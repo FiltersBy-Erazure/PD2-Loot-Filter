@@ -5,15 +5,10 @@ When in game, remember to toggle the following settings with an X:
 
  
  X Always Show Items - HIGHLY RECOMMENDED
- 
  X Always Show Item Stat Ranges
- 
  X Advanced Item Display
- 
  X Item Drop Notifications
- 
  X Item Close Notifications
- 
  X Item Detailed Notifications
 
  Shoutout to WolfieeifloW #6431 on Discord for creating the base of this filter
