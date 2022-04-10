@@ -9,5 +9,6 @@ X Item Close Notifications
 X Item Detailed Notifications
 
 Shoutout to Wolfie for creating the base of this filter for nonmagical items and to Kryszard for his sections on charms and nonmagical superior item renaming
-For more information on loot filters, check out the Item Filtering section on the PD2 Wiki 
+For more information on loot filters, check out the Item Filtering section on the PD2 Wiki
+
 <><><> https://projectdiablo2.miraheze.org/wiki/Item_Filtering <><><>
