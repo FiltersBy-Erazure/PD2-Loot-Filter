@@ -2593,9 +2593,9 @@ ItemDisplay[RARE !ID SPEAR THROWING !ETH !ZON NORM CLVL>39]://	Hide non-Ethereal
 ItemDisplay[RARE !ID SPEAR THROWING !ETH !ZON EXC CLVL>89]://	Hide non-Ethereal Exceptional quality Javs After Level 89
 ItemDisplay[RARE !ID SPEAR THROWING !ETH !ZON ELT CLVL>95]://   Hide non-Ethereal Elite quality Javs After Level 95
 
-ItemDisplay[RARE !ID !ETH SPEAR !THROWING NORM CLVL>39]://      Hide non-Ethereal Normal quality Rare Spears After Level 39
-ItemDisplay[RARE !ID !ETH SPEAR !THROWING EXC CLVL>89]://       Hide non-Ethereal Exceptional quality Rare Spears After Level 89
-ItemDisplay[RARE !ID !ETH SPEAR !THROWING ELT CLVL>95]://       Hide non-Ethereal Elite quality Rare Spears After Level 95
+ItemDisplay[RARE !ID !ETH SPEAR !THROWING !ZON NORM CLVL>39]://      Hide non-Ethereal Normal quality Rare Spears After Level 39
+ItemDisplay[RARE !ID !ETH SPEAR !THROWING !ZON EXC CLVL>89]://       Hide non-Ethereal Exceptional quality Rare Spears After Level 89
+ItemDisplay[RARE !ID !ETH SPEAR !THROWING !ZON ELT CLVL>95]://       Hide non-Ethereal Elite quality Rare Spears After Level 95
 
 ItemDisplay[RARE !ID JAV NORM !ETH !ZON CLVL>39]://   		    Hide non-Ethereal Normal quality Rare Throwing Weapons that aren't Zon class specific After Level 39
 ItemDisplay[RARE !ID JAV EXC !ETH !ZON CLVL>89]://    		    Hide non-Ethereal Exceptional quality Rare Throwing Weapons that aren't Zon class After Level 89
@@ -3245,13 +3245,14 @@ ItemDisplay[NMAG GLOVES ELT]:// This will completely hide all elite quality whit
 // These are generic lines for showing all Amazon weapons of a certain tier and certain conditions (sockets, superior, and/or ethereal)
 // Please note all weapons must have +3 to a skill tab to show as well
 
-// Add +skills tag to Amazon bows and Amazon javelins
-ItemDisplay[NMAG !RW TABSK0=1]: %TAN%+1%DARK_GREEN% Bow Skills %NAME%%CONTINUE%
-ItemDisplay[NMAG !RW TABSK0=2]: %TAN%+2%DARK_GREEN% Bow Skills %NAME%%CONTINUE%
-ItemDisplay[NMAG !RW TABSK0=3]: %TAN%+3%DARK_GREEN% Bow Skills %NAME%%CONTINUE%
-ItemDisplay[NMAG !RW TABSK2=1]: %TAN%+1%DARK_GREEN% Jav Skills %NAME%%CONTINUE%
-ItemDisplay[NMAG !RW TABSK2=2]: %TAN%+2%DARK_GREEN% Jav Skills %NAME%%CONTINUE%
-ItemDisplay[NMAG !RW TABSK2=3]: %TAN%+3%DARK_GREEN% Jav Skills %NAME%%CONTINUE%
+// Add +skills tag to Amazon bows
+ItemDisplay[NMAG !RW TABSK0=1 SOCK=0]: %TAN%+1%DARK_GREEN% Bow Skill %WHITE%%NAME%%CONTINUE%
+ItemDisplay[NMAG !RW TABSK0=2 SOCK=0]: %TAN%+2%DARK_GREEN% Bow Skill %WHITE%%NAME%%CONTINUE%
+ItemDisplay[NMAG !RW TABSK0=3 SOCK=0]: %TAN%+3%DARK_GREEN% Bow Skill %WHITE%%NAME%%CONTINUE%
+
+ItemDisplay[NMAG !RW TABSK0=1 (ETH OR SOCK>0)]: %TAN%+1%DARK_GREEN% Bow Skill %GRAY%%NAME%%CONTINUE%
+ItemDisplay[NMAG !RW TABSK0=2 (ETH OR SOCK>0)]: %TAN%+2%DARK_GREEN% Bow Skill %GRAY%%NAME%%CONTINUE%
+ItemDisplay[NMAG !RW TABSK0=3 (ETH OR SOCK>0)]: %TAN%+3%DARK_GREEN% Bow Skill %GRAY%%NAME%%CONTINUE%
 
 // Hide Zon Class Bows that Don't Have +3 to Bow Skills above character level 9
 ItemDisplay[NMAG TABSK0<3 (am1 OR am2 OR am6 OR am7 OR amb OR amc) CLVL>9]://
@@ -3350,6 +3351,14 @@ ItemDisplay[NMAG !INF !RW SUP !ETH SOCK=3 (TABSK0>2 OR TABSK1>2) (am1 OR am2 OR 
 ItemDisplay[NMAG !INF !RW SUP !ETH SOCK=4 (TABSK0>2 OR TABSK1>2) (am1 OR am2 OR am6 OR am7 OR amb OR amc)]:%GRAY%%NAME%{%ORANGE%Passion, Phoenix, Wrath%NL%Harmony, Hand of Justice, Ice,%NL%Brand, Faith, Fortitude,%NL%%TAN%Possible Runewords:}// Superior, 4os
 ItemDisplay[NMAG !INF !RW SUP !ETH SOCK=5 (TABSK0>2 OR TABSK1>2) (am1 OR am2 OR am6 OR am7 OR amb OR amc)]:%GRAY%%NAME%{%ORANGE%Zenith, Call to Arms%NL%%TAN%Possible Runewords:}// Superior, 5os
 
+// Add +skills tag to Amazon javelins
+ItemDisplay[NMAG !RW TABSK2=1 (ETH OR SOCK>0)]: %TAN%+1%DARK_GREEN% Jav Skill %GRAY%%NAME%%CONTINUE%
+ItemDisplay[NMAG !RW TABSK2=2 (ETH OR SOCK>0)]: %TAN%+2%DARK_GREEN% Jav Skill %GRAY%%NAME%%CONTINUE%
+ItemDisplay[NMAG !RW TABSK2=3 (ETH OR SOCK>0)]: %TAN%+3%DARK_GREEN% Jav Skill %GRAY%%NAME%%CONTINUE%
+ItemDisplay[NMAG !RW TABSK2=1 SOCK=0]: %TAN%+1%DARK_GREEN% Jav Skill %WHITE%%NAME%%CONTINUE%
+ItemDisplay[NMAG !RW TABSK2=2 SOCK=0]: %TAN%+2%DARK_GREEN% Jav Skill %WHITE%%NAME%%CONTINUE%
+ItemDisplay[NMAG !RW TABSK2=3 SOCK=0]: %TAN%+3%DARK_GREEN% Jav Skill %WHITE%%NAME%%CONTINUE%
+
 // Hide Zon Class Spears that Don't Have +3 to Javelin Skills above character level 9
 ItemDisplay[NMAG TABSK2<3 ZON (am3 OR am4 OR am8 OR am9 OR amd OR am3) CLVL>9]://
 
@@ -3368,10 +3377,11 @@ ItemDisplay[NMAG !INF !RW am9 CLVL>39]://
 
 //      	Elite tier
 //           Matriarchal Spear
-
-ItemDisplay[NMAG !INF !RW TABSK2<3 (amd OR ame)]://
+ItemDisplay[NMAG !INF !RW ETH TABSK2=3 (SOCK=0 OR SOCK=6) amd]:%GRAY%%NAME% %ORANGE%BotD Base%DOT-20%%PX-00%//
+ItemDisplay[NMAG !INF !RW ETH TABSK2=3 !(SOCK=0 OR SOCK=6) amd]://
 //             Matriarchal Pike
 ItemDisplay[NMAG !INF !RW ETH TABSK2=3 (SOCK=0 OR SOCK=6) ame]:%GRAY%%NAME% %ORANGE%BotD Base%DOT-20%%PX-00%//
+ItemDisplay[NMAG !INF !RW ETH TABSK2=3 !(SOCK=0 OR SOCK=6) ame]://
 
 ItemDisplay[NMAG !INF !RW !SUP !ETH SOCK=0 TABSK2>2 ZON SPEAR !THROWING]:%NAME%{%TAN%and %ORANGE%Perfect %WHITE%Amethyst %PURPLE%o %TAN%for sockets%NL%Larzuk or Cube with %WHITE%Ral %TAN%+ %WHITE%Amn}// 0os
 ItemDisplay[NMAG !INF !RW !SUP !ETH SOCK=2 TABSK2>2 ZON SPEAR !THROWING]:%GRAY%%NAME%{%ORANGE%Strength%NL%%TAN%Possible Runewords:}// 2os
@@ -4211,13 +4221,13 @@ ItemDisplay[NMAG !INF !RW SOCK=5 SCEPTER]:%NAME%{%ORANGE%Eternity, Honor%NL%Beas
 
 // 	Normal tiers
 
-ItemDisplay[NMAG !INF !RW NORM CLVL>9 SPEAR !THROWING]://
+ItemDisplay[NMAG !INF !RW NORM CLVL>9 SPEAR !THROWING !ZON]://
 
 // 	Exceptional tiers
-ItemDisplay[NMAG !INF !RW EXC SPEAR !THROWING]:// 
+ItemDisplay[NMAG !INF !RW EXC SPEAR !THROWING !ZON]:// 
 
 // 	Elite tiers
-ItemDisplay[NMAG !INF !RW ELT SPEAR !THROWING !(7br OR 7p7)]://
+ItemDisplay[NMAG !INF !RW ELT SPEAR !THROWING !ZON !(7br OR 7p7)]://
 
 // Elite tier Polearms
 //      Mancatcher
@@ -4254,30 +4264,30 @@ ItemDisplay[NMAG !INF !RW SUP ETH SOCK=6 7p7]:%GRAY%%NAME%%DOT-20%%PX-00%%CONTIN
 // These lines add descriptions to all Spears, leave these alone if you want to display possible runewords on base Spears
 // Please note you still have to uncomment specific base items lines to get a drop notification
 // You can also use these lines to completely hide items. Just put "//" in between "]:" and "{%" (eg "...]://{%")
-ItemDisplay[NMAG !INF !RW !SUP !ETH SOCK=0 SPEAR !THROWING]:%NAME%{%TAN%and %ORANGE%Perfect %WHITE% %PURPLE%o %TAN%for sockets%NL%Larzuk or Cube with %WHITE%Ral %TAN%+ %WHITE%Amn}// All tiers, 0os
-ItemDisplay[NMAG !INF !RW !SUP !ETH SOCK=2 SPEAR !THROWING]:%GRAY%%NAME%{%ORANGE%Strength, Wind%NL%%TAN%Possible Runewords:}// All tiers, 2os
-ItemDisplay[NMAG !INF !RW !SUP !ETH SOCK=3 SPEAR !THROWING]:%GRAY%%NAME%{%ORANGE%Malice, Plague, Venom%NL%Crescent Moon, Fury%NL%%TAN%Possible Runewords:}// All tiers, 3os
-ItemDisplay[NMAG !INF !RW !SUP !ETH SOCK=4 SPEAR !THROWING]:%GRAY%%NAME%{%ORANGE%Phoenix, Pride, Rift%NL%Infinity, Insight, Passion,%NL%Fortitude, Hand of Justice,%NL%%TAN%Possible Runewords:}// All tiers, 4os
-ItemDisplay[NMAG !INF !RW !SUP !ETH SOCK=5 SPEAR !THROWING]:%GRAY%%NAME%{%ORANGE%Eternity, Honor, Obedience%NL%Call to Arms, Destruction, Doom,%NL%%TAN%Possible Runewords:}// All tiers, 5os
-ItemDisplay[NMAG !INF !RW !SUP !ETH SOCK=6 SPEAR !THROWING]:%GRAY%%NAME%{%ORANGE%Breath of the Dying, Silence%NL%%TAN%Possible Runewords:}// All tiers, 6os
-ItemDisplay[NMAG !INF !RW SUP !ETH SOCK=0 SPEAR !THROWING]:%NAME%{%TAN%Use Larzuk quest to roll max sockets}// All tiers, 0os, Superior
-ItemDisplay[NMAG !INF !RW SUP !ETH SOCK=2 SPEAR !THROWING]:%GRAY%%NAME%{%ORANGE%Strength, Wind%NL%%TAN%Possible Runewords:}// All tiers, 2os, Superior
-ItemDisplay[NMAG !INF !RW SUP !ETH SOCK=3 SPEAR !THROWING]:%GRAY%%NAME%{%ORANGE%Malice, Plague, Venom%NL%Crescent Moon, Fury%NL%%TAN%Possible Runewords:}// All tiers, 3os, Superior
-ItemDisplay[NMAG !INF !RW SUP !ETH SOCK=4 SPEAR !THROWING]:%GRAY%%NAME%{%ORANGE%Phoenix, Pride, Rift%NL%Infinity, Insight, Passion,%NL%Fortitude, Hand of Justice,%NL%%TAN%Possible Runewords:}// All tiers, 4os, Superior
-ItemDisplay[NMAG !INF !RW SUP !ETH SOCK=5 SPEAR !THROWING]:%GRAY%%NAME%{%ORANGE%Eternity, Honor, Obedience%NL%Call to Arms, Destruction, Doom,%NL%%TAN%Possible Runewords:}// All tiers, 5os, Superior
-ItemDisplay[NMAG !INF !RW SUP !ETH SOCK=6 SPEAR !THROWING]:%GRAY%%NAME%{%ORANGE%Breath of the Dying, Silence%NL%%TAN%Possible Runewords:}// All tiers, 6os, Superior
-ItemDisplay[NMAG !INF !RW !SUP ETH SOCK=0 SPEAR !THROWING]:%GRAY%%NAME%{%TAN%and %ORANGE%Perfect %WHITE%Amethyst %PURPLE%o %TAN%for sockets%NL%Larzuk or Cube with %WHITE%Ral %TAN%+ %WHITE%Amn}// All tiers, 0os, Eth
-ItemDisplay[NMAG !INF !RW !SUP ETH SOCK=2 SPEAR !THROWING]:%GRAY%%NAME%{%ORANGE%Strength, Wind%NL%%TAN%Possible Runewords:}// All tiers, 2os, Eth
-ItemDisplay[NMAG !INF !RW !SUP ETH SOCK=3 SPEAR !THROWING]:%GRAY%%NAME%{%ORANGE%Malice, Plague, Venom%NL%Crescent Moon, Fury%NL%%TAN%Possible Runewords:}// All tiers, 3os, Eth
-ItemDisplay[NMAG !INF !RW !SUP ETH SOCK=4 SPEAR !THROWING]:%GRAY%%NAME%{%ORANGE%Phoenix, Pride, Rift%NL%Infinity, Insight, Passion,%NL%Fortitude, Hand of Justice,%NL%%TAN%Possible Runewords:}// All tiers, 4os, Eth
-ItemDisplay[NMAG !INF !RW !SUP ETH SOCK=5 SPEAR !THROWING]:%GRAY%%NAME%{%ORANGE%Eternity, Honor, Obedience%NL%Call to Arms, Destruction, Doom,%NL%%TAN%Possible Runewords:}// All tiers, 5os, Eth
-ItemDisplay[NMAG !INF !RW !SUP ETH SOCK=6 SPEAR !THROWING]:%GRAY%%NAME%{%ORANGE%Breath of the Dying, Silence%NL%%TAN%Possible Runewords:}// All tiers, 6os, Eth
-ItemDisplay[NMAG !INF !RW SUP ETH SOCK=0 SPEAR !THROWING]:%GRAY%%NAME%{%TAN%Use Larzuk quest to roll max sockets}// All tiers, 0os, Superior, Eth
-ItemDisplay[NMAG !INF !RW SUP ETH SOCK=2 SPEAR !THROWING]:%GRAY%%NAME%{%ORANGE%Strength, Wind%NL%%TAN%Possible Runewords:}// All tiers, 2os, Superior, Eth
-ItemDisplay[NMAG !INF !RW SUP ETH SOCK=3 SPEAR !THROWING]:%GRAY%%NAME%{%ORANGE%Malice, Plague, Venom%NL%Crescent Moon, Fury%NL%%TAN%Possible Runewords:}// All tiers, 3os, Superior, Eth
-ItemDisplay[NMAG !INF !RW SUP ETH SOCK=4 SPEAR !THROWING]:%GRAY%%NAME%{%ORANGE%Phoenix, Pride, Rift%NL%Infinity, Insight, Passion,%NL%Fortitude, Hand of Justice,%NL%%TAN%Possible Runewords:}// All tiers, 4os, Superior, Eth
-ItemDisplay[NMAG !INF !RW SUP ETH SOCK=5 SPEAR !THROWING]:%GRAY%%NAME%{%ORANGE%Eternity, Honor, Obedience%NL%Call to Arms, Destruction, Doom,%NL%%TAN%Possible Runewords:}// All tiers, 5os, Superior, Eth
-ItemDisplay[NMAG !INF !RW SUP ETH SOCK=6 SPEAR !THROWING]:%GRAY%%NAME%{%ORANGE%Breath of the Dying, Silence%NL%%TAN%Possible Runewords:}// All tiers, 6os, Superior, Eth
+ItemDisplay[NMAG !INF !RW !SUP !ETH SOCK=0 SPEAR !THROWING !ZON]:%NAME%{%TAN%and %ORANGE%Perfect %WHITE% %PURPLE%o %TAN%for sockets%NL%Larzuk or Cube with %WHITE%Ral %TAN%+ %WHITE%Amn}// All tiers, 0os
+ItemDisplay[NMAG !INF !RW !SUP !ETH SOCK=2 SPEAR !THROWING !ZON]:%GRAY%%NAME%{%ORANGE%Strength, Wind%NL%%TAN%Possible Runewords:}// All tiers, 2os
+ItemDisplay[NMAG !INF !RW !SUP !ETH SOCK=3 SPEAR !THROWING !ZON]:%GRAY%%NAME%{%ORANGE%Malice, Plague, Venom%NL%Crescent Moon, Fury%NL%%TAN%Possible Runewords:}// All tiers, 3os
+ItemDisplay[NMAG !INF !RW !SUP !ETH SOCK=4 SPEAR !THROWING !ZON]:%GRAY%%NAME%{%ORANGE%Phoenix, Pride, Rift%NL%Infinity, Insight, Passion,%NL%Fortitude, Hand of Justice,%NL%%TAN%Possible Runewords:}// All tiers, 4os
+ItemDisplay[NMAG !INF !RW !SUP !ETH SOCK=5 SPEAR !THROWING !ZON]:%GRAY%%NAME%{%ORANGE%Eternity, Honor, Obedience%NL%Call to Arms, Destruction, Doom,%NL%%TAN%Possible Runewords:}// All tiers, 5os
+ItemDisplay[NMAG !INF !RW !SUP !ETH SOCK=6 SPEAR !THROWING !ZON]:%GRAY%%NAME%{%ORANGE%Breath of the Dying, Silence%NL%%TAN%Possible Runewords:}// All tiers, 6os
+ItemDisplay[NMAG !INF !RW SUP !ETH SOCK=0 SPEAR !THROWING !ZON]:%NAME%{%TAN%Use Larzuk quest to roll max sockets}// All tiers, 0os, Superior
+ItemDisplay[NMAG !INF !RW SUP !ETH SOCK=2 SPEAR !THROWING !ZON]:%GRAY%%NAME%{%ORANGE%Strength, Wind%NL%%TAN%Possible Runewords:}// All tiers, 2os, Superior
+ItemDisplay[NMAG !INF !RW SUP !ETH SOCK=3 SPEAR !THROWING !ZON]:%GRAY%%NAME%{%ORANGE%Malice, Plague, Venom%NL%Crescent Moon, Fury%NL%%TAN%Possible Runewords:}// All tiers, 3os, Superior
+ItemDisplay[NMAG !INF !RW SUP !ETH SOCK=4 SPEAR !THROWING !ZON]:%GRAY%%NAME%{%ORANGE%Phoenix, Pride, Rift%NL%Infinity, Insight, Passion,%NL%Fortitude, Hand of Justice,%NL%%TAN%Possible Runewords:}// All tiers, 4os, Superior
+ItemDisplay[NMAG !INF !RW SUP !ETH SOCK=5 SPEAR !THROWING !ZON]:%GRAY%%NAME%{%ORANGE%Eternity, Honor, Obedience%NL%Call to Arms, Destruction, Doom,%NL%%TAN%Possible Runewords:}// All tiers, 5os, Superior
+ItemDisplay[NMAG !INF !RW SUP !ETH SOCK=6 SPEAR !THROWING !ZON]:%GRAY%%NAME%{%ORANGE%Breath of the Dying, Silence%NL%%TAN%Possible Runewords:}// All tiers, 6os, Superior
+ItemDisplay[NMAG !INF !RW !SUP ETH SOCK=0 SPEAR !THROWING !ZON]:%GRAY%%NAME%{%TAN%and %ORANGE%Perfect %WHITE%Amethyst %PURPLE%o %TAN%for sockets%NL%Larzuk or Cube with %WHITE%Ral %TAN%+ %WHITE%Amn}// All tiers, 0os, Eth
+ItemDisplay[NMAG !INF !RW !SUP ETH SOCK=2 SPEAR !THROWING !ZON]:%GRAY%%NAME%{%ORANGE%Strength, Wind%NL%%TAN%Possible Runewords:}// All tiers, 2os, Eth
+ItemDisplay[NMAG !INF !RW !SUP ETH SOCK=3 SPEAR !THROWING !ZON]:%GRAY%%NAME%{%ORANGE%Malice, Plague, Venom%NL%Crescent Moon, Fury%NL%%TAN%Possible Runewords:}// All tiers, 3os, Eth
+ItemDisplay[NMAG !INF !RW !SUP ETH SOCK=4 SPEAR !THROWING !ZON]:%GRAY%%NAME%{%ORANGE%Phoenix, Pride, Rift%NL%Infinity, Insight, Passion,%NL%Fortitude, Hand of Justice,%NL%%TAN%Possible Runewords:}// All tiers, 4os, Eth
+ItemDisplay[NMAG !INF !RW !SUP ETH SOCK=5 SPEAR !THROWING !ZON]:%GRAY%%NAME%{%ORANGE%Eternity, Honor, Obedience%NL%Call to Arms, Destruction, Doom,%NL%%TAN%Possible Runewords:}// All tiers, 5os, Eth
+ItemDisplay[NMAG !INF !RW !SUP ETH SOCK=6 SPEAR !THROWING !ZON]:%GRAY%%NAME%{%ORANGE%Breath of the Dying, Silence%NL%%TAN%Possible Runewords:}// All tiers, 6os, Eth
+ItemDisplay[NMAG !INF !RW SUP ETH SOCK=0 SPEAR !THROWING !ZON]:%GRAY%%NAME%{%TAN%Use Larzuk quest to roll max sockets}// All tiers, 0os, Superior, Eth
+ItemDisplay[NMAG !INF !RW SUP ETH SOCK=2 SPEAR !THROWING !ZON]:%GRAY%%NAME%{%ORANGE%Strength, Wind%NL%%TAN%Possible Runewords:}// All tiers, 2os, Superior, Eth
+ItemDisplay[NMAG !INF !RW SUP ETH SOCK=3 SPEAR !THROWING !ZON]:%GRAY%%NAME%{%ORANGE%Malice, Plague, Venom%NL%Crescent Moon, Fury%NL%%TAN%Possible Runewords:}// All tiers, 3os, Superior, Eth
+ItemDisplay[NMAG !INF !RW SUP ETH SOCK=4 SPEAR !THROWING !ZON]:%GRAY%%NAME%{%ORANGE%Phoenix, Pride, Rift%NL%Infinity, Insight, Passion,%NL%Fortitude, Hand of Justice,%NL%%TAN%Possible Runewords:}// All tiers, 4os, Superior, Eth
+ItemDisplay[NMAG !INF !RW SUP ETH SOCK=5 SPEAR !THROWING !ZON]:%GRAY%%NAME%{%ORANGE%Eternity, Honor, Obedience%NL%Call to Arms, Destruction, Doom,%NL%%TAN%Possible Runewords:}// All tiers, 5os, Superior, Eth
+ItemDisplay[NMAG !INF !RW SUP ETH SOCK=6 SPEAR !THROWING !ZON]:%GRAY%%NAME%{%ORANGE%Breath of the Dying, Silence%NL%%TAN%Possible Runewords:}// All tiers, 6os, Superior, Eth
 
 // ---------------------------------------------------------------------------
 // ================================== [BWSW] Swords =========================
