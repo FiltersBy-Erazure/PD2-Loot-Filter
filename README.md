@@ -3,8 +3,6 @@ Season 5 loot filter now available on the PD2 Launcher!
 
 ![Earlygame Potions](https://user-images.githubusercontent.com/76863417/174730113-665c06c1-a33f-493e-b879-2b62b3a0cdc0.jpg)
 
-![Lategame Potions](https://user-images.githubusercontent.com/76863417/174730133-bf31963a-72d6-49fb-99ab-07301e2f91de.jpg)
-
 ![Gem Display and Map Icons](https://user-images.githubusercontent.com/76863417/174730148-b27e60fa-8af3-4311-afc8-f4d2e0650c8f.jpg)
 
 ![Low Rune Display and Map Icons](https://user-images.githubusercontent.com/76863417/174730160-48f3c2ac-8606-40dc-a1e9-7db6c0b2cc19.jpg)
