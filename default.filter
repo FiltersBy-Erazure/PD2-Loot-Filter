@@ -18,12 +18,12 @@ ItemDisplay[GOLD<25 CLVL>5]://      Hide 25 gold and less if level 6+
 ItemDisplay[GOLD<50 CLVL>9]://      Hide 50 gold and less if level 10+
 ItemDisplay[GOLD<100 CLVL>14]://    Hide 100 gold and less if level 15+
 ItemDisplay[GOLD<200 CLVL>19]://    Hide 200 gold and less if level 20+
-ItemDisplay[GOLD<300 CLVL>24]://    Hide 300 gold and less if level 25+
+ItemDisplay[GOLD<250 CLVL>24]://    Hide 300 gold and less if level 25+
 ItemDisplay[GOLD<500 CLVL>29]://    Hide 500 gold and less if level 30+
-ItemDisplay[GOLD<1000 CLVL>39]://   Hide 1000 gold and less if level 40+
-ItemDisplay[GOLD<2000 CLVL>59]://   Hide 2000 gold and less if level 60+
-ItemDisplay[GOLD<3000 CLVL>79]://   Hide 3000 gold and less if level 80+
-ItemDisplay[GOLD<4000 CLVL>89]://   Hide 4000 gold and less if level 90+
+ItemDisplay[GOLD<750 CLVL>39]://    Hide 750 gold and less if level 40+
+ItemDisplay[GOLD<1000 CLVL>59]://   Hide 1000 gold and less if level 60+
+ItemDisplay[GOLD<1500 CLVL>79]://   Hide 1500 gold and less if level 80+
+ItemDisplay[GOLD<2000 CLVL>89]://   Hide 2000 gold and less if level 90+
 
 // ================================  Health Potions  =================================
 
@@ -2449,7 +2449,7 @@ ItemDisplay[MAG ID jew]:%NAME%{%WHITE%to create %TAN%(x %BLUE%Jewel %TAN%x) %WHI
 //       			                      Rings
 // ------------------------------------------------------------------------------
 
-ItemDisplay[MAG !ID rin CLVL<20]:%TAN%*  %BLUE%%NAME%  %TAN%*%BLUE%%BORDER-91%%MAP-97%%DOT-0E%%PX-A6%// All unidentified rings
+ItemDisplay[MAG !ID rin CLVL<20]:%TAN%o  %BLUE%%NAME%  %TAN%o%BLUE%%BORDER-91%%MAP-97%%DOT-0E%%PX-A6%// All unidentified rings
 ItemDisplay[MAG !ID rin CLVL>19]:%TAN%*  %BLUE%%NAME%  %TAN%*%BLUE%// Do not notify for magic rings after character level 19
 
 // ------------------------------------------------------------------------------
@@ -4116,8 +4116,8 @@ ItemDisplay[(NMAG OR MAG OR RARE OR CRAFT) !RW SK36=3]:%NAME% %TAN%+1%DARK_GREEN
 ItemDisplay[ID (MAG OR RARE OR SET OR UNI OR CRAFT) SOCK>0]:%NAME% %TAN%[%WHITE%%SOCKETS%%TAN%]{%NAME%}%CONTINUE%// Add number of sockets to the end of socketed items' names (eg "Quilted Armor [2os]")
 ItemDisplay[NMAG SOCK>0]:%NAME% %TAN%[%WHITE%%SOCKETS%%TAN%]%CONTINUE%// Add number of sockets to the end of socketed items' names (eg "Quilted Armor [2os]")
 
-ItemDisplay[NMAG !RW (ARMOR OR WEAPON) !leg SOCK=1 CLVL<10 (!(clb OR 9cl OR 7cl OR spc OR 9sp OR 7sp) AND !STAFF AND !SIN AND !SCEPTER AND !WAND AND !SOR AND !BAR AND !DRU AND !NEC)]:%GRAY%%NAME% %GRAY%[%WHITE%%SOCKETS%%GRAY%]%GRAY%// Before character level 10, show all 1 socket armors and weapons
-ItemDisplay[NMAG !RW (ARMOR OR WEAPON) !leg SOCK=1 CLVL>9 (!(clb OR 9cl OR 7cl OR spc OR 9sp OR 7sp) AND !STAFF AND !SIN AND !SCEPTER AND !WAND AND !SOR AND !BAR AND !DRU AND !NEC)]:// Hides all 1 socket nonmagical items except for items that sell for gold
+ItemDisplay[NMAG !RW (ARMOR OR WEAPON) !leg SOCK=1 CLVL<10 !(clb OR 9cl OR 7cl OR spc OR 9sp OR 7sp OR STAFF OR SIN OR SCEPTER OR WAND OR SOR OR BAR OR DRU OR NEC)]:%GRAY%%NAME%%GRAY%// Before character level 10, show all 1 socket armors and weapons
+ItemDisplay[NMAG !RW (ARMOR OR WEAPON) !leg SOCK=1 CLVL>9 !(clb OR 9cl OR 7cl OR spc OR 9sp OR 7sp OR STAFF OR SIN OR SCEPTER OR WAND OR SOR OR BAR OR DRU OR NEC)]:// Hides all 1 socket nonmagical items except for items that sell for gold
 
 ItemDisplay[ETH NMAG]:%TAN%[%WHITE%Eth%TAN%] %NAME%{%NAME%}%CONTINUE%//
 
@@ -4151,15 +4151,15 @@ ItemDisplay[(((WEAPON !THROWING !SIN !SOR !WAND !SCEPTER !STAFF !(clb OR 9cl OR 
 // These lines add a "$" to the start of an item name if it's more than 10,000 in normal, more than 20,000 in nightmare, more than 25,000 in hell
 // Normal difficulty
 ItemDisplay[(NMAG OR MAG OR RARE) !RW !ETH SOCK=0 PRICE>9999 DIFF=0]:%DARK_GREEN%$ %WHITE%%NAME%{%NAME%}%CONTINUE%// For non-eth, non socketed items
-ItemDisplay[(NMAG OR MAG OR RARE) !RW PRICE>9999 DIFF=0]:%DARK_GREEN%$ %GRAY%%NAME%{%NAME%}%CONTINUE%// For eth or socketed items
+ItemDisplay[(NMAG OR MAG OR RARE) !RW (ETH OR SOCK>0) PRICE>9999 DIFF=0]:%DARK_GREEN%$ %GRAY%%NAME%{%NAME%}%CONTINUE%// For eth or socketed items
 
 // Nightmare difficulty
 ItemDisplay[(NMAG OR MAG OR RARE) !RW !ETH SOCK=0 PRICE>19999 DIFF=1]:%DARK_GREEN%$ %WHITE%%NAME%{%NAME%}%CONTINUE%// For non-eth, non socketed items
-ItemDisplay[(NMAG OR MAG OR RARE) !RW PRICE>19999 DIFF=1]:%DARK_GREEN%$ %GRAY%%NAME%{%NAME%}%CONTINUE%// For eth or socketed items
+ItemDisplay[(NMAG OR MAG OR RARE) !RW (ETH OR SOCK>0) PRICE>19999 DIFF=1]:%DARK_GREEN%$ %GRAY%%NAME%{%NAME%}%CONTINUE%// For eth or socketed items
 
 // Hell difficulty
 ItemDisplay[(NMAG OR MAG OR RARE) !RW !ETH SOCK=0 PRICE>24999 DIFF=2]:%DARK_GREEN%$ %WHITE%%NAME%{%NAME%}%CONTINUE%// For non-eth, non socketed items
-ItemDisplay[(NMAG OR MAG OR RARE) !RW PRICE>24999 DIFF=2]:%DARK_GREEN%$ %GRAY%%NAME%{%NAME%}%CONTINUE%// For eth or socketed items
+ItemDisplay[(NMAG OR MAG OR RARE) !RW (ETH OR SOCK>0) PRICE>24999 DIFF=2]:%DARK_GREEN%$ %GRAY%%NAME%{%NAME%}%CONTINUE%// For eth or socketed items
 
 // Filters out inferior items unless your character is playing that class
 ItemDisplay[INF (NEC OR WAND) !NECROMANCER]://
@@ -5248,7 +5248,7 @@ ItemDisplay[(lbw OR 8lb) (RARE OR CRAFT OR UNI OR SET) ID SOCK=0 STAT360=0]:%NAM
 
 //Info about Max Sockets from all sources of socketing
 //opener
-ItemDisplay[((CHEST OR HELM OR CIRC OR SHIELD) OR WEAPON) !THROWING (RARE OR CRAFT OR UNI OR SET) ID SOCK=0]:%NAME%{%NAME%%NL%}%CONTINUE%
+ItemDisplay[((CHEST OR HELM OR CIRC OR SHIELD) OR WEAPON) !THROWING (RARE OR CRAFT OR UNI OR SET) (NORM OR EXC) ID SOCK=0]:%NAME%{%NAME%%NL%}%CONTINUE%
 ItemDisplay[(dgr OR dir OR wnd OR ywn OR 9wn OR (ci0 ILVL<26)) MAG ID SOCK=0]:%NAME%{%NAME%%WHITE%Max Sockets: %TAN%[%WHITE%LQ:1}%CONTINUE%
 ItemDisplay[((CHEST OR HELM OR CIRC OR SHIELD) OR WEAPON) !(THROWING OR dgr OR dir OR wnd OR ywn OR 9wn OR (ci0 ILVL<26)) MAG ID SOCK=0]:%NAME%{%NAME%%WHITE%Max Sockets: %TAN%[%WHITE%LQ:2}%CONTINUE%
 ItemDisplay[((CHEST OR HELM OR CIRC OR SHIELD) OR WEAPON) !THROWING (RARE OR CRAFT OR UNI OR SET) ID SOCK=0]:%NAME%{%NAME%%WHITE%Max Sockets: %TAN%[%WHITE%LQ:1}%CONTINUE%
