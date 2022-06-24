@@ -146,17 +146,17 @@ ItemDisplay[rkey]:%GOLD%xX%GRAY%xX%GOLD%||%GRAY%Xx%GOLD%Xx  %GOLD%%NAME%  %GOLD%
 // ========================================  Quest Items  ======================================
 //----------------------------------------------------------------------------------------------
 
-ItemDisplay[bks]:%NAME%{%TAN%in Act 1%NL%Talk to Akara%NL%}// Scroll of Inifuss
+ItemDisplay[bks]:%NAME%%MAP-00%%DOT-0E%%PX-20%{%TAN%in Act 1%NL%Talk to Akara%NL%}// Scroll of Inifuss
 ItemDisplay[bkd]:%NAME%{%TAN%Go to Act 1: Stony Field%NL%}// Scroll of Inifuss, deciphered
 ItemDisplay[leg (DIFF=2 ILVL>60)]:%GOLD%%NAME%%MAP-00%%DOT-0E%%PX-20%{%TAN%in Act 1 to open Cow Level%NL%Cube with Tome of Town Portal}// Wirt's Leg
 ItemDisplay[leg (DIFF=2 ILVL<61)]:%RED%Broken Wirt's Leg%MAP-00%%DOT-0E%%PX-20%{%RED%difficulty and will not work%NL%%TAN%Note%WHITE%: %RED%This leg is from a lower}// Wirt's Leg
 ItemDisplay[leg (DIFF=1 ILVL>30)]:%GOLD%%NAME%%MAP-00%%DOT-0E%%PX-20%{%TAN%in Act 1 to open Cow Level%NL%Cube with Tome of Town Portal}// Wirt's Leg
 ItemDisplay[leg (DIFF=1 ILVL<31)]:%RED%Broken Wirt's Leg%MAP-00%%DOT-0E%%PX-20%{%RED%difficulty and will not work%NL%%TAN%Note%WHITE%: %RED%This leg is from a lower}// Wirt's Leg
 ItemDisplay[leg]:%GOLD%%NAME%%MAP-00%%DOT-0E%%PX-20%{%TAN%in Act 1 to open Cow Level%NL%Cube with Tome of Town Portal}// Wirt's Leg
-ItemDisplay[hdm]:%NAME%{%TAN%Give to Charsi in Act 1}// Horadric Malus
+ItemDisplay[hdm]:%NAME%%MAP-00%%DOT-0E%%PX-20%{%TAN%Give to Charsi in Act 1}// Horadric Malus
 ItemDisplay[ass]:%GOLD%Book of Skill%DOT-0E%{%TAN%+1 skill point%NL%Right click for %NL%}// Book of Skill
 ItemDisplay[tr1]:// Horadric Scroll
-ItemDisplay[box]:%BLACK%x%GOLD%|%BLACK%X%GOLD%|%BLACK%x  %GOLD%Horadric Cube  %BLACK%x%GOLD%|%BLACK%X%GOLD%|%BLACK%x%MAP-00%%DOT-0E%%PX-20%// Horadric Cube
+ItemDisplay[box]:%BLACK%x%GOLD%|%BLACK%X%GOLD%|%BLACK%x  %GOLD%Horadric Cube  %BLACK%x%GOLD%|%BLACK%X%GOLD%|%BLACK%x// Horadric Cube
 ItemDisplay[hst]:%NAME%{%TAN%Act 2: Tal Rashas Tomb%NL%Place in Tomb Orifice in}// Horadric Staff
 ItemDisplay[vip]:%NAME%{%TAN%Cube with Staff of Kings}// Amulet of the Viper
 ItemDisplay[msf]:%NAME%{%TAN%Cube with Amulet of the Viper}// Staff of Kings
@@ -173,7 +173,7 @@ ItemDisplay[bbb]:%NAME%%MAP-00%%DOT-0E%%PX-20%{%TAN%+5 Stat Points%NL%Give to Al
 ItemDisplay[mss]:%GOLD%[%BLUE%O%GOLD%]{%TAN%Act 4: River of Flame%NL%Take to the Hellforge in%NL%%NL%%GOLD%Mephisto's Soulstone}// Mephisto's Soulstone
 ItemDisplay[hfh]:%NAME%%MAP-00%%DOT-0E%%PX-20%{%TAN%Hit Hellforge in Act 4: River of Flame%NL%}// Hellforge Hammer
 ItemDisplay[ice]:%GOLD%Malahs Potion%DOT-0E%{%TAN%Act 5: Frozen River%NL%Use to unfreeze Anya in%NL%}// Malah's Potion
-ItemDisplay[tr2]:%GOLD%Scroll of Resistance%DOT-0E%{%WHITE%+10 %PURPLE%All Resistances%NL%%TAN%Right click for a permanent buff%NL%}// Scroll of Resistance
+ItemDisplay[tr2]:%GOLD%Scroll of Resistance%DOT-0E%{%TAN%permanent %WHITE%+10 %PURPLE%All %GRAY%Resist%NL%%TAN%Right click this scroll for a%NL%}// Scroll of Resistance
 
 
 // ================================================  Gems  ============================================
@@ -4114,7 +4114,7 @@ ItemDisplay[(NMAG OR MAG OR RARE OR CRAFT) !RW SK36=2]:%NAME% %TAN%+1%DARK_GREEN
 ItemDisplay[(NMAG OR MAG OR RARE OR CRAFT) !RW SK36=3]:%NAME% %TAN%+1%DARK_GREEN% F.Bolt{%NAME%}%CONTINUE%//
 
 ItemDisplay[ID (MAG OR RARE OR SET OR UNI OR CRAFT) SOCK>0]:%NAME% %TAN%[%WHITE%%SOCKETS%%TAN%]{%NAME%}%CONTINUE%// Add number of sockets to the end of socketed items' names (eg "Quilted Armor [2os]")
-ItemDisplay[NMAG SOCK>0]:%NAME% %TAN%[%WHITE%%SOCKETS%%TAN%]%CONTINUE%// Add number of sockets to the end of socketed items' names (eg "Quilted Armor [2os]")
+ItemDisplay[NMAG SOCK>0]:%NAME% %TAN%[%WHITE%%SOCKETS%%TAN%]%GRAY%%CONTINUE%// Add number of sockets to the end of socketed items' names (eg "Quilted Armor [2os]")
 
 ItemDisplay[NMAG !RW (ARMOR OR WEAPON) !leg SOCK=1 CLVL<10 !(clb OR 9cl OR 7cl OR spc OR 9sp OR 7sp OR STAFF OR SIN OR SCEPTER OR WAND OR SOR OR BAR OR DRU OR NEC)]:%GRAY%%NAME%%GRAY%// Before character level 10, show all 1 socket armors and weapons
 ItemDisplay[NMAG !RW (ARMOR OR WEAPON) !leg SOCK=1 CLVL>9 !(clb OR 9cl OR 7cl OR spc OR 9sp OR 7sp OR STAFF OR SIN OR SCEPTER OR WAND OR SOR OR BAR OR DRU OR NEC)]:// Hides all 1 socket nonmagical items except for items that sell for gold
@@ -5435,8 +5435,6 @@ ItemDisplay[(MAG OR RARE) ID (WAND OR SCEPTER) FCR=10 CLVL<20]:%NAME%{%NAME%%NL%
 ItemDisplay[(MAG OR RARE) ID STAFF FCR>19 CLVL<30]:%NAME%{%NAME%%NL%%RED%***   %PURPLE%Faster Cast Rate   %RED%***}// 
 ItemDisplay[(MAG OR RARE) ID (WAND OR SCEPTER) FCR>19 CLVL<30]:%NAME%{%NAME%%NL%%RED%***   %PURPLE%Faster Cast Rate   %RED%***}// 
 
-//Always show me those items
+// Show identified Unique Set Runeword or Crafted Items
 ItemDisplay[UNI OR SET OR RW OR CRAFT]:%NAME%{%NAME%}
-
-//Show me every identified item
 ItemDisplay[(ARMOR OR WEAPON OR (aqv OR cqv)) (MAG OR RARE OR SET OR UNI OR CRAFT) ID]:%NAME%{%NAME%}
