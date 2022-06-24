@@ -1,15 +1,16 @@
-
-
 // ==============================  Filter Tiers  ==================================
 
 // ItemDisplayFilterName[]:Show All Items//         TIER-0
-ItemDisplayFilterName[]:Auto Filter//               TIER-1
-ItemDisplayFilterName[]:No H/M Pots//               TIER-2
+ItemDisplayFilterName[]:Least Strict//              TIER-1
+ItemDisplayFilterName[]:More Strict//               TIER-2
+ItemDisplayFilterName[]:Most Strict//               TIER-3
+ItemDisplayFilterName[]:No Super H Pots//           TIER-4
+ItemDisplayFilterName[]:No Super H/M Pots//         TIER-5
 
 // ==============================  Arrows and Bolts  ===============================
 
-ItemDisplay[NMAG aqv]:// Hides nonmagical Arrow quivers
-ItemDisplay[NMAG cqv]:// Hides nonmagical Bolt quivers
+ItemDisplay[NMAG aqv CLVL>2]:// Hides nonmagical Arrow quivers
+ItemDisplay[NMAG cqv CLVL>2]:// Hides nonmagical Bolt quivers
 
 // ================================  Gold  =======================================
 
@@ -34,8 +35,8 @@ ItemDisplay[hp3 CLVL>21]:{%NL%%WHITE% Healing Potion }//            Hides Healin
 ItemDisplay[hp4 CLVL>29]:{%NL%%WHITE% Greater Healing Potion }//    Hides Greater Healing Potions after level 29
 
 // Super Healing Potion
-ItemDisplay[hp5 CLVL>89 FILTLVL=2]:{%NL%%WHITE% Super Healing Potion }// On Filter Levels 3, hide Super Healing potions
-ItemDisplay[hp5 CLVL>79]:{%WHITE% Super Healing Potion }%RED%i%GRAY%|%RED%( %WHITE%H %RED%)%GRAY%|%RED%i//             Character level 80+
+ItemDisplay[hp5 CLVL>89 (FILTLVL=4 OR FILTLVL=5)]:{%NL%%WHITE% Super Healing Potion }// On Filter Levels 4 or 5, hide Super Healing potions
+ItemDisplay[hp5 CLVL>79]:{%WHITE% Super Healing Potion }%RED%i%GRAY%|%RED%( %WHITE%H %RED%)%GRAY%|%RED%i// Character level 80+
 ItemDisplay[hp5 CLVL<80 CLVL>34]:{%WHITE% Super Healing Potion }%RED%i%GRAY%|%RED%|( %WHITE%H %RED%)|%GRAY%|%RED%i// Character levels 35 to 79
 
 // Display for Healing Potions during levels 1-35
@@ -54,9 +55,9 @@ ItemDisplay[mp3 CLVL>21]:{%NL%%WHITE% Mana Potion }//               Hides Mana P
 ItemDisplay[mp4 CLVL>29]:{%NL%%WHITE% Greater Mana Potion }//       Hides Greater Mana Potions after level 29
 
 // Adjust display of Super Mana Potions based on character level
-ItemDisplay[hp5 FILTLVL=2]:{%NL%%WHITE% Super Mana Potion }// On Filter Level 3, hide Super Mana potions
-ItemDisplay[mp5 CLVL>79]:%BLUE%i%GRAY%|%BLUE%(%WHITE% M %BLUE%)%GRAY%|%BLUE%i{%WHITE% Super Mana Potion }// Display for Super Mana Potions from 35-89
-ItemDisplay[mp5 CLVL<80 CLVL>34]:%BLUE%i%GRAY%|%BLUE%(%WHITE% M %BLUE%)%GRAY%|%BLUE%i{%WHITE% Super Mana Potion }// Display for Super Mana Potions after level 34
+ItemDisplay[hp5 FILTLVL=5]:{%NL%%WHITE% Super Mana Potion }// On Filter Level 5, hide Super Mana potions
+ItemDisplay[mp5 CLVL>79]:%BLUE%i%GRAY%|%BLUE%(%WHITE% M %BLUE%)%GRAY%|%BLUE%i{%WHITE% Super Mana Potion }// Character level 80+
+ItemDisplay[mp5 CLVL<80 CLVL>34]:%BLUE%i%GRAY%|%BLUE%(%WHITE% M %BLUE%)%GRAY%|%BLUE%i{%WHITE% Super Mana Potion }// Character levels 35 to 79
 
 // Display for Mana Potions during levels 1-35
 ItemDisplay[mp1 CLVL<15]:%BLUE%i( %WHITE%M%GRAY%-%WHITE%1 %BLUE%)i{%WHITE% Minor Mana Potion }//
@@ -1732,105 +1733,94 @@ ItemDisplay[SET ELT !ID CLVL<90]:%PURPLE%* %GREEN%>  Set %NAME%  < %PURPLE%*%GRE
 ItemDisplay[RARE]:%YELLOW%%NAME%{%NAME%}%CONTINUE%
 ItemDisplay[ETH RARE]:%TAN%[%WHITE%Eth%TAN%] %NAME%{%NAME%}%CONTINUE%//
 
-ItemDisplay[RARE !ID amu]:%PURPLE%|%YELLOW%|  %PURPLE%* %YELLOW%> %TAN%o  %YELLOW%%NAME%  %TAN%o %YELLOW%< %PURPLE%*  %YELLOW%|%PURPLE%|%YELLOW%%BORDER-8F%%MAP-9B%%DOT-6C%%PX-A8%// All unidentified rare Amulets
-
-ItemDisplay[RARE !ID CIRC]:%PURPLE%|%YELLOW%|  %PURPLE%* %YELLOW%> %TAN%o  %YELLOW%%NAME%  %TAN%o %YELLOW%< %PURPLE%*  %YELLOW%|%PURPLE%|%YELLOW%%BORDER-8F%%MAP-9B%%DOT-6C%%PX-A8%// All unidentified rare Circlets
-
 ItemDisplay[RARE !ID jew]:%PURPLE%|%YELLOW%|  %PURPLE%* %YELLOW%>  %TAN%(x  %YELLOW%%NAME%  %TAN%x)  %YELLOW%< %PURPLE%*  %YELLOW%|%PURPLE%|%YELLOW%%BORDER-8F%%MAP-9B%%DOT-6C%%PX-A8%// All unidentified rare Jewels
 
+ItemDisplay[RARE !ID amu]:%PURPLE%|%YELLOW%|  %PURPLE%* %YELLOW%> %TAN%o  %YELLOW%%NAME%  %TAN%o %YELLOW%< %PURPLE%*  %YELLOW%|%PURPLE%|%YELLOW%%BORDER-8F%%MAP-9B%%DOT-6C%%PX-A8%// All unidentified rare Amulets
+ItemDisplay[RARE !ID CIRC]:%PURPLE%|%YELLOW%|  %PURPLE%* %YELLOW%> %TAN%o  %YELLOW%%NAME%  %TAN%o %YELLOW%< %PURPLE%*  %YELLOW%|%PURPLE%|%YELLOW%%BORDER-8F%%MAP-9B%%DOT-6C%%PX-A8%// All unidentified rare Circlets
 ItemDisplay[RARE !ID rin]:%PURPLE%|%YELLOW%|  %PURPLE%* %YELLOW%> %TAN%o  %YELLOW%%NAME%  %TAN%o %YELLOW%< %PURPLE%*  %YELLOW%|%PURPLE%|%YELLOW%%BORDER-8F%%MAP-9B%%DOT-6C%%PX-A8%// All unidentified rare Rings
 
-ItemDisplay[RARE !ID !ETH BELT CLVL<90]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%%BORDER-8F%%MAP-9B%%DOT-6C%%PX-A8%// All unidentified rare belts
-
 ItemDisplay[RARE !ID aqv]:%YELLOW%*  %NAME%  *// All unidentified rare arrows
-
 ItemDisplay[RARE !ID cqv]:%YELLOW%*  %NAME%  *// All unidentified rare bolts
 
 ItemDisplay[RARE !ID !ETH BOOTS CLVL<90]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%%BORDER-8F%%MAP-9B%%DOT-6C%%PX-A8%// All unidentified rare boots
-
+ItemDisplay[RARE !ID !ETH BELT CLVL<90]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%%BORDER-8F%%MAP-9B%%DOT-6C%%PX-A8%// All unidentified rare belts
 ItemDisplay[RARE !ID !ETH GLOVES CLVL<90]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%%BORDER-8F%%MAP-9B%%DOT-6C%%PX-A8%// All unidentified rare gloves
 
-ItemDisplay[RARE !ID NORM CHEST]:%YELLOW%%NAME%//               Show All Rare Norm tier Armors
-ItemDisplay[RARE !ID EXC CHEST]:%YELLOW%%NAME%//                Show All Rare Exceptional tier Armors
-ItemDisplay[RARE !ID ELT CHEST]:%YELLOW%%NAME%//             	Show All Rare Elite tier Armors
+ItemDisplay[RARE !ID NORM CHEST CLVL>59 FILTLVL>1]://     Hide Normal quality Rare Amazon bows After Level 39
+ItemDisplay[RARE !ID EXC CHEST CLVL>89 FILTLVL>1]://      Hide Exceptional quality Rare Amazon bows After Level 89
+ItemDisplay[RARE !ID ELT CHEST CLVL>95 FILTLVL>2]://      Hide Elite quality Rare Amazon bows After Level 95
 
-ItemDisplay[RARE !ID BAR]:%YELLOW%%NAME%//       	  Show All Rare Barbarian helmets
-ItemDisplay[RARE !ID DRU]:%YELLOW%%NAME%//            Show All Rare Druid Pelts
-ItemDisplay[RARE !ID SOR]:%YELLOW%%NAME%//       	  Show All Rare Sorceress Orbs
-ItemDisplay[RARE !ID WAND]:%YELLOW%%NAME%//           Show All Rare Necro Wands
-ItemDisplay[RARE !ID SCEPTER]:%YELLOW%%NAME%//        Show All Rare Scepters
-ItemDisplay[RARE !ID NEC]:%YELLOW%%NAME%//            Show All Rare Necro Heads
+ItemDisplay[RARE !ID CLVL<80 (clb OR spc OR 9cl OR 9sp OR 7cl OR 7sp OR BAR OR DRU OR SOR OR WAND OR SCEPTER OR NEC)]:%YELLOW%*  %NAME%  %YELLOW%*// Show all rare Druid Clubs that can roll staff mods
+ItemDisplay[RARE !ID CLVL>79 (clb OR spc OR 9cl OR 9sp OR 7cl OR 7sp OR BAR OR DRU OR SOR OR WAND OR SCEPTER OR NEC)]:%YELLOW%%NAME%// Show all rare Druid Clubs that can roll staff mods
 
-//ItemDisplay[RARE !ID NORM (am1 OR am2) CLVL>39]://         Hide Normal quality Rare Amazon bows After Level 39
-//ItemDisplay[RARE !ID EXC (am6 OR am7) CLVL>89]://          Hide Exceptional quality Rare Amazon bows After Level 89
-//ItemDisplay[RARE !ID ELT (amb OR amc) CLVL>95]://          Hide Elite quality Rare Amazon bows After Level 95
+//ItemDisplay[RARE !ID NORM (am1 OR am2) CLVL>39]://                    Hide Normal quality Rare Amazon bows After Level 39
+//ItemDisplay[RARE !ID EXC (am6 OR am7) CLVL>89]://                     Hide Exceptional quality Rare Amazon bows After Level 89
+//ItemDisplay[RARE !ID ELT (amb OR amc) CLVL>95]://                     Hide Elite quality Rare Amazon bows After Level 95
 
-//ItemDisplay[RARE !ID NORM !ETH (am5 OR ama OR amf) CLVL>59]://      Hide non-Ethereal Normal quality Rare Amazon javelins After Level 59
-//ItemDisplay[RARE !ID EXC !ETH (am5 OR ama OR amf) CLVL>89]://       Hide non-Ethereal Exceptional quality Rare Amazon javelins After Level 89
-//ItemDisplay[RARE !ID ELT !ETH (am5 OR ama OR amf) CLVL>95]://       Hide non-ethereal Elite quality Rare Amazon javelins After Level 95
+//ItemDisplay[RARE !ID NORM !ETH (am5 OR ama OR amf) CLVL>59]://        Hide non-Ethereal Normal quality Rare Amazon javelins After Level 59
+//ItemDisplay[RARE !ID EXC !ETH (am5 OR ama OR amf) CLVL>89]://         Hide non-Ethereal Exceptional quality Rare Amazon javelins After Level 89
+//ItemDisplay[RARE !ID ELT !ETH (am5 OR ama OR amf) CLVL>95]://         Hide non-ethereal Elite quality Rare Amazon javelins After Level 95
 
-ItemDisplay[RARE !ID DIN NORM (!pa1 OR pa2) CLVL>59]://             Hide Normal quality Rare Paladin Shields After Level 59
-ItemDisplay[RARE !ID DIN EXC !(pa6 OR pa7) CLVL>89]://              Hide Exceptional quality Rare Paladin Shields After Level 89
-ItemDisplay[RARE !ID DIN ELT !(pab OR pac) CLVL>95]://              Hide Elite quality Rare Paladin Shields After Level 95
+ItemDisplay[RARE !ID DIN NORM CLVL>39 FILTLVL>1]://                     Hide Normal quality Rare Paladin Shields After Level 39
+ItemDisplay[RARE !ID DIN EXC CLVL>89 FILTLVL>1]://                      Hide Exceptional quality Rare Paladin Shields After Level 89
+ItemDisplay[RARE !ID DIN ELT CLVL>95 FILTLVL>2]://                      Hide Elite quality Rare Paladin Shields After Level 95
 
-//ItemDisplay[RARE !ID !ETH SIN NORM CLVL>59]://        Hide non-Ethereal Normal quality Rare Claws After Level 59
-//ItemDisplay[RARE !ID !ETH SIN EXC CLVL>89]://         Hide non-Ethereal Exceptional quality Rare Claws After Level 89
-//ItemDisplay[RARE !ID !ETH SIN ELT CLVL>95]://         Hide non-Ethereal Elite quality Rare Claws After Level 95
+ItemDisplay[RARE !ID SIN NORM !(clw OR btl) CLVL>59 FILTLVL>1]://       Hide non-Ethereal Normal quality Rare Claws After Level 59
+ItemDisplay[RARE !ID SIN EXC !(9lw OR 9tw) CLVL>89 FILTLVL>1]://        Hide non-Ethereal Exceptional quality Rare Claws After Level 89
+ItemDisplay[RARE !ID SIN ELT !(7lw OR 7tw) CLVL>95 FILTLVL>2]://        Hide non-Ethereal Elite quality Rare Claws After Level 95
 
-ItemDisplay[RARE !ID (clb OR spc OR 9cl OR 9sp OR 7cl OR 7sp)]:%NAME%// Show all rare Druid Clubs that can roll staff mods
+ItemDisplay[RARE !ID XBOW NORM CLVL>39 FILTLVL>1]://                    Hide Normal quality Rare Crossbows After Level 39
+ItemDisplay[RARE !ID XBOW EXC CLVL>89 FILTLVL>1]://                     Hide Exceptional quality Rare Crossbows After Level 89
+ItemDisplay[RARE !ID XBOW ELT CLVL>95 FILTLVL>2]://                     Hide Elite quality Rare Crossbows After Level 95
 
-ItemDisplay[RARE !ID XBOW NORM CLVL>39]://            Hide Normal quality Rare Crossbows After Level 39
-ItemDisplay[RARE !ID XBOW EXC CLVL>89]://             Hide Exceptional quality Rare Crossbows After Level 89
-ItemDisplay[RARE !ID XBOW ELT CLVL>95]://             Hide Elite quality Rare Crossbows After Level 95
+ItemDisplay[RARE !ID BOW !(am1 OR am2) NORM CLVL>39 FILTLVL>1]://           Hide Normal quality Rare Bows After Level 39
+ItemDisplay[RARE !ID BOW !(am6 OR am7) EXC CLVL>89 FILTLVL>1]://            Hide Exceptional quality Rare Bows After Level 89
+ItemDisplay[RARE !ID BOW !(amb OR amc) ELT CLVL>95 FILTLVL>2]://            Hide Elite quality Rare Bows After Level 95
 
-//ItemDisplay[RARE !ID BOW !(am1 OR am2) NORM CLVL>39]://        Hide Normal quality Rare Bows After Level 39
-//ItemDisplay[RARE !ID BOW !(am6 OR am7) EXC CLVL>89]://         Hide Exceptional quality Rare Bows After Level 89
-//ItemDisplay[RARE !ID BOW !(amb OR amc) ELT CLVL>95]://         Hide Elite quality Rare Bows After Level 95
+ItemDisplay[RARE !ID SHIELD !NEC !DIN NORM CLVL>39 FILTLVL>1]://            Hide Normal quality Rare Shields After Level 39
+ItemDisplay[RARE !ID SHIELD !NEC !DIN EXC CLVL>89 FILTLVL>1]://             Hide Exceptional quality Rare Shields After Level 89
+ItemDisplay[RARE !ID SHIELD !NEC !DIN ELT CLVL>95 FILTLVL>2]://             Hide Elite quality Rare Shields After Level 95
 
-//ItemDisplay[RARE !ID SHIELD !NEC !DIN NORM CLVL>39]://          Hide Normal quality Rare Shields After Level 39
-//ItemDisplay[RARE !ID SHIELD !NEC !DIN EXC CLVL>89]://           Hide Exceptional quality Rare Shields After Level 89
-//ItemDisplay[RARE !ID SHIELD !NEC !DIN ELT CLVL>95]://           Hide Elite quality Rare Shields After Level 95
+ItemDisplay[RARE !ID HELM !CIRC !DRU !BAR NORM CLVL>39 FILTLVL>1]://        Hide Normal quality Rare Helms After Level 39
+ItemDisplay[RARE !ID HELM !CIRC !DRU !BAR EXC CLVL>89 FILTLVL>1]://         Hide Exceptional quality Rare Helms After Level 89
+ItemDisplay[RARE !ID HELM !CIRC !DRU !BAR ELT CLVL>95 FILTLVL>2]://         Hide Elite quality Rare Helms After Level 95
 
-ItemDisplay[RARE !ID HELM !CIRC !DRU !BAR NORM CLVL>39]://      Hide Normal quality Rare Helms After Level 39
-ItemDisplay[RARE !ID HELM !CIRC !DRU !BAR EXC CLVL>89]://       Hide Exceptional quality Rare Helms After Level 89
-ItemDisplay[RARE !ID HELM !CIRC !DRU !BAR ELT CLVL>95]://       Hide Elite quality Rare Helms After Level 95
+ItemDisplay[RARE !ID AXE !ETH !THROWING NORM CLVL>39 FILTLVL>1]://          Hide non-Ethereal Normal quality Rare Axes After Level 39
+ItemDisplay[RARE !ID AXE !ETH !THROWING EXC CLVL>89 FILTLVL>1]://           Hide non-Ethereal Exceptional quality Rare Axes After Level 89
+ItemDisplay[RARE !ID AXE !ETH !THROWING ELT CLVL>95 FILTLVL>2]://           Hide non-Ethereal Elite quality Rare Axes After Level 95
 
-ItemDisplay[RARE !ID AXE !ETH !THROWING NORM CLVL>39]://        Hide non-Ethereal Normal quality Rare Axes After Level 39
-ItemDisplay[RARE !ID AXE !ETH !THROWING EXC CLVL>89]://         Hide non-Ethereal Exceptional quality Rare Axes After Level 89
-ItemDisplay[RARE !ID AXE !ETH !THROWING ELT CLVL>95]://         Hide non-Ethereal Elite quality Rare Axes After Level 95
+ItemDisplay[RARE !ID SPEAR THROWING !ETH !ZON NORM CLVL>39 FILTLVL>1]://    Hide non-Ethereal Normal quality Javs After Level 39
+ItemDisplay[RARE !ID SPEAR THROWING !ETH !ZON EXC CLVL>89 FILTLVL>1]://	    Hide non-Ethereal Exceptional quality Javs After Level 89
+ItemDisplay[RARE !ID SPEAR THROWING !ETH !ZON ELT CLVL>95 FILTLVL>2]://     Hide non-Ethereal Elite quality Javs After Level 95
 
-ItemDisplay[RARE !ID SPEAR THROWING !ETH !ZON NORM CLVL>39]://	Hide non-Ethereal Normal quality Javs After Level 39
-ItemDisplay[RARE !ID SPEAR THROWING !ETH !ZON EXC CLVL>89]://	Hide non-Ethereal Exceptional quality Javs After Level 89
-ItemDisplay[RARE !ID SPEAR THROWING !ETH !ZON ELT CLVL>95]://   Hide non-Ethereal Elite quality Javs After Level 95
+ItemDisplay[RARE !ID !ETH SPEAR !THROWING !ZON NORM CLVL>39 FILTLVL>1]://   Hide non-Ethereal Normal quality Rare Spears After Level 39
+ItemDisplay[RARE !ID !ETH SPEAR !THROWING !ZON EXC CLVL>89 FILTLVL>1]://    Hide non-Ethereal Exceptional quality Rare Spears After Level 89
+ItemDisplay[RARE !ID !ETH SPEAR !THROWING !ZON ELT CLVL>95 FILTLVL>2]://    Hide non-Ethereal Elite quality Rare Spears After Level 95
 
-ItemDisplay[RARE !ID !ETH SPEAR !THROWING !ZON NORM CLVL>39]://      Hide non-Ethereal Normal quality Rare Spears After Level 39
-ItemDisplay[RARE !ID !ETH SPEAR !THROWING !ZON EXC CLVL>89]://       Hide non-Ethereal Exceptional quality Rare Spears After Level 89
-ItemDisplay[RARE !ID !ETH SPEAR !THROWING !ZON ELT CLVL>95]://       Hide non-Ethereal Elite quality Rare Spears After Level 95
+ItemDisplay[RARE !ID THROWING !SPEAR NORM !ETH !ZON CLVL>39 FILTLVL>1]://   Hide non-Ethereal Normal quality Rare Throwing Weapons that aren't Zon class specific After Level 39
+ItemDisplay[RARE !ID THROWING !SPEAR EXC !ETH !ZON CLVL>89 FILTLVL>1]://    Hide non-Ethereal Exceptional quality Rare Throwing Weapons that aren't Zon class After Level 89
+ItemDisplay[RARE !ID THROWING !SPEAR ELT !ETH !ZON CLVL>95 FILTLVL>2]://    Hide non-Ethereal Elite quality Rare Throwing Weapons that aren't Zon class After Level 95
 
-ItemDisplay[RARE !ID JAV NORM !ETH !ZON CLVL>39]://   		    Hide non-Ethereal Normal quality Rare Throwing Weapons that aren't Zon class specific After Level 39
-ItemDisplay[RARE !ID JAV EXC !ETH !ZON CLVL>89]://    		    Hide non-Ethereal Exceptional quality Rare Throwing Weapons that aren't Zon class After Level 89
-ItemDisplay[RARE !ID JAV ELT !ETH !ZON CLVL>95]://    		    Hide non-Ethereal Elite quality Rare Throwing Weapons that aren't Zon class After Level 95
+ItemDisplay[RARE !ID SWORD !crs NORM CLVL>39 FILTLVL>1]://                  Hide Normal quality Rare Swords (except for crystal swords) After Level 39
+ItemDisplay[RARE !ID SWORD crs !ETH CLVL>39 FILTLVL>1]://           		Hide non-Ethereal Crystal Swords After Level 39
 
-ItemDisplay[RARE !ID SWORD !crs NORM CLVL>39]://                Hide Normal quality Rare Swords (except for crystal swords) After Level 39
-ItemDisplay[RARE !ID SWORD crs !ETH CLVL>39]://           		Hide non-Ethereal Crystal Swords After Level 39
+ItemDisplay[RARE !ID SWORD !9cr EXC CLVL>89 FILTLVL>1]://                   Hide Exceptional quality Rare Swords (except for dimensional blades) After Level 89
+ItemDisplay[RARE !ID SWORD 9cr !ETH CLVL>89 FILTLVL>1]://                   Hide non-Ethereal Dimensional Blades After Level 89
 
-ItemDisplay[RARE !ID SWORD !9cr EXC CLVL>89]://                 Hide Exceptional quality Rare Swords (except for dimensional blades) After Level 89
-ItemDisplay[RARE !ID SWORD 9cr !ETH CLVL>89]://                 Hide non-Ethereal Dimensional Blades After Level 89
+ItemDisplay[RARE !ID 7cr ELT]:%NAME%//                                      Show Rare Phase Blades
+ItemDisplay[RARE !ID !ETH SWORD !7cr ELT CLVL>95 FILTLVL>2]://              Hide Elite quality Rare Swords After Level 95
 
-ItemDisplay[RARE !ID 7cr ELT]:%NAME%//                          Show Rare Phase Blades
-ItemDisplay[RARE !ID !ETH SWORD !7cr ELT CLVL>95]://            Hide Elite quality Rare Swords After Level 95
+ItemDisplay[RARE !ID MACE !ETH !(clb OR spc) NORM CLVL>39 FILTLVL>1]://     Hide non-Ethereal Normal quality Rare Maces after character level 39
+ItemDisplay[RARE !ID MACE !ETH !(9cl OR 9sp) EXC CLVL>89 FILTLVL>1]://      Hide non-Ethereal Exceptional quality Rare Rare Maces after character level 79
+ItemDisplay[RARE !ID MACE !ETH !(7cl OR 7sp) ELT CLVL>95 FILTLVL>2]://      Hide non-Ethereal Elite quality Rare Rare Maces after character level 89
 
-ItemDisplay[RARE !ID MACE !ETH !(clb OR spc) NORM CLVL>39]://       	Hide non-Ethereal Normal quality Rare Maces after character level 39
-ItemDisplay[RARE !ID MACE !ETH !(9cl OR 9sp) EXC CLVL>89]://        	Hide non-Ethereal Exceptional quality Rare Rare Maces after character level 79
-ItemDisplay[RARE !ID MACE !ETH !(7cl OR 7sp) ELT CLVL>95]://        	Hide non-Ethereal Elite quality Rare Rare Maces after character level 89
+ItemDisplay[RARE !ID POLEARM !ETH NORM CLVL>39 FILTLVL>1]://         		Hide non-Ethereal Normal quality Rare Polearms after character level 39
+ItemDisplay[RARE !ID POLEARM !ETH EXC CLVL>89 FILTLVL>1]://          		Hide non-Ethereal Exceptional quality Rare Polearms After Level 89
+ItemDisplay[RARE !ID POLEARM !ETH ELT CLVL>95 FILTLVL>2]://          		Hide non-Ethereal Elite quality Rare Polearms After Level 95
 
-ItemDisplay[RARE !ID POLEARM !ETH NORM CLVL>39]://         		        Hide non-Ethereal Normal quality Rare Polearms after character level 39
-ItemDisplay[RARE !ID POLEARM !ETH EXC CLVL>89]://          		        Hide non-Ethereal Exceptional quality Rare Polearms After Level 89
-ItemDisplay[RARE !ID POLEARM !ETH ELT CLVL>95]://          		        Hide non-Ethereal Elite quality Rare Polearms After Level 95
-
-ItemDisplay[RARE !ID !THROWING DAGGER !ETH NORM CLVL>39]://     			    Hide non-Ethereal Normal quality Rare Daggers after character level 39
-ItemDisplay[RARE !ID !THROWING DAGGER !ETH EXC CLVL>89]://      			    Hide non-Ethereal Exceptional quality Rare Daggers After Level 89
-ItemDisplay[RARE !ID !THROWING DAGGER !ETH ELT CLVL>95]://      		        Hide non-Ethereal Elite quality Rare Daggers After Level 89
+ItemDisplay[RARE !ID !THROWING DAGGER !ETH NORM CLVL>39 FILTLVL>1]://     	Hide non-Ethereal Normal quality Rare Daggers after character level 39
+ItemDisplay[RARE !ID !THROWING DAGGER !ETH EXC CLVL>89 FILTLVL>1]://      	Hide non-Ethereal Exceptional quality Rare Daggers After Level 89
+ItemDisplay[RARE !ID !THROWING DAGGER !ETH ELT CLVL>95 FILTLVL>2]://      	Hide non-Ethereal Elite quality Rare Daggers After Level 89
 
 // Arrow and Bolts Visual Tags
 ItemDisplay[(MAG OR RARE) ID (aqv OR cqv)]:%YELLOW%{%NAME%}%CONTINUE%
@@ -2462,18 +2452,18 @@ ItemDisplay[MAG !ID rin CLVL>19]:%TAN%*  %BLUE%%NAME%  %TAN%*%BLUE%// Do not not
 
 //                 Amazon Spears
 ItemDisplay[MAG !ID (am3 OR am4) CLVL>39]:// Hide all Normal quality magic Amazon spears after level 39
-ItemDisplay[MAG !ID (am8 OR am9) CLVL>79]:// Hide all Exc quality  Amazon spears after level 79
-ItemDisplay[MAG !ID (amd OR ame) CLVL>89]:// Hide all Elite quality  Amazon spears after level 89
+ItemDisplay[MAG !ID (am8 OR am9) CLVL>79 FILTLVL>1]:// Hide all Exc quality  Amazon spears after level 79
+ItemDisplay[MAG !ID (amd OR ame) CLVL>89 FILTLVL>2]:// Hide all Elite quality Amazon spears after level 89
 
 // 				   Amazon Javelins
-ItemDisplay[MAG !ID !ETH (am5 OR ama OR amf) CLVL>89]:// Hides magic non-eth Maiden Javelin Ceremonial Javelin Matriarchal Javelins after level 89
+ItemDisplay[MAG !ID !ETH (am5 OR ama OR amf) CLVL>89 FILTLVL>1]:// Hides magic non-eth Maiden Javelin Ceremonial Javelin Matriarchal Javelins after level 89
 ItemDisplay[MAG !ID ETH (am5 OR ama OR amf) CLVL>89]:%BLUE%%NAME% %ORANGE%[C]%BLUE%%BORDER-91%%MAP-97%%DOT-5C%%PX-68%%CONTINUE%// Notifies for magic ethereal Maiden Javelin, Ceremonial Javelin, Matriarchal Javelins after level 89
 ItemDisplay[MAG !ID (am5 OR ama OR amf) CLVL<90]:%BLUE%%NAME%{%NAME%}%CONTINUE%// Shows Magic Javelins that can roll +6skill/40ias// Maiden Javelin, Ceremonial Javelin, Matriarchal Javelin
 
 // 				   Amazon Bows
 ItemDisplay[MAG !ID (am1 OR am2) CLVL>39]:// Hides magic Reflex Bows after character level 39
-ItemDisplay[MAG !ID (am6 OR am7) CLVL>79]:// Hides magic Ceremonial Bows after character level 79
-ItemDisplay[MAG !ID (amb OR amc) CLVL>89]:// Hides magic Grand Matron Bows after character level 89
+ItemDisplay[MAG !ID (am6 OR am7) CLVL>79 FILTLVL>1]:// Hides magic Ceremonial Bows after character level 79
+ItemDisplay[MAG !ID (amb OR amc) CLVL>89 FILTLVL>2]:// Hides magic Grand Matron Bows after character level 89
 
 ItemDisplay[MAG !ID (aqv OR cqv) CLVL>15]:// 
 ItemDisplay[MAG !ID (aqv OR cqv) CLVL<16]:%BLUE%%NAME%{%NAME%}%CONTINUE%// 
@@ -2483,13 +2473,8 @@ ItemDisplay[MAG !ID (aqv OR cqv) CLVL<16]:%BLUE%%NAME%{%NAME%}%CONTINUE%//
 // ------------------------------------------------------------------------------
 
 ItemDisplay[MAG !ID NORM SIN CLVL>39]:// All Normal tier Assassin Katars
-ItemDisplay[MAG !ID NORM SIN CLVL<40]:%BLUE%%NAME%{%NAME%}%CONTINUE%// All Normal tier Assassin Katars
-
-ItemDisplay[MAG !ID EXC SIN CLVL>79 !(9lw OR 9tw)]:// All Exceptional tier Assassin Katars
-ItemDisplay[MAG !ID EXC SIN CLVL<80]:%BLUE%%NAME%{%NAME%}%CONTINUE%// All Exceptional tier Assassin Katars
-
-ItemDisplay[MAG !ID ELT SIN CLVL>89 !(7lw OR 7tw)]:// All Elite tier Assassin Katars
-ItemDisplay[MAG !ID ELT SIN CLVL<90]:%BLUE%%NAME%{%NAME%}%CONTINUE%// All Elite tier Assassin Katars
+ItemDisplay[MAG !ID EXC SIN CLVL>79 !(9lw OR 9tw) FILTLVL>1]:// All Exceptional tier Assassin Katars
+ItemDisplay[MAG !ID ELT SIN CLVL>89 !(7lw OR 7tw) FILTLVL>2]:// All Elite tier Assassin Katars
 
 // ------------------------------------------------------------------------------
 //     				                   Barbarian
@@ -2517,9 +2502,9 @@ ItemDisplay[MAG !ID NEC]:%NAME%{%NAME%}%CONTINUE%// Always display magic Necro H
 // ------------------------------------------------------------------------------
 
 ItemDisplay[MAG ETH !ID DIN CLVL>79]:// Hide Eth magic paladin shields past level 80
-ItemDisplay[MAG !ID NORM DIN !(pa1 OR pa2) CLVL>39]://
-ItemDisplay[MAG !ID EXC DIN !(pa6 OR pa7) CLVL>79]://
-ItemDisplay[MAG !ID ELT DIN !(pab OR pac) CLVL>89]://
+ItemDisplay[MAG !ID NORM DIN CLVL>39]://
+ItemDisplay[MAG !ID EXC DIN CLVL>79 FILTLVL>1]://
+ItemDisplay[MAG !ID ELT DIN CLVL>89 FILTLVL>2]://
 
 // ------------------------------------------------------------------------------
 //     				             Scepters
@@ -2544,8 +2529,8 @@ ItemDisplay[MAG !ID SOR]:%NAME%{%NAME%}%CONTINUE%// Always display magic sorcere
 // All armors
 ItemDisplay[MAG ETH !ID CHEST]:// 
 ItemDisplay[MAG !ID NORM CHEST CLVL>39]:// 
-ItemDisplay[MAG !ID EXC CHEST CLVL>79]:// 
-ItemDisplay[MAG !ID ELT CHEST CLVL>89]://
+ItemDisplay[MAG !ID EXC CHEST CLVL>79 FILTLVL>1]:// 
+ItemDisplay[MAG !ID ELT CHEST CLVL>89 FILTLVL>2]://
 
 // ------------------------------------------------------------------------------
 //     				                   Belts
@@ -2554,8 +2539,8 @@ ItemDisplay[MAG !ID ELT CHEST CLVL>89]://
 // All belts
 ItemDisplay[MAG ETH !ID BELT]:// 
 ItemDisplay[MAG !ID NORM BELT CLVL>39]://
-ItemDisplay[MAG !ID EXC BELT CLVL>79]://
-ItemDisplay[MAG !ID ELT BELT CLVL>89]://
+ItemDisplay[MAG !ID EXC BELT CLVL>79 FILTLVL>1]://
+ItemDisplay[MAG !ID ELT BELT CLVL>89 FILTLVL>2]://
 
 // ------------------------------------------------------------------------------
 //     				                  Boots
@@ -2564,8 +2549,8 @@ ItemDisplay[MAG !ID ELT BELT CLVL>89]://
 // All boots
 ItemDisplay[MAG ETH !ID BOOTS]:// 
 ItemDisplay[MAG !ID NORM CLVL>39 BOOTS]://
-ItemDisplay[MAG !ID EXC CLVL>79 BOOTS]://
-ItemDisplay[MAG !ID ELT CLVL>89 BOOTS]://
+ItemDisplay[MAG !ID EXC CLVL>79 BOOTS FILTLVL>1]://
+ItemDisplay[MAG !ID ELT CLVL>89 BOOTS FILTLVL>2]://
 
 // ------------------------------------------------------------------------------
 //     				                 Gloves
@@ -2574,8 +2559,8 @@ ItemDisplay[MAG !ID ELT CLVL>89 BOOTS]://
 // All gloves
 ItemDisplay[MAG !ID ETH GLOVES]:// 
 ItemDisplay[MAG !ID NORM GLOVES CLVL>39]:// 
-ItemDisplay[MAG !ID EXC GLOVES CLVL>79]:// 
-ItemDisplay[MAG !ID ELT GLOVES CLVL>89]://
+ItemDisplay[MAG !ID EXC GLOVES CLVL>79 FILTLVL>1]:// 
+ItemDisplay[MAG !ID ELT GLOVES CLVL>89 FILTLVL>2]://
 
 // ------------------------------------------------------------------------------
 //     				                   Helms
@@ -2584,8 +2569,8 @@ ItemDisplay[MAG !ID ELT GLOVES CLVL>89]://
 // All helms
 ItemDisplay[MAG ETH !DRU !BAR !ID HELM !CIRC]://
 ItemDisplay[MAG !DRU !BAR !ID NORM HELM !CIRC CLVL>39]://
-ItemDisplay[MAG !DRU !BAR !ID EXC HELM !CIRC CLVL>69]://
-ItemDisplay[MAG !DRU !BAR !ID ELT HELM !CIRC CLVL>89]:// 
+ItemDisplay[MAG !DRU !BAR !ID EXC HELM !CIRC CLVL>79 FILTLVL>1]://
+ItemDisplay[MAG !DRU !BAR !ID ELT HELM !CIRC CLVL>89 FILTLVL>2]:// 
 
 // ------------------------------------------------------------------------------
 //     				                 Shields
@@ -2594,17 +2579,17 @@ ItemDisplay[MAG !DRU !BAR !ID ELT HELM !CIRC CLVL>89]://
 // All Shields
 ItemDisplay[MAG ETH !ID !NEC !DIN SHIELD]://
 ItemDisplay[MAG NORM !ID !NEC !DIN SHIELD CLVL>39]://
-ItemDisplay[MAG EXC !ID !NEC !DIN SHIELD CLVL>69]://
-ItemDisplay[MAG ELT !ID !NEC !DIN SHIELD CLVL>89]:// 
+ItemDisplay[MAG EXC !ID !NEC !DIN SHIELD CLVL>79 FILTLVL>1]://
+ItemDisplay[MAG ELT !ID !NEC !DIN SHIELD CLVL>89 FILTLVL>2]:// 
 
 // ------------------------------------------------------------------------------
 //     				                 Axes
 // ------------------------------------------------------------------------------
 
 // All Axes
-ItemDisplay[MAG NORM !ID !ETH AXE !JAV CLVL>39]://
-ItemDisplay[MAG EXC !ID !ETH AXE !JAV CLVL>69]://
-ItemDisplay[MAG ELT !ID !ETH AXE !JAV CLVL>89]://
+ItemDisplay[MAG NORM !ID !ETH AXE !THROWING CLVL>39]://
+ItemDisplay[MAG EXC !ID !ETH AXE !THROWING CLVL>79 FILTLVL>1]://
+ItemDisplay[MAG ELT !ID !ETH AXE !THROWING CLVL>89 FILTLVL>2]://
 
 // ------------------------------------------------------------------------------
 //     				                 Bows
@@ -2612,8 +2597,8 @@ ItemDisplay[MAG ELT !ID !ETH AXE !JAV CLVL>89]://
 
 // All Bows
 ItemDisplay[MAG NORM !ID BOW !(lwb OR lbb) CLVL>39]://
-ItemDisplay[MAG EXC !ID BOW !(8lw OR 8l8) CLVL>69]://
-ItemDisplay[MAG ELT !ID BOW !(6lw OR 6l7) CLVL>89]://
+ItemDisplay[MAG EXC !ID BOW !(8lw OR 8l8) CLVL>79 FILTLVL>1]://
+ItemDisplay[MAG ELT !ID BOW !(6lw OR 6l7) CLVL>89 FILTLVL>2]://
 
 // ------------------------------------------------------------------------------
 //     				              Crossbows
@@ -2621,17 +2606,17 @@ ItemDisplay[MAG ELT !ID BOW !(6lw OR 6l7) CLVL>89]://
 
 // All Bows
 ItemDisplay[MAG NORM !ID XBOW CLVL>39]://
-ItemDisplay[MAG EXC !ID XBOW CLVL>69]://
-ItemDisplay[MAG ELT !ID XBOW CLVL>89]://
+ItemDisplay[MAG EXC !ID XBOW CLVL>79 FILTLVL>1]://
+ItemDisplay[MAG ELT !ID XBOW CLVL>89 FILTLVL>2]://
 
 // ------------------------------------------------------------------------------
 //     				              Daggers
 // ------------------------------------------------------------------------------
 
 // All Daggers
-ItemDisplay[MAG NORM !ID DAGGER !JAV CLVL>39]://
-ItemDisplay[MAG EXC !ID DAGGER !JAV CLVL>69]://
-ItemDisplay[MAG ELT !ID DAGGER !JAV CLVL>89]://
+ItemDisplay[MAG NORM !ID DAGGER !THROWING CLVL>39]://
+ItemDisplay[MAG EXC !ID DAGGER !THROWING CLVL>79 FILTLVL>1]://
+ItemDisplay[MAG ELT !ID DAGGER !THROWING CLVL>89 FILTLVL>2]://
 
 // ------------------------------------------------------------------------------
 //     				             Javelins
@@ -2639,8 +2624,8 @@ ItemDisplay[MAG ELT !ID DAGGER !JAV CLVL>89]://
 
 // All Javelins
 ItemDisplay[MAG NORM !ETH !ID SPEAR THROWING !ZON CLVL>39]://
-ItemDisplay[MAG EXC !ETH !ID SPEAR THROWING !ZON CLVL>69]://
-ItemDisplay[MAG ELT !ETH !ID SPEAR THROWING !ZON CLVL>89]://
+ItemDisplay[MAG EXC !ETH !ID SPEAR THROWING !ZON CLVL>79 FILTLVL>1]://
+ItemDisplay[MAG ELT !ETH !ID SPEAR THROWING !ZON CLVL>89 FILTLVL>2]://
 
 // ------------------------------------------------------------------------------
 //     				              Maces
@@ -2654,24 +2639,24 @@ ItemDisplay[MAG !ID (clb OR spc OR 9cl OR 9sp OR 7cl OR 7sp)]:%NAME%{%NAME%}%CON
 ItemDisplay[MAG ETH (gma OR 9gm OR 7gm) !ID]:%NAME%{%NAME%}%CONTINUE%//
 
 ItemDisplay[MAG NORM !ETH !ID MACE !(clb OR spc) CLVL>39]://
-ItemDisplay[MAG EXC !ETH !ID MACE !(9cl OR 9sp) CLVL>69]://
-ItemDisplay[MAG ELT !ETH !ID MACE !(7cl OR 7sp) CLVL>89]://
+ItemDisplay[MAG EXC !ETH !ID MACE !(9cl OR 9sp) CLVL>79 FILTLVL>1]://
+ItemDisplay[MAG ELT !ETH !ID MACE !(7cl OR 7sp) CLVL>89 FILTLVL>2]://
 
 // ------------------------------------------------------------------------------
 //     				             Polearms
 // ------------------------------------------------------------------------------
 // All magic Polearms
 ItemDisplay[MAG NORM !ETH !ID POLEARM CLVL>39]://
-ItemDisplay[MAG EXC !ETH !ID POLEARM CLVL>69]://
-ItemDisplay[MAG ELT !ETH !ID POLEARM CLVL>89]://
+ItemDisplay[MAG EXC !ETH !ID POLEARM CLVL>79 FILTLVL>1]://
+ItemDisplay[MAG ELT !ETH !ID POLEARM CLVL>89 FILTLVL>2]://
 
 // ------------------------------------------------------------------------------
 //     				             Spears
 // ------------------------------------------------------------------------------
 // Hide All magic Spears
 ItemDisplay[MAG NORM !ID SPEAR !ETH !THROWING CLVL>39]://
-ItemDisplay[MAG EXC !ID SPEAR !ETH !THROWING CLVL>59]://
-ItemDisplay[MAG ELT !ID SPEAR !ETH !THROWING CLVL>79]://
+ItemDisplay[MAG EXC !ID SPEAR !ETH !THROWING CLVL>79 FILTLVL>1]://
+ItemDisplay[MAG ELT !ID SPEAR !ETH !THROWING CLVL>89 FILTLVL>2]://
 
 // ------------------------------------------------------------------------------
 //    				            Staves
@@ -2684,22 +2669,22 @@ ItemDisplay[MAG !ID STAFF]:%NAME%{%NAME%}%CONTINUE%//
 // ------------------------------------------------------------------------------
 
 ItemDisplay[MAG crs ETH !ID]:%NAME%{%NAME%}%CONTINUE%//
-ItemDisplay[MAG NORM !ETH !ID SWORD CLVL>49]://
+ItemDisplay[MAG NORM !ETH !ID SWORD CLVL>39]://
 
 ItemDisplay[MAG 9cr ETH !ID]:%NAME%{%NAME%}%CONTINUE%//
-ItemDisplay[MAG EXC !ETH !ID SWORD CLVL>69]://
+ItemDisplay[MAG EXC !ETH !ID SWORD CLVL>79 FILTLVL>1]://
 
 ItemDisplay[MAG 7cr !ID]:%NAME%{%NAME%}%CONTINUE%//
-ItemDisplay[MAG !7cr ELT !ETH !ID SWORD CLVL>89]://
+ItemDisplay[MAG !7cr ELT !ETH !ID SWORD CLVL>89 FILTLVL>2]://
 
 // ------------------------------------------------------------------------------
 //    		                Throwing Weapons
 // ------------------------------------------------------------------------------
 
 // All magic Throwing Weapons
-ItemDisplay[MAG NORM !ETH !ID JAV !SPEAR !ZON CLVL>49]:// All Throwing Weapons
-ItemDisplay[MAG EXC !ETH !ID JAV !SPEAR !ZON CLVL>69]:// All Throwing Weapons
-ItemDisplay[MAG ELT !ETH !ID JAV !SPEAR !ZON CLVL>89]:// All Throwing Weapons
+ItemDisplay[MAG NORM !ETH !ID THROWING !SPEAR !ZON CLVL>39]:// All Throwing Weapons
+ItemDisplay[MAG EXC !ETH !ID THROWING !SPEAR !ZON CLVL>79 FILTLVL>1]:// All Throwing Weapons
+ItemDisplay[MAG ELT !ETH !ID THROWING !SPEAR !ZON CLVL>89 FILTLVL>2]:// All Throwing Weapons
 
 // ------------------------------------------------------------------------------
 //   				            Wands
@@ -3324,20 +3309,20 @@ ItemDisplay[NMAG !RW TABSK0=1]:%TAN%+1%DARK_GREEN% Bow Skill %GRAY%%NAME%{%NAME%
 ItemDisplay[NMAG !RW TABSK0=2]:%TAN%+2%DARK_GREEN% Bow Skill %GRAY%%NAME%{%NAME%}%CONTINUE%
 ItemDisplay[NMAG !RW TABSK0=3]:%TAN%+3%DARK_GREEN% Bow Skill %GRAY%%NAME%{%NAME%}%CONTINUE%
 
-// Hide Zon Class Bows that don't have at least +2 Bow Skills above character level 9
-ItemDisplay[NMAG TABSK0<2 (am1 OR am2 OR am6 OR am7 OR amb OR amc) CLVL<20 CLVL>9]://
-// Hide Zon Class Bows that don't have at least +3 to Bow Skills above character level 19
-ItemDisplay[NMAG TABSK0<3 (am1 OR am2 OR am6 OR am7 OR amb OR amc) CLVL>19]://
+// Hide Zon Class Bows that don't have at least +2 Bow Skills  between levels 20-30
+ItemDisplay[NMAG TABSK0<1 (am1 OR am2 OR am6 OR am7 OR amb OR amc) CLVL<31 CLVL>19]://
+// Hide Zon Class Bows that don't have at least +3 to Bow Skills above character level 30
+ItemDisplay[NMAG TABSK0<3 (am1 OR am2 OR am6 OR am7 OR amb OR amc) CLVL>30]://
 
 // Add +skills tag to Amazon javelins
 ItemDisplay[NMAG !RW TABSK2=1]:%TAN%+1%DARK_GREEN% Jav Skill %GRAY%%NAME%{%NAME%}%CONTINUE%
 ItemDisplay[NMAG !RW TABSK2=2]:%TAN%+2%DARK_GREEN% Jav Skill %GRAY%%NAME%{%NAME%}%CONTINUE%
 ItemDisplay[NMAG !RW TABSK2=3]:%TAN%+3%DARK_GREEN% Jav Skill %GRAY%%NAME%{%NAME%}%CONTINUE%
 
-// Hide Zon Class Spears that Don't Have +3 to Javelin Skills above character level 9
-ItemDisplay[NMAG TABSK2<3 (am3 OR am4 OR am8 OR am9 OR amd OR ame) CLVL<20 CLVL>9]://
-// Hide Zon Class Bows that don't have at least +3 to Bow Skills above character level 19
-ItemDisplay[NMAG TABSK2<3 (am3 OR am4 OR am8 OR am9 OR amd OR ame) CLVL>19]://
+// Hide Zon Class Spears and Javelins that Don't Have +3 to Javelin Skills between levels 20-30
+ItemDisplay[NMAG TABSK2<1 (am3 OR am4 OR am8 OR am9 OR amd OR ame OR am5 OR ama OR amf) CLVL<31 CLVL>19]://
+// Hide Zon Class Spears and Javelins that don't have at least +3 to Bow Skills above character level 30
+ItemDisplay[NMAG TABSK2<3 (am3 OR am4 OR am8 OR am9 OR amd OR ame OR am5 OR ama OR amf) CLVL>30]://
 
 
 //Assasin
@@ -4217,7 +4202,7 @@ ItemDisplay[NMAG !INF !RW ETH !ELT SOCK=3 HELM !CIRC !BAR !DRU CLVL>60]://
 // ------------------------------------------------------------------------------
 
 ItemDisplay[NMAG BELT ETH]:// This will completely hide all eth nonmagical belts
-ItemDisplay[NMAG BELT NORM CLVL>24]:// This will completely hide all normal quality white belts past character level 24
+ItemDisplay[NMAG BELT NORM CLVL>18]:// This will completely hide all normal quality white belts past character level 18
 ItemDisplay[NMAG BELT EXC]:// This will completely hide all exceptional quality white belts
 ItemDisplay[NMAG BELT ELT]:// This will completely hide all elite quality white belts
 
@@ -4226,11 +4211,7 @@ ItemDisplay[NMAG BELT ELT]:// This will completely hide all elite quality white 
 // ------------------------------------------------------------------------------
 
 ItemDisplay[NMAG BOOTS ETH]:// This will completely hide all eth nonmagical boots
-
-ItemDisplay[NMAG BOOTS NORM DIFF>0]://
-ItemDisplay[NMAG BOOTS NORM CLVL<23 DIFF=0]://
-ItemDisplay[NMAG BOOTS NORM CLVL>22 DIFF=0]://
-
+ItemDisplay[NMAG BOOTS NORM]:// This will completely hide all normal quality white boots
 ItemDisplay[NMAG BOOTS EXC]:// This will completely hide all exceptional quality white boots
 ItemDisplay[NMAG BOOTS ELT]:// This will completely hide all elite quality white boots
 
@@ -4730,7 +4711,7 @@ ItemDisplay[NMAG !INF !RW WP10]:// %NAME%%DOT-20%%PX-00%%CONTINUE%// All tiers, 
 // ------------------------------------------------------------------------------
 
 // Hide All tiers
-ItemDisplay[NMAG CLVL>29 !INF !RW DAGGER !JAV]:// %NAME%%DOT-20%%PX-00%%CONTINUE%// All tiers, 0os
+ItemDisplay[NMAG CLVL>29 !INF !RW DAGGER !THROWING]:// %NAME%%DOT-20%%PX-00%%CONTINUE%// All tiers, 0os
 
 // ------------------------------------------------------------------------------
 //     ============================= [BWJA] Javelins ============================= 
@@ -5120,7 +5101,7 @@ ItemDisplay[WEAPON !leg SOCK=3 NMAG !RW]:%NAME%{%GRAY%Plague %WHITE%* %GRAY%Veno
 ItemDisplay[WEAPON !(BOW OR XBOW OR SOR OR leg) SOCK=3 NMAG !RW]:%NAME%{%GRAY%Malice %WHITE%* %GRAY%Plague %WHITE%* %GRAY%Venom %WHITE%* %GRAY%Fury%NL%%TAN%Possible Runewords:}%CONTINUE%
 ItemDisplay[(BOW OR XBOW) SOCK=3 NMAG !RW]:%NAME%{%GRAY%Edge %WHITE%* %GRAY%Melody %WHITE%* %GRAY%Plague %WHITE%* %GRAY%Venom%NL%%TAN%Possible Runewords:}%CONTINUE%
 ItemDisplay[SIN SOCK=3 NMAG !RW]:%NAME%{%GRAY%Malice %WHITE%* %GRAY%Pattern %WHITE%* %GRAY%Plague %WHITE%* %GRAY%Venom%NL%Fury %WHITE%* %GRAY%King's grace %WHITE%* %GRAY%Lawbringer%NL%Black %WHITE%* %GRAY%Chaos %WHITE%* %GRAY%Crescent moon%NL%%TAN%Possible Runewords:}%CONTINUE%
-ItemDisplay[(AXE OR POLEARM OR SPEAR OR JAV) SOCK=3 NMAG !RW]:%NAME%{%GRAY%Malice %WHITE%* %GRAY%Plague %WHITE%* %GRAY%Venom%NL%Crescent Moon %WHITE%* %GRAY%Fury%NL%%TAN%Possible Runewords:}%CONTINUE%
+ItemDisplay[(AXE OR POLEARM OR SPEAR) SOCK=3 NMAG !RW]:%NAME%{%GRAY%Malice %WHITE%* %GRAY%Plague %WHITE%* %GRAY%Venom%NL%Crescent Moon %WHITE%* %GRAY%Fury%NL%%TAN%Possible Runewords:}%CONTINUE%
 ItemDisplay[SWORD SOCK=3 NMAG !RW]:%NAME%{%GRAY%Lawbringer %WHITE%* %GRAY%Malice %WHITE%* %GRAY%Plague %WHITE%* %GRAY%Venom%NL%Crescent Moon %WHITE%* %GRAY%Fury %WHITE%* %GRAY%King's Grace%NL%%TAN%Possible Runewords:}%CONTINUE%
 ItemDisplay[SCEPTER SOCK=3 NMAG !RW]:%NAME%{%GRAY%Malice %WHITE%* %GRAY%Plague %WHITE%* %GRAY%Venom%NL%Fury %WHITE%* %GRAY%King's Grace %WHITE%* %GRAY%Lawbringer%NL%%TAN%Possible Runewords:}%CONTINUE%
 ItemDisplay[(clb OR spc OR mac OR mst OR fla OR 9cl OR 9sp OR 9ma OR 9mt OR 9fl OR 7cl OR 7sp OR 7ma OR 7mt OR 7fl) SOCK=3 NMAG !RW]:%NAME%{%GRAY%Fury %WHITE%* %GRAY%Malice %WHITE%* %GRAY%Plague %WHITE%* %GRAY%Venom %WHITE%* %GRAY%Black%NL%%TAN%Possible Runewords:}%CONTINUE%
@@ -5130,7 +5111,7 @@ ItemDisplay[WEAPON SOCK=4 NMAG !RW]:%NAME%{%GRAY%Hand of Justice %WHITE%* %GRAY%
 ItemDisplay[(BOW OR XBOW) SOCK=4 NMAG !RW]:%NAME%{%GRAY%Phoenix %WHITE%* %GRAY%Voice of Reason %WHITE%* %GRAY%Wrath%NL%Hand of Justice %WHITE%* %GRAY%Harmony %WHITE%* %GRAY%Passion%NL%Brand %WHITE%* %GRAY%Faith %WHITE%* %GRAY%Fortitude %WHITE%* %GRAY%Ice%NL%%TAN%Possible Runewords:}%CONTINUE%
 ItemDisplay[(fla OR 9fl OR 7fl) SOCK=4 NMAG !RW]:%NAME%{%GRAY%Oath %WHITE%* %GRAY%Passion %WHITE%* %GRAY%Phoenix %WHITE%* %GRAY%Voice of Reason%NL%Hand of Justice %WHITE%* %GRAY%Heart of the Oak %WHITE%* %GRAY%Fortitude%NL%%TAN%Possible Runewords:}%CONTINUE%
 ItemDisplay[SWORD SOCK=4 NMAG !RW]:%NAME%{%GRAY%Phoenix %WHITE%* %GRAY%Spirit %WHITE%* %GRAY%Voice of Reason%NL%Justice %WHITE%* %GRAY%Kingslayer %WHITE%* %GRAY%Oath %WHITE%* %GRAY%Passion%NL%Famine %WHITE%* %GRAY%Fortitude %WHITE%* %GRAY%Hand of%NL%%TAN%Possible Runewords:}%CONTINUE%
-ItemDisplay[(POLEARM OR SPEAR OR JAV) SOCK=4 NMAG !RW]:%NAME%{%GRAY%Passion %WHITE%* %GRAY%Phoenix %WHITE%* %GRAY%Pride %WHITE%* %GRAY%Rift %WHITE%* %GRAY%Rampage%NL%Hand of Justice %WHITE%* %GRAY%Infinity %WHITE%* %GRAY%Insight %WHITE%* %GRAY%Fortitude%NL%%TAN%Possible Runewords:}%CONTINUE%
+ItemDisplay[(POLEARM OR SPEAR) SOCK=4 NMAG !RW]:%NAME%{%GRAY%Passion %WHITE%* %GRAY%Phoenix %WHITE%* %GRAY%Pride %WHITE%* %GRAY%Rift %WHITE%* %GRAY%Rampage%NL%Hand of Justice %WHITE%* %GRAY%Infinity %WHITE%* %GRAY%Insight %WHITE%* %GRAY%Fortitude%NL%%TAN%Possible Runewords:}%CONTINUE%
 ItemDisplay[SCEPTER SOCK=4 NMAG !RW]:%NAME%{%GRAY%Insight %WHITE%* %GRAY%Passion %WHITE%* %GRAY%Phoenix %WHITE%* %GRAY%Rift%NL%Holy Thunder %WHITE%* %GRAY%Hand of Justice %WHITE%* %GRAY%Fortitude%NL%%TAN%Possible Runewords:}%CONTINUE%
 ItemDisplay[AXE SOCK=4 NMAG !RW]:%NAME%{%GRAY%Oath %WHITE%* %GRAY%Passion %WHITE%* %GRAY%Phoenix %WHITE%* %GRAY%Famine%NL%Fortitude %WHITE%* %GRAY%Hand of Justice %WHITE%* %GRAY%Kingslayer%NL%%TAN%Possible Runewords:}%CONTINUE%
 ItemDisplay[STAFF SOCK=4 NMAG !RW]:%NAME%{%GRAY%Memory %WHITE%* %GRAY%Passion %WHITE%* %GRAY%Phoenix %WHITE%* %GRAY%Spirit%NL%Heart of the Oak %WHITE%* %GRAY%Infinity %WHITE%* %GRAY%Insight%NL%Fortitude %WHITE%* %GRAY%Hand of Justice %WHITE%* %GRAY%Rampage%NL%%TAN%Possible Runewords:}%CONTINUE%
@@ -5144,7 +5125,7 @@ ItemDisplay[SCEPTER SOCK=5 NMAG !RW]:%NAME%{%GRAY%Call to Arms %WHITE%* %GRAY%Et
 ItemDisplay[(whm OR mau OR gma OR 9wh OR 9m9 OR 9gm OR 7wh OR 7m7 OR 7gm) SOCK=5 NMAG !RW]:%NAME%{%GRAY% Eternity %WHITE%* %GRAY%Honor %WHITE%* %GRAY%Obedience%NL%Beast %WHITE%* %GRAY%Call to Arms %WHITE%* %GRAY%Doom%NL%%TAN%Possible Runewords:}%CONTINUE%
 ItemDisplay[AXE SOCK=5 NMAG !RW]:%NAME%{%GRAY%Eternity %WHITE%* %GRAY%Grief %WHITE%* %GRAY%Honor%NL%Call to Arms %WHITE%* %GRAY%Death %WHITE%* %GRAY%Doom%NL%%TAN%Possible Runewords: %GRAY%Beast}%CONTINUE%
 ItemDisplay[SWORD SOCK=5 NMAG !RW]:%NAME%{%GRAY%Destruction %WHITE%* %GRAY%Doom %WHITE%* %GRAY%Grief %WHITE%* %GRAY%Honor%NL%Call to Arms %WHITE%* %GRAY%Eternity %WHITE%* %GRAY%Death%NL%%TAN%Possible Runewords:}%CONTINUE%
-ItemDisplay[(POLEARM OR SPEAR OR JAV) SOCK=5 NMAG !RW]:%NAME%{%GRAY%Eternity %WHITE%* %GRAY%Honor %WHITE%* %GRAY%Obedience %WHITE%* %GRAY%Doom%NL%Call to Arms %WHITE%* %GRAY%Zenith %WHITE%* %GRAY%Destruction%NL%%TAN%Possible Runewords:}%CONTINUE%
+ItemDisplay[(POLEARM OR SPEAR) SOCK=5 NMAG !RW]:%NAME%{%GRAY%Eternity %WHITE%* %GRAY%Honor %WHITE%* %GRAY%Obedience %WHITE%* %GRAY%Doom%NL%Call to Arms %WHITE%* %GRAY%Zenith %WHITE%* %GRAY%Destruction%NL%%TAN%Possible Runewords:}%CONTINUE%
 //Weapons 6soc
 ItemDisplay[WEAPON SOCK=6 NMAG !RW]:%NAME%{%GRAY%Breath of the Dying %WHITE%* %GRAY%Silence%NL%%TAN%Possible Runewords:}%CONTINUE%
 ItemDisplay[STAFF SOCK=6 NMAG !RW]:%NAME%{%GRAY%Breath of the Dying %WHITE%* %GRAY%Silence %WHITE%* %GRAY%Obsession%NL%%TAN%Possible Runewords:}%CONTINUE%
