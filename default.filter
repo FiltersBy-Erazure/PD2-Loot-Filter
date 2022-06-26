@@ -6,6 +6,7 @@ ItemDisplayFilterName[]:More Strict//               TIER-2
 ItemDisplayFilterName[]:Most Strict//               TIER-3
 ItemDisplayFilterName[]:No Super H Pots//           TIER-4
 ItemDisplayFilterName[]:No Super H/M Pots//         TIER-5
+ItemDisplayFilterName[]:No Small Rejuv Pots//       TIER-6
 
 // ==============================  Arrows and Bolts  ===============================
 
@@ -35,7 +36,7 @@ ItemDisplay[hp3 CLVL>21]:{%NL%%WHITE% Healing Potion }//            Hides Healin
 ItemDisplay[hp4 CLVL>29]:{%NL%%WHITE% Greater Healing Potion }//    Hides Greater Healing Potions after level 29
 
 // Super Healing Potion
-ItemDisplay[hp5 CLVL>89 (FILTLVL=4 OR FILTLVL=5)]:{%NL%%WHITE% Super Healing Potion }// On Filter Levels 4 or 5, hide Super Healing potions
+ItemDisplay[hp5 (FILTLVL=4 OR FILTLVL=5 OR FILTLVL=6)]:{%NL%%WHITE% Super Healing Potion }// On Filter Levels 4 or 5 or 6, hide Super Healing potions
 ItemDisplay[hp5 CLVL>79]:{%WHITE% Super Healing Potion }%RED%i%GRAY%|%RED%( %WHITE%H %RED%)%GRAY%|%RED%i// Character level 80+
 ItemDisplay[hp5 CLVL<80 CLVL>34]:{%WHITE% Super Healing Potion }%RED%i%GRAY%|%RED%|( %WHITE%H %RED%)|%GRAY%|%RED%i// Character levels 35 to 79
 
@@ -55,7 +56,7 @@ ItemDisplay[mp3 CLVL>21]:{%NL%%WHITE% Mana Potion }//               Hides Mana P
 ItemDisplay[mp4 CLVL>29]:{%NL%%WHITE% Greater Mana Potion }//       Hides Greater Mana Potions after level 29
 
 // Adjust display of Super Mana Potions based on character level
-ItemDisplay[hp5 FILTLVL=5]:{%NL%%WHITE% Super Mana Potion }// On Filter Level 5, hide Super Mana potions
+ItemDisplay[mp5 (FILTLVL=5 OR FILTLVL=6)]:{%NL%%WHITE% Super Mana Potion }// On Filter Level 5 or 6, hide Super Mana potions
 ItemDisplay[mp5 CLVL>79]:%BLUE%i%GRAY%|%BLUE%(%WHITE% M %BLUE%)%GRAY%|%BLUE%i{%WHITE% Super Mana Potion }// Character level 80+
 ItemDisplay[mp5 CLVL<80 CLVL>34]:%BLUE%i%GRAY%|%BLUE%(%WHITE% M %BLUE%)%GRAY%|%BLUE%i{%WHITE% Super Mana Potion }// Character levels 35 to 79
 
@@ -68,6 +69,7 @@ ItemDisplay[mp5 CLVL<35]:%BLUE%i%GRAY%|%BLUE%|( %WHITE%M%GRAY%-%WHITE%5 %BLUE%)|
 
 // ==================================  Rejuvenation Potions  ================================
 
+ItemDisplay[rvs FILTLVL=6]:{%NL%%WHITE% Rejuvenation Potion }//
 ItemDisplay[rvs CLVL>79]:%PURPLE%* i|(%WHITE% Juv %PURPLE%)|i *//
 ItemDisplay[rvs CLVL<80]:%PURPLE%* i|(%WHITE% Rejuv %PURPLE%)|i *//
 
@@ -501,17 +503,17 @@ ItemDisplay[r31]:%PURPLE%xX%RED%xX%ORANGE%xX%TAN%XO%WHITE%X%TAN%OX%ORANGE%Xx%RED
 
 // ========================================  Essences  =========================================
 
-ItemDisplay[bet QTY>1]:%RED%|i|i|  %ORANGE%Burning %RED%Essences %ORANGE%of Terror %TAN%x %WHITE%%QTY%  %RED%|i|i|%BORDER-08%%MAP-62%%DOT-68%%PX-20%{%NL%%TAN%and %BLUE%Twisted %ORANGE%Essences %NL%%TAN% Cube with %YELLOW%Charged %DARK_GREEN%Festering%TAN% }// Burning Essence of Terror
-ItemDisplay[bet QTY=1]:%RED%|i|i|  %ORANGE%Burning %RED%Essence %ORANGE%of Terror  %RED%|i|i|%BORDER-08%%MAP-62%%DOT-68%%PX-20%{%NL%%TAN%and %BLUE%Twisted %ORANGE%Essences %NL%%TAN% Cube with %YELLOW%Charged %DARK_GREEN%Festering%TAN% }// Burning Essence of Terror
+ItemDisplay[bet QTY>1]:%RED%|x|  %ORANGE%Burning %RED%Essences %ORANGE%of Terror %TAN%x %WHITE%%QTY%  %RED%|x|%BORDER-08%%MAP-62%%DOT-68%%PX-20%{%NL%%TAN%and %BLUE%Twisted %ORANGE%Essences %NL%%TAN% Cube with %YELLOW%Charged %DARK_GREEN%Festering%TAN% }// Burning Essence of Terror
+ItemDisplay[bet QTY=1]:%RED%|x|  %ORANGE%Burning %RED%Essence %ORANGE%of Terror  %RED%|x|%BORDER-08%%MAP-62%%DOT-68%%PX-20%{%NL%%TAN%and %BLUE%Twisted %ORANGE%Essences %NL%%TAN% Cube with %YELLOW%Charged %DARK_GREEN%Festering%TAN% }// Burning Essence of Terror
 
-ItemDisplay[ceh QTY>1]:%YELLOW%|i|i|  %ORANGE%Charged %YELLOW%Essences %ORANGE%of Hatred %TAN%x %WHITE%%QTY%  %YELLOW%|i|i|%MAP-6D%%DOT-68%%PX-20%{%NL%%TAN%and %BLUE%Twisted %ORANGE%Essences %NL%%TAN%Cube with %RED%Burning %DARK_GREEN%Festering%TAN% }// Charged Essence of Hatred
-ItemDisplay[ceh QTY=1]:%YELLOW%|i|i|  %ORANGE%Charged %YELLOW%Essence %ORANGE%of Hatred  %YELLOW%|i|i|%MAP-6D%%DOT-68%%PX-20%{%NL%%TAN%and %BLUE%Twisted %ORANGE%Essences %NL%%TAN%Cube with %RED%Burning %DARK_GREEN%Festering%TAN% }// Charged Essence of Hatred
+ItemDisplay[ceh QTY>1]:%YELLOW%|x|  %ORANGE%Charged %YELLOW%Essences %ORANGE%of Hatred %TAN%x %WHITE%%QTY%  %YELLOW%|x|%MAP-6D%%DOT-68%%PX-20%{%NL%%TAN%and %BLUE%Twisted %ORANGE%Essences %NL%%TAN%Cube with %RED%Burning %DARK_GREEN%Festering%TAN% }// Charged Essence of Hatred
+ItemDisplay[ceh QTY=1]:%YELLOW%|x|  %ORANGE%Charged %YELLOW%Essence %ORANGE%of Hatred  %YELLOW%|x|%MAP-6D%%DOT-68%%PX-20%{%NL%%TAN%and %BLUE%Twisted %ORANGE%Essences %NL%%TAN%Cube with %RED%Burning %DARK_GREEN%Festering%TAN% }// Charged Essence of Hatred
 
-ItemDisplay[fed QTY>1]:%DARK_GREEN%|i|i|  %ORANGE%Festering %DARK_GREEN%Essences %ORANGE%of Destruction %TAN%x %WHITE%%QTY%  %DARK_GREEN%|i|i|%BORDER-71%%MAP-76%%DOT-68%%PX-20%{%NL%%TAN%and %BLUE%Twisted %ORANGE%Essences%NL%%TAN%Cube with %RED%Burning %YELLOW%Charged%TAN% }// Festering Essence of Destruction
-ItemDisplay[fed QTY=1]:%DARK_GREEN%|i|i|  %ORANGE%Festering %DARK_GREEN%Essence %ORANGE%of Destruction  %DARK_GREEN%|i|i|%BORDER-71%%MAP-76%%DOT-68%%PX-20%{%NL%%TAN%and %BLUE%Twisted %ORANGE%Essences%NL%%TAN%Cube with %RED%Burning %YELLOW%Charged%TAN% }// Festering Essence of Destruction
+ItemDisplay[fed QTY>1]:%DARK_GREEN%|x|  %ORANGE%Festering %DARK_GREEN%Essences %ORANGE%of Destruction %TAN%x %WHITE%%QTY%  %DARK_GREEN%|x|%BORDER-71%%MAP-76%%DOT-68%%PX-20%{%NL%%TAN%and %BLUE%Twisted %ORANGE%Essences%NL%%TAN%Cube with %RED%Burning %YELLOW%Charged%TAN% }// Festering Essence of Destruction
+ItemDisplay[fed QTY=1]:%DARK_GREEN%|x|  %ORANGE%Festering %DARK_GREEN%Essence %ORANGE%of Destruction  %DARK_GREEN%|x|%BORDER-71%%MAP-76%%DOT-68%%PX-20%{%NL%%TAN%and %BLUE%Twisted %ORANGE%Essences%NL%%TAN%Cube with %RED%Burning %YELLOW%Charged%TAN% }// Festering Essence of Destruction
 
-ItemDisplay[tes QTY>1]:%BLUE%|i|i|  %ORANGE%Twisted %BLUE%Essences %ORANGE%of Suffering %TAN%x %WHITE%%QTY%  %BLUE%|i|i|%BORDER-8E%%MAP-97%%DOT-68%%PX-20%{%NL%%TAN%and %DARK_GREEN%Festering %ORANGE%Essences%NL%%TAN%Cube with %RED%Burning %YELLOW%Charged%TAN% }// Twisted Essence of Suffering
-ItemDisplay[tes QTY=1]:%BLUE%|i|i|  %ORANGE%Twisted %BLUE%Essence %ORANGE%of Suffering  %BLUE%|i|i|%BORDER-8E%%MAP-97%%DOT-68%%PX-20%{%NL%%TAN%and %DARK_GREEN%Festering %ORANGE%Essences%NL%%TAN%Cube with %RED%Burning %YELLOW%Charged%TAN% }// Twisted Essence of Suffering
+ItemDisplay[tes QTY>1]:%BLUE%|x|  %ORANGE%Twisted %BLUE%Essences %ORANGE%of Suffering %TAN%x %WHITE%%QTY%  %BLUE%|x|%BORDER-8E%%MAP-97%%DOT-68%%PX-20%{%NL%%TAN%and %DARK_GREEN%Festering %ORANGE%Essences%NL%%TAN%Cube with %RED%Burning %YELLOW%Charged%TAN% }// Twisted Essence of Suffering
+ItemDisplay[tes QTY=1]:%BLUE%|x|  %ORANGE%Twisted %BLUE%Essence %ORANGE%of Suffering  %BLUE%|x|%BORDER-8E%%MAP-97%%DOT-68%%PX-20%{%NL%%TAN%and %DARK_GREEN%Festering %ORANGE%Essences%NL%%TAN%Cube with %RED%Burning %YELLOW%Charged%TAN% }// Twisted Essence of Suffering
 
 ItemDisplay[toa]:%WHITE%|x|x|  %ORANGE%Token of Absolution  %WHITE%|x|x|%MAP-20%%DOT-69%%PX-68%{%NL%%TAN%Right click to reset stats & skills%NL%}// Token of Absolution
 
@@ -4719,24 +4721,42 @@ ItemDisplay[NMAG !INF !RW ELT BOW !ZON CLVL>89]://
 //     ============================= [BWCR] Crossbows ============================= 
 // ------------------------------------------------------------------------------
 
-ItemDisplay[NMAG !INF !RW SOCK=4 6rx]:%ORANGE%Wrath %GRAY%%NAME%%DOT-20%%PX-00%{%ORANGE%Ice, Brand, Wrath%NL%Harmony, Hand of Justice,%NL%Faith, Voice of Reason%NL%%TAN%Possible Runewords:}// 4os Demon crossbow
-ItemDisplay[NMAG !INF !RW SOCK=4 8rx]:%GRAY%%NAME%%DOT-20%%PX-00%{%ORANGE%Ice, Brand, Wrath%NL%Harmony, Hand of Justice,%NL%Faith, Voice of Reason%NL%%TAN%Possible Runewords:}// 4os Chu Ko Nu
+ItemDisplay[NMAG !INF !RW SOCK=4 6rx]:%ORANGE%Wrath %GRAY%%NAME%%DOT-20%%PX-00%%CONTINUE%// 4os Demon crossbow
+ItemDisplay[NMAG !INF !RW SOCK=4 8rx]:%GRAY%%NAME%%DOT-20%%PX-00%%CONTINUE%// 4os Chu Ko Nu
 
 // Hide all other crossbows that aren't -60 base weapon speed
-ItemDisplay[NMAG !INF !RW WP10]:// %NAME%%DOT-20%%PX-00%%CONTINUE%// All tiers, 0os
+ItemDisplay[NMAG !INF !RW WP10 !(SOCK=4 (8rx OR 6rx))]:// Hide all other crossbows that aren't -60 base weapon speed
 
 // ------------------------------------------------------------------------------
 //     ============================= [BWDA] Daggers ============================= 
 // ------------------------------------------------------------------------------
 
 // Hide All tiers
-ItemDisplay[NMAG CLVL>29 !INF !RW DAGGER !THROWING]:// %NAME%%DOT-20%%PX-00%%CONTINUE%// All tiers, 0os
+ItemDisplay[NMAG CLVL>29 !INF !RW DAGGER !THROWING]:// Hide All nonmagical daggers
 
 // ------------------------------------------------------------------------------
 //     ============================= [BWJA] Javelins ============================= 
 // ------------------------------------------------------------------------------
-// No need for white throwing weapons as they cannot have sockets
-ItemDisplay[NMAG CLVL>29 SPEAR !ETH THROWING !ZON]:// This will completely hide all white javelins past character level 20
+// Non-eth Throwing weapons
+ItemDisplay[NMAG CLVL>29 !ETH THROWING !SPEAR !ZON]:// This will completely hide all white javelins past character level 30
+
+// Normal Throwing weapons
+ItemDisplay[NMAG CLVL>29 NORM ETH THROWING !SPEAR !ZON]:// This will completely hide all white javelins past character level 30
+
+// Exceptional Throwing weapons
+ItemDisplay[NMAG CLVL>79 EXC ETH THROWING !SPEAR !ZON]:// This will completely hide all white javelins past character level 80
+
+// Elite Throwing weapons
+ItemDisplay[NMAG CLVL>89 EXC ETH THROWING !SPEAR !ZON]:// This will completely hide all white javelins past character level 90
+
+// Amazon Spears: SPEAR !THROWING ZON
+// Amazon Javelins: SPEAR THROWING ZON
+// Axes: AXE !THROWING
+// Daggers: DAGGER !THROWING
+// Javelins: SPEAR THROWING !ZON
+// Spears: SPEAR !THROWING !ZON
+// Throwing Weapons: !SPEAR THROWING !ZON
+
 
 // ------------------------------------------------------------------------------
 //        ============================= [BWMH] Hammers ==========================
@@ -4871,19 +4891,17 @@ ItemDisplay[NMAG !INF !RW CLVL>29 SCEPTER !(SK96>0 OR SK97>0 OR SK98>0 OR SK99>0
 
 // 	Normal tiers
 
-ItemDisplay[NMAG !INF !RW NORM CLVL>9 SPEAR !THROWING !ZON]://
+ItemDisplay[NMAG !INF !RW NORM SPEAR !THROWING !ZON CLVL>9]://
 
 // 	Exceptional tiers
-ItemDisplay[NMAG !INF !RW EXC SPEAR !THROWING !ZON]:// 
+ItemDisplay[NMAG !INF !RW !ETH EXC SPEAR !THROWING !ZON CLVL CLVL>29]://
+ItemDisplay[NMAG !INF !RW EXC SPEAR !THROWING !ZON CLVL>79]://
 
 // 	Elite tiers
-ItemDisplay[NMAG !INF !RW ELT SPEAR !THROWING !ZON !(7br OR 7p7)]://
+ItemDisplay[NMAG !INF !RW (!ETH OR SOCK=2) ELT SPEAR !THROWING !ZON]://
 
 // Elite tier Polearms
 //      Mancatcher
-ItemDisplay[NMAG !INF !RW !ETH 7br]:// Hide noneth mancatchers
-ItemDisplay[NMAG !INF !RW SOCK=2 7br]:// Hide 2 Socket Mancatchers
-
 ItemDisplay[NMAG !INF !RW !SUP ETH SOCK=0 7br]:%GRAY%%NAME%%DOT-20%%PX-00%%CONTINUE%// 0os, Eth, Nonsuperior
 ItemDisplay[NMAG !INF !RW !SUP ETH SOCK=3 7br]:%GRAY%%NAME%%DOT-20%%PX-00%%CONTINUE%// 3os, Eth
 ItemDisplay[NMAG !INF !RW !SUP ETH SOCK=4 7br]:%GRAY%%NAME%%DOT-20%%PX-00%%CONTINUE%// 4os, Eth
@@ -4894,18 +4912,13 @@ ItemDisplay[NMAG !INF !RW SUP ETH SOCK=4 7br]:%GRAY%%NAME%%DOT-20%%PX-00%%CONTIN
 ItemDisplay[NMAG !INF !RW SUP ETH SOCK=5 7br]:%GRAY%%NAME%%DOT-20%%PX-00%%CONTINUE%// 5os, Superior, Eth
 
 //      War Pike
-ItemDisplay[NMAG !INF !ETH 7p7]:// Hide noneth warpikes
-ItemDisplay[NMAG !INF (SOCK=2 OR SOCK=3 OR SOCK=4) 7p7]:// Hide warpikes that have 2 3 4 or 5 sockets
-
 ItemDisplay[NMAG !INF !RW !SUP ETH SOCK=0 7p7]:%GRAY%%NAME%%DOT-20%%PX-00%%CONTINUE%// 0os, Eth
-ItemDisplay[NMAG !INF !RW !SUP ETH SOCK=2 7p7]:%GRAY%%NAME%%DOT-20%%PX-00%%CONTINUE%// 2os, Eth
 ItemDisplay[NMAG !INF !RW !SUP ETH SOCK=3 7p7]:%GRAY%%NAME%%DOT-20%%PX-00%%CONTINUE%// 3os, Eth
 ItemDisplay[NMAG !INF !RW !SUP ETH SOCK=4 7p7]:%GRAY%%NAME%%DOT-20%%PX-00%%CONTINUE%// 4os, Eth
 ItemDisplay[NMAG !INF !RW !SUP ETH SOCK=5 7p7]:%GRAY%%NAME%%DOT-20%%PX-00%%CONTINUE%// 5os, Eth
 ItemDisplay[NMAG !INF !RW !SUP ETH SOCK=6 7p7]:%GRAY%%NAME%%DOT-20%%PX-00%%CONTINUE%// 6os, Eth
 
 ItemDisplay[NMAG !INF !RW SUP ETH SOCK=0 7p7]:%GRAY%%NAME%%DOT-20%%PX-00%%CONTINUE%// 0os, Superior, Eth
-ItemDisplay[NMAG !INF !RW SUP ETH SOCK=2 7p7]:%GRAY%%NAME%%DOT-20%%PX-00%%CONTINUE%// 2os, Eth
 ItemDisplay[NMAG !INF !RW SUP ETH SOCK=3 7p7]:%GRAY%%NAME%%DOT-20%%PX-00%%CONTINUE%// 3os, Eth
 ItemDisplay[NMAG !INF !RW SUP ETH SOCK=4 7p7]:%GRAY%%NAME%%DOT-20%%PX-00%%CONTINUE%// 4os, Eth
 ItemDisplay[NMAG !INF !RW SUP ETH SOCK=5 7p7]:%GRAY%%NAME%%DOT-20%%PX-00%%CONTINUE%// 5os, Superior, Eth
