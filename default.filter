@@ -26,7 +26,7 @@ ItemDisplay[GOLD<750 CLVL>39]://    Hide 750 gold and less if level 40+
 ItemDisplay[GOLD<1000 CLVL>59]://   Hide 1000 gold and less if level 60+
 ItemDisplay[GOLD<1500 CLVL>79]://   Hide 1500 gold and less if level 80+
 ItemDisplay[GOLD<2000 CLVL>89]://   Hide 2000 gold and less if level 90+
-ItemDisplay[GOLD<3000 CLVL>89 FILTLVL>2]://   Hide 2000 gold and less if level 90+
+ItemDisplay[GOLD<3000 CLVL>89 FILTLVL>2]://   Hide 3000 gold and less if level 90+ on loot filter level 3 or higher
 
 // ================================  Health Potions  =================================
 
@@ -38,15 +38,16 @@ ItemDisplay[hp4 CLVL>29]:{%NL%%WHITE% Greater Healing Potion }//    Hides Greate
 
 // Super Healing Potion
 ItemDisplay[hp5 (FILTLVL=4 OR FILTLVL=5 OR FILTLVL=6)]:{%NL%%WHITE% Super Healing Potion }// On Filter Levels 4 or 5 or 6, hide Super Healing potions
-ItemDisplay[hp5 CLVL>79]:{%WHITE% Super Healing Potion }%RED%i%GRAY%|%RED%( %WHITE%H %RED%)%GRAY%|%RED%i// Character level 80+
-ItemDisplay[hp5 CLVL<80 CLVL>34]:{%WHITE% Super Healing Potion }%RED%i%GRAY%|%RED%|( %WHITE%H %RED%)|%GRAY%|%RED%i// Character levels 35 to 79
+ItemDisplay[hp5 CLVL>89]:%GRAY%i%RED%(%WHITE%H%RED%)%GRAY%i%RED%{%WHITE% Super Healing Potion }// Character level 90+
+ItemDisplay[hp5 CLVL<90 CLVL>79]:%GRAY%i%RED%( %WHITE%H %RED%)%GRAY%i%RED%{%WHITE% Super Healing Potion }// Character levels 80 to 90
+ItemDisplay[hp5 CLVL<80 CLVL>34]:%RED%i%GRAY%|%RED%( %WHITE%H %RED%)%GRAY%|%RED%i{%WHITE% Super Healing Potion }// Character levels 35 to 79
 
 // Display for Healing Potions during levels 1-35
 ItemDisplay[hp1 CLVL<15]:%RED%i( %WHITE%H%GRAY%-%WHITE%1 %RED%)i{%WHITE% Minor Healing Potion }//
 ItemDisplay[hp2 CLVL<20]:%RED%i%GRAY%|%RED%( %WHITE%H%GRAY%-%WHITE%2 %RED%)%GRAY%|%RED%i{%WHITE% Light Healing Potion }//
 ItemDisplay[hp3 CLVL<22]:%RED%i%GRAY%|%RED%( %WHITE%H%GRAY%-%WHITE%3 %RED%)%GRAY%|%RED%i{%WHITE% Mid Healing Potion }//
-ItemDisplay[hp4 CLVL<30]:%RED%i%GRAY%|%RED%|( %WHITE%H%GRAY%-%WHITE%4 %RED%)|%GRAY%|%RED%i{%WHITE% Greater Healing Potion }//
-ItemDisplay[hp5 CLVL<35]:%RED%i%GRAY%|%RED%|( %WHITE%H%GRAY%-%WHITE%5 %RED%)|%GRAY%|%RED%i{%WHITE% Super Healing Potion }//
+ItemDisplay[hp4 CLVL<30]:%RED%i%GRAY%|%RED%( %WHITE%H%GRAY%-%WHITE%4 %RED%)%GRAY%|%RED%i{%WHITE% Greater Healing Potion }//
+ItemDisplay[hp5 CLVL<35]:%RED%i%GRAY%|%RED%( %WHITE%H%GRAY%-%WHITE%5 %RED%)%GRAY%|%RED%i{%WHITE% Super Healing Potion }//
 
 // ==================================  Mana Potions  ====================================
 
@@ -58,24 +59,25 @@ ItemDisplay[mp4 CLVL>29]:{%NL%%WHITE% Greater Mana Potion }//       Hides Greate
 
 // Adjust display of Super Mana Potions based on character level
 ItemDisplay[mp5 (FILTLVL=5 OR FILTLVL=6)]:{%NL%%WHITE% Super Mana Potion }// On Filter Level 5 or 6, hide Super Mana potions
-ItemDisplay[mp5 CLVL>79]:%BLUE%i%GRAY%|%BLUE%(%WHITE% M %BLUE%)%GRAY%|%BLUE%i{%WHITE% Super Mana Potion }// Character level 80+
+ItemDisplay[mp5 CLVL>89]:%GRAY%i%BLUE%(%WHITE%M%BLUE%)%GRAY%i%BLUE%{%WHITE% Super Mana Potion }// Character level 90+
+ItemDisplay[mp5 CLVL<90 CLVL>79]:%GRAY%i%BLUE%(%WHITE% M %BLUE%)%GRAY%i%BLUE%{%WHITE% Super Mana Potion }// Character levels 80 to 90
 ItemDisplay[mp5 CLVL<80 CLVL>34]:%BLUE%i%GRAY%|%BLUE%(%WHITE% M %BLUE%)%GRAY%|%BLUE%i{%WHITE% Super Mana Potion }// Character levels 35 to 79
 
 // Display for Mana Potions during levels 1-35
 ItemDisplay[mp1 CLVL<15]:%BLUE%i( %WHITE%M%GRAY%-%WHITE%1 %BLUE%)i{%WHITE% Minor Mana Potion }//
 ItemDisplay[mp2 CLVL<20]:%BLUE%i%GRAY%|%BLUE%( %WHITE%M%GRAY%-%WHITE%2 %BLUE%)%GRAY%|%BLUE%i{%WHITE% Light Mana Potion }//
 ItemDisplay[mp3 CLVL<22]:%BLUE%i%GRAY%|%BLUE%( %WHITE%M%GRAY%-%WHITE%3 %BLUE%)%GRAY%|%BLUE%i{%WHITE% Mana Potion }//
-ItemDisplay[mp4 CLVL<30]:%BLUE%i%GRAY%|%BLUE%|( %WHITE%M%GRAY%-%WHITE%4 %BLUE%)|%GRAY%|%BLUE%i{%WHITE% Greater Mana Potion }//
-ItemDisplay[mp5 CLVL<35]:%BLUE%i%GRAY%|%BLUE%|( %WHITE%M%GRAY%-%WHITE%5 %BLUE%)|%GRAY%|%BLUE%i{%WHITE% Super Mana Potion }//
+ItemDisplay[mp4 CLVL<30]:%BLUE%i%GRAY%|%BLUE%( %WHITE%M%GRAY%-%WHITE%4 %BLUE%)%GRAY%|%BLUE%i{%WHITE% Greater Mana Potion }//
+ItemDisplay[mp5 CLVL<35]:%BLUE%i%GRAY%|%BLUE%( %WHITE%M%GRAY%-%WHITE%5 %BLUE%)%GRAY%|%BLUE%i{%WHITE% Super Mana Potion }//
 
 // ==================================  Rejuvenation Potions  ================================
 
 ItemDisplay[rvs FILTLVL=6]:{%NL%%WHITE% Rejuvenation Potion }//
-ItemDisplay[rvs CLVL>79]:%PURPLE%* i|(%WHITE% Juv %PURPLE%)|i *//
-ItemDisplay[rvs CLVL<80]:%PURPLE%* i|(%WHITE% Rejuv %PURPLE%)|i *//
+ItemDisplay[rvs CLVL>79]:%PURPLE%* i%GRAY%|%PURPLE%(%WHITE% Juv %PURPLE%)%GRAY%|%PURPLE%i *//
+ItemDisplay[rvs CLVL<80]:%PURPLE%* i%GRAY%|%PURPLE%(%WHITE% Rejuv %PURPLE%)%GRAY%|%PURPLE%i *//
 
-ItemDisplay[rvl CLVL>79]:%PURPLE%* i|(%WHITE% Full %PURPLE%)|i *//
-ItemDisplay[rvl CLVL<80]:%PURPLE%* i|(%WHITE% Full Rejuv %PURPLE%)|i *//
+ItemDisplay[rvl CLVL>79]:%PURPLE%* i%GRAY%|%PURPLE%(%WHITE% Full %PURPLE%)%GRAY%|%PURPLE%i *//
+ItemDisplay[rvl CLVL<80]:%PURPLE%* i%GRAY%|%PURPLE%(%WHITE% Full Rejuv %PURPLE%)%GRAY%|%PURPLE%i *//
 
 // =====================================  Utility Potions  ==================================
 
@@ -558,7 +560,7 @@ ItemDisplay[ubac QTY=1]:%PURPLE%Xx %RED%Xx  %TAN%Sigil of Korlic  %RED%xX %PURPL
 
 // ======================================  Diablo Clone  ===================================
 
-ItemDisplay[dcma]:%BLACK%x%TAN%|%BLACK%X%TAN%||%BLACK%X%TAN%|%BLACK%x  %PURPLE%Xx %RED%Xx %ORANGE%Xx  %TAN%Vision of Terror  %ORANGE%xX %RED%xX %PURPLE%xX  %BLACK%x%TAN%|%BLACK%X%TAN%||%BLACK%X%TAN%|%BLACK%x%BORDER-00%%MAP-9B%%DOT-0A%%PX-20%{%NL%%WHITE%Opens a portal to %RED%Diablo Clone %WHITE%fight%NL%}//Vision of Terror
+ItemDisplay[dcma]:%BLACK%x%TAN%|%BLACK%X%TAN%|%BLACK%X%TAN%|%BLACK%x  %PURPLE%Xx %RED%Xx %ORANGE%Xx  %TAN%Vision of Terror  %ORANGE%xX %RED%xX %PURPLE%xX  %BLACK%x%TAN%|%BLACK%X%TAN%|%BLACK%X%TAN%|%BLACK%x%BORDER-00%%MAP-9B%%DOT-0A%%PX-20%{%NL%%WHITE%Opens a portal to %RED%Diablo Clone %WHITE%fight%NL%}//Vision of Terror
 
 ItemDisplay[dcbl QTY>1]:%BLACK%x%TAN%|%BLACK%X%TAN%|%BLACK%x  %RED%Xx %ORANGE%Xx  %TAN%Pure Demonic Essences %GRAY%x %WHITE%%QTY%  %ORANGE%xX %RED%xX  %BLACK%x%TAN%|%BLACK%X%TAN%|%BLACK%x%BORDER-00%%MAP-0A%%DOT-62%%PX-20%{%NL%%WHITE%for %RED%Diablo Clone's %TAN%Vision of Terror%NL%%TAN%Black Soulstone%WHITE%, %TAN%Prime Evil Soul%NL%%WHITE%Cube %TAN%Pure Demonic Essence%WHITE%,%NL%}//Pure Demonic Essence
 ItemDisplay[dcbl QTY=1]:%BLACK%x%TAN%|%BLACK%X%TAN%|%BLACK%x  %RED%Xx %ORANGE%Xx  %TAN%Pure Demonic Essence  %ORANGE%xX %RED%xX  %BLACK%x%TAN%|%BLACK%X%TAN%|%BLACK%x%BORDER-00%%MAP-0A%%DOT-62%%PX-20%{%NL%%WHITE%for %RED%Diablo Clone's %TAN%Vision of Terror%NL%%TAN%Black Soulstone%WHITE%, %TAN%Prime Evil Soul%NL%%WHITE%Cube %TAN%Pure Demonic Essence%WHITE%,%NL%}//Pure Demonic Essence
@@ -571,19 +573,19 @@ ItemDisplay[dcso QTY=1]:%BLACK%x%TAN%|%BLACK%X%TAN%|%BLACK%X%TAN%|%BLACK%x  %RED
 
 // ======================================  Rathma Items  =======================================
 
-ItemDisplay[rtma]:%BLACK%x%TAN%|%BLACK%X%TAN%||%BLACK%X%TAN%|%BLACK%x  %PURPLE%Xx %RED%Xx %ORANGE%Xx  %BLACK%|| %TAN%Voidstone %BLACK%||  %ORANGE%xX %RED%xX %PURPLE%xX  %BLACK%x%TAN%|%BLACK%X%TAN%||%BLACK%X%TAN%|%BLACK%x%BORDER-00%%MAP-9B%%DOT-0A%%PX-20%{%NL%%TAN%Summons a portal to fight %RED%Rathma%NL%}// Voidstone
+ItemDisplay[rtma]:%BLACK%x%TAN%|%BLACK%X%TAN%|%BLACK%X%TAN%|%BLACK%x  %PURPLE%Xx %RED%Xx %ORANGE%Xx  %BLACK%|| %TAN%Voidstone %BLACK%||  %ORANGE%xX %RED%xX %PURPLE%xX  %BLACK%x%TAN%|%BLACK%X%TAN%|%BLACK%X%TAN%|%BLACK%x%BORDER-00%%MAP-9B%%DOT-0A%%PX-20%{%NL%%TAN%Summons a portal to fight %RED%Rathma%NL%}// Voidstone
 
-ItemDisplay[rtmo QTY>1]:%BLACK%x%TAN%|%BLACK%X%TAN%||%BLACK%X%TAN%|%BLACK%x  %PURPLE%Xx %RED%Xx  %TAN%Trang-Oul's Jawbones %GRAY%x %WHITE%%QTY%  %RED%xX %PURPLE%xX  %BLACK%x%TAN%|%BLACK%X%TAN%||%BLACK%X%TAN%|%BLACK%x%BORDER-00%%MAP-11%%DOT-13%%PX-1E%{%NL%%WHITE%Splinter of the Void %TAN%to create %RED%Rathma %WHITE%Voidstone%NL%%TAN%Cube with a Hellfire Torch and a%NL%}// 
-ItemDisplay[rtmo QTY=1]:%BLACK%x%TAN%|%BLACK%X%TAN%||%BLACK%X%TAN%|%BLACK%x  %PURPLE%Xx %RED%Xx  %TAN%Trang-Oul's Jawbone  %RED%xX %PURPLE%xX  %BLACK%x%TAN%|%BLACK%X%TAN%||%BLACK%X%TAN%|%BLACK%x%BORDER-00%%MAP-11%%DOT-13%%PX-1E%{%NL%%WHITE%Splinter of the Void %TAN%to create %RED%Rathma %WHITE%Voidstone%NL%%TAN%Cube with a Hellfire Torch and a%NL%}// 
+ItemDisplay[rtmo QTY>1]:%BLACK%x%TAN%|%BLACK%X%TAN%|%BLACK%X%TAN%|%BLACK%x  %PURPLE%Xx %RED%Xx  %TAN%Trang-Oul's Jawbones %GRAY%x %WHITE%%QTY%  %RED%xX %PURPLE%xX  %BLACK%x%TAN%|%BLACK%X%TAN%|%BLACK%X%TAN%|%BLACK%x%BORDER-00%%MAP-11%%DOT-13%%PX-1E%{%NL%%WHITE%Splinter of the Void %TAN%to create %RED%Rathma %WHITE%Voidstone%NL%%TAN%Cube with a Hellfire Torch and a%NL%}// 
+ItemDisplay[rtmo QTY=1]:%BLACK%x%TAN%|%BLACK%X%TAN%|%BLACK%X%TAN%|%BLACK%x  %PURPLE%Xx %RED%Xx  %TAN%Trang-Oul's Jawbone  %RED%xX %PURPLE%xX  %BLACK%x%TAN%|%BLACK%X%TAN%|%BLACK%X%TAN%|%BLACK%x%BORDER-00%%MAP-11%%DOT-13%%PX-1E%{%NL%%WHITE%Splinter of the Void %TAN%to create %RED%Rathma %WHITE%Voidstone%NL%%TAN%Cube with a Hellfire Torch and a%NL%}// 
 
-ItemDisplay[rtmv QTY>1]:%BLACK%x%TAN%|%BLACK%X%TAN%||%BLACK%X%TAN%|%BLACK%x  %PURPLE%Xx %RED%Xx  %TAN%Splinters of the Void %GRAY%x %WHITE%%QTY%  %RED%xX %PURPLE%xX  %BLACK%x%TAN%|%BLACK%X%TAN%||%BLACK%X%TAN%|%BLACK%x%BORDER-00%%MAP-11%%DOT-13%%PX-1E%{%NL%%WHITE%Trang Oul's Jawbone %TAN%to create a %WHITE%Voidstone%NL%%TAN%Cube with a Hellfire Torch and a%NL%}// 
-ItemDisplay[rtmv QTY=1]:%BLACK%x%TAN%|%BLACK%X%TAN%||%BLACK%X%TAN%|%BLACK%x  %PURPLE%Xx %RED%Xx  %TAN%Splinter of the Void  %RED%xX %PURPLE%xX  %BLACK%x%TAN%|%BLACK%X%TAN%||%BLACK%X%TAN%|%BLACK%x%BORDER-00%%MAP-11%%DOT-13%%PX-1E%{%NL%%WHITE%Trang Oul's Jawbone %TAN%to create a %RED%Rathma %WHITE%Voidstone%NL%%TAN%Cube with a Hellfire Torch and a%NL%}// 
+ItemDisplay[rtmv QTY>1]:%BLACK%x%TAN%|%BLACK%X%TAN%|%BLACK%X%TAN%|%BLACK%x  %PURPLE%Xx %RED%Xx  %TAN%Splinters of the Void %GRAY%x %WHITE%%QTY%  %RED%xX %PURPLE%xX  %BLACK%x%TAN%|%BLACK%X%TAN%|%BLACK%X%TAN%|%BLACK%x%BORDER-00%%MAP-11%%DOT-13%%PX-1E%{%NL%%WHITE%Trang Oul's Jawbone %TAN%to create a %WHITE%Voidstone%NL%%TAN%Cube with a Hellfire Torch and a%NL%}// 
+ItemDisplay[rtmv QTY=1]:%BLACK%x%TAN%|%BLACK%X%TAN%|%BLACK%X%TAN%|%BLACK%x  %PURPLE%Xx %RED%Xx  %TAN%Splinter of the Void  %RED%xX %PURPLE%xX  %BLACK%x%TAN%|%BLACK%X%TAN%|%BLACK%X%TAN%|%BLACK%x%BORDER-00%%MAP-11%%DOT-13%%PX-1E%{%NL%%WHITE%Trang Oul's Jawbone %TAN%to create a %RED%Rathma %WHITE%Voidstone%NL%%TAN%Cube with a Hellfire Torch and a%NL%}// 
 
-ItemDisplay[rtmf QTY>1]:%BLACK%x%TAN%|%BLACK%X%TAN%||%BLACK%X%TAN%|%BLACK%x  %PURPLE%Xx %RED%Xx  %TAN%Bone Fragments %GRAY%x %WHITE%%QTY%  %RED%xX %PURPLE%xX  %BLACK%x%TAN%|%BLACK%X%TAN%||%BLACK%X%TAN%|%BLACK%x%BORDER-00%%MAP-11%%DOT-13%%PX-1E%{%NL%%TAN%Hellfire Torch to create a %WHITE%Trang-Oul's Jawbone%NL%%TAN%Cube two %WHITE%Bone Fragments %TAN%with a%NL%}//
-ItemDisplay[rtmf QTY=1]:%BLACK%x%TAN%|%BLACK%X%TAN%||%BLACK%X%TAN%|%BLACK%x  %PURPLE%Xx %RED%Xx  %TAN%Ancient Bone Fragments  %RED%xX %PURPLE%xX  %BLACK%x%TAN%|%BLACK%X%TAN%||%BLACK%X%TAN%|%BLACK%x%BORDER-00%%MAP-11%%DOT-13%%PX-1E%{%NL%%TAN%Hellfire Torch to create a %WHITE%Trang-Oul's Jawbone%NL%%TAN%Cube two %WHITE%Bone Fragments %TAN%with a%NL%}//
+ItemDisplay[rtmf QTY>1]:%BLACK%x%TAN%|%BLACK%X%TAN%|%BLACK%X%TAN%|%BLACK%x  %PURPLE%Xx %RED%Xx  %TAN%Bone Fragments %GRAY%x %WHITE%%QTY%  %RED%xX %PURPLE%xX  %BLACK%x%TAN%|%BLACK%X%TAN%|%BLACK%X%TAN%|%BLACK%x%BORDER-00%%MAP-11%%DOT-13%%PX-1E%{%NL%%TAN%Hellfire Torch to create a %WHITE%Trang-Oul's Jawbone%NL%%TAN%Cube two %WHITE%Bone Fragments %TAN%with a%NL%}//
+ItemDisplay[rtmf QTY=1]:%BLACK%x%TAN%|%BLACK%X%TAN%|%BLACK%X%TAN%|%BLACK%x  %PURPLE%Xx %RED%Xx  %TAN%Ancient Bone Fragments  %RED%xX %PURPLE%xX  %BLACK%x%TAN%|%BLACK%X%TAN%|%BLACK%X%TAN%|%BLACK%x%BORDER-00%%MAP-11%%DOT-13%%PX-1E%{%NL%%TAN%Hellfire Torch to create a %WHITE%Trang-Oul's Jawbone%NL%%TAN%Cube two %WHITE%Bone Fragments %TAN%with a%NL%}//
 
-ItemDisplay[cwss QTY>1]:%BLACK%x%TAN%|%BLACK%X%TAN%||%BLACK%X%TAN%|%BLACK%x  %PURPLE%Xx  %RED%Tainted Worldstone Shards %TAN%x %WHITE%%QTY%  %PURPLE%xX  %BLACK%x%TAN%|%BLACK%X%TAN%||%BLACK%X%TAN%|%BLACK%x%BORDER-00%%MAP-11%%DOT-13%%PX-1E%{%TAN%25% chance Exp%NL%25% chance All Res%NL%25% chance Vit/nrg%NL%25% chance +1 Skills%NL%Cube with Annihilus to corrupt:}// Tainted Worldstone Shard
-ItemDisplay[cwss QTY=1]:%BLACK%x%TAN%|%BLACK%X%TAN%||%BLACK%X%TAN%|%BLACK%x  %PURPLE%Xx  %RED%Tainted Worldstone Shard  %PURPLE%xX  %BLACK%x%TAN%|%BLACK%X%TAN%||%BLACK%X%TAN%|%BLACK%x%BORDER-00%%MAP-11%%DOT-13%%PX-1E%{%TAN%25% chance Exp%NL%25% chance All Res%NL%25% chance Vit/nrg%NL%25% chance +1 Skills%NL%Cube with Annihilus to corrupt:}// Tainted Worldstone Shard
+ItemDisplay[cwss QTY>1]:%BLACK%x%TAN%|%BLACK%X%TAN%|%BLACK%X%TAN%|%BLACK%x  %PURPLE%Xx  %RED%Tainted Worldstone Shards %TAN%x %WHITE%%QTY%  %PURPLE%xX  %BLACK%x%TAN%|%BLACK%X%TAN%|%BLACK%X%TAN%|%BLACK%x%BORDER-00%%MAP-11%%DOT-13%%PX-1E%{%TAN%25% chance Exp%NL%25% chance All Res%NL%25% chance Vit/nrg%NL%25% chance +1 Skills%NL%Cube with Annihilus to corrupt:}// Tainted Worldstone Shard
+ItemDisplay[cwss QTY=1]:%BLACK%x%TAN%|%BLACK%X%TAN%|%BLACK%X%TAN%|%BLACK%x  %PURPLE%Xx  %RED%Tainted Worldstone Shard  %PURPLE%xX  %BLACK%x%TAN%|%BLACK%X%TAN%|%BLACK%X%TAN%|%BLACK%x%BORDER-00%%MAP-11%%DOT-13%%PX-1E%{%TAN%25% chance Exp%NL%25% chance All Res%NL%25% chance Vit/nrg%NL%25% chance +1 Skills%NL%Cube with Annihilus to corrupt:}// Tainted Worldstone Shard
 
 // ======================================  Worldstone Shards  ==================================
 
