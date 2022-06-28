@@ -4,9 +4,10 @@
 ItemDisplayFilterName[]:Least Strict//              TIER-1
 ItemDisplayFilterName[]:More Strict//               TIER-2
 ItemDisplayFilterName[]:Most Strict//               TIER-3
-ItemDisplayFilterName[]:No Super H Pots//           TIER-4
-ItemDisplayFilterName[]:No Super H/M Pots//         TIER-5
-ItemDisplayFilterName[]:No Small Rejuv Pots//       TIER-6
+ItemDisplayFilterName[]:Most Strict Alt Pots//      TIER-4
+ItemDisplayFilterName[]:No Super H Pots//           TIER-5
+ItemDisplayFilterName[]:No Super H/M Pots//         TIER-6
+ItemDisplayFilterName[]:No H/M or Small Rejuv//     TIER-7
 
 // ==============================  Arrows and Bolts  ===============================
 
@@ -37,9 +38,9 @@ ItemDisplay[hp3 CLVL>21]:{%NL%%WHITE% Healing Potion }//            Hides Healin
 ItemDisplay[hp4 CLVL>29]:{%NL%%WHITE% Greater Healing Potion }//    Hides Greater Healing Potions after level 29
 
 // Super Healing Potion
-ItemDisplay[hp5 (FILTLVL=4 OR FILTLVL=5 OR FILTLVL=6)]:{%NL%%WHITE% Super Healing Potion }// On Filter Levels 4 or 5 or 6, hide Super Healing potions
-ItemDisplay[hp5 CLVL>89]:%GRAY%i%RED%(O)%GRAY%i%RED%{%WHITE% Super Healing Potion }// Character level 90+
-ItemDisplay[hp5 CLVL<90 CLVL>79]:%GRAY%i%RED%( %WHITE%H %RED%)%GRAY%i%RED%{%WHITE% Super Healing Potion }// Character levels 80 to 90
+ItemDisplay[hp5 (FILTLVL=5 OR FILTLVL=6 OR FILTLVL=7)]:{%NL%%WHITE% Super Healing Potion }// On Filter Levels 5 or 6 or 7, hide Super Healing potions
+ItemDisplay[hp5 FILTLVL=4]:%GRAY%i%RED%(O)%GRAY%i%RED%{%WHITE% Super Healing Potion }// On Filter Level 4, show as i(O)i
+ItemDisplay[hp5 CLVL>79]:%GRAY%i%RED%( %WHITE%H %RED%)%GRAY%i%RED%{%WHITE% Super Healing Potion }// Character levels 80+
 ItemDisplay[hp5 CLVL<80 CLVL>34]:%RED%i%GRAY%|%RED%( %WHITE%H %RED%)%GRAY%|%RED%i{%WHITE% Super Healing Potion }// Character levels 35 to 79
 
 // Display for Healing Potions during levels 1-35
@@ -58,9 +59,9 @@ ItemDisplay[mp3 CLVL>21]:{%NL%%WHITE% Mana Potion }//               Hides Mana P
 ItemDisplay[mp4 CLVL>29]:{%NL%%WHITE% Greater Mana Potion }//       Hides Greater Mana Potions after level 29
 
 // Adjust display of Super Mana Potions based on character level
-ItemDisplay[mp5 (FILTLVL=5 OR FILTLVL=6)]:{%NL%%WHITE% Super Mana Potion }// On Filter Level 5 or 6, hide Super Mana potions
-ItemDisplay[mp5 CLVL>89]:%GRAY%i%BLUE%(O)%GRAY%i%BLUE%{%WHITE% Super Mana Potion }// Character level 90+
-ItemDisplay[mp5 CLVL<90 CLVL>79]:%GRAY%i%BLUE%(%WHITE% M %BLUE%)%GRAY%i%BLUE%{%WHITE% Super Mana Potion }// Character levels 80 to 90
+ItemDisplay[mp5 (FILTLVL=6 OR FILTLVL=7)]:{%NL%%WHITE% Super Mana Potion }// On Filter Level 6 or 7, hide Super Mana potions
+ItemDisplay[mp5 (FILTLVL=4 OR FILTLVL=5)]:%GRAY%i%BLUE%(O)%GRAY%i%BLUE%{%WHITE% Super Mana Potion }// On Filter Level 4 or 5, show as i(O)i
+ItemDisplay[mp5 CLVL>79]:%GRAY%i%BLUE%(%WHITE% M %BLUE%)%GRAY%i%BLUE%{%WHITE% Super Mana Potion }// Character levels 80+
 ItemDisplay[mp5 CLVL<80 CLVL>34]:%BLUE%i%GRAY%|%BLUE%(%WHITE% M %BLUE%)%GRAY%|%BLUE%i{%WHITE% Super Mana Potion }// Character levels 35 to 79
 
 // Display for Mana Potions during levels 1-35
