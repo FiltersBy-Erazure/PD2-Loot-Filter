@@ -1751,13 +1751,16 @@ ItemDisplay[SET !ID amu CLVL>79]:%DARK_GREEN%* %GREEN%>  %GREEN%%NAME%  %GREEN%<
 ItemDisplay[SET !ID amu CLVL<80]:%DARK_GREEN%* %GREEN%>  %NAME%  %GREEN%< %DARK_GREEN%*%GREEN%%BORDER-71%%MAP-76%%DOT-81%%PX-84%//
 
 // Normal Set Items
+ItemDisplay[SET !ID NORM !(crn OR tbl OR tgl OR lbt) FILTLVL>6]://
 ItemDisplay[SET !ID NORM CLVL>59]:%DARK_GREEN%* %GREEN%>  %NAME%  %GREEN%< %DARK_GREEN%*//
 ItemDisplay[SET !ID NORM CLVL<60]:%PURPLE%* %GREEN%>  %NAME%  %GREEN%< %PURPLE%*%GREEN%%BORDER-71%%MAP-76%%DOT-81%%PX-84%//
 
 // Exceptional Set items
+ItemDisplay[SET !ID EXC !(xhm OR xvg OR dr8 OR xtb OR xar OR zvb OR xtg OR xmb OR xsk OR zmb OR oba OR xul OR ne9) FILTLVL>6]://
 ItemDisplay[SET EXC !ID]:%PURPLE%* %GREEN%>  %NAME%  %GREEN%< %PURPLE%*%GREEN%%BORDER-71%%MAP-76%%DOT-81%%PX-84%//
 
 // Elite Set items
+ItemDisplay[SET !ID ELT !(ulg OR uhm OR uts OR urn OR paf OR uar OR ci3 OR uld OR amc OR ucl OR uth OR uh9 OR utc) FILTLVL>6]://
 ItemDisplay[SET ELT !ID]:%PURPLE%* %GREEN%>  %NAME%  %GREEN%< %PURPLE%*%GREEN%%BORDER-71%%MAP-76%%DOT-81%%PX-84%//
 
 // =========================================== Rare Items ==========================================
@@ -3362,7 +3365,6 @@ ItemDisplay[NMAG !INF !SOCK=1 !RW RES=30 DIN]:%NAME%%DOT-20%%PX-00% %ORANGE%+30 
 //Show me exactly +SKILLS values on NMAG items
 
 // Add +skills tag to Amazon bows
-
 ItemDisplay[NMAG !RW TABSK0=1]:%TAN%+1%DARK_GREEN% Bow Skill %GRAY%%NAME%{%NAME%}%CONTINUE%
 ItemDisplay[NMAG !RW TABSK0=2]:%TAN%+2%DARK_GREEN% Bow Skill %GRAY%%NAME%{%NAME%}%CONTINUE%
 ItemDisplay[NMAG !RW TABSK0=3]:%TAN%+3%DARK_GREEN% Bow Skill %GRAY%%NAME%{%NAME%}%CONTINUE%
@@ -4670,7 +4672,7 @@ ItemDisplay[NMAG !INF !RW ELT SHIELD !uit !ush !uow !uts !DIN !NEC !(MAPID=1 OR 
 //      Monarch
 ItemDisplay[NMAG !INF !RW ETH uit !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide eth monarchs
 
-ItemDisplay[NMAG !INF !RW !ETH !SUP SOCK=0 uit CLVL>85]:%NAME%// Hide nonsuperior 0os shields after level 85
+ItemDisplay[NMAG !INF !RW !SUP SOCK=0 uit CLVL>85 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide nonsuperior 0os Monarch after level 85
 ItemDisplay[NMAG !INF !RW !ETH !SUP SOCK=0 uit CLVL<86]:%NAME%%DOT-20%%PX-00%%CONTINUE%// Show nonsuperior 0os shields before level 86
 
 ItemDisplay[NMAG !INF !RW !ETH SOCK=4 uit]:%GRAY%%NAME%%DOT-20%%PX-00%%CONTINUE%// Show 4os Aegis
@@ -4689,6 +4691,7 @@ ItemDisplay[NMAG !INF !RW (SOCK=2 OR SOCK=3) uts !(MAPID=1 OR MAPID=40 OR MAPID=
 ItemDisplay[NMAG !INF !RW ED>4 ETH SUP (SOCK=0 OR SOCK=4) uts]:%GRAY%%NAME% %ORANGE%Exile Base%GRAY%%DOT-20%%PX-00%%CONTINUE%// Superior, 0os or 4os
 
 //      Troll Nest
+ItemDisplay[NMAG !INF !RW !SUP SOCK=0 ush CLVL>85 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide nonsuperior 0os Troll Nest after level 85
 ItemDisplay[NMAG !INF !RW !ETH SOCK=3 ush]:%GRAY%%NAME%%CONTINUE%// 3os
 ItemDisplay[NMAG !INF !RW SUP !ETH SOCK=3 ush]:%GRAY%%NAME%%CONTINUE%// Superior, 3os
 
