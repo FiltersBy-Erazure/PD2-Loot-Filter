@@ -7,8 +7,9 @@ ItemDisplayFilterName[]: Most Strict//                  TIER-3
 ItemDisplayFilterName[]: Most Strict - Alt Potions//    TIER-4
 ItemDisplayFilterName[]: Hide H5 Potions//              TIER-5
 ItemDisplayFilterName[]: Hide H5 M5 Potions//           TIER-6
-ItemDisplayFilterName[]: Hide H5 M5, Map Clutter//      TIER-7
-ItemDisplayFilterName[]: Hide H5 M5 Juv, Map Clutter//  TIER-8
+ItemDisplayFilterName[]: Hide H5, Map Clutter//         TIER-7
+ItemDisplayFilterName[]: Hide H5 M5, Map Clutter//      TIER-8
+ItemDisplayFilterName[]: Hide H5 M5 Juv, Map Clutter//  TIER-9
 
 // ==============================  Arrows and Bolts  ===============================
 
@@ -61,8 +62,8 @@ ItemDisplay[mp3 CLVL>21]:{%NL%%WHITE% Mana Potion }//               Hides Mana P
 ItemDisplay[mp4 CLVL>29]:{%NL%%WHITE% Greater Mana Potion }//       Hides Greater Mana Potions after level 29
 
 // Adjust display of Super Mana Potions based on character level
-ItemDisplay[mp5 FILTLVL>5]:{%NL%%WHITE% Super Mana Potion }// On Filter Level 6 or 7, hide Super Mana potions
-ItemDisplay[mp5 (FILTLVL=4 OR FILTLVL=5)]:%GRAY%i%BLUE%(O)%GRAY%i%BLUE%{%WHITE% Super Mana Potion }// On Filter Level 4 or 5, show as i(O)i
+ItemDisplay[mp5 (FILTLVL=6 OR FILTLVL=8 OR FILTLVL=9)]:{%NL%%WHITE% Super Mana Potion }// On Filter Level 6 or 7, hide Super Mana potions
+ItemDisplay[mp5 (FILTLVL=4 OR FILTLVL=5 OR FILTLVL=7)]:%GRAY%i%BLUE%(O)%GRAY%i%BLUE%{%WHITE% Super Mana Potion }// On Filter Level 4 or 5, show as i(O)i
 ItemDisplay[mp5 CLVL>79]:%GRAY%i%BLUE%(%WHITE% M %BLUE%)%GRAY%i%BLUE%{%WHITE% Super Mana Potion }// Character levels 80+
 ItemDisplay[mp5 CLVL<80 CLVL>34]:%BLUE%i%GRAY%|%BLUE%(%WHITE% M %BLUE%)%GRAY%|%BLUE%i{%WHITE% Super Mana Potion }// Character levels 35 to 79
 
@@ -75,7 +76,7 @@ ItemDisplay[mp5 CLVL<35]:%BLUE%i%GRAY%|%BLUE%( %WHITE%M%GRAY%-%WHITE%5 %BLUE%)%G
 
 // ==================================  Rejuvenation Potions  ================================
 
-ItemDisplay[rvs FILTLVL>7]:{%NL%%WHITE% Rejuvenation Potion }//
+ItemDisplay[rvs FILTLVL>8]:{%NL%%WHITE% Rejuvenation Potion }//
 ItemDisplay[rvs CLVL>79]:%PURPLE%* i|(%WHITE% Juv %PURPLE%)|i *//
 ItemDisplay[rvs CLVL<80]:%PURPLE%* i|(%WHITE% Rejuv %PURPLE%)|i *//
 
@@ -4738,8 +4739,6 @@ ItemDisplay[NMAG !INF !RW EXC BOW !ZON CLVL>79 !(MAPID=1 OR MAPID=40 OR MAPID=75
 
 //  Blade Bow and Great Bows
 ItemDisplay[NMAG !INF !RW ELT BOW !ZON !(6hb OR 6cb) CLVL<90 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
-ItemDisplay[NMAG !INF !RW (6hb OR 6cb) (SOCK=0 OR SOCK=3) CLVL<90 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
-ItemDisplay[NMAG !INF !RW (6hb OR 6cb) CLVL<90]:%NAME%%CONTINUE%//
 //  Hide other Elite tiers
 ItemDisplay[NMAG !INF !RW ELT BOW !ZON CLVL>89 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
@@ -5136,7 +5135,7 @@ ItemDisplay[CHEST SOCK=4 NMAG !RW]:%NAME%{%GRAY%Chains of Honor %WHITE%* %GRAY%F
 ItemDisplay[(HELM OR CIRC) SOCK=2 NMAG !RW]:%NAME%{%GRAY%Lore %WHITE%* %GRAY%Nadir%NL%%TAN%Possible Runewords:}%CONTINUE%
 ItemDisplay[(HELM OR CIRC) SOCK=3 NMAG !RW]:%NAME%{%GRAY%Dream %WHITE%* %GRAY%Delirium %WHITE%* %GRAY%Flickering Flame%NL%Wisdom %WHITE%* %GRAY%Ferocity %WHITE%* %GRAY%Radiance%NL%%TAN%Possible Runewords:}%CONTINUE%
 ItemDisplay[SHIELD SOCK=2 NMAG !RW]:%NAME%{%GRAY%Rhyme %WHITE%* %GRAY%Splendor%NL%%TAN%Possible Runewords:}%CONTINUE%
-ItemDisplay[SHIELD SOCK=3 NMAG !RW]:%NAME%{%GRAY%Pledge %WHITE%* %GRAY%Dragon %WHITE%* %GRAY%Dream %WHITE%* %GRAY%Sanctuary %WHITE%* %GRAY%Ancient's%NL%%TAN%Possible Runewords:}%CONTINUE%
+ItemDisplay[SHIELD SOCK=3 NMAG !RW]:%NAME%{%GRAY%Ancient's Pledge %WHITE%* %GRAY%Dragon%NL%Sanctuary %WHITE%* %GRAY%Dream%NL%%TAN%Possible Runewords:}%CONTINUE%
 ItemDisplay[SHIELD SOCK=4 NMAG !RW]:%NAME%{%GRAY%Exile %WHITE%* %GRAY%Phoenix %WHITE%* %GRAY%Spirit%NL%%TAN%Possible Runewords:}%CONTINUE%
 //Weapons 2soc
 ItemDisplay[WEAPON !(BOW OR XBOW OR leg) SOCK=2 NMAG !RW]: %NAME%{%GRAY%Strength, Wind%NL%%TAN%Note%WHITE%: Possible RuneWords:}%CONTINUE%
