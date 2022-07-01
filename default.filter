@@ -2503,7 +2503,7 @@ ItemDisplay[MAG !ID ETH (am5 OR ama OR amf)]:%BLUE%%NAME% %ORANGE%[C]%BLUE%%BORD
 // 				   Amazon Bows
 ItemDisplay[MAG !ID (am1 OR am2) CLVL>39]:// Hides magic Reflex Bows after character level 39
 ItemDisplay[MAG !ID (am6 OR am7) CLVL>79 FILTLVL>1]:// Hides magic Ceremonial Bows after character level 79
-ItemDisplay[MAG !ID (amb OR amc) CLVL>89 FILTLVL>2]:// Hides magic Grand Matron Bows after character level 89
+//ItemDisplay[MAG !ID (amb OR amc) CLVL>89 FILTLVL>2]:// Hides magic Grand Matron Bows after character level 89
 
 ItemDisplay[MAG !ID (aqv OR cqv) CLVL>15]:// 
 ItemDisplay[MAG !ID (aqv OR cqv) CLVL<16]:%BLUE%%NAME%{%NAME%}%CONTINUE%// 
@@ -2658,7 +2658,7 @@ ItemDisplay[MAG ELT !ID !NEC !DIN SHIELD CLVL>89 FILTLVL>2]://
 // ------------------------------------------------------------------------------
 
 // All Axes
-ItemDisplay[MAG NORM !ID !ETH AXE !THROWING CLVL>39]://
+ItemDisplay[MAG NORM !ID AXE !THROWING CLVL>39]://
 ItemDisplay[MAG EXC !ID !ETH AXE !THROWING CLVL>79 FILTLVL>1]://
 ItemDisplay[MAG ELT !ID !ETH AXE !THROWING CLVL>89 FILTLVL>2]://
 
@@ -2667,9 +2667,9 @@ ItemDisplay[MAG ELT !ID !ETH AXE !THROWING CLVL>89 FILTLVL>2]://
 // ------------------------------------------------------------------------------
 
 // All Bows
-ItemDisplay[MAG NORM !ID BOW !(lwb OR lbb) CLVL>39]://
-ItemDisplay[MAG EXC !ID BOW !(8lw OR 8l8) CLVL>79 FILTLVL>1]://
-ItemDisplay[MAG ELT !ID BOW !(6lw OR 6l7) CLVL>89 FILTLVL>2]://
+ItemDisplay[MAG NORM !ID BOW !ZON !(lwb OR lbb) CLVL>39]://
+ItemDisplay[MAG EXC !ID BOW !ZON !(8lw OR 8l8) CLVL>79 FILTLVL>1]://
+ItemDisplay[MAG ELT !ID BOW !ZON !(6lw OR 6l7) CLVL>89 FILTLVL>2]://
 
 // ------------------------------------------------------------------------------
 //     				              Crossbows
@@ -2703,9 +2703,7 @@ ItemDisplay[MAG ELT !ETH !ID SPEAR THROWING !ZON CLVL>89 FILTLVL>2]://
 // ------------------------------------------------------------------------------
 
 // All magic Maces
-ItemDisplay[MAG ETH (gma OR 9gm OR 7gm) !ID]:%NAME%{%NAME%}%CONTINUE%//
-
-ItemDisplay[MAG NORM !ETH !ID MACE !(clb OR spc) CLVL>39]://
+ItemDisplay[MAG NORM !ID MACE !(clb OR spc) CLVL>39]://
 ItemDisplay[MAG EXC !ETH !ID MACE !(9cl OR 9sp) CLVL>79 FILTLVL>1]://
 ItemDisplay[MAG ELT !ETH !ID MACE !(7cl OR 7sp) CLVL>89 FILTLVL>2]://
 
@@ -2713,15 +2711,15 @@ ItemDisplay[MAG ELT !ETH !ID MACE !(7cl OR 7sp) CLVL>89 FILTLVL>2]://
 //     				             Polearms
 // ------------------------------------------------------------------------------
 // All magic Polearms
-ItemDisplay[MAG NORM !ETH !ID POLEARM CLVL>39]://
+ItemDisplay[MAG NORM !ID POLEARM CLVL>39]://
 ItemDisplay[MAG EXC !ETH !ID POLEARM CLVL>79 FILTLVL>1]://
 ItemDisplay[MAG ELT !ETH !ID POLEARM CLVL>89 FILTLVL>2]://
 
 // ------------------------------------------------------------------------------
 //     				             Spears
 // ------------------------------------------------------------------------------
-// Hide All magic Spears
-ItemDisplay[MAG NORM !ID SPEAR !ETH !THROWING CLVL>39]://
+// All magic Spears
+ItemDisplay[MAG NORM !ID SPEAR !THROWING CLVL>39]://
 ItemDisplay[MAG EXC !ID SPEAR !ETH !THROWING CLVL>79 FILTLVL>1]://
 ItemDisplay[MAG ELT !ID SPEAR !ETH !THROWING CLVL>89 FILTLVL>2]://
 
@@ -2769,22 +2767,22 @@ ItemDisplay[!SHOP (SOCK>0 OR am5 OR ama OR amf OR tkf OR tax OR bkf OR bal OR 9t
 ItemDisplay[!SHOP SOCK>0 (BOW OR XBOW) MAG ID (((CLVL>31 AND CLVL<52) AND (ILVL>31 AND ILVL<52)) OR ((CLVL>51 AND CLVL<72) AND (ILVL>51 AND ILVL<72)) OR (CLVL>71 AND ILVL>71))]:%NAME%%BLUE%{%YELLOW% MF: O %TAN%+ %WHITE%Shael  %GRAY%Vamp: O %TAN%+ %WHITE%Shael%NL%  %BLUE%HP: O %TAN%+ %WHITE%Tir  %DARK_GREEN%Safety: O %TAN%+ %WHITE%Sol%NL%%RED%Blood: O %TAN%+ %WHITE%Ort  %PURPLE%Caster: O %TAN%+ %WHITE%Tir %NL%%ORANGE%Crafting: %BLUE%This Item %TAN%+ %BLUE%Jewel %TAN%+ }%CONTINUE%//
 
 //Notes for upgrading
-ItemDisplay[ARMOR NORM RARE ID]:%NAME%{%YELLOW%This Item %TAN%+ %WHITE%Ral %TAN%+ %WHITE%Thul %TAN%+ %ORANGE%Perfect %PURPLE%O%NL%%TAN%Note%WHITE%: Upgrading Recipe:}%CONTINUE%
-ItemDisplay[ARMOR EXC RARE ID]:%NAME%{%YELLOW%This Item %TAN%+ %WHITE%Ko %TAN%+ %WHITE%Pul %TAN%+ %ORANGE%Perfect %PURPLE%O%NL%%TAN%Note%WHITE%: Upgrading Recipe:}%CONTINUE%
-ItemDisplay[WEAPON NORM RARE ID]:%NAME%{%YELLOW%This Item %TAN%+ %WHITE%Ort %TAN%+ %WHITE%Amn %TAN%+ %ORANGE%Perfect %BLUE%O%NL%%TAN%Note%WHITE%: Upgrading Recipe:}%CONTINUE%
-ItemDisplay[WEAPON EXC RARE ID]:%NAME%{%YELLOW%This Item %TAN%+ %WHITE%Fal %TAN%+ %WHITE%Um %TAN%+ %ORANGE%Perfect %BLUE%O%NL%%TAN%Note%WHITE%: Upgrading Recipe:}%CONTINUE%
-ItemDisplay[ARMOR NORM CRAFT ID]:%NAME%{%ORANGE%This Item %TAN%+ %WHITE%Ral %TAN%+ %WHITE%Thul %TAN%+ %ORANGE%Perfect %PURPLE%O%NL%%TAN%Note%WHITE%: Upgrading Recipe:}%CONTINUE%
-ItemDisplay[ARMOR EXC CRAFT ID]:%NAME%{%ORANGE%This Item %TAN%+ %WHITE%Ko %TAN%+ %WHITE%Pul %TAN%+ %ORANGE%Perfect %PURPLE%O%NL%%TAN%Note%WHITE%: Upgrading Recipe:}%CONTINUE%
-ItemDisplay[WEAPON NORM CRAFT ID]:%NAME%{%ORANGE%This Item %TAN%+ %WHITE%Ort %TAN%+ %WHITE%Amn %TAN%+ %ORANGE%Perfect %BLUE%O%NL%%TAN%Note%WHITE%: Upgrading Recipe:}%CONTINUE%
-ItemDisplay[WEAPON EXC CRAFT ID]:%NAME%{%ORANGE%This Item %TAN%+ %WHITE%Fal %TAN%+ %WHITE%Um %TAN%+ %ORANGE%Perfect %BLUE%O%NL%%TAN%Note%WHITE%: Upgrading Recipe:}%CONTINUE%
-ItemDisplay[ARMOR NORM UNI ID]:%NAME%{%GOLD%This Item %TAN%+ %WHITE%Tal %TAN%+ %WHITE%Shael %TAN%+ %ORANGE%Perfect %WHITE%O%NL%%TAN%Note%WHITE%: Upgrading Recipe:}%CONTINUE%
-ItemDisplay[ARMOR EXC UNI ID]:%NAME%{%GOLD%This Item %TAN%+ %WHITE%Lem %TAN%+ %WHITE%Ko %TAN%+ %ORANGE%Perfect %WHITE%O%NL%%TAN%Note%WHITE%: Upgrading Recipe:}%CONTINUE%
-ItemDisplay[WEAPON NORM UNI ID]:%NAME%{%GOLD%This Item %TAN%+ %WHITE%Ral %TAN%+ %WHITE%Sol %TAN%+ %ORANGE%Perfect %DARK_GREEN%O%NL%%TAN%Note%WHITE%: Upgrading Recipe:}%CONTINUE%
-ItemDisplay[WEAPON EXC UNI ID]:%NAME%{%GOLD%This Item %TAN%+ %WHITE%Lum %TAN%+ %WHITE%Pul %TAN%+ %ORANGE%Perfect %DARK_GREEN%O%NL%%TAN%Note%WHITE%: Upgrading Recipe:}%CONTINUE%
-ItemDisplay[ARMOR NORM SET ID]:%NAME%{%GREEN%This Item %TAN%+ %WHITE%Tal %TAN%+ %WHITE%Shael %TAN%+ %ORANGE%Perfect %WHITE%O%NL%%TAN%Note%WHITE%: Upgrading Recipe:}%CONTINUE%
-ItemDisplay[ARMOR EXC SET ID]:%NAME%{%GREEN%This Item %TAN%+ %WHITE%Lem %TAN%+ %WHITE%Ko %TAN%+ %ORANGE%Perfect %WHITE%O%NL%%TAN%Note%WHITE%: Upgrading Recipe:}%CONTINUE%
-ItemDisplay[WEAPON NORM SET ID]:%NAME%{%GREEN%This Item %TAN%+ %WHITE%Ral %TAN%+ %WHITE%Sol %TAN%+ %ORANGE%Perfect %DARK_GREEN%O%NL%%TAN%Note%WHITE%: Upgrading Recipe:}%CONTINUE%
-ItemDisplay[WEAPON EXC SET ID]:%NAME%{%GREEN%This Item %TAN%+ %WHITE%Lum %TAN%+ %WHITE%Pul %TAN%+ %ORANGE%Perfect %DARK_GREEN%O%NL%%TAN%Note%WHITE%: Upgrading Recipe:}%CONTINUE%
+ItemDisplay[ARMOR NORM RARE ID]:%NAME%{%YELLOW%This Item %TAN%+ %WHITE%Ral %TAN%+ %WHITE%Thul %TAN%+ %ORANGE%Perf %WHITE%Amethyst %PURPLE%O%NL%%TAN%Note%WHITE%: Upgrading Recipe:}%CONTINUE%
+ItemDisplay[ARMOR EXC RARE ID]:%NAME%{%YELLOW%This Item %TAN%+ %WHITE%Ko %TAN%+ %WHITE%Pul %TAN%+ %ORANGE%Perf %WHITE%Amethyst %PURPLE%O%NL%%TAN%Note%WHITE%: Upgrading Recipe:}%CONTINUE%
+ItemDisplay[WEAPON NORM RARE ID]:%NAME%{%YELLOW%This Item %TAN%+ %WHITE%Ort %TAN%+ %WHITE%Amn %TAN%+ %ORANGE%Perf %WHITE%Sapphire %BLUE%O%NL%%TAN%Note%WHITE%: Upgrading Recipe:}%CONTINUE%
+ItemDisplay[WEAPON EXC RARE ID]:%NAME%{%YELLOW%This Item %TAN%+ %WHITE%Fal %TAN%+ %WHITE%Um %TAN%+ %ORANGE%Perf %WHITE%Sapphire %BLUE%O%NL%%TAN%Note%WHITE%: Upgrading Recipe:}%CONTINUE%
+ItemDisplay[ARMOR NORM CRAFT ID]:%NAME%{%ORANGE%This Item %TAN%+ %WHITE%Ral %TAN%+ %WHITE%Thul %TAN%+ %ORANGE%Perf %WHITE%Amethyst %PURPLE%O%NL%%TAN%Note%WHITE%: Upgrading Recipe:}%CONTINUE%
+ItemDisplay[ARMOR EXC CRAFT ID]:%NAME%{%ORANGE%This Item %TAN%+ %WHITE%Ko %TAN%+ %WHITE%Pul %TAN%+ %ORANGE%Perf %WHITE%Amethyst %PURPLE%O%NL%%TAN%Note%WHITE%: Upgrading Recipe:}%CONTINUE%
+ItemDisplay[WEAPON NORM CRAFT ID]:%NAME%{%ORANGE%This Item %TAN%+ %WHITE%Ort %TAN%+ %WHITE%Amn %TAN%+ %ORANGE%Perf %WHITE%Sapphire %BLUE%O%NL%%TAN%Note%WHITE%: Upgrading Recipe:}%CONTINUE%
+ItemDisplay[WEAPON EXC CRAFT ID]:%NAME%{%ORANGE%This Item %TAN%+ %WHITE%Fal %TAN%+ %WHITE%Um %TAN%+ %ORANGE%Perf %WHITE%Sapphire %BLUE%O%NL%%TAN%Note%WHITE%: Upgrading Recipe:}%CONTINUE%
+ItemDisplay[ARMOR NORM UNI ID]:%NAME%{%GOLD%This Item %TAN%+ %WHITE%Tal %TAN%+ %WHITE%Shael %TAN%+ %ORANGE%Perf %WHITE%Diamond O%NL%%TAN%Note%WHITE%: Upgrading Recipe:}%CONTINUE%
+ItemDisplay[ARMOR EXC UNI ID]:%NAME%{%GOLD%This Item %TAN%+ %WHITE%Lem %TAN%+ %WHITE%Ko %TAN%+ %ORANGE%Perf %WHITE%Diamond O%NL%%TAN%Note%WHITE%: Upgrading Recipe:}%CONTINUE%
+ItemDisplay[WEAPON NORM UNI ID]:%NAME%{%GOLD%This Item %TAN%+ %WHITE%Ral %TAN%+ %WHITE%Sol %TAN%+ %ORANGE%Perf %WHITE%Emerald %DARK_GREEN%O%NL%%TAN%Note%WHITE%: Upgrading Recipe:}%CONTINUE%
+ItemDisplay[WEAPON EXC UNI ID]:%NAME%{%GOLD%This Item %TAN%+ %WHITE%Lum %TAN%+ %WHITE%Pul %TAN%+ %ORANGE%Perf %WHITE%Emerald %DARK_GREEN%O%NL%%TAN%Note%WHITE%: Upgrading Recipe:}%CONTINUE%
+ItemDisplay[ARMOR NORM SET ID]:%NAME%{%GREEN%This Item %TAN%+ %WHITE%Tal %TAN%+ %WHITE%Shael %TAN%+ %ORANGE%Perf %WHITE%Diamond O%NL%%TAN%Note%WHITE%: Upgrading Recipe:}%CONTINUE%
+ItemDisplay[ARMOR EXC SET ID]:%NAME%{%GREEN%This Item %TAN%+ %WHITE%Lem %TAN%+ %WHITE%Ko %TAN%+ %ORANGE%Perf %WHITE%Diamond O%NL%%TAN%Note%WHITE%: Upgrading Recipe:}%CONTINUE%
+ItemDisplay[WEAPON NORM SET ID]:%NAME%{%GREEN%This Item %TAN%+ %WHITE%Ral %TAN%+ %WHITE%Sol %TAN%+ %ORANGE%Perf %WHITE%Emerald %DARK_GREEN%O%NL%%TAN%Note%WHITE%: Upgrading Recipe:}%CONTINUE%
+ItemDisplay[WEAPON EXC SET ID]:%NAME%{%GREEN%This Item %TAN%+ %WHITE%Lum %TAN%+ %WHITE%Pul %TAN%+ %ORANGE%Perf %WHITE%Emerald %DARK_GREEN%O%NL%%TAN%Note%WHITE%: Upgrading Recipe:}%CONTINUE%
 
 
 // ----------------------------------------------------------------------
@@ -4518,7 +4516,7 @@ ItemDisplay[NMAG 6ws (SK44>2 OR SK59>2 OR SK64>2 OR SK65>2 OR SK369>2) SOCK=5 !I
 ItemDisplay[NMAG !INF !RW STAFF CLVL>9 !(SK36>0 OR SK37>0 OR SK38>0 OR SK39>0 OR SK40>0 OR SK41>0 OR SK42>0 OR SK43>0 OR SK44>0 OR SK45>0 OR SK46>0 OR SK47>0 OR SK48>0 OR SK49>0 OR SK50>0 OR SK51>0 OR SK52>0 OR SK53>0 OR SK54>0 OR SK55>0 OR SK56>0 OR SK57>0 OR SK58>0 OR SK59>0 OR SK60>0 OR SK61>0 OR SK62>0 OR SK63>0 OR SK64>0 OR SK65>0 OR SK369>0 OR SK383>0) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// 
 
 // Hide nonsuperior noneth 0 socket armors after filter level 6
-ItemDisplay[NMAG !INF !RW !SUP CHEST FILTLVL>6]://
+ItemDisplay[NMAG !INF !RW (!SUP OR (SUP ED<5)) CHEST FILTLVL>6]://
 
 // Normal tier
 ItemDisplay[NMAG !INF !RW NORM SOCK=0 CHEST !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide All NMAG Normal tier 0 socket Armors
