@@ -27,52 +27,68 @@ ItemDisplay[GOLD<250 CLVL>24]://    Hide 300 gold and less if level 25+
 ItemDisplay[GOLD<500 CLVL>29]://    Hide 500 gold and less if level 30+
 ItemDisplay[GOLD<750 CLVL>39]://    Hide 750 gold and less if level 40+
 ItemDisplay[GOLD<1000 CLVL>59]://   Hide 1000 gold and less if level 60+
-ItemDisplay[GOLD<1500 CLVL>79]://   Hide 1500 gold and less if level 80+
-ItemDisplay[GOLD<2000 CLVL>89]://   Hide 2000 gold and less if level 90+
-ItemDisplay[GOLD<3000 CLVL>89 FILTLVL>2]://   Hide 3000 gold and less if level 90+ on loot filter level 3 or higher
-ItemDisplay[GOLD<5000 CLVL>89 FILTLVL>6]://   Hide 5000 gold and less if level 90+ on loot filter level 7 or higher
+ItemDisplay[GOLD<1250 CLVL>69]://   Hide 1250 gold and less if level 70+
+
+ItemDisplay[GOLD<1500 CLVL>79 FILTLVL<3]://   Hide 1500 gold and less if level 80+ on loot filter level 2 or lower
+ItemDisplay[GOLD<1750 CLVL>84 FILTLVL<3]://   Hide 1750 gold and less if level 85+ on loot filter level 2 or lower
+ItemDisplay[GOLD<2000 CLVL>89 FILTLVL<3]://   Hide 2000 gold and less if level 90+ on loot filter level 2 or lower
+ItemDisplay[GOLD<2500 CLVL>94 FILTLVL<3]://   Hide 2500 gold and less if level 95+ on loot filter level 2 or lower
+
+ItemDisplay[GOLD<2000 CLVL>79 FILTLVL<7 FILTLVL>2]://   Hide 2000 gold and less if level 80+, loot filter levels 3-6
+ItemDisplay[GOLD<2500 CLVL>84 FILTLVL<7 FILTLVL>2]://   Hide 2500 gold and less if level 85+, loot filter levels 3-6
+ItemDisplay[GOLD<3000 CLVL>89 FILTLVL<7 FILTLVL>2]://   Hide 3000 gold and less if level 90+, loot filter levels 3-6
+ItemDisplay[GOLD<4000 CLVL>94 FILTLVL<7 FILTLVL>2]://   Hide 4000 gold and less if level 95+, loot filter levels 3-6
+
+ItemDisplay[GOLD<2000 CLVL>79 FILTLVL>6]://   Hide 2000 gold and less if level 80+ on loot filter level 7 or higher
+ItemDisplay[GOLD<3000 CLVL>84 FILTLVL>6]://   Hide 3000 gold and less if level 85+ on loot filter level 7 or higher
+ItemDisplay[GOLD<4000 CLVL>89 FILTLVL>6]://   Hide 4000 gold and less if level 90+ on loot filter level 7 or higher
+ItemDisplay[GOLD<6000 CLVL>94 FILTLVL>6]://   Hide 6000 gold and less if level 95+ on loot filter level 7 or higher
 
 // ================================  Health Potions  =================================
 
 // Hide lower quality potions based on character level
 ItemDisplay[hp1 CLVL>14]:{%NL%%WHITE% Minor Healing Potion }//      Hides Minor Heal Potions after level 11
 ItemDisplay[hp2 CLVL>19]:{%NL%%WHITE% Light Healing Potion }//      Hides Light Heal Potions after level 19
-ItemDisplay[hp3 CLVL>21]:{%NL%%WHITE% Healing Potion }//            Hides Healing Potions after level 22
+ItemDisplay[hp3 CLVL>24]:{%NL%%WHITE% Healing Potion }//            Hides Healing Potions after level 22
 ItemDisplay[hp4 CLVL>29]:{%NL%%WHITE% Greater Healing Potion }//    Hides Greater Healing Potions after level 29
-
-// Super Healing Potion
-ItemDisplay[hp5 FILTLVL>4]:{%NL%%WHITE% Super Healing Potion }// On Filter Levels 5 or higher, hide Super Healing potions
-ItemDisplay[hp5 FILTLVL=4]:%GRAY%i%RED%(O)%GRAY%i%RED%{%WHITE% Super Healing Potion }// On Filter Level 4, show as i(O)i
-ItemDisplay[hp5 CLVL>79]:%GRAY%i%RED%( %WHITE%H %RED%)%GRAY%i%RED%{%WHITE% Super Healing Potion }// Character levels 80+
-ItemDisplay[hp5 CLVL<80 CLVL>34]:%RED%i%GRAY%|%RED%( %WHITE%H %RED%)%GRAY%|%RED%i{%WHITE% Super Healing Potion }// Character levels 35 to 79
 
 // Display for Healing Potions during levels 1-35
 ItemDisplay[hp1 CLVL<15]:%RED%i( %WHITE%H%GRAY%-%WHITE%1 %RED%)i{%WHITE% Minor Healing Potion }//
 ItemDisplay[hp2 CLVL<20]:%RED%i%GRAY%|%RED%( %WHITE%H%GRAY%-%WHITE%2 %RED%)%GRAY%|%RED%i{%WHITE% Light Healing Potion }//
-ItemDisplay[hp3 CLVL<22]:%RED%i%GRAY%|%RED%( %WHITE%H%GRAY%-%WHITE%3 %RED%)%GRAY%|%RED%i{%WHITE% Mid Healing Potion }//
+ItemDisplay[hp3 CLVL<25]:%RED%i%GRAY%|%RED%( %WHITE%H%GRAY%-%WHITE%3 %RED%)%GRAY%|%RED%i{%WHITE% Mid Healing Potion }//
 ItemDisplay[hp4 CLVL<30]:%RED%i%GRAY%|%RED%( %WHITE%H%GRAY%-%WHITE%4 %RED%)%GRAY%|%RED%i{%WHITE% Greater Healing Potion }//
+
+// Super Healing Potion
 ItemDisplay[hp5 CLVL<35]:%RED%i%GRAY%|%RED%( %WHITE%H%GRAY%-%WHITE%5 %RED%)%GRAY%|%RED%i{%WHITE% Super Healing Potion }//
+ItemDisplay[hp5 CLVL<80 CLVL>34]:%RED%i%GRAY%|%RED%( %WHITE%H %RED%)%GRAY%|%RED%i{%WHITE% Super Healing Potion }// Character levels 35 to 79
+ItemDisplay[hp5 CLVL>79 FILTLVL<4]:%GRAY%i%RED%( %WHITE%H %RED%)%GRAY%i%RED%{%WHITE% Super Healing Potion }// Character levels 80+
+
+ItemDisplay[hp5 CLVL>79 FILTLVL=4]:%GRAY%i%RED%(O)%GRAY%i%RED%{%WHITE% Super Healing Potion }// On Filter Level 4, show as i(O)i
+ItemDisplay[hp5 CLVL>79 FILTLVL>4]:{%NL%%WHITE% Super Healing Potion }// On Filter Levels 5 or higher, hide Super Healing potions
 
 // ==================================  Mana Potions  ====================================
 
 // Hide lower quality potions based on character level
 ItemDisplay[mp1 CLVL>14]:{%NL%%WHITE% Minor Mana Potion }//         Hides Minor Mana Potions after level 11
 ItemDisplay[mp2 CLVL>19]:{%NL%%WHITE% Light Mana Potion }//         Hides Light Mana Potions after level 19
-ItemDisplay[mp3 CLVL>21]:{%NL%%WHITE% Mana Potion }//               Hides Mana Potions after level 21
+ItemDisplay[mp3 CLVL>24]:{%NL%%WHITE% Mana Potion }//               Hides Mana Potions after level 21
 ItemDisplay[mp4 CLVL>29]:{%NL%%WHITE% Greater Mana Potion }//       Hides Greater Mana Potions after level 29
-
-// Adjust display of Super Mana Potions based on character level
-ItemDisplay[mp5 (FILTLVL=6 OR FILTLVL=8 OR FILTLVL=9)]:{%NL%%WHITE% Super Mana Potion }// On Filter Level 6 or 7, hide Super Mana potions
-ItemDisplay[mp5 (FILTLVL=4 OR FILTLVL=5 OR FILTLVL=7)]:%GRAY%i%BLUE%(O)%GRAY%i%BLUE%{%WHITE% Super Mana Potion }// On Filter Level 4 or 5, show as i(O)i
-ItemDisplay[mp5 CLVL>79]:%GRAY%i%BLUE%(%WHITE% M %BLUE%)%GRAY%i%BLUE%{%WHITE% Super Mana Potion }// Character levels 80+
-ItemDisplay[mp5 CLVL<80 CLVL>34]:%BLUE%i%GRAY%|%BLUE%(%WHITE% M %BLUE%)%GRAY%|%BLUE%i{%WHITE% Super Mana Potion }// Character levels 35 to 79
 
 // Display for Mana Potions during levels 1-35
 ItemDisplay[mp1 CLVL<15]:%BLUE%i( %WHITE%M%GRAY%-%WHITE%1 %BLUE%)i{%WHITE% Minor Mana Potion }//
 ItemDisplay[mp2 CLVL<20]:%BLUE%i%GRAY%|%BLUE%( %WHITE%M%GRAY%-%WHITE%2 %BLUE%)%GRAY%|%BLUE%i{%WHITE% Light Mana Potion }//
-ItemDisplay[mp3 CLVL<22]:%BLUE%i%GRAY%|%BLUE%( %WHITE%M%GRAY%-%WHITE%3 %BLUE%)%GRAY%|%BLUE%i{%WHITE% Mana Potion }//
+ItemDisplay[mp3 CLVL<25]:%BLUE%i%GRAY%|%BLUE%( %WHITE%M%GRAY%-%WHITE%3 %BLUE%)%GRAY%|%BLUE%i{%WHITE% Mana Potion }//
 ItemDisplay[mp4 CLVL<30]:%BLUE%i%GRAY%|%BLUE%( %WHITE%M%GRAY%-%WHITE%4 %BLUE%)%GRAY%|%BLUE%i{%WHITE% Greater Mana Potion }//
+
 ItemDisplay[mp5 CLVL<35]:%BLUE%i%GRAY%|%BLUE%( %WHITE%M%GRAY%-%WHITE%5 %BLUE%)%GRAY%|%BLUE%i{%WHITE% Super Mana Potion }//
+ItemDisplay[mp5 CLVL>34 CLVL<80]:%BLUE%i%GRAY%|%BLUE%(%WHITE% M %BLUE%)%GRAY%|%BLUE%i{%WHITE% Super Mana Potion }// Character levels 35 to 79
+ItemDisplay[mp5 CLVL>79 FILTLVL<4]:%GRAY%i%BLUE%(%WHITE% M %BLUE%)%GRAY%i%BLUE%{%WHITE% Super Mana Potion }// Character levels 80+
+
+ItemDisplay[mp5 CLVL>79 (FILTLVL=4 OR FILTLVL=5 OR FILTLVL=7)]:%GRAY%i%BLUE%(O)%GRAY%i%BLUE%{%WHITE% Super Mana Potion }// On Filter Level 4 5 or 7, show as i(O)i
+ItemDisplay[mp5 CLVL>79 (FILTLVL=6 OR FILTLVL=8 OR FILTLVL=9)]:{%NL%%WHITE% Super Mana Potion }// On Filter Level 6 8 or 9, hide Super Mana potions
+
+// Adjust display of Super Mana Potions based on character level
+
 
 // ==================================  Rejuvenation Potions  ================================
 
@@ -99,18 +115,18 @@ ItemDisplay[wms CLVL<25]:%YELLOW%|( %WHITE%Thawing %YELLOW%)|{%NL%%WHITE% +25% c
 
 // =====================================  Throwing Potions  =================================
 
-ItemDisplay[gpl CLVL<10]:%GREEN%+  %WHITE%Strangling Gas Potion  %GREEN%+// Strangling Gas Potion (Level 6 Req)
+ItemDisplay[gpl CLVL<10]:%GREEN%+  %WHITE%Strangling Gas Potion  %GREEN%+%WHITE%// Strangling Gas Potion (Level 6 Req)
 ItemDisplay[gpl CLVL>9]:{%NL%%GREEN%+  %WHITE%Strangling Gas Potion  %GREEN%+}//
-ItemDisplay[gpm CLVL<22]:%GREEN%+  %WHITE%Choking Gas Potion  %GREEN%+// Choking Gas Potion (Level 16 Req)
+ItemDisplay[gpm CLVL<22]:%GREEN%+  %WHITE%Choking Gas Potion  %GREEN%+%WHITE%// Choking Gas Potion (Level 16 Req)
 ItemDisplay[gpm CLVL>21]:{%NL%%GREEN%+  %WHITE%Choking Gas Potion  %GREEN%+}//
-ItemDisplay[gps CLVL<28]:%GREEN%+  %WHITE%Rancid Gas Potion  %GREEN%+// Rancid Gas Potion (Level 24 Req)
+ItemDisplay[gps CLVL<28]:%GREEN%+  %WHITE%Rancid Gas Potion  %GREEN%+%WHITE%// Rancid Gas Potion (Level 24 Req)
 ItemDisplay[gps CLVL>27]:{%NL%%GREEN%+  %WHITE%Rancid Gas Potion  %GREEN%+}//
 
-ItemDisplay[opl CLVL<3]:%ORANGE%+  %WHITE%Fulminating Potion  %ORANGE%+// Fulminating Potion (Level 1 Req)
+ItemDisplay[opl CLVL<3]:%ORANGE%+  %WHITE%Fulminating Potion  %ORANGE%+%WHITE%// Fulminating Potion (Level 1 Req)
 ItemDisplay[opl CLVL>2]:{%NL%%ORANGE%+  %WHITE%Fulminating Potion  %ORANGE%+}//
-ItemDisplay[opm CLVL<14]:%ORANGE%+  %WHITE%Exploding Gas Potion  %ORANGE%+// Exploding Potion (Level 12 Req)
+ItemDisplay[opm CLVL<14]:%ORANGE%+  %WHITE%Exploding Gas Potion  %ORANGE%+%WHITE%// Exploding Potion (Level 12 Req)
 ItemDisplay[opm CLVL>13]:{%NL%%ORANGE%+  %WHITE%Exploding Gas Potion  %ORANGE%+}//
-ItemDisplay[ops CLVL<22]:%ORANGE%+  %WHITE%Oil Potion  %ORANGE%+// Oil Potion (Level 20 Req)
+ItemDisplay[ops CLVL<22]:%ORANGE%+  %WHITE%Oil Potion  %ORANGE%+%WHITE%// Oil Potion (Level 20 Req)
 ItemDisplay[ops CLVL>21]:{%NL%%ORANGE%+  %WHITE%Oil Potion  %ORANGE%+}//
 
 // =================================  Scrolls, Keys, and Tomes  ================================
@@ -120,23 +136,23 @@ ItemDisplay[ops CLVL>21]:{%NL%%ORANGE%+  %WHITE%Oil Potion  %ORANGE%+}//
 // Scroll of Identify after level 79
 ItemDisplay[isc CLVL>79 FILTLVL>1]:{%NL%%WHITE% Scroll of Identify }//
 // Scroll of Identify after level 29
-ItemDisplay[isc CLVL>29]:%RED%+{%NL%%WHITE% Scroll of Identify }//
+ItemDisplay[isc CLVL>29]:%RED%+%WHITE%{%NL%%WHITE% Scroll of Identify }//
 // Scroll of Identify before level 30
-ItemDisplay[isc CLVL<30]:%RED%+  %GRAY%ID %WHITE%Scroll  %RED%+//
+ItemDisplay[isc CLVL<30]:%RED%+  %GRAY%ID %WHITE%Scroll  %RED%+%WHITE%//
 // Notify for Tome of Identify under character level 30
-ItemDisplay[ibk CLVL<30]:%RED%|||  %WHITE%Tome of Identify  %RED%|||//
-ItemDisplay[ibk CLVL>29]:%RED%|||  %WHITE%Tome of Identify  %RED%|||//
+ItemDisplay[ibk CLVL<30]:%RED%|||  %WHITE%Tome of Identify  %RED%|||%WHITE%//
+ItemDisplay[ibk CLVL>29]:%RED%|||  %WHITE%Tome of Identify  %RED%|||%WHITE%//
 
 // TP Scrolls
 // Scroll of Town Portal after level 79
 ItemDisplay[tsc CLVL>79 FILTLVL>1]:{%NL%%WHITE% Scroll of Town Portal }//
 // Scroll of Town Portal after level 29
-ItemDisplay[tsc CLVL>29]:%BLUE%+{%NL%%WHITE% Scroll of Town Portal }//
+ItemDisplay[tsc CLVL>29]:%BLUE%+%WHITE%{%NL%%WHITE% Scroll of Town Portal }//
 // Scroll of Town Portal before level 30
-ItemDisplay[tsc CLVL<30]:%BLUE%+  %GRAY%TP %WHITE%Scroll  %BLUE%+//
+ItemDisplay[tsc CLVL<30]:%BLUE%+  %GRAY%TP %WHITE%Scroll  %BLUE%+%WHITE%//
 // Notify for Tome of Town Portal under character level 30
-ItemDisplay[tbk CLVL<30]:%BLUE%|||  %WHITE%Tome of Town Portal  %BLUE%|||//
-ItemDisplay[tbk CLVL>29]:%BLUE%|||  %WHITE%Tome of Town Portal  %BLUE%|||//
+ItemDisplay[tbk CLVL<30]:%BLUE%|||  %WHITE%Tome of Town Portal  %BLUE%|||%WHITE%//
+ItemDisplay[tbk CLVL>29]:%BLUE%|||  %WHITE%Tome of Town Portal  %BLUE%|||%WHITE%//
 
 // Unlimited usage tomes
 ItemDisplay[rid]:%RED%|%GOLD%X%RED%|||%GOLD%X%RED%|  %GOLD%Horadrim Almanac  %RED%|%GOLD%X%RED%|||%GOLD%X%RED%|%BORDER-00%%MAP-11%%DOT-13%%PX-1E%// Unlimited Tome of Identify
@@ -2383,7 +2399,7 @@ ItemDisplay[MAG FCR=10 amu (TABSK0=2 OR TABSK1=2 OR TABSK2=2 OR TABSK8=2 OR TABS
 ItemDisplay[MAG FCR=20 amu (TABSK0=2 OR TABSK1>2 OR TABSK2>2 OR TABSK8>2 OR TABSK9>2 OR TABSK10>2 OR TABSK16>2 OR TABSK17>2 OR TABSK18>2 OR TABSK24>2 OR TABSK25>2 OR TABSK26>2 OR TABSK32>2 OR TABSK34>2 OR TABSK40>2 OR TABSK41>2 OR TABSK42>2 OR TABSK48>2 OR TABSK49>2 OR TABSK50>2)]:%NAME%{%NAME%%GREEN%***%RED%***              %RED%***%GREEN%***%NL%%RED%***   %GREEN%(3/20)   %RED%***%NL%%GREEN%***%RED%***              %RED%***%GREEN%***}// 3 tab skills, 20 FCR amulet
 ItemDisplay[MAG FCR=20 amu (TABSK0=2 OR TABSK1=2 OR TABSK2=2 OR TABSK8=2 OR TABSK9=2 OR TABSK10=2 OR TABSK16=2 OR TABSK17=2 OR TABSK18=2 OR TABSK24=2 OR TABSK25=2 OR TABSK26=2 OR TABSK34=2 OR TABSK40=2 OR TABSK41=2 OR TABSK42=2 OR TABSK48=2 OR TABSK49=2 OR TABSK50=2)]:%NAME%{%NAME%%GREEN%***%RED%***              %RED%***%GREEN%***%NL%%RED%***   %GREEN%(2/20)   %RED%***%NL%%GREEN%***%RED%***              %RED%***%GREEN%***}// 2 tab skills, 20 FCR amulet
 
-ItemDisplay[MAG !ID amu FILTLVL>6]://
+ItemDisplay[MAG !ID amu CLVL>94 FILTLVL>6]://
 
 //Notes For High ILVL Crafting Amulets
 ItemDisplay[MAG amu ILVL=86]:%TAN%o  %BLUE%%NAME% %ORANGE%[C]  %TAN%o%BLUE%{%YELLOW%   MF: O %TAN%+ %WHITE%Ko  %GRAY%Vamp: O %TAN%+ %WHITE%Dol%NL%   %BLUE%HP: O %TAN%+ %WHITE%Thul  %DARK_GREEN%Safety: O %TAN%+ %WHITE%Thul%NL%%RED%Blood: O %TAN%+ %WHITE%Amn%WHITE%  %PURPLE%Caster: O %TAN%+ %WHITE%Ral%NL%%ORANGE%Craft at 94+: %BLUE%Jewel %TAN%+}
@@ -2426,7 +2442,7 @@ ItemDisplay[MAG !ID cm3]:%ORANGE%((o  %BLUE%%NAME%%ORANGE%  o))%BLUE%%BORDER-91%
 //    				                       Rings
 // ------------------------------------------------------------------------------
 
-ItemDisplay[MAG !ID rin FILTLVL>6]://
+ItemDisplay[MAG !ID rin CLVL>94 FILTLVL>6]://
 
 ItemDisplay[MAG rin ILVL=80]:%TAN%*  %BLUE%%NAME% %ORANGE%[C]  %TAN%*%BLUE%{%YELLOW%MF: O %TAN%+ %WHITE%Lum  %GRAY%Vamp: O %TAN%+ %WHITE%Hel%NL%  %BLUE%HP: O %TAN%+ %WHITE%Amn  %DARK_GREEN%Safety: O %TAN%+ %WHITE%Amn%NL%%RED% Blood: O %TAN%+ %WHITE%Sol  %PURPLE%Caster: O%WHITE% %TAN%+ %WHITE%Amn %NL%%ORANGE%Craft at 82+: %BLUE%Jewel %TAN%+}
 ItemDisplay[MAG rin ILVL=81]:%TAN%*  %BLUE%%NAME% %ORANGE%[C]  %TAN%*%BLUE%{%YELLOW%MF: O %TAN%+ %WHITE%Lum  %GRAY%Vamp: O %TAN%+ %WHITE%Hel%NL%  %BLUE%HP: O %TAN%+ %WHITE%Amn  %DARK_GREEN%Safety: O %TAN%+ %WHITE%Amn%NL%%RED% Blood: O %TAN%+ %WHITE%Sol  %PURPLE%Caster: O%WHITE% %TAN%+ %WHITE%Amn %NL%%ORANGE%Craft at 82+: %BLUE%Jewel %TAN%+}
@@ -2749,21 +2765,21 @@ ItemDisplay[MAG ELT !ETH !ID THROWING !SPEAR !ZON CLVL>89 FILTLVL>2]:// All Thro
 // ------------------------------------------------------------------------------
 
 //Craft Descriptions
-ItemDisplay[!SHOP GLOVES MAG ID (((CLVL>31 AND CLVL<52) AND (ILVL>31 AND ILVL<52)) OR ((CLVL>51 AND CLVL<72) AND (ILVL>51 AND ILVL<72)) OR (CLVL>71 AND ILVL>71))]:%NAME%%BLUE%{%YELLOW%MF: O %TAN%+ %WHITE%Hel  %GRAY%Vamp: O %TAN%+ %WHITE%Io%NL%  %BLUE%HP: O %TAN%+ %WHITE%Ort  %DARK_GREEN%Safety: O %TAN%+ %WHITE%Ral%NL%%RED%Blood: O %TAN%+ %WHITE%Nef  %PURPLE%Caster: O %TAN%+ %WHITE%Ort %NL%%ORANGE%Crafting: %BLUE%This Item %TAN%+ %BLUE%Jewel %TAN%+ }%CONTINUE%//
-ItemDisplay[!SHOP BOOTS MAG ID (((CLVL>31 AND CLVL<52) AND (ILVL>31 AND ILVL<52)) OR ((CLVL>51 AND CLVL<72) AND (ILVL>51 AND ILVL<72)) OR (CLVL>71 AND ILVL>71))]:%NAME%%BLUE%{%YELLOW%MF: O %TAN%+ %WHITE%Io  %GRAY%Vamp: O %TAN%+ %WHITE%El%NL% %BLUE%HP: O %TAN%+ %WHITE%Ral  %DARK_GREEN%Safety: O %TAN%+ %WHITE%Ort%NL%%RED%Blood: O %TAN%+ %WHITE%Eth  %PURPLE%Caster: O %TAN%+ %WHITE%Thul %NL%%ORANGE%Crafting: %BLUE%This Item %TAN%+ %BLUE%Jewel %TAN%+ }%CONTINUE%//
-ItemDisplay[!SHOP BELT MAG ID (((CLVL>31 AND CLVL<52) AND (ILVL>31 AND ILVL<52)) OR ((CLVL>51 AND CLVL<72) AND (ILVL>51 AND ILVL<72)) OR (CLVL>71 AND ILVL>71))]:%NAME%%BLUE%{%YELLOW%MF: O %TAN%+ %WHITE%El  %GRAY%Vamp: O %TAN%+ %WHITE%Eld%NL% %BLUE%HP: O %TAN%+ %WHITE%Tal  %DARK_GREEN%Safety: O %TAN%+ %WHITE%Tal%NL%%RED%Blood: O %TAN%+ %WHITE%Tal  %PURPLE%Caster: O %TAN%+ %WHITE%Ith %NL%%ORANGE%Crafting: %BLUE%This Item %TAN%+ %BLUE%Jewel %TAN%+ }%CONTINUE%//
+ItemDisplay[!SHOP GLOVES MAG ID (((CLVL>31 AND CLVL<52) AND (ILVL>31 AND ILVL<52)) OR ((CLVL>51 AND CLVL<72) AND (ILVL>51 AND ILVL<72)) OR (CLVL>69 AND ILVL>71) OR (CLVL>59 AND ILVL>81) OR (CLVL>65 AND ILVL>75) OR (CLVL>71 AND ILVL>69) OR (CLVL>81 AND ILVL>59) OR (CLVL>75 AND ILVL>65))]:%NAME%%BLUE%{%YELLOW%MF: O %TAN%+ %WHITE%Hel  %GRAY%Vamp: O %TAN%+ %WHITE%Io%NL%  %BLUE%HP: O %TAN%+ %WHITE%Ort  %DARK_GREEN%Safety: O %TAN%+ %WHITE%Ral%NL%%RED%Blood: O %TAN%+ %WHITE%Nef  %PURPLE%Caster: O %TAN%+ %WHITE%Ort %NL%%ORANGE%Crafting: %BLUE%This Item %TAN%+ %BLUE%Jewel %TAN%+ }%CONTINUE%//
+ItemDisplay[!SHOP BOOTS MAG ID (((CLVL>31 AND CLVL<52) AND (ILVL>31 AND ILVL<52)) OR ((CLVL>51 AND CLVL<72) AND (ILVL>51 AND ILVL<72)) OR (CLVL>69 AND ILVL>71) OR (CLVL>59 AND ILVL>81) OR (CLVL>65 AND ILVL>75) OR (CLVL>71 AND ILVL>69) OR (CLVL>81 AND ILVL>59) OR (CLVL>75 AND ILVL>65))]:%NAME%%BLUE%{%YELLOW%MF: O %TAN%+ %WHITE%Io  %GRAY%Vamp: O %TAN%+ %WHITE%El%NL% %BLUE%HP: O %TAN%+ %WHITE%Ral  %DARK_GREEN%Safety: O %TAN%+ %WHITE%Ort%NL%%RED%Blood: O %TAN%+ %WHITE%Eth  %PURPLE%Caster: O %TAN%+ %WHITE%Thul %NL%%ORANGE%Crafting: %BLUE%This Item %TAN%+ %BLUE%Jewel %TAN%+ }%CONTINUE%//
+ItemDisplay[!SHOP BELT MAG ID (((CLVL>31 AND CLVL<52) AND (ILVL>31 AND ILVL<52)) OR ((CLVL>51 AND CLVL<72) AND (ILVL>51 AND ILVL<72)) OR (CLVL>69 AND ILVL>71) OR (CLVL>59 AND ILVL>81) OR (CLVL>65 AND ILVL>75) OR (CLVL>71 AND ILVL>69) OR (CLVL>81 AND ILVL>59) OR (CLVL>75 AND ILVL>65))]:%NAME%%BLUE%{%YELLOW%MF: O %TAN%+ %WHITE%El  %GRAY%Vamp: O %TAN%+ %WHITE%Eld%NL% %BLUE%HP: O %TAN%+ %WHITE%Tal  %DARK_GREEN%Safety: O %TAN%+ %WHITE%Tal%NL%%RED%Blood: O %TAN%+ %WHITE%Tal  %PURPLE%Caster: O %TAN%+ %WHITE%Ith %NL%%ORANGE%Crafting: %BLUE%This Item %TAN%+ %BLUE%Jewel %TAN%+ }%CONTINUE%//
 
-ItemDisplay[!SHOP SOCK=0 (SHIELD OR NEC OR DIN) MAG ID (((CLVL>31 AND CLVL<52) AND (ILVL>31 AND ILVL<52)) OR ((CLVL>51 AND CLVL<72) AND (ILVL>51 AND ILVL<72)) OR (CLVL>71 AND ILVL>71))]:%NAME%%BLUE%{%YELLOW%MF: O %TAN%+ %WHITE%Dol  %GRAY%Vamp: O %TAN%+ %WHITE%Sol%NL% %BLUE%HP: O %TAN%+ %WHITE%Eth  %DARK_GREEN%Safety: O %TAN%+ %WHITE%Nef%NL%%RED%Blood: O %TAN%+ %WHITE%Ith  %PURPLE%Caster: O %TAN%+ %WHITE%Eth %NL%%ORANGE%Crafting: %BLUE%This Item %TAN%+ %BLUE%Jewel %TAN%+ %NL%}%CONTINUE%//
-ItemDisplay[!SHOP SOCK=0 (HELM OR DRU OR BAR) MAG ID (((CLVL>31 AND CLVL<52) AND (ILVL>31 AND ILVL<52)) OR ((CLVL>51 AND CLVL<72) AND (ILVL>51 AND ILVL<72)) OR (CLVL>71 AND ILVL>71))]:%NAME%%BLUE%{%YELLOW%MF: O %TAN%+ %WHITE%Tir  %GRAY%Vamp: O %TAN%+ %WHITE%Lum%NL% %BLUE%HP: O %TAN%+ %WHITE%Ith  %DARK_GREEN%Safety: O %TAN%+ %WHITE%Ith%NL%%RED%Blood: O %TAN%+ %WHITE%Ral  %PURPLE%Caster: O %TAN%+ %WHITE%Nef %NL%%ORANGE%Crafting: %BLUE%This Item %TAN%+ %BLUE%Jewel %TAN%+ %NL%}%CONTINUE%//
-ItemDisplay[!SHOP SOCK=0 CHEST MAG ID (((CLVL>31 AND CLVL<52) AND (ILVL>31 AND ILVL<52)) OR ((CLVL>51 AND CLVL<72) AND (ILVL>51 AND ILVL<72)) OR (CLVL>71 AND ILVL>71))]:%NAME%%BLUE%{%YELLOW%MF: O %TAN%+ %WHITE%Eld  %GRAY%Vamp: O %TAN%+ %WHITE%Tir%NL%  %BLUE%HP: O %TAN%+ %WHITE%Nef  %DARK_GREEN%Safety: O %TAN%+ %WHITE%Eth%NL%%RED%Blood: O %TAN%+ %WHITE%Thul  %PURPLE%Caster: O %TAN%+ %WHITE%Tal %NL%%ORANGE%Crafting: %BLUE%This Item %TAN%+ %BLUE%Jewel %TAN%+ %NL%}%CONTINUE%//
-ItemDisplay[!SHOP SOCK=0 !(am5 OR ama OR amf OR tkf OR tax OR bkf OR bal OR 9tk OR 9ta OR 9bk OR 9b8 OR 7tk OR 7ta OR 7bk OR 7b8 OR jav OR pil OR ssp OR glv OR tsp OR 9ja OR 9pi OR 9s9 OR 9gl OR 9ts OR 7ja OR 7pi OR 7s7 OR 7gl OR 7ts) WEAPON !(BOW OR XBOW) MAG ID (((CLVL>31 AND CLVL<52) AND (ILVL>31 AND ILVL<52)) OR ((CLVL>51 AND CLVL<72) AND (ILVL>51 AND ILVL<72)) OR (CLVL>71 AND ILVL>71))]:%NAME%%BLUE%{%YELLOW% MF: O %TAN%+ %WHITE%Shael  %GRAY%Vamp: O %TAN%+ %WHITE%Shael%NL%  %BLUE%HP: O %TAN%+ %WHITE%Tir  %DARK_GREEN%S: %WHITE%Bows Only  %NL%%RED%Blood: O %TAN%+ %WHITE%Ort  %PURPLE%Caster: O %TAN%+ %WHITE%Tir %NL%%ORANGE%Crafting: %BLUE%This Item %TAN%+ %BLUE%Jewel %TAN%+ %NL%}%CONTINUE%//
-ItemDisplay[!SHOP SOCK=0 (BOW OR XBOW) MAG ID (((CLVL>31 AND CLVL<52) AND (ILVL>31 AND ILVL<52)) OR ((CLVL>51 AND CLVL<72) AND (ILVL>51 AND ILVL<72)) OR (CLVL>71 AND ILVL>71))]:%NAME%%BLUE%{%YELLOW% MF: O %TAN%+ %WHITE%Shael  %GRAY%Vamp: O %TAN%+ %WHITE%Shael%NL%  %BLUE%HP: O %TAN%+ %WHITE%Tir  %DARK_GREEN%Safety: O %TAN%+ %WHITE%Sol%NL%%RED%Blood: O %TAN%+ %WHITE%Ort  %PURPLE%Caster: O %TAN%+ %WHITE%Tir %NL%%ORANGE%Crafting: %BLUE%This Item %TAN%+ %BLUE%Jewel %TAN%+ %NL%}%CONTINUE%//
+ItemDisplay[!SHOP SOCK=0 (SHIELD OR NEC OR DIN) MAG ID (((CLVL>31 AND CLVL<52) AND (ILVL>31 AND ILVL<52)) OR ((CLVL>51 AND CLVL<72) AND (ILVL>51 AND ILVL<72)) OR (CLVL>69 AND ILVL>71) OR (CLVL>59 AND ILVL>81) OR (CLVL>65 AND ILVL>75) OR (CLVL>71 AND ILVL>69) OR (CLVL>81 AND ILVL>59) OR (CLVL>75 AND ILVL>65))]:%NAME%%BLUE%{%YELLOW%MF: O %TAN%+ %WHITE%Dol  %GRAY%Vamp: O %TAN%+ %WHITE%Sol%NL% %BLUE%HP: O %TAN%+ %WHITE%Eth  %DARK_GREEN%Safety: O %TAN%+ %WHITE%Nef%NL%%RED%Blood: O %TAN%+ %WHITE%Ith  %PURPLE%Caster: O %TAN%+ %WHITE%Eth %NL%%ORANGE%Crafting: %BLUE%This Item %TAN%+ %BLUE%Jewel %TAN%+ %NL%}%CONTINUE%//
+ItemDisplay[!SHOP SOCK=0 (HELM OR DRU OR BAR) MAG ID (((CLVL>31 AND CLVL<52) AND (ILVL>31 AND ILVL<52)) OR ((CLVL>51 AND CLVL<72) AND (ILVL>51 AND ILVL<72)) OR (CLVL>69 AND ILVL>71) OR (CLVL>59 AND ILVL>81) OR (CLVL>65 AND ILVL>75) OR (CLVL>71 AND ILVL>69) OR (CLVL>81 AND ILVL>59) OR (CLVL>75 AND ILVL>65))]:%NAME%%BLUE%{%YELLOW%MF: O %TAN%+ %WHITE%Tir  %GRAY%Vamp: O %TAN%+ %WHITE%Lum%NL% %BLUE%HP: O %TAN%+ %WHITE%Ith  %DARK_GREEN%Safety: O %TAN%+ %WHITE%Ith%NL%%RED%Blood: O %TAN%+ %WHITE%Ral  %PURPLE%Caster: O %TAN%+ %WHITE%Nef %NL%%ORANGE%Crafting: %BLUE%This Item %TAN%+ %BLUE%Jewel %TAN%+ %NL%}%CONTINUE%//
+ItemDisplay[!SHOP SOCK=0 CHEST MAG ID (((CLVL>31 AND CLVL<52) AND (ILVL>31 AND ILVL<52)) OR ((CLVL>51 AND CLVL<72) AND (ILVL>51 AND ILVL<72)) OR (CLVL>69 AND ILVL>71) OR (CLVL>59 AND ILVL>81) OR (CLVL>65 AND ILVL>75) OR (CLVL>71 AND ILVL>69) OR (CLVL>81 AND ILVL>59) OR (CLVL>75 AND ILVL>65))]:%NAME%%BLUE%{%YELLOW%MF: O %TAN%+ %WHITE%Eld  %GRAY%Vamp: O %TAN%+ %WHITE%Tir%NL%  %BLUE%HP: O %TAN%+ %WHITE%Nef  %DARK_GREEN%Safety: O %TAN%+ %WHITE%Eth%NL%%RED%Blood: O %TAN%+ %WHITE%Thul  %PURPLE%Caster: O %TAN%+ %WHITE%Tal %NL%%ORANGE%Crafting: %BLUE%This Item %TAN%+ %BLUE%Jewel %TAN%+ %NL%}%CONTINUE%//
+ItemDisplay[!SHOP SOCK=0 !(am5 OR ama OR amf OR tkf OR tax OR bkf OR bal OR 9tk OR 9ta OR 9bk OR 9b8 OR 7tk OR 7ta OR 7bk OR 7b8 OR jav OR pil OR ssp OR glv OR tsp OR 9ja OR 9pi OR 9s9 OR 9gl OR 9ts OR 7ja OR 7pi OR 7s7 OR 7gl OR 7ts) WEAPON !(BOW OR XBOW) MAG ID (((CLVL>31 AND CLVL<52) AND (ILVL>31 AND ILVL<52)) OR ((CLVL>51 AND CLVL<72) AND (ILVL>51 AND ILVL<72)) OR (CLVL>69 AND ILVL>71) OR (CLVL>59 AND ILVL>81) OR (CLVL>65 AND ILVL>75) OR (CLVL>71 AND ILVL>69) OR (CLVL>81 AND ILVL>59) OR (CLVL>75 AND ILVL>65))]:%NAME%%BLUE%{%YELLOW% MF: O %TAN%+ %WHITE%Shael  %GRAY%Vamp: O %TAN%+ %WHITE%Shael%NL%  %BLUE%HP: O %TAN%+ %WHITE%Tir  %DARK_GREEN%S: %WHITE%Bows Only  %NL%%RED%Blood: O %TAN%+ %WHITE%Ort  %PURPLE%Caster: O %TAN%+ %WHITE%Tir %NL%%ORANGE%Crafting: %BLUE%This Item %TAN%+ %BLUE%Jewel %TAN%+ %NL%}%CONTINUE%//
+ItemDisplay[!SHOP SOCK=0 (BOW OR XBOW) MAG ID (((CLVL>31 AND CLVL<52) AND (ILVL>31 AND ILVL<52)) OR ((CLVL>51 AND CLVL<72) AND (ILVL>51 AND ILVL<72)) OR (CLVL>69 AND ILVL>71) OR (CLVL>59 AND ILVL>81) OR (CLVL>65 AND ILVL>75) OR (CLVL>71 AND ILVL>69) OR (CLVL>81 AND ILVL>59) OR (CLVL>75 AND ILVL>65))]:%NAME%%BLUE%{%YELLOW% MF: O %TAN%+ %WHITE%Shael  %GRAY%Vamp: O %TAN%+ %WHITE%Shael%NL%  %BLUE%HP: O %TAN%+ %WHITE%Tir  %DARK_GREEN%Safety: O %TAN%+ %WHITE%Sol%NL%%RED%Blood: O %TAN%+ %WHITE%Ort  %PURPLE%Caster: O %TAN%+ %WHITE%Tir %NL%%ORANGE%Crafting: %BLUE%This Item %TAN%+ %BLUE%Jewel %TAN%+ %NL%}%CONTINUE%//
 
-ItemDisplay[!SHOP SOCK>0 (SHIELD OR NEC OR DIN) MAG ID (((CLVL>31 AND CLVL<52) AND (ILVL>31 AND ILVL<52)) OR ((CLVL>51 AND CLVL<72) AND (ILVL>51 AND ILVL<72)) OR (CLVL>71 AND ILVL>71))]:%NAME%%BLUE%{%YELLOW%MF: O %TAN%+ %WHITE%Dol  %GRAY%Vamp: O %TAN%+ %WHITE%Sol%NL% %BLUE%HP: O %TAN%+ %WHITE%Eth  %DARK_GREEN%Safety: O %TAN%+ %WHITE%Nef%NL%%RED%Blood: O %TAN%+ %WHITE%Ith  %PURPLE%Caster: O %TAN%+ %WHITE%Eth %NL%%ORANGE%Crafting: %BLUE%This Item %TAN%+ %BLUE%Jewel %TAN%+ }%CONTINUE%//
-ItemDisplay[!SHOP SOCK>0 (HELM OR DRU OR BAR) MAG ID (((CLVL>31 AND CLVL<52) AND (ILVL>31 AND ILVL<52)) OR ((CLVL>51 AND CLVL<72) AND (ILVL>51 AND ILVL<72)) OR (CLVL>71 AND ILVL>71))]:%NAME%%BLUE%{%YELLOW%MF: O %TAN%+ %WHITE%Tir  %GRAY%Vamp: O %TAN%+ %WHITE%Lum%NL% %BLUE%HP: O %TAN%+ %WHITE%Ith  %DARK_GREEN%Safety: O %TAN%+ %WHITE%Ith%NL%%RED%Blood: O %TAN%+ %WHITE%Ral  %PURPLE%Caster: O %TAN%+ %WHITE%Nef %NL%%ORANGE%Crafting: %BLUE%This Item %TAN%+ %BLUE%Jewel %TAN%+ }%CONTINUE%//
-ItemDisplay[!SHOP SOCK>0 CHEST MAG ID (((CLVL>31 AND CLVL<52) AND (ILVL>31 AND ILVL<52)) OR ((CLVL>51 AND CLVL<72) AND (ILVL>51 AND ILVL<72)) OR (CLVL>71 AND ILVL>71))]:%NAME%%BLUE%{%YELLOW%MF: O %TAN%+ %WHITE%Eld  %GRAY%Vamp: O %TAN%+ %WHITE%Tir%NL%  %BLUE%HP: O %TAN%+ %WHITE%Nef  %DARK_GREEN%Safety: O %TAN%+ %WHITE%Eth%NL%%RED%Blood: O %TAN%+ %WHITE%Thul  %PURPLE%Caster: O %TAN%+ %WHITE%Tal %NL%%ORANGE%Crafting: %BLUE%This Item %TAN%+ %BLUE%Jewel %TAN%+ }%CONTINUE%//
-ItemDisplay[!SHOP (SOCK>0 OR am5 OR ama OR amf OR tkf OR tax OR bkf OR bal OR 9tk OR 9ta OR 9bk OR 9b8 OR 7tk OR 7ta OR 7bk OR 7b8 OR jav OR pil OR ssp OR glv OR tsp OR 9ja OR 9pi OR 9s9 OR 9gl OR 9ts OR 7ja OR 7pi OR 7s7 OR 7gl OR 7ts) WEAPON !(BOW OR XBOW) MAG ID (((CLVL>31 AND CLVL<52) AND (ILVL>31 AND ILVL<52)) OR ((CLVL>51 AND CLVL<72) AND (ILVL>51 AND ILVL<72)) OR (CLVL>71 AND ILVL>71))]:%NAME%%BLUE%{%YELLOW% MF: O %TAN%+ %WHITE%Shael  %GRAY%Vamp: O %TAN%+ %WHITE%Shael%NL%  %BLUE%HP: O %TAN%+ %WHITE%Tir  %DARK_GREEN%S: %WHITE%Bows Only  %NL%%RED%Blood: O %TAN%+ %WHITE%Ort  %PURPLE%Caster: O %TAN%+ %WHITE%Tir %NL%%ORANGE%Crafting: %BLUE%This Item %TAN%+ %BLUE%Jewel %TAN%+ }%CONTINUE%//
-ItemDisplay[!SHOP SOCK>0 (BOW OR XBOW) MAG ID (((CLVL>31 AND CLVL<52) AND (ILVL>31 AND ILVL<52)) OR ((CLVL>51 AND CLVL<72) AND (ILVL>51 AND ILVL<72)) OR (CLVL>71 AND ILVL>71))]:%NAME%%BLUE%{%YELLOW% MF: O %TAN%+ %WHITE%Shael  %GRAY%Vamp: O %TAN%+ %WHITE%Shael%NL%  %BLUE%HP: O %TAN%+ %WHITE%Tir  %DARK_GREEN%Safety: O %TAN%+ %WHITE%Sol%NL%%RED%Blood: O %TAN%+ %WHITE%Ort  %PURPLE%Caster: O %TAN%+ %WHITE%Tir %NL%%ORANGE%Crafting: %BLUE%This Item %TAN%+ %BLUE%Jewel %TAN%+ }%CONTINUE%//
+ItemDisplay[!SHOP SOCK>0 (SHIELD OR NEC OR DIN) MAG ID (((CLVL>31 AND CLVL<52) AND (ILVL>31 AND ILVL<52)) OR ((CLVL>51 AND CLVL<72) AND (ILVL>51 AND ILVL<72)) OR (CLVL>69 AND ILVL>71) OR (CLVL>59 AND ILVL>81) OR (CLVL>65 AND ILVL>75) OR (CLVL>71 AND ILVL>69) OR (CLVL>81 AND ILVL>59) OR (CLVL>75 AND ILVL>65))]:%NAME%%BLUE%{%YELLOW%MF: O %TAN%+ %WHITE%Dol  %GRAY%Vamp: O %TAN%+ %WHITE%Sol%NL% %BLUE%HP: O %TAN%+ %WHITE%Eth  %DARK_GREEN%Safety: O %TAN%+ %WHITE%Nef%NL%%RED%Blood: O %TAN%+ %WHITE%Ith  %PURPLE%Caster: O %TAN%+ %WHITE%Eth %NL%%ORANGE%Crafting: %BLUE%This Item %TAN%+ %BLUE%Jewel %TAN%+ }%CONTINUE%//
+ItemDisplay[!SHOP SOCK>0 (HELM OR DRU OR BAR) MAG ID (((CLVL>31 AND CLVL<52) AND (ILVL>31 AND ILVL<52)) OR ((CLVL>51 AND CLVL<72) AND (ILVL>51 AND ILVL<72)) OR (CLVL>69 AND ILVL>71) OR (CLVL>59 AND ILVL>81) OR (CLVL>65 AND ILVL>75) OR (CLVL>71 AND ILVL>69) OR (CLVL>81 AND ILVL>59) OR (CLVL>75 AND ILVL>65))]:%NAME%%BLUE%{%YELLOW%MF: O %TAN%+ %WHITE%Tir  %GRAY%Vamp: O %TAN%+ %WHITE%Lum%NL% %BLUE%HP: O %TAN%+ %WHITE%Ith  %DARK_GREEN%Safety: O %TAN%+ %WHITE%Ith%NL%%RED%Blood: O %TAN%+ %WHITE%Ral  %PURPLE%Caster: O %TAN%+ %WHITE%Nef %NL%%ORANGE%Crafting: %BLUE%This Item %TAN%+ %BLUE%Jewel %TAN%+ }%CONTINUE%//
+ItemDisplay[!SHOP SOCK>0 CHEST MAG ID (((CLVL>31 AND CLVL<52) AND (ILVL>31 AND ILVL<52)) OR ((CLVL>51 AND CLVL<72) AND (ILVL>51 AND ILVL<72)) OR (CLVL>69 AND ILVL>71) OR (CLVL>59 AND ILVL>81) OR (CLVL>65 AND ILVL>75) OR (CLVL>71 AND ILVL>69) OR (CLVL>81 AND ILVL>59) OR (CLVL>75 AND ILVL>65))]:%NAME%%BLUE%{%YELLOW%MF: O %TAN%+ %WHITE%Eld  %GRAY%Vamp: O %TAN%+ %WHITE%Tir%NL%  %BLUE%HP: O %TAN%+ %WHITE%Nef  %DARK_GREEN%Safety: O %TAN%+ %WHITE%Eth%NL%%RED%Blood: O %TAN%+ %WHITE%Thul  %PURPLE%Caster: O %TAN%+ %WHITE%Tal %NL%%ORANGE%Crafting: %BLUE%This Item %TAN%+ %BLUE%Jewel %TAN%+ }%CONTINUE%//
+ItemDisplay[!SHOP (SOCK>0 OR am5 OR ama OR amf OR tkf OR tax OR bkf OR bal OR 9tk OR 9ta OR 9bk OR 9b8 OR 7tk OR 7ta OR 7bk OR 7b8 OR jav OR pil OR ssp OR glv OR tsp OR 9ja OR 9pi OR 9s9 OR 9gl OR 9ts OR 7ja OR 7pi OR 7s7 OR 7gl OR 7ts) WEAPON !(BOW OR XBOW) MAG ID (((CLVL>31 AND CLVL<52) AND (ILVL>31 AND ILVL<52)) OR ((CLVL>51 AND CLVL<72) AND (ILVL>51 AND ILVL<72)) OR (CLVL>69 AND ILVL>71) OR (CLVL>59 AND ILVL>81) OR (CLVL>65 AND ILVL>75) OR (CLVL>71 AND ILVL>69) OR (CLVL>81 AND ILVL>59) OR (CLVL>75 AND ILVL>65))]:%NAME%%BLUE%{%YELLOW% MF: O %TAN%+ %WHITE%Shael  %GRAY%Vamp: O %TAN%+ %WHITE%Shael%NL%  %BLUE%HP: O %TAN%+ %WHITE%Tir  %DARK_GREEN%S: %WHITE%Bows Only  %NL%%RED%Blood: O %TAN%+ %WHITE%Ort  %PURPLE%Caster: O %TAN%+ %WHITE%Tir %NL%%ORANGE%Crafting: %BLUE%This Item %TAN%+ %BLUE%Jewel %TAN%+ }%CONTINUE%//
+ItemDisplay[!SHOP SOCK>0 (BOW OR XBOW) MAG ID (((CLVL>31 AND CLVL<52) AND (ILVL>31 AND ILVL<52)) OR ((CLVL>51 AND CLVL<72) AND (ILVL>51 AND ILVL<72)) OR (CLVL>69 AND ILVL>71) OR (CLVL>59 AND ILVL>81) OR (CLVL>65 AND ILVL>75) OR (CLVL>71 AND ILVL>69) OR (CLVL>81 AND ILVL>59) OR (CLVL>75 AND ILVL>65))]:%NAME%%BLUE%{%YELLOW% MF: O %TAN%+ %WHITE%Shael  %GRAY%Vamp: O %TAN%+ %WHITE%Shael%NL%  %BLUE%HP: O %TAN%+ %WHITE%Tir  %DARK_GREEN%Safety: O %TAN%+ %WHITE%Sol%NL%%RED%Blood: O %TAN%+ %WHITE%Ort  %PURPLE%Caster: O %TAN%+ %WHITE%Tir %NL%%ORANGE%Crafting: %BLUE%This Item %TAN%+ %BLUE%Jewel %TAN%+ }%CONTINUE%//
 
 //Notes for upgrading
 ItemDisplay[ARMOR NORM RARE ID]:%NAME%{%YELLOW%This Item %TAN%+ %WHITE%Ral %TAN%+ %WHITE%Thul %TAN%+ %ORANGE%P. %WHITE%Amethyst %PURPLE%o%NL%%TAN%Note%WHITE%: Cube Upgrading Recipe:}%CONTINUE%
@@ -4953,7 +4969,7 @@ ItemDisplay[NMAG !INF !RW scm CLVL>10 SOCK=0 !(MAPID=1 OR MAPID=40 OR MAPID=75 O
 ItemDisplay[NMAG !INF !RW SOCK=2 scm CLVL<20]:%GRAY%%NAME%%CONTINUE%// 2os
 ItemDisplay[NMAG !INF !RW SUP SOCK=2 scm CLVL<20]:%GRAY%%NAME%%CONTINUE%// 2os, Superior
 
-ItemDisplay[NMAG !INF !RW SOCK=0 (crs OR bsd OR lsd) CLVL>59 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide 0os Spirit bases after level 60
+ItemDisplay[NMAG !INF !RW SOCK=0 (crs OR bsd OR lsd) CLVL>49 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide 0os Spirit bases after level 60
 
 ItemDisplay[NMAG !INF !RW SOCK=0 crs (ILVL<26 OR ILVL>40) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide crystal swords that won't roll 4 sockets from Larzuk quest
 ItemDisplay[NMAG !INF !RW SOCK=0 crs (ILVL>25 AND ILVL<41)]:%WHITE%%NAME% %TAN%[%ORANGE%Larzuk%TAN%]%WHITE%%DOT-20%%PX-00%%CONTINUE%// 
@@ -4967,7 +4983,7 @@ ItemDisplay[NMAG !INF !RW SOCK=0 lsd ILVL>25 CLVL<41]:%WHITE%%NAME% %TAN%[%ORANG
 ItemDisplay[NMAG !INF !RW (SOCK=2 OR SOCK=3) (bsd OR lsd OR crs) CLVL>40 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide Broad Swords that aren't 0os or 4os
 
 //      Show and notify for 4, 5, and 6 socket crystal swords and 4 socket broad swords and long swords
-ItemDisplay[NMAG !INF !RW SOCK=4 CLVL>89 (crs OR bsd OR lsd) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hides 4os crystal swords, broad swords, and long swords past level 89
+ItemDisplay[NMAG !INF !RW SOCK=4 CLVL>79 (crs OR bsd OR lsd) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hides 4os crystal swords, broad swords, and long swords past level 89
 ItemDisplay[NMAG !INF !RW SOCK=4 CLVL>59 (crs OR bsd OR lsd)]:%GRAY%%NAME%%CONTINUE%// Show but don't notify for 4os crystal swords, broad swords, and long swords after level 59
 ItemDisplay[NMAG !INF !RW SOCK=4 CLVL<60 (crs OR bsd OR lsd)]:%GRAY%%NAME%%DOT-20%%PX-00%%CONTINUE%// Show and notify for 4os crystal swords, broad swords, and long swords before level 60
 
