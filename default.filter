@@ -1,15 +1,15 @@
 // ==============================  Filter Tiers  ==================================
 
 // ItemDisplayFilterName[]:Show All Items//               TIER-0
-ItemDisplayFilterName[]: Least Strict - Show Most Items// TIER-1
+ItemDisplayFilterName[]: Least Strict - Most Magic/Rare// TIER-1
 ItemDisplayFilterName[]: Less Strict - Some Magic/Rare//  TIER-2
-ItemDisplayFilterName[]: More Strict - Fewer Magic/Rare// TIER-3
+ItemDisplayFilterName[]: Strict - Fewer Magic/Rare//      TIER-3
 ItemDisplayFilterName[]: Strict - Hide H5 Potions//       TIER-4
 ItemDisplayFilterName[]: Strict - Hide H5 M5 Potions//    TIER-5
-ItemDisplayFilterName[]: Hide Map Clutter//               TIER-6
-ItemDisplayFilterName[]: Hide H5, Map Clutter//           TIER-7
-ItemDisplayFilterName[]: Hide H5 M5, Map Clutter//        TIER-8
-ItemDisplayFilterName[]: Hide H5 M5 Juv, Map Clutter//    TIER-9
+ItemDisplayFilterName[]: Most Strict//                    TIER-6
+ItemDisplayFilterName[]: Most Strict - Hide H5//          TIER-7
+ItemDisplayFilterName[]: Most Strict - Hide H5 M5//       TIER-8
+ItemDisplayFilterName[]: Most Strict - Hide H5 M5 Juv//   TIER-9
 
 // ==============================  Arrows and Bolts  ===============================
 
@@ -57,8 +57,8 @@ ItemDisplay[hp4 CLVL<30]:%RED%i%GRAY%|%RED%( %WHITE%H%GRAY%-%WHITE%4 %RED%)%GRAY
 
 // Super Healing Potion
 ItemDisplay[hp5 CLVL<35]:%RED%i%GRAY%|%RED%( %WHITE%H%GRAY%-%WHITE%5 %RED%)%GRAY%|%RED%i{%WHITE% Super Healing Potion }//
-ItemDisplay[hp5 CLVL<80 CLVL>34]:%RED%i%GRAY%|%RED%( %WHITE%H %RED%)%GRAY%|%RED%i{%WHITE% Super Healing Potion }// Character levels 35 to 79
-ItemDisplay[hp5 CLVL>79 FILTLVL<4]:%GRAY%i%RED%( %WHITE%H %RED%)%GRAY%i%RED%{%WHITE% Super Healing Potion }// Character levels 80+
+ItemDisplay[hp5 CLVL<80 CLVL>34]:%GRAY%i%RED%(O)%GRAY%i%RED%{%WHITE% Super Healing Potion }// Character levels 35 to 79
+ItemDisplay[hp5 CLVL>79 FILTLVL<4]:%GRAY%i%RED%(O)%GRAY%i%RED%{%WHITE% Super Healing Potion }// Character levels 80+
 
 ItemDisplay[hp5 CLVL>79 FILTLVL=6]:%GRAY%i%RED%(O)%GRAY%i%RED%{%WHITE% Super Healing Potion }// On Filter Level 4, show as i(O)i
 ItemDisplay[hp5 CLVL>79 !FILTLVL=6 FILTLVL>3]:{%NL%%WHITE% Super Healing Potion }// On Filter Levels 5 or higher, hide Super Healing potions
@@ -78,8 +78,8 @@ ItemDisplay[mp3 CLVL<25]:%BLUE%i%GRAY%|%BLUE%( %WHITE%M%GRAY%-%WHITE%3 %BLUE%)%G
 ItemDisplay[mp4 CLVL<30]:%BLUE%i%GRAY%|%BLUE%( %WHITE%M%GRAY%-%WHITE%4 %BLUE%)%GRAY%|%BLUE%i{%WHITE% Greater Mana Potion }//
 
 ItemDisplay[mp5 CLVL<35]:%BLUE%i%GRAY%|%BLUE%( %WHITE%M%GRAY%-%WHITE%5 %BLUE%)%GRAY%|%BLUE%i{%WHITE% Super Mana Potion }//
-ItemDisplay[mp5 CLVL>34 CLVL<80]:%BLUE%i%GRAY%|%BLUE%(%WHITE% M %BLUE%)%GRAY%|%BLUE%i{%WHITE% Super Mana Potion }// Character levels 35 to 79
-ItemDisplay[mp5 CLVL>79 FILTLVL<4]:%GRAY%i%BLUE%(%WHITE% M %BLUE%)%GRAY%i%BLUE%{%WHITE% Super Mana Potion }// Character levels 80+
+ItemDisplay[mp5 CLVL>34 CLVL<80]:%GRAY%i%BLUE%(O)%GRAY%i%BLUE%{%WHITE% Super Mana Potion }// Character levels 35 to 79
+ItemDisplay[mp5 CLVL>79 FILTLVL<4]:%GRAY%i%BLUE%(O)%GRAY%i%BLUE%{%WHITE% Super Mana Potion }// Character levels 80+
 
 ItemDisplay[mp5 CLVL>79 (FILTLVL=4 OR FILTLVL=6 OR FILTLVL=7)]:%GRAY%i%BLUE%(O)%GRAY%i%BLUE%{%WHITE% Super Mana Potion }// On Filter Level 4 5 or 7, show as i(O)i
 ItemDisplay[mp5 CLVL>79 (FILTLVL=5 OR FILTLVL=8 OR FILTLVL=9)]:{%NL%%WHITE% Super Mana Potion }// On Filter Level 6 8 or 9, hide Super Mana potions
@@ -4895,8 +4895,8 @@ ItemDisplay[NMAG (wsp OR 9ws OR 7ws) SOCK=3 (SK101>2 OR SK121>2 OR SK123>2 OR SK
 
 ItemDisplay[NMAG SCEPTER SOCK=4 !RW CLVL>89 (SK121>2 OR SK123>2 OR SK110>2 OR SK99>2) !RW]:%ORANGE%Insight %WHITE%%NAME%%DOT-20%%PX-00%%CONTINUE%//
 
-ItemDisplay[NMAG SCEPTER SOCK=4 !RW CLVL>79]:%ORANGE%Insight %WHITE%%NAME%{%NAME%}//
-ItemDisplay[NMAG SCEPTER SOCK=4 !RW CLVL<80]:%ORANGE%Insight %WHITE%%NAME%%DOT-20%%PX-00%{%NAME%}//
+ItemDisplay[NMAG SCEPTER SOCK=4 !RW CLVL>79]:%ORANGE%Insight %WHITE%%NAME%{%NAME%}%CONTINUE%//
+ItemDisplay[NMAG SCEPTER SOCK=4 !RW CLVL<80]:%ORANGE%Insight %WHITE%%NAME%%DOT-20%%PX-00%{%NAME%}%CONTINUE%//
 
 ItemDisplay[NMAG !INF !RW CLVL>29 SCEPTER !(SK96>0 OR SK97>0 OR SK98>0 OR SK99>0 OR SK100>0 OR SK101>0 OR SK102>0 OR SK103>0 OR SK104>0 OR SK105>0 OR SK106>0 OR SK107>0 OR SK108>0 OR SK109>0 OR SK110>0 OR SK111>0 OR SK112>0 OR SK113>0 OR SK114>0 OR SK115>0 OR SK116>0 OR SK117>0 OR SK118>0 OR SK119>0 OR SK120>0 OR SK121>0 OR SK122>0 OR SK123>0 OR SK124>0 OR SK125>0 OR SK371>0 OR SK364>0) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
