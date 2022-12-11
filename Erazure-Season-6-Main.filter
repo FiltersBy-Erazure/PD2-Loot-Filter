@@ -45,7 +45,7 @@ ItemDisplay[hp2 CLVL>19]:{%NL%%WHITE% Light Healing Potion }//      Hides Light 
 ItemDisplay[hp3 CLVL>24]:{%NL%%WHITE% Healing Potion }//            Hides Healing Potions after level 22
 ItemDisplay[hp4 CLVL>29]:{%NL%%WHITE% Greater Healing Potion }//    Hides Greater Healing Potions after level 29
 
-// Display for Healing Potions during levels 1-35
+// Display for Healing Potions during levels 1-30
 ItemDisplay[hp1 CLVL<15]:%RED%i( %WHITE%H%GRAY%-%WHITE%1 %RED%)i{%WHITE% Minor Healing Potion }//
 ItemDisplay[hp2 CLVL<20]:%RED%i%GRAY%|%RED%( %WHITE%H%GRAY%-%WHITE%2 %RED%)%GRAY%|%RED%i{%WHITE% Light Healing Potion }//
 ItemDisplay[hp3 CLVL<25]:%RED%i%GRAY%|%RED%( %WHITE%H%GRAY%-%WHITE%3 %RED%)%GRAY%|%RED%i{%WHITE% Mid Healing Potion }//
@@ -54,10 +54,8 @@ ItemDisplay[hp4 CLVL<30]:%RED%i%GRAY%|%RED%( %WHITE%H%GRAY%-%WHITE%4 %RED%)%GRAY
 // Super Healing Potion
 ItemDisplay[hp5 CLVL<35]:%RED%i%GRAY%|%RED%( %WHITE%H%GRAY%-%WHITE%5 %RED%)%GRAY%|%RED%i{%WHITE% Super Healing Potion }//
 ItemDisplay[hp5 CLVL<80 CLVL>34]:%GRAY%i%RED%(O)%GRAY%i%RED%{%WHITE% Super Healing Potion }// Character levels 35 to 79
-ItemDisplay[hp5 CLVL>79 FILTLVL<3]:%GRAY%i%RED%(O)%GRAY%i%RED%{%WHITE% Super Healing Potion }// Character levels 80+
-
-ItemDisplay[hp5 CLVL>79 FILTLVL=5]:%GRAY%i%RED%(O)%GRAY%i%RED%{%WHITE% Super Healing Potion }// On Filter Level 4, show as i(O)i
-ItemDisplay[hp5 CLVL>79 !FILTLVL=5 FILTLVL>3]:{%NL%%WHITE% Super Healing Potion }// On Filter Levels 5 or higher, hide Super Healing potions
+ItemDisplay[hp5 CLVL>79 (FILTLVL<3 OR FILTLVL=5)]:%GRAY%i%RED%(O)%GRAY%i%RED%{%WHITE% Super Healing Potion }// On Filter Level 1, 2, and 5, show as i(O)i
+ItemDisplay[hp5 CLVL>79 !FILTLVL=5 FILTLVL>2]:{%NL%%WHITE% Super Healing Potion }// On Filter Levels 3 or higher (except for Level 5), hide Super Healing potions
 
 // ==================================  Mana Potions  ====================================
 
@@ -67,21 +65,17 @@ ItemDisplay[mp2 CLVL>19]:{%NL%%WHITE% Light Mana Potion }//         Hides Light 
 ItemDisplay[mp3 CLVL>24]:{%NL%%WHITE% Mana Potion }//               Hides Mana Potions after level 21
 ItemDisplay[mp4 CLVL>29]:{%NL%%WHITE% Greater Mana Potion }//       Hides Greater Mana Potions after level 29
 
-// Display for Mana Potions during levels 1-35
+// Display for Mana Potions during levels 1-30
 ItemDisplay[mp1 CLVL<15]:%BLUE%i( %WHITE%M%GRAY%-%WHITE%1 %BLUE%)i{%WHITE% Minor Mana Potion }//
 ItemDisplay[mp2 CLVL<20]:%BLUE%i%GRAY%|%BLUE%( %WHITE%M%GRAY%-%WHITE%2 %BLUE%)%GRAY%|%BLUE%i{%WHITE% Light Mana Potion }//
 ItemDisplay[mp3 CLVL<25]:%BLUE%i%GRAY%|%BLUE%( %WHITE%M%GRAY%-%WHITE%3 %BLUE%)%GRAY%|%BLUE%i{%WHITE% Mana Potion }//
 ItemDisplay[mp4 CLVL<30]:%BLUE%i%GRAY%|%BLUE%( %WHITE%M%GRAY%-%WHITE%4 %BLUE%)%GRAY%|%BLUE%i{%WHITE% Greater Mana Potion }//
 
+// Super Mana Potion
 ItemDisplay[mp5 CLVL<35]:%BLUE%i%GRAY%|%BLUE%( %WHITE%M%GRAY%-%WHITE%5 %BLUE%)%GRAY%|%BLUE%i{%WHITE% Super Mana Potion }//
 ItemDisplay[mp5 CLVL>34 CLVL<80]:%GRAY%i%BLUE%(O)%GRAY%i%BLUE%{%WHITE% Super Mana Potion }// Character levels 35 to 79
-ItemDisplay[mp5 CLVL>79 FILTLVL<4]:%GRAY%i%BLUE%(O)%GRAY%i%BLUE%{%WHITE% Super Mana Potion }// Character levels 80+
-
-ItemDisplay[mp5 CLVL>79 (FILTLVL=3 OR FILTLVL=5 OR FILTLVL=6)]:%GRAY%i%BLUE%(O)%GRAY%i%BLUE%{%WHITE% Super Mana Potion }// On Filter Level 4 5 or 7, show as i(O)i
-ItemDisplay[mp5 CLVL>79 (FILTLVL=4 OR FILTLVL=7 OR FILTLVL=8 OR FILTLVL=9)]:{%NL%%WHITE% Super Mana Potion }// On Filter Level 6 8 or 9, hide Super Mana potions
-
-// Adjust display of Super Mana Potions based on character level
-
+ItemDisplay[mp5 CLVL>79 (FILTLVL<4 OR FILTLVL=5 OR FILTLVL=6)]:%GRAY%i%BLUE%(O)%GRAY%i%BLUE%{%WHITE% Super Mana Potion }// On Filter Level 1, 2, 3, 5 and 6, show as i(O)i
+ItemDisplay[mp5 CLVL>79 (FILTLVL=4 OR FILTLVL=7 OR FILTLVL=8 OR FILTLVL=9)]:{%NL%%WHITE% Super Mana Potion }// On Filter Level 4, 7, 8 and 9, hide Super Mana potions
 
 // ==================================  Rejuvenation Potions  ================================
 
@@ -1828,7 +1822,7 @@ ItemDisplay[UNI NORM !ID FILTLVL<9]:%GOLD%*%GRAY%* %WHITE%>  %NAME%  %WHITE%< %G
 ItemDisplay[UNI NORM !ID FILTLVL=9]:%GOLD%*%GRAY%* %WHITE%>  %NAME%  %WHITE%< %GRAY%*%GOLD%*// Don't notify for normal uniques on filter level 9
 ItemDisplay[UNI EXC !ID FILTLVL<9]:%GOLD%*%GRAY%* %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%< %GRAY%*%GOLD%*%BORDER-00%%MAP-19%%DOT-61%%PX-20%//
 ItemDisplay[UNI EXC !ID FILTLVL=9]:%GOLD%*%GRAY%* %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%< %GRAY%*%GOLD%*// Don't notify for exceptional uniques on filter level 9
-ItemDisplay[UNI ELT !ID]:%GOLD%|%WHITE%|  %GOLD%*%GRAY%* %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%< %GRAY%*%GOLD%*  %WHITE%|%GOLD%|%BORDER-00%%MAP-19%%DOT-61%%PX-20%//
+ItemDisplay[UNI ELT !ID]:%GOLD%|%WHITE%|  %GRAY%* %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%< %GRAY%*  %WHITE%|%GOLD%|%BORDER-00%%MAP-19%%DOT-61%%PX-20%//
 
 // ===========================================  Set Items  =================================================
 
