@@ -92,12 +92,12 @@ ItemDisplay[vps CLVL>13]:{%NL%%GRAY%|(%WHITE% Stamina %GRAY%)|}// Hides Stamina 
 ItemDisplay[vps CLVL<14]:%GRAY%|(%WHITE% Stamina %GRAY%)|{Stamina Potion}//
 
 ItemDisplay[yps (MAPID>160 MAPID<164)]:%DARK_GREEN%|(%WHITE%A%DARK_GREEN%)|{%NL%%WHITE% +25% poison resistance for 30 seconds %NL%%WHITE%Cures %DARK_GREEN%poison %WHITE%affliction and grants %NL%%WHITE% Antidote Potion: }// Condenses Antidote Potions after level 79
-ItemDisplay[yps !(MAPID>160 MAPID<164) CLVL>79]:{%NL%%WHITE% +25% poison resistance for 30 seconds %NL%%WHITE%Cures %DARK_GREEN%poison %WHITE%affliction and grants %NL%%WHITE% Antidote Potion: }// Condenses Antidote Potions after level 79
-ItemDisplay[yps CLVL<80 CLVL>19]:%DARK_GREEN%|(%WHITE%A%DARK_GREEN%)|{%WHITE% +25% poison resistance for 30 seconds %NL%%WHITE%Cures %DARK_GREEN%poison %WHITE%affliction and grants %NL%Antidote Potion:}// Condenses Antidote Potions after level 20
+ItemDisplay[yps !(MAPID>160 MAPID<164) CLVL>79 FILTLVL>4]:{%NL%%WHITE% +25% poison resistance for 30 seconds %NL%%WHITE%Cures %DARK_GREEN%poison %WHITE%affliction and grants %NL%%WHITE% Antidote Potion: }// Condenses Antidote Potions after level 79
+ItemDisplay[yps CLVL>19]:%DARK_GREEN%|(%WHITE%A%DARK_GREEN%)|{%WHITE% +25% poison resistance for 30 seconds %NL%%WHITE%Cures %DARK_GREEN%poison %WHITE%affliction and grants %NL%Antidote Potion:}// Condenses Antidote Potions after level 20
 ItemDisplay[yps CLVL<20]:%DARK_GREEN%|( %WHITE%Antidote %DARK_GREEN%)|{%WHITE% +25% poison resistance for 30 seconds %NL%%WHITE%Cures %DARK_GREEN%poison %WHITE%affliction and grants %NL%Antidote Potion:}// Antidote Potion
 
-ItemDisplay[wms CLVL>79]:{%NL%%WHITE% +25% cold resistance for 30 seconds%NL%%WHITE%Clears %BLUE%frozen %WHITE%affliction and grants %NL%%WHITE% Thawing Potion: }//              Condenses Thawing Potions after level 79
-ItemDisplay[wms CLVL<80 CLVL>24]:%YELLOW%|(%WHITE%T%YELLOW%)|{%WHITE% +25% cold resistance for 30 seconds%NL%%WHITE%Clears %BLUE%frozen %WHITE%affliction and grants %NL% Thawing Potion: }//    Condenses Thawing Potions after level 24
+ItemDisplay[wms CLVL>79 FILTLVL>4]:{%NL%%WHITE% +25% cold resistance for 30 seconds%NL%%WHITE%Clears %BLUE%frozen %WHITE%affliction and grants %NL%%WHITE% Thawing Potion: }//              Condenses Thawing Potions after level 79
+ItemDisplay[wms CLVL>24]:%YELLOW%|(%WHITE%T%YELLOW%)|{%WHITE% +25% cold resistance for 30 seconds%NL%%WHITE%Clears %BLUE%frozen %WHITE%affliction and grants %NL% Thawing Potion: }//    Condenses Thawing Potions after level 24
 ItemDisplay[wms CLVL<25]:%YELLOW%|( %WHITE%Thawing %YELLOW%)|{%WHITE% +25% cold resistance for 30 seconds%NL%%WHITE%Clears %BLUE%frozen %WHITE%affliction and grants %NL% Thawing Potion: }//                   Thawing Potion
 
 // =====================================  Throwing Potions  =================================
@@ -154,7 +154,8 @@ ItemDisplay[key QTY=3 CLVL>79]:{%NL%%GRAY%Keys %TAN%x %WHITE%%QTY%}//
 ItemDisplay[key QTY=3 CLVL<80]:%GRAY%Keys %TAN%x %WHITE%%QTY%//
 ItemDisplay[key QTY=4 CLVL>89]:{%NL%%GRAY%Keys %TAN%x %WHITE%%QTY%}//
 ItemDisplay[key QTY=4 CLVL<90]:%GRAY%Keys %TAN%x %WHITE%%QTY%//
-ItemDisplay[key QTY=5 CLVL>89]:{%NL%%GRAY%Keys %TAN%x %WHITE%%QTY%}//
+ItemDisplay[key QTY=5 CLVL>89 FILTLVL>4]:{%NL%%GRAY%Keys %TAN%x %WHITE%%QTY%}//
+ItemDisplay[key QTY=5 CLVL>89 FILTLVL<5]:%GRAY%Keys %TAN%x %WHITE%%QTY%//
 ItemDisplay[key QTY=5 CLVL<90]:%GRAY%Keys %TAN%x %WHITE%%QTY%//
 ItemDisplay[key QTY>5]:%GRAY%Keys %TAN%x %WHITE%%QTY%//
 
@@ -844,10 +845,10 @@ ItemDisplay[RARE (t24 OR t25 OR t31 OR t32 OR t35 OR t37 OR t38 OR t39 OR t3a)]:
 
 ItemDisplay[(NMAG OR MAG OR RARE) (t41 OR t42 OR t43)]:%ORANGE%\V/  %NAME% %YELLOW%[%ORANGE%T4%YELLOW%] %RED%Dungeon  %ORANGE%\V/%BORDER-05%%MAP-62%%DOT-68%{%NAME%}%CONTINUE%//
 
-
 ItemDisplay[NMAG (t11 OR t12 OR t13 OR t14 OR t15 OR t16 OR t17 OR t18 OR t19 OR t21 OR t22 OR t23 OR t24 OR t25 OR t26 OR t27 OR t28 OR t29 OR t31 OR t32 OR t33 OR t34 OR t35 OR t36 OR t37 OR t38 OR t39 OR t3a OR t41 OR t42 OR t43)]:%NAME%%PX-20%%WHITE%{%NAME%}//
 ItemDisplay[MAG (t11 OR t12 OR t13 OR t14 OR t15 OR t16 OR t17 OR t18 OR t19 OR t21 OR t22 OR t23 OR t24 OR t25 OR t26 OR t27 OR t28 OR t29 OR t31 OR t32 OR t33 OR t34 OR t35 OR t36 OR t37 OR t38 OR t39 OR t3a OR t41 OR t42 OR t43)]:%NAME%%PX-97%%BLUE%{%NAME%}//
 ItemDisplay[RARE (t11 OR t12 OR t13 OR t14 OR t15 OR t16 OR t17 OR t18 OR t19 OR t21 OR t22 OR t23 OR t24 OR t25 OR t26 OR t27 OR t28 OR t29 OR t31 OR t32 OR t33 OR t34 OR t35 OR t36 OR t37 OR t38 OR t39 OR t3a OR t41 OR t42 OR t43)]:%NAME%%PX-A8%%YELLOW%{%NAME%}//
+
 // Arenas
 ItemDisplay[(t61 OR t62)]:%BLUE%\V/  %WHITE%%NAME%  %BLUE%\V/%WHITE%{%NL%%TAN%to open Dueling Arena%NL%Right-click in town%NL%}// Items for PvP arenas
 
@@ -1881,16 +1882,16 @@ ItemDisplay[RARE !ID !ETH BOOTS CLVL<90]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< 
 ItemDisplay[RARE !ID !ETH BELT CLVL<90]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%%BORDER-8F%%MAP-9B%%DOT-6C%%PX-A8%// All unidentified rare belts
 ItemDisplay[RARE !ID !ETH GLOVES CLVL<90]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%%BORDER-8F%%MAP-9B%%DOT-6C%%PX-A8%// All unidentified rare gloves
 
-//ItemDisplay[RARE !ID NORM CHEST CLVL>59 FILTLVL>1]://     Hide Normal quality Rare Amazon bows After Level 39
-//ItemDisplay[RARE !ID EXC CHEST CLVL>89 FILTLVL>1]://      Hide Exceptional quality Rare Amazon bows After Level 89
-//ItemDisplay[RARE !ID ELT CHEST CLVL>94 FILTLVL>4]://      Hide Elite quality Rare Amazon bows After Level 94
+//ItemDisplay[RARE !ID NORM CHEST CLVL>59 FILTLVL>1]://     Hide Normal quality Rare Chests After Level 39
+//ItemDisplay[RARE !ID EXC CHEST CLVL>89 FILTLVL>1]://      Hide Exceptional quality Rare Chests After Level 89
+//ItemDisplay[RARE !ID ELT CHEST CLVL>94 FILTLVL>4]://      Hide Elite quality Rare Chests After Level 94
 
 ItemDisplay[RARE !ID CLVL<80 (clb OR spc OR 9cl OR 9sp OR 7cl OR 7sp OR BAR OR DRU OR SOR OR WAND OR SCEPTER OR NEC)]:%YELLOW%*  %NAME%  %YELLOW%*// Show all rare Druid Clubs that can roll staff mods
 ItemDisplay[RARE !ID CLVL>79 (clb OR spc OR 9cl OR 9sp OR 7cl OR 7sp OR BAR OR DRU OR SOR OR WAND OR SCEPTER OR NEC)]:%YELLOW%%NAME%// Show all rare Druid Clubs that can roll staff mods
 
-//ItemDisplay[RARE !ID NORM (am1 OR am2) CLVL>39]://                    Hide Normal quality Rare Chests After Level 39
-//ItemDisplay[RARE !ID EXC (am6 OR am7) CLVL>89]://                     Hide Exceptional quality Rare Chests After Level 89
-//ItemDisplay[RARE !ID ELT (amb OR amc) CLVL>94]://                     Hide Elite quality Rare Chests After Level 94
+//ItemDisplay[RARE !ID NORM (am1 OR am2) CLVL>39]://                    Hide Normal quality Rare Amazon bows After Level 39
+//ItemDisplay[RARE !ID EXC (am6 OR am7) CLVL>89]://                     Hide Exceptional quality Rare Amazon bows After Level 89
+//ItemDisplay[RARE !ID ELT (amb OR amc) CLVL>94]://                     Hide Elite quality Rare Amazon bows After Level 94
 
 //ItemDisplay[RARE !ID NORM !ETH (am5 OR ama OR amf) CLVL>59]://        Hide non-Ethereal Normal quality Rare Amazon javelins After Level 59
 //ItemDisplay[RARE !ID EXC !ETH (am5 OR ama OR amf) CLVL>89]://         Hide non-Ethereal Exceptional quality Rare Amazon javelins After Level 89
