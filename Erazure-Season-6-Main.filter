@@ -1884,6 +1884,7 @@ ItemDisplay[RARE !ID !ETH BOOTS CLVL<90]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< 
 ItemDisplay[RARE !ID !ETH BELT CLVL<90]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%%BORDER-8F%%MAP-9B%%DOT-6C%%PX-A8%// All unidentified rare belts
 ItemDisplay[RARE !ID !ETH GLOVES CLVL<90]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%%BORDER-8F%%MAP-9B%%DOT-6C%%PX-A8%// All unidentified rare gloves
 
+//  Always show rare armors
 //ItemDisplay[RARE !ID NORM CHEST CLVL>59 FILTLVL>1]://     Hide Normal quality Rare Chests After Level 39
 //ItemDisplay[RARE !ID EXC CHEST CLVL>89 FILTLVL>1]://      Hide Exceptional quality Rare Chests After Level 89
 //ItemDisplay[RARE !ID ELT CHEST CLVL>94 FILTLVL>4]://      Hide Elite quality Rare Chests After Level 94
@@ -1891,13 +1892,14 @@ ItemDisplay[RARE !ID !ETH GLOVES CLVL<90]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%<
 ItemDisplay[RARE !ID CLVL<90 (clb OR spc OR 9cl OR 9sp OR 7cl OR 7sp OR BAR OR DRU OR SOR OR WAND OR SCEPTER OR NEC)]:%YELLOW%*  %NAME%  %YELLOW%*// Show all rare Druid Clubs that can roll staff mods
 ItemDisplay[RARE !ID CLVL>89 (clb OR spc OR 9cl OR 9sp OR 7cl OR 7sp OR BAR OR DRU OR SOR OR WAND OR SCEPTER OR NEC)]:%YELLOW%%NAME%// Show all rare Druid Clubs that can roll staff mods
 
-ItemDisplay[RARE !ID NORM am1 CLVL>39 FILTLVL>1]://                               Hide Normal Rare quality Stag Bows After Level 39
-ItemDisplay[RARE !ID EXC am6 CLVL>89 FILTLVL>1]://                                Hide Exceptional Rare quality Ashwood Bows After Level 89
-ItemDisplay[RARE !ID ELT amb CLVL>94 FILTLVL>4]://                                Hide Elite Rare quality Matriarchal Bows After Level 94
+ItemDisplay[RARE !ID NORM am1 CLVL>39 FILTLVL>1]://                     Hide Normal Rare quality Stag Bows After Level 39
+ItemDisplay[RARE !ID EXC am6 CLVL>89 FILTLVL>1]://                      Hide Exceptional Rare quality Ashwood Bows After Level 89
+ItemDisplay[RARE !ID ELT amb CLVL>94 FILTLVL>4]://                      Hide Elite Rare quality Matriarchal Bows After Level 94
 
-//ItemDisplay[RARE !ID NORM !ETH (am5 OR ama OR amf) CLVL>59]://        Hide non-Ethereal Normal quality Rare Amazon javelins After Level 59
-//ItemDisplay[RARE !ID EXC !ETH (am5 OR ama OR amf) CLVL>89]://         Hide non-Ethereal Exceptional quality Rare Amazon javelins After Level 89
-//ItemDisplay[RARE !ID ELT !ETH (am5 OR ama OR amf) CLVL>94]://         Hide non-ethereal Elite quality Rare Amazon javelins After Level 94
+//  Always show rare amazon javelins
+//ItemDisplay[RARE !ID NORM !ETH (am5 OR ama OR amf) CLVL>59]://
+//ItemDisplay[RARE !ID EXC !ETH (am5 OR ama OR amf) CLVL>89]://
+//ItemDisplay[RARE !ID ELT !ETH (am5 OR ama OR amf) CLVL>94]://
 
 ItemDisplay[RARE !ID DIN NORM CLVL>39 FILTLVL>1]://                     Hide Normal quality Rare Paladin Shields After Level 39
 ItemDisplay[RARE !ID DIN EXC CLVL>89 FILTLVL>1]://                      Hide Exceptional quality Rare Paladin Shields After Level 89
@@ -5103,16 +5105,16 @@ ItemDisplay[ETH NMAG]:%GRAY%[%WHITE%Eth%GRAY%] %NAME%{%NAME%}%CONTINUE%//
 
 // These lines add a "$" to the start of an item name if it's more than 10,000 in normal, more than 20,000 in nightmare, more than 25,000 in hell
 // Normal difficulty
-ItemDisplay[(NMAG OR MAG OR RARE) !RW !ETH SOCK=0 PRICE>9999 DIFF=0]:%GRAY%(%DARK_GREEN%$%GRAY%) %WHITE%%NAME%{%NAME%}%CONTINUE%// For non-eth, non socketed items
-ItemDisplay[(NMAG OR MAG OR RARE) !RW (ETH OR SOCK>0) PRICE>9999 DIFF=0]:%GRAY%(%DARK_GREEN%$%GRAY%) %GRAY%%NAME%{%NAME%}%CONTINUE%// For eth or socketed items
+ItemDisplay[(NMAG OR MAG OR RARE) !RW !ETH SOCK=0 PRICE>9999 DIFF=0 !((CHEST OR BELT OR SHIELD) (STAT36>7 OR STAT17>99))]:%GRAY%(%DARK_GREEN%$%GRAY%) %WHITE%%NAME%{%NAME%}%CONTINUE%// For non-eth, non socketed items
+ItemDisplay[(NMAG OR MAG OR RARE) !RW (ETH OR SOCK>0) PRICE>9999 DIFF=0 !((CHEST OR BELT OR SHIELD) (STAT36>7 OR STAT17>99))]:%GRAY%(%DARK_GREEN%$%GRAY%) %GRAY%%NAME%{%NAME%}%CONTINUE%// For eth or socketed items
 
 // Nightmare difficulty
-ItemDisplay[(NMAG OR MAG OR RARE) !RW !ETH SOCK=0 PRICE>19999 DIFF=1]:%GRAY%(%DARK_GREEN%$%GRAY%) %WHITE%%NAME%{%NAME%}%CONTINUE%// For non-eth, non socketed items
-ItemDisplay[(NMAG OR MAG OR RARE) !RW (ETH OR SOCK>0) PRICE>19999 DIFF=1]:%GRAY%(%DARK_GREEN%$%GRAY%) %GRAY%%NAME%{%NAME%}%CONTINUE%// For eth or socketed items
+ItemDisplay[(NMAG OR MAG OR RARE) !RW !ETH SOCK=0 PRICE>19999 DIFF=1 !((CHEST OR BELT OR SHIELD) (STAT36>7 OR STAT17>99))]:%GRAY%(%DARK_GREEN%$%GRAY%) %WHITE%%NAME%{%NAME%}%CONTINUE%// For non-eth, non socketed items
+ItemDisplay[(NMAG OR MAG OR RARE) !RW (ETH OR SOCK>0) PRICE>19999 DIFF=1 !((CHEST OR BELT OR SHIELD) (STAT36>7 OR STAT17>99))]:%GRAY%(%DARK_GREEN%$%GRAY%) %GRAY%%NAME%{%NAME%}%CONTINUE%// For eth or socketed items
 
 // Hell difficulty
-ItemDisplay[(NMAG OR MAG OR RARE) !RW !ETH SOCK=0 PRICE>24999 DIFF=2]:%GRAY%(%DARK_GREEN%$%GRAY%) %WHITE%%NAME%{%NAME%}%CONTINUE%// For non-eth, non socketed items
-ItemDisplay[(NMAG OR MAG OR RARE) !RW (ETH OR SOCK>0) PRICE>24999 DIFF=2]:%GRAY%(%DARK_GREEN%$%GRAY%) %GRAY%%NAME%{%NAME%}%CONTINUE%// For eth or socketed items
+ItemDisplay[(NMAG OR MAG OR RARE) !RW !ETH SOCK=0 PRICE>24999 DIFF=2 !((CHEST OR BELT OR SHIELD) (STAT36>7 OR STAT17>99))]:%GRAY%(%DARK_GREEN%$%GRAY%) %WHITE%%NAME%{%NAME%}%CONTINUE%// For non-eth, non socketed items
+ItemDisplay[(NMAG OR MAG OR RARE) !RW (ETH OR SOCK>0) PRICE>24999 DIFF=2 !((CHEST OR BELT OR SHIELD) (STAT36>7 OR STAT17>99))]:%GRAY%(%DARK_GREEN%$%GRAY%) %GRAY%%NAME%{%NAME%}%CONTINUE%// For eth or socketed items
 
 
 // ------------------------------------------------------------------------------
