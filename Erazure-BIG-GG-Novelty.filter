@@ -1900,7 +1900,7 @@ ItemDisplay[RARE !ID amu]:%PURPLE%\%YELLOW%\  %PURPLE%* %YELLOW%> %TAN%o  %YELLO
 ItemDisplay[RARE !ID CIRC]:%PURPLE%\%YELLOW%\  %PURPLE%* %YELLOW%> %TAN%o  %YELLOW%%NAME%  %TAN%o %YELLOW%< %PURPLE%*  %YELLOW%/%PURPLE%/%YELLOW%%BORDER-8F%%MAP-9B%%DOT-6C%%PX-A8%// All unidentified rare Circlets
 ItemDisplay[RARE !ID rin]:%PURPLE%\%YELLOW%\  %PURPLE%* %YELLOW%> %TAN%o  %YELLOW%%NAME%  %TAN%o %YELLOW%< %PURPLE%*  %YELLOW%/%PURPLE%/%YELLOW%%BORDER-8F%%MAP-9B%%DOT-6C%%PX-A8%// All unidentified rare Rings
 
-ItemDisplay[RARE !ID (aqv OR cqv) FILTLVL=9]:// Hide rare arrows on filter level 9
+ItemDisplay[RARE !ID (aqv OR cqv) FILTLVL=9 !AMAZON]:// Hide rare arrows on filter level 9
 ItemDisplay[RARE !ID aqv]:%YELLOW%*  %YELLOW%%NAME%  %YELLOW%*// All unidentified rare arrows
 ItemDisplay[RARE !ID cqv]:%YELLOW%*  %YELLOW%%NAME%  %YELLOW%*// All unidentified rare bolts
 
@@ -2573,9 +2573,29 @@ ItemDisplay[MAG !ID amb CLVL>79 FILTLVL>1]:// Hides magic Matriarchal Bows after
 //     			                          Arrows
 // ------------------------------------------------------------------------------
 
-ItemDisplay[MAG !ID (aqv OR cqv) CLVL>15 AMAZON FILTLVL<5]:%BLUE%* %NAME% *// 
-ItemDisplay[MAG !ID (aqv OR cqv) CLVL>15]:// 
-ItemDisplay[MAG !ID (aqv OR cqv) CLVL<16]:%BLUE%%NAME%// 
+// If character is Amazon, hide magic arrows at filter level 9
+ItemDisplay[MAG !ID aqv AMAZON FILTLVL=9]://
+// If character is Amazon, show magic arrows at filter levels 1-8
+ItemDisplay[MAG !ID aqv AMAZON FILTLVL<9]:%BLUE%* %NAME% *//
+
+// If character is not amazon, hide magic arrows on filter levels 5-8
+ItemDisplay[MAG !ID aqv !AMAZON FILTLVL>4]:// 
+// If character is not amazon, show magic arrows on filter levels 1-4
+ItemDisplay[MAG !ID aqv !AMAZON FILTLVL<5]:%BLUE%* %NAME% *// 
+
+// ------------------------------------------------------------------------------
+//     			                          Bolts
+// ------------------------------------------------------------------------------
+
+// If character is Amazon, hide magic bolts at filter level 5-8
+ItemDisplay[MAG !ID cqv AMAZON FILTLVL>4]://
+// If character is Amazon, show magic bolts at filter levels 1-4
+ItemDisplay[MAG !ID cqv AMAZON FILTLVL<5]:%BLUE%* %NAME% *//
+
+// If character is not amazon, hide magic bolts on filter levels 2-8
+ItemDisplay[MAG !ID cqv !AMAZON (FILTLVL>1 OR CLVL>9)]:// 
+// If character is not amazon, show magic bolts on filter levels 1-4
+ItemDisplay[MAG !ID cqv !AMAZON (FILTLVL<2 OR CLVL<10)]:%BLUE%* %NAME% *// 
 
 // ------------------------------------------------------------------------------
 //     			                         Assassin
