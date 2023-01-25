@@ -76,8 +76,9 @@ ItemDisplay[mp5 CLVL>29 (FILTLVL=4 OR FILTLVL=7 OR FILTLVL=8 OR FILTLVL=9)]:{%NL
 // ==================================  Rejuvenation Potions  ================================
 
 ItemDisplay[rvs FILTLVL>7]:{%NL%%WHITE% Rejuvenation Potion }//
-ItemDisplay[rvs CLVL>79]:%PURPLE%* i%GRAY%I%PURPLE%(%WHITE% Juv %PURPLE%)%GRAY%I%PURPLE%i *%WHITE%{%WHITE% Rejuvenation Potion }//
-ItemDisplay[rvs CLVL<80]:%PURPLE%* i%GRAY%I%PURPLE%(%WHITE% Rejuv %PURPLE%)%GRAY%I%PURPLE%i *%WHITE%{%WHITE% Rejuvenation Potion }//
+ItemDisplay[rvs CLVL>79]:%PURPLE%i%GRAY%I%PURPLE%(%WHITE% Juv %PURPLE%)%GRAY%I%PURPLE%i%WHITE%{%WHITE% Rejuvenation Potion }//
+ItemDisplay[rvs CLVL<80 CLVL>49]:%PURPLE%i%GRAY%I%PURPLE%(%WHITE% Rejuv %PURPLE%)%GRAY%I%PURPLE%i%WHITE%{%WHITE% Rejuvenation Potion }//
+ItemDisplay[rvs CLVL<50]:%PURPLE%* i%GRAY%I%PURPLE%(%WHITE% Rejuv %PURPLE%)%GRAY%I%PURPLE%i *%WHITE%{%WHITE% Rejuvenation Potion }//
 
 ItemDisplay[rvl CLVL>79]:%PURPLE%* iI(%WHITE% Full %PURPLE%)Ii *%WHITE%{%WHITE% Full Rejuvenation }//
 ItemDisplay[rvl CLVL<80]:%PURPLE%* iI(%WHITE% Full Rejuv %PURPLE%)Ii *%WHITE%{%WHITE% Full Rejuvenation }//
@@ -2560,23 +2561,23 @@ ItemDisplay[MAG !ID aqv AMAZON FILTLVL=9]://
 // If character is Amazon, show magic arrows at filter levels 1-8
 ItemDisplay[MAG !ID aqv AMAZON FILTLVL<9]:%BLUE%* %NAME% *//
 
-// If character is not amazon, hide magic arrows on filter levels 5-8
-ItemDisplay[MAG !ID aqv !AMAZON FILTLVL>4]:// 
-// If character is not amazon, show magic arrows on filter levels 1-4
-ItemDisplay[MAG !ID aqv !AMAZON FILTLVL<5]:%BLUE%* %NAME% *// 
+// If character is not amazon, hide magic arrows on filter levels 2-8
+ItemDisplay[MAG !ID aqv !AMAZON FILTLVL>1]:// 
+// If character is not amazon, show magic arrows on filter levels 1
+ItemDisplay[MAG !ID aqv !AMAZON FILTLVL<2]:%BLUE%* %NAME% *// 
 
 // ------------------------------------------------------------------------------
 //     			                          Bolts
 // ------------------------------------------------------------------------------
 
-// If character is Amazon, hide magic bolts at filter level 5-8
-ItemDisplay[MAG !ID cqv AMAZON FILTLVL>4]://
-// If character is Amazon, show magic bolts at filter levels 1-4
-ItemDisplay[MAG !ID cqv AMAZON FILTLVL<5]:%BLUE%* %NAME% *//
+// If character is Amazon, hide magic bolts at filter level 2-8
+ItemDisplay[MAG !ID cqv AMAZON FILTLVL>1]://
+// If character is Amazon, show magic bolts at filter levels 1
+ItemDisplay[MAG !ID cqv AMAZON FILTLVL<2]:%BLUE%* %NAME% *//
 
 // If character is not amazon, hide magic bolts on filter levels 2-8
 ItemDisplay[MAG !ID cqv !AMAZON (FILTLVL>1 OR CLVL>9)]:// 
-// If character is not amazon, show magic bolts on filter levels 1-4
+// If character is not amazon, show magic bolts on filter levels 1
 ItemDisplay[MAG !ID cqv !AMAZON (FILTLVL<2 OR CLVL<10)]:%BLUE%* %NAME% *// 
 
 // ------------------------------------------------------------------------------
