@@ -4265,7 +4265,7 @@ ItemDisplay[NMAG SOCK>0]:%NAME% %TAN%[%WHITE%%SOCKETS%%TAN%]%GRAY%%CONTINUE%// A
 ItemDisplay[NMAG !RW (ARMOR OR WEAPON) !leg SOCK=1 CLVL<5]:%GRAY%%NAME%%GRAY%// Before character level 5, show all 1 socket armors and weapons
 ItemDisplay[NMAG !RW (ARMOR OR WEAPON) !leg SOCK=1 CLVL>4 !(clb OR 9cl OR 7cl OR spc OR 9sp OR 7sp OR STAFF OR SIN OR SCEPTER OR WAND OR SOR OR BAR OR DRU OR NEC)]:// Hides all 1 socket nonmagical items except for items that sell for gold
 
-ItemDisplay[NMAG !RW FILTLVL>4 SOCK=1 (clb OR 9cl OR 7cl OR spc OR 9sp OR 7sp OR STAFF OR SIN OR SCEPTER OR WAND OR SOR OR BAR OR DRU OR NEC)]:// On filter level 5+, hide 1 socket class items
+ItemDisplay[NMAG !RW (FILTLVL>4 OR CLVL>89) SOCK=1 (clb OR 9cl OR 7cl OR spc OR 9sp OR 7sp OR STAFF OR SIN OR SCEPTER OR WAND OR SOR OR BAR OR DRU OR NEC)]:// On filter level 5+, hide 1 socket class items
 
 // Filters out inferior items unless your character is playing that class
 ItemDisplay[INF (NEC OR WAND) !NECROMANCER]://
@@ -4616,8 +4616,11 @@ ItemDisplay[NMAG !INF !RW CLVL>9 SCEPTER !(SK96>0 OR SK97>0 OR SK98>0 OR SK99>0 
 //      =========================  Armors/Chests ===========================
 // ------------------------------------------------------------------------------
 
-// Hide nonsuperior noneth 0 socket armors after filter level 4
+// Hide nonsuperior armors after filter level 4
 ItemDisplay[NMAG !INF !RW (!SUP OR (SUP ED<5)) CHEST CLVL>79 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
+
+// Hide nonsuperior 0 socket armors after character level 89 (any filter level)
+ItemDisplay[NMAG !INF !RW (!SUP OR (SUP ED<5)) CHEST CLVL>89 SOCK=0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
 // Normal tier
 ItemDisplay[NMAG !INF !RW NORM CHEST SOCK=0]:// Hide All NMAG Normal tier 0 socket Armors
@@ -4853,7 +4856,7 @@ ItemDisplay[NMAG !INF !RW (8lx OR 8mx OR 8hx) CLVL>49]://
 ItemDisplay[NMAG !INF !RW 8rx SOCK=0]://
 ItemDisplay[NMAG !INF !RW 8rx (SOCK=2 OR SOCK=3 OR SOCK=5) CLVL>49]://
 ItemDisplay[NMAG !INF !RW 8rx SOCK=4 FILTLVL<5]:%NAME%%DOT-20%%PX-00%%CONTINUE%// 4os Chu-Ko-Nus//
-ItemDisplay[NMAG !INF !RW 8rx SOCK=4 SUP ED>4 FILTLVL>4]:%NAME%%DOT-20%%PX-00%%CONTINUE%// 4os Chu-Ko-Nus//
+ItemDisplay[NMAG !INF !RW 8rx SOCK=4 SUP ED>4]:%NAME%%DOT-20%%PX-00%%CONTINUE%// 4os Chu-Ko-Nus//
 
 //  Hide other Elite tiers
 ItemDisplay[NMAG !INF !RW 6hx (SOCK=2 OR SOCK=3)]://
