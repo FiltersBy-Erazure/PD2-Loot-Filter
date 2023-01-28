@@ -1,10 +1,13 @@
 Season 6 loot filter now available on the PD2 Launcher!
 
+
 Select between Season 6 Main version or BIG GG Novelty version:
 - Season 6 Main version of the filter shows actual names for all high runes and super rare items
 - BIG GG version version of the filter shows BIG GG for runes Vex-Zod, Puzzlebox, Vial of Lightsong, and Lilith's Mirror while outside of town
 
+
 DM me on Discord if you have any questions or feedback: Wolf | Erazure#5126
+
 
 ![Earlygame Potions](https://user-images.githubusercontent.com/76863417/174730113-665c06c1-a33f-493e-b879-2b62b3a0cdc0.jpg)
 
