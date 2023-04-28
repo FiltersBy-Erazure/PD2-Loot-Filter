@@ -1,28 +1,21 @@
-Season 6 loot filter now available on the PD2 Launcher!
+Season 7 loot filter now available on the PD2 Launcher!
 
 
-Select between Season 6 Main version or BIG GG Novelty version:
-- Season 6 Main version of the filter shows actual names for all high runes and super rare items
-- BIG GG version version of the filter shows BIG GG for runes Vex-Zod, Puzzlebox, Vial of Lightsong, and Lilith's Mirror while outside of town
+Two versions of my filter are available to choose from: the Season 7 Main version or the BIG GG Novelty version
+- The Season 7 Main version shows actual names for all high runes and super rare items
+- BIG GG version version shows BIG GG for runes Vex-Zod, Puzzlebox, Vial of Lightsong, and Lilith's Mirror while outside of town
 
 
-DM me on Discord if you have any questions or feedback: Wolf | Erazure#5126
+DM me on Discord if you have any questions or feedback: Erazure#5126
 
+![HD Erazure Filter Potions](https://user-images.githubusercontent.com/76863417/235098364-f4f1a464-ce4a-4648-ae71-602a541f7003.png)
 
-![Earlygame Potions](https://user-images.githubusercontent.com/76863417/174730113-665c06c1-a33f-493e-b879-2b62b3a0cdc0.jpg)
+![HD Erazure Filter Gems](https://user-images.githubusercontent.com/76863417/235098406-36af2323-9b98-43da-b807-2dd3ac97ec5f.png)
 
-![Gem Display and Map Icons](https://user-images.githubusercontent.com/76863417/174730148-b27e60fa-8af3-4311-afc8-f4d2e0650c8f.jpg)
+![HD Erazure Filter Low Runes](https://user-images.githubusercontent.com/76863417/235098438-c90636aa-92c3-4cf5-8e39-35730c9b369b.png)
 
-![Low Rune Display and Map Icons](https://user-images.githubusercontent.com/76863417/174730160-48f3c2ac-8606-40dc-a1e9-7db6c0b2cc19.jpg)
+![HD Erazure Filter Mid Runes](https://user-images.githubusercontent.com/76863417/235098467-32269495-510e-445c-8a08-d173f72a991e.png)
 
-![Mid Runes and Map Icons](https://user-images.githubusercontent.com/76863417/174730183-feb21d51-5291-48ab-8cad-4427a7fb9f80.jpg)
+![HD Erazure Filter High Runes](https://user-images.githubusercontent.com/76863417/235098494-624dd84f-d49f-43b2-ac2c-01e33198932e.png)
 
-![High Rune Display and Map Icons](https://user-images.githubusercontent.com/76863417/174730193-e8241c6b-1834-4d60-8028-766271b07e84.jpg)
-
-![Uber Trist Uber Ancient](https://user-images.githubusercontent.com/76863417/174730258-28c9a83d-f410-45c0-bb33-d7801aec839b.jpg)
-
-![WSS, Pbox, Ppiece](https://user-images.githubusercontent.com/76863417/174730317-6d0db6e8-3d21-49ec-aaf7-ead4c93d99e1.jpg)
-
-![DClone Rathma](https://user-images.githubusercontent.com/76863417/174730350-cf6a67d5-862c-460c-ab26-5007104450b8.jpg)
-
-![Magic and Unique Charm Display](https://user-images.githubusercontent.com/76863417/174730363-5afd9e62-8201-4a85-bbd3-23223bc3c129.jpg)
+![HD Erazure Filter Rathma DClone](https://user-images.githubusercontent.com/76863417/235098525-e4366e9d-91da-4113-9f74-b859ee87a7b3.png)
