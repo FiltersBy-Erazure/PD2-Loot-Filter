@@ -53,7 +53,7 @@ ItemDisplay[hp3 CLVL>24]:{%NL%%WHITE% Healing Potion }//            Hides Healin
 
 // Greater Healing Potion
 ItemDisplay[hp4 (CLVL<30 OR FILTLVL=0)]:%RED%i%GRAY%I%RED%( %WHITE%H%GRAY%-%WHITE%4 %RED%)%GRAY%I%RED%i%WHITE%{%WHITE% Greater Healing Potion }//
-ItemDisplay[hp4 (CLVL>69 OR FILTLVL>3)]:{%NL%%WHITE% Greater Healing Potion }//       Hides Greater Healing Potions after level 89 or on filter levels 4+
+ItemDisplay[hp4 (CLVL>39 OR FILTLVL>2)]:{%NL%%WHITE% Greater Healing Potion }//       Hides Greater Healing Potions after level 89 or on filter levels 4+
 ItemDisplay[hp4 CLVL>29]:%GRAY%i%RED%(O)%GRAY%i%WHITE%{%WHITE% Greater Healing Potion }//
 
 // Super Healing Potion
@@ -75,7 +75,7 @@ ItemDisplay[mp3 CLVL>24]:{%NL%%WHITE% Mana Potion }//               Hides Mana P
 
 // Greater Mana Potion
 ItemDisplay[mp4 (CLVL<30 OR FILTLVL=0)]:%BLUE%i%GRAY%I%BLUE%( %WHITE%M%GRAY%-%WHITE%4 %BLUE%)%GRAY%I%BLUE%i%WHITE%{%WHITE% Greater Mana Potion }//
-ItemDisplay[mp4 (CLVL>89 OR FILTLVL>3)]:{%NL%%WHITE% Greater Mana Potion }//       Hides Greater Mana Potions after level 89 or on filter levels 4+
+ItemDisplay[mp4 (CLVL>79 OR FILTLVL>3)]:{%NL%%WHITE% Greater Mana Potion }//       Hides Greater Mana Potions after level 89 or on filter levels 4+
 ItemDisplay[mp4 CLVL>29]:%GRAY%i%BLUE%(O)%GRAY%i%WHITE%{%WHITE% Greater Mana Potion }//
 
 // Super Mana Potion
@@ -5236,13 +5236,13 @@ ItemDisplay[ETH NMAG]:%GRAY%[%WHITE%Eth%GRAY%] %NAME%{%NAME%}%CONTINUE%//
 
 // These lines add a "$" to the start of an item name if it's more than 10,000 in normal, more than 20,000 in nightmare, more than 25,000 in hell
 // Normal difficulty
-ItemDisplay[(NMAG OR MAG) !RW PRICE>9999 DIFF=0 (WAND OR NEC OR DRU OR BAR OR SOR OR SIN OR (STAFF !wst !8ws !6ws) OR scp OR 9sc OR 7sc OR gsc OR 9qs OR 7qs OR clb OR 9cl OR 7cl OR spc OR 9sp OR 7sp) FILTLVL<9]:%GRAY%(%DARK_GREEN%$%GRAY%) %NAME%{%NAME%}%CONTINUE%// 
+ItemDisplay[(NMAG OR MAG OR RARE) !RW PRICE>9999 DIFF=0 (WAND OR NEC OR DRU OR BAR OR SOR OR SIN OR HELM OR (STAFF !wst !8ws !6ws) OR scp OR 9sc OR 7sc OR gsc OR 9qs OR 7qs OR clb OR 9cl OR 7cl OR spc OR 9sp OR 7sp) FILTLVL<9]:%GRAY%(%DARK_GREEN%$%GRAY%) %NAME%{%NAME%}%CONTINUE%// 
 
 // Nightmare difficulty
-ItemDisplay[(NMAG OR MAG) !RW PRICE>19999 DIFF=1 (WAND OR NEC OR DRU OR BAR OR SOR OR SIN OR (STAFF !wst !8ws !6ws) OR scp OR 9sc OR 7sc OR gsc OR 9qs OR 7qs OR clb OR 9cl OR 7cl OR spc OR 9sp OR 7sp) FILTLVL<9]:%GRAY%(%DARK_GREEN%$%GRAY%) %NAME%{%NAME%}%CONTINUE%// 
+ItemDisplay[(NMAG OR MAG OR RARE) !RW PRICE>19999 DIFF=1 (WAND OR NEC OR DRU OR BAR OR SOR OR SIN OR HELM OR (STAFF !wst !8ws !6ws) OR scp OR 9sc OR 7sc OR gsc OR 9qs OR 7qs OR clb OR 9cl OR 7cl OR spc OR 9sp OR 7sp) FILTLVL<9]:%GRAY%(%DARK_GREEN%$%GRAY%) %NAME%{%NAME%}%CONTINUE%// 
 
 // Hell difficulty
-ItemDisplay[(NMAG OR MAG) !RW PRICE>24999 DIFF=2 (WAND OR NEC OR DRU OR BAR OR SOR OR SIN OR (STAFF !wst !8ws !6ws) OR scp OR 9sc OR 7sc OR gsc OR 9qs OR 7qs OR clb OR 9cl OR 7cl OR spc OR 9sp OR 7sp) FILTLVL<9]:%GRAY%(%DARK_GREEN%$%GRAY%) %NAME%{%NAME%}%CONTINUE%// 
+ItemDisplay[(NMAG OR MAG OR RARE) !RW PRICE>24999 DIFF=2 (WAND OR NEC OR DRU OR BAR OR SOR OR SIN OR HELM OR (STAFF !wst !8ws !6ws) OR scp OR 9sc OR 7sc OR gsc OR 9qs OR 7qs OR clb OR 9cl OR 7cl OR spc OR 9sp OR 7sp) FILTLVL<9]:%GRAY%(%DARK_GREEN%$%GRAY%) %NAME%{%NAME%}%CONTINUE%// 
 
 
 // ------------------------------------------------------------------------------
@@ -6215,7 +6215,7 @@ ItemDisplay[(MAG OR RARE OR CRAFT) ID (WAND OR SCEPTER OR STAFF OR BELT OR GLOVE
 ItemDisplay[(((RARE OR CRAFT) ((NORM OR EXC) OR (SOCK=0 WEAPON !THROWING))) OR ((MAG OR RARE OR CRAFT) SOCK=0 !THROWING !BELT !BOOTS !GLOVES !rin !amu)) ID (WAND OR SCEPTER OR STAFF OR BELT OR GLOVES OR BOOTS OR (SHIELD !DIN) OR CHEST OR HELM OR CIRC OR rin OR amu) (((PRES>9 FRES>9 CRES>9) OR (PRES>9 FRES>9 LRES>9) OR (PRES>9 CRES>9 LRES>9) OR (FRES>9 LRES>9 CRES>9) CLVL<50) OR (((PRES>19 FRES>19 CRES>19) OR (PRES>19 FRES>19 LRES>19) OR (PRES>19 CRES>19 LRES>19) OR (FRES>19 LRES>19 CRES>19)) CLVL<90))]:%NAME%{%NL%%NAME%}%CONTINUE%
 ItemDisplay[(MAG OR RARE OR CRAFT) ID (WAND OR SCEPTER OR STAFF OR BELT OR GLOVES OR BOOTS OR (SHIELD !DIN) OR CHEST OR HELM OR CIRC OR rin OR amu) (((PRES>9 FRES>9 CRES>9) OR (PRES>9 FRES>9 LRES>9) OR (PRES>9 CRES>9 LRES>9) OR (FRES>9 LRES>9 CRES>9) CLVL<50) OR (((PRES>19 FRES>19 CRES>19) OR (PRES>19 FRES>19 LRES>19) OR (PRES>19 CRES>19 LRES>19) OR (FRES>19 LRES>19 CRES>19)) CLVL<90))]:%NAME%{%GRAY%**%PURPLE%**   %PURPLE%Tri Resist   %PURPLE%**%GRAY%**%NAME%}//
 // Poison Res
-ItemDisplay[(((RARE OR CRAFT) ((NORM OR EXC) OR (SOCK=0 WEAPON !THROWING))) OR ((MAG OR RARE OR CRAFT) SOCK=0 !THROWING !BELT !BOOTS !GLOVES !rin !amu)) ID (WAND OR SCEPTER OR STAFF OR BELT OR GLOVES OR BOOTS OR (SHIELD !DIN) OR CHEST OR HELM OR CIRC OR rin OR amu) ((PRES>9 CLVL<50) OR (PRES>19 CLVL<90))]:%NAME%{%NL%%NAME%}%CONTINUE%
+ItemDisplay[(((RARE OR CRAFT) ((NORM OR EXC) OR (SOCK=0 WEAPON !THROWING))) OR ((MAG OR RARE OR CRAFT) SOCK=0 !THROWING !BELT !BOOTS !GLOVES !rin !amu)) ID ((!STAT365>4 (BELT OR SHIELD OR CHEST)) OR WAND OR SCEPTER OR STAFF OR GLOVES OR BOOTS OR HELM OR CIRC OR rin OR amu) ((PRES>9 CLVL<50) OR (PRES>19 CLVL<90))]:%NAME%{%NL%%NAME%}%CONTINUE%
 ItemDisplay[(MAG OR RARE OR CRAFT) ID (WAND OR SCEPTER OR STAFF OR BELT OR GLOVES OR BOOTS OR (SHIELD !DIN) OR CHEST OR HELM OR CIRC OR rin OR amu) ((PRES>9 CLVL<50) OR (PRES>19 CLVL<90))]:%NAME%{%GRAY%**%DARK_GREEN%**   %DARK_GREEN%Poison Resist   %DARK_GREEN%**%GRAY%**%NAME%}%CONTINUE%//
 ItemDisplay[(MAG OR RARE OR CRAFT) ((ELT ID (WAND OR SCEPTER OR STAFF OR BELT OR GLOVES OR BOOTS OR (SHIELD !DIN) OR CHEST OR HELM)) OR rin OR amu) ((PRES>9 CLVL<50) OR (PRES>19 CLVL<90)) (((LRES>9 CLVL<50) OR (LRES>19 CLVL<90)) OR ((CRES>9 CLVL<50) OR (CRES>19 CLVL<90)) OR ((FRES>9 CLVL<50) OR (FRES>19 CLVL<90)))]:%NAME%{%NL%%NAME%}%CONTINUE%//
 // Light Res
