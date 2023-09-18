@@ -1,7 +1,7 @@
-My loot filters are updated for season 7 and are now available to select on the PD2 Launcher!
+Updated for season 8, my loot filters are available to select on the PD2 Launcher!
 
-- The Season 7 Main version shows actual names for all high runes and super rare items
-- The BIG GG Novelty version shows "BIG GG" for runes Vex-Zod, Puzzlebox, Vial of Lightsong, and Lilith's Mirror while outside of town
+- The Season 8 Main version displays standard names for all high runes and super rare items
+- The BIG GG Novelty version shows "BIG GG" when any of the following drop while the character is outside of town: Vex-Zod, Larzuk's Puzzlebox, Vial of Lightsong, and Lilith's Mirror
 
 
 DM me on Discord if you have any questions or feedback: Erazure#5126
