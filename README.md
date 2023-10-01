@@ -10,7 +10,7 @@ My loot filters are updated and available to select on the PD2 Launcher!
 
 # **Contact and Support:**
 
-Message me on Discord if you have any questions, feedback, or suggestions: **Erazure#5126**
+Message me on Discord if you have any questions, feedback, or suggestions: **erazure#**
 
 Please consider donating to my [**PayPal**](https://paypal.me/ErazurePD2LootFilter) or subscribing to my [**Patreon**](https://patreon.com/user?u=4978022) if you like my work and want to support the development of my filters!
 
