@@ -6,7 +6,7 @@ My loot filters are updated and available to select on the PD2 Launcher!
 
 - The **Erazure Season 8 Main** version displays standard names for all high runes and super rare items
 - The **Erazure BIG GG Novelty** version shows "BIG GG" when any of the following drop while your character is outside of town:
-  - Vex - Zod Runes, Larzuk's Puzzlebox, Vial of Lightsong, and Lilith's Mirror
+  - Vex - Zod Runes, Larzuk's Puzzlebox, Horadric Navigator, Horadric Almanac, Skeleton Key, Vial of Lightsong, and Lilith's Mirror
 
 # **Contact and Support:**
 
@@ -68,6 +68,7 @@ Please consider donating to my [**PayPal**](https://paypal.me/ErazurePD2LootFilt
   - Low-value normal-tier set items (except for Death's gloves and belt, and Tancred's boots) will get filtered out. Non-desirable exceptional and elite-tier set items will show but not notify upon drop.
 - **Non-Magical Items:**
   - Many non-magical armor and weapon bases without %ED are hidden, however this does not apply to select useful runeword bases (e.g. ethereal)
+  - When your character is level 90+, non-useful non-magical items with staffmods are hidden if they aren't good runeword bases
   - Ethereal non-magical throwing weapons (that are corruptible for a 50% chance to create a crafting base) are hidden
   - Non-magical 1-socket class items are hidden
 - **Miscellaneous:**
@@ -89,6 +90,7 @@ Please consider donating to my [**PayPal**](https://paypal.me/ErazurePD2LootFilt
 - **Set Items:**
   - Set rings and amulets are hidden
 - **Non-Magical Items:**
+  - Non-useful non-magical items with staffmods are hidden if they aren't good runeword bases
   - Non-ethereal non-magical paladin shields with less than 30 all res are hidden
 - **Miscellaneous:**
   - All healing, mana, and small rejuvenation potions are hidden (however super mana potions will continue to show if your character is a Sorceress)
