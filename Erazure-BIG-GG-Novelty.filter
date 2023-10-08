@@ -10,8 +10,8 @@ ItemDisplayFilterName[]: Tier 4 = Endgame Mapping//    TIER-9
 
 // ==============================  Arrows and Bolts  ===============================
 
-ItemDisplay[NMAG aqv CLVL>1]:// Hides nonmagical Arrow quivers
-ItemDisplay[NMAG cqv CLVL>1]:// Hides nonmagical Bolt quivers
+ItemDisplay[NMAG aqv CLVL>1 FILTLVL>0]:// Hides nonmagical Arrow quivers
+ItemDisplay[NMAG cqv CLVL>1 FILTLVL>0]:// Hides nonmagical Bolt quivers
 
 // ================================  Gold  =======================================
 
@@ -1899,8 +1899,8 @@ ItemDisplay[RARE !ID ETH BARBARIAN FILTLVL>4 (tax OR 9ta OR 7ta OR bkf OR 9bk OR
 ItemDisplay[RARE !ID ETH !BARBARIAN FILTLVL<5 (tax OR 9ta OR 7ta OR bkf OR 9bk OR 7bk OR bal OR 9b8 OR 7b8 OR jav OR 9ja OR 7ja OR ssp OR 9s9 OR 7s7 OR glv OR 9gl OR 7gl OR tsp OR 9ts OR 7ts)]:%NAME%%BORDER-8F%%MAP-9B%%DOT-6C%%PX-A8%//
 
 // Filter out arrows that don't have one of the below attributes
-ItemDisplay[(MAG OR RARE) (aqv OR cqv) ID CLVL>29 !(TABSK1>0 OR STAT188>0 OR STAT96>9 OR IAS>9 OR STAT156>9 OR ED>39 OR MINDMG>7 OR MAXDMG>7 OR STAT141>9 OR RES>4)]://
-ItemDisplay[(MAG OR RARE) (aqv OR cqv) ID CLVL>59 !(TABSK1>1 OR STAT188>1 OR STAT96>19 OR IAS>19 OR STAT156>19 OR (ED>39 (MINDMG>7 OR MAXDMG>7)) OR STAT141>19 OR RES>9)]://
+ItemDisplay[(MAG OR RARE) (aqv OR cqv) ID CLVL>29 !(TABSK1>0 OR STAT188>0 OR STAT96>9 OR IAS>9 OR STAT156>9 OR ED>39 OR MINDMG>7 OR MAXDMG>7 OR STAT141>9 OR RES>4) FILTLVL>0]://
+ItemDisplay[(MAG OR RARE) (aqv OR cqv) ID CLVL>59 !(TABSK1>1 OR STAT188>1 OR STAT96>19 OR IAS>19 OR STAT156>19 OR (ED>39 (MINDMG>7 OR MAXDMG>7)) OR STAT141>19 OR RES>9) FILTLVL>0]://
 
 // Arrow and Bolts Visual Tags
 ItemDisplay[MAG ID (aqv OR cqv)]:%BLUE%{%NAME%}%CONTINUE%
@@ -2400,7 +2400,7 @@ ItemDisplay[MAG !ID rin FILTLVL>4]:// Hide unidentified magic rings on filter le
 //      			                           Circlets
 // ----------------------------------------------------------------------------------------------
 
-ItemDisplay[MAG !ID ETH CIRC CLVL>79]://
+ItemDisplay[MAG !ID ETH CIRC CLVL>79 FILTLVL>0]://
 ItemDisplay[MAG !ID CIRC CLVL<80]:%TAN%o  %BLUE%%NAME%  %TAN%o%BLUE%%BORDER-91%%MAP-97%%DOT-0E%%PX-A6%// Notify for magic circlets before character level 80
 ItemDisplay[MAG !ID CIRC CLVL>79]:%TAN%o  %BLUE%%NAME%  %TAN%o%BLUE%// Do not notify for magic circlets after character level 80
 
@@ -2524,7 +2524,7 @@ ItemDisplay[MAG !ID NEC]:%NAME%{%NAME%}%CONTINUE%// Always display magic Necro H
 //     				                      Paladin Shields
 // ----------------------------------------------------------------------------------------------
 
-ItemDisplay[MAG ETH !ID DIN]:// Hide Eth magic paladin shields past level 80
+ItemDisplay[MAG ETH !ID DIN FILTLVL>0]:// Hide Eth magic paladin shields past level 80
 
 ItemDisplay[MAG !ID NORM DIN CLVL>39 FILTLVL>1]://
 ItemDisplay[MAG !ID EXC DIN CLVL>59 FILTLVL>1]://
@@ -3272,8 +3272,8 @@ ItemDisplay[(WEAPON OR ARMOR) NMAG !ID]:%NAME%//
 //Show staffmods on NMAG items
 
 //Assasin
-ItemDisplay[NMAG !RW CLVL>59 SIN !(SK251>2 OR SK252>2 OR SK253>2 OR SK254>2 OR SK255>2 OR SK256>2 OR SK257>2 OR SK258>2 OR SK259>2 OR SK260>2 OR SK261>2 OR SK262>2 OR SK263>2 OR SK264>2 OR SK265>2 OR SK266>2 OR SK267>2 OR SK268>2 OR SK269>2 OR SK270>2 OR SK271>2 OR SK272>2 OR SK273>2 OR SK274>2 OR SK275>2 OR SK276>2 OR SK277>2 OR SK278>2 OR SK279>2 OR SK280>2 OR SK366>2 OR ((7qr OR 7ar OR 7xf) (SOCK=0 OR SOCK=3) ETH (ED>4 OR SK275>0 OR SK252>0 OR SK277>0 OR (ETH 7xf))))]:// Hides assassin claws that don't have +3 to a skill past level 60
-ItemDisplay[NMAG !RW CLVL>39 SIN !(SK251>1 OR SK252>1 OR SK253>1 OR SK254>1 OR SK255>1 OR SK256>1 OR SK257>1 OR SK258>1 OR SK259>1 OR SK260>1 OR SK261>1 OR SK262>1 OR SK263>1 OR SK264>1 OR SK265>1 OR SK266>1 OR SK267>1 OR SK268>1 OR SK269>1 OR SK270>1 OR SK271>1 OR SK272>1 OR SK273>1 OR SK274>1 OR SK275>1 OR SK276>1 OR SK277>1 OR SK278>1 OR SK279>1 OR SK280>1 OR SK366>1 OR ((7qr OR 7ar OR 7xf) (SOCK=0 OR SOCK=3) ETH (ED>4 OR SK275>0 OR SK252>0 OR SK277>0 OR (ETH 7xf))))]:// Hides assassin claws that don't have +2 to a skill past level 40
+ItemDisplay[NMAG !RW CLVL>59 SIN !(SK251>2 OR SK252>2 OR SK253>2 OR SK254>2 OR SK255>2 OR SK256>2 OR SK257>2 OR SK258>2 OR SK259>2 OR SK260>2 OR SK261>2 OR SK262>2 OR SK263>2 OR SK264>2 OR SK265>2 OR SK266>2 OR SK267>2 OR SK268>2 OR SK269>2 OR SK270>2 OR SK271>2 OR SK272>2 OR SK273>2 OR SK274>2 OR SK275>2 OR SK276>2 OR SK277>2 OR SK278>2 OR SK279>2 OR SK280>2 OR SK366>2 OR ((7qr OR 7ar OR 7xf) (SOCK=0 OR SOCK=3) ETH (ED>4 OR SK275>0 OR SK252>0 OR SK277>0 OR (ETH 7xf)))) FILTLVL>0]:// Hides assassin claws that don't have +3 to a skill past level 60
+ItemDisplay[NMAG !RW CLVL>39 SIN !(SK251>1 OR SK252>1 OR SK253>1 OR SK254>1 OR SK255>1 OR SK256>1 OR SK257>1 OR SK258>1 OR SK259>1 OR SK260>1 OR SK261>1 OR SK262>1 OR SK263>1 OR SK264>1 OR SK265>1 OR SK266>1 OR SK267>1 OR SK268>1 OR SK269>1 OR SK270>1 OR SK271>1 OR SK272>1 OR SK273>1 OR SK274>1 OR SK275>1 OR SK276>1 OR SK277>1 OR SK278>1 OR SK279>1 OR SK280>1 OR SK366>1 OR ((7qr OR 7ar OR 7xf) (SOCK=0 OR SOCK=3) ETH (ED>4 OR SK275>0 OR SK252>0 OR SK277>0 OR (ETH 7xf)))) FILTLVL>0]:// Hides assassin claws that don't have +2 to a skill past level 40
 
 ItemDisplay[(NMAG OR MAG OR RARE OR CRAFT) !RW SK366=1 CLVL<80]:%NAME% %TAN%+1 %DARK_GREEN%L.Sent{%NAME%}%CONTINUE%//
 ItemDisplay[(NMAG OR MAG OR RARE OR CRAFT) !RW SK366=2 CLVL<90]:%NAME% %TAN%+2 %DARK_GREEN%L.Sent{%NAME%}%CONTINUE%//
@@ -3516,8 +3516,8 @@ ItemDisplay[(NMAG OR MAG OR RARE OR CRAFT) !RW SK368=2 CLVL<90]:%NAME% %TAN%+2 %
 ItemDisplay[(NMAG OR MAG OR RARE OR CRAFT) !RW SK368=3]:%NAME% %TAN%+3 %DARK_GREEN%D.Wnd{%NAME%}%CONTINUE%//
 
 //Druid
-ItemDisplay[NMAG !RW CLVL>59 (DRU OR clb OR 7cl OR 9cl OR spc OR 7sp OR 9sp) !(SK221>2 OR SK222>2 OR SK223>2 OR SK224>2 OR SK225>2 OR SK226>2 OR SK227>2 OR SK228>2 OR SK229>2 OR SK230>2 OR SK231>2 OR SK232>2 OR SK233>2 OR SK234>2 OR SK235>2 OR SK236>2 OR SK237>2 OR SK238>2 OR SK239>2 OR SK240>2 OR SK241>2 OR SK242>2 OR SK243>2 OR SK244>2 OR SK245>2 OR SK246>2 OR SK247>2 OR SK248>2 OR SK249>2 OR SK250>2 OR SK370>2)]:// Hides items that don't have +3 to a skill past level 60
-ItemDisplay[NMAG !RW CLVL>39 (DRU OR clb OR 7cl OR 9cl OR spc OR 7sp OR 9sp) !(SK221>1 OR SK222>1 OR SK223>1 OR SK224>1 OR SK225>1 OR SK226>1 OR SK227>1 OR SK228>1 OR SK229>1 OR SK230>1 OR SK231>1 OR SK232>1 OR SK233>1 OR SK234>1 OR SK235>1 OR SK236>1 OR SK237>1 OR SK238>1 OR SK239>1 OR SK240>1 OR SK241>1 OR SK242>1 OR SK243>1 OR SK244>1 OR SK245>1 OR SK246>1 OR SK247>1 OR SK248>1 OR SK249>1 OR SK250>1 OR SK370>1)]:// Hides items that don't have +2 to a skill past level 40
+ItemDisplay[NMAG !RW CLVL>59 (DRU OR clb OR 7cl OR 9cl OR spc OR 7sp OR 9sp) !(SK221>2 OR SK222>2 OR SK223>2 OR SK224>2 OR SK225>2 OR SK226>2 OR SK227>2 OR SK228>2 OR SK229>2 OR SK230>2 OR SK231>2 OR SK232>2 OR SK233>2 OR SK234>2 OR SK235>2 OR SK236>2 OR SK237>2 OR SK238>2 OR SK239>2 OR SK240>2 OR SK241>2 OR SK242>2 OR SK243>2 OR SK244>2 OR SK245>2 OR SK246>2 OR SK247>2 OR SK248>2 OR SK249>2 OR SK250>2 OR SK370>2) FILTLVL>0]:// Hides items that don't have +3 to a skill past level 60
+ItemDisplay[NMAG !RW CLVL>39 (DRU OR clb OR 7cl OR 9cl OR spc OR 7sp OR 9sp) !(SK221>1 OR SK222>1 OR SK223>1 OR SK224>1 OR SK225>1 OR SK226>1 OR SK227>1 OR SK228>1 OR SK229>1 OR SK230>1 OR SK231>1 OR SK232>1 OR SK233>1 OR SK234>1 OR SK235>1 OR SK236>1 OR SK237>1 OR SK238>1 OR SK239>1 OR SK240>1 OR SK241>1 OR SK242>1 OR SK243>1 OR SK244>1 OR SK245>1 OR SK246>1 OR SK247>1 OR SK248>1 OR SK249>1 OR SK250>1 OR SK370>1) FILTLVL>0]:// Hides items that don't have +2 to a skill past level 40
 
 ItemDisplay[(NMAG OR MAG OR RARE OR CRAFT) !RW SK370=1 CLVL<80]:%NAME% %TAN%+1 %DARK_GREEN%Gust{%NAME%}%CONTINUE%//
 ItemDisplay[(NMAG OR MAG OR RARE OR CRAFT) !RW SK370=2 CLVL<90]:%NAME% %TAN%+2 %DARK_GREEN%Gust{%NAME%}%CONTINUE%//
@@ -3644,8 +3644,8 @@ ItemDisplay[(NMAG OR MAG OR RARE OR CRAFT) !RW SK221=2 CLVL<90]:%NAME% %TAN%+2 %
 ItemDisplay[(NMAG OR MAG OR RARE OR CRAFT) !RW SK221=3]:%NAME% %TAN%+3 %DARK_GREEN%Raven{%NAME%}%CONTINUE%//
 
 //Necromancer
-ItemDisplay[NMAG !RW CLVL>59 (NEC OR WAND) !(SK66>2 OR SK67>2 OR SK68>2 OR SK69>2 OR SK70>2 OR SK71>2 OR SK72>2 OR SK73>2 OR SK74>2 OR SK75>2 OR SK76>2 OR SK77>2 OR SK78>2 OR SK79>2 OR SK80>2 OR SK81>2 OR SK82>2 OR SK83>2 OR SK84>2 OR SK85>2 OR SK86>2 OR SK87>2 OR SK88>2 OR SK89>2 OR SK90>2 OR SK91>2 OR SK92>2 OR SK93>2 OR SK94>2 OR SK95>2 OR SK367>2 OR SK381>2 OR SK374>2)]:// Hides items that don't have +3 to a skill past level 60
-ItemDisplay[NMAG !RW CLVL>39 (NEC OR WAND) !(SK66>1 OR SK67>1 OR SK68>1 OR SK69>1 OR SK70>1 OR SK71>1 OR SK72>1 OR SK73>1 OR SK74>1 OR SK75>1 OR SK76>1 OR SK77>1 OR SK78>1 OR SK79>1 OR SK80>1 OR SK81>1 OR SK82>1 OR SK83>1 OR SK84>1 OR SK85>1 OR SK86>1 OR SK87>1 OR SK88>1 OR SK89>1 OR SK90>1 OR SK91>1 OR SK92>1 OR SK93>1 OR SK94>1 OR SK95>1 OR SK367>1 OR SK381>1 OR SK374>1)]:// Hides items that don't have +2 to a skill past level 40
+ItemDisplay[NMAG !RW CLVL>59 (NEC OR WAND) !(SK66>2 OR SK67>2 OR SK68>2 OR SK69>2 OR SK70>2 OR SK71>2 OR SK72>2 OR SK73>2 OR SK74>2 OR SK75>2 OR SK76>2 OR SK77>2 OR SK78>2 OR SK79>2 OR SK80>2 OR SK81>2 OR SK82>2 OR SK83>2 OR SK84>2 OR SK85>2 OR SK86>2 OR SK87>2 OR SK88>2 OR SK89>2 OR SK90>2 OR SK91>2 OR SK92>2 OR SK93>2 OR SK94>2 OR SK95>2 OR SK367>2 OR SK381>2 OR SK374>2) FILTLVL>0]:// Hides items that don't have +3 to a skill past level 60
+ItemDisplay[NMAG !RW CLVL>39 (NEC OR WAND) !(SK66>1 OR SK67>1 OR SK68>1 OR SK69>1 OR SK70>1 OR SK71>1 OR SK72>1 OR SK73>1 OR SK74>1 OR SK75>1 OR SK76>1 OR SK77>1 OR SK78>1 OR SK79>1 OR SK80>1 OR SK81>1 OR SK82>1 OR SK83>1 OR SK84>1 OR SK85>1 OR SK86>1 OR SK87>1 OR SK88>1 OR SK89>1 OR SK90>1 OR SK91>1 OR SK92>1 OR SK93>1 OR SK94>1 OR SK95>1 OR SK367>1 OR SK381>1 OR SK374>1) FILTLVL>0]:// Hides items that don't have +2 to a skill past level 40
 
 ItemDisplay[(NMAG OR MAG OR RARE OR CRAFT) !RW SK374=1 CLVL<80]:%NAME% %TAN%+1 %DARK_GREEN%C.Mast{%NAME%}%CONTINUE%//
 ItemDisplay[(NMAG OR MAG OR RARE OR CRAFT) !RW SK374=2 CLVL<90]:%NAME% %TAN%+2 %DARK_GREEN%C.Mast{%NAME%}%CONTINUE%//
@@ -3780,8 +3780,8 @@ ItemDisplay[(NMAG OR MAG OR RARE OR CRAFT) !RW SK66=2 CLVL<90]:%NAME% %TAN%+2 %D
 ItemDisplay[(NMAG OR MAG OR RARE OR CRAFT) !RW SK66=3]:%NAME% %TAN%+3 %DARK_GREEN%A.Dmg{%NAME%}%CONTINUE%//
 
 //Paladin
-ItemDisplay[NMAG !RW CLVL>59 SCEPTER !(SK96>2 OR SK97>2 OR SK98>2 OR SK99>2 OR SK100>2 OR SK101>2 OR SK102>2 OR SK103>2 OR SK104>2 OR SK105>2 OR SK106>2 OR SK107>2 OR SK108>2 OR SK109>2 OR SK110>2 OR SK111>2 OR SK112>2 OR SK113>2 OR SK114>2 OR SK115>2 OR SK116>2 OR SK117>2 OR SK118>2 OR SK119>2 OR SK120>2 OR SK121>2 OR SK122>2 OR SK123>2 OR SK124>2 OR SK125>2 OR SK364>2 OR SK371>2 OR SK378>2 OR SOCK=4)]:// Hides items that don't have +3 to a skill past level 60
-ItemDisplay[NMAG !RW CLVL>39 SCEPTER !(SK96>1 OR SK97>1 OR SK98>1 OR SK99>1 OR SK100>1 OR SK101>1 OR SK102>1 OR SK103>1 OR SK104>1 OR SK105>1 OR SK106>1 OR SK107>1 OR SK108>1 OR SK109>1 OR SK110>1 OR SK111>1 OR SK112>1 OR SK113>1 OR SK114>1 OR SK115>1 OR SK116>1 OR SK117>1 OR SK118>1 OR SK119>1 OR SK120>1 OR SK121>1 OR SK122>1 OR SK123>1 OR SK124>1 OR SK125>1 OR SK364>1 OR SK371>1 OR SK378>1 OR SOCK=4)]:// Hides items that don't have +2 to a skill past level 40
+ItemDisplay[NMAG !RW CLVL>59 SCEPTER !(SK96>2 OR SK97>2 OR SK98>2 OR SK99>2 OR SK100>2 OR SK101>2 OR SK102>2 OR SK103>2 OR SK104>2 OR SK105>2 OR SK106>2 OR SK107>2 OR SK108>2 OR SK109>2 OR SK110>2 OR SK111>2 OR SK112>2 OR SK113>2 OR SK114>2 OR SK115>2 OR SK116>2 OR SK117>2 OR SK118>2 OR SK119>2 OR SK120>2 OR SK121>2 OR SK122>2 OR SK123>2 OR SK124>2 OR SK125>2 OR SK364>2 OR SK371>2 OR SK378>2 OR SOCK=4) FILTLVL>0]:// Hides items that don't have +3 to a skill past level 60
+ItemDisplay[NMAG !RW CLVL>39 SCEPTER !(SK96>1 OR SK97>1 OR SK98>1 OR SK99>1 OR SK100>1 OR SK101>1 OR SK102>1 OR SK103>1 OR SK104>1 OR SK105>1 OR SK106>1 OR SK107>1 OR SK108>1 OR SK109>1 OR SK110>1 OR SK111>1 OR SK112>1 OR SK113>1 OR SK114>1 OR SK115>1 OR SK116>1 OR SK117>1 OR SK118>1 OR SK119>1 OR SK120>1 OR SK121>1 OR SK122>1 OR SK123>1 OR SK124>1 OR SK125>1 OR SK364>1 OR SK371>1 OR SK378>1 OR SOCK=4) FILTLVL>0]:// Hides items that don't have +2 to a skill past level 40
 
 ItemDisplay[(NMAG OR MAG OR RARE OR CRAFT) !RW SK378=1 CLVL<80]:%NAME% %TAN%+1 %DARK_GREEN%Jst{%NAME%}%CONTINUE%//
 ItemDisplay[(NMAG OR MAG OR RARE OR CRAFT) !RW SK378=2 CLVL<90]:%NAME% %TAN%+2 %DARK_GREEN%Jst{%NAME%}%CONTINUE%//
@@ -3916,8 +3916,8 @@ ItemDisplay[(NMAG OR MAG OR RARE OR CRAFT) !RW SK96=2 CLVL<90]:%NAME% %TAN%+2 %D
 ItemDisplay[(NMAG OR MAG OR RARE OR CRAFT) !RW SK96=3]:%NAME% %TAN%+3 %DARK_GREEN%Sacr{%NAME%}%CONTINUE%//
 
 //Sorceress
-ItemDisplay[NMAG !RW CLVL>59 (SOR OR STAFF) !(SK36>2 OR SK37>2 OR SK38>2 OR SK39>2 OR SK40>2 OR SK41>2 OR SK42>2 OR SK43>2 OR SK44>2 OR SK45>2 OR SK46>2 OR SK47>2 OR SK48>2 OR SK49>2 OR SK50>2 OR SK51>2 OR SK52>2 OR SK53>2 OR SK54>2 OR SK55>2 OR SK56>2 OR SK57>2 OR SK58>2 OR SK59>2 OR SK60>2 OR SK61>2 OR SK62>2 OR SK63>2 OR SK64>2 OR SK65>2 OR SK369>2 OR SK383>2 OR SK376>2 OR ((SOCK=0 OR SOCK=4 OR SOCK=5 OR SOCK=6) 6ws) OR ((wst OR 8ws OR 6ws) SK58>1 (SOCK=0 OR SOCK=5)))]:// Hides items that don't have +3 to a skill past level 40
-ItemDisplay[NMAG !RW CLVL>39 (SOR OR STAFF) !(SK36>1 OR SK37>1 OR SK38>1 OR SK39>1 OR SK40>1 OR SK41>1 OR SK42>1 OR SK43>1 OR SK44>1 OR SK45>1 OR SK46>1 OR SK47>1 OR SK48>1 OR SK49>1 OR SK50>1 OR SK51>1 OR SK52>1 OR SK53>1 OR SK54>1 OR SK55>1 OR SK56>1 OR SK57>1 OR SK58>1 OR SK59>1 OR SK60>1 OR SK61>1 OR SK62>1 OR SK63>1 OR SK64>1 OR SK65>1 OR SK369>1 OR SK383>1 OR SK376>1 OR ((SOCK=0 OR SOCK=4 OR SOCK=5 OR SOCK=6) 6ws))]:// Hides items that don't have +2 to a skill past level 40
+ItemDisplay[NMAG !RW CLVL>59 (SOR OR STAFF) !(SK36>2 OR SK37>2 OR SK38>2 OR SK39>2 OR SK40>2 OR SK41>2 OR SK42>2 OR SK43>2 OR SK44>2 OR SK45>2 OR SK46>2 OR SK47>2 OR SK48>2 OR SK49>2 OR SK50>2 OR SK51>2 OR SK52>2 OR SK53>2 OR SK54>2 OR SK55>2 OR SK56>2 OR SK57>2 OR SK58>2 OR SK59>2 OR SK60>2 OR SK61>2 OR SK62>2 OR SK63>2 OR SK64>2 OR SK65>2 OR SK369>2 OR SK383>2 OR SK376>2 OR ((SOCK=0 OR SOCK=4 OR SOCK=5 OR SOCK=6) 6ws) OR ((wst OR 8ws OR 6ws) SK58>1 (SOCK=0 OR SOCK=5))) FILTLVL>0]:// Hides items that don't have +3 to a skill past level 40
+ItemDisplay[NMAG !RW CLVL>39 (SOR OR STAFF) !(SK36>1 OR SK37>1 OR SK38>1 OR SK39>1 OR SK40>1 OR SK41>1 OR SK42>1 OR SK43>1 OR SK44>1 OR SK45>1 OR SK46>1 OR SK47>1 OR SK48>1 OR SK49>1 OR SK50>1 OR SK51>1 OR SK52>1 OR SK53>1 OR SK54>1 OR SK55>1 OR SK56>1 OR SK57>1 OR SK58>1 OR SK59>1 OR SK60>1 OR SK61>1 OR SK62>1 OR SK63>1 OR SK64>1 OR SK65>1 OR SK369>1 OR SK383>1 OR SK376>1 OR ((SOCK=0 OR SOCK=4 OR SOCK=5 OR SOCK=6) 6ws)) FILTLVL>0]:// Hides items that don't have +2 to a skill past level 40
 
 ItemDisplay[(NMAG OR MAG OR RARE OR CRAFT) !RW SK376=1 CLVL<80]:%NAME% %TAN%+1 %DARK_GREEN%Cmbst{%NAME%}%CONTINUE%//
 ItemDisplay[(NMAG OR MAG OR RARE OR CRAFT) !RW SK376=2 CLVL<90]:%NAME% %TAN%+2 %DARK_GREEN%Cmbst{%NAME%}%CONTINUE%//
@@ -4055,35 +4055,35 @@ ItemDisplay[ID (MAG OR RARE OR SET OR UNI OR CRAFT) SOCK>0]:%NAME% %TAN%[%WHITE%
 ItemDisplay[NMAG !RW SOCK>0]:%NAME% %TAN%[%WHITE%%SOCKETS%%TAN%]%GRAY%%CONTINUE%// Add number of sockets to the end of socketed items' names (eg "Quilted Armor [2os]")
 
 ItemDisplay[NMAG !RW (ARMOR OR WEAPON) !leg SOCK=1 CLVL<5]:%GRAY%%NAME%%GRAY%// Before character level 5, show all 1 socket armors and weapons
-ItemDisplay[NMAG !RW (ARMOR OR WEAPON) !leg SOCK=1 CLVL>4 !(clb OR 9cl OR 7cl OR spc OR 9sp OR 7sp OR STAFF OR SIN OR SCEPTER OR WAND OR SOR OR BAR OR DRU OR NEC)]:// Hides all 1 socket nonmagical items except for items that sell for gold
+ItemDisplay[NMAG !RW (ARMOR OR WEAPON) !leg SOCK=1 CLVL>4 FILTLVL>0 !(clb OR 9cl OR 7cl OR spc OR 9sp OR 7sp OR STAFF OR SIN OR SCEPTER OR WAND OR SOR OR BAR OR DRU OR NEC)]:// Hides all 1 socket nonmagical items except for items that sell for gold
 
-ItemDisplay[NMAG !RW (FILTLVL>4 OR CLVL>89) SOCK=1 (clb OR 9cl OR 7cl OR spc OR 9sp OR 7sp OR STAFF OR SIN OR SCEPTER OR WAND OR SOR OR BAR OR DRU OR NEC)]:// On filter level 5+, hide 1 socket class items
+ItemDisplay[NMAG !RW (FILTLVL>4 OR (CLVL>89 FILTLVL>0)) SOCK=1 (clb OR 9cl OR 7cl OR spc OR 9sp OR 7sp OR STAFF OR SIN OR SCEPTER OR WAND OR SOR OR BAR OR DRU OR NEC)]:// On filter level 5+, hide 1 socket class items
 
 // Filters out inferior items unless your character is playing that class
-ItemDisplay[INF (NEC OR WAND) !NECROMANCER]://
-ItemDisplay[INF (SOR OR STAFF) !SORCERESS]://
-ItemDisplay[INF SCEPTER !PALADIN]://
-ItemDisplay[INF (DRU OR clb OR spc) !DRUID]://
-ItemDisplay[INF BAR !BARBARIAN]://
-ItemDisplay[INF SIN !ASSASSIN]://
+ItemDisplay[INF (NEC OR WAND) !NECROMANCER FILTLVL>0]://
+ItemDisplay[INF (SOR OR STAFF) !SORCERESS FILTLVL>0]://
+ItemDisplay[INF SCEPTER !PALADIN FILTLVL>0]://
+ItemDisplay[INF (DRU OR clb OR spc) !DRUID FILTLVL>0]://
+ItemDisplay[INF BAR !BARBARIAN FILTLVL>0]://
+ItemDisplay[INF SIN !ASSASSIN FILTLVL>0]://
 
-ItemDisplay[INF !(NEC OR WAND OR SOR OR STAFF OR SCEPTER OR DRU OR clb OR 9cl OR 7cl OR spc OR 9sp OR 7sp OR BAR OR SIN OR (uit SOCK=0 CLVL<85)) CLVL>1]:// Hide all Low Quality, Cracked, Crude, & Damaged items after level 1
+ItemDisplay[INF !(NEC OR WAND OR SOR OR STAFF OR SCEPTER OR DRU OR clb OR 9cl OR 7cl OR spc OR 9sp OR 7sp OR BAR OR SIN OR (uit SOCK=0 CLVL<85)) CLVL>1 FILTLVL>0]:// Hide all Low Quality, Cracked, Crude, & Damaged items after level 1
 
 // ------------------------------------------------------------------------------
 //     ==========================  Paladin Shields  =========================
 // ------------------------------------------------------------------------------
 
 // Hide all eth Normal paladin shields
-ItemDisplay[NMAG !INF !RW ETH NORM DIN]://
+ItemDisplay[NMAG !INF !RW ETH NORM DIN FILTLVL>0]://
 
 // Hide all paladin shields with less than 10 all res at character level 25+
-ItemDisplay[NMAG !INF !RW RES<10 DIN CLVL>24]://
+ItemDisplay[NMAG !INF !RW RES<10 DIN CLVL>24 FILTLVL>0]://
 
 // Hide all paladin shields with less than 20 all res at character level 50+
-ItemDisplay[NMAG !INF !RW RES<20 DIN CLVL>49]://
+ItemDisplay[NMAG !INF !RW RES<20 DIN CLVL>49 FILTLVL>0]://
 
 // Hide all non-eth paladin shields with less than 25 all res at character level 80+
-ItemDisplay[NMAG !INF !RW !ETH RES<25 DIN CLVL>79]://
+ItemDisplay[NMAG !INF !RW !ETH RES<25 DIN CLVL>79 FILTLVL>0]://
 
 // Hide all non-eth paladin shields with less than 30 all res at character level 90+ on filter level 9
 ItemDisplay[NMAG !INF !RW !ETH RES<30 DIN CLVL>89 FILTLVL=9]://
@@ -4127,18 +4127,18 @@ ItemDisplay[NMAG !INF !RW ETH (SOCK=0 OR SOCK=4) (EXC OR ELT) RES>19 DIN]:%GREEN
 // ------------------------------------------------------------------------------
 
 // Hide nonmagical nonruneword ethereal circlets
-ItemDisplay[NMAG !RW ETH CIRC]://
+ItemDisplay[NMAG !RW ETH CIRC FILTLVL>0]://
 
 // Circlet
-ItemDisplay[NMAG !INF !RW ci0 CLVL>59]:// Hides nonmagical circlets when over level 60
+ItemDisplay[NMAG !INF !RW ci0 CLVL>59 FILTLVL>0]:// Hides nonmagical circlets when over level 60
 ItemDisplay[NMAG !INF !RW !ETH SOCK=0 ci0 CLVL<60]:%NAME% %TAN%[%YELLOW%Imbue%TAN%]%WHITE%{%WHITE%in Act 1 to %YELLOW%Imbue %WHITE%this item%NL%%TAN%Note%WHITE%: Bring to Charsi}// 0os
 
 // Coronet
-ItemDisplay[NMAG !INF !RW ci1 CLVL>59]:// Hides nonmagical coronets when over level 60
+ItemDisplay[NMAG !INF !RW ci1 CLVL>59 FILTLVL>0]:// Hides nonmagical coronets when over level 60
 ItemDisplay[NMAG !INF !RW !ETH SOCK=0 ci1 CLVL<60]:%NAME% %TAN%[%YELLOW%Imbue%TAN%]%WHITE%{%WHITE%in Act 1 to %YELLOW%Imbue %WHITE%this item%NL%%TAN%Note%WHITE%: Bring to Charsi}// 0os
 
 // Tiara
-ItemDisplay[NMAG !INF !RW ci2 CLVL>79]:// Hides nonmagical tiaras when over level 80
+ItemDisplay[NMAG !INF !RW ci2 CLVL>79 FILTLVL>0]:// Hides nonmagical tiaras when over level 80
 ItemDisplay[NMAG !INF !RW !ETH SOCK=0 ci2 CLVL<80]:%NAME% %TAN%[%YELLOW%Imbue%TAN%]%WHITE%{%WHITE%in Act 1 to %YELLOW%Imbue %WHITE%this item%NL%%TAN%Note%WHITE%: Bring to Charsi}// 0os
 
 // Diadem
@@ -4153,18 +4153,18 @@ ItemDisplay[NMAG !INF !RW !ETH SOCK=0 ci3 CLVL<90 FILTLVL<5]:%NAME% %TAN%[%YELLO
 
 ItemDisplay[NMAG !INF !RW HELM !GEMMED !CIRC !BAR !DRU (!SUP OR (SUP ED<5)) FILTLVL>4]:// Hides Helms without 5%ED or more after filter level 4
 
-ItemDisplay[NMAG !INF !RW HELM !CIRC !BAR !DRU (NORM OR EXC) SOCK=0]://  Hides 0os Normal and Exceptional helms
-ItemDisplay[NMAG !INF !RW HELM !CIRC !BAR !DRU (NORM OR EXC) ETH]://     Hides ethereal Normal and Exceptional helms
+ItemDisplay[NMAG !INF !RW HELM !CIRC !BAR !DRU (NORM OR EXC) SOCK=0 FILTLVL>0]://  Hides 0os Normal and Exceptional helms
+ItemDisplay[NMAG !INF !RW HELM !CIRC !BAR !DRU (NORM OR EXC) ETH FILTLVL>0]://     Hides ethereal Normal and Exceptional helms
 
-ItemDisplay[NMAG !INF !RW HELM !GEMMED !CIRC !BAR !DRU NORM SOCK=2 CLVL>39]://   Hides Normal 2os Helms past level 39
-ItemDisplay[NMAG !INF !RW HELM !GEMMED !CIRC !BAR !DRU NORM SOCK=3 CLVL>59]://   Hides Normal 3os Helms past level 59
+ItemDisplay[NMAG !INF !RW HELM !GEMMED !CIRC !BAR !DRU NORM SOCK=2 CLVL>39 FILTLVL>0]://   Hides Normal 2os Helms past level 39
+ItemDisplay[NMAG !INF !RW HELM !GEMMED !CIRC !BAR !DRU NORM SOCK=3 CLVL>59 FILTLVL>0]://   Hides Normal 3os Helms past level 59
 
-ItemDisplay[NMAG !INF !RW HELM !GEMMED !CIRC !BAR !DRU EXC SOCK=2 CLVL>49]://    Hides Exceptional 2os Helms Past 49
-ItemDisplay[NMAG !INF !RW HELM !GEMMED !CIRC !BAR !DRU EXC SOCK=3 CLVL>69]://    Hides Exceptional 3os Helms Past 69
+ItemDisplay[NMAG !INF !RW HELM !GEMMED !CIRC !BAR !DRU EXC SOCK=2 CLVL>49 FILTLVL>0]://    Hides Exceptional 2os Helms Past 49
+ItemDisplay[NMAG !INF !RW HELM !GEMMED !CIRC !BAR !DRU EXC SOCK=3 CLVL>69 FILTLVL>0]://    Hides Exceptional 3os Helms Past 69
 
-ItemDisplay[NMAG !INF !RW HELM !CIRC !BAR !DRU ELT SOCK=0 (!SUP OR (SUP ED<5))]://           Hides 0os Elite Helms without 5%ED or more
-ItemDisplay[NMAG !INF !RW HELM !CIRC !BAR !DRU ELT SOCK=2 CLVL>79]://                             Hides 2os Elite Helms past level 79
-ItemDisplay[NMAG !INF !RW HELM !CIRC !BAR !DRU ELT !ETH (SOCK=0 OR SOCK=3) (uhm OR urn)]://  Hide non-eth 0os and 3os coronas and spired helms
+ItemDisplay[NMAG !INF !RW HELM !CIRC !BAR !DRU ELT SOCK=0 (!SUP OR (SUP ED<5)) FILTLVL>0]://           Hides 0os Elite Helms without 5%ED or more
+ItemDisplay[NMAG !INF !RW HELM !CIRC !BAR !DRU ELT SOCK=2 CLVL>79 FILTLVL>0]://                             Hides 2os Elite Helms past level 79
+ItemDisplay[NMAG !INF !RW HELM !CIRC !BAR !DRU ELT !ETH (SOCK=0 OR SOCK=3) (uhm OR urn) FILTLVL>0]://  Hide non-eth 0os and 3os coronas and spired helms
 
 // Hide non-useful elite nonmagical Helms after filter level 4
 ItemDisplay[NMAG !INF !RW (uap OR ukp OR ulm OR uhl) FILTLVL>4]:// (Shako, Hydraskull, Armet, Giant Conch)
@@ -4173,34 +4173,34 @@ ItemDisplay[NMAG !INF !RW (uap OR ukp OR ulm OR uhl) FILTLVL>4]:// (Shako, Hydra
 //    ===============================  Belts  ===============================   
 // ------------------------------------------------------------------------------
 
-ItemDisplay[NMAG BELT ETH]:// Hide all eth nonmagical belts
+ItemDisplay[NMAG BELT ETH FILTLVL>0]:// Hide all eth nonmagical belts
 
-ItemDisplay[NMAG (lbl OR vbl) CLVL>9]:// Hide light belts and sashes after level 9
-ItemDisplay[NMAG mbl CLVL>15]:// Hide nonmagical belts after level 15
-ItemDisplay[NMAG tbl]:// Hide nonmagical heavy belts (too high strength requirement)
+ItemDisplay[NMAG (lbl OR vbl) CLVL>9 FILTLVL>0]:// Hide light belts and sashes after level 9
+ItemDisplay[NMAG mbl CLVL>15 FILTLVL>0]:// Hide nonmagical belts after level 15
+ItemDisplay[NMAG tbl FILTLVL>0]:// Hide nonmagical heavy belts (too high strength requirement)
 
-ItemDisplay[NMAG (zlb OR zvb OR zmb OR hbl) CLVL>29]:// After level 29 (for early 4slot belt imbue) hide Demonhide Sash, Sharkskin Belt, and Mesh Belt 
-ItemDisplay[NMAG (ztb OR zhb)]:// Hide nonmagical Battle Belt and War Belt (too high strength requirement)
+ItemDisplay[NMAG (zlb OR zvb OR zmb OR hbl) CLVL>29 FILTLVL>0]:// After level 29 (for early 4slot belt imbue) hide Demonhide Sash, Sharkskin Belt, Mesh Belt, Plated Belt
+ItemDisplay[NMAG (ztb OR zhb) FILTLVL>0]:// Hide nonmagical Battle Belt and War Belt (too high strength requirement)
 
-ItemDisplay[NMAG BELT ELT]:// Hide all elite quality white belts
+ItemDisplay[NMAG BELT ELT FILTLVL>0]:// Hide all elite quality white belts
 
 // ------------------------------------------------------------------------------
 //    ===============================  Boots  ===============================   
 // ------------------------------------------------------------------------------
 
-ItemDisplay[NMAG BOOTS ETH]:// Hide all eth nonmagical boots
-ItemDisplay[NMAG BOOTS NORM]:// Hide all normal quality white boots
-ItemDisplay[NMAG BOOTS EXC]:// Hide all exceptional quality white boots
-ItemDisplay[NMAG BOOTS ELT]:// Hide all elite quality white boots
+ItemDisplay[NMAG BOOTS ETH FILTLVL>0]:// Hide all eth nonmagical boots
+ItemDisplay[NMAG BOOTS NORM FILTLVL>0]:// Hide all normal quality white boots
+ItemDisplay[NMAG BOOTS EXC FILTLVL>0]:// Hide all exceptional quality white boots
+ItemDisplay[NMAG BOOTS ELT FILTLVL>0]:// Hide all elite quality white boots
 
 // ------------------------------------------------------------------------------
 //    ===============================  Gloves  ===============================   
 // ------------------------------------------------------------------------------
 
-ItemDisplay[NMAG GLOVES ETH]:// Hide all eth nonmagical gloves
-ItemDisplay[NMAG GLOVES NORM]:// Hide all normal quality white gloves
-ItemDisplay[NMAG GLOVES EXC]:// Hide all exceptional quality white gloves
-ItemDisplay[NMAG GLOVES ELT]:// Hide all elite quality white gloves
+ItemDisplay[NMAG GLOVES ETH FILTLVL>0]:// Hide all eth nonmagical gloves
+ItemDisplay[NMAG GLOVES NORM FILTLVL>0]:// Hide all normal quality white gloves
+ItemDisplay[NMAG GLOVES EXC FILTLVL>0]:// Hide all exceptional quality white gloves
+ItemDisplay[NMAG GLOVES ELT FILTLVL>0]:// Hide all elite quality white gloves
 
 // ------------------------------------------------------------------------------
 //    =============================  Amazon Bows  ============================   
@@ -4212,11 +4212,11 @@ ItemDisplay[NMAG !RW TABSK0=2]:%WHITE%+2 %DARK_GREEN%Bow%TAN%Skill %GRAY%%NAME%{
 ItemDisplay[NMAG !RW TABSK0=3]:%WHITE%+3 %DARK_GREEN%Bow%TAN%Skill %GRAY%%NAME%{%NAME%}%CONTINUE%
 
 // Hide Zon Class Bows that don't have at least +1 to Bow Skills above character level 24
-ItemDisplay[NMAG TABSK0<1 (am1 OR am2 OR am6 OR am7 OR amb OR amc) CLVL>24]://
+ItemDisplay[NMAG TABSK0<1 (am1 OR am2 OR am6 OR am7 OR amb OR amc) CLVL>24 FILTLVL>0]://
 // Hide Zon Class Bows that don't have at least +2 to Bow Skills above character level 44
-ItemDisplay[NMAG TABSK0<2 (am1 OR am2 OR am6 OR am7 OR amb OR amc) CLVL>44]://
+ItemDisplay[NMAG TABSK0<2 (am1 OR am2 OR am6 OR am7 OR amb OR amc) CLVL>44 FILTLVL>0]://
 // Hide Zon Class Bows that don't have at least +3 to Bow Skills above character level 64
-ItemDisplay[NMAG TABSK0<3 (am1 OR am2 OR am6 OR am7 OR amb OR amc) CLVL>64]://
+ItemDisplay[NMAG TABSK0<3 (am1 OR am2 OR am6 OR am7 OR amb OR amc) CLVL>64 FILTLVL>0]://
 
 //          Normal tier
 
@@ -4243,18 +4243,18 @@ ItemDisplay[NMAG !INF !RW (SOCK=3 OR SOCK=4) am7 TABSK0>2 FILTLVL<5 CLVL<90]:%GR
 //           Matriarchal Bow
 ItemDisplay[NMAG !INF !RW (!SUP OR (SUP ED<5)) (SOCK=0 OR SOCK=3) amb TABSK0>2 FILTLVL<5 CLVL<90]:%WHITE%%NAME%%DOT-20%%PX-00%%CONTINUE%// 0os, 3os
 ItemDisplay[NMAG !INF !RW (!SUP OR (SUP ED<5)) (SOCK=4 OR SOCK=5) amb TABSK0>2]:%GRAY%%NAME%%DOT-20%%PX-00%%CONTINUE%// 4os, 5os
-ItemDisplay[NMAG !INF !RW (!SUP OR (SUP ED<5)) SOCK=2 amb TABSK0>2]:// Hide 2os
+ItemDisplay[NMAG !INF !RW (!SUP OR (SUP ED<5)) SOCK=2 amb TABSK0>2 FILTLVL>0]:// Hide 2os
 
 ItemDisplay[NMAG !INF !RW SUP ED>4 (SOCK=0 OR SOCK=3 OR SOCK=4 OR SOCK=5) amb TABSK0>2]:%WHITE%%NAME%%DOT-20%%PX-00%%CONTINUE%// Superior 5-15%ED 0os, 3os, 4os, 5os
-ItemDisplay[NMAG !INF !RW SUP ED>4 SOCK=2 amb TABSK0>2]://
+ItemDisplay[NMAG !INF !RW SUP ED>4 SOCK=2 amb TABSK0>2 FILTLVL>0]://
 
 //           Grand Matron Bow
 ItemDisplay[NMAG !INF !RW (!SUP OR (SUP ED<5)) (SOCK=0 OR SOCK=3) amc TABSK0>2 FILTLVL<5 CLVL<90]:%WHITE%%NAME%%DOT-20%%PX-00%%CONTINUE%// 0os, 3os
 ItemDisplay[NMAG !INF !RW (!SUP OR (SUP ED<5)) (SOCK=4 OR SOCK=5) amc TABSK0>2]:%GRAY%%NAME%%DOT-20%%PX-00%%CONTINUE%// 4os, 5os
-ItemDisplay[NMAG !INF !RW (!SUP OR (SUP ED<5)) SOCK=2 amc TABSK0>2]:// Hide 2os
+ItemDisplay[NMAG !INF !RW (!SUP OR (SUP ED<5)) SOCK=2 amc TABSK0>2 FILTLVL>0]:// Hide 2os
 
 ItemDisplay[NMAG !INF !RW SUP ED>4 (SOCK=0 OR SOCK=3 OR SOCK=4 OR SOCK=5) amc TABSK0>2]:%WHITE%%NAME%%DOT-20%%PX-00%%CONTINUE%// Superior 5-15%ED 0os, 3os, 4os, 5os
-ItemDisplay[NMAG !INF !RW SUP ED>4 SOCK=2 amc TABSK0>2]://
+ItemDisplay[NMAG !INF !RW SUP ED>4 SOCK=2 amc TABSK0>2 FILTLVL>0]://
 
 // ------------------------------------------------------------------------------
 //   =============================  Amazon Spears  ===========================
@@ -4266,24 +4266,24 @@ ItemDisplay[NMAG !RW TABSK2=2]:%WHITE%+2 %DARK_GREEN%Jav%TAN%Skill %GRAY%%NAME%{
 ItemDisplay[NMAG !RW TABSK2=3]:%WHITE%+3 %DARK_GREEN%Jav%TAN%Skill %GRAY%%NAME%{%NAME%}%CONTINUE%
 
 // Hide Zon Class Spears and Javelins that don't have at least +1 to Javelin Skills above character level 24
-ItemDisplay[NMAG TABSK2<1 (am3 OR am4 OR am8 OR am9 OR amd OR ame OR am5 OR ama OR amf) CLVL>24]://
+ItemDisplay[NMAG TABSK2<1 (am3 OR am4 OR am8 OR am9 OR amd OR ame OR am5 OR ama OR amf) CLVL>24 FILTLVL>0]://
 // Hide Zon Class Spears and Javelins that don't have at least +2 to Javelin Skills above character level 44
-ItemDisplay[NMAG TABSK2<2 (am3 OR am4 OR am8 OR am9 OR amd OR ame OR am5 OR ama OR amf) CLVL>44]://
+ItemDisplay[NMAG TABSK2<2 (am3 OR am4 OR am8 OR am9 OR amd OR ame OR am5 OR ama OR amf) CLVL>44 FILTLVL>0]://
 // Hide Zon Class Spears and Javelins that don't have at least +3 to Javelin Skills above character level 64
-ItemDisplay[NMAG TABSK2<3 (am3 OR am4 OR am8 OR am9 OR amd OR ame OR am5 OR ama OR amf) CLVL>64]://
+ItemDisplay[NMAG TABSK2<3 (am3 OR am4 OR am8 OR am9 OR amd OR ame OR am5 OR ama OR amf) CLVL>64 FILTLVL>0]://
 
 // Hides nonmagical Zon Class Javelins above character level 85 (Above this level, most Amazons have used their imbue quests)
-ItemDisplay[NMAG TABSK2=3 (am5 OR ama OR amf) CLVL>79]://
+ItemDisplay[NMAG TABSK2=3 (am5 OR ama OR amf) CLVL>79 FILTLVL>0]://
 
 //           Maiden Spear, Maiden Pike
-ItemDisplay[NMAG !INF !RW (am3 OR am4) SOCK=0]:// 
-ItemDisplay[NMAG !INF !RW (am3 OR am4) !AMAZON CLVL>19]://
-ItemDisplay[NMAG !INF !RW (am3 OR am4) AMAZON CLVL>29]://
+ItemDisplay[NMAG !INF !RW (am3 OR am4) SOCK=0 FILTLVL>0]:// 
+ItemDisplay[NMAG !INF !RW (am3 OR am4) !AMAZON CLVL>19 FILTLVL>0]://
+ItemDisplay[NMAG !INF !RW (am3 OR am4) AMAZON CLVL>29 FILTLVL>0]://
 
 //           Ceremonial Spear, Ceremonial Pike
-ItemDisplay[NMAG !INF !RW (am8 OR am9) SOCK=0]:// 
-ItemDisplay[NMAG !INF !RW (am8 OR am9) !AMAZON CLVL>39]://
-ItemDisplay[NMAG !INF !RW (am8 OR am9) AMAZON CLVL>49]://
+ItemDisplay[NMAG !INF !RW (am8 OR am9) SOCK=0 FILTLVL>0]:// 
+ItemDisplay[NMAG !INF !RW (am8 OR am9) !AMAZON CLVL>39 FILTLVL>0]://
+ItemDisplay[NMAG !INF !RW (am8 OR am9) AMAZON CLVL>49 FILTLVL>0]://
 
 //           Matriarchal Spear, Matriarchal Pike
 // Hide amazon spears above filter level 4 unless character is an amazon
@@ -4293,9 +4293,9 @@ ItemDisplay[NMAG !INF !RW amd AMAZON FILTLVL>4 (!SUP OR (SUP ED<5))]://
 // Hide matriarchal pikes after filter level 4 if character is an amazon
 ItemDisplay[NMAG !INF !RW ame AMAZON FILTLVL>4]://
 // Hide noneth matriarchal spears and pikes that are not 0, 3, or 4 sockets
-ItemDisplay[NMAG !INF !RW (amd OR ame) !ETH TABSK2=3 !(SOCK=0 OR SOCK=3 OR SOCK=4)]://
+ItemDisplay[NMAG !INF !RW (amd OR ame) !ETH TABSK2=3 !(SOCK=0 OR SOCK=3 OR SOCK=4) FILTLVL>0]://
 // Hide eth matriarchal spears and pikes that are not 0 or 6 sockets
-ItemDisplay[NMAG !INF !RW (amd OR ame) ETH TABSK2=3 !(SOCK=0 OR SOCK=6)]://
+ItemDisplay[NMAG !INF !RW (amd OR ame) ETH TABSK2=3 !(SOCK=0 OR SOCK=6) FILTLVL>0]://
 
 // ------------------------------------------------------------------------------
 //    ============================  Assassin Claws  ==========================
@@ -4322,7 +4322,7 @@ ItemDisplay[NMAG !RW CLVL<80 SIN SOCK=2 (SK273>2 OR SK253>2)]:%ORANGE%Neophyte %
 ItemDisplay[NMAG !INF !RW ETH (7qr OR 7ar OR 7xf) (SK252>0 OR SK275>0 OR SK277>0 OR ED>4 OR (ETH 7xf)) (SOCK=0 OR SOCK=3)]:%ORANGE%Chaos %NAME%%DOT-20%%PX-00%%CONTINUE%//
 
 //      Hides assassin claws that do no have +1 to at least 1 skill past level 10
-ItemDisplay[NMAG !RW SIN CLVL>9 !(SK251>0 OR SK252>0 OR SK253>0 OR SK254>0 OR SK255>0 OR SK256>0 OR SK257>0 OR SK258>0 OR SK259>0 OR SK260>0 OR SK261>0 OR SK262>0 OR SK263>0 OR SK264>0 OR SK265>0 OR SK266>0 OR SK267>0 OR SK268>0 OR SK269>0 OR SK270>0 OR SK271>0 OR SK272>0 OR SK273>0 OR SK274>0 OR SK275>0 OR SK276>0 OR SK277>0 OR SK278>0 OR SK279>0 OR SK280>0 OR SK366>0 OR ((7qr OR 7ar OR 7xf) (SOCK=0 OR SOCK=3) ETH (ED>4 OR SK275>0 OR SK252>0 OR SK277>0 OR (ETH 7xf))))]:// All tiers, 0os
+ItemDisplay[NMAG !RW SIN CLVL>9 FILTLVL>0 !(SK251>0 OR SK252>0 OR SK253>0 OR SK254>0 OR SK255>0 OR SK256>0 OR SK257>0 OR SK258>0 OR SK259>0 OR SK260>0 OR SK261>0 OR SK262>0 OR SK263>0 OR SK264>0 OR SK265>0 OR SK266>0 OR SK267>0 OR SK268>0 OR SK269>0 OR SK270>0 OR SK271>0 OR SK272>0 OR SK273>0 OR SK274>0 OR SK275>0 OR SK276>0 OR SK277>0 OR SK278>0 OR SK279>0 OR SK280>0 OR SK366>0 OR ((7qr OR 7ar OR 7xf) (SOCK=0 OR SOCK=3) ETH (ED>4 OR SK275>0 OR SK252>0 OR SK277>0 OR (ETH 7xf))))]:// All tiers, 0os
 
 
 // ------------------------------------------------------------------------------
@@ -4338,7 +4338,7 @@ ItemDisplay[NMAG !INF !RW !ETH SOCK=2 FILTLVL<5 CLVL<80 (SK149>2 OR SK154>2) BAR
 ItemDisplay[NMAG !INF !RW !ETH SOCK=3 FILTLVL<5 CLVL<90 (SK149>2 OR SK154>2) BAR]:%GRAY%%NAME%%DOT-20%%PX-00%%CONTINUE%// All tiers, 3os
 
 // Hides barbarian helms don't have any + to skills
-ItemDisplay[NMAG !RW BAR CLVL>9 !(SK368>0 OR SK126>0 OR SK127>0 OR SK128>0 OR SK129>0 OR SK130>0 OR SK131>0 OR SK132>0 OR SK133>0 OR SK134>0 OR SK135>0 OR SK136>0 OR SK137>0 OR SK138>0 OR SK139>0 OR SK140>0 OR SK141>0 OR SK142>0 OR SK143>0 OR SK144>0 OR SK145>0 OR SK146>0 OR SK147>0 OR SK148>0 OR SK149>0 OR SK150>0 OR SK151>0 OR SK152>0 OR SK153>0 OR SK154>0 OR SK155>0)]:// All tiers, 0os
+ItemDisplay[NMAG !RW BAR CLVL>9 FILTLVL>0 !(SK368>0 OR SK126>0 OR SK127>0 OR SK128>0 OR SK129>0 OR SK130>0 OR SK131>0 OR SK132>0 OR SK133>0 OR SK134>0 OR SK135>0 OR SK136>0 OR SK137>0 OR SK138>0 OR SK139>0 OR SK140>0 OR SK141>0 OR SK142>0 OR SK143>0 OR SK144>0 OR SK145>0 OR SK146>0 OR SK147>0 OR SK148>0 OR SK149>0 OR SK150>0 OR SK151>0 OR SK152>0 OR SK153>0 OR SK154>0 OR SK155>0)]:// All tiers, 0os
 
 
 // ------------------------------------------------------------------------------
@@ -4357,7 +4357,7 @@ ItemDisplay[NMAG !RW (9cl OR 9sp OR 7cl OR 7sp) (SOCK=0 OR SOCK=3) ((CLVL<90 OR 
 
 // Hides nonmagical Ethereal Druid Helms after character level 30
 ItemDisplay[NMAG !RW ETH DRU DRUID CLVL>29]:// If your character is a druid, hide all Eth nonmagical Ethereal Druid Helms after character level 29
-ItemDisplay[NMAG !RW ETH DRU !DRUID]:// Hides all Eth nonmagical Ethereal Druid Helms for non-druid characters
+ItemDisplay[NMAG !RW ETH DRU !DRUID FILTLVL>0]:// Hides all Eth nonmagical Ethereal Druid Helms for non-druid characters
 
 //      Lore runeword Druid pelt bases
 //      At levels 1-39, (+3 to one of the following: Raven, Spirit Wolf, Dire Wolf, Grizzly)
@@ -4368,7 +4368,7 @@ ItemDisplay[NMAG !RW !ETH CLVL>49 CLVL<80 DRU SOCK=2 ((SK236>0 OR SK226>0 OR SK3
 ItemDisplay[NMAG !RW !ETH CLVL>79 CLVL<90 DRU SOCK=2 ((SK236>0 OR SK226>0 OR SK370>0 OR SK231>0 OR SK250>0) ((SK221>2 (SK237>2 OR SK227>2 OR SK247>2)) OR (SK237>2 (SK221>2 OR SK227>2 OR SK247>2)) OR (SK227>2 (SK237>2 OR SK221>2 OR SK247>2)) OR (SK247>2 (SK237>2 OR SK227>2 OR SK221>2))))]:%ORANGE%Lore %WHITE%%NAME%%DOT-20%%PX-00%%CONTINUE%//
 
 // Hides all other Druid Helms and clubs that don't have any + to skills past level 10
-ItemDisplay[NMAG !RW (DRU OR clb OR 9cl OR 7cl OR spc OR 9sp OR 7sp) CLVL>9 !(SK221>0 OR SK222>0 OR SK223>0 OR SK224>0 OR SK225>0 OR SK226>0 OR SK227>0 OR SK228>0 OR SK229>0 OR SK230>0 OR SK231>0 OR SK232>0 OR SK233>0 OR SK234>0 OR SK235>0 OR SK236>0 OR SK237>0 OR SK238>0 OR SK239>0 OR SK240>0 OR SK241>0 OR SK242>0 OR SK243>0 OR SK244>0 OR SK245>0 OR SK246>0 OR SK247>0 OR SK248>0 OR SK249>0 OR SK250>0 OR SK370>0)]:// All tiers, 0os
+ItemDisplay[NMAG !RW (DRU OR clb OR 9cl OR 7cl OR spc OR 9sp OR 7sp) CLVL>9 FILTLVL>0 !(SK221>0 OR SK222>0 OR SK223>0 OR SK224>0 OR SK225>0 OR SK226>0 OR SK227>0 OR SK228>0 OR SK229>0 OR SK230>0 OR SK231>0 OR SK232>0 OR SK233>0 OR SK234>0 OR SK235>0 OR SK236>0 OR SK237>0 OR SK238>0 OR SK239>0 OR SK240>0 OR SK241>0 OR SK242>0 OR SK243>0 OR SK244>0 OR SK245>0 OR SK246>0 OR SK247>0 OR SK248>0 OR SK249>0 OR SK250>0 OR SK370>0)]:// All tiers, 0os
 
 
 // ------------------------------------------------------------------------------
@@ -4380,7 +4380,7 @@ ItemDisplay[NMAG !RW NEC (FILTLVL=9 OR (FILTLVL<9 FILTLVL>4 CLVL>89))]:// On fil
 
 // Hides Ethereal Necromancer Heads
 ItemDisplay[NMAG !RW ETH NEC NECROMANCER CLVL>29]:// If your character is a necromancer, hide all Eth nonmagical necromancer heads after character level 29
-ItemDisplay[NMAG !RW ETH NEC !NECROMANCER]:// Hides all Eth nonmagical necromancer heads for non-necromancer characters
+ItemDisplay[NMAG !RW ETH NEC !NECROMANCER FILTLVL>0]:// Hides all Eth nonmagical necromancer heads for non-necromancer characters
 
 //      Rhyme/Splendor runeword necromancer head bases
 //     At levels 1-79, (+3 to one of the following: Teeth, Skele Mastery, Skele Warrior, Clay Golem, Skeletal Mage, Bone Spear, Skele Archer, Corpse Explosion, Dark Pact)
@@ -4391,7 +4391,7 @@ ItemDisplay[NMAG !RW CLVL<80 NEC ((NORM (SOCK=0 OR SOCK=2)) OR ((EXC OR ELT) SOC
 ItemDisplay[NMAG !RW CLVL<80 NEC (EXC OR ELT) (SOCK=0 OR SOCK=3) (SK67>2 OR SK69>2 OR SK70>2 OR SK75>2 OR SK80>2 OR SK84>2 OR SK89>2 OR SK381>2 OR SK74>2 OR SK381>2)]:%ORANGE%AP %WHITE%%NAME%%DOT-20%%PX-00%%CONTINUE%//
 
 // Hides heads that don't have at least +1 to any necro skills
-ItemDisplay[NMAG !RW NEC !(SK66>0 OR SK67>0 OR SK68>0 OR SK69>0 OR SK70>0 OR SK71>0 OR SK72>0 OR SK73>0 OR SK74>0 OR SK75>0 OR SK76>0 OR SK77>0 OR SK78>0 OR SK79>0 OR SK80>0 OR SK81>0 OR SK82>0 OR SK83>0 OR SK84>0 OR SK85>0 OR SK86>0 OR SK87>0 OR SK88>0 OR SK89>0 OR SK90>0 OR SK91>0 OR SK92>0 OR SK93>0 OR SK94>0 OR SK95>0 OR SK367>0 OR SK374>0 OR SK381>0)]://
+ItemDisplay[NMAG !RW NEC CLVL>9 FILTLVL>0 !(SK66>0 OR SK67>0 OR SK68>0 OR SK69>0 OR SK70>0 OR SK71>0 OR SK72>0 OR SK73>0 OR SK74>0 OR SK75>0 OR SK76>0 OR SK77>0 OR SK78>0 OR SK79>0 OR SK80>0 OR SK81>0 OR SK82>0 OR SK83>0 OR SK84>0 OR SK85>0 OR SK86>0 OR SK87>0 OR SK88>0 OR SK89>0 OR SK90>0 OR SK91>0 OR SK92>0 OR SK93>0 OR SK94>0 OR SK95>0 OR SK367>0 OR SK374>0 OR SK381>0)]://
 
 
 // ---------------------------------------------------------------------------------
@@ -4409,7 +4409,7 @@ ItemDisplay[NMAG !RW WAND !(wnd OR ywn OR 9wn) (SOCK=0 OR SOCK=2) SK75>2 ((SK367
 ItemDisplay[NMAG !RW WAND NECROMANCER CLVL<60 !(wnd OR ywn OR 9wn) (SOCK=0 OR SOCK=2) (SK67>2 OR SK69>2 OR SK70>2 OR SK80>2 OR SK84>2 OR SK89>2 OR SK74>2)]:%ORANGE%White %WHITE%%NAME%%DOT-20%%PX-00%%CONTINUE%//
 
 // Hides all other wands that don't have + to skills
-ItemDisplay[NMAG !RW WAND !(SK66>0 OR SK67>0 OR SK68>0 OR SK69>0 OR SK70>0 OR SK71>0 OR SK72>0 OR SK73>0 OR SK74>0 OR SK75>0 OR SK76>0 OR SK77>0 OR SK78>0 OR SK79>0 OR SK80>0 OR SK81>0 OR SK82>0 OR SK83>0 OR SK84>0 OR SK85>0 OR SK86>0 OR SK87>0 OR SK88>0 OR SK89>0 OR SK90>0 OR SK91>0 OR SK92>0 OR SK93>0 OR SK94>0 OR SK95>0 OR SK367>0 OR SK374>0 OR SK381>0)]://
+ItemDisplay[NMAG !RW WAND CLVL>9 FILTLVL>0 !(SK66>0 OR SK67>0 OR SK68>0 OR SK69>0 OR SK70>0 OR SK71>0 OR SK72>0 OR SK73>0 OR SK74>0 OR SK75>0 OR SK76>0 OR SK77>0 OR SK78>0 OR SK79>0 OR SK80>0 OR SK81>0 OR SK82>0 OR SK83>0 OR SK84>0 OR SK85>0 OR SK86>0 OR SK87>0 OR SK88>0 OR SK89>0 OR SK90>0 OR SK91>0 OR SK92>0 OR SK93>0 OR SK94>0 OR SK95>0 OR SK367>0 OR SK374>0 OR SK381>0)]://
 
 
 // ------------------------------------------------------------------------------
@@ -4424,7 +4424,7 @@ ItemDisplay[NMAG !RW SOR (FILTLVL=9 OR (FILTLVL<9 FILTLVL>4 CLVL>89))]:// On fil
 ItemDisplay[NMAG !RW SOR SORCERESS CLVL<80 (((SOCK=0 OR SOCK=2) (ob1 OR ob2 OR ob3 OR ob4 OR ob6 OR ob7 OR ob8 OR ob9 OR obb OR obc OR obd OR obe)) OR (SOCK=2 (ob5 OR oba OR obf))) (SK44>2 OR SK47>2 OR SK48>2 OR SK56>2 OR SK59>2 OR SK62>2 OR SK369>2 OR SK367>2)]:%ORANGE%Neophyte %WHITE%%NAME%%DOT-20%%PX-00%%CONTINUE%//
 
 // Hides all other orbs that don't have + to skills
-ItemDisplay[NMAG !RW SOR !(SK36>0 OR SK37>0 OR SK38>0 OR SK39>0 OR SK40>0 OR SK41>0 OR SK42>0 OR SK43>0 OR SK44>0 OR SK45>0 OR SK46>0 OR SK47>0 OR SK48>0 OR SK49>0 OR SK50>0 OR SK51>0 OR SK52>0 OR SK53>0 OR SK54>0 OR SK55>0 OR SK56>0 OR SK57>0 OR SK58>0 OR SK59>0 OR SK60>0 OR SK61>0 OR SK62>0 OR SK63>0 OR SK64>0 OR SK65>0 OR SK369>0 OR SK383>0)]://
+ItemDisplay[NMAG !RW SOR CLVL>9 FILTLVL>0 !(SK36>0 OR SK37>0 OR SK38>0 OR SK39>0 OR SK40>0 OR SK41>0 OR SK42>0 OR SK43>0 OR SK44>0 OR SK45>0 OR SK46>0 OR SK47>0 OR SK48>0 OR SK49>0 OR SK50>0 OR SK51>0 OR SK52>0 OR SK53>0 OR SK54>0 OR SK55>0 OR SK56>0 OR SK57>0 OR SK58>0 OR SK59>0 OR SK60>0 OR SK61>0 OR SK62>0 OR SK63>0 OR SK64>0 OR SK65>0 OR SK369>0 OR SK383>0)]://
 
 
 // ------------------------------------------------------------------------------
@@ -4453,7 +4453,7 @@ ItemDisplay[NMAG !RW 6ws ETH SUP ED>4 SOCK=0]:%RED%Sup. %WHITE%Archon Staff%DOT-
 ItemDisplay[NMAG !RW 6ws ETH SUP ED>4 SOCK=6]:%RED%Sup. %GRAY%Archon Staff %TAN%[%WHITE%6%TAN%]%DOT-20%%PX-00%%CONTINUE%//
 
 // Hides all other Staves that don't have + to skills past level 10
-ItemDisplay[NMAG !INF !RW STAFF CLVL>9 !(SK36>0 OR SK37>0 OR SK38>0 OR SK39>0 OR SK40>0 OR SK41>0 OR SK42>0 OR SK43>0 OR SK44>0 OR SK45>0 OR SK46>0 OR SK47>0 OR SK48>0 OR SK49>0 OR SK50>0 OR SK51>0 OR SK52>0 OR SK53>0 OR SK54>0 OR SK55>0 OR SK56>0 OR SK57>0 OR SK58>0 OR SK59>0 OR SK60>0 OR SK61>0 OR SK62>0 OR SK63>0 OR SK64>0 OR SK65>0 OR SK369>0 OR SK383>0 OR ((SOCK=0 OR SOCK=4 OR SOCK=5 OR SOCK=6) 6ws))]:// 
+ItemDisplay[NMAG !INF !RW STAFF CLVL>9 FILTLVL>0 !(SK36>0 OR SK37>0 OR SK38>0 OR SK39>0 OR SK40>0 OR SK41>0 OR SK42>0 OR SK43>0 OR SK44>0 OR SK45>0 OR SK46>0 OR SK47>0 OR SK48>0 OR SK49>0 OR SK50>0 OR SK51>0 OR SK52>0 OR SK53>0 OR SK54>0 OR SK55>0 OR SK56>0 OR SK57>0 OR SK58>0 OR SK59>0 OR SK60>0 OR SK61>0 OR SK62>0 OR SK63>0 OR SK64>0 OR SK65>0 OR SK369>0 OR SK383>0 OR ((SOCK=0 OR SOCK=4 OR SOCK=5 OR SOCK=6) 6ws))]:// 
 
 
 // ------------------------------------------------------------------------------
@@ -4480,7 +4480,7 @@ ItemDisplay[NMAG !INF !RW SCEPTER SOCK=4 !RW CLVL>79 SK109>1]:%ORANGE%Cleansing 
 ItemDisplay[NMAG !INF !RW SCEPTER SOCK=4 !RW CLVL<80 SK109>1]:%ORANGE%Cleansing %WHITE%%NAME%%DOT-20%%PX-00%{%NAME%}%CONTINUE%//
 
 // Hides all other Scepters that don't have + to skills past level 10
-ItemDisplay[NMAG !INF !RW CLVL>9 SCEPTER !(SK96>0 OR SK97>0 OR SK98>0 OR SK99>0 OR SK100>0 OR SK101>0 OR SK102>0 OR SK103>0 OR SK104>0 OR SK105>0 OR SK106>0 OR SK107>0 OR SK108>0 OR SK109>0 OR SK110>0 OR SK111>0 OR SK112>0 OR SK113>0 OR SK114>0 OR SK115>0 OR SK116>0 OR SK117>0 OR SK118>0 OR SK119>0 OR SK120>0 OR SK121>0 OR SK122>0 OR SK123>0 OR SK124>0 OR SK125>0 OR SK371>0 OR SK364>0 OR SOCK=4)]://
+ItemDisplay[NMAG !INF !RW SCEPTER CLVL>9 FILTLVL>0 !(SK96>0 OR SK97>0 OR SK98>0 OR SK99>0 OR SK100>0 OR SK101>0 OR SK102>0 OR SK103>0 OR SK104>0 OR SK105>0 OR SK106>0 OR SK107>0 OR SK108>0 OR SK109>0 OR SK110>0 OR SK111>0 OR SK112>0 OR SK113>0 OR SK114>0 OR SK115>0 OR SK116>0 OR SK117>0 OR SK118>0 OR SK119>0 OR SK120>0 OR SK121>0 OR SK122>0 OR SK123>0 OR SK124>0 OR SK125>0 OR SK371>0 OR SK364>0 OR SOCK=4)]://
 
 // ------------------------------------------------------------------------------
 //      =========================  Armors/Chests ===========================
@@ -4490,28 +4490,27 @@ ItemDisplay[NMAG !INF !RW CLVL>9 SCEPTER !(SK96>0 OR SK97>0 OR SK98>0 OR SK99>0 
 ItemDisplay[NMAG !INF !RW (!SUP OR (SUP ED<5)) CHEST !GEMMED CLVL>84 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
 // Hide nonsuperior 0 socket armors after character level 84 or on filter levels 5+
-ItemDisplay[NMAG !INF !RW (!SUP OR (SUP ED<5)) CHEST !GEMMED (CLVL>84 OR FILTLVL>4) SOCK=0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
+ItemDisplay[NMAG !INF !RW (!SUP OR (SUP ED<5)) CHEST !GEMMED ((CLVL>84 FILTLVL>0) OR FILTLVL>4) SOCK=0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
 // Low-Value Normal tier Armors (Quilted Armor, Leather Armor, Hard Leather Armor, Studded Leather, Scale Mail, Chain Mail, Splint Mail, Plate Mail, Field Plate)
-ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (qui OR lea OR hla OR stu) SOCK=0]:// Hide low-value 0 socket Armors
-ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (scl OR chn OR spl OR plt OR fld) SOCK=0 CLVL>19]:// Hide medium-value 0 socket normal armors at character levels 20+
-ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (qui OR lea OR hla OR stu OR scl OR chn OR spl OR plt OR fld) CLVL>29]:// Hide All Normal tier Armors after level 29
+ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (qui OR lea OR hla OR stu) SOCK=0 FILTLVL>0]:// Hide low-value 0 socket Armors
+ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (scl OR chn OR spl OR plt OR fld) SOCK=0 CLVL>19 FILTLVL>0]:// Hide medium-value 0 socket normal armors at character levels 20+
+ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (qui OR lea OR hla OR stu OR scl OR chn OR spl OR plt OR fld) CLVL>29 FILTLVL>0]:// Hide All Normal tier Armors after level 29
 
 // Higher-Value Normal tier Armors (Ring Mail, Breast Plate, Gothic Plate, Full Plate Mail, Ancient Armor)
-ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (rng OR brs OR gth OR ful OR aar) (!SUP OR (SUP ED<13)) SOCK=0 CLVL>19]:// Hide higher-value nonsuperior 0 socket normal armors at character levels 20+
-ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (rng OR brs OR gth OR ful OR aar) ((!SUP OR (SUP ED<13)) OR SOCK=2) CLVL>29]:// Hide higher-value Normal tier Armors after level 29
+ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (rng OR brs OR gth OR ful OR aar) (!SUP OR (SUP ED<13)) SOCK=0 CLVL>19 FILTLVL>0]:// Hide higher-value nonsuperior 0 socket normal armors at character levels 20+
+ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (rng OR brs OR gth OR ful OR aar) ((!SUP OR (SUP ED<13)) OR SOCK=2) CLVL>29 FILTLVL>0]:// Hide higher-value Normal tier Armors after level 29
 
 // Low-Value Exceptional tier Armors (Ghost Armor, Serpentskin Armor, Demonhide Armor, Trellised Armor, Templar Coat, Embossed Plate, Chaos Armor, Ornate Armor)
-ItemDisplay[NMAG !INF !RW !GEMMED (xui OR xea OR xla OR xtu OR xlt OR xth OR xul OR xar) (CLVL>49 OR SOCK=0)]:// Hide 0os or character level 50+
+ItemDisplay[NMAG !INF !RW !GEMMED (xui OR xea OR xla OR xtu OR xlt OR xth OR xul OR xar) (CLVL>49 OR SOCK=0) FILTLVL>0]:// Hide 0os or character level 50+
 ItemDisplay[NMAG !INF !RW !ETH SOCK=2 CLVL<50 (xui OR xea OR xla OR xtu)]:%GRAY%%NAME%%DOT-20%%PX-00%%CONTINUE%// Notify for 2os noneth under level 50
 ItemDisplay[NMAG !INF !RW !ETH (SOCK=2 OR SOCK=3) (xrs OR xtp) CLVL<80]:%GRAY%%NAME%%DOT-20%%PX-00%%CONTINUE%// 2 or 3 socket Cuirass and Mage Plate under level 80
 
 // Higher-Value Exceptional tier Armors (Linked Mail, Tigulated Mail, Mesh Armor, Cuirass, Russet Armor, Sharktooth Armor, Mage Plate)
-ItemDisplay[NMAG !INF !RW !GEMMED (xng OR xcl OR xhn OR xrs OR xpl OR xld OR xtp) ((!SUP OR (SUP ED<13)) OR SOCK=2) CLVL>79]:// Hides Select Nonsuperior Exceptional tier Armors after 79
+ItemDisplay[NMAG !INF !RW !GEMMED (xng OR xcl OR xhn OR xrs OR xpl OR xld OR xtp) ((!SUP OR (SUP ED<13)) OR SOCK=2) CLVL>79 FILTLVL>0]:// Hides Select Nonsuperior Exceptional tier Armors after 79
 ItemDisplay[NMAG !INF !RW SUP !ETH (SOCK=0 OR SOCK=3) (xng OR xcl OR xhn OR xrs OR xpl OR xld OR xtp) ED>12]:%GRAY%%NAME%%DOT-20%%PX-00%%CONTINUE%// Superior, 3os
 
 // Elite tier: Dusk Shroud, Wyrmhide, Scarab Husk, and Archon Plate (uui OR uea OR utp OR ula)
-ItemDisplay[NMAG !INF !RW !SUP !ETH DEF>399 SOCK=0 ELT CHEST (uui OR uea OR utp OR ula)]:%NAME%%CONTINUE%// Elite tier 0os
 ItemDisplay[NMAG !INF !RW !SUP !ETH DEF>399 (SOCK=2 OR SOCK=3 OR SOCK=4) ELT CHEST (uui OR uea OR utp OR ula) FILTLVL<5 CLVL<90]:%NAME%%DOT-20%%PX-00%%CONTINUE%// 
 ItemDisplay[NMAG !INF !RW SUP ED>4 !ETH DEF>399 (SOCK=0 OR SOCK=2 OR SOCK=3 OR SOCK=4) ELT CHEST (uui OR uea OR utp OR ula)]:%NAME%%DOT-20%%PX-00%%CONTINUE%// Superior
 
@@ -4527,103 +4526,103 @@ ItemDisplay[NMAG !INF !RW SUP ETH ED>4 DEF>649 (SOCK=0 OR SOCK=3 OR SOCK=4) !(uu
 // ------------------------------------------------------------------------------
 
 // 	Normal tier
-ItemDisplay[NMAG !INF !RW CLVL>29 NORM SHIELD !bsh !lrg !kit !tow !DIN !NEC]://
+ItemDisplay[NMAG !INF !RW CLVL>29 NORM SHIELD !bsh !lrg !kit !tow !DIN !NEC FILTLVL>0]://
 
-ItemDisplay[NMAG !INF !RW SOCK=0 NORM SHIELD !DIN !NEC]:// All Normal tiers 0os
-ItemDisplay[NMAG !INF !RW SOCK=2 NORM SHIELD !sml !bsh !sml !tow !DIN !NEC]:// All Normal tiers 2os
-ItemDisplay[NMAG !INF !RW SOCK=3 NORM SHIELD !lrg !kit !tow !DIN !NEC]:// All Normal tiers 3os
+ItemDisplay[NMAG !INF !RW SOCK=0 NORM SHIELD !DIN !NEC FILTLVL>0]:// All Normal tiers 0os
+ItemDisplay[NMAG !INF !RW SOCK=2 NORM SHIELD !sml !bsh !sml !tow !DIN !NEC FILTLVL>0]:// All Normal tiers 2os
+ItemDisplay[NMAG !INF !RW SOCK=3 NORM SHIELD !lrg !kit !tow !DIN !NEC FILTLVL>0]:// All Normal tiers 3os
 
 //      Buckler
-ItemDisplay[NMAG buc CLVL>2]:// Hide all white Bucklers past character level 2
+ItemDisplay[NMAG buc CLVL>2 FILTLVL>0]:// Hide all white Bucklers past character level 2
 
 //      Small Shield
-ItemDisplay[NMAG !INF !RW sml CLVL>19]:// Hide all white small shields past character level 19
+ItemDisplay[NMAG !INF !RW sml CLVL>19 FILTLVL>0]:// Hide all white small shields past character level 19
 
 //      Large Shield
-ItemDisplay[NMAG !INF !RW lrg !GEMMED CLVL>60]:// Hide large shields after level 60
+ItemDisplay[NMAG !INF !RW lrg !GEMMED CLVL>60 FILTLVL>0]:// Hide large shields after level 60
 ItemDisplay[NMAG !INF !RW lrg !ETH SOCK=3 CLVL<30]:%ORANGE%AP %GRAY%%NAME%%DOT-20%%PX-00%%CONTINUE%// 3os
 
 //      Kite Shield
-ItemDisplay[NMAG !INF !RW kit !GEMMED CLVL>60]:// Hide large shields after level 60
+ItemDisplay[NMAG !INF !RW kit !GEMMED CLVL>60 FILTLVL>0]:// Hide large shields after level 60
 ItemDisplay[NMAG !INF !RW kit !ETH SOCK=3 CLVL<30]:%ORANGE%AP %GRAY%%NAME%%DOT-20%%PX-00%%CONTINUE%// 3os
 
 //      Tower Shield
-ItemDisplay[NMAG !INF !RW tow !GEMMED CLVL>60]:// Hide large shields after level 60
+ItemDisplay[NMAG !INF !RW tow !GEMMED CLVL>60 FILTLVL>0]:// Hide large shields after level 60
 ItemDisplay[NMAG !INF !RW tow !ETH SOCK=2 CLVL<50]:%GRAY%%NAME%%DOT-20%%PX-00%%CONTINUE%// 2os
 ItemDisplay[NMAG !INF !RW tow !ETH SOCK=3 CLVL<30]:%ORANGE%AP %GRAY%%NAME%%DOT-20%%PX-00%%CONTINUE%// 3os
 
 //      Bone Shield
-ItemDisplay[NMAG !INF !RW bsh CLVL>49]://
+ItemDisplay[NMAG !INF !RW bsh CLVL>49 FILTLVL>0]://
 ItemDisplay[NMAG !INF !RW !ETH SOCK=2 bsh CLVL<50]:%GRAY%%NAME%%DOT-20%%PX-00%%CONTINUE%// 2os
 
 
 // 	Exceptional tier
-ItemDisplay[NMAG !INF !RW EXC SHIELD !xsh !DIN !NEC]:// All Exceptional tiers 0os
+ItemDisplay[NMAG !INF !RW EXC SHIELD !xsh !DIN !NEC FILTLVL>0]:// All Exceptional tiers 0os
 
 //      Grim Shield
-ItemDisplay[NMAG !INF !RW xsh SOCK=0]:// Hide 0os
-ItemDisplay[NMAG !INF !RW xsh CLVL>79]:// Hide Nonmagical grim shields after character level 79
+ItemDisplay[NMAG !INF !RW xsh SOCK=0 FILTLVL>0]:// Hide 0os
+ItemDisplay[NMAG !INF !RW xsh CLVL>79 FILTLVL>0]:// Hide Nonmagical grim shields after character level 79
 ItemDisplay[NMAG !INF !RW xsh CLVL<80 !ETH SOCK=2]:%GRAY%%NAME%%DOT-20%%PX-00%%CONTINUE%// Notify 2os Grim Shields before level 80
 
 
 //  Elite tier Shield
-ItemDisplay[NMAG !INF !RW ELT SHIELD !uit !ush !uow !uts !DIN !NEC]:// Hide elite tiers that aren't Monarch Aegis Ward or Troll Nest
+ItemDisplay[NMAG !INF !RW ELT SHIELD !uit !ush !uow !uts !DIN !NEC FILTLVL>0]:// Hide elite tiers that aren't Monarch Aegis Ward or Troll Nest
 
 //      Monarch
-ItemDisplay[NMAG !INF !RW uit ETH]:// Hide eth monarchs
-ItemDisplay[NMAG !INF !RW uit (SOCK=2 OR SOCK=3)]:// Hide 2os and 3os Monarchs
+ItemDisplay[NMAG !INF !RW uit ETH FILTLVL>0]:// Hide eth monarchs
+ItemDisplay[NMAG !INF !RW uit (SOCK=2 OR SOCK=3) FILTLVL>0]:// Hide 2os and 3os Monarchs
 
-ItemDisplay[NMAG !INF !RW uit SOCK=0 (!SUP OR (SUP ED<5)) CLVL>79]:// Hide nonsuperior 0os Monarch after level 79
+ItemDisplay[NMAG !INF !RW uit SOCK=0 (!SUP OR (SUP ED<5)) CLVL>79 FILTLVL>0]:// Hide nonsuperior 0os Monarch after level 79
 ItemDisplay[NMAG !INF !RW uit SOCK=0 !ETH CLVL<80 !PALADIN !NECROMANCER !ASSASSIN]:%NAME%%DOT-20%%PX-00%%CONTINUE%// Show and notify for 0os Monarchs before level 80
 ItemDisplay[NMAG !INF !RW uit SOCK=4 !ETH CLVL<80 !PALADIN !NECROMANCER !ASSASSIN]:%GRAY%%NAME%%DOT-20%%PX-00%%CONTINUE%// Show and notify for 4os Monarchs before level 80
 
 //      Aegis
-ItemDisplay[NMAG !INF !RW uow !ETH]:// Hide noneth Aegis
-ItemDisplay[NMAG !INF !RW uow (SOCK=2 OR SOCK=3)]:// Hide 2 and 3 socket Aegis
+ItemDisplay[NMAG !INF !RW uow !ETH FILTLVL>0]:// Hide noneth Aegis
+ItemDisplay[NMAG !INF !RW uow (SOCK=2 OR SOCK=3) FILTLVL>0]:// Hide 2 and 3 socket Aegis
 ItemDisplay[NMAG !INF !RW uow ETH (!SUP OR (SUP ED<5)) FILTLVL>4]:// Hide Wards without 5%ED or more after filter level 4
 ItemDisplay[NMAG !INF !RW uow ETH SUP ED>4 (SOCK=0 OR SOCK=4)]:%GREEN%Exile %GRAY%%NAME%%DOT-20%%PX-00%%CONTINUE%// Superior, 0os or 4os
 
 //      Ward
-ItemDisplay[NMAG !INF !RW uts !ETH]:// Hide noneth Wards
-ItemDisplay[NMAG !INF !RW uts (SOCK=2 OR SOCK=3)]:// Hide 2 and 3 socket Wards
+ItemDisplay[NMAG !INF !RW uts !ETH FILTLVL>0]:// Hide noneth Wards
+ItemDisplay[NMAG !INF !RW uts (SOCK=2 OR SOCK=3) FILTLVL>0]:// Hide 2 and 3 socket Wards
 ItemDisplay[NMAG !INF !RW uts ETH (!SUP OR (SUP ED<5)) FILTLVL>4]:// Hide Wards without 5%ED or more after filter level 4
 ItemDisplay[NMAG !INF !RW uts ED>4 SUP ETH (SOCK=0 OR SOCK=4)]:%GREEN%Exile%GRAY% %NAME%%DOT-20%%PX-00%%CONTINUE%// Superior, 0os or 4os
 
 //      Troll Nest
-ItemDisplay[NMAG !INF !RW ush ETH]:// Hide eth Troll Nests
-ItemDisplay[NMAG !INF !RW ush (!SUP OR (SUP ED<5)) !ETH SOCK=0]:// Hide noneth 0os Troll Nests
+ItemDisplay[NMAG !INF !RW ush ETH FILTLVL>0]:// Hide eth Troll Nests
+ItemDisplay[NMAG !INF !RW ush (!SUP OR (SUP ED<5)) !ETH SOCK=0 FILTLVL>0]:// Hide noneth 0os Troll Nests
 ItemDisplay[NMAG !INF !RW ush SOCK=2 FILTLVL>4]:// Hide noneth 0os Troll Nests
 ItemDisplay[NMAG !INF !RW ush (!SUP OR (SUP ED<5)) FILTLVL>4]:// Hide Troll Nests without 5 or more ED
 
 
 // 	Normal tier
 //      1-Handed Axes
-ItemDisplay[NMAG !INF !RW SOCK=0 (hax OR axe OR 2ax OR mpi OR wax)]:// All Normal tiers 0os
-ItemDisplay[NMAG !INF !RW CLVL>29 !SOCK=5 (hax OR axe OR 2ax OR mpi OR wax)]:// All Normal tiers 0os
+ItemDisplay[NMAG !INF !RW SOCK=0 (hax OR axe OR 2ax OR mpi OR wax) FILTLVL>0]:// All Normal tiers 0os
+ItemDisplay[NMAG !INF !RW CLVL>29 !SOCK=5 (hax OR axe OR 2ax OR mpi OR wax) FILTLVL>0]:// All Normal tiers 0os
 //      2-Handed Axes
-ItemDisplay[NMAG !INF !RW SOCK=0 (lax OR bax OR btx OR gax OR gix)]:// All Normal tiers 0os
-ItemDisplay[NMAG !INF !RW CLVL>29 (lax OR bax OR btx OR gax OR gix)]:// All Normal tiers 0os
+ItemDisplay[NMAG !INF !RW SOCK=0 (lax OR bax OR btx OR gax OR gix) FILTLVL>0]:// All Normal tiers 0os
+ItemDisplay[NMAG !INF !RW CLVL>29 (lax OR bax OR btx OR gax OR gix) FILTLVL>0]:// All Normal tiers 0os
 
 // 	Exceptional tier
 //      1-Handed Axes
-ItemDisplay[NMAG !INF !RW SOCK=0 (9ha OR 9ax OR 92a OR 9mp OR 9wa)]:// All Exceptional tiers 0os
-ItemDisplay[NMAG !INF !RW CLVL>49 (9ha OR 9ax OR 92a OR 9mp OR 9wa)]:// All Exceptional tiers 0os
+ItemDisplay[NMAG !INF !RW SOCK=0 (9ha OR 9ax OR 92a OR 9mp OR 9wa) FILTLVL>0]:// All Exceptional tiers 0os
+ItemDisplay[NMAG !INF !RW CLVL>49 (9ha OR 9ax OR 92a OR 9mp OR 9wa) FILTLVL>0]:// All Exceptional tiers 0os
 //      2-Handed Axes
-ItemDisplay[NMAG !INF !RW SOCK=0 (9la OR 9ba OR 9bt OR 9ga OR 9gi)]:// All Exceptional tiers 0os
-ItemDisplay[NMAG !INF !RW CLVL>49 (9la OR 9ba OR 9bt OR 9ga OR 9gi)]:// All Exceptional tiers 0os
+ItemDisplay[NMAG !INF !RW SOCK=0 (9la OR 9ba OR 9bt OR 9ga OR 9gi) FILTLVL>0]:// All Exceptional tiers 0os
+ItemDisplay[NMAG !INF !RW CLVL>49 (9la OR 9ba OR 9bt OR 9ga OR 9gi) FILTLVL>0]:// All Exceptional tiers 0os
 
 // 	    Elite tier
 //      Berserker Axe, Ettin Axe, and War Spike
-ItemDisplay[NMAG !INF !RW !ETH (!SUP OR (SUP ED<5)) SOCK=0 (72a OR 7wa OR 7mp)]:// Hide 0os noneth nonsuperior Berserker, Ettin Axe,  Axe and War Spike
+ItemDisplay[NMAG !INF !RW !ETH (!SUP OR (SUP ED<5)) SOCK=0 (72a OR 7wa OR 7mp) FILTLVL>0]:// Hide 0os noneth nonsuperior Berserker, Ettin Axe,  Axe and War Spike
 ItemDisplay[NMAG !INF !RW !ETH (!SUP OR (SUP ED<5)) !SOCK=5 (72a OR 7wa OR 7mp) FILTLVL>4]:// Hide nonsuperior or SUP without ED Berserker, Ettin Axe,  Axe and War Spike
 ItemDisplay[NMAG !INF !RW ETH (SOCK=0 OR SOCK=4 OR SOCK=5 OR SOCK=6) (72a OR 7wa OR 7mp)]:%NAME%%DOT-20%%PX-00%%CONTINUE%// 0, 4, 5, and 6os Berserker Axe, Ettin Axe, and War Spike
 
 //      Hide other 1 Handed axes
-ItemDisplay[NMAG !INF !RW (7ha OR 7ax)]:// Hide All other (Bad) Elite 1-Handed Axes tiers
+ItemDisplay[NMAG !INF !RW (7ha OR 7ax) FILTLVL>0]:// Hide All other (Bad) Elite 1-Handed Axes tiers
 
 //      2-Handed Axes
-ItemDisplay[NMAG !INF !RW !ETH (7bt OR 7ga OR 7ba OR 7gi OR 7la)]:// Hide noneth Elite 2H Axes
-ItemDisplay[NMAG !INF !RW ETH (SOCK=2 OR SOCK=3) (7bt OR 7ga OR 7ba OR 7gi OR 7la)]:// Hide 2os and 3os Elite 2-Handed Axes
+ItemDisplay[NMAG !INF !RW !ETH (7bt OR 7ga OR 7ba OR 7gi OR 7la) FILTLVL>0]:// Hide noneth Elite 2H Axes
+ItemDisplay[NMAG !INF !RW ETH (SOCK=2 OR SOCK=3) (7bt OR 7ga OR 7ba OR 7gi OR 7la) FILTLVL>0]:// Hide 2os and 3os Elite 2-Handed Axes
 ItemDisplay[NMAG !INF !RW ETH (!SUP OR (SUP ED<5)) (7bt OR 7ga OR 7ba OR 7gi OR 7la) FILTLVL>4]:// Hide Elite 2-Handed Axes without 5%ED or more after filter level 4
 
 
@@ -4631,22 +4630,22 @@ ItemDisplay[NMAG !INF !RW ETH (!SUP OR (SUP ED<5)) (7bt OR 7ga OR 7ba OR 7gi OR 
 //     ============================= [BWBO] Bows ============================
 // ------------------------------------------------------------------------------
 // Normal tiers
-ItemDisplay[NMAG !INF !RW NORM BOW !ZON SOCK=0]:// Hide 0os normal nows after character level 6
-ItemDisplay[NMAG !INF !RW NORM BOW !ZON CLVL>29]://
+ItemDisplay[NMAG !INF !RW NORM BOW !ZON SOCK=0 FILTLVL>0]:// Hide 0os normal nows after character level 6
+ItemDisplay[NMAG !INF !RW NORM BOW !ZON CLVL>29 FILTLVL>0]://
 
 //  Razor Bow and Double Bows
-ItemDisplay[NMAG !INF !RW EXC BOW !ZON !(8hb OR 8cb) CLVL<50]://
-ItemDisplay[NMAG !INF !RW (8hb OR 8cb) !SOCK=4 CLVL<50]://
+ItemDisplay[NMAG !INF !RW EXC BOW !ZON !(8hb OR 8cb) CLVL<50 FILTLVL>0]://
+ItemDisplay[NMAG !INF !RW (8hb OR 8cb) !SOCK=4 CLVL<50 FILTLVL>0]://
 
 //  Hide other Exceptional tiers
-ItemDisplay[NMAG !INF !RW EXC BOW !ZON SOCK=0]://
-ItemDisplay[NMAG !INF !RW EXC BOW !ZON CLVL>49]://
+ItemDisplay[NMAG !INF !RW EXC BOW !ZON SOCK=0 FILTLVL>0]://
+ItemDisplay[NMAG !INF !RW EXC BOW !ZON CLVL>49 FILTLVL>0]://
 
 //  Blade Bow and Great Bows
-ItemDisplay[NMAG !INF !RW ELT BOW !ZON (6hb OR 6cb) !SOCK=4]://
-ItemDisplay[NMAG !INF !RW ELT BOW !ZON !(6hb OR 6cb) CLVL<80]://
+ItemDisplay[NMAG !INF !RW ELT BOW !ZON (6hb OR 6cb) !SOCK=4 FILTLVL>0]://
+ItemDisplay[NMAG !INF !RW ELT BOW !ZON !(6hb OR 6cb) CLVL<80 FILTLVL>0]://
 //  Hide other Elite tiers
-ItemDisplay[NMAG !INF !RW ELT BOW !ZON CLVL>79]://
+ItemDisplay[NMAG !INF !RW ELT BOW !ZON CLVL>79 FILTLVL>0]://
 
 
 // ------------------------------------------------------------------------------
@@ -4654,31 +4653,31 @@ ItemDisplay[NMAG !INF !RW ELT BOW !ZON CLVL>79]://
 // ------------------------------------------------------------------------------
 
 // Normal tiers
-ItemDisplay[NMAG !INF !RW (lxb OR mxb OR hxb OR rxb) SOCK=0]://
-ItemDisplay[NMAG !INF !RW (lxb OR mxb OR hxb OR rxb) CLVL>29]://
+ItemDisplay[NMAG !INF !RW (lxb OR mxb OR hxb OR rxb) SOCK=0 FILTLVL>0]://
+ItemDisplay[NMAG !INF !RW (lxb OR mxb OR hxb OR rxb) CLVL>29 FILTLVL>0]://
 
 //  Hide other Exceptional tiers
-ItemDisplay[NMAG !INF !RW (8lx OR 8mx OR 8hx) SOCK=0]://
-ItemDisplay[NMAG !INF !RW (8lx OR 8mx OR 8hx) CLVL>49]://
+ItemDisplay[NMAG !INF !RW (8lx OR 8mx OR 8hx) SOCK=0 FILTLVL>0]://
+ItemDisplay[NMAG !INF !RW (8lx OR 8mx OR 8hx) CLVL>49 FILTLVL>0]://
 
-ItemDisplay[NMAG !INF !RW 8rx SOCK=0]://
-ItemDisplay[NMAG !INF !RW 8rx (SOCK=2 OR SOCK=3 OR SOCK=5) CLVL>49]://
+ItemDisplay[NMAG !INF !RW 8rx SOCK=0 FILTLVL>0]://
+ItemDisplay[NMAG !INF !RW 8rx (SOCK=2 OR SOCK=3 OR SOCK=5) CLVL>49 FILTLVL>0]://
 ItemDisplay[NMAG !INF !RW 8rx SOCK=4 FILTLVL<5]:%NAME%%DOT-20%%PX-00%%CONTINUE%// 4os Chu-Ko-Nus//
 ItemDisplay[NMAG !INF !RW 8rx SOCK=4 SUP ED>4]:%NAME%%DOT-20%%PX-00%%CONTINUE%// 4os Chu-Ko-Nus//
 
 //  Hide other Elite tiers
-ItemDisplay[NMAG !INF !RW 6hx (SOCK=2 OR SOCK=3)]://
-ItemDisplay[NMAG !INF !RW 6hx (SOCK=0 OR SOCK=4 OR SOCK=5 OR SOCK=6) (!SUP OR (SUP ED<5))]:// Hide Colossus Crossbows without 5%ED or more
+ItemDisplay[NMAG !INF !RW 6hx (SOCK=2 OR SOCK=3) FILTLVL>0]://
+ItemDisplay[NMAG !INF !RW 6hx (SOCK=0 OR SOCK=4 OR SOCK=5 OR SOCK=6) (!SUP OR (SUP ED<5)) FILTLVL>0]:// Hide Colossus Crossbows without 5%ED or more
 ItemDisplay[NMAG !INF !RW 6hx (SOCK=0 OR SOCK=4 OR SOCK=5 OR SOCK=6) SUP ED>9 FILTLVL<9]:%NAME%%DOT-20%%PX-00%%CONTINUE%// Superior 10ED+ Colossus Crossbows
 
-ItemDisplay[NMAG !INF !RW (6lx OR 6mx) SOCK=0 (!SUP OR (SUP ED<5))]://
-ItemDisplay[NMAG !INF !RW (6lx OR 6mx) (SOCK=2 OR SOCK=3)]://
+ItemDisplay[NMAG !INF !RW (6lx OR 6mx) SOCK=0 (!SUP OR (SUP ED<5)) FILTLVL>0]://
+ItemDisplay[NMAG !INF !RW (6lx OR 6mx) (SOCK=2 OR SOCK=3) FILTLVL>0]://
 ItemDisplay[NMAG !INF !RW (6lx OR 6mx) SOCK=4 FILTLVL<5]:%NAME%%DOT-20%%PX-00%%CONTINUE%// All 4os Pellet Bows and Gorgon Crossbows
 ItemDisplay[NMAG !INF !RW (6lx OR 6mx) (SOCK=0 OR SOCK=4) (!SUP OR (SUP ED<5)) FILTLVL>4]:// After filter level 4, hide Pellet Bows and Gorgon Crossbows without 5% or more ED
 ItemDisplay[NMAG !INF !RW (6lx OR 6mx) (SOCK=0 OR SOCK=4) SUP ED>9]:%NAME%%DOT-20%%PX-00%%CONTINUE%// 10ED+ 4os Pellet Bows and Gorgon Crossbows
 
-ItemDisplay[NMAG !INF !RW 6rx SOCK=0 (!SUP OR (SUP ED<5))]://
-ItemDisplay[NMAG !INF !RW 6rx (SOCK=2 OR SOCK=3)]://
+ItemDisplay[NMAG !INF !RW 6rx SOCK=0 (!SUP OR (SUP ED<5)) FILTLVL>0]://
+ItemDisplay[NMAG !INF !RW 6rx (SOCK=2 OR SOCK=3) FILTLVL>0]://
 ItemDisplay[NMAG !INF !RW 6rx SOCK=4 FILTLVL<5]:%NAME%%DOT-20%%PX-00%%CONTINUE%// 4os Demon crossbows//
 ItemDisplay[NMAG !INF !RW 6rx !SOCK=4 (!SUP OR (SUP ED<5)) FILTLVL>4]:// After filter level 4, hide Demon crossbows without 5% or more ED
 ItemDisplay[NMAG !INF !RW 6rx (SOCK=0 OR SOCK=4) SUP ED>9]:%NAME%%DOT-20%%PX-00%%CONTINUE%// 10ED+ 4os Demon crossbows//
@@ -4690,15 +4689,15 @@ ItemDisplay[NMAG !INF !RW 6rx SOCK=4 FILTLVL<5]:%ORANGE%Wrath %GRAY%%NAME%%DOT-2
 // ------------------------------------------------------------------------------
 
 // Hide All tiers
-ItemDisplay[NMAG NORM !INF !RW DAGGER !THROWING SOCK=0]:// Hide 0os normal nonmagical daggers
-ItemDisplay[NMAG NORM !INF !RW DAGGER !THROWING CLVL>29]:// Hide All nonmagical daggers
+ItemDisplay[NMAG NORM !INF !RW DAGGER !THROWING SOCK=0 FILTLVL>0]:// Hide 0os normal nonmagical daggers
+ItemDisplay[NMAG NORM !INF !RW DAGGER !THROWING CLVL>29 FILTLVL>0]:// Hide All nonmagical daggers
 
-ItemDisplay[NMAG EXC !INF !RW DAGGER !THROWING SOCK=0]:// Hide 0os exceptional nonmagical daggers
-ItemDisplay[NMAG EXC !INF !RW DAGGER !THROWING CLVL>49]:// Hide All nonmagical daggers
+ItemDisplay[NMAG EXC !INF !RW DAGGER !THROWING SOCK=0 FILTLVL>0]:// Hide 0os exceptional nonmagical daggers
+ItemDisplay[NMAG EXC !INF !RW DAGGER !THROWING CLVL>49 FILTLVL>0]:// Hide All nonmagical daggers
 
-ItemDisplay[NMAG ELT !INF !RW DAGGER !THROWING (7dg OR 7di OR 7bl)]:// Hide all nonmagical bone knives, mithril points, and legend spikes
+ItemDisplay[NMAG ELT !INF !RW DAGGER !THROWING (7dg OR 7di OR 7bl) FILTLVL>0]:// Hide all nonmagical bone knives, mithril points, and legend spikes
 
-ItemDisplay[NMAG ELT !INF !RW DAGGER !THROWING 7kr SOCK=2]:// Hide All nonmagical daggers
+ItemDisplay[NMAG ELT !INF !RW DAGGER !THROWING 7kr SOCK=2 FILTLVL>0]:// Hide All nonmagical daggers
 ItemDisplay[NMAG ELT !INF !RW DAGGER !THROWING 7kr SOCK=0 (!SUP OR (SUP ED<5))]:// Hide All nonmagical daggers
 ItemDisplay[NMAG ELT !INF !RW DAGGER !THROWING 7kr CLVL>79 (!SUP OR (SUP ED<5))]:// Hide All nonmagical daggers
 
@@ -4706,9 +4705,9 @@ ItemDisplay[NMAG ELT !INF !RW DAGGER !THROWING 7kr CLVL>79 (!SUP OR (SUP ED<5))]
 //     ===================  Javelins and Throwing Weapons  =================== 
 // ------------------------------------------------------------------------------
 // Non-ethereal Throwing weapons
-ItemDisplay[NMAG !ETH (tkf OR tax OR bkf OR bal OR jav OR pil OR ssp OR glv OR tsp) CLVL>5]:// Hide all Normnal Non-eth throwing items past character level 5
-ItemDisplay[NMAG !ETH (9tk OR 9ta OR 9bk OR 9b8 OR 9ja OR 9pi OR 9s9 OR 9gl OR 9ts)]:// Hide all Exceptional Non-eth throwing items
-ItemDisplay[NMAG !ETH (7tk OR 7ta OR 7bk OR 7b8 OR 7ja OR 7pi OR 7s7 OR 7gl OR 7ts)]:// Hide all Elite Non-eth throwing items
+ItemDisplay[NMAG !ETH (tkf OR tax OR bkf OR bal OR jav OR pil OR ssp OR glv OR tsp) CLVL>5 FILTLVL>0]:// Hide all Normnal Non-eth throwing items past character level 5
+ItemDisplay[NMAG !ETH (9tk OR 9ta OR 9bk OR 9b8 OR 9ja OR 9pi OR 9s9 OR 9gl OR 9ts) FILTLVL>0]:// Hide all Exceptional Non-eth throwing items
+ItemDisplay[NMAG !ETH (7tk OR 7ta OR 7bk OR 7b8 OR 7ja OR 7pi OR 7s7 OR 7gl OR 7ts) FILTLVL>0]:// Hide all Elite Non-eth throwing items
 
 // Bad-Quality Ethereal Throwing weapons
 ItemDisplay[NMAG NORM ETH (tkf OR pil) CLVL>29 FILTLVL>1]:// Hide non-magical ethereal throwing knives and pilums past character level 30 on filter levels 2+
@@ -4725,33 +4724,30 @@ ItemDisplay[NMAG ELT ETH (7ta OR 7bk OR 7b8 OR 7ja OR 7s7 OR 7ts OR 7gl) CLVL>89
 // ------------------------------------------------------------------------------
 
 // Normal tiers
-ItemDisplay[NMAG !INF !RW !ETH SOCK=0 (whm OR mau OR gma)]:// 
-ItemDisplay[NMAG !INF !RW CLVL>29 (whm OR mau OR gma)]:// 
+ItemDisplay[NMAG !INF !RW !ETH SOCK=0 (whm OR mau OR gma) FILTLVL>0]:// 
+ItemDisplay[NMAG !INF !RW CLVL>29 (whm OR mau OR gma) FILTLVL>0]:// 
 
 // Exceptional tiers
-ItemDisplay[NMAG !INF !RW !ETH SOCK=0 (9wh OR 9m9 OR 9gm)]:// 
-ItemDisplay[NMAG !INF !RW CLVL>49 (9wh OR 9m9 OR 9gm)]:// 
+ItemDisplay[NMAG !INF !RW !ETH SOCK=0 (9wh OR 9m9 OR 9gm) FILTLVL>0]:// 
+ItemDisplay[NMAG !INF !RW CLVL>49 (9wh OR 9m9 OR 9gm) FILTLVL>0]:// 
 
 // Elite tiers
 
 // 	Thunder Maul Bases
-ItemDisplay[NMAG !INF !RW 7gm !ETH]:// Hide Non-eth
-ItemDisplay[NMAG !INF !RW 7gm ETH SOCK=0]:%NAME%%DOT-20%%PX-00%%CONTINUE%// All tiers, 0os
-ItemDisplay[NMAG !INF !RW 7gm ETH SOCK=2]:// All tiers, 2os
-ItemDisplay[NMAG !INF !RW 7gm ETH SOCK=3]:%NAME%%DOT-20%%PX-00%%CONTINUE%// All tiers, 3os
-ItemDisplay[NMAG !INF !RW 7gm ETH SOCK=5]:%NAME%%DOT-20%%PX-00%%CONTINUE%// All tiers, 4os
-ItemDisplay[NMAG !INF !RW 7gm ETH SOCK=6]:%NAME%%DOT-20%%PX-00%%CONTINUE%// All tiers, 5os
+ItemDisplay[NMAG !INF !RW 7gm !ETH FILTLVL>0]:// Hide Non-eth
+ItemDisplay[NMAG !INF !RW 7gm ETH (SOCK=0 OR SOCK=3 OR SOCK=5 OR SOCK=6)]:%NAME%%DOT-20%%PX-00%%CONTINUE%// All tiers, 0os
+ItemDisplay[NMAG !INF !RW 7gm ETH SOCK=2 FILTLVL>0]:// All tiers, 2os
 
 // 	Legendary Mallets
-ItemDisplay[NMAG !INF !RW !ETH 7wh]:// Hide Non-eth
-ItemDisplay[NMAG !INF !RW ETH 7wh (SOCK=2 OR SOCK=4)]://
+ItemDisplay[NMAG !INF !RW !ETH 7wh FILTLVL>0]:// Hide Non-eth
+ItemDisplay[NMAG !INF !RW ETH 7wh (SOCK=2 OR SOCK=4) FILTLVL>0]://
 ItemDisplay[NMAG !INF !RW ETH 7wh !SOCK=3 (!SUP OR (SUP ED<5)) FILTLVL>4]://
 
 // 	Ogre Mauls
-ItemDisplay[NMAG !INF !RW !ETH 7m7]:// Hide Non-eth
+ItemDisplay[NMAG !INF !RW !ETH 7m7 FILTLVL>0]:// Hide Non-eth
 ItemDisplay[NMAG !INF !RW ETH 7m7 SOCK=0 FILTLVL<5 CLVL<90]:%NAME%%DOT-20%%PX-00%%CONTINUE%// All tiers, 4os
-ItemDisplay[NMAG !INF !RW ETH 7m7 SOCK=2]:// All tiers, 2os
-ItemDisplay[NMAG !INF !RW ETH 7m7 SOCK=5 FILTLVL<9]:%NAME%%DOT-20%%PX-00%%CONTINUE%// All tiers, 4os
+ItemDisplay[NMAG !INF !RW ETH 7m7 SOCK=2 FILTLVL>0]:// All tiers, 2os
+ItemDisplay[NMAG !INF !RW ETH 7m7 SOCK=5 FILTLVL<5 CLVL<90]:%NAME%%DOT-20%%PX-00%%CONTINUE%// All tiers, 4os
 ItemDisplay[NMAG !INF !RW ETH 7m7 !SOCK=5 (!SUP OR (SUP ED<5)) FILTLVL>4]://
 
 // ------------------------------------------------------------------------------
@@ -4760,39 +4756,39 @@ ItemDisplay[NMAG !INF !RW ETH 7m7 !SOCK=5 (!SUP OR (SUP ED<5)) FILTLVL>4]://
 
 
 //  Normal Tiers
-ItemDisplay[NMAG !INF !RW (mac OR mst OR fla) SOCK=0]:// Hides 0 socket maces, morning stars, and flails
-ItemDisplay[NMAG !INF !RW (mac OR mst) CLVL>29]:// Hides all nonmagical maces and morning stars past character level 29
-ItemDisplay[NMAG !INF !RW fla (SOCK=2 OR SOCK=3) CLVL>29]:// Hides 2os and 3os flails above level 29
+ItemDisplay[NMAG !INF !RW (mac OR mst OR fla) SOCK=0 FILTLVL>0]:// Hides 0 socket maces, morning stars, and flails
+ItemDisplay[NMAG !INF !RW (mac OR mst) CLVL>29 FILTLVL>0]:// Hides all nonmagical maces and morning stars past character level 29
+ItemDisplay[NMAG !INF !RW fla (SOCK=2 OR SOCK=3) CLVL>29 FILTLVL>0]:// Hides 2os and 3os flails above level 29
 
 // Shows 4 and 5 socket flails
 ItemDisplay[NMAG !INF !RW fla SOCK=4 CLVL<90]:%GRAY%%NAME%%DOT-20%%PX-00%%CONTINUE%// All Normal tiers 4os
 ItemDisplay[NMAG !INF !RW fla SOCK=5 CLVL<90]:%GRAY%%NAME%%DOT-20%%PX-00%%CONTINUE%// All Normal tiers 5os
 
 // 	Exceptional tiers
-ItemDisplay[NMAG !INF !RW (9ma OR 9mt OR 9fl) SOCK=0]:// Hides 0 socket
-ItemDisplay[NMAG !INF !RW (9ma OR 9mt OR 9fl) CLVL>49]:// Hides bad exceptional bases
+ItemDisplay[NMAG !INF !RW (9ma OR 9mt OR 9fl) SOCK=0 FILTLVL>0]:// Hides 0 socket
+ItemDisplay[NMAG !INF !RW (9ma OR 9mt OR 9fl) CLVL>49 FILTLVL>0]:// Hides bad exceptional bases
 
 // 	Elite tiers
-ItemDisplay[NMAG !INF !RW (7ma OR 7mt OR 7fl) SOCK=0]:// Hides bad elite bases
-ItemDisplay[NMAG !INF !RW (7ma OR 7mt OR 7fl) CLVL>69]:// Hides bad elite bases
+ItemDisplay[NMAG !INF !RW (7ma OR 7mt OR 7fl) SOCK=0 FILTLVL>0]:// Hides bad elite bases
+ItemDisplay[NMAG !INF !RW (7ma OR 7mt OR 7fl) CLVL>69 FILTLVL>0]:// Hides bad elite bases
 
 // ------------------------------------------------------------------------------
 //   	=============================  Polearms  ==========================
 // ------------------------------------------------------------------------------
 
 // Normal tiers
-ItemDisplay[NMAG !INF !RW NORM POLEARM !ETH SOCK=0]://
-ItemDisplay[NMAG !INF !RW NORM POLEARM CLVL>29]:// 
+ItemDisplay[NMAG !INF !RW NORM POLEARM !ETH SOCK=0 FILTLVL>0]://
+ItemDisplay[NMAG !INF !RW NORM POLEARM CLVL>29 FILTLVL>0]:// 
 
 // Exceptional tiers
-ItemDisplay[NMAG !INF !RW EXC POLEARM !ETH SOCK=0]://
-ItemDisplay[NMAG !INF !RW EXC POLEARM CLVL>69]://
+ItemDisplay[NMAG !INF !RW EXC POLEARM !ETH SOCK=0 FILTLVL>0]://
+ItemDisplay[NMAG !INF !RW EXC POLEARM CLVL>69 FILTLVL>0]://
 
 // 					Elite tiers
 ItemDisplay[NMAG !INF !RW ELT POLEARM !(ETH (SOCK=4 OR SOCK=5)) (!SUP OR (SUP ED<5)) FILTLVL>4]://
 
-ItemDisplay[NMAG !INF !RW ELT POLEARM ((!ETH (SOCK=0 OR SOCK=3)) OR SOCK=2)]:// 
-ItemDisplay[NMAG !INF !RW ELT POLEARM !ETH (CLVL>89 OR FILTLVL>4) (!SUP OR (SUP ED<5))]://
+ItemDisplay[NMAG !INF !RW ELT POLEARM ((!ETH (SOCK=0 OR SOCK=3)) OR SOCK=2) FILTLVL>0]:// 
+ItemDisplay[NMAG !INF !RW ELT POLEARM !ETH (CLVL>89 OR FILTLVL>4) (!SUP OR (SUP ED<5)) FILTLVL>0]://
 
 ItemDisplay[NMAG !INF !RW ELT POLEARM ETH SOCK=0 FILTLVL<5]:%GRAY%%NAME%%DOT-20%%PX-00%%CONTINUE%//
 ItemDisplay[NMAG !INF !RW ELT POLEARM ETH SOCK=4 FILTLVL<5]:%GRAY%%NAME%%DOT-20%%PX-00%%CONTINUE%// All Elite tiers 4os, Eth
@@ -4813,21 +4809,21 @@ ItemDisplay[NMAG !INF !RW (!SUP OR (SUP ED<5)) ETH SOCK=4 7wc]:%GRAY%%NAME%%DOT-
 // ------------------------------------------------------------------------------
 
 // 	Normal tiers
-ItemDisplay[NMAG !INF !RW (spr OR tri OR brn OR spt OR pik) !ETH SOCK=0]://
-ItemDisplay[NMAG !INF !RW (spr OR tri OR brn OR spt OR pik) CLVL>29]://
+ItemDisplay[NMAG !INF !RW (spr OR tri OR brn OR spt OR pik) !ETH SOCK=0 FILTLVL>0]://
+ItemDisplay[NMAG !INF !RW (spr OR tri OR brn OR spt OR pik) CLVL>29 FILTLVL>0]://
 
 // 	Exceptional tiers
-ItemDisplay[NMAG !INF !RW (9sr OR 9tr OR 9br OR 9st OR 9p9) !ETH SOCK=0]://
-ItemDisplay[NMAG !INF !RW (9sr OR 9tr OR 9br OR 9st OR 9p9) CLVL>49]://
+ItemDisplay[NMAG !INF !RW (9sr OR 9tr OR 9br OR 9st OR 9p9) !ETH SOCK=0 FILTLVL>0]://
+ItemDisplay[NMAG !INF !RW (9sr OR 9tr OR 9br OR 9st OR 9p9) CLVL>49 FILTLVL>0]://
 
 // 	Elite tiers
-ItemDisplay[NMAG !INF !RW ((!ETH (SOCK=0 OR SOCK=3)) OR SOCK=2) (7sr OR 7tr OR 7br OR 7st OR 7p7)]://
-ItemDisplay[NMAG !INF !RW !ETH (7sr OR 7tr OR 7br OR 7st OR 7p7) (CLVL>89 OR FILTLVL>4) (!SUP OR (SUP ED<5))]://
+ItemDisplay[NMAG !INF !RW ((!ETH (SOCK=0 OR SOCK=3)) OR SOCK=2) (7sr OR 7tr OR 7br OR 7st OR 7p7) FILTLVL>0]://
+ItemDisplay[NMAG !INF !RW !ETH (7sr OR 7tr OR 7br OR 7st OR 7p7) (!SUP OR (SUP ED<5)) ((CLVL>89 FILTLVL>0) OR FILTLVL>4)]://
 
 // After filter level 4, hide elite spears without 5 or more ED (unless it is eth with 4 or 5 sockets)
 ItemDisplay[NMAG !INF !RW !(ETH (SOCK=4 OR SOCK=5)) (!SUP OR (SUP ED<5)) (7sr OR 7tr OR 7br OR 7st OR 7p7) FILTLVL>4]://
 
-ItemDisplay[NMAG !INF !RW ELT SPEAR ETH (SUP ED>4) (SOCK=0 OR SOCK=3 OR SOCK=5 OR SOCK=6)]:%GRAY%%NAME%%DOT-20%%PX-00%%CONTINUE%// All Elite tiers 4os, Eth
+ItemDisplay[NMAG !INF !RW ELT SPEAR ETH (SUP ED>4) (SOCK=0 OR SOCK=3 OR SOCK=5 OR SOCK=6) FILTLVL>0]:%GRAY%%NAME%%DOT-20%%PX-00%%CONTINUE%// All Elite tiers 4os, Eth
 
 // Elite tier Polearms
 //      Mancatcher
@@ -4844,54 +4840,54 @@ ItemDisplay[NMAG !INF !RW (!SUP OR (SUP ED<5)) ETH (SOCK=4 OR SOCK=5 OR SOCK=6) 
 // ------------------------------------------------------------------------------
 
 //      Normal 1-Handed Swords
-ItemDisplay[NMAG !INF !RW (ssd OR sbr OR flc OR wsd) SOCK=0]:// Hide All tiers
-ItemDisplay[NMAG !INF !RW (ssd OR sbr OR flc OR wsd) CLVL>9]:// Hide All tiers
+ItemDisplay[NMAG !INF !RW (ssd OR sbr OR flc OR wsd) SOCK=0 FILTLVL>0]:// Hide All tiers
+ItemDisplay[NMAG !INF !RW (ssd OR sbr OR flc OR wsd) CLVL>9 FILTLVL>0]:// Hide All tiers
 
 //          Scimitar
-ItemDisplay[NMAG !INF !RW scm CLVL>19]://  Hide scimitars after level 19
-ItemDisplay[NMAG !INF !RW scm CLVL>9 SOCK=0]://  Hide 0os scimitars
+ItemDisplay[NMAG !INF !RW scm CLVL>19 FILTLVL>0]://  Hide scimitars after level 19
+ItemDisplay[NMAG !INF !RW scm CLVL>9 SOCK=0 FILTLVL>0]://  Hide 0os scimitars
 
-ItemDisplay[NMAG !INF !RW SOCK=0 (crs OR bsd OR lsd) CLVL>40]:// Hide 0os Spirit bases after level 40
+ItemDisplay[NMAG !INF !RW SOCK=0 (crs OR bsd OR lsd) CLVL>40 FILTLVL>0]:// Hide 0os Spirit bases after level 40
 
-ItemDisplay[NMAG !INF !RW SOCK=0 crs (ILVL<26 OR ILVL>40)]:// Hide crystal swords that won't roll 4 sockets from Larzuk quest
+ItemDisplay[NMAG !INF !RW SOCK=0 crs (ILVL<26 OR ILVL>40) FILTLVL>0]:// Hide crystal swords that won't roll 4 sockets from Larzuk quest
 ItemDisplay[NMAG !INF !RW SOCK=0 crs (ILVL>25 ILVL<41) CLVL<25]:%WHITE%%NAME% %TAN%[%WHITE%Larzuk%TAN%]%WHITE%%DOT-20%%PX-00%%CONTINUE%//  Notify for 0s crystal swords that can get 4os under level 25
 ItemDisplay[NMAG !INF !RW SOCK=0 crs (ILVL>25 ILVL<41) CLVL>24]:%WHITE%%NAME% %TAN%[%WHITE%L%TAN%]%WHITE%%CONTINUE%// Show but don't notify for 0s broad swords that can get 4os under level 25
 
-ItemDisplay[NMAG !INF !RW SOCK=0 bsd ILVL<26]:// Hide 0os broad swords that won't roll 4 sockets from Larzuk quest
+ItemDisplay[NMAG !INF !RW SOCK=0 bsd ILVL<26 FILTLVL>0]:// Hide 0os broad swords that won't roll 4 sockets from Larzuk quest
 ItemDisplay[NMAG !INF !RW SOCK=0 bsd ILVL>25 CLVL<25]:%WHITE%%NAME% %TAN%[%WHITE%Larzuk%TAN%]%WHITE%%DOT-20%%PX-00%%CONTINUE%// Notify for 0s broad swords that can get 4os under level 25 
 ItemDisplay[NMAG !INF !RW SOCK=0 bsd ILVL>25 CLVL>24 CLVL<41]:%WHITE%%NAME% %TAN%[%WHITE%L%TAN%]%WHITE%%CONTINUE%// Show but don't notify for 0s broad swords that can get 4os under level 25
 
-ItemDisplay[NMAG !INF !RW SOCK=0 lsd ILVL<26]:// Hide 0os long swords that won't roll 4 sockets from Larzuk quest
+ItemDisplay[NMAG !INF !RW SOCK=0 lsd ILVL<26 FILTLVL>0]:// Hide 0os long swords that won't roll 4 sockets from Larzuk quest
 ItemDisplay[NMAG !INF !RW SOCK=0 lsd ILVL>25 CLVL<25]:%WHITE%%NAME% %TAN%[%WHITE%Larzuk%TAN%]%WHITE%%DOT-20%%PX-00%%CONTINUE%// Notify for 0s long swords that can get 4os under level 25
 ItemDisplay[NMAG !INF !RW SOCK=0 lsd ILVL>25 CLVL>24 CLVL<41]:%WHITE%%NAME% %TAN%[%WHITE%L%TAN%]%WHITE%%CONTINUE%// Show but don't notify for 0s long swords that can get 4os under level 25
 
-ItemDisplay[NMAG !INF !RW (SOCK=2 OR SOCK=3) (bsd OR lsd OR crs) CLVL>29]:// Hide Broad Swords that aren't 0os or 4os
+ItemDisplay[NMAG !INF !RW (SOCK=2 OR SOCK=3) (bsd OR lsd OR crs) CLVL>29 FILTLVL>0]:// Hide Broad Swords that aren't 0os or 4os
 
 //      Show and notify for 4, 5, and 6 socket crystal swords and 4 socket broad swords and long swords
-ItemDisplay[NMAG !INF !RW SOCK=4 CLVL>79 (crs OR bsd OR lsd) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hides 4os crystal swords, broad swords, and long swords past level 79
+ItemDisplay[NMAG !INF !RW SOCK=4 CLVL>79 (crs OR bsd OR lsd) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109) FILTLVL>0]:// Hides 4os crystal swords, broad swords, and long swords past level 79
 ItemDisplay[NMAG !INF !RW SOCK=4 CLVL>59 (crs OR bsd OR lsd)]:%GRAY%%NAME%%CONTINUE%// Show but don't notify for 4os crystal swords, broad swords, and long swords after level 59
 ItemDisplay[NMAG !INF !RW SOCK=4 CLVL<60 (crs OR bsd OR lsd)]:%GRAY%%NAME%%DOT-20%%PX-00%%CONTINUE%// Show and notify for 4os crystal swords, broad swords, and long swords before level 60
 
 ItemDisplay[NMAG !INF !RW SOCK=5 crs]:%GRAY%%NAME%%DOT-20%%PX-00%%CONTINUE%// Show and notify for 5os crystal swords
 
 // 	Exceptional tier 1-Handed Swords
-ItemDisplay[NMAG !INF !RW (9ss OR 9sm OR 9sb OR 9fc OR 9cr OR 9bs OR 9ls OR 9wd) SOCK=0]:// Hide all exceptional tier 2-handed swords
-ItemDisplay[NMAG !INF !RW (9ss OR 9sm OR 9sb OR 9fc OR 9cr OR 9bs OR 9ls OR 9wd) CLVL>49]:// Hide all exceptional tier 2-handed swords
+ItemDisplay[NMAG !INF !RW (9ss OR 9sm OR 9sb OR 9fc OR 9cr OR 9bs OR 9ls OR 9wd) SOCK=0 FILTLVL>0]:// Hide all exceptional tier 2-handed swords
+ItemDisplay[NMAG !INF !RW (9ss OR 9sm OR 9sb OR 9fc OR 9cr OR 9bs OR 9ls OR 9wd) CLVL>49 FILTLVL>0]:// Hide all exceptional tier 2-handed swords
 
 // 	Elite tier 1-Handed Swords
-ItemDisplay[NMAG !INF !RW (7ss OR 7fc OR 7wd) (SOCK=0 OR SOCK=2)]:// Hide 0 and 2 socket slow attack speed elite tier 1-handed swords
-ItemDisplay[NMAG !INF !RW (7ss OR 7fc OR 7wd) (!SUP OR (SUP ED<5))]:// Hide all slow attack speed elite tier 1-handed swords
+ItemDisplay[NMAG !INF !RW (7ss OR 7fc OR 7wd) (SOCK=0 OR SOCK=2) FILTLVL>0]:// Hide 0 and 2 socket slow attack speed elite tier 1-handed swords
+ItemDisplay[NMAG !INF !RW (7ss OR 7fc OR 7wd) (!SUP OR (SUP ED<5)) FILTLVL>0]:// Hide all slow attack speed elite tier 1-handed swords
 ItemDisplay[NMAG !INF !RW (7ss OR 7fc OR 7wd) FILTLVL>1]:// Hide all slow attack speed elite tier 1-handed swords
 
-ItemDisplay[NMAG !INF !RW (7sm OR 7sb OR 7bs OR 7ls) !ETH SOCK=0 (!SUP OR (SUP ED<5))]:// Hide all 0 socket elite tier 1-handed swords
-ItemDisplay[NMAG !INF !RW (7sm OR 7sb OR 7bs OR 7ls) SOCK=2]:// Hide all 2 socket elite tier 1-handed swords
+ItemDisplay[NMAG !INF !RW (7sm OR 7sb OR 7bs OR 7ls) !ETH SOCK=0 (!SUP OR (SUP ED<5)) FILTLVL>0]:// Hide all 0 socket elite tier 1-handed swords
+ItemDisplay[NMAG !INF !RW (7sm OR 7sb OR 7bs OR 7ls) SOCK=2 FILTLVL>0]:// Hide all 2 socket elite tier 1-handed swords
 ItemDisplay[NMAG !INF !RW (7sm OR 7sb OR 7bs OR 7ls) (!SUP OR (SUP ED<5)) FILTLVL>4]:// Hide all elite tier 1-handed swords
 
 //          Phase Blade
 ItemDisplay[NMAG !INF !RW 7cr (!SUP OR (SUP ED<5)) !SOCK=5 FILTLVL>4]:// 0os
 
-ItemDisplay[NMAG !INF !RW 7cr (!SUP OR (SUP ED<5)) SOCK=0]:// 0os
-ItemDisplay[NMAG !INF !RW 7cr SOCK=2]:// 
+ItemDisplay[NMAG !INF !RW 7cr (!SUP OR (SUP ED<5)) SOCK=0 FILTLVL>0]:// 0os
+ItemDisplay[NMAG !INF !RW 7cr SOCK=2 FILTLVL>0]:// 
 ItemDisplay[NMAG !INF !RW 7cr (!SUP OR (SUP ED<5)) SOCK=3 FILTLVL<5]:%GRAY%%NAME%%DOT-20%%PX-00%%CONTINUE%// 3os
 ItemDisplay[NMAG !INF !RW 7cr (!SUP OR (SUP ED<5)) SOCK=5 FILTLVL<5]:%GRAY%%NAME%%DOT-20%%PX-00%%CONTINUE%// 5os
 
@@ -4906,49 +4902,49 @@ ItemDisplay[NMAG !INF !RW 7cr (SUP ED>4) SOCK=6 FILTLVL<9]:%GRAY%%NAME%%DOT-20%%
 // ------------------------------------------------------------------------------
 
 //      Normal 2-Handed Swords
-ItemDisplay[NMAG !INF !RW (2hs OR clm OR gis OR bsw OR flb OR gsd) SOCK=0]:// Hide all exceptional tier 2 handed swords
-ItemDisplay[NMAG !INF !RW (2hs OR clm OR gis OR bsw OR flb OR gsd) CLVL>29]:// Hide all other normal swords
+ItemDisplay[NMAG !INF !RW (2hs OR clm OR gis OR bsw OR flb OR gsd) SOCK=0 FILTLVL>0]:// Hide all exceptional tier 2 handed swords
+ItemDisplay[NMAG !INF !RW (2hs OR clm OR gis OR bsw OR flb OR gsd) CLVL>29 FILTLVL>0]:// Hide all other normal swords
 
 //      Exceptional 2-Handed Swords
-ItemDisplay[NMAG !INF !RW (92h OR 9cm OR 9gs OR 9b9 OR 9fb OR 9gd) SOCK=0]://
-ItemDisplay[NMAG !INF !RW (92h OR 9cm OR 9gs OR 9b9 OR 9fb OR 9gd) CLVL>49]://
+ItemDisplay[NMAG !INF !RW (92h OR 9cm OR 9gs OR 9b9 OR 9fb OR 9gd) SOCK=0 FILTLVL>0]://
+ItemDisplay[NMAG !INF !RW (92h OR 9cm OR 9gs OR 9b9 OR 9fb OR 9gd) CLVL>49 FILTLVL>0]://
 
 //      Elite 2-Handed Swords
 
 //      Legend Sword (72h)
-ItemDisplay[NMAG !INF !RW SOCK=2 72h]:// Hide 2 socket Legend Swords
-ItemDisplay[NMAG !INF !RW !ETH SOCK=0 72h]:// Hide noneth 0-socket Legend Swords
+ItemDisplay[NMAG !INF !RW SOCK=2 72h FILTLVL>0]:// Hide 2 socket Legend Swords
+ItemDisplay[NMAG !INF !RW !ETH SOCK=0 72h FILTLVL>0]:// Hide noneth 0-socket Legend Swords
 ItemDisplay[NMAG !INF !RW !ETH 72h FILTLVL>1]:// Hide noneth Legend Swords on filter levels 2+
 ItemDisplay[NMAG !INF !RW ETH (SOCK=0 OR SOCK=3) 72h FILTLVL<5]:%GRAY%%NAME%%DOT-20%%PX-00%%CONTINUE%// All tiers, 0os, Eth
 ItemDisplay[NMAG !INF !RW ETH (SOCK=0 OR SOCK=3) 72h FILTLVL>4 SUP ED>4]:%NAME%%DOT-20%%PX-00%%CONTINUE%//
 ItemDisplay[NMAG !INF !RW (!SUP OR (SUP ED<5)) 72h FILTLVL>4]://
 
 //      Highland Blades (7cm)
-ItemDisplay[NMAG !INF !RW SOCK=2 7cm]:// Hide 2os Highland Blades
-ItemDisplay[NMAG !INF !RW !ETH SOCK=0 7cm]:// Hide nonethereal Highland Blades with 0 sockets
+ItemDisplay[NMAG !INF !RW SOCK=2 7cm FILTLVL>0]:// Hide 2os Highland Blades
+ItemDisplay[NMAG !INF !RW !ETH SOCK=0 7cm FILTLVL>0]:// Hide nonethereal Highland Blades with 0 sockets
 ItemDisplay[NMAG !INF !RW !ETH 7cm FILTLVL>1]:// Hide noneth Highland Blades after filter level 1
 ItemDisplay[NMAG !INF !RW ETH (SOCK=0 OR SOCK=3 OR SOCK=4) 7cm FILTLVL<5]:%GRAY%%NAME%%DOT-20%%PX-00%%CONTINUE%// All tiers, 0os, Eth
 ItemDisplay[NMAG !INF !RW ETH (SOCK=0 OR SOCK=3 OR SOCK=4) 7cm FILTLVL>4 SUP ED>4]:%NAME%%DOT-20%%PX-00%%CONTINUE%//
 ItemDisplay[NMAG !INF !RW (!SUP OR (SUP ED<5)) 7cm FILTLVL>4]://
 
 //      Champion Swords (7b7)
-ItemDisplay[NMAG !INF !RW SOCK=2 7b7]:// Hide 2os Champion swords
-ItemDisplay[NMAG !INF !RW !ETH SOCK=0 7b7]:// Hide nonethereal Champion swords with 0 sockets
+ItemDisplay[NMAG !INF !RW SOCK=2 7b7 FILTLVL>0]:// Hide 2os Champion swords
+ItemDisplay[NMAG !INF !RW !ETH SOCK=0 7b7 FILTLVL>0]:// Hide nonethereal Champion swords with 0 sockets
 ItemDisplay[NMAG !INF !RW !ETH 7b7 FILTLVL>1]:// Hide noneth Champion swords after filter level 1
 ItemDisplay[NMAG !INF !RW ETH (SOCK=0 OR SOCK=3 OR SOCK=4) 7b7 FILTLVL<5]:%GRAY%%NAME%%DOT-20%%PX-00%%CONTINUE%// All tiers, 0os, Eth
 ItemDisplay[NMAG !INF !RW ETH (SOCK=0 OR SOCK=3 OR SOCK=4) 7b7 FILTLVL>4 SUP ED>4]:%NAME%%DOT-20%%PX-00%%CONTINUE%//
 ItemDisplay[NMAG !INF !RW (!SUP OR (SUP ED<5)) 7b7 FILTLVL>4]://
 
 //      Balrog Blade (7gs)
-ItemDisplay[NMAG !INF !RW SOCK=2 7gs]:// Hide 2 socket Balrog blades
-ItemDisplay[NMAG !INF !RW !ETH SOCK=0 7gs]:// Hide nonethereal Balrog blades with 0 sockets
+ItemDisplay[NMAG !INF !RW SOCK=2 7gs FILTLVL>0]:// Hide 2 socket Balrog blades
+ItemDisplay[NMAG !INF !RW !ETH SOCK=0 7gs FILTLVL>0]:// Hide nonethereal Balrog blades with 0 sockets
 ItemDisplay[NMAG !INF !RW !ETH 7gs FILTLVL>1]:// Hide noneth Balrog Blades
 ItemDisplay[NMAG !INF !RW ETH (SOCK=0 OR SOCK=3 OR SOCK=4) 7gs FILTLVL<5]:%GRAY%%NAME%%DOT-20%%PX-00%%CONTINUE%// All tiers, 0os, Eth
 ItemDisplay[NMAG !INF !RW ETH (SOCK=0 OR SOCK=3 OR SOCK=4) 7gs FILTLVL>4 SUP ED>4]:%NAME%%DOT-20%%PX-00%%CONTINUE%//
 ItemDisplay[NMAG !INF !RW (!SUP OR (SUP ED<5)) 7gs FILTLVL>4]://
 
 //      Colossus Blade (7gd)
-ItemDisplay[NMAG !INF !RW SOCK=2 7gd]:// Hide 2 socket Colossus Blades
+ItemDisplay[NMAG !INF !RW SOCK=2 7gd FILTLVL>0]:// Hide 2 socket Colossus Blades
 ItemDisplay[NMAG !INF !RW !ETH 7gd (SOCK=0 OR SOCK=5 OR SOCK=6) 7gd (!SUP OR (SUP ED<5)) FILTLVL>1]:// Hide non-ED% Colossus Blades with 0, 5, 6 sockets on filter level 2+
 ItemDisplay[NMAG !INF !RW !ETH 7gd (SOCK=3 OR SOCK=4) FILTLVL>1]:// Hide noneth Colossus Blades
 
@@ -4960,8 +4956,8 @@ ItemDisplay[NMAG !INF !RW ETH (SOCK=0 OR SOCK=3 OR SOCK=4 OR SOCK=5 OR SOCK=6) 7
 ItemDisplay[NMAG !INF !RW (!SUP OR (SUP ED<5)) 7gd FILTLVL>4]://
 
 //      Colossus Sword (7fb)
-ItemDisplay[NMAG !INF !RW SOCK=2 7fb]:// Hide 2 socket Colossus Swords
-ItemDisplay[NMAG !INF !RW !ETH SOCK=0 7fb]:// Hide nonethereal Colossus Swords with 0 sockets
+ItemDisplay[NMAG !INF !RW SOCK=2 7fb FILTLVL>0]:// Hide 2 socket Colossus Swords
+ItemDisplay[NMAG !INF !RW !ETH SOCK=0 7fb FILTLVL>0]:// Hide nonethereal Colossus Swords with 0 sockets
 ItemDisplay[NMAG !INF !RW !ETH 7fb FILTLVL>1]:// Hide noneth Colossus Swords after filter level 1
 // Notify for all 0, 3, 4, and 5 socket Colossus Swords before filter level 5
 ItemDisplay[NMAG !INF !RW ETH (SOCK=0 OR SOCK=3 OR SOCK=4 OR SOCK=5) 7fb FILTLVL<5]:%GRAY%%NAME%%DOT-20%%PX-00%%CONTINUE%// All tiers, 0os, Eth
