@@ -4499,7 +4499,8 @@ ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (qui OR lea OR hla OR stu OR scl OR
 
 // Higher-Value Normal tier Armors (Ring Mail, Breast Plate, Gothic Plate, Full Plate Mail, Ancient Armor)
 ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (rng OR brs OR gth OR ful OR aar) (!SUP OR (SUP ED<13)) SOCK=0 CLVL>19 FILTLVL>0]:// Hide higher-value nonsuperior 0 socket normal armors at character levels 20+
-ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (rng OR brs OR gth OR ful OR aar) ((!SUP OR (SUP ED<13)) OR SOCK=2) CLVL>29 FILTLVL>0]:// Hide higher-value Normal tier Armors after level 29
+ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (rng OR brs OR gth OR ful OR aar) ((!SUP OR (SUP ED<13)) OR SOCK=2) CLVL>29 FILTLVL>0]:// Hide higher-value Normal tier Armors with less than 13 %ED after level 29
+ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (rng OR brs OR gth OR ful OR aar) ((!SUP OR (SUP ED<15)) OR SOCK=2) CLVL>29 FILTLVL>4]:// Hide higher-value Normal tier Armors with less than 15 %ED after level 29 on filter level 5+ 
 
 // Low-Value Exceptional tier Armors (Ghost Armor, Serpentskin Armor, Demonhide Armor, Trellised Armor, Templar Coat, Embossed Plate, Chaos Armor, Ornate Armor)
 ItemDisplay[NMAG !INF !RW !GEMMED (xui OR xea OR xla OR xtu OR xlt OR xth OR xul OR xar) (CLVL>49 OR SOCK=0) FILTLVL>0]:// Hide 0os or character level 50+
@@ -4508,7 +4509,9 @@ ItemDisplay[NMAG !INF !RW !ETH (SOCK=2 OR SOCK=3) (xrs OR xtp) CLVL<80]:%GRAY%%N
 
 // Higher-Value Exceptional tier Armors (Linked Mail, Tigulated Mail, Mesh Armor, Cuirass, Russet Armor, Sharktooth Armor, Mage Plate)
 ItemDisplay[NMAG !INF !RW !GEMMED (xng OR xcl OR xhn OR xrs OR xpl OR xld OR xtp) ((!SUP OR (SUP ED<13)) OR SOCK=2) CLVL>79 FILTLVL>0]:// Hides Select Nonsuperior Exceptional tier Armors after 79
-ItemDisplay[NMAG !INF !RW SUP !ETH (SOCK=0 OR SOCK=3) (xng OR xcl OR xhn OR xrs OR xpl OR xld OR xtp) ED>12]:%GRAY%%NAME%%DOT-20%%PX-00%%CONTINUE%// Superior, 3os
+ItemDisplay[NMAG !INF !RW SUP !ETH (SOCK=0 OR SOCK=3) (xng OR xcl OR xhn OR xrs OR xpl OR xld OR xtp) ED>12 FILTLVL<9]:%GRAY%%NAME%%DOT-20%%PX-00%%CONTINUE%// Superior, 3os
+ItemDisplay[NMAG !INF !RW !GEMMED (xng OR xcl OR xhn OR xrs OR xpl OR xld OR xtp) ((!SUP OR (SUP ED<15)) OR SOCK=2) CLVL>79 FILTLVL>8]:// Hides Select Nonsuperior Exceptional tier Armors after 79
+ItemDisplay[NMAG !INF !RW SUP !ETH (SOCK=0 OR SOCK=3) (xng OR xcl OR xhn OR xrs OR xpl OR xld OR xtp) ED>14 FILTLVL>8]:%GRAY%%NAME%%DOT-20%%PX-00%%CONTINUE%// Superior, 3os
 
 // Elite tier: Dusk Shroud, Wyrmhide, Scarab Husk, and Archon Plate (uui OR uea OR utp OR ula)
 ItemDisplay[NMAG !INF !RW !SUP !ETH DEF>399 (SOCK=2 OR SOCK=3 OR SOCK=4) ELT CHEST (uui OR uea OR utp OR ula) FILTLVL<5 CLVL<90]:%NAME%%DOT-20%%PX-00%%CONTINUE%// 
