@@ -35,7 +35,7 @@ Please consider donating to my [**PayPal**](https://paypal.me/ErazurePD2LootFilt
 
 # **Differences Between Filter Level Tiers:**
 
-**Tier 1 = Most Magic/Rare:**
+**Tier 1 = Lowest Strictness:**
 
 - This filter level is recommended for the ladder start and for characters level 1-80 as it shows all magic and rare items.
 - When your character exceeds specific level thresholds, some low-value non-magical items start to get filtered out.
