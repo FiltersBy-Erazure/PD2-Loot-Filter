@@ -196,7 +196,17 @@ ItemDisplay[bkd]:%NAME%{%GOLD%Go to Stony Field in Act 1}// Scroll of Inifuss, d
 ItemDisplay[leg]:%GOLD%%NAME%%MAP-21%%DOT-0E%%PX-20%{%GOLD%in Act 1 to open the Cow Level%NL%Cube with Tome of Town Portal}// Wirt's Leg
 ItemDisplay[hdm]:%NAME%%MAP-21%%DOT-0E%%PX-20%{%GOLD%to Imbue a non-magical item%NL%Give to Charsi in Act 1}// Horadric Malus
 ItemDisplay[ass]:%GOLD%Book of Skill%DOT-0E%{%GOLD%+1 Skill Point%NL%Right click to gain}// Book of Skill
-ItemDisplay[box]:%BLACK%II%GOLD%II%BLACK%X%GOLD%II%BLACK%II  %GOLD%Horadric Cube  %BLACK%II%GOLD%II%BLACK%X%GOLD%II%BLACK%II{%GRAY%Erazure Version 10.22}// Horadric Cube
+ItemDisplay[box FILTLVL=0]:%BLACK%II%GOLD%II%BLACK%X%GOLD%II%BLACK%II  %GOLD%Horadric Cube  %BLACK%II%GOLD%II%BLACK%X%GOLD%II%BLACK%II{%GRAY%Filter Level: 0}%CONTINUE%// Horadric Cube
+ItemDisplay[box FILTLVL=1]:%BLACK%II%GOLD%II%BLACK%X%GOLD%II%BLACK%II  %GOLD%Horadric Cube  %BLACK%II%GOLD%II%BLACK%X%GOLD%II%BLACK%II{%GRAY%Filter Level: 1}%CONTINUE%// Horadric Cube
+ItemDisplay[box FILTLVL=2]:%BLACK%II%GOLD%II%BLACK%X%GOLD%II%BLACK%II  %GOLD%Horadric Cube  %BLACK%II%GOLD%II%BLACK%X%GOLD%II%BLACK%II{%GRAY%Filter Level: 2}%CONTINUE%// Horadric Cube
+ItemDisplay[box FILTLVL=3]:%BLACK%II%GOLD%II%BLACK%X%GOLD%II%BLACK%II  %GOLD%Horadric Cube  %BLACK%II%GOLD%II%BLACK%X%GOLD%II%BLACK%II{%GRAY%Filter Level: 3}%CONTINUE%// Horadric Cube
+ItemDisplay[box FILTLVL=4]:%BLACK%II%GOLD%II%BLACK%X%GOLD%II%BLACK%II  %GOLD%Horadric Cube  %BLACK%II%GOLD%II%BLACK%X%GOLD%II%BLACK%II{%GRAY%Filter Level: 4}%CONTINUE%// Horadric Cube
+ItemDisplay[box FILTLVL=5]:%BLACK%II%GOLD%II%BLACK%X%GOLD%II%BLACK%II  %GOLD%Horadric Cube  %BLACK%II%GOLD%II%BLACK%X%GOLD%II%BLACK%II{%GRAY%Filter Level: 5}%CONTINUE%// Horadric Cube
+ItemDisplay[box FILTLVL=6]:%BLACK%II%GOLD%II%BLACK%X%GOLD%II%BLACK%II  %GOLD%Horadric Cube  %BLACK%II%GOLD%II%BLACK%X%GOLD%II%BLACK%II{%GRAY%Filter Level: 6}%CONTINUE%// Horadric Cube
+ItemDisplay[box FILTLVL=7]:%BLACK%II%GOLD%II%BLACK%X%GOLD%II%BLACK%II  %GOLD%Horadric Cube  %BLACK%II%GOLD%II%BLACK%X%GOLD%II%BLACK%II{%GRAY%Filter Level: 7}%CONTINUE%// Horadric Cube
+ItemDisplay[box FILTLVL=8]:%BLACK%II%GOLD%II%BLACK%X%GOLD%II%BLACK%II  %GOLD%Horadric Cube  %BLACK%II%GOLD%II%BLACK%X%GOLD%II%BLACK%II{%GRAY%Filter Level: 8}%CONTINUE%// Horadric Cube
+ItemDisplay[box FILTLVL=9]:%BLACK%II%GOLD%II%BLACK%X%GOLD%II%BLACK%II  %GOLD%Horadric Cube  %BLACK%II%GOLD%II%BLACK%X%GOLD%II%BLACK%II{%GRAY%Filter Level: 9}%CONTINUE%// Horadric Cube
+ItemDisplay[box]:%NAME%{%NAME%%NL%%GRAY%Erazure Version 10.23}// Horadric Cube
 ItemDisplay[tr1]:// Horadric Scroll
 ItemDisplay[hst]:%NAME%{%GOLD%Act 2: Tal Rashas Tomb%NL%Place in Tomb Orifice in}// Horadric Staff
 ItemDisplay[vip]:%NAME%{%GOLD%Cube with Staff of Kings}// Amulet of the Viper
@@ -4103,6 +4113,9 @@ ItemDisplay[INF !(NEC OR WAND OR SOR OR STAFF OR SCEPTER OR DRU OR clb OR 9cl OR
 // Hide all eth Normal paladin shields
 ItemDisplay[NMAG !INF !RW ETH NORM DIN FILTLVL>0]://
 
+// Hide all paladin shields with less than 5 all res at character level 10+
+ItemDisplay[NMAG !INF !RW RES<5 DIN CLVL>9 FILTLVL>0]://
+
 // Hide all paladin shields with less than 10 all res at character level 25+
 ItemDisplay[NMAG !INF !RW RES<10 DIN CLVL>24 FILTLVL>0]://
 
@@ -4329,12 +4342,12 @@ ItemDisplay[NMAG !INF !RW (amd OR ame) ETH TABSK2=3 !(SOCK=0 OR SOCK=6) FILTLVL>
 // ------------------------------------------------------------------------------
 
 // On filter level 9, hide nonmagical assassin claws that are not plague or chaos bases
-ItemDisplay[NMAG !RW SIN (FILTLVL=9 OR (FILTLVL<9 FILTLVL>4 CLVL>89)) !(((7qr OR 7ar OR 7xf) (SOCK=0 OR SOCK=3) ETH (ED>4 OR SK275>0 OR SK252>0 OR SK277>0 OR (ETH 7xf))) OR ((btl OR 7lw OR 7tw OR 9lw OR 9tw) (SOCK=0 OR SOCK=3) (SK271>2 OR SK366>2 OR SK262>2)) OR (!ETH (7lw OR 7tw OR 9lw OR 9tw) (SOCK=0 OR SOCK=3) (SK265>2 OR SK280>2)) OR (SIN ASSASSIN !(ktr OR wrb OR axf OR ces) (SOCK=0 OR SOCK=3) (SK273>2 OR (SK273>1 SK253>2))))]:// Hides assassin claws that don't have +3 to a skill past level 80
+ItemDisplay[NMAG !RW SIN (FILTLVL=9 OR (FILTLVL<9 FILTLVL>4 CLVL>89)) !((SIN !(ktr OR wrb OR axf OR ces) (SOCK=0 OR SOCK=3) ((SK271>2 (SK263>1 OR SK267>1 OR SK275>0 OR SK366>1)) OR (SK262>2 (SK263>1 OR SK267>1 OR SK275>0 OR SK272>1)))) OR ((7qr OR 7ar OR 7xf) (SOCK=0 OR SOCK=3) ETH (ED>4 OR SK275>0 OR SK252>0 OR SK277>0 OR (ETH 7xf))) OR ((btl OR 7lw OR 7tw OR 9lw OR 9tw) (SOCK=0 OR SOCK=3) (SK271>2 OR SK262>2)) OR (!ETH (7lw OR 7tw OR 9lw OR 9tw) (SOCK=0 OR SOCK=3) (SK265>2 OR SK280>2)) OR (SIN ASSASSIN !(ktr OR wrb OR axf OR ces) (SOCK=0 OR SOCK=3) (SK273>2 OR (SK273>1 SK253>2))))]:// Hides assassin claws that don't have +3 to a skill past level 80
 
-//      Plague: +3 Wake of Fire, +3 Lightning Sentry, +3 Chain Lightning Sentry
+//      Plague: +3 Wake of Fire or +3 Chain Lightning Sentry on fast bases, or +3 Wake of Fire or +3 Chain Lightning Sentry with +2-3 to Weapon Block/Fade/Dragon Flight/Wake of Inferno/Lightning Sentry
 //      Plague: +3 Cobra Strike or +3 Phoenix Strike
 //      Plague: +3 Mind Blast or (+3 Psychic Hammer and +2-3 Mind Blast) when playing as Assassin
-ItemDisplay[NMAG !RW (((btl OR 7lw OR 7tw OR 9lw OR 9tw) (SOCK=0 OR SOCK=3) (SK271>2 OR SK366>2 OR SK262>2)) OR (!ETH (7lw OR 7tw OR 9lw OR 9tw) (SOCK=0 OR SOCK=3) (SK265>2 OR SK280>2)) OR (SIN ASSASSIN !(ktr OR wrb OR axf OR ces) (SOCK=0 OR SOCK=3) (SK273>2 OR (SK273>1 SK253>2))))]:%ORANGE%Plague %NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 
+ItemDisplay[NMAG !RW ((SIN !(ktr OR wrb OR axf OR ces) (SOCK=0 OR SOCK=3) ((SK271>2 (SK263>1 OR SK267>1 OR SK275>0 OR SK366>1)) OR (SK262>2 (SK263>1 OR SK267>1 OR SK275>0 OR SK272>1)))) OR ((btl OR 7lw OR 7tw OR 9lw OR 9tw) (SOCK=0 OR SOCK=3) (SK271>2 OR SK262>2)) OR (!ETH (7lw OR 7tw OR 9lw OR 9tw) (SOCK=0 OR SOCK=3) (SK265>2 OR SK280>2)) OR (SIN ASSASSIN !(ktr OR wrb OR axf OR ces) (SOCK=0 OR SOCK=3) (SK273>2 OR (SK273>1 SK253>2))))]:%ORANGE%Plague %NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 
 
 //      Neophyte: +3 Mind Blast or +3 Psychic Hammer
 ItemDisplay[NMAG !RW CLVL<80 ASSASSIN SIN SOCK=2 (SK273>2 OR SK253>2)]:%ORANGE%Neophyte %NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//  
@@ -4367,14 +4380,14 @@ ItemDisplay[NMAG !RW BAR CLVL>9 FILTLVL>0 !(SK368>0 OR SK126>0 OR SK127>0 OR SK1
 // ------------------------------------------------------------------------------
 
 // On filter level 9, hide nonmagical druid clubs are not plague bases
-ItemDisplay[NMAG !RW (clb OR spc OR 9cl OR 9sp OR 7cl OR 7sp) (FILTLVL=9 OR (FILTLVL<9 FILTLVL>4 CLVL>89)) !((9cl OR 9sp OR 7cl OR 7sp) (SOCK=0 OR SOCK=3) ((CLVL<90 OR (SK236>0 OR SK226>0 OR SK370>0 OR SK231>0 OR SK250>0)) ((SK221>2 (SK237>2 OR SK227>2 OR SK247>2)) OR (SK237>2 (SK221>2 OR SK227>2 OR SK247>2)) OR (SK227>2 (SK237>2 OR SK221>2 OR SK247>2)) OR (SK247>2 (SK237>2 OR SK227>2 OR SK221>2)))))]:// On filter level 9, hide nonmagical druid clubs are not plague bases and all nonmagical druid helms
+ItemDisplay[NMAG !RW (clb OR spc OR 9cl OR 9sp OR 7cl OR 7sp) (FILTLVL=9 OR (FILTLVL<9 FILTLVL>4 CLVL>89)) !((9cl OR 9sp OR 7cl OR 7sp) (SOCK=0 OR SOCK=3) ((CLVL<95 OR (SK236>0 OR SK226>0 OR SK370>0 OR SK231>0 OR SK250>0 OR SK235>0 OR SK241>0)) ((SK221>2 (SK237>2 OR SK227>2 OR SK247>2)) OR (SK237>2 (SK221>2 OR SK227>2 OR SK247>2)) OR (SK227>2 (SK237>2 OR SK221>2 OR SK247>2)) OR (SK247>2 (SK237>2 OR SK227>2 OR SK221>2)))))]:// On filter level 9, hide nonmagical druid clubs are not plague bases and all nonmagical druid helms
 
 // On filter level 9, hide nonmagical druid clubs are not plague bases and all nonmagical druid helms
 ItemDisplay[NMAG !RW DRU (FILTLVL=9 OR (FILTLVL<9 FILTLVL>4 CLVL>89))]:// On filter level 9, hide nonmagical druid helms
 
 //      Plague runeword club bases
-//      (CLVL<90 OR (+1 or more to H.Wolverine, Oak Sage, Gust, Carrion Vine, or Hurricane)) AND: (+3 to two of the following: Raven, Spirit Wolf, Dire Wolf, Grizzly)
-ItemDisplay[NMAG !RW (9cl OR 9sp OR 7cl OR 7sp) (SOCK=0 OR SOCK=3) ((CLVL<90 OR (SK236>0 OR SK226>0 OR SK370>0 OR SK231>0 OR SK250>0)) ((SK221>2 (SK237>2 OR SK227>2 OR SK247>2)) OR (SK237>2 (SK221>2 OR SK227>2 OR SK247>2)) OR (SK227>2 (SK237>2 OR SK221>2 OR SK247>2)) OR (SK247>2 (SK237>2 OR SK227>2 OR SK221>2))))]:%ORANGE%Plague %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
+//      (CLVL<95 OR (+1 or more to H.Wolverine, Oak Sage, Gust, Carrion Vine, Solar Creeper, Cyclone Armor, or Hurricane)) AND: (+3 to two of the following: Raven, Spirit Wolf, Dire Wolf, Grizzly)
+ItemDisplay[NMAG !RW (9cl OR 9sp OR 7cl OR 7sp) (SOCK=0 OR SOCK=3) ((CLVL<95 OR (SK236>0 OR SK226>0 OR SK370>0 OR SK231>0 OR SK250>0 OR SK235>0 OR SK241>0)) ((SK221>2 (SK237>2 OR SK227>2 OR SK247>2)) OR (SK237>2 (SK221>2 OR SK227>2 OR SK247>2)) OR (SK227>2 (SK237>2 OR SK221>2 OR SK247>2)) OR (SK247>2 (SK237>2 OR SK227>2 OR SK221>2))))]:%ORANGE%Plague %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
 
 // Hides nonmagical Ethereal Druid Helms after character level 30
 ItemDisplay[NMAG !RW ETH DRU DRUID CLVL>29]:// If your character is a druid, hide all Eth nonmagical Ethereal Druid Helms after character level 29
@@ -4487,7 +4500,7 @@ ItemDisplay[NMAG !RW SCEPTER (FILTLVL=9 OR (FILTLVL<9 FILTLVL>4 CLVL>89)) !(((9s
 
 ItemDisplay[NMAG !INF !RW PALADIN (9sc OR 9qs OR 7sc OR 7qs) (SOCK=0 OR SOCK=3) (SK101>2 OR SK112>2 OR SK121>2)]:%ORANGE%Plague %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
 
-ItemDisplay[NMAG !INF !RW (wsp OR 9ws OR 7ws) SOCK=3 (SK101>2 OR SK112>2 OR SK121>2)]:%ORANGE%Plague %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
+ItemDisplay[NMAG !INF !RW PALADIN (wsp OR 9ws OR 7ws) SOCK=3 (SK101>2 OR SK112>2 OR SK121>2)]:%ORANGE%Plague %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
 
 ItemDisplay[NMAG !INF !RW PALADIN CLVL<80 SCEPTER SOCK=2 (SK101>2 OR SK112>2 OR SK121>2)]:%ORANGE%Neophyte %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
 
