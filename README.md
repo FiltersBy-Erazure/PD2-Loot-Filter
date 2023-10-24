@@ -5,11 +5,14 @@ My loot filters are updated and available to select on the PD2 Launcher!
 ![Screenshot 2023-09-26 204931 medium](https://github.com/FiltersBy-Erazure/PD2-Loot-Filter/assets/76863417/e25dda0c-924b-48cd-8e6e-05f6e72217cf)
 
 - The **Erazure Season 8 Main** version displays standard names for all high runes and super rare items
-- The **Erazure BIG GG Novelty** version shows "BIG GG" when the following items drop while your character is outside of town:
-  - Vex, Ohm, Larzuk's Puzzlebox
-  - Lo, Sur, Ber, Jah, Cham, Zod
-  - Vial of Lightsong, Lilith's Mirror
-  - Horadric Navigator, Horadric Almanac, Skeleton Key
+- The **Erazure BIG GG Novelty** version shows "BIG GG" or "LIL GG" when the following items drop while your character is outside of town:
+  - BIG GG  
+    - Lo, Sur, Ber, Jah, Cham, Zod
+    - Vial of Lightsong, Lilith's Mirror
+    - Horadric Navigator, Horadric Almanac, Skeleton Key
+  - LIL GG
+    - Vex, Ohm, Larzuk's Puzzlebox
+
 
 # **Contact and Support:**
 
