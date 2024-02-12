@@ -11,7 +11,7 @@ My loot filters are updated and available to select on the PD2 Launcher!
     - Vial of Lightsong, Lilith's Mirror
     - Horadric Navigator, Horadric Almanac, Skeleton Key
   - LIL GG
-    - Vex, Ohm, Larzuk's Puzzlebox
+    - Vex, Ohm, Larzuk's Puzzlebox (and for crafter's league, Larzuk's Puzzlepiece)
 
 
 # **Contact and Support:**
