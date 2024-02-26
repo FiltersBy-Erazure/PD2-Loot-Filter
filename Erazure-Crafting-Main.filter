@@ -4612,42 +4612,39 @@ ItemDisplay[MAG ID (BELT OR CHEST OR SHIELD OR HELM OR CIRC OR rin OR BOOTS)]:%B
 ItemDisplay[RARE ID (BELT OR CHEST OR SHIELD OR HELM OR CIRC OR rin OR BOOTS)]:%YELLOW%%NAME%{%NAME%}%CONTINUE%
 ItemDisplay[CRAFT ID (BELT OR CHEST OR SHIELD OR HELM OR CIRC OR rin OR BOOTS)]:%ORANGE%%NAME%{%NAME%}%CONTINUE%
 
-// Add %NL% to the item description of rare and crafted armors with 100+ ED or 5+ PDR that have upgrade recipe or max sockets in item description
-ItemDisplay[(RARE OR CRAFT) ((NORM OR EXC) OR SOCK=0) (EDAM>99 OR STAT36>4) ID CHEST]:%NAME%{%NL%%NAME%}%CONTINUE%
+// Add %NL% to the item description of rare and crafted armors with 100+ ED or 4+ PDR that have upgrade recipe or max sockets in item description
+ItemDisplay[(RARE OR CRAFT) ((NORM OR EXC) OR SOCK=0) (EDAM>99 OR STAT36>3) ID CHEST]:%NAME%{%NL%%NAME%}%CONTINUE%
 
-// Add %NL% to the item description of magic armors with 150+ ED, 15+ PDR, or both 100+ ED and 10+ PDR that have max sockets in item description
-ItemDisplay[MAG SOCK=0 (EDAM>149 OR STAT36>14 OR (EDAM>99 STAT36>9)) ID CHEST]:%NAME%{%NL%%NAME%}%CONTINUE%
+// Add %NL% to the item description of magic armors with 150+ ED, or both 100+ ED and 4+ PDR that have max sockets in item description
+ItemDisplay[MAG SOCK=0 (EDAM>149 OR (EDAM>99 STAT36>3)) ID CHEST]:%NAME%{%NL%%NAME%}%CONTINUE%
 
-// Enhanced Damage on Armors
-ItemDisplay[MAG STAT36>9 (EDAM>99 EDAM<150) ID CHEST]:%WHITE%%EDAM%%RED%ed %NAME%{%GOLD%***   %RED%%EDAM%% Enhanced Damage   %GOLD%***%NAME%}%CONTINUE%
-
+// Enhanced Damage on Armors - Gold Highlight
+ItemDisplay[MAG STAT36>3 (EDAM>99 EDAM<150) ID CHEST]:%WHITE%%EDAM%%RED%ed %NAME%{%GOLD%***   %RED%%EDAM%% Enhanced Damage   %GOLD%***%NAME%}%CONTINUE%
 ItemDisplay[(RARE OR CRAFT) (EDAM>99 EDAM<150) ID CHEST]:%WHITE%%EDAM%%RED%ed %NAME%{%GOLD%***   %RED%%EDAM%% Enhanced Damage   %GOLD%***%NAME%}%CONTINUE%
-
 ItemDisplay[(MAG OR RARE OR CRAFT) (EDAM>149 EDAM<180) ID CHEST]:%WHITE%%EDAM%%RED%ed %NAME%{%GOLD%***   %RED%%EDAM%% Enhanced Damage   %GOLD%***%NAME%}%CONTINUE%
-
+// Enhanced Damage on Armors - Purple Highlight
 ItemDisplay[(MAG OR RARE OR CRAFT) EDAM>179 ID CHEST]:%WHITE%%EDAM%%PURPLE%ed %NAME%{%PURPLE%***   %RED%%EDAM%% Enhanced Damage   %PURPLE%***%NAME%}%CONTINUE%
 
-// Add %NL% to the item description of rare/crafted armors that have both 100+ ED and 5+ PDR
-ItemDisplay[(RARE OR CRAFT) EDAM>99 STAT36>4 ID CHEST]:%NAME%{%NL%%NAME%}%CONTINUE%
-// Add %NL% to the item description of magic armors that have both 100+ ED and 10+ PDR
-ItemDisplay[MAG EDAM>99 STAT36>9 ID CHEST]:%NAME%{%NL%%NAME%}%CONTINUE%
+// Add %NL% to the item description of rare/crafted armors that have both 100+ ED and 4+ PDR
+ItemDisplay[(RARE OR CRAFT) EDAM>99 STAT36>3 ID CHEST]:%NAME%{%NL%%NAME%}%CONTINUE%
+// Add %NL% to the item description of magic armors that have both 100+ ED and 4+ PDR
+ItemDisplay[MAG EDAM>99 STAT36>3 ID CHEST]:%NAME%{%NL%%NAME%}%CONTINUE%
+// Add %NL% to the item description of magic armors with 15+ PDR that have max sockets in item description
+ItemDisplay[MAG SOCK=0 STAT36>14 ID CHEST]:%NAME%{%NL%%NAME%}%CONTINUE%
 
-// Add %NL% to the item description of rare/crafted shields with 5+ PDR that have upgrade recipe or max sockets in item description
-ItemDisplay[(RARE OR CRAFT) (((NORM OR EXC) OR SOCK=0)) STAT36>4 ID SHIELD]:%NAME%{%NL%%NAME%}%CONTINUE%
-// Add %NL% to the item description of magic shields with 14+ PDR that have crafting recipe or max sockets in item description
-ItemDisplay[MAG SOCK=0 STAT36>14 ID SHIELD]:%NAME%{%NL%%NAME%}%CONTINUE%
+// Add %NL% to the item description of rare/crafted shields with 4+ PDR that have upgrade recipe or max sockets in item description
+ItemDisplay[(RARE OR CRAFT) (((NORM OR EXC) OR SOCK=0)) STAT36>3 ID SHIELD]:%NAME%{%NL%%NAME%}%CONTINUE%
+// Add %NL% to the item description of magic shields with 4+ PDR that have max sockets in item description
+ItemDisplay[MAG SOCK=0 STAT36>3 ID SHIELD]:%NAME%{%NL%%NAME%}%CONTINUE%
 
-// %PDR on Armors and Shields
-ItemDisplay[(RARE OR CRAFT) (STAT36>4 STAT36<10) ID (CHEST OR SHIELD)]:%WHITE%%STAT36%%GOLD%pdr %NAME%{%RED%***   %GOLD%%STAT36%% Damage Reduction   %RED%***%NAME%}%CONTINUE%
-
+// %PDR on Armors and Shields - Red Highlight
+ItemDisplay[(RARE OR CRAFT) (STAT36>3 STAT36<10) ID (CHEST OR SHIELD)]:%WHITE%%STAT36%%GOLD%pdr %NAME%{%RED%***   %GOLD%%STAT36%% Damage Reduction   %RED%***%NAME%}%CONTINUE%
 ItemDisplay[(RARE OR CRAFT) (STAT36>9 STAT36<15) ID (CHEST OR SHIELD)]:%WHITE%%STAT36%%GOLD%pdr %NAME%{%RED%***   %GOLD%%STAT36%% Damage Reduction   %RED%***%NAME%}%CONTINUE%
-
-ItemDisplay[MAG EDAM>99 (STAT36>9 STAT36<15) ID CHEST]:%WHITE%%STAT36%%GOLD%pdr %NAME%{%RED%***   %GOLD%%STAT36%% Damage Reduction   %RED%***%NAME%}%CONTINUE%
-
-ItemDisplay[MAG (STAT36>14 STAT36<20) ID (CHEST OR SHIELD)]:%WHITE%%STAT36%%GOLD%pdr %NAME%{%RED%***   %GOLD%%STAT36%% Damage Reduction   %RED%***%NAME%}%CONTINUE%
-
+ItemDisplay[MAG EDAM>99 (STAT36>3 STAT36<15) ID CHEST]:%WHITE%%STAT36%%GOLD%pdr %NAME%{%RED%***   %GOLD%%STAT36%% Damage Reduction   %RED%***%NAME%}%CONTINUE%
+ItemDisplay[MAG (STAT36>14 STAT36<20) ID CHEST]:%WHITE%%STAT36%%GOLD%pdr %NAME%{%RED%***   %GOLD%%STAT36%% Damage Reduction   %RED%***%NAME%}%CONTINUE%
+ItemDisplay[MAG (STAT36>3 STAT36<20) ID SHIELD]:%WHITE%%STAT36%%GOLD%pdr %NAME%{%RED%***   %GOLD%%STAT36%% Damage Reduction   %RED%***%NAME%}%CONTINUE%
+// %PDR on Armors and Shields - Purple Highlight
 ItemDisplay[(RARE OR CRAFT) (STAT36>14 STAT36<20) ID (CHEST OR SHIELD)]:%WHITE%%STAT36%%PURPLE%pdr %NAME%{%PURPLE%***   %GOLD%%STAT36%% Damage Reduction   %PURPLE%***%NAME%}%CONTINUE%
-
 ItemDisplay[(MAG OR RARE OR CRAFT) STAT36>19 ID (CHEST OR SHIELD)]:%WHITE%%STAT36%%PURPLE%pdr %NAME%{%PURPLE%***   %GOLD%%STAT36%% Damage Reduction   %PURPLE%***%NAME%}%CONTINUE%
 
 // Add %NL% to the item description of rare/crafted boots
