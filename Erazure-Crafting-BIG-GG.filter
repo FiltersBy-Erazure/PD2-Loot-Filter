@@ -108,13 +108,16 @@ ItemDisplay[pvpp]:%BLUE%i%GRAY%I%BLUE%(O)%GRAY%I%BLUE%i%WHITE%{%WHITE% Dueling M
 // ==================================  Rejuvenation Potions  ================================
 
 ItemDisplay[rvs FILTLVL>7]:{%NL%%WHITE% Rejuvenation Potion }//
-ItemDisplay[rvs CLVL>79]:%GRAY%i%PURPLE%(%WHITE% Juv %PURPLE%)%GRAY%i%WHITE%{%WHITE% Rejuvenation Potion }//
-ItemDisplay[rvs CLVL<80 CLVL>49]:%PURPLE%i%GRAY%I%PURPLE%(%WHITE% Rejuv %PURPLE%)%GRAY%I%PURPLE%i%WHITE%{%WHITE% Rejuvenation Potion }//
+ItemDisplay[rvs CLVL<60 !FILTLVL>7]:%DOT-9B%%PX-20%%TIER-0%%CONTINUE%//
 ItemDisplay[rvs CLVL<50]:%PURPLE%i%GRAY%I%PURPLE%(%WHITE% Rejuv %PURPLE%)%GRAY%I%PURPLE%i%WHITE%{%WHITE% Rejuvenation Potion }//
+ItemDisplay[rvs CLVL<80 CLVL>49]:%PURPLE%i%GRAY%I%PURPLE%(%WHITE% Rejuv %PURPLE%)%GRAY%I%PURPLE%i%WHITE%{%WHITE% Rejuvenation Potion }//
+ItemDisplay[rvs CLVL>79]:%GRAY%i%PURPLE%(%WHITE% Juv %PURPLE%)%GRAY%i%WHITE%{%WHITE% Rejuvenation Potion }//
 
-ItemDisplay[rvl ((MAPID>160 MAPID<164) OR MAPID=137)]:%GRAY%i%PURPLE%(O)%GRAY%i%WHITE%{%WHITE% Full Rejuvenation Potion }//
-ItemDisplay[rvl CLVL>79 !((MAPID>160 MAPID<164) OR MAPID=137)]:%PURPLE%iI(%WHITE% Full %PURPLE%)Ii%WHITE%{%WHITE% Full Rejuvenation Potion }//
+
+ItemDisplay[rvl CLVL<80 !((MAPID>160 MAPID<164) OR MAPID=137)]:%DOT-9B%%PX-20%%TIER-0%%CONTINUE%//
 ItemDisplay[rvl CLVL<80 !((MAPID>160 MAPID<164) OR MAPID=137)]:%PURPLE%iI(%WHITE% Full Rejuv %PURPLE%)Ii%WHITE%{%WHITE% Full Rejuvenation Potion }//
+ItemDisplay[rvl CLVL>79 !((MAPID>160 MAPID<164) OR MAPID=137)]:%PURPLE%iI(%WHITE% Full %PURPLE%)Ii%WHITE%{%WHITE% Full Rejuvenation Potion }//
+ItemDisplay[rvl ((MAPID>160 MAPID<164) OR MAPID=137)]:%GRAY%i%PURPLE%(O)%GRAY%i%WHITE%{%WHITE% Full Rejuvenation Potion }//
 
 // =====================================  Utility Potions  ==================================
 
@@ -306,7 +309,7 @@ ItemDisplay[gcw CLVL>29]:// Chipped Diamond
 ItemDisplay[gfw CLVL>39]:// Flawed Diamond
 ItemDisplay[gsw CLVL>49]:// Normal Diamond
 
-ItemDisplay[gcw CLVL>19 CLVL<30]:%WHITE%-  %ORANGE%Chipped %WHITE%Diamond  %WHITE%-%WHITE%%{%TAN%Cube %WHITE%Chipped %TAN%x %WHITE%3 %TAN%= %WHITE%Flawed}%WHITE%// Chipped Diamond
+ItemDisplay[gcw CLVL>19 CLVL<30]:%WHITE%-  %ORANGE%Chipped %WHITE%Diamond  %WHITE%-%WHITE%{%TAN%Cube %WHITE%Chipped %TAN%x %WHITE%3 %TAN%= %WHITE%Flawed}%WHITE%// Chipped Diamond
 ItemDisplay[gfw CLVL>29 CLVL<40]:%WHITE%-  %ORANGE%Flawed %WHITE%Diamond  %WHITE%-%WHITE%{%TAN%Cube %WHITE%Flawed %TAN%x %WHITE%3 %TAN%= %WHITE%Normal}%WHITE%// Flawed Diamond
 ItemDisplay[gsw CLVL>39 CLVL<50]:%WHITE%o  %ORANGE%Normal %WHITE%Diamond  %WHITE%o%WHITE%{%TAN%Cube %WHITE%Normal %TAN%x %WHITE%3 %TAN%= %WHITE%Flawless}%WHITE%// Diamond ("Normal")
 
@@ -1782,7 +1785,6 @@ ItemDisplay[MAG ID !EQUIPPED amu (CLVL>81 ILVL<81)]:%NAME%%BLUE%{%ORANGE%Crafted
 ItemDisplay[MAG ID !EQUIPPED amu (CLVL<82 ILVL<98)]:%NAME%%BLUE%{%ORANGE%Crafted %WHITE%Affix Level: %WHITE%%CRAFTALVL%}%CONTINUE%//
 
 ItemDisplay[MAG ID !EQUIPPED amu (!(SHOP CLVL>79) ((((RES>5 STAT360=51) OR RES>9) OR ((((PRES>9 FRES>9 CRES>9) OR (PRES>9 FRES>9 LRES>9) OR (PRES>9 CRES>9 LRES>9) OR (FRES>9 LRES>9 CRES>9)) CLVL<50) OR ((PRES>19 FRES>19 CRES>19) OR (PRES>19 FRES>19 LRES>19) OR (PRES>19 CRES>19 LRES>19) OR (FRES>19 LRES>19 CRES>19))) OR ((((PRES>9 FRES>9) OR (PRES>9 LRES>9) OR (PRES>9 CRES>9) OR (CRES>9 LRES>9) OR (CRES>9 FRES>9) OR (LRES>9 FRES>9)) CLVL<50)) OR ((PRES>19 FRES>19) OR (PRES>19 LRES>19) OR (PRES>19 CRES>19) OR (CRES>19 LRES>19) OR (CRES>19 FRES>19) OR (LRES>19 FRES>19)))) OR (!CLVL>79 (((PRES>9 CLVL<50) OR PRES>19) OR ((LRES>9 CLVL<50) OR LRES>19) OR ((LRES>9 CLVL<50) OR LRES>19) OR ((CRES>9 CLVL<50) OR CRES>19) OR ((FRES>9 CLVL<50) OR FRES>19))))]:%NAME%{%NL%%NAME%}%CONTINUE%//
-//ItemDisplay[MAG ID !EQUIPPED amu (ILVL>81 OR (ILVL<98 CLVL<82)) (!(SHOP CLVL>79) ((((RES>5 STAT360=51) OR RES>9) OR ((((PRES>9 FRES>9 CRES>9) OR (PRES>9 FRES>9 LRES>9) OR (PRES>9 CRES>9 LRES>9) OR (FRES>9 LRES>9 CRES>9)) CLVL<50) OR ((PRES>19 FRES>19 CRES>19) OR (PRES>19 FRES>19 LRES>19) OR (PRES>19 CRES>19 LRES>19) OR (FRES>19 LRES>19 CRES>19))) OR ((((PRES>9 FRES>9) OR (PRES>9 LRES>9) OR (PRES>9 CRES>9) OR (CRES>9 LRES>9) OR (CRES>9 FRES>9) OR (LRES>9 FRES>9)) CLVL<50)) OR ((PRES>19 FRES>19) OR (PRES>19 LRES>19) OR (PRES>19 CRES>19) OR (CRES>19 LRES>19) OR (CRES>19 FRES>19) OR (LRES>19 FRES>19)))) OR (!CLVL>79 (((PRES>9 CLVL<50) OR PRES>19) OR ((LRES>9 CLVL<50) OR LRES>19) OR ((LRES>9 CLVL<50) OR LRES>19) OR ((CRES>9 CLVL<50) OR CRES>19) OR ((FRES>9 CLVL<50) OR FRES>19))))]:%NAME%{%NL%%NAME%}%CONTINUE%//
 
 ItemDisplay[MAG !ID amu CLVL>79 FILTLVL<9]:%TAN%o  %BLUE%%NAME%  %TAN%o%BLUE%// No map or chat notification for magic amulets past level 80
 ItemDisplay[MAG !ID amu CLVL<80 FILTLVL<9]:%TAN%o  %BLUE%%NAME%  %TAN%o%BLUE%%BORDER-91%%MAP-97%%DOT-0E%%PX-A6%// All unidentified amulets
@@ -1832,7 +1834,6 @@ ItemDisplay[MAG ID !EQUIPPED rin (CLVL>63 ILVL<63)]:%NAME%%BLUE%{%ORANGE%Crafted
 ItemDisplay[MAG ID !EQUIPPED rin (CLVL<64 ILVL<98)]:%NAME%%BLUE%{%ORANGE%Crafted %WHITE%Affix Level: %WHITE%%CRAFTALVL%}%CONTINUE%//
 
 ItemDisplay[MAG ID !EQUIPPED rin (ILVL>63 OR (ILVL<98 CLVL<64)) (!(SHOP CLVL>79) ((((RES>5 STAT360=51) OR RES>7) OR ((((PRES>9 FRES>9 CRES>9) OR (PRES>9 FRES>9 LRES>9) OR (PRES>9 CRES>9 LRES>9) OR (FRES>9 LRES>9 CRES>9)) CLVL<50) OR ((PRES>19 FRES>19 CRES>19) OR (PRES>19 FRES>19 LRES>19) OR (PRES>19 CRES>19 LRES>19) OR (FRES>19 LRES>19 CRES>19))) OR ((((PRES>9 FRES>9) OR (PRES>9 LRES>9) OR (PRES>9 CRES>9) OR (CRES>9 LRES>9) OR (CRES>9 FRES>9) OR (LRES>9 FRES>9)) CLVL<50)) OR ((PRES>19 FRES>19) OR (PRES>19 LRES>19) OR (PRES>19 CRES>19) OR (CRES>19 LRES>19) OR (CRES>19 FRES>19) OR (LRES>19 FRES>19)))) OR (!CLVL>79 (((PRES>9 CLVL<50) OR PRES>19) OR ((LRES>9 CLVL<50) OR LRES>19) OR ((LRES>9 CLVL<50) OR LRES>19) OR ((CRES>9 CLVL<50) OR CRES>19) OR ((FRES>9 CLVL<50) OR FRES>19))))]:%NAME%{%NL%%NAME%}%CONTINUE%//
-//ItemDisplay[MAG ID !EQUIPPED rin (ILVL>63 OR (ILVL<98 CLVL<64)) (!(SHOP CLVL>79) ((((RES>5 STAT360=51) OR RES>7) OR ((((PRES>9 FRES>9 CRES>9) OR (PRES>9 FRES>9 LRES>9) OR (PRES>9 CRES>9 LRES>9) OR (FRES>9 LRES>9 CRES>9)) CLVL<50) OR ((PRES>19 FRES>19 CRES>19) OR (PRES>19 FRES>19 LRES>19) OR (PRES>19 CRES>19 LRES>19) OR (FRES>19 LRES>19 CRES>19))) OR ((((PRES>9 FRES>9) OR (PRES>9 LRES>9) OR (PRES>9 CRES>9) OR (CRES>9 LRES>9) OR (CRES>9 FRES>9) OR (LRES>9 FRES>9)) CLVL<50)) OR ((PRES>19 FRES>19) OR (PRES>19 LRES>19) OR (PRES>19 CRES>19) OR (CRES>19 LRES>19) OR (CRES>19 FRES>19) OR (LRES>19 FRES>19)))) OR (!CLVL>79 (((PRES>9 CLVL<50) OR PRES>19) OR ((LRES>9 CLVL<50) OR LRES>19) OR ((LRES>9 CLVL<50) OR LRES>19) OR ((CRES>9 CLVL<50) OR CRES>19) OR ((FRES>9 CLVL<50) OR FRES>19))))]:%NAME%{%NL%%NAME%}%CONTINUE%//
 
 // ----------------------------------------------------------------------------------------------
 //      			                           Circlets
@@ -2201,10 +2202,10 @@ ItemDisplay[WEAPON NORM SET ID]:%NAME%{%WHITE%Ral %TAN%+ %WHITE%Sol %TAN%+ %ORAN
 ItemDisplay[WEAPON EXC SET ID]:%NAME%{%WHITE%Lum %TAN%+ %WHITE%Pul %TAN%+ %ORANGE%Perfect %WHITE%Emerald %DARK_GREEN%o}%CONTINUE%//
 
 //Exact Requirements after upgrade (Thanks to BetweenWalls)
-ItemDisplay[(ARMOR OR WEAPON) !(CIRC OR SOR OR WAND OR 8ss OR hdm OR msf OR hst OR g33 OR qf1 OR qf2 OR hfh) (RARE OR CRAFT OR UNI OR SET) (NORM OR EXC) ID]: %NAME%{%NAME%%NL%%WHITE%Upgrade Recipe:}%CONTINUE%
-ItemDisplay[(ARMOR OR WEAPON) (CIRC OR SOR OR WAND OR 8ss OR hdm OR msf OR hst OR g33 OR qf1 OR qf2 OR hfh) (RARE OR CRAFT OR UNI OR SET) (NORM OR EXC) ID]: %NAME%{%NAME%%NL%%TAN%Note%WHITE%: Cube Upgrading Recipe:}%CONTINUE%
+ItemDisplay[(ARMOR OR WEAPON) !(CIRC OR SOR OR WAND OR 8ss OR msf OR hst OR g33 OR qf1 OR qf2 OR hfh) (RARE OR CRAFT OR UNI OR SET) (NORM OR EXC) ID]: %NAME%{%NAME%%NL%%WHITE%Upgrade Recipe:}%CONTINUE%
+ItemDisplay[(ARMOR OR WEAPON) (CIRC OR SOR OR WAND OR 8ss OR msf OR hst OR g33 OR qf1 OR qf2 OR hfh) (RARE OR CRAFT OR UNI OR SET) (NORM OR EXC) ID]: %NAME%{%NAME%%NL%%TAN%Note%WHITE%: Cube Upgrading Recipe:}%CONTINUE%
 //Strength
-ItemDisplay[(ARMOR OR WEAPON) !(CIRC OR SOR OR WAND OR 8ss OR hdm OR msf OR hst OR g33 OR qf1 OR qf2 OR hfh) (RARE OR CRAFT OR UNI OR SET) (NORM OR EXC) ID]: %NAME%{%NAME% %WHITE%Req: %GRAY%Str:%WHITE%}%CONTINUE%
+ItemDisplay[(ARMOR OR WEAPON) !(CIRC OR SOR OR WAND OR 8ss OR msf OR hst OR g33 OR qf1 OR qf2 OR hfh) (RARE OR CRAFT OR UNI OR SET) (NORM OR EXC) ID]: %NAME%{%NAME% %WHITE%Req: %GRAY%Str:%WHITE%}%CONTINUE%
 //STR 2__
 ItemDisplay[(RARE OR CRAFT OR UNI OR SET) ID (xth OR xul OR xar OR xow OR xhb OR 9m9 OR 9gm OR 9vo) !(ETH (xth OR xhb))]: %NAME%{%NAME%2}%CONTINUE%
 //STR 1__
@@ -2250,7 +2251,7 @@ ItemDisplay[(RARE OR CRAFT OR UNI OR SET) ID (stu OR xtu OR xng OR lrg OR kit OR
 //STR __0
 ItemDisplay[(RARE OR CRAFT OR UNI OR SET) ID (cap OR xap OR hla OR ful OR aar OR xul OR gts OR xml OR lgl OR vgl OR hgl OR xlg OR xvg OR lbt OR xlb OR lbl OR vbl OR hbl OR zlb OR zvb OR dr2 OR ne4 OR spc OR whm OR flc OR gsd OR 9ss OR ssp OR brn OR pik OR bar OR wsc OR 9vo OR lbb OR mxb OR hxb OR rxb OR 9cs)]: %NAME%{%NAME%0}%CONTINUE%
 //When -REQ appears
-ItemDisplay[(ARMOR OR WEAPON) !(CIRC OR SOR OR WAND OR 8ss OR hdm OR msf OR hst OR g33 OR qf1 OR qf2 OR hfh) (RARE OR CRAFT OR UNI OR SET) (NORM OR EXC) ID !STAT91=0]: %NAME%{%NAME%%GRAY%-x%}%CONTINUE%
+ItemDisplay[(ARMOR OR WEAPON) !(CIRC OR SOR OR WAND OR 8ss OR msf OR hst OR g33 OR qf1 OR qf2 OR hfh) (RARE OR CRAFT OR UNI OR SET) (NORM OR EXC) ID !STAT91=0]: %NAME%{%NAME%%GRAY%-x%}%CONTINUE%
 //Dexterity
 ItemDisplay[(hax OR mpi OR gax OR 9ha OR 9ax OR 92a OR 9mp OR 9wa OR 9ba OR 9bt OR 9ga OR 9gi OR fla OR 9cl OR 9ma OR 9mt OR 9fl OR (SWORD !ssd) OR (DAGGER !THROWING !dgr) OR THROWING OR (SPEAR !THROWING !spt) OR (POLEARM !bar !vou) OR BOW OR XBOW OR 8ls OR 8cs OR 8bs OR 9sc OR 9qs OR 9ws OR SIN OR ZON) (RARE OR CRAFT OR UNI OR SET) (NORM OR EXC) ID]: %NAME%{%NAME% %GRAY%Dex:%WHITE%}%CONTINUE%
 //DEX 1__
@@ -2298,7 +2299,7 @@ ItemDisplay[(RARE OR CRAFT OR UNI OR SET) ID (mpi OR crs OR clm OR bsw OR gsd OR
 //When -REQ appears
 ItemDisplay[(hax OR mpi OR gax OR 9ha OR 9ax OR 92a OR 9mp OR 9wa OR 9ba OR 9bt OR 9ga OR 9gi OR fla OR 9cl OR 9ma OR 9mt OR 9fl OR (SWORD !ssd) OR (DAGGER !THROWING !dgr) OR THROWING OR (SPEAR !THROWING !spt) OR (POLEARM !bar !vou) OR BOW OR XBOW OR 8ls OR 8cs OR 8bs OR 9sc OR 9qs OR 9ws OR SIN OR ZON) (RARE OR CRAFT OR UNI OR SET) (NORM OR EXC) ID !STAT91=0]: %NAME%{%NAME%%GRAY%-x%}%CONTINUE%
 //Upgrading Req End Line
-ItemDisplay[(ARMOR OR WEAPON) !(CIRC OR SOR OR WAND OR 8ss OR hdm OR msf OR hst OR g33 OR qf1 OR qf2 OR hfh) (RARE OR CRAFT OR UNI OR SET) (NORM OR EXC) ID]: %NAME%{%NAME%}%CONTINUE%
+ItemDisplay[(ARMOR OR WEAPON) !(CIRC OR SOR OR WAND OR 8ss OR msf OR hst OR g33 OR qf1 OR qf2 OR hfh) (RARE OR CRAFT OR UNI OR SET) (NORM OR EXC) ID]: %NAME%{%NAME%}%CONTINUE%
 
 // 	-------------------------------------------------------------------    
 // 	     			     NMAG  Non-Magic Items       
@@ -4408,7 +4409,7 @@ ItemDisplay[SHIELD !GEMMED SOCK=3 NMAG !RW]:%NAME%{%GRAY%Ancient's Pledge %WHITE
 ItemDisplay[SHIELD !GEMMED SOCK=4 NMAG !DIN !RW]:%NAME%{%GRAY%Exile %WHITE%* %GRAY%Phoenix %WHITE%* %GRAY%Spirit%NL%%TAN%Possible Runewords:}%CONTINUE%
 ItemDisplay[SHIELD !GEMMED SOCK=4 NMAG DIN !RW]:%NAME%{%GRAY%Shattered Wall %WHITE%* %GRAY%Spirit%NL%%GRAY%Exile %WHITE%* %GRAY%Phoenix%NL%%TAN%Possible Runewords:}%CONTINUE%
 // Weapons 2soc
-ItemDisplay[WEAPON !(BOW OR XBOW OR leg) !GEMMED SOCK=2 NMAG !RW]: %NAME%{%GRAY%Strength, Wind%NL%%TAN%Note%WHITE%: Possible RuneWords:}%CONTINUE%
+ItemDisplay[WEAPON !(BOW OR XBOW OR leg) !GEMMED SOCK=2 NMAG !RW]: %NAME%{%GRAY%Strength, Wind%NL%%TAN%Possible RuneWords:}%CONTINUE%
 ItemDisplay[(BOW OR XBOW) !GEMMED SOCK=2 NMAG !RW]:%NAME%{%GRAY%Zephyr%NL%%TAN%Possible Runewords:}%CONTINUE%
 ItemDisplay[WAND !GEMMED SOCK=2 NMAG !RW]:%NAME%{%GRAY%Dominion %WHITE%* %GRAY%White %WHITE%* %GRAY%Wind %WHITE%* %GRAY%Strength%NL%%TAN%Possible Runewords: }%CONTINUE%
 ItemDisplay[STAFF !GEMMED SOCK=2 NMAG !RW]:%NAME%{%GRAY%Leaf %WHITE%* %GRAY%Strength %WHITE%* %GRAY%Wind %WHITE%* %GRAY%Neophyte%NL%%TAN%Possible Runewords:}%CONTINUE%
