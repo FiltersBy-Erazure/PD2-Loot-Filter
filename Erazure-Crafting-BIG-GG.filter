@@ -23,7 +23,7 @@ ItemDisplay[box FILTLVL=8]:%NAME%{%WHITE%Filter Level: 8}%CONTINUE%//
 ItemDisplay[box FILTLVL=9]:%NAME%{%WHITE%Filter Level: 9}%CONTINUE%//
 ItemDisplay[box FILTLVL=0]:%NAME%{%NAME%%NL%%GRAY%Levels 5-6-7-8 Hide Some Rares and Non-Eth Items%NL%%GRAY%Levels 2-3-4 Hide Some Non-Magic/Magic Items%NL%Level 1 Shows Most Non-Magic/Magic Items}//
 ItemDisplay[box CLVL<25 !FILTLVL=0]:%NAME%{%NAME%%NL%%GRAY%For "Increase and Decrease Filter Level"%NL%For "Always Show Items" and Hotkeys%NL%Open Settings to Create Toggle}//
-ItemDisplay[box CLVL>24 !FILTLVL=0]:%NAME%{%NAME%%NL%%GRAY%Erazure: Version 3.12}//
+ItemDisplay[box CLVL>24 !FILTLVL=0]:%NAME%{%NAME%%NL%%GRAY%Erazure: Version 3.14}//
 
 // ==============================  Arrows and Bolts  ===============================
 
@@ -166,20 +166,26 @@ ItemDisplay[tpll CLVL>27]:{%WHITE%Shock Potion}//
 
 // Scroll of Identify after level 59
 ItemDisplay[isc CLVL>59 FILTLVL>1]:{%NL%%WHITE% Scroll of Identify }//
-// Scroll of Identify after level 14
-ItemDisplay[isc (CLVL>14 OR FILTLVL=0)]:%RED%+%WHITE%{%NL%%WHITE% Scroll of Identify }//
+// Scroll of Identify after level 29
+ItemDisplay[isc (CLVL>29 OR FILTLVL=0)]:%RED%+%WHITE%{%NL%%WHITE% Scroll of Identify }//
+// Scroll of Identify between 15 and 29
+ItemDisplay[isc (CLVL>14 CLVL<30)]:%RED%+%GRAY%ID%WHITE%{%NL%%WHITE% Scroll of Identify }//
 // Scroll of Identify before level 15
 ItemDisplay[isc CLVL<15]:%RED%+  %GRAY%ID %WHITE%Scroll  %RED%+%WHITE%//
+
 // Tome of Identify
 ItemDisplay[ibk]:%RED%iIIi  %WHITE%Tome of ID  %RED%iIIi%WHITE%//
 
 // TP Scrolls
 // Scroll of Town Portal after level 59
 ItemDisplay[tsc CLVL>59 FILTLVL>1]:{%NL%%WHITE% Scroll of Town Portal }//
-// Scroll of Town Portal after level 14
-ItemDisplay[tsc (CLVL>14 OR FILTLVL=0)]:%BLUE%+%WHITE%{%NL%%WHITE% Scroll of Town Portal }//
+// Scroll of Town Portal after level 29
+ItemDisplay[tsc (CLVL>29 OR FILTLVL=0)]:%BLUE%+%WHITE%{%NL%%WHITE% Scroll of Town Portal }//
+// Scroll of Town Portal between 15 and 29
+ItemDisplay[tsc (CLVL>14 CLVL<30)]:%BLUE%+%GRAY%TP%WHITE%{%NL%%WHITE% Scroll of Town Portal }//
 // Scroll of Town Portal before level 15
 ItemDisplay[tsc CLVL<15]:%BLUE%+  %GRAY%TP %WHITE%Scroll  %BLUE%+%WHITE%//
+
 // Tome of Town Portal
 ItemDisplay[tbk]:%BLUE%iIIi  %WHITE%Tome of TP  %BLUE%iIIi%WHITE%//
 
@@ -3962,6 +3968,7 @@ ItemDisplay[NMAG !INF !RW SCEPTER CLVL>4 FILTLVL>0 !(SK96>0 OR SK97>0 OR SK98>0 
 ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (qui OR lea OR hla OR stu) SOCK=0 FILTLVL>0]:// Hide low-value 0 socket Armors
 ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (scl OR chn OR spl OR plt OR fld) SOCK=0 CLVL>19 FILTLVL>0]:// Hide medium-value 0 socket normal armors at character levels 20+
 ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (qui OR lea OR hla OR stu OR scl OR chn OR spl OR plt OR fld) CLVL>29 FILTLVL>0]:// Hide All Normal tier Armors after level 29
+ItemDisplay[NMAG !INF !RW (brs OR rng OR ltp) !GEMMED !ETH SOCK=3 CLVL<30 SHOP]:%TAN%**%LIGHT_GRAY%*%GRAY%*  %GRAY%%NAME%  %GRAY%*%LIGHT_GRAY%*%TAN%**%GRAY%%CONTINUE%// 3os Vendor Tag
 
 // Higher-Value Normal tier Armors (Ring Mail, Breast Plate, Gothic Plate, Full Plate Mail, Ancient Armor, Light Plate)
 ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (rng OR brs OR ful OR aar OR ltp OR gth) CLVL>19 FILTLVL>0 SOCK=0]:// Hide higher-value nonsuperior 0 socket normal armors at character levels 20+
@@ -3996,23 +4003,14 @@ ItemDisplay[NMAG !INF !RW SOCK=3 NORM SHIELD !GEMMED !lrg !kit !tow !DIN !NEC CL
 //      Buckler
 ItemDisplay[NMAG buc CLVL>2 FILTLVL>0]:// Hide all white Bucklers past character level 2
 
-//      Small Shield
-ItemDisplay[NMAG !INF !RW sml CLVL>19 FILTLVL>0]:// Hide all white small shields past character level 19
+//      Small Shield, Bone Shield
+ItemDisplay[NMAG !INF !RW (sml OR bsh) CLVL>19 FILTLVL>0]:// Hide all white small shields past character level 19
 
-//      Bone Shield
-ItemDisplay[NMAG !INF !RW bsh CLVL>19 FILTLVL>0]://
 
-//      Large Shield
-ItemDisplay[NMAG !INF !RW lrg !GEMMED CLVL>49 FILTLVL>0]:// Hide large shields after level 50
-ItemDisplay[NMAG !INF !RW lrg !GEMMED !ETH SOCK=3 CLVL<30]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 3os
-
-//      Kite Shield
-ItemDisplay[NMAG !INF !RW kit !GEMMED CLVL>49 FILTLVL>0]:// Hide large shields after level 50
-ItemDisplay[NMAG !INF !RW kit !GEMMED !ETH SOCK=3 CLVL<30]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 3os
-
-//      Tower Shield
-ItemDisplay[NMAG !INF !RW tow !GEMMED CLVL>49 FILTLVL>0]:// Hide large shields after level 50
-ItemDisplay[NMAG !INF !RW tow !GEMMED !ETH SOCK=3 CLVL<30]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 3os
+//      Large Shield, Kite Shield, Tower Shield
+ItemDisplay[NMAG !INF !RW (lrg OR kit OR tow) !GEMMED CLVL>49 FILTLVL>0]:// Hide large shields after level 50
+ItemDisplay[NMAG !INF !RW (lrg OR kit OR tow) !GEMMED !ETH SOCK=3 CLVL<30 SHOP]:%TAN%**%LIGHT_GRAY%*%GRAY%*  %GRAY%%NAME%  %GRAY%*%LIGHT_GRAY%*%TAN%**%GRAY%%CONTINUE%// 3os Vendor Tag
+ItemDisplay[NMAG !INF !RW (lrg OR kit OR tow) !GEMMED !ETH SOCK=3 CLVL<30]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 3os notification 
 
 // 	Exceptional tier
 ItemDisplay[NMAG !INF !RW EXC SHIELD !DIN !NEC SOCK=0 FILTLVL>0]://
@@ -5330,16 +5328,17 @@ ItemDisplay[WEAPON CLVL<85 !STAFF (MAG OR RARE OR CRAFT) (SUFFIX=594 OR SUFFIX=5
 
 //  Magic High Enhanced Damage Weapons (250-299)
 ItemDisplay[WEAPON !BOW !XBOW !STAFF !WAND !SOR MAG (EXC OR ELT) (SOCK=0 !THROWING) ED>249 ED<300 CLVL<80]:%NAME%{%NL%%NAME%}%CONTINUE%//
-ItemDisplay[WEAPON !BOW !XBOW !STAFF !WAND !SOR MAG (EXC OR ELT) ED>249 ED<300 CLVL<80]:%NAME%{%NL%%RED%*%ORANGE%**%YELLOW%**   %ORANGE%+%ED%% Enhanced Damage   %YELLOW%**%ORANGE%**%RED%*%NL%%NAME%}%CONTINUE%//
+ItemDisplay[WEAPON !BOW !XBOW !STAFF !WAND !SOR MAG (EXC OR ELT) ED>249 ED<300 CLVL<80]:%NAME%{%ORANGE%**%YELLOW%**   %ORANGE%+%ED%% Enhanced Damage   %YELLOW%**%ORANGE%**%NAME%}%CONTINUE%//
 
 //  Rare or Crafted High Enhanced Damage Magic Weapons (250-299) under character level 80
 ItemDisplay[WEAPON !BOW !XBOW !STAFF !WAND !SOR ((RARE OR CRAFT) ((NORM OR EXC) OR (SOCK=0 !THROWING))) ED>249 ED<300 CLVL<80]:%NAME%{%NL%%NAME%}%CONTINUE%//
-ItemDisplay[WEAPON !BOW !XBOW !STAFF !WAND !SOR (RARE OR CRAFT) ED>249 ED<300 CLVL<80]:%NAME%{%NL%%RED%*%ORANGE%**%YELLOW%**   %ORANGE%+%ED%% Enhanced Damage   %YELLOW%**%ORANGE%**%RED%*%NL%%NAME%}%CONTINUE%//
+ItemDisplay[WEAPON !BOW !XBOW !STAFF !WAND !SOR (RARE OR CRAFT) ED>249 ED<300 CLVL<80]:%NAME%{%ORANGE%**%YELLOW%**   %ORANGE%+%ED%% Enhanced Damage   %YELLOW%**%ORANGE%**%NAME%}%CONTINUE%//
 
 //  High Enhanced Damage Weapons (300+)
 ItemDisplay[((WEAPON !BOW !XBOW !STAFF !WAND !SOR ED>299) OR ((BOW OR XBOW) ED>399)) (((RARE OR CRAFT) ((NORM OR EXC) OR (SOCK=0 !THROWING))) OR (MAG SOCK=0 !THROWING))]:%NAME%{%NL%%NAME%}%CONTINUE%//
 //  High Enhanced Damage Weapons (300-399)
-ItemDisplay[WEAPON !BOW !XBOW !STAFF !WAND !SOR (MAG OR RARE OR CRAFT) ED>299 ED<400]:%NAME%{%NL%%RED%*%ORANGE%**%YELLOW%**   %ORANGE%+%ED%% Enhanced Damage   %YELLOW%**%ORANGE%**%RED%*%NL%%NAME%}%CONTINUE%//
+ItemDisplay[WEAPON !BOW !XBOW !STAFF !WAND !SOR (MAG OR RARE OR CRAFT) CLVL<80 ED>299 ED<400]:%NAME%{%NL%%RED%*%ORANGE%**%YELLOW%**   %ORANGE%+%ED%% Enhanced Damage   %YELLOW%**%ORANGE%**%RED%*%NL%%NAME%}%CONTINUE%//
+ItemDisplay[WEAPON !BOW !XBOW !STAFF !WAND !SOR (MAG OR RARE OR CRAFT) CLVL>79 ED>299 ED<400]:%NAME%{%ORANGE%**%YELLOW%**   %ORANGE%+%ED%% Enhanced Damage   %YELLOW%**%ORANGE%**%NAME%}%CONTINUE%//
 
 //  High Enhanced Damage Weapons (400-499)
 ItemDisplay[WEAPON !STAFF !WAND !SOR (MAG OR RARE OR CRAFT) ED>399 ED<500]:%NAME%{%NL%%PURPLE%*%RED%**%ORANGE%**   %RED%+%ED%% Enhanced Damage   %ORANGE%**%RED%**%PURPLE%*%NL%%NAME%}%CONTINUE%//
@@ -5432,7 +5431,7 @@ ItemDisplay[!CLVL>79 !((SHIELD OR HELM OR CHEST) SHOP CLVL>49) (RARE OR CRAFT) I
 ItemDisplay[!CLVL>79 !((SHIELD OR HELM OR CHEST) SHOP CLVL>49) (MAG OR RARE OR CRAFT) ID (WAND OR SCEPTER OR STAFF OR BELT OR GLOVES OR BOOTS OR (SHIELD !DIN) OR CHEST OR HELM OR CIRC OR rin OR amu) ((FRES>9 CLVL<50) OR FRES>19)]:%NAME%{%GRAY%**%RED%**   %RED%Fire Resist   %RED%**%GRAY%**%NAME%}%CONTINUE%//
 
 //Show Weapon Speed & Range
-ItemDisplay[WEAPON !GEMMED !RW !((UNI ELT SOCK>0) OR (NMAG SOCK=1) OR (STAFF OR WAND OR SOR) OR (NMAG THROWING) OR ((((CRAFT OR RARE) ELT SOCK>0) OR (MAG SOCK>0) OR ((ELT OR MAG) THROWING)) !((ED>249 ED<300 CLVL<80) OR ED>299 OR ((SUFFIX=662 CLVL<80) OR SUFFIX=898 OR SUFFIX=899))))]: %NAME%{%NAME%%NL%}%CONTINUE%//
+ItemDisplay[WEAPON !RW !((UNI ELT SOCK>0) OR (NMAG SOCK=1) OR (STAFF OR WAND OR SOR) OR (NMAG THROWING) OR (NMAG GEMMED) OR ((((CRAFT OR RARE) ELT SOCK>0) OR (MAG SOCK>0) OR ((ELT OR MAG) THROWING)) !((ED>249 ED<300 CLVL<80) OR ED>299 OR ((SUFFIX=662 CLVL<80) OR SUFFIX=898 OR SUFFIX=899))))]: %NAME%{%NAME%%NL%}%CONTINUE%//
 ItemDisplay[WEAPON !BOW !XBOW !WAND !SOR !STAFF]:%NAME%{%NAME%%WHITE%Speed: %WPNSPD% %GRAY%|| %WHITE%Range: +%RANGE%}%CONTINUE%//
 ItemDisplay[WEAPON (BOW OR XBOW)]:%NAME%{%NAME%%WHITE%Base Speed: %WPNSPD%}%CONTINUE%//
 
