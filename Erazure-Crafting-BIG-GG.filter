@@ -175,9 +175,12 @@ ItemDisplay[tplm CLVL>19]:{%WHITE%Static Potion}//
 ItemDisplay[tpll (CLVL<28 OR FILTLVL=0)]:%GRAY%i%YELLOW%I%GRAY%(  %WHITE%Shock  %GRAY%)%YELLOW%I%GRAY%i%WHITE%// Shock Potion (Level 24 Req)
 ItemDisplay[tpll CLVL>27]:{%WHITE%Shock Potion}//
 
-// =================================  Scrolls, Keys, and Tomes  ================================
+// =================================  Tomes and Scrolls  =================================
 
-// ID Scrolls
+// Tome of Identify
+ItemDisplay[ibk]:%RED%iIIi  %WHITE%Tome of ID  %RED%iIIi%WHITE%//
+// Tome of Town Portal
+ItemDisplay[tbk]:%BLUE%iIIi  %WHITE%Tome of TP  %BLUE%iIIi%WHITE%//
 
 // Scroll of Identify after level 59
 ItemDisplay[isc CLVL>59 FILTLVL>1]:{%NL%%WHITE% Scroll of Identify }//
@@ -188,10 +191,6 @@ ItemDisplay[isc (CLVL>14 CLVL<30)]:%RED%+%GRAY%ID%WHITE%{%NL%%WHITE% Scroll of I
 // Scroll of Identify before level 15
 ItemDisplay[isc CLVL<15]:%RED%+  %GRAY%ID %WHITE%Scroll  %RED%+%WHITE%//
 
-// Tome of Identify
-ItemDisplay[ibk]:%RED%iIIi  %WHITE%Tome of ID  %RED%iIIi%WHITE%//
-
-// TP Scrolls
 // Scroll of Town Portal after level 59
 ItemDisplay[tsc CLVL>59 FILTLVL>1]:{%NL%%WHITE% Scroll of Town Portal }//
 // Scroll of Town Portal after level 29
@@ -201,10 +200,8 @@ ItemDisplay[tsc (CLVL>14 CLVL<30)]:%BLUE%+%GRAY%TP%WHITE%{%NL%%WHITE% Scroll of 
 // Scroll of Town Portal before level 15
 ItemDisplay[tsc CLVL<15]:%BLUE%+  %GRAY%TP %WHITE%Scroll  %BLUE%+%WHITE%//
 
-// Tome of Town Portal
-ItemDisplay[tbk]:%BLUE%iIIi  %WHITE%Tome of TP  %BLUE%iIIi%WHITE%//
+// ======================================   Keys   ======================================
 
-// Keys
 ItemDisplay[key FILTLVL=0]:%GRAY%Keys %TAN%x %WHITE%%QTY%// Display name of keys on filter level 0
 
 ItemDisplay[key QTY>5]:%GRAY%Keys %TAN%x %WHITE%%QTY%// Always show keys of in stacks of 5 or more
@@ -226,7 +223,7 @@ ItemDisplay[key QTY=1 FILTLVL<5 CLVL>5]:{%NL%%GRAY%Key %TAN%x %WHITE%%QTY%}// On
 ItemDisplay[key QTY=1 FILTLVL<5 CLVL<6]:%GRAY%Key %TAN%x %WHITE%%QTY%// On filter levels 1-4, show keys of QTY=1 under level 6
 
 //----------------------------------------------------------------------------------------------
-// ========================================  Quest Items  ======================================
+// =======================================  Quest Items  =======================================
 //----------------------------------------------------------------------------------------------
 
 ItemDisplay[bks]:%NAME%%MAP-21%%DOT-0E%%PX-20%{%GOLD%Talk to Akara in Act 1}// Scroll of Inifuss
@@ -1847,6 +1844,9 @@ ItemDisplay[MAG ID !EQUIPPED rin (CLVL<64 ILVL<98)]:%NAME%%BLUE%{%ORANGE%Crafted
 
 ItemDisplay[MAG ID !EQUIPPED rin (ILVL>63 OR (ILVL<98 CLVL<64)) (!(SHOP CLVL>79) ((((RES>5 STAT360=51) OR RES>7) OR ((((PRES>9 FRES>9 CRES>9) OR (PRES>9 FRES>9 LRES>9) OR (PRES>9 CRES>9 LRES>9) OR (FRES>9 LRES>9 CRES>9)) CLVL<50) OR ((PRES>19 FRES>19 CRES>19) OR (PRES>19 FRES>19 LRES>19) OR (PRES>19 CRES>19 LRES>19) OR (FRES>19 LRES>19 CRES>19))) OR ((((PRES>9 FRES>9) OR (PRES>9 LRES>9) OR (PRES>9 CRES>9) OR (CRES>9 LRES>9) OR (CRES>9 FRES>9) OR (LRES>9 FRES>9)) CLVL<50)) OR ((PRES>19 FRES>19) OR (PRES>19 LRES>19) OR (PRES>19 CRES>19) OR (CRES>19 LRES>19) OR (CRES>19 FRES>19) OR (LRES>19 FRES>19)))) OR (!CLVL>79 (((PRES>9 CLVL<50) OR PRES>19) OR ((LRES>9 CLVL<50) OR LRES>19) OR ((LRES>9 CLVL<50) OR LRES>19) OR ((CRES>9 CLVL<50) OR CRES>19) OR ((FRES>9 CLVL<50) OR FRES>19))))]:%NAME%{%NL%%NAME%}%CONTINUE%//
 
+ItemDisplay[MAG !ID rin CLVL<20 FILTLVL<5]:%TAN%*  %BLUE%%NAME%  %TAN%*%BLUE%%BORDER-91%%MAP-97%%DOT-0E%%PX-A6%// All unidentified rings
+ItemDisplay[MAG !ID rin CLVL>19 FILTLVL<5]:%TAN%*  %BLUE%%NAME%  %TAN%*%BLUE%// Do not notify for magic rings after character level 19
+
 // ----------------------------------------------------------------------------------------------
 //      			                           Circlets
 // ----------------------------------------------------------------------------------------------
@@ -1865,13 +1865,6 @@ ItemDisplay[jewf QTY=1]:%TAN%(x %BLUE%Jewel %TAN%x) %WHITE%Fragment{%BLUE%Jewel 
 ItemDisplay[MAG !ID jew CLVL>29]:%TAN%* %BLUE%>  %TAN%(x  %BLUE%Jewel  %TAN%x)  %BLUE%< %TAN%*%BLUE%{%WHITE%to create %TAN%(x %BLUE%Jewel %TAN%x) %WHITE%Fragments%NL%%TAN%Cube %WHITE%any %BLUE%Jewel %WHITE%with %GRAY%Keys%WHITE%}%MAP-91%%DOT-97%%PX-A6%// All unidentified magic jewels
 ItemDisplay[MAG !ID jew CLVL<30]:%TAN%* %BLUE%>  %TAN%(x  %BLUE%Jewel  %TAN%x)  %BLUE%< %TAN%*%BLUE%{%WHITE%to create %TAN%(x %BLUE%Jewel %TAN%x) %WHITE%Fragments%NL%%TAN%Cube %WHITE%any %BLUE%Jewel %WHITE%with %GRAY%Keys%WHITE%}%MAP-91%%DOT-97%%PX-A6%// All unidentified magic jewels
 ItemDisplay[MAG ID jew]:%NAME%{%WHITE%to create %TAN%(x %BLUE%Jewel %TAN%x) %WHITE%Fragments%NL%%TAN%Cube %WHITE%any %BLUE%Jewel %WHITE%with %GRAY%Keys%WHITE%}// All identified magic jewels
-
-// ----------------------------------------------------------------------------------------------
-//       			                           Rings
-// ----------------------------------------------------------------------------------------------
-
-ItemDisplay[MAG !ID rin CLVL<20]:%TAN%*  %BLUE%%NAME%  %TAN%*%BLUE%%BORDER-91%%MAP-97%%DOT-0E%%PX-A6%// All unidentified rings
-ItemDisplay[MAG !ID rin CLVL>19]:%TAN%*  %BLUE%%NAME%  %TAN%*%BLUE%// Do not notify for magic rings after character level 19
 
 // ----------------------------------------------------------------------------------------------
 // 			                          Magic Items Class Specific
