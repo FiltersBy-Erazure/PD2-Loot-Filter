@@ -1,26 +1,24 @@
-# **Season 8 Crafter League Update:**
-
-My loot filters are updated and available to select on the PD2 Launcher!
-
-![image](https://github.com/FiltersBy-Erazure/PD2-Loot-Filter/assets/76863417/dddf1c63-5ea1-44fa-9c54-2863189904fd)
-
-- The **Erazure Season 8 Main** version displays standard names for all high runes and super rare items
-- The **Erazure BIG GG Novelty** version shows "BIG GG" or "LIL GG" when the following items drop while your character is outside of town:
-  - BIG GG  
-    - Lo, Sur, Ber, Jah, Cham, Zod
-    - Vial of Lightsong, Lilith's Mirror
-    - Horadric Navigator, Horadric Almanac, Skeleton Key
-  - LIL GG
-    - Vex, Ohm, Larzuk's Puzzlebox (and for crafter's league, Larzuk's Puzzlepiece)
-
-
 # **Contact and Support:**
 
 Message me on Discord if you have any questions, feedback, or suggestions: **erazure**
 
-Please consider donating to my [**PayPal**](https://paypal.me/ErazurePD2LootFilter) or subscribing to my [**Patreon**](https://patreon.com/user?u=4978022) if you like my work and want to support the development of my filters!
+Please consider donating to my [**PayPal**](https://paypal.me/ErazurePD2LootFilter) or subscribing to my [**Patreon**](https://patreon.com/user?u=4978022) if you like my work and want to support the development of my filters
 
 ![heart medium](https://github.com/FiltersBy-Erazure/PD2-Loot-Filter/assets/76863417/cb45f82f-26ca-49ec-b5c7-bb3d67583fe1)
+
+# **Season 9 Anarchy Update:**
+
+My loot filters are updated ahead of the April 12th ladder reset! You can select either one on the PD2 Launcher!
+
+- The **Erazure Season 9 Main** version displays standard names for all high runes and super rare items
+- The **Erazure BIG GG Novelty** version shows "BIG GG" or "LIL GG" when the following items drop while your character is outside of town:
+  - BIG GG  
+    - Lo, Sur, Ber, Jah, Cham, Zod
+    - Vial of Lightsong, Lilith's Mirror
+  - LIL GG
+    - Vex, Ohm, Larzuk's Puzzlebox
+
+![image](https://github.com/FiltersBy-Erazure/PD2-Loot-Filter/assets/76863417/fed30691-5230-41b2-847f-9698d21d1a82)
 
 # **Examples of Stylization and Aesthetic:**
 
@@ -43,7 +41,7 @@ Please consider donating to my [**PayPal**](https://paypal.me/ErazurePD2LootFilt
 - This filter level is recommended for the ladder start and for characters level 1-80 as it shows all magic and rare items.
 - When your character exceeds specific level thresholds, some low-value non-magical items start to get filtered out.
 
-**Tier 2 = Fewer Magic/Rare:**
+**Tier 2 = Fewer Magic Items:**
 
 - **Magic and Rare Items:**
   - Low-value magic and rare items are hidden when your character exceeds specific level thresholds.
