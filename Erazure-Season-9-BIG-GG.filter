@@ -1,12 +1,12 @@
-ItemDisplayFilterName[]: Tier 1 = Lowest Strictness//  TIER-1
-ItemDisplayFilterName[]: Tier 2 = Fewer Magic Items//  TIER-2
-ItemDisplayFilterName[]: Tier 2 + Hides H5//           TIER-3
-ItemDisplayFilterName[]: Tier 2 + Hides H5 M5//        TIER-4
-ItemDisplayFilterName[]: Tier 3 = Strict Filtering//   TIER-5
-ItemDisplayFilterName[]: Tier 3 + Hides H5//           TIER-6
-ItemDisplayFilterName[]: Tier 3 + Hides H5 M5//        TIER-7
-ItemDisplayFilterName[]: Tier 3 + Hides H5 M5 Juv//    TIER-8
-ItemDisplayFilterName[]: Tier 4 = Endgame Mapping//    TIER-9
+ItemDisplayFilterName[]: Lowest Strictness//             TIER-1
+ItemDisplayFilterName[]: Fewer Magic Items//             TIER-2
+ItemDisplayFilterName[]: Fewer Magic Items -H5//         TIER-3
+ItemDisplayFilterName[]: Fewer Magic Items -H5 -M5//     TIER-4
+ItemDisplayFilterName[]: Strict Filtering//              TIER-5
+ItemDisplayFilterName[]: Strict Filtering -H5//          TIER-6
+ItemDisplayFilterName[]: Strict Filtering -H5 -M5//      TIER-7
+ItemDisplayFilterName[]: Strict Filtering -H5 -M5 -Juv// TIER-8
+ItemDisplayFilterName[]: Endgame Mapping//               TIER-9
 
 
 ItemDisplay[box]:%BLACK%II%GOLD%II%BLACK%X%GOLD%II%BLACK%II  %GOLD%Horadric Cube  %BLACK%II%GOLD%II%BLACK%X%GOLD%II%BLACK%II%CONTINUE%//
@@ -20,9 +20,9 @@ ItemDisplay[box FILTLVL=6]:%NAME%{%WHITE%Filter Level: 6}%CONTINUE%//
 ItemDisplay[box FILTLVL=7]:%NAME%{%WHITE%Filter Level: 7}%CONTINUE%//
 ItemDisplay[box FILTLVL=8]:%NAME%{%WHITE%Filter Level: 8}%CONTINUE%//
 ItemDisplay[box FILTLVL=9]:%NAME%{%WHITE%Filter Level: 9}%CONTINUE%//
-ItemDisplay[box FILTLVL=0]:%NAME%{%NAME%%CL%%GRAY%Levels 5-6-7-8 Hide Some Rares and Non-Eth Items%CL%%GRAY%Levels 2-3-4 Hide Some Non-Magic/Magic Items%CL%Level 1 Shows Most Non-Magic/Magic Items}//
-ItemDisplay[box CLVL<20 !FILTLVL=0]:%NAME%{%NAME%%CL%%GRAY%For "Increase and Decrease Filter Level"%CL%For "Always Show Items" and Hotkeys%CL%Open Settings to Create Toggle}//
-ItemDisplay[box CLVL>19 !FILTLVL=0]:%NAME%{%NAME%%CL%%GRAY%Erazure: Version 4.09}//
+ItemDisplay[box FILTLVL=0]:%NAME%{%NAME%%CL%%GRAY%Levels 5-6-7-8 Hide Some Rares and Non-Eth Items%CL%%GRAY%Levels 2-3-4 Hide Some Non-Magic/Magic Items%CL%Level 1 Shows Most Non-Magic/Magic Items%CL%%WHITE%Erazure: Version 4.10}%CONTINUE%//
+ItemDisplay[box CLVL<20 !FILTLVL=0]:%NAME%{%NAME%%CL%%GRAY%For "Increase and Decrease Filter Level"%CL%For "Always Show Items" and Hotkeys%CL%Open Settings to Create Toggle%CL%%WHITE%Erazure: Version 4.10}%CONTINUE%//
+ItemDisplay[box CLVL>19 !FILTLVL=0]:%NAME%{%NAME%%CL%%GRAY%Erazure: Version 4.10}//
 
 // ==============================  Arrows and Bolts  ===============================
 
@@ -521,17 +521,21 @@ ItemDisplay[(r33s OR r33)]:%NAME%{%GOLD%Shattered Wall %WHITE%* %GOLD%Innocence 
 
 
 // ======================================  Worldstone Shards  ==================================
-ItemDisplay[wss QTY>1]:%PURPLE%xX%RED%XOX%PURPLE%Xx   %WHITE%Worldstone Shards %TAN%x %WHITE%%QTY%   %PURPLE%xX%RED%XOX%PURPLE%Xx%BORDER-21%%MAP-0A%%DOT-9B%%PX-20%{%TAN% Helmet, Chest, Shield: %TAN%[%WHITE%1-3%TAN%] %NL%%TAN%One-Handed Weapon: %TAN%[%TAN%%WHITE%1-4%TAN%] %TAN%Two-Handed: %TAN%[%WHITE%1-6%TAN%] %NL%%TAN% Unsocketed Item: %WHITE%50% %BLUE%Mod %WHITE%25% %RED%Brick %WHITE%25% %BLUE%Sockets %NL%%TAN% Socketed Item: %WHITE%75% %BLUE%Mod %WHITE%25% %RED%Brick %NL%%TAN% Map/Dungeon: %WHITE%100% %BLUE%Mod %NL%%RED%Possible %RED%Corruptions:}//
-ItemDisplay[wss QTY=1]:%PURPLE%xX%RED%XOX%PURPLE%Xx   %WHITE%Worldstone Shard   %PURPLE%xX%RED%XOX%PURPLE%Xx%BORDER-21%%MAP-0A%%DOT-9B%%PX-20%{%TAN% Helmet, Chest, Shield: %TAN%[%WHITE%1-3%TAN%] %NL%%TAN%One-Handed Weapon: %TAN%[%TAN%%WHITE%1-4%TAN%] %TAN%Two-Handed: %TAN%[%WHITE%1-6%TAN%] %NL%%TAN% Unsocketed Item: %WHITE%50% %BLUE%Mod %WHITE%25% %RED%Brick %WHITE%25% %BLUE%Sockets %NL%%TAN% Socketed Item: %WHITE%75% %BLUE%Mod %WHITE%25% %RED%Brick %NL%%TAN% Map/Dungeon: %WHITE%100% %BLUE%Mod %NL%%RED%Possible Corruptions:}//
+ItemDisplay[wss]:%WHITE%Worldstone Shard%CONTINUE%//
+ItemDisplay[wss QTY>1]:%NAME%s %TAN%x %WHITE%%QTY%%CONTINUE%//
+ItemDisplay[wss]:%PURPLE%xX%RED%XOX%PURPLE%Xx   %NAME%   %PURPLE%xX%RED%XOX%PURPLE%Xx%BORDER-21%%MAP-0A%%DOT-9B%%PX-20%{%TAN%Two-Handed Weapons: %TAN%[%WHITE%1-6%TAN%]%CL%%TAN%One-Handed Weapons: %TAN%[%TAN%%WHITE%1-4%TAN%]%CL%%TAN% Helmet, Chest, Shield: %TAN%[%WHITE%1-3%TAN%] %CL%%TAN% Unsocketed Item: %WHITE%50% %BLUE%Mod %WHITE%| %WHITE%25% %RED%Brick %WHITE%| %WHITE%25% %BLUE%Sockets %CL%%TAN% Socketed Item: %WHITE%75% %BLUE%Mod %WHITE%| %WHITE%25% %RED%Brick %CL%%TAN% Map/Dungeon: %WHITE%100% %BLUE%Mod %CL%%RED%Possible Corruptions:}//
 
 // ======================================  Catalyst Shards  ==================================
-ItemDisplay[iwss QTY>1]:%GRAY%x%LIGHT_GRAY%X%WHITE%XOX%LIGHT_GRAY%X%GRAY%x   %WHITE%Catalyst Shards %TAN%x %WHITE%%QTY%   %GRAY%x%LIGHT_GRAY%X%WHITE%XOX%LIGHT_GRAY%X%GRAY%x%BORDER-10%%MAP-16%%DOT-1E%%PX-20%//
-ItemDisplay[iwss QTY=1]:%GRAY%x%LIGHT_GRAY%X%WHITE%XOX%LIGHT_GRAY%X%GRAY%x   %WHITE%Catalyst Shard   %GRAY%x%LIGHT_GRAY%X%WHITE%XOX%LIGHT_GRAY%X%GRAY%x%BORDER-10%%MAP-16%%DOT-1E%%PX-20%//
+ItemDisplay[iwss QTY=1]:%WHITE%Catalyst Shard%CONTINUE%//
+ItemDisplay[iwss QTY>1]:%NAME%s %TAN%x %WHITE%%QTY%%CONTINUE%//
+ItemDisplay[iwss]:%GRAY%x%LIGHT_GRAY%X%WHITE%XOX%LIGHT_GRAY%X%GRAY%x   %NAME%%   %GRAY%x%LIGHT_GRAY%X%WHITE%XOX%LIGHT_GRAY%X%GRAY%x%BORDER-10%%MAP-16%%DOT-1E%%PX-20%//
 
 // ====================================  Larzuk's Puzzlepiece  ===================================
-ItemDisplay[lpp QTY>1]:%GOLD%[%ORANGE%X%GOLD%][%YELLOW%X%GOLD%][%TAN%X%GOLD%]  %WHITE%Larzuk's Puzzlepieces %TAN%x %WHITE%%QTY%  %GOLD%[%TAN%X%GOLD%][%YELLOW%X%GOLD%][%ORANGE%X%GOLD%]%BORDER-65%%MAP-69%%DOT-6F%%PX-20%{%TAN%Two-Handed Weapons: %TAN%[%WHITE%2-4%TAN%]%NL%%TAN%One-Handed Weapons: %TAN%[%WHITE%1-2%TAN%]%NL%%TAN%Helmet, Chest, Shield: %TAN%[%WHITE%1-2%TAN%]%NL%%NL%%WHITE%Cube with %BLUE%Magic %YELLOW%Rare %WHITE%or %ORANGE%Crafted %WHITE%item to roll sockets%NL%}//
-ItemDisplay[lpp QTY=1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:%GOLD%[%ORANGE%X%GOLD%][%YELLOW%X%GOLD%]  %WHITE%Puzzlepiece  %GOLD%[%YELLOW%X%GOLD%][%ORANGE%X%GOLD%]%BORDER-65%%MAP-69%%DOT-6F%%PX-20%{%TAN%Two-Handed Weapons: %TAN%[%WHITE%2-4%TAN%]%NL%%TAN%One-Handed Weapons: %TAN%[%WHITE%1-2%TAN%]%NL%%TAN%Helmet, Chest, Shield: %TAN%[%WHITE%1-2%TAN%]%NL%%NL%%WHITE%Cube with %BLUE%Magic %YELLOW%Rare %WHITE%or %ORANGE%Crafted %WHITE%item to roll sockets%NL%}//
-ItemDisplay[lpp QTY=1 (MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:%GOLD%[%ORANGE%X%GOLD%][%YELLOW%X%GOLD%][%TAN%X%GOLD%]  %WHITE%Larzuk's Puzzlepiece  %GOLD%[%TAN%X%GOLD%][%YELLOW%X%GOLD%][%ORANGE%X%GOLD%]%BORDER-65%%MAP-69%%DOT-6F%%PX-20%{%TAN%Two-Handed Weapons: %TAN%[%WHITE%2-4%TAN%]%NL%%TAN%One-Handed Weapons: %TAN%[%WHITE%1-2%TAN%]%NL%%TAN%Helmet, Chest, Shield: %TAN%[%WHITE%1-2%TAN%]%NL%%NL%%WHITE%Cube with %BLUE%Magic %YELLOW%Rare %WHITE%or %ORANGE%Crafted %WHITE%item to roll sockets%NL%}//
+ItemDisplay[lpp]:%WHITE%Puzzlepiece%CONTINUE%//
+ItemDisplay[lpp QTY>1]:%WHITE%%NAME%s %TAN%x %WHITE%%QTY%%CONTINUE%//
+ItemDisplay[lpp !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:%GOLD%[%ORANGE%X%GOLD%][%YELLOW%X%GOLD%]  %NAME%  %GOLD%[%YELLOW%X%GOLD%][%ORANGE%X%GOLD%]%BORDER-65%%MAP-69%%DOT-6F%%PX-20%%CONTINUE%//
+ItemDisplay[lpp (MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:%GOLD%[%ORANGE%X%GOLD%][%YELLOW%X%GOLD%][%TAN%X%GOLD%]  %WHITE%Larzuk's %NAME%  %GOLD%[%TAN%X%GOLD%][%YELLOW%X%GOLD%][%ORANGE%X%GOLD%]%BORDER-65%%MAP-69%%DOT-6F%%PX-20%%CONTINUE%//
+ItemDisplay[lpp]:%NAME%%BORDER-65%%MAP-69%%DOT-6F%%PX-20%{%TAN%Two-Handed Weapons: %TAN%[%WHITE%2-4%TAN%]%CL%%TAN%One-Handed Weapons: %TAN%[%WHITE%1-2%TAN%]%CL%%TAN%Helmet, Chest, Shield: %TAN%[%WHITE%1-2%TAN%]%NL%%NL%%WHITE%Cube with a %BLUE%Magic %YELLOW%Rare %WHITE%or %ORANGE%Crafted %WHITE%item to roll sockets}//
 
 // =====================================  Larzuk's Puzzlebox  ====================================
 ItemDisplay[lbox QTY>1]:%GOLD%[%BLUE%X%GOLD%][%PURPLE%X%GOLD%][%ORANGE%X%GOLD%][%TAN%X%GOLD%]  %WHITE%Larzuk's Puzzleboxes %TAN%x %WHITE%%QTY%  %GOLD%[%TAN%X%GOLD%][%ORANGE%X%GOLD%][%PURPLE%X%GOLD%][%BLUE%X%GOLD%]%BORDER-97%%MAP-9B%%DOT-68%%PX-20%{%TAN%Two-Handed Weapons: %TAN%[%WHITE%2-4%TAN%]%NL%%TAN%One-Handed Weapons: %TAN%[%WHITE%1-2%TAN%]%NL%%TAN%Helmet, Chest, Shield: %TAN%[%WHITE%1-2%TAN%]%NL%%NL%%WHITE%Cube with a %GOLD%Unique %WHITE%or %GREEN%Set %WHITE%item to roll sockets%NL%}//
@@ -2698,10 +2702,10 @@ ItemDisplay[(ARMOR OR WEAPON) NMAG (SOCK>0 OR ETH)]:%GRAY%%NAME%{%NAME%}%CONTINU
 ItemDisplay[(WEAPON OR ARMOR) SUP NMAG ED<5 !ETH SOCK=0]:%WHITE%Sup. %NAME%{%NAME%}%CONTINUE%//
 ItemDisplay[(WEAPON OR ARMOR) SUP NMAG ED<5 (SOCK>0 OR ETH)]:%GRAY%Sup. %NAME%{%NAME%}%CONTINUE%//
 
-ItemDisplay[(WEAPON !(STAFF OR SOR OR WAND)) SUP NMAG ED>4]:%CORAL%Sup. %NAME%{%NAME%}%CONTINUE%
-ItemDisplay[(ARMOR !(GLOVES OR BOOTS OR BELT)) SUP NMAG ED>4]:%TEAL%Sup. %NAME%{%NAME%}%CONTINUE%
+ItemDisplay[(WEAPON !((STAFF (NORM OR (EXC !(ETH 8ws CLVL<80 (SOCK=0 OR SOCK=4))) OR (ELT !(ETH (6ws OR 6bs OR 6cs) (SOCK=0 OR SOCK~4-6))))) OR SOR OR WAND)) SUP NMAG ED>4]:%CORAL%Sup. %NAME%{%NAME%}%CONTINUE%
+ItemDisplay[(CHEST OR HELM OR SHIELD) SUP NMAG ED>4]:%TEAL%Sup. %NAME%{%NAME%}%CONTINUE%
 
-ItemDisplay[(STAFF OR SOR OR WAND) SUP NMAG ED>4]:%WHITE%Sup. %NAME%{%NAME%}%CONTINUE%
+ItemDisplay[((STAFF (NORM OR (EXC !(ETH 8ws CLVL<80 (SOCK=0 OR SOCK=4))) OR (ELT !(ETH (6ws OR 6bs OR 6cs) (SOCK=0 OR SOCK~4-6))))) OR SOR OR WAND) SUP NMAG ED>4]:%WHITE%Sup. %NAME%{%NAME%}%CONTINUE%
 ItemDisplay[(GLOVES OR BOOTS OR BELT) SUP NMAG ED>4]:%WHITE%Sup. %NAME%{%NAME%}%CONTINUE%
 
 // Adds "Inf." for tag for inferiors
@@ -3110,7 +3114,7 @@ ItemDisplay[NMAG !RW SOR CLVL>9 FILTLVL>0 !(SK36>0 OR SK37>0 OR SK38>0 OR SK39>0
 // ------------------------------------------------------------------------------
 
 // On filter level 9, hide nonmagical staves
-ItemDisplay[NMAG !RW STAFF (FILTLVL>8 OR (FILTLVL<9 FILTLVL>4 CLVL>89)) !(((cst OR bst OR 8cs OR 8bs OR 6cs OR 6bs) (SOCK=0 SK58>2)) OR ((wst OR 8ws OR 6ws) SOCK=4 SK58>2) OR ((cst OR bst OR 8cs OR 8bs OR 6cs OR 6bs) (SOCK=0 OR SOCK=4) (SK58>2 SK50>0)) OR ((wst OR 8ws OR 6ws) (SOCK=4) (SK58>2 SK50>0)) OR ((6ws OR 6cs OR 6bs) (SOCK=0 OR SOCK=4) (SK38>2 OR SK48>2 OR SK53>2)) OR ((wst OR 8ws OR 6ws) SK58>1 (SOCK=0 OR SOCK=5)) OR (6ws (SK44>2 OR SK59>2 OR SK64>2 OR SK65>2 OR SK369>2) (SOCK=0 OR SOCK=5)) OR (6ws (SK38>2 OR SK39>2 OR SK59>2) (SOCK=0 OR SOCK=6)) OR (6ws ETH SUP ED>4 (SOCK=0 OR SOCK=6)) OR ((SOCK=0 OR SOCK=4 OR SOCK=5 OR SOCK=6) 6ws)) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// On filter level 9, hide nonmagical staves
+ItemDisplay[NMAG !RW STAFF (FILTLVL>8 OR (FILTLVL<9 FILTLVL>4 CLVL>89)) !(((cst OR bst OR 8cs OR 8bs OR 6cs OR 6bs) (SOCK=0 SK58>2)) OR ((wst OR 8ws OR 6ws) SOCK=4 SK58>2) OR ((cst OR bst OR 8cs OR 8bs OR 6cs OR 6bs) (SOCK=0 OR SOCK=4) (SK58>2 SK50>0)) OR ((wst OR 8ws OR 6ws) (SOCK=4) (SK58>2 SK50>0)) OR ((6ws OR 6cs OR 6bs) (SOCK=0 OR SOCK=4) (SK38>2 OR SK48>2 OR SK53>2)) OR ((wst OR 8ws OR 6ws) SK58>1 (SOCK=0 OR SOCK=5)) OR (6ws (SK44>2 OR SK59>2 OR SK64>2 OR SK65>2 OR SK369>2) (SOCK=0 OR SOCK=5)) OR (6ws (SK38>2 OR SK39>2 OR SK59>2) (SOCK=0 OR SOCK=6)) OR (6ws ETH SUP ED>4 (SOCK=0 OR SOCK=6)) OR ((6ws OR (ETH (6bs OR 6cs)) (SOCK=0 OR SOCK~4-6)))) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// On filter level 9, hide nonmagical staves
 
 // Staff Highlights
 ItemDisplay[NMAG !RW (cst OR bst OR 8cs OR 8bs OR 6cs OR 6bs) (SOCK=0 OR SOCK=4) SK58>2]:%ORANGE%Memory %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
@@ -3132,7 +3136,7 @@ ItemDisplay[NMAG !RW 6ws ETH SUP ED>4 SOCK=6]:%RED%Sup. %GRAY%Archon Staff %TAN%
 ItemDisplay[NMAG !RW 6ws ETH SUP ED>4 SOCK=4]:%ORANGE%Phoenix %RED%Sup. %GRAY%Archon Staff %TAN%[%WHITE%4%TAN%]%DOT-20%%PX-00%%CONTINUE%//
 
 // Hides all other Staves that don't have + to skills past level 10
-ItemDisplay[NMAG !INF !RW STAFF CLVL>9 FILTLVL>0 !(SK36>0 OR SK37>0 OR SK38>0 OR SK39>0 OR SK40>0 OR SK41>0 OR SK42>0 OR SK43>0 OR SK44>0 OR SK45>0 OR SK46>0 OR SK47>0 OR SK48>0 OR SK49>0 OR SK50>0 OR SK51>0 OR SK52>0 OR SK53>0 OR SK54>0 OR SK55>0 OR SK56>0 OR SK57>0 OR SK58>0 OR SK59>0 OR SK60>0 OR SK61>0 OR SK62>0 OR SK63>0 OR SK64>0 OR SK65>0 OR SK369>0 OR SK383>0 OR ((SOCK=0 OR SOCK=4 OR SOCK=5 OR SOCK=6) 6ws)) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// 
+ItemDisplay[NMAG !INF !RW STAFF CLVL>9 FILTLVL>0 !(SK36>0 OR SK37>0 OR SK38>0 OR SK39>0 OR SK40>0 OR SK41>0 OR SK42>0 OR SK43>0 OR SK44>0 OR SK45>0 OR SK46>0 OR SK47>0 OR SK48>0 OR SK49>0 OR SK50>0 OR SK51>0 OR SK52>0 OR SK53>0 OR SK54>0 OR SK55>0 OR SK56>0 OR SK57>0 OR SK58>0 OR SK59>0 OR SK60>0 OR SK61>0 OR SK62>0 OR SK63>0 OR SK64>0 OR SK65>0 OR SK369>0 OR SK383>0 OR (ETH 8ws CLVL<80 (SOCK=0 OR SOCK=4)) OR ((6ws OR (ETH (6bs OR 6cs)) (SOCK=0 OR SOCK~4-6))) OR ((wst OR 8ws OR 6ws) SK58>1 (SOCK=0 OR SOCK=5))) FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// 
 
 
 // ------------------------------------------------------------------------------
@@ -3301,7 +3305,7 @@ ItemDisplay[NMAG !INF !RW CLVL>69 (9la OR 9ba OR 9bt OR 9ga OR 9gi) FILTLVL>0 !(
 //      Berserker Axe, Ettin Axe, and War Spike
 ItemDisplay[NMAG !INF !RW !ETH (!SUP OR (SUP ED<5)) SOCK=0 (72a OR 7wa OR 7mp) FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide 0os noneth nonsuperior Berserker, Ettin Axe,  Axe and War Spike
 ItemDisplay[NMAG !INF !RW !ETH (!SUP OR (SUP ED<5)) !SOCK=5 (72a OR 7wa OR 7mp) FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide nonsuperior or SUP without ED Berserker, Ettin Axe,  Axe and War Spike
-ItemDisplay[NMAG !INF !RW ETH (SOCK=0 OR SOCK=4 OR SOCK=5 OR SOCK=6) (72a OR 7wa OR 7mp)]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 0, 4, 5, and 6os Berserker Axe, Ettin Axe, and War Spike
+ItemDisplay[NMAG !INF !RW ETH (SOCK=0 OR SOCK~4-6) (72a OR 7wa OR 7mp)]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 0, 4, 5, and 6os Berserker Axe, Ettin Axe, and War Spike
 
 //      Hide other 1 Handed axes
 ItemDisplay[NMAG !INF !RW (7ha OR 7ax) FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide All other (Bad) Elite 1-Handed Axes tiers
@@ -3353,7 +3357,7 @@ ItemDisplay[NMAG !INF !RW 8rx SOCK=4 SUP ED>4]:%NAME%{%NAME%}%DOT-20%%PX-00%%CON
 
 //  Hide other Elite tiers
 ItemDisplay[NMAG !INF !RW 6hx (SOCK=2 OR SOCK=3) FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
-ItemDisplay[NMAG !INF !RW 6hx (SOCK=0 OR SOCK=4 OR SOCK=5 OR SOCK=6) (!SUP OR (SUP ED<5)) FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide Colossus Crossbows without 5%ED or more
+ItemDisplay[NMAG !INF !RW 6hx (SOCK=0 OR SOCK~4-6) (!SUP OR (SUP ED<5)) FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide Colossus Crossbows without 5%ED or more
 
 ItemDisplay[NMAG !INF !RW (6lx OR 6mx) SOCK=0 (!SUP OR (SUP ED<5)) FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 ItemDisplay[NMAG !INF !RW (6lx OR 6mx) (SOCK=2 OR SOCK=3) FILTLVL>1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
@@ -3507,7 +3511,7 @@ ItemDisplay[NMAG !INF !RW (!SUP OR (SUP ED<5)) ETH SOCK=4 7br]:%GRAY%%NAME%{%NAM
 
 //      War Pike
 ItemDisplay[NMAG !INF !RW (!SUP OR (SUP ED<5)) ETH (SOCK=0 OR SOCK=3) FILTLVL<5 7p7]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 0, 3os Eth
-ItemDisplay[NMAG !INF !RW (!SUP OR (SUP ED<5)) ETH (SOCK=4 OR SOCK=5 OR SOCK=6) 7p7]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 4, 5, 6os Eth
+ItemDisplay[NMAG !INF !RW (!SUP OR (SUP ED<5)) ETH (SOCK~4-6) 7p7]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 4, 5, 6os Eth
 
 
 // ------------------------------------------------------------------------------
@@ -3624,9 +3628,9 @@ ItemDisplay[NMAG !INF !RW !ETH 7gd (SOCK=0 OR SOCK=5 OR SOCK=6) 7gd (!SUP OR (SU
 ItemDisplay[NMAG !INF !RW !ETH 7gd (SOCK=3 OR SOCK=4) FILTLVL>1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide noneth Colossus Blades
 
 // Notify for all 0, 3, 4, 5, and 6 socket eth Colossus Blades before filter level 5
-ItemDisplay[NMAG !INF !RW ETH (SOCK=0 OR SOCK=3 OR SOCK=4 OR SOCK=5 OR SOCK=6) 7gd FILTLVL<5]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
+ItemDisplay[NMAG !INF !RW ETH (SOCK=0 OR SOCK~3-6) 7gd FILTLVL<5]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
 // Notify for superior 5%ED or more 0, 3, 4, 5, and 6 socket eth Colossus Blades after filter level 4
-ItemDisplay[NMAG !INF !RW ETH (SOCK=0 OR SOCK=3 OR SOCK=4 OR SOCK=5 OR SOCK=6) 7gd SUP ED>4 FILTLVL>4]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
+ItemDisplay[NMAG !INF !RW ETH (SOCK=0 OR SOCK~3-6) 7gd SUP ED>4 FILTLVL>4]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
 // Hide Colossus Blades that don't have 5%ED or more after filter level 4
 ItemDisplay[NMAG !INF !RW (!SUP OR (SUP ED<5)) 7gd FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
@@ -3655,30 +3659,11 @@ ItemDisplay[ETH NMAG]:%GRAY%[%WHITE%Eth%GRAY%] %NAME%{%NAME%}%CONTINUE%//
 // ------------------------------------------------------------------------------
 
 // Armors
-ItemDisplay[(CHEST OR HELM OR SHIELD) !SOCK=1 !INF SUP NMAG ED=5]:%BLUE%* %GRAY%[%WHITE%5%%GRAY%] %NAME%{%NAME%}%CONTINUE%//
-ItemDisplay[(CHEST OR HELM OR SHIELD) !SOCK=1 !INF SUP NMAG ED=6]:%BLUE%* %GRAY%[%WHITE%6%%GRAY%] %NAME%{%NAME%}%CONTINUE%//
-ItemDisplay[(CHEST OR HELM OR SHIELD) !SOCK=1 !INF SUP NMAG ED=7]:%BLUE%* %GRAY%[%WHITE%7%%GRAY%] %NAME%{%NAME%}%CONTINUE%//
-ItemDisplay[(CHEST OR HELM OR SHIELD) !SOCK=1 !INF SUP NMAG ED=8]:%BLUE%* %GRAY%[%WHITE%8%%GRAY%] %NAME%{%NAME%}%CONTINUE%//
-ItemDisplay[(CHEST OR HELM OR SHIELD) !SOCK=1 !INF SUP NMAG ED=9]:%BLUE%* %GRAY%[%WHITE%9%%GRAY%] %NAME%{%NAME%}%CONTINUE%//
-ItemDisplay[(CHEST OR HELM OR SHIELD) !SOCK=1 !INF SUP NMAG ED=10]:%BLUE%* %GRAY%[%WHITE%10%%GRAY%] %NAME%{%NAME%}%CONTINUE%//
-ItemDisplay[(CHEST OR HELM OR SHIELD) !SOCK=1 !INF SUP NMAG ED=11]:%BLUE%* %GRAY%[%WHITE%11%%GRAY%] %NAME%{%NAME%}%CONTINUE%//
-ItemDisplay[(CHEST OR HELM OR SHIELD) !SOCK=1 !INF SUP NMAG ED=12]:%BLUE%* %GRAY%[%WHITE%12%%GRAY%] %NAME%{%NAME%}%CONTINUE%//
-ItemDisplay[(CHEST OR HELM OR SHIELD) !SOCK=1 !INF SUP NMAG ED=13]:%PURPLE%*%BLUE%* %GRAY%[%WHITE%13%%GRAY%] %NAME%{%NAME%}%CONTINUE%//
-ItemDisplay[(CHEST OR HELM OR SHIELD) !SOCK=1 !INF SUP NMAG ED=14]:%PURPLE%*%BLUE%* %GRAY%[%WHITE%14%%GRAY%] %NAME%{%NAME%}%CONTINUE%//
-ItemDisplay[(CHEST OR HELM OR SHIELD) !SOCK=1 !INF SUP NMAG ED=15]:%PURPLE%*%BLUE%* %GRAY%[%WHITE%15%%GRAY%] %NAME%{%NAME%}%CONTINUE%//
-
+ItemDisplay[(CHEST OR HELM OR SHIELD) !SOCK=1 !INF SUP NMAG ED~5-12]:%BLUE%* %GRAY%[%WHITE%%ED%%%GRAY%] %NAME%{%NAME%}%CONTINUE%//
+ItemDisplay[(CHEST OR HELM OR SHIELD) !SOCK=1 !INF SUP NMAG ED~13-15]:%PURPLE%*%BLUE%* %GRAY%[%WHITE%%ED%%%GRAY%] %NAME%{%NAME%}%CONTINUE%//
 // Weapons
-ItemDisplay[WEAPON !SOCK=1 !INF SUP NMAG ED=5]:%RED%* %GRAY%[%WHITE%5%%GRAY%] %NAME%{%NAME%}%CONTINUE%//
-ItemDisplay[WEAPON !SOCK=1 !INF SUP NMAG ED=6]:%RED%* %GRAY%[%WHITE%6%%GRAY%] %NAME%{%NAME%}%CONTINUE%//
-ItemDisplay[WEAPON !SOCK=1 !INF SUP NMAG ED=7]:%RED%* %GRAY%[%WHITE%7%%GRAY%] %NAME%{%NAME%}%CONTINUE%//
-ItemDisplay[WEAPON !SOCK=1 !INF SUP NMAG ED=8]:%RED%* %GRAY%[%WHITE%8%%GRAY%] %NAME%{%NAME%}%CONTINUE%//
-ItemDisplay[WEAPON !SOCK=1 !INF SUP NMAG ED=9]:%RED%* %GRAY%[%WHITE%9%%GRAY%] %NAME%{%NAME%}%CONTINUE%//
-ItemDisplay[WEAPON !SOCK=1 !INF SUP NMAG ED=10]:%RED%* %GRAY%[%WHITE%10%%GRAY%] %NAME%{%NAME%}%CONTINUE%//
-ItemDisplay[WEAPON !SOCK=1 !INF SUP NMAG ED=11]:%RED%* %GRAY%[%WHITE%11%%GRAY%] %NAME%{%NAME%}%CONTINUE%//
-ItemDisplay[WEAPON !SOCK=1 !INF SUP NMAG ED=12]:%RED%* %GRAY%[%WHITE%12%%GRAY%] %NAME%{%NAME%}%CONTINUE%//
-ItemDisplay[WEAPON !SOCK=1 !INF SUP NMAG ED=13]:%PURPLE%*%RED%* %GRAY%[%WHITE%13%%GRAY%] %NAME%{%NAME%}%CONTINUE%//
-ItemDisplay[WEAPON !SOCK=1 !INF SUP NMAG ED=14]:%PURPLE%*%RED%* %GRAY%[%WHITE%14%%GRAY%] %NAME%{%NAME%}%CONTINUE%//
-ItemDisplay[WEAPON !SOCK=1 !INF SUP NMAG ED=15]:%PURPLE%*%RED%* %GRAY%[%WHITE%15%%GRAY%] %NAME%{%NAME%}%CONTINUE%//
+ItemDisplay[(WEAPON !((STAFF (NORM OR (EXC !(ETH 8ws CLVL<80 (SOCK=0 OR SOCK=4))) OR (ELT !(ETH (6ws OR 6bs OR 6cs) (SOCK=0 OR SOCK~4-6))))) OR SOR OR WAND)) !SOCK=1 !INF SUP NMAG ED~5-12]:%RED%* %GRAY%[%WHITE%%ED%%%GRAY%] %NAME%{%NAME%}%CONTINUE%//
+ItemDisplay[(WEAPON !((STAFF (NORM OR (EXC !(ETH 8ws CLVL<80 (SOCK=0 OR SOCK=4))) OR (ELT !(ETH (6ws OR 6bs OR 6cs) (SOCK=0 OR SOCK~4-6))))) OR SOR OR WAND)) !SOCK=1 !INF SUP NMAG ED~13-15]:%PURPLE%*%RED%* %GRAY%[%WHITE%%ED%%%GRAY%] %NAME%{%NAME%}%CONTINUE%//
 
 // Fixing coloring for vendors
 ItemDisplay[UNI OR RW]:%NAME%%GOLD%{%NAME%}%CONTINUE%
@@ -4871,8 +4856,8 @@ ItemDisplay[(NMAG OR MAG OR RARE OR CRAFT) !EQUIPPED !RW ((SK97=1 CLVL<60) OR (S
 ItemDisplay[(NMAG OR MAG OR RARE OR CRAFT) !EQUIPPED !RW ((SK96=1 CLVL<60) OR (SK96=2 CLVL<90) OR (SK96=3))]:%TAN%+%SK96% %DARK_GREEN%Sacr %NAME%{%NAME%}%CONTINUE%//
 
 //Sorceress
-ItemDisplay[NMAG !RW CLVL>79 (SOR OR STAFF) !(SK36>2 OR SK37>2 OR SK38>2 OR SK39>2 OR SK40>2 OR SK41>2 OR SK42>2 OR SK43>2 OR SK44>2 OR SK45>2 OR SK46>2 OR SK47>2 OR SK48>2 OR SK49>2 OR SK50>2 OR SK51>2 OR SK52>2 OR SK53>2 OR SK54>2 OR SK55>2 OR SK56>2 OR SK57>2 OR SK58>2 OR SK59>2 OR SK60>2 OR SK61>2 OR SK62>2 OR SK63>2 OR SK64>2 OR SK65>2 OR SK369>2 OR SK383>2 OR SK376>2 OR ((SOCK=0 OR SOCK=4 OR SOCK=5 OR SOCK=6) 6ws) OR ((wst OR 8ws OR 6ws) SK58>1 (SOCK=0 OR SOCK=5))) FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hides items that don't have +3 to a skill past level 40
-ItemDisplay[NMAG !RW CLVL>39 (SOR OR STAFF) !(SK36>1 OR SK37>1 OR SK38>1 OR SK39>1 OR SK40>1 OR SK41>1 OR SK42>1 OR SK43>1 OR SK44>1 OR SK45>1 OR SK46>1 OR SK47>1 OR SK48>1 OR SK49>1 OR SK50>1 OR SK51>1 OR SK52>1 OR SK53>1 OR SK54>1 OR SK55>1 OR SK56>1 OR SK57>1 OR SK58>1 OR SK59>1 OR SK60>1 OR SK61>1 OR SK62>1 OR SK63>1 OR SK64>1 OR SK65>1 OR SK369>1 OR SK383>1 OR SK376>1 OR ((SOCK=0 OR SOCK=4 OR SOCK=5 OR SOCK=6) 6ws)) FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hides items that don't have +2 to a skill past level 40
+ItemDisplay[NMAG !RW CLVL>79 (SOR OR STAFF) !(SK36>2 OR SK37>2 OR SK38>2 OR SK39>2 OR SK40>2 OR SK41>2 OR SK42>2 OR SK43>2 OR SK44>2 OR SK45>2 OR SK46>2 OR SK47>2 OR SK48>2 OR SK49>2 OR SK50>2 OR SK51>2 OR SK52>2 OR SK53>2 OR SK54>2 OR SK55>2 OR SK56>2 OR SK57>2 OR SK58>2 OR SK59>2 OR SK60>2 OR SK61>2 OR SK62>2 OR SK63>2 OR SK64>2 OR SK65>2 OR SK369>2 OR SK383>2 OR SK376>2 OR (ETH 8ws CLVL<80 (SOCK=0 OR SOCK=4)) OR ((6ws OR (ETH (6bs OR 6cs)) (SOCK=0 OR SOCK~4-6))) OR ((wst OR 8ws OR 6ws) SK58>1 (SOCK=0 OR SOCK=5))) FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hides items that don't have +3 to a skill past level 80
+ItemDisplay[NMAG !RW CLVL>39 (SOR OR STAFF) !(SK36>1 OR SK37>1 OR SK38>1 OR SK39>1 OR SK40>1 OR SK41>1 OR SK42>1 OR SK43>1 OR SK44>1 OR SK45>1 OR SK46>1 OR SK47>1 OR SK48>1 OR SK49>1 OR SK50>1 OR SK51>1 OR SK52>1 OR SK53>1 OR SK54>1 OR SK55>1 OR SK56>1 OR SK57>1 OR SK58>1 OR SK59>1 OR SK60>1 OR SK61>1 OR SK62>1 OR SK63>1 OR SK64>1 OR SK65>1 OR SK369>1 OR SK383>1 OR SK376>1 OR (ETH 8ws CLVL<80 (SOCK=0 OR SOCK=4)) OR ((6ws OR (ETH (6bs OR 6cs)) (SOCK=0 OR SOCK~4-6))) OR ((wst OR 8ws OR 6ws) SK58>1 (SOCK=0 OR SOCK=5))) FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hides items that don't have +2 to a skill past level 40
 
 ItemDisplay[(NMAG OR MAG OR RARE OR CRAFT) !EQUIPPED !RW ((SK36=1 CLVL<60) OR (SK36=2 CLVL<90) OR (SK36=3))]:%TAN%+%SK36% %DARK_GREEN%F.Bolt %NAME%{%NAME%}%CONTINUE%//
 ItemDisplay[(NMAG OR MAG OR RARE OR CRAFT) !EQUIPPED !RW ((SK37=1 CLVL<60) OR (SK37=2 CLVL<90) OR (SK37=3))]:%TAN%+%SK37% %DARK_GREEN%Wrmth %NAME%{%NAME%}%CONTINUE%//
