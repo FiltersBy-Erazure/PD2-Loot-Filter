@@ -22,7 +22,7 @@ ItemDisplay[box FILTLVL=8]:%NAME%{%WHITE%Filter Level: 8%CL%%GRAY%Strict Filteri
 ItemDisplay[box FILTLVL=9]:%NAME%{%WHITE%Filter Level: 9%CL%%GRAY%Endgame Mapping}%CONTINUE%//
 ItemDisplay[box FILTLVL=0]:%NAME%{%NAME%%CL%%GRAY%Levels 5-6-7-8 Hide Some Rares and Non-Eth Items%CL%%GRAY%Levels 2-3-4 Hide Some Non-Magic/Magic Items%CL%Level 1 Shows Most Non-Magic/Magic Items}%CONTINUE%//
 ItemDisplay[box CLVL<20 !FILTLVL=0]:%NAME%{%NAME%%CL%%GRAY%For %GOLD%Increase and Decrease Filter Level%CL%%GRAY%For %GOLD%Always Show Items %GRAY%and Hotkeys%CL%Open Settings to Create Toggle}%CONTINUE%//
-ItemDisplay[box]:%NAME%{%NAME%%CL%%WHITE%Erazure: Version 4.10}//
+ItemDisplay[box]:%NAME%{%NAME%%CL%%WHITE%Erazure: Version 4.12}//
 
 // ==============================  Arrows and Bolts  ===============================
 
@@ -654,6 +654,7 @@ ItemDisplay[upmp QTY=1]:%ORANGE%O   %WHITE%Cartographer's Orb   %ORANGE%O%WHITE%
 
 ItemDisplay[imma QTY>1]:%WHITE%O   %WHITE%Arcane Orbs %TAN%x %WHITE%%QTY%   %WHITE%O//
 ItemDisplay[imma QTY=1 FILTLVL<5]:%WHITE%O   %WHITE%Arcane Orb   %WHITE%O//
+ItemDisplay[imma QTY=1 FILTLVL>4 (MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:%WHITE%O   %WHITE%Arcane Orb   %WHITE%O//
 ItemDisplay[imma QTY=1 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
 ItemDisplay[fort QTY>1]:%GOLD%O   %WHITE%Orbs of Fortification %TAN%x %WHITE%%QTY%   %GOLD%O%WHITE%//
@@ -939,7 +940,7 @@ ItemDisplay[t32]:%NAME%{%RED%75% %GRAY%* %YELLOW%130% %GRAY%* %BLUE%130% %GRAY%*
 ItemDisplay[t35]:%NAME%{%RED%65% %GRAY%* %YELLOW%65% %GRAY%* %BLUE%65% %GRAY%* %DARK_GREEN%65% %GRAY%* %ORANGE%33% %GRAY%* %TAN%50%%CL%%NAME%}%CONTINUE%// Blood Moon
 ItemDisplay[t37]:%NAME%{%RED%75% %GRAY%* %YELLOW%135% %GRAY%* %BLUE%75% %GRAY%* %DARK_GREEN%130% %GRAY%* %ORANGE%50% %GRAY%* %TAN%100%%CL%%NAME%}%CONTINUE%// Pandemonium Citadel
 ItemDisplay[t38]:%NAME%{%RED%130% %GRAY%* %YELLOW%75% %GRAY%* %BLUE%80% %GRAY%* %DARK_GREEN%110% %GRAY%* %ORANGE%70% %GRAY%* %TAN%120%%CL%%NAME%}%CONTINUE%// Canyon of Sescheron
-ItemDisplay[t39]:%NAME%{%RED%125% %GRAY%* %YELLOW%90% %GRAY%* %BLUE%130% %GRAY%* %DARK_GREEN%100% %GRAY%* %ORANGE%50% %GRAY%* %TAN%40%%CL%%NAME%}%CONTINUE%// Kehjistan Marketplace
+ItemDisplay[t39]:%NAME%{%RED%125% %GRAY%* %YELLOW%90% %GRAY%* %BLUE%130% %GRAY%* %DARK_GREEN%1000% %GRAY%* %ORANGE%50% %GRAY%* %TAN%40%%CL%%NAME%}%CONTINUE%// Kehjistan Marketplace
 ItemDisplay[t3a]:%NAME%{%RED%75% %GRAY%* %YELLOW%80% %GRAY%* %BLUE%130% %GRAY%* %DARK_GREEN%130% %GRAY%* %ORANGE%120% %GRAY%* %TAN%50%%CL%%NAME%}%CONTINUE%// Ashen Plains
 ItemDisplay[t16]:%NAME%{%RED%75% %GRAY%* %YELLOW%75% %GRAY%* %BLUE%115% %GRAY%* %DARK_GREEN%140% %GRAY%* %ORANGE%125% %GRAY%* %TAN%60%%CL%%NAME%}%CONTINUE%// Ruined Cistern
 // Tier 3 Unique Map Monster Resistances
@@ -947,7 +948,7 @@ ItemDisplay[t51]:%NAME%{%RED%85% %GRAY%* %YELLOW%85% %GRAY%* %BLUE%85% %GRAY%* %
 ItemDisplay[t52]:%NAME%{%RED%65% %GRAY%* %YELLOW%60% %GRAY%* %BLUE%65% %GRAY%* %DARK_GREEN%75% %GRAY%* %ORANGE%50% %GRAY%* %TAN%50%%CL%%NAME%}%CONTINUE%// Stygian Caverns
 
 // Catalyst Shard Applied?
-ItemDisplay[STAT500>0]: %NAME%{%LIGHT_GRAY%Catalyzed%CL%%NAME%}%CONTINUE%//
+ItemDisplay[STAT500>0]:%NAME%{%LIGHT_GRAY%Catalyzed%CL%%NAME%}%CONTINUE%//
 
 // Add Tier Type
 ItemDisplay[!(STAT360>0) NMAG QTY=1 MAPTIER=1]:%DARK_GREEN%\%WHITE%\%DARK_GREEN%V%WHITE%/%DARK_GREEN%/  %NAME% %GRAY%[%DARK_GREEN%T1%GRAY%] %WHITE%Map  %DARK_GREEN%\%WHITE%\%DARK_GREEN%V%WHITE%/%DARK_GREEN%/%MAP-71%%DOT-75%{%NAME%}%CONTINUE%//
@@ -1145,89 +1146,137 @@ ItemDisplay[UNI !ID (cm1 OR cm2 OR cm3)]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %G
 ItemDisplay[UNI !ID ci2]:%NAME%%CONTINUE%// Kira's Guardian Tiara
 ItemDisplay[UNI !ID ci3]:%NAME%%CONTINUE%// Griffon's Eye Diadem
 ItemDisplay[UNI !ID (ci2 OR ci3)]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
-//    Amazon Weapons
-ItemDisplay[UNI !ID ama CLVL<90]:%NAME%%CONTINUE%// Titan's Revenge Ceremonial Javelin
+//     High Value Amazon Weapons
 ItemDisplay[UNI !ID amf]:%NAME%%CONTINUE%// Thunderstroke Matriarchal Javelin
 ItemDisplay[UNI !ID amb]:%NAME%%CONTINUE%// Blood Raven's Charge Matriarchal Bow
+ItemDisplay[UNI !ID (amf OR amb)]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
+//     Medium Value Amazon Weapons
+ItemDisplay[UNI !ID ama CLVL<90]:%NAME%%CONTINUE%// Titan's Revenge Ceremonial Javelin
 ItemDisplay[UNI !ID am5 ETH]:%NAME%%CONTINUE%// True Silver Maiden Javelin
-ItemDisplay[UNI !ID ((ama CLVL<90) OR amf OR amb OR (am5 ETH))]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
-//    Assassin Claws
+ItemDisplay[UNI !ID ((ama CLVL<90) OR (am5 ETH))]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
+
+//     High Value Assassin Claws
 ItemDisplay[UNI !ID 7cs (CLVL<90 OR ASSASSIN)]:%NAME%%CONTINUE%// Shadowkiller Battle Cestus
 ItemDisplay[UNI !ID 7tw]:%NAME%%CONTINUE%// Stalker's Cull Runic Talons
 ItemDisplay[UNI !ID 9tw]:%NAME%%CONTINUE%// Bartuc's Greater Talons
-ItemDisplay[UNI !ID 9ar (CLVL<40 OR (NECROMANCER CLVL<80))]:%NAME%%CONTINUE%// Mage Slayer Quhab
-ItemDisplay[UNI !ID ((7cs (CLVL<90 OR ASSASSIN)) OR 7tw OR 9tw OR (9ar (CLVL<40 OR (NECROMANCER CLVL<80))))]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
-//    Barbarian Helms
+ItemDisplay[UNI !ID ((7cs (CLVL<90 OR ASSASSIN)) OR 7tw OR 9tw)]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
+//     Medium Value Assassin Claws
+ItemDisplay[UNI !ID 7cs (CLVL>89 OR !ASSASSIN)]:%NAME%%CONTINUE%// Shadowkiller Battle Cestus
+ItemDisplay[UNI !ID 9ar ((ASSASSIN CLVL<40) OR (NECROMANCER CLVL<80))]:%NAME%%CONTINUE%// Mage Slayer Quhab
+ItemDisplay[UNI !ID 7wb ASSASSIN CLVL<80]:%NAME%%CONTINUE%// Jade Talon Wrist Sword
+ItemDisplay[UNI !ID 7lw ASSASSIN CLVL<80]:%NAME%%CONTINUE%// Firelizard's Talons Feral Claws
+ItemDisplay[UNI !ID ((7cs (CLVL>89 OR !ASSASSIN)) OR (9ar ((ASSASSIN CLVL<40) OR (NECROMANCER CLVL<80))) OR (7wb ASSASSIN CLVL<80) OR (7lw ASSASSIN CLVL<80))]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
+
+//     High Value Barbarian Helms
+ItemDisplay[UNI !ID ba6 CLVL<80]:%NAME%%CONTINUE%// Cyclopean Roar Jawbone Visor
 ItemDisplay[UNI !ID bac]:%NAME%%CONTINUE%// Wolfhowl Fury Visor
 ItemDisplay[UNI !ID baa]:%NAME%%CONTINUE%// Arreat's Face Slayer Guard
 ItemDisplay[UNI !ID bae]:%NAME%%CONTINUE%// Halaberd's Reign Conqueror Crown
-ItemDisplay[UNI !ID ba6 CLVL<90]:%NAME%%CONTINUE%// Cyclopean Roar Jawbone Visor
 ItemDisplay[UNI !ID baf]:%NAME%%CONTINUE%// Raekor's Virtue Guardian Crown
-ItemDisplay[UNI !ID (bac OR baa OR bae OR (ba6 CLVL<90) OR baf)]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
-//    Sorceress Orbs
+ItemDisplay[UNI !ID ((ba6 CLVL<80) OR bac OR baa OR bae OR baf)]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
+//     Medium Value Barbarian Helms
+ItemDisplay[UNI !ID ba6 CLVL>79]:%NAME%%CONTINUE%// Cyclopean Roar Jawbone Visor
+ItemDisplay[UNI !ID bad BARBARIAN]:%NAME%%CONTINUE%// Demonhorn's Edge Destroyer Helm
+ItemDisplay[UNI !ID ((ba6 CLVL>79) OR (bad BARBARIAN))]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
+
+//     High Value Sorceress Orbs
 ItemDisplay[UNI !ID obc]:%NAME%%CONTINUE%// Eschuta's Temper Eldritch Orb
 ItemDisplay[UNI !ID obf]:%NAME%%CONTINUE%// Death's Fathom Dimensional Shard
 ItemDisplay[UNI !ID oba]:%NAME%%CONTINUE%// The Oculus Swirling Crystal
+ItemDisplay[UNI !ID (obc OR obf OR oba)]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
+//     Medium Value Sorceress Orbs
 ItemDisplay[UNI !ID ob6 CLVL<80]:%NAME%%CONTINUE%// Tempest Glowing Orb
-ItemDisplay[UNI !ID (obc OR obf OR oba OR (ob6 CLVL<80))]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
-//    Druid Pelts
+ItemDisplay[UNI !ID (ob6 CLVL<80)]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
+
+//     High Value Druid Pelts
+ItemDisplay[UNI !ID dr2 CLVL<90]:%NAME%%CONTINUE%// Quetzalcoatl Hawk Helm
 ItemDisplay[UNI !ID dra]:%NAME%%CONTINUE%// Jalal's Mane Totemic Mask
 ItemDisplay[UNI !ID dre]:%NAME%%CONTINUE%// Ravenlore Sky Spirit
 ItemDisplay[UNI !ID drb]:%NAME%%CONTINUE%// Cerebus' Bite Blood Spirit
 ItemDisplay[UNI !ID drd]:%NAME%%CONTINUE%// Spirit Keeper Earth Spirit
-ItemDisplay[UNI !ID dr2 CLVL<90]:%NAME%%CONTINUE%// Quetzalcoatl Hawk Helm
-ItemDisplay[UNI !ID (dra OR dre OR drb OR drd OR (dr2 CLVL<90))]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
-//    Necromancer Shields
+ItemDisplay[UNI !ID ((dr2 CLVL<90) OR dra OR dre OR drb OR drd)]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
+//     Medium Value Druid Pelts
+ItemDisplay[UNI !ID dr2 CLVL>89]:%NAME%%CONTINUE%// Quetzalcoatl Hawk Helm
+ItemDisplay[UNI !ID drf]:%NAME%%CONTINUE%// Ursa's Nightmare Dream Spirit
+ItemDisplay[UNI !ID ((dr2 CLVL>89) OR drf)]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
+
+//     High Value Necromancer Shields
+ItemDisplay[UNI !ID ne6 CLVL<80]:%NAME%%CONTINUE%// Kalan's Legacy Mummified Trophy
 ItemDisplay[UNI !ID nea]:%NAME%%CONTINUE%// Homunculus Hierophant Trophy
 ItemDisplay[UNI !ID nee]:%NAME%%CONTINUE%// Boneflame Succubus Skull
-ItemDisplay[UNI !ID nef]:%NAME%%CONTINUE%// Darkforce Spawn Bloodlord Skull
-ItemDisplay[UNI !ID ne6 CLVL<80]:%NAME%%CONTINUE%// Kalan's Legacy Mummified Trophy
-ItemDisplay[UNI !ID (nea OR nee OR nef OR (ne6 CLVL<80))]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
-//    Paladin Shields
+ItemDisplay[UNI !ID ((ne6 CLVL<80) OR nea OR nee)]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
+//     Medium Value Necromancer Shields
+ItemDisplay[UNI !ID ne6 CLVL>79]:%NAME%%CONTINUE%// Kalan's Legacy Mummified Trophy
+ItemDisplay[UNI !ID nef NECROMANCER CLVL<90]:%NAME%%CONTINUE%// Darkforce Spawn Bloodlord Skull
+ItemDisplay[UNI !ID ned NECROMANCER CLVL<90]:%NAME%%CONTINUE%// Martyrdom Overseer Skull
+ItemDisplay[UNI !ID ((ne6 CLVL>79) OR (ned NECROMANCER CLVL<90) OR (ned NECROMANCER CLVL<90))]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
+
+//     High Value Paladin Shields
 ItemDisplay[UNI !ID pa9]:%NAME%%CONTINUE%// Herald of Zakarum Gilded Shield
 ItemDisplay[UNI !ID pa9]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
-//    Armors
-ItemDisplay[UNI !ID xld CLVL<80]:%NAME%%CONTINUE%// Tooththrow Sharktooth Armor
+//     Medium Value Paladin Shields
+ItemDisplay[UNI !ID pac PALADIN]:%NAME%%CONTINUE%// Alma Negra Sacred Rondache
+ItemDisplay[UNI !ID pae PALADIN]:%NAME%%CONTINUE%// Dragonscale Zakarum Shield
+ItemDisplay[UNI !ID ((pac PALADIN) OR (pae PALADIN))]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
+
+//     High Value Armors
+ItemDisplay[UNI !ID xui CLVL<80]:%NAME%%CONTINUE%// The Spirit Shroud Ghost Armor
+ItemDisplay[UNI !ID utp ETH]:%NAME%%CONTINUE%// Purgatory Archon Plate
+ItemDisplay[UNI !ID uul ETH]:%NAME%%CONTINUE%// Eth Steel Carapace Shadow Plate
+ItemDisplay[UNI !ID xld]:%NAME%%CONTINUE%// Tooththrow Sharktooth Armor
 ItemDisplay[UNI !ID xea]:%NAME%%CONTINUE%// Skin of the Vipermagi Serpentskin Armor
-ItemDisplay[UNI !ID xrs CLVL<80]:%NAME%%CONTINUE%// Duriel's Shell Cuirass
 ItemDisplay[UNI !ID xhn]:%NAME%%CONTINUE%// Shaftstop Mesh Armor
 ItemDisplay[UNI !ID xpl]:%NAME%%CONTINUE%// Skullder's Ire Russet Armor
 ItemDisplay[UNI !ID xth]:%NAME%%CONTINUE%// Atma's Wail Embossed Plate
-ItemDisplay[UNI !ID xlt CLVL<90]:%NAME%%CONTINUE%// Guardian Angel Templar Coat
 ItemDisplay[UNI !ID uar]:%NAME%%CONTINUE%// Templar's Might or Tyrael's Might Sacred Armor
 ItemDisplay[UNI !ID utu]:%NAME%%CONTINUE%// The Gladiator's Bane Wire Fleece
 ItemDisplay[UNI !ID uld]:%NAME%%CONTINUE%// Leviathan Kraken Shell
 ItemDisplay[UNI !ID upl]:%NAME%%CONTINUE%// Arkaine's Valor Balrog Skin
 ItemDisplay[UNI !ID xtp]:%NAME%%CONTINUE%// Que-Hegan's Wisdom Mage Plate
-ItemDisplay[UNI !ID xul (ETH OR CLVL<90)]:%NAME%%CONTINUE%// Black Hades Chaos Armor
-ItemDisplay[UNI !ID uul ETH]:%NAME%%CONTINUE%// Eth Steel Carapace Shadow Plate
-ItemDisplay[UNI !ID xui CLVL<80]:%NAME%%CONTINUE%// The Spirit Shroud Ghost Armor
-ItemDisplay[UNI !ID utp ETH]:%NAME%%CONTINUE%// Purgatory Archon Plate
 ItemDisplay[UNI !ID uui]:%NAME%%CONTINUE%// Ormus' Robes Dusk Shroud
-ItemDisplay[UNI !ID ((xld CLVL<80) OR xea OR (xrs CLVL<80) OR xhn OR xpl OR xth OR (xlt CLVL<90) OR uar OR utu OR uld OR upl OR xtp OR (xul (ETH OR CLVL<90)) OR (uul ETH) OR (xui CLVL<80) OR (utp ETH) OR uui)]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
-//    Belts
+ItemDisplay[UNI !ID xar]:%NAME%%CONTINUE%// Corpsemourn Ornate Plate
+ItemDisplay[UNI !ID ((xui CLVL<80) OR (utp ETH) OR (uul ETH) OR xld OR xea OR xhn OR xpl OR xth OR uar OR utu OR uld OR upl OR xtp OR uui OR xar)]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
+//     Medium Value Armors
+ItemDisplay[UNI !ID xui CLVL>79]:%NAME%%CONTINUE%// The Spirit Shroud Ghost Armor
+ItemDisplay[UNI !ID xrs CLVL<80]:%NAME%%CONTINUE%// Duriel's Shell Cuirass
+ItemDisplay[UNI !ID ltp CLVL<80]:%NAME%%CONTINUE%// Heavenly Garb Light Plate
+ItemDisplay[UNI !ID xlt CLVL<90]:%NAME%%CONTINUE%// Guardian Angel Templar Coat
+ItemDisplay[UNI !ID xul (ETH OR CLVL<90)]:%NAME%%CONTINUE%// Black Hades Chaos Armor
+ItemDisplay[UNI !ID utp !ETH]:%NAME%%CONTINUE%// Purgatory Archon Plate
+ItemDisplay[UNI !ID ((xui CLVL>79) OR (xrs CLVL<80) OR (ltp CLVL<80) OR (xlt CLVL<90) OR (xul (ETH OR CLVL<90)) OR (utp !ETH))]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
+
+//     High Value Belts
 ItemDisplay[UNI !ID zlb]:%NAME%%CONTINUE%// String of Ears Demonhide Sash
 ItemDisplay[UNI !ID zhb]:%NAME%%CONTINUE%// Thundergod's Vigor War Belt
 ItemDisplay[UNI !ID ulc]:%NAME%%CONTINUE%// Arachnid Mesh Spiderweb Sash
 ItemDisplay[UNI !ID uvc]:%NAME%%CONTINUE%// Nosferatu's Coil Vampirefang Belt
 ItemDisplay[UNI !ID umc]:%NAME%%CONTINUE%// Verdungo's Hearty Cord Mithril Coil
 ItemDisplay[UNI !ID ztb]:%NAME%%CONTINUE%// Snowclash Battle Belt
+ItemDisplay[UNI !ID (zlb OR zhb OR ulc OR uvc OR umc OR ztb)]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
+//     Medium Value Belts
 ItemDisplay[UNI !ID zvb CLVL<80]:%NAME%%CONTINUE%// Razortail Sharkskin Belt
-ItemDisplay[UNI !ID (zlb OR zhb OR ulc OR uvc OR umc OR ztb OR (zvb CLVL<80))]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
-//    Boots
-ItemDisplay[UNI !ID lbt]:%NAME%%CONTINUE%// Hotspur Boots
+ItemDisplay[UNI !ID tbl CLVL<80]:%NAME%%CONTINUE%// Goldwrap Heavy Belt
+ItemDisplay[UNI !ID ((zvb CLVL<80) OR (tbl CLVL<80))]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
+
+//     High Value Boots
+ItemDisplay[UNI !ID xmb CLVL<90]:%NAME%%CONTINUE%// Silkweave Mesh Boots
+ItemDisplay[UNI !ID xlb CLVL<80]:%NAME%%CONTINUE%// Infernostride Demonhide Boots
+ItemDisplay[UNI !ID uvb ETH]:%NAME%%CONTINUE%// Sandstorm Trek Scarabshell Boots
 ItemDisplay[UNI !ID xtb]:%NAME%%CONTINUE%// War Traveler Battle Boots
 ItemDisplay[UNI !ID xhb]:%NAME%%CONTINUE%// Gore Rider War Boots
 ItemDisplay[UNI !ID xvb]:%NAME%%CONTINUE%// Waterwalk Sharkskin Boots
-ItemDisplay[UNI !ID uvb (ETH OR CLVL<90)]:%NAME%%CONTINUE%// Sandstorm Trek Scarabshell Boots
 ItemDisplay[UNI !ID umb]:%NAME%%CONTINUE%// Marrowwalk Boneweave Boots
 ItemDisplay[UNI !ID uhb]:%NAME%%CONTINUE%// Shadow Dancer Myrmidon Greaves
-ItemDisplay[UNI !ID xmb]:%NAME%%CONTINUE%// Silkweave Mesh Boots
-ItemDisplay[UNI !ID (lbt OR xtb OR xhb OR xvb OR (uvb (ETH OR CLVL<90)) OR umb OR uhb OR xmb)]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
-//    Gloves
-ItemDisplay[UNI !ID vgl CLVL<60]:%NAME%%CONTINUE%// Bloodfist Heavy Gloves
-ItemDisplay[UNI !ID mgl CLVL<90]:%NAME%%CONTINUE%// Chance Guards Chain Gloves
-ItemDisplay[UNI !ID tgl (CLVL<90 OR SORCERESS)]:%NAME%%CONTINUE%// Magefist Light Gauntlets
+ItemDisplay[UNI !ID ((xmb CLVL<90) OR (xlb CLVL<80) OR (uvb ETH) OR xtb OR xhb OR xvb OR umb OR uhb)]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
+//     Medium Value Boots
+ItemDisplay[UNI !ID lbt CLVL<80]:%NAME%%CONTINUE%// Hotspur Boots
+ItemDisplay[UNI !ID uvb !ETH]:%NAME%%CONTINUE%// Sandstorm Trek Scarabshell Boots
+ItemDisplay[UNI !ID xmb CLVL>89]:%NAME%%CONTINUE%// Silkweave Mesh Boots
+ItemDisplay[UNI !ID xlb CLVL>79 CLVL<90]:%NAME%%CONTINUE%// Infernostride Demonhide Boots
+ItemDisplay[UNI !ID ((lbt CLVL<80) OR (uvb !ETH) OR (xmb CLVL>59) OR (xmb CLVL>89) OR (xlb CLVL>79 CLVL<90))]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
+
+//     High Value Gloves
+ItemDisplay[UNI !ID tgl]:%NAME%%CONTINUE%// Magefist Light Gauntlets
 ItemDisplay[UNI !ID xtg]:%NAME%%CONTINUE%// Lava Gout Battle Gauntlets
 ItemDisplay[UNI !ID uvg]:%NAME%%CONTINUE%// Dracul's Grasp Vampirebone Gloves
 ItemDisplay[UNI !ID umg]:%NAME%%CONTINUE%// Soul Drainer Vambraces
@@ -1235,109 +1284,212 @@ ItemDisplay[UNI !ID uhg]:%NAME%%CONTINUE%// Steelrend Ogre Gauntlets
 ItemDisplay[UNI !ID xhg]:%NAME%%CONTINUE%// Hellmouth War Gauntlets
 ItemDisplay[UNI !ID xvg]:%NAME%%CONTINUE%// Gravepalm Sharkskin Gloves
 ItemDisplay[UNI !ID utg]:%NAME%%CONTINUE%// Occultist Crusader Gauntlets
-ItemDisplay[UNI !ID ((vgl CLVL<60) OR (mgl CLVL<90) OR (tgl (CLVL<90 OR SORCERESS)) OR xtg OR uvg OR umg OR uhg OR xhg OR xvg OR utg)]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
-//    Helms
-ItemDisplay[UNI !ID xkp CLVL<90]:%NAME%%CONTINUE%// Rockstopper Sallet
+ItemDisplay[UNI !ID (tgl OR xtg OR uvg OR umg OR uhg OR xhg OR xvg OR utg)]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
+//     Medium Value Gloves
+ItemDisplay[UNI !ID vgl CLVL<60]:%NAME%%CONTINUE%// Bloodfist Heavy Gloves
+ItemDisplay[UNI !ID xmg CLVL<80]:%NAME%%CONTINUE%// Ghoulhide Heavy Bracers
+ItemDisplay[UNI !ID mgl CLVL<80]:%NAME%%CONTINUE%// Chance Guards Chain Gloves
+ItemDisplay[UNI !ID xlg]:%NAME%%CONTINUE%// Venom Grip Demonhide Gloves
+ItemDisplay[UNI !ID ((vgl CLVL<60) OR (xmg CLVL<80) OR (mgl CLVL<90) OR xlg)]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
+
+//     High Value Helms
 ItemDisplay[UNI !ID ulm]:%NAME%%CONTINUE%// Steel Shade Armet
 ItemDisplay[UNI !ID xh9]:%NAME%%CONTINUE%// Vampire Gaze Grim Helm
 ItemDisplay[UNI !ID uap]:%NAME%%CONTINUE%// Harlequin Crest Shako
 ItemDisplay[UNI !ID uhm]:%NAME%%CONTINUE%// Veil of Steel or Nightwing's Veil Spired Helm
 ItemDisplay[UNI !ID usk]:%NAME%%CONTINUE%// Andariel's Visage Demonhead
 ItemDisplay[UNI !ID urn]:%NAME%%CONTINUE%// Crown of Ages Corona
-ItemDisplay[UNI !ID xrn CLVL<80]:%NAME%%CONTINUE%// Crown of Thieves Grand Crown
 ItemDisplay[UNI !ID uh9]:%NAME%%CONTINUE%// Giant Skull Bone Visage
+ItemDisplay[UNI !ID (ulm OR xh9 OR uap OR uhm OR usk OR urn OR uh9)]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
+//     Medium Value Helms
+ItemDisplay[UNI !ID crn CLVL<40 NECROMANCER]:%NAME%%CONTINUE%// Undead Crown Crown
+ItemDisplay[UNI !ID skp CLVL<40]:%NAME%%CONTINUE%// Tarnhelm Skull Cap
+ItemDisplay[UNI !ID xap CLVL<40]:%NAME%%CONTINUE%// Peasant Crown War Hat
+ItemDisplay[UNI !ID xsk CLVL<60 AMAZON]:%NAME%%CONTINUE%// Valkyrie Wing Winged Helm
+ItemDisplay[UNI !ID xhl CLVL<60]:%NAME%%CONTINUE%// Darksight Basinet
+ItemDisplay[UNI !ID xsk CLVL<60]:%NAME%%CONTINUE%// Blackhorn's Face Death Mask
+ItemDisplay[UNI !ID xrn CLVL<80]:%NAME%%CONTINUE%// Crown of Thieves Grand Crown
 ItemDisplay[UNI !ID xlm CLVL<80]:%NAME%%CONTINUE%// Stealskull Casque
-ItemDisplay[UNI !ID ((xkp CLVL<90) OR ulm OR xh9 OR uap OR uhm OR usk OR urn OR (xrn CLVL<80) OR uh9 OR (xlm CLVL<80))]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
-//    Shields
+ItemDisplay[UNI !ID xkp CLVL<90]:%NAME%%CONTINUE%// Rockstopper Sallet
+ItemDisplay[UNI !ID ((crn CLVL<40 NECROMANCER) OR (skp CLVL<40) OR (xap CLVL<40) OR (xsk CLVL<60 AMAZON) OR (xhl CLVL<60) OR (xsk CLVL<60) OR (xrn CLVL<80) OR (xlm CLVL<80) OR (xkp CLVL<90))]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
+
+//     High Value Shields
 ItemDisplay[UNI !ID xsh]:%NAME%%CONTINUE%// Lidless Wall Grim Shield
 ItemDisplay[UNI !ID xow]:%NAME%%CONTINUE%// Gerke's Sanctuary Pavise
 ItemDisplay[UNI !ID uit]:%NAME%%CONTINUE%// Stormshield Monarch
 ItemDisplay[UNI !ID uow]:%NAME%%CONTINUE%// Medusa's Gaze Aegis
 ItemDisplay[UNI !ID uts]:%NAME%%CONTINUE%// Spirit Ward Ward
+ItemDisplay[UNI !ID (xsh OR xow OR uit OR uow OR uts)]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
+//     Medium Value Shields
+ItemDisplay[UNI !ID xpk]:%NAME%%CONTINUE%// Lance Guard Spiked Shield
 ItemDisplay[UNI !ID ush]:%NAME%%CONTINUE%// Head Hunter's Glory Troll Nest
-ItemDisplay[UNI !ID (xsh OR xow OR uit OR uow OR uts OR ush)]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
-//    Bows and Crossbows
+ItemDisplay[UNI !ID uml]:%NAME%%CONTINUE%// Blackoak Shield Luna
+ItemDisplay[UNI !ID upk]:%NAME%%CONTINUE%// Spike Thorn Blade Barrier
+ItemDisplay[UNI !ID (xpk OR ush OR uml OR upk)]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
+
+//     High Value Bows and Crossbows
 ItemDisplay[UNI !ID 8s8]:%NAME%%CONTINUE%// Witchwild String Short Siege Bow
 ItemDisplay[UNI !ID 8mx]:%NAME%%CONTINUE%// Pus Spitter Siege Crossbow
-ItemDisplay[UNI !ID 8hx CLVL<80]:%NAME%%CONTINUE%// Buriza Ballista
 ItemDisplay[UNI !ID 6lw]:%NAME%%CONTINUE%// Windforce Hydra Bow
-ItemDisplay[UNI !ID 6l7 CLVL<90]:%NAME%%CONTINUE%// Eaglehorn Crusader Bow
-ItemDisplay[UNI !ID (8s8 OR 8mx OR (8hx CLVL<80) OR 6lw OR (6l7 CLVL<90))]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
-//    Daggers
-ItemDisplay[UNI !ID dgr CLVL<80]:%NAME%%CONTINUE%// Gull Dagger
+ItemDisplay[UNI !ID (8s8 OR 8mx OR 6lw)]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
+//     Medium Value Bows and Crossbows
+ItemDisplay[UNI !ID 8rx CLVL<60]:%NAME%%CONTINUE%// Demon Machine Chu-Ko-Nu
+ItemDisplay[UNI !ID 8hx CLVL<80]:%NAME%%CONTINUE%// Buriza Ballista
+ItemDisplay[UNI !ID 6rx CLVL<80]:%NAME%%CONTINUE%// Gut Siphon Demon Crossbow
+ItemDisplay[UNI !ID 6hx CLVL<80]:%NAME%%CONTINUE%// Hellrack Colossus Crossbow
+ItemDisplay[UNI !ID 6l7 CLVL<80]:%NAME%%CONTINUE%// Eaglehorn Crusader Bow
+ItemDisplay[UNI !ID (8s8 OR 8mx OR (8hx CLVL<80) OR 6lw OR (6l7 CLVL<90))]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
+
+//     High Value Daggers
 ItemDisplay[UNI !ID 7dg CLVL<90]:%NAME%%CONTINUE%// Wizardspike Bone Knife
-ItemDisplay[UNI !ID 9di ETH]:%NAME%%CONTINUE%// Eth Heart Carver Rondel
+ItemDisplay[UNI !ID 9kr NECROMANCER]:%NAME%%CONTINUE%// Blackbog's Sharp Cinquedeas
+ItemDisplay[UNI !ID ((7dg CLVL<90) OR (9kr NECROMANCER))]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
+//     Medium Value Daggers
+ItemDisplay[UNI !ID dgr CLVL<80]:%NAME%%CONTINUE%// Gull Dagger
+ItemDisplay[UNI !ID 7dg CLVL>89]:%NAME%%CONTINUE%// Wizardspike Bone Knife
+ItemDisplay[UNI !ID 9kr !NECROMANCER]:%NAME%%CONTINUE%// Blackbog's Sharp Cinquedeas
 ItemDisplay[UNI !ID 7kr (ETH OR CLVL<90)]:%NAME%%CONTINUE%// Fleshripper Fanged Knife
-ItemDisplay[UNI !ID 7bl ASSASSIN CLVL<90]:%NAME%%CONTINUE%// Ghostflame Legend Spike
-ItemDisplay[UNI !ID ((dgr CLVL<80) OR (7dg CLVL<90) OR (9di ETH) OR (7kr (ETH OR CLVL<90)) OR (7bl ASSASSIN CLVL<90))]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
-//    Axes
-ItemDisplay[UNI !ID 9ba CLVL<80]:%NAME%%CONTINUE%// Spellsteal Bearded Axe
-ItemDisplay[UNI !ID 7bt (ETH OR CLVL<90)]:%NAME%%CONTINUE%// Hellslayer Decapitator
-ItemDisplay[UNI !ID 7wa (ETH OR CLVL<90)]:%NAME%%CONTINUE%// Death Cleaver Berserker Axe
-ItemDisplay[UNI !ID 7ha (ETH OR CLVL<90)]:%NAME%%CONTINUE%// Razor's Edge Tomahwak
-ItemDisplay[UNI !ID 7gi (ETH OR CLVL<90)]:%NAME%%CONTINUE%// Executioner's Justice Glorious Axe
-ItemDisplay[UNI !ID 7ga (ETH OR CLVL<90)]:%NAME%%CONTINUE%// Messerschmidt's Reaver Champion Axe
-ItemDisplay[UNI !ID 9la ETH CLVL<90]:%NAME%%CONTINUE%// Warlord's Trust Military Axe
+ItemDisplay[UNI !ID 7bl ASSASSIN CLVL<80]:%NAME%%CONTINUE%// Ghostflame Legend Spike
+ItemDisplay[UNI !ID ((dgr CLVL<80) OR (7dg CLVL>89) OR (9kr !NECROMANCER) OR (7kr (ETH OR CLVL<90)) OR (7bl ASSASSIN CLVL<80))]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
+
+//     High Value Axes
 ItemDisplay[UNI !ID 72a]:%NAME%%CONTINUE%// Runemaster Ettin Axe
-ItemDisplay[UNI !ID ((9ba CLVL<80) OR ((7bt OR 7wa OR 7ha OR 7gi OR 7ga) (ETH OR CLVL<90)) OR (9la ETH CLVL<90) OR 72a)]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
-//    Throwing Weapons
-ItemDisplay[UNI !ID 7b8 (ETH OR CLVL<90)]:%NAME%%CONTINUE%// Lacerator Winged Axe
+ItemDisplay[UNI !ID 9la ETH CLVL<90]:%NAME%%CONTINUE%// Warlord's Trust Military Axe
+ItemDisplay[UNI !ID 7gi (ETH OR CLVL<90 OR DRUID)]:%NAME%%CONTINUE%// Executioner's Justice Glorious Axe
+ItemDisplay[UNI !ID 7ha (ETH OR CLVL<90 OR PALADIN)]:%NAME%%CONTINUE%// Razor's Edge Tomahwak
+ItemDisplay[UNI !ID 7wa (ETH OR CLVL<90 OR PALADIN)]:%NAME%%CONTINUE%// Death Cleaver Berserker Axe
+ItemDisplay[UNI !ID 7ga (ETH OR CLVL<90 OR DRUID OR BARBARIAN)]:%NAME%%CONTINUE%// Messerschmidt's Reaver Champion Axe
+ItemDisplay[UNI !ID 7bt (ETH OR CLVL<90 OR DRUID OR BARBARIAN)]:%NAME%%CONTINUE%// Hellslayer Decapitator
+ItemDisplay[UNI !ID (((7bt OR 7wa OR 7ha OR 7gi OR 7ga) (ETH OR CLVL<90)) OR (9la ETH CLVL<90) OR 72a)]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
+//     Medium Value Axes
+ItemDisplay[UNI !ID 9ha CLVL<60]:%NAME%%CONTINUE%// Coldkill Hatchet
+ItemDisplay[UNI !ID gix CLVL<60]:%NAME%%CONTINUE%// Humongous Giant Axe
+ItemDisplay[UNI !ID 9gi CLVL<60]:%NAME%%CONTINUE%// The Minotaur Ancient Axe
+ItemDisplay[UNI !ID 9ax CLVL<60]:%NAME%%CONTINUE%// Butcher's Pupil Cleaver
+ItemDisplay[UNI !ID 9ba CLVL<80]:%NAME%%CONTINUE%// Spellsteal Bearded Axe
+ItemDisplay[UNI !ID 9la (!ETH OR CLVL>89)]:%NAME%%CONTINUE%// Warlord's Trust Military Axe
+ItemDisplay[UNI !ID 7gi (!ETH OR CLVL>89 OR !DRUID)]:%NAME%%CONTINUE%// Executioner's Justice Glorious Axe
+ItemDisplay[UNI !ID 7ha (!ETH OR CLVL>89 OR !PALADIN)]:%NAME%%CONTINUE%// Razor's Edge Tomahwak
+ItemDisplay[UNI !ID 7wa (!ETH OR CLVL>89 OR !PALADIN)]:%NAME%%CONTINUE%// Death Cleaver Berserker Axe
+ItemDisplay[UNI !ID 7ga (!ETH OR CLVL>89 OR !(DRUID OR BARBARIAN))]:%NAME%%CONTINUE%// Messerschmidt's Reaver Champion Axe
+ItemDisplay[UNI !ID 7bt (!ETH OR CLVL>89 OR !(DRUID OR !BARBARIAN))]:%NAME%%CONTINUE%// Hellslayer Decapitator
+ItemDisplay[UNI !ID ((9ha CLVL<60) OR (gix CLVL<60) OR (9gi CLVL<60) OR (9ax CLVL<60) OR (9ba CLVL<80) OR (9la (!ETH OR CLVL>89)) OR (7gi (!ETH OR CLVL>89 OR !DRUID)) OR (7gi (!ETH OR CLVL>89 OR !DRUID)) OR (7ha (!ETH OR CLVL>89 OR !PALADIN)) OR (7wa (!ETH OR CLVL>89 OR !PALADIN)) OR (7ga (!ETH OR CLVL>89 OR !(DRUID OR BARBARIAN))) OR (7bt (!ETH OR CLVL>89 OR !(DRUID OR !BARBARIAN))))]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
+
+//     High Value Throwing Weapons
 ItemDisplay[UNI !ID 7bk ETH]:%NAME%%CONTINUE%// Warshrike Winged Knife
-ItemDisplay[UNI !ID ((7b8 (ETH OR CLVL<90)) OR (7bk ETH CLVL<90))]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
-//    Javelins
-ItemDisplay[UNI !ID 7gl CLVL<90]:%NAME%%CONTINUE%// Wraith Flight Ghost Glaive
-ItemDisplay[UNI !ID 7s7 ETH CLVL<90]:%NAME%%CONTINUE%// Demon's Arch Balrog Spear
+ItemDisplay[UNI !ID 7b8 (ETH OR CLVL<90)]:%NAME%%CONTINUE%// Lacerator Winged Axe
+ItemDisplay[UNI !ID ((7bk ETH) OR (7b8 (ETH OR CLVL<90)))]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
+//     Medium Value Throwing Weapons
+ItemDisplay[UNI !ID 7bk !ETH]:%NAME%%CONTINUE%// Warshrike Winged Knife
+ItemDisplay[UNI !ID 7b8 (!ETH OR CLVL>89)]:%NAME%%CONTINUE%// Lacerator Winged Axe
+ItemDisplay[UNI !ID 7ta CLVL<90]:%NAME%%CONTINUE%// Gimmershred Flying Axe
+ItemDisplay[UNI !ID ((7bk !ETH) OR (7b8 (!ETH OR CLVL>89)) OR (7ta CLVL<90))]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
+
+//     High Value Javelins
 ItemDisplay[UNI !ID 7ts]:%NAME%%CONTINUE%// Gargoyle's Bite Winged Harpoon
-ItemDisplay[UNI !ID ((7gl CLVL<90) OR (7s7 ETH CLVL<90) OR 7ts)]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
-//    Maces
+ItemDisplay[UNI !ID 7s7 ETH CLVL<90]:%NAME%%CONTINUE%// Demon's Arch Balrog Spear
+ItemDisplay[UNI !ID 7ts]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
+//     Medium Value Javelins
+ItemDisplay[UNI !ID 7s7 (!ETH OR CLVL>89)]:%NAME%%CONTINUE%// Demon's Arch Balrog Spear
+ItemDisplay[UNI !ID 7gl BARBARIAN CLVL<80]:%NAME%%CONTINUE%// Wraith Flight Ghost Glaive
+ItemDisplay[UNI !ID ((7s7 (!ETH OR CLVL>89)) OR (7gl BARBARIAN CLVL<80))]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
+
+//     High Value Maces
 ItemDisplay[UNI !ID 7m7]:%NAME%%CONTINUE%// Windhammer Ogre Maul
 ItemDisplay[UNI !ID 9gm]:%NAME%%CONTINUE%// The Gavel Of Pain Martel de Fer
 ItemDisplay[UNI !ID 7gm]:%NAME%%CONTINUE%// Earth Shifter or The Cranium Basher Thunder Maul
 ItemDisplay[UNI !ID 7wh]:%NAME%%CONTINUE%// Stone Crusher or Schaefer's Hammer Legendary Mallet
 ItemDisplay[UNI !ID 7fl]:%NAME%%CONTINUE%// Stormlash or Horizons Tornado
+ItemDisplay[UNI !ID (7m7 OR 9gm OR 7gm OR 7wh OR 7fl)]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
+//     Medium Value Maces
+ItemDisplay[UNI !ID 9wh]:%NAME%%CONTINUE%// Earthshaker Battle Hammer
+ItemDisplay[UNI !ID 9sp CLVL<50 DRUID]:%NAME%%CONTINUE%// Barbed Club Fleshrender
+ItemDisplay[UNI !ID 9cl CLVL<50 DRUID]:%NAME%%CONTINUE%// Dark Clan Crusher Cudgel
+ItemDisplay[UNI !ID 7sp CLVL<60 BARBARIAN]:%NAME%%CONTINUE%// Bloodtree Stump War Club
 ItemDisplay[UNI !ID 7sp CLVL<80]:%NAME%%CONTINUE%// Demon Limb Tyrant Club
-ItemDisplay[UNI !ID (7m7 OR 9gm OR 7gm OR 7wh OR 7fl OR (7sp CLVL<80))]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
-//    Polearms
+ItemDisplay[UNI !ID 7cl CLVL<80]:%NAME%%CONTINUE%// Nord's Tenderizer Truncheon
+ItemDisplay[UNI !ID (9wh OR (9sp CLVL<50 DRUID) OR (9cl CLVL<50 DRUID) OR (7sp CLVL<60 BARBARIAN) OR (7sp CLVL<80) OR (7cl CLVL<80))]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
+
+//     High Value Polearms
 ItemDisplay[UNI !ID 7s8]:%NAME%%CONTINUE%// The Reaper's Toll Thresher
 ItemDisplay[UNI !ID 7wc]:%NAME%%CONTINUE%// Stormspire Giant Thresher
 ItemDisplay[UNI !ID 7pa]:%NAME%%CONTINUE%// Tomb Reaver Cryptic Axe
+ItemDisplay[UNI !ID (7s8 OR 7wc OR 7pa)]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
+//     Medium Value Polearms
+ItemDisplay[UNI !ID 7o7 CLVL<60]:%NAME%%CONTINUE%// Pierre Tombale Couant Partizan
+ItemDisplay[UNI !ID 9s8 CLVL<60 DRUID]:%NAME%%CONTINUE%// Athena's Wrath Battle Scythe
+ItemDisplay[UNI !ID 9wc CLVL<60 NECROMANCER]:%NAME%%CONTINUE%// Grim's Burning Dead Grim Scythe
 ItemDisplay[UNI !ID 7o7 CLVL<80]:%NAME%%CONTINUE%// Bonehew Ogre Axe
-ItemDisplay[UNI !ID (7s8 OR 7wc OR 7pa OR (7o7 CLVL<80))]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
-//    Scepters
+ItemDisplay[UNI !ID ((7o7 CLVL<60) OR (9s8 CLVL<60 DRUID) OR (9wc CLVL<60 NECROMANCER) OR (7o7 CLVL<80))]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
+
+//     High Value Scepters
 ItemDisplay[UNI !ID 9ws]:%NAME%%CONTINUE%// Hand of Blessed Light Divine Scepter
 ItemDisplay[UNI !ID 7ws]:%NAME%%CONTINUE%// Astreon's Iron Ward Caduceus
 ItemDisplay[UNI !ID 7sc]:%NAME%%CONTINUE%// Heaven's Light or The Redeemer Mighty Scepter
 ItemDisplay[UNI !ID 7qs]:%NAME%%CONTINUE%// Akarat's Devotion, Seraph Rod
 ItemDisplay[UNI !ID (9ws OR 7ws OR 7sc OR 7qs)]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
-//    Spears
+
+//     High Value Spears
 ItemDisplay[UNI !ID 7p7]:%NAME%%CONTINUE%// Steel Pillar War Pike
 ItemDisplay[UNI !ID 7p7]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
-//    Staves
-ItemDisplay[UNI !ID 8ss CLVL<60]:%NAME%%CONTINUE%// Razorswitch Jo Staff
+//     Medium Value Spears
+ItemDisplay[UNI !ID 9p9 CLVL<60]:%NAME%%CONTINUE%// Spire of Honor Lance
+ItemDisplay[UNI !ID 7st CLVL<80]:%NAME%%CONTINUE%// Uldyssian's Awakening Ghost Spear
+ItemDisplay[UNI !ID 7sr (ETH OR CLVL<80)]:%NAME%%CONTINUE%// Arioc's Needle
+ItemDisplay[UNI !ID 7br (CLVL<80 OR DRUID)]:%NAME%%CONTINUE%// Viperfork Mancatcher
+ItemDisplay[UNI !ID ((9p9 CLVL<60) OR (7st CLVL<80) OR (7sr (ETH OR CLVL<80)) OR (7br (CLVL<80 OR DRUID)))]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
+
+//     High Value Staves
 ItemDisplay[UNI !ID 8cs]:%NAME%%CONTINUE%// Chromatic Ire Cedar Staff
 ItemDisplay[UNI !ID 8ws]:%NAME%%CONTINUE%// Skull Collector Rune Staff
-ItemDisplay[UNI !ID 8ls (ETH OR CLVL<90)]:%NAME%%CONTINUE%// Ribcracker Quarterstaff
 ItemDisplay[UNI !ID 6ws]:%NAME%%CONTINUE%// Mang Song's Lesson Archon Staff
 ItemDisplay[UNI !ID 6bs]:%NAME%%CONTINUE%// Brimstone Rain Shillelagh
-ItemDisplay[UNI !ID ((8ss CLVL<60) OR 8cs OR 8ws OR (8ls (ETH OR CLVL<90)) OR 6ws OR 6bs)]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
-//    Swords
+ItemDisplay[UNI !ID (8cs OR 8ws OR 6ws OR 6bs)]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
+//     Medium Value Staves
+ItemDisplay[UNI !ID cst CLVL<60]:%NAME%%CONTINUE%// Spire of Lazarus Gnarled Staff
+ItemDisplay[UNI !ID 8ss CLVL<60]:%NAME%%CONTINUE%// Razorswitch Jo Staff
+ItemDisplay[UNI !ID wst CLVL<60]:%NAME%%CONTINUE%// The Iron Jang Bong War Staff
+ItemDisplay[UNI !ID 8bs CLVL<60]:%NAME%%CONTINUE%// Warpspear Gothic Staff
+ItemDisplay[UNI !ID 8ls (ETH OR CLVL<80)]:%NAME%%CONTINUE%// Ribcracker Quarterstaff
+ItemDisplay[UNI !ID 6cs CLVL<90]:%NAME%%CONTINUE%// Ondal's Wisdom Elder Staff
+ItemDisplay[UNI !ID ((8ss CLVL<60) OR (8ss CLVL<60) OR (wst CLVL<60) OR (8bs CLVL<60) OR (8ls (ETH OR CLVL<80)) OR (6cs CLVL<90))]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
+
+//     High Value Swords
 ItemDisplay[UNI !ID 7b7]:%NAME%%CONTINUE%// Doombringer Champion Sword
 ItemDisplay[UNI !ID 7gd]:%NAME%%CONTINUE%// The Grandfather Colossus Blade
 ItemDisplay[UNI !ID 7fb]:%NAME%%CONTINUE%// Odium Colossus Sword
-ItemDisplay[UNI !ID 9fc CLVL<90]:%NAME%%CONTINUE%// Blade of Ali Baba Tulwar
 ItemDisplay[UNI !ID 7cr]:%NAME%%CONTINUE%// Lightsabre or Azurewrath Phase Blade
 ItemDisplay[UNI !ID 7gs]:%NAME%%CONTINUE%// Flamebellow Balrog Blade
-ItemDisplay[UNI !ID 9gs (ETH OR CLVL<90)]:%NAME%%CONTINUE%// Vile Husk Tusk Sword
 ItemDisplay[UNI !ID 9ls]:%NAME%%CONTINUE%// Plague Bearer Rune Sword
-ItemDisplay[UNI !ID (7b7 OR 7gd OR 7fb OR (9fc CLVL<90) OR (7cr CLVL<90) OR 7gs OR (9gs (ETH OR CLVL<90)) OR 9ls)]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
-//    Wands
+ItemDisplay[UNI !ID (7b7 OR 7gd OR 7fb OR 7cr OR 7gs OR 9ls)]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
+//     Medium Value Swords
+ItemDisplay[UNI !ID gsd CLVL<40]:%NAME%%CONTINUE%// The Patriarch Great Sword
+ItemDisplay[UNI !ID 9cm CLVL<60]:%NAME%%CONTINUE%// Bing Sz Wang Dacian Falx
+ItemDisplay[UNI !ID 9cr CLVL<60 ETH]:%NAME%%CONTINUE%// Ginther's Rift Dimensional Blade
+ItemDisplay[UNI !ID 9bs (CLVL<60 OR ETH)]:%NAME%%CONTINUE%// Headstriker Battle Sword
+ItemDisplay[UNI !ID 92h (CLVL<60 OR ETH)]:%NAME%%CONTINUE%// Crainte Vomir Espandon
+ItemDisplay[UNI !ID 9ss CLVL<60 BARBARIAN]:%NAME%%CONTINUE%// Bloodletter Gladius
+ItemDisplay[UNI !ID 9fb CLVL<80]:%NAME%%CONTINUE%// Todesfaelle Flamme Zweihander
+ItemDisplay[UNI !ID 7ls CLVL<80]:%NAME%%CONTINUE%// Frostwind Cryptic Sword
+ItemDisplay[UNI !ID 7cm CLVL<80 PALADIN]:%NAME%%CONTINUE%// Leoric's Mithril Bane Highland Blade
+ItemDisplay[UNI !ID 9fc CLVL<90]:%NAME%%CONTINUE%// Blade of Ali Baba Tulwar
+ItemDisplay[UNI !ID 9gs (ETH OR CLVL<90)]:%NAME%%CONTINUE%// Vile Husk Tusk Sword
+ItemDisplay[UNI !ID 9gd (ETH OR CLVL<90)]:%NAME%%CONTINUE%// Swordguard Executioner Sword
+ItemDisplay[UNI !ID ((gsd CLVL<40) OR (9cm CLVL<60) OR (9cr CLVL<60 ETH) OR (9bs (CLVL<60 OR ETH)) OR (92h (CLVL<60 OR ETH)) OR (9ss CLVL<60 BARBARIAN) OR (9fb CLVL<80) OR (7ls CLVL<80) OR (7cm CLVL<80 PALADIN) OR (9fc CLVL<90) OR (9gs (ETH OR CLVL<90)) OR (9gd (ETH OR CLVL<90)))]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
+
+//     High Value Wands
 ItemDisplay[UNI !ID 7gw]:%NAME%%CONTINUE%// Deaths's Web Unearthed Wand
 ItemDisplay[UNI !ID 9bw]:%NAME%%CONTINUE%// Arm of King Leoric Tomb Wand
 ItemDisplay[UNI !ID 9gw]:%NAME%%CONTINUE%// Blackhand Key Grave Wand
 ItemDisplay[UNI !ID 7bw]:%NAME%%CONTINUE%// Boneshade Lich Wand
 ItemDisplay[UNI !ID (7gw OR 9bw OR 9gw OR 7bw)]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
+//     Medium Value Wands
+ItemDisplay[UNI !ID 9wn CLVL<60]:%NAME%%CONTINUE%// 
+ItemDisplay[UNI !ID 9yw (NECROMANCER OR CLVL<80)]:%NAME%%CONTINUE%// 
+ItemDisplay[UNI !ID ((9wn CLVL<60) OR (9yw (NECROMANCER OR CLVL<80)))]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
 
-//                                         Notify for All other unique item drops
+
+//                                         Notify for other unique item drops
 ItemDisplay[UNI NORM !ID FILTLVL<5]:%GOLD%*%GRAY%* %WHITE%>  %NAME%  %WHITE%< %GRAY%*%GOLD%*%BORDER-21%%MAP-19%%DOT-61%%PX-20%// Notify for all normal unique items on filter levels 1-8
 
 ItemDisplay[UNI NORM !ID FILTLVL>4 FILTLVL<9 CLVL<80]:%GOLD%*%GRAY%* %WHITE%>  %NAME%  %WHITE%< %GRAY%*%GOLD%*%BORDER-21%%MAP-19%%DOT-61%%PX-20%// Notify for all normal uniques on filter levels 5-8 under character level 90
@@ -2732,49 +2884,18 @@ ItemDisplay[NMAG !INF !RW ETH NORM DIN FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=
 
 // Hide all paladin shields with less than 5 all res at character level 10+
 ItemDisplay[NMAG !INF !RW RES<5 DIN CLVL>9 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
-
 // Hide all paladin shields with less than 10 all res at character level 25+
 ItemDisplay[NMAG !INF !RW RES<10 DIN CLVL>24 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
-
 // Hide all paladin shields with less than 20 all res at character level 60+
 ItemDisplay[NMAG !INF !RW RES<20 DIN CLVL>59 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
-
 // Hide all non-eth paladin shields with less than 25 all res at character level 80+
 ItemDisplay[NMAG !INF !RW !ETH RES<25 DIN CLVL>79 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
-
 // Hide all non-eth paladin shields with less than 30 all res at character level 90+ on filter level 9
 ItemDisplay[NMAG !INF !RW !ETH RES<30 DIN CLVL>89 FILTLVL>8 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
 // Label All Res Paladin shields when leveling
-ItemDisplay[NMAG !INF !RW RES=5 DIN]:%NAME% %WHITE%+5 %PURPLE%All %GRAY%Res{%NAME%}%CONTINUE%//
-ItemDisplay[NMAG !INF !RW RES=6 DIN]:%NAME% %WHITE%+6 %PURPLE%All %GRAY%Res{%NAME%}%CONTINUE%//
-ItemDisplay[NMAG !INF !RW RES=7 DIN]:%NAME% %WHITE%+7 %PURPLE%All %GRAY%Res{%NAME%}%CONTINUE%//
-ItemDisplay[NMAG !INF !RW RES=8 DIN]:%NAME% %WHITE%+8 %PURPLE%All %GRAY%Res{%NAME%}%CONTINUE%//
-ItemDisplay[NMAG !INF !RW RES=9 DIN]:%NAME% %WHITE%+9 %PURPLE%All %GRAY%Res{%NAME%}%CONTINUE%//
-
-ItemDisplay[NMAG !INF !RW RES=10 DIN]:%NAME% %WHITE%+10 %PURPLE%All %GRAY%Res{%NAME%}%CONTINUE%//
-ItemDisplay[NMAG !INF !RW RES=11 DIN]:%NAME% %WHITE%+11 %PURPLE%All %GRAY%Res{%NAME%}%CONTINUE%//
-ItemDisplay[NMAG !INF !RW RES=12 DIN]:%NAME% %WHITE%+12 %PURPLE%All %GRAY%Res{%NAME%}%CONTINUE%//
-ItemDisplay[NMAG !INF !RW RES=13 DIN]:%NAME% %WHITE%+13 %PURPLE%All %GRAY%Res{%NAME%}%CONTINUE%//
-ItemDisplay[NMAG !INF !RW RES=14 DIN]:%NAME% %WHITE%+14 %PURPLE%All %GRAY%Res{%NAME%}%CONTINUE%//
-ItemDisplay[NMAG !INF !RW RES=15 DIN]:%NAME% %WHITE%+15 %PURPLE%All %GRAY%Res{%NAME%}%CONTINUE%//
-ItemDisplay[NMAG !INF !RW RES=16 DIN]:%NAME% %WHITE%+16 %PURPLE%All %GRAY%Res{%NAME%}%CONTINUE%//
-ItemDisplay[NMAG !INF !RW RES=17 DIN]:%NAME% %WHITE%+17 %PURPLE%All %GRAY%Res{%NAME%}%CONTINUE%//
-ItemDisplay[NMAG !INF !RW RES=18 DIN]:%NAME% %WHITE%+18 %PURPLE%All %GRAY%Res{%NAME%}%CONTINUE%//
-ItemDisplay[NMAG !INF !RW RES=19 DIN]:%NAME% %WHITE%+19 %PURPLE%All %GRAY%Res{%NAME%}%CONTINUE%//
-
-ItemDisplay[NMAG !INF !SOCK=1 !RW RES=20 DIN]:%NAME% %WHITE%+20 %PURPLE%All %GRAY%Res{%NAME%}%CONTINUE%//
-ItemDisplay[NMAG !INF !SOCK=1 !RW RES=21 DIN]:%NAME% %WHITE%+21 %PURPLE%All %GRAY%Res{%NAME%}%CONTINUE%//
-ItemDisplay[NMAG !INF !SOCK=1 !RW RES=22 DIN]:%NAME% %WHITE%+22 %PURPLE%All %GRAY%Res{%NAME%}%CONTINUE%//
-ItemDisplay[NMAG !INF !SOCK=1 !RW RES=23 DIN]:%NAME% %WHITE%+23 %PURPLE%All %GRAY%Res{%NAME%}%CONTINUE%//
-ItemDisplay[NMAG !INF !SOCK=1 !RW RES=24 DIN]:%NAME% %WHITE%+24 %PURPLE%All %GRAY%Res{%NAME%}%CONTINUE%//
-
-ItemDisplay[NMAG !INF !SOCK=1 !RW RES=25 DIN]:%NAME% %WHITE%+25 %PURPLE%All %GRAY%Res{%NAME%}%CONTINUE%//
-ItemDisplay[NMAG !INF !SOCK=1 !RW RES=26 DIN]:%NAME% %WHITE%+26 %PURPLE%All %GRAY%Res{%NAME%}%CONTINUE%//
-ItemDisplay[NMAG !INF !SOCK=1 !RW RES=27 DIN]:%NAME% %WHITE%+27 %PURPLE%All %GRAY%Res{%NAME%}%CONTINUE%//
-ItemDisplay[NMAG !INF !SOCK=1 !RW RES=28 DIN]:%NAME% %WHITE%+28 %PURPLE%All %GRAY%Res{%NAME%}%CONTINUE%//
-ItemDisplay[NMAG !INF !SOCK=1 !RW RES=29 DIN]:%NAME% %WHITE%+29 %PURPLE%All %GRAY%Res{%NAME%}%CONTINUE%//
-ItemDisplay[NMAG !INF !SOCK=1 !RW RES=30 DIN]:%NAME% %WHITE%+30 %PURPLE%All %GRAY%Res{%NAME%}%CONTINUE%//
+ItemDisplay[NMAG !INF !RW RES~5-19 DIN]:%NAME% %WHITE%+5 %PURPLE%All %GRAY%Res{%NAME%}%CONTINUE%//
+ItemDisplay[NMAG !INF !SOCK=1 !RW RES~20-30 DIN]:%NAME% %WHITE%+20 %PURPLE%All %GRAY%Res{%NAME%}%CONTINUE%//
 
 // Paladin Exile Bases - exceptional or elite ethereal paladin shields with more than 20 all res
 ItemDisplay[NMAG !INF !RW ETH (SOCK=0 OR SOCK=4) (EXC OR ELT) RES>19 DIN]:%GREEN%Exile %NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
@@ -4599,8 +4720,8 @@ ItemDisplay[(NMAG OR MAG OR RARE OR CRAFT) !EQUIPPED ((CLVL<60 (SK251=1 OR SK252
 
 //Show staffmods on NMAG items
 // Daggers
-ItemDisplay[NMAG !RW CLVL>79 DAGGER !(SK73>2 OR SK254>2 OR SK259>2 OR SK265>2 OR SK269>2 OR SK270>2 OR SK274>2 OR SK275>2 OR SK280>2) FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hides daggers that don't have +3 to a skill past level 80
-ItemDisplay[NMAG !RW CLVL>39 DAGGER !(SK73>1 OR SK254>1 OR SK259>1 OR SK265>1 OR SK269>1 OR SK270>1 OR SK274>1 OR SK275>1 OR SK280>1) FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hides daggers that don't have +2 to a skill past level 40
+ItemDisplay[NMAG !RW CLVL>79 DAGGER !(SK73>2 OR SK254>2 OR SK257>2 OR SK259>2 OR SK265>2 OR SK266>2 OR SK269>2 OR SK270>2 OR SK274>2 OR SK275>2 OR SK280>2) FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hides daggers that don't have +3 to a skill past level 80
+ItemDisplay[NMAG !RW CLVL>39 DAGGER !(SK73>1 OR SK254>1 OR SK257>1 OR SK259>1 OR SK265>1 OR SK266>1 OR SK269>1 OR SK270>1 OR SK274>1 OR SK275>1 OR SK280>1) FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hides daggers that don't have +2 to a skill past level 40
 
 //Assasin
 ItemDisplay[NMAG !RW CLVL>79 SIN !(SK251>2 OR SK252>2 OR SK253>2 OR SK254>2 OR SK255>2 OR SK256>2 OR SK257>2 OR SK258>2 OR SK259>2 OR SK260>2 OR SK261>2 OR SK262>2 OR SK263>2 OR SK264>2 OR SK265>2 OR SK266>2 OR SK267>2 OR SK268>2 OR SK269>2 OR SK270>2 OR SK271>2 OR SK272>2 OR SK273>2 OR SK274>2 OR SK275>2 OR SK276>2 OR SK277>2 OR SK278>2 OR SK279>2 OR SK280>2 OR SK366>2 OR ((skr OR 9qr OR 7qr OR ktr OR 9ar OR 7ar OR axf OR 9xf OR 7xf) ETH)) FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hides assassin claws that don't have +3 to a skill past level 80
@@ -4616,7 +4737,7 @@ ItemDisplay[(NMAG OR MAG OR RARE OR CRAFT) !EQUIPPED !RW ((SK275=1 CLVL<60) OR (
 ItemDisplay[(NMAG OR MAG OR RARE OR CRAFT) !EQUIPPED !RW ((SK274=1 CLVL<60) OR (SK274=2 CLVL<90) OR (SK274=3))]:%TAN%+%SK274%%DARK_GREEN%b.ice %NAME%{%NAME%}%CONTINUE%//
 ItemDisplay[(NMAG OR MAG OR RARE OR CRAFT) !EQUIPPED !RW ((SK273=1 CLVL<60) OR (SK273=2 CLVL<90) OR (SK273=3))]:%TAN%+%SK273%%DARK_GREEN%m.blst %NAME%{%NAME%}%CONTINUE%//
 ItemDisplay[(NMAG OR MAG OR RARE OR CRAFT) !EQUIPPED !RW ((SK272=1 CLVL<60) OR (SK272=2 CLVL<90) OR (SK272=3))]:%TAN%+%SK272%%DARK_GREEN%w.infr %NAME%{%NAME%}%CONTINUE%//
-ItemDisplay[(NMAG OR MAG OR RARE OR CRAFT) !EQUIPPED !RW ((SK271=1 CLVL<60) OR (SK271=2 CLVL<90) OR (SK271=3))]:%TAN%+%SK271%%DARK_GREEN%cL.snt %NAME%{%NAME%}%CONTINUE%//
+ItemDisplay[(NMAG OR MAG OR RARE OR CRAFT) !EQUIPPED !RW ((SK271=1 CLVL<60) OR (SK271=2 CLVL<90) OR (SK271=3))]:%TAN%+%SK271%%DARK_GREEN%c.l.snt %NAME%{%NAME%}%CONTINUE%//
 ItemDisplay[(NMAG OR MAG OR RARE OR CRAFT) !EQUIPPED !RW ((SK270=1 CLVL<60) OR (SK270=2 CLVL<90) OR (SK270=3))]:%TAN%+%SK270%%DARK_GREEN%d.tail %NAME%{%NAME%}%CONTINUE%//
 ItemDisplay[(NMAG OR MAG OR RARE OR CRAFT) !EQUIPPED !RW ((SK269=1 CLVL<60) OR (SK269=2 CLVL<90) OR (SK269=3))]:%TAN%+%SK269%%DARK_GREEN%c.thnd %NAME%{%NAME%}%CONTINUE%//
 ItemDisplay[(NMAG OR MAG OR RARE OR CRAFT) !EQUIPPED !RW ((SK268=1 CLVL<60) OR (SK268=2 CLVL<90) OR (SK268=3))]:%TAN%+%SK268%%DARK_GREEN%s.warr %NAME%{%NAME%}%CONTINUE%//
