@@ -22,7 +22,7 @@ ItemDisplay[box FILTLVL=8]:%NAME%{%WHITE%Filter Level: 8%CL%%GRAY%Strict Filteri
 ItemDisplay[box FILTLVL=9]:%NAME%{%WHITE%Filter Level: 9%CL%%GRAY%Endgame Mapping}%CONTINUE%//
 ItemDisplay[box FILTLVL=0]:%NAME%{%NAME%%CL%%GRAY%Levels 5-6-7-8 Hide Some Rares and Non-Eth Items%CL%%GRAY%Levels 2-3-4 Hide Some Non-Magic/Magic Items%CL%Level 1 Shows Most Non-Magic/Magic Items}%CONTINUE%//
 ItemDisplay[box CLVL<20 !FILTLVL=0]:%NAME%{%NAME%%CL%%GRAY%For %GOLD%Increase and Decrease Filter Level%CL%%GRAY%For %GOLD%Always Show Items %GRAY%and Hotkeys%CL%Open Settings to Create Toggle}%CONTINUE%//
-ItemDisplay[box]:%NAME%{%NAME%%CL%%WHITE%Erazure: Version 4.14}//
+ItemDisplay[box]:%NAME%{%NAME%%CL%%WHITE%Erazure: Version 4.15}//
 
 // ==============================  Arrows and Bolts  ===============================
 
@@ -1047,9 +1047,9 @@ ItemDisplay[MAG PRES>0 (cm1 OR cm2 OR cm3) !RES>0]:%WHITE%+%PRES% %DARK_GREEN%Ps
 // Cold Resist
 ItemDisplay[MAG CRES>0 (cm1 OR cm2 OR cm3) !RES>0]:%WHITE%+%CRES% %BLUE%Cold %GRAY%Res %NAME%{%NAME%}%CONTINUE%
 // Dexterity
-ItemDisplay[MAG DEX>0 (cm1 OR cm2 OR cm3)]:%WHITE%+%DEX% %DARK_GREEN%Dex %NAME%{%NAME%}%CONTINUE%
+ItemDisplay[MAG DEX>0 (cm1 OR cm2 OR cm3)]:%WHITE%+%DEX% %GRAY%Dex %NAME%{%NAME%}%CONTINUE%
 // Strength
-ItemDisplay[MAG STR>0 (cm1 OR cm2 OR cm3)]:%WHITE%+%STR% %DARK_GREEN%Str %NAME%{%NAME%}%CONTINUE%
+ItemDisplay[MAG STR>0 (cm1 OR cm2 OR cm3)]:%WHITE%+%STR% %GRAY%Str %NAME%{%NAME%}%CONTINUE%
 // Life
 ItemDisplay[MAG LIFE>0 (cm1 OR cm2 OR cm3)]:%WHITE%+%LIFE% %RED%Life %NAME%{%NAME%}%CONTINUE%
 // Defense
@@ -1593,7 +1593,7 @@ ItemDisplay[RARE !ID !ETH BOOTS CLVL>89]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< 
 ItemDisplay[RARE !ID !ETH GLOVES CLVL<90]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%%BORDER-8F%%MAP-9B%%DOT-6C%%PX-A8%// Notify for rare gloves under character level 90
 ItemDisplay[RARE !ID !ETH GLOVES CLVL>89]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%// No chat notification above character level 89
 
-ItemDisplay[RARE !ID CHEST ALVL>84 FILTLVL<9]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%%BORDER-8F%%MAP-9B%%DOT-6C%%PX-A8%// Notify for rare armors with affix levels 85 or higher
+ItemDisplay[RARE !ID CHEST (ALVL>84 OR ILVL>93) FILTLVL<9]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%%BORDER-8F%%MAP-9B%%DOT-6C%%PX-A8%// Notify for rare armors with affix levels 85 or higher
 
 ItemDisplay[RARE !ID CLVL<95 (clb OR spc OR 9cl OR 9sp OR 7cl OR 7sp OR BAR OR DRU OR SOR OR WAND OR SCEPTER OR NEC)]:%YELLOW%*  %NAME%  %YELLOW%*// Show all rare Druid Clubs that can roll staff mods
 ItemDisplay[RARE !ID CLVL>94 (clb OR spc OR 9cl OR 9sp OR 7cl OR 7sp OR BAR OR DRU OR SOR OR WAND OR SCEPTER OR NEC)]:%YELLOW%%NAME%// Show all rare Druid Clubs that can roll staff mods
@@ -1700,9 +1700,9 @@ ItemDisplay[(MAG OR RARE) STAT1>0 ID jew]:%WHITE%%STAT1%%BLUE%nrg %NAME%{%NAME%}
 // Life
 ItemDisplay[(MAG OR RARE) LIFE>0 ID jew]:%WHITE%%LIFE%%RED%life %NAME%{%NAME%}%CONTINUE%
 // Strength
-ItemDisplay[(MAG OR RARE) STR>0 ID jew]:%WHITE%%STR%%DARK_GREEN%str %NAME%{%NAME%}%CONTINUE%
+ItemDisplay[(MAG OR RARE) STR>0 ID jew]:%WHITE%%STR%%GRAY%str %NAME%{%NAME%}%CONTINUE%
 // Dexterity
-ItemDisplay[(MAG OR RARE) DEX>0 ID jew]:%WHITE%%DEX%%DARK_GREEN%dex %NAME%{%NAME%}%CONTINUE%
+ItemDisplay[(MAG OR RARE) DEX>0 ID jew]:%WHITE%%DEX%%GRAY%dex %NAME%{%NAME%}%CONTINUE%
 // Defense
 ItemDisplay[(MAG OR RARE) DEF>0 ID jew]:%WHITE%%DEF%%GRAY%def %NAME%{%NAME%}%CONTINUE%
 // 15 Increased Attack Speed
@@ -4177,11 +4177,11 @@ ItemDisplay[MAG (STAT36>3 STAT36<20) ID SHIELD]:%WHITE%%STAT36%%GOLD%pdr %NAME%{
 ItemDisplay[(RARE OR CRAFT) (STAT36>14 STAT36<20) ID (CHEST OR SHIELD)]:%WHITE%%STAT36%%PURPLE%pdr %NAME%{%PURPLE%***   %GOLD%%STAT36%% Damage Reduction   %PURPLE%***%CL%%NAME%}%CONTINUE%
 ItemDisplay[(MAG OR RARE OR CRAFT) STAT36>19 ID (CHEST OR SHIELD)]:%WHITE%%STAT36%%PURPLE%pdr %NAME%{%PURPLE%***   %GOLD%%STAT36%% Damage Reduction   %PURPLE%***%CL%%NAME%}%CONTINUE%
 
-// 3% PDR on Boots
-ItemDisplay[(MAG OR RARE OR CRAFT) STAT36>2 ID BOOTS]:%WHITE%%STAT36%%GOLD%pdr %NAME%{%RED%***   %GOLD%%STAT36%% Damage Reduction   %RED%***%CL%%NAME%}%CONTINUE%
+// 2%+ PDR on Boots
+ItemDisplay[STAT36>1 ID BOOTS]:%WHITE%%STAT36%%GOLD%pdr %NAME%{%RED%***   %GOLD%%STAT36%% Damage Reduction   %RED%***%CL%%NAME%}%CONTINUE%
 
-// 3% PDR on Rings
-ItemDisplay[(MAG OR RARE OR CRAFT) STAT36>2 ID rin]:%WHITE%%STAT36%%GOLD%pdr %NAME%{%RED%***   %GOLD%%STAT36%% Damage Reduction   %RED%***%CL%%NAME%}%CONTINUE%
+// 2%+ PDR on Rings
+ItemDisplay[STAT36>1 ID rin]:%WHITE%%STAT36%%GOLD%pdr %NAME%{%RED%***   %GOLD%%STAT36%% Damage Reduction   %RED%***%CL%%NAME%}%CONTINUE%
 
 // %PDR on Helms and Circlets
 ItemDisplay[(MAG OR RARE OR CRAFT) (STAT36>3 STAT36<8) ID (HELM OR CIRC)]:%WHITE%%STAT36%%GOLD%pdr %NAME%{%RED%***   %GOLD%%STAT36%% Damage Reduction   %RED%***%CL%%NAME%}%CONTINUE%
