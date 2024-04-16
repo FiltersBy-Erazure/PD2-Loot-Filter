@@ -121,16 +121,14 @@ ItemDisplay[pvpp]:%GRAY%i%BLUE%(O)%GRAY%i%WHITE%{%WHITE% Dueling Mana Potion }//
 // ==================================  Rejuvenation Potions  ================================
 
 ItemDisplay[rvs ((MAPID>160 MAPID<164) OR MAPID=137)]:%GRAY%i%PURPLE%(O)%GRAY%i%WHITE%{%WHITE% Rejuvenation Potion }//
-ItemDisplay[rvs FILTLVL>7 !((MAPID>160 MAPID<164) OR MAPID=137)]:{%WHITE% Rejuvenation Potion }//
+ItemDisplay[rvs FILTLVL=9 !((MAPID>160 MAPID<164) OR MAPID=137)]:{%WHITE% Rejuvenation Potion }//
 ItemDisplay[rvs FILTLVL=0 !((MAPID>160 MAPID<164) OR MAPID=137)]:%GRAY%i%PURPLE%(%WHITE% Rejuv %PURPLE%)%GRAY%i%WHITE%{%WHITE% Rejuvenation Potion }//
-ItemDisplay[rvs CLVL<60 !FILTLVL>7 !FILTLVL=0 !((MAPID>160 MAPID<164) OR MAPID=137)]:%GRAY%i%PURPLE%(%WHITE% Rejuv %PURPLE%)%GRAY%i%WHITE%{%WHITE% Rejuvenation Potion }%DOT-9B%%PX-20%%TIER-0%//
-ItemDisplay[rvs CLVL>59 CLVL<80 !FILTLVL>7 !((MAPID>160 MAPID<164) OR MAPID=137)]:%GRAY%i%PURPLE%(%WHITE% Rejuv %PURPLE%)%GRAY%i%WHITE%{%WHITE% Rejuvenation Potion }//
-ItemDisplay[rvs CLVL>79 !FILTLVL>7]:%GRAY%i%PURPLE%(%WHITE% Juv %PURPLE%)%GRAY%i%WHITE%{%WHITE% Rejuvenation Potion }//
-
-
+ItemDisplay[rvs CLVL<60 !FILTLVL=9 !FILTLVL=0 !((MAPID>160 MAPID<164) OR MAPID=137)]:%GRAY%i%PURPLE%(%WHITE% Rejuv %PURPLE%)%GRAY%i%WHITE%{%WHITE% Rejuvenation Potion }%DOT-9B%%PX-20%%TIER-0%//
+ItemDisplay[rvs CLVL>59 CLVL<80 !FILTLVL=9 !((MAPID>160 MAPID<164) OR MAPID=137)]:%GRAY%i%PURPLE%(%WHITE% Rejuv %PURPLE%)%GRAY%i%WHITE%{%WHITE% Rejuvenation Potion }//
+ItemDisplay[rvs CLVL>79 !FILTLVL=9]:%GRAY%i%PURPLE%(%WHITE% Juv %PURPLE%)%GRAY%i%WHITE%{%WHITE% Rejuvenation Potion }//
 
 ItemDisplay[rvl ((MAPID>160 MAPID<164) OR MAPID=137)]:%GRAY%i%PURPLE%(O)%GRAY%i%WHITE%{%WHITE% Full Rejuvenation Potion }//
-ItemDisplay[rvl (FILTLVL=8 OR FILTLVL=9)]:%PURPLE%i%GRAY%I%PURPLE%(O)%GRAY%I%PURPLE%i%WHITE%{%WHITE% Full Rejuvenation Potion }//
+ItemDisplay[rvl FILTLVL=9]:%PURPLE%i%GRAY%I%PURPLE%(O)%GRAY%I%PURPLE%i%WHITE%{%WHITE% Full Rejuvenation Potion }//
 ItemDisplay[rvl FILTLVL=0 !((MAPID>160 MAPID<164) OR MAPID=137)]:%PURPLE%i(%WHITE% Full Rejuv %PURPLE%)i%WHITE%{%WHITE% Full Rejuvenation Potion }//
 ItemDisplay[rvl CLVL<80 !((MAPID>160 MAPID<164) OR MAPID=137) !FILTLVL=0]:%PURPLE%i(%WHITE% Full Rejuv %PURPLE%)i%WHITE%{%WHITE% Full Rejuvenation Potion }%DOT-9B%%PX-20%%TIER-0%//
 ItemDisplay[rvl CLVL>79 !((MAPID>160 MAPID<164) OR MAPID=137)]:%PURPLE%i(%WHITE% Full %PURPLE%)i%WHITE%{%WHITE% Full Rejuvenation Potion }//
@@ -1450,11 +1448,11 @@ ItemDisplay[UNI !ID xvg]:%NAME%%CONTINUE%// Gravepalm Sharkskin Gloves
 ItemDisplay[UNI !ID utg]:%NAME%%CONTINUE%// Occultist Crusader Gauntlets
 ItemDisplay[UNI !ID (tgl OR xtg OR uvg OR umg OR uhg OR xhg OR xvg OR utg)]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
 //     Medium Value Gloves
-ItemDisplay[UNI !ID vgl CLVL<60]:%NAME%%CONTINUE%// Bloodfist Heavy Gloves
+ItemDisplay[UNI !ID vgl]:%NAME%%CONTINUE%// Bloodfist Heavy Gloves
 ItemDisplay[UNI !ID xmg CLVL<80]:%NAME%%CONTINUE%// Ghoulhide Heavy Bracers
-ItemDisplay[UNI !ID mgl CLVL<80]:%NAME%%CONTINUE%// Chance Guards Chain Gloves
+ItemDisplay[UNI !ID mgl CLVL<90]:%NAME%%CONTINUE%// Chance Guards Chain Gloves
 ItemDisplay[UNI !ID xlg]:%NAME%%CONTINUE%// Venom Grip Demonhide Gloves
-ItemDisplay[UNI !ID ((vgl CLVL<60) OR (xmg CLVL<80) OR (mgl CLVL<90) OR xlg)]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
+ItemDisplay[UNI !ID (vgl OR (xmg CLVL<80) OR (mgl CLVL<90) OR xlg)]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
 
 //     High Value Helms
 ItemDisplay[UNI !ID ulm]:%NAME%%CONTINUE%// Steel Shade Armet
@@ -1801,11 +1799,9 @@ ItemDisplay[RARE !ID !ETH (tkf OR tax OR bkf OR bal) CLVL>39 FILTLVL>4 !(MAPID=1
 ItemDisplay[RARE !ID !ETH (9tk OR 9ta OR 9bk OR 9b8) CLVL>79 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide non-Ethereal Exceptional quality Rare Throwing Weapons that aren't Zon class After Level 89
 ItemDisplay[RARE !ID !ETH (7tk OR 7ta OR 7bk OR 7b8) CLVL>89 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide non-Ethereal Elite quality Rare Throwing Weapons that aren't Zon class After Level 94
 
-ItemDisplay[RARE !ID SWORD !crs NORM CLVL>39 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide Normal quality Rare Swords (except for crystal swords) After Level 39
-ItemDisplay[RARE !ID SWORD crs !ETH CLVL>39 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide non-Ethereal Crystal Swords After Level 39
-ItemDisplay[RARE !ID SWORD !9cr EXC CLVL>79 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide Exceptional quality Rare Swords (except for dimensional blades) After Level 89
-ItemDisplay[RARE !ID SWORD 9cr !ETH CLVL>79 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide non-Ethereal Dimensional Blades After Level 89
-ItemDisplay[RARE !ID !ETH SWORD !7cr ELT CLVL>89 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide Elite quality Rare Swords After Level 94
+ItemDisplay[RARE !ID SWORD !ETH NORM CLVL>39 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide non-Ethereal Crystal Swords After Level 39
+ItemDisplay[RARE !ID SWORD !ETH EXC CLVL>79 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide non-Ethereal Dimensional Blades After Level 89
+ItemDisplay[RARE !ID SWORD !ETH ELT CLVL>89 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide Elite quality Rare Swords After Level 94
 
 ItemDisplay[RARE !ID MACE !ETH !(clb OR spc) NORM CLVL>39 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide non-Ethereal Normal quality Rare Maces after character level 39
 ItemDisplay[RARE !ID MACE !ETH !(9cl OR 9sp) EXC CLVL>79 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide non-Ethereal Exceptional quality Rare Rare Maces after character level 79
@@ -3276,11 +3272,11 @@ ItemDisplay[NMAG !RW (clb OR spc OR 9cl OR 9sp OR 7cl OR 7sp) (FILTLVL>8 OR (FIL
 ItemDisplay[NMAG !RW DRU (FILTLVL>8 OR (FILTLVL<9 FILTLVL>4 CLVL>89)) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// On filter level 9, hide nonmagical druid helms
 
 //      Plague runeword club bases
-//      (CLVL<95 OR (+1 or more to H.Wolverine, Oak Sage, Gust, Carrion Vine, Solar Creeper, Cyclone Armor, or Hurricane)) AND: (+3 to two of the following: Raven, Spirit Wolf, Dire Wolf, Grizzly)
-ItemDisplay[NMAG !RW (9cl OR 9sp OR 7cl OR 7sp) (SOCK=0 OR SOCK=3) ((CLVL<95 OR (SK236>0 OR SK226>0 OR SK370>0 OR SK231>0 OR SK250>0 OR SK235>0 OR SK241>0)) ((SK221>2 (SK237>2 OR SK227>2 OR SK247>2)) OR (SK237>2 (SK221>2 OR SK227>2 OR SK247>2)) OR (SK227>2 (SK237>2 OR SK221>2 OR SK247>2)) OR (SK247>2 (SK237>2 OR SK227>2 OR SK221>2))))]:%ORANGE%Plague %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
-
 //      +3 Arctic Blast with +3 to Oak/SolarCreeper/CarrionVine/Grizzly and +(1-3) Oak/SolarCreeper/CarrionVine/Grizzly
 ItemDisplay[NMAG !RW (9cl OR 9sp OR 7cl OR 7sp) (SOCK=0 OR SOCK=3) SK230=3 ((SK226=3 (SK231>0 OR SK241>0 OR SK247>0)) OR (SK231=3 (SK226>0 OR SK241>0 OR SK247>0)) OR (SK241=3 (SK231>0 OR SK226>0 OR SK247>0)) OR (SK247=3 (SK231>0 OR SK241>0 OR SK226>0)))]:%ORANGE%Plague %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
+
+//      (CLVL<95 OR (+1 or more to H.Wolverine, Oak Sage, Gust, Carrion Vine, Solar Creeper, Cyclone Armor, or Hurricane)) AND: (+3 to two of the following: Raven, Spirit Wolf, Dire Wolf, Grizzly)
+ItemDisplay[NMAG !RW (9cl OR 9sp OR 7cl OR 7sp) (SOCK=0 OR SOCK=3) ((CLVL<95 OR (SK236>0 OR SK226>0 OR SK370>0 OR SK231>0 OR SK250>0 OR SK235>0 OR SK241>0)) ((SK221>2 (SK237>2 OR SK227>2 OR SK247>2)) OR (SK237>2 (SK221>2 OR SK227>2 OR SK247>2)) OR (SK227>2 (SK237>2 OR SK221>2 OR SK247>2)) OR (SK247>2 (SK237>2 OR SK227>2 OR SK221>2))))]:%ORANGE%Plague %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
 
 // Hides nonmagical Ethereal Druid Helms after character level 30
 ItemDisplay[NMAG !RW ETH DRU DRUID CLVL>29 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// If your character is a druid, hide all Eth nonmagical Ethereal Druid Helms after character level 29
