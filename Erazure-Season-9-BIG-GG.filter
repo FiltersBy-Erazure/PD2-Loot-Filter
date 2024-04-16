@@ -1,12 +1,12 @@
-ItemDisplayFilterName[]: Lowest Strictness//              TIER-1
-ItemDisplayFilterName[]: Fewer Magic Items//              TIER-2
-ItemDisplayFilterName[]: Fewer Magic Items -H5//          TIER-3
-ItemDisplayFilterName[]: Fewer Magic Items -H5 -M5//      TIER-4
-ItemDisplayFilterName[]: Strict Filtering//               TIER-5
-ItemDisplayFilterName[]: Strict Filtering -H5//           TIER-6
-ItemDisplayFilterName[]: Strict Filtering -H5 -M5//       TIER-7
-ItemDisplayFilterName[]: Strict Filtering -H5 -M5 -Juv//  TIER-8
-ItemDisplayFilterName[]: Endgame Filtering -H5 -M5 -Juv// TIER-9
+ItemDisplayFilterName[]: Lowest Strictness//               Filter Level 1
+ItemDisplayFilterName[]: Fewer Magic Items//               Filter Level 2
+ItemDisplayFilterName[]: Fewer Magic Items -H5//           Filter Level 3
+ItemDisplayFilterName[]: Fewer Magic Items -M5//           Filter Level 4
+ItemDisplayFilterName[]: Strict Filtering//                Filter Level 5
+ItemDisplayFilterName[]: Strict Filtering -H5//            Filter Level 6
+ItemDisplayFilterName[]: Strict Filtering -M5//            Filter Level 7
+ItemDisplayFilterName[]: Strict Filtering -H5 -M5//        Filter Level 8
+ItemDisplayFilterName[]: Endgame Filtering -H5 -M5 -Juv//  Filter Level 9
 
 
 ItemDisplay[box]:%BLACK%II%GOLD%II%BLACK%X%GOLD%II%BLACK%II  %GOLD%Horadric Cube  %BLACK%II%GOLD%II%BLACK%X%GOLD%II%BLACK%II%CONTINUE%//
@@ -82,9 +82,9 @@ ItemDisplay[hp4 CLVL>24]:%GRAY%i%RED%(O)%GRAY%i%WHITE%{%WHITE% Greater Healing P
 // Super Healing Potion
 ItemDisplay[hp5 FILTLVL=0]:%GRAY%i%RED%( %WHITE%H%GRAY%-%WHITE%5 %RED%)%GRAY%i%WHITE%{%WHITE% Super Healing Potion }//
 ItemDisplay[hp5 CLVL<25 !FILTLVL=0]:%GRAY%i%RED%( %WHITE%H%GRAY%-%WHITE%5 %RED%)%GRAY%i%WHITE%%PX-50%%TIER-0%{%WHITE% Super Healing Potion }//
-ItemDisplay[hp5 CLVL>24 CLVL<50 (FILTLVL=1 OR FILTLVL=2 OR FILTLVL=5)]:%RED%i%GRAY%I%RED%(O)%GRAY%I%RED%i%WHITE%{%WHITE% Super Healing Potion }// On Filter Level 1, 2, and 5, show as iI(O)Ii between character level 30 and 50
-ItemDisplay[hp5 CLVL>49 (FILTLVL=1 OR FILTLVL=2 OR FILTLVL=5)]:%GRAY%i%RED%(O)%GRAY%i%WHITE%{%WHITE% Super Healing Potion }// On Filter Level 1, 2, and 5, show as i(O)i at character level 50+
-ItemDisplay[hp5 CLVL>24 (FILTLVL=3 OR FILTLVL=4 OR FILTLVL=6 OR FILTLVL=7 OR FILTLVL=8 OR FILTLVL=9)]:{%WHITE% Super Healing Potion }// On Filter Levels 3 or higher (except for Level 5), hide Super Healing potions
+ItemDisplay[hp5 CLVL>24 CLVL<50 (FILTLVL=1 OR FILTLVL=2 OR FILTLVL=4 OR FILTLVL=5 OR FILTLVL=7)]:%RED%i%GRAY%I%RED%(O)%GRAY%I%RED%i%WHITE%{%WHITE% Super Healing Potion }// On Filter Level 1, 2, and 5, show as iI(O)Ii between character level 30 and 50
+ItemDisplay[hp5 CLVL>49 (FILTLVL=1 OR FILTLVL=2 OR FILTLVL=4 OR FILTLVL=5 OR FILTLVL=7)]:%GRAY%i%RED%(O)%GRAY%i%WHITE%{%WHITE% Super Healing Potion }// On Filter Level 1, 2, 4, 5, and 7 show as i(O)i at character level 50+
+ItemDisplay[hp5 CLVL>24 (FILTLVL=3 OR FILTLVL=6 OR FILTLVL=8 OR FILTLVL=9)]:{%WHITE% Super Healing Potion }// On Filter Levels 3, 6, 8, 9 hide Super Healing potions
 
 // ==================================  Mana Potions  ====================================
 
@@ -1182,10 +1182,10 @@ ItemDisplay[UNI !ID 9tw]:%NAME%%CONTINUE%// Bartuc's Greater Talons
 ItemDisplay[UNI !ID ((7cs (CLVL<90 OR ASSASSIN)) OR 7tw OR 9tw)]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
 //     Medium Value Assassin Claws
 ItemDisplay[UNI !ID 7cs (CLVL>89 OR !ASSASSIN)]:%NAME%%CONTINUE%// Shadowkiller Battle Cestus
-ItemDisplay[UNI !ID 9ar ((ASSASSIN CLVL<40) OR (NECROMANCER CLVL<80))]:%NAME%%CONTINUE%// Mage Slayer Quhab
+ItemDisplay[UNI !ID 9ar ((ASSASSIN CLVL<40) OR NECROMANCER)]:%NAME%%CONTINUE%// Mage Slayer Quhab
 ItemDisplay[UNI !ID 7wb ASSASSIN CLVL<80]:%NAME%%CONTINUE%// Jade Talon Wrist Sword
 ItemDisplay[UNI !ID 7lw ASSASSIN CLVL<80]:%NAME%%CONTINUE%// Firelizard's Talons Feral Claws
-ItemDisplay[UNI !ID ((7cs (CLVL>89 OR !ASSASSIN)) OR (9ar ((ASSASSIN CLVL<40) OR (NECROMANCER CLVL<80))) OR (7wb ASSASSIN CLVL<80) OR (7lw ASSASSIN CLVL<80))]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
+ItemDisplay[UNI !ID ((7cs (CLVL>89 OR !ASSASSIN)) OR (9ar ((ASSASSIN CLVL<40) OR NECROMANCER)) OR (7wb ASSASSIN CLVL<80) OR (7lw ASSASSIN CLVL<80))]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%MAP-62%%BORDER-9B%%DOT-68%%PX-20%//
 
 //     High Value Barbarian Helms
 ItemDisplay[UNI !ID ba6 CLVL<80]:%NAME%%CONTINUE%// Cyclopean Roar Jawbone Visor
@@ -1551,9 +1551,9 @@ ItemDisplay[SET !ID amu CLVL>89 FILTLVL<9]:%PURPLE%*%DARK_GREEN%* %GREEN%>  %GRE
 ItemDisplay[SET !ID amu CLVL<90]:%PURPLE%*%DARK_GREEN%* %GREEN%>  %NAME%  %GREEN%< %DARK_GREEN%*%PURPLE%*%GREEN%%BORDER-71%%MAP-76%%DOT-81%%PX-84%//
 
 // Normal Set Items
-ItemDisplay[SET !ID NORM (lbt OR lbl OR lgl) FILTLVL>4]:%PURPLE%*%DARK_GREEN%* %GREEN%>  %NAME%  %GREEN%< %DARK_GREEN%*%PURPLE%*%GREEN%%BORDER-71%%MAP-76%%DOT-81%%PX-84%//
-ItemDisplay[SET !ID NORM !lbt !lgl !lbl FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
-ItemDisplay[SET !ID NORM CLVL>59 FILTLVL<5]:%DARK_GREEN%* %GREEN%>  %NAME%  %GREEN%< %DARK_GREEN%*%GREEN%//
+ItemDisplay[SET !ID NORM (lbt OR lbl OR lgl OR ba4) FILTLVL>4]:%PURPLE%*%DARK_GREEN%* %GREEN%>  %NAME%  %GREEN%< %DARK_GREEN%*%PURPLE%*%GREEN%%BORDER-71%%MAP-76%%DOT-81%%PX-84%//
+ItemDisplay[SET !ID NORM !lbt !lgl !lbl !ba4 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
+ItemDisplay[SET !ID NORM CLVL>59 FILTLVL<5]:%PURPLE%*%DARK_GREEN%* %GREEN%>  %NAME%  %GREEN%< %DARK_GREEN%*%PURPLE%*%GREEN%//
 ItemDisplay[SET !ID NORM CLVL<60 FILTLVL<5]:%PURPLE%*%DARK_GREEN%* %GREEN%>  %NAME%  %GREEN%< %DARK_GREEN%*%PURPLE%*%GREEN%%BORDER-71%%MAP-76%%DOT-81%%PX-84%//
 
 // Exceptional Set items
@@ -1584,14 +1584,14 @@ ItemDisplay[RARE !ID (aqv OR cqv) FILTLVL>8 !AMAZON !(MAPID=1 OR MAPID=40 OR MAP
 ItemDisplay[RARE !ID aqv]:%YELLOW%*  %YELLOW%%NAME%  %YELLOW%*// All unidentified rare arrows
 ItemDisplay[RARE !ID cqv]:%YELLOW%*  %YELLOW%%NAME%  %YELLOW%*// All unidentified rare bolts
 
-ItemDisplay[RARE !ID !ETH BELT FILTLVL<9]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%%BORDER-8F%%MAP-9B%%DOT-6C%%PX-A8%// Notify for rare belts filter levels 1-8
-ItemDisplay[RARE !ID !ETH BELT FILTLVL>8]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%// No chat notification on filter level 9
+ItemDisplay[RARE !ID BELT FILTLVL<9]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%%BORDER-8F%%MAP-9B%%DOT-6C%%PX-A8%// Notify for rare belts filter levels 1-8
+ItemDisplay[RARE !ID BELT FILTLVL>8]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%// No chat notification on filter level 9
 
-ItemDisplay[RARE !ID !ETH BOOTS CLVL<90]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%%BORDER-8F%%MAP-9B%%DOT-6C%%PX-A8%// Notify for rare boots under character level 90
-ItemDisplay[RARE !ID !ETH BOOTS CLVL>89]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%// No chat notification above character level 89
+ItemDisplay[RARE !ID BOOTS CLVL<90]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%%BORDER-8F%%MAP-9B%%DOT-6C%%PX-A8%// Notify for rare boots under character level 90
+ItemDisplay[RARE !ID BOOTS CLVL>89]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%// No chat notification above character level 89
 
-ItemDisplay[RARE !ID !ETH GLOVES CLVL<90]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%%BORDER-8F%%MAP-9B%%DOT-6C%%PX-A8%// Notify for rare gloves under character level 90
-ItemDisplay[RARE !ID !ETH GLOVES CLVL>89]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%// No chat notification above character level 89
+ItemDisplay[RARE !ID GLOVES CLVL<90]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%%BORDER-8F%%MAP-9B%%DOT-6C%%PX-A8%// Notify for rare gloves under character level 90
+ItemDisplay[RARE !ID GLOVES CLVL>89]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%// No chat notification above character level 89
 
 ItemDisplay[RARE !ID CHEST (ALVL>84 OR ILVL>93) FILTLVL<9]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%%BORDER-8F%%MAP-9B%%DOT-6C%%PX-A8%// Notify for rare armors with affix levels 85 or higher
 
@@ -1816,14 +1816,13 @@ ItemDisplay[(MAG OR RARE) ID (aqv OR cqv)]:%NAME%{%NAME%}//
 ItemDisplay[CRAFT]:%ORANGE%%NAME%{%NAME%}%CONTINUE%//
 
 // Add Crafted Item Type
-ItemDisplay[CRAFT ((amu FRW>9 STAT86>2 LIFE>9) OR (rin STR>4 STAT60>0 LIFE>9) OR (HELM STAT136>9 STAT60>1 LIFE>9) OR (CHEST STAT86>2 STAT60>2 LIFE>19) OR (SHIELD STAT20>9 STAT60>2 LIFE>9) OR (GLOVES STAT136>4 STAT60>1 LIFE>9) OR (BOOTS REPLIFE>14 STAT60>1 LIFE>9) OR (BELT STAT135>9 STAT60>2 LIFE>9) OR (WEAPON ED>49 STAT60>2 LIFE>9))]:%RED%Blood %NAME%{%NAME%}%CONTINUE%//
-ItemDisplay[CRAFT ((amu FCR>4 STAT27>3 MANA>9) OR (rin STAT1>4 MAEK>0 MANA>9) OR (HELM FCR>4 STAT27>3 MANA>9) OR (CHEST FCR>4 MAEK>2 MANA>19) OR (SHIELD STAT20>9 FCR>4 MANA>19) OR (GLOVES FCR>4 MAEK>0 MANA>9) OR (BOOTS STAT77>9 STAT27>3 MANA>9) OR (BELT FCR>9 STAT27>3 MANA>9) OR (WEAPON ALLSK>0 FCR>9 MANA>9))]:%PURPLE%Caster %NAME%{%NAME%}%CONTINUE%//
-ItemDisplay[CRAFT ((amu STAT20>9 STAT35>3 STAT34>3) OR (rin STAT3>4 STAT35>1 STAT34>1) OR (HELM ED>19 LRES>9 STAT36>4) OR (CHEST ED>19 STAT33>99 STAT36>4 !(CHEST MULTI201,2820=5 ED>24 FHR>29)) OR (SHIELD ED>19 STAT33>99 STAT36>4 !(MULTI201,2820=5)) OR (GLOVES ED>9 CRES>9 STAT35>1 STAT34>1) OR (BOOTS ED>19 FRES>9 STAT35>1 STAT34>1) OR (BELT ED>9 PRES>9 STAT35>1 STAT34>1) OR (WEAPON ED>49 STAT35>1 STAT34>1 STAT81=1))]:%DARK_GREEN%Safety %NAME%{%NAME%}%CONTINUE%//
+ItemDisplay[CRAFT ((amu FRW>9 STAT86>2 LIFE>9) OR (rin STR>4 STAT60>0 LIFE>9) OR (HELM STAT136>9 STAT60>1 LIFE>9) OR (CHEST STAT86>2 STAT60>2 LIFE>19) OR (SHIELD STAT20>9 STAT60>2 LIFE>9) OR (GLOVES STAT136>4 STAT60>1 LIFE>9 !STAT81>0) OR (BOOTS REPLIFE>14 STAT60>1 LIFE>9) OR (BELT STAT135>9 STAT60>2 LIFE>9) OR (WEAPON ED>49 STAT60>2 LIFE>9 !(WEAPON MULTI201,2820=5 ED>49 STAT116>9)))]:%RED%Blood %NAME%{%NAME%}%CONTINUE%//
+ItemDisplay[CRAFT ((amu FCR>4 STAT27>3 MANA>9) OR (rin STAT1>4 MAEK>0 MANA>9) OR (HELM FCR>4 STAT27>3 MANA>9) OR (CHEST FCR>4 MAEK>2 MANA>19) OR (SHIELD STAT20>9 FCR>4 MANA>19) OR (GLOVES FCR>4 MAEK>0 MANA>9 !STAT81>0) OR (BOOTS STAT77>9 STAT27>3 MANA>9) OR (BELT FCR>9 STAT27>3 MANA>9) OR (WEAPON ALLSK>0 FCR>9 MANA>9))]:%PURPLE%Caster %NAME%{%NAME%}%CONTINUE%//
+ItemDisplay[CRAFT ((amu STAT20>9 STAT35>3 STAT34>3) OR (rin STAT3>4 STAT35>1 STAT34>1) OR (HELM ED>19 LRES>9 STAT36>4) OR (CHEST ED>19 STAT33>99 STAT36>4 !(CHEST MULTI201,2820=5 ED>24 FHR>29)) OR (SHIELD ED>19 STAT33>99 STAT36>4 !(MULTI201,2820=5)) OR (GLOVES ED>9 CRES>9 STAT35>1 STAT34>1 !STAT81>0) OR (BOOTS ED>19 FRES>9 STAT35>1 STAT34>1) OR (BELT ED>9 PRES>9 STAT35>1 STAT34>1) OR (WEAPON ED>49 STAT35>1 STAT34>1 STAT81=1 !(WEAPON MULTI201,2820=5 ED>49 STAT116>9)))]:%DARK_GREEN%Safety %NAME%{%NAME%}%CONTINUE%//
 ItemDisplay[CRAFT ((amu MULTI201,2820=5 AR>149 FHR>9) OR (rin MULTI201,2820=5 DEX>4 MAXDMG>1) OR (HELM MULTI201,2820=5 ED>9 FHR>9) OR (CHEST MULTI201,2820=5 ED>24 FHR>29) OR (SHIELD MULTI201,2820=5 STAT20>9 FBR>19 !STAT62>0) OR (GLOVES MULTI201,2820=5 STAT81>0 STAT116>9) OR (BOOTS MULTI201,2820=5 STAT33>59 FHR>9) OR (BELT MULTI201,2820=5 DTM>4 FHR>9) OR (WEAPON MULTI201,2820=5 ED>49 STAT116>9))]:%BLUE%Hitpower %NAME%{%NAME%}%CONTINUE%//
-ItemDisplay[CRAFT ((amu STAT62>2 REPLIFE>4 STAT109>4) OR (rin STAT62>0 REPLIFE>4 STAT110>9) OR (HELM STAT62>1 REPLIFE>4 STAT141>4) OR (CHEST STAT62>2 STAT91>19) OR (SHIELD STAT62>2 STAT20>9 STAT91>19) OR (GLOVES STAT62>1 REPLIFE>4 STAT141>4) OR (BOOTS STAT62>1 REPLIFE>4 STAT110>9) OR (BELT STAT62>2 REPLIFE>4 DTM>9) OR (WEAPON STAT62>2 STAT121>99 STAT122>99 REPLIFE>4))]:%GRAY%Vampiric %NAME%{%NAME%}%CONTINUE%//
-ItemDisplay[CRAFT ((amu STAT3>9 MFIND>19 STAT89>0) OR (rin STAT3>4 MFIND>9 STAT89>0) OR (HELM ED>24 MFIND>19 STAT89>0) OR (CHEST ED>24 MFIND>19 STAT89>0) OR (SHIELD STAT20>9 MFIND>19 STAT89>0) OR (GLOVES ED>24 MFIND>14 STAT89>0) OR (BOOTS ED>24 MFIND>14 STAT89>0) OR (BELT ED>24 MFIND>19 STAT89>0) OR (WEAPON ED>49 MFIND>19 STAT89>0))]:%YELLOW%Bountiful %NAME%{%NAME%}%CONTINUE%//
-ItemDisplay[CRAFT ((amu (STR>3 DEX>3 STAT1>3 STAT3>3) RES>4 STAT32>99) OR (rin RES>2 STAT32>49 STAT118=1) OR (HELM IAS>4 STAT20>9 STAT118=1) OR (CHEST RES>4 STAT20>9 STAT16>24) OR (SHIELD RES>4 STAT20>9 STAT118=1) OR (GLOVES IAS>4 STAT119>9 STAT16>24) OR (BOOTS FRW>9 STAT32>99 STAT118=1) OR (BELT IAS>4 STAT118=1 STAT16>24 !(STAT360=20 IAS=10)) OR (WEAPON IAS>19 EDAM>19 STAT19>49))]:%WHITE%Brilliant %NAME%{%NAME%}%CONTINUE%//
-// Brilliant gloves with 10% AR bonus exception
+ItemDisplay[CRAFT ((amu STAT62>2 REPLIFE>4 STAT109>4) OR (rin STAT62>0 REPLIFE>4 STAT110>9) OR (HELM STAT62>1 REPLIFE>4 STAT141>4) OR (CHEST STAT62>2 STAT91>19) OR (SHIELD STAT62>2 STAT20>9 STAT91>19) OR (GLOVES STAT62>1 REPLIFE>4 STAT141>4 !STAT81>0) OR (BOOTS STAT62>1 REPLIFE>4 STAT110>9) OR (BELT STAT62>2 REPLIFE>4 DTM>9) OR (WEAPON STAT62>2 STAT121>99 STAT122>99 REPLIFE>4 !(WEAPON MULTI201,2820=5 ED>49 STAT116>9)))]:%GRAY%Vampiric %NAME%{%NAME%}%CONTINUE%//
+ItemDisplay[CRAFT ((amu STAT3>9 MFIND>19 STAT89>0) OR (rin STAT3>4 MFIND>9 STAT89>0) OR (HELM ED>24 MFIND>19 STAT89>0) OR (CHEST ED>24 MFIND>19 STAT89>0) OR (SHIELD STAT20>9 MFIND>19 STAT89>0) OR (GLOVES ED>24 MFIND>14 STAT89>0 !STAT81>0) OR (BOOTS ED>24 MFIND>14 STAT89>0) OR (BELT ED>24 MFIND>19 STAT89>0) OR (WEAPON ED>49 MFIND>19 STAT89>0 !(WEAPON MULTI201,2820=5 ED>49 STAT116>9)))]:%YELLOW%Bountiful %NAME%{%NAME%}%CONTINUE%//
+ItemDisplay[CRAFT ((amu (STR>3 DEX>3 STAT1>3 STAT3>3) RES>4 STAT32>99) OR (rin RES>2 STAT32>49 STAT118=1) OR (HELM IAS>4 STAT20>9 STAT118=1) OR (CHEST RES>4 STAT20>9 STAT16>24) OR (SHIELD RES>4 STAT20>9 STAT118=1) OR (GLOVES IAS>4 STAT119>9 STAT16>24 !STAT81>0) OR (BOOTS FRW>9 STAT32>99 STAT118=1) OR (BELT IAS>4 STAT118=1 STAT16>24 !(STAT360=20 IAS=10)) OR (WEAPON IAS>19 EDAM>19 STAT19>49 !(WEAPON MULTI201,2820=5 ED>49 STAT116>9)))]:%WHITE%Brilliant %NAME%{%NAME%}%CONTINUE%//
 
 // 	----------------------------------------------------------------------------    
 // 	     						    Magic Items    
@@ -2875,9 +2874,6 @@ ItemDisplay[(GLOVES OR BOOTS OR BELT) SUP NMAG ED>4]:%WHITE%Sup. %NAME%{%NAME%}%
 // Adds "Inf." for tag for inferiors
 ItemDisplay[INF NMAG ID]:%GRAY%Inf. %NAME%{%NAME%}%CONTINUE%//
 
-// Show names of items in gambling screen
-ItemDisplay[(WEAPON OR ARMOR) NMAG !ID]:%NAME%{%NAME%}//
-
 ItemDisplay[ID (MAG OR RARE OR SET OR UNI OR CRAFT) SOCK>0]:%NAME% %TAN%[%WHITE%%SOCKETS%%TAN%]{%NAME%}%CONTINUE%// Add number of sockets to the end of socketed items' names (eg "Quilted Armor [2os]")
 ItemDisplay[NMAG !RW SOCK>0]:%NAME% %TAN%[%WHITE%%SOCKETS%%TAN%]%GRAY%{%NAME%}%CONTINUE%// Add number of sockets to the end of socketed items' names (eg "Quilted Armor [2os]")
 
@@ -2895,6 +2891,183 @@ ItemDisplay[INF BAR !BARBARIAN FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MA
 ItemDisplay[INF SIN !ASSASSIN FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
 ItemDisplay[INF !(NEC OR WAND OR SOR OR STAFF OR SCEPTER OR DRU OR clb OR 9cl OR 7cl OR spc OR 9sp OR 7sp OR BAR OR SIN) CLVL>2 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide all Low Quality, Cracked, Crude, & Damaged items after level 2
+
+// Show names of items in gambling screen
+ItemDisplay[(WEAPON OR ARMOR) NMAG !ID MAPID<133]:%NAME%{%NAME%}//
+
+// Show the names of possible normal, exceptional, and elite uniques for the Gheed map event
+ItemDisplay[NMAG !ID SHOP amu MAPID>132]:%GOLD%Seraph's Hymn%NL%Saracen's Chance%NL%Rising Sun%NL%Nokozan Relic%NL%Metalgrid%NL%Mara's Kaleidoscope%NL%Mahim-Oak Curio%NL%Highlord's Wrath%NL%Eye of Etlich%NL%Crescent Moon%NL%Cat's Eye%NL%Atma's Scarab%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP rin MAPID>132]:%GOLD%Wisp Projector%NL%Stone of Jordan%NL%Raven Frost%NL%Nature's Peace%NL%Nagelring%NL%Manald Heal%NL%Kadala's Heirloom%NL%Dwarf Star%NL%Carrion Wind%NL%Bul-Kathos'%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP jew MAPID>132]:%GOLD%Rainbow Facet%NL%%GRAY%List of Jewels:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP cm3 MAPID>132]:%GOLD%Gheed's Fortune%NL%%GRAY%List of Charms:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP ci0 MAPID>132]:%GOLD%Kira's Guardian%NL%%GRAY%Exceptional Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP ci1 MAPID>132]:%GOLD%Griffon's Eye%NL%%GRAY%Elite Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP am1 MAPID>132]:%GOLD%Blood Raven's Charge%NL%%GRAY%Elite Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP am2 MAPID>132]:%GOLD%Lycander's Aim%NL%%GRAY%Exceptional Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP am5 MAPID>132]:%GOLD%Thunderstroke%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Titan's Revenge%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%True Silver%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP am3 MAPID>132]:%GOLD%Stoneraven%NL%%GRAY%Elite Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP am4 MAPID>132]:%GOLD%Zerae's Resolve%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Lycander's Flank%NL%%GRAY%Exceptional Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP ktr MAPID>132]:%GOLD%Mage Slayer%NL%%GRAY%Exceptional Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP wrb MAPID>132]:%GOLD%Jade Talon%NL%%GRAY%Elite Tier:%CONTINUE%//
+// ItemDisplay[NMAG !ID SHOP axf MAPID>132]:%NAME%//
+ItemDisplay[NMAG !ID SHOP ces MAPID>132]:%GOLD%Shadow Killer%NL%%GRAY%Elite Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP clw MAPID>132]:%GOLD%Firelizard's Talons%NL%%GRAY%Elite Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP btl MAPID>132]:%GOLD%Stalker's Cull%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Bartuc's Cut-Throat%NL%%GRAY%Exceptional Tier:%CONTINUE%//
+// ItemDisplay[NMAG !ID SHOP skr MAPID>132]:%NAME%//
+ItemDisplay[NMAG !ID SHOP ba1 MAPID>132]:%GOLD%Cyclopean Roar%NL%%GRAY%Exceptional Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP ba2 MAPID>132]:%GOLD%Wolfhowl%NL%%GRAY%Elite Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP ba3 MAPID>132]:%GOLD%Demonhorn's Edge%NL%%GRAY%Elite Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP ba4 MAPID>132]:%GOLD%Halaberd's Reign%NL%%GRAY%Elite Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP ba5 MAPID>132]:%GOLD%Raekor's Virtue%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Arreat's Face%NL%%GRAY%Exceptional Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP dr1 MAPID>132]:%GOLD%Cerebus' Bite%NL%%GRAY%Elite Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP dr2 MAPID>132]:%GOLD%Quetzalcoatl%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP dr3 MAPID>132]:%GOLD%Spirit Keeper%NL%%GRAY%Elite Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP dr4 MAPID>132]:%GOLD%Ravenlore%NL%%GRAY%Elite Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP dr5 MAPID>132]:%GOLD%Ursa's Nightmare%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Jalal's Mane%NL%%GRAY%Exceptional Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP ne1 MAPID>132]:%GOLD%Kalan's Legacy%NL%%GRAY%Exceptional Tier:%CONTINUE%//
+// ItemDisplay[NMAG !ID SHOP ne2 MAPID>132]:%NAME%//
+ItemDisplay[NMAG !ID SHOP ne3 MAPID>132]:%GOLD%Martyrdom%NL%%GRAY%Elite Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP ne4 MAPID>132]:%GOLD%Boneflame%NL%%GRAY%Elite Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP ne5 MAPID>132]:%GOLD%Darkforce Spawn%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Homunculus%NL%%GRAY%Exceptional Tier:%CONTINUE%//
+// ItemDisplay[NMAG !ID SHOP pa1 MAPID>132]:%NAME%//
+ItemDisplay[NMAG !ID SHOP pa2 MAPID>132]:%GOLD%Alma Negra%NL%%GRAY%Elite Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP pa3 MAPID>132]:%GOLD%Sankekur's Fall%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP pa4 MAPID>132]:%GOLD%Dragonscale%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Herald of Zakarum%NL%%GRAY%Exceptional Tier:%CONTINUE%//
+// ItemDisplay[NMAG !ID SHOP pa5 MAPID>132]:%NAME%//
+ItemDisplay[NMAG !ID SHOP ob1 MAPID>132]:%GOLD%Tempest%NL%%GRAY%Exceptional Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP ob2 MAPID>132]:%GOLD%Eschuta's Temper%NL%%GRAY%Elite Tier:%CONTINUE%//
+// ItemDisplay[NMAG !ID SHOP ob3 MAPID>132]:%NAME%//
+// ItemDisplay[NMAG !ID SHOP ob4 MAPID>132]:%NAME%//
+ItemDisplay[NMAG !ID SHOP ob5 MAPID>132]:%GOLD%Death's Fathom%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%The Oculus%NL%%GRAY%Exceptional Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP qui MAPID>132]:%GOLD%Ormus' Robes%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Spirit Shroud%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Greyform%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP lea MAPID>132]:%GOLD%Skin of the Vipermagi%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Blinkbat's Form%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP hla MAPID>132]:%GOLD%Skin of the Flayed One%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%The Centurion%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP stu MAPID>132]:%GOLD%The Gladiator's Bane%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Iron Pelt%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Twitchthroe%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP rng MAPID>132]:%GOLD%Spirit Forge%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Darkglow%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP scl MAPID>132]:%GOLD%Crow Caw%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Hawkmail%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP brs MAPID>132]:%GOLD%Duriel's Shell%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Venom Ward%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP chn MAPID>132]:%GOLD%Shaftstop%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Sparking Mail%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP spl MAPID>132]:%GOLD%Arkaine's Valor%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Skullder's Ire%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Iceblink%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP ltp MAPID>132]:%GOLD%Purgatory%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Que-Hegan's Wisdom%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Heavenly Garb%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP fld MAPID>132]:%GOLD%Leviathan%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Toothrow%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Rockfleece%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP plt MAPID>132]:%GOLD%Guardian Angel%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Boneflesh%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP gth MAPID>132]:%GOLD%Atma's Wail%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Rattlecage%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP ful MAPID>132]:%GOLD%Steel Carapace%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Black Hades%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Goldskin%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP aar MAPID>132]:%GOLD%Tyrael's Might%NL%Templar's Might%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%%GOLD%Corpsemourn%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%%GOLD%Silks of the Victor%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP lbl MAPID>132]:%GOLD%Arachnid Mesh%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%String of Ears%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Lenymo%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP vbl MAPID>132]:%GOLD%Nosferatu's Coil%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Razortail%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Snakecord%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP mbl MAPID>132]:%GOLD%Verdungo's Hearty Cord%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Gloom's Trap%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Nightsmoke%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP tbl MAPID>132]:%GOLD%Snowclash%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Goldwrap%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP hbl MAPID>132]:%GOLD%Thundergod's Vigor%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Bladebuckle%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP lbt MAPID>132]:%GOLD%Merman's Sprocket%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Infernostride%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Hotspur%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP vbt MAPID>132]:%GOLD%Sandstorm Trek%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Waterwalk%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Gorefoot%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP mbt MAPID>132]:%GOLD%Marrowwalk%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Silkweave%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Treads of Cthon%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP tbt MAPID>132]:%GOLD%War Traveler%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Goblin Toe%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP hbt MAPID>132]:%GOLD%Shadow Dancer%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Gore Rider%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Tearhaunch%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP lgl MAPID>132]:%GOLD%Venom Grip%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%The Hand of Broc%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP vgl MAPID>132]:%GOLD%Dracul's Grasp%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Gravepalm%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Bloodfist%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP mgl MAPID>132]:%GOLD%Soul Drainer%NL%Ghoulhide%NL%Chance Guards%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP tgl MAPID>132]:%GOLD%Occultist%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Lava Gout%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Magefist%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP hgl MAPID>132]:%GOLD%Steelrend%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Hellmouth%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Frostburn%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP cap MAPID>132]:%GOLD%Harlequin Crest%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Peasant Crown%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Biggin's Bonnet%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP skp MAPID>132]:%GOLD%Rockstopper%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Tarnhelm%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP hlm MAPID>132]:%GOLD%Steel Shade%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Stealskull%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Coif of Glory%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP fhl MAPID>132]:%GOLD%Darksight Helm%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Duskdeep%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP ghm MAPID>132]:%GOLD%Nightwing's Veil%NL%Veil of Steel%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Valkyrie Wing%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Howltusk%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP msk MAPID>132]:%GOLD%Andariel's Visage%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Blackhorn's Face%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%The Face of Horror%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP crn MAPID>132]:%GOLD%Crown of Ages%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Crown of Thieves%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Undead Crown%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP bhm MAPID>132]:%GOLD%Giant Skull%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Vampire Gaze%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Wormskull%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP buc MAPID>132]:%GOLD%Visceratuant%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Pelta Lunata%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP sml MAPID>132]:%GOLD%Blackoak Shield%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Moser's Blessed Circle%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Umbral Disk%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP lrg MAPID>132]:%GOLD%Stormchaser%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Stormguild%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP kit MAPID>132]:%GOLD%Stormshield%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Tiamat's Rebuke%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Steelclash%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP spk MAPID>132]:%GOLD%Spike Thorn%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Lance Guard%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Swordback Hold%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP tow MAPID>132]:%GOLD%Medusa's Gaze%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Gerke's Sanctuary%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Bverrit Keep%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP bsh MAPID>132]:%GOLD%Head Hunter's Glory%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Lidless Wall%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Wall of the Eyeless%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP gts MAPID>132]:%GOLD%Spirit Ward%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Radament's Sphere%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%The Ward%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP hax MAPID>132]:%GOLD%Razor's Edge%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Coldkill%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%The Gnasher%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP axe MAPID>132]:%GOLD%Butcher's Pupil%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Deathspade%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP 2ax MAPID>132]:%GOLD%Rune Master%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Islestrike%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Bladebone%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP mpi MAPID>132]:%GOLD%Cranebeak%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Pompeii's Wrath%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Skull Splitter%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP wax MAPID>132]:%GOLD%Death Cleaver%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Guardian Naga%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Rakescar%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP lax MAPID>132]:%GOLD%Warlord's Trust%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Axe of Fechmar%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP bax MAPID>132]:%GOLD%Ethereal Edge%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Spellsteel%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Goreshovel%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP btx MAPID>132]:%GOLD%Hellslayer%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Stormrider%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%The Chieftain%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP gax MAPID>132]:%GOLD%Messerschmidt's Reaver%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Boneslayer Blade%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Brainhew%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP gix MAPID>132]:%GOLD%Executioner's Justice%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%The Minotaur%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Humongous%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP sbw MAPID>132]:%GOLD%Skystrike%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Pluckeye%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP hbw MAPID>132]:%GOLD%Riphook%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Witherstring%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP lbw MAPID>132]:%GOLD%Kuko Shakaku%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Raven Claw%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP cbw MAPID>132]:%GOLD%Endlesshail%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Rogue's Bow%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP sbb MAPID>132]:%GOLD%Witchwild String%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Stormstrike%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP lbb MAPID>132]:%GOLD%Eaglehorn%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Cliffkiller%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Wizendraw%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP swb MAPID>132]:%GOLD%Widowmaker%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Magewrath%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Hellclap%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP lwb MAPID>132]:%GOLD%Windforce%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Goldstrike Arch%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Blastbark%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP lxb MAPID>132]:%GOLD%Langer Briser%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Leadcrow%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP mxb MAPID>132]:%GOLD%Pus Spitter%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Ichorsting%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP hxb MAPID>132]:%GOLD%Hellrack%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Buriza-Do Kyanon%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Hellcast%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP rxb MAPID>132]:%GOLD%Gut Siphon%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Demon Machine%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Doomslinger%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP dgr MAPID>132]:%GOLD%Wizardspike%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Spineripper%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Gull%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP dir MAPID>132]:%GOLD%Heart Carver%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%The Diggler%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP kri MAPID>132]:%GOLD%Fleshripper%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Blackbog's Sharp%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%The Jade Tan Do%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP bld MAPID>132]:%GOLD%Ghostflame%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Stormspike%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Spectral Shard%NL%%GRAY%Normal Tier:%CONTINUE%//
+// ItemDisplay[NMAG !ID SHOP jav MAPID>132]:%NAME%//
+// ItemDisplay[NMAG !ID SHOP pil MAPID>132]:%NAME%//
+ItemDisplay[NMAG !ID SHOP ssp MAPID>132]:%GOLD%Demon's Arch%NL%%GRAY%Elite Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP glv MAPID>132]:%GOLD%Wraith Flight%NL%%GRAY%Elite Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP tsp MAPID>132]:%GOLD%Gargoyle's Bite%NL%%GRAY%Elite Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP clb MAPID>132]:%GOLD%Nord's Tenderizer%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Dark Clan Crusher%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Felloak%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP spc MAPID>132]:%GOLD%Demon Limb%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Fleshrender%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Stoutnail%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP mac MAPID>132]:%GOLD%Sureshrill Frost%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Crushflange%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP mst MAPID>132]:%GOLD%Baranar's Star%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Moonfall%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Bloodrise%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP fla MAPID>132]:%GOLD%Stormlash%NL%Horizon's Tornado%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Baezil's Vortex%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%The General's Tan Do Li Ga%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP whm MAPID>132]:%GOLD%Schaefer's Hammer%NL%Stone Crusher%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Earthshaker%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Ironstone%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP mau MAPID>132]:%GOLD%Windhammer%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Bloodtree Stump%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Bonesnap%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP gma MAPID>132]:%GOLD%The Cranium Basher%NL%Earth Shifter%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%The Gavel of Pain%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Steeldriver%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP bar MAPID>132]:%GOLD%Bonehew%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%The Meat Scraper%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Dimoak's Hew%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP vou MAPID>132]:%GOLD%Blackleach Blade%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Steelgoad%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP scy MAPID>132]:%GOLD%The Reaper's Toll%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Athena's Wrath%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Soul Harvest%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP pax MAPID>132]:%GOLD%Tomb Reaver%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Pierre Tombale Couant%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%The Battlebranch%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP hal MAPID>132]:%GOLD%Husoldal Evo%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Woestave%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP wsc MAPID>132]:%GOLD%Stormspire%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Grim's Burning Dead%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%The Grim Reaper%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP scp MAPID>132]:%GOLD%The Redeemer%NL%Heaven's Light%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Zakarum's Hand%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Knell Striker%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP gsc MAPID>132]:%GOLD%Akarat's Devotion%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%The Fetid Sprinkler%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Rusthandle%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP wsp MAPID>132]:%GOLD%Astreon's Iron Ward%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Hand of Blessed Light%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Stormeye%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP spr MAPID>132]:%GOLD%Arioc's Needle%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%The Impaler%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%The Dragon Chang%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP tri MAPID>132]:%GOLD%Kelpie Snare%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Razortine%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP brn MAPID>132]:%GOLD%Viperfork%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Soulfeast Tine%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Bloodthief%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP spt MAPID>132]:%GOLD%Uldyssian's Awakening%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Hone Sundan%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Lance of Yaggai%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP pik MAPID>132]:%GOLD%Steel Pillar%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Spire of Honor%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%The Tannr Gorerod%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP sst MAPID>132]:%GOLD%Razorswitch%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Bane Ash%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP lst MAPID>132]:%GOLD%Ribcracker%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Serpent Lord%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP cst MAPID>132]:%GOLD%Ondal's Wisdom%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Chromatic Ire%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Spire of Lazarus%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP bst MAPID>132]:%GOLD%Brimstone Rain%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Warpspear%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%The Salamander%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP wst MAPID>132]:%GOLD%Mang Song's Lesson%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Skull Collector%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%The Iron Jang Bong%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP ssd MAPID>132]:%GOLD%Bloodletter%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Rixot's Keen%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP scm MAPID>132]:%GOLD%Djinn Slayer%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Coldsteel Eye%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Blood Crescent%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP sbr MAPID>132]:%GOLD%Bloodmoon%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Hexfire%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Skewer of Krintiz%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP flc MAPID>132]:%GOLD%Blade of Ali Baba%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Gleamscythe%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP crs MAPID>132]:%GOLD%Lightsabre%NL%Azurewrath%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Ginther's Rift%NL%%GRAY%Exceptional Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP bsd MAPID>132]:%GOLD%Headstriker%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Griswold's Edge%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP lsd MAPID>132]:%GOLD%Frostwind%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Plague Bearer%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Hellplague%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP wsd MAPID>132]:%GOLD%The Atlantean%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Culwen's Point%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP 2hs MAPID>132]:%GOLD%Crainte Vomir%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Shadowfang%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP clm MAPID>132]:%GOLD%Leoric's Mithril Bane%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Bing Sz Wang%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Soulflay%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP gis MAPID>132]:%GOLD%Flamebellow%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%The Vile Husk%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Kinemil's Awl%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP bsw MAPID>132]:%GOLD%Doombringer%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Cloudcrack%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Blacktongue%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP flb MAPID>132]:%GOLD%Odium%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Todesfaelle Flamme%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Ripsaw%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP gsd MAPID>132]:%GOLD%The Grandfather%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Swordguard%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%The Patriarch%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP tkf MAPID>132]:%GOLD%Deathbit%NL%%GRAY%Exceptional Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP bkf MAPID>132]:%GOLD%Warshrike%NL%%GRAY%Elite Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP tax MAPID>132]:%GOLD%Gimmershred%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%The Scalper%NL%%GRAY%Exceptional Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP bal MAPID>132]:%GOLD%Lacerator%NL%%GRAY%Elite Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP wnd MAPID>132]:%GOLD%Suicide Branch%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Torch of Iro%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP ywn MAPID>132]:%GOLD%Carin Shard%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Maelstrom%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP bwn MAPID>132]:%GOLD%Boneshade%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Arm of King Leoric%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Gravenspine%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP gwn MAPID>132]:%GOLD%Death's Web%NL%%GRAY%Elite Tier:%NL%%NL%%GOLD%Blackhand Key%NL%%GRAY%Exceptional Tier:%NL%%NL%%GOLD%Ume's Lament%NL%%GRAY%Normal Tier:%CONTINUE%//
+ItemDisplay[NMAG !ID SHOP MAPID>132]:%NL%%NAME%%NL%%NL%%WHITE%Possible Uniques:%GOLD%//
+
+
 // ------------------------------------------------------------------------------
 //     ==========================  Paladin Shields  =========================
 // ------------------------------------------------------------------------------
@@ -3179,7 +3352,7 @@ ItemDisplay[NMAG !RW BAR CLVL>9 FILTLVL>0 !(SK368>0 OR SK126>0 OR SK127>0 OR SK1
 // ------------------------------------------------------------------------------
 
 // On filter level 9, hide nonmagical druid clubs are not plague bases
-ItemDisplay[NMAG !RW (clb OR spc OR 9cl OR 9sp OR 7cl OR 7sp) (FILTLVL>8 OR (FILTLVL<9 FILTLVL>4 CLVL>89)) !((9cl OR 9sp OR 7cl OR 7sp) (SOCK=0 OR SOCK=3) ((CLVL<95 OR (SK236>0 OR SK226>0 OR SK370>0 OR SK231>0 OR SK250>0 OR SK235>0 OR SK241>0)) ((SK221>2 (SK237>2 OR SK227>2 OR SK247>2)) OR (SK237>2 (SK221>2 OR SK227>2 OR SK247>2)) OR (SK227>2 (SK237>2 OR SK221>2 OR SK247>2)) OR (SK247>2 (SK237>2 OR SK227>2 OR SK221>2))))) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// On filter level 9, hide nonmagical druid clubs are not plague bases and all nonmagical druid helms
+ItemDisplay[NMAG !RW (clb OR spc OR 9cl OR 9sp OR 7cl OR 7sp) (FILTLVL>8 OR (FILTLVL<9 FILTLVL>4 CLVL>89)) !((SK230=3 ((SK226=3 (SK231>0 OR SK241>0 OR SK247>0)) OR (SK231=3 (SK226>0 OR SK241>0 OR SK247>0)) OR (SK241=3 (SK231>0 OR SK226>0 OR SK247>0)) OR (SK247=3 (SK231>0 OR SK241>0 OR SK226>0)))) OR ((9cl OR 9sp OR 7cl OR 7sp) (SOCK=0 OR SOCK=3) ((CLVL<95 OR (SK236>0 OR SK226>0 OR SK370>0 OR SK231>0 OR SK250>0 OR SK235>0 OR SK241>0)) ((SK221>2 (SK237>2 OR SK227>2 OR SK247>2)) OR (SK237>2 (SK221>2 OR SK227>2 OR SK247>2)) OR (SK227>2 (SK237>2 OR SK221>2 OR SK247>2)) OR (SK247>2 (SK237>2 OR SK227>2 OR SK221>2)))))) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// On filter level 9, hide nonmagical druid clubs are not plague bases and all nonmagical druid helms
 
 // On filter level 9, hide nonmagical druid clubs are not plague bases and all nonmagical druid helms
 ItemDisplay[NMAG !RW DRU (FILTLVL>8 OR (FILTLVL<9 FILTLVL>4 CLVL>89)) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// On filter level 9, hide nonmagical druid helms
@@ -3187,6 +3360,9 @@ ItemDisplay[NMAG !RW DRU (FILTLVL>8 OR (FILTLVL<9 FILTLVL>4 CLVL>89)) !(MAPID=1 
 //      Plague runeword club bases
 //      (CLVL<95 OR (+1 or more to H.Wolverine, Oak Sage, Gust, Carrion Vine, Solar Creeper, Cyclone Armor, or Hurricane)) AND: (+3 to two of the following: Raven, Spirit Wolf, Dire Wolf, Grizzly)
 ItemDisplay[NMAG !RW (9cl OR 9sp OR 7cl OR 7sp) (SOCK=0 OR SOCK=3) ((CLVL<95 OR (SK236>0 OR SK226>0 OR SK370>0 OR SK231>0 OR SK250>0 OR SK235>0 OR SK241>0)) ((SK221>2 (SK237>2 OR SK227>2 OR SK247>2)) OR (SK237>2 (SK221>2 OR SK227>2 OR SK247>2)) OR (SK227>2 (SK237>2 OR SK221>2 OR SK247>2)) OR (SK247>2 (SK237>2 OR SK227>2 OR SK221>2))))]:%ORANGE%Plague %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
+
+//      +3 Arctic Blast with +3 to Oak/SolarCreeper/CarrionVine/Grizzly and +(1-3) Oak/SolarCreeper/CarrionVine/Grizzly
+ItemDisplay[NMAG !RW (9cl OR 9sp OR 7cl OR 7sp) (SOCK=0 OR SOCK=3) SK230=3 ((SK226=3 (SK231>0 OR SK241>0 OR SK247>0)) OR (SK231=3 (SK226>0 OR SK241>0 OR SK247>0)) OR (SK241=3 (SK231>0 OR SK226>0 OR SK247>0)) OR (SK247=3 (SK231>0 OR SK241>0 OR SK226>0)))]:%ORANGE%Plague %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
 
 // Hides nonmagical Ethereal Druid Helms after character level 30
 ItemDisplay[NMAG !RW ETH DRU DRUID CLVL>29 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// If your character is a druid, hide all Eth nonmagical Ethereal Druid Helms after character level 29
@@ -4172,16 +4348,16 @@ ItemDisplay[(RARE OR CRAFT) (STAT36>3 STAT36<10) ID (CHEST OR SHIELD)]:%WHITE%%S
 ItemDisplay[(RARE OR CRAFT) (STAT36>9 STAT36<15) ID (CHEST OR SHIELD)]:%WHITE%%STAT36%%GOLD%pdr %NAME%{%RED%***   %GOLD%%STAT36%% Damage Reduction   %RED%***%CL%%NAME%}%CONTINUE%
 ItemDisplay[MAG EDAM>99 (STAT36>3 STAT36<15) ID CHEST]:%WHITE%%STAT36%%GOLD%pdr %NAME%{%RED%***   %GOLD%%STAT36%% Damage Reduction   %RED%***%CL%%NAME%}%CONTINUE%
 ItemDisplay[MAG (STAT36>14 STAT36<20) ID CHEST]:%WHITE%%STAT36%%GOLD%pdr %NAME%{%RED%***   %GOLD%%STAT36%% Damage Reduction   %RED%***%CL%%NAME%}%CONTINUE%
-ItemDisplay[MAG (STAT36>3 STAT36<20) ID SHIELD]:%WHITE%%STAT36%%GOLD%pdr %NAME%{%RED%***   %GOLD%%STAT36%% Damage Reduction   %RED%***%CL%%NAME%}%CONTINUE%
+ItemDisplay[MAG (((STAT36>3 (CLVL<80 OR SOCK>2)) OR (STAT36>9 CLVL>79)) STAT36<20) ID SHIELD]:%WHITE%%STAT36%%GOLD%pdr %NAME%{%RED%***   %GOLD%%STAT36%% Damage Reduction   %RED%***%CL%%NAME%}%CONTINUE%
 // %PDR on Armors and Shields - Purple Highlight
 ItemDisplay[(RARE OR CRAFT) (STAT36>14 STAT36<20) ID (CHEST OR SHIELD)]:%WHITE%%STAT36%%PURPLE%pdr %NAME%{%PURPLE%***   %GOLD%%STAT36%% Damage Reduction   %PURPLE%***%CL%%NAME%}%CONTINUE%
 ItemDisplay[(MAG OR RARE OR CRAFT) STAT36>19 ID (CHEST OR SHIELD)]:%WHITE%%STAT36%%PURPLE%pdr %NAME%{%PURPLE%***   %GOLD%%STAT36%% Damage Reduction   %PURPLE%***%CL%%NAME%}%CONTINUE%
 
 // 2%+ PDR on Boots
-ItemDisplay[STAT36>1 ID BOOTS]:%WHITE%%STAT36%%GOLD%pdr %NAME%{%RED%***   %GOLD%%STAT36%% Damage Reduction   %RED%***%CL%%NAME%}%CONTINUE%
+ItemDisplay[STAT36>1 ID BOOTS]:%NAME%{%RED%***   %GOLD%%STAT36%% Damage Reduction   %RED%***%CL%%NAME%}%CONTINUE%
 
-// 2%+ PDR on Rings
-ItemDisplay[STAT36>1 ID rin]:%WHITE%%STAT36%%GOLD%pdr %NAME%{%RED%***   %GOLD%%STAT36%% Damage Reduction   %RED%***%CL%%NAME%}%CONTINUE%
+// %PDR on Rings: 1-3 or 5+ 
+ItemDisplay[((STAT36>1 STAT36<4) OR STAT36>4) ID rin]:%NAME%{%RED%***   %GOLD%%STAT36%% Damage Reduction   %RED%***%CL%%NAME%}%CONTINUE%
 
 // %PDR on Helms and Circlets
 ItemDisplay[(MAG OR RARE OR CRAFT) (STAT36>3 STAT36<8) ID (HELM OR CIRC)]:%WHITE%%STAT36%%GOLD%pdr %NAME%{%RED%***   %GOLD%%STAT36%% Damage Reduction   %RED%***%CL%%NAME%}%CONTINUE%
@@ -4572,29 +4748,39 @@ ItemDisplay[(CLUB OR DRU) (MAG OR RARE OR CRAFT) ((ALLSK=0 (((TABSK40=2 OR CLSK5
 //  +5 Poison Creeper Highlight
 ItemDisplay[(CLUB OR DRU) (MAG OR RARE OR CRAFT) ((ALLSK=0 (((TABSK40=2 OR CLSK5=2) SK222=3) OR (TABSK40=3 SK222=2))) OR (ALLSK=1 ((TABSK40=3 SK222=1) OR ((TABSK40=2 OR CLSK5=2) SK222=2) OR ((TABSK40=1 OR CLSK5=1) SK222=3))) OR (ALLSK=2 (((TABSK40=2 OR CLSK5=2) SK222=1) OR ((TABSK40=1 OR CLSK5=1) SK222=2))))]:%NAME%{%BLUE%**%TEAL%**%DARK_GREEN%***   %GREEN%+5 Poison Creeper   %DARK_GREEN%***%TEAL%**%BLUE%**%CL%%NAME%}%CONTINUE%//
 
-// +3 Class/Tab Skills with +20 FCR
-ItemDisplay[(MAG OR RARE) FCR=20 CIRC ALLSK=1 (CLSK0=2 OR CLSK1=2 OR CLSK2=2 OR CLSK3=2 OR CLSK4=2 OR CLSK5=2 OR CLSK6=2 OR TABSK1=2 OR TABSK8=2 OR TABSK9=2 OR TABSK10=2 OR TABSK16=2 OR TABSK17=2 OR TABSK18=2 OR TABSK24=2 OR TABSK34=2 OR TABSK42=2 OR TABSK49=2)]:%NAME%{%BLUE%**%TEAL%**%DARK_GREEN%***   %GREEN%+3 Skills 20fcr   %DARK_GREEN%***%TEAL%**%BLUE%**%CL%%NAME%}%CONTINUE%//
-// +2 Class/Tab Skills with +20 FCR
-ItemDisplay[(MAG OR RARE) FCR=20 CIRC ALLSK=0 (CLSK0=2 OR CLSK1=2 OR CLSK2=2 OR CLSK3=2 OR CLSK4=2 OR CLSK5=2 OR CLSK6=2 OR TABSK1=2 OR TABSK8=2 OR TABSK9=2 OR TABSK10=2 OR TABSK16=2 OR TABSK17=2 OR TABSK18=2 OR TABSK24=2 OR TABSK34=2 OR TABSK42=2 OR TABSK49=2)]:%NAME%{%BLUE%**%TEAL%**%DARK_GREEN%***   %GREEN%+2 Skills 20fcr   %DARK_GREEN%***%TEAL%**%BLUE%**%CL%%NAME%}%CONTINUE%//
+// +3 Class/Tab Skills with +20 FCR and FRW
+ItemDisplay[(MAG OR RARE) FCR=20 CIRC ALLSK=1 FRW>0 (CLSK0=2 OR CLSK1=2 OR CLSK2=2 OR CLSK3=2 OR CLSK4=2 OR CLSK5=2 OR CLSK6=2 OR TABSK1=2 OR TABSK8=2 OR TABSK9=2 OR TABSK10=2 OR TABSK16=2 OR TABSK17=2 OR TABSK18=2 OR TABSK24=2 OR TABSK34=2 OR TABSK42=2 OR TABSK49=2)]:%NAME%{%BLUE%**%TEAL%**%DARK_GREEN%***   %GREEN%+3 Skills %FCR%/%FRW%   %DARK_GREEN%***%TEAL%**%BLUE%**%CL%%NAME%}%CONTINUE%//
+// +2 Class/Tab Skills with +20 FCR and FRW
+ItemDisplay[(MAG OR RARE) FCR=20 CIRC ALLSK=0 FRW>0 (CLSK0=2 OR CLSK1=2 OR CLSK2=2 OR CLSK3=2 OR CLSK4=2 OR CLSK5=2 OR CLSK6=2 OR TABSK1=2 OR TABSK8=2 OR TABSK9=2 OR TABSK10=2 OR TABSK16=2 OR TABSK17=2 OR TABSK18=2 OR TABSK24=2 OR TABSK34=2 OR TABSK42=2 OR TABSK49=2)]:%NAME%{%BLUE%**%TEAL%**%DARK_GREEN%***   %GREEN%+2 Skills %FCR%/%FRW%   %DARK_GREEN%***%TEAL%**%BLUE%**%CL%%NAME%}%CONTINUE%//
 
-// +4 Tab Skills with +20 FCR
-ItemDisplay[MAG FCR=20 CIRC ALLSK=1 (TABSK1=3 OR TABSK8=3 OR TABSK9=3 OR TABSK10=3 OR TABSK16=3 OR TABSK17=3 OR TABSK18=3 OR TABSK24=3 OR TABSK34=3 OR TABSK42=3 OR TABSK49=3)]:%NAME%{%BLUE%**%TEAL%**%DARK_GREEN%***   %GREEN%+4 Skills +20 FCR   %DARK_GREEN%***%TEAL%**%BLUE%**%CL%%NAME%}%CONTINUE%//
-// +3 Tab Skills with +20 FCR
-ItemDisplay[MAG FCR=20 CIRC ALLSK=0 (TABSK1=3 OR TABSK8=3 OR TABSK9=3 OR TABSK10=3 OR TABSK16=3 OR TABSK17=3 OR TABSK18=3 OR TABSK24=3 OR TABSK34=3 OR TABSK42=3 OR TABSK49=3)]:%NAME%{%BLUE%**%TEAL%**%DARK_GREEN%***   %GREEN%+3 Skills +20 FCR   %DARK_GREEN%***%TEAL%**%BLUE%**%CL%%NAME%}%CONTINUE%//
+// +4 Tab Skills with +20 FCR and FRW
+ItemDisplay[MAG FCR=20 CIRC ALLSK=1 FRW>0 (TABSK1=3 OR TABSK8=3 OR TABSK9=3 OR TABSK10=3 OR TABSK16=3 OR TABSK17=3 OR TABSK18=3 OR TABSK24=3 OR TABSK34=3 OR TABSK42=3 OR TABSK49=3)]:%NAME%{%BLUE%**%TEAL%**%DARK_GREEN%***   %GREEN%+4 Skills %FCR%/%FRW%   %DARK_GREEN%***%TEAL%**%BLUE%**%CL%%NAME%}%CONTINUE%//
+// +3 Tab Skills with +20 FCR and FRW
+ItemDisplay[MAG FCR=20 CIRC ALLSK=0 FRW>0 (TABSK1=3 OR TABSK8=3 OR TABSK9=3 OR TABSK10=3 OR TABSK16=3 OR TABSK17=3 OR TABSK18=3 OR TABSK24=3 OR TABSK34=3 OR TABSK42=3 OR TABSK49=3)]:%NAME%{%BLUE%**%TEAL%**%DARK_GREEN%***   %GREEN%+3 Skills %FCR%/%FRW%   %DARK_GREEN%***%TEAL%**%BLUE%**%CL%%NAME%}%CONTINUE%//
 
-// +3 Class Skills with +20-30 FRW
-ItemDisplay[(MAG OR RARE) FRW=20 CIRC ALLSK=1 (CLSK0=2 OR CLSK1=2 OR CLSK2=2 OR CLSK3=2 OR CLSK4=2 OR CLSK5=2 OR CLSK6=2 OR TABSK0=2 OR TABSK1=2 OR TABSK2=2 OR TABSK8=2 OR TABSK9=2 OR TABSK10=2 OR TABSK16=2 OR TABSK17=2 OR TABSK18=2 OR TABSK24=2 OR TABSK34=2 OR TABSK48=2 OR TABSK49=2 OR TABSK50=2)]:%NAME%{%BLUE%**%TEAL%**%DARK_GREEN%***   %GREEN%+3 Skills 20frw   %DARK_GREEN%***%TEAL%**%BLUE%**%CL%%NAME%}%CONTINUE%//
-ItemDisplay[(MAG OR RARE) FRW=30 CIRC ALLSK=1 (CLSK0=2 OR CLSK1=2 OR CLSK2=2 OR CLSK3=2 OR CLSK4=2 OR CLSK5=2 OR CLSK6=2 OR TABSK0=2 OR TABSK1=2 OR TABSK2=2 OR TABSK8=2 OR TABSK9=2 OR TABSK10=2 OR TABSK16=2 OR TABSK17=2 OR TABSK18=2 OR TABSK24=2 OR TABSK34=2 OR TABSK48=2 OR TABSK49=2 OR TABSK50=2)]:%NAME%{%BLUE%**%TEAL%**%DARK_GREEN%***   %GREEN%+3 Skills 30frw   %DARK_GREEN%***%TEAL%**%BLUE%**%CL%%NAME%}%CONTINUE%//
-// +2 Class Skills with +20-30 FRW
-ItemDisplay[(MAG OR RARE) FRW=20 CIRC ALLSK=0 (CLSK0=2 OR CLSK1=2 OR CLSK2=2 OR CLSK3=2 OR CLSK4=2 OR CLSK5=2 OR CLSK6=2 OR TABSK0=2 OR TABSK1=2 OR TABSK2=2 OR TABSK8=2 OR TABSK9=2 OR TABSK10=2 OR TABSK16=2 OR TABSK17=2 OR TABSK18=2 OR TABSK24=2 OR TABSK34=2 OR TABSK48=2 OR TABSK49=2 OR TABSK50=2)]:%NAME%{%BLUE%**%TEAL%**%DARK_GREEN%***   %GREEN%+2 Skills 20frw   %DARK_GREEN%***%TEAL%**%BLUE%**%CL%%NAME%}%CONTINUE%//
-ItemDisplay[(MAG OR RARE) FRW=30 CIRC ALLSK=0 (CLSK0=2 OR CLSK1=2 OR CLSK2=2 OR CLSK3=2 OR CLSK4=2 OR CLSK5=2 OR CLSK6=2 OR TABSK0=2 OR TABSK1=2 OR TABSK2=2 OR TABSK8=2 OR TABSK9=2 OR TABSK10=2 OR TABSK16=2 OR TABSK17=2 OR TABSK18=2 OR TABSK24=2 OR TABSK34=2 OR TABSK48=2 OR TABSK49=2 OR TABSK50=2)]:%NAME%{%BLUE%**%TEAL%**%DARK_GREEN%***   %GREEN%+2 Skills 30frw   %DARK_GREEN%***%TEAL%**%BLUE%**%CL%%NAME%}%CONTINUE%//
+// +3 Class/Tab Skills with +20 FCR (No FRW)
+ItemDisplay[(MAG OR RARE) FCR=20 CIRC ALLSK=1 FRW=0 (CLSK0=2 OR CLSK1=2 OR CLSK2=2 OR CLSK3=2 OR CLSK4=2 OR CLSK5=2 OR CLSK6=2 OR TABSK1=2 OR TABSK8=2 OR TABSK9=2 OR TABSK10=2 OR TABSK16=2 OR TABSK17=2 OR TABSK18=2 OR TABSK24=2 OR TABSK34=2 OR TABSK42=2 OR TABSK49=2)]:%NAME%{%BLUE%**%TEAL%**%DARK_GREEN%***   %GREEN%+3 Skills %FCR%fcr   %DARK_GREEN%***%TEAL%**%BLUE%**%CL%%NAME%}%CONTINUE%//
+// +2 Class/Tab Skills with +20 FCR (No FRW)
+ItemDisplay[(MAG OR RARE) FCR=20 CIRC ALLSK=0 FRW=0 (CLSK0=2 OR CLSK1=2 OR CLSK2=2 OR CLSK3=2 OR CLSK4=2 OR CLSK5=2 OR CLSK6=2 OR TABSK1=2 OR TABSK8=2 OR TABSK9=2 OR TABSK10=2 OR TABSK16=2 OR TABSK17=2 OR TABSK18=2 OR TABSK24=2 OR TABSK34=2 OR TABSK42=2 OR TABSK49=2)]:%NAME%{%BLUE%**%TEAL%**%DARK_GREEN%***   %GREEN%+2 Skills %FCR%fcr   %DARK_GREEN%***%TEAL%**%BLUE%**%CL%%NAME%}%CONTINUE%//
 
-// +4 Tab Skills with +20-30 FRW
-ItemDisplay[MAG FRW=20 CIRC ALLSK=1 (TABSK0=3 OR TABSK1=3 OR TABSK2=3 OR TABSK8=3 OR TABSK9=3 OR TABSK10=3 OR TABSK16=3 OR TABSK17=3 OR TABSK18=3 OR TABSK24=3 OR TABSK34=3 OR TABSK48=3 OR TABSK49=3 OR TABSK50=3)]:%NAME%{%BLUE%**%TEAL%**%DARK_GREEN%***   %GREEN%+4 Skills 20frw   %DARK_GREEN%***%TEAL%**%BLUE%**%CL%%NAME%}%CONTINUE%//
-ItemDisplay[MAG FRW=30 CIRC ALLSK=1 (TABSK0=3 OR TABSK1=3 OR TABSK2=3 OR TABSK8=3 OR TABSK9=3 OR TABSK10=3 OR TABSK16=3 OR TABSK17=3 OR TABSK18=3 OR TABSK24=3 OR TABSK34=3 OR TABSK48=3 OR TABSK49=3 OR TABSK50=3)]:%NAME%{%BLUE%**%TEAL%**%DARK_GREEN%***   %GREEN%+4 Skills 30frw   %DARK_GREEN%***%TEAL%**%BLUE%**%CL%%NAME%}%CONTINUE%//
-// +3 Tab Skills with +20-30 FRW
-ItemDisplay[MAG FRW=20 CIRC ALLSK=0 (TABSK0=3 OR TABSK1=3 OR TABSK2=3 OR TABSK8=3 OR TABSK9=3 OR TABSK10=3 OR TABSK16=3 OR TABSK17=3 OR TABSK18=3 OR TABSK24=3 OR TABSK34=3 OR TABSK48=3 OR TABSK49=3 OR TABSK50=3)]:%NAME%{%BLUE%**%TEAL%**%DARK_GREEN%***   %GREEN%+3 Skills 20frw   %DARK_GREEN%***%TEAL%**%BLUE%**%CL%%NAME%}%CONTINUE%//
-ItemDisplay[MAG FRW=30 CIRC ALLSK=0 (TABSK0=3 OR TABSK1=3 OR TABSK2=3 OR TABSK8=3 OR TABSK9=3 OR TABSK10=3 OR TABSK16=3 OR TABSK17=3 OR TABSK18=3 OR TABSK24=3 OR TABSK34=3 OR TABSK48=3 OR TABSK49=3 OR TABSK50=3)]:%NAME%{%BLUE%**%TEAL%**%DARK_GREEN%***   %GREEN%+3 Skills 30frw   %DARK_GREEN%***%TEAL%**%BLUE%**%CL%%NAME%}%CONTINUE%//
+// +4 Tab Skills with +20 FCR (No FRW)
+ItemDisplay[MAG FCR=20 CIRC ALLSK=1 FRW=0 (TABSK1=3 OR TABSK8=3 OR TABSK9=3 OR TABSK10=3 OR TABSK16=3 OR TABSK17=3 OR TABSK18=3 OR TABSK24=3 OR TABSK34=3 OR TABSK42=3 OR TABSK49=3)]:%NAME%{%BLUE%**%TEAL%**%DARK_GREEN%***   %GREEN%+4 Skills %FCR%fcr   %DARK_GREEN%***%TEAL%**%BLUE%**%CL%%NAME%}%CONTINUE%//
+// +3 Tab Skills with +20 FCR (No FRW)
+ItemDisplay[MAG FCR=20 CIRC ALLSK=0 FRW=0 (TABSK1=3 OR TABSK8=3 OR TABSK9=3 OR TABSK10=3 OR TABSK16=3 OR TABSK17=3 OR TABSK18=3 OR TABSK24=3 OR TABSK34=3 OR TABSK42=3 OR TABSK49=3)]:%NAME%{%BLUE%**%TEAL%**%DARK_GREEN%***   %GREEN%+3 Skills %FCR%fcr   %DARK_GREEN%***%TEAL%**%BLUE%**%CL%%NAME%}%CONTINUE%//
+
+// +3 Class Skills with +20-30 FRW (No FCR)
+ItemDisplay[(MAG OR RARE) FRW=20 CIRC ALLSK=1 FCR=0 (CLSK0=2 OR CLSK1=2 OR CLSK2=2 OR CLSK3=2 OR CLSK4=2 OR CLSK5=2 OR CLSK6=2 OR TABSK0=2 OR TABSK1=2 OR TABSK2=2 OR TABSK8=2 OR TABSK9=2 OR TABSK10=2 OR TABSK16=2 OR TABSK17=2 OR TABSK18=2 OR TABSK24=2 OR TABSK34=2 OR TABSK48=2 OR TABSK49=2 OR TABSK50=2)]:%NAME%{%BLUE%**%TEAL%**%DARK_GREEN%***   %GREEN%+3 Skills %FRW%frw   %DARK_GREEN%***%TEAL%**%BLUE%**%CL%%NAME%}%CONTINUE%//
+ItemDisplay[(MAG OR RARE) FRW=30 CIRC ALLSK=1 FCR=0 (CLSK0=2 OR CLSK1=2 OR CLSK2=2 OR CLSK3=2 OR CLSK4=2 OR CLSK5=2 OR CLSK6=2 OR TABSK0=2 OR TABSK1=2 OR TABSK2=2 OR TABSK8=2 OR TABSK9=2 OR TABSK10=2 OR TABSK16=2 OR TABSK17=2 OR TABSK18=2 OR TABSK24=2 OR TABSK34=2 OR TABSK48=2 OR TABSK49=2 OR TABSK50=2)]:%NAME%{%BLUE%**%TEAL%**%DARK_GREEN%***   %GREEN%+3 Skills %FRW%frw   %DARK_GREEN%***%TEAL%**%BLUE%**%CL%%NAME%}%CONTINUE%//
+// +2 Class Skills with +20-30 FRW (No FCR)
+ItemDisplay[(MAG OR RARE) FRW=20 CIRC ALLSK=0 FCR=0 (CLSK0=2 OR CLSK1=2 OR CLSK2=2 OR CLSK3=2 OR CLSK4=2 OR CLSK5=2 OR CLSK6=2 OR TABSK0=2 OR TABSK1=2 OR TABSK2=2 OR TABSK8=2 OR TABSK9=2 OR TABSK10=2 OR TABSK16=2 OR TABSK17=2 OR TABSK18=2 OR TABSK24=2 OR TABSK34=2 OR TABSK48=2 OR TABSK49=2 OR TABSK50=2)]:%NAME%{%BLUE%**%TEAL%**%DARK_GREEN%***   %GREEN%+2 Skills %FRW%frw   %DARK_GREEN%***%TEAL%**%BLUE%**%CL%%NAME%}%CONTINUE%//
+ItemDisplay[(MAG OR RARE) FRW=30 CIRC ALLSK=0 FCR=0 (CLSK0=2 OR CLSK1=2 OR CLSK2=2 OR CLSK3=2 OR CLSK4=2 OR CLSK5=2 OR CLSK6=2 OR TABSK0=2 OR TABSK1=2 OR TABSK2=2 OR TABSK8=2 OR TABSK9=2 OR TABSK10=2 OR TABSK16=2 OR TABSK17=2 OR TABSK18=2 OR TABSK24=2 OR TABSK34=2 OR TABSK48=2 OR TABSK49=2 OR TABSK50=2)]:%NAME%{%BLUE%**%TEAL%**%DARK_GREEN%***   %GREEN%+2 Skills %FRW%frw   %DARK_GREEN%***%TEAL%**%BLUE%**%CL%%NAME%}%CONTINUE%//
+
+// +4 Tab Skills with +20-30 FRW (No FCR)
+ItemDisplay[MAG FRW=20 CIRC ALLSK=1 FCR=0 (TABSK0=3 OR TABSK1=3 OR TABSK2=3 OR TABSK8=3 OR TABSK9=3 OR TABSK10=3 OR TABSK16=3 OR TABSK17=3 OR TABSK18=3 OR TABSK24=3 OR TABSK34=3 OR TABSK48=3 OR TABSK49=3 OR TABSK50=3)]:%NAME%{%BLUE%**%TEAL%**%DARK_GREEN%***   %GREEN%+4 Skills %FRW%frw   %DARK_GREEN%***%TEAL%**%BLUE%**%CL%%NAME%}%CONTINUE%//
+ItemDisplay[MAG FRW=30 CIRC ALLSK=1 FCR=0 (TABSK0=3 OR TABSK1=3 OR TABSK2=3 OR TABSK8=3 OR TABSK9=3 OR TABSK10=3 OR TABSK16=3 OR TABSK17=3 OR TABSK18=3 OR TABSK24=3 OR TABSK34=3 OR TABSK48=3 OR TABSK49=3 OR TABSK50=3)]:%NAME%{%BLUE%**%TEAL%**%DARK_GREEN%***   %GREEN%+4 Skills %FRW%frw   %DARK_GREEN%***%TEAL%**%BLUE%**%CL%%NAME%}%CONTINUE%//
+// +3 Tab Skills with +20-30 FRW (No FCR)
+ItemDisplay[MAG FRW=20 CIRC ALLSK=0 FCR=0 (TABSK0=3 OR TABSK1=3 OR TABSK2=3 OR TABSK8=3 OR TABSK9=3 OR TABSK10=3 OR TABSK16=3 OR TABSK17=3 OR TABSK18=3 OR TABSK24=3 OR TABSK34=3 OR TABSK48=3 OR TABSK49=3 OR TABSK50=3)]:%NAME%{%BLUE%**%TEAL%**%DARK_GREEN%***   %GREEN%+3 Skills %FRW%frw   %DARK_GREEN%***%TEAL%**%BLUE%**%CL%%NAME%}%CONTINUE%//
+ItemDisplay[MAG FRW=30 CIRC ALLSK=0 FCR=0 (TABSK0=3 OR TABSK1=3 OR TABSK2=3 OR TABSK8=3 OR TABSK9=3 OR TABSK10=3 OR TABSK16=3 OR TABSK17=3 OR TABSK18=3 OR TABSK24=3 OR TABSK34=3 OR TABSK48=3 OR TABSK49=3 OR TABSK50=3)]:%NAME%{%BLUE%**%TEAL%**%DARK_GREEN%***   %GREEN%+3 Skills %FRW%frw   %DARK_GREEN%***%TEAL%**%BLUE%**%CL%%NAME%}%CONTINUE%//
 
 //  +4 Combat 20 FCR Shield Highlight
 ItemDisplay[SHIELD FCR=20 ALLSK=1 TABSK24=3 (MAG OR RARE OR CRAFT)]:%NAME%{%BLUE%**%TEAL%**%DARK_GREEN%***   %GREEN%+4 Skills 20fcr   %DARK_GREEN%***%TEAL%**%BLUE%**%CL%%NAME%}%CONTINUE%//
@@ -4609,18 +4795,21 @@ ItemDisplay[WEAPON ((ALLSK=1 TABSK34=3) OR (ALLSK=2 (TABSK34=2 OR CLSK4=2)))]:%N
 ItemDisplay[WEAPON ((ALLSK=0 TABSK34=3) OR (ALLSK=1 (TABSK34=2 OR CLSK4=2)) OR (ALLSK=2 (TABSK34=1 OR CLSK4=1)))]:%NAME%{%BLUE%**%TEAL%**%DARK_GREEN%***   %GREEN%+3 Warcries Weapon   %DARK_GREEN%***%TEAL%**%BLUE%**%CL%%NAME%}%CONTINUE%//
 
 //  3 Socket Magic Find Helm
-ItemDisplay[SHOP MAG (crn OR xrn OR ghm OR xhm) SOCK=3 MFIND>14]:%NAME%{%BLUE%**%TEAL%**%DARK_GREEN%***   %GREEN%Magic Find Helm   %DARK_GREEN%***%TEAL%**%BLUE%**%CL%%NAME%}%CONTINUE%//
+ItemDisplay[SHOP MAG (crn OR xrn OR ghm OR xhm) SOCK=3 MFIND>14]:%NAME%%GREEN%{%BLUE%**%TEAL%**%DARK_GREEN%***   %GREEN%Magic Find Helm   %DARK_GREEN%***%TEAL%**%BLUE%**%CL%%NAME%}%CONTINUE%//
 
 //  4 Shadow Discipline Helm
 ItemDisplay[MAG HELM ALLSK=1 TABSK49=3]:%NAME%{%BLUE%**%TEAL%**%DARK_GREEN%***   %GREEN%+4 Shadow Disciplines   %DARK_GREEN%***%TEAL%**%BLUE%**%CL%%NAME%}%CONTINUE%//
 //  3 Shadow Discipline Helm
-ItemDisplay[SHOP MAG ASSASSIN HELM ALLSK=0 TABSK49=3]:%NAME%{%BLUE%**%TEAL%**%DARK_GREEN%***   %GREEN%+3 Shadow Disciplines   %DARK_GREEN%***%TEAL%**%BLUE%**%CL%%NAME%}%CONTINUE%//
+ItemDisplay[SHOP MAG ASSASSIN HELM ALLSK=0 TABSK49=3]:%NAME%%GREEN%{%BLUE%**%TEAL%**%DARK_GREEN%***   %GREEN%+3 Shadow Disciplines   %DARK_GREEN%***%TEAL%**%BLUE%**%CL%%NAME%}%CONTINUE%//
 
 //  3 Socket Armor with Useful Mods
-ItemDisplay[SHOP MAG CHEST SOCK=3 CLVL<87 (STAT36>14 OR FCR>19)]:%NAME%{%BLUE%**%TEAL%**%DARK_GREEN%***   %GREEN%Artisan's Armor   %DARK_GREEN%***%TEAL%**%BLUE%**%CL%%NAME%}%CONTINUE%//
+ItemDisplay[SHOP MAG CHEST SOCK=3 CLVL<87 (STAT36>14 OR FCR>19)]:%NAME%%GREEN%{%BLUE%**%TEAL%**%DARK_GREEN%***   %GREEN%Artisan's Armor   %DARK_GREEN%***%TEAL%**%BLUE%**%CL%%NAME%}%CONTINUE%//
+
+//  2-3 Socket Shield with 10%+ PDR
+ItemDisplay[SHOP MAG SHIELD SOCK>1 STAT36>9]:%NAME%%GREEN%{%NAME%}%CONTINUE%//
 
 //  4 Socket Armor with Useful Mods
-ItemDisplay[SHOP MAG CHEST SOCK=4 (STAT36>14 OR FCR>19 OR (CLVL<87 (STAT36>9 OR LIFE>59 OR FHR>16 OR STR>14 OR DEX>14)))]:%NAME%{%BLUE%**%TEAL%**%DARK_GREEN%***   %GREEN%Jeweler's Armor   %DARK_GREEN%***%TEAL%**%BLUE%**%CL%%NAME%}%CONTINUE%//
+ItemDisplay[SHOP MAG CHEST SOCK=4 (STAT36>14 OR FCR>19 OR (CLVL<87 (STAT36>9 OR LIFE>59 OR FHR>16 OR STR>14 OR DEX>14)))]:%NAME%%GREEN%{%BLUE%**%TEAL%**%DARK_GREEN%***   %GREEN%Jeweler's Armor   %DARK_GREEN%***%TEAL%**%BLUE%**%CL%%NAME%}%CONTINUE%//
 
 //  Teleport Charges (non-sorcs only)
 ItemDisplay[STAFF CLVL<85 (MAG OR RARE OR CRAFT) CHSK54>0 !SORCERESS]:%NAME%{%BLUE%**%TEAL%**%DARK_GREEN%***   %GREEN%Teleport Charges   %DARK_GREEN%***%TEAL%**%BLUE%**%CL%%NAME%}%CONTINUE%//
@@ -5028,6 +5217,13 @@ ItemDisplay[(NMAG OR MAG OR RARE OR CRAFT) !EQUIPPED !RW ((SK376=1 CLVL<60) OR (
 ItemDisplay[(NMAG OR MAG OR RARE OR CRAFT) !RW (SOR OR STAFF) SORCERESS FILTLVL<5 CLVL<60 (SK40=3 OR SK41=3 OR SK44=3 OR SK47=3 OR SK48=3 OR SK49=3 OR SK51=3 OR SK52=3 OR SK53=3 OR SK55=3 OR SK56=3 OR SK59=3 OR SK61=3 OR SK62=3 OR SK63=3 OR SK64=3 OR SK65=3 OR SK369=3 OR SK376=3 OR SK383)]:%NAME%%PX-76%{%NAME%}%CONTINUE%//
 ItemDisplay[(NMAG OR MAG OR RARE OR CRAFT) !RW (SOR OR STAFF) SORCERESS FILTLVL<5 CLVL<20 (SK36=3 OR SK38=3 OR SK39=3 OR SK42=3 OR SK45=3)]:%NAME%%PX-76%{%NAME%}%CONTINUE%//
 
+
+// ------------------------------------------------------------------------------
+//    ========================  Cannot Be Frozen Tag  ========================
+// ------------------------------------------------------------------------------
+
+// Cannot be Frozen from 2x HFD
+ItemDisplay[CHARSTAT118>1 STAT118=1 EQUIPPED]:%NAME%{%GRAY%**%BLUE%**   %BLUE%Cannot Be Frozen   %BLUE%**%GRAY%**%CL%%NAME%}%CONTINUE%
 
 // ------------------------------------------------------------------------------
 //    ===========================  Resistances Tags  =========================
