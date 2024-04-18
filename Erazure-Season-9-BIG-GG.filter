@@ -3010,9 +3010,8 @@ ItemDisplay[NMAG !INF !RW ci2 CLVL>79 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=7
 ItemDisplay[NMAG !INF !RW ci2 CLVL<80 !ETH SOCK=0]:%NAME% %TAN%[%YELLOW%Imbue%TAN%]%WHITE%{%WHITE%in Act 1 to %YELLOW%Imbue %WHITE%this item%CL%%TAN%Note%WHITE%: Bring to Charsi}//
 
 // Diadem
-ItemDisplay[NMAG !INF !RW ci3 CLVL>89 FILTLVL>4 (ETH OR SOCK~1-2) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hides nonmagical diadems on filter levels 5 and above
-ItemDisplay[NMAG !INF !RW ci3 CLVL>89 FILTLVL>4 !ETH SOCK=0]:%NAME%%WHITE%{%WHITE%brick into a %YELLOW%Rare Diadem%CL%%RED%Corrupt %WHITE%for a chance to}//
-ItemDisplay[NMAG !INF !RW ci3 CLVL<90 FILTLVL<5 !ETH SOCK=0]:%NAME% %TAN%[%YELLOW%Imbue%TAN%]%WHITE%{%WHITE%in Act 1 to %YELLOW%Imbue %WHITE%this item%CL%%TAN%Note%WHITE%: Bring to Charsi}//
+ItemDisplay[NMAG !INF !RW ci3 (CLVL>79 OR FILTLVL>4) SOCK~1-3 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hides nonmagical diadems on filter levels 5 and above
+ItemDisplay[NMAG !INF !RW ci3 !ETH SOCK=0]:%NAME% %TAN%[%YELLOW%Imbue%TAN%]%WHITE%{%WHITE%in Act 1 to %YELLOW%Imbue %WHITE%this item%CL%%TAN%Note%WHITE%: Bring to Charsi}//
 
 // ------------------------------------------------------------------------------
 //    ===============================  Helms  ===============================   
@@ -5233,12 +5232,13 @@ ItemDisplay[(MAG OR RARE) (CRAFTALVL>74 (BOW OR XBOW OR TMACE OR (tax OR 9ta OR 
 ItemDisplay[(MAG OR RARE) (CRAFTALVL<75 (BOW OR XBOW OR TMACE OR (tax OR 9ta OR 7ta OR bal OR 9b8 OR 7b8) OR (tkf OR 9tk OR 7tk OR bkf OR 9bk OR 7bk) OR (ZON JAV))) SHOP]:%NAME%{%NAME%%CL%%WHITE%Crafted Affix Level: %RED%%CRAFTALVL%}%CONTINUE%// 
 
 // Swords, Polearms, Spears, Maces (Not Tipped), Axes (Not Throwing)
-ItemDisplay[(MAG OR RARE) (CRAFTALVL>55 (SWORD OR POLEARM OR SPEAR OR (MACE !TMACE) OR (AXE !THROWING) OR (JAV !ZON))) !SHOP !EQUIPPED]:%NAME%{%NAME%%CL%%ORANGE%Crafted %WHITE%Affix Level: %BLUE%%CRAFTALVL%}%CONTINUE%// 
-ItemDisplay[(MAG OR RARE) (CRAFTALVL<56 (SWORD OR POLEARM OR SPEAR OR (MACE !TMACE) OR (AXE !THROWING) OR (JAV !ZON))) !SHOP !EQUIPPED]:%NAME%{%NAME%%CL%%WHITE%Crafted Affix Level: %RED%%CRAFTALVL%}%CONTINUE%// 
+ItemDisplay[(MAG OR RARE) (CRAFTALVL>55 (SWORD OR POLEARM OR SPEAR OR (MACE !TMACE !(clb OR 9cl OR spc OR 9sp)) OR (AXE !THROWING) OR (JAV !ZON))) !SHOP !EQUIPPED]:%NAME%{%NAME%%CL%%ORANGE%Crafted %WHITE%Affix Level: %BLUE%%CRAFTALVL%}%CONTINUE%// 
+ItemDisplay[(MAG OR RARE) (CRAFTALVL<56 (SWORD OR POLEARM OR SPEAR OR (MACE !TMACE !(clb OR 9cl OR spc OR 9sp)) OR (AXE !THROWING) OR (JAV !ZON))) !SHOP !EQUIPPED]:%NAME%{%NAME%%CL%%WHITE%Crafted Affix Level: %RED%%CRAFTALVL%}%CONTINUE%// 
 
-ItemDisplay[(MAG OR RARE) (CRAFTALVL>55 (SWORD OR POLEARM OR SPEAR OR (MACE !TMACE) OR (AXE !THROWING) OR (JAV !ZON))) SHOP]:%NAME%{%NAME%%CL%%WHITE%Crafted Affix Level: %BLUE%%CRAFTALVL%}%CONTINUE%// 
-ItemDisplay[(MAG OR RARE) (CRAFTALVL<56 (SWORD OR POLEARM OR SPEAR OR (MACE !TMACE) OR (AXE !THROWING) OR (JAV !ZON))) SHOP]:%NAME%{%NAME%%CL%%WHITE%Crafted Affix Level: %RED%%CRAFTALVL%}%CONTINUE%// 
+ItemDisplay[(MAG OR RARE) (CRAFTALVL>55 (SWORD OR POLEARM OR SPEAR OR (MACE !TMACE !(clb OR 9cl OR spc OR 9sp)) OR (AXE !THROWING) OR (JAV !ZON))) SHOP]:%NAME%{%NAME%%CL%%WHITE%Crafted Affix Level: %BLUE%%CRAFTALVL%}%CONTINUE%// 
+ItemDisplay[(MAG OR RARE) (CRAFTALVL<56 (SWORD OR POLEARM OR SPEAR OR (MACE !TMACE !(clb OR 9cl OR spc OR 9sp)) OR (AXE !THROWING) OR (JAV !ZON))) SHOP]:%NAME%{%NAME%%CL%%WHITE%Crafted Affix Level: %RED%%CRAFTALVL%}%CONTINUE%// 
 
+/
 // Chests, Tower Shields/Pavise, Paladin Shields, Gloves, Boots,  Belts
 ItemDisplay[(MAG OR RARE) ((CRAFTALVL>84 CLVL>79 (CHEST OR (tow OR xow OR DIN))) OR (GLOVES CRAFTALVL>58) OR (BOOTS CRAFTALVL>64) OR (BELT CRAFTALVL>74)) !SHOP !EQUIPPED]:%NAME%{%NAME%%CL%%ORANGE%Crafted %WHITE%Affix Level: %BLUE%%CRAFTALVL%}%CONTINUE%// 
 ItemDisplay[(MAG OR RARE) ((CRAFTALVL<85 CLVL>79 (CHEST OR (tow OR xow OR DIN))) OR (GLOVES CRAFTALVL<59) OR (BOOTS CRAFTALVL<65) OR (BELT CRAFTALVL<75)) !SHOP !EQUIPPED]:%NAME%{%NAME%%CL%%WHITE%Crafted Affix Level: %RED%%CRAFTALVL%}%CONTINUE%// 
