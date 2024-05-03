@@ -59,62 +59,60 @@ ItemDisplay[GOLD<10000 CLVL>94 FILTLVL>8]://            Hide under 10000 gold if
 // ================================  Health Potions  =================================
 
 // Display for Healing Potions during levels 1-25
-ItemDisplay[hp1 FILTLVL=0]:%GRAY%i%RED%( %WHITE%H%GRAY%-%WHITE%1 %RED%)%GRAY%i%WHITE%{%WHITE% Minor Healing Potion }//
-ItemDisplay[hp2 FILTLVL=0]:%GRAY%i%RED%( %WHITE%H%GRAY%-%WHITE%2 %RED%)%GRAY%i%WHITE%{%WHITE% Light Healing Potion }//
-ItemDisplay[hp3 FILTLVL=0]:%GRAY%i%RED%( %WHITE%H%GRAY%-%WHITE%3 %RED%)%GRAY%i%WHITE%{%WHITE% Mid Healing Potion }//
+ItemDisplay[hp1 (FILTLVL=0 OR SHOP)]:%GRAY%i%RED%( %WHITE%H%GRAY%-%WHITE%1 %RED%)%GRAY%i%WHITE%{%WHITE% Minor Healing Potion }//
+ItemDisplay[hp2 (FILTLVL=0 OR SHOP)]:%GRAY%i%RED%( %WHITE%H%GRAY%-%WHITE%2 %RED%)%GRAY%i%WHITE%{%WHITE% Light Healing Potion }//
+ItemDisplay[hp3 (FILTLVL=0 OR SHOP)]:%GRAY%i%RED%( %WHITE%H%GRAY%-%WHITE%3 %RED%)%GRAY%i%WHITE%{%WHITE% Mid Healing Potion }//
 
 ItemDisplay[hp1 CLVL<15 !FILTLVL=0]:%GRAY%i%RED%( %WHITE%H%GRAY%-%WHITE%1 %RED%)%GRAY%i%WHITE%%PX-50%%TIER-0%{%WHITE% Minor Healing Potion }//
 ItemDisplay[hp2 CLVL<20 !FILTLVL=0]:%GRAY%i%RED%( %WHITE%H%GRAY%-%WHITE%2 %RED%)%GRAY%i%WHITE%%PX-50%%TIER-0%{%WHITE% Light Healing Potion }//
 ItemDisplay[hp3 CLVL<25 !FILTLVL=0]:%GRAY%i%RED%( %WHITE%H%GRAY%-%WHITE%3 %RED%)%GRAY%i%WHITE%%PX-50%%TIER-0%{%WHITE% Mid Healing Potion }//
 
 // Hide lower quality potions based on character level
-ItemDisplay[hp1 CLVL>14]:{%WHITE% Minor Healing Potion }//      Hides Minor Heal Potions after level 14
-ItemDisplay[hp2 CLVL>19]:{%WHITE% Light Healing Potion }//      Hides Light Heal Potions after level 19
-ItemDisplay[hp3 CLVL>24]:{%WHITE% Healing Potion }//            Hides Healing Potions after level 24
+ItemDisplay[hp1 CLVL>14 !SHOP]:{%WHITE% Minor Healing Potion }//      Hides Minor Heal Potions after level 14
+ItemDisplay[hp2 CLVL>19 !SHOP]:{%WHITE% Light Healing Potion }//      Hides Light Heal Potions after level 19
+ItemDisplay[hp3 CLVL>24 !SHOP]:{%WHITE% Healing Potion }//            Hides Healing Potions after level 24
 
 // Greater Healing Potion
-ItemDisplay[hp4 FILTLVL=0]:%GRAY%i%RED%( %WHITE%H%GRAY%-%WHITE%4 %RED%)%GRAY%i%WHITE%{%WHITE% Greater Healing Potion }//
+ItemDisplay[hp4 (FILTLVL=0 OR SHOP)]:%GRAY%i%RED%( %WHITE%H%GRAY%-%WHITE%4 %RED%)%GRAY%i%WHITE%{%WHITE% Greater Healing Potion }//
 ItemDisplay[hp4 CLVL<25 !FILTLVL=0]:%GRAY%i%RED%( %WHITE%H%GRAY%-%WHITE%4 %RED%)%GRAY%i%WHITE%%PX-50%%TIER-0%{%WHITE% Greater Healing Potion }//
-ItemDisplay[hp4 (CLVL>49 OR FILTLVL>2)]:{%WHITE% Greater Healing Potion }//       Hides Greater Healing Potions after level 49 or on filter levels 3+
+ItemDisplay[hp4 (CLVL>49 OR FILTLVL>2) !SHOP]:{%WHITE% Greater Healing Potion }//       Hides Greater Healing Potions after level 49 or on filter levels 3+
 ItemDisplay[hp4 CLVL>24]:%GRAY%i%RED%(O)%GRAY%i%WHITE%{%WHITE% Greater Healing Potion }//
 
 // Super Healing Potion
-ItemDisplay[hp5 FILTLVL=0]:%CORAL%i%RED%( %WHITE%H%GRAY%-%WHITE%5 %RED%)%CORAL%i%WHITE%{%WHITE% Super Healing Potion }//
+ItemDisplay[hp5 (FILTLVL=0 OR SHOP)]:%CORAL%i%RED%( %WHITE%H%GRAY%-%WHITE%5 %RED%)%CORAL%i%WHITE%{%WHITE% Super Healing Potion }//
 ItemDisplay[hp5 CLVL<25 !FILTLVL=0]:%CORAL%i%RED%( %WHITE%H%GRAY%-%WHITE%5 %RED%)%CORAL%i%WHITE%%PX-50%%TIER-0%{%WHITE% Super Healing Potion }//
 ItemDisplay[hp5 CLVL>24 CLVL<50 (FILTLVL=1 OR FILTLVL=2 OR FILTLVL=4 OR FILTLVL=5 OR FILTLVL=7)]:%RED%i%CORAL%I%RED%(O)%CORAL%I%RED%i%WHITE%{%WHITE% Super Healing Potion }// On Filter Level 1, 2, and 5, show as iI(O)Ii between character level 30 and 50
 ItemDisplay[hp5 CLVL>49 (FILTLVL=1 OR FILTLVL=2 OR FILTLVL=4 OR FILTLVL=5 OR FILTLVL=7)]:%CORAL%i%RED%(O)%CORAL%i%WHITE%{%WHITE% Super Healing Potion }// On Filter Level 1, 2, 4, 5, and 7 show as i(O)i at character level 50+
 ItemDisplay[hp5 CLVL>24 (FILTLVL=3 OR FILTLVL=6 OR FILTLVL=8 OR FILTLVL=9) !SHOP]:{%WHITE% Super Healing Potion }// On Filter Levels 3, 6, 8, 9 hide Super Healing potions
-ItemDisplay[hp5 CLVL>24 (FILTLVL=3 OR FILTLVL=6 OR FILTLVL=8 OR FILTLVL=9) SHOP]:%CORAL%i%RED%(O)%CORAL%i%WHITE%{%WHITE% Super Healing Potion }// On Filter Levels 3, 6, 8, 9 hide Super Healing potions
 
 // ==================================  Mana Potions  ====================================
 
 // Display for Mana Potions during levels 1-25
-ItemDisplay[mp1 FILTLVL=0]:%GRAY%i%BLUE%( %WHITE%M%GRAY%-%WHITE%1 %BLUE%)%GRAY%i%WHITE%{%WHITE% Minor Mana Potion }//
-ItemDisplay[mp2 FILTLVL=0]:%GRAY%i%BLUE%( %WHITE%M%GRAY%-%WHITE%2 %BLUE%)%GRAY%i%WHITE%{%WHITE% Light Mana Potion }//
-ItemDisplay[mp3 FILTLVL=0]:%GRAY%i%BLUE%( %WHITE%M%GRAY%-%WHITE%3 %BLUE%)%GRAY%i%WHITE%{%WHITE% Mana Potion }//
+ItemDisplay[mp1 (FILTLVL=0 OR SHOP)]:%GRAY%i%BLUE%( %WHITE%M%GRAY%-%WHITE%1 %BLUE%)%GRAY%i%WHITE%{%WHITE% Minor Mana Potion }//
+ItemDisplay[mp2 (FILTLVL=0 OR SHOP)]:%GRAY%i%BLUE%( %WHITE%M%GRAY%-%WHITE%2 %BLUE%)%GRAY%i%WHITE%{%WHITE% Light Mana Potion }//
+ItemDisplay[mp3 (FILTLVL=0 OR SHOP)]:%GRAY%i%BLUE%( %WHITE%M%GRAY%-%WHITE%3 %BLUE%)%GRAY%i%WHITE%{%WHITE% Mana Potion }//
 
 ItemDisplay[mp1 CLVL<15 !FILTLVL=0]:%GRAY%i%BLUE%( %WHITE%M%GRAY%-%WHITE%1 %BLUE%)%GRAY%i%WHITE%%PX-97%%TIER-0%{%WHITE% Minor Mana Potion }//
 ItemDisplay[mp2 CLVL<20 !FILTLVL=0]:%GRAY%i%BLUE%( %WHITE%M%GRAY%-%WHITE%2 %BLUE%)%GRAY%i%WHITE%%PX-97%%TIER-0%{%WHITE% Light Mana Potion }//
 ItemDisplay[mp3 CLVL<25 !FILTLVL=0]:%GRAY%i%BLUE%( %WHITE%M%GRAY%-%WHITE%3 %BLUE%)%GRAY%i%WHITE%%PX-97%%TIER-0%{%WHITE% Mana Potion }//
 
 // Hide lower quality potions based on character level
-ItemDisplay[mp1 CLVL>14]:{%WHITE% Minor Mana Potion }//         Hides Minor Mana Potions after level 14
-ItemDisplay[mp2 CLVL>19]:{%WHITE% Light Mana Potion }//         Hides Light Mana Potions after level 19
-ItemDisplay[mp3 CLVL>24]:{%WHITE% Mana Potion }//               Hides Mana Potions after level 24
+ItemDisplay[mp1 CLVL>14 !SHOP]:{%WHITE% Minor Mana Potion }//         Hides Minor Mana Potions after level 14
+ItemDisplay[mp2 CLVL>19 !SHOP]:{%WHITE% Light Mana Potion }//         Hides Light Mana Potions after level 19
+ItemDisplay[mp3 CLVL>24 !SHOP]:{%WHITE% Mana Potion }//               Hides Mana Potions after level 24
 
 // Greater Mana Potion
-ItemDisplay[mp4 FILTLVL=0]:%GRAY%i%BLUE%( %WHITE%M%GRAY%-%WHITE%4 %BLUE%)%GRAY%i%WHITE%{%WHITE% Greater Mana Potion }//
+ItemDisplay[mp4 (FILTLVL=0 OR SHOP)]:%GRAY%i%BLUE%( %WHITE%M%GRAY%-%WHITE%4 %BLUE%)%GRAY%i%WHITE%{%WHITE% Greater Mana Potion }//
 ItemDisplay[mp4 CLVL<25 !FILTLVL=0]:%GRAY%i%BLUE%( %WHITE%M%GRAY%-%WHITE%4 %BLUE%)%GRAY%i%WHITE%%PX-97%%TIER-0%{%WHITE% Greater Mana Potion }//
-ItemDisplay[mp4 (CLVL>49 OR FILTLVL>3)]:{%WHITE% Greater Mana Potion }//       Hides Greater Mana Potions after level 79 or on filter levels 4+
+ItemDisplay[mp4 (CLVL>49 OR FILTLVL>3) !SHOP]:{%WHITE% Greater Mana Potion }//       Hides Greater Mana Potions after level 79 or on filter levels 4+
 ItemDisplay[mp4 CLVL>24]:%TEAL%i%BLUE%(O)%TEAL%i%WHITE%{%WHITE% Greater Mana Potion }//
 
 // Super Mana Potion
-ItemDisplay[mp5 FILTLVL=0]:%TEAL%i%BLUE%( %WHITE%M%GRAY%-%WHITE%5 %BLUE%)%TEAL%i%WHITE%{%WHITE% Super Mana Potion }//
+ItemDisplay[mp5 (FILTLVL=0 OR SHOP)]:%TEAL%i%BLUE%( %WHITE%M%GRAY%-%WHITE%5 %BLUE%)%TEAL%i%WHITE%{%WHITE% Super Mana Potion }//
 ItemDisplay[mp5 CLVL<25 !FILTLVL=0]:%TEAL%i%BLUE%( %WHITE%M%GRAY%-%WHITE%5 %BLUE%)%TEAL%i%WHITE%%PX-97%%TIER-0%{%WHITE% Super Mana Potion }//
 ItemDisplay[mp5 CLVL>24 CLVL<50 (FILTLVL=1 OR FILTLVL=2 OR FILTLVL=3 OR FILTLVL=5 OR FILTLVL=6 OR (FILTLVL=9 SORCERESS))]:%BLUE%i%TEAL%I%BLUE%(O)%TEAL%I%BLUE%i%WHITE%{%WHITE% Super Mana Potion }// On Filter Level 1, 2, 3, 5 and 6, show as iI(O)Ii
 ItemDisplay[mp5 CLVL>49 (FILTLVL=1 OR FILTLVL=2 OR FILTLVL=3 OR FILTLVL=5 OR FILTLVL=6 OR (FILTLVL=9 SORCERESS))]:%TEAL%i%BLUE%(O)%TEAL%i%WHITE%{%WHITE% Super Mana Potion }// On Filter Level 1, 2, 3, 5 and 6, show as iI(O)Ii
 ItemDisplay[mp5 CLVL>24 (FILTLVL=4 OR FILTLVL=7 OR FILTLVL=8 OR (FILTLVL=9 !SORCERESS)) !SHOP]:{%WHITE% Super Mana Potion }// On Filter Level 4, 7, 8 and 9, hide Super Mana potions
-ItemDisplay[mp5 CLVL>24 (FILTLVL=4 OR FILTLVL=7 OR FILTLVL=8 OR (FILTLVL=9 !SORCERESS)) SHOP]:%TEAL%i%BLUE%(O)%TEAL%i%WHITE%{%WHITE% Super Mana Potion }// On Filter Level 4, 7, 8 and 9, hide Super Mana potions
 
 // Dueling Mana Potion
 ItemDisplay[pvpp]:%GRAY%i%BLUE%(O)%GRAY%i%WHITE%{%WHITE% Dueling Mana Potion }//
@@ -153,43 +151,43 @@ ItemDisplay[wms CLVL<25 !FILTLVL=0]:%GRAY%i%YELLOW%( %WHITE%Thaw %YELLOW%)%GRAY%
 
 // =====================================  Throwing Potions  =================================
 
-ItemDisplay[tpgs FILTLVL=0]:%GRAY%i%DARK_GREEN%( %GRAY%Strg %DARK_GREEN%)%GRAY%i%WHITE%{ %WHITE%Strangling Potion }//
+ItemDisplay[tpgs (FILTLVL=0 OR SHOP)]:%GRAY%i%DARK_GREEN%( %GRAY%Strg %DARK_GREEN%)%GRAY%i%WHITE%{ %WHITE%Strangling Potion }//
 ItemDisplay[tpgs (CLVL>8 OR FILTLVL>1)]:{ %WHITE%Strangling Potion }//
 ItemDisplay[tpgs CLVL<9]:%GRAY%i%DARK_GREEN%(  %GRAY%Strangling  %DARK_GREEN%)%GRAY%i%WHITE%{ %WHITE%Strangling Potion }// Strangling Gas Potion (Level 6 Req)
-ItemDisplay[tpgm FILTLVL=0]:%GRAY%i%DARK_GREEN%( %GRAY%Chok %DARK_GREEN%)%GRAY%i%WHITE%{ %WHITE%Choking Potion }//
+ItemDisplay[tpgm (FILTLVL=0 OR SHOP)]:%GRAY%i%DARK_GREEN%( %GRAY%Chok %DARK_GREEN%)%GRAY%i%WHITE%{ %WHITE%Choking Potion }//
 ItemDisplay[tpgm (CLVL>19 OR FILTLVL>1)]:{ %WHITE%Choking Potion }//
 ItemDisplay[tpgm CLVL<20]:%GRAY%i%DARK_GREEN%(  %GRAY%Choking  %DARK_GREEN%)%GRAY%i%WHITE%{ %WHITE%Choking Potion }// Choking Gas Potion (Level 16 Req)
-ItemDisplay[tpgl FILTLVL=0]:%GRAY%i%DARK_GREEN%(  %GRAY%Ranc  %DARK_GREEN%)%GRAY%i%WHITE%{ %WHITE%Rancid Potion }//
+ItemDisplay[tpgl (FILTLVL=0 OR SHOP)]:%GRAY%i%DARK_GREEN%(  %GRAY%Ranc  %DARK_GREEN%)%GRAY%i%WHITE%{ %WHITE%Rancid Potion }//
 ItemDisplay[tpgl (CLVL>27 OR FILTLVL>1)]:{ %WHITE%Rancid Potion }//
 ItemDisplay[tpgl CLVL<28]:%GRAY%i%DARK_GREEN%(  %GRAY%Rancid  %DARK_GREEN%)%GRAY%i%WHITE%{ %WHITE%Rancid Potion }// Rancid Gas Potion (Level 24 Req)
 
-ItemDisplay[tpfs FILTLVL=0]:%GRAY%i%RED%( %GRAY%Fulm %RED%)%GRAY%i%WHITE%{ %WHITE%Fulminating Potion }//
+ItemDisplay[tpfs (FILTLVL=0 OR SHOP)]:%GRAY%i%RED%( %GRAY%Fulm %RED%)%GRAY%i%WHITE%{ %WHITE%Fulminating Potion }//
 ItemDisplay[tpfs (CLVL>5 OR FILTLVL>1)]:{ %WHITE%Fulminating Potion }//
 ItemDisplay[tpfs CLVL<6]:%GRAY%i%RED%( %GRAY%Fulminating %RED%)%GRAY%i%WHITE%{ %WHITE%Fulminating Potion }// Fulminating Potion (Level 1 Req)
-ItemDisplay[tpfm FILTLVL=0]:%GRAY%i%RED%( %GRAY%Expl %RED%)%GRAY%i%WHITE%{ %WHITE%Exploding Potion }//
+ItemDisplay[tpfm (FILTLVL=0 OR SHOP)]:%GRAY%i%RED%( %GRAY%Expl %RED%)%GRAY%i%WHITE%{ %WHITE%Exploding Potion }//
 ItemDisplay[tpfm (CLVL>15 OR FILTLVL>1)]:{ %WHITE%Exploding Potion }//
 ItemDisplay[tpfm CLVL<16]:%GRAY%i%RED%( %GRAY%Exploding %RED%)%GRAY%i%WHITE%{ %WHITE%Exploding Potion }// Exploding Potion (Level 12 Req)
-ItemDisplay[tpfl FILTLVL=0]:%GRAY%i%RED%( %GRAY%Oil %RED%)%GRAY%i%WHITE%{ %WHITE%Oil Potion }//
+ItemDisplay[tpfl (FILTLVL=0 OR SHOP)]:%GRAY%i%RED%( %GRAY%Oil %RED%)%GRAY%i%WHITE%{ %WHITE%Oil Potion }//
 ItemDisplay[tpfl (CLVL>23 OR FILTLVL>1)]:{ %WHITE%Oil Potion }//
 ItemDisplay[tpfl CLVL<24]:%GRAY%i%RED%( %GRAY%Oil Potion %RED%)%GRAY%i%WHITE%{ %WHITE%Oil Potion }// Oil Potion (Level 20 Req)
 
-ItemDisplay[tpcs FILTLVL=0]:%GRAY%i%BLUE%( %GRAY%Chil %BLUE%)%GRAY%i%WHITE%{ %WHITE%Chilling Potion }//
+ItemDisplay[tpcs (FILTLVL=0 OR SHOP)]:%GRAY%i%BLUE%( %GRAY%Chil %BLUE%)%GRAY%i%WHITE%{ %WHITE%Chilling Potion }//
 ItemDisplay[tpcs (CLVL>5 OR FILTLVL>1)]:{ %WHITE%Chilling Potion }//
 ItemDisplay[tpcs CLVL<6]:%GRAY%i%BLUE%( %GRAY%Chilling %BLUE%)%GRAY%i%WHITE%{ %WHITE%Chilling Potion }// Chilling Potion (Level 1 Req)
-ItemDisplay[tpcm FILTLVL=0]:%GRAY%i%BLUE%( %GRAY%Frst %BLUE%)%GRAY%i%WHITE%{ %WHITE%Frost Potion }//
+ItemDisplay[tpcm (FILTLVL=0 OR SHOP)]:%GRAY%i%BLUE%( %GRAY%Frst %BLUE%)%GRAY%i%WHITE%{ %WHITE%Frost Potion }//
 ItemDisplay[tpcm (CLVL>15 OR FILTLVL>1)]:{ %WHITE%Frost Potion }//
 ItemDisplay[tpcm CLVL<16]:%GRAY%i%BLUE%( %GRAY%Frost %BLUE%)%GRAY%i%WHITE%{ %WHITE%Frost Potion }// Frost Potion (Level 12 Req)
-ItemDisplay[tpcl FILTLVL=0]:%GRAY%i%BLUE%( %GRAY%Frez %BLUE%)%GRAY%i%WHITE%{ %WHITE%Freezing Potion }// 
+ItemDisplay[tpcl (FILTLVL=0 OR SHOP)]:%GRAY%i%BLUE%( %GRAY%Frez %BLUE%)%GRAY%i%WHITE%{ %WHITE%Freezing Potion }// 
 ItemDisplay[tpcl (CLVL>23 OR FILTLVL>1)]:{ %WHITE%Freezing Potion }//
 ItemDisplay[tpcl CLVL<24]:%GRAY%i%BLUE%( %GRAY%Freezing %BLUE%)%GRAY%i%WHITE%{ %WHITE%Freezing Potion }// Freezing Potion (Level 20 Req)
 
-ItemDisplay[tpls FILTLVL=0]:%GRAY%i%YELLOW%( %GRAY%Chrg %YELLOW%)%GRAY%i%WHITE%{ %WHITE%Charged Potion }//
+ItemDisplay[tpls (FILTLVL=0 OR SHOP)]:%GRAY%i%YELLOW%( %GRAY%Chrg %YELLOW%)%GRAY%i%WHITE%{ %WHITE%Charged Potion }//
 ItemDisplay[tpls (CLVL>8 OR FILTLVL>1)]:{ %WHITE%Charged Potion }//
 ItemDisplay[tpls CLVL<9]:%GRAY%i%YELLOW%(  %GRAY%Charged  %YELLOW%)%GRAY%i%WHITE%{ %WHITE%Charged Potion }// Charged Potion (Level 6 Req)
-ItemDisplay[tplm FILTLVL=0]:%GRAY%i%YELLOW%( %GRAY%Stat %YELLOW%)%GRAY%i%WHITE%{ %WHITE%Static Potion }//
+ItemDisplay[tplm (FILTLVL=0 OR SHOP)]:%GRAY%i%YELLOW%( %GRAY%Stat %YELLOW%)%GRAY%i%WHITE%{ %WHITE%Static Potion }//
 ItemDisplay[tplm (CLVL>19 OR FILTLVL>1)]:{ %WHITE%Static Potion }//
 ItemDisplay[tplm CLVL<20]:%GRAY%i%YELLOW%(  %GRAY%Static  %YELLOW%)%GRAY%i%WHITE%{ %WHITE%Static Potion }// Static Potion (Level 16 Req)
-ItemDisplay[tpll FILTLVL=0]:%GRAY%i%YELLOW%( %GRAY%Shck %YELLOW%)%GRAY%i%WHITE%{ %WHITE%Shock Potion }//
+ItemDisplay[tpll (FILTLVL=0 OR SHOP)]:%GRAY%i%YELLOW%( %GRAY%Shck %YELLOW%)%GRAY%i%WHITE%{ %WHITE%Shock Potion }//
 ItemDisplay[tpll (CLVL>27 OR FILTLVL>1)]:{ %WHITE%Shock Potion }//
 ItemDisplay[tpll CLVL<28]:%GRAY%i%YELLOW%( %GRAY%Shock %YELLOW%)%GRAY%i%WHITE%{ %WHITE%Shock Potion }// Shock Potion (Level 24 Req)
 
@@ -222,26 +220,25 @@ ItemDisplay[tsc CLVL<10]:%BLUE%+  %GRAY%TP %WHITE%Scroll  %BLUE%+%WHITE%//
 
 // ======================================   Keys   ======================================
 
-ItemDisplay[key FILTLVL=0]:%GRAY%Keys %TAN%x %WHITE%%QTY%// Display name of keys on filter level 0
+ItemDisplay[key (FILTLVL=0 OR SHOP)]:%GRAY%Keys %TAN%x %WHITE%%QTY%// Display name of keys on filter level 0
 
 ItemDisplay[key QTY>5]:%GRAY%Keys %TAN%x %WHITE%%QTY%// Always show keys of in stacks of 5 or more
 
 ItemDisplay[key QTY<6 FILTLVL>4 !SHOP]:{%GRAY%Keys %TAN%x %WHITE%%QTY%}// On filter level 5+, hide keys of QTY=5 or less
-ItemDisplay[key QTY<6 FILTLVL>4 SHOP]:%GRAY%Keys %TAN%x %WHITE%%QTY%// On filter level 5+, hide keys of QTY=5 or less
 
 ItemDisplay[key QTY=5 FILTLVL<5]:%GRAY%Keys %TAN%x %WHITE%%QTY%// On filter levels 1-4, show keys of QTY=5
 
 ItemDisplay[key QTY=4 FILTLVL<5 CLVL>89 !SHOP]:{%GRAY%Keys %TAN%x %WHITE%%QTY%}// On filter levels 1-4, hide keys of QTY=4 over level 89
-ItemDisplay[key QTY=4 FILTLVL<5 ((CLVL>89 SHOP) OR CLVL<90)]:{%GRAY%Keys %TAN%x %WHITE%%QTY%}// On filter levels 1-4, hide keys of QTY=4 over level 89
+ItemDisplay[key QTY=4 FILTLVL<5 CLVL<90]:%GRAY%Keys %TAN%x %WHITE%%QTY%// On filter levels 1-4, show keys of QTY=4 under level 90
 
 ItemDisplay[key QTY=3 FILTLVL<5 CLVL>79 !SHOP]:{%GRAY%Keys %TAN%x %WHITE%%QTY%}// On filter levels 1-4, hide keys of QTY=3 over level 79
-ItemDisplay[key QTY=3 FILTLVL<5 ((CLVL>79 SHOP) OR CLVL<80)]:{%GRAY%Keys %TAN%x %WHITE%%QTY%}// On filter levels 1-4, hide keys of QTY=3 over level 79
+ItemDisplay[key QTY=3 FILTLVL<5 CLVL<80]:%GRAY%Keys %TAN%x %WHITE%%QTY%// On filter levels 1-4, show keys of QTY=3 under level 80
 
 ItemDisplay[key QTY=2 FILTLVL<5 CLVL>15 !SHOP]:{%GRAY%Keys %TAN%x %WHITE%%QTY%}// On filter levels 1-4, hide keys of QTY=2 over level 15
-ItemDisplay[key QTY=2 FILTLVL<5 ((CLVL>15 SHOP) OR CLVL<16)]:{%GRAY%Keys %TAN%x %WHITE%%QTY%}// On filter levels 1-4, hide keys of QTY=2 over level 15
+ItemDisplay[key QTY=2 FILTLVL<5 CLVL<16]:%GRAY%Keys %TAN%x %WHITE%%QTY%// On filter levels 1-4, show keys of QTY=2 under level 60
 
 ItemDisplay[key QTY=1 FILTLVL<5 CLVL>5 !SHOP]:{%GRAY%Key %TAN%x %WHITE%%QTY%}// On filter levels 1-4, hide keys of QTY=1 over level 5
-ItemDisplay[key QTY=1 FILTLVL<5 ((CLVL>5 SHOP) OR CLVL<6)]:{%GRAY%Key %TAN%x %WHITE%%QTY%}// On filter levels 1-4, hide keys of QTY=1 over level 5
+ItemDisplay[key QTY=1 FILTLVL<5 CLVL<6]:%GRAY%Key %TAN%x %WHITE%%QTY%// On filter levels 1-4, show keys of QTY=1 under level 6
 
 //----------------------------------------------------------------------------------------------
 // =======================================  Quest Items  =======================================
