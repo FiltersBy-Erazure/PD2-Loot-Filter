@@ -21,7 +21,7 @@ ItemDisplay[box FILTLVL=8]:%NAME%{%WHITE%Filter Level: 8%CL%%GRAY%Strict Filteri
 ItemDisplay[box FILTLVL=9]:%NAME%{%WHITE%Filter Level: 9%CL%%GRAY%Endgame Mapping}%CONTINUE%//
 ItemDisplay[box FILTLVL=0]:%NAME%{%NAME%%CL%%GRAY%Levels 5-6-7-8 Hide Some Rares and Non-Eth Items%CL%%GRAY%Levels 2-3-4 Hide Some Non-Magic/Magic Items%CL%Level 1 Shows Most Non-Magic/Magic Items}%CONTINUE%//
 ItemDisplay[box CLVL<20 !FILTLVL=0]:%NAME%{%NAME%%CL%%GRAY%For %GOLD%Increase and Decrease Filter Level%CL%%GRAY%For %GOLD%Always Show Items %GRAY%and Hotkeys%CL%Open Settings to Create Toggle}%CONTINUE%//
-ItemDisplay[box]:%NAME%{%NAME%%CL%%WHITE%Erazure: Version 5.05}//
+ItemDisplay[box]:%NAME%{%NAME%%CL%%WHITE%Erazure: Version 5.05.2}//
 
 // ==============================  Arrows and Bolts  ===============================
 
@@ -139,7 +139,7 @@ ItemDisplay[vps CLVL>9 !SHOP]:{%WHITE%Stamina Potion}// Hides Stamina Potions wh
 ItemDisplay[vps ((CLVL<10 OR FILTLVL=0) OR SHOP)]:%GRAY%i%WHITE%( %WHITE%Stam %WHITE%)%GRAY%i%WHITE%{%WHITE%Stamina Potion}//
 
 ItemDisplay[yps FILTLVL=0]:%GRAY%i%DARK_GREEN%(%WHITE%A%DARK_GREEN%)%GRAY%i%WHITE%{%WHITE% +25% poison resistance for 30 seconds %CL%%WHITE%Cures %DARK_GREEN%poison %WHITE%affliction and grants %CL%Antidote Potion}//     Condenses Antidote Potions after level 20
-ItemDisplay[yps (MAPID>160 MAPID<164)]:%GRAY%i%DARK_GREEN%(%WHITE%A%DARK_GREEN%)%GRAY%i%WHITE%{%NL%%WHITE%+25% poison resistance for 30 seconds %CL%%WHITE%Cures %DARK_GREEN%poison %WHITE%affliction and grants%CL%%WHITE% Antidote Potion }//      
+ItemDisplay[yps (MAPID>160 MAPID<164)]:%GRAY%i%DARK_GREEN%(%WHITE%A%DARK_GREEN%)%GRAY%i%WHITE%{%WHITE%+25% poison resistance for 30 seconds %CL%%WHITE%Cures %DARK_GREEN%poison %WHITE%affliction and grants%CL%%WHITE%Antidote Potion}//      
 ItemDisplay[yps !(MAPID>160 MAPID<164) !SORCERESS CLVL>79 FILTLVL>4 !SHOP]:{%WHITE%+25% poison resistance for 30 seconds %CL%%WHITE%Cures %DARK_GREEN%poison %WHITE%affliction and grants%CL%%WHITE%Antidote Potion}//                  Condenses Antidote Potions after level 79
 ItemDisplay[yps (CLVL>24 OR SHOP)]:%GRAY%i%DARK_GREEN%(%WHITE%A%DARK_GREEN%)%GRAY%i%WHITE%{%WHITE%+25% poison resistance for 30 seconds %CL%%WHITE%Cures %DARK_GREEN%poison %WHITE%affliction and grants %CL%Antidote Potion}//     Condenses Antidote Potions after level 20
 ItemDisplay[yps CLVL<25 !FILTLVL=0]:%GRAY%i%DARK_GREEN%( %WHITE%Anti %DARK_GREEN%)%GRAY%i%WHITE%%PX-76%%TIER-0%{%WHITE%+25% poison resistance for 30 seconds %CL%%WHITE%Cures %DARK_GREEN%poison %WHITE%affliction and grants%CL%Antidote Potion}//  Antidote Potion
@@ -4240,7 +4240,7 @@ ItemDisplay[MAG ID (aqv OR cqv)]:%CL%%BLUE%%NAME%{%NAME%}%CONTINUE%
 ItemDisplay[RARE ID (aqv OR cqv)]:%CL%%YELLOW%%NAME%{%NAME%}%CONTINUE%
 
 // Poison Length Reduction
-ItemDisplay[(MAG OR RARE) STAT110>24 ID (aqv OR cqv)]:%WHITE%%STAT110%%DARK_GREEN%plr %NAME%{%NAME%}%CONTINUE%
+ItemDisplay[(MAG OR RARE) STAT110>49 ID (aqv OR cqv)]:%WHITE%%STAT110%%DARK_GREEN%plr %NAME%{%NAME%}%CONTINUE%
 // All Resist
 ItemDisplay[(MAG OR RARE) RES>4 ID (aqv OR cqv)]:%WHITE%%RES%%PURPLE%res %NAME%{%NAME%}%CONTINUE%
 // Curse Resistance
@@ -4627,7 +4627,7 @@ ItemDisplay[(BELT OR BOOTS OR GLOVES) (UNI OR SET) STAT360=9 STAT138>3]:%WHITE%%
 // ---------------------------------------------------------------------
 
 // Flat Magic Damage Reduction (from corruption) on Set and Unique
-ItemDisplay[(rin OR CHEST OR SHIELD) (MAG OR RARE OR CRAFT OR UNI OR SET) STAT360=46]:%WHITE%%STAT34%%GRAY%mdr %NAME%{%NAME%}%CONTINUE%
+ItemDisplay[(rin OR CHEST OR SHIELD) (MAG OR RARE OR CRAFT OR UNI OR SET) STAT360=46]:%WHITE%%STAT34%%GRAY%pdr %NAME%{%NAME%}%CONTINUE%
 // Flat Physical Damage Reduction (from corruption) on Set and Unique
 ItemDisplay[(rin OR CHEST OR SHIELD) (MAG OR RARE OR CRAFT OR UNI OR SET) STAT360=47]:%WHITE%%STAT35%%GRAY%mdr %NAME%{%NAME%}%CONTINUE%
 
@@ -4679,6 +4679,20 @@ ItemDisplay[BELT (MAG OR RARE OR CRAFT) LIFE>39]:%WHITE%%LIFE%%RED%life %NAME%{%
 
 // Replenish Life
 ItemDisplay[(UNI OR SET) STAT360=34 STAT74>0]:%WHITE%%STAT74%%GRAY%rep%RED%life %NAME%{%NAME%}%CONTINUE%
+
+// ---------------------------------------------------------------------------
+// ==========================  Maximum Resistances  ==========================
+// ---------------------------------------------------------------------------
+
+// 1-2% Maximum Resistances
+ItemDisplay[(BELT OR amu) STAT360=72 (STAT40>0 STAT42>0 STAT44>0 STAT46>0) !(STAT40>1 STAT42>1 STAT44>1 STAT46>1)]:%WHITE%1%PURPLE%max%GRAY%res %NAME%{%NAME%}%CONTINUE%
+ItemDisplay[(BELT OR amu) STAT360=72 (STAT40>1 STAT42>1 STAT44>1 STAT46>1)]:%WHITE%2%PURPLE%max%GRAY%res %NAME%{%NAME%}%CONTINUE%
+
+// Individual Maximum Resistances
+ItemDisplay[(BOOTS OR CHEST OR SHIELD OR HELM OR CIRC) (MAG OR RARE OR CRAFT OR STAT360=53) STAT40>0 !(STAT40>0 STAT42>0 STAT44>0 STAT46>0)]:%WHITE%%STAT40%%RED%max%GRAY%res %NAME%{%NAME%}%CONTINUE%
+ItemDisplay[(BOOTS OR CHEST OR SHIELD OR HELM OR CIRC) (MAG OR RARE OR CRAFT OR STAT360=55) STAT42>0 !(STAT40>0 STAT42>0 STAT44>0 STAT46>0)]:%WHITE%%STAT42%%YELLOW%max%GRAY%res %NAME%{%NAME%}%CONTINUE%
+ItemDisplay[(BOOTS OR CHEST OR SHIELD OR HELM OR CIRC) (MAG OR RARE OR CRAFT OR STAT360=54) STAT44>0 !(STAT40>0 STAT42>0 STAT44>0 STAT46>0)]:%WHITE%%STAT44%%BLUE%max%GRAY%res %NAME%{%NAME%}%CONTINUE%
+ItemDisplay[(BOOTS OR CHEST OR SHIELD OR HELM OR CIRC) (MAG OR RARE OR CRAFT OR STAT360=56) STAT46>0 !(STAT40>0 STAT42>0 STAT44>0 STAT46>0)]:%WHITE%%STAT46%%DARK_GREEN%max%GRAY%res %NAME%{%NAME%}%CONTINUE%
 
 // ----------------------------------------------------------------------
 // ==========================  All Attributes  ==========================
@@ -4748,6 +4762,13 @@ ItemDisplay[(CIRC OR HELM OR amu) STAT360=57 STAT60>0]:%WHITE%%STAT60%%RED%ls %N
 ItemDisplay[(CIRC OR HELM OR amu) STAT360=58 STAT62>0]:%WHITE%%STAT62%%BLUE%ms %NAME%{%NAME%}%CONTINUE%
 
 // --------------------------------------------------------------------------
+// ========================  Reduced Curse Duration  ========================
+// --------------------------------------------------------------------------
+
+// % Bonus Attack Rating
+ItemDisplay[(UNI OR SET) STAT360=62]:%WHITE%%STAT109%%GRAY%rcd %NAME%{%NAME%}%CONTINUE%
+
+// --------------------------------------------------------------------------
 // =====================  Attack Rating and % Bonus AR  =====================
 // --------------------------------------------------------------------------
 
@@ -4756,20 +4777,6 @@ ItemDisplay[(rin OR amu OR CIRC OR HELM OR GLOVES) (MAG OR RARE OR CRAFT) STAT11
 
 // Attack Rating (Gloves, Belt, Ring)
 ItemDisplay[(GLOVES OR BELT OR rin) STAT360=3]:%WHITE%%AR%%DARK_GREEN%ar %NAME%{%NAME%}%CONTINUE%
-
-// ---------------------------------------------------------------------------
-// ==========================  Maximum Resistances  ==========================
-// ---------------------------------------------------------------------------
-
-// 1-2% Maximum Resistances
-ItemDisplay[(BELT OR amu) STAT360=72 (STAT40>0 STAT42>0 STAT44>0 STAT46>0) !(STAT40>1 STAT42>1 STAT44>1 STAT46>1)]:%WHITE%1%PURPLE%max%GRAY%res %NAME%{%NAME%}%CONTINUE%
-ItemDisplay[(BELT OR amu) STAT360=72 (STAT40>1 STAT42>1 STAT44>1 STAT46>1)]:%WHITE%2%PURPLE%max%GRAY%res %NAME%{%NAME%}%CONTINUE%
-
-// Individual Maximum Resistances
-ItemDisplay[(BOOTS OR CHEST OR SHIELD OR HELM OR CIRC) (MAG OR RARE OR CRAFT OR STAT360=53) STAT40>0 !(STAT40>0 STAT42>0 STAT44>0 STAT46>0)]:%WHITE%%STAT40%%RED%max%GRAY%res %NAME%{%NAME%}%CONTINUE%
-ItemDisplay[(BOOTS OR CHEST OR SHIELD OR HELM OR CIRC) (MAG OR RARE OR CRAFT OR STAT360=55) STAT42>0 !(STAT40>0 STAT42>0 STAT44>0 STAT46>0)]:%WHITE%%STAT42%%YELLOW%max%GRAY%res %NAME%{%NAME%}%CONTINUE%
-ItemDisplay[(BOOTS OR CHEST OR SHIELD OR HELM OR CIRC) (MAG OR RARE OR CRAFT OR STAT360=54) STAT44>0 !(STAT40>0 STAT42>0 STAT44>0 STAT46>0)]:%WHITE%%STAT44%%BLUE%max%GRAY%res %NAME%{%NAME%}%CONTINUE%
-ItemDisplay[(BOOTS OR CHEST OR SHIELD OR HELM OR CIRC) (MAG OR RARE OR CRAFT OR STAT360=56) STAT46>0 !(STAT40>0 STAT42>0 STAT44>0 STAT46>0)]:%WHITE%%STAT46%%DARK_GREEN%max%GRAY%res %NAME%{%NAME%}%CONTINUE%
 
 // --------------------------------------------------------------------------
 // ======================  Minimum and Maximum Damage  ======================
