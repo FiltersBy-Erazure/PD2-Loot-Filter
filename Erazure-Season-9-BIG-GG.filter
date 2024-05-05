@@ -21,7 +21,7 @@ ItemDisplay[box FILTLVL=8]:%NAME%{%WHITE%Filter Level: 8%CL%%GRAY%Strict Filteri
 ItemDisplay[box FILTLVL=9]:%NAME%{%WHITE%Filter Level: 9%CL%%GRAY%Endgame Mapping}%CONTINUE%//
 ItemDisplay[box FILTLVL=0]:%NAME%{%NAME%%CL%%GRAY%Levels 5-6-7-8 Hide Some Rares and Non-Eth Items%CL%%GRAY%Levels 2-3-4 Hide Some Non-Magic/Magic Items%CL%Level 1 Shows Most Non-Magic/Magic Items}%CONTINUE%//
 ItemDisplay[box CLVL<20 !FILTLVL=0]:%NAME%{%NAME%%CL%%GRAY%For %GOLD%Increase and Decrease Filter Level%CL%%GRAY%For %GOLD%Always Show Items %GRAY%and Hotkeys%CL%Open Settings to Create Toggle}%CONTINUE%//
-ItemDisplay[box]:%NAME%{%NAME%%CL%%WHITE%Erazure: Version 5.05.2}//
+ItemDisplay[box]:%NAME%{%NAME%%CL%%WHITE%Erazure: Version 5.05.3}//
 
 // ==============================  Arrows and Bolts  ===============================
 
@@ -1002,10 +1002,13 @@ ItemDisplay[(t61 OR t62)]:%BLUE%\%WHITE%\%BLUE%V%WHITE%/%BLUE%/  %WHITE%%NAME%  
 // ==========================================  Unique Items  ==============================================
 // --------------------------------------------------------------------------------------------------------
 
-
 // Keep orginal coloring for items
 ItemDisplay[UNI]:%GOLD%%NAME%{%NAME%}%CONTINUE%
 ItemDisplay[ETH UNI]:%WHITE%Eth %NAME%{%NAME%}%CONTINUE%//
+
+// --------------------------------------------------------------------------------------------------------
+// ================================  Diablo Clone and Rathma Unique Items  ================================
+// --------------------------------------------------------------------------------------------------------
 
 // DClone and Rathma Unique Items
 ItemDisplay[UNI !ID rar]:%NAME%%CONTINUE%// Cage of the Unsullied Boneweave
@@ -1022,6 +1025,9 @@ ItemDisplay[UNI ETH !ID 7qr]:%BLUE%xX%PURPLE%xX%RED%\%ORANGE%\V/%RED%/%PURPLE%Xx
 ItemDisplay[UNI !ETH !ID uth]:%BLUE%xX%PURPLE%xX%RED%\%ORANGE%\%YELLOW%V%ORANGE%/%RED%/%PURPLE%Xx%BLUE%Xx  %WHITE%O  %GOLD%Lacquered Plate  %WHITE%O  %BLUE%xX%PURPLE%xX%RED%\%ORANGE%\%YELLOW%V%ORANGE%/%RED%/%PURPLE%Xx%BLUE%Xx%GOLD%%BORDER-9B%%MAP-62%%DOT-68%%PX-20%// Dark Abyss Lacquered Plate
 ItemDisplay[UNI ETH !ID uth]:%BLUE%xX%PURPLE%xX%RED%\%ORANGE%\V/%RED%/%PURPLE%Xx%BLUE%Xx  %WHITE%O  %WHITE%Eth %GOLD%Lacq. Plate  %WHITE%O  %BLUE%xX%PURPLE%xX%RED%\%ORANGE%\V/%RED%/%PURPLE%Xx%BLUE%Xx%GOLD%%BORDER-9B%%MAP-62%%DOT-68%%PX-20%// Dark Abyss Lacquered Plate
 
+// --------------------------------------------------------------------------------------------------------
+// =================================  High and Medium Value Unique Items  =================================
+// --------------------------------------------------------------------------------------------------------
 
 //    Jewels
 ItemDisplay[UNI !ID jew]:%GREEN%X\%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\%YELLOW%X\  %TAN%(x  %GOLD%Rainbow Facet  %TAN%x)  %YELLOW%/X%ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GREEN%/X%GOLD%%BORDER-9B%%MAP-62%%DOT-68%%PX-20%// Rainbow Facet Jewel
@@ -1074,11 +1080,12 @@ ItemDisplay[UNI !ID ((ba6 CLVL>79) OR (bad BARBARIAN))]:%RED%X\%ORANGE%X\  %GOLD
 //     High Value Sorceress Orbs
 ItemDisplay[UNI !ID obc]:%NAME%%CONTINUE%// Eschuta's Temper Eldritch Orb
 ItemDisplay[UNI !ID obf]:%NAME%%CONTINUE%// Death's Fathom Dimensional Shard
-ItemDisplay[UNI !ID oba]:%NAME%%CONTINUE%// The Oculus Swirling Crystal
+ItemDisplay[UNI !ID oba (CLVL<90 OR SORCERESS)]:%NAME%%CONTINUE%// The Oculus Swirling Crystal
 ItemDisplay[UNI !ID (obc OR obf OR oba)]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%BORDER-9B%%MAP-62%%DOT-68%%PX-20%//
 //     Medium Value Sorceress Orbs
 ItemDisplay[UNI !ID ob6 CLVL<80]:%NAME%%CONTINUE%// Tempest Glowing Orb
-ItemDisplay[UNI !ID (ob6 CLVL<80)]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%BORDER-08%%MAP-50%%DOT-59%%PX-6A%//
+ItemDisplay[UNI !ID oba (CLVL>89 OR !SORCERESS)]:%NAME%%CONTINUE%// The Oculus Swirling Crystal
+ItemDisplay[UNI !ID ((ob6 CLVL<80) OR (CLVL>89 OR !SORCERESS))]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%BORDER-08%%MAP-50%%DOT-59%%PX-6A%//
 
 //     High Value Druid Pelts
 ItemDisplay[UNI !ID dr2 CLVL<80 DRUID]:%NAME%%CONTINUE%// Quetzalcoatl Hawk Helm
@@ -1129,6 +1136,10 @@ ItemDisplay[UNI !ID uui]:%NAME%%CONTINUE%// Ormus' Robes Dusk Shroud
 ItemDisplay[UNI !ID ((xui CLVL<80) OR (utp ETH) OR (uul ETH) OR xea OR xhn OR xpl OR xth OR uar OR utu OR uld OR upl OR xtp OR uui)]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%BORDER-9B%%MAP-62%%DOT-68%%PX-20%//
 //     Medium Value Armors
 ItemDisplay[UNI !ID !ETH brs]:%NAME%%CONTINUE%// Venom Ward Breast Plate
+ItemDisplay[UNI !ID scl CLVL<40 DRUID]:%NAME%%CONTINUE%// Hawkmail Scale Mail
+ItemDisplay[UNI !ID fld CLVL<60]:%NAME%%CONTINUE%// Rockfleece Field Plate
+ItemDisplay[UNI !ID ful CLVL<60]:%NAME%%CONTINUE%// Goldskin Full Plate Mail
+ItemDisplay[UNI !ID aar CLVL<60]:%NAME%%CONTINUE%// Silks of the Victor Ancient Armor
 ItemDisplay[UNI !ID xar]:%NAME%%CONTINUE%// Corpsemourn Ornate Plate
 ItemDisplay[UNI !ID xld]:%NAME%%CONTINUE%// Tooththrow Sharktooth Armor
 ItemDisplay[UNI !ID xui CLVL>79]:%NAME%%CONTINUE%// The Spirit Shroud Ghost Armor
@@ -1137,7 +1148,7 @@ ItemDisplay[UNI !ID ltp CLVL<80]:%NAME%%CONTINUE%// Heavenly Garb Light Plate
 ItemDisplay[UNI !ID xlt CLVL<90]:%NAME%%CONTINUE%// Guardian Angel Templar Coat
 ItemDisplay[UNI !ID xul (ETH OR CLVL<90)]:%NAME%%CONTINUE%// Black Hades Chaos Armor
 ItemDisplay[UNI !ID utp !ETH]:%NAME%%CONTINUE%// Purgatory Archon Plate
-ItemDisplay[UNI !ID ((!ETH brs) OR xar OR xld OR (xui CLVL>79) OR (xrs CLVL<80) OR (ltp CLVL<80) OR (xlt CLVL<90) OR (xul (ETH OR CLVL<90)) OR (utp !ETH))]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%BORDER-08%%MAP-50%%DOT-59%%PX-6A%//
+ItemDisplay[UNI !ID ((!ETH brs) OR (scl CLVL<40 DRUID) OR (fld CLVL<60) OR (ful CLVL<60) OR (aar CLVL<60) OR xar OR xld OR (xui CLVL>79) OR (xrs CLVL<80) OR (ltp CLVL<80) OR (xlt CLVL<90) OR (xul (ETH OR CLVL<90)) OR (utp !ETH))]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%BORDER-08%%MAP-50%%DOT-59%%PX-6A%//
 
 //     High Value Belts
 ItemDisplay[UNI !ID zlb]:%NAME%%CONTINUE%// String of Ears Demonhide Sash
@@ -1387,40 +1398,58 @@ ItemDisplay[UNI !ID 9yw (NECROMANCER OR CLVL<80)]:%NAME%%CONTINUE%//
 ItemDisplay[UNI !ID 9gw !NECROMANCER]:%NAME%%CONTINUE%// Blackhand Key Grave Wand
 ItemDisplay[UNI !ID ((9wn CLVL<60) OR (9yw (NECROMANCER OR CLVL<80)) OR (9gw !NECROMANCER))]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%BORDER-08%%MAP-50%%DOT-59%%PX-6A%//
 
+// --------------------------------------------------------------------------------------------------------
+// =======================================  All Other Unique Items  =======================================
+// --------------------------------------------------------------------------------------------------------
 
-//                                         Notify for other unique item drops
+// Notify for all Normal Unique Items on Filter Levels 0-4
+ItemDisplay[UNI NORM !ID FILTLVL<5]:%GOLD%*%GRAY%* %WHITE%>  %NAME%  %WHITE%< %GRAY%*%GOLD%*%BORDER-21%%MAP-19%%DOT-61%%PX-20%//
 
-// Normal
-ItemDisplay[UNI NORM !ID FILTLVL<5]:%GOLD%*%GRAY%* %WHITE%>  %NAME%  %WHITE%< %GRAY%*%GOLD%*%BORDER-21%%MAP-19%%DOT-61%%PX-20%// Notify for all normal unique items on filter levels 1-8
+// Notify for all Normal Unique Items on Filter Levels 5-8 while under character level 80
+ItemDisplay[UNI NORM !ID FILTLVL>4 FILTLVL<9 CLVL<80]:%GOLD%*%GRAY%* %WHITE%>  %NAME%  %WHITE%< %GRAY%*%GOLD%*%BORDER-21%%MAP-19%%DOT-61%%PX-20%//
+// Notify for select Normal Unique Items on Filter Levels 5-8 above character level 79
+ItemDisplay[UNI NORM !ID FILTLVL>4 FILTLVL<9 CLVL>79 (vgl OR brs OR ltp OR tgl OR mgl)]:%GOLD%*%GRAY%* %WHITE%>  %NAME%  %WHITE%< %GRAY%*%GOLD%*%BORDER-21%%MAP-19%%DOT-61%%PX-20%//
+// Don't notify for most Normal Unique Items on Filter Levels 5-8 above character level 79
+ItemDisplay[UNI NORM !ID FILTLVL>4 FILTLVL<9 CLVL>79 !(vgl OR brs OR ltp OR tgl OR mgl)]:%GOLD%*%GRAY%* %WHITE%>  %NAME%  %WHITE%< %GRAY%*%GOLD%*//
 
-ItemDisplay[UNI NORM !ID FILTLVL>4 FILTLVL<9 CLVL<80]:%GOLD%*%GRAY%* %WHITE%>  %NAME%  %WHITE%< %GRAY%*%GOLD%*%BORDER-21%%MAP-19%%DOT-61%%PX-20%// Notify for all normal uniques on filter levels 5-8 under character level 90
-ItemDisplay[UNI NORM !ID FILTLVL>4 FILTLVL<9 CLVL>79 (vgl OR brs OR ltp OR tgl OR mgl)]:%GOLD%*%GRAY%* %WHITE%>  %NAME%  %WHITE%< %GRAY%*%GOLD%*%BORDER-21%%MAP-19%%DOT-61%%PX-20%// Notify for select normal unique items on filter levels 5-8 above character level 89
-ItemDisplay[UNI NORM !ID FILTLVL>4 FILTLVL<9 CLVL>79 !(vgl OR brs OR ltp OR tgl OR mgl)]:%GOLD%*%GRAY%* %WHITE%>  %NAME%  %WHITE%< %GRAY%*%GOLD%*// No notification for most normal unique items filter levels 5-8 above character level 89
+// Notify for select Normal Unique Items on Filter Level 9
+ItemDisplay[UNI NORM !ID FILTLVL>8 (vgl OR brs OR ltp OR tgl OR mgl)]:%GOLD%*%GRAY%* %WHITE%>  %NAME%  %WHITE%< %GRAY%*%GOLD%*%BORDER-21%%MAP-19%%DOT-61%%PX-20%//
+// Don't notify for other Normal Unique Items on Filter Level 9
+ItemDisplay[UNI NORM !ID FILTLVL>8 !(vgl OR brs OR ltp OR tgl OR mgl)]:%GOLD%*%GRAY%* %WHITE%>  %NAME%  %WHITE%< %GRAY%*%GOLD%*//
 
-ItemDisplay[UNI NORM !ID FILTLVL>8 (vgl OR brs OR ltp OR tgl OR mgl)]:%GOLD%*%GRAY%* %WHITE%>  %NAME%  %WHITE%< %GRAY%*%GOLD%*%BORDER-21%%MAP-19%%DOT-61%%PX-20%// Notify for select normal unique items on filter level 9
-ItemDisplay[UNI NORM !ID FILTLVL>8 !(vgl OR brs OR ltp OR tgl OR mgl)]:%GOLD%*%GRAY%* %WHITE%>  %NAME%  %WHITE%< %GRAY%*%GOLD%*// Don't notify for other normal unique items on filter level 9
-
-// Exceptional
+// Notify for All Exceptional Uniques on Filter Levels 0-4
 ItemDisplay[UNI EXC !ID FILTLVL<5]:%GOLD%*%GRAY%* %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%< %GRAY%*%GOLD%*%BORDER-21%%MAP-19%%DOT-61%%PX-20%//
 
+// Notify for All Exceptional Uniques on Filter Levels 5-8 while under character level 90
 ItemDisplay[UNI EXC !ID FILTLVL>4 FILTLVL<9 CLVL<90]:%GOLD%*%GRAY%* %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%< %GRAY%*%GOLD%*%BORDER-21%%MAP-19%%DOT-61%%PX-20%//
-ItemDisplay[UNI EXC !ID FILTLVL>4 FILTLVL<9 CLVL>89 (9ar OR ba6 OR 9wh OR dr2 OR ama OR xlt OR xld OR zvb OR xrn OR xul OR xar OR xlb OR ztb OR 9fc OR xui OR xkp OR ne6 OR 9ba OR 9gs)]:%GOLD%*%GRAY%* %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%< %GRAY%*%GOLD%*%BORDER-21%%MAP-19%%DOT-61%%PX-20%// Notify for select exceptional unique items on filter level 9
-ItemDisplay[UNI EXC !ID FILTLVL>4 FILTLVL<9 CLVL>89 !(9ar OR ba6 OR 9wh OR dr2 OR ama OR xlt OR xld OR zvb OR xrn OR xul OR xar OR xlb OR ztb OR 9fc OR xui OR xkp OR ne6 OR 9ba OR 9gs)]:%GOLD%*%GRAY%* %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%< %GRAY%*%GOLD%*%BORDER-21%%MAP-19%%DOT-61%%PX-20%%TIER-0%// Don't notify for other exceptional unique items on filter level 9
+// Notify for select exceptional unique items on filter level 9
+ItemDisplay[UNI EXC !ID FILTLVL>4 FILTLVL<9 CLVL>89 (9ar OR ba6 OR 9wh OR dr2 OR ama OR xlt OR xld OR zvb OR xrn OR xul OR xar OR xlb OR ztb OR 9fc OR xui OR xkp OR ne6 OR 9ba OR 9gs)]:%GOLD%*%GRAY%* %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%< %GRAY%*%GOLD%*%BORDER-21%%MAP-19%%DOT-61%%PX-20%//
+// Don't notify for other exceptional unique items on filter level 9
+ItemDisplay[UNI EXC !ID FILTLVL>4 FILTLVL<9 CLVL>89 !(9ar OR ba6 OR 9wh OR dr2 OR ama OR xlt OR xld OR zvb OR xrn OR xul OR xar OR xlb OR ztb OR 9fc OR xui OR xkp OR ne6 OR 9ba OR 9gs)]:%GOLD%*%GRAY%* %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%< %GRAY%*%GOLD%*%BORDER-21%%MAP-19%%DOT-61%%PX-20%%TIER-0%//
 
-ItemDisplay[UNI EXC !ID FILTLVL>8 (9ar OR ba6 OR 9wh OR dr2 OR ama OR xlt OR xld OR zvb OR xrn OR xul OR xar OR xlb OR ztb OR 9fc OR xui OR xkp OR ne6 OR 9ba OR 9gs)]:%GOLD%*%GRAY%* %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%< %GRAY%*%GOLD%*%BORDER-21%%MAP-19%%DOT-61%%PX-20%// Notify for select exceptional unique items on filter level 9
-ItemDisplay[UNI EXC !ID FILTLVL>8 !(9ar OR ba6 OR 9wh OR dr2 OR ama OR xlt OR xld OR zvb OR xrn OR xul OR xar OR xlb OR ztb OR 9fc OR xui OR xkp OR ne6 OR 9ba OR 9gs)]:%GOLD%*%GRAY%* %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%< %GRAY%*%GOLD%*%BORDER-21%%MAP-19%%DOT-61%%PX-20%%TIER-0%// Don't notify for other exceptional unique items on filter level 9
+// Notify for select exceptional unique items on filter level 9
+ItemDisplay[UNI EXC !ID FILTLVL>8 (9ar OR ba6 OR 9wh OR dr2 OR ama OR xlt OR xld OR zvb OR xrn OR xul OR xar OR xlb OR ztb OR 9fc OR xui OR xkp OR ne6 OR 9ba OR 9gs)]:%GOLD%*%GRAY%* %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%< %GRAY%*%GOLD%*%BORDER-21%%MAP-19%%DOT-61%%PX-20%//
+// Don't notify for other exceptional unique items on filter level 9
+ItemDisplay[UNI EXC !ID FILTLVL>8 !(9ar OR ba6 OR 9wh OR dr2 OR ama OR xlt OR xld OR zvb OR xrn OR xul OR xar OR xlb OR ztb OR 9fc OR xui OR xkp OR ne6 OR 9ba OR 9gs)]:%GOLD%*%GRAY%* %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%< %GRAY%*%GOLD%*%BORDER-21%%MAP-19%%DOT-61%%PX-20%%TIER-0%//
 
-// Elite
+// Notify for All Elite Uniques on Filter Levels 0-4
 ItemDisplay[UNI ELT !ID FILTLVL<5]:%GOLD%*%GRAY%* %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%< %GRAY%*%GOLD%*%BORDER-21%%MAP-19%%DOT-61%%PX-20%//
 
+// Notify for All Exceptional Uniques on Filter Levels 5-8 while under character level 90
 ItemDisplay[UNI ELT !ID FILTLVL>4 FILTLVL<9 CLVL<90]:%GOLD%\%GRAY%\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %GRAY%/%GOLD%/%BORDER-21%%MAP-19%%DOT-61%%PX-20%//
+// Notify for select exceptional unique items on filter level 9
 ItemDisplay[UNI ELT !ID FILTLVL>4 FILTLVL<9 CLVL>89 !(7mp OR 7cl OR 7mt OR 7sm OR 7sb OR 7cm OR 7kr OR 7bl OR 7s7 OR 7gl OR 7sr OR 7br OR 7st OR 7o7 OR 6l7 OR 6sw OR 6rx OR 6cs OR 7sc OR ame OR 7wb OR 7lw OR baf OR drf OR pae OR pac OR nef)]:%GOLD%\%GRAY%\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %GRAY%/%GOLD%/%BORDER-21%%MAP-19%%DOT-61%%PX-20%//
+// Don't notify for other exceptional unique items on filter level 9
 ItemDisplay[UNI ELT !ID FILTLVL>4 FILTLVL<9 CLVL>89 (7mp OR 7cl OR 7mt OR 7sm OR 7sb OR 7cm OR 7kr OR 7bl OR 7s7 OR 7gl OR 7sr OR 7br OR 7st OR 7o7 OR 6l7 OR 6sw OR 6rx OR 6cs OR 7sc OR ame OR 7wb OR 7lw OR baf OR drf OR pae OR pac OR nef)]:%GOLD%\%GRAY%\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %GRAY%/%GOLD%/%BORDER-21%%MAP-19%%DOT-61%%PX-20%%TIER-0%//
 
+// Notify for select exceptional unique items on filter level 9
 ItemDisplay[UNI ELT !ID FILTLVL>8 !(7mp OR 7cl OR 7mt OR 7sm OR 7sb OR 7cm OR 7kr OR 7bl OR 7s7 OR 7gl OR 7sr OR 7br OR 7st OR 7o7 OR 6l7 OR 6sw OR 6rx OR 6cs OR 7sc OR ame OR 7wb OR 7lw OR baf OR drf OR pae OR pac OR nef)]:%GOLD%\%GRAY%\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %GRAY%/%GOLD%/%BORDER-21%%MAP-19%%DOT-61%%PX-20%//
+// Don't notify for other exceptional unique items on filter level 9
 ItemDisplay[UNI ELT !ID FILTLVL>8 (7mp OR 7cl OR 7mt OR 7sm OR 7sb OR 7cm OR 7kr OR 7bl OR 7s7 OR 7gl OR 7sr OR 7br OR 7st OR 7o7 OR 6l7 OR 6sw OR 6rx OR 6cs OR 7sc OR ame OR 7wb OR 7lw OR baf OR drf OR pae OR pac OR nef)]:%GOLD%\%GRAY%\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %GRAY%/%GOLD%/%BORDER-21%%MAP-19%%DOT-61%%PX-20%%TIER-0%//
 
-// ===========================================  Set Items  =================================================
+// -------------------------------------------------------------------------------------------------------
+// =============================================  Set Items  =============================================
+// -------------------------------------------------------------------------------------------------------
 
 // Keep orginal coloring for Set items
 ItemDisplay[SET]:%GREEN%%NAME%{%NAME%}%CONTINUE%
@@ -1454,10 +1483,9 @@ ItemDisplay[SET !ID ELT (ulg OR uhm OR uld OR amc OR ucl OR 6cs OR 7qr) FILTLVL>
 ItemDisplay[SET !ID ELT !(ulg OR uhm OR uld OR amc OR ucl OR 6cs OR 7qr) FILTLVL>4]:%PURPLE%*%DARK_GREEN%* %GREEN%>  %NAME%  %GREEN%< %DARK_GREEN%*%PURPLE%*%GREEN%//
 ItemDisplay[SET !ID ELT FILTLVL<5]:%PURPLE%*%DARK_GREEN%* %GREEN%>  %NAME%  %GREEN%< %DARK_GREEN%*%PURPLE%*%GREEN%%BORDER-71%%MAP-76%%DOT-81%%PX-84%//
 
-// 	----------------------------------------------------------------------------      
-// 	     						   Crafted Items    
-// 	----------------------------------------------------------------------------
-
+// -------------------------------------------------------------------------------------------------------
+// ===========================================  Crafted Items  ===========================================
+// -------------------------------------------------------------------------------------------------------
 
 ItemDisplay[CRAFT]:%ORANGE%%NAME%{%NAME%}%CONTINUE%//
 
@@ -1479,100 +1507,106 @@ ItemDisplay[CRAFT ((amu (STR>3 DEX>3 STAT1>3 STAT3>3) RES>4 STAT32>99) OR (rin R
 
 ItemDisplay[ETH CRAFT]:%WHITE%Eth %NAME%{%NAME%}%CONTINUE%//
 
-
-// =========================================== Rare Items ==========================================
-
+// --------------------------------------------------------------------------------------------------------
+// =============================================  Rare Items  =============================================
+// --------------------------------------------------------------------------------------------------------
 
 // Keep orginal coloring for items
 ItemDisplay[RARE]:%YELLOW%%NAME%{%NAME%}%CONTINUE%
 ItemDisplay[ETH RARE]:%WHITE%Eth %NAME%{%NAME%}%CONTINUE%//
 
-
+// Jewels
 ItemDisplay[RARE !ID jew]:%PURPLE%\%YELLOW%\  %PURPLE%* %YELLOW%>  %TAN%(x  %YELLOW%%NAME%  %TAN%x)  %YELLOW%< %PURPLE%*  %YELLOW%/%PURPLE%/%YELLOW%%BORDER-8F%%MAP-9B%%DOT-6C%%PX-A8%// All unidentified rare Jewels
-
+// Amulets
 ItemDisplay[RARE !ID amu]:%PURPLE%\%YELLOW%\  %PURPLE%* %YELLOW%> %TAN%o  %YELLOW%%NAME%  %TAN%o %YELLOW%< %PURPLE%*  %YELLOW%/%PURPLE%/%YELLOW%%BORDER-8F%%MAP-9B%%DOT-6C%%PX-A8%// All unidentified rare Amulets
+// Circlets
 ItemDisplay[RARE !ID CIRC]:%PURPLE%\%YELLOW%\  %PURPLE%* %YELLOW%> %TAN%o  %YELLOW%%NAME%  %TAN%o %YELLOW%< %PURPLE%*  %YELLOW%/%PURPLE%/%YELLOW%%BORDER-8F%%MAP-9B%%DOT-6C%%PX-A8%// All unidentified rare Circlets
+// Rings
 ItemDisplay[RARE !ID rin]:%PURPLE%\%YELLOW%\  %PURPLE%* %YELLOW%> %TAN%o  %YELLOW%%NAME%  %TAN%o %YELLOW%< %PURPLE%*  %YELLOW%/%PURPLE%/%YELLOW%%BORDER-8F%%MAP-9B%%DOT-6C%%PX-A8%// All unidentified rare Rings
-
+// Arrows and Bolts
 ItemDisplay[RARE !ID (aqv OR cqv) FILTLVL>8 !AMAZON !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide rare arrows on filter level 9
 ItemDisplay[RARE !ID aqv]:%YELLOW%*  %YELLOW%%NAME%  %YELLOW%*// All unidentified rare arrows
 ItemDisplay[RARE !ID cqv]:%YELLOW%*  %YELLOW%%NAME%  %YELLOW%*// All unidentified rare bolts
-
+// Belts
 ItemDisplay[RARE !ID BELT FILTLVL<9]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%%BORDER-8F%%MAP-9B%%DOT-6C%%PX-A8%// Notify for rare belts filter levels 1-8
 ItemDisplay[RARE !ID BELT FILTLVL>8]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%// No chat notification on filter level 9
-
+// Boots
 ItemDisplay[RARE !ID BOOTS (CLVL<90 OR FILTLVL<5)]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%%BORDER-8F%%MAP-9B%%DOT-6C%%PX-A8%// Notify for rare boots under character level 90
 ItemDisplay[RARE !ID BOOTS CLVL>89]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%// No chat notification above character level 89
-
+// Gloves
 ItemDisplay[RARE !ID GLOVES (CLVL<90 OR FILTLVL<5)]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%%BORDER-8F%%MAP-9B%%DOT-6C%%PX-A8%// Notify for rare gloves under character level 90
 ItemDisplay[RARE !ID GLOVES CLVL>89]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%// No chat notification above character level 89
-
+// Chests
 ItemDisplay[RARE !ID CHEST CLVL>89 ILVL>93 FILTLVL<9]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%%BORDER-8F%%MAP-9B%%DOT-6C%%PX-A8%%TIER-0%// Minimap icon for rare armors with affix levels 94 or higher on filter levels 0-8
 ItemDisplay[RARE !ID CHEST CLVL<90 ILVL>93 FILTLVL<9]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%%BORDER-8F%%MAP-9B%%DOT-6C%%PX-A8%// Notify for rare armors with affix levels 94 or higher on filter levels 0-8
 ItemDisplay[RARE !ID CHEST CLVL<90 ILVL>89 FILTLVL<5]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%%BORDER-8F%%MAP-9B%%DOT-6C%%PX-A8%// Notify for rare armors with item levels 90 or higher on filter levels 0-4
-
+// Clubs
 ItemDisplay[RARE !ID CLVL<95 (clb OR spc OR 9cl OR 9sp OR 7cl OR 7sp OR BAR OR DRU OR SOR OR WAND OR SCEPTER OR NEC)]:%YELLOW%*  %NAME%  %YELLOW%*// Show all rare Druid Clubs that can roll staff mods
 ItemDisplay[RARE !ID CLVL>94 (clb OR spc OR 9cl OR 9sp OR 7cl OR 7sp OR BAR OR DRU OR SOR OR WAND OR SCEPTER OR NEC)]:%YELLOW%%NAME%// Show all rare Druid Clubs that can roll staff mods
-
+// Amazon Spears
 ItemDisplay[RARE !ID !ETH NORM (am4 OR am3) CLVL>59 FILTLVL>1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide Normal Rare quality noneth Amazon spears After Level 39
 ItemDisplay[RARE !ID !ETH EXC (am9 OR am8) CLVL>89 FILTLVL>1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide Exceptional Rare quality noneth Amazon spears After Level 39
 ItemDisplay[RARE !ID !ETH ELT (ame OR amd) CLVL>94 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide Elite Rare quality noneth Amazon spears After Level 39
-
+// Paladin Shields
 ItemDisplay[RARE !ID DIN NORM !PALADIN CLVL>39 FILTLVL>8 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide Normal quality Rare Paladin Shields After Level 39
 ItemDisplay[RARE !ID DIN EXC !PALADIN CLVL>89 FILTLVL>8 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide Exceptional quality Rare Paladin Shields After Level 89
 ItemDisplay[RARE !ID DIN ELT !PALADIN CLVL>94 FILTLVL>8 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide Elite quality Rare Paladin Shields After Level 94
-
+// Assassin Claws
 ItemDisplay[RARE !ID SIN NORM !ASSASSIN (wrb OR ces OR clw OR !ETH) CLVL>59 FILTLVL>8 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide non-Ethereal Normal quality Rare Claws After Level 59
 ItemDisplay[RARE !ID SIN EXC !ASSASSIN (9wb OR 9cs OR 9lw OR !ETH) CLVL>89 FILTLVL>8 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide non-Ethereal Exceptional quality Rare Claws After Level 89
 ItemDisplay[RARE !ID SIN ELT !ASSASSIN (7wb OR 7cs OR 7lw OR !ETH) CLVL>94 FILTLVL>8 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide non-Ethereal Elite quality Rare Claws After Level 94
-
+// Daggers
+ItemDisplay[RARE !ID !ETH NORM !THROWING DAGGER !ASSASSIN NORM CLVL>59 FILTLVL>8 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide non-Ethereal Normal quality Rare Daggers After Level 59
+ItemDisplay[RARE !ID !ETH EXC !THROWING DAGGER !ASSASSIN CLVL>89 FILTLVL>8 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide non-Ethereal Exceptional quality Rare Daggers After Level 89
+ItemDisplay[RARE !ID !ETH ELT !THROWING DAGGER !ASSASSIN CLVL>94 FILTLVL>8 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide non-Ethereal Elite quality Rare Daggers After Level 94
+// Crossbows
 ItemDisplay[RARE !ID XBOW NORM !(hxb OR mxb) CLVL>39 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide Normal quality Rare Crossbows After Level 39
 ItemDisplay[RARE !ID XBOW EXC !(8hx OR 8mx) CLVL>89 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide Exceptional quality Rare Crossbows After Level 89
 ItemDisplay[RARE !ID XBOW ELT !(6hx OR 6mx) CLVL>94 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide Elite quality Rare Crossbows After Level 94
-
+// Bows
 ItemDisplay[RARE !ID BOW NORM !(am1 OR am2 OR lwb OR lbb) CLVL>39 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide Normal quality Rare Bows After Level 39
 ItemDisplay[RARE !ID BOW EXC !(am6 OR am7 OR 8lw OR 8l8) CLVL>89 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide Exceptional quality Rare Bows After Level 89
 ItemDisplay[RARE !ID BOW ELT !(amb OR amc OR 6lw OR 6l7) CLVL>94 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide Elite quality Rare Bows After Level 94
-
+// Shields
 ItemDisplay[RARE !ID SHIELD NORM !NEC !DIN (buc OR sml OR spk) CLVL>39 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide specific Normal quality Rare Shields After Level 39
 ItemDisplay[RARE !ID SHIELD EXC !NEC !DIN (xuc OR xml OR xpk) CLVL>89 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide specific Exceptional quality Rare Shields After Level 89
 ItemDisplay[RARE !ID SHIELD ELT !NEC !DIN (uuc OR uml OR upk) CLVL>94 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide specific Elite quality Rare Shields After Level 94
-
+// Helmets
 ItemDisplay[RARE !ID HELM NORM !CIRC !DRU !BAR CLVL>39 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide Normal quality Rare Helms After Level 39
 ItemDisplay[RARE !ID HELM EXC !CIRC !DRU !BAR CLVL>79 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide Exceptional quality Rare Helms After Level 89
 ItemDisplay[RARE !ID HELM ELT !CIRC !DRU !BAR CLVL>89 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide Elite quality Rare Helms After Level 94
-
+// Axes
 ItemDisplay[RARE !ID !ETH NORM AXE !THROWING CLVL>39 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide non-Ethereal Normal quality Rare Axes After Level 39
 ItemDisplay[RARE !ID !ETH EXC AXE !THROWING CLVL>79 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide non-Ethereal Exceptional quality Rare Axes After Level 89
 ItemDisplay[RARE !ID !ETH ELT AXE !THROWING CLVL>94 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide non-Ethereal Elite quality Rare Axes After Level 94
-
+// Javelins
 ItemDisplay[RARE !ID !ETH (jav OR pil OR ssp OR glv OR tsp) CLVL>39 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide non-Ethereal Normal quality Javs After Level 39
 ItemDisplay[RARE !ID !ETH (9ja OR 9pi OR 9s9 OR 9gl OR 9ts) CLVL>79 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide non-Ethereal Exceptional quality Javs After Level 89
 ItemDisplay[RARE !ID !ETH (7ja OR 7pi OR 7s7 OR 7gl OR 7ts) CLVL>89 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide non-Ethereal Elite quality Javs After Level 94
-
+// Spears
 ItemDisplay[RARE !ID !ETH NORM (spr OR tri OR brn OR spt OR pik) CLVL>39 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide non-Ethereal Normal quality Rare Spears After Level 39
 ItemDisplay[RARE !ID !ETH EXC (9sr OR 9tr OR 9br OR 9st OR 9p9) CLVL>79 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide non-Ethereal Exceptional quality Rare Spears After Level 89
 ItemDisplay[RARE !ID !ETH ELT (7sr OR 7tr OR 7br OR 7st OR 7p7) CLVL>89 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide non-Ethereal Elite quality Rare Spears After Level 94
-
+// Throwing Weapons
 ItemDisplay[RARE !ID !ETH (tkf OR tax OR bkf OR bal) CLVL>39 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide non-Ethereal Normal quality Rare Throwing Weapons that aren't Zon class specific After Level 39
 ItemDisplay[RARE !ID !ETH (9tk OR 9ta OR 9bk OR 9b8) CLVL>79 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide non-Ethereal Exceptional quality Rare Throwing Weapons that aren't Zon class After Level 89
 ItemDisplay[RARE !ID !ETH (7tk OR 7ta OR 7bk OR 7b8) CLVL>89 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide non-Ethereal Elite quality Rare Throwing Weapons that aren't Zon class After Level 94
-
+// Swords
 ItemDisplay[RARE !ID !ETH NORM SWORD CLVL>39 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide non-Ethereal Normal quality Rare Swords After Level 39
 ItemDisplay[RARE !ID !ETH EXC SWORD CLVL>79 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide non-Ethereal Exceptional quality Rare Swords After Level 89
 ItemDisplay[RARE !ID !ETH ELT SWORD CLVL>89 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide non-Ethereal Elite quality Rare Swords After Level 94
-
+// Maces
 ItemDisplay[RARE !ID !ETH NORM MACE !(clb OR spc) CLVL>39 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide non-Ethereal Normal quality Rare Maces after character level 39
 ItemDisplay[RARE !ID !ETH EXC MACE !(9cl OR 9sp) CLVL>79 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide non-Ethereal Exceptional quality Rare Rare Maces after character level 79
 ItemDisplay[RARE !ID !ETH ELT MACE !(7cl OR 7sp) CLVL>89 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide non-Ethereal Elite quality Rare Rare Maces after character level 89
-
+// Polearms
 ItemDisplay[RARE !ID !ETH NORM POLEARM CLVL>39 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide non-Ethereal Normal quality Rare Polearms after character level 39
 ItemDisplay[RARE !ID !ETH EXC POLEARM CLVL>79 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide non-Ethereal Exceptional quality Rare Polearms After Level 89
 ItemDisplay[RARE !ID !ETH ELT POLEARM CLVL>89 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide non-Ethereal Elite quality Rare Polearms After Level 94
 
-ItemDisplay[RARE !ID !ETH NORM !THROWING DAGGER !ASSASSIN NORM CLVL>59 FILTLVL>8 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide non-Ethereal Normal quality Rare Claws After Level 59
-ItemDisplay[RARE !ID !ETH EXC !THROWING DAGGER !ASSASSIN CLVL>89 FILTLVL>8 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide non-Ethereal Exceptional quality Rare Claws After Level 89
-ItemDisplay[RARE !ID !ETH ELT !THROWING DAGGER !ASSASSIN CLVL>94 FILTLVL>8 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide non-Ethereal Elite quality Rare Claws After Level 94
+// ------------------------------------------------------------------------
+// =================  Notifications for Rare Eth Weapons  =================
+// ------------------------------------------------------------------------
 
 // Highlight all ethereal throwing weapons as a Barbarian on filter level 1-4
 ItemDisplay[RARE !ID ETH BARBARIAN FILTLVL<5 (tkf OR 9tk OR 7tk OR tax OR 9ta OR 7ta OR bkf OR 9bk OR 7bk OR bal OR 9b8 OR 7b8 OR jav OR 9ja OR 7ja OR pil OR 9pi OR 7pi OR ssp OR 9s9 OR 7s7 OR glv OR 9gl OR 7gl OR tsp OR 9ts OR 7ts)]:%NAME%%BORDER-8F%%MAP-9B%%DOT-6C%%PX-A8%//
@@ -1582,10 +1616,6 @@ ItemDisplay[RARE !ID ETH BARBARIAN FILTLVL>4 (tax OR 9ta OR 7ta OR bkf OR 9bk OR
 ItemDisplay[RARE !ID ETH !BARBARIAN FILTLVL<5 (tax OR 9ta OR 7ta OR bkf OR 9bk OR 7bk OR bal OR 9b8 OR 7b8 OR jav OR 9ja OR 7ja OR ssp OR 9s9 OR 7s7 OR glv OR 9gl OR 7gl OR tsp OR 9ts OR 7ts)]:%NAME%%BORDER-8F%%MAP-9B%%DOT-6C%%PX-A8%//
 // Minimap Icons for select ethereal throwing weapons as a Non-Barb on filter level 5-9 (No notification)
 ItemDisplay[RARE !ID ETH !BARBARIAN FILTLVL>4 (tax OR 9ta OR 7ta OR bkf OR 9bk OR 7bk OR bal OR 9b8 OR 7b8 OR jav OR 9ja OR 7ja OR ssp OR 9s9 OR 7s7 OR glv OR 9gl OR 7gl OR tsp OR 9ts OR 7ts)]:%NAME%%BORDER-8F%%MAP-9B%%DOT-6C%%PX-A8%%TIER-0%//
-
-// ----------------------------------------------------------------------------------------------
-//   				          Notifications for Rare Eth Weapons
-// ----------------------------------------------------------------------------------------------
 
 // Axes
 ItemDisplay[RARE !ID ETH (2ax OR mpi OR wax OR lax OR bax OR btx OR gax OR gix OR 92a OR 9mp OR 9wa OR 9la OR 9ba OR 9bt OR 9ga OR 9gi OR 72a OR 7mp OR 7wa OR 7la OR 7ba OR 7bt OR 7ga OR 7gi)]:%NAME%%BORDER-8F%%MAP-9B%%DOT-6C%%PX-A8%//
@@ -1600,26 +1630,20 @@ ItemDisplay[RARE !ID ETH (bar OR vou OR scy OR pax OR hal OR wsc OR 9b7 OR 9vo O
 // Assassin Claws
 ItemDisplay[RARE !ID ETH ASSASSIN (ktr OR axf OR clw OR btl OR skr OR 9ar OR 9xf OR 9lw OR 9tw OR 9qr OR 7ar OR 7xf OR 7lw OR 7tw OR 7qr)]:%NAME%%BORDER-8F%%MAP-9B%%DOT-6C%%PX-A8%//
 
-// 	----------------------------------------------------------------------------    
-// 	     						    Magic Items    
-// 	---------------------------------------------------------------------------- 
+// -------------------------------------------------------------------------------------------------------
+// ============================================  Magic Items  ============================================
+// -------------------------------------------------------------------------------------------------------
 
 ItemDisplay[MAG]:%BLUE%%NAME%{%NAME%}%CONTINUE%
 ItemDisplay[ETH MAG]:%WHITE%Eth %NAME%{%NAME%}%CONTINUE%//
 
-// -----------------------------------------------------------------------------
-//    						          Amulets
-// -----------------------------------------------------------------------------
-
+// Amulets
 ItemDisplay[MAG !ID amu FILTLVL>8 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide unidentified magic amulets on filter level 9
 
 ItemDisplay[MAG !ID amu CLVL>79 FILTLVL<9]:%TAN%o  %BLUE%%NAME%  %TAN%o%BLUE%// No map or chat notification for magic amulets past level 80
 ItemDisplay[MAG !ID amu CLVL<80 FILTLVL<9]:%TAN%o  %BLUE%%NAME%  %TAN%o%BLUE%%BORDER-91%%MAP-97%%DOT-0E%%PX-A6%// All unidentified amulets
 
-// ----------------------------------------------------------------------------------------------
-//    				                            Charms
-// ----------------------------------------------------------------------------------------------
-
+// Charms
 ItemDisplay[MAG !ID ILVL>90 cm3]:%TEAL%\(%PURPLE%(  %BLUE%Grand Charm %WHITE%* %BLUE%iLvl %ILVL%  %PURPLE%)%TEAL%)/%BLUE%%BORDER-8F%%MAP-9B%%DOT-97%%PX-20%{%TAN%Cube with any 3 Perfect Gems to Reroll}// iLvl 91 or higher grand charms for cube rerolling
 
 ItemDisplay[MAG !ID cm1]:%BLUE%Small Charm%BORDER-8F%%MAP-9B%%DOT-97%%PX-A2%%CONTINUE%//
@@ -1627,58 +1651,35 @@ ItemDisplay[MAG !ID cm2]:%BLUE%Large Charm%BORDER-8F%%MAP-9B%%DOT-97%%PX-A2%%CON
 ItemDisplay[MAG !ID cm3]:%BLUE%Grand Charm%BORDER-8F%%MAP-9B%%DOT-97%%PX-A2%%CONTINUE%//
 ItemDisplay[MAG !ID (cm1 OR cm2 OR cm3)]:%TEAL%\(%PURPLE%(  %NAME%  %PURPLE%)%TEAL%)/%BLUE%{%NAME%}//
 
-
-// ----------------------------------------------------------------------------------------------
-//    				                            Rings
-// ----------------------------------------------------------------------------------------------
-
+// Rings
 ItemDisplay[MAG !ID rin FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide unidentified magic rings on filter level 5 or higher
 
 ItemDisplay[MAG !ID rin CLVL<20 FILTLVL<5]:%TAN%*  %BLUE%%NAME%  %TAN%*%BLUE%%BORDER-91%%MAP-97%%DOT-0E%%PX-A6%// All unidentified rings
 ItemDisplay[MAG !ID rin CLVL>19 FILTLVL<5]:%TAN%*  %BLUE%%NAME%  %TAN%*%BLUE%// Do not notify for magic rings after character level 19
 
-// ----------------------------------------------------------------------------------------------
-//      			                           Circlets
-// ----------------------------------------------------------------------------------------------
-
+// Circlets
 ItemDisplay[MAG !ID ETH CIRC CLVL>79 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 ItemDisplay[MAG !ID CIRC CLVL<80]:%TAN%o  %BLUE%%NAME%  %TAN%o%BLUE%%BORDER-91%%MAP-97%%DOT-0E%%PX-A6%// Notify for magic circlets before character level 80
 ItemDisplay[MAG !ID CIRC CLVL>79]:%TAN%o  %BLUE%%NAME%  %TAN%o%BLUE%// Do not notify for magic circlets after character level 80
 
-// ----------------------------------------------------------------------------------------------
-//      			                           Jewels
-// ----------------------------------------------------------------------------------------------
-
+// Jewels
 ItemDisplay[jewf QTY>1]:%TAN%(x %BLUE%Jewel %TAN%x) %WHITE%Fragments %TAN%x %WHITE%%QTY%{%BLUE%Jewel %WHITE%when crafting%CL%%WHITE%Use in place of a}%MAP-91%%DOT-97%%PX-A6%// Jewel fragments
 ItemDisplay[jewf QTY=1]:%TAN%(x %BLUE%Jewel %TAN%x) %WHITE%Fragment{%BLUE%Jewel %WHITE%when crafting%CL%%WHITE%Use in place of a}%MAP-91%%DOT-97%%PX-A6%// Jewel fragments
 
 ItemDisplay[MAG !ID jew CLVL>29]:%TAN%* %BLUE%>  %TAN%(x  %BLUE%Jewel  %TAN%x)  %BLUE%< %TAN%*%BLUE%{%WHITE%to create %TAN%(x %BLUE%Jewel %TAN%x) %WHITE%Fragments%CL%%TAN%Cube %WHITE%any %BLUE%Jewel %WHITE%with %GRAY%Keys%WHITE%}%MAP-91%%DOT-97%%PX-A6%// All unidentified magic jewels
 ItemDisplay[MAG !ID jew CLVL<30]:%TAN%* %BLUE%>  %TAN%(x  %BLUE%Jewel  %TAN%x)  %BLUE%< %TAN%*%BLUE%{%WHITE%to create %TAN%(x %BLUE%Jewel %TAN%x) %WHITE%Fragments%CL%%TAN%Cube %WHITE%any %BLUE%Jewel %WHITE%with %GRAY%Keys%WHITE%}%MAP-91%%DOT-97%%PX-A6%// All unidentified magic jewels
 
-// ----------------------------------------------------------------------------------------------
-// 			                          Magic Items Class Specific
-// ----------------------------------------------------------------------------------------------
-
-// ----------------------------------------------------------------------------------------------
-//     			                             Amazon Spears
-// ----------------------------------------------------------------------------------------------
-
+// Amazon Spears
 ItemDisplay[MAG !ID (am3 OR am4) CLVL>29 FILTLVL>1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide all Normal quality magic Amazon spears after level 39
 ItemDisplay[MAG !ID (am8 OR am9) CLVL>79 FILTLVL>1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide all Exc quality  Amazon spears after level 79
 ItemDisplay[MAG !ID (amd OR ame) CLVL>89 FILTLVL>1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide all Elite quality Amazon spears after level 89
 
-// ----------------------------------------------------------------------------------------------
-//     			                            Amazon Javelins
-// ----------------------------------------------------------------------------------------------
-
+// Amazon Javelins
 ItemDisplay[MAG !ID !ETH (am5 OR ama OR amf) CLVL>89 FILTLVL>4 !AMAZON !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hides magic non-eth Maiden Javelin Ceremonial Javelin Matriarchal Javelins after level 89 on filter levels 5+ if character is not an Amazon
 ItemDisplay[MAG !ID !ETH (am5 OR ama OR amf) CLVL>89 FILTLVL>8 AMAZON !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hides magic non-eth Maiden Javelin Ceremonial Javelin Matriarchal Javelins after level 89 on filter levels 9 if character is an Amazon
 ItemDisplay[MAG !ID ETH (am5 OR ama OR amf)]:%BLUE%%NAME%%BLUE%%BORDER-91%%MAP-97%%DOT-1D%%PX-20%%CONTINUE%// Notifies for magic ethereal Maiden Javelin, Ceremonial Javelin, Matriarchal Javelins after level 89
 
-// ----------------------------------------------------------------------------------------------
-//     			                             Amazon Bows
-// ----------------------------------------------------------------------------------------------
-
+// Amazon Bows
 ItemDisplay[MAG !ID !AMAZON am1 CLVL>29 FILTLVL>1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hides magic Stag Bows after character level 39
 ItemDisplay[MAG !ID !AMAZON am6 CLVL>59 FILTLVL>1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hides magic Ashwood Bows after character level 59
 ItemDisplay[MAG !ID !AMAZON amb CLVL>79 FILTLVL>1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hides magic Matriarchal Bows after character level 79
@@ -1687,38 +1688,21 @@ ItemDisplay[MAG !ID AMAZON am1 CLVL>29 FILTLVL>8 !(MAPID=1 OR MAPID=40 OR MAPID=
 ItemDisplay[MAG !ID AMAZON am6 CLVL>59 FILTLVL>8 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hides magic Ashwood Bows after character level 59
 ItemDisplay[MAG !ID AMAZON amb CLVL>79 FILTLVL>8 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hides magic Matriarchal Bows after character level 79
 
-// ----------------------------------------------------------------------------------------------
-//     			                               Arrows
-// ----------------------------------------------------------------------------------------------
+// Arrows
+ItemDisplay[MAG !ID aqv AMAZON FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// If character is Amazon, hide magic arrows at filter levels 5-9
+ItemDisplay[MAG !ID aqv AMAZON FILTLVL<5]:%BLUE%* %NAME% *// If character is Amazon, show magic arrows at filter levels 1-4
 
-// If character is Amazon, hide magic arrows at filter levels 5-9
-ItemDisplay[MAG !ID aqv AMAZON FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
-// If character is Amazon, show magic arrows at filter levels 1-4
-ItemDisplay[MAG !ID aqv AMAZON FILTLVL<5]:%BLUE%* %NAME% *//
+ItemDisplay[MAG !ID aqv !AMAZON FILTLVL>1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// If character is not Amazon, hide magic arrows on filter levels 2-8
+ItemDisplay[MAG !ID aqv !AMAZON FILTLVL<2]:%BLUE%* %NAME% *// If character is not Amazon, show magic arrows on filter level 1 
 
-// If character is not Amazon, hide magic arrows on filter levels 2-8
-ItemDisplay[MAG !ID aqv !AMAZON FILTLVL>1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// 
-// If character is not Amazon, show magic arrows on filter level 1
-ItemDisplay[MAG !ID aqv !AMAZON FILTLVL<2]:%BLUE%* %NAME% *// 
+// Bolts
+ItemDisplay[MAG !ID cqv AMAZON FILTLVL>1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// If character is Amazon, hide magic bolts at filter levels 2-8
+ItemDisplay[MAG !ID cqv AMAZON FILTLVL<2]:%BLUE%* %NAME% *// If character is Amazon, show magic bolts at filter level 1
 
-// ----------------------------------------------------------------------------------------------
-//     			                               Bolts
-// ----------------------------------------------------------------------------------------------
+ItemDisplay[MAG !ID cqv !AMAZON (FILTLVL>1 OR CLVL>19) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// If character is not Amazon, hide magic bolts when on filter levels 2-8 or over character level 20 
+ItemDisplay[MAG !ID cqv !AMAZON (FILTLVL<2 OR CLVL<20)]:%BLUE%* %NAME% *// If character is not Amazon, show magic bolts on filter level 1 when under character level 20
 
-// If character is Amazon, hide magic bolts at filter levels 2-8
-ItemDisplay[MAG !ID cqv AMAZON FILTLVL>1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
-// If character is Amazon, show magic bolts at filter level 1
-ItemDisplay[MAG !ID cqv AMAZON FILTLVL<2]:%BLUE%* %NAME% *//
-
-// If character is not Amazon, hide magic bolts when on filter levels 2-8 or over character level 20
-ItemDisplay[MAG !ID cqv !AMAZON (FILTLVL>1 OR CLVL>19) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// 
-// If character is not Amazon, show magic bolts on filter level 1 when under character level 20
-ItemDisplay[MAG !ID cqv !AMAZON (FILTLVL<2 OR CLVL<20)]:%BLUE%* %NAME% *//  
-
-// ----------------------------------------------------------------------------------------------
-//     			                              Assassin
-// ----------------------------------------------------------------------------------------------
-
+// Assassin Claws
 ItemDisplay[MAG !ID NORM SIN ASSASSIN CLVL>29 (wrb OR ces OR clw OR !ETH) FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 ItemDisplay[MAG !ID EXC SIN ASSASSIN CLVL>59 (9wb OR 9cs OR 9lw OR !ETH) FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 ItemDisplay[MAG !ID ELT SIN ASSASSIN CLVL>79 (7wb OR 7cs OR 7lw OR !ETH) FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
@@ -1731,11 +1715,7 @@ ItemDisplay[MAG !ID NORM SIN !ASSASSIN !ETH CLVL>29 FILTLVL>4 !(MAPID=1 OR MAPID
 ItemDisplay[MAG !ID EXC SIN !ASSASSIN !ETH CLVL>59 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 ItemDisplay[MAG !ID ELT SIN !ASSASSIN !ETH CLVL>79 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
-
-// ----------------------------------------------------------------------------------------------
-//     				                     Daggers
-// ----------------------------------------------------------------------------------------------
-
+// Daggers
 ItemDisplay[MAG !ID NORM DAGGER ASSASSIN CLVL>29 !ETH FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 ItemDisplay[MAG !ID EXC DAGGER ASSASSIN CLVL>59 !ETH FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 ItemDisplay[MAG !ID ELT DAGGER ASSASSIN CLVL>79 !ETH FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
@@ -1748,37 +1728,25 @@ ItemDisplay[MAG !ID NORM DAGGER !ASSASSIN !ETH CLVL>29 FILTLVL>4 !(MAPID=1 OR MA
 ItemDisplay[MAG !ID EXC DAGGER !ASSASSIN !ETH CLVL>59 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 ItemDisplay[MAG !ID ELT DAGGER !ASSASSIN !ETH CLVL>79 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
-// ----------------------------------------------------------------------------------------------
-//     				                         Barbarian
-// ----------------------------------------------------------------------------------------------
-
+// Barbarian Helmets
 ItemDisplay[MAG !ID BAR FILTLVL>8 BARBARIAN !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 ItemDisplay[MAG !ID BAR FILTLVL>4 !BARBARIAN !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
 ItemDisplay[MAG ETH !ID BAR CLVL>79 FILTLVL>1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide Eth magic Barb Helms past level 80
 
-// ----------------------------------------------------------------------------------------------
-//     				                        Druid Pelts
-// ----------------------------------------------------------------------------------------------
-
+// Druid Pelts
 ItemDisplay[MAG !ID DRU FILTLVL>8 DRUID !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 ItemDisplay[MAG !ID DRU FILTLVL>4 !DRUID !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
 ItemDisplay[MAG ETH !ID DRU CLVL>79 FILTLVL>1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide Eth magic Druid Helms past level 80
 
-// ----------------------------------------------------------------------------------------------
-//     				                       Necromancer
-// ----------------------------------------------------------------------------------------------
-
+// Necromancer Heads
 ItemDisplay[MAG !ID NEC FILTLVL>8 NECROMANCER !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 ItemDisplay[MAG !ID NEC FILTLVL>4 !NECROMANCER !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
 ItemDisplay[MAG ETH !ID NEC CLVL>79 FILTLVL>1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide Eth magic necromancer heads past level 80
 
-// ----------------------------------------------------------------------------------------------
-//     				                      Paladin Shields
-// ----------------------------------------------------------------------------------------------
-
+// Paladin Shields
 ItemDisplay[MAG ETH !ID DIN FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide Eth magic paladin shields
 
 ItemDisplay[MAG !ID NORM !PALADIN DIN CLVL>29 FILTLVL>1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
@@ -1790,176 +1758,110 @@ ItemDisplay[MAG !ID EXC PALADIN DIN CLVL>59 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR M
 ItemDisplay[MAG !ID ELT !PALADIN DIN CLVL>79 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 ItemDisplay[MAG !ID ELT PALADIN DIN CLVL>79 FILTLVL>8 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
-// ----------------------------------------------------------------------------------------------
-//     				                        Scepters
-// ----------------------------------------------------------------------------------------------
-
-
+// Scepters
 ItemDisplay[MAG !ID SCEPTER FILTLVL>8 PALADIN !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// 
 ItemDisplay[MAG !ID SCEPTER FILTLVL>4 !PALADIN !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// 
-// ----------------------------------------------------------------------------------------------
-//     				                       Sorceress
-// ----------------------------------------------------------------------------------------------
 
+// Sorceress Orbs
 ItemDisplay[MAG !ID SOR FILTLVL>8 SORCERESS !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// 
 ItemDisplay[MAG !ID SOR FILTLVL>4 !SORCERESS !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
-// ----------------------------------------------------------------------------------------------
-//    				                        Staves
-// ----------------------------------------------------------------------------------------------
-// All magic Staves
+// Staves
 ItemDisplay[MAG !ID STAFF FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
-
-// ----------------------------------------------------------------------------------------------
-//   				                        Wands
-// ----------------------------------------------------------------------------------------------
-
-// All magic Wands
+// Wands
 ItemDisplay[MAG !ID WAND FILTLVL>8 NECROMANCER !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// 
 ItemDisplay[MAG !ID WAND FILTLVL>4 !NECROMANCER !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// 
 
-// ----------------------------------------------------------------------------------------------
-//   				                     Druid Clubs
-// ----------------------------------------------------------------------------------------------
-
-// All magic Druid Clubs
+// Druid Clubs
 ItemDisplay[MAG !ID (clb OR spc OR 9cl OR 9sp OR 7cl OR 7sp) FILTLVL>8 DRUID !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// 
 ItemDisplay[MAG !ID (clb OR spc OR 9cl OR 9sp OR 7cl OR 7sp) FILTLVL>4 !DRUID !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
-// ----------------------------------------------------------------------------------------------
-//     				                       Armor
-// ----------------------------------------------------------------------------------------------
-
-// All armors
+// Chests
 ItemDisplay[MAG !ID ETH CHEST FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// 
 
 ItemDisplay[MAG !ID NORM CHEST (ILVL<94 OR FILTLVL=9) CLVL>29 FILTLVL>1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// 
 ItemDisplay[MAG !ID EXC CHEST (ILVL<94 OR FILTLVL=9) CLVL>59 FILTLVL>1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// 
 ItemDisplay[MAG !ID ELT CHEST (ILVL<94 OR FILTLVL=9) CLVL>79 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
-// ----------------------------------------------------------------------------------------------
-//     				                       Belts
-// ----------------------------------------------------------------------------------------------
-
-// All belts
+// Belts
 ItemDisplay[MAG ETH !ID BELT FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// 
 
 ItemDisplay[MAG !ID NORM BELT CLVL>29 FILTLVL>1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 ItemDisplay[MAG !ID EXC BELT CLVL>59 FILTLVL>1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 ItemDisplay[MAG !ID ELT BELT CLVL>79 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
-// ----------------------------------------------------------------------------------------------
-//     				                       Boots
-// ----------------------------------------------------------------------------------------------
-
-// All boots
+// Boots
 ItemDisplay[MAG !ID ETH BOOTS FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// 
 
 ItemDisplay[MAG !ID NORM CLVL>29 BOOTS FILTLVL>1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 ItemDisplay[MAG !ID EXC CLVL>59 BOOTS FILTLVL>1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 ItemDisplay[MAG !ID ELT CLVL>79 BOOTS FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
-// ----------------------------------------------------------------------------------------------
-//     				                      Gloves
-// ----------------------------------------------------------------------------------------------
-
-// All gloves
+// Gloves
 ItemDisplay[MAG !ID ETH GLOVES FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// 
 
 ItemDisplay[MAG !ID NORM GLOVES CLVL>29 FILTLVL>1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// 
 ItemDisplay[MAG !ID EXC GLOVES CLVL>59 FILTLVL>1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// 
 ItemDisplay[MAG !ID ELT GLOVES CLVL>79 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
-// ----------------------------------------------------------------------------------------------
-//     				                      Helms
-// ----------------------------------------------------------------------------------------------
-
-// All helms
+// Helmets
 ItemDisplay[MAG !ID HELM ETH !DRU !BAR !CIRC FILTLVL>1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
 ItemDisplay[MAG !ID HELM NORM !DRU !BAR !CIRC CLVL>29 FILTLVL>1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 ItemDisplay[MAG !ID HELM EXC !DRU !BAR !CIRC CLVL>59 FILTLVL>1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 ItemDisplay[MAG !ID HELM ELT !DRU !BAR !CIRC CLVL>79 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// 
 
-// ----------------------------------------------------------------------------------------------
-//     				                     Shields
-// ----------------------------------------------------------------------------------------------
-
-// All Shields
+// Shields
 ItemDisplay[MAG !ID ETH SHIELD !NEC !DIN FILTLVL>1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
 ItemDisplay[MAG !ID NORM SHIELD ILVL<94 !NEC !DIN CLVL>29 FILTLVL>1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 ItemDisplay[MAG !ID EXC SHIELD ILVL<94 !NEC !DIN CLVL>59 FILTLVL>1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 ItemDisplay[MAG !ID ELT SHIELD ILVL<94 !NEC !DIN CLVL>79 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// 
 
-// ----------------------------------------------------------------------------------------------
-//     				                      Axes
-// ----------------------------------------------------------------------------------------------
-
-// All Axes
+// Axes
 ItemDisplay[MAG NORM !ID !ETH AXE !THROWING CLVL>29 FILTLVL>1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 ItemDisplay[MAG EXC !ID !ETH AXE !THROWING CLVL>59 FILTLVL>1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 ItemDisplay[MAG ELT !ID !ETH AXE !THROWING CLVL>79 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
-// ----------------------------------------------------------------------------------------------
-//     				                      Bows
-// ----------------------------------------------------------------------------------------------
-
-// All Bows
+// Bows
 ItemDisplay[MAG NORM !ID BOW !ZON CLVL>29 FILTLVL>1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 ItemDisplay[MAG EXC !ID BOW !ZON CLVL>59 FILTLVL>1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 ItemDisplay[MAG ELT !ID BOW !ZON CLVL>79 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
-// ----------------------------------------------------------------------------------------------
-//     				                    Crossbows
-// ----------------------------------------------------------------------------------------------
-
-// All Bows
+// Crossbows
 ItemDisplay[MAG NORM !ID XBOW CLVL>29 FILTLVL>1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 ItemDisplay[MAG EXC !ID XBOW CLVL>59 FILTLVL>1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 ItemDisplay[MAG ELT !ID XBOW CLVL>79 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
-// ----------------------------------------------------------------------------------------------
-//     				                     Maces
-// ----------------------------------------------------------------------------------------------
-
-// All magic Maces
+// Maces
 ItemDisplay[MAG NORM !ETH !ID MACE !(clb OR spc) CLVL>29 FILTLVL>1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 ItemDisplay[MAG EXC !ETH !ID MACE !(9cl OR 9sp) CLVL>59 FILTLVL>1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 ItemDisplay[MAG ELT !ETH !ID MACE !(7cl OR 7sp) CLVL>79 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
-// ----------------------------------------------------------------------------------------------
-//     				                   Polearms
-// ----------------------------------------------------------------------------------------------
-// All magic Polearms
+// Polearms
 ItemDisplay[MAG NORM !ETH !ID POLEARM CLVL>29 FILTLVL>1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 ItemDisplay[MAG EXC !ETH !ID POLEARM CLVL>59 FILTLVL>1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 ItemDisplay[MAG ELT !ETH !ID POLEARM CLVL>79 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
-// ----------------------------------------------------------------------------------------------
-//     				                    Spears
-// ----------------------------------------------------------------------------------------------
-// All magic Spears
+// Spears
 ItemDisplay[MAG NORM !ID (spr OR tri OR brn OR spt OR pik) !ETH CLVL>29 FILTLVL>1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 ItemDisplay[MAG EXC !ID (9sr OR 9tr OR 9br OR 9st OR 9p9) !ETH CLVL>59 FILTLVL>1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 ItemDisplay[MAG ELT !ID (7sr OR 7tr OR 7br OR 7st OR 7p7) !ETH CLVL>79 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
-// ----------------------------------------------------------------------------------------------
-//   				                    Swords
-// ----------------------------------------------------------------------------------------------
-
+// Swords
 ItemDisplay[MAG NORM !ETH !ID SWORD CLVL>29 FILTLVL>1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 ItemDisplay[MAG EXC !ETH !ID SWORD CLVL>59 FILTLVL>1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 ItemDisplay[MAG ELT !ETH !ID SWORD CLVL>79 FILTLVL>1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
-// ----------------------------------------------------------------------------------------------
-//   				          Javelins and Throwing Weapons
-// ----------------------------------------------------------------------------------------------
-
+// Javelins and Throwing Weapons
 ItemDisplay[MAG !ID !ETH (tkf OR tax OR bkf OR bal OR jav OR pil OR ssp OR glv OR tsp) CLVL>29 FILTLVL>1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 ItemDisplay[MAG !ID !ETH (9tk OR 9ta OR 9bk OR 9b8 OR 9ja OR 9pi OR 9s9 OR 9gl OR 9ts) CLVL>79 FILTLVL>1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 ItemDisplay[MAG !ID !ETH (7tk OR 7ta OR 7bk OR 7b8 OR 7ja OR 7pi OR 7s7 OR 7gl OR 7ts) CLVL>89 FILTLVL>4 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
+
+// -------------------------------------------------------------------------
+// =================  Notifications for Magic Eth Weapons  =================
+// -------------------------------------------------------------------------
 
 // Highlight all ethereal throwing weapons as a Barbarian on filter level 0-4
 ItemDisplay[MAG !ID ETH BARBARIAN FILTLVL<5 (tkf OR 9tk OR 7tk OR tax OR 9ta OR 7ta OR bkf OR 9bk OR 7bk OR bal OR 9b8 OR 7b8 OR jav OR 9ja OR 7ja OR pil OR 9pi OR 7pi OR ssp OR 9s9 OR 7s7 OR glv OR 9gl OR 7gl OR tsp OR 9ts OR 7ts)]:%NAME%%BORDER-91%%MAP-97%%DOT-1D%%PX-20%//
@@ -1968,10 +1870,6 @@ ItemDisplay[MAG !ID ETH BARBARIAN FILTLVL>4 (tax OR 9ta OR 7ta OR bkf OR 9bk OR 
 
 // Highlight select ethereal throwing weapons as a Non-Barb on filter level 0-4
 ItemDisplay[MAG !ID ETH !BARBARIAN FILTLVL<5 ILVL>59 CLVL<90 (tax OR 9ta OR 7ta OR bkf OR 9bk OR 7bk OR bal OR 9b8 OR 7b8 OR jav OR 9ja OR 7ja OR ssp OR 9s9 OR 7s7 OR glv OR 9gl OR 7gl OR tsp OR 9ts OR 7ts)]:%NAME%%BORDER-91%%MAP-97%%DOT-1D%%PX-20%//
-
-// ----------------------------------------------------------------------------------------------
-//   				          Notifications for Magic Eth Weapons
-// ----------------------------------------------------------------------------------------------
 
 // Axes
 ItemDisplay[MAG !ID ETH (2ax OR mpi OR wax OR lax OR bax OR btx OR gax OR gix OR 92a OR 9mp OR 9wa OR 9la OR 9ba OR 9bt OR 9ga OR 9gi OR 72a OR 7mp OR 7wa OR 7la OR 7ba OR 7bt OR 7ga OR 7gi)]:%NAME%%BORDER-91%%MAP-97%%DOT-1D%%PX-20%%TIER-0%//
@@ -1986,9 +1884,10 @@ ItemDisplay[MAG !ID ETH (bar OR vou OR scy OR pax OR hal OR wsc OR 9b7 OR 9vo OR
 // Assassin Claws
 ItemDisplay[MAG !ID ETH ASSASSIN (ktr OR axf OR clw OR btl OR skr OR 9ar OR 9xf OR 9lw OR 9tw OR 9qr OR 7ar OR 7xf OR 7lw OR 7tw OR 7qr)]:%NAME%%BORDER-91%%MAP-97%%DOT-1D%%PX-20%%TIER-0%//
 
-// 	-------------------------------------------------------------------    
-// 	     			     NMAG  Non-Magic Items       
-// 	------------------------------------------------------------------- 
+
+// -------------------------------------------------------------------------------------------------------
+// ======================================  Non-Magical Items  ============================================
+// -------------------------------------------------------------------------------------------------------
 
 
 // Names of Superior and Inferior items to short in later step
@@ -2689,9 +2588,11 @@ ItemDisplay[NMAG !RW !STAT360=32 SOCK>0]:%NAME% %TAN%[%WHITE%%SOCKETS%%TAN%]%GRA
 ItemDisplay[(MAG OR RARE OR SET OR UNI OR CRAFT) ID STAT360=32 SOCK>0]:%NAME% %TAN%[%WHITE%%SOCKETS%%TAN%]%RED%*{%NAME%}%CONTINUE%// Add number of sockets to the end of socketed items' names (eg "Quilted Armor [2os]")
 ItemDisplay[NMAG !RW STAT360=32 SOCK>0]:%NAME% %TAN%[%WHITE%%SOCKETS%%TAN%]%RED%*%GRAY%{%NAME%}%CONTINUE%// Add number of sockets to the end of socketed items' names (eg "Quilted Armor [2os]")
 
+// Filtering for items with only 1 Socket
 ItemDisplay[NMAG !RW (ARMOR OR WEAPON) !leg SOCK=1 CLVL<5]:%GRAY%%NAME%{%NAME%}%GRAY%%CONTINUE%// Before character level 5, show all 1 socket armors and weapons
 ItemDisplay[NMAG !RW (ARMOR OR WEAPON) !leg SOCK=1 CLVL>4 FILTLVL>0 !(clb OR 9cl OR 7cl OR spc OR 9sp OR 7sp OR STAFF OR SIN OR SCEPTER OR WAND OR SOR OR BAR OR DRU OR NEC) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hides all 1 socket nonmagical items except for items that sell for gold
 
+// On filter level 5+, hide 1 Socket Class Items
 ItemDisplay[NMAG !RW (FILTLVL>4 OR (CLVL>89 FILTLVL>0)) SOCK=1 (clb OR 9cl OR 7cl OR spc OR 9sp OR 7sp OR STAFF OR SIN OR SCEPTER OR WAND OR SOR OR BAR OR DRU OR NEC) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// On filter level 5+, hide 1 socket class items
 
 // Filters out inferior items unless your character is playing that class
@@ -4236,9 +4137,9 @@ ItemDisplay[RARE jew ID RARE ILVL>67 STAT486=0 ((CLVL=99 ILVL=69) OR (CLVL=99 IL
 ItemDisplay[MAG ID jew]:%NAME%{%WHITE%to create %TAN%(x %BLUE%Jewel %TAN%x) %WHITE%Fragments%CL%%TAN%Cube %WHITE%any %BLUE%Jewel %WHITE%with %GRAY%Keys%WHITE%}// All identified magic jewels
 ItemDisplay[RARE ID jew]:%NAME%{%NAME%}//
 
-// ------------------------------------------------------------------------------
-//    =======================  Arrows and Bolts Display ======================
-// ------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------
+//    =====================  Affixes for Arrows and Bolts =====================
+// -------------------------------------------------------------------------------
 
 // Filter out arrows that don't have one of the below attributes
 ItemDisplay[(MAG OR RARE) (aqv OR cqv) ID CLVL>29 !(TABSK0>0 OR TABSK1>0 OR STAT115=1 OR STAT116>9 OR STAT188>0 OR STAT96>9 OR IAS>9 OR STAT156>9 OR ED>39 OR MINDMG>9 OR MAXDMG>9 OR STAT141>9 OR RES>4) FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
@@ -4346,9 +4247,8 @@ ItemDisplay[RARE CIRC ID STAT110>49 (LIFE>39 OR STAT216>0 OR STR>14 OR DEX>14) (
 // ------------------------------------------------------------------------------
 //     =========================  Affixes Tags Display ======================
 // ------------------------------------------------------------------------------
-// Affixes on Magic, Rare, and Crafted Items. Corruptions on Set and Unique items
 
-// Affixes on Lower Line - Magic, Rare, and Crafted Items
+// Put Affixes on Lower Line - Magic, Rare, and Crafted Items
 // Weapons
 ItemDisplay[WEAPON (MAG OR RARE OR CRAFT) (STAT118=1 OR STAT360=8 OR STAT360=9 OR (STAT333>0 STAT360=12 ((ZON BOW) OR XBOW OR WAND OR SOR)) OR (STAT335>0 STAT360=14 ((ZON BOW) OR XBOW OR SOR)) OR (STAT334>0 STAT360=13 ((ZON JAV) OR SOR)) OR (STAT336>0 STAT360=15 (SIN OR DAGGER OR WAND)) OR STAT136>9 OR (!DAGGER STAT141>9) OR (DAGGER STAT141>20) OR (STAT360=24 STAT115=1) OR STAT360=3 OR STAT360=18 OR STAT360=26 OR ED>0 OR IAS>0 OR ((SOR OR STAFF OR WAND OR CLUB OR SCEPTER OR SIN) FCR>0) OR (CRAFT ALLSK=1 !STAT360=27) OR TABSK0>0 OR TABSK1>0 OR TABSK2>0 OR TABSK8>0 OR TABSK9>0 OR TABSK10>0 OR TABSK16>0 OR TABSK17>0 OR TABSK18>0 OR TABSK24>0 OR TABSK25>0 OR TABSK26>0 OR TABSK32>0 OR TABSK33>0 OR TABSK34>0 OR TABSK40>0 OR TABSK41>0 OR TABSK42>0 OR TABSK48>0 OR TABSK49>0 OR TABSK50>0 OR CLSK0>0 OR CLSK1>0 OR CLSK2>0 OR CLSK3>0 OR CLSK4>0 OR CLSK5>0 OR CLSK6>0 OR STAT360=27)]:%CL%%NAME%{%NAME%}%CONTINUE%
 // Ring Tags
@@ -4370,7 +4270,7 @@ ItemDisplay[BELT (MAG OR RARE OR CRAFT) (MFIND>9 OR GFIND>49 OR STAT110>19 OR ST
 // Gloves
 ItemDisplay[GLOVES (MAG OR RARE OR CRAFT) (MFIND>9 OR GFIND>49 OR STAT110>19 OR STAT118=1 OR RES>0 OR MANA>29 OR LIFE>19 OR (STAT0>2 STAT1>2 STAT2>2 STAT3>2) OR STAT1>9 OR STAT3>9 OR STAT2>9 OR STAT0>9 OR STAT141>0 OR STAT60>0 OR STAT62>0 OR STAT119>0 OR STAT360=3 OR STAT360=63 OR STAT360=66 OR FBR>0 OR FCR>0 OR IAS>0 OR TABSK0>1 OR TABSK1>1 OR TABSK2>1 OR TABSK50>1 OR STAT360=67)]:%CL%%NAME%{%NAME%}%CONTINUE%
 
-// Affixes on Lower Line - Corruptions on Unique and Set Items
+// Put Affixes on Lower Line - Corruptions on Unique and Set Items
 ItemDisplay[(UNI OR SET) (STAT360=2 OR STAT360=3 OR STAT360=4 OR STAT360=5 OR STAT360=6 OR STAT360=7 OR STAT360=8 OR STAT360=9 OR STAT360=10 OR STAT360=12 OR STAT360=13 OR STAT360=14 OR STAT360=15 OR STAT360=16 OR STAT360=17 OR STAT360=18 OR STAT360=19 OR STAT360=20 OR STAT360=21 OR STAT360=22 OR STAT360=23 OR STAT360=24 OR STAT360=25 OR STAT360=26 OR STAT360=27 OR STAT360=28 OR STAT360=29 OR STAT360=30 OR STAT360=31 OR STAT360=33 OR STAT360=34 OR STAT360=35 OR STAT360=36 OR STAT360=37 OR STAT360=38 OR STAT360=39 OR STAT360=40 OR STAT360=41 OR STAT360=42 OR STAT360=43 OR STAT360=44 OR STAT360=45 OR STAT360=46 OR STAT360=47 OR STAT360=48 OR STAT360=49 OR STAT360=50 OR STAT360=51 OR STAT360=52 OR STAT360=53 OR STAT360=54 OR STAT360=55 OR STAT360=56 OR STAT360=57 OR STAT360=58 OR STAT360=59 OR STAT360=60 OR STAT360=61 OR STAT360=62 OR STAT360=63 OR STAT360=64 OR STAT360=65 OR STAT360=66 OR STAT360=67 OR STAT360=68 OR STAT360=69 OR STAT360=70 OR STAT360=71 OR STAT360=72 OR STAT360=73 OR STAT360=74 OR STAT360=75 OR STAT360=76 OR STAT360=77)]:%CL%%NAME%{%NAME%}%CONTINUE%
 
 // ------------------------------------------------------------------------
