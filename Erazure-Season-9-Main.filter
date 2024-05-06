@@ -21,7 +21,7 @@ ItemDisplay[box FILTLVL=8]:%NAME%{%WHITE%Filter Level: 8%CL%%GRAY%Strict Filteri
 ItemDisplay[box FILTLVL=9]:%NAME%{%WHITE%Filter Level: 9%CL%%GRAY%Endgame Mapping}%CONTINUE%//
 ItemDisplay[box FILTLVL=0]:%NAME%{%NAME%%CL%%GRAY%Levels 5-6-7-8 Hide Some Rares and Non-Eth Items%CL%%GRAY%Levels 2-3-4 Hide Some Non-Magic/Magic Items%CL%Level 1 Shows Most Non-Magic/Magic Items}%CONTINUE%//
 ItemDisplay[box CLVL<20 !FILTLVL=0]:%NAME%{%NAME%%CL%%GRAY%For %GOLD%Increase and Decrease Filter Level%CL%%GRAY%For %GOLD%Always Show Items %GRAY%and Hotkeys%CL%Open Settings to Create Toggle}%CONTINUE%//
-ItemDisplay[box]:%NAME%{%NAME%%CL%%WHITE%Erazure: Version 5.05.5}//
+ItemDisplay[box]:%NAME%{%NAME%%CL%%WHITE%Erazure: Version 5.06}//
 
 // ==============================  Arrows and Bolts  ===============================
 
@@ -1284,12 +1284,11 @@ ItemDisplay[UNI !ID ((7bk !ETH) OR (7b8 (!ETH OR CLVL>89)) OR (7ta CLVL<90))]:%R
 
 //     High Value Javelins
 ItemDisplay[UNI !ID 7ts]:%NAME%%CONTINUE%// Gargoyle's Bite Winged Harpoon
-ItemDisplay[UNI !ID 7s7 ETH CLVL<90]:%NAME%%CONTINUE%// Demon's Arch Balrog Spear
-ItemDisplay[UNI !ID (7ts OR (7s7 ETH CLVL<90))]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%BORDER-9B%%MAP-62%%DOT-68%%PX-20%//
+ItemDisplay[UNI !ID 7ts]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%BORDER-9B%%MAP-62%%DOT-68%%PX-20%//
 //     Medium Value Javelins
-ItemDisplay[UNI !ID 7s7 (!ETH OR CLVL>89)]:%NAME%%CONTINUE%// Demon's Arch Balrog Spear
+ItemDisplay[UNI !ID 7s7 ETH CLVL<90]:%NAME%%CONTINUE%// Demon's Arch Balrog Spear
 ItemDisplay[UNI !ID 7gl BARBARIAN CLVL<80]:%NAME%%CONTINUE%// Wraith Flight Ghost Glaive
-ItemDisplay[UNI !ID ((7s7 (!ETH OR CLVL>89)) OR (7gl BARBARIAN CLVL<80))]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%BORDER-08%%MAP-50%%DOT-59%%PX-6A%//
+ItemDisplay[UNI !ID ((7s7 (ETH OR CLVL<90)) OR (7gl BARBARIAN CLVL<80))]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%BORDER-08%%MAP-50%%DOT-59%%PX-6A%//
 
 //     High Value Maces
 ItemDisplay[UNI !ID 7m7]:%NAME%%CONTINUE%// Windhammer Ogre Maul
@@ -4275,10 +4274,10 @@ ItemDisplay[WEAPON (UNI OR SET) MFIND>0 STAT360=7]:%WHITE%%MFIND%%YELLOW%mf %NAM
 ItemDisplay[WEAPON (MAG OR RARE OR CRAFT) STAT118=1]:%TEAL%Hfd %NAME%{%NAME%}%CONTINUE%
 
 // -% Requirements
-ItemDisplay[WEAPON (UNI OR SET) STAT360=6 STAT91>0]:%WHITE%%STAT91%%LIGHT_GRAY%%req %NAME%{%NAME%}%CONTINUE%
+ItemDisplay[WEAPON (UNI OR SET) STAT360=6 STAT91<0]:%WHITE%%STAT91%%LIGHT_GRAY%%req %NAME%{%NAME%}%CONTINUE%
 
 // Life per Hit
-ItemDisplay[WEAPON (UNI OR SET) STAT360=4 STAT91>0]:%WHITE%%STAT91%%RED%lph %NAME%{%NAME%}%CONTINUE%
+ItemDisplay[WEAPON (UNI OR SET) STAT360=4 STAT424>0]:%WHITE%%STAT424%%RED%lph %NAME%{%NAME%}%CONTINUE%
 
 // Life per Kill
 ItemDisplay[WEAPON STAT360=8 STAT86>0 STAT86<7]:%WHITE%%STAT86%%RED%lpk %NAME%{%NAME%}%CONTINUE%
