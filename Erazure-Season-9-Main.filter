@@ -21,7 +21,7 @@ ItemDisplay[box FILTLVL=8]:%NAME%{%WHITE%Filter Level: 8%CL%%GRAY%Strict Filteri
 ItemDisplay[box FILTLVL=9]:%NAME%{%WHITE%Filter Level: 9%CL%%GRAY%Endgame Mapping}%CONTINUE%//
 ItemDisplay[box FILTLVL=0]:%NAME%{%NAME%%CL%%GRAY%Levels 5-6-7-8 Hide Some Rares and Non-Eth Items%CL%%GRAY%Levels 2-3-4 Hide Some Non-Magic/Magic Items%CL%Level 1 Shows Most Non-Magic/Magic Items}%CONTINUE%//
 ItemDisplay[box CLVL<20 !FILTLVL=0]:%NAME%{%NAME%%CL%%GRAY%For %GOLD%Increase and Decrease Filter Level%CL%%GRAY%For %GOLD%Always Show Items %GRAY%and Hotkeys%CL%Open Settings to Create Toggle}%CONTINUE%//
-ItemDisplay[box]:%NAME%{%NAME%%CL%%WHITE%Erazure: Version 5.08.2}//
+ItemDisplay[box]:%NAME%{%NAME%%CL%%WHITE%Erazure: Version 5.09.1}//
 
 // ==============================  Arrows and Bolts  ===============================
 
@@ -1169,7 +1169,8 @@ ItemDisplay[UNI !ID lbt CLVL<80]:%NAME%%CONTINUE%// Hotspur Boots
 ItemDisplay[UNI !ID uvb !ETH]:%NAME%%CONTINUE%// Sandstorm Trek Scarabshell Boots
 ItemDisplay[UNI !ID xmb (CLVL>89 OR !SORCERESS)]:%NAME%%CONTINUE%// Silkweave Mesh Boots
 ItemDisplay[UNI !ID xlb CLVL>79]:%NAME%%CONTINUE%// Infernostride Demonhide Boots
-ItemDisplay[UNI !ID ((lbt CLVL<80) OR (uvb !ETH) OR (xmb (CLVL>89 OR !SORCERESS)) OR (xlb CLVL>79))]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%BORDER-08%%MAP-50%%DOT-59%%PX-6A%//
+ItemDisplay[UNI !ID ulb]:%NAME%%CONTINUE%// Merman's Sprocket Wyrmhide Boots
+ItemDisplay[UNI !ID ((lbt CLVL<80) OR (uvb !ETH) OR (xmb (CLVL>89 OR !SORCERESS)) OR (xlb CLVL>79) OR ulb)]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%BORDER-08%%MAP-50%%DOT-59%%PX-6A%//
 
 //     High Value Gloves
 ItemDisplay[UNI !ID tgl]:%NAME%%CONTINUE%// Magefist Light Gauntlets
@@ -1620,7 +1621,7 @@ ItemDisplay[RARE !ID ETH (spr OR tri OR brn OR spt OR pik OR 9sr OR 9tr OR 9br O
 // Eth Rare Polearms
 ItemDisplay[RARE !ID ETH (bar OR vou OR scy OR pax OR hal OR wsc OR 9b7 OR 9vo OR 9s8 OR 9pa OR 9h9 OR 9wc OR 7o7 OR 7vo OR 7s8 OR 7pa OR 7h7 OR 7wc)]:%NAME%%BORDER-8F%%MAP-9B%%DOT-6C%%PX-A8%//
 // Eth Rare Assassin Claws
-ItemDisplay[RARE !ID ETH ASSASSIN (ktr OR axf OR clw OR btl OR skr OR 9ar OR 9xf OR 9lw OR 9tw OR 9qr OR 7ar OR 7xf OR 7lw OR 7tw OR 7qr)]:%NAME%%BORDER-8F%%MAP-9B%%DOT-6C%%PX-A8%//
+ItemDisplay[RARE !ID ETH (ktr OR axf OR clw OR btl OR skr OR 9ar OR 9xf OR 9lw OR 9tw OR 9qr OR 7ar OR 7xf OR 7lw OR 7tw OR 7qr)]:%NAME%%BORDER-8F%%MAP-9B%%DOT-6C%%PX-A8%//
 
 // -------------------------------------------------------------------------------------------------------
 // ============================================  Magic Items  ============================================
@@ -1875,7 +1876,7 @@ ItemDisplay[MAG !ID ETH (spr OR tri OR brn OR spt OR pik OR 9sr OR 9tr OR 9br OR
 // Eth Magic Polearms
 ItemDisplay[MAG !ID ETH (bar OR vou OR scy OR pax OR hal OR wsc OR 9b7 OR 9vo OR 9s8 OR 9pa OR 9h9 OR 9wc OR 7o7 OR 7vo OR 7s8 OR 7pa OR 7h7 OR 7wc)]:%NAME%%BORDER-91%%MAP-97%%DOT-1D%%PX-20%%TIER-0%//
 // Eth Magic Assassin Claws
-ItemDisplay[MAG !ID ETH ASSASSIN (ktr OR axf OR clw OR btl OR skr OR 9ar OR 9xf OR 9lw OR 9tw OR 9qr OR 7ar OR 7xf OR 7lw OR 7tw OR 7qr)]:%NAME%%BORDER-91%%MAP-97%%DOT-1D%%PX-20%%TIER-0%//
+ItemDisplay[MAG !ID ETH (ktr OR axf OR clw OR btl OR skr OR 9ar OR 9xf OR 9lw OR 9tw OR 9qr OR 7ar OR 7xf OR 7lw OR 7tw OR 7qr)]:%NAME%%BORDER-91%%MAP-97%%DOT-1D%%PX-20%%TIER-0%//
 
 
 // -------------------------------------------------------------------------------------------------------
@@ -4057,6 +4058,8 @@ ItemDisplay[(MAG OR RARE) GFIND>0 ID jew]:%WHITE%%GFIND%%GOLD%gf %NAME%{%NAME%}%
 ItemDisplay[(MAG OR RARE) STAT86>0 ID jew]:%WHITE%%STAT86%%RED%lpk %NAME%{%NAME%}%CONTINUE%
 // Mana after Kill
 ItemDisplay[(MAG OR RARE) STAT138>0 ID jew]:%WHITE%%STAT138%%BLUE%mpk %NAME%{%NAME%}%CONTINUE%
+// Damage to Mana
+ItemDisplay[(MAG OR RARE) DTM>0 ID jew]:%WHITE%%DTM%%BLUE%dtm %NAME%{%NAME%}%CONTINUE%
 // All Res
 ItemDisplay[(MAG OR RARE) RES>0 ID jew]:%WHITE%%RES%%PURPLE%res %NAME%{%NAME%}%CONTINUE%
 // Fire Res
@@ -4069,10 +4072,8 @@ ItemDisplay[(MAG OR RARE) !RES>0 CRES>0 ID jew]:%WHITE%%CRES%%BLUE%res %NAME%{%N
 ItemDisplay[(MAG OR RARE) !RES>0 PRES>0 ID jew]:%WHITE%%PRES%%DARK_GREEN%res %NAME%{%NAME%}%CONTINUE%
 // Poison Res
 ItemDisplay[(MAG OR RARE) MFIND>0 ID jew]:%WHITE%%MFIND%%DARK_GREEN%mf %NAME%{%NAME%}%CONTINUE%
-// Damage to Mana
-ItemDisplay[(MAG OR RARE) MANA>0 ID jew]:%WHITE%%MANA%%BLUE%mana %NAME%{%NAME%}%CONTINUE%
 // Mana
-ItemDisplay[(MAG OR RARE) DTM>0 ID jew]:%WHITE%%DTM%%BLUE%dtm %NAME%{%NAME%}%CONTINUE%
+ItemDisplay[(MAG OR RARE) MANA>0 ID jew]:%WHITE%%MANA%%BLUE%mana %NAME%{%NAME%}%CONTINUE%
 // Energy
 ItemDisplay[(MAG OR RARE) STAT1>0 ID jew]:%WHITE%%STAT1%%BLUE%nrg %NAME%{%NAME%}%CONTINUE%
 // Life
@@ -4151,10 +4152,6 @@ ItemDisplay[(MAG OR RARE) STAT110>49 ID (aqv OR cqv)]:%WHITE%%STAT110%%DARK_GREE
 ItemDisplay[(MAG OR RARE) RES>4 ID (aqv OR cqv)]:%WHITE%%RES%%PURPLE%res %NAME%{%NAME%}%CONTINUE%
 // Curse Resistance
 ItemDisplay[(MAG OR RARE) STAT360=49 STAT504>0 ID (aqv OR cqv)]:%WHITE%%STAT504%%GRAY%cr %NAME%{%NAME%}%CONTINUE%
-// - Enemy Fire Res
-ItemDisplay[(MAG OR RARE) STAT333>4 ID (aqv OR cqv)]:%WHITE%-%STAT333%%RED%%res %NAME%{%NAME%}%CONTINUE%
-// - Enemy Cold Res
-ItemDisplay[(MAG OR RARE) STAT335>4 ID (aqv OR cqv)]:%WHITE%-%STAT335%%BLUE%%res %NAME%{%NAME%}%CONTINUE%
 // Open Wounds
 ItemDisplay[(MAG OR RARE) STAT135>9 ID (aqv OR cqv)]:%WHITE%%STAT135%%ORANGE%ow %NAME%{%NAME%}%CONTINUE%
 // Deadly Strike
@@ -4162,6 +4159,10 @@ ItemDisplay[(MAG OR RARE) STAT141>9 STAT141<20 ID (aqv OR cqv)]:%WHITE%%STAT141%
 ItemDisplay[(MAG OR RARE) STAT141>19 ID (aqv OR cqv)]:%WHITE%%STAT141%%PURPLE%ds %NAME%{%NAME%}%CONTINUE%
 // Crushing Blow
 ItemDisplay[(MAG OR RARE) STAT136>9 ID (aqv OR cqv)]:%WHITE%%STAT136%%ORANGE%cb %NAME%{%NAME%}%CONTINUE%
+// - Enemy Fire Res
+ItemDisplay[(MAG OR RARE) STAT333>4 ID (aqv OR cqv)]:%WHITE%-%STAT333%%RED%%res %NAME%{%NAME%}%CONTINUE%
+// - Enemy Cold Res
+ItemDisplay[(MAG OR RARE) STAT335>4 ID (aqv OR cqv)]:%WHITE%-%STAT335%%BLUE%%res %NAME%{%NAME%}%CONTINUE%
 // Max Damage
 ItemDisplay[(MAG OR RARE) MAXDMG>9 MAXDMG<15 ID (aqv OR cqv)]:%WHITE%%MAXDMG%%TAN%max %NAME%{%NAME%}%CONTINUE%
 ItemDisplay[(MAG OR RARE) MAXDMG>14 ID (aqv OR cqv)]:%WHITE%%MAXDMG%%PURPLE%max %NAME%{%NAME%}%CONTINUE%
@@ -4404,7 +4405,7 @@ ItemDisplay[(amu OR CIRC OR HELM) (UNI OR SET) STAT360=9 STAT138>0 STAT138<7]:%W
 // -----------------------------------------------------------------------
 
 // Attacker Takes Damage Corruption
-ItemDisplay[(UNI OR SET) STAT360=41]:%WHITE%%STAT238%%GRAY%atd %NAME%{%NAME%}%CONTINUE%
+ItemDisplay[(UNI OR SET) STAT360=41]:%GRAY%ATD %NAME%{%NAME%}%CONTINUE%
 
 // ------------------------------------------------------------------------
 // ====================  Light Radius + Attack Rating  ====================
@@ -4725,6 +4726,15 @@ ItemDisplay[SHIELD STAT360=64 FBR>24]:%WHITE%%FBR%%PURPLE%fbr %NAME%{%NAME%}%CON
 ItemDisplay[SHIELD STAT360=73 FBR>0 FBR<20]:%WHITE%%FBR%%ORANGE%fbr %GRAY%%blk %NAME%{%NAME%}%CONTINUE%
 ItemDisplay[SHIELD STAT360=73 FBR>19]:%WHITE%%FBR%%PURPLE%fbr %GRAY%%blk %NAME%{%NAME%}%CONTINUE%
 
+// -----------------------------------------------------------------------------
+// ========================  Increased Chance to Block  ========================
+// -----------------------------------------------------------------------------
+
+// Increased Chance of Blocking corruption (Amulet (10/20), Boots, Gloves, Belt, Shield))
+ItemDisplay[(BOOTS OR GLOVES OR BELT OR SHIELD) STAT360=67]:%WHITE%10%GRAY%%blk %NAME%{%NAME%}%CONTINUE%
+ItemDisplay[amu STAT20=10 STAT360=67]:%WHITE%10%GRAY%%blk %NAME%{%NAME%}%CONTINUE%
+ItemDisplay[amu STAT20=20 STAT360=67]:%WHITE%20%GOLD%%blk %NAME%{%NAME%}%CONTINUE%
+
 // ----------------------------------------------------------------------------
 // ============================  Faster Cast Rate  ============================
 // ----------------------------------------------------------------------------
@@ -4764,15 +4774,6 @@ ItemDisplay[GLOVES TABSK0>1]:%WHITE%%TABSK0%%DARK_GREEN%bow %NAME%{%NAME%}%CONTI
 ItemDisplay[GLOVES TABSK1>1]:%WHITE%%TABSK1%%DARK_GREEN%pas %NAME%{%NAME%}%CONTINUE%
 ItemDisplay[GLOVES TABSK2>1]:%WHITE%%TABSK2%%DARK_GREEN%jav %NAME%{%NAME%}%CONTINUE%
 ItemDisplay[GLOVES TABSK50>1]:%WHITE%%TABSK50%%DARK_GREEN%m.arts %NAME%{%NAME%}%CONTINUE%
-
-// -----------------------------------------------------------------------------
-// ========================  Increased Chance to Block  ========================
-// -----------------------------------------------------------------------------
-
-// Increased Chance of Blocking corruption (Amulet (10/20), Boots, Gloves, Belt, Shield))
-ItemDisplay[(BOOTS OR GLOVES OR BELT OR SHIELD) STAT360=67]:%WHITE%10%GRAY%%blk %NAME%{%NAME%}%CONTINUE%
-ItemDisplay[amu STAT20=10 STAT360=67]:%WHITE%10%GRAY%%blk %NAME%{%NAME%}%CONTINUE%
-ItemDisplay[amu STAT20=20 STAT360=67]:%WHITE%20%GOLD%%blk %NAME%{%NAME%}%CONTINUE%
 
 // -----------------------------------------------------------------------------
 // =============================  Faster Run Walk  =============================
