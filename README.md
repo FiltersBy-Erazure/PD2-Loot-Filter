@@ -13,10 +13,11 @@ My loot filters are updated ahead of the April 12th ladder reset! You can select
 - The **Erazure Season 9 Main** version displays standard names for all high runes and super rare items
 - The **Erazure BIG GG Novelty** version shows "BIG GG" or "LIL GG" when the following items drop while your character is outside of town:
   - BIG GG  
-    - Lo, Sur, Ber, Jah, Cham, Zod
+    - Sur, Ber, Jah, Cham, Zod
     - Vial of Lightsong, Lilith's Mirror
+    - Larzuk's Puzzlebox
   - LIL GG
-    - Vex, Ohm, Larzuk's Puzzlebox
+    - Vex, Ohm, Lo
 
 ![image](https://github.com/FiltersBy-Erazure/PD2-Loot-Filter/assets/76863417/fed30691-5230-41b2-847f-9698d21d1a82)
 
