@@ -19,7 +19,7 @@ My loot filters are updated ahead of the October 25th ladder reset! You can sele
   - LIL GG
     - Vex, Ohm, Lo
 
-![image](https://github.com/FiltersBy-Erazure/PD2-Loot-Filter/assets/76863417/fed30691-5230-41b2-847f-9698d21d1a82)
+![image](https://github.com/user-attachments/assets/dc69f7a8-4752-49f0-a01a-696fee6bc41f)
 
 # **Examples of Stylization and Aesthetic:**
 
