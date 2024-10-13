@@ -2,15 +2,15 @@
 
 Message me on Discord if you have any questions, feedback, or suggestions: **erazure**
 
-Please consider donating to my [**PayPal**](https://paypal.me/ErazurePD2LootFilter) or subscribing to my [**Patreon**](https://patreon.com/user?u=4978022) if you like my work and want to support the development of my filters
+Please consider donating to my [**PayPal**](https://paypal.me/ErazurePD2LootFilter) or subscribing to my [**Patreon**](https://www.patreon.com/erazure_pd2/membership) if you like my work and want to support the development of my filters
 
 ![heart medium](https://github.com/FiltersBy-Erazure/PD2-Loot-Filter/assets/76863417/cb45f82f-26ca-49ec-b5c7-bb3d67583fe1)
 
-# **Season 9 Anarchy Update:**
+# **Season 10 Desecration Update:**
 
-My loot filters are updated ahead of the April 12th ladder reset! You can select either one on the PD2 Launcher!
+My loot filters are updated ahead of the October 25th ladder reset! You can select either one on the PD2 Launcher!
 
-- The **Erazure Season 9 Main** version displays standard names for all high runes and super rare items
+- The **Erazure Season 10 Main** version displays standard names for all high runes and super rare items
 - The **Erazure BIG GG Novelty** version shows "BIG GG" or "LIL GG" when the following items drop while your character is outside of town:
   - BIG GG  
     - Larzuk's Puzzlebox
@@ -80,9 +80,9 @@ My loot filters are updated ahead of the April 12th ladder reset! You can select
   - Antidote and thawing potions will be hidden (unless the character is in the zones pertaining to the Rathma fight)
   - Every 5 levels after character level 80, filtering applies to larger gold piles.
 
-**Tier 4 = Endgame Mapping:**
+**Tier 4 = Endgame Filtering:**
 - **Gems:**
-  - Flawless gem stacks with quantity of 1 are hidden
+  - Flawless gem stacks with quantity of 1 show on filter level 11 but are hidden on filter level 12
 - **Runes:**
   - Runes between El - Io will show but no longer notify upon drop, however map icons will remain visible
 - **Unique Items**
