@@ -33,7 +33,7 @@ My loot filters are updated ahead of the October 25th ladder reset! You can sele
 
 ![HD Erazure Filter High Runes](https://user-images.githubusercontent.com/76863417/235098494-624dd84f-d49f-43b2-ac2c-01e33198932e.png)
 
-![HD Erazure Filter Rathma DClone](https://user-images.githubusercontent.com/76863417/235098525-e4366e9d-91da-4113-9f74-b859ee87a7b3.png)
+![HD Erazure Filter Diablo Clone Rathma](https://github.com/user-attachments/assets/1136d280-b2fe-45b0-806d-853beb017afe)
 
 # **Differences Between Filter Level Tiers:**
 
