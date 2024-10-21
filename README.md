@@ -25,6 +25,8 @@ My loot filters are updated ahead of the October 25th ladder reset! You can sele
 
 ![HD Erazure Filter Potions](https://user-images.githubusercontent.com/76863417/235098364-f4f1a464-ce4a-4648-ae71-602a541f7003.png)
 
+![image](https://github.com/user-attachments/assets/c4b6080e-d0a4-415a-bfae-d1c58b028195)
+
 ![HD Erazure Filter Gems](https://github.com/user-attachments/assets/9d725749-df75-4895-896a-1ae3a26fc162)
 
 ![HD Erazure Filter Low Runes](https://user-images.githubusercontent.com/76863417/235098438-c90636aa-92c3-4cf5-8e39-35730c9b369b.png)
