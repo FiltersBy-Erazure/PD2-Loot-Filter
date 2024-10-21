@@ -1,3 +1,17 @@
+# **Season 10 Desecration Update:**
+
+My loot filters are updated ahead of the October 25th ladder reset. You can now select either version on the PD2 Launcher!
+
+- The **Erazure Season 10 Main** version displays standard names for all high runes and super rare items
+- The **Erazure BIG GG Novelty** version shows "BIG GG" or "LIL GG" when the following items drop while your character is outside of town:
+  - BIG GG  
+    - Sur, Ber, Jah, Cham, Zod
+    - Vial of Lightsong, Lilith's Mirror
+  - LIL GG
+    - Vex, Ohm, Lo, Larzuk's Puzzlebox
+
+![image](https://github.com/user-attachments/assets/dc69f7a8-4752-49f0-a01a-696fee6bc41f)
+
 # **Contact and Support:**
 
 Message me on Discord if you have any questions, feedback, or suggestions: **erazure**
@@ -5,21 +19,6 @@ Message me on Discord if you have any questions, feedback, or suggestions: **era
 Please consider donating to my [**PayPal**](https://paypal.me/ErazurePD2LootFilter) or subscribing to my [**Patreon**](https://www.patreon.com/erazure_pd2/membership) if you like my work and want to support the development of my filters
 
 ![heart medium](https://github.com/FiltersBy-Erazure/PD2-Loot-Filter/assets/76863417/cb45f82f-26ca-49ec-b5c7-bb3d67583fe1)
-
-# **Season 10 Desecration Update:**
-
-My loot filters are updated ahead of the October 25th ladder reset! You can select either one on the PD2 Launcher!
-
-- The **Erazure Season 10 Main** version displays standard names for all high runes and super rare items
-- The **Erazure BIG GG Novelty** version shows "BIG GG" or "LIL GG" when the following items drop while your character is outside of town:
-  - BIG GG  
-    - Larzuk's Puzzlebox
-    - Sur, Ber, Jah, Cham, Zod
-    - Vial of Lightsong, Lilith's Mirror
-  - LIL GG
-    - Vex, Ohm, Lo
-
-![image](https://github.com/user-attachments/assets/dc69f7a8-4752-49f0-a01a-696fee6bc41f)
 
 # **Examples of Stylization and Aesthetic:**
 
@@ -37,12 +36,12 @@ My loot filters are updated ahead of the October 25th ladder reset! You can sele
 
 # **Differences Between Filter Level Tiers:**
 
-**Tier 1 = Lowest Strictness:**
+**Tier 1 = Lowest Strictness: Filter Level 1**
 
 - This filter level is recommended for the ladder start and for characters level 1-80 as it shows all magic and rare items.
 - When your character exceeds specific level thresholds, some low-value non-magical items start to get filtered out.
 
-**Tier 2 = Fewer Magic Items:**
+**Tier 2 = Relaxed Filtering: Filter Levels 2-5**
 
 - **Magic and Rare Items:**
   - Low-value magic and rare items are hidden when your character exceeds specific level thresholds.
@@ -56,7 +55,7 @@ My loot filters are updated ahead of the October 25th ladder reset! You can sele
   - Every 5 levels after character level 80, filtering applies to larger gold piles.
   - Scrolls of TP and ID are hidden at character levels 80+
 
-**Tier 3 = Strict Filtering:**
+**Tier 3 = Strict Filtering: Filter Levels 6-10**
 
 - **Magic and Rare Items:**
   - Filtering for magic and rare items becomes more strict when your character exceeds specific level thresholds
@@ -66,11 +65,10 @@ My loot filters are updated ahead of the October 25th ladder reset! You can sele
   - Magic ethereal armors, belts, boots, and gloves are filtered out
   - Non-ethereal magic amazon javelins are hidden unless your character is an Amazon
   - Ethereal craftable throwing weapons no longer notify unless your character is a Barbarian
-  - Magic class items are hidden unless you character can use them
   - Magic arrows are hidden
   - Magic rings are hidden
 - **Set Items:**
-  - Low-value normal-tier set items (except for Death's gloves and belt, and Tancred's boots) will get filtered out. Non-desirable exceptional and elite-tier set items will show but not notify upon drop.
+  - Low-value normal-tier set items (except for Tancred's boots and Immortal King's assault helmet) will get filtered out. Non-desirable exceptional and elite-tier set items will show but not notify upon drop.
 - **Non-Magical Items:**
   - Many non-magical armor and weapon bases without %ED are hidden, however this does not apply to select useful runeword bases (e.g. ethereal)
   - When your character is level 90+, non-useful non-magical items with staffmods are hidden if they aren't good runeword bases
@@ -80,9 +78,8 @@ My loot filters are updated ahead of the October 25th ladder reset! You can sele
   - Antidote and thawing potions will be hidden (unless the character is in the zones pertaining to the Rathma fight)
   - Every 5 levels after character level 80, filtering applies to larger gold piles.
 
-**Tier 4 = Endgame Filtering:**
-- **Gems:**
-  - Flawless gem stacks with quantity of 1 show on filter level 11 but are hidden on filter level 12
+**Tier 4 = Endgame Filtering: Filter Level 11**
+
 - **Runes:**
   - Runes between El - Io will show but no longer notify upon drop, however map icons will remain visible
 - **Unique Items**
@@ -90,7 +87,7 @@ My loot filters are updated ahead of the October 25th ladder reset! You can sele
 - **Magic and Rare Items:**
   - Rare arrows and bolts are hidden unless your character is an Amazon
   - Rare paladin shields are hidden unless you character is a Paladin
-  - All magic class items are hidden
+  - Magic class items are hidden (except for specific assassin claws)
   - Magic amulets are hidden
 - **Set Items:**
   - Set rings and amulets are hidden
@@ -100,3 +97,15 @@ My loot filters are updated ahead of the October 25th ladder reset! You can sele
 - **Miscellaneous:**
   - All healing, mana, and small rejuvenation potions are hidden (however super mana potions will continue to show if your character is a Sorceress)
   - Every 5 levels after character level 80, filtering applies to larger gold piles.
+
+**Tier 5 = Extreme Filtering: Filter Level 12**
+
+- **Gems:**
+  - Flawless gem stacks with quantity of 1 are hidden on filter level 12
+- **Unique Items**
+  - Low-value unique items are hidden
+- **Set Items:**
+  - Most set items are hidden
+- **Magic and Rare Items:**
+  - Rare armors (except circlets), weapons, amulets, rings, arrows, and bolts are hidden
+  - Magic armors, weapons, jewels, and charms are hidden
