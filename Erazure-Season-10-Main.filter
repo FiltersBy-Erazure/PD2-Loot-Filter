@@ -1776,7 +1776,7 @@ ItemDisplay[MAG !ID (am8 OR am9) ((CLVL>59 FILTLVL>1) OR FILTLVL>5) !(MAPID=1 OR
 ItemDisplay[MAG !ID (amd OR ame) ((CLVL>79 FILTLVL>1) OR FILTLVL>5) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide all Elite quality Amazon spears after level 89
 
 // Amazon Javelins
-ItemDisplay[MAG !ID !ETH (am5 OR ama OR amf) !AMAZON ((CLVL>89 FILTLVL>5) OR FILTLVL>10) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hides magic non-eth Maiden Javelin Ceremonial Javelin Matriarchal Javelins after level 89 on filter levels 5+ if character is not an Amazon
+ItemDisplay[MAG !ID !ETH (am5 OR ama OR amf) !AMAZON ((CLVL>89 FILTLVL>5) OR FILTLVL>10) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hides magic non-eth Maiden Javelin Ceremonial Javelin Matriarchal Javelins after level 89 on filter levels 6+ if character is not an Amazon
 ItemDisplay[MAG !ID !ETH (am5 OR ama OR amf) AMAZON CLVL>89 FILTLVL>10 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hides magic non-eth Maiden Javelin Ceremonial Javelin Matriarchal Javelins after level 89 on filter levels 9 if character is an Amazon
 ItemDisplay[MAG !ID ETH (am5 OR ama OR amf)]:%BLUE%%NAME%%BLUE%%BORDER-91%%MAP-97%%DOT-1D%%PX-20%%CONTINUE%// Notifies for magic ethereal Maiden Javelin, Ceremonial Javelin, Matriarchal Javelins after level 89
 ItemDisplay[MAG !ID ETH (am5 OR ama OR amf) FILTLVL<11]:%BLUE%%NAME%%BLUE%%BORDER-91%%MAP-97%%DOT-1D%%PX-20%// No notification for magic ethereal Maiden Javelin, Ceremonial Javelin, Matriarchal Javelins on filter levels 11-12
@@ -3126,14 +3126,13 @@ ItemDisplay[NMAG !INF !RW SCEPTER CLVL>9 FILTLVL>0 !(SK96>0 OR SK97>0 OR SK98>0 
 //      =========================  Armors/Chests ===========================
 // ------------------------------------------------------------------------------
 
-// Hide nonsuperior noneth armors after character level 80 and on filter levels 5+
+// Hide nonsuperior noneth 0 socket armors after character level 80 or on filter levels 1+
+ItemDisplay[NMAG !INF !RW ED<5 !ETH CHEST CLVL>79 FILTLVL>0 SOCK=0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
+
+// Hide nonsuperior noneth armors after character level 80 and on filter levels 6+
 ItemDisplay[NMAG !INF !RW ED<5 !ETH CHEST CLVL>79 FILTLVL>5 (SOCK=0 OR (!GEMMED SOCK>0)) !EQUIPPED !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
-
+// Hide nonsuperior eth armors after character level 90 and on filter levels 6+
 ItemDisplay[NMAG !INF !RW ED<5 ETH CHEST CLVL>89 FILTLVL>5 (SOCK=0 OR (!GEMMED SOCK>0)) !EQUIPPED !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
-
-// Hide nonsuperior 0 socket armors after character level 80 or on filter levels 5+
-ItemDisplay[NMAG !INF !RW ED<5 CHEST SOCK=0 FILTLVL>0 CLVL>79 !ETH !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
-ItemDisplay[NMAG !INF !RW ED<5 CHEST SOCK=0 FILTLVL>5 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
 // Notifications for 2os and 3os armors while leveling
 ItemDisplay[NMAG !INF !RW NORM CHEST !ETH SOCK=2 CLVL<20 !GEMMED]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 2os
@@ -3326,7 +3325,7 @@ ItemDisplay[NMAG !INF !RW (6lx OR 6mx) (SOCK=2 OR SOCK=3) FILTLVL>1 !(MAPID=1 OR
 ItemDisplay[NMAG !INF !RW (6lx OR 6mx) SOCK=4 FILTLVL<6]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// All 4os Pellet Bows and Gorgon Crossbows
 ItemDisplay[NMAG !INF !RW (6lx OR 6mx) (SOCK=0 OR SOCK=4) ED<5 FILTLVL>5 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// After filter level 5, hide Pellet Bows and Gorgon Crossbows without 5% or more ED
 ItemDisplay[NMAG !INF !RW (6lx OR 6mx) (SOCK=0 OR SOCK=4) SUP ED>9 FILTLVL<6]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 10ED+ 4os Pellet Bows and Gorgon Crossbows filter levels 1-5
-ItemDisplay[NMAG !INF !RW (6lx OR 6mx) (SOCK=0 OR SOCK=4) SUP ED>12 FILTLVL>5]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 13ED+ 4os Pellet Bows and Gorgon Crossbows filter levels 5+
+ItemDisplay[NMAG !INF !RW (6lx OR 6mx) (SOCK=0 OR SOCK=4) SUP ED>12 FILTLVL>5]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 13ED+ 4os Pellet Bows and Gorgon Crossbows filter levels 6+
 
 ItemDisplay[NMAG !INF !RW 6rx SOCK=0 ED<5 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 ItemDisplay[NMAG !INF !RW 6rx (SOCK=2 OR SOCK=3) FILTLVL>1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
@@ -3350,9 +3349,9 @@ ItemDisplay[NMAG EXC ETH (9tk OR 9pi) CLVL>79 FILTLVL>1 !(MAPID=1 OR MAPID=40 OR
 ItemDisplay[NMAG ELT ETH (7tk OR 7pi) CLVL>89 FILTLVL>1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide non-magical ethereal flying knives and stygian pilums past character level 90 on filter levels 2+
 
 // Good-Quality Ethereal Throwing weapons (useful for corrupting for a 50% chance to create a craftable base)
-ItemDisplay[NMAG NORM ETH (tax OR bkf OR bal OR jav OR ssp OR tsp OR glv) CLVL>29 FILTLVL>5 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide all white Javelins and Throwing Weapons past character level 30 on filter levels 5+
-ItemDisplay[NMAG EXC ETH (9ta OR 9bk OR 9b8 OR 9ja OR 9s9 OR 9ts OR 9gl) CLVL>79 FILTLVL>5 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide all white Javelins and Throwing Weapons past character level 80 on filter levels 5+
-ItemDisplay[NMAG ELT ETH (7ta OR 7bk OR 7b8 OR 7ja OR 7s7 OR 7ts OR 7gl) CLVL>89 FILTLVL>5 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide all white Javelins and Throwing Weapons past character level 90 on filter levels 5+
+ItemDisplay[NMAG NORM ETH (tax OR bkf OR bal OR jav OR ssp OR tsp OR glv) CLVL>29 FILTLVL>5 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide all white Javelins and Throwing Weapons past character level 30 on filter levels 6+
+ItemDisplay[NMAG EXC ETH (9ta OR 9bk OR 9b8 OR 9ja OR 9s9 OR 9ts OR 9gl) CLVL>79 FILTLVL>5 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide all white Javelins and Throwing Weapons past character level 80 on filter levels 6+
+ItemDisplay[NMAG ELT ETH (7ta OR 7bk OR 7b8 OR 7ja OR 7s7 OR 7ts OR 7gl) CLVL>89 FILTLVL>5 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide all white Javelins and Throwing Weapons past character level 90 on filter levels 6+
 
 // ------------------------------------------------------------------------------
 //     ==============================  Hammers  =============================
