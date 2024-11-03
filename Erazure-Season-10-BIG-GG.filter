@@ -28,7 +28,7 @@ ItemDisplay[box FILTLVL=12]:%NAME%{%WHITE%Filter Level: 12%CL%%GRAY%-Crafting Ba
 
 ItemDisplay[box FILTLVL=0]:%NAME%{%NAME%%CL%%GRAY%Level 12 Hides Most Magic and Rare Items%CL%%GRAY%Level 11 Hides Magic and Non-Magic Class Items%CL%%GRAY%Levels 6-7-8-9-10 Hide Some Rares and Non-Eth Items%CL%%GRAY%Levels 2-3-4-5 Hide Some Non-Magic/Magic Items%CL%Level 1 Shows Most Non-Magic/Magic Items}%CONTINUE%//
 ItemDisplay[box CLVL<20 !FILTLVL=0]:%NAME%{%NAME%%CL%%GRAY%For %GOLD%Increase and Decrease Filter Level%CL%%GRAY%For %GOLD%Always Show Items %GRAY%and Hotkeys%CL%Open Settings to Create Toggle}%CONTINUE%//
-ItemDisplay[box]:%NAME%{%NAME%%CL%%WHITE%Erazure: Season 10 v11.01}//
+ItemDisplay[box]:%NAME%{%NAME%%CL%%WHITE%Erazure: Season 10 v11.03}//
 
 // ==============================  Arrows and Bolts  ===============================
 
@@ -308,11 +308,16 @@ ItemDisplay[(GEMLEVEL=1 OR GEMLEVEL=2)]:%NAME%-%CONTINUE%// "-" Chipped or Flawe
 ItemDisplay[(GEMLEVEL=3 OR GEMLEVEL=4)]:%NAME%o%CONTINUE%// "o" Normal or Flawless
 ItemDisplay[GEMLEVEL=5]:%NAME%O%CONTINUE%// "O" Perfect
 // Quality Levels
-ItemDisplay[GEMLEVEL=1]:%NAME%  %LIGHT_GRAY%Chipped%CONTINUE%// Chipped quality
-ItemDisplay[GEMLEVEL=2]:%NAME%  %LIGHT_GRAY%Flawed%CONTINUE%// Flawed quality
-ItemDisplay[GEMLEVEL=3]:%NAME%  %LIGHT_GRAY%Normal%CONTINUE%// Normal quality
-ItemDisplay[GEMLEVEL=4]:%NAME%  %LIGHT_GRAY%Flawless%CONTINUE%// Flawless quality
-ItemDisplay[GEMLEVEL=5]:%NAME%  %LIGHT_GRAY%Perfect%CONTINUE%// Perfect quality
+ItemDisplay[GEMLEVEL=1 (FILTLVL>5 QTY=1)]:%NAME%  %WHITE%Chipped%CONTINUE%// Chipped quality
+ItemDisplay[GEMLEVEL=2 (FILTLVL>5 QTY=1)]:%NAME%  %WHITE%Flawed%CONTINUE%// Flawed quality
+ItemDisplay[GEMLEVEL=3 (FILTLVL>5 QTY=1)]:%NAME%  %WHITE%Normal%CONTINUE%// Normal quality
+ItemDisplay[GEMLEVEL=4 (FILTLVL>5 QTY=1)]:%NAME%  %WHITE%Flawless%CONTINUE%// Flawless quality
+ItemDisplay[GEMLEVEL=5 (FILTLVL>5 QTY=1)]:%NAME%  %WHITE%Perfect%CONTINUE%// Perfect quality
+ItemDisplay[GEMLEVEL=1 (FILTLVL<6 OR QTY>1 OR gcv OR gcy OR gcb OR gcg OR gcr OR gcw OR skc)]:%NAME%  %LIGHT_GRAY%Chipped%CONTINUE%// Chipped quality
+ItemDisplay[GEMLEVEL=2 (FILTLVL<6 OR QTY>1 OR gfv OR gfy OR gfb OR gfg OR gfr OR gfw OR skf)]:%NAME%  %LIGHT_GRAY%Flawed%CONTINUE%// Flawed quality
+ItemDisplay[GEMLEVEL=3 (FILTLVL<6 OR QTY>1 OR gsv OR gsy OR gsb OR gsg OR gsr OR gsw OR sku)]:%NAME%  %LIGHT_GRAY%Normal%CONTINUE%// Normal quality
+ItemDisplay[GEMLEVEL=4 (FILTLVL<6 OR QTY>1 OR gzv OR gly OR glb OR glg OR glr OR glw OR skl)]:%NAME%  %LIGHT_GRAY%Flawless%CONTINUE%// Flawless quality
+ItemDisplay[GEMLEVEL=5 (FILTLVL<6 OR QTY>1 OR gpv OR gpy OR gpb OR gpg OR gpr OR gpw OR skz)]:%NAME%  %LIGHT_GRAY%Perfect%CONTINUE%// Perfect quality
 // Names of Gems QTY>1
 ItemDisplay[GEMTYPE=1 QTY>1]:%NAME% %WHITE%Amethysts%CONTINUE%//
 ItemDisplay[GEMTYPE=2 QTY>1]:%NAME% %WHITE%Diamonds%CONTINUE%//
@@ -360,7 +365,7 @@ ItemDisplay[GEMLEVEL=4]:%NAME%{%TAN%Cube %WHITE%Flawless %TAN%x %WHITE%3 %TAN%+ 
 ItemDisplay[(((gzvs OR gzv) FILTLVL<12) OR (gpvs OR gpv)) !MAPID>137]:%NAME%%DOT-9B%%PX-68%{%NAME%}%CONTINUE%// Notifications for flawless/perfect gems while not in maps
 ItemDisplay[((gzvs FILTLVL<12) OR gpvs) MAPID>137 !FILTLVL=0]:%NAME%%DOT-9B%%PX-68%%TIER-0%{%NAME%}%CONTINUE%// Icons but no notifications for flawless/perfect gems while in maps
 ItemDisplay[gzvs]:%NAME%{%NAME%%NL%%NL%%WHITE%Shields: +24 Defense%CL%Helms: +8 to Strength%CL%Armor: +8 to Strength%CL%Weapons: +100 to Attack Rating%NL%}// Stacked Flawless Amethyst
-ItemDisplay[gpvs]:%NAME%{%BLUE%   Gloves %TAN%+ %WHITE%Ort  %BLUE%Ring %TAN%+ %WHITE%Amn  %BLUE%Boots %TAN%+ %WHITE%Thul  %CL%%BLUE%  Armor %TAN%+ %WHITE%Tal   %BLUE%Belt %TAN%+ %WHITE%Ith    %BLUE%Shield %TAN%+ %WHITE%Eth   %CL%%BLUE%Weapon %TAN%+ %WHITE%Tir    %BLUE%Helm %TAN%+ %WHITE%Nef  %BLUE%Amulet %TAN%+ %WHITE%Ral  %NL%%NL%%PURPLE%Caster %ORANGE%Crafting %TAN%Recipes:  %WHITE%Amethyst %TAN%+ %BLUE%Jewel}%CONTINUE%// Caster Craft Recipes - Stacked Perfect Amethyst
+ItemDisplay[gpvs]:%NAME%{%BLUE%   Gloves %TAN%+ %WHITE%Ort  %BLUE%Ring %TAN%+ %WHITE%Amn  %BLUE%Boots %TAN%+ %WHITE%Thul  %CL%%BLUE%  Armor %TAN%+ %WHITE%Tal    %BLUE%Belt %TAN%+ %WHITE%Ith   %BLUE%Shield %TAN%+ %WHITE%Eth   %CL%%BLUE%Weapon %TAN%+ %WHITE%Tir    %BLUE%Helm %TAN%+ %WHITE%Nef  %BLUE%Amulet %TAN%+ %WHITE%Ral  %NL%%NL%%PURPLE%Caster %ORANGE%Crafting %TAN%Recipes:  %WHITE%Amethyst %TAN%+ %BLUE%Jewel}%CONTINUE%// Caster Craft Recipes - Stacked Perfect Amethyst
 // Diamond
 ItemDisplay[(((glws OR glw) FILTLVL<12) OR (gpws OR gpw)) !MAPID>137]:%NAME%%DOT-DC%%PX-68%{%NAME%}%CONTINUE%// Notifications for flawless/perfect gems while not in maps
 ItemDisplay[((glws FILTLVL<12) OR gpws) MAPID>137 !FILTLVL=0]:%NAME%%DOT-DC%%PX-68%%TIER-0%{%NAME%}%CONTINUE%// Icons but no notifications for flawless/perfect gem stacks while in maps
@@ -370,7 +375,7 @@ ItemDisplay[gpws]:%NAME%{%BLUE%  Gloves %TAN%+ %WHITE%Shael  %BLUE%Ring %TAN%+ %
 ItemDisplay[(((glgs OR glg) FILTLVL<12) OR (gpgs OR gpg)) !MAPID>137]:%NAME%%DOT-79%%PX-68%{%NAME%}%CONTINUE%// Notifications for flawless/perfect gems while not in maps
 ItemDisplay[((glgs FILTLVL<12) OR gpgs) MAPID>137 !FILTLVL=0]:%NAME%%DOT-79%%PX-68%%TIER-0%{%NAME%}%CONTINUE%// Icons but no notifications for flawless/perfect gem stacks while in maps
 ItemDisplay[glgs]:%NAME%{%NAME%%NL%%NL%%WHITE%Shields: Poison Resist +28%%CL%Helms: +8 to Dexterity%CL%Armor: +8 to Dexterity%CL%Weapons: +60 poison damage over 6 seconds%NL%}// Stacked Flawless Emerald
-ItemDisplay[gpgs]:%NAME%{%BLUE%   Gloves %TAN%+ %WHITE%Ral  %BLUE%Ring %TAN%+ %WHITE%Amn  %BLUE%Boots %TAN%+ %WHITE%Ort  %CL%%BLUE%   Armor %TAN%+ %WHITE%Eth   %BLUE%Belt %TAN%+ %WHITE%Tal   %BLUE%Shield %TAN%+ %WHITE%Nef   %CL%%BLUE%    Bow %TAN%+ %WHITE%Sol   %BLUE%Helm %TAN%+ %WHITE%Ith   %BLUE%Amulet %TAN%+ %WHITE%Thul%NL%%NL%%DARK_GREEN%Safety %ORANGE%Crafting %TAN%Recipes:  %WHITE%Emerald %TAN%+ %BLUE%Jewel}%CONTINUE%//  Safety Craft Recipes - Stacked Perfect Emerald
+ItemDisplay[gpgs]:%NAME%{%BLUE%   Gloves %TAN%+ %WHITE%Ral  %BLUE%Ring %TAN%+ %WHITE%Amn  %BLUE%Boots %TAN%+ %WHITE%Ort  %CL%%BLUE%   Armor %TAN%+ %WHITE%Eth   %BLUE%Belt %TAN%+ %WHITE%Tal   %BLUE%Shield %TAN%+ %WHITE%Nef   %CL%%BLUE% Weapon %TAN%+ %WHITE%Sol   %BLUE%Helm %TAN%+ %WHITE%Ith   %BLUE%Amulet %TAN%+ %WHITE%Thul%NL%%NL%%DARK_GREEN%Safety %ORANGE%Crafting %TAN%Recipes:  %WHITE%Emerald %TAN%+ %BLUE%Jewel}%CONTINUE%//  Safety Craft Recipes - Stacked Perfect Emerald
 // Ruby
 ItemDisplay[(((glrs OR glr) FILTLVL<12) OR (gprs OR gpr)) !MAPID>137]:%NAME%%DOT-0A%%PX-68%{%NAME%}%CONTINUE%// Notifications for flawless/perfect gems while not in maps
 ItemDisplay[((glrs FILTLVL<12) OR gprs) MAPID>137 !FILTLVL=0]:%NAME%%DOT-0A%%PX-68%%TIER-0%{%NAME%}%CONTINUE%// Icons but no notifications for flawless/perfect gem stacks while in maps
@@ -385,12 +390,12 @@ ItemDisplay[gpbs]:%NAME%{%BLUE%   Gloves %TAN%+ %WHITE%Ort  %BLUE%Ring %TAN%+ %W
 ItemDisplay[(((skls OR skl) FILTLVL<12) OR (skzs OR skz)) !MAPID>137]:%NAME%%DOT-15%%PX-68%{%NAME%}%CONTINUE%// Notifications for flawless/perfect gems while not in maps
 ItemDisplay[((skls FILTLVL<12) OR skzs) MAPID>137 !FILTLVL=0]:%NAME%%DOT-15%%PX-68%%TIER-0%{%NAME%}%CONTINUE%// Icons but no notifications for flawless/perfect gem stacks while in maps
 ItemDisplay[skls]:%NAME%{%NAME%%NL%%NL%%WHITE%Shields: Attacker Takes Damage of 16%CL%Helms: Regen Mana 12%, Replenish Life +4%CL%Armor: Regen Mana 12%, Replenish Life +4%CL%Weapons: 3% Life Steal, 3% Mana Steal%NL%}// Stacked Flawless Emerald
-ItemDisplay[skzs]:%NAME%{%BLUE%   Gloves %TAN%+ %WHITE%Io   %BLUE%Ring %TAN%+ %WHITE%Hel   %BLUE%Boots %TAN%+ %WHITE%El    %CL%%BLUE%   Armor %TAN%+ %WHITE%Tir   %BLUE%Belt %TAN%+ %WHITE%Eld    %BLUE%Shield %TAN%+ %WHITE%Sol   %CL%%BLUE%Weapon %TAN%+ %WHITE%Shael  %BLUE%Helm %TAN%+ %WHITE%Lum  %BLUE%Amulet %TAN%+ %WHITE%Dol %NL%%NL%%GRAY%Vampiric %ORANGE%Crafting %TAN%Recipes:  %WHITE%Skull %TAN%+ %BLUE%Jewel}%CONTINUE%// Vampiric Craft Recipes - Stacked Perfect Skulls
+ItemDisplay[skzs]:%NAME%{%BLUE%  Gloves %TAN%+ %WHITE%Io   %BLUE%Ring %TAN%+ %WHITE%Hel   %BLUE%Boots %TAN%+ %WHITE%El   %CL%%BLUE%   Armor %TAN%+ %WHITE%Tir    %BLUE%Belt %TAN%+ %WHITE%Eld   %BLUE%Shield %TAN%+ %WHITE%Sol   %CL%%BLUE%Weapon %TAN%+ %WHITE%Shael  %BLUE%Helm %TAN%+ %WHITE%Lum  %BLUE%Amulet %TAN%+ %WHITE%Dol %NL%%NL%%GRAY%Vampiric %ORANGE%Crafting %TAN%Recipes:  %WHITE%Skull %TAN%+ %BLUE%Jewel}%CONTINUE%// Vampiric Craft Recipes - Stacked Perfect Skulls
 // Topaz
 ItemDisplay[(((glys OR gpy) FILTLVL<12) OR (gpys OR gpy)) !MAPID>137]:%NAME%%DOT-6F%%PX-68%{%NAME%}%CONTINUE%// Notifications for flawless/perfect gems while not in maps
 ItemDisplay[((glys FILTLVL<12) OR gpys) MAPID>137 !FILTLVL=0]:%NAME%%DOT-6F%%PX-68%%TIER-0%{%NAME%}%CONTINUE%// Icons but no notifications for flawless/perfect gem stacks while in maps
 ItemDisplay[glys]:%NAME%{%NAME%%NL%%NL%%WHITE%Shields: Lightning Resist +28%%CL%Helms: 20% Better Magic Find%CL%Armor: 20% Better Magic Find%CL%Weapons: Adds 1-30 lightning damage%NL%}// Stacked Flawless Emerald
-ItemDisplay[gpys]:%NAME%{%BLUE%   Gloves %TAN%+ %WHITE%Hel   %BLUE%Ring %TAN%+ %WHITE%Lum   %BLUE%Boots %TAN%+ %WHITE%Io    %CL%%BLUE%Armor %TAN%+ %WHITE%Eld    %BLUE%Belt %TAN%+ %WHITE%El     %BLUE%Shield %TAN%+ %WHITE%Dol%CL%%BLUE%Weapon %TAN%+ %WHITE%Shael  %BLUE%Helm %TAN%+ %WHITE%Tir   %BLUE%Amulet %TAN%+ %WHITE%Ko  %NL%%NL%%YELLOW%Bountiful %ORANGE%Crafting %TAN%Recipes:  %WHITE%Topaz %TAN%+ %BLUE%Jewel}%CONTINUE%// Bountiful Craft Recipes - Stacked Perfect Topaz
+ItemDisplay[gpys]:%NAME%{%BLUE%   Gloves %TAN%+ %WHITE%Hel   %BLUE%Ring %TAN%+ %WHITE%Lum   %BLUE%Boots %TAN%+ %WHITE%Io    %CL%%BLUE% Armor %TAN%+ %WHITE%Eld     %BLUE%Belt %TAN%+ %WHITE%El     %BLUE%Shield %TAN%+ %WHITE%Dol%CL%%BLUE%Weapon %TAN%+ %WHITE%Shael  %BLUE%Helm %TAN%+ %WHITE%Tir   %BLUE%Amulet %TAN%+ %WHITE%Ko  %NL%%NL%%YELLOW%Bountiful %ORANGE%Crafting %TAN%Recipes:  %WHITE%Topaz %TAN%+ %BLUE%Jewel}%CONTINUE%// Bountiful Craft Recipes - Stacked Perfect Topaz
 // Shift Click to Stack Unstacked Flawless and Perfect
 ItemDisplay[(gzv OR gpv OR glw OR gpw OR glg OR gpg OR glr OR gpr OR glb OR gpb OR skl OR skz OR gly OR gpy)]:%NAME%{%WHITE%Stack: %WHITE%Ctrl %TAN%+ %WHITE%Shift %TAN%+ %WHITE%Left Click}// Flawless or Perfect Unstacked
 // Shift Click to Unstack Flawless and Perfect Stacks
@@ -1237,17 +1242,17 @@ ItemDisplay[UNI !ID xtg]:%NAME%%CONTINUE%// Lava Gout Battle Gauntlets
 ItemDisplay[UNI !ID uvg]:%NAME%%CONTINUE%// Dracul's Grasp Vampirebone Gloves
 ItemDisplay[UNI !ID umg]:%NAME%%CONTINUE%// Soul Drainer Vambraces
 ItemDisplay[UNI !ID uhg]:%NAME%%CONTINUE%// Steelrend Ogre Gauntlets
-ItemDisplay[UNI !ID xhg]:%NAME%%CONTINUE%// Hellmouth War Gauntlets
-ItemDisplay[UNI !ID xvg]:%NAME%%CONTINUE%// Gravepalm Sharkskin Gloves
 ItemDisplay[UNI !ID utg]:%NAME%%CONTINUE%// Occultist Crusader Gauntlets
-ItemDisplay[UNI !ID (tgl OR xtg OR uvg OR umg OR uhg OR xhg OR xvg OR utg)]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%BORDER-9B%%MAP-62%%DOT-68%%PX-20%//
+ItemDisplay[UNI !ID (tgl OR xtg OR uvg OR umg OR uhg OR utg)]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%BORDER-9B%%MAP-62%%DOT-68%%PX-20%//
 //     Medium Value Gloves
 ItemDisplay[UNI !ID hgl]:%NAME%%CONTINUE%// Frostburn Gauntlets
 ItemDisplay[UNI !ID vgl]:%NAME%%CONTINUE%// Bloodfist Heavy Gloves
 ItemDisplay[UNI !ID xmg]:%NAME%%CONTINUE%// Ghoulhide Heavy Bracers
+ItemDisplay[UNI !ID xhg]:%NAME%%CONTINUE%// Hellmouth War Gauntlets
+ItemDisplay[UNI !ID xvg]:%NAME%%CONTINUE%// Gravepalm Sharkskin Gloves
 ItemDisplay[UNI !ID mgl CLVL<90]:%NAME%%CONTINUE%// Chance Guards Chain Gloves
 ItemDisplay[UNI !ID xlg]:%NAME%%CONTINUE%// Venom Grip Demonhide Gloves
-ItemDisplay[UNI !ID (hgl OR vgl OR xmg OR (mgl CLVL<90) OR xlg)]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%BORDER-08%%MAP-50%%DOT-59%%PX-6A%//
+ItemDisplay[UNI !ID (hgl OR vgl OR xmg OR xhg OR xvg OR (mgl CLVL<90) OR xlg)]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%BORDER-08%%MAP-50%%DOT-59%%PX-6A%//
 
 //     High Value Helms
 ItemDisplay[UNI !ID ulm]:%NAME%%CONTINUE%// Steel Shade Armet
@@ -1746,7 +1751,7 @@ ItemDisplay[RARE !ID ETH FILTLVL=11 (ktr OR axf OR clw OR btl OR skr OR 9ar OR 9
 // ============================================  Magic Items  ============================================
 // -------------------------------------------------------------------------------------------------------
 
-// Hide Rare Items on Filter Level 12
+// Hide Magic Items on Filter Level 12
 ItemDisplay[MAG !ID FILTLVL=12 (ARMOR OR WEAPON OR jew OR cm1 OR cm2 OR cm3) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
 ItemDisplay[MAG]:%BLUE%%NAME%{%NAME%}%CONTINUE%
@@ -4097,8 +4102,8 @@ ItemDisplay[MAG (((cm1 OR cm1p) STAT54>10 STAT55>19) OR ((cm2 OR cm2p) STAT54>21
 ItemDisplay[MAG (((cm1 OR cm1p) STAT50>0 (STAT51>0 STAT51<31)) OR ((cm2 OR cm2p) STAT50>0 (STAT51>0 STAT51<62)) OR ((cm3 OR cm3p) STAT50>0 (STAT51>0 STAT51<84))) ]:%WHITE%+%STAT50%-%STAT51%%YELLOW%light %NAME%{%NAME%}%CONTINUE%
 ItemDisplay[MAG (((cm1 OR cm1p) STAT50>0 STAT51>30) OR ((cm2 OR cm2p) STAT50>0 STAT51>61) OR ((cm3 OR cm3p) STAT50>0 STAT51>83))]:%YELLOW%+%WHITE%%STAT50%%YELLOW%-%WHITE%%STAT51%%YELLOW%light %NAME%{%NAME%}%CONTINUE%
 // Fire Damage
-ItemDisplay[MAG (((cm1 OR cm1p) (STAT48>0 STAT48<10) (STAT49>0 STAT49<20)) OR ((cm2 OR cm2p) (STAT48>0 STAT48<20) (STAT49>0 STAT49<40)) OR ((cm3 OR cm3p) (STAT48>0 STAT48<27) (STAT49>0 STAT49<54)))]:%WHITE%+%STAT48%-%STAT49%%RED%fire %NAME%{%NAME%}%CONTINUE%
-ItemDisplay[MAG (((cm1 OR cm1p) STAT48>9 STAT49>19) OR ((cm2 OR cm2p) STAT48>19 STAT49>39) OR ((cm3 OR cm3p) STAT48>26 STAT49>53))]:%RED%+%WHITE%%STAT48%%RED%-%WHITE%%STAT49%%RED%fire %NAME%{%NAME%}%CONTINUE%
+ItemDisplay[MAG (((cm1 OR cm1p) (STAT48>0 STAT48<10) (STAT49>0 STAT49<19)) OR ((cm2 OR cm2p) (STAT48>0 STAT48<20) (STAT49>0 STAT49<40)) OR ((cm3 OR cm3p) (STAT48>0 STAT48<27) (STAT49>0 STAT49<54)))]:%WHITE%+%STAT48%-%STAT49%%RED%fire %NAME%{%NAME%}%CONTINUE%
+ItemDisplay[MAG (((cm1 OR cm1p) STAT48>9 STAT49>18) OR ((cm2 OR cm2p) STAT48>19 STAT49>39) OR ((cm3 OR cm3p) STAT48>26 STAT49>53))]:%RED%+%WHITE%%STAT48%%RED%-%WHITE%%STAT49%%RED%fire %NAME%{%NAME%}%CONTINUE%
 // Attack Rating
 ItemDisplay[MAG AR>0 AR<120 (cm1 OR cm2 OR cm3 OR cm1p OR cm2p OR cm3p)]:%WHITE%%AR%%DARK_GREEN%ar %NAME%{%NAME%}%CONTINUE%
 ItemDisplay[MAG AR>119 (cm1 OR cm2 OR cm3 OR cm1p OR cm2p OR cm3p)]:%WHITE%%AR%%PURPLE%ar %NAME%{%NAME%}%CONTINUE%
@@ -6010,7 +6015,7 @@ ItemDisplay[(NMAG OR MAG OR RARE) !EQUIPPED !RW PRICE>19999 DIFF=1 (DAGGER OR WA
 // Hell difficulty
 ItemDisplay[(NMAG OR MAG OR RARE) !EQUIPPED !RW PRICE>24999 DIFF=2 (DAGGER OR WAND OR NEC OR DRU OR BAR OR SOR OR SIN OR STAFF OR scp OR 9sc OR 7sc OR gsc OR 9qs OR 7qs OR clb OR 9cl OR 7cl OR spc OR 9sp OR 7sp) FILTLVL<11]:%GRAY%(%DARK_GREEN%$%GRAY%) %NAME%{%NAME%}%CONTINUE%// 
 
-ItemDisplay[MAG CLVL>79 PRICE<31000 CRAFTALVL>84 (CHEST OR (tow OR xow OR DIN)) SHOP]:%GRAY%(%ORANGE%$%GRAY%) %NAME%{%NAME%}%CONTINUE%// Orange $ Tag at Vendors
+ItemDisplay[MAG CLVL>79 PRICE<31000 CRAFTALVL>84 ((CHEST !STAT78>0) OR (SHIELD !NEC)) SHOP]:%GRAY%(%ORANGE%$%GRAY%) %NAME%{%NAME%}%CONTINUE%// Orange $ Tag at Vendors
 ItemDisplay[MAG CLVL>49 CRAFTALVL>49 ((DIFF=0 PRICE<10000) OR (DIFF=1 PRICE<20000) OR (DIFF=2 PRICE<25000)) (BAR OR DRU OR NEC OR STAFF OR SOR OR btl OR 9tw OR 7tw OR axf OR 9xf OR 7xf OR wsp OR (WAND !(wnd OR ywn OR 9wn)) OR clb OR 9cl OR spc OR 9sp) SHOP]:%GRAY%(%ORANGE%$%GRAY%) %NAME%{%NAME%}%CONTINUE%// Orange $ Tag at Vendors
 
 // Center staffmods on second line
