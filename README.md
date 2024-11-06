@@ -80,26 +80,25 @@ Please consider donating to my [**PayPal**](https://paypal.me/ErazurePD2LootFilt
 
 **Tier 4 = Endgame Filtering: Filter Level 11**
 
-- **Runes:**
-  - Runes between El - Io will show but no longer notify upon drop, however map icons will remain visible
 - **Unique Items**
   - Low-value unique items will show but not notify upon drop
 - **Magic and Rare Items:**
   - Rare arrows and bolts are hidden unless your character is an Amazon
-  - Rare paladin shields are hidden unless you character is a Paladin
-  - Magic class items are hidden (except for specific assassin claws)
+  - Rare class items are hidden unless your character is playing that class
+  - Magic class items are hidden (except for specific eth assassin claws)
   - Magic amulets are hidden
 - **Set Items:**
   - Set rings and amulets are hidden
 - **Non-Magical Items:**
   - Non-useful non-magical items with staffmods are hidden if they aren't good runeword bases
-  - Non-ethereal non-magical paladin shields with less than 30 all res are hidden
 - **Miscellaneous:**
-  - All healing, mana, and small rejuvenation potions are hidden (however super mana potions will continue to show if your character is a Sorceress)
+  - All healing, mana, and small rejuvenation potions are hidden
   - Every 5 levels after character level 80, filtering applies to larger gold piles.
 
 **Tier 5 = Extreme Filtering: Filter Level 12**
 
+- **Runes:**
+  - Runes between El - Io will show but no longer notify upon drop, however map icons will remain visible
 - **Gems:**
   - Flawless gem stacks with quantity of 1 are hidden on filter level 12
 - **Unique Items**
@@ -107,5 +106,5 @@ Please consider donating to my [**PayPal**](https://paypal.me/ErazurePD2LootFilt
 - **Set Items:**
   - Most set items are hidden
 - **Magic and Rare Items:**
-  - Rare armors (except circlets), weapons, amulets, rings, arrows, and bolts are hidden
+  - Rare armors (except circlets), weapons, arrows, and bolts are hidden
   - Magic armors, weapons, jewels, and charms are hidden
