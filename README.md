@@ -75,7 +75,7 @@ Please consider donating to my [**PayPal**](https://paypal.me/ErazurePD2LootFilt
   - Ethereal non-magical throwing weapons (that are corruptible for a 50% chance to create a crafting base) are hidden
   - Non-magical 1-socket class items are hidden
 - **Miscellaneous:**
-  - Antidote and thawing potions will be hidden (unless the character is in the zones pertaining to the Rathma fight)
+  - Antidote potions (for non-sorceresses) and thawing potions will be hidden (unless the character is in the zones pertaining to the Rathma fight)
   - Every 5 levels after character level 80, filtering applies to larger gold piles.
 
 **Tier 4 = Endgame Filtering: Filter Level 11**
@@ -92,6 +92,7 @@ Please consider donating to my [**PayPal**](https://paypal.me/ErazurePD2LootFilt
 - **Non-Magical Items:**
   - Non-useful non-magical items with staffmods are hidden if they aren't good runeword bases
 - **Miscellaneous:**
+  - Antidote potions will be hidden for sorceresses
   - All healing, mana, and small rejuvenation potions are hidden
   - Every 5 levels after character level 80, filtering applies to larger gold piles.
 
