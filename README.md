@@ -60,8 +60,7 @@ Please consider donating to my [**PayPal**](https://paypal.me/ErazurePD2LootFilt
 - **Magic and Rare Items:**
   - Filtering for magic and rare items becomes more strict when your character exceeds specific level thresholds
     - Generally, these thresholds are at character level 80+ for exceptional-tier items and 90+ for elite-tier
-  - Select exceptional and elite-tier magic/rare armors and weapons (particularly non-ethereal weapons) are hidden past specific level thresholds.
-  - Normal-tier non-ethereal magic/rare weapons that are deemed not useful for crafting are hidden.
+  - Normal-tier non-ethereal magic weapons that are deemed not useful for crafting are hidden.
   - Magic ethereal armors, belts, boots, and gloves are filtered out
   - Non-ethereal magic amazon javelins are hidden unless your character is an Amazon
   - Ethereal craftable throwing weapons no longer notify unless your character is a Barbarian
@@ -83,8 +82,9 @@ Please consider donating to my [**PayPal**](https://paypal.me/ErazurePD2LootFilt
 - **Unique Items**
   - Low-value unique items will show but not notify upon drop
 - **Magic and Rare Items:**
-  - Rare arrows and bolts are hidden unless your character is an Amazon
+  - Select exceptional and elite-tier magic/rare armors and weapons (particularly non-ethereal weapons) are hidden past specific level thresholds.
   - Rare class items are hidden unless your character is playing that class
+  - Rare arrows and bolts are hidden unless your character is an Amazon
   - Magic class items are hidden (except for specific eth assassin claws)
   - Magic amulets are hidden
 - **Set Items:**
