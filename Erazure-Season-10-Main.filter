@@ -18,7 +18,7 @@ ItemDisplay[box FILTLVL=2]:%NAME%{%WHITE%Filter Level: 2%CL%%GRAY%Hides Some Non
 ItemDisplay[box FILTLVL=3]:%NAME%{%WHITE%Filter Level: 3%CL%%GRAY%-H5%CL%Relaxed Filtering}%CONTINUE%//
 ItemDisplay[box FILTLVL=4]:%NAME%{%WHITE%Filter Level: 4%CL%%GRAY%-M5%CL%Relaxed Filtering}%CONTINUE%//
 ItemDisplay[box FILTLVL=5]:%NAME%{%WHITE%Filter Level: 5%CL%%GRAY%-H5 -M5%CL%Relaxed Filtering}%CONTINUE%//
-ItemDisplay[box FILTLVL=6]:%NAME%{%WHITE%Filter Level: 6%CL%%GRAY%Hides Some Rares and Non-Eth Items%CL%Strict Filtering}%CONTINUE%//
+ItemDisplay[box FILTLVL=6]:%NAME%{%WHITE%Filter Level: 6%CL%%GRAY%Hides Some Rares and Non-Sup Items%CL%Strict Filtering}%CONTINUE%//
 ItemDisplay[box FILTLVL=7]:%NAME%{%WHITE%Filter Level: 7%CL%%GRAY%-H5%CL%Strict Filtering}%CONTINUE%//
 ItemDisplay[box FILTLVL=8]:%NAME%{%WHITE%Filter Level: 8%CL%%GRAY%-M5%CL%Strict Filtering}%CONTINUE%//
 ItemDisplay[box FILTLVL=9]:%NAME%{%WHITE%Filter Level: 9%CL%%GRAY%-H5 -M5%CL%Strict Filtering}%CONTINUE%//
@@ -26,7 +26,7 @@ ItemDisplay[box FILTLVL=10]:%NAME%{%WHITE%Filter Level: 10%CL%%GRAY%-H5 -M5 -Juv
 ItemDisplay[box FILTLVL=11]:%NAME%{%WHITE%Filter Level: 11%CL%%GRAY%-H5 -M5 -Juv%CL%Endgame Filtering}%CONTINUE%//
 ItemDisplay[box FILTLVL=12]:%NAME%{%WHITE%Filter Level: 12%CL%%GRAY%-Crafting Bases%CL%-Flawless -Rares%CL%Extreme Filtering}%CONTINUE%//
 
-ItemDisplay[box FILTLVL=0]:%NAME%{%NAME%%CL%%GRAY%Level 12 Hides Most Magic and Rare Items%CL%%GRAY%Level 11 Hides Magic and Non-Magic Class Items%CL%%GRAY%Levels 6-7-8-9-10 Hide Some Rares and Non-Eth Items%CL%%GRAY%Levels 2-3-4-5 Hide Some Non-Magic/Magic Items%CL%Level 1 Shows Most Non-Magic/Magic Items}%CONTINUE%//
+ItemDisplay[box FILTLVL=0]:%NAME%{%NAME%%CL%%GRAY%Level 12 Hides Most Magic and Rare Items%CL%%GRAY%Level 11 Hides Most Non-Eth and Non-Magic Class Items%CL%%GRAY%Levels 6-7-8-9-10 Hide Some Rares and Non-Sup Items%CL%%GRAY%Levels 2-3-4-5 Hide Some Non-Magic/Magic Items%CL%Level 1 Shows Most Non-Magic/Magic Items}%CONTINUE%//
 ItemDisplay[box CLVL<20 !FILTLVL=0]:%NAME%{%NAME%%CL%%GRAY%For %GOLD%Increase and Decrease Filter Level%CL%%GRAY%For %GOLD%Always Show Items %GRAY%and Hotkeys%CL%Open Settings to Create Toggle}%CONTINUE%//
 ItemDisplay[box]:%NAME%{%NAME%%CL%%WHITE%Erazure: Season 10 v11.12}//
 
@@ -1895,8 +1895,7 @@ ItemDisplay[MAG !ID SORCERESS SOR FILTLVL>10 !(MAPID=1 OR MAPID=40 OR MAPID=75 O
 ItemDisplay[MAG !ID !SORCERESS SOR FILTLVL>5 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// 
 
 // Magic Staves
-ItemDisplay[MAG !ID SORCERESS STAFF FILTLVL>10 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
-ItemDisplay[MAG !ID !SORCERESS STAFF FILTLVL>5 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
+ItemDisplay[MAG !ID STAFF FILTLVL>5 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
 // Magic Paladin Shields
 ItemDisplay[MAG ETH !ID DIN PALADIN FILTLVL>5 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide Eth magic paladin shields
@@ -2745,56 +2744,132 @@ ItemDisplay[INF !(NEC OR WAND OR SOR OR STAFF OR SCEPTER OR DRU OR clb OR 9cl OR
 
 
 // ------------------------------------------------------------------------------
-//     ==========================  Paladin Shields  =========================
+//      =========================  Armors/Chests ===========================
 // ------------------------------------------------------------------------------
 
-// Hide all eth Normal paladin shields
-ItemDisplay[NMAG !INF !RW ETH NORM DIN FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
+// Hide nonsuperior noneth 0 socket armors after character level 80 or on filter levels 1+
+ItemDisplay[NMAG !INF !RW ED<5 !ETH CHEST CLVL>79 FILTLVL>0 SOCK=0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
-// Hide all paladin shields with less than 5 all res at character level 10+
-ItemDisplay[NMAG !INF !RW RES<5 DIN CLVL>9 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
-// Hide all paladin shields with less than 10 all res at character level 30+
-ItemDisplay[NMAG !INF !RW RES<10 DIN CLVL>29 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
-// Hide all paladin shields with less than 20 all res at character level 60+
-ItemDisplay[NMAG !INF !RW RES<20 DIN CLVL>59 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
-// Hide all non-eth paladin shields with less than 25 all res at character level 80+
-ItemDisplay[NMAG !INF !RW !ETH RES<25 DIN CLVL>79 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
-// Hide all non-eth normal and exceptional paladin shields with less than 29 all res at character level 90+ on filter level 6+
-ItemDisplay[NMAG !INF !RW !ETH (NORM OR EXC) RES<29 DIN CLVL>89 FILTLVL>5 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
+// Hide nonsuperior noneth armors after character level 80 and on filter levels 6+
+ItemDisplay[NMAG !INF !RW ED<5 !ETH CHEST CLVL>79 FILTLVL>5 (SOCK=0 OR (!GEMMED SOCK>0)) !EQUIPPED !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
-// Label All Res Paladin shields when leveling
-ItemDisplay[NMAG !INF !RW RES=5 DIN]:%NAME% %WHITE%+5%PURPLE%all%GRAY%res{%NAME%}%CONTINUE%//
-ItemDisplay[NMAG !INF !RW RES=6 DIN]:%NAME% %WHITE%+6%PURPLE%all%GRAY%res{%NAME%}%CONTINUE%//
-ItemDisplay[NMAG !INF !RW RES=7 DIN]:%NAME% %WHITE%+7%PURPLE%all%GRAY%res{%NAME%}%CONTINUE%//
-ItemDisplay[NMAG !INF !RW RES=8 DIN]:%NAME% %WHITE%+8%PURPLE%all%GRAY%res{%NAME%}%CONTINUE%//
-ItemDisplay[NMAG !INF !RW RES=9 DIN]:%NAME% %WHITE%+9%PURPLE%all%GRAY%res{%NAME%}%CONTINUE%//
+// Hide nonsuperior noneth armors after character level 90 and on filter levels 11+
+ItemDisplay[NMAG !INF !RW ED<14 !ETH CHEST CLVL>89 FILTLVL>10 (SOCK=0 OR (!GEMMED SOCK>0)) !EQUIPPED !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
-ItemDisplay[NMAG !INF !RW RES=10 DIN]:%NAME% %WHITE%+10%PURPLE%all%GRAY%res{%NAME%}%CONTINUE%//
-ItemDisplay[NMAG !INF !RW RES=11 DIN]:%NAME% %WHITE%+11%PURPLE%all%GRAY%res{%NAME%}%CONTINUE%//
-ItemDisplay[NMAG !INF !RW RES=12 DIN]:%NAME% %WHITE%+12%PURPLE%all%GRAY%res{%NAME%}%CONTINUE%//
-ItemDisplay[NMAG !INF !RW RES=13 DIN]:%NAME% %WHITE%+13%PURPLE%all%GRAY%res{%NAME%}%CONTINUE%//
-ItemDisplay[NMAG !INF !RW RES=14 DIN]:%NAME% %WHITE%+14%PURPLE%all%GRAY%res{%NAME%}%CONTINUE%//
-ItemDisplay[NMAG !INF !RW RES=15 DIN]:%NAME% %WHITE%+15%PURPLE%all%GRAY%res{%NAME%}%CONTINUE%//
-ItemDisplay[NMAG !INF !RW RES=16 DIN]:%NAME% %WHITE%+16%PURPLE%all%GRAY%res{%NAME%}%CONTINUE%//
-ItemDisplay[NMAG !INF !RW RES=17 DIN]:%NAME% %WHITE%+17%PURPLE%all%GRAY%res{%NAME%}%CONTINUE%//
-ItemDisplay[NMAG !INF !RW RES=18 DIN]:%NAME% %WHITE%+18%PURPLE%all%GRAY%res{%NAME%}%CONTINUE%//
-ItemDisplay[NMAG !INF !RW RES=19 DIN]:%NAME% %WHITE%+19%PURPLE%all%GRAY%res{%NAME%}%CONTINUE%//
+// Hide nonsuperior eth armors after character level 90 and on filter levels 6+
+ItemDisplay[NMAG !INF !RW ED<5 ETH CHEST CLVL>89 FILTLVL>5 (SOCK=0 OR (!GEMMED SOCK>0)) !EQUIPPED !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
-ItemDisplay[NMAG !INF !SOCK=1 !RW RES=20 DIN]:%NAME% %WHITE%+20%PURPLE%all%GRAY%res{%NAME%}%CONTINUE%//
-ItemDisplay[NMAG !INF !SOCK=1 !RW RES=21 DIN]:%NAME% %WHITE%+21%PURPLE%all%GRAY%res{%NAME%}%CONTINUE%//
-ItemDisplay[NMAG !INF !SOCK=1 !RW RES=22 DIN]:%NAME% %WHITE%+22%PURPLE%all%GRAY%res{%NAME%}%CONTINUE%//
-ItemDisplay[NMAG !INF !SOCK=1 !RW RES=23 DIN]:%NAME% %WHITE%+23%PURPLE%all%GRAY%res{%NAME%}%CONTINUE%//
-ItemDisplay[NMAG !INF !SOCK=1 !RW RES=24 DIN]:%NAME% %WHITE%+24%PURPLE%all%GRAY%res{%NAME%}%CONTINUE%//
+// Notifications for 2os and 3os armors while leveling
+ItemDisplay[NMAG !INF !RW NORM CHEST !ETH SOCK=2 CLVL<20 !GEMMED]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 2os
+ItemDisplay[NMAG !INF !RW NORM CHEST !ETH SOCK=3 CLVL<30 !GEMMED]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 3os
 
-ItemDisplay[NMAG !INF !SOCK=1 !RW RES=25 DIN]:%NAME% %WHITE%+25%PURPLE%all%GRAY%res{%NAME%}%CONTINUE%//
-ItemDisplay[NMAG !INF !SOCK=1 !RW RES=26 DIN]:%NAME% %WHITE%+26%PURPLE%all%GRAY%res{%NAME%}%CONTINUE%//
-ItemDisplay[NMAG !INF !SOCK=1 !RW RES=27 DIN]:%NAME% %WHITE%+27%PURPLE%all%GRAY%res{%NAME%}%CONTINUE%//
-ItemDisplay[NMAG !INF !SOCK=1 !RW RES=28 DIN]:%NAME% %WHITE%+28%PURPLE%all%GRAY%res{%NAME%}%CONTINUE%//
-ItemDisplay[NMAG !INF !SOCK=1 !RW RES=29 DIN]:%NAME% %WHITE%+29%PURPLE%all%GRAY%res{%NAME%}%CONTINUE%//
-ItemDisplay[NMAG !INF !SOCK=1 !RW RES=30 DIN]:%NAME% %WHITE%+30%PURPLE%all%GRAY%res{%NAME%}%CONTINUE%//
+// Low-Value Normal tier Armors (Quilted Armor, Leather Armor, Hard Leather Armor, Studded Leather, Scale Mail, Chain Mail, Splint Mail, Plate Mail, Field Plate)
+ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (qui OR lea OR hla OR stu) SOCK=0 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide low-value 0 socket Armors
+ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (scl OR chn OR spl OR plt OR fld) SOCK=0 CLVL>19 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide medium-value 0 socket normal armors at character levels 20+
+ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (qui OR lea OR hla OR stu OR scl OR chn OR spl OR plt OR fld) CLVL>29 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide All Normal tier Armors after level 29
 
-// Paladin Exile/Shattered Wall Bases - Highlight select exceptional or elite ethereal paladin shields with more than 20 all res (Does not tag Akaran Targe or Akaran Rondache)
-ItemDisplay[NMAG !INF !RW ETH (SOCK=0 OR SOCK=4) ((EXC RES>24 !(pa6 OR pa7)) OR (ELT RES>19)) DIN]:%GREEN%Exile %NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
+// Higher-Value Normal tier Armors (Ring Mail, Breast Plate, Gothic Plate, Full Plate Mail, Ancient Armor, Light Plate)
+ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (gth OR ful) ED<13 SOCK=0 CLVL>49 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide higher-value nonsuperior 0 socket normal armors at character levels 20+
+ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (rng OR brs OR aar OR ltp) ED<13 SOCK=0 CLVL>19 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide higher-value nonsuperior 0 socket normal armors at character levels 20+
+ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (rng OR brs OR gth OR ful OR aar OR ltp) (ED<13 OR SOCK=2) CLVL>29 FILTLVL>0 !(SOCK=4 (gth OR ful) CLVL<70) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide higher-value Normal tier Armors with less than 13 %ED after level 29
+ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (rng OR brs OR gth OR ful OR aar OR ltp) (ED<15 OR SOCK=2) CLVL>29 FILTLVL>5 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide higher-value Normal tier Armors with less than 15 %ED after level 29 on filter level 5+ 
+//  3os Vendor Tag
+ItemDisplay[NMAG !INF !RW (brs OR rng OR ltp) !GEMMED !ETH SOCK=3 CLVL<30 SHOP]:%TAN%**%LIGHT_GRAY%*%GRAY%*  %GRAY%%NAME%  %GRAY%*%LIGHT_GRAY%*%TAN%**%GRAY%%CONTINUE%// 3os Vendor Tag
+
+// Low-Value Exceptional tier Armors (Ghost Armor, Serpentskin Armor, Demonhide Armor, Trellised Armor, Templar Coat, Embossed Plate, Chaos Armor, Ornate Armor)
+ItemDisplay[NMAG !INF !RW !GEMMED (xui OR xea OR xla OR xtu OR xlt OR xth OR xul OR xar) SOCK=0 CLVL>49 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide 0os at character level 50+
+ItemDisplay[NMAG !INF !RW !ETH SOCK=2 CLVL<50 (xui OR xea OR xla OR xtu)]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Notify for 2os noneth under level 50
+ItemDisplay[NMAG !INF !RW !ETH (SOCK=2 OR SOCK=3) (xrs OR xtp) CLVL<80]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 2 or 3 socket Cuirass and Mage Plate under level 80
+
+// Higher-Value Exceptional tier Armors (Linked Mail, Tigulated Mail, Mesh Armor, Cuirass, Russet Armor, Sharktooth Armor, Mage Plate)
+ItemDisplay[NMAG !INF !RW !GEMMED (xng OR xcl OR xhn OR xrs OR xpl OR xld OR xtp) (ED<13 OR SOCK=2) CLVL>79 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hides Select Nonsuperior Exceptional tier Armors after 79
+ItemDisplay[NMAG !INF !RW SUP !ETH (SOCK=0 OR SOCK=3) (xng OR xcl OR xhn OR xrs OR xpl OR xld OR xtp) ED>12 FILTLVL<11]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Superior, 3os
+ItemDisplay[NMAG !INF !RW !GEMMED (xng OR xcl OR xhn OR xrs OR xpl OR xld OR xtp) (ED<15 OR SOCK=2) CLVL>79 FILTLVL>10 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hides Select Nonsuperior Exceptional tier Armors after 79
+ItemDisplay[NMAG !INF !RW SUP !ETH (SOCK=0 OR SOCK=3) (xng OR xcl OR xhn OR xrs OR xpl OR xld OR xtp) ED>14 FILTLVL>10]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Superior, 3os
+
+// Elite tier: 
+ItemDisplay[NMAG !INF !RW !SUP !ETH (SOCK=2 OR SOCK=3 OR SOCK=4) ELT CHEST FILTLVL<6 CLVL<80]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 
+ItemDisplay[NMAG !INF !RW SUP ED>4 !ETH (SOCK=0 OR SOCK=2 OR SOCK=3 OR SOCK=4) FILTLVL<6 ELT CHEST]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Superior
+ItemDisplay[NMAG !INF !RW SUP ED>9 !ETH (SOCK=0 OR SOCK=2 OR SOCK=3 OR SOCK=4) FILTLVL>5 CLVL<90 ELT CHEST]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Superior
+ItemDisplay[NMAG !INF !RW SUP ED>11 !ETH (SOCK=0 OR SOCK=2 OR SOCK=3 OR SOCK=4) FILTLVL~6-10 CLVL>89 ELT CHEST]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Superior
+ItemDisplay[NMAG !INF !RW SUP ED>13 !ETH (SOCK=0 OR SOCK=2 OR SOCK=3 OR SOCK=4) FILTLVL~11-12 CLVL>89 ELT CHEST]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Superior
+
+ItemDisplay[NMAG !INF !RW !SUP ETH (SOCK=0 OR SOCK=2 OR SOCK=3 OR SOCK=4) ELT CHEST FILTLVL<6 CLVL<80]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Elite tier 0os, Eth
+ItemDisplay[NMAG !INF !RW SUP ETH ED>4 (SOCK=0 OR SOCK=3 OR SOCK=4) FILTLVL<6 ELT CHEST]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Elite tier 0os, Superior, Eth
+ItemDisplay[NMAG !INF !RW SUP ETH ED>9 (SOCK=0 OR SOCK=3 OR SOCK=4) FILTLVL>5 CLVL<90 ELT CHEST]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Elite tier 0os, Superior, Eth
+ItemDisplay[NMAG !INF !RW SUP ETH ED>11 (SOCK=0 OR SOCK=3 OR SOCK=4) FILTLVL>5 CLVL>89 ELT CHEST]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Elite tier 0os, Superior, Eth
+ItemDisplay[NMAG !INF !RW SUP ETH ED>4 SOCK=2 ELT CHEST FILTLVL<11 CLVL<90]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Elite tier 2os, Superior, Eth
+
+// ------------------------------------------------------------------------------
+//     ===============================  Shields  =============================   
+// ------------------------------------------------------------------------------
+
+// 	Normal tier
+ItemDisplay[NMAG !INF !RW CLVL>29 NORM SHIELD !bsh !lrg !kit !tow !DIN !NEC FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
+
+ItemDisplay[NMAG !INF !RW SOCK=0 NORM SHIELD !DIN !NEC FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// All Normal tiers 0os
+ItemDisplay[NMAG !INF !RW SOCK=2 NORM SHIELD !sml !bsh !sml !tow !DIN !NEC FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// All Normal tiers 2os
+ItemDisplay[NMAG !INF !RW SOCK=3 NORM SHIELD !lrg !kit !tow !DIN !NEC FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// All Normal tiers 3os
+
+//      Buckler
+ItemDisplay[NMAG buc CLVL>2 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide all white Bucklers past character level 2
+
+//      Small Shield
+ItemDisplay[NMAG !INF !RW sml !ETH SOCK=2 CLVL<10 !GEMMED]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 2os
+ItemDisplay[NMAG !INF !RW sml CLVL>19 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide all white small shields past character level 19
+
+//      Large Shield, Kite Shield, Tower Shield
+//  Hidden after level 60
+ItemDisplay[NMAG !INF !RW (lrg OR kit OR tow) !GEMMED CLVL>60 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide large shields after level 60
+//  Orange Ancient's Pledge Tag
+ItemDisplay[NMAG !INF !RW (lrg OR kit OR tow) !ETH SOCK=3 CLVL<30 !GEMMED]:%ORANGE%AP %GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 3os
+//  3os Vendor Tag
+ItemDisplay[NMAG !INF !RW (lrg OR kit OR tow) !GEMMED !ETH SOCK=3 CLVL<30 SHOP]:%ORANGE%**%TAN%**%LIGHT_GRAY%**%GRAY%**  %GRAY%%NAME%  %GRAY%**%LIGHT_GRAY%**%TAN%**%ORANGE%**%GRAY%{%ORANGE%**%TAN%**%LIGHT_GRAY%**%GRAY%*   %ORANGE%Ancient's Pledge   %GRAY%*%LIGHT_GRAY%**%TAN%**%ORANGE%**}// 3os Vendor Tag
+//  Notification for good block rhyme base
+ItemDisplay[NMAG !INF !RW tow !ETH SOCK=2 CLVL<50]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 2os
+
+//      Bone Shield
+ItemDisplay[NMAG !INF !RW bsh CLVL>49 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
+ItemDisplay[NMAG !INF !RW !ETH SOCK=2 bsh CLVL<50]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 2os
+
+
+// 	Exceptional tier
+ItemDisplay[NMAG !INF !RW EXC SHIELD !xsh !DIN !NEC FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// All Exceptional tiers 0os
+
+//      Grim Shield
+ItemDisplay[NMAG !INF !RW xsh SOCK=0 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide 0os
+ItemDisplay[NMAG !INF !RW xsh CLVL>79 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide Nonmagical grim shields after character level 79
+ItemDisplay[NMAG !INF !RW xsh CLVL<80 !ETH SOCK=2]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Notify 2os Grim Shields before level 80
+
+
+//  Elite tier Shield
+ItemDisplay[NMAG !INF !RW ELT SHIELD !uit !ush !uow !uts !DIN !NEC FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide elite tiers that aren't Monarch Aegis Ward or Troll Nest
+
+//      Monarch
+ItemDisplay[NMAG !INF !RW uit ETH FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide eth monarchs
+ItemDisplay[NMAG !INF !RW uit (SOCK=2 OR SOCK=3) FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide 2os and 3os Monarchs
+
+ItemDisplay[NMAG !INF !RW uit SOCK=0 ED<5 CLVL>79 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide nonsuperior 0os Monarch after level 79
+ItemDisplay[NMAG !INF !RW uit SOCK=0 !ETH CLVL<80 !PALADIN !NECROMANCER !ASSASSIN]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Show and notify for 0os Monarchs before level 80
+ItemDisplay[NMAG !INF !RW uit SOCK=4 !ETH CLVL<80 !PALADIN !NECROMANCER !ASSASSIN]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Show and notify for 4os Monarchs before level 80
+
+//      Aegis
+ItemDisplay[NMAG !INF !RW uow !ETH FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide noneth Aegis
+ItemDisplay[NMAG !INF !RW uow (SOCK=2 OR SOCK=3) FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide 2 and 3 socket Aegis
+ItemDisplay[NMAG !INF !RW uow ETH ED<5 FILTLVL>5 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide Wards without 5%ED or more after filter level 5
+ItemDisplay[NMAG !INF !RW uow ETH SUP ED>4 (SOCK=0 OR SOCK=4)]:%GREEN%Exile %GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Superior, 0os or 4os
+
+//      Ward
+ItemDisplay[NMAG !INF !RW uts !ETH FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide noneth Wards
+ItemDisplay[NMAG !INF !RW uts (SOCK=2 OR SOCK=3) FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide 2 and 3 socket Wards
+ItemDisplay[NMAG !INF !RW uts ETH ED<5 FILTLVL>5 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide Wards without 5%ED or more after filter level 5
+ItemDisplay[NMAG !INF !RW uts ED>4 SUP ETH (SOCK=0 OR SOCK=4)]:%GREEN%Exile%GRAY% %NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Superior, 0os or 4os
+
+//      Troll Nest
+ItemDisplay[NMAG !INF !RW ush ETH FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide eth Troll Nests
+ItemDisplay[NMAG !INF !RW ush ED<5 !ETH SOCK=0 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide noneth 0os Troll Nests
+ItemDisplay[NMAG !INF !RW ush SOCK=2 FILTLVL>5 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide noneth 0os Troll Nests
+ItemDisplay[NMAG !INF !RW ush ED<5 FILTLVL>5 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide Troll Nests without 5 or more ED
 
 // ------------------------------------------------------------------------------
 //    ==============================  Circlets  ==============================   
@@ -2884,6 +2959,153 @@ ItemDisplay[NMAG GLOVES ETH FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID
 ItemDisplay[NMAG GLOVES NORM FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide all normal quality white gloves
 ItemDisplay[NMAG GLOVES EXC FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide all exceptional quality white gloves
 ItemDisplay[NMAG GLOVES ELT FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide all elite quality white gloves
+
+// ------------------------------------------------------------------------------
+//     ==========================  Paladin Shields  =========================
+// ------------------------------------------------------------------------------
+
+// Hide all eth Normal paladin shields
+ItemDisplay[NMAG !INF !RW ETH NORM DIN FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
+
+// Hide all paladin shields with less than 5 all res at character level 10+
+ItemDisplay[NMAG !INF !RW RES<5 DIN CLVL>9 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
+// Hide all paladin shields with less than 10 all res at character level 30+
+ItemDisplay[NMAG !INF !RW RES<10 DIN CLVL>29 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
+// Hide all paladin shields with less than 20 all res at character level 60+
+ItemDisplay[NMAG !INF !RW RES<20 DIN CLVL>59 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
+// Hide all non-eth paladin shields with less than 25 all res at character level 80+
+ItemDisplay[NMAG !INF !RW !ETH RES<25 DIN CLVL>79 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
+// Hide all non-eth normal and exceptional paladin shields with less than 29 all res at character level 90+ on filter level 6+
+ItemDisplay[NMAG !INF !RW !ETH (NORM OR EXC) RES<29 DIN CLVL>89 FILTLVL>5 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
+
+// Label All Res Paladin shields when leveling
+ItemDisplay[NMAG !INF !RW RES=5 DIN]:%NAME% %WHITE%+5%PURPLE%all%GRAY%res{%NAME%}%CONTINUE%//
+ItemDisplay[NMAG !INF !RW RES=6 DIN]:%NAME% %WHITE%+6%PURPLE%all%GRAY%res{%NAME%}%CONTINUE%//
+ItemDisplay[NMAG !INF !RW RES=7 DIN]:%NAME% %WHITE%+7%PURPLE%all%GRAY%res{%NAME%}%CONTINUE%//
+ItemDisplay[NMAG !INF !RW RES=8 DIN]:%NAME% %WHITE%+8%PURPLE%all%GRAY%res{%NAME%}%CONTINUE%//
+ItemDisplay[NMAG !INF !RW RES=9 DIN]:%NAME% %WHITE%+9%PURPLE%all%GRAY%res{%NAME%}%CONTINUE%//
+
+ItemDisplay[NMAG !INF !RW RES=10 DIN]:%NAME% %WHITE%+10%PURPLE%all%GRAY%res{%NAME%}%CONTINUE%//
+ItemDisplay[NMAG !INF !RW RES=11 DIN]:%NAME% %WHITE%+11%PURPLE%all%GRAY%res{%NAME%}%CONTINUE%//
+ItemDisplay[NMAG !INF !RW RES=12 DIN]:%NAME% %WHITE%+12%PURPLE%all%GRAY%res{%NAME%}%CONTINUE%//
+ItemDisplay[NMAG !INF !RW RES=13 DIN]:%NAME% %WHITE%+13%PURPLE%all%GRAY%res{%NAME%}%CONTINUE%//
+ItemDisplay[NMAG !INF !RW RES=14 DIN]:%NAME% %WHITE%+14%PURPLE%all%GRAY%res{%NAME%}%CONTINUE%//
+ItemDisplay[NMAG !INF !RW RES=15 DIN]:%NAME% %WHITE%+15%PURPLE%all%GRAY%res{%NAME%}%CONTINUE%//
+ItemDisplay[NMAG !INF !RW RES=16 DIN]:%NAME% %WHITE%+16%PURPLE%all%GRAY%res{%NAME%}%CONTINUE%//
+ItemDisplay[NMAG !INF !RW RES=17 DIN]:%NAME% %WHITE%+17%PURPLE%all%GRAY%res{%NAME%}%CONTINUE%//
+ItemDisplay[NMAG !INF !RW RES=18 DIN]:%NAME% %WHITE%+18%PURPLE%all%GRAY%res{%NAME%}%CONTINUE%//
+ItemDisplay[NMAG !INF !RW RES=19 DIN]:%NAME% %WHITE%+19%PURPLE%all%GRAY%res{%NAME%}%CONTINUE%//
+
+ItemDisplay[NMAG !INF !SOCK=1 !RW RES=20 DIN]:%NAME% %WHITE%+20%PURPLE%all%GRAY%res{%NAME%}%CONTINUE%//
+ItemDisplay[NMAG !INF !SOCK=1 !RW RES=21 DIN]:%NAME% %WHITE%+21%PURPLE%all%GRAY%res{%NAME%}%CONTINUE%//
+ItemDisplay[NMAG !INF !SOCK=1 !RW RES=22 DIN]:%NAME% %WHITE%+22%PURPLE%all%GRAY%res{%NAME%}%CONTINUE%//
+ItemDisplay[NMAG !INF !SOCK=1 !RW RES=23 DIN]:%NAME% %WHITE%+23%PURPLE%all%GRAY%res{%NAME%}%CONTINUE%//
+ItemDisplay[NMAG !INF !SOCK=1 !RW RES=24 DIN]:%NAME% %WHITE%+24%PURPLE%all%GRAY%res{%NAME%}%CONTINUE%//
+
+ItemDisplay[NMAG !INF !SOCK=1 !RW RES=25 DIN]:%NAME% %WHITE%+25%PURPLE%all%GRAY%res{%NAME%}%CONTINUE%//
+ItemDisplay[NMAG !INF !SOCK=1 !RW RES=26 DIN]:%NAME% %WHITE%+26%PURPLE%all%GRAY%res{%NAME%}%CONTINUE%//
+ItemDisplay[NMAG !INF !SOCK=1 !RW RES=27 DIN]:%NAME% %WHITE%+27%PURPLE%all%GRAY%res{%NAME%}%CONTINUE%//
+ItemDisplay[NMAG !INF !SOCK=1 !RW RES=28 DIN]:%NAME% %WHITE%+28%PURPLE%all%GRAY%res{%NAME%}%CONTINUE%//
+ItemDisplay[NMAG !INF !SOCK=1 !RW RES=29 DIN]:%NAME% %WHITE%+29%PURPLE%all%GRAY%res{%NAME%}%CONTINUE%//
+ItemDisplay[NMAG !INF !SOCK=1 !RW RES=30 DIN]:%NAME% %WHITE%+30%PURPLE%all%GRAY%res{%NAME%}%CONTINUE%//
+
+// Paladin Exile/Shattered Wall Bases - Highlight select exceptional or elite ethereal paladin shields with more than 20 all res (Does not tag Akaran Targe or Akaran Rondache)
+ItemDisplay[NMAG !INF !RW ETH (SOCK=0 OR SOCK=4) ((EXC RES>24 !(pa6 OR pa7)) OR (ELT RES>19)) DIN]:%GREEN%Exile %NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
+
+// ------------------------------------------------------------------------------
+//     ===========================  Barbarian Helms  =========================
+// ------------------------------------------------------------------------------
+
+// On filter levels 11-12, hide nonmagical barbarian helms
+ItemDisplay[NMAG !RW BAR (FILTLVL>10 OR (FILTLVL<11 FILTLVL>5 CLVL>89)) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// On filter levels 11-12, hide nonmagical barbarian helms 
+
+// All tiers; Battle Orders (SK149) or War Cry (SK154)
+ItemDisplay[NMAG !INF !RW !ETH SOCK=0 FILTLVL<6 CLVL<80 (SK149>2 OR SK154>2) BAR]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// All tiers, 0os
+ItemDisplay[NMAG !INF !RW !ETH SOCK=2 FILTLVL<6 CLVL<60 (SK149>2 OR SK154>2) BAR]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// All tiers, 2os
+ItemDisplay[NMAG !INF !RW !ETH SOCK=3 FILTLVL<6 CLVL<80 (SK149>2 OR SK154>2) BAR]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// All tiers, 3os
+
+// Hides barbarian helms don't have any + to skills
+ItemDisplay[NMAG !RW BAR CLVL>9 FILTLVL>0 !(SK368>0 OR SK126>0 OR SK127>0 OR SK128>0 OR SK129>0 OR SK130>0 OR SK131>0 OR SK132>0 OR SK133>0 OR SK134>0 OR SK135>0 OR SK136>0 OR SK137>0 OR SK138>0 OR SK139>0 OR SK140>0 OR SK141>0 OR SK142>0 OR SK143>0 OR SK144>0 OR SK145>0 OR SK146>0 OR SK147>0 OR SK148>0 OR SK149>0 OR SK150>0 OR SK151>0 OR SK152>0 OR SK153>0 OR SK154>0 OR SK155>0) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// All tiers, 0os
+
+// ------------------------------------------------------------------------------
+//    ===========================  Druid Pelts and Clubs =====================
+// ------------------------------------------------------------------------------
+
+// On filter levels 11-12, hide nonmagical druid clubs are not plague bases
+ItemDisplay[NMAG !RW (clb OR spc OR 9cl OR 9sp OR 7cl OR 7sp) (FILTLVL>10 OR (FILTLVL<11 FILTLVL>5 CLVL>89)) !(((9cl OR 9sp OR 7cl OR 7sp) (SOCK=0 OR SOCK=3) SK249=3 SK250=3 (CLVL<95 OR SK226>0 OR SK231>0 OR SK235>0 OR SK241>0 OR SK247>0 OR SK370>0)) OR ((9cl OR 9sp OR 7cl OR 7sp) (SOCK=0 OR SOCK=3) SK243=3 ((SK224=3 (SK226>0 OR SK231>0 OR SK247>0)) OR (SK226=3 (SK224>0 OR SK231>0 OR SK247>0)) OR (SK231=3 (SK224>0 OR SK226>0 OR SK247>0)) OR (SK247=3 (SK224>0 OR SK226>0 OR SK231>0)))) OR ((9cl OR 9sp OR 7cl OR 7sp) (SOCK=0 OR SOCK=3) SK230=3 SK250=3 (CLVL<95 OR SK226>0 OR SK231>0 OR SK235>0 OR SK241>0 OR SK247>0 OR SK370>0)) OR ((9cl OR 9sp OR 7cl OR 7sp) (SOCK=0 OR SOCK=3) ((SK226=3 SK236=3) OR ((CLVL<95 OR (SK236>0 OR SK226>0 OR SK370>0 OR SK231>0 OR SK250>0 OR SK235>0 OR SK241>0)) ((SK221>2 (SK237>2 OR SK227>2 OR SK247>2)) OR (SK237>2 (SK221>2 OR SK227>2 OR SK247>2)) OR (SK227>2 (SK237>2 OR SK221>2 OR SK247>2)) OR (SK247>2 (SK237>2 OR SK227>2 OR SK221>2)))))) OR ((9cl OR 9sp OR 7cl OR 7sp) (SOCK=0 OR SOCK=3) SK222=3 (SK226>0 OR SK247>0 OR SK250>0 OR SK370>0))) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// On filter levels 11-12, hide nonmagical druid clubs are not good runeword bases
+
+// On filter levels 11-12, hide all nonmagical druid helms
+ItemDisplay[NMAG !RW DRU (FILTLVL>10 OR (FILTLVL<11 FILTLVL>5 CLVL>89)) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
+
+//      Plague runeword club bases
+//      +3 Hurricane, +3 Armageddon, and +1-3 to Oak/CarrionVine/CycloneArmor/Solar/Grizzly/Gust
+ItemDisplay[NMAG !RW (9cl OR 9sp OR 7cl OR 7sp) (SOCK=0 OR SOCK=3) SK249=3 SK250=3 (CLVL<95 OR SK226>0 OR SK231>0 OR SK235>0 OR SK241>0 OR SK247>0 OR SK370>0)]:%ORANGE%Plague %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
+
+//      +3 Shockwave and +3 to Oak/CarrionVine/Grizzly/Lycanthropy
+ItemDisplay[NMAG !RW (9cl OR 9sp OR 7cl OR 7sp) (SOCK=0 OR SOCK=3) SK243=3 ((SK224=3 (SK226>0 OR SK231>0 OR SK247>0)) OR (SK226=3 (SK224>0 OR SK231>0 OR SK247>0)) OR (SK231=3 (SK224>0 OR SK226>0 OR SK247>0)) OR (SK247=3 (SK224>0 OR SK226>0 OR SK231>0)))]:%ORANGE%Plague %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
+
+//      +3 Arctic Blast, +3 Hurricane, and +1-3 to Oak/SolarCreeper/CycloneArmor/CarrionVine/Grizzly/Gust
+ItemDisplay[NMAG !RW (9cl OR 9sp OR 7cl OR 7sp) (SOCK=0 OR SOCK=3) SK230=3 SK250=3 (CLVL<95 OR SK226>0 OR SK231>0 OR SK235>0 OR SK241>0 OR SK247>0 OR SK370>0)]:%ORANGE%Plague %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
+
+//       +3 to two of the following: (Raven, Spirit Wolf, Dire Wolf, Grizzly) AND: (CLVL<95 OR (+1 or more to H.Wolverine, Oak Sage, Gust, Carrion Vine, Solar Creeper, Cyclone Armor, or Hurricane))
+ItemDisplay[NMAG !RW (9cl OR 9sp OR 7cl OR 7sp) (SOCK=0 OR SOCK=3) ((SK226=3 SK236=3) OR ((CLVL<95 OR (SK236>0 OR SK226>0 OR SK370>0 OR SK231>0 OR SK250>0 OR SK235>0 OR SK241>0)) ((SK221>2 (SK237>2 OR SK227>2 OR SK247>2)) OR (SK237>2 (SK221>2 OR SK227>2 OR SK247>2)) OR (SK227>2 (SK237>2 OR SK221>2 OR SK247>2)) OR (SK247>2 (SK237>2 OR SK227>2 OR SK221>2)))))]:%ORANGE%Plague %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
+
+//       +3 to Poison Creeper and (+1 or more to Oak Sage, Grizzly, Hurricane, or Gust)
+ItemDisplay[NMAG !RW (9cl OR 9sp OR 7cl OR 7sp) (SOCK=0 OR SOCK=3) SK222=3 (SK226>0 OR SK247>0 OR SK250>0 OR SK370>0)]:%ORANGE%Plague %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
+
+// Hides nonmagical Ethereal Druid Helms after character level 30
+ItemDisplay[NMAG !RW ETH DRU DRUID CLVL>29 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// If your character is a druid, hide all Eth nonmagical Ethereal Druid Helms after character level 29
+ItemDisplay[NMAG !RW ETH DRU !DRUID FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hides all Eth nonmagical Ethereal Druid Helms for non-druid characters
+
+//      Lore runeword Druid pelt bases
+//      +3 to one of the following: Raven, Spirit Wolf, Dire Wolf, Grizzly
+ItemDisplay[NMAG !RW !ETH ((CLVL<90 FILTLVL<11) OR FILTLVL<6) ((!DRUID CLVL<60) OR (DRUID CLVL<80)) DRU SOCK=2 (SK221>2 OR SK237>2 OR SK227>2 OR SK247>2)]:%ORANGE%Lore %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
+
+// Hides all other Druid Helms and clubs that don't have any + to skills past level 10
+ItemDisplay[NMAG !RW (DRU OR clb OR 9cl OR 7cl OR spc OR 9sp OR 7sp) CLVL>9 FILTLVL>0 !(SK221>0 OR SK222>0 OR SK223>0 OR SK224>0 OR SK225>0 OR SK226>0 OR SK227>0 OR SK228>0 OR SK229>0 OR SK230>0 OR SK231>0 OR SK232>0 OR SK233>0 OR SK234>0 OR SK235>0 OR SK236>0 OR SK237>0 OR SK238>0 OR SK239>0 OR SK240>0 OR SK241>0 OR SK242>0 OR SK243>0 OR SK244>0 OR SK245>0 OR SK246>0 OR SK247>0 OR SK248>0 OR SK249>0 OR SK250>0 OR SK370>0) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// All tiers, 0os
+
+// ------------------------------------------------------------------------------
+//    ========================  Necromancer Heads  ===========================
+// ------------------------------------------------------------------------------
+
+// On filter levels 11-12, hide nonmagical necromancer heads
+ItemDisplay[NMAG !RW NEC (FILTLVL>10 OR (FILTLVL<11 FILTLVL>5 CLVL>89)) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// On filter levels 11-12, hide nonmagical necromancer heads 
+
+// Hides Ethereal Necromancer Heads
+ItemDisplay[NMAG !RW ETH NEC NECROMANCER CLVL>29 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// If your character is a necromancer, hide all Eth nonmagical necromancer heads after character level 29
+ItemDisplay[NMAG !RW ETH NEC !NECROMANCER FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hides all Eth nonmagical necromancer heads for non-necromancer characters
+
+//      Rhyme/Splendor runeword necromancer head bases
+//     At levels 1-79, (+3 to one of the following: Teeth, Skele Mastery, Skele Warrior, Clay Golem, Skeletal Mage, Bone Spear, Skele Archer, Corpse Explosion, Dark Pact)
+ItemDisplay[NMAG !RW NEC ((CLVL<90 FILTLVL<11) OR FILTLVL<6) ((!NECROMANCER CLVL<60) OR (NECROMANCER CLVL<80)) ((NORM (SOCK=0 OR SOCK=2)) OR ((EXC OR ELT) SOCK=2)) (SK67>2 OR SK69>2 OR SK70>2 OR SK75>2 OR SK80>2 OR SK84>2 OR SK89>2 OR SK381>2 OR SK74>2 OR SK381>2)]:%ORANGE%Rhyme %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
+
+//      Ancient's Pledge Bases
+//     At levels 1-79, (+3 to one of the following: Teeth, Skele Mastery, Skele Warrior, Clay Golem, Skeletal Mage, Bone Spear, Skele Archer, Corpse Explosion, Dark Pact)
+ItemDisplay[NMAG !RW NEC ((CLVL<90 FILTLVL<11) OR FILTLVL<6) ((!NECROMANCER CLVL<60) OR (NECROMANCER CLVL<80)) (EXC OR ELT) (SOCK=0 OR SOCK=3) (SK67>2 OR SK69>2 OR SK70>2 OR SK75>2 OR SK80>2 OR SK84>2 OR SK89>2 OR SK381>2 OR SK74>2 OR SK381>2)]:%ORANGE%AP %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
+
+// Hides heads that don't have at least +1 to any necro skills
+ItemDisplay[NMAG !RW NEC CLVL>9 FILTLVL>0 !(SK66>0 OR SK67>0 OR SK68>0 OR SK69>0 OR SK70>0 OR SK71>0 OR SK72>0 OR SK73>0 OR SK74>0 OR SK75>0 OR SK76>0 OR SK77>0 OR SK78>0 OR SK79>0 OR SK80>0 OR SK81>0 OR SK82>0 OR SK83>0 OR SK84>0 OR SK85>0 OR SK86>0 OR SK87>0 OR SK88>0 OR SK89>0 OR SK90>0 OR SK91>0 OR SK92>0 OR SK93>0 OR SK94>0 OR SK95>0 OR SK367>0 OR SK374>0 OR SK381>0) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
+
+// ---------------------------------------------------------------------------------
+// ===============================  Necro Wands  ===============================
+// ---------------------------------------------------------------------------------
+
+// On filter levels 11-12, hide nonmagical necromancer wands
+ItemDisplay[NMAG !RW WAND (FILTLVL>10 OR (FILTLVL<11 FILTLVL>5 CLVL>89)) !((!(wnd OR ywn OR 9wn) (SOCK=0 OR SOCK=2) SK75>2 ((SK367>0 (SK66>2 OR SK68>2 OR SK95>2)) OR (SK66>0 (SK367>2 OR SK68>2 OR SK95>2)) OR (SK68>0 (SK66>2 OR SK367>2 OR SK95>2)) OR (SK95>0 (SK66>2 OR SK367>2 OR SK68>2)))) OR (!(wnd OR ywn OR 9wn) (SOCK=0 OR SOCK=2) SK94>2 ((SK367>0 (SK91>2 OR SK68>2 OR SK95>2)) OR (SK91>0 (SK367>2 OR SK68>2 OR SK95>2)) OR (SK68>0 (SK91>2 OR SK367>2 OR SK95>2)) OR (SK95>0 (SK91>2 OR SK367>2 OR SK68>2)))) OR (!(wnd OR ywn OR 9wn) (SOCK=0 OR SOCK=2) ((SK367>2 SK68>2 (SK91>0 OR SK66>0 OR SK95>0 OR SK75>0 OR SK94>0)) OR (SK367>2 SK91>2 (SK68>0 OR SK95>0 OR SK94>0)) OR (SK367>2 SK66>2 (SK68>0 OR SK95>0 OR SK75>0)) OR (SK68>2 (SK66>2 OR SK91>2) (SK367>0 OR SK95>0 OR SK75>0 OR SK94>0))))) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// On filter levels 11-12, hide nonmagical necromancer wands 
+
+//      Dominion runeword wand bases
+ItemDisplay[NMAG !RW WAND !(wnd OR ywn OR 9wn) (SOCK=0 OR SOCK=2) SK75>2 ((SK367>0 (SK66>2 OR SK68>2 OR SK95>2)) OR (SK66>0 (SK367>2 OR SK68>2 OR SK95>2)) OR (SK68>0 (SK66>2 OR SK367>2 OR SK95>2)) OR (SK95>0 (SK66>2 OR SK367>2 OR SK68>2)))]:%ORANGE%Dominion %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
+
+ItemDisplay[NMAG !RW WAND !(wnd OR ywn OR 9wn) (SOCK=0 OR SOCK=2) SK94>2 ((SK367>0 (SK91>2 OR SK68>2 OR SK95>2)) OR (SK91>0 (SK367>2 OR SK68>2 OR SK95>2)) OR (SK68>0 (SK91>2 OR SK367>2 OR SK95>2)) OR (SK95>0 (SK91>2 OR SK367>2 OR SK68>2)))]:%ORANGE%Dominion %WHITE%%NAME%%DOT-20%%PX-00%%CONTINUE%//
+
+ItemDisplay[NMAG !RW WAND !(wnd OR ywn OR 9wn) (SOCK=0 OR SOCK=2) ((SK367>2 SK68>2 (SK91>0 OR SK66>0 OR SK95>0 OR SK75>0 OR SK94>0)) OR (SK367>2 SK91>2 (SK68>0 OR SK95>0 OR SK94>0)) OR (SK367>2 SK66>2 (SK68>0 OR SK95>0 OR SK75>0)) OR (SK68>2 (SK66>2 OR SK91>2) (SK367>0 OR SK95>0 OR SK75>0 OR SK94>0)))]:%ORANGE%Dominion %WHITE%%NAME%%DOT-20%%PX-00%%CONTINUE%//
+
+//      White runeword wand bases: 
+//      Teeth, Bone Spear, and Corpse Explosion
+ItemDisplay[NMAG !RW WAND ((CLVL<90 FILTLVL<11) OR FILTLVL<6) ((!NECROMANCER CLVL<60) OR (NECROMANCER CLVL<80)) !(wnd OR ywn OR 9wn) (SOCK=0 OR SOCK=2) (SK67>2 OR SK84>2 OR SK74>2)]:%ORANGE%White %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
+
+// Hides all other wands that don't have + to skills
+ItemDisplay[NMAG !RW WAND CLVL>9 FILTLVL>0 !(SK66>0 OR SK67>0 OR SK68>0 OR SK69>0 OR SK70>0 OR SK71>0 OR SK72>0 OR SK73>0 OR SK74>0 OR SK75>0 OR SK76>0 OR SK77>0 OR SK78>0 OR SK79>0 OR SK80>0 OR SK81>0 OR SK82>0 OR SK83>0 OR SK84>0 OR SK85>0 OR SK86>0 OR SK87>0 OR SK88>0 OR SK89>0 OR SK90>0 OR SK91>0 OR SK92>0 OR SK93>0 OR SK94>0 OR SK95>0 OR SK367>0 OR SK374>0 OR SK381>0) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
 // ------------------------------------------------------------------------------
 //    =============================  Amazon Bows  ============================   
@@ -3018,101 +3240,6 @@ ItemDisplay[NMAG !INF !RW !ETH NECROMANCER SK73=3 (kri OR 9kr OR 7kr) (SOCK=0 OR
 ItemDisplay[NMAG !RW DAGGER CLVL>9 FILTLVL>0 !(SK73>0 OR SK254>0 OR SK257>0 OR SK259>0 OR SK265>0 OR SK266>0 OR SK269>0 OR SK270>0 OR SK274>0 OR SK275>0 OR SK280>0) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// All tiers, 0os
 
 // ------------------------------------------------------------------------------
-//     ===========================  Barbarian Helms  =========================
-// ------------------------------------------------------------------------------
-
-// On filter levels 11-12, hide nonmagical barbarian helms
-ItemDisplay[NMAG !RW BAR (FILTLVL>10 OR (FILTLVL<11 FILTLVL>5 CLVL>89)) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// On filter levels 11-12, hide nonmagical barbarian helms 
-
-// All tiers; Battle Orders (SK149) or War Cry (SK154)
-ItemDisplay[NMAG !INF !RW !ETH SOCK=0 FILTLVL<6 CLVL<80 (SK149>2 OR SK154>2) BAR]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// All tiers, 0os
-ItemDisplay[NMAG !INF !RW !ETH SOCK=2 FILTLVL<6 CLVL<60 (SK149>2 OR SK154>2) BAR]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// All tiers, 2os
-ItemDisplay[NMAG !INF !RW !ETH SOCK=3 FILTLVL<6 CLVL<80 (SK149>2 OR SK154>2) BAR]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// All tiers, 3os
-
-// Hides barbarian helms don't have any + to skills
-ItemDisplay[NMAG !RW BAR CLVL>9 FILTLVL>0 !(SK368>0 OR SK126>0 OR SK127>0 OR SK128>0 OR SK129>0 OR SK130>0 OR SK131>0 OR SK132>0 OR SK133>0 OR SK134>0 OR SK135>0 OR SK136>0 OR SK137>0 OR SK138>0 OR SK139>0 OR SK140>0 OR SK141>0 OR SK142>0 OR SK143>0 OR SK144>0 OR SK145>0 OR SK146>0 OR SK147>0 OR SK148>0 OR SK149>0 OR SK150>0 OR SK151>0 OR SK152>0 OR SK153>0 OR SK154>0 OR SK155>0) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// All tiers, 0os
-
-// ------------------------------------------------------------------------------
-//    ===========================  Druid Pelts and Clubs =====================
-// ------------------------------------------------------------------------------
-
-// On filter levels 11-12, hide nonmagical druid clubs are not plague bases
-ItemDisplay[NMAG !RW (clb OR spc OR 9cl OR 9sp OR 7cl OR 7sp) (FILTLVL>10 OR (FILTLVL<11 FILTLVL>5 CLVL>89)) !(((9cl OR 9sp OR 7cl OR 7sp) (SOCK=0 OR SOCK=3) SK249=3 SK250=3 (CLVL<95 OR SK226>0 OR SK231>0 OR SK235>0 OR SK241>0 OR SK247>0 OR SK370>0)) OR ((9cl OR 9sp OR 7cl OR 7sp) (SOCK=0 OR SOCK=3) SK243=3 ((SK224=3 (SK226>0 OR SK231>0 OR SK247>0)) OR (SK226=3 (SK224>0 OR SK231>0 OR SK247>0)) OR (SK231=3 (SK224>0 OR SK226>0 OR SK247>0)) OR (SK247=3 (SK224>0 OR SK226>0 OR SK231>0)))) OR ((9cl OR 9sp OR 7cl OR 7sp) (SOCK=0 OR SOCK=3) SK230=3 SK250=3 (CLVL<95 OR SK226>0 OR SK231>0 OR SK235>0 OR SK241>0 OR SK247>0 OR SK370>0)) OR ((9cl OR 9sp OR 7cl OR 7sp) (SOCK=0 OR SOCK=3) ((SK226=3 SK236=3) OR ((CLVL<95 OR (SK236>0 OR SK226>0 OR SK370>0 OR SK231>0 OR SK250>0 OR SK235>0 OR SK241>0)) ((SK221>2 (SK237>2 OR SK227>2 OR SK247>2)) OR (SK237>2 (SK221>2 OR SK227>2 OR SK247>2)) OR (SK227>2 (SK237>2 OR SK221>2 OR SK247>2)) OR (SK247>2 (SK237>2 OR SK227>2 OR SK221>2)))))) OR ((9cl OR 9sp OR 7cl OR 7sp) (SOCK=0 OR SOCK=3) SK222=3 (SK226>0 OR SK247>0 OR SK250>0 OR SK370>0))) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// On filter levels 11-12, hide nonmagical druid clubs are not good runeword bases
-
-// On filter levels 11-12, hide all nonmagical druid helms
-ItemDisplay[NMAG !RW DRU (FILTLVL>10 OR (FILTLVL<11 FILTLVL>5 CLVL>89)) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
-
-//      Plague runeword club bases
-//      +3 Hurricane, +3 Armageddon, and +1-3 to Oak/CarrionVine/CycloneArmor/Solar/Grizzly/Gust
-ItemDisplay[NMAG !RW (9cl OR 9sp OR 7cl OR 7sp) (SOCK=0 OR SOCK=3) SK249=3 SK250=3 (CLVL<95 OR SK226>0 OR SK231>0 OR SK235>0 OR SK241>0 OR SK247>0 OR SK370>0)]:%ORANGE%Plague %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
-
-//      +3 Shockwave and +3 to Oak/CarrionVine/Grizzly/Lycanthropy
-ItemDisplay[NMAG !RW (9cl OR 9sp OR 7cl OR 7sp) (SOCK=0 OR SOCK=3) SK243=3 ((SK224=3 (SK226>0 OR SK231>0 OR SK247>0)) OR (SK226=3 (SK224>0 OR SK231>0 OR SK247>0)) OR (SK231=3 (SK224>0 OR SK226>0 OR SK247>0)) OR (SK247=3 (SK224>0 OR SK226>0 OR SK231>0)))]:%ORANGE%Plague %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
-
-//      +3 Arctic Blast, +3 Hurricane, and +1-3 to Oak/SolarCreeper/CycloneArmor/CarrionVine/Grizzly/Gust
-ItemDisplay[NMAG !RW (9cl OR 9sp OR 7cl OR 7sp) (SOCK=0 OR SOCK=3) SK230=3 SK250=3 (CLVL<95 OR SK226>0 OR SK231>0 OR SK235>0 OR SK241>0 OR SK247>0 OR SK370>0)]:%ORANGE%Plague %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
-
-//       +3 to two of the following: (Raven, Spirit Wolf, Dire Wolf, Grizzly) AND: (CLVL<95 OR (+1 or more to H.Wolverine, Oak Sage, Gust, Carrion Vine, Solar Creeper, Cyclone Armor, or Hurricane))
-ItemDisplay[NMAG !RW (9cl OR 9sp OR 7cl OR 7sp) (SOCK=0 OR SOCK=3) ((SK226=3 SK236=3) OR ((CLVL<95 OR (SK236>0 OR SK226>0 OR SK370>0 OR SK231>0 OR SK250>0 OR SK235>0 OR SK241>0)) ((SK221>2 (SK237>2 OR SK227>2 OR SK247>2)) OR (SK237>2 (SK221>2 OR SK227>2 OR SK247>2)) OR (SK227>2 (SK237>2 OR SK221>2 OR SK247>2)) OR (SK247>2 (SK237>2 OR SK227>2 OR SK221>2)))))]:%ORANGE%Plague %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
-
-//       +3 to Poison Creeper and (+1 or more to Oak Sage, Grizzly, Hurricane, or Gust)
-ItemDisplay[NMAG !RW (9cl OR 9sp OR 7cl OR 7sp) (SOCK=0 OR SOCK=3) SK222=3 (SK226>0 OR SK247>0 OR SK250>0 OR SK370>0)]:%ORANGE%Plague %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
-
-// Hides nonmagical Ethereal Druid Helms after character level 30
-ItemDisplay[NMAG !RW ETH DRU DRUID CLVL>29 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// If your character is a druid, hide all Eth nonmagical Ethereal Druid Helms after character level 29
-ItemDisplay[NMAG !RW ETH DRU !DRUID FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hides all Eth nonmagical Ethereal Druid Helms for non-druid characters
-
-//      Lore runeword Druid pelt bases
-//      +3 to one of the following: Raven, Spirit Wolf, Dire Wolf, Grizzly
-ItemDisplay[NMAG !RW !ETH ((CLVL<90 FILTLVL<11) OR FILTLVL<6) ((!DRUID CLVL<60) OR (DRUID CLVL<80)) DRU SOCK=2 (SK221>2 OR SK237>2 OR SK227>2 OR SK247>2)]:%ORANGE%Lore %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
-
-// Hides all other Druid Helms and clubs that don't have any + to skills past level 10
-ItemDisplay[NMAG !RW (DRU OR clb OR 9cl OR 7cl OR spc OR 9sp OR 7sp) CLVL>9 FILTLVL>0 !(SK221>0 OR SK222>0 OR SK223>0 OR SK224>0 OR SK225>0 OR SK226>0 OR SK227>0 OR SK228>0 OR SK229>0 OR SK230>0 OR SK231>0 OR SK232>0 OR SK233>0 OR SK234>0 OR SK235>0 OR SK236>0 OR SK237>0 OR SK238>0 OR SK239>0 OR SK240>0 OR SK241>0 OR SK242>0 OR SK243>0 OR SK244>0 OR SK245>0 OR SK246>0 OR SK247>0 OR SK248>0 OR SK249>0 OR SK250>0 OR SK370>0) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// All tiers, 0os
-
-// ------------------------------------------------------------------------------
-//    ========================  Necromancer Heads  ===========================
-// ------------------------------------------------------------------------------
-
-// On filter levels 11-12, hide nonmagical necromancer heads
-ItemDisplay[NMAG !RW NEC (FILTLVL>10 OR (FILTLVL<11 FILTLVL>5 CLVL>89)) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// On filter levels 11-12, hide nonmagical necromancer heads 
-
-// Hides Ethereal Necromancer Heads
-ItemDisplay[NMAG !RW ETH NEC NECROMANCER CLVL>29 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// If your character is a necromancer, hide all Eth nonmagical necromancer heads after character level 29
-ItemDisplay[NMAG !RW ETH NEC !NECROMANCER FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hides all Eth nonmagical necromancer heads for non-necromancer characters
-
-//      Rhyme/Splendor runeword necromancer head bases
-//     At levels 1-79, (+3 to one of the following: Teeth, Skele Mastery, Skele Warrior, Clay Golem, Skeletal Mage, Bone Spear, Skele Archer, Corpse Explosion, Dark Pact)
-ItemDisplay[NMAG !RW NEC ((CLVL<90 FILTLVL<11) OR FILTLVL<6) ((!NECROMANCER CLVL<60) OR (NECROMANCER CLVL<80)) ((NORM (SOCK=0 OR SOCK=2)) OR ((EXC OR ELT) SOCK=2)) (SK67>2 OR SK69>2 OR SK70>2 OR SK75>2 OR SK80>2 OR SK84>2 OR SK89>2 OR SK381>2 OR SK74>2 OR SK381>2)]:%ORANGE%Rhyme %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
-
-//      Ancient's Pledge Bases
-//     At levels 1-79, (+3 to one of the following: Teeth, Skele Mastery, Skele Warrior, Clay Golem, Skeletal Mage, Bone Spear, Skele Archer, Corpse Explosion, Dark Pact)
-ItemDisplay[NMAG !RW NEC ((CLVL<90 FILTLVL<11) OR FILTLVL<6) ((!NECROMANCER CLVL<60) OR (NECROMANCER CLVL<80)) (EXC OR ELT) (SOCK=0 OR SOCK=3) (SK67>2 OR SK69>2 OR SK70>2 OR SK75>2 OR SK80>2 OR SK84>2 OR SK89>2 OR SK381>2 OR SK74>2 OR SK381>2)]:%ORANGE%AP %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
-
-// Hides heads that don't have at least +1 to any necro skills
-ItemDisplay[NMAG !RW NEC CLVL>9 FILTLVL>0 !(SK66>0 OR SK67>0 OR SK68>0 OR SK69>0 OR SK70>0 OR SK71>0 OR SK72>0 OR SK73>0 OR SK74>0 OR SK75>0 OR SK76>0 OR SK77>0 OR SK78>0 OR SK79>0 OR SK80>0 OR SK81>0 OR SK82>0 OR SK83>0 OR SK84>0 OR SK85>0 OR SK86>0 OR SK87>0 OR SK88>0 OR SK89>0 OR SK90>0 OR SK91>0 OR SK92>0 OR SK93>0 OR SK94>0 OR SK95>0 OR SK367>0 OR SK374>0 OR SK381>0) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
-
-// ---------------------------------------------------------------------------------
-// ===============================  Necro Wands  ===============================
-// ---------------------------------------------------------------------------------
-
-// On filter levels 11-12, hide nonmagical necromancer wands
-ItemDisplay[NMAG !RW WAND (FILTLVL>10 OR (FILTLVL<11 FILTLVL>5 CLVL>89)) !((!(wnd OR ywn OR 9wn) (SOCK=0 OR SOCK=2) SK75>2 ((SK367>0 (SK66>2 OR SK68>2 OR SK95>2)) OR (SK66>0 (SK367>2 OR SK68>2 OR SK95>2)) OR (SK68>0 (SK66>2 OR SK367>2 OR SK95>2)) OR (SK95>0 (SK66>2 OR SK367>2 OR SK68>2)))) OR (!(wnd OR ywn OR 9wn) (SOCK=0 OR SOCK=2) SK94>2 ((SK367>0 (SK91>2 OR SK68>2 OR SK95>2)) OR (SK91>0 (SK367>2 OR SK68>2 OR SK95>2)) OR (SK68>0 (SK91>2 OR SK367>2 OR SK95>2)) OR (SK95>0 (SK91>2 OR SK367>2 OR SK68>2)))) OR (!(wnd OR ywn OR 9wn) (SOCK=0 OR SOCK=2) ((SK367>2 SK68>2 (SK91>0 OR SK66>0 OR SK95>0 OR SK75>0 OR SK94>0)) OR (SK367>2 SK91>2 (SK68>0 OR SK95>0 OR SK94>0)) OR (SK367>2 SK66>2 (SK68>0 OR SK95>0 OR SK75>0)) OR (SK68>2 (SK66>2 OR SK91>2) (SK367>0 OR SK95>0 OR SK75>0 OR SK94>0))))) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// On filter levels 11-12, hide nonmagical necromancer wands 
-
-//      Dominion runeword wand bases
-ItemDisplay[NMAG !RW WAND !(wnd OR ywn OR 9wn) (SOCK=0 OR SOCK=2) SK75>2 ((SK367>0 (SK66>2 OR SK68>2 OR SK95>2)) OR (SK66>0 (SK367>2 OR SK68>2 OR SK95>2)) OR (SK68>0 (SK66>2 OR SK367>2 OR SK95>2)) OR (SK95>0 (SK66>2 OR SK367>2 OR SK68>2)))]:%ORANGE%Dominion %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
-
-ItemDisplay[NMAG !RW WAND !(wnd OR ywn OR 9wn) (SOCK=0 OR SOCK=2) SK94>2 ((SK367>0 (SK91>2 OR SK68>2 OR SK95>2)) OR (SK91>0 (SK367>2 OR SK68>2 OR SK95>2)) OR (SK68>0 (SK91>2 OR SK367>2 OR SK95>2)) OR (SK95>0 (SK91>2 OR SK367>2 OR SK68>2)))]:%ORANGE%Dominion %WHITE%%NAME%%DOT-20%%PX-00%%CONTINUE%//
-
-ItemDisplay[NMAG !RW WAND !(wnd OR ywn OR 9wn) (SOCK=0 OR SOCK=2) ((SK367>2 SK68>2 (SK91>0 OR SK66>0 OR SK95>0 OR SK75>0 OR SK94>0)) OR (SK367>2 SK91>2 (SK68>0 OR SK95>0 OR SK94>0)) OR (SK367>2 SK66>2 (SK68>0 OR SK95>0 OR SK75>0)) OR (SK68>2 (SK66>2 OR SK91>2) (SK367>0 OR SK95>0 OR SK75>0 OR SK94>0)))]:%ORANGE%Dominion %WHITE%%NAME%%DOT-20%%PX-00%%CONTINUE%//
-
-//      White runeword wand bases: 
-//      Teeth, Bone Spear, and Corpse Explosion
-ItemDisplay[NMAG !RW WAND ((CLVL<90 FILTLVL<11) OR FILTLVL<6) ((!NECROMANCER CLVL<60) OR (NECROMANCER CLVL<80)) !(wnd OR ywn OR 9wn) (SOCK=0 OR SOCK=2) (SK67>2 OR SK84>2 OR SK74>2)]:%ORANGE%White %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
-
-// Hides all other wands that don't have + to skills
-ItemDisplay[NMAG !RW WAND CLVL>9 FILTLVL>0 !(SK66>0 OR SK67>0 OR SK68>0 OR SK69>0 OR SK70>0 OR SK71>0 OR SK72>0 OR SK73>0 OR SK74>0 OR SK75>0 OR SK76>0 OR SK77>0 OR SK78>0 OR SK79>0 OR SK80>0 OR SK81>0 OR SK82>0 OR SK83>0 OR SK84>0 OR SK85>0 OR SK86>0 OR SK87>0 OR SK88>0 OR SK89>0 OR SK90>0 OR SK91>0 OR SK92>0 OR SK93>0 OR SK94>0 OR SK95>0 OR SK367>0 OR SK374>0 OR SK381>0) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
-
-// ------------------------------------------------------------------------------
 //     ===========================  Sorceress Orbs  =========================   
 // ------------------------------------------------------------------------------
 
@@ -3190,134 +3317,6 @@ ItemDisplay[NMAG !INF !RW SCEPTER SOCK=4 !RW CLVL<80 SK99>2]:%ORANGE%Prayer %WHI
 ItemDisplay[NMAG !INF !RW SCEPTER CLVL>9 FILTLVL>0 !(SK96>0 OR SK97>0 OR SK98>0 OR SK99>0 OR SK100>0 OR SK101>0 OR SK102>0 OR SK103>0 OR SK104>0 OR SK105>0 OR SK106>0 OR SK107>0 OR SK108>0 OR SK109>0 OR SK110>0 OR SK111>0 OR SK112>0 OR SK113>0 OR SK114>0 OR SK115>0 OR SK116>0 OR SK117>0 OR SK118>0 OR SK119>0 OR SK120>0 OR SK121>0 OR SK122>0 OR SK123>0 OR SK124>0 OR SK125>0 OR SK371>0 OR SK364>0 OR SOCK=4 OR (7ws SUP ED>9 (SOCK=0 OR SOCK=4 OR SOCK=5))) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
 // ------------------------------------------------------------------------------
-//      =========================  Armors/Chests ===========================
-// ------------------------------------------------------------------------------
-
-// Hide nonsuperior noneth 0 socket armors after character level 80 or on filter levels 1+
-ItemDisplay[NMAG !INF !RW ED<5 !ETH CHEST CLVL>79 FILTLVL>0 SOCK=0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
-
-// Hide nonsuperior noneth armors after character level 80 and on filter levels 6+
-ItemDisplay[NMAG !INF !RW ED<5 !ETH CHEST CLVL>79 FILTLVL>5 (SOCK=0 OR (!GEMMED SOCK>0)) !EQUIPPED !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
-
-// Hide nonsuperior noneth armors after character level 90 and on filter levels 11+
-ItemDisplay[NMAG !INF !RW ED<14 !ETH CHEST CLVL>89 FILTLVL>10 (SOCK=0 OR (!GEMMED SOCK>0)) !EQUIPPED !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
-
-// Hide nonsuperior eth armors after character level 90 and on filter levels 6+
-ItemDisplay[NMAG !INF !RW ED<5 ETH CHEST CLVL>89 FILTLVL>5 (SOCK=0 OR (!GEMMED SOCK>0)) !EQUIPPED !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
-
-// Notifications for 2os and 3os armors while leveling
-ItemDisplay[NMAG !INF !RW NORM CHEST !ETH SOCK=2 CLVL<20 !GEMMED]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 2os
-ItemDisplay[NMAG !INF !RW NORM CHEST !ETH SOCK=3 CLVL<30 !GEMMED]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 3os
-
-// Low-Value Normal tier Armors (Quilted Armor, Leather Armor, Hard Leather Armor, Studded Leather, Scale Mail, Chain Mail, Splint Mail, Plate Mail, Field Plate)
-ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (qui OR lea OR hla OR stu) SOCK=0 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide low-value 0 socket Armors
-ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (scl OR chn OR spl OR plt OR fld) SOCK=0 CLVL>19 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide medium-value 0 socket normal armors at character levels 20+
-ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (qui OR lea OR hla OR stu OR scl OR chn OR spl OR plt OR fld) CLVL>29 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide All Normal tier Armors after level 29
-
-// Higher-Value Normal tier Armors (Ring Mail, Breast Plate, Gothic Plate, Full Plate Mail, Ancient Armor, Light Plate)
-ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (gth OR ful) ED<13 SOCK=0 CLVL>49 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide higher-value nonsuperior 0 socket normal armors at character levels 20+
-ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (rng OR brs OR aar OR ltp) ED<13 SOCK=0 CLVL>19 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide higher-value nonsuperior 0 socket normal armors at character levels 20+
-ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (rng OR brs OR gth OR ful OR aar OR ltp) (ED<13 OR SOCK=2) CLVL>29 FILTLVL>0 !(SOCK=4 (gth OR ful) CLVL<70) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide higher-value Normal tier Armors with less than 13 %ED after level 29
-ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (rng OR brs OR gth OR ful OR aar OR ltp) (ED<15 OR SOCK=2) CLVL>29 FILTLVL>5 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide higher-value Normal tier Armors with less than 15 %ED after level 29 on filter level 5+ 
-//  3os Vendor Tag
-ItemDisplay[NMAG !INF !RW (brs OR rng OR ltp) !GEMMED !ETH SOCK=3 CLVL<30 SHOP]:%TAN%**%LIGHT_GRAY%*%GRAY%*  %GRAY%%NAME%  %GRAY%*%LIGHT_GRAY%*%TAN%**%GRAY%%CONTINUE%// 3os Vendor Tag
-
-// Low-Value Exceptional tier Armors (Ghost Armor, Serpentskin Armor, Demonhide Armor, Trellised Armor, Templar Coat, Embossed Plate, Chaos Armor, Ornate Armor)
-ItemDisplay[NMAG !INF !RW !GEMMED (xui OR xea OR xla OR xtu OR xlt OR xth OR xul OR xar) SOCK=0 CLVL>49 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide 0os at character level 50+
-ItemDisplay[NMAG !INF !RW !ETH SOCK=2 CLVL<50 (xui OR xea OR xla OR xtu)]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Notify for 2os noneth under level 50
-ItemDisplay[NMAG !INF !RW !ETH (SOCK=2 OR SOCK=3) (xrs OR xtp) CLVL<80]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 2 or 3 socket Cuirass and Mage Plate under level 80
-
-// Higher-Value Exceptional tier Armors (Linked Mail, Tigulated Mail, Mesh Armor, Cuirass, Russet Armor, Sharktooth Armor, Mage Plate)
-ItemDisplay[NMAG !INF !RW !GEMMED (xng OR xcl OR xhn OR xrs OR xpl OR xld OR xtp) (ED<13 OR SOCK=2) CLVL>79 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hides Select Nonsuperior Exceptional tier Armors after 79
-ItemDisplay[NMAG !INF !RW SUP !ETH (SOCK=0 OR SOCK=3) (xng OR xcl OR xhn OR xrs OR xpl OR xld OR xtp) ED>12 FILTLVL<11]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Superior, 3os
-ItemDisplay[NMAG !INF !RW !GEMMED (xng OR xcl OR xhn OR xrs OR xpl OR xld OR xtp) (ED<15 OR SOCK=2) CLVL>79 FILTLVL>10 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hides Select Nonsuperior Exceptional tier Armors after 79
-ItemDisplay[NMAG !INF !RW SUP !ETH (SOCK=0 OR SOCK=3) (xng OR xcl OR xhn OR xrs OR xpl OR xld OR xtp) ED>14 FILTLVL>10]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Superior, 3os
-
-// Elite tier: 
-ItemDisplay[NMAG !INF !RW !SUP !ETH (SOCK=2 OR SOCK=3 OR SOCK=4) ELT CHEST FILTLVL<6 CLVL<80]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 
-ItemDisplay[NMAG !INF !RW SUP ED>4 !ETH (SOCK=0 OR SOCK=2 OR SOCK=3 OR SOCK=4) FILTLVL<6 ELT CHEST]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Superior
-ItemDisplay[NMAG !INF !RW SUP ED>9 !ETH (SOCK=0 OR SOCK=2 OR SOCK=3 OR SOCK=4) FILTLVL>5 CLVL<90 ELT CHEST]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Superior
-ItemDisplay[NMAG !INF !RW SUP ED>11 !ETH (SOCK=0 OR SOCK=2 OR SOCK=3 OR SOCK=4) FILTLVL~6-10 CLVL>89 ELT CHEST]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Superior
-ItemDisplay[NMAG !INF !RW SUP ED>13 !ETH (SOCK=0 OR SOCK=2 OR SOCK=3 OR SOCK=4) FILTLVL~11-12 CLVL>89 ELT CHEST]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Superior
-
-ItemDisplay[NMAG !INF !RW !SUP ETH (SOCK=0 OR SOCK=2 OR SOCK=3 OR SOCK=4) ELT CHEST FILTLVL<6 CLVL<80]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Elite tier 0os, Eth
-ItemDisplay[NMAG !INF !RW SUP ETH ED>4 (SOCK=0 OR SOCK=3 OR SOCK=4) FILTLVL<6 ELT CHEST]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Elite tier 0os, Superior, Eth
-ItemDisplay[NMAG !INF !RW SUP ETH ED>9 (SOCK=0 OR SOCK=3 OR SOCK=4) FILTLVL>5 CLVL<90 ELT CHEST]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Elite tier 0os, Superior, Eth
-ItemDisplay[NMAG !INF !RW SUP ETH ED>11 (SOCK=0 OR SOCK=3 OR SOCK=4) FILTLVL>5 CLVL>89 ELT CHEST]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Elite tier 0os, Superior, Eth
-ItemDisplay[NMAG !INF !RW SUP ETH ED>4 SOCK=2 ELT CHEST FILTLVL<6 CLVL<90]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Elite tier 2os, Superior, Eth
-
-// ------------------------------------------------------------------------------
-//     ===============================  Shields  =============================   
-// ------------------------------------------------------------------------------
-
-// 	Normal tier
-ItemDisplay[NMAG !INF !RW CLVL>29 NORM SHIELD !bsh !lrg !kit !tow !DIN !NEC FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
-
-ItemDisplay[NMAG !INF !RW SOCK=0 NORM SHIELD !DIN !NEC FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// All Normal tiers 0os
-ItemDisplay[NMAG !INF !RW SOCK=2 NORM SHIELD !sml !bsh !sml !tow !DIN !NEC FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// All Normal tiers 2os
-ItemDisplay[NMAG !INF !RW SOCK=3 NORM SHIELD !lrg !kit !tow !DIN !NEC FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// All Normal tiers 3os
-
-//      Buckler
-ItemDisplay[NMAG buc CLVL>2 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide all white Bucklers past character level 2
-
-//      Small Shield
-ItemDisplay[NMAG !INF !RW sml !ETH SOCK=2 CLVL<10 !GEMMED]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 2os
-ItemDisplay[NMAG !INF !RW sml CLVL>19 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide all white small shields past character level 19
-
-//      Large Shield, Kite Shield, Tower Shield
-//  Hidden after level 60
-ItemDisplay[NMAG !INF !RW (lrg OR kit OR tow) !GEMMED CLVL>60 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide large shields after level 60
-//  Orange Ancient's Pledge Tag
-ItemDisplay[NMAG !INF !RW (lrg OR kit OR tow) !ETH SOCK=3 CLVL<30 !GEMMED]:%ORANGE%AP %GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 3os
-//  3os Vendor Tag
-ItemDisplay[NMAG !INF !RW (lrg OR kit OR tow) !GEMMED !ETH SOCK=3 CLVL<30 SHOP]:%ORANGE%**%TAN%**%LIGHT_GRAY%**%GRAY%**  %GRAY%%NAME%  %GRAY%**%LIGHT_GRAY%**%TAN%**%ORANGE%**%GRAY%{%ORANGE%**%TAN%**%LIGHT_GRAY%**%GRAY%*   %ORANGE%Ancient's Pledge   %GRAY%*%LIGHT_GRAY%**%TAN%**%ORANGE%**}// 3os Vendor Tag
-//  Notification for good block rhyme base
-ItemDisplay[NMAG !INF !RW tow !ETH SOCK=2 CLVL<50]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 2os
-
-//      Bone Shield
-ItemDisplay[NMAG !INF !RW bsh CLVL>49 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
-ItemDisplay[NMAG !INF !RW !ETH SOCK=2 bsh CLVL<50]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 2os
-
-
-// 	Exceptional tier
-ItemDisplay[NMAG !INF !RW EXC SHIELD !xsh !DIN !NEC FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// All Exceptional tiers 0os
-
-//      Grim Shield
-ItemDisplay[NMAG !INF !RW xsh SOCK=0 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide 0os
-ItemDisplay[NMAG !INF !RW xsh CLVL>79 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide Nonmagical grim shields after character level 79
-ItemDisplay[NMAG !INF !RW xsh CLVL<80 !ETH SOCK=2]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Notify 2os Grim Shields before level 80
-
-
-//  Elite tier Shield
-ItemDisplay[NMAG !INF !RW ELT SHIELD !uit !ush !uow !uts !DIN !NEC FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide elite tiers that aren't Monarch Aegis Ward or Troll Nest
-
-//      Monarch
-ItemDisplay[NMAG !INF !RW uit ETH FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide eth monarchs
-ItemDisplay[NMAG !INF !RW uit (SOCK=2 OR SOCK=3) FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide 2os and 3os Monarchs
-
-ItemDisplay[NMAG !INF !RW uit SOCK=0 ED<5 CLVL>79 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide nonsuperior 0os Monarch after level 79
-ItemDisplay[NMAG !INF !RW uit SOCK=0 !ETH CLVL<80 !PALADIN !NECROMANCER !ASSASSIN]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Show and notify for 0os Monarchs before level 80
-ItemDisplay[NMAG !INF !RW uit SOCK=4 !ETH CLVL<80 !PALADIN !NECROMANCER !ASSASSIN]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Show and notify for 4os Monarchs before level 80
-
-//      Aegis
-ItemDisplay[NMAG !INF !RW uow !ETH FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide noneth Aegis
-ItemDisplay[NMAG !INF !RW uow (SOCK=2 OR SOCK=3) FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide 2 and 3 socket Aegis
-ItemDisplay[NMAG !INF !RW uow ETH ED<5 FILTLVL>5 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide Wards without 5%ED or more after filter level 5
-ItemDisplay[NMAG !INF !RW uow ETH SUP ED>4 (SOCK=0 OR SOCK=4)]:%GREEN%Exile %GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Superior, 0os or 4os
-
-//      Ward
-ItemDisplay[NMAG !INF !RW uts !ETH FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide noneth Wards
-ItemDisplay[NMAG !INF !RW uts (SOCK=2 OR SOCK=3) FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide 2 and 3 socket Wards
-ItemDisplay[NMAG !INF !RW uts ETH ED<5 FILTLVL>5 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide Wards without 5%ED or more after filter level 5
-ItemDisplay[NMAG !INF !RW uts ED>4 SUP ETH (SOCK=0 OR SOCK=4)]:%GREEN%Exile%GRAY% %NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Superior, 0os or 4os
-
-//      Troll Nest
-ItemDisplay[NMAG !INF !RW ush ETH FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide eth Troll Nests
-ItemDisplay[NMAG !INF !RW ush ED<5 !ETH SOCK=0 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide noneth 0os Troll Nests
-ItemDisplay[NMAG !INF !RW ush SOCK=2 FILTLVL>5 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide noneth 0os Troll Nests
-ItemDisplay[NMAG !INF !RW ush ED<5 FILTLVL>5 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide Troll Nests without 5 or more ED
-
-// ------------------------------------------------------------------------------
 //     ================================  Axes  ==============================   
 // ------------------------------------------------------------------------------
 
@@ -3339,17 +3338,20 @@ ItemDisplay[NMAG !INF !RW CLVL>69 (9la OR 9ba OR 9bt OR 9ga OR 9gi) FILTLVL>0 !(
 
 // 	    Elite tier
 //      Berserker Axe, Ettin Axe, and War Spike
-ItemDisplay[NMAG !INF !RW !ETH ED<5 SOCK=0 (72a OR 7wa OR 7mp) FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide 0os noneth nonsuperior Berserker, Ettin Axe,  Axe and War Spike
-ItemDisplay[NMAG !INF !RW !ETH ED<5 !SOCK=5 (72a OR 7wa OR 7mp) FILTLVL>5 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide nonsuperior or SUP without ED Berserker, Ettin Axe,  Axe and War Spike
-ItemDisplay[NMAG !INF !RW ETH (SOCK=0 OR SOCK=4 OR SOCK=5 OR SOCK=6) (72a OR 7wa)]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 0, 4, 5, and 6os Berserker Axe, Ettin Axe
+ItemDisplay[NMAG !INF !RW !ETH ED<5 SOCK=0 (72a OR 7wa) FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide 0os noneth nonsuperior Berserker, Ettin Axe,  Axe and War Spike
+ItemDisplay[NMAG !INF !RW !ETH ED<5 (72a OR 7wa) FILTLVL>5 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide nonsuperior or SUP without ED Berserker, Ettin Axe,  Axe and War Spike
+ItemDisplay[NMAG !INF !RW ETH FILTLVL<11 (72a OR 7wa) (SOCK=0 OR SOCK=4 OR SOCK=5 OR SOCK=6)]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 0, 4, 5, and 6os Berserker Axe, Ettin Axe
+ItemDisplay[NMAG !INF !RW ETH ED>11 FILTLVL>10 (72a OR 7wa) (SOCK=0 OR SOCK=4 OR SOCK=5 OR SOCK=6)]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 0, 4, 5, and 6os Berserker Axe, Ettin Axe
 
 //      Hide other 1 Handed axes
-ItemDisplay[NMAG !INF !RW (7ha OR 7ax) FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide All other (Bad) Elite 1-Handed Axes tiers
+ItemDisplay[NMAG !INF !RW (7ha OR 7ax OR 7mp) FILTLVL>0 CLVL>79 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide All other (Bad) Elite 1-Handed Axes tiers
 
 //      2-Handed Axes
-ItemDisplay[NMAG !INF !RW !ETH (7bt OR 7ga OR 7ba OR 7gi OR 7la) FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide noneth Elite 2H Axes
-ItemDisplay[NMAG !INF !RW ETH (SOCK=2 OR SOCK=3) (7bt OR 7ga OR 7ba OR 7gi OR 7la) FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide 2os and 3os Elite 2-Handed Axes
-ItemDisplay[NMAG !INF !RW ETH ED<5 (7bt OR 7ga OR 7ba OR 7gi OR 7la) FILTLVL>5 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide Elite 2-Handed Axes without 5%ED or more after filter level 5
+ItemDisplay[NMAG !INF !RW !ETH (7bt OR 7ga OR 7ba OR 7gi OR 7la) SOCK=0 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide noneth 0 socket Elite 2H Axes
+ItemDisplay[NMAG !INF !RW !ETH (7bt OR 7ga OR 7ba OR 7gi OR 7la) CLVL>79 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide noneth Elite 2H Axes
+ItemDisplay[NMAG !INF !RW ETH (SOCK=2 OR SOCK=3) (7bt OR 7ga OR 7ba OR 7gi OR 7la) FILTLVL>0 CLVL>79 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide 2os and 3os Elite 2-Handed Axes
+ItemDisplay[NMAG !INF !RW ETH ED<5 FILTLVL>5 (7bt OR 7ga OR 7ba OR 7gi OR 7la) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide Elite 2-Handed Axes without 5%ED or more after filter level 5
+ItemDisplay[NMAG !INF !RW ETH ED<12 FILTLVL>10 (7bt OR 7ga OR 7ba OR 7gi OR 7la) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide Elite 2-Handed Axes without 5%ED or more after filter level 5
 
 // ------------------------------------------------------------------------------
 //     ================================ Bows ===============================
@@ -3387,25 +3389,28 @@ ItemDisplay[NMAG !INF !RW (8lx OR 8mx OR 8hx) CLVL>69 FILTLVL>0 !(MAPID=1 OR MAP
 ItemDisplay[NMAG !INF !RW 8rx SOCK=0 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 ItemDisplay[NMAG !INF !RW 8rx (SOCK=2 OR SOCK=3 OR SOCK=5) CLVL>49 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 ItemDisplay[NMAG !INF !RW 8rx SOCK=4 FILTLVL<6]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 4os Chu-Ko-Nus//
-ItemDisplay[NMAG !INF !RW 8rx SOCK=4 SUP ED>4]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 4os Chu-Ko-Nus//
+ItemDisplay[NMAG !INF !RW 8rx SOCK=4 SUP ED>4 FILTLVL<11]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 4os Chu-Ko-Nus//
+ItemDisplay[NMAG !INF !RW 8rx SOCK=4 FILTLVL>10 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// 4os Chu-Ko-Nus//
 
 //  Hide other Elite tiers
 ItemDisplay[NMAG !INF !RW 6hx (SOCK=2 OR SOCK=3) FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 ItemDisplay[NMAG !INF !RW 6hx (SOCK=0 OR SOCK=4 OR SOCK=5 OR SOCK=6) ED<5 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide Colossus Crossbows without 5%ED or more
+ItemDisplay[NMAG !INF !RW 6hx (SOCK=0 OR SOCK=4 OR SOCK=5 OR SOCK=6) ED<12 FILTLVL>10 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide Colossus Crossbows without 5%ED or more
 
 ItemDisplay[NMAG !INF !RW (6lx OR 6mx) SOCK=0 ED<5 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 ItemDisplay[NMAG !INF !RW (6lx OR 6mx) (SOCK=2 OR SOCK=3) FILTLVL>1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 ItemDisplay[NMAG !INF !RW (6lx OR 6mx) SOCK=4 FILTLVL<6]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// All 4os Pellet Bows and Gorgon Crossbows
 ItemDisplay[NMAG !INF !RW (6lx OR 6mx) (SOCK=0 OR SOCK=4) ED<5 FILTLVL>5 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// After filter level 5, hide Pellet Bows and Gorgon Crossbows without 5% or more ED
 ItemDisplay[NMAG !INF !RW (6lx OR 6mx) (SOCK=0 OR SOCK=4) SUP ED>9 FILTLVL<6]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 10ED+ 4os Pellet Bows and Gorgon Crossbows filter levels 1-5
-ItemDisplay[NMAG !INF !RW (6lx OR 6mx) (SOCK=0 OR SOCK=4) SUP ED>12 FILTLVL>5]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 13ED+ 4os Pellet Bows and Gorgon Crossbows filter levels 6+
+ItemDisplay[NMAG !INF !RW (6lx OR 6mx) (SOCK=0 OR SOCK=4) SUP ED>11 FILTLVL>5]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 12ED+ 4os Pellet Bows and Gorgon Crossbows filter levels 6+
 
 ItemDisplay[NMAG !INF !RW 6rx SOCK=0 ED<5 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
-ItemDisplay[NMAG !INF !RW 6rx (SOCK=2 OR SOCK=3) FILTLVL>1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
+ItemDisplay[NMAG !INF !RW 6rx (SOCK=2 OR SOCK=3) FILTLVL>5 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 ItemDisplay[NMAG !INF !RW 6rx !SOCK=4 ED<5 FILTLVL>5 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// After filter level 5, hide Demon crossbows without 5% or more ED
 ItemDisplay[NMAG !INF !RW 6rx SOCK=0 SUP ED>9 FILTLVL<6]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 10ED+ 4os Demon crossbows//
 
-ItemDisplay[NMAG !INF !RW 6rx SOCK=4]:%ORANGE%Wrath %GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 4os Demon crossbow
+ItemDisplay[NMAG !INF !RW 6rx SOCK=4 FILTLVL<11]:%ORANGE%Wrath %GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 4os Demon crossbow
+ItemDisplay[NMAG !INF !RW 6rx SOCK=4 FILTLVL>10 ED>11]:%ORANGE%Wrath %GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 4os Demon crossbow
 
 // ------------------------------------------------------------------------------
 //     ===================  Javelins and Throwing Weapons  =================== 
@@ -3446,20 +3451,25 @@ ItemDisplay[NMAG !INF !RW ETH (9wh OR 9m9 OR 9gm) (FILTLVL>5 OR CLVL>79) FILTLVL
 ItemDisplay[NMAG !INF !RW !ETH 7gm SOCK=0 ED<5 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide Non-eth
 ItemDisplay[NMAG !INF !RW 7gm SOCK=2 CLVL>79 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// All tiers, 2os
 ItemDisplay[NMAG !INF !RW 7gm (SOCK=0 OR SOCK=5 OR SOCK=6) FILTLVL<6 (CLVL<90 OR ETH)]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// All tiers, 4os
-ItemDisplay[NMAG !INF !RW 7gm (SOCK=0 OR SOCK=5 OR SOCK=6) ED>4 FILTLVL>5 ]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// All tiers, 4os
-ItemDisplay[NMAG !INF !RW 7gm ED<5 FILTLVL>5 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
+ItemDisplay[NMAG !INF !RW 7gm (SOCK=0 OR SOCK=5 OR SOCK=6) ED>4 FILTLVL~6-10]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// All tiers, 4os
+ItemDisplay[NMAG !INF !RW 7gm (SOCK=0 OR SOCK=5 OR SOCK=6) ED>11 FILTLVL>10]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// All tiers, 4os
+ItemDisplay[NMAG !INF !RW 7gm ED<5 FILTLVL~6-10 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
+ItemDisplay[NMAG !INF !RW 7gm ED<12 FILTLVL>10 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
 // 	Legendary Mallets
 ItemDisplay[NMAG !INF !RW !ETH 7wh SOCK=0 ED<5 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide Non-eth
 ItemDisplay[NMAG !INF !RW 7wh (SOCK=2 OR SOCK=4) FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
-ItemDisplay[NMAG !INF !RW 7wh ED<5 FILTLVL>5 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
+ItemDisplay[NMAG !INF !RW 7wh ED<5 FILTLVL~6-10 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
+ItemDisplay[NMAG !INF !RW 7wh ED<12 FILTLVL>10 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
 // 	Ogre Mauls
 ItemDisplay[NMAG !INF !RW !ETH 7m7 SOCK=0 ED<5 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide Non-eth
 ItemDisplay[NMAG !INF !RW 7m7 SOCK=2 CLVL>79 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// All tiers, 2os
 ItemDisplay[NMAG !INF !RW 7m7 (SOCK=5 OR SOCK=6) FILTLVL<6 (CLVL<90 OR ETH)]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// All tiers, 4os
-ItemDisplay[NMAG !INF !RW 7m7 (SOCK=0 OR SOCK=5 OR SOCK=6) ED>4 FILTLVL>5 ]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// All tiers, 4os
-ItemDisplay[NMAG !INF !RW 7m7 ED<5 FILTLVL>5 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
+ItemDisplay[NMAG !INF !RW 7m7 (SOCK=0 OR SOCK=5 OR SOCK=6) ED>4 FILTLVL~6-10]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// All tiers, 4os
+ItemDisplay[NMAG !INF !RW 7m7 (SOCK=0 OR SOCK=5 OR SOCK=6) ED>11 FILTLVL>10]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// All tiers, 4os
+ItemDisplay[NMAG !INF !RW 7m7 ED<5 FILTLVL~6-10 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
+ItemDisplay[NMAG !INF !RW 7m7 ED<12 FILTLVL>10 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
 // ------------------------------------------------------------------------------
 //       =============================  Maces  ==========================
@@ -3503,15 +3513,8 @@ ItemDisplay[NMAG !INF !RW ELT POLEARM !ETH (CLVL>89 OR FILTLVL>5) ED<5 FILTLVL>0
 
 ItemDisplay[NMAG !INF !RW ELT POLEARM ETH (SOCK=0 OR SOCK=3 OR SOCK=4 OR SOCK=5) FILTLVL<6]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
 
-ItemDisplay[NMAG !INF !RW ELT POLEARM ETH (SUP ED>4) (SOCK=0 OR SOCK=3 OR SOCK=5 OR SOCK=6)]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// All Elite tiers 4os, Eth
-
-//      				Thresher
-ItemDisplay[NMAG !INF !RW ED<5 ETH (SOCK=0 OR SOCK=3 OR SOCK=5) 7s8 FILTLVL<6]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 0, 3, 5os Eth
-ItemDisplay[NMAG !INF !RW ED<5 ETH SOCK=4 7s8]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 4os Eth
-
-//      				Giant Thresher
-ItemDisplay[NMAG !INF !RW ED<5 ETH (SOCK=0 OR SOCK=3 OR SOCK=5 OR SOCK=6) 7wc FILTLVL<6]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 0, 3, 5, 6os Eth
-ItemDisplay[NMAG !INF !RW ED<5 ETH SOCK=4 7wc]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 4os Eth
+ItemDisplay[NMAG !INF !RW ELT POLEARM ETH SUP ED>4 (SOCK=0 OR SOCK=3 OR SOCK=5 OR SOCK=6) FILTLVL~6-10]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// All Elite tiers 4os, Eth
+ItemDisplay[NMAG !INF !RW ELT POLEARM ETH SUP ED>11 (SOCK=0 OR SOCK=3 OR SOCK=5 OR SOCK=6) FILTLVL>10]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// All Elite tiers 4os, Eth
 
 // ------------------------------------------------------------------------------
 //    =============================  Spears  =================================
@@ -3537,16 +3540,9 @@ ItemDisplay[NMAG !INF !RW !ETH (7sr OR 7tr OR 7br OR 7st OR 7p7) ED<5 ((CLVL>89 
 // After filter level 5, hide elite spears without 5 or more ED (unless it is eth with 4 or 5 sockets)
 ItemDisplay[NMAG !INF !RW !(ETH (SOCK=4 OR SOCK=5)) ED<5 (7sr OR 7tr OR 7br OR 7st OR 7p7) FILTLVL>5 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
-ItemDisplay[NMAG !INF !RW ELT SPEAR ETH (SUP ED>4) (SOCK=0 OR SOCK=3 OR SOCK=4 OR SOCK=5 OR SOCK=6)]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// All Elite tiers 4os, Eth
-
-// Elite tier Polearms
-//      Mancatcher
-ItemDisplay[NMAG !INF !RW ED<5 ETH (SOCK=0 OR SOCK=3 OR SOCK=5) 7br FILTLVL<6]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 0os, Eth, Nonsuperior
-ItemDisplay[NMAG !INF !RW ED<5 ETH SOCK=4 7br]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 4os, Eth
-
-//      War Pike
-ItemDisplay[NMAG !INF !RW ED<5 ETH (SOCK=0 OR SOCK=3) FILTLVL<6 7p7]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 0, 3os Eth
-ItemDisplay[NMAG !INF !RW ED<5 ETH (SOCK=4 OR SOCK=5 OR SOCK=6) 7p7]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 4, 5, 6os Eth
+ItemDisplay[NMAG !INF !RW ELT SPEAR ETH (SOCK=0 OR SOCK=3 OR SOCK=4 OR SOCK=5 OR SOCK=6) FILTLVL<6]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// All Elite tiers 4os, Eth
+ItemDisplay[NMAG !INF !RW ELT SPEAR ETH SUP ED>4 (SOCK=0 OR SOCK=3 OR SOCK=4 OR SOCK=5 OR SOCK=6) FILTLVL<11]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// All Elite tiers 4os, Eth
+ItemDisplay[NMAG !INF !RW ELT SPEAR ETH SUP ED>11 (SOCK=0 OR SOCK=3 OR SOCK=4 OR SOCK=5 OR SOCK=6) FILTLVL>10]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// All Elite tiers 4os, Eth
 
 // ------------------------------------------------------------------------------
 //    =========================  1-Handed Swords  ===========================
@@ -3604,11 +3600,8 @@ ItemDisplay[NMAG !INF !RW 7cr SOCK=2 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75
 ItemDisplay[NMAG !INF !RW 7cr ED<5 SOCK=3 FILTLVL<6]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 3os
 ItemDisplay[NMAG !INF !RW 7cr ED<5 SOCK=5 FILTLVL<6]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 5os
 
-ItemDisplay[NMAG !INF !RW 7cr (SUP ED>4) SOCK=0]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 0os, Superior
-ItemDisplay[NMAG !INF !RW 7cr (SUP ED>4) SOCK=3 FILTLVL<11]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 3os, Superior
-ItemDisplay[NMAG !INF !RW 7cr (SUP ED>4) SOCK=4 FILTLVL<11]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 4os, Superior
-ItemDisplay[NMAG !INF !RW 7cr (SUP ED>4) SOCK=5]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 5os, Superior
-ItemDisplay[NMAG !INF !RW 7cr (SUP ED>4) SOCK=6 FILTLVL<11]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 6os, Superior
+ItemDisplay[NMAG !INF !RW 7cr SUP ED>4 (SOCK=0 OR SOCK=3 OR SOCK=4 OR SOCK=5 OR SOCK=6) FILTLVL~6-10]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 0os, Superior
+ItemDisplay[NMAG !INF !RW 7cr SUP ED>11 (SOCK=0 OR SOCK=3 OR SOCK=4 OR SOCK=5 OR SOCK=6) FILTLVL>10]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 0os, Superior
 
 // ------------------------------------------------------------------------------
 //    =========================  2-Handed Swords  ===========================
@@ -3623,61 +3616,27 @@ ItemDisplay[NMAG !INF !RW (92h OR 9cm OR 9gs OR 9b9 OR 9fb OR 9gd) SOCK=0 FILTLV
 ItemDisplay[NMAG !INF !RW (92h OR 9cm OR 9gs OR 9b9 OR 9fb OR 9gd) CLVL>69 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
 //      Elite 2-Handed Swords
+//      Legend Sword (72h) Highland Blades (7cm) Champion Swords (7b7) Balrog Blade 7gs
+ItemDisplay[NMAG !INF !RW SOCK=2 (72h OR 7cm OR 7b7 OR 7gs) FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide 2 socket Balrog blades
+ItemDisplay[NMAG !INF !RW !ETH SOCK=0 (72h OR 7cm OR 7b7 OR 7gs) FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide nonethereal Balrog blades with 0 sockets
+ItemDisplay[NMAG !INF !RW !ETH (72h OR 7cm OR 7b7 OR 7gs) FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide noneth Balrog Blades
+ItemDisplay[NMAG !INF !RW ETH (SOCK=0 OR SOCK=3 OR SOCK=4) (72h OR 7cm OR 7b7 OR 7gs) FILTLVL<6]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// All tiers, 0os, Eth
+ItemDisplay[NMAG !INF !RW ETH (SOCK=0 OR SOCK=3 OR SOCK=4) (72h OR 7cm OR 7b7 OR 7gs) FILTLVL~6-10 SUP ED>4]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
+ItemDisplay[NMAG !INF !RW ETH (SOCK=0 OR SOCK=3 OR SOCK=4) (72h OR 7cm OR 7b7 OR 7gs) FILTLVL>10 SUP ED>11]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
+ItemDisplay[NMAG !INF !RW ED<5 (72h OR 7cm OR 7b7 OR 7gs) FILTLVL>5 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
-//      Legend Sword (72h)
-ItemDisplay[NMAG !INF !RW SOCK=2 72h FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide 2 socket Legend Swords
-ItemDisplay[NMAG !INF !RW !ETH SOCK=0 72h FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide noneth 0-socket Legend Swords
-ItemDisplay[NMAG !INF !RW !ETH 72h FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide noneth Legend Swords on filter levels 2+
-ItemDisplay[NMAG !INF !RW ETH (SOCK=0 OR SOCK=3) 72h FILTLVL<6]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// All tiers, 0os, Eth
-ItemDisplay[NMAG !INF !RW ETH (SOCK=0 OR SOCK=3) 72h FILTLVL>5 SUP ED>4]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
-ItemDisplay[NMAG !INF !RW ED<5 72h FILTLVL>5 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
-
-//      Highland Blades (7cm)
-ItemDisplay[NMAG !INF !RW SOCK=2 7cm FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide 2os Highland Blades
-ItemDisplay[NMAG !INF !RW !ETH SOCK=0 7cm FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide nonethereal Highland Blades with 0 sockets
-ItemDisplay[NMAG !INF !RW !ETH 7cm FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide noneth Highland Blades after filter level 1
-ItemDisplay[NMAG !INF !RW ETH (SOCK=0 OR SOCK=3 OR SOCK=4) 7cm FILTLVL<6]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// All tiers, 0os, Eth
-ItemDisplay[NMAG !INF !RW ETH (SOCK=0 OR SOCK=3 OR SOCK=4) 7cm FILTLVL>5 SUP ED>4]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
-ItemDisplay[NMAG !INF !RW ED<5 7cm FILTLVL>5 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
-
-//      Champion Swords (7b7)
-ItemDisplay[NMAG !INF !RW SOCK=2 7b7 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide 2os Champion swords
-ItemDisplay[NMAG !INF !RW !ETH SOCK=0 7b7 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide nonethereal Champion swords with 0 sockets
-ItemDisplay[NMAG !INF !RW !ETH 7b7 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide noneth Champion swords after filter level 1
-ItemDisplay[NMAG !INF !RW ETH (SOCK=0 OR SOCK=3 OR SOCK=4) 7b7 FILTLVL<6]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// All tiers, 0os, Eth
-ItemDisplay[NMAG !INF !RW ETH (SOCK=0 OR SOCK=3 OR SOCK=4) 7b7 FILTLVL>5 SUP ED>4]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
-ItemDisplay[NMAG !INF !RW ED<5 7b7 FILTLVL>5 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
-
-//      Balrog Blade (7gs)
-ItemDisplay[NMAG !INF !RW SOCK=2 7gs FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide 2 socket Balrog blades
-ItemDisplay[NMAG !INF !RW !ETH SOCK=0 7gs FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide nonethereal Balrog blades with 0 sockets
-ItemDisplay[NMAG !INF !RW !ETH 7gs FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide noneth Balrog Blades
-ItemDisplay[NMAG !INF !RW ETH (SOCK=0 OR SOCK=3 OR SOCK=4) 7gs FILTLVL<6]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// All tiers, 0os, Eth
-ItemDisplay[NMAG !INF !RW ETH (SOCK=0 OR SOCK=3 OR SOCK=4) 7gs FILTLVL>5 SUP ED>4]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
-ItemDisplay[NMAG !INF !RW ED<5 7gs FILTLVL>5 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
-
-//      Colossus Blade (7gd)
-ItemDisplay[NMAG !INF !RW SOCK=2 7gd FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide 2 socket Colossus Blades
-ItemDisplay[NMAG !INF !RW !ETH 7gd (SOCK=0 OR SOCK=4 OR SOCK=5 OR SOCK=6) ED<5 FILTLVL>0 CLVL>79 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide non-ED% Colossus Blades with 0, 5, 6 sockets on filter level 2+
-ItemDisplay[NMAG !INF !RW !ETH 7gd SOCK=3 FILTLVL>0 CLVL>79 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide noneth Colossus Blades
+//      Colossus Blade (7gd) Colossus Sword (7fb)
+ItemDisplay[NMAG !INF !RW SOCK=2 (7gd OR 7fb) FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide 2 socket Colossus Blades
+ItemDisplay[NMAG !INF !RW !ETH (7gd OR 7fb) (SOCK=0 OR SOCK=4 OR SOCK=5 OR SOCK=6) ED<5 FILTLVL>0 CLVL>79 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide non-ED% Colossus Blades with 0, 5, 6 sockets on filter level 2+
+ItemDisplay[NMAG !INF !RW !ETH (7gd OR 7fb) SOCK=3 FILTLVL>0 CLVL>79 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide noneth Colossus Blades
 
 // Notify for all 0, 3, 4, 5, and 6 socket eth Colossus Blades before filter level 5
-ItemDisplay[NMAG !INF !RW ETH (SOCK=0 OR SOCK~3-6) 7gd FILTLVL<6]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
+ItemDisplay[NMAG !INF !RW ETH (SOCK=0 OR SOCK~3-6) (7gd OR 7fb) FILTLVL<6]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
 // Notify for superior 5%ED or more 0, 3, 4, 5, and 6 socket eth Colossus Blades after filter level 5
-ItemDisplay[NMAG !INF !RW ETH (SOCK=0 OR SOCK~3-6) 7gd SUP ED>4 FILTLVL>5]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
+ItemDisplay[NMAG !INF !RW ETH (SOCK=0 OR SOCK~3-6) (7gd OR 7fb) SUP ED>4 FILTLVL~6-10]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
+ItemDisplay[NMAG !INF !RW ETH (SOCK=0 OR SOCK~3-6) (7gd OR 7fb) SUP ED>11 FILTLVL>10]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
 // Hide Colossus Blades that don't have 5%ED or more after filter level 5
-ItemDisplay[NMAG !INF !RW ED<5 7gd FILTLVL>5 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
-
-//      Colossus Sword (7fb)
-ItemDisplay[NMAG !INF !RW SOCK=2 7fb FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide 2 socket Colossus Swords
-ItemDisplay[NMAG !INF !RW !ETH 7fb (SOCK=0 OR SOCK=4 OR SOCK=5) ED<5 FILTLVL>0 CLVL>79 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide nonethereal Colossus Swords with 0 sockets
-ItemDisplay[NMAG !INF !RW !ETH 7fb SOCK=3 FILTLVL>0 CLVL>79 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide noneth Colossus Swords after filter level 1
-// Notify for all 0, 3, 4, and 5 socket Colossus Swords before filter level 5
-ItemDisplay[NMAG !INF !RW ETH (SOCK=0 OR SOCK=3 OR SOCK=4 OR SOCK=5) 7fb FILTLVL<6]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// All tiers, 0os, Eth
-// Notify for superior 5%ED or more 0, 3, 4, and 5 socket Colossus Swords after filter level 5
-ItemDisplay[NMAG !INF !RW ETH (SOCK=0 OR SOCK=3 OR SOCK=4 OR SOCK=5) 7fb FILTLVL>5 SUP ED>4]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
-// Hide Colossus Swords that don't have 5%ED or more after filter level 5
-ItemDisplay[NMAG !INF !RW ED<5 7fb FILTLVL>5 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
+ItemDisplay[NMAG !INF !RW ED<5 (7gd OR 7fb) FILTLVL>5 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
 // ------------------------------------------------------------------------------
 //    =========================  Ethereal Nonmagical  =======================
