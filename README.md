@@ -1,3 +1,11 @@
+# **Contact and Support:**
+
+Message me on Discord if you have any questions, feedback, or suggestions: **erazure**
+
+Please consider donating to my [**PayPal**](https://paypal.me/ErazurePD2LootFilter) or subscribing to my [**Patreon**](https://www.patreon.com/erazure_pd2/membership) if you like my work and want to support the development of my filters
+
+![heart medium](https://github.com/FiltersBy-Erazure/PD2-Loot-Filter/assets/76863417/cb45f82f-26ca-49ec-b5c7-bb3d67583fe1)
+
 # **Season 10 Desecration Update:**
 
 My loot filters are updated ahead of the October 25th ladder reset. You can now select either version on the PD2 Launcher!
@@ -11,14 +19,6 @@ My loot filters are updated ahead of the October 25th ladder reset. You can now 
     - Vex, Ohm, Lo, Larzuk's Puzzlebox
 
 ![image](https://github.com/user-attachments/assets/dc69f7a8-4752-49f0-a01a-696fee6bc41f)
-
-# **Contact and Support:**
-
-Message me on Discord if you have any questions, feedback, or suggestions: **erazure**
-
-Please consider donating to my [**PayPal**](https://paypal.me/ErazurePD2LootFilter) or subscribing to my [**Patreon**](https://www.patreon.com/erazure_pd2/membership) if you like my work and want to support the development of my filters
-
-![heart medium](https://github.com/FiltersBy-Erazure/PD2-Loot-Filter/assets/76863417/cb45f82f-26ca-49ec-b5c7-bb3d67583fe1)
 
 # **Examples of Stylization and Aesthetic:**
 
