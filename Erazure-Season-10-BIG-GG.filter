@@ -153,10 +153,10 @@ ItemDisplay[rvs CLVL>59 CLVL<80 !FILTLVL>10 !((MAPID>160 MAPID<164) OR MAPID=137
 ItemDisplay[rvs CLVL>79 !FILTLVL>10]:%GRAY%i%PURPLE%(%WHITE% Juv %PURPLE%)%GRAY%i%WHITE%{%WHITE% Rejuvenation Potion }//
 
 ItemDisplay[rvl ((MAPID>160 MAPID<164) OR MAPID=137)]:%GRAY%i%PURPLE%(O)%GRAY%i%WHITE%{%WHITE% Full Rejuvenation Potion }//
-ItemDisplay[rvl FILTLVL>10]:%PURPLE%i(%WHITE% Full %PURPLE%)i%WHITE%{%WHITE% Full Rejuvenation Potion }//
+ItemDisplay[rvl FILTLVL>10]:%PURPLE%i(%WHITE% Full %PURPLE%)i%WHITE%{%WHITE% Full Rejuvenation Potion }%DOT-9B%%PX-20%%TIER-0%//
 ItemDisplay[rvl FILTLVL=0 !((MAPID>160 MAPID<164) OR MAPID=137)]:%PURPLE%i(%WHITE% Full %PURPLE%)i%WHITE%{%WHITE% Full Rejuvenation Potion }//
 ItemDisplay[rvl CLVL<80 !((MAPID>160 MAPID<164) OR MAPID=137) !FILTLVL=0]:%PURPLE%i(%WHITE% Full Rejuv %PURPLE%)i%WHITE%{%WHITE% Full Rejuvenation Potion }%DOT-9B%%PX-20%%TIER-0%//
-ItemDisplay[rvl CLVL>79 !((MAPID>160 MAPID<164) OR MAPID=137)]:%PURPLE%i(%WHITE% Full %PURPLE%)i%WHITE%{%WHITE% Full Rejuvenation Potion }//
+ItemDisplay[rvl CLVL>79 !((MAPID>160 MAPID<164) OR MAPID=137) !FILTLVL=0]:%PURPLE%i(%WHITE% Full %PURPLE%)i%WHITE%{%WHITE% Full Rejuvenation Potion }%DOT-9B%%PX-20%%TIER-0%//
 
 
 // =====================================  Utility Potions  ==================================
@@ -2892,6 +2892,7 @@ ItemDisplay[NMAG !INF !RW uit ETH FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR
 ItemDisplay[NMAG !INF !RW uit (SOCK=2 OR SOCK=3) FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide 2os and 3os Monarchs
 
 ItemDisplay[NMAG !INF !RW uit SOCK=0 ED<5 CLVL>79 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide nonsuperior 0os Monarch after level 79
+ItemDisplay[NMAG !INF !RW uit ED<5 CLVL>79 FILTLVL>5 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide all nonsuperior Monarchs after level 79 on filter levels 6+
 ItemDisplay[NMAG !INF !RW uit SOCK=0 !ETH CLVL<80 !PALADIN !NECROMANCER !ASSASSIN]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Show and notify for 0os Monarchs before level 80
 ItemDisplay[NMAG !INF !RW uit SOCK=4 !ETH CLVL<80 !PALADIN !NECROMANCER !ASSASSIN]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Show and notify for 4os Monarchs before level 80
 
@@ -3451,8 +3452,8 @@ ItemDisplay[NMAG !INF !RW 6rx (SOCK=2 OR SOCK=3) FILTLVL>5 !(MAPID=1 OR MAPID=40
 ItemDisplay[NMAG !INF !RW 6rx !SOCK=4 ED<5 FILTLVL>5 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// After filter level 5, hide Demon crossbows without 5% or more ED
 ItemDisplay[NMAG !INF !RW 6rx SOCK=0 SUP ED>9 FILTLVL<6]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 10ED+ 4os Demon crossbows//
 
-ItemDisplay[NMAG !INF !RW 6rx SOCK=4 FILTLVL<11]:%ORANGE%Wrath %GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 4os Demon crossbow
-ItemDisplay[NMAG !INF !RW 6rx SOCK=4 FILTLVL>10 ED>11]:%ORANGE%Wrath %GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 4os Demon crossbow
+ItemDisplay[NMAG !INF !RW 6rx SOCK=4 (FILTLVL<11 OR (FILTLVL>10 ED>4))]:%ORANGE%Wrath %GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 4os Demon crossbow
+ItemDisplay[NMAG !INF !RW 6rx SOCK=4 FILTLVL>10 ED<5]:%ORANGE%Wrath %GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%TIER-0%%CONTINUE%// 4os Demon crossbow
 
 // ------------------------------------------------------------------------------
 //     ===================  Javelins and Throwing Weapons  =================== 
