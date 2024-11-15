@@ -107,5 +107,5 @@ My loot filters are updated ahead of the October 25th ladder reset. You can now 
 - **Set Items:**
   - Most set items are hidden
 - **Magic and Rare Items:**
-  - Rare armors (except circlets), weapons, arrows, and bolts are hidden
-  - Magic armors, weapons, jewels, and charms are hidden
+  - Rare armors (except circlets, belts, and boots), weapons, arrows, and bolts are hidden
+  - Magic armors, weapons, and large charms are hidden
