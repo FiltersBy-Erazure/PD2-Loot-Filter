@@ -28,7 +28,7 @@ ItemDisplay[box FILTLVL=12]:%NAME%{%WHITE%Filter Level: 12%CL%%GRAY%Hides H5, M5
 
 ItemDisplay[box FILTLVL=0]:%NAME%{%NAME%%CL%%GRAY%Level 12 Hides Crafting Bases, Flawless Gems, and Low Value Items%CL%%GRAY%Levels 8-9-10-11 Hide Most Non-Eth and Non-Magic Class Items%CL%%GRAY%Levels 3-4-5-6-7 Hide Some Rares and Non-Superior Items%CL%%GRAY%Level 2 Hides Additional Non-Magic/Magic Items%CL%Level 1 Shows Most Non-Magic/Magic Items}%CONTINUE%//
 ItemDisplay[box CLVL<20 !FILTLVL=0]:%NAME%{%NAME%%CL%%GRAY%For %GOLD%Increase and Decrease Filter Level%CL%%GRAY%For %GOLD%Always Show Items %GRAY%and Hotkeys%CL%Open Settings to Create Toggle}%CONTINUE%//
-ItemDisplay[box]:%NAME%{%NAME%%CL%%WHITE%Erazure: Season 10 v11.19}//
+ItemDisplay[box]:%NAME%{%NAME%%CL%%WHITE%Erazure: Season 10 v11.20}//
 
 // ==============================  Arrows and Bolts  ===============================
 
@@ -1346,11 +1346,11 @@ ItemDisplay[UNI !ID ((8s8 CLVL<90) OR (8mx CLVL<90) OR 8hx OR 6lw)]:%BLUE%X\%PUR
 //     Medium Value Bows and Crossbows
 ItemDisplay[UNI !ID 8s8 CLVL>89]:%NAME%%CONTINUE%// Witchwild String Short Siege Bow
 ItemDisplay[UNI !ID 8mx CLVL>89]:%NAME%%CONTINUE%// Pus Spitter Siege Crossbow
-ItemDisplay[UNI !ID 8rx CLVL<90]:%NAME%%CONTINUE%// Demon Machine Chu-Ko-Nu
+ItemDisplay[UNI !ID 8rx]:%NAME%%CONTINUE%// Demon Machine Chu-Ko-Nu
 ItemDisplay[UNI !ID 6rx CLVL<80]:%NAME%%CONTINUE%// Gut Siphon Demon Crossbow
 ItemDisplay[UNI !ID 6l7 CLVL<90]:%NAME%%CONTINUE%// Eaglehorn Crusader Bow
 ItemDisplay[UNI !ID 8sw (CLVL<90 OR AMAZON)]:%NAME%%CONTINUE%// Magewrath Rune Bow
-ItemDisplay[UNI !ID ((8s8 CLVL>89) OR (8mx CLVL>89) OR (8rx CLVL<90) OR (6rx CLVL<80) OR (6l7 CLVL<90) OR (8sw (CLVL<90 OR AMAZON)))]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%BORDER-08%%MAP-50%%DOT-59%%PX-6A%//
+ItemDisplay[UNI !ID ((8s8 CLVL>89) OR (8mx CLVL>89) OR 8rx OR (6rx CLVL<80) OR (6l7 CLVL<90) OR (8sw (CLVL<90 OR AMAZON)))]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%BORDER-08%%MAP-50%%DOT-59%%PX-6A%//
 
 //     High Value Daggers
 ItemDisplay[UNI !ID 7dg CLVL<90]:%NAME%%CONTINUE%// Wizardspike Bone Knife
@@ -1380,11 +1380,11 @@ ItemDisplay[UNI !ID 9ax CLVL<60]:%NAME%%CONTINUE%// Butcher's Pupil Cleaver
 ItemDisplay[UNI !ID 9ba CLVL<80]:%NAME%%CONTINUE%// Spellsteal Bearded Axe
 ItemDisplay[UNI !ID 72a]:%NAME%%CONTINUE%// Runemaster Ettin Axe
 ItemDisplay[UNI !ID 7bt CLVL>89]:%NAME%%CONTINUE%// Hellslayer Decapitator
-ItemDisplay[UNI !ID 9la (!ETH OR CLVL>89)]:%NAME%%CONTINUE%// Warlord's Trust Military Axe
+ItemDisplay[UNI !ID 9la (ETH CLVL>89)]:%NAME%%CONTINUE%// Warlord's Trust Military Axe
 ItemDisplay[UNI !ID 7gi (!ETH OR CLVL>89 OR !DRUID)]:%NAME%%CONTINUE%// Executioner's Justice Glorious Axe
 ItemDisplay[UNI !ID 7wa (!ETH OR CLVL>89 OR !(PALADIN OR BARBARIAN))]:%NAME%%CONTINUE%// Death Cleaver Berserker Axe
 ItemDisplay[UNI !ID 7ga (!ETH OR CLVL>89 OR !(DRUID OR BARBARIAN))]:%NAME%%CONTINUE%// Messerschmidt's Reaver Champion Axe
-ItemDisplay[UNI !ID ((9ha CLVL<60) OR (gix CLVL<60) OR (9gi CLVL<60) OR (9ax CLVL<60) OR (9ba CLVL<80) OR 72a OR (7bt CLVL>89) OR (9la (!ETH OR CLVL>89)) OR (7gi (!ETH OR CLVL>89 OR !DRUID)) OR (7wa (!ETH OR CLVL>89 OR !(PALADIN OR BARBARIAN))) OR (7ga (!ETH OR CLVL>89 OR !(DRUID OR BARBARIAN))))]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%BORDER-08%%MAP-50%%DOT-59%%PX-6A%//
+ItemDisplay[UNI !ID ((9ha CLVL<60) OR (gix CLVL<60) OR (9gi CLVL<60) OR (9ax CLVL<60) OR (9ba CLVL<80) OR 72a OR (7bt CLVL>89) OR (9la (ETH CLVL>89)) OR (7gi (!ETH OR CLVL>89 OR !DRUID)) OR (7wa (!ETH OR CLVL>89 OR !(PALADIN OR BARBARIAN))) OR (7ga (!ETH OR CLVL>89 OR !(DRUID OR BARBARIAN))))]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%BORDER-08%%MAP-50%%DOT-59%%PX-6A%//
 
 //     High Value Throwing Weapons
 ItemDisplay[UNI !ID 7b8 (ETH OR CLVL<90)]:%NAME%%CONTINUE%// Lacerator Winged Axe
@@ -1513,50 +1513,45 @@ ItemDisplay[UNI !ID ((9wn CLVL<60) OR (9yw (NECROMANCER OR CLVL<80)) OR (9gw !NE
 
 // Notify for all Normal Unique Items on Filter Levels 0-5
 ItemDisplay[UNI NORM !ID FILTLVL<3]:%GOLD%*%GRAY%* %WHITE%>  %NAME%  %WHITE%< %GRAY%*%GOLD%*%BORDER-21%%MAP-19%%DOT-61%%PX-20%//
-
 // Notify for all Normal Unique Items on Filter Levels 6-10 while under character level 80
 ItemDisplay[UNI NORM !ID FILTLVL~3-7 CLVL<80]:%GOLD%*%GRAY%* %WHITE%>  %NAME%  %WHITE%< %GRAY%*%GOLD%*%BORDER-21%%MAP-19%%DOT-61%%PX-20%//
 // Notify for select Normal Unique Items on Filter Levels 6-10 above character level 79
-ItemDisplay[UNI NORM !ID FILTLVL~3-7 CLVL>79 (vgl OR brs OR ltp OR tgl OR mgl)]:%GOLD%*%GRAY%* %WHITE%>  %NAME%  %WHITE%< %GRAY%*%GOLD%*%BORDER-21%%MAP-19%%DOT-61%%PX-20%//
+ItemDisplay[UNI NORM !ID FILTLVL~3-7 CLVL>79 (vgl OR ltp OR tgl OR mgl)]:%GOLD%*%GRAY%* %WHITE%>  %NAME%  %WHITE%< %GRAY%*%GOLD%*%BORDER-21%%MAP-19%%DOT-61%%PX-20%//
 // Don't notify for most Normal Unique Items on Filter Levels 6-10 above character level 79
-ItemDisplay[UNI NORM !ID FILTLVL~3-7 CLVL>79 !(vgl OR brs OR ltp OR tgl OR mgl)]:%GOLD%*%GRAY%* %WHITE%>  %NAME%  %WHITE%< %GRAY%*%GOLD%*//
-
+ItemDisplay[UNI NORM !ID FILTLVL~3-7 CLVL>79 !(vgl OR ltp OR tgl OR mgl)]:%GOLD%*%GRAY%* %WHITE%>  %NAME%  %WHITE%< %GRAY%*%GOLD%*//
 // Notify for select Normal Unique Items on filter levels 11-12
-ItemDisplay[UNI NORM !ID FILTLVL>7 (vgl OR brs OR ltp OR tgl OR mgl)]:%GOLD%*%GRAY%* %WHITE%>  %NAME%  %WHITE%< %GRAY%*%GOLD%*%BORDER-21%%MAP-19%%DOT-61%%PX-20%//
+ItemDisplay[UNI NORM !ID FILTLVL>7 (vgl OR ltp OR tgl OR mgl)]:%GOLD%*%GRAY%* %WHITE%>  %NAME%  %WHITE%< %GRAY%*%GOLD%*%BORDER-21%%MAP-19%%DOT-61%%PX-20%//
 // Don't notify for other Normal Unique Items on filter levels 11-12
 ItemDisplay[UNI NORM !ID FILTLVL~8-11 !(vgl OR ltp OR tgl OR mgl)]:%GOLD%*%GRAY%* %WHITE%>  %NAME%  %WHITE%< %GRAY%*%GOLD%*//
 ItemDisplay[UNI NORM !ID FILTLVL=12 !(vgl OR ltp OR tgl OR mgl)]://
 
+
 // Notify for All Exceptional Uniques on Filter Levels 0-5
 ItemDisplay[UNI EXC !ID FILTLVL<3]:%GOLD%*%GRAY%* %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%< %GRAY%*%GOLD%*%BORDER-21%%MAP-19%%DOT-61%%PX-20%//
-
 // Notify for All Exceptional Uniques on Filter Levels 6-10 while under character level 90
 ItemDisplay[UNI EXC !ID FILTLVL~3-7 CLVL<90]:%GOLD%*%GRAY%* %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%< %GRAY%*%GOLD%*%BORDER-21%%MAP-19%%DOT-61%%PX-20%//
 // Notify for select exceptional unique items on filter levels 11-12
-ItemDisplay[UNI EXC !ID FILTLVL~3-7 CLVL>89 (9ar OR ba6 OR 9wh OR dr2 OR ama OR xlt OR xld OR zvb OR xrn OR xul OR xar OR xlb OR ztb OR 9fc OR xui OR xkp OR xhm OR ne6 OR 9ba OR 9gs)]:%GOLD%*%GRAY%* %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%< %GRAY%*%GOLD%*%BORDER-21%%MAP-19%%DOT-61%%PX-20%//
+ItemDisplay[UNI EXC !ID FILTLVL~3-7 CLVL>89 (xrn OR xul OR xar OR 9fc OR ne6 OR 9gs)]:%GOLD%*%GRAY%* %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%< %GRAY%*%GOLD%*%BORDER-21%%MAP-19%%DOT-61%%PX-20%//
 // Don't notify for other exceptional unique items on filter levels 11-12
-ItemDisplay[UNI EXC !ID FILTLVL~3-7 CLVL>89 !(9ar OR ba6 OR 9wh OR dr2 OR ama OR xlt OR xld OR zvb OR xrn OR xul OR xar OR xlb OR ztb OR 9fc OR xui OR xkp OR xhm OR ne6 OR 9ba OR 9gs)]:%GOLD%*%GRAY%* %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%< %GRAY%*%GOLD%*%BORDER-21%%MAP-19%%DOT-61%%PX-20%%TIER-0%//
-
+ItemDisplay[UNI EXC !ID FILTLVL~3-7 CLVL>89 !(xrn OR xul OR xar OR 9fc OR ne6 OR 9gs)]:%GOLD%*%GRAY%* %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%< %GRAY%*%GOLD%*%MAP-21%%DOT-19%%PX-61%%TIER-0%//
 // Notify for select exceptional unique items on filter levels 11-12
-ItemDisplay[UNI EXC !ID FILTLVL>7 (ba6 OR 9wh OR dr2 OR ama OR xlt OR xld OR zvb OR xrn OR xul OR xar OR xlb OR ztb OR 9fc OR xui OR xkp OR xhm OR ne6 OR 9ba OR 9gs)]:%GOLD%*%GRAY%* %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%< %GRAY%*%GOLD%*%BORDER-21%%MAP-19%%DOT-61%%PX-20%//
+ItemDisplay[UNI EXC !ID FILTLVL>7 (xrn OR xul OR xar OR 9fc OR ne6 OR 9gs)]:%GOLD%*%GRAY%* %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%< %GRAY%*%GOLD%*%MAP-21%%DOT-19%%PX-61%%TIER-0%//
 // Don't notify for other exceptional unique items on filter levels 11-12
-ItemDisplay[UNI EXC !ID FILTLVL~8-11 !(ba6 OR 9wh OR dr2 OR ama OR xlt OR xld OR zvb OR xrn OR xul OR xar OR xlb OR ztb OR 9fc OR xui OR xkp OR xhm OR ne6 OR 9ba OR 9gs)]:%GOLD%*%GRAY%* %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%< %GRAY%*%GOLD%*%BORDER-21%%MAP-19%%DOT-61%%PX-20%%TIER-0%//
-ItemDisplay[UNI EXC !ID FILTLVL=12 !(ba6 OR 9wh OR dr2 OR ama OR xlt OR xld OR zvb OR xrn OR xul OR xar OR xlb OR ztb OR 9fc OR xui OR xkp OR xhm OR ne6 OR 9ba OR 9gs)]://
+ItemDisplay[UNI EXC !ID FILTLVL~8-11 !(xrn OR xul OR xar OR 9fc OR ne6 OR 9gs)]:%GOLD%*%GRAY%* %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%< %GRAY%*%GOLD%*//
+ItemDisplay[UNI EXC !ID FILTLVL=12]://
+
 
 // Notify for All Elite Uniques on Filter Levels 0-5
-ItemDisplay[UNI ELT !ID FILTLVL<3]:%GOLD%*%GRAY%* %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%< %GRAY%*%GOLD%*%BORDER-21%%MAP-19%%DOT-61%%PX-20%//
-
+ItemDisplay[UNI ELT !ID FILTLVL<3]:%GOLD%\%GRAY%\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %GRAY%/%GOLD%/%BORDER-21%%MAP-19%%DOT-61%%PX-20%//
 // Notify for All Elite Uniques on Filter Levels 6-10 while under character level 90
 ItemDisplay[UNI ELT !ID FILTLVL~3-7 CLVL<90]:%GOLD%\%GRAY%\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %GRAY%/%GOLD%/%BORDER-21%%MAP-19%%DOT-61%%PX-20%//
 // Notify for select Elite unique items on filter levels 11-12
-ItemDisplay[UNI ELT !ID FILTLVL~3-7 CLVL>89 !(7mp OR 7cl OR 7mt OR 7sm OR 7sb OR 7cm OR 7kr OR 7bl OR 7s7 OR 7gl OR 7sr OR 7br OR 7st OR 7o7 OR 6l7 OR 6sw OR 6rx OR 6cs OR 7sc OR ame OR 7wb OR 7lw OR baf OR drf OR pae OR pac OR nef)]:%GOLD%\%GRAY%\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %GRAY%/%GOLD%/%BORDER-21%%MAP-19%%DOT-61%%PX-20%//
+ItemDisplay[UNI ELT !ID FILTLVL~3-7 CLVL>89 (7sm OR 7sb OR 7cm OR 7bl OR 7gl OR 7sr OR 7br OR 7st OR 7o7 OR 6l7 OR 6sw OR 6rx OR 7sc OR ame OR 7wb OR 7lw OR baf)]:%GOLD%\%GRAY%\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %GRAY%/%GOLD%/%BORDER-21%%MAP-19%%DOT-61%%PX-20%//
 // Don't notify for other Elite unique items on filter levels 11-12
-ItemDisplay[UNI ELT !ID FILTLVL~3-7 CLVL>89 (7mp OR 7cl OR 7mt OR 7sm OR 7sb OR 7cm OR 7kr OR 7bl OR 7s7 OR 7gl OR 7sr OR 7br OR 7st OR 7o7 OR 6l7 OR 6sw OR 6rx OR 6cs OR 7sc OR ame OR 7wb OR 7lw OR baf OR drf OR pae OR pac OR nef)]:%GOLD%\%GRAY%\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %GRAY%/%GOLD%/%BORDER-21%%MAP-19%%DOT-61%%PX-20%%TIER-0%//
-
+ItemDisplay[UNI ELT !ID FILTLVL~3-7 CLVL>89 !(7sm OR 7sb OR 7cm OR 7bl OR 7gl OR 7sr OR 7br OR 7st OR 7o7 OR 6l7 OR 6sw OR 6rx OR 7sc OR ame OR 7wb OR 7lw OR baf)]:%GOLD%\%GRAY%\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %GRAY%/%GOLD%/%MAP-21%%DOT-19%%PX-61%%TIER-0%//
 // Notify for select Elite unique items on filter levels 11-12
-ItemDisplay[UNI ELT !ID FILTLVL>7 !(7mp OR 7cl OR 7mt OR 7sm OR 7sb OR 7cm OR 7kr OR 7bl OR 7s7 OR 7gl OR 7sr OR 7br OR 7st OR 7o7 OR 6l7 OR 6sw OR 6rx OR 6cs OR 7sc OR ame OR 7wb OR 7lw OR baf OR drf OR pae OR pac OR nef)]:%GOLD%\%GRAY%\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %GRAY%/%GOLD%/%BORDER-21%%MAP-19%%DOT-61%%PX-20%//
-// Don't notify for other Elite unique items on filter levels 11-12
-ItemDisplay[UNI ELT !ID FILTLVL>7 (7mp OR 7cl OR 7mt OR 7sm OR 7sb OR 7cm OR 7kr OR 7bl OR 7s7 OR 7gl OR 7sr OR 7br OR 7st OR 7o7 OR 6l7 OR 6sw OR 6rx OR 6cs OR 7sc OR ame OR 7wb OR 7lw OR baf OR drf OR pae OR pac OR nef)]:%GOLD%\%GRAY%\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %GRAY%/%GOLD%/%BORDER-21%%MAP-19%%DOT-61%%PX-20%%TIER-0%//
+ItemDisplay[UNI ELT !ID FILTLVL~8-11]:%GOLD%\%GRAY%\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %GRAY%/%GOLD%/%MAP-21%%DOT-19%%PX-61%%TIER-0%//
+ItemDisplay[UNI ELT !ID FILTLVL=12]:%GOLD%\%GRAY%\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %GRAY%/%GOLD%//
 
 // -------------------------------------------------------------------------------------------------------
 // =============================================  Set Items  =============================================
@@ -1571,41 +1566,40 @@ ItemDisplay[SET !ID (dr8 OR uul OR xtb OR urn OR paf OR 7ws OR uar OR ci3 OR uth
 
 // Rings and Amulets
 ItemDisplay[SET !ID rin CLVL>79 FILTLVL>7 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
-ItemDisplay[SET !ID rin CLVL>79 FILTLVL<8]:%PURPLE%*%DARK_GREEN%* %GREEN%>  %GREEN%%NAME%  %GREEN%< %DARK_GREEN%*%PURPLE%*%GREEN%%BORDER-71%%MAP-76%%DOT-81%%PX-84%%TIER-0%//
+ItemDisplay[SET !ID rin CLVL>79 FILTLVL<8]:%PURPLE%*%DARK_GREEN%* %GREEN%>  %GREEN%%NAME%  %GREEN%< %DARK_GREEN%*%PURPLE%*%GREEN%%MAP-71%%DOT-76%%PX-81%%TIER-0%//
 ItemDisplay[SET !ID rin CLVL<80]:%PURPLE%*%DARK_GREEN%* %GREEN%>  %NAME%  %GREEN%< %DARK_GREEN%*%PURPLE%*%GREEN%%BORDER-71%%MAP-76%%DOT-81%%PX-84%//
 
 ItemDisplay[SET !ID amu CLVL>89 FILTLVL>7 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
-ItemDisplay[SET !ID amu CLVL>89 FILTLVL<8]:%PURPLE%*%DARK_GREEN%* %GREEN%>  %GREEN%%NAME%  %GREEN%< %DARK_GREEN%*%PURPLE%*%GREEN%%BORDER-71%%MAP-76%%DOT-81%%PX-84%%TIER-0%//
+ItemDisplay[SET !ID amu CLVL>89 FILTLVL<8]:%PURPLE%*%DARK_GREEN%* %GREEN%>  %GREEN%%NAME%  %GREEN%< %DARK_GREEN%*%PURPLE%*%GREEN%%MAP-71%%DOT-76%%PX-81%%TIER-0%//
 ItemDisplay[SET !ID amu CLVL<90]:%PURPLE%*%DARK_GREEN%* %GREEN%>  %NAME%  %GREEN%< %DARK_GREEN%*%PURPLE%*%GREEN%%BORDER-71%%MAP-76%%DOT-81%%PX-84%//
 
 // Normal Set Items
-ItemDisplay[SET !ID NORM FILTLVL=12 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
+ItemDisplay[SET !ID NORM lbt FILTLVL~8-12]:%PURPLE%*%DARK_GREEN%* %GREEN%>  %NAME%  %GREEN%< %DARK_GREEN%*%PURPLE%*%GREEN%%BORDER-71%%MAP-76%%DOT-81%%PX-84%%TIER-0%//
+ItemDisplay[SET !ID NORM (ba5 OR lbl OR lgl) FILTLVL~8-12]:%PURPLE%*%DARK_GREEN%* %GREEN%>  %NAME%  %GREEN%< %DARK_GREEN%*%PURPLE%*%GREEN%%MAP-71%%DOT-76%%PX-81%%TIER-0%//
 
-ItemDisplay[SET !ID NORM (lbt OR ba5) FILTLVL~8-11]:%PURPLE%*%DARK_GREEN%* %GREEN%>  %NAME%  %GREEN%< %DARK_GREEN%*%PURPLE%*%GREEN%%BORDER-71%%MAP-76%%DOT-81%%PX-84%%TIER-0%//
-
-ItemDisplay[SET !ID NORM (lbt OR ba5) FILTLVL<8]:%PURPLE%*%DARK_GREEN%* %GREEN%>  %NAME%  %GREEN%< %DARK_GREEN%*%PURPLE%*%GREEN%%BORDER-71%%MAP-76%%DOT-81%%PX-84%//
-ItemDisplay[SET !ID NORM !(lbt OR ba5) FILTLVL~3-11 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
-ItemDisplay[SET !ID NORM CLVL>59 FILTLVL<3]:%PURPLE%*%DARK_GREEN%* %GREEN%>  %NAME%  %GREEN%< %DARK_GREEN%*%PURPLE%*%GREEN%%BORDER-71%%MAP-76%%DOT-81%%PX-84%%TIER-0%//
+ItemDisplay[SET !ID NORM (lbt OR ba5 OR lbl OR lgl) FILTLVL<8]:%PURPLE%*%DARK_GREEN%* %GREEN%>  %NAME%  %GREEN%< %DARK_GREEN%*%PURPLE%*%GREEN%%BORDER-71%%MAP-76%%DOT-81%%PX-84%//
+ItemDisplay[SET !ID NORM !(lbt OR ba5 OR lbl OR lgl) FILTLVL~3-12 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
+ItemDisplay[SET !ID NORM CLVL>59 FILTLVL<3]:%PURPLE%*%DARK_GREEN%* %GREEN%>  %NAME%  %GREEN%< %DARK_GREEN%*%PURPLE%*%GREEN%%MAP-71%%DOT-76%%PX-81%%TIER-0%//
 ItemDisplay[SET !ID NORM CLVL<60 FILTLVL<3]:%PURPLE%*%DARK_GREEN%* %GREEN%>  %NAME%  %GREEN%< %DARK_GREEN%*%PURPLE%*%GREEN%%BORDER-71%%MAP-76%%DOT-81%%PX-84%//
 
 // Exceptional Set items
 ItemDisplay[SET !ID EXC FILTLVL=12 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
-ItemDisplay[SET !ID EXC (xhm OR dr8 OR xtb OR xar OR zvb OR xtg OR xmb OR xsk OR zmb OR oba OR xul OR xhb OR zhb OR xhg) FILTLVL~8-11]:%PURPLE%*%DARK_GREEN%* %GREEN%>  %NAME%  %GREEN%< %DARK_GREEN%*%PURPLE%*%GREEN%%BORDER-71%%MAP-76%%DOT-81%%PX-84%%TIER-0%//
+ItemDisplay[SET !ID EXC (xhm OR dr8 OR xtb OR xar OR zvb OR xtg OR xmb OR xsk OR zmb OR oba OR xul OR xhb OR zhb OR xhg) FILTLVL~8-11]:%PURPLE%*%DARK_GREEN%* %GREEN%>  %NAME%  %GREEN%< %DARK_GREEN%*%PURPLE%*%GREEN%%MAP-71%%DOT-76%%PX-81%%TIER-0%//
 ItemDisplay[SET !ID EXC !(xhm OR dr8 OR xtb OR xar OR zvb OR xtg OR xmb OR xsk OR zmb OR oba OR xul OR xhb OR zhb OR xhg) FILTLVL~8-11 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
 ItemDisplay[SET !ID EXC (xhm OR dr8 OR xtb OR xar OR zvb OR xtg OR xmb OR xsk OR zmb OR oba OR xul OR xhb OR zhb OR xhg) FILTLVL~3-7]:%PURPLE%*%DARK_GREEN%* %GREEN%>  %NAME%  %GREEN%< %DARK_GREEN%*%PURPLE%*%GREEN%%BORDER-71%%MAP-76%%DOT-81%%PX-84%//
-ItemDisplay[SET !ID EXC !(xhm OR dr8 OR xtb OR xar OR zvb OR xtg OR xmb OR xsk OR zmb OR oba OR xul OR xhb OR zhb OR xhg) FILTLVL~3-7]:%PURPLE%*%DARK_GREEN%* %GREEN%>  %NAME%  %GREEN%< %DARK_GREEN%*%PURPLE%*%GREEN%%BORDER-71%%MAP-76%%DOT-81%%PX-84%%TIER-0%//
+ItemDisplay[SET !ID EXC !(xhm OR dr8 OR xtb OR xar OR zvb OR xtg OR xmb OR xsk OR zmb OR oba OR xul OR xhb OR zhb OR xhg) FILTLVL~3-7]:%PURPLE%*%DARK_GREEN%* %GREEN%>  %NAME%  %GREEN%< %DARK_GREEN%*%PURPLE%*%GREEN%%MAP-71%%DOT-76%%PX-81%%TIER-0%//
 ItemDisplay[SET !ID EXC FILTLVL<3]:%PURPLE%*%DARK_GREEN%* %GREEN%>  %NAME%  %GREEN%< %DARK_GREEN%*%PURPLE%*%GREEN%%BORDER-71%%MAP-76%%DOT-81%%PX-84%//
 
 // Elite Set items
 ItemDisplay[SET !ID ELT FILTLVL=12 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
-ItemDisplay[SET !ID ELT (ulg OR uhm OR uld OR amc OR ucl OR 6cs OR 7qr OR 7m7 OR uar) FILTLVL~8-11]:%PURPLE%*%DARK_GREEN%* %GREEN%>  %NAME%  %GREEN%< %DARK_GREEN%*%PURPLE%*%GREEN%%BORDER-71%%MAP-76%%DOT-81%%PX-84%%TIER-0%//
+ItemDisplay[SET !ID ELT (ulg OR uhm OR uld OR amc OR ucl OR 6cs OR 7qr OR 7m7 OR uar) FILTLVL~8-11]:%PURPLE%*%DARK_GREEN%* %GREEN%>  %NAME%  %GREEN%< %DARK_GREEN%*%PURPLE%*%GREEN%%MAP-71%%DOT-76%%PX-81%%TIER-0%//
 ItemDisplay[SET !ID ELT !(ulg OR uhm OR uld OR amc OR ucl OR 6cs OR 7qr OR 7m7 OR uar) FILTLVL~8-11 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
 ItemDisplay[SET !ID ELT (ulg OR uhm OR uld OR amc OR ucl OR 6cs OR 7qr OR 7m7 OR uar) FILTLVL~3-7]:%PURPLE%*%DARK_GREEN%* %GREEN%>  %NAME%  %GREEN%< %DARK_GREEN%*%PURPLE%*%GREEN%%BORDER-71%%MAP-76%%DOT-81%%PX-84%//
-ItemDisplay[SET !ID ELT !(ulg OR uhm OR uld OR amc OR ucl OR 6cs OR 7qr OR 7m7 OR uar) FILTLVL~3-7]:%PURPLE%*%DARK_GREEN%* %GREEN%>  %NAME%  %GREEN%< %DARK_GREEN%*%PURPLE%*%GREEN%%BORDER-71%%MAP-76%%DOT-81%%PX-84%%TIER-0%//
+ItemDisplay[SET !ID ELT !(ulg OR uhm OR uld OR amc OR ucl OR 6cs OR 7qr OR 7m7 OR uar) FILTLVL~3-7]:%PURPLE%*%DARK_GREEN%* %GREEN%>  %NAME%  %GREEN%< %DARK_GREEN%*%PURPLE%*%GREEN%%MAP-71%%DOT-76%%PX-81%%TIER-0%//
 ItemDisplay[SET !ID ELT FILTLVL<3]:%PURPLE%*%DARK_GREEN%* %GREEN%>  %NAME%  %GREEN%< %DARK_GREEN%*%PURPLE%*%GREEN%%BORDER-71%%MAP-76%%DOT-81%%PX-84%//
 
 // -------------------------------------------------------------------------------------------------------
@@ -1642,11 +1636,11 @@ ItemDisplay[RARE !ID cqv]:%LIGHT_GRAY%* %YELLOW%%NAME% %LIGHT_GRAY%*%YELLOW%// A
 
 // Rare Belts
 ItemDisplay[RARE !ID BELT FILTLVL<8]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%%BORDER-8F%%MAP-9B%%DOT-68%%PX-A8%// Notify for rare belts filter levels 1-8
-ItemDisplay[RARE !ID BELT FILTLVL~8-11]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%%BORDER-8F%%MAP-9B%%DOT-68%%PX-A8%%TIER-0%//
+ItemDisplay[RARE !ID BELT FILTLVL~8-11]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%%MAP-9B%%DOT-5C%%PX-6D%%TIER-0%//
 ItemDisplay[RARE !ID BELT FILTLVL=12]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%//
 // Rare Boots
 ItemDisplay[RARE !ID BOOTS FILTLVL<8]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%%BORDER-8F%%MAP-9B%%DOT-68%%PX-A8%//
-ItemDisplay[RARE !ID BOOTS FILTLVL~8-11]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%%BORDER-8F%%MAP-9B%%DOT-68%%PX-A8%%TIER-0%// 
+ItemDisplay[RARE !ID BOOTS FILTLVL~8-11]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%%MAP-9B%%DOT-5C%%PX-6D%%TIER-0%// 
 ItemDisplay[RARE !ID BOOTS FILTLVL=12]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%// 
 // Rare Gloves
 ItemDisplay[RARE !ID GLOVES (CLVL<90 OR FILTLVL<3)]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%%BORDER-8F%%MAP-9B%%DOT-68%%PX-A8%// Notify for rare gloves under character level 90
@@ -1655,13 +1649,13 @@ ItemDisplay[RARE !ID GLOVES CLVL>89 (FILTLVL~8-9 OR FILTLVL=11) (ASSASSIN OR AMA
 
 // Rare Chests
 ItemDisplay[RARE !ID CHEST ALVL>84 FILTLVL=12]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%// 
-ItemDisplay[RARE !ID CHEST ALVL>84 FILTLVL~8-11]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%%BORDER-8F%%MAP-9B%%DOT-68%%PX-A8%%TIER-0%// 
+ItemDisplay[RARE !ID CHEST ALVL>84 FILTLVL~8-11]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%%MAP-9B%%DOT-5C%%PX-6D%%TIER-0%// 
 ItemDisplay[RARE !ID CHEST CLVL>89 ILVL>93 FILTLVL<8]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%%BORDER-8F%%MAP-9B%%DOT-68%%PX-A8%%TIER-0%// Minimap icon for rare armors with affix levels 94 or higher on filter levels 0-8
 ItemDisplay[RARE !ID CHEST CLVL<90 ILVL>93 FILTLVL<8]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%%BORDER-8F%%MAP-9B%%DOT-68%%PX-A8%// Notify for rare armors with affix levels 94 or higher on filter levels 0-8
 // Rare Shields
-ItemDisplay[RARE !ID SHIELD NORM !NEC !DIN FILTLVL>7 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide specific Normal quality Rare Shields After Level 39
-ItemDisplay[RARE !ID SHIELD EXC !NEC !DIN FILTLVL>7 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide specific Exceptional quality Rare Shields After Level 89
-ItemDisplay[RARE !ID SHIELD ELT !NEC !DIN FILTLVL>7 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide specific Elite quality Rare Shields After Level 94
+ItemDisplay[RARE !ID SHIELD NORM !NEC !DIN FILTLVL>7 ALVL<85 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide specific Normal quality Rare Shields After Level 39
+ItemDisplay[RARE !ID SHIELD EXC !NEC !DIN FILTLVL>7 ALVL<85 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide specific Exceptional quality Rare Shields After Level 89
+ItemDisplay[RARE !ID SHIELD ELT !NEC !DIN FILTLVL>7 ALVL<85 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide specific Elite quality Rare Shields After Level 94
 // Rare Helmets
 ItemDisplay[RARE !ID HELM NORM !CIRC !DRU !BAR ((CLVL>39 FILTLVL>2) OR FILTLVL>7) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide Normal quality Rare Helms After Level 39
 ItemDisplay[RARE !ID HELM EXC !CIRC !DRU !BAR ((CLVL>79 FILTLVL>2) OR FILTLVL>7) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide Exceptional quality Rare Helms After Level 89
@@ -1770,36 +1764,36 @@ ItemDisplay[RARE !ID !ETH ELT AXE !THROWING FILTLVL>7 !(MAPID=1 OR MAPID=40 OR M
 // ------------------------------------------------------------------------
 
 // Ethereal Throwing Weapons
-ItemDisplay[RARE !ID ETH FILTLVL~1-7 (tax OR 9ta OR 7ta OR jav OR 9ja OR 7ja OR pil OR 9pi OR 7pi OR ssp OR 9s9 OR 7s7)]:%NAME%%BORDER-8F%%MAP-9B%%DOT-68%%PX-A8%%TIER-0%//
-ItemDisplay[RARE !ID ETH (FILTLVL~1-9 OR FILTLVL=11) (bkf OR 9bk OR 7bk OR bal OR 9b8 OR 7b8 OR glv OR 9gl OR 7gl OR tsp OR 9ts OR 7ts)]:%NAME%%BORDER-8F%%MAP-9B%%DOT-68%%PX-A8%%TIER-0%//
+ItemDisplay[RARE !ID ETH FILTLVL~1-7 (jav OR 9ja OR 7ja)]:%NAME%%MAP-9B%%DOT-5C%%PX-6D%%TIER-0%//
+ItemDisplay[RARE !ID ETH (FILTLVL~1-9 OR FILTLVL=11) (tax OR 9ta OR 7ta OR bkf OR 9bk OR 7bk OR bal OR 9b8 OR 7b8 OR glv OR 9gl OR 7gl OR tsp OR 9ts OR 7ts OR ssp OR 9s9 OR 7s7)]:%NAME%%MAP-9B%%DOT-5C%%PX-6D%%TIER-0%//
 ItemDisplay[RARE !ID ETH (FILTLVL~8-9 OR FILTLVL=11) (tkf OR 9tk OR 7tk OR pil OR 9pi OR 7pi) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
 // Eth Rare Axes
-ItemDisplay[RARE !ID ETH FILTLVL~1-7 (2ax OR 92a OR 72a OR wax OR 9wa OR 7wa OR lax OR 9la OR 7la OR gax OR 9ga OR 7ga)]:%NAME%%BORDER-8F%%MAP-9B%%DOT-68%%PX-A8%%TIER-0%//
-ItemDisplay[RARE !ID ETH (FILTLVL~1-9 OR FILTLVL=11) (btx OR 9bt OR 7bt OR gix OR 9gi OR 7gi)]:%NAME%%BORDER-8F%%MAP-9B%%DOT-68%%PX-A8%%TIER-0%//
+ItemDisplay[RARE !ID ETH FILTLVL~1-7 (2ax OR 92a OR 72a OR wax OR 9wa OR 7wa OR lax OR 9la OR 7la OR gax OR 9ga OR 7ga)]:%NAME%%MAP-9B%%DOT-5C%%PX-6D%%TIER-0%//
+ItemDisplay[RARE !ID ETH (FILTLVL~1-9 OR FILTLVL=11) (btx OR 9bt OR 7bt OR gix OR 9gi OR 7gi)]:%NAME%%MAP-9B%%DOT-5C%%PX-6D%%TIER-0%//
 ItemDisplay[RARE !ID ETH (FILTLVL~8-9 OR FILTLVL=11) (hax OR 9ha OR 7ha OR axe OR 9ax OR 7ax OR mpi OR 9mp OR 7mp OR bax OR 9ba OR 7ba) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
 // Eth Rare Maces
-ItemDisplay[RARE !ID ETH FILTLVL~1-7 (mac OR 9ma OR 7ma OR mst OR 9mt OR 7mt)]:%NAME%%BORDER-8F%%MAP-9B%%DOT-68%%PX-A8%%TIER-0%//
-ItemDisplay[RARE !ID ETH (FILTLVL~1-9 OR FILTLVL=11) (fla OR 9fl OR 7fl OR whm OR 9wh OR 7wh OR mau OR 9m9 OR 7m7 OR gma OR 9gm OR 7gm)]:%NAME%%BORDER-8F%%MAP-9B%%DOT-68%%PX-A8%%TIER-0%//
+ItemDisplay[RARE !ID ETH FILTLVL~1-7 (mac OR 9ma OR 7ma OR mst OR 9mt OR 7mt)]:%NAME%%MAP-9B%%DOT-5C%%PX-6D%%TIER-0%//
+ItemDisplay[RARE !ID ETH (FILTLVL~1-9 OR FILTLVL=11) (fla OR 9fl OR 7fl OR whm OR 9wh OR 7wh OR mau OR 9m9 OR 7m7 OR gma OR 9gm OR 7gm)]:%NAME%%MAP-9B%%DOT-5C%%PX-6D%%TIER-0%//
 
 // Eth Rare Swords
-ItemDisplay[RARE !ID ETH FILTLVL~1-7 (flc OR 9fc OR 7fc OR crs OR 9cr OR clm OR 9cm OR 7cm OR gis OR 9gs OR 7gs OR bsw OR 9b9 OR 7b7)]:%NAME%%BORDER-8F%%MAP-9B%%DOT-68%%PX-A8%%TIER-0%//
-ItemDisplay[RARE !ID ETH (FILTLVL~1-9 OR FILTLVL=11) (flb OR gsd OR 9fb OR 9gd OR 7fb OR 7gd)]:%NAME%%BORDER-8F%%MAP-9B%%DOT-68%%PX-A8%%TIER-0%//
+ItemDisplay[RARE !ID ETH FILTLVL~1-7 (flc OR 9fc OR 7fc OR crs OR 9cr OR clm OR 9cm OR 7cm OR gis OR 9gs OR 7gs OR bsw OR 9b9 OR 7b7)]:%NAME%%MAP-9B%%DOT-5C%%PX-6D%%TIER-0%//
+ItemDisplay[RARE !ID ETH (FILTLVL~1-9 OR FILTLVL=11) (flb OR gsd OR 9fb OR 9gd OR 7fb OR 7gd)]:%NAME%%MAP-9B%%DOT-5C%%PX-6D%%TIER-0%//
 ItemDisplay[RARE !ID ETH (FILTLVL~8-9 OR FILTLVL=11) (ssd OR 9ss OR 7ss OR scm OR 9sm OR 7sm OR sbr OR 9sb OR 7sb OR bsd OR 9bs OR 7bs OR lsd OR 9ls OR 7ls OR wsd OR 9wd OR 7wd OR 2hs OR 92h OR 72h) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
 // Eth Rare Spears
-ItemDisplay[RARE !ID ETH FILTLVL~1-7 (spr OR 9sr OR 7sr OR tri OR 9tr OR 7tr OR spt OR 9st OR 7st)]:%NAME%%BORDER-8F%%MAP-9B%%DOT-68%%PX-A8%%TIER-0%//
-ItemDisplay[RARE !ID ETH (FILTLVL~1-9 OR FILTLVL=11) (pik OR 9p9 OR 7p7)]:%NAME%%BORDER-8F%%MAP-9B%%DOT-68%%PX-A8%%TIER-0%//
+ItemDisplay[RARE !ID ETH FILTLVL~1-7 (spr OR 9sr OR 7sr OR tri OR 9tr OR 7tr OR spt OR 9st OR 7st)]:%NAME%%MAP-9B%%DOT-5C%%PX-6D%%TIER-0%//
+ItemDisplay[RARE !ID ETH (FILTLVL~1-9 OR FILTLVL=11) (pik OR 9p9 OR 7p7)]:%NAME%%MAP-9B%%DOT-5C%%PX-6D%%TIER-0%//
 ItemDisplay[RARE !ID ETH (FILTLVL~8-9 OR FILTLVL=11) (brn OR 9br OR 7br) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
 // Eth Rare Polearms
-ItemDisplay[RARE !ID ETH FILTLVL~1-7 (scy OR 9s8 OR 7s8 OR wsc OR 9wc OR 7wc OR pax OR hal OR 9pa OR 9h9 OR 7pa OR 7h7)]:%NAME%%BORDER-8F%%MAP-9B%%DOT-68%%PX-A8%%TIER-0%//
+ItemDisplay[RARE !ID ETH FILTLVL~1-7 (scy OR 9s8 OR 7s8 OR wsc OR 9wc OR 7wc OR pax OR hal OR 9pa OR 9h9 OR 7pa OR 7h7)]:%NAME%%MAP-9B%%DOT-5C%%PX-6D%%TIER-0%//
 ItemDisplay[RARE !ID ETH (FILTLVL~8-9 OR FILTLVL=11) (bar OR 9b7 OR 7o7 OR vou OR 9vo OR 7vo) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
 // Eth Rare Assassin Claws
-ItemDisplay[RARE !ID ETH FILTLVL~1-7 (ktr OR 9ar OR 7ar OR skr OR 9qr OR 7qr)]:%NAME%%BORDER-8F%%MAP-9B%%DOT-68%%PX-A8%%TIER-0%//
-ItemDisplay[RARE !ID ETH (FILTLVL~1-9 OR FILTLVL=11) (axf OR 9xf OR 7xf OR btl OR 9tw OR 7tw)]:%NAME%%BORDER-8F%%MAP-9B%%DOT-68%%PX-A8%%TIER-0%//
+ItemDisplay[RARE !ID ETH FILTLVL~1-7 (ktr OR 9ar OR 7ar OR skr OR 9qr OR 7qr)]:%NAME%%MAP-9B%%DOT-5C%%PX-6D%%TIER-0%//
+ItemDisplay[RARE !ID ETH (FILTLVL~1-9 OR FILTLVL=11) (axf OR 9xf OR 7xf OR btl OR 9tw OR 7tw)]:%NAME%%MAP-9B%%DOT-5C%%PX-6D%%TIER-0%//
 ItemDisplay[RARE !ID ETH (FILTLVL~8-9 OR FILTLVL=11) (wrb OR 9wb OR 7wb OR ces OR 9cs OR 7cs OR clw OR 9lw OR 7lw) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
 // -------------------------------------------------------------------------------------------------------
@@ -2042,31 +2036,31 @@ ItemDisplay[MAG !ID !ETH (7tk OR 7ta OR 7bk OR 7b8 OR 7ja OR 7pi OR 7s7 OR 7gl O
 // -------------------------------------------------------------------------
 
 // Eth Magic Throwing Weapons
-ItemDisplay[MAG !ID ETH (FILTLVL~1-9 OR FILTLVL=11) (tax OR 9ta OR 7ta OR bkf OR 9bk OR 7bk OR bal OR 9b8 OR 7b8 OR glv OR 9gl OR 7gl OR tsp OR 9ts OR 7ts OR ssp OR 9s9 OR 7s7)]:%NAME%%BORDER-91%%MAP-97%%DOT-1D%%PX-20%%TIER-0%//
+ItemDisplay[MAG !ID ETH (FILTLVL~1-9 OR FILTLVL=11) (tax OR 9ta OR 7ta OR bkf OR 9bk OR 7bk OR bal OR 9b8 OR 7b8 OR glv OR 9gl OR 7gl OR tsp OR 9ts OR 7ts OR ssp OR 9s9 OR 7s7)]:%NAME%%MAP-91%%DOT-97%%PX-1F%%TIER-0%//
 ItemDisplay[MAG !ID ETH (FILTLVL~8-9 OR FILTLVL=11) (tkf OR 9tk OR 7tk OR pil OR 9pi OR 7pi OR jav OR 9ja OR 7ja) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
 // Eth Magic Axes
-ItemDisplay[MAG !ID ETH (FILTLVL~1-9 OR FILTLVL=11) (btx OR 9bt OR 7bt OR gix OR 9gi OR 7gi)]:%NAME%%BORDER-91%%MAP-97%%DOT-1D%%PX-20%%TIER-0%//
+ItemDisplay[MAG !ID ETH (FILTLVL~1-9 OR FILTLVL=11) (btx OR 9bt OR 7bt OR gix OR 9gi OR 7gi)]:%NAME%%MAP-91%%DOT-97%%PX-1F%%TIER-0%//
 ItemDisplay[MAG !ID ETH (FILTLVL~8-9 OR FILTLVL=11) (2ax OR 92a OR 72a OR wax OR 9wa OR 7wa OR hax OR 9ha OR 7ha OR axe OR 9ax OR 7ax OR mpi OR 9mp OR 7mp OR lax OR 9la OR 7la OR gax OR 9ga OR 7ga OR bax OR 9ba OR 7ba) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
 // Eth Magic Maces
-ItemDisplay[MAG !ID ETH (FILTLVL~1-9 OR FILTLVL=11) (fla OR 9fl OR 7fl OR whm OR 9wh OR 7wh OR mau OR 9m9 OR 7m7 OR gma OR 9gm OR 7gm)]:%NAME%%BORDER-91%%MAP-97%%DOT-1D%%PX-20%%TIER-0%//
+ItemDisplay[MAG !ID ETH (FILTLVL~1-9 OR FILTLVL=11) (fla OR 9fl OR 7fl OR whm OR 9wh OR 7wh OR mau OR 9m9 OR 7m7 OR gma OR 9gm OR 7gm)]:%NAME%%MAP-91%%DOT-97%%PX-1F%%TIER-0%//
 ItemDisplay[MAG !ID ETH (FILTLVL~8-9 OR FILTLVL=11) (mac OR 9ma OR 7ma OR mst OR 9mt OR 7mt) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
 // Eth Magic Swords
-ItemDisplay[MAG !ID ETH (FILTLVL~1-9 OR FILTLVL=11) (flb OR gsd OR 9fb OR 9gd OR 7fb OR 7gd)]:%NAME%%BORDER-91%%MAP-97%%DOT-1D%%PX-20%%TIER-0%//
+ItemDisplay[MAG !ID ETH (FILTLVL~1-9 OR FILTLVL=11) (flb OR gsd OR 9fb OR 9gd OR 7fb OR 7gd)]:%NAME%%MAP-91%%DOT-97%%PX-1F%%TIER-0%//
 ItemDisplay[MAG !ID ETH (FILTLVL~8-9 OR FILTLVL=11) (flc OR 9fc OR 7fc OR crs OR 9cr OR clm OR 9cm OR 7cm OR gis OR 9gs OR 7gs OR bsw OR 9b9 OR 7b7 OR ssd OR 9ss OR 7ss OR scm OR 9sm OR 7sm OR sbr OR 9sb OR 7sb OR bsd OR 9bs OR 7bs OR lsd OR 9ls OR 7ls OR wsd OR 9wd OR 7wd OR 2hs OR 92h OR 72h) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
 // Eth Magic Spears
-ItemDisplay[MAG !ID ETH (FILTLVL~1-9 OR FILTLVL=11) (pik OR 9p9 OR 7p7)]:%NAME%%BORDER-91%%MAP-97%%DOT-1D%%PX-20%%TIER-0%//
+ItemDisplay[MAG !ID ETH (FILTLVL~1-9 OR FILTLVL=11) (pik OR 9p9 OR 7p7)]:%NAME%%MAP-91%%DOT-97%%PX-1F%%TIER-0%//
 ItemDisplay[MAG !ID ETH (FILTLVL~8-9 OR FILTLVL=11) (spr OR 9sr OR 7sr OR tri OR 9tr OR 7tr OR spt OR 9st OR 7st OR brn OR 9br OR 7br) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
 // Eth Magic Polearms
 ItemDisplay[MAG !ID ETH (FILTLVL~8-9 OR FILTLVL=11) (scy OR 9s8 OR 7s8 OR wsc OR 9wc OR 7wc OR bar OR 9b7 OR 7o7 OR vou OR 9vo OR 7vo OR pax OR 9pa OR 7pa OR hal OR 9h9 OR 7h7) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
 // Eth Magic Assassin Claws
-ItemDisplay[MAG !ID ETH FILTLVL~1-7 (ktr OR 9ar OR 7ar OR skr OR 9qr OR 7qr)]:%NAME%%BORDER-91%%MAP-97%%DOT-1D%%PX-20%%TIER-0%//
-ItemDisplay[MAG !ID ETH (FILTLVL~1-9 OR FILTLVL=11) (axf OR 9xf OR 7xf OR btl OR 9tw OR 7tw)]:%NAME%%BORDER-91%%MAP-97%%DOT-1D%%PX-20%%TIER-0%//
+ItemDisplay[MAG !ID ETH FILTLVL~1-7 (ktr OR 9ar OR 7ar OR skr OR 9qr OR 7qr)]:%NAME%%MAP-91%%DOT-97%%PX-1F%%TIER-0%//
+ItemDisplay[MAG !ID ETH (FILTLVL~1-9 OR FILTLVL=11) (axf OR 9xf OR 7xf OR btl OR 9tw OR 7tw)]:%NAME%%MAP-91%%DOT-97%%PX-1F%%TIER-0%//
 ItemDisplay[MAG !ID ETH (FILTLVL~8-9 OR FILTLVL=11) (wrb OR 9wb OR 7wb OR ces OR 9cs OR 7cs OR clw OR 9lw OR 7lw) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
 // -------------------------------------------------------------------------------------------------------
@@ -3624,11 +3618,14 @@ ItemDisplay[NMAG !INF !RW SOCK=0 lsd ILVL>25 CLVL>24 CLVL<41]:%WHITE%%NAME% %TAN
 ItemDisplay[NMAG !INF !RW (SOCK=2 OR SOCK=3) (bsd OR lsd OR crs) CLVL>29 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide Broad Swords that aren't 0os or 4os
 
 //      Show and notify for 4, 5, and 6 socket crystal swords and 4 socket broad swords and long swords
-ItemDisplay[NMAG !INF !RW SOCK=4 CLVL>79 (crs OR bsd OR lsd) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109) FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hides 4os crystal swords, broad swords, and long swords past level 79
+ItemDisplay[NMAG !INF !RW SOCK=4 CLVL>79 (crs OR bsd OR lsd) FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hides 4os crystal swords, broad swords, and long swords past level 79
 ItemDisplay[NMAG !INF !RW SOCK=4 CLVL>59 (crs OR bsd OR lsd)]:%GRAY%%NAME%{%NAME%}%CONTINUE%// Show but don't notify for 4os crystal swords, broad swords, and long swords after level 59
 ItemDisplay[NMAG !INF !RW SOCK=4 CLVL<60 (crs OR bsd OR lsd)]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Show and notify for 4os crystal swords, broad swords, and long swords before level 60
 
 ItemDisplay[NMAG !INF !RW SOCK=5 crs]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Show and notify for 5os crystal swords
+ItemDisplay[NMAG !INF !RW SOCK=5 crs CLVL>79 FILTLVL>7 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
+
+ItemDisplay[NMAG !INF !RW SOCK=6 crs CLVL>79 FILTLVL>2 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
 
 // 	Exceptional tier 1-Handed Swords
 ItemDisplay[NMAG !INF !RW (9ss OR 9sm OR 9sb OR 9fc OR 9cr OR 9bs OR 9ls OR 9wd) SOCK=0 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide all exceptional tier 2-handed swords
