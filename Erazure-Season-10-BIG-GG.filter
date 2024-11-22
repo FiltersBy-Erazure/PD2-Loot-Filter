@@ -9,7 +9,7 @@ ItemDisplayFilterName[]: Endgame Filtering: Hides H5, 35%//                     
 ItemDisplayFilterName[]: Endgame Filtering: Hides H5, M5, 35%//                                              Filter Level 9
 ItemDisplayFilterName[]: Endgame Filtering: Hides H5, M5, 35%, Crafting Bases//                              Filter Level 10
 ItemDisplayFilterName[]: Endgame Filtering: Hides H5, M5, 35%, Flawless Gems, Large Charms//                 Filter Level 11
-ItemDisplayFilterName[]: Extreme Filtering: Hides H5, M5, 35%, Crafting Bases, Flawless Gems, Large Charms// Filter Level 12
+ItemDisplayFilterName[]: Extreme Filtering: Hides Crafting Bases, Flawless Gems, Large Charms//              Filter Level 12
 
 ItemDisplay[box]:%BLACK%II%GOLD%II%BLACK%X%GOLD%II%BLACK%II  %GOLD%Horadric Cube  %BLACK%II%GOLD%II%BLACK%X%GOLD%II%BLACK%II%CONTINUE%//
 ItemDisplay[box FILTLVL=0]:%NAME%{%WHITE%Filter Level: 0}%CONTINUE%//
@@ -24,11 +24,12 @@ ItemDisplay[box FILTLVL=8]:%NAME%{%WHITE%Filter Level: 8%CL%%GRAY%Hides H5, 35%%
 ItemDisplay[box FILTLVL=9]:%NAME%{%WHITE%Filter Level: 9%CL%%GRAY%Hides H5, M5, 35%%CL%Endgame Filtering}%CONTINUE%//
 ItemDisplay[box FILTLVL=10]:%NAME%{%WHITE%Filter Level: 10%CL%%GRAY%Hides H5, M5, 35%%CL%Endgame Filtering}%CONTINUE%//
 ItemDisplay[box FILTLVL=11]:%NAME%{%WHITE%Filter Level: 11%CL%%GRAY%Hides H5, M5, 35%%CL%Endgame Filtering}%CONTINUE%//
-ItemDisplay[box FILTLVL=12]:%NAME%{%WHITE%Filter Level: 12%CL%%GRAY%Hides H5, M5, 35%%CL%Extreme Filtering}%CONTINUE%//
+ItemDisplay[box FILTLVL=12 (!SORCERESS OR (SORCERESS CHARSTAT1<150))]:%NAME%{%WHITE%Filter Level: 12%CL%%GRAY%Hides H5, M5, 35%%CL%Extreme Filtering}%CONTINUE%//
+ItemDisplay[box FILTLVL=12 SORCERESS CHARSTAT1>149]:%NAME%{%WHITE%Filter Level: 12%CL%%GRAY%Hides H5, 35%%CL%Extreme Filtering}%CONTINUE%//
 
 ItemDisplay[box FILTLVL=0]:%NAME%{%NAME%%CL%%GRAY%Level 12 Hides Crafting Bases, Flawless Gems, and Low Value Items%CL%%GRAY%Levels 8-9-10-11 Hide Most Non-Eth and Non-Magic Class Items%CL%%GRAY%Levels 3-4-5-6-7 Hide Some Rares and Non-Superior Items%CL%%GRAY%Level 2 Hides Additional Non-Magic/Magic Items%CL%Level 1 Shows Most Non-Magic/Magic Items}%CONTINUE%//
 ItemDisplay[box CLVL<20 !FILTLVL=0]:%NAME%{%NAME%%CL%%GRAY%For %GOLD%Increase and Decrease Filter Level%CL%%GRAY%For %GOLD%Always Show Items %GRAY%and Hotkeys%CL%Open Settings to Create Toggle}%CONTINUE%//
-ItemDisplay[box]:%NAME%{%NAME%%CL%%WHITE%Erazure: Season 10 v11.21}//
+ItemDisplay[box]:%NAME%{%NAME%%CL%%WHITE%Erazure: Season 10 v11.22}//
 
 // ==============================  Arrows and Bolts  ===============================
 
@@ -136,9 +137,9 @@ ItemDisplay[mp4 (CLVL>49 OR FILTLVL>2) !SHOP]:{%WHITE% Greater Mana Potion }//  
 ItemDisplay[mp4 CLVL>24]:%GRAY%i%BLUE%(O)%GRAY%i%WHITE%{%WHITE% Greater Mana Potion }//
 
 // Super Mana Potion
-ItemDisplay[mp5 CLVL>24 CLVL<50 (FILTLVL~1-4 OR FILTLVL=8)]:%BLUE%i%TEAL%I%BLUE%(O)%TEAL%I%BLUE%i%WHITE%{%WHITE% Super Mana Potion }// On Filter Level 1, 2, 3, 5 and 6, show as iI(O)Ii
-ItemDisplay[mp5 CLVL>49 (FILTLVL~1-4 OR FILTLVL=8)]:%TEAL%i%BLUE%(O)%TEAL%i%WHITE%{%WHITE% Super Mana Potion }// On Filter Level 1, 2, 3, 5 and 6, show as iI(O)Ii
-ItemDisplay[mp5 CLVL>24 (FILTLVL~5-7 OR FILTLVL~9-12) !SHOP]:{%WHITE% Super Mana Potion }// On Filter Level 4, 7, 8 and 9, hide Super Mana potions
+ItemDisplay[mp5 CLVL>24 CLVL<50 (FILTLVL~1-4 OR FILTLVL=8 OR (FILTLVL=12 SORCERESS CHARSTAT1>149))]:%BLUE%i%TEAL%I%BLUE%(O)%TEAL%I%BLUE%i%WHITE%{%WHITE% Super Mana Potion }// On Filter Level 1, 2, 3, 5 and 6, show as iI(O)Ii
+ItemDisplay[mp5 CLVL>49 (FILTLVL~1-4 OR FILTLVL=8 OR (FILTLVL=12 SORCERESS CHARSTAT1>149))]:%TEAL%i%BLUE%(O)%TEAL%i%WHITE%{%WHITE% Super Mana Potion }// On Filter Level 1, 2, 3, 5 and 6, show as iI(O)Ii
+ItemDisplay[mp5 CLVL>24 (FILTLVL~5-7 OR FILTLVL~9-11 OR (FILTLVL=12 (!SORCERESS OR (SORCERESS CHARSTAT1<150)))) !SHOP]:{%WHITE% Super Mana Potion }// On Filter Level 4, 7, 8 and 9, hide Super Mana potions
 
 // Dueling Mana Potion
 ItemDisplay[pvpp]:%GRAY%i%BLUE%(O)%GRAY%i%WHITE%{%WHITE% Dueling Mana Potion }//
@@ -160,63 +161,69 @@ ItemDisplay[rvl CLVL>79 !((MAPID>160 MAPID<164) OR MAPID=137) !FILTLVL=0]:%PURPL
 
 // =====================================  Utility Potions  ==================================
 
+//Stamina
 ItemDisplay[vps (CLVL<10 OR FILTLVL=0 OR SHOP)]:%GRAY%i%WHITE%( %WHITE%Stam %WHITE%)%GRAY%i%WHITE%{%WHITE%Stamina Potion}//
 ItemDisplay[vps CLVL>9 !SHOP]:{%WHITE%Stamina Potion}// Hides Stamina Potions when character level 10+
 
+// Antidote
 ItemDisplay[yps FILTLVL=0]:%GRAY%i%DARK_GREEN%(%WHITE%A%DARK_GREEN%)%GRAY%i%WHITE%{%WHITE%+25% poison resistance for 30 seconds%CL%%WHITE%Cures %DARK_GREEN%poison %WHITE%affliction and grants%CL%Antidote Potion}//     Condenses Antidote Potions after level 20
+ItemDisplay[yps SHOP]:%GRAY%i%DARK_GREEN%( %WHITE%Anti %DARK_GREEN%)%GRAY%i%WHITE%{%WHITE%+25% poison resistance for 30 seconds%CL%%WHITE%Cures %DARK_GREEN%poison %WHITE%affliction and grants%CL%Antidote Potion}//     Condenses Antidote Potions after level 20
 ItemDisplay[yps (MAPID>160 MAPID<164)]:%GRAY%i%DARK_GREEN%(%WHITE%A%DARK_GREEN%)%GRAY%i%WHITE%{%WHITE%+25% poison resistance for 30 seconds%CL%%WHITE%Cures %DARK_GREEN%poison %WHITE%affliction and grants%CL%%WHITE%Antidote Potion}//      
 ItemDisplay[yps !(MAPID>160 MAPID<164) CLVL>79 !SORCERESS FILTLVL>2 !SHOP]:{%WHITE%+25% poison resistance for 30 seconds%CL%%WHITE%Cures %DARK_GREEN%poison %WHITE%affliction and grants%CL%%WHITE%Antidote Potion}//                  Condenses Antidote Potions after level 79
-ItemDisplay[yps !(MAPID>160 MAPID<164) CLVL>79 SORCERESS FILTLVL>7 !SHOP]:{%WHITE%+25% poison resistance for 30 seconds%CL%%WHITE%Cures %DARK_GREEN%poison %WHITE%affliction and grants%CL%%WHITE%Antidote Potion}//                  Condenses Antidote Potions after level 79
-ItemDisplay[yps (CLVL>24 OR SHOP)]:%GRAY%i%DARK_GREEN%(%WHITE%A%DARK_GREEN%)%GRAY%i%WHITE%{%WHITE%+25% poison resistance for 30 seconds%CL%%WHITE%Cures %DARK_GREEN%poison %WHITE%affliction and grants%CL%Antidote Potion}//     Condenses Antidote Potions after level 20
+ItemDisplay[yps !(MAPID>160 MAPID<164) CLVL>79 SORCERESS CHARSTAT1<150 FILTLVL>7 !SHOP]:{%WHITE%+25% poison resistance for 30 seconds%CL%%WHITE%Cures %DARK_GREEN%poison %WHITE%affliction and grants%CL%%WHITE%Antidote Potion}//                  Condenses Antidote Potions after level 79
+ItemDisplay[yps !(MAPID>160 MAPID<164) CLVL>79 SORCERESS CHARSTAT1>149 FILTLVL>7 !SHOP]:%GRAY%i%DARK_GREEN%(%WHITE%A%DARK_GREEN%)%GRAY%i%WHITE%{%WHITE%+25% poison resistance for 30 seconds%CL%%WHITE%Cures %DARK_GREEN%poison %WHITE%affliction and grants%CL%Antidote Potion}//     Condenses Antidote Potions after level 20
+ItemDisplay[yps CLVL>24]:%GRAY%i%DARK_GREEN%(%WHITE%A%DARK_GREEN%)%GRAY%i%WHITE%{%WHITE%+25% poison resistance for 30 seconds%CL%%WHITE%Cures %DARK_GREEN%poison %WHITE%affliction and grants%CL%Antidote Potion}//     Condenses Antidote Potions after level 20
 ItemDisplay[yps CLVL<25 !FILTLVL=0]:%GRAY%i%DARK_GREEN%( %WHITE%Anti %DARK_GREEN%)%GRAY%i%WHITE%%PX-76%%TIER-0%{%WHITE%+25% poison resistance for 30 seconds%CL%%WHITE%Cures %DARK_GREEN%poison %WHITE%affliction and grants%CL%Antidote Potion}//  Antidote Potion
 
+// Thawing
 ItemDisplay[wms FILTLVL=0]:%GRAY%i%YELLOW%(%WHITE%T%YELLOW%)%GRAY%i%WHITE%{%WHITE%+25% cold resistance for 30 seconds%CL%%WHITE%Clears %BLUE%frozen %WHITE%affliction and grants%CL%Thawing Potion}//                     Condenses Thawing Potions after level 24
+ItemDisplay[wms SHOP]:%GRAY%i%YELLOW%( %WHITE%Thaw %YELLOW%)%GRAY%i%WHITE%{%WHITE%+25% cold resistance for 30 seconds%CL%%WHITE%Clears %BLUE%frozen %WHITE%affliction and grants%CL%Thawing Potion}//                     Condenses Thawing Potions after level 24
 ItemDisplay[wms CLVL>79 FILTLVL>2 !SHOP]:{%WHITE%+25% cold resistance for 30 seconds%CL%%WHITE%Clears %BLUE%frozen %WHITE%affliction and grants%CL%%WHITE%Thawing Potion}//                                                              Condenses Thawing Potions after level 79
-ItemDisplay[wms (CLVL>24 OR SHOP)]:%GRAY%i%YELLOW%(%WHITE%T%YELLOW%)%GRAY%i%WHITE%{%WHITE%+25% cold resistance for 30 seconds%CL%%WHITE%Clears %BLUE%frozen %WHITE%affliction and grants%CL%Thawing Potion}//                     Condenses Thawing Potions after level 24
+ItemDisplay[wms CLVL>24]:%GRAY%i%YELLOW%(%WHITE%T%YELLOW%)%GRAY%i%WHITE%{%WHITE%+25% cold resistance for 30 seconds%CL%%WHITE%Clears %BLUE%frozen %WHITE%affliction and grants%CL%Thawing Potion}//                     Condenses Thawing Potions after level 24
 ItemDisplay[wms CLVL<25 !FILTLVL=0]:%GRAY%i%YELLOW%( %WHITE%Thaw %YELLOW%)%GRAY%i%WHITE%%PX-6C%%TIER-0%{%WHITE%+25% cold resistance for 30 seconds%CL%%WHITE%Clears %BLUE%frozen %WHITE%affliction and grants%CL%Thawing Potion}//             Thawing Potion
 
 // =====================================  Throwing Potions  =================================
 
 ItemDisplay[tpgs (FILTLVL=0 OR SHOP)]:%GRAY%Strangling%WHITE%{ %GRAY%Strangling Potion }//
-ItemDisplay[tpgs (CLVL>8 OR FILTLVL>1)]:{ %WHITE%Strangling Potion }//
+ItemDisplay[tpgs (CLVL>8 OR FILTLVL>1)]:{%WHITE% Strangling Potion }//
 ItemDisplay[tpgs CLVL<9]:%GRAY%i%DARK_GREEN%(  %GRAY%Strangling  %DARK_GREEN%)%GRAY%i%WHITE%{ %WHITE%Strangling Potion }// Strangling Gas Potion (Level 6 Req)
 ItemDisplay[tpgm (FILTLVL=0 OR SHOP)]:%GRAY%Choking%WHITE%{ %GRAY%Choking Potion }//
-ItemDisplay[tpgm (CLVL>19 OR FILTLVL>1)]:{ %WHITE%Choking Potion }//
+ItemDisplay[tpgm (CLVL>19 OR FILTLVL>1)]:{%WHITE% Choking Potion }//
 ItemDisplay[tpgm CLVL<20]:%GRAY%i%DARK_GREEN%(  %GRAY%Choking  %DARK_GREEN%)%GRAY%i%WHITE%{ %WHITE%Choking Potion }// Choking Gas Potion (Level 16 Req)
 ItemDisplay[tpgl (FILTLVL=0 OR SHOP)]:%GRAY%Rancid%WHITE%{ %GRAY%Rancid Potion }//
-ItemDisplay[tpgl (CLVL>27 OR FILTLVL>1)]:{ %WHITE%Rancid Potion }//
+ItemDisplay[tpgl (CLVL>27 OR FILTLVL>1)]:{%WHITE% Rancid Potion }//
 ItemDisplay[tpgl CLVL<28]:%GRAY%i%DARK_GREEN%(  %GRAY%Rancid  %DARK_GREEN%)%GRAY%i%WHITE%{ %WHITE%Rancid Potion }// Rancid Gas Potion (Level 24 Req)
 
 ItemDisplay[tpfs (FILTLVL=0 OR SHOP)]:%GRAY%Fulminating%WHITE%{ %GRAY%Fulminating Potion }//
-ItemDisplay[tpfs (CLVL>5 OR FILTLVL>1)]:{ %WHITE%Fulminating Potion }//
+ItemDisplay[tpfs (CLVL>5 OR FILTLVL>1)]:{%WHITE% Fulminating Potion }//
 ItemDisplay[tpfs CLVL<4]:%GRAY%i%RED%( %GRAY%Fulminating %RED%)%GRAY%i%WHITE%%PX-50%{ %WHITE%Fulminating Potion }// Fulminating Potion (Level 1 Req)
 ItemDisplay[tpfs CLVL~4-5]:%GRAY%i%RED%( %GRAY%Fulminating %RED%)%GRAY%i%WHITE%{ %WHITE%Fulminating Potion }// Fulminating Potion (Level 1 Req)
 ItemDisplay[tpfm (FILTLVL=0 OR SHOP)]:%GRAY%Exploding%WHITE%{ %GRAY%Exploding Potion }//
-ItemDisplay[tpfm (CLVL>15 OR FILTLVL>1)]:{ %WHITE%Exploding Potion }//
+ItemDisplay[tpfm (CLVL>15 OR FILTLVL>1)]:{%WHITE% Exploding Potion }//
 ItemDisplay[tpfm CLVL<16]:%GRAY%i%RED%( %GRAY%Exploding %RED%)%GRAY%i%WHITE%{ %WHITE%Exploding Potion }// Exploding Potion (Level 12 Req)
 ItemDisplay[tpfl (FILTLVL=0 OR SHOP)]:%GRAY%Oil%WHITE%{ %GRAY%Oil Potion }//
-ItemDisplay[tpfl (CLVL>23 OR FILTLVL>1)]:{ %WHITE%Oil Potion }//
+ItemDisplay[tpfl (CLVL>23 OR FILTLVL>1)]:{%WHITE% Oil Potion }//
 ItemDisplay[tpfl CLVL<24]:%GRAY%i%RED%( %GRAY%Oil Potion %RED%)%GRAY%i%WHITE%{ %WHITE%Oil Potion }// Oil Potion (Level 20 Req)
 
 ItemDisplay[tpcs (FILTLVL=0 OR SHOP)]:%GRAY%Chilling%WHITE%{ %GRAY%Chilling Potion }//
-ItemDisplay[tpcs (CLVL>5 OR FILTLVL>1)]:{ %WHITE%Chilling Potion }//
+ItemDisplay[tpcs (CLVL>5 OR FILTLVL>1)]:{%WHITE% Chilling Potion }//
 ItemDisplay[tpcs CLVL<4]:%GRAY%i%BLUE%( %GRAY%Chilling %BLUE%)%GRAY%i%WHITE%%PX-97%{ %WHITE%Chilling Potion }// Chilling Potion (Level 1 Req)
 ItemDisplay[tpcs CLVL~4-5]:%GRAY%i%BLUE%( %GRAY%Chilling %BLUE%)%GRAY%i%WHITE%{ %WHITE%Chilling Potion }// Chilling Potion (Level 1 Req)
 ItemDisplay[tpcm (FILTLVL=0 OR SHOP)]:%GRAY%Frost%WHITE%{ %GRAY%Frost Potion }//
-ItemDisplay[tpcm (CLVL>15 OR FILTLVL>1)]:{ %WHITE%Frost Potion }//
+ItemDisplay[tpcm (CLVL>15 OR FILTLVL>1)]:{%WHITE% Frost Potion }//
 ItemDisplay[tpcm CLVL<16]:%GRAY%i%BLUE%( %GRAY%Frost %BLUE%)%GRAY%i%WHITE%{ %WHITE%Frost Potion }// Frost Potion (Level 12 Req)
 ItemDisplay[tpcl (FILTLVL=0 OR SHOP)]:%GRAY%Freezing%WHITE%{ %GRAY%Freezing Potion }// 
-ItemDisplay[tpcl (CLVL>23 OR FILTLVL>1)]:{ %WHITE%Freezing Potion }//
+ItemDisplay[tpcl (CLVL>23 OR FILTLVL>1)]:{%WHITE% Freezing Potion }//
 ItemDisplay[tpcl CLVL<24]:%GRAY%i%BLUE%( %GRAY%Freezing %BLUE%)%GRAY%i%WHITE%{ %WHITE%Freezing Potion }// Freezing Potion (Level 20 Req)
 
 ItemDisplay[tpls (FILTLVL=0 OR SHOP)]:%GRAY%Charged%WHITE%{ %GRAY%Charged Potion }//
-ItemDisplay[tpls (CLVL>8 OR FILTLVL>1)]:{ %WHITE%Charged Potion }//
+ItemDisplay[tpls (CLVL>8 OR FILTLVL>1)]:{%WHITE% Charged Potion }//
 ItemDisplay[tpls CLVL<9]:%GRAY%i%YELLOW%(  %GRAY%Charged  %YELLOW%)%GRAY%i%WHITE%{ %WHITE%Charged Potion }// Charged Potion (Level 6 Req)
 ItemDisplay[tplm (FILTLVL=0 OR SHOP)]:%GRAY%Static%WHITE%{ %GRAY%Static Potion }//
-ItemDisplay[tplm (CLVL>19 OR FILTLVL>1)]:{ %WHITE%Static Potion }//
+ItemDisplay[tplm (CLVL>19 OR FILTLVL>1)]:{%WHITE% Static Potion }//
 ItemDisplay[tplm CLVL<20]:%GRAY%i%YELLOW%(  %GRAY%Static  %YELLOW%)%GRAY%i%WHITE%{ %WHITE%Static Potion }// Static Potion (Level 16 Req)
 ItemDisplay[tpll (FILTLVL=0 OR SHOP)]:%GRAY%Shock%WHITE%{ %GRAY%Shock Potion }//
-ItemDisplay[tpll (CLVL>27 OR FILTLVL>1)]:{ %WHITE%Shock Potion }//
+ItemDisplay[tpll (CLVL>27 OR FILTLVL>1)]:{%WHITE% Shock Potion }//
 ItemDisplay[tpll CLVL<28]:%GRAY%i%YELLOW%( %GRAY%Shock %YELLOW%)%GRAY%i%WHITE%{ %WHITE%Shock Potion }// Shock Potion (Level 24 Req)
 
 // =================================  Tomes and Scrolls  =================================
@@ -1239,20 +1246,20 @@ ItemDisplay[UNI !ID pac]:%NAME%%CONTINUE%// Alma Negra Sacred Rondache
 ItemDisplay[UNI !ID (pac)]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%BORDER-08%%MAP-50%%DOT-59%%PX-6A%//
 
 //     High Value Armors
-ItemDisplay[UNI !ID xui CLVL<80]:%NAME%%CONTINUE%// The Spirit Shroud Ghost Armor
 ItemDisplay[UNI !ID utp ETH]:%NAME%%CONTINUE%// Purgatory Archon Plate
 ItemDisplay[UNI !ID uul ETH]:%NAME%%CONTINUE%// Eth Steel Carapace Shadow Plate
-ItemDisplay[UNI !ID xea]:%NAME%%CONTINUE%// Skin of the Vipermagi Serpentskin Armor
 ItemDisplay[UNI !ID xhn]:%NAME%%CONTINUE%// Shaftstop Mesh Armor
 ItemDisplay[UNI !ID xpl]:%NAME%%CONTINUE%// Skullder's Ire Russet Armor
-ItemDisplay[UNI !ID xth]:%NAME%%CONTINUE%// Atma's Wail Embossed Plate
 ItemDisplay[UNI !ID uar]:%NAME%%CONTINUE%// Templar's Might or Tyrael's Might Sacred Armor
 ItemDisplay[UNI !ID utu]:%NAME%%CONTINUE%// The Gladiator's Bane Wire Fleece
 ItemDisplay[UNI !ID uld]:%NAME%%CONTINUE%// Leviathan Kraken Shell
 ItemDisplay[UNI !ID upl]:%NAME%%CONTINUE%// Arkaine's Valor Balrog Skin
-ItemDisplay[UNI !ID xtp]:%NAME%%CONTINUE%// Que-Hegan's Wisdom Mage Plate
+ItemDisplay[UNI !ID xea CLVL<80]:%NAME%%CONTINUE%// Skin of the Vipermagi Serpentskin Armor
+ItemDisplay[UNI !ID xth CLVL<80]:%NAME%%CONTINUE%// Atma's Wail Embossed Plate
+ItemDisplay[UNI !ID xtp CLVL<80]:%NAME%%CONTINUE%// Que-Hegan's Wisdom Mage Plate
 ItemDisplay[UNI !ID uui CLVL<80]:%NAME%%CONTINUE%// Ormus' Robes Dusk Shroud
-ItemDisplay[UNI !ID ((xui CLVL<80) OR (utp ETH) OR (uul ETH) OR xea OR xhn OR xpl OR xth OR uar OR utu OR uld OR upl OR xtp OR (uui CLVL<80))]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%BORDER-8E%%MAP-4B%%DOT-62%%PX-69%//
+ItemDisplay[UNI !ID xui CLVL<80]:%NAME%%CONTINUE%// The Spirit Shroud Ghost Armor
+ItemDisplay[UNI !ID ((utp ETH) OR (uul ETH) OR xea OR xhn OR xpl OR xth OR uar OR utu OR uld OR upl OR xtp OR (xea CLVL<80) OR (xth CLVL<80) OR (xtp CLVL<80) OR (uui CLVL<80) OR (xui CLVL<80))]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%BORDER-8E%%MAP-4B%%DOT-62%%PX-69%//
 //     Medium Value Armors
 ItemDisplay[UNI !ID scl CLVL<40 DRUID]:%NAME%%CONTINUE%// Hawkmail Scale Mail
 ItemDisplay[UNI !ID fld CLVL<60]:%NAME%%CONTINUE%// Rockfleece Field Plate
@@ -1260,14 +1267,17 @@ ItemDisplay[UNI !ID ful CLVL<60]:%NAME%%CONTINUE%// Goldskin Full Plate Mail
 ItemDisplay[UNI !ID aar CLVL<60]:%NAME%%CONTINUE%// Silks of the Victor Ancient Armor
 ItemDisplay[UNI !ID xar CLVL<90]:%NAME%%CONTINUE%// Corpsemourn Ornate Plate
 ItemDisplay[UNI !ID xld]:%NAME%%CONTINUE%// Tooththrow Sharktooth Armor
-ItemDisplay[UNI !ID xui CLVL>79]:%NAME%%CONTINUE%// The Spirit Shroud Ghost Armor
 ItemDisplay[UNI !ID xrs CLVL<80]:%NAME%%CONTINUE%// Duriel's Shell Cuirass
 ItemDisplay[UNI !ID ltp CLVL<90]:%NAME%%CONTINUE%// Heavenly Garb Light Plate
 ItemDisplay[UNI !ID xlt]:%NAME%%CONTINUE%// Guardian Angel Templar Coat
 ItemDisplay[UNI !ID xul (ETH OR CLVL<90)]:%NAME%%CONTINUE%// Black Hades Chaos Armor
 ItemDisplay[UNI !ID utp !ETH]:%NAME%%CONTINUE%// Purgatory Archon Plate
+ItemDisplay[UNI !ID xea CLVL>79]:%NAME%%CONTINUE%// Skin of the Vipermagi Serpentskin Armor
+ItemDisplay[UNI !ID xth CLVL>79]:%NAME%%CONTINUE%// Atma's Wail Embossed Plate
+ItemDisplay[UNI !ID xtp CLVL>79]:%NAME%%CONTINUE%// Que-Hegan's Wisdom Mage Plate
 ItemDisplay[UNI !ID uui CLVL>79]:%NAME%%CONTINUE%// Ormus' Robes Dusk Shroud
-ItemDisplay[UNI !ID ((scl CLVL<40 DRUID) OR (fld CLVL<60) OR (ful CLVL<60) OR (aar CLVL<60) OR (xar CLVL<90) OR xld OR (xui CLVL>79) OR (xrs CLVL<80) OR (ltp CLVL<90) OR xlt OR (xul (ETH OR CLVL<90)) OR (utp !ETH) OR (uui CLVL>79))]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%BORDER-08%%MAP-50%%DOT-59%%PX-6A%//
+ItemDisplay[UNI !ID xui CLVL>79]:%NAME%%CONTINUE%// The Spirit Shroud Ghost Armor
+ItemDisplay[UNI !ID ((scl CLVL<40 DRUID) OR (fld CLVL<60) OR (ful CLVL<60) OR (aar CLVL<60) OR (xar CLVL<90) OR xld OR (xrs CLVL<80) OR (ltp CLVL<90) OR xlt OR (xul (ETH OR CLVL<90)) OR (utp !ETH) OR (uui CLVL>79) OR (xea CLVL>79) OR (xth CLVL>79) OR (xtp CLVL>79) OR (xui CLVL>79))]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%BORDER-08%%MAP-50%%DOT-59%%PX-6A%//
 
 //     High Value Belts
 ItemDisplay[UNI !ID zlb]:%NAME%%CONTINUE%// String of Ears Demonhide Sash
@@ -1278,9 +1288,9 @@ ItemDisplay[UNI !ID umc]:%NAME%%CONTINUE%// Verdungo's Hearty Cord Mithril Coil
 ItemDisplay[UNI !ID ztb]:%NAME%%CONTINUE%// Snowclash Battle Belt
 ItemDisplay[UNI !ID (zlb OR zhb OR ulc OR uvc OR umc OR ztb)]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%BORDER-8E%%MAP-4B%%DOT-62%%PX-69%//
 //     Medium Value Belts
-ItemDisplay[UNI !ID zvb CLVL<80]:%NAME%%CONTINUE%// Razortail Sharkskin Belt
+ItemDisplay[UNI !ID zvb]:%NAME%%CONTINUE%// Razortail Sharkskin Belt
 ItemDisplay[UNI !ID tbl CLVL<80]:%NAME%%CONTINUE%// Goldwrap Heavy Belt
-ItemDisplay[UNI !ID ((zvb CLVL<80) OR (tbl CLVL<80))]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%BORDER-08%%MAP-50%%DOT-59%%PX-6A%//
+ItemDisplay[UNI !ID (zvb OR (tbl CLVL<80))]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%BORDER-08%%MAP-50%%DOT-59%%PX-6A%//
 
 //     High Value Boots
 ItemDisplay[UNI !ID xmb (CLVL<90 OR SORCERESS)]:%NAME%%CONTINUE%// Silkweave Mesh Boots
@@ -1654,11 +1664,11 @@ ItemDisplay[RARE !ID cqv]:%LIGHT_GRAY%* %YELLOW%%NAME% %LIGHT_GRAY%*%YELLOW%// A
 
 // Rare Belts
 ItemDisplay[RARE !ID BELT FILTLVL<8]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%%BORDER-8F%%MAP-9B%%DOT-64%%PX-6D%// Notify for rare belts filter levels 1-8
-ItemDisplay[RARE !ID BELT FILTLVL~8-11]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%%MAP-9B%%DOT-0B%%PX-6D%%TIER-0%//
+ItemDisplay[RARE !ID BELT FILTLVL~8-11]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%%BORDER-8F%%MAP-9B%%DOT-64%%PX-6D%%TIER-0%//
 ItemDisplay[RARE !ID BELT FILTLVL=12]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%//
 // Rare Boots
 ItemDisplay[RARE !ID BOOTS FILTLVL<8]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%%BORDER-8F%%MAP-9B%%DOT-64%%PX-6D%//
-ItemDisplay[RARE !ID BOOTS FILTLVL~8-11]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%%MAP-9B%%DOT-0B%%PX-6D%%TIER-0%// 
+ItemDisplay[RARE !ID BOOTS FILTLVL~8-11]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%%BORDER-8F%%MAP-9B%%DOT-64%%PX-6D%%TIER-0%// 
 ItemDisplay[RARE !ID BOOTS FILTLVL=12]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%// 
 // Rare Gloves
 ItemDisplay[RARE !ID GLOVES (CLVL<90 OR FILTLVL<3)]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%%BORDER-8F%%MAP-9B%%DOT-64%%PX-6D%// Notify for rare gloves under character level 90
@@ -1667,8 +1677,8 @@ ItemDisplay[RARE !ID GLOVES CLVL>89 (FILTLVL~8-9 OR FILTLVL=11) (ASSASSIN OR AMA
 
 // Rare Chests
 ItemDisplay[RARE !ID CHEST ALVL>84 FILTLVL=12]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%// 
-ItemDisplay[RARE !ID CHEST ALVL>84 FILTLVL~8-11]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%%MAP-9B%%DOT-0B%%PX-6D%%TIER-0%// 
-ItemDisplay[RARE !ID CHEST CLVL>89 ILVL>93 FILTLVL<8]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%%MAP-9B%%DOT-0B%%PX-6D%%TIER-0%// Minimap icon for rare armors with affix levels 94 or higher on filter levels 0-8
+ItemDisplay[RARE !ID CHEST ALVL>84 FILTLVL~8-11]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%%BORDER-8F%%MAP-9B%%DOT-64%%PX-6D%%TIER-0%// 
+ItemDisplay[RARE !ID CHEST CLVL>89 ILVL>93 FILTLVL<8]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%%BORDER-8F%%MAP-9B%%DOT-64%%PX-6D%%TIER-0%// Minimap icon for rare armors with affix levels 94 or higher on filter levels 0-8
 ItemDisplay[RARE !ID CHEST CLVL<90 ILVL>93 FILTLVL<8]:%PURPLE%* %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%*%YELLOW%%BORDER-8F%%MAP-9B%%DOT-64%%PX-6D%// Notify for rare armors with affix levels 94 or higher on filter levels 0-8
 // Rare Shields
 ItemDisplay[RARE !ID SHIELD NORM !NEC !DIN FILTLVL>7 ALVL<85 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide specific Normal quality Rare Shields After Level 39
