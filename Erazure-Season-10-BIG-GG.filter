@@ -28,8 +28,8 @@ ItemDisplay[box FILTLVL=12 (!SORCERESS OR (SORCERESS CHARSTAT1<150))]:%NAME%{%WH
 ItemDisplay[box FILTLVL=12 SORCERESS CHARSTAT1>149]:%NAME%{%WHITE%Filter Level: 12%CL%%GRAY%Hides H5, 35%%CL%Extreme Filtering}%CONTINUE%//
 
 ItemDisplay[box FILTLVL=0]:%NAME%{%NAME%%CL%%GRAY%Level 12 Hides Crafting Bases, Flawless Gems, and Low Value Items%CL%%GRAY%Levels 8-9-10-11 Hide Most Non-Eth and Non-Magic Class Items%CL%%GRAY%Levels 3-4-5-6-7 Hide Some Rares and Non-Superior Items%CL%%GRAY%Level 2 Hides Additional Non-Magic/Magic Items%CL%Level 1 Shows Most Non-Magic/Magic Items}%CONTINUE%//
-ItemDisplay[box CLVL<20 !FILTLVL=0]:%NAME%{%NAME%%CL%%GRAY%For %GOLD%Increase and Decrease Filter Level%CL%%GRAY%For %GOLD%Always Show Items %GRAY%and Hotkeys%CL%Open Settings to Create Toggle}%CONTINUE%//
-ItemDisplay[box]:%NAME%{%NAME%%CL%%WHITE%Erazure: Season 10 v11.22}//
+ItemDisplay[box CLVL<50 !FILTLVL=0]:%NAME%{%NAME%%CL%%GRAY%For %GOLD%Increase and Decrease Filter Level%CL%%GRAY%For %GOLD%Always Show Items %GRAY%and Hotkeys%CL%Open Settings to Create Toggle}%CONTINUE%//
+ItemDisplay[box]:%NAME%{%NAME%%CL%%WHITE%Erazure: Season 10 v11.23}//
 
 // ==============================  Arrows and Bolts  ===============================
 
@@ -138,8 +138,8 @@ ItemDisplay[mp4 CLVL>24]:%GRAY%i%BLUE%(O)%GRAY%i%WHITE%{%WHITE% Greater Mana Pot
 
 // Super Mana Potion
 ItemDisplay[mp5 CLVL>24 CLVL<50 (FILTLVL~1-4 OR FILTLVL=8)]:%BLUE%i%TEAL%I%BLUE%(O)%TEAL%I%BLUE%i%WHITE%{%WHITE% Super Mana Potion }// On Filter Level 1, 2, 3, 5 and 6, show as iI(O)Ii
-ItemDisplay[mp5 CLVL>49 (FILTLVL~1-4 OR FILTLVL=8)]:%TEAL%i%BLUE%(O)%TEAL%i%WHITE%{%WHITE% Super Mana Potion }// On Filter Level 1, 2, 3, 5 and 6, show as iI(O)Ii
-ItemDisplay[mp5 CLVL>49 (FILTLVL=12 SORCERESS CHARSTAT1>149)]:%GRAY%(%BLUE%O%GRAY%)%WHITE%{%WHITE% Super Mana Potion }// On Filter Level 1, 2, 3, 5 and 6, show as iI(O)Ii
+ItemDisplay[mp5 CLVL>49 (FILTLVL~1-4)]:%TEAL%i%BLUE%(O)%TEAL%i%WHITE%{%WHITE% Super Mana Potion }// On Filter Level 1, 2, 3, 5 and 6, show as iI(O)Ii
+ItemDisplay[mp5 CLVL>49 (FILTLVL=8 OR (FILTLVL=12 SORCERESS CHARSTAT1>149))]:%GRAY%(%BLUE%O%GRAY%)%WHITE%{%WHITE% Super Mana Potion }// On Filter Level 1, 2, 3, 5 and 6, show as iI(O)Ii
 ItemDisplay[mp5 CLVL>24 (FILTLVL~5-7 OR FILTLVL~9-11 OR (FILTLVL=12 (!SORCERESS OR (SORCERESS CHARSTAT1<150)))) !SHOP]:{%WHITE% Super Mana Potion }// On Filter Level 4, 7, 8 and 9, hide Super Mana potions
 
 // Dueling Mana Potion
@@ -373,13 +373,13 @@ ItemDisplay[(GEMLEVEL=1 OR GEMLEVEL=2)]:%NAME%-%WHITE%%CONTINUE%// "-" Chipped o
 ItemDisplay[(GEMLEVEL=3 OR GEMLEVEL=4)]:%NAME%o%WHITE%%CONTINUE%// "o" Normal or Flawless
 ItemDisplay[GEMLEVEL=5]:%NAME%O%WHITE%%CONTINUE%// "O" Perfect
 // Notify for Chipped, Flawed, Normal at low levels
-ItemDisplay[((gcv CLVL<15) OR (gfv CLVL<20) OR (gsv CLVL<30))]:%NAME%%DOT-9B%%PX-1E%%CONTINUE%// Amethyst
-ItemDisplay[((gcw CLVL<15) OR (gfw CLVL<20) OR (gsw CLVL<30))]:%NAME%%DOT-DC%%PX-1E%%CONTINUE%// Diamond
-ItemDisplay[((gcg CLVL<15) OR (gfg CLVL<20) OR (gsg CLVL<30))]:%NAME%%DOT-79%%PX-1E%%CONTINUE%// Emerald
-ItemDisplay[((gcr CLVL<15) OR (gfr CLVL<20) OR (gsr CLVL<30))]:%NAME%%DOT-0A%%PX-1E%%CONTINUE%// Ruby
-ItemDisplay[((gcb CLVL<15) OR (gfb CLVL<20) OR (gsb CLVL<30))]:%NAME%%DOT-97%%PX-1E%%CONTINUE%// Sapphire
-ItemDisplay[((gcy CLVL<15) OR (gfy CLVL<20) OR (gsy CLVL<30))]:%NAME%%DOT-6F%%PX-1E%%CONTINUE%// Topaz
-ItemDisplay[((skc CLVL<15) OR (skf CLVL<20) OR (sku CLVL<30))]:%NAME%%DOT-15%%PX-1E%%CONTINUE%// Skull
+ItemDisplay[((gcv CLVL<15) OR (gfv CLVL<20) OR (gsv CLVL<30)) FILTLVL<3]:%NAME%%DOT-9B%%PX-1E%%CONTINUE%// Amethyst
+ItemDisplay[((gcw CLVL<15) OR (gfw CLVL<20) OR (gsw CLVL<30)) FILTLVL<3]:%NAME%%DOT-DC%%PX-1E%%CONTINUE%// Diamond
+ItemDisplay[((gcg CLVL<15) OR (gfg CLVL<20) OR (gsg CLVL<30)) FILTLVL<3]:%NAME%%DOT-79%%PX-1E%%CONTINUE%// Emerald
+ItemDisplay[((gcr CLVL<15) OR (gfr CLVL<20) OR (gsr CLVL<30)) FILTLVL<3]:%NAME%%DOT-0A%%PX-1E%%CONTINUE%// Ruby
+ItemDisplay[((gcb CLVL<15) OR (gfb CLVL<20) OR (gsb CLVL<30)) FILTLVL<3]:%NAME%%DOT-97%%PX-1E%%CONTINUE%// Sapphire
+ItemDisplay[((gcy CLVL<15) OR (gfy CLVL<20) OR (gsy CLVL<30)) FILTLVL<3]:%NAME%%DOT-6F%%PX-1E%%CONTINUE%// Topaz
+ItemDisplay[((skc CLVL<15) OR (skf CLVL<20) OR (sku CLVL<30)) FILTLVL<3]:%NAME%%DOT-15%%PX-1E%%CONTINUE%// Skull
 // Cube 3 for next gem level
 ItemDisplay[GEMLEVEL=1]:%NAME%{%TAN%Cube %WHITE%Chipped %TAN%x %WHITE%3 %TAN%= %WHITE%Flawed}// Chipped
 ItemDisplay[GEMLEVEL=2]:%NAME%{%TAN%Cube %WHITE%Flawed %TAN%x %WHITE%3 %TAN%= %WHITE%Normal}// Flawed
@@ -1208,7 +1208,7 @@ ItemDisplay[UNI !ID (bac OR ba6 OR (baf !BARBARIAN) OR (bad BARBARIAN))]:%RED%X\
 ItemDisplay[UNI !ID obc]:%NAME%%CONTINUE%// Eschuta's Temper Eldritch Orb
 ItemDisplay[UNI !ID obf]:%NAME%%CONTINUE%// Death's Fathom Dimensional Shard
 ItemDisplay[UNI !ID oba (CLVL<90 OR SORCERESS)]:%NAME%%CONTINUE%// The Oculus Swirling Crystal
-ItemDisplay[UNI !ID (obc OR obf OR oba)]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%BORDER-8E%%MAP-4B%%DOT-62%%PX-69%//
+ItemDisplay[UNI !ID (obc OR obf OR (oba (CLVL<90 OR SORCERESS)))]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%BORDER-8E%%MAP-4B%%DOT-62%%PX-69%//
 //     Medium Value Sorceress Orbs
 ItemDisplay[UNI !ID ob6 CLVL<80]:%NAME%%CONTINUE%// Tempest Glowing Orb
 ItemDisplay[UNI !ID oba (CLVL>89 OR !SORCERESS)]:%NAME%%CONTINUE%// The Oculus Swirling Crystal
@@ -2895,7 +2895,7 @@ ItemDisplay[NMAG !INF !RW (lrg OR kit OR tow) !GEMMED CLVL>60 FILTLVL>0 !(MAPID=
 //  Orange Ancient's Pledge Tag
 ItemDisplay[NMAG !INF !RW (lrg OR kit OR tow) !ETH SOCK=3 CLVL<30 !GEMMED]:%ORANGE%AP %GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 3os
 //  3os Vendor Tag
-ItemDisplay[NMAG !INF !RW (lrg OR kit OR tow) !GEMMED !ETH SOCK=3 CLVL<30 SHOP]:%ORANGE%**%TAN%**%LIGHT_GRAY%**%GRAY%**  %GRAY%%NAME%  %GRAY%**%LIGHT_GRAY%**%TAN%**%ORANGE%**%GRAY%{%ORANGE%**%TAN%**%LIGHT_GRAY%**%GRAY%*   %ORANGE%Ancient's Pledge   %GRAY%*%LIGHT_GRAY%**%TAN%**%ORANGE%**}// 3os Vendor Tag
+ItemDisplay[NMAG !INF !RW (lrg OR kit OR tow) !GEMMED !ETH SOCK=3 CLVL<30 SHOP]:%ORANGE%**%TAN%**%LIGHT_GRAY%**%GRAY%**  %GRAY%%NAME%  %GRAY%**%LIGHT_GRAY%**%TAN%**%ORANGE%**%GRAY%{%ORANGE%**%TAN%**%LIGHT_GRAY%**%GRAY%**  %ORANGE%Ancient's Pledge  %GRAY%**%LIGHT_GRAY%**%TAN%**%ORANGE%**}// 3os Vendor Tag
 //  Notification for good block rhyme base
 ItemDisplay[NMAG !INF !RW tow !ETH SOCK=2 CLVL<50]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 2os
 
@@ -3672,7 +3672,8 @@ ItemDisplay[NMAG !INF !RW (7sm OR 7sb OR 7bs OR 7ls) ED<5 FILTLVL>2 !(MAPID=1 OR
 ItemDisplay[NMAG !INF !RW (7sm OR 7sb OR 7bs OR 7ls) ED<12 FILTLVL>7 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hide all elite tier 1-handed swords
 
 //          Phase Blade
-ItemDisplay[NMAG !INF !RW 7cr ED<5 !SOCK=5 FILTLVL>2 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// 0os
+ItemDisplay[NMAG !INF !RW 7cr ED<5 FILTLVL>2 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// 0os
+ItemDisplay[NMAG !INF !RW 7cr ED<12 FILTLVL>7 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// 0os
 
 ItemDisplay[NMAG !INF !RW 7cr ED<5 SOCK=0 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// 0os
 ItemDisplay[NMAG !INF !RW 7cr SOCK=2 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// 
