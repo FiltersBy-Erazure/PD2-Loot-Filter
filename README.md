@@ -1,6 +1,8 @@
 # **Season 10 Desecration Update:**
 
-My loot filters are updated ahead of the October 25th ladder reset. You can now select either version on the PD2 Launcher! Be sure to click "Save Filter" on the right side afterwards
+My loot filters are updated for the Season 10 Desecration ladder reset on October 25th 2024
+
+After selecting the version of the filter from the launcher, be sure to click "Save Filter" on the right side afterwards
 
 - The **Erazure Season 10 Main** version displays standard names for all high runes and super rare items
 - The **Erazure BIG GG Novelty** version shows "BIG GG" or "LIL GG" when the following items drop while your character is outside of town:
