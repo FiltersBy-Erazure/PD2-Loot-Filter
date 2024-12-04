@@ -945,40 +945,172 @@ ItemDisplay[STAT374=2 MAPTIER=4]:%NAME%{%TEAL%Area Level: 94}%CONTINUE%//
 
 ItemDisplay[STAT360=0 (MAPTIER=1 OR (MAPTIER=2 OR t53) OR (MAPTIER=3 OR t51 OR t52))]:%NAME%{%WHITE%Highest Resistances:%CL%%NAME%}%CONTINUE%//
 
-// Tier 1 Map Monster Resistances
-ItemDisplay[t22]:%NAME%{%RED%125% %WHITE%* %YELLOW%105% %WHITE%* %BLUE%75% %WHITE%* %DARK_GREEN%85% %WHITE%* %ORANGE%50% %WHITE%* %TAN%50%%CL%%NAME%}%CONTINUE%// Torajan Jungle
-ItemDisplay[t12]:%NAME%{%RED%135% %WHITE%* %YELLOW%80% %WHITE%* %BLUE%130% %WHITE%* %DARK_GREEN%75% %WHITE%* %ORANGE%50% %WHITE%* %TAN%50%%CL%%NAME%}%CONTINUE%// Horazon's Memory
-ItemDisplay[t23]:%NAME%{%RED%130% %WHITE%* %YELLOW%100% %WHITE%* %BLUE%80% %WHITE%* %DARK_GREEN%85% %WHITE%* %ORANGE%50% %WHITE%* %TAN%50%%CL%%NAME%}%CONTINUE%// Arreat Battlefield
-ItemDisplay[t26]:%NAME%{%RED%75% %WHITE%* %YELLOW%75% %WHITE%* %BLUE%85% %WHITE%* %DARK_GREEN%135% %WHITE%* %ORANGE%50% %WHITE%* %TAN%100%%CL%%NAME%}%CONTINUE%// Shadows of Westmarch
-ItemDisplay[t25]:%NAME%{%RED%75% %WHITE%* %YELLOW%135% %WHITE%* %BLUE%85% %WHITE%* %DARK_GREEN%125% %WHITE%* %ORANGE%50% %WHITE%* %TAN%66%%CL%%NAME%}%CONTINUE%// Sewers of Harrogath
-ItemDisplay[t36]:%NAME%{%RED%95% %WHITE%* %YELLOW%100% %WHITE%* %BLUE%130% %WHITE%* %DARK_GREEN%80% %WHITE%* %ORANGE%50% %WHITE%* %TAN%50%%CL%%NAME%}%CONTINUE%// Fall of Caldeum
-ItemDisplay[t15]:%NAME%{%RED%75% %WHITE%* %YELLOW%80% %WHITE%* %BLUE%125% %WHITE%* %DARK_GREEN%105% %WHITE%* %ORANGE%150% %WHITE%* %TAN%60%%CL%%NAME%}%CONTINUE%// Royal Crypts
 
-// Tier 2 Map Monster Resistances
-ItemDisplay[t13]:%NAME%{%RED%125% %WHITE%* %YELLOW%75% %WHITE%* %BLUE%130% %WHITE%* %DARK_GREEN%85% %WHITE%* %ORANGE%50% %WHITE%* %TAN%110%%CL%%NAME%}%CONTINUE%// Bastion Keep
-ItemDisplay[t31]:%NAME%{%RED%90% %WHITE%* %YELLOW%85% %WHITE%* %BLUE%180% %WHITE%* %DARK_GREEN%130% %WHITE%* %ORANGE%100% %WHITE%* %TAN%66%%CL%%NAME%}%CONTINUE%// River of Blood
-ItemDisplay[t11]:%NAME%{%RED%130% %WHITE%* %YELLOW%120% %WHITE%* %BLUE%75% %WHITE%* %DARK_GREEN%80% %WHITE%* %ORANGE%50% %WHITE%* %TAN%80%%CL%%NAME%}%CONTINUE%// Ruins of Viz-jun
-ItemDisplay[t34]:%NAME%{%RED%75% %WHITE%* %YELLOW%130% %WHITE%* %BLUE%75% %WHITE%* %DARK_GREEN%120% %WHITE%* %ORANGE%50% %WHITE%* %TAN%50%%CL%%NAME%}%CONTINUE%// Ancestral Trial
-ItemDisplay[t33]:%NAME%{%RED%120% %WHITE%* %YELLOW%80% %WHITE%* %BLUE%110% %WHITE%* %DARK_GREEN%80% %WHITE%* %ORANGE%50% %WHITE%* %TAN%55%%CL%%NAME%}%CONTINUE%// Lost Temple
-ItemDisplay[t24]:%NAME%{%RED%85% %WHITE%* %YELLOW%120% %WHITE%* %BLUE%75% %WHITE%* %DARK_GREEN%110% %WHITE%* %ORANGE%50% %WHITE%* %TAN%105%%CL%%NAME%}%CONTINUE%// Tomb of Zoltun Kulle
-ItemDisplay[t27]:%NAME%{%RED%85% %WHITE%* %YELLOW%85% %WHITE%* %BLUE%85% %WHITE%* %DARK_GREEN%85% %WHITE%* %ORANGE%40% %WHITE%* %TAN%45%%CL%%NAME%}%CONTINUE%// Demon Road
-ItemDisplay[t28]:%NAME%{%RED%85% %WHITE%* %YELLOW%85% %WHITE%* %BLUE%85% %WHITE%* %DARK_GREEN%85% %WHITE%* %ORANGE%40% %WHITE%* %TAN%45%%CL%%NAME%}%CONTINUE%// Skovos Stronghold
-// Tier 2 Unique Map Monster Resistances
-ItemDisplay[t53]:%NAME%{%RED%70% %WHITE%* %YELLOW%75% %WHITE%* %BLUE%65% %WHITE%* %DARK_GREEN%80% %WHITE%* %ORANGE%80% %WHITE%* %TAN%60%%CL%%NAME%}%CONTINUE%// Fallen Gardens
+// Physical Resistances
+// Map Contains 
+ItemDisplay[(t39 OR t27 OR t28) (STAT441>0 OR STAT440>0)]:%NAME%{%TAN%50%%CL%%NAME%}%CONTINUE%// Reanimated, Cows (50%)
+ItemDisplay[(t39 OR t27 OR t28 OR t22 OR t12 OR t23 OR t36 OR t34 OR t32 OR t35 OR t3a OR t52 OR t33 OR t15 OR t53 OR t14 OR t16 OR t61 OR t25 OR t31) STAT439>0]:%NAME%{%TAN%75%%CL%%NAME%}%CONTINUE%// Vampire Lords (75%)
+ItemDisplay[(t39 OR t27 OR t28 OR t22 OR t12 OR t23 OR t36 OR t34 OR t32 OR t35 OR t3a OR t52 OR t33 OR t15 OR t53 OR t14 OR t16 OR t61 OR t25 OR t31 OR t21 OR t11) STAT442>0]:%NAME%{%TAN%95%%CL%%NAME%}%CONTINUE%// Ghosts (95%)
+// 40
+ItemDisplay[(t39) !STAT441>0 !STAT440>0 !STAT439>0 !STAT442>0]:%NAME%{%TAN%40%%CL%%NAME%}%CONTINUE%//
+// 45
+ItemDisplay[(t27 OR t28) !STAT441>0 !STAT440>0 !STAT439>0 !STAT442>0]:%NAME%{%TAN%45%%CL%%NAME%}%CONTINUE%//
+// 50
+ItemDisplay[(t22 OR t12 OR t23 OR t36 OR t34 OR t32 OR t35 OR t3a OR t52) !STAT439>0 !STAT442>0]:%NAME%{%TAN%50%%CL%%NAME%}%CONTINUE%//
+// 55
+ItemDisplay[(t33) !STAT439>0 !STAT442>0]:%NAME%{%TAN%55%%CL%%NAME%}%CONTINUE%//
+// 60
+ItemDisplay[(t15 OR t53 OR t14 OR t16) !STAT439>0 !STAT442>0]:%NAME%{%TAN%60%%CL%%NAME%}%CONTINUE%//
+// 65
+ItemDisplay[(t51) !STAT439>0 !STAT442>0]:%NAME%{%TAN%65%%CL%%NAME%}%CONTINUE%//
+// 66
+ItemDisplay[(t25 OR t31) !STAT439>0 !STAT442>0]:%NAME%{%TAN%66%%CL%%NAME%}%CONTINUE%//
+// 75
+ItemDisplay[(t21) !STAT442>0]:%NAME%{%TAN%75%%CL%%NAME%}%CONTINUE%//
+// 80
+ItemDisplay[(t11) !STAT442>0]:%NAME%{%TAN%80%%CL%%NAME%}%CONTINUE%//
+// 100
+ItemDisplay[(t26 OR t37)]:%NAME%{%TAN%100%%CL%%NAME%}%CONTINUE%//
+// 105
+ItemDisplay[(t24)]:%NAME%{%TAN%105%%CL%%NAME%}%CONTINUE%//
+// 110
+ItemDisplay[(t13)]:%NAME%{%TAN%110%%CL%%NAME%}%CONTINUE%//
+// 120
+ItemDisplay[(t38)]:%NAME%{%TAN%120%%CL%%NAME%}%CONTINUE%//
 
-// Tier 3 Map Monster Resistances
-ItemDisplay[t14]:%NAME%{%RED%75% %WHITE%* %YELLOW%125% %WHITE%* %BLUE%75% %WHITE%* %DARK_GREEN%130% %WHITE%* %ORANGE%35% %WHITE%* %TAN%60%%CL%%NAME%}%CONTINUE%// Sanatorium
-ItemDisplay[t21]:%NAME%{%RED%140% %WHITE%* %YELLOW%125% %WHITE%* %BLUE%80% %WHITE%* %DARK_GREEN%75% %WHITE%* %ORANGE%50% %WHITE%* %TAN%75%%CL%%NAME%}%CONTINUE%// Phlegethon
-ItemDisplay[t32]:%NAME%{%RED%75% %WHITE%* %YELLOW%130% %WHITE%* %BLUE%130% %WHITE%* %DARK_GREEN%85% %WHITE%* %ORANGE%75% %WHITE%* %TAN%50%%CL%%NAME%}%CONTINUE%// Throne of Insanity
-ItemDisplay[t35]:%NAME%{%RED%65% %WHITE%* %YELLOW%65% %WHITE%* %BLUE%65% %WHITE%* %DARK_GREEN%65% %WHITE%* %ORANGE%33% %WHITE%* %TAN%50%%CL%%NAME%}%CONTINUE%// Blood Moon
-ItemDisplay[t37]:%NAME%{%RED%75% %WHITE%* %YELLOW%135% %WHITE%* %BLUE%75% %WHITE%* %DARK_GREEN%130% %WHITE%* %ORANGE%50% %WHITE%* %TAN%100%%CL%%NAME%}%CONTINUE%// Pandemonium Citadel
-ItemDisplay[t38]:%NAME%{%RED%130% %WHITE%* %YELLOW%75% %WHITE%* %BLUE%80% %WHITE%* %DARK_GREEN%110% %WHITE%* %ORANGE%70% %WHITE%* %TAN%120%%CL%%NAME%}%CONTINUE%// Canyon of Sescheron
-ItemDisplay[t39]:%NAME%{%RED%125% %WHITE%* %YELLOW%90% %WHITE%* %BLUE%130% %WHITE%* %DARK_GREEN%105% %WHITE%* %ORANGE%50% %WHITE%* %TAN%40%%CL%%NAME%}%CONTINUE%// Kehjistan Marketplace
-ItemDisplay[t3a]:%NAME%{%RED%75% %WHITE%* %YELLOW%80% %WHITE%* %BLUE%130% %WHITE%* %DARK_GREEN%130% %WHITE%* %ORANGE%120% %WHITE%* %TAN%50%%CL%%NAME%}%CONTINUE%// Ashen Plains
-ItemDisplay[t16]:%NAME%{%RED%135% %WHITE%* %YELLOW%75% %WHITE%* %BLUE%115% %WHITE%* %DARK_GREEN%75% %WHITE%* %ORANGE%125% %WHITE%* %TAN%60%%CL%%NAME%}%CONTINUE%// Ruined Cistern
-// Tier 3 Unique Map Monster Resistances
-ItemDisplay[t51]:%NAME%{%RED%85% %WHITE%* %YELLOW%85% %WHITE%* %BLUE%85% %WHITE%* %DARK_GREEN%95% %WHITE%* %ORANGE%40% %WHITE%* %TAN%65%%CL%%NAME%}%CONTINUE%// Zhar's Sanctum
-ItemDisplay[t52]:%NAME%{%RED%65% %WHITE%* %YELLOW%60% %WHITE%* %BLUE%65% %WHITE%* %DARK_GREEN%75% %WHITE%* %ORANGE%50% %WHITE%* %TAN%50%%CL%%NAME%}%CONTINUE%// Stygian Caverns
+// Magic Resistances
+// Map Contains
+ItemDisplay[(t35 OR t14 OR t27 OR t28 OR t51) (STAT441>0 OR STAT442>0)]:%NAME%{%ORANGE%50% %WHITE%* %NAME%}%CONTINUE%// Reanimated, Ghosts (50%)
+// 33
+ItemDisplay[(t35) !STAT441>0 !STAT442>0]:%NAME%{%ORANGE%33% %WHITE%* %NAME%}%CONTINUE%//
+// 35
+ItemDisplay[(t14) !STAT441>0 !STAT442>0]:%NAME%{%ORANGE%35% %WHITE%* %NAME%}%CONTINUE%//
+// 40
+ItemDisplay[(t27 OR 28t OR t51) !STAT441>0 !STAT442>0]:%NAME%{%ORANGE%40% %WHITE%* %NAME%}%CONTINUE%//
+// 50
+ItemDisplay[(t22 OR t12 OR t23 OR t26 OR t25 OR t36 OR t13 OR t11 OR t34 OR t33 OR t24 OR t21 OR t37 OR t39 OR t52)]:%NAME%{%ORANGE%50% %WHITE%* %NAME%}%CONTINUE%//
+// 70
+ItemDisplay[(t38)]:%NAME%{%ORANGE%70% %WHITE%* %NAME%}%CONTINUE%//
+// 75
+ItemDisplay[(t32)]:%NAME%{%ORANGE%75% %WHITE%* %NAME%}%CONTINUE%//
+// 80
+ItemDisplay[(t53)]:%NAME%{%ORANGE%80% %WHITE%* %NAME%}%CONTINUE%//
+// 100
+ItemDisplay[(t31)]:%NAME%{%ORANGE%100% %WHITE%* %NAME%}%CONTINUE%//
+// 120
+ItemDisplay[(t3a)]:%NAME%{%ORANGE%120% %WHITE%* %NAME%}%CONTINUE%//
+// 125
+ItemDisplay[(t16)]:%NAME%{%ORANGE%125% %WHITE%* %NAME%}%CONTINUE%//
+// 150
+ItemDisplay[(t15)]:%NAME%{%ORANGE%150% %WHITE%* %NAME%}%CONTINUE%//
+
+// Poison Resistances
+// Map Contains
+ItemDisplay[(t35) STAT470>0]:%NAME%{%DARK_GREEN%x% %WHITE%* %NAME%}%CONTINUE%// Souls (75%)
+ItemDisplay[(t35 OR t12 OR t21 OR t16 OR t52) (STAT437>0 OR STAT441>0)]:%NAME%{%DARK_GREEN%x% %WHITE%* %NAME%}%CONTINUE%// Dolls, Reanimated (80%)
+ItemDisplay[(t35 OR t12 OR t21 OR t16 OR t52 OR t36 OR t11 OR t33 OR t53 OR t22 OR t23 OR t13 OR t27 OR t28 OR t32) STAT442>0]:%NAME%{%DARK_GREEN%x% %WHITE%* %NAME%}%CONTINUE%// Ghosts (95%)
+// 65
+ItemDisplay[(t35) !STAT470>0 !STAT437>0 !STAT441>0 !STAT442>0]:%NAME%{%DARK_GREEN%65% %WHITE%* %NAME%}%CONTINUE%//
+// 75
+ItemDisplay[(t12 OR t21 OR t16 OR t52) !STAT437>0 !STAT441>0 !STAT442>0]:%NAME%{%DARK_GREEN%75% %WHITE%* %NAME%}%CONTINUE%//
+// 80
+ItemDisplay[(t36 OR t11 OR t33 OR t53) !STAT442>0]:%NAME%{%DARK_GREEN%80% %WHITE%* %NAME%}%CONTINUE%//
+// 85
+ItemDisplay[(t22 OR t23 OR t13 OR t27 OR t28 OR t32) !STAT442>0]:%NAME%{%DARK_GREEN%85% %WHITE%* %NAME%}%CONTINUE%//
+// 95
+ItemDisplay[(t51)]:%NAME%{%DARK_GREEN%95% %WHITE%* %NAME%}%CONTINUE%//
+// 105
+ItemDisplay[(t15 OR t39)]:%NAME%{%DARK_GREEN%105% %WHITE%* %NAME%}%CONTINUE%//
+// 110
+ItemDisplay[(t24 OR t38)]:%NAME%{%DARK_GREEN%110% %WHITE%* %NAME%}%CONTINUE%//
+// 120
+ItemDisplay[(t34)]:%NAME%{%DARK_GREEN%120% %WHITE%* %NAME%}%CONTINUE%//
+// 125
+ItemDisplay[(t25)]:%NAME%{%DARK_GREEN%125% %WHITE%* %NAME%}%CONTINUE%//
+// 130
+ItemDisplay[(t31 OR t14 OR t37 OR t3a)]:%NAME%{%DARK_GREEN%130% %WHITE%* %NAME%}%CONTINUE%//
+// 135
+ItemDisplay[(t26)]:%NAME%{%DARK_GREEN%135% %WHITE%* %NAME%}%CONTINUE%//
+
+
+// Cold Resistances
+// Map Contains
+ItemDisplay[(t53 OR t35 OR t52 OR t22 OR t11 OR t34 OR t24 OR t14 OR t37) STAT499>0]:%NAME%{%BLUE%x% %WHITE%* %NAME%}%CONTINUE%// Shrieking Terrors (80%)
+ItemDisplay[(t53 OR t35 OR t52 OR t22 OR t11 OR t34 OR t24 OR t14 OR t37 OR t23 OR t21 OR t38 OR t26 OR t25 OR t27 OR t28 OR t51 OR t33 OR t16 OR t15 OR t12 OR t36 OR t13 OR t32 OR t39 OR t3a) STAT439>0]:%NAME%{%BLUE%x% %WHITE%* %NAME%}%CONTINUE%// Vampire Lords (135%)
+// 65
+ItemDisplay[(t53 OR t35 OR t52) !STAT499>0 !STAT439>0]:%NAME%{%BLUE%65% %WHITE%* %NAME%}%CONTINUE%//
+// 75
+ItemDisplay[(t22 OR t11 OR t34 OR t24 OR t14 OR t37) !STAT499>0 !STAT439>0]:%NAME%{%BLUE%75% %WHITE%* %NAME%}%CONTINUE%//
+// 80
+ItemDisplay[(t23 OR t21 OR t38) !STAT439>0]:%NAME%{%BLUE%80% %WHITE%* %NAME%}%CONTINUE%//
+// 85
+ItemDisplay[(t26 OR t25 OR t27 OR t28 OR t51) !STAT439>0]:%NAME%{%BLUE%85% %WHITE%* %NAME%}%CONTINUE%//
+// 110
+ItemDisplay[(t33) !STAT439>0]:%NAME%{%BLUE%110% %WHITE%* %NAME%}%CONTINUE%//
+// 115
+ItemDisplay[(t16) !STAT439>0]:%NAME%{%BLUE%115% %WHITE%* %NAME%}%CONTINUE%//
+// 125
+ItemDisplay[(t15) !STAT439>0]:%NAME%{%BLUE%125% %WHITE%* %NAME%}%CONTINUE%//
+// 130
+ItemDisplay[(t12 OR t36 OR t13 OR t32 OR t39 OR t3a) !STAT439>0]:%NAME%{%BLUE%130% %WHITE%* %NAME%}%CONTINUE%//
+// 180
+ItemDisplay[(t31)]:%NAME%{%BLUE%180% %WHITE%* %NAME%}%CONTINUE%//
+
+// Lightning Resistances
+// Map Contains
+ItemDisplay[(t52 OR t35) STAT442>0]:%NAME%{%YELLOW%x% %WHITE%* %NAME%}%CONTINUE%// Ghosts (75%)
+ItemDisplay[(t52 OR t35 OR t26 OR t13 OR t53 OR t38 OR t16) STAT470>0]:%NAME%{%YELLOW%x% %WHITE%* %NAME%}%CONTINUE%// Souls (80%)
+// 60
+ItemDisplay[(t52) !STAT442>0 !STAT470>0]:%NAME%{%YELLOW%60% %WHITE%* %NAME%}%CONTINUE%//
+// 65
+ItemDisplay[(t35) !STAT442>0 !STAT470>0]:%NAME%{%YELLOW%65% %WHITE%* %NAME%}%CONTINUE%//
+// 75
+ItemDisplay[(t26 OR t13 OR t53 OR t38 OR t16) !STAT470>0]:%NAME%{%YELLOW%75% %WHITE%* %NAME%}%CONTINUE%//
+// 80
+ItemDisplay[(t12 OR t15 OR t33 OR t3a)]:%NAME%{%YELLOW%80% %WHITE%* %NAME%}%CONTINUE%//
+// 85
+ItemDisplay[(t31 OR t27 OR t28 OR t51)]:%NAME%{%YELLOW%85% %WHITE%* %NAME%}%CONTINUE%//
+// 90
+ItemDisplay[(t39)]:%NAME%{%YELLOW%90% %WHITE%* %NAME%}%CONTINUE%//
+// 100
+ItemDisplay[(t23 OR t36)]:%NAME%{%YELLOW%100% %WHITE%* %NAME%}%CONTINUE%//
+// 105
+ItemDisplay[(t22)]:%NAME%{%YELLOW%105% %WHITE%* %NAME%}%CONTINUE%//
+// 120
+ItemDisplay[(t11 OR t24)]:%NAME%{%YELLOW%120% %WHITE%* %NAME%}%CONTINUE%//
+// 125
+ItemDisplay[(t14 OR t21)]:%NAME%{%YELLOW%125% %WHITE%* %NAME%}%CONTINUE%//
+// 130
+ItemDisplay[(t34 OR t32)]:%NAME%{%YELLOW%130% %WHITE%* %NAME%}%CONTINUE%//
+// 135
+ItemDisplay[(t25 OR t37)]:%NAME%{%YELLOW%135% %WHITE%* %NAME%}%CONTINUE%//
+
+// Fire Resistances
+// Map Contains
+ItemDisplay[(t35 OR t62 OR t53) STAT441>0]:%NAME%{%RED%x% %WHITE%* %NAME%}%CONTINUE%// Reanimated (75%)
+// 65
+ItemDisplay[(t35 OR t62) !STAT441>0]:%NAME%{%RED%65% %WHITE%* %NAME%}%CONTINUE%//
+// 70
+ItemDisplay[(t53) !STAT441>0]:%NAME%{%RED%70% %WHITE%* %NAME%}%CONTINUE%//
+// 75
+ItemDisplay[(t26 OR t25 OR t15 OR t34 OR t14 OR t32 OR t37 OR t3a)]:%NAME%{%RED%75% %WHITE%* %NAME%}%CONTINUE%//
+// 85
+ItemDisplay[(t24 OR t27 OR t28 OR t51)]:%NAME%{%RED%85% %WHITE%* %NAME%}%CONTINUE%//
+// 90
+ItemDisplay[(t31)]:%NAME%{%RED%90% %WHITE%* %NAME%}%CONTINUE%//
+// 95
+ItemDisplay[(t36)]:%NAME%{%RED%95% %WHITE%* %NAME%}%CONTINUE%//
+// 120
+ItemDisplay[(t33)]:%NAME%{%RED%120% %WHITE%* %NAME%}%CONTINUE%//
+// 125
+ItemDisplay[(t22 OR t13 OR t39)]:%NAME%{%RED%125% %WHITE%* %NAME%}%CONTINUE%//
+// 130
+ItemDisplay[(t23 OR t11 OR t38)]:%NAME%{%RED%130% %WHITE%* %NAME%}%CONTINUE%//
+// 135
+ItemDisplay[(t12 OR t16)]:%NAME%{%RED%135% %WHITE%* %NAME%}%CONTINUE%//
+// 140
+ItemDisplay[(t21)]:%NAME%{%RED%140% %WHITE%* %NAME%}%CONTINUE%//
+
 
 // Map Contains Ghosts
 ItemDisplay[STAT442>0 (t12 OR t13 OR t16 OR t21 OR t22 OR t23 OR t33 OR t11 OR t14 OR t15 OR t26 OR t34 OR t36 OR t24 OR t25 OR t31 OR t32 OR t35 OR t37 OR t38 OR t39 OR t3a OR t51 OR t52 OR t53 OR t27 OR t28)]:%NAME%{%TEAL%Ghosts%CL%%NAME%}%CONTINUE%//
@@ -1002,7 +1134,9 @@ ItemDisplay[MULTI427,22913=100 !MAPTIER=4]:%NAME%{%GRAY%Melee Splash%CL%%NAME%}%
 ItemDisplay[STAT437>0 !MAPTIER=4]:%NAME%{%PURPLE%Stygian Dolls%CL%%NAME%}%CONTINUE%//
 
 // Map Contains Burning Souls
-ItemDisplay[(STAT470>0 OR t3a OR t14) (t12 OR t13 OR t16 OR t21 OR t22 OR t23 OR t33 OR t11 OR t14 OR t15 OR t26 OR t34 OR t36 OR t24 OR t25 OR t31 OR t32 OR t35 OR t37 OR t38 OR t39 OR t3a OR t51 OR t52 OR t53 OR t27 OR t28)]:%NAME%{%PURPLE%Burning Souls%CL%%NAME%}%CONTINUE%//
+ItemDisplay[STAT470>0 (t12 OR t13 OR t16 OR t21 OR t22 OR t23 OR t33 OR t11 OR t15 OR t26 OR t34 OR t36 OR t24 OR t25 OR t31 OR t32 OR t35 OR t37 OR t38 OR t39 OR t51 OR t52 OR t53 OR t27 OR t28)]:%NAME%{%PURPLE%Burning Souls%CL%%NAME%}%CONTINUE%//
+// Map Contains Native Burning Souls
+ItemDisplay[(t3a OR t14)]:%NAME%{%RED%Burning Souls%CL%%NAME%}%CONTINUE%//
 
 // Map Contains Vampire Lords
 ItemDisplay[STAT439>0 (t12 OR t13 OR t16 OR t21 OR t22 OR t23 OR t33 OR t11 OR t14 OR t15 OR t26 OR t34 OR t36 OR t24 OR t25 OR t31 OR t32 OR t35 OR t37 OR t38 OR t39 OR t3a OR t51 OR t52 OR t53 OR t27 OR t28) SORCERESS CLVL<90]:%NAME%{%GRAY%Vampire Lords%CL%%NAME%}%CONTINUE%//
@@ -1011,10 +1145,12 @@ ItemDisplay[STAT439>0 (t12 OR t13 OR t16 OR t21 OR t22 OR t23 OR t33 OR t11 OR t
 ItemDisplay[STAT498>0 (t12 OR t13 OR t16 OR t21 OR t22 OR t23 OR t33 OR t11 OR t14 OR t15 OR t26 OR t34 OR t36 OR t24 OR t25 OR t31 OR t32 OR t35 OR t37 OR t38 OR t39 OR t3a OR t51 OR t52 OR t53 OR t27 OR t28)]:%NAME%{%GRAY%Additional Boss%CL%%NAME%}%CONTINUE%//
 
 // Map Contains Cursing Knights
-ItemDisplay[(t12 OR t38 OR t31 OR t52)]:%NAME%{%PURPLE%Cursing Knights%CL%%NAME%}%CONTINUE%//
+ItemDisplay[(t12 OR t38 OR t31 OR t52)]:%NAME%{%RED%Cursing Knights%CL%%NAME%}%CONTINUE%//
 
 // Map Contains Succubus Witches 
-ItemDisplay[(STAT438>0 OR t13 OR t26 OR t27 OR t51) (t12 OR t13 OR t16 OR t21 OR t22 OR t23 OR t33 OR t11 OR t14 OR t15 OR t26 OR t34 OR t36 OR t24 OR t25 OR t31 OR t32 OR t35 OR t37 OR t38 OR t39 OR t3a OR t51 OR t52 OR t53 OR t27 OR t28)]:%NAME%{%PURPLE%Succubus Witches%CL%%NAME%}%CONTINUE%//
+ItemDisplay[STAT438>0 (t12 OR t16 OR t21 OR t22 OR t23 OR t33 OR t11 OR t14 OR t15 OR t34 OR t36 OR t24 OR t25 OR t31 OR t32 OR t35 OR t37 OR t38 OR t39 OR t3a OR t52 OR t53 OR t28)]:%NAME%{%PURPLE%Succubus Witches%CL%%NAME%}%CONTINUE%//
+// Map Contains Native Succubus Witches 
+ItemDisplay[(t13 OR t26 OR t27 OR t51)]:%NAME%{%RED%Succubus Witches%CL%%NAME%}%CONTINUE%//
 
 // Map Contains Reanimated Horde
 ItemDisplay[STAT441>0 (t12 OR t13 OR t16 OR t21 OR t22 OR t23 OR t33 OR t11 OR t14 OR t15 OR t26 OR t34 OR t36 OR t24 OR t25 OR t31 OR t32 OR t35 OR t37 OR t38 OR t39 OR t3a OR t51 OR t52 OR t53 OR t27 OR t28)]:%NAME%{%GRAY%Reanimated Horde%CL%%NAME%}%CONTINUE%//
@@ -1069,7 +1205,7 @@ ItemDisplay[STAT411<0 (t12 OR t13 OR t16 OR t21 OR t22 OR t23 OR t33 OR t11 OR t
 ItemDisplay[STAT451<0 STAT452<0 (t12 OR t13 OR t16 OR t21 OR t22 OR t23 OR t33 OR t11 OR t14 OR t15 OR t26 OR t34 OR t36 OR t24 OR t25 OR t31 OR t32 OR t35 OR t37 OR t38 OR t39 OR t3a OR t51 OR t52 OR t53 OR t27 OR t28)]:%NAME%{%RED%%STAT452%% Attack & Cast Speed%CL%%NAME%}%CONTINUE%//
 
 // Map Plus % Player Attack/Cast Speed Highlight
-ItemDisplay[STAT451>0 STAT452>0 (t12 OR t13 OR t16 OR t21 OR t22 OR t23 OR t33 OR t11 OR t14 OR t15 OR t26 OR t34 OR t36 OR t24 OR t25 OR t31 OR t32 OR t35 OR t37 OR t38 OR t39 OR t3a OR t51 OR t52 OR t53 OR t27 OR t28)]:%NAME%{%BLUE%+%STAT452%% Attack & Cast Speed%CL%%NAME%}%CONTINUE%//
+ItemDisplay[STAT451>0 STAT452>0 (t12 OR t13 OR t16 OR t21 OR t22 OR t23 OR t33 OR t11 OR t14 OR t15 OR t26 OR t34 OR t36 OR t24 OR t25 OR t31 OR t32 OR t35 OR t37 OR t38 OR t39 OR t3a OR t51 OR t52 OR t53 OR t27 OR t28)]:%NAME%{%TEAL%+%STAT452%% Attack & Cast Speed%CL%%NAME%}%CONTINUE%//
 
 // Map Monster Rarity Highlight
 ItemDisplay[STAT375>29 STAT375<50 (t12 OR t13 OR t16 OR t21 OR t22 OR t23 OR t33 OR t11 OR t14 OR t15 OR t26 OR t34 OR t36 OR t24 OR t25 OR t31 OR t32 OR t35 OR t37 OR t38 OR t39 OR t3a OR t51 OR t52 OR t53 OR t27 OR t28)]:%NAME%{%RED%**%GOLD%***     %GOLD%+%STAT375%% Monster Rarity     %GOLD%***%RED%**%CL%%NAME%}%CONTINUE%//
@@ -1109,17 +1245,17 @@ ItemDisplay[MAPTIER~1-3 RARE]:%NAME% %YELLOW%Map{%NAME%}%CONTINUE%//
 ItemDisplay[NMAG MAPTIER=1]:%DARK_GREEN%\%WHITE%\%DARK_GREEN%V%WHITE%/%DARK_GREEN%/  %NAME%  %DARK_GREEN%\%WHITE%\%DARK_GREEN%V%WHITE%/%DARK_GREEN%/{%NAME%}%CONTINUE%//
 ItemDisplay[MAG MAPTIER=1]:%DARK_GREEN%\%BLUE%\%DARK_GREEN%V%BLUE%/%DARK_GREEN%/  %NAME%  %DARK_GREEN%\%BLUE%\%DARK_GREEN%V%BLUE%/%DARK_GREEN%/{%NAME%}%CONTINUE%//
 ItemDisplay[RARE MAPTIER=1]:%DARK_GREEN%\%YELLOW%\%DARK_GREEN%V%YELLOW%/%DARK_GREEN%/  %NAME%  %DARK_GREEN%\%YELLOW%\%DARK_GREEN%V%YELLOW%/%DARK_GREEN%/{%NAME%}%CONTINUE%//
-ItemDisplay[MAPTIER=1 (NMAG OR MAG OR RARE)]:%NAME%%BORDER-71%%MAP-75%{%NAME%}%CONTINUE%//
+ItemDisplay[(NMAG OR MAG OR RARE) MAPTIER=1]:%NAME%%BORDER-71%%MAP-75%{%NAME%}%CONTINUE%//
 
 ItemDisplay[NMAG MAPTIER=2]:%RED%\%WHITE%\%RED%V%WHITE%/%RED%/  %NAME%  %RED%\%WHITE%\%RED%V%WHITE%/%RED%/{%NAME%}%CONTINUE%//
 ItemDisplay[MAG MAPTIER=2]:%RED%\%BLUE%\%RED%V%BLUE%/%RED%/  %NAME%  %RED%\%BLUE%\%RED%V%BLUE%/%RED%/{%NAME%}%CONTINUE%//
 ItemDisplay[RARE MAPTIER=2]:%RED%\%YELLOW%\%RED%V%YELLOW%/%RED%/  %NAME%  %RED%\%YELLOW%\%RED%V%YELLOW%/%RED%/{%NAME%}%CONTINUE%//
-ItemDisplay[MAPTIER=2 (NMAG OR MAG OR RARE)]:%NAME%%BORDER-05%%MAP-0A%{%NAME%}%CONTINUE%//
+ItemDisplay[(NMAG OR MAG OR RARE) MAPTIER=2]:%NAME%%BORDER-05%%MAP-0A%{%NAME%}%CONTINUE%//
 
 ItemDisplay[NMAG MAPTIER=3]:%PURPLE%\%WHITE%\%PURPLE%V%WHITE%/%PURPLE%/  %NAME%  %PURPLE%\%WHITE%\%PURPLE%V%WHITE%/%PURPLE%/{%NAME%}%CONTINUE%//
 ItemDisplay[MAG MAPTIER=3]:%PURPLE%\%BLUE%\%PURPLE%V%BLUE%/%PURPLE%/  %NAME%  %PURPLE%\%BLUE%\%PURPLE%V%BLUE%/%PURPLE%/{%NAME%}%CONTINUE%//
 ItemDisplay[RARE MAPTIER=3]:%PURPLE%\%YELLOW%\%PURPLE%V%YELLOW%/%PURPLE%/  %NAME%  %PURPLE%\%YELLOW%\%PURPLE%V%YELLOW%/%PURPLE%/{%NAME%}%CONTINUE%//
-ItemDisplay[MAPTIER=3 (NMAG OR MAG OR RARE)]:%NAME%%BORDER-8F%%MAP-9B%{%NAME%}%CONTINUE%//
+ItemDisplay[(NMAG OR MAG OR RARE) MAPTIER=3]:%NAME%%BORDER-8F%%MAP-9B%{%NAME%}%CONTINUE%//
 
 ItemDisplay[MAPTIER=4]:%NAME% %GRAY%[%ORANGE%T4%GRAY%] %RED%Dungeon%BORDER-05%%MAP-62%%DOT-68%%PX-6D%{%NAME%}//
 
@@ -1236,14 +1372,14 @@ ItemDisplay[UNI !ID ((ob6 CLVL<80) OR (oba (CLVL>89 OR !SORCERESS)))]:%RED%X\%OR
 ItemDisplay[UNI !ID dr2 CLVL<80 DRUID]:%NAME%%CONTINUE%// Quetzalcoatl Hawk Helm
 ItemDisplay[UNI !ID dra]:%NAME%%CONTINUE%// Jalal's Mane Totemic Mask
 ItemDisplay[UNI !ID dre]:%NAME%%CONTINUE%// Ravenlore Sky Spirit
-ItemDisplay[UNI !ID drb]:%NAME%%CONTINUE%// Cerebus' Bite Blood Spirit
 ItemDisplay[UNI !ID drd]:%NAME%%CONTINUE%// Spirit Keeper Earth Spirit
 ItemDisplay[UNI !ID drc]:%NAME%%CONTINUE%// Denmother Sun Spirit
-ItemDisplay[UNI !ID ((dr2 CLVL<80 DRUID) OR dra OR dre OR drb OR drd OR drc)]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%BORDER-91%%MAP-9B%%DOT-62%%PX-68%//
+ItemDisplay[UNI !ID ((dr2 CLVL<80 DRUID) OR dra OR dre OR drd OR drc)]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%BORDER-91%%MAP-9B%%DOT-62%%PX-68%//
 //     Medium Value Druid Pelts
 ItemDisplay[UNI !ID dr2 !(CLVL<80 DRUID)]:%NAME%%CONTINUE%// Quetzalcoatl Hawk Helm
 ItemDisplay[UNI !ID drf]:%NAME%%CONTINUE%// Ursa's Nightmare Dream Spirit
-ItemDisplay[UNI !ID ((dr2 !(CLVL<80 DRUID)) OR drf)]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%BORDER-08%%MAP-50%%DOT-59%%PX-6A%//
+ItemDisplay[UNI !ID drb]:%NAME%%CONTINUE%// Cerebus' Bite Blood Spirit
+ItemDisplay[UNI !ID ((dr2 !(CLVL<80 DRUID)) OR drf OR drb)]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%BORDER-08%%MAP-50%%DOT-59%%PX-6A%//
 
 //     High Value Necromancer Shields
 ItemDisplay[UNI !ID nea CLVL<90]:%NAME%%CONTINUE%// Homunculus Hierophant Trophy
@@ -1406,11 +1542,11 @@ ItemDisplay[UNI !ID 7dg CLVL<90]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %
 //     Medium Value Daggers
 ItemDisplay[UNI !ID dgr CLVL<80]:%NAME%%CONTINUE%// Gull Dagger
 ItemDisplay[UNI !ID 7dg CLVL>89]:%NAME%%CONTINUE%// Wizardspike Bone Knife
-ItemDisplay[UNI !ID 7di]:%NAME%%CONTINUE%// Shatterblade Mithril Point
+ItemDisplay[UNI !ID 7di CLVL<90]:%NAME%%CONTINUE%// Shatterblade Mithril Point
 ItemDisplay[UNI !ID 7kr (ETH OR CLVL<90)]:%NAME%%CONTINUE%// Fleshripper Fanged Knife
 ItemDisplay[UNI !ID 7bl ASSASSIN CLVL<80]:%NAME%%CONTINUE%// Ghostflame Legend Spike
 ItemDisplay[UNI !ID 9kr (CLVL<90 OR NECROMANCER)]:%NAME%%CONTINUE%// Blackbog's Sharp Cinquedeas
-ItemDisplay[UNI !ID ((dgr CLVL<80) OR (7dg CLVL>89) OR 7di OR (7kr (ETH OR CLVL<90)) OR (7bl ASSASSIN CLVL<80) OR (9kr (CLVL<90 OR NECROMANCER)))]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%BORDER-08%%MAP-50%%DOT-59%%PX-6A%//
+ItemDisplay[UNI !ID ((dgr CLVL<80) OR (7dg CLVL>89) OR (7di CLVL<90) OR (7kr (ETH OR CLVL<90)) OR (7bl ASSASSIN CLVL<80) OR (9kr (CLVL<90 OR NECROMANCER)))]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%BORDER-08%%MAP-50%%DOT-59%%PX-6A%//
 
 //     High Value Axes
 ItemDisplay[UNI !ID 7bt CLVL<90]:%NAME%%CONTINUE%// Hellslayer Decapitator
@@ -1573,8 +1709,8 @@ ItemDisplay[UNI !ID gsd]:%NAME%%CONTINUE%// The Patriarch Great Sword
 ItemDisplay[UNI !ID vgl]:%NAME%%CONTINUE%// Bloodfist Heavy Gloves
 ItemDisplay[UNI !ID xui]:%NAME%%CONTINUE%// Spirit Shroud Ghost Armor
 
-ItemDisplay[UNI !ID !ETH FILTLVL<8 (xap OR fld OR mau OR tbt OR gth OR hbt OR mbt OR pa3 OR aar OR gsd OR vgl OR xui)]:%GRAY%*%TEAL%* %WHITE%>  %NAME% %GRAY%[%TEAL%LLD%GRAY%]  %WHITE%< %TEAL%*%GRAY%*%BORDER-11%%MAP-C5%%DOT-9F%%PX-A2%//
-ItemDisplay[UNI !ID !ETH FILTLVL~8-11 (xap OR fld OR mau OR tbt OR gth OR hbt OR mbt OR pa3 OR aar OR gsd OR vgl OR xui)]:%GRAY%*%TEAL%* %WHITE%>  %NAME% %GRAY%[%TEAL%LLD%GRAY%]  %WHITE%< %TEAL%*%GRAY%*%BORDER-11%%MAP-C5%%DOT-9F%%PX-A2%%TIER-0%//
+ItemDisplay[UNI !ID !ETH FILTLVL<12 (xap OR fld OR mau OR tbt OR gth OR hbt OR mbt OR pa3 OR aar OR gsd OR vgl OR xui)]:%GRAY%*%TEAL%* %WHITE%>  %NAME% %GRAY%[%TEAL%LLD%GRAY%]  %WHITE%< %TEAL%*%GRAY%*%BORDER-11%%MAP-C5%%DOT-9F%%PX-A2%//
+ItemDisplay[UNI !ID !ETH FILTLVL=12 (xap OR fld OR mau OR tbt OR gth OR hbt OR mbt OR pa3 OR aar OR gsd OR vgl OR xui)]:%NAME% %GRAY%[%TEAL%LLD%GRAY%]%BORDER-11%%MAP-C5%%DOT-9F%%PX-A2%%TIER-0%//
 
 // --------------------------------------------------------------------------------------------------------
 // =======================================  All Other Unique Items  =======================================
@@ -1634,8 +1770,8 @@ ItemDisplay[ETH SET]:%WHITE%Eth %NAME%{%NAME%}%CONTINUE%//
 ItemDisplay[SET !ID (dr8 OR uul OR xtb OR urn OR paf OR 7ws OR uar OR ci3 OR uth OR uh9 OR utc OR xmg OR ne9 OR xhm OR ulg OR uts OR (ETH (7fb OR 7gd OR 7ls OR 7qr OR 7ws)))]:%PURPLE%\%DARK_GREEN%\  %GREEN%>  %WHITE%o  %GREEN%%NAME%  %WHITE%o  %GREEN%<  %DARK_GREEN%/%PURPLE%/%GREEN%%BORDER-71%%MAP-76%%DOT-84%%PX-20%%TIER-0%//
 
 // Low Level Duel Set Items
-ItemDisplay[SET !ID !ETH FILTLVL<8 (vbt OR vgl OR xlb)]:%TEAL%*%DARK_GREEN%* %GREEN%>  %NAME% %GRAY%[%TEAL%LLD%GRAY%]  %GREEN%< %DARK_GREEN%*%PURPLE%*%GREEN%%BORDER-71%%MAP-C5%%DOT-9F%%PX-A2%//
-ItemDisplay[SET !ID !ETH FILTLVL~8-11 (vbt OR vgl OR xlb)]:%TEAL%*%DARK_GREEN%* %GREEN%>  %NAME% %GRAY%[%TEAL%LLD%GRAY%]  %GREEN%< %DARK_GREEN%*%TEAL%*%GREEN%%BORDER-71%%MAP-C5%%DOT-9F%%PX-A2%%TIER-0%//
+ItemDisplay[SET !ID !ETH FILTLVL<12 (vbt OR vgl OR xlb)]:%TEAL%*%DARK_GREEN%* %GREEN%>  %NAME% %GRAY%[%TEAL%LLD%GRAY%]  %GREEN%< %DARK_GREEN%*%PURPLE%*%GREEN%%BORDER-71%%MAP-C5%%DOT-9F%%PX-A2%//
+ItemDisplay[SET !ID !ETH FILTLVL=12 (vbt OR vgl OR xlb)]:%NAME% %GRAY%[%TEAL%LLD%GRAY%]%BORDER-71%%MAP-C5%%DOT-9F%%PX-A2%%TIER-0%//
 
 // Rings and Amulets
 ItemDisplay[SET !ID rin CLVL>79 FILTLVL>7 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
@@ -5662,10 +5798,10 @@ ItemDisplay[(GLOVES OR BELT OR rin OR amu OR CIRC OR HELM OR CHEST) MAG AR>0]:%W
 
 // Minimum and Maximum Damage on Rings
 ItemDisplay[(rin OR HELM) (RARE OR CRAFT) !GEMMED ((MAXDMG>0 CLVL<80) OR MAXDMG>6) MAXDMG<14]:%WHITE%%MAXDMG%%TAN%max %NAME%{%NAME%}%CONTINUE%
-ItemDisplay[(rin OR HELM) (RARE OR CRAFT) !GEMMED MAXDMG>13]:%WHITE%%MAXDMG%%RED%max %NAME%{%NAME%}%CONTINUE%
+ItemDisplay[(rin OR HELM) (RARE OR CRAFT) !GEMMED MAXDMG>13]:%WHITE%%MAXDMG%%PURPLE%max %NAME%{%NAME%}%CONTINUE%
 
 ItemDisplay[(rin OR HELM) (RARE OR CRAFT) !GEMMED ((MINDMG>0 CLVL<80) OR MINDMG>6) MINDMG<13]:%WHITE%%MINDMG%%TAN%min %NAME%{%NAME%}%CONTINUE%
-ItemDisplay[(rin OR HELM) (RARE OR CRAFT) !GEMMED MINDMG>12]:%WHITE%%MINDMG%%RED%min %NAME%{%NAME%}%CONTINUE%
+ItemDisplay[(rin OR HELM) (RARE OR CRAFT) !GEMMED MINDMG>12]:%WHITE%%MINDMG%%PURPLE%min %NAME%{%NAME%}%CONTINUE%
 
 ItemDisplay[(rin OR amu OR CIRC OR HELM) MAG MAXDMG>0]:%WHITE%%MAXDMG%%TAN%max %NAME%{%NAME%}%CONTINUE%
 ItemDisplay[(rin OR amu OR CIRC OR HELM) MAG MINDMG>0]:%WHITE%%MINDMG%%TAN%min %NAME%{%NAME%}%CONTINUE%
