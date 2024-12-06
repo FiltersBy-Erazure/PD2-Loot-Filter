@@ -1,3 +1,24 @@
+// ==============================  Filter Customization  ===========================
+
+// This section contains lines of code that are "commented out".
+// When a line of code has "//" in front of it, the filter will ignore that line as it doesn't read anything after "//".
+// To enable a line, simply remove the "//" in front of the line (the left-most // before ItemDisplay).
+// The filter reads from top to bottom. Enabling these lines will override any lines that would otherwise hide these items.
+
+// Rare Arrows
+//ItemDisplay[RARE !ID aqv]:%LIGHT_GRAY%* %YELLOW%%NAME% %LIGHT_GRAY%*%YELLOW%//
+
+// Rare Bolts
+//ItemDisplay[RARE !ID cqv]:%LIGHT_GRAY%* %YELLOW%%NAME% %LIGHT_GRAY%*%YELLOW%//
+
+// Magic Arrows
+//ItemDisplay[MAG !ID aqv]:%LIGHT_GRAY%* %BLUE%%NAME% %LIGHT_GRAY%*%BLUE%//
+
+// Magic Bolts
+//ItemDisplay[MAG !ID cqv]:%LIGHT_GRAY%* %BLUE%%NAME% %LIGHT_GRAY%*%BLUE%//
+
+// ==================================  Filter Levels  ===============================
+
 ItemDisplayFilterName[]: Lowest Strictness//                                                                 Filter Level 1
 ItemDisplayFilterName[]: Relaxed Filtering//                                                                 Filter Level 2
 ItemDisplayFilterName[]: Strict Filtering//                                                                  Filter Level 3
@@ -10,6 +31,8 @@ ItemDisplayFilterName[]: Endgame Filtering: Hides H5, M5, 35%//                 
 ItemDisplayFilterName[]: Endgame Filtering: Hides H5, M5, 35%, Crafting Bases//                              Filter Level 10
 ItemDisplayFilterName[]: Endgame Filtering: Hides H5, M5, 35%, Flawless Gems, Large Charms//                 Filter Level 11
 ItemDisplayFilterName[]: Extreme Filtering: Hides Crafting Bases, Flawless Gems, Large Charms//              Filter Level 12
+
+// ==================================  Horadric Cube  ===============================
 
 ItemDisplay[box]:%BLACK%II%GOLD%II%BLACK%X%GOLD%II%BLACK%II  %GOLD%Horadric Cube  %BLACK%II%GOLD%II%BLACK%X%GOLD%II%BLACK%II%CONTINUE%//
 ItemDisplay[box FILTLVL=0]:%NAME%{%WHITE%Filter Level: 0}%CONTINUE%//
@@ -29,9 +52,9 @@ ItemDisplay[box FILTLVL=12 SORCERESS CHARSTAT1>149]:%NAME%{%WHITE%Filter Level: 
 
 ItemDisplay[box FILTLVL=0]:%NAME%{%NAME%%CL%%GRAY%Level 12 Hides Crafting Bases, Flawless Gems, and Low Value Items%CL%%GRAY%Levels 8-9-10-11 Hide Most Non-Eth and Non-Magic Class Items%CL%%GRAY%Levels 3-4-5-6-7 Hide Some Rares and Non-Superior Items%CL%%GRAY%Level 2 Hides Additional Non-Magic/Magic Items%CL%Level 1 Shows Most Non-Magic/Magic Items}%CONTINUE%//
 ItemDisplay[box CLVL<50 !FILTLVL=0]:%NAME%{%NAME%%CL%%GRAY%For %GOLD%Increase and Decrease Filter Level%CL%%GRAY%For %GOLD%Always Show Items %GRAY%and Hotkeys%CL%Open Settings to Create Toggle}%CONTINUE%//
-ItemDisplay[box]:%NAME%{%NAME%%CL%%WHITE%Erazure: Season 10 v12.04}//
+ItemDisplay[box]:%NAME%{%NAME%%CL%%WHITE%Erazure: Season 10 v12.05}//
 
-// ==============================  Arrows and Bolts  ===============================
+// ========================  Non-Magic Arrows and Bolts  =========================
 
 ItemDisplay[NMAG aqv CLVL>1 FILTLVL>0 !SHOP]:// Hides nonmagical Arrow quivers
 ItemDisplay[NMAG cqv CLVL>1 FILTLVL>0 !SHOP]:// Hides nonmagical Bolt quivers
@@ -640,16 +663,20 @@ ItemDisplay[llmr (MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:%P
 // ========================================  Essences  =========================================
 
 ItemDisplay[bet QTY>1]:%RED%|[X]|  %ORANGE%Burning Essences of Terror %TAN%x %WHITE%%QTY%  %RED%|[X]|%BORDER-08%%MAP-62%%DOT-60%%PX-0B%{%WHITE%Token of Absolution%CL%%TAN%Cube with %BLUE%[X]%DARK_GREEN%[X]%YELLOW%[X] %TAN%to create%NL%%NL%%RED%Diablo, Lord of Terror}// Burning Essence of Terror
-ItemDisplay[bet QTY=1]:%RED%[X]  %ORANGE%Burning Essence of Terror  %RED%[X]%BORDER-08%%MAP-62%%DOT-60%%PX-0B%{%WHITE%Token of Absolution%CL%%TAN%Cube with %BLUE%[X]%DARK_GREEN%[X]%YELLOW%[X] %TAN%to create%NL%%NL%%RED%Diablo, Lord of Terror}// Burning Essence of Terror
+ItemDisplay[bet QTY=1 FILTLVL>7]:%RED%[X]  %ORANGE%Burning Essence  %RED%[X]%BORDER-08%%MAP-62%%DOT-60%%PX-0B%{%WHITE%Token of Absolution%CL%%TAN%Cube with %BLUE%[X]%DARK_GREEN%[X]%YELLOW%[X] %TAN%to create%NL%%NL%%RED%Diablo, Lord of Terror}// Burning Essence of Terror
+ItemDisplay[bet QTY=1 FILTLVL<8]:%RED%[X]  %ORANGE%Burning Essence of Terror  %RED%[X]%BORDER-08%%MAP-62%%DOT-60%%PX-0B%{%WHITE%Token of Absolution%CL%%TAN%Cube with %BLUE%[X]%DARK_GREEN%[X]%YELLOW%[X] %TAN%to create%NL%%NL%%RED%Diablo, Lord of Terror}// Burning Essence of Terror
 
 ItemDisplay[ceh QTY>1]:%YELLOW%|[X]|  %ORANGE%Charged Essences of Hatred %TAN%x %WHITE%%QTY%  %YELLOW%|[X]|%MAP-6D%%DOT-60%%PX-0B%{%WHITE%Token of Absolution%CL%%TAN%Cube with %RED%[X]%BLUE%[X]%DARK_GREEN%[X] %TAN%to create%NL%%NL%%YELLOW%Mephisto, Lord of Hatred}// Charged Essence of Hatred
-ItemDisplay[ceh QTY=1]:%YELLOW%[X]  %ORANGE%Charged Essence of Hatred  %YELLOW%[X]%MAP-6D%%DOT-60%%PX-0B%{%WHITE%Token of Absolution%CL%%TAN%Cube with %RED%[X]%BLUE%[X]%DARK_GREEN%[X] %TAN%to create%NL%%NL%%YELLOW%Mephisto, Lord of Hatred}// Charged Essence of Hatred
+ItemDisplay[ceh QTY=1 FILTLVL>7]:%YELLOW%[X]  %ORANGE%Charged Essence  %YELLOW%[X]%MAP-6D%%DOT-60%%PX-0B%{%WHITE%Token of Absolution%CL%%TAN%Cube with %RED%[X]%BLUE%[X]%DARK_GREEN%[X] %TAN%to create%NL%%NL%%YELLOW%Mephisto, Lord of Hatred}// Charged Essence of Hatred
+ItemDisplay[ceh QTY=1 FILTLVL<8]:%YELLOW%[X]  %ORANGE%Charged Essence of Hatred  %YELLOW%[X]%MAP-6D%%DOT-60%%PX-0B%{%WHITE%Token of Absolution%CL%%TAN%Cube with %RED%[X]%BLUE%[X]%DARK_GREEN%[X] %TAN%to create%NL%%NL%%YELLOW%Mephisto, Lord of Hatred}// Charged Essence of Hatred
 
 ItemDisplay[fed QTY>1]:%DARK_GREEN%|[X]|  %ORANGE%Festering Essences of Destruction %TAN%x %WHITE%%QTY%  %DARK_GREEN%|[X]|%BORDER-71%%MAP-76%%DOT-60%%PX-0B%{%WHITE%Token of Absolution%CL%%TAN%Cube with %BLUE%[X]%RED%[X]%YELLOW%[X] %TAN%to create%NL%%NL%%DARK_GREEN%Baal, Lord of Destruction}// Festering Essence of Destruction
-ItemDisplay[fed QTY=1]:%DARK_GREEN%[X]  %ORANGE%Festering Essence of Destruction  %DARK_GREEN%[X]%BORDER-71%%MAP-76%%DOT-60%%PX-0B%{%WHITE%Token of Absolution%CL%%TAN%Cube with %BLUE%[X]%RED%[X]%YELLOW%[X] %TAN%to create%NL%%NL%%DARK_GREEN%Baal, Lord of Destruction}// Festering Essence of Destruction
+ItemDisplay[fed QTY=1 FILTLVL>7]:%DARK_GREEN%[X]  %ORANGE%Festering Essence  %DARK_GREEN%[X]%BORDER-71%%MAP-76%%DOT-60%%PX-0B%{%WHITE%Token of Absolution%CL%%TAN%Cube with %BLUE%[X]%RED%[X]%YELLOW%[X] %TAN%to create%NL%%NL%%DARK_GREEN%Baal, Lord of Destruction}// Festering Essence of Destruction
+ItemDisplay[fed QTY=1 FILTLVL<8]:%DARK_GREEN%[X]  %ORANGE%Festering Essence of Destruction  %DARK_GREEN%[X]%BORDER-71%%MAP-76%%DOT-60%%PX-0B%{%WHITE%Token of Absolution%CL%%TAN%Cube with %BLUE%[X]%RED%[X]%YELLOW%[X] %TAN%to create%NL%%NL%%DARK_GREEN%Baal, Lord of Destruction}// Festering Essence of Destruction
 
 ItemDisplay[tes QTY>1]:%BLUE%|[X]|  %ORANGE%Twisted Essences of Suffering %TAN%x %WHITE%%QTY%  %BLUE%|[X]|%BORDER-8E%%MAP-97%%DOT-60%%PX-0B%{%WHITE%Token of Absolution%CL%%TAN%Cube with %DARK_GREEN%[X]%YELLOW%[X]%RED%[X] %TAN%to create%NL%%NL%%BLUE%Duriel, Lord of Pain%CL%%BLUE%Andariel, Maiden of Anguish}// Twisted Essence of Suffering
-ItemDisplay[tes QTY=1]:%BLUE%[X]  %ORANGE%Twisted Essence of Suffering  %BLUE%[X]%BORDER-8E%%MAP-97%%DOT-60%%PX-0B%{%WHITE%Token of Absolution%CL%%TAN%Cube with %DARK_GREEN%[X]%YELLOW%[X]%RED%[X] %TAN%to create%NL%%NL%%BLUE%Duriel, Lord of Pain%CL%%BLUE%Andariel, Maiden of Anguish}// Twisted Essence of Suffering
+ItemDisplay[tes QTY=1 FILTLVL>7]:%BLUE%[X]  %ORANGE%Twisted Essence  %BLUE%[X]%BORDER-8E%%MAP-97%%DOT-60%%PX-0B%{%WHITE%Token of Absolution%CL%%TAN%Cube with %DARK_GREEN%[X]%YELLOW%[X]%RED%[X] %TAN%to create%NL%%NL%%BLUE%Duriel, Lord of Pain%CL%%BLUE%Andariel, Maiden of Anguish}// Twisted Essence of Suffering
+ItemDisplay[tes QTY=1 FILTLVL<8]:%BLUE%[X]  %ORANGE%Twisted Essence of Suffering  %BLUE%[X]%BORDER-8E%%MAP-97%%DOT-60%%PX-0B%{%WHITE%Token of Absolution%CL%%TAN%Cube with %DARK_GREEN%[X]%YELLOW%[X]%RED%[X] %TAN%to create%NL%%NL%%BLUE%Duriel, Lord of Pain%CL%%BLUE%Andariel, Maiden of Anguish}// Twisted Essence of Suffering
 
 ItemDisplay[toa]:%WHITE%|%LIGHT_GRAY%|%WHITE%[X]%LIGHT_GRAY%|%WHITE%|  %WHITE%Token of Absolution  %WHITE%|%LIGHT_GRAY%|%WHITE%[X]%LIGHT_GRAY%|%WHITE%|%BORDER-11%%MAP-1B%%DOT-1E%%PX-20%// Token of Absolution
 
