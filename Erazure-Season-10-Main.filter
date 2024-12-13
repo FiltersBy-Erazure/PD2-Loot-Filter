@@ -84,7 +84,7 @@ ItemDisplay[box FILTLVL=12 SORCERESS CHARSTAT1>149]:%NAME%{%WHITE%Filter Level: 
 
 ItemDisplay[box FILTLVL=0]:%NAME%{%NAME%%CL%%GRAY%Level 12 Hides Crafting Bases, Flawless Gems, and Low Value Items%CL%%GRAY%Levels 8-9-10-11 Hide Most Non-Eth and Non-Magic Class Items%CL%%GRAY%Levels 3-4-5-6-7 Hide Some Rares and Non-Superior Items%CL%%GRAY%Level 2 Hides Additional Non-Magic/Magic Items%CL%Level 1 Shows Most Non-Magic/Magic Items}%CONTINUE%//
 ItemDisplay[box CLVL<50 !FILTLVL=0]:%NAME%{%NAME%%CL%%GRAY%For %GOLD%Increase and Decrease Filter Level%CL%%GRAY%For %GOLD%Always Show Items %GRAY%and Hotkeys%CL%Open Settings to Create Toggle}%CONTINUE%//
-ItemDisplay[box]:%NAME%{%NAME%%CL%%WHITE%Erazure: Season 10 v12.12}//
+ItemDisplay[box]:%NAME%{%NAME%%CL%%WHITE%Erazure: Season 10 v12.13}//
 
 // ========================  Non-Magic Arrows and Bolts  =========================
 
@@ -5366,6 +5366,21 @@ ItemDisplay[(RARE OR CRAFT) CHEST ID STAT110>74 (LIFE>39 OR STR>14 OR DEX>14 OR 
 ItemDisplay[RARE CIRC ID STAT110>49 (LIFE>39 OR STAT216>0 OR STR>14 OR DEX>14) (FCR>19 OR FRW>19 OR RES>14 OR SOCK=3) (TABSK40>1 OR TABSK42>1 OR TABSK32>1 OR TABSK33>1 OR TABSK34>1 OR TABSK24>1 OR TABSK25>1 OR TABSK16>1 OR TABSK17>1 OR TABSK18>1 OR TABSK8>1 OR TABSK9>1 OR TABSK10>1 OR TABSK48>1 OR TABSK49>1 OR TABSK50>1 OR TABSK0>1 OR TABSK1>1 OR TABSK2>1 OR CLSK0>1 OR CLSK1>1 OR CLSK2>1 OR CLSK3>1 OR CLSK4>1 OR CLSK5>1 OR CLSK6>1)]:%NAME%{%RED%Rathma Circlet%CL%%NAME%}%CONTINUE%//
 
 // ------------------------------------------------------------------------------
+//    =======================  High Sell Value ($) tag  =====================
+// ------------------------------------------------------------------------------
+
+// These lines add a "$" to the start of an item name if it's more than 10,000 in normal, more than 20,000 in nightmare, more than 25,000 in hell
+// Normal difficulty
+ItemDisplay[(MAG OR RARE) !EQUIPPED !RW PRICE>9999 DIFF=0 (DAGGER OR WAND OR NEC OR DRU OR BAR OR SOR OR SIN OR STAFF OR scp OR 9sc OR 7sc OR gsc OR 9qs OR 7qs OR clb OR 9cl OR 7cl OR spc OR 9sp OR 7sp) FILTLVL<8 CLVL<90]:%GRAY%(%DARK_GREEN%$%GRAY%) %NAME%{%NAME%}%CONTINUE%// 
+// Nightmare difficulty
+ItemDisplay[(MAG OR RARE) !EQUIPPED !RW PRICE>19999 DIFF=1 (DAGGER OR WAND OR NEC OR DRU OR BAR OR SOR OR SIN OR STAFF OR scp OR 9sc OR 7sc OR gsc OR 9qs OR 7qs OR clb OR 9cl OR 7cl OR spc OR 9sp OR 7sp) FILTLVL<8 CLVL<90]:%GRAY%(%DARK_GREEN%$%GRAY%) %NAME%{%NAME%}%CONTINUE%// 
+// Hell difficulty
+ItemDisplay[(MAG OR RARE) !EQUIPPED !RW PRICE>24999 DIFF=2 (DAGGER OR WAND OR NEC OR DRU OR BAR OR SOR OR SIN OR STAFF OR scp OR 9sc OR 7sc OR gsc OR 9qs OR 7qs OR clb OR 9cl OR 7cl OR spc OR 9sp OR 7sp) FILTLVL<8 CLVL<90]:%GRAY%(%DARK_GREEN%$%GRAY%) %NAME%{%NAME%}%CONTINUE%// 
+
+ItemDisplay[MAG CLVL>79 PRICE<31000 CRAFTALVL>84 ((CHEST !STAT78>0) OR (SHIELD !NEC)) SHOP]:%NAME%%ORANGE%{%NAME%}%CONTINUE%// Orange $ Tag at Vendors
+ItemDisplay[MAG CLVL>49 CRAFTALVL>49 ((DIFF=0 PRICE<10000) OR (DIFF=1 PRICE<20000) OR (DIFF=2 PRICE<25000)) (BAR OR DRU OR NEC OR STAFF OR SOR OR btl OR 9tw OR 7tw OR axf OR 9xf OR 7xf OR wsp OR (WAND !(wnd OR ywn OR 9wn)) OR clb OR 9cl OR spc OR 9sp) SHOP]:%GRAY%(%ORANGE%$%GRAY%) %NAME%{%NAME%}%CONTINUE%// Orange $ Tag at Vendors
+
+// ------------------------------------------------------------------------------
 //     =========================  Affixes Tags Display ======================
 // ------------------------------------------------------------------------------
 
@@ -6097,21 +6112,6 @@ ItemDisplay[(MAG OR CRAFT OR RARE) WEAPON (STAFF OR WAND OR SOR) SUFFIX=912]:%WH
 // Indestructible
 ItemDisplay[(UNI OR SET) (CHEST OR SHIELD OR HELM OR CIRC OR BOOTS) STAT360=48]:%LIGHT_GRAY%Ind. %WHITE%%ED%%LIGHT_GRAY%ed %NAME%{%NAME%}%CONTINUE%
 
-
-// ------------------------------------------------------------------------------
-//    =======================  High Sell Value ($) tag  =====================
-// ------------------------------------------------------------------------------
-
-// These lines add a "$" to the start of an item name if it's more than 10,000 in normal, more than 20,000 in nightmare, more than 25,000 in hell
-// Normal difficulty
-ItemDisplay[(MAG OR RARE) !EQUIPPED !RW PRICE>9999 DIFF=0 (DAGGER OR WAND OR NEC OR DRU OR BAR OR SOR OR SIN OR STAFF OR scp OR 9sc OR 7sc OR gsc OR 9qs OR 7qs OR clb OR 9cl OR 7cl OR spc OR 9sp OR 7sp) FILTLVL<8 CLVL<90]:%GRAY%(%DARK_GREEN%$%GRAY%) %NAME%{%NAME%}%CONTINUE%// 
-// Nightmare difficulty
-ItemDisplay[(MAG OR RARE) !EQUIPPED !RW PRICE>19999 DIFF=1 (DAGGER OR WAND OR NEC OR DRU OR BAR OR SOR OR SIN OR STAFF OR scp OR 9sc OR 7sc OR gsc OR 9qs OR 7qs OR clb OR 9cl OR 7cl OR spc OR 9sp OR 7sp) FILTLVL<8 CLVL<90]:%GRAY%(%DARK_GREEN%$%GRAY%) %NAME%{%NAME%}%CONTINUE%// 
-// Hell difficulty
-ItemDisplay[(MAG OR RARE) !EQUIPPED !RW PRICE>24999 DIFF=2 (DAGGER OR WAND OR NEC OR DRU OR BAR OR SOR OR SIN OR STAFF OR scp OR 9sc OR 7sc OR gsc OR 9qs OR 7qs OR clb OR 9cl OR 7cl OR spc OR 9sp OR 7sp) FILTLVL<8 CLVL<90]:%GRAY%(%DARK_GREEN%$%GRAY%) %NAME%{%NAME%}%CONTINUE%// 
-
-ItemDisplay[MAG CLVL>79 PRICE<31000 CRAFTALVL>84 ((CHEST !STAT78>0) OR (SHIELD !NEC)) SHOP]:%GRAY%(%ORANGE%$%GRAY%) %NAME%{%NAME%}%CONTINUE%// Orange $ Tag at Vendors
-ItemDisplay[MAG CLVL>49 CRAFTALVL>49 ((DIFF=0 PRICE<10000) OR (DIFF=1 PRICE<20000) OR (DIFF=2 PRICE<25000)) (BAR OR DRU OR NEC OR STAFF OR SOR OR btl OR 9tw OR 7tw OR axf OR 9xf OR 7xf OR wsp OR (WAND !(wnd OR ywn OR 9wn)) OR clb OR 9cl OR spc OR 9sp) SHOP]:%GRAY%(%ORANGE%$%GRAY%) %NAME%{%NAME%}%CONTINUE%// Orange $ Tag at Vendors
 
 // Add extra space to center Affixes on Lower Line - Rare and Crafted Items
 ItemDisplay[WEAPON (RARE OR CRAFT) ((SUFFIX=904 CLVL<80) OR SUFFIX=905 OR SUFFIX=906 OR (SUFFIX=910 CLVL<80) OR SUFFIX=911 OR SUFFIX=912 OR (SUFFIX=662 CLVL<80) OR SUFFIX=898 OR SUFFIX=899 OR (SUFFIX=907 CLVL<80) OR SUFFIX=908 OR SUFFIX=909 OR STAT118=1 OR STAT360=8 OR STAT360=9 OR (STAT333>0 STAT360=12 ((ZON BOW) OR XBOW OR WAND OR SOR)) OR (STAT335>0 STAT360=14 ((ZON BOW) OR XBOW OR SOR)) OR (STAT334>0 STAT360=13 ((ZON JAV) OR SOR)) OR (STAT336>0 STAT360=15 (SIN OR DAGGER OR WAND)) OR STAT360=21 OR STAT360=23 OR STAT136>19 OR ((!DAGGER OR (DAGGER THROWING)) STAT141>9) OR (DAGGER STAT141>20) OR (STAT360=24 STAT115=1) OR ED>0 OR IAS>0 OR ((SOR OR STAFF OR WAND OR CLUB OR SCEPTER OR SIN) FCR>0) OR (CRAFT ALLSK=1 !STAT360=27) OR TABSK0>0 OR TABSK1>0 OR TABSK2>0 OR TABSK8>0 OR TABSK9>0 OR TABSK10>0 OR TABSK16>0 OR TABSK17>0 OR TABSK18>0 OR TABSK24>0 OR TABSK25>0 OR TABSK26>0 OR TABSK32>0 OR TABSK33>0 OR TABSK34>0 OR TABSK40>0 OR TABSK41>0 OR TABSK42>0 OR TABSK48>0 OR TABSK49>0 OR TABSK50>0 OR CLSK0>0 OR CLSK1>0 OR CLSK2>0 OR CLSK3>0 OR CLSK4>0 OR CLSK5>0 OR CLSK6>0 OR STAT360=27)]:%CONTINUE% %NAME%{%NAME%}//
