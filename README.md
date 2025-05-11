@@ -13,7 +13,7 @@ After selecting the version of the filter from the launcher, be sure to click "S
     - Vex, Ohm, Lo
     - Larzuk's Puzzlebox
 
-![image](https://github.com/user-attachments/assets/dc69f7a8-4752-49f0-a01a-696fee6bc41f)
+![image](https://github.com/user-attachments/assets/68374769-cc52-48c8-8982-4adadaa4d8f8)
 
 # **Contact and Support:**
 
