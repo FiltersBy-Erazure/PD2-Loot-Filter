@@ -1,17 +1,17 @@
-# **Season 10 Desecration Update:**
+# **Season 11 Prosperity Update:**
 
-My loot filters are updated for the Season 10 Desecration ladder reset on October 25th 2024
+My loot filters are updated for the Season 11 Prosperity ladder reset on May 16th 2025
 
 After selecting the version of the filter from the launcher, be sure to click "Save Filter" on the right side afterwards
 
-- The **Erazure Season 10 Main** version displays standard names for all high runes and super rare items
+- The **Erazure Main** version displays standard names for all high runes and super rare items
 - The **Erazure BIG GG Novelty** version shows "BIG GG" or "LIL GG" when the following items drop while your character is outside of town:
   - BIG GG
-    - Larzuk's Puzzlebox
     - Sur, Ber, Jah, Cham, Zod
     - Vial of Lightsong, Lilith's Mirror
   - LIL GG
     - Vex, Ohm, Lo
+    - Larzuk's Puzzlebox
 
 ![image](https://github.com/user-attachments/assets/dc69f7a8-4752-49f0-a01a-696fee6bc41f)
 
