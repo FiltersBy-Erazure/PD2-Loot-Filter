@@ -510,8 +510,8 @@ ItemDisplay[(gpvs OR gpws OR gpgs OR gprs OR gpbs OR skzs OR gpys)]:%NAME%{%NAME
 // Sound notification for Puzzlepiece under filter level 8
 ItemDisplay[lpp QTY=1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109) FILTLVL<8]:%NAME%{%NAME%}%SOUNDID-2679%%CONTINUE%// 
 
-// Sound notification for Lem-Pul Runes under character level 60
-ItemDisplay[(r20s OR r21s) QTY=1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109) CLVL<60]:%NAME%{%NAME%}%SOUNDID-2679%%CONTINUE%// 
+// Sound notification for Lem-Pul Runes under character level 80
+ItemDisplay[(r20s OR r21s) QTY=1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109) CLVL<80]:%NAME%{%NAME%}%SOUNDID-2679%%CONTINUE%// 
 // Sound notification for Um-Mal
 ItemDisplay[(r22s OR r23s) QTY=1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:%NAME%{%NAME%}%SOUNDID-2679%%CONTINUE%// 
 // Sound notification for Ist and Gul Runes
@@ -1546,15 +1546,15 @@ ItemDisplay[UNI !ID ((dr2 !(CLVL<80 DRUID)) OR drb OR (dr6 (!DRUID OR CLVL>89)))
 //     High Value Necromancer Shields
 ItemDisplay[UNI !ID nea CLVL<90]:%NAME%%SOUNDID-2477%%CONTINUE%// Homunculus Hierophant Trophy
 ItemDisplay[UNI !ID nee]:%NAME%%SOUNDID-2446%%CONTINUE%// Boneflame Succubus Skull
-ItemDisplay[UNI !ID neg NECROMANCER]:%NAME%%SOUNDID-2475%%CONTINUE%// Sacred Totem Hellspawn Skull
-ItemDisplay[UNI !ID ((nea CLVL<90) OR nee OR (neg NECROMANCER))]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%BORDER-91%%MAP-9B%%DOT-62%%PX-68%//
+ItemDisplay[UNI !ID neg (NECROMANCER CLVL<90)]:%NAME%%SOUNDID-2475%%CONTINUE%// Sacred Totem Hellspawn Skull
+ItemDisplay[UNI !ID ((nea CLVL<90) OR nee OR (neg (NECROMANCER CLVL<90)))]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%BORDER-91%%MAP-9B%%DOT-62%%PX-68%//
 //     Medium Value Necromancer Shields
 ItemDisplay[UNI !ID ne6 CLVL<80]:%NAME%%CONTINUE%// Kalan's Legacy Mummified Trophy
 ItemDisplay[UNI !ID nea CLVL>89]:%NAME%%CONTINUE%// Homunculus Hierophant Trophy
 ItemDisplay[UNI !ID nef]:%NAME%%CONTINUE%// Darkforce Spawn Bloodlord Skull
 ItemDisplay[UNI !ID ned CLVL<90]:%NAME%%CONTINUE%// Martyrdom Overseer Skull
-ItemDisplay[UNI !ID neg !NECROMANCER]:%NAME%%CONTINUE%// Sacred Totem Hellspawn Skull
-ItemDisplay[UNI !ID ((ne6 CLVL<80) OR (nea CLVL>89) OR nef OR (ned CLVL<90) OR (neg !NECROMANCER))]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%BORDER-08%%MAP-50%%DOT-59%%PX-6A%//
+ItemDisplay[UNI !ID neg !(neg (NECROMANCER CLVL<90))]:%NAME%%CONTINUE%// Sacred Totem Hellspawn Skull
+ItemDisplay[UNI !ID ((ne6 CLVL<80) OR (nea CLVL>89) OR nef OR (ned CLVL<90) OR (neg (NECROMANCER CLVL<90)))]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%BORDER-08%%MAP-50%%DOT-59%%PX-6A%//
 
 //     High Value Paladin Shields
 ItemDisplay[UNI !ID pa9]:%NAME%%SOUNDID-2387%%CONTINUE%// Herald of Zakarum Gilded Shield
@@ -1626,10 +1626,10 @@ ItemDisplay[UNI !ID uhb]:%NAME%%SOUNDID-2302%%CONTINUE%// Shadow Dancer Myrmidon
 ItemDisplay[UNI !ID ((xmb (CLVL<90 OR SORCERESS)) OR (xlb CLVL<90) OR xtb OR xhb OR xvb OR umb OR uhb)]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%BORDER-91%%MAP-9B%%DOT-62%%PX-68%//
 //     Medium Value Boots
 ItemDisplay[UNI !ID xlb CLVL>89]:%NAME%%CONTINUE%// Infernostride Demonhide Boots
-ItemDisplay[UNI !ID uvb ETH]:%NAME%%CONTINUE%// Sandstorm Trek Scarabshell Boots
+ItemDisplay[UNI !ID uvb]:%NAME%%CONTINUE%// Sandstorm Trek Scarabshell Boots
 ItemDisplay[UNI !ID xmb (CLVL>89 OR !SORCERESS)]:%NAME%%CONTINUE%// Silkweave Mesh Boots
 ItemDisplay[UNI !ID ulb]:%NAME%%CONTINUE%// Merman's Sprocket Wyrmhide Boots
-ItemDisplay[UNI !ID ((xlb CLVL>90) OR (uvb ETH) OR (xmb (CLVL>89 OR !SORCERESS)) OR ulb)]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%BORDER-08%%MAP-50%%DOT-59%%PX-6A%//
+ItemDisplay[UNI !ID ((xlb CLVL>90) OR uvb OR (xmb (CLVL>89 OR !SORCERESS)) OR ulb)]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%BORDER-08%%MAP-50%%DOT-59%%PX-6A%//
 
 //     High Value Gloves
 ItemDisplay[UNI !ID tgl CLVL<90]:%NAME%%SOUNDID-2302%%CONTINUE%// Magefist Light Gauntlets
@@ -3334,8 +3334,8 @@ ItemDisplay[NMAG !INF !RW ci3 FILTLVL>7 !ETH SOCK=0]:%NAME%{%WHITE%a 25% Chance 
 // These are generic lines for showing all helms of a certain tier and certain conditions (sockets, superior, and/or ethereal)
 // All tiers
 
-ItemDisplay[NMAG !INF !RW HELM (NORM OR EXC) !GEMMED !CIRC !BAR !DRU ED<5 FILTLVL>2 CLVL>79 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hides Helms without 5%ED or more after filter level 5
-ItemDisplay[NMAG !INF !RW HELM ELT !GEMMED !CIRC !BAR !DRU ED<5 FILTLVL>7 CLVL>79 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hides Helms without 5%ED or more after filter level 5
+ItemDisplay[NMAG !INF !RW HELM (NORM OR EXC) !GEMMED !CIRC !BAR !DRU ED<5 FILTLVL>2 CLVL>79 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hides Helms without 5%ED or more on filter levels 3+
+ItemDisplay[NMAG !INF !RW HELM ELT !GEMMED !CIRC !BAR !DRU ED<5 FILTLVL>7 CLVL>79 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hides Helms without 5%ED or more on filter levels 8+
 
 ItemDisplay[NMAG !INF !RW HELM !CIRC !BAR !DRU NORM SOCK=0 CLVL>5 FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://  Hides 0os Normal helms
 ItemDisplay[NMAG !INF !RW HELM !CIRC !BAR !DRU NORM ETH FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://     Hides ethereal Normal and Exceptional helms
