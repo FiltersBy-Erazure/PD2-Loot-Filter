@@ -7,6 +7,7 @@ After selecting the version of the filter from the launcher, be sure to click "S
 - The **Erazure Main** version displays standard names for all high runes and super rare items
 - The **Erazure BIG GG Novelty** version shows "BIG GG" or "LIL GG" when the following items drop while your character is outside of town:
   - BIG GG
+    - Demonic Cube 
     - Sur, Ber, Jah, Cham, Zod
     - Vial of Lightsong, Lilith's Mirror
   - LIL GG
