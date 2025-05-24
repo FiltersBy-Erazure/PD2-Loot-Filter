@@ -8,6 +8,34 @@
 
 // =================================================================================
 
+//  ===============  Potions  ===============
+//   Show Standard Health and Mana Potions
+//ItemDisplay[hp5 FILTLVL=0]:%CORAL%i%RED%(O)%CORAL%i%WHITE%{%WHITE% Super Healing Potion }//
+//ItemDisplay[mp5 FILTLVL=0]:%TEAL%i%BLUE%(O)%TEAL%i%WHITE%{%WHITE% Super Mana Potion }//
+
+//   Show Compact Health and Mana Potions
+//ItemDisplay[mp5]:%GRAY%(%BLUE%O%GRAY%)%WHITE%{%WHITE% Super Mana Potion }//
+//ItemDisplay[hp5]:%GRAY%(%RED%O%GRAY%)%WHITE%{%WHITE% Super Healing Potion }//
+
+//   Hide Health and Mana Potions
+//ItemDisplay[mp5]:{%WHITE% Super Mana Potion }//
+//ItemDisplay[hp5]:{%WHITE% Super Healing Potion }//
+
+//   Show Antidote Potions
+//ItemDisplay[yps]:%GRAY%i%DARK_GREEN%(%WHITE%A%DARK_GREEN%)%GRAY%i%WHITE%{%WHITE%+25% poison resistance for 30 seconds%CL%%WHITE%Cures %DARK_GREEN%poison %WHITE%affliction and grants%CL%Antidote Potion}//
+
+//   Hide Antidote Potions
+//ItemDisplay[yps]:{%WHITE%+25% poison resistance for 30 seconds%CL%%WHITE%Cures %DARK_GREEN%poison %WHITE%affliction and grants%CL%Antidote Potion}//
+
+//   Show Full Rejuvenation Potions
+//ItemDisplay[rvl]:%PURPLE%i(%WHITE% Full %PURPLE%)i%WHITE%{%WHITE% Full Rejuvenation Potion }//
+
+//   Show Small Rejuvenation Potions
+//ItemDisplay[rvs]:%GRAY%i%PURPLE%(%WHITE% 35% %PURPLE%)%GRAY%i%WHITE%{%WHITE% Rejuvenation Potion }//
+
+//   Hide Small Rejuvenation Potions
+//ItemDisplay[rvs]:{%WHITE% Rejuvenation Potion }//
+
 //  ==========  Arrows and Bolts  ==========
 //   Show Magic Arrows
 //ItemDisplay[MAG !ID aqv]:%LIGHT_GRAY%* %BLUE%%NAME% %LIGHT_GRAY%*%BLUE%//
@@ -148,7 +176,7 @@ ItemDisplay[box FILTLVL=12 SORCERESS CHARSTAT1>149]:%NAME%{%WHITE%Filter Level: 
 
 ItemDisplay[box FILTLVL=0]:%NAME%{%NAME%%CL%%GRAY%Level 12 Hides Crafting Bases, Flawless Gems, and Low Value Items%CL%%GRAY%Levels 8-9-10-11 Hide Most Non-Eth and Non-Magic Class Items%CL%%GRAY%Levels 3-4-5-6-7 Hide Some Rares and Non-Superior Items%CL%%GRAY%Level 2 Hides Additional Non-Magic/Magic Items%CL%Level 1 Shows Most Non-Magic/Magic Items}%CONTINUE%//
 ItemDisplay[box CLVL<50 !FILTLVL=0]:%NAME%{%NAME%%CL%%GRAY%For %GOLD%Increase and Decrease Filter Level%CL%%GRAY%For %GOLD%Always Show Items %GRAY%and Hotkeys%CL%Open Settings to Create Toggle}%CONTINUE%//
-ItemDisplay[box]:%NAME%{%NAME%%CL%%WHITE%Erazure: Season 11 v5.23}//
+ItemDisplay[box]:%NAME%{%NAME%%CL%%WHITE%Erazure: Season 11 v5.24}//
 
 // ========================  Non-Magic Arrows and Bolts  =========================
 
@@ -273,10 +301,11 @@ ItemDisplay[rvs CLVL<60 !FILTLVL>6 !FILTLVL=0 !((MAPID>160 MAPID<164) OR MAPID=1
 ItemDisplay[rvs CLVL>59 !FILTLVL>6 !((MAPID>160 MAPID<164) OR MAPID=137)]:%GRAY%i%PURPLE%(%WHITE% 35% %PURPLE%)%GRAY%i%WHITE%{%WHITE% Rejuvenation Potion }//
 
 ItemDisplay[rvl ((MAPID>160 MAPID<164) OR MAPID=137)]:%GRAY%i%PURPLE%(O)%GRAY%i%WHITE%{%WHITE% Full Rejuvenation Potion }//
-ItemDisplay[rvl FILTLVL>6]:%PURPLE%i(%WHITE% Full %PURPLE%)i%WHITE%{%WHITE% Full Rejuvenation Potion }%DOT-9B%%PX-20%%TIER-0%//
+ItemDisplay[rvl FILTLVL>7 CLVL<80]:%PURPLE%i(%WHITE% Full %PURPLE%)i%WHITE%{%WHITE% Full Rejuvenation Potion }%DOT-9B%%PX-20%%TIER-0%//
+ItemDisplay[rvl FILTLVL>7 CLVL>79]:%PURPLE%i(%WHITE% Full %PURPLE%)i%WHITE%{%WHITE% Full Rejuvenation Potion }//
 ItemDisplay[rvl FILTLVL=0 !((MAPID>160 MAPID<164) OR MAPID=137)]:%PURPLE%i(%WHITE% Full %PURPLE%)i%WHITE%{%WHITE% Full Rejuvenation Potion }//
-ItemDisplay[rvl CLVL<60 !((MAPID>160 MAPID<164) OR MAPID=137) !FILTLVL=0]:%PURPLE%i(%WHITE% Full Rejuv %PURPLE%)i%WHITE%{%WHITE% Full Rejuvenation Potion }%DOT-9B%%PX-20%%TIER-0%//
-ItemDisplay[rvl CLVL>59 !((MAPID>160 MAPID<164) OR MAPID=137) !FILTLVL=0]:%PURPLE%i(%WHITE% Full %PURPLE%)i%WHITE%{%WHITE% Full Rejuvenation Potion }%DOT-9B%%PX-20%%TIER-0%//
+ItemDisplay[rvl FILTLVL<8 CLVL<60 !((MAPID>160 MAPID<164) OR MAPID=137) !FILTLVL=0]:%PURPLE%i(%WHITE% Full Rejuv %PURPLE%)i%WHITE%{%WHITE% Full Rejuvenation Potion }%DOT-9B%%PX-20%%TIER-0%//
+ItemDisplay[rvl FILTLVL<8 CLVL>59 !((MAPID>160 MAPID<164) OR MAPID=137) !FILTLVL=0]:%PURPLE%i(%WHITE% Full %PURPLE%)i%WHITE%{%WHITE% Full Rejuvenation Potion }%DOT-9B%%PX-20%%TIER-0%//
 
 // =====================================  Utility Potions  ==================================
 
@@ -1588,15 +1617,15 @@ ItemDisplay[UNI !ID ((dr2 !(CLVL<80 DRUID)) OR drb OR (dr6 (!DRUID OR CLVL>89)))
 //     High Value Necromancer Shields
 ItemDisplay[UNI !ID nea CLVL<90]:%NAME%%SOUNDID-2477%%CONTINUE%// Homunculus Hierophant Trophy
 ItemDisplay[UNI !ID nee]:%NAME%%SOUNDID-2446%%CONTINUE%// Boneflame Succubus Skull
-ItemDisplay[UNI !ID neg (NECROMANCER CLVL<90)]:%NAME%%SOUNDID-2475%%CONTINUE%// Sacred Totem Hellspawn Skull
-ItemDisplay[UNI !ID ((nea CLVL<90) OR nee OR (neg (NECROMANCER CLVL<90)))]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%BORDER-91%%MAP-9B%%DOT-62%%PX-68%//
+ItemDisplay[UNI !ID neg NECROMANCER CLVL<90]:%NAME%%SOUNDID-2475%%CONTINUE%// Sacred Totem Hellspawn Skull
+ItemDisplay[UNI !ID ((nea CLVL<90) OR nee OR (neg NECROMANCER CLVL<90))]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%BORDER-91%%MAP-9B%%DOT-62%%PX-68%//
 //     Medium Value Necromancer Shields
 ItemDisplay[UNI !ID ne6]:%NAME%%CONTINUE%// Kalan's Legacy Mummified Trophy
 ItemDisplay[UNI !ID nea CLVL>89]:%NAME%%CONTINUE%// Homunculus Hierophant Trophy
 ItemDisplay[UNI !ID nef]:%NAME%%CONTINUE%// Darkforce Spawn Bloodlord Skull
 ItemDisplay[UNI !ID ned]:%NAME%%CONTINUE%// Martyrdom Overseer Skull
-ItemDisplay[UNI !ID neg !(neg (NECROMANCER CLVL<90))]:%NAME%%CONTINUE%// Sacred Totem Hellspawn Skull
-ItemDisplay[UNI !ID (ne6 OR (nea CLVL>89) OR nef OR ned OR (neg (NECROMANCER CLVL<90)))]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%BORDER-08%%MAP-50%%DOT-59%%PX-6A%//
+ItemDisplay[UNI !ID neg !(NECROMANCER CLVL<90)]:%NAME%%CONTINUE%// Sacred Totem Hellspawn Skull
+ItemDisplay[UNI !ID (ne6 OR (nea CLVL>89) OR nef OR ned OR (neg !(NECROMANCER CLVL<90)))]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%BORDER-08%%MAP-50%%DOT-59%%PX-6A%//
 
 //     High Value Paladin Shields
 ItemDisplay[UNI !ID pa9]:%NAME%%SOUNDID-2387%%CONTINUE%// Herald of Zakarum Gilded Shield
@@ -1920,8 +1949,8 @@ ItemDisplay[UNI !ID gsd]:%NAME%%CONTINUE%// The Patriarch Great Sword
 ItemDisplay[UNI !ID vgl]:%NAME%%CONTINUE%// Bloodfist Heavy Gloves
 ItemDisplay[UNI !ID xui]:%NAME%%CONTINUE%// Spirit Shroud Ghost Armor
 
-ItemDisplay[UNI !ID !ETH FILTLVL<12 (xap OR fld OR mau OR tbt OR gth OR hbt OR mbt OR pa3 OR aar OR gsd OR vgl OR xui)]:%GRAY%*%TEAL%* %WHITE%>  %NAME% %GRAY%[%TEAL%LLD%GRAY%]  %WHITE%< %TEAL%*%GRAY%*%BORDER-11%%MAP-C5%%DOT-9F%%PX-A2%//
-ItemDisplay[UNI !ID !ETH FILTLVL=12 (xap OR fld OR mau OR tbt OR gth OR hbt OR mbt OR pa3 OR aar OR gsd OR vgl OR xui)]:%NAME% %GRAY%[%TEAL%LLD%GRAY%]%BORDER-11%%MAP-C5%%DOT-9F%%PX-A2%%TIER-0%//
+ItemDisplay[UNI !ID !ETH FILTLVL<8 (xap OR fld OR mau OR tbt OR gth OR hbt OR mbt OR pa3 OR aar OR gsd OR vgl OR xui)]:%GRAY%*%TEAL%* %WHITE%>  %NAME% %GRAY%[%TEAL%LLD%GRAY%]  %WHITE%< %TEAL%*%GRAY%*%BORDER-11%%MAP-C5%%DOT-9F%%PX-A2%//
+ItemDisplay[UNI !ID !ETH FILTLVL>7 (xap OR fld OR mau OR tbt OR gth OR hbt OR mbt OR pa3 OR aar OR gsd OR vgl OR xui)]:%NAME% %GRAY%[%TEAL%LLD%GRAY%]%BORDER-11%%MAP-C5%%DOT-9F%%PX-A2%%TIER-0%//
 
 // --------------------------------------------------------------------------------------------------------
 // =======================================  All Other Unique Items  =======================================
@@ -2003,8 +2032,8 @@ ItemDisplay[UNI !ID ETH 7ls]:%NAME%%SOUNDID-2594%%CONTINUE%// Eth Sazabi's Cobal
 ItemDisplay[SET !ID (dr8 OR uul OR xtb OR urn OR paf OR 7ws OR uar OR ci3 OR uth OR uh9 OR utc OR xmg OR ne9 OR xhm OR ulg OR uts OR 7qr OR ucl OR (ETH (7fb OR 7gd OR 7ls)))]:%PURPLE%\%DARK_GREEN%\  %GREEN%>  %WHITE%o  %GREEN%%NAME%  %WHITE%o  %GREEN%<  %DARK_GREEN%/%PURPLE%/%GREEN%%BORDER-71%%MAP-76%%DOT-84%%PX-20%//
 
 // Low Level Duel Set Items
-ItemDisplay[SET !ID !ETH FILTLVL<12 (vbt OR vgl OR xlb)]:%TEAL%*%DARK_GREEN%* %GREEN%>  %NAME% %GRAY%[%TEAL%LLD%GRAY%]  %GREEN%< %DARK_GREEN%*%TEAL%*%GREEN%%BORDER-71%%MAP-C5%%DOT-9F%%PX-A2%//
-ItemDisplay[SET !ID !ETH FILTLVL=12 (vbt OR vgl OR xlb)]:%NAME% %GRAY%[%TEAL%LLD%GRAY%]%BORDER-71%%MAP-C5%%DOT-9F%%PX-A2%%TIER-0%//
+ItemDisplay[SET !ID !ETH FILTLVL<8 (vbt OR vgl OR xlb)]:%TEAL%*%DARK_GREEN%* %GREEN%>  %NAME% %GRAY%[%TEAL%LLD%GRAY%]  %GREEN%< %DARK_GREEN%*%TEAL%*%GREEN%%BORDER-71%%MAP-C5%%DOT-9F%%PX-A2%//
+ItemDisplay[SET !ID !ETH FILTLVL>7 (vbt OR vgl OR xlb)]:%NAME% %GRAY%[%TEAL%LLD%GRAY%]%BORDER-71%%MAP-C5%%DOT-9F%%PX-A2%%TIER-0%//
 
 // Rings and Amulets
 ItemDisplay[SET !ID rin CLVL>79 FILTLVL>11 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
@@ -3595,10 +3624,10 @@ ItemDisplay[NMAG !RW NEC CLVL>9 FILTLVL>0 !(SK66>0 OR SK67>0 OR SK68>0 OR SK69>0
 // ---------------------------------------------------------------------------------
 
 // On filter levels 11-12, hide nonmagical necromancer wands
-ItemDisplay[NMAG !RW WAND (FILTLVL>7 OR (FILTLVL~3-7 CLVL>89)) !((7wn OR 9yw OR 7yw OR bwn OR 9bw OR 7bw OR gwn OR 9gw OR 7gw) (SOCK=0 OR SOCK=2) (((SK75>2 OR SK85>2) ((SK367>2 (SK68>0 OR SK95>0 OR SK66>2)) OR (SK68>0 (SK95>0 OR SK66>2)) OR (SK95>0 SK66>2))) OR (SK94>2 ((SK367>2 (SK91>0 OR SK68>0 OR SK95>0)) OR (SK91>0 (SK68>0 OR SK95>0)) OR (SK68>0 SK95>0))) OR (SK367>2 SK68>0 (SK91>0 OR SK95>0 OR SK66>2)) OR (SK367>2 SK91>0 SK95>0) OR (SK68>0 SK95>0 (SK91>0 OR SK66>2)))) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// On filter levels 11-12, hide nonmagical necromancer wands 
+ItemDisplay[NMAG !RW WAND (FILTLVL>7 OR (FILTLVL~3-7 CLVL>89)) !((7wn OR 9yw OR 7yw OR bwn OR 9bw OR 7bw OR gwn OR 9gw OR 7gw) (SOCK=0 OR SOCK=2) (((SK75>2 OR SK85>2) ((SK367>0 (SK68>0 OR SK95>0 OR SK66>0 OR SK87>0)) OR (SK68>0 (SK95>0 OR SK66>0 OR SK87>0)) OR (SK95>0 (SK66>0 OR SK87>0)))) OR (SK94>2 ((SK367>0 (SK91>0 OR SK68>0 OR SK95>0)) OR (SK91>0 (SK68>0 OR SK95>0)) OR (SK68>0 SK95>0))) OR (SK367>2 ((SK68>0 (SK91>0 OR SK95>0 OR SK66>0 OR SK87>0)) OR (SK91>0 SK95>0) OR SK91>0 OR SK95>0)) OR (SK91>2 SK95>0) OR (SK68>0 SK95>0 (SK91>0 OR SK66>0 OR SK95>0)))) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// On filter levels 11-12, hide nonmagical necromancer wands 
 
 //      Dominion runeword wand bases
-ItemDisplay[NMAG !RW WAND (7wn OR 9yw OR 7yw OR bwn OR 9bw OR 7bw OR gwn OR 9gw OR 7gw) (SOCK=0 OR SOCK=2) (((SK75>2 OR SK85>2) ((SK367>2 (SK68>0 OR SK95>0 OR SK66>2)) OR (SK68>0 (SK95>0 OR SK66>2)) OR (SK95>0 SK66>2))) OR (SK94>2 ((SK367>2 (SK91>0 OR SK68>0 OR SK95>0)) OR (SK91>0 (SK68>0 OR SK95>0)) OR (SK68>0 SK95>0))) OR (SK367>2 SK68>0 (SK91>0 OR SK95>0 OR SK66>2)) OR (SK367>2 SK91>0 SK95>0) OR (SK68>0 SK95>0 (SK91>0 OR SK66>2)))]:%ORANGE%Dominion %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
+ItemDisplay[NMAG !RW WAND (7wn OR 9yw OR 7yw OR bwn OR 9bw OR 7bw OR gwn OR 9gw OR 7gw) (SOCK=0 OR SOCK=2) (((SK75>2 OR SK85>2) ((SK367>0 (SK68>0 OR SK95>0 OR SK66>0 OR SK87>0)) OR (SK68>0 (SK95>0 OR SK66>0 OR SK87>0)) OR (SK95>0 (SK66>0 OR SK87>0)))) OR (SK94>2 ((SK367>0 (SK91>0 OR SK68>0 OR SK95>0)) OR (SK91>0 (SK68>0 OR SK95>0)) OR (SK68>0 SK95>0))) OR (SK367>2 ((SK68>0 (SK91>0 OR SK95>0 OR SK66>0 OR SK87>0)) OR (SK91>0 SK95>0) OR SK91>0 OR SK95>0)) OR (SK91>2 SK95>0) OR (SK68>0 SK95>0 (SK91>0 OR SK66>0 OR SK95>0)))]:%ORANGE%Dominion %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
 
 //      White runeword wand bases: 
 //      Teeth, Bone Spear, and Corpse Explosion
@@ -3793,10 +3822,10 @@ ItemDisplay[NMAG !INF !RW STAFF CLVL>9 FILTLVL>0 !(SK36>0 OR SK37>0 OR SK38>0 OR
 // ------------------------------------------------------------------------------
 
 // On filter levels 11-12, hide nonmagical scepters
-ItemDisplay[NMAG !RW SCEPTER (FILTLVL>7 OR (FILTLVL~3-7 CLVL>89)) !(((SOCK=0 OR SOCK=4) (SK102>2 OR SK123>2)) OR ((SOCK=0 OR SOCK=5) (SK98>2 OR SK113>2 OR SK119>2 OR SK123>2 OR SK121>2)) OR (((gsc OR 9sc OR 9qs OR 7sc OR 7qs) (SOCK=0 OR SOCK=3)) OR ((wsp OR 9ws OR 7ws) SOCK=3)) ((SK101>2 SK121>1) OR (SK101>1 SK121>2)) OR (((wsp ILVL>25) OR 9ws OR 7ws) (SOCK=0 OR SOCK=5) (SK116>2 OR SK117>2 OR SK124>2 OR SK115>2)) OR (((wsp ILVL>25) OR 9ws OR 7ws) (SOCK=0 OR SOCK=5) (SK109>2 OR SK99>2)) OR (7ws SUP ED>9 (SOCK=0 OR SOCK=4 OR SOCK=5))) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// On filter levels 11-12, hide nonmagical scepters
+ItemDisplay[NMAG !RW SCEPTER (FILTLVL>7 OR (FILTLVL~3-7 CLVL>89)) !(((SOCK=0 OR SOCK=4) (SK102>2 OR SK123>2)) OR ((SOCK=0 OR SOCK=5) (SK98>2 OR SK113>2 OR SK119>2 OR SK123>2)) OR (((gsc OR 9sc OR 9qs OR 7sc OR 7qs) (SOCK=0 OR SOCK=3)) OR ((wsp OR 9ws OR 7ws) SOCK=3)) ((SK101>2 SK121>1) OR (SK101>1 SK121>2)) OR (((wsp ILVL>25) OR 9ws OR 7ws) (SOCK=0 OR SOCK=5) (SK116>2 OR SK117>2 OR SK124>2 OR SK115>2)) OR (((wsp ILVL>25) OR 9ws OR 7ws) (SOCK=0 OR SOCK=5) (SK109>2 OR SK99>2)) OR (7ws SUP ED>9 (SOCK=0 OR SOCK=4 OR SOCK=5))) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// On filter levels 11-12, hide nonmagical scepters
 
 ItemDisplay[NMAG !INF !RW 7ws (SOCK=0 OR SOCK=4) (SK102>2 OR SK123>2)]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
-ItemDisplay[NMAG !INF !RW 7ws (SOCK=0 OR SOCK=5) (SK98>2 OR SK113>2 OR SK119>2 OR SK123>2 OR SK121>2)]:%ORANGE%Doom %NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
+ItemDisplay[NMAG !INF !RW 7ws (SOCK=0 OR SOCK=5) (SK98>2 OR SK113>2 OR SK119>2 OR SK123>2)]:%ORANGE%Doom %NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
 
 ItemDisplay[NMAG !INF !RW (((gsc OR 9sc OR 9qs OR 7sc OR 7qs) (SOCK=0 OR SOCK=3)) OR ((wsp OR 9ws OR 7ws) SOCK=3)) ((SK101>2 SK121>1) OR (SK101>1 SK121>2))]:%ORANGE%Plague %NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
 
@@ -3807,7 +3836,7 @@ ItemDisplay[NMAG !INF !RW ((wsp ILVL>25) OR 9ws OR 7ws) (SOCK=0 OR SOCK=5) (SK11
 
 ItemDisplay[NMAG !INF !RW ((wsp ILVL>25) OR 9ws OR 7ws) (SOCK=0 OR SOCK=5) (SK109>2 OR SK99>2)]:%ORANGE%Beast %NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
 
-ItemDisplay[NMAG !INF !RW ((wsp ILVL>25) OR 9ws OR 7ws) (SOCK=0 OR SOCK=4) (SK111>2 OR SK114>2 OR SK123>2) ((CLVL<90 FILTLVL<8) OR FILTLVL<3)]:%ORANGE%Voice of Reason %NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
+ItemDisplay[NMAG !INF !RW ((wsp ILVL>25) OR 9ws OR 7ws) (SOCK=0 OR SOCK=4) ((SK111>2 OR SK114>2) SK123>2) ((CLVL<90 FILTLVL<8) OR FILTLVL<3)]:%ORANGE%Voice of Reason %NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
 
 // Hides all other Scepters that don't have + to skills past level 10
 ItemDisplay[NMAG !INF !RW SCEPTER CLVL>9 FILTLVL>0 !(SK96>0 OR SK97>0 OR SK98>0 OR SK99>0 OR SK100>0 OR SK101>0 OR SK102>0 OR SK103>0 OR SK104>0 OR SK105>0 OR SK106>0 OR SK107>0 OR SK108>0 OR SK109>0 OR SK110>0 OR SK111>0 OR SK112>0 OR SK113>0 OR SK114>0 OR SK115>0 OR SK116>0 OR SK117>0 OR SK118>0 OR SK119>0 OR SK120>0 OR SK121>0 OR SK122>0 OR SK123>0 OR SK124>0 OR SK125>0 OR SK371>0 OR SK364>0 OR SOCK=4 OR (7ws SUP ED>9 (SOCK=0 OR SOCK=4 OR SOCK=5))) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]://
@@ -6589,8 +6618,8 @@ ItemDisplay[(NMAG OR MAG) !RW (CLUB OR DRU) DRUID FILTLVL<3 CLVL<60 (SK221=3 OR 
 ItemDisplay[(NMAG OR MAG) !RW (CLUB OR DRU) DRUID FILTLVL<3 CLVL<20 (SK221=2 OR SK227=2 OR SK234=2 OR SK237=2 OR SK247=2 OR SK370=2)]:%NAME%%PX-76%{%NAME%}%CONTINUE%//
 
 //Necromancer
-ItemDisplay[NMAG !RW CLVL>79 (NEC OR WAND) !(SK66>2 OR SK67>2 OR SK68>2 OR SK69>2 OR SK70>2 OR SK71>2 OR SK72>2 OR SK73>2 OR SK74>2 OR SK75>2 OR SK76>2 OR SK77>2 OR SK78>2 OR SK79>2 OR SK80>2 OR SK81>2 OR SK82>2 OR SK83>2 OR SK84>2 OR SK85>2 OR SK86>2 OR SK87>2 OR SK88>2 OR SK89>2 OR SK90>2 OR SK91>2 OR SK92>2 OR SK93>2 OR SK94>2 OR SK95>2 OR SK367>2 OR SK381>2 OR SK374>2 OR ((7wn OR 9yw OR 7yw OR bwn OR 9bw OR 7bw OR gwn OR 9gw OR 7gw) (SOCK=0 OR SOCK=2) (SK68>0 SK95>0 SK91>0))) FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hides items that don't have +3 to a skill past level 80
-ItemDisplay[NMAG !RW CLVL>39 (NEC OR WAND) !(SK66>1 OR SK67>1 OR SK68>1 OR SK69>1 OR SK70>1 OR SK71>1 OR SK72>1 OR SK73>1 OR SK74>1 OR SK75>1 OR SK76>1 OR SK77>1 OR SK78>1 OR SK79>1 OR SK80>1 OR SK81>1 OR SK82>1 OR SK83>1 OR SK84>1 OR SK85>1 OR SK86>1 OR SK87>1 OR SK88>1 OR SK89>1 OR SK90>1 OR SK91>1 OR SK92>1 OR SK93>1 OR SK94>1 OR SK95>1 OR SK367>1 OR SK381>1 OR SK374>1 OR ((7wn OR 9yw OR 7yw OR bwn OR 9bw OR 7bw OR gwn OR 9gw OR 7gw) (SOCK=0 OR SOCK=2) (SK68>0 SK95>0 SK91>0))) FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hides items that don't have +2 to a skill past level 40
+ItemDisplay[NMAG !RW CLVL>79 (NEC OR WAND) !(SK66>2 OR SK67>2 OR SK68>2 OR SK69>2 OR SK70>2 OR SK71>2 OR SK72>2 OR SK73>2 OR SK74>2 OR SK75>2 OR SK76>2 OR SK77>2 OR SK78>2 OR SK79>2 OR SK80>2 OR SK81>2 OR SK82>2 OR SK83>2 OR SK84>2 OR SK85>2 OR SK86>2 OR SK87>2 OR SK88>2 OR SK89>2 OR SK90>2 OR SK91>2 OR SK92>2 OR SK93>2 OR SK94>2 OR SK95>2 OR SK367>2 OR SK381>2 OR SK374>2 OR (WAND (7wn OR 9yw OR 7yw OR bwn OR 9bw OR 7bw OR gwn OR 9gw OR 7gw) (SOCK=0 OR SOCK=2) (SK68>0 SK95>0 (SK91>0 OR SK66>0 OR SK95>0)))) FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hides items that don't have +3 to a skill past level 80
+ItemDisplay[NMAG !RW CLVL>39 (NEC OR WAND) !(SK66>1 OR SK67>1 OR SK68>1 OR SK69>1 OR SK70>1 OR SK71>1 OR SK72>1 OR SK73>1 OR SK74>1 OR SK75>1 OR SK76>1 OR SK77>1 OR SK78>1 OR SK79>1 OR SK80>1 OR SK81>1 OR SK82>1 OR SK83>1 OR SK84>1 OR SK85>1 OR SK86>1 OR SK87>1 OR SK88>1 OR SK89>1 OR SK90>1 OR SK91>1 OR SK92>1 OR SK93>1 OR SK94>1 OR SK95>1 OR SK367>1 OR SK381>1 OR SK374>1 OR (WAND (7wn OR 9yw OR 7yw OR bwn OR 9bw OR 7bw OR gwn OR 9gw OR 7gw) (SOCK=0 OR SOCK=2) (SK68>0 SK95>0 (SK91>0 OR SK66>0 OR SK95>0)))) FILTLVL>0 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:// Hides items that don't have +2 to a skill past level 40
 
 ItemDisplay[(NMAG OR MAG) !EQUIPPED !RW ((SK374=1 (CLVL<40 OR FILTLVL=0)) OR (SK374=2 (CLVL<80 OR FILTLVL=0)) OR (SK374=3) OR (SK374>0 (MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)))]:%TAN%+%SK374%%DARK_GREEN%c.mast %NAME%{%NAME%}%CONTINUE%//
 ItemDisplay[(NMAG OR MAG) !EQUIPPED !RW ((SK381=1 (CLVL<40 OR FILTLVL=0)) OR (SK381=2 (CLVL<80 OR FILTLVL=0)) OR (SK381=3) OR (SK381>0 (MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)))]:%TAN%+%SK381%%DARK_GREEN%d.pact %NAME%{%NAME%}%CONTINUE%//
