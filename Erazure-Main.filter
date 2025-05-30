@@ -589,7 +589,7 @@ ItemDisplay[(gpvs OR gpws OR gpgs OR gprs OR gpbs OR skzs OR gpys)]:%NAME%{%NAME
 //----------------------------------------------------------------------------------------------------------
 
 // Sound notification for Puzzlepiece under filter level 8
-ItemDisplay[lpp QTY=1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109) FILTLVL<8]:%NAME%{%NAME%}%SOUNDID-2679%%CONTINUE%// 
+ItemDisplay[lpp QTY=1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:%NAME%{%NAME%}%SOUNDID-2679%%CONTINUE%// 
 
 // Sound notification for Lem-Pul Runes under character level 80
 ItemDisplay[(r20s OR r21s) QTY=1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:%NAME%{%NAME%}%SOUNDID-2679%%CONTINUE%// 
@@ -607,13 +607,13 @@ ItemDisplay[(pk1 OR pk2 OR pk3) QTY=1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID
 ItemDisplay[(dcma OR dcbl OR dcho OR dcso OR rtma OR rtmo OR rtmv OR luca OR lucb OR lucc OR lucd) QTY=1 !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:%NAME%{%NAME%}%SOUNDID-1123%%CONTINUE%// 
 
 // Sound notification for Tainted Worldstone Shard
-ItemDisplay[(cwss QTY=1) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:%NAME%{%NAME%}%SOUNDID-34%%CONTINUE%// 
+ItemDisplay[(cwss QTY=1) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:%NAME%{%NAME%}%SOUNDID-705%%CONTINUE%// 
 
 // Sound notification for Horadric Navigator, Horadric Almanac, Skeleton Key
-ItemDisplay[(rid OR rtp OR rkey) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:%NAME%{%NAME%}%SOUNDID-621%%CONTINUE%// 
+ItemDisplay[(rid OR rtp OR rkey) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:%NAME%{%NAME%}%SOUNDID-619%%CONTINUE%// 
 
 // Sound notification for Vial of Lightsong, Lilith's Mirror
-ItemDisplay[(lsvl OR llmr) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:%NAME%{%NAME%}%SOUNDID-619%%CONTINUE%// 
+ItemDisplay[(lsvl OR llmr) !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]:%NAME%{%NAME%}%SOUNDID-418%%CONTINUE%// 
 
 //----------------------------------------------------------------------------------------------------------
 // ==========================================  El - Tal Runes  ============================================= 
@@ -672,7 +672,6 @@ ItemDisplay[(RUNE~1-16 QTY=1)]:%NAME%{%WHITE%Unstack: %WHITE%Ctrl %TAN%+ %WHITE%
 //----------------------------------------------------------------------------------------------------------
 // ==================================  Rune Notifications and Map Icons  ===================================
 //----------------------------------------------------------------------------------------------------------
-
 
 // Map Icon and notification for El-Tal Runes on filter levels 1-11
 ItemDisplay[RUNE<8 FILTLVL<12]:%NAME%{%NAME%}%BORDER-71%%MAP-75%%DOT-1B%%PX-20%// Notify for runes El-Tal
@@ -1405,11 +1404,24 @@ ItemDisplay[STAT449>9 (t12 OR t13 OR t16 OR t17 OR t21 OR t22 OR t23 OR t33 OR t
 ItemDisplay[STAT408>0 STAT408<10 !((STAT372>59 STAT375>29 MAPTIER=1) OR (STAT372>69 STAT375>29 MAPTIER=2) OR (STAT372>79 STAT375>29 MAPTIER=3)) (t12 OR t13 OR t16 OR t17 OR t21 OR t22 OR t23 OR t33 OR t11 OR t14 OR t15 OR t26 OR t34 OR t36 OR t24 OR t25 OR t31 OR t32 OR t35 OR t37 OR t38 OR t39 OR t3a OR t51 OR t52 OR t54 OR t55 OR t53 OR t27 OR t28)]:%NAME%{%GRAY%+%STAT408%% Crushing Blow%CL%%NAME%}%CONTINUE%//
 ItemDisplay[STAT408>9 (t12 OR t13 OR t16 OR t17 OR t21 OR t22 OR t23 OR t33 OR t11 OR t14 OR t15 OR t26 OR t34 OR t36 OR t24 OR t25 OR t31 OR t32 OR t35 OR t37 OR t38 OR t39 OR t3a OR t51 OR t52 OR t54 OR t55 OR t53 OR t27 OR t28)]:%NAME%{%RED%+%STAT408%% Crushing Blow%CL%%NAME%}%CONTINUE%//
 
-// Elemental and Poison Skill Damage
-ItemDisplay[STAT388>9 (t26 OR t28 OR t37 OR t21 OR t31 OR t3a OR t32)]:%NAME%{%RED%+%STAT388%% Fire Damage%CL%%NAME%}%CONTINUE%//
-ItemDisplay[STAT390>9 (t34 OR t13 OR t38)]:%NAME%{%RED%+%STAT390%% Cold Damage%CL%%NAME%}%CONTINUE%//
-ItemDisplay[STAT389>9 (t25 OR t35 OR t3a OR t14 OR STAT470>0)]:%NAME%{%RED%+%STAT389%% Light Damage%CL%%NAME%}%CONTINUE%//
-ItemDisplay[STAT391>9 (t22 OR t33 OR t24 OR t16)]:%NAME%{%RED%+%STAT391%% Poison Damage%CL%%NAME%}%CONTINUE%//
+// Fire Skill Damage
+ItemDisplay[STAT388>0 STAT388<10 (t26 OR t28 OR t37 OR t21 OR t31 OR t3a OR t32 OR STAT434>0)]:%NAME%{%GRAY%+%STAT388%% Fire Damage%CL%%NAME%}%CONTINUE%//
+ItemDisplay[STAT388>9 (t26 OR t28 OR t37 OR t21 OR t31 OR t3a OR t32 OR STAT434>0)]:%NAME%{%RED%+%STAT388%% Fire Damage%CL%%NAME%}%CONTINUE%//
+
+// Cold Skill Damage
+ItemDisplay[STAT390>0 STAT390<10 (t34 OR t13 OR t38 OR STAT433>0)]:%NAME%{%GRAY%+%STAT390%% Cold Damage%CL%%NAME%}%CONTINUE%//
+ItemDisplay[STAT390>9 (t34 OR t13 OR t38 OR STAT433>0)]:%NAME%{%RED%+%STAT390%% Cold Damage%CL%%NAME%}%CONTINUE%//
+
+// Light Skill Damage
+ItemDisplay[STAT389>0 STAT389<10 (t25 OR t35 OR t3a OR t14 OR STAT470>0 OR STAT432>0)]:%NAME%{%GRAY%+%STAT389%% Light Damage%CL%%NAME%}%CONTINUE%//
+ItemDisplay[STAT389>9 (t25 OR t35 OR t3a OR t14 OR STAT470>0 OR STAT432>0)]:%NAME%{%RED%+%STAT389%% Light Damage%CL%%NAME%}%CONTINUE%//
+
+// Map Dual Extra Damage
+ItemDisplay[((STAT432>0 STAT433>0 !(STAT434>0 OR STAT435>0 OR STAT436>0)) OR (STAT432>0 STAT434>0 !(STAT433>0 OR STAT435>0 OR STAT436>0)) OR (STAT432>0 STAT435>0 !(STAT433>0 OR STAT434>0 OR STAT436>0)) OR (STAT432>0 STAT436>0 !(STAT433>0 OR STAT434>0 OR STAT435>0)) OR (STAT433>0 STAT434>0 !(STAT432>0 OR STAT435>0 OR STAT436>0)) OR (STAT433>0 STAT435>0 !(STAT432>0 OR STAT434>0 OR STAT436>0)) OR (STAT433>0 STAT436>0 !(STAT432>0 OR STAT434>0 OR STAT435>0)) OR (STAT434>0 STAT435>0 !(STAT432>0 OR STAT433>0 OR STAT436>0)) OR (STAT434>0 STAT436>0 !(STAT432>0 OR STAT433>0 OR STAT435>0)) OR (STAT435>0 STAT436>0 !(STAT432>0 OR STAT433>0 OR STAT434>0))) (t12 OR t13 OR t16 OR t17 OR t21 OR t22 OR t23 OR t33 OR t11 OR t14 OR t15 OR t26 OR t34 OR t36 OR t24 OR t25 OR t31 OR t32 OR t35 OR t37 OR t38 OR t39 OR t3a OR t51 OR t52 OR t54 OR t55 OR t53 OR t27 OR t28)]:%NAME%{%RED%Dual Extra Damage%CL%%NAME%}%CONTINUE%//
+
+// Poison Skill Damage
+ItemDisplay[STAT391>0 STAT391<10 (t22 OR t33 OR t24 OR t16 OR STAT435>0)]:%NAME%{%GRAY%+%STAT391%% Poison Damage%CL%%NAME%}%CONTINUE%//
+ItemDisplay[STAT391>9 (t22 OR t33 OR t24 OR t16 OR STAT435>0)]:%NAME%{%RED%+%STAT391%% Poison Damage%CL%%NAME%}%CONTINUE%//
 
 // Map -% Max Resistances Highlight
 ItemDisplay[STAT418<0 STAT419<0 STAT420<0 STAT421<0 (t12 OR t13 OR t16 OR t17 OR t21 OR t22 OR t23 OR t33 OR t11 OR t14 OR t15 OR t26 OR t34 OR t36 OR t24 OR t25 OR t31 OR t32 OR t35 OR t37 OR t38 OR t39 OR t3a OR t51 OR t52 OR t54 OR t55 OR t53 OR t27 OR t28)]:%NAME%{%PURPLE%%STAT418%% Max Resistances%CL%%NAME%}%CONTINUE%//
@@ -1448,9 +1460,6 @@ ItemDisplay[STAT392>0 STAT393>0 (t12 OR t13 OR t16 OR t17 OR t21 OR t22 OR t23 O
 
 // Map Minus % Player Attack/Cast Speed Highlight
 ItemDisplay[STAT451<0 STAT452<0 (t12 OR t13 OR t16 OR t17 OR t21 OR t22 OR t23 OR t33 OR t11 OR t14 OR t15 OR t26 OR t34 OR t36 OR t24 OR t25 OR t31 OR t32 OR t35 OR t37 OR t38 OR t39 OR t3a OR t51 OR t52 OR t54 OR t55 OR t53 OR t27 OR t28)]:%NAME%{%RED%%STAT452%% Attack/Cast Speed%CL%%NAME%}%CONTINUE%//
-
-// Map Dual Extra Damage
-ItemDisplay[((STAT432>0 STAT433>0 !(STAT434>0 OR STAT435>0 OR STAT436>0)) OR (STAT432>0 STAT434>0 !(STAT433>0 OR STAT435>0 OR STAT436>0)) OR (STAT432>0 STAT435>0 !(STAT433>0 OR STAT434>0 OR STAT436>0)) OR (STAT432>0 STAT436>0 !(STAT433>0 OR STAT434>0 OR STAT435>0)) OR (STAT433>0 STAT434>0 !(STAT432>0 OR STAT435>0 OR STAT436>0)) OR (STAT433>0 STAT435>0 !(STAT432>0 OR STAT434>0 OR STAT436>0)) OR (STAT433>0 STAT436>0 !(STAT432>0 OR STAT434>0 OR STAT435>0)) OR (STAT434>0 STAT435>0 !(STAT432>0 OR STAT433>0 OR STAT436>0)) OR (STAT434>0 STAT436>0 !(STAT432>0 OR STAT433>0 OR STAT435>0)) OR (STAT435>0 STAT436>0 !(STAT432>0 OR STAT433>0 OR STAT434>0))) (t12 OR t13 OR t16 OR t17 OR t21 OR t22 OR t23 OR t33 OR t11 OR t14 OR t15 OR t26 OR t34 OR t36 OR t24 OR t25 OR t31 OR t32 OR t35 OR t37 OR t38 OR t39 OR t3a OR t51 OR t52 OR t54 OR t55 OR t53 OR t27 OR t28)]:%NAME%{%RED%Dual Extra Damage%CL%%NAME%}%CONTINUE%//
 
 // Map Triple Extra Damage
 ItemDisplay[((STAT432>0 STAT433>0 STAT434>0 !(STAT435>0 OR STAT436>0)) OR (STAT432>0 STAT433>0 STAT435>0 !(STAT434>0 OR STAT436>0)) OR (STAT432>0 STAT433>0 STAT436>0 !(STAT434>0 OR STAT435>0)) OR (STAT432>0 STAT434>0 STAT435>0 !(STAT433>0 OR STAT436>0)) OR (STAT432>0 STAT434>0 STAT436>0 !(STAT433>0 OR STAT435>0)) OR (STAT432>0 STAT435>0 STAT436>0 !(STAT433>0 OR STAT434>0)) OR (STAT433>0 STAT434>0 STAT435>0 !(STAT432>0 OR STAT436>0)) OR (STAT433>0 STAT434>0 STAT436>0 !(STAT432>0 OR STAT435>0)) OR (STAT433>0 STAT435>0 STAT436>0 !(STAT432>0 OR STAT434>0)) OR (STAT434>0 STAT435>0 STAT436>0 !(STAT432>0 OR STAT433>0))) (t12 OR t13 OR t16 OR t17 OR t21 OR t22 OR t23 OR t33 OR t11 OR t14 OR t15 OR t26 OR t34 OR t36 OR t24 OR t25 OR t31 OR t32 OR t35 OR t37 OR t38 OR t39 OR t3a OR t51 OR t52 OR t54 OR t55 OR t53 OR t27 OR t28)]:%NAME%{%PURPLE%Triple Extra Damage%CL%%NAME%}%CONTINUE%//
@@ -1812,9 +1821,9 @@ ItemDisplay[UNI !ID 7bt CLVL<90]:%NAME%%SOUNDID-2594%%CONTINUE%// Hellslayer Dec
 ItemDisplay[UNI !ID 9la ETH CLVL<90]:%NAME%%SOUNDID-2594%%CONTINUE%// Warlord's Trust Military Axe
 ItemDisplay[UNI !ID 7gi]:%NAME%%SOUNDID-2594%%CONTINUE%// Executioner's Justice Glorious Axe
 ItemDisplay[UNI !ID 7ha CLVL<90]:%NAME%%SOUNDID-2594%%CONTINUE%// Razor's Edge Tomahwak
-ItemDisplay[UNI !ID 7wa (ETH OR CLVL<90 OR PALADIN OR BARBARIAN)]:%NAME%%SOUNDID-2594%%CONTINUE%// Death Cleaver Berserker Axe
+ItemDisplay[UNI !ID 7wa (ETH OR CLVL<90)]:%NAME%%SOUNDID-2594%%CONTINUE%// Death Cleaver Berserker Axe
 ItemDisplay[UNI !ID 7ga CLVL<90]:%NAME%%SOUNDID-2594%%CONTINUE%// Messerschmidt's Reaver Champion Axe
-ItemDisplay[UNI !ID ((7bt CLVL<90) OR (9la ETH CLVL<90) OR 7gi OR (7ha CLVL<90) OR (7wa (ETH OR CLVL<90 OR PALADIN OR BARBARIAN)) OR (7ga CLVL<90))]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%BORDER-91%%MAP-9B%%DOT-62%%PX-68%//
+ItemDisplay[UNI !ID ((7bt CLVL<90) OR (9la ETH CLVL<90) OR 7gi OR (7ha CLVL<90) OR (7wa (ETH OR CLVL<90)) OR (7ga CLVL<90))]:%BLUE%X\%PURPLE%X\%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%O  %NAME%  %WHITE%O  %GOLD%<  %ORANGE%/X%RED%/X%PURPLE%/X%BLUE%/X%GOLD%%BORDER-91%%MAP-9B%%DOT-62%%PX-68%//
 //     Medium Value Axes
 ItemDisplay[UNI !ID 9ha CLVL<60]:%NAME%%CONTINUE%// Coldkill Hatchet
 ItemDisplay[UNI !ID gix CLVL<60]:%NAME%%CONTINUE%// Humongous Giant Axe
@@ -1824,11 +1833,10 @@ ItemDisplay[UNI !ID 9ba CLVL<80]:%NAME%%CONTINUE%// Spellsteal Bearded Axe
 ItemDisplay[UNI !ID 72a]:%NAME%%CONTINUE%// Runemaster Ettin Axe
 ItemDisplay[UNI !ID 7bt CLVL>89]:%NAME%%CONTINUE%// Hellslayer Decapitator
 ItemDisplay[UNI !ID 9la (ETH CLVL>89)]:%NAME%%CONTINUE%// Warlord's Trust Military Axe
-ItemDisplay[UNI !ID 7gi (!ETH OR CLVL>89 OR !DRUID)]:%NAME%%CONTINUE%// Executioner's Justice Glorious Axe
-ItemDisplay[UNI !ID 7wa (!ETH OR CLVL>89 OR !(PALADIN OR BARBARIAN))]:%NAME%%CONTINUE%// Death Cleaver Berserker Axe
+ItemDisplay[UNI !ID 7wa (!ETH OR CLVL>89)]:%NAME%%CONTINUE%// Death Cleaver Berserker Axe
 ItemDisplay[UNI !ID 7ga CLVL>89]:%NAME%%CONTINUE%// Messerschmidt's Reaver Champion Axe
 ItemDisplay[UNI !ID 7ha CLVL>89]:%NAME%%CONTINUE%// Razor's Edge Tomahwak
-ItemDisplay[UNI !ID ((9ha CLVL<60) OR (gix CLVL<60) OR (9gi CLVL<60) OR (9ax CLVL<60) OR (9ba CLVL<80) OR 72a OR (7bt CLVL>89) OR (9la (ETH CLVL>89)) OR (7gi (!ETH OR CLVL>89 OR !DRUID)) OR (7wa (!ETH OR CLVL>89 OR !(PALADIN OR BARBARIAN))) OR (7ga CLVL>89) OR (7ha CLVL>89))]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%BORDER-08%%MAP-50%%DOT-59%%PX-6A%//
+ItemDisplay[UNI !ID ((9ha CLVL<60) OR (gix CLVL<60) OR (9gi CLVL<60) OR (9ax CLVL<60) OR (9ba CLVL<80) OR 72a OR (7bt CLVL>89) OR (9la (ETH CLVL>89)) OR (7wa (!ETH OR CLVL>89)) OR (7ga CLVL>89) OR (7ha CLVL>89))]:%RED%X\%ORANGE%X\  %GOLD%>  %WHITE%o  %NAME%  %WHITE%o  %GOLD%<  %ORANGE%/X%RED%/X%GOLD%%BORDER-08%%MAP-50%%DOT-59%%PX-6A%//
 
 //     High Value Throwing Weapons
 ItemDisplay[UNI !ID 7b8 (ETH OR CLVL<90)]:%NAME%%SOUNDID-2594%%CONTINUE%// Lacerator Winged Axe
