@@ -1,11 +1,11 @@
-# **Season 11 Prosperity Update:**
+# **Season 12 Suffering Update:**
 
-My loot filters are updated for the Season 11 Prosperity ladder reset on May 16th 2025
+My loot filters are updated for the Season 12 Suffering ladder reset on November 28th 2025
 
 After selecting the version of the filter from the launcher, be sure to click "Save Filter" on the right side afterwards
 
-- The **Erazure Main** version displays standard names for all high runes and super rare items
-- The **Erazure BIG GG Novelty** version shows "BIG GG" or "LIL GG" when the following items drop while your character is outside of town:
+- The **Erazure - Main** version displays standard names for all high runes and super rare items
+- The **Erazure - BIG GG** version shows "BIG GG" or "LIL GG" when the following items drop while your character is outside of town:
   - BIG GG
     - Demonic Cube 
     - Sur, Ber, Jah, Cham, Zod
@@ -13,8 +13,9 @@ After selecting the version of the filter from the launcher, be sure to click "S
   - LIL GG
     - Vex, Ohm, Lo
     - Larzuk's Puzzlebox
+- The PoE version of each filter adds sound notifications from PoE to certain items
 
-![image](https://github.com/user-attachments/assets/68374769-cc52-48c8-8982-4adadaa4d8f8)
+<img width="994" height="737" alt="image" src="https://github.com/user-attachments/assets/c53910f3-788e-4f6e-aa7b-4e7b42bd80f2" />
 
 # **Contact and Support:**
 
