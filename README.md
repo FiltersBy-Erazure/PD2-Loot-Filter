@@ -4,6 +4,8 @@ My loot filters are updated for the Season 12 Suffering ladder reset on November
 
 After selecting the version of the filter from the launcher, be sure to click "Save Filter" on the right side afterwards
 
+## Versions of the Filter
+
 - The **Erazure - Main** version displays standard names for all high runes and super rare items
 - The **Erazure - BIG GG** version shows "BIG GG" or "LIL GG" when the following items drop while your character is outside of town:
   - BIG GG
@@ -16,6 +18,82 @@ After selecting the version of the filter from the launcher, be sure to click "S
 - The PoE version of each filter adds sound notifications from PoE to certain items
 
 <img width="994" height="737" alt="image" src="https://github.com/user-attachments/assets/c53910f3-788e-4f6e-aa7b-4e7b42bd80f2" />
+
+
+
+# **Loot Filter Customization and Edits**
+
+- I recommend using either [VS Code](https://code.visualstudio.com/download) or [Notepad++](https://notepad-plus-plus.org/downloads/v8.8.8/) for editing a customized version of the filter
+  
+- Because the filter uses custom symbols that require a specific encoding, we will need to follow the steps below to ensure that the file does not default to UTF-8 encoding
+  
+## VS Code
+
+- Open up the program after downloading and installing it
+
+- Under File - Preferences - Settings - Search for "Encoding"
+
+<img width="1167" height="408" alt="image" src="https://github.com/user-attachments/assets/c8336ebe-08d2-4ccb-87d3-bac83795ff4d" />
+
+- De-select **Auto Guess Encoding**
+
+- Set **Western (Windows 1252)** as the default character set encoding
+      
+- Under File - Preferences - Extensions - Search for "TommyC90"
+
+- Install the Diablo 2 Loot Filter Hints Extension
+
+- This adds helpful color coding to the syntax of .filter files
+
+<img width="1125" height="160" alt="image" src="https://github.com/user-attachments/assets/f5e425a0-6db7-43eb-81fc-53110fb7ba8e" />
+
+- Then navigate to the file of the filter version you would like to edit. Click on Raw to start the download
+    
+<img width="865" height="191" alt="image" src="https://github.com/user-attachments/assets/4037ffb0-5aa4-463d-be57-cda15a2cea0d" />
+
+- Under File - Open File - Navigate to where the file was downloaded and open it
+
+- In the bottom right of your screen, you should see a section where the encoding reads Windows 1252
+    
+<img width="365" height="21" alt="image" src="https://github.com/user-attachments/assets/1dbc4aab-0c58-45f2-b4de-25a48ac81d2a" />
+
+- You are then free to make the edits you want
+
+- After this, save the file to Diablo II\ProjectD2\filters\local. Be sure that it is saved as a .filter file
+
+- In the launcher under Item Filter Properties, click Local Author, select the file, then click Save Filter
+    
+<img width="979" height="729" alt="image" src="https://github.com/user-attachments/assets/3c6ac94d-bac9-4585-b821-2823207b92ad" />
+
+## Notepad++
+- Open up the program after downloading and installing it
+
+- Under Settings - Preferences - New Document - Encoding - Select **ANSI**
+    
+<img width="857" height="403" alt="image" src="https://github.com/user-attachments/assets/5c3cbe76-6196-46cf-968e-c824507156ef" />
+
+- Under Settings - Preferences - MISC. - Encoding - De-select **Autodetect character encoding**
+    
+<img width="859" height="403" alt="image" src="https://github.com/user-attachments/assets/5e6d7fdf-4f15-4da1-84d4-cde7c7cfa1b9" />
+
+- Then navigate to the file of the filter version you would like to edit. Click on Raw to start the download
+    
+<img width="865" height="191" alt="image" src="https://github.com/user-attachments/assets/4037ffb0-5aa4-463d-be57-cda15a2cea0d" />
+
+
+Under File - Open File - Navigate to where the file was downloaded and open it
+
+In the bottom right of your screen, you should see a section where the encoding reads ANSI
+    
+<img width="283" height="21" alt="image" src="https://github.com/user-attachments/assets/d8f065d3-ec69-4753-bc49-d21f9149e396" />
+
+You are then free to make the edits you want
+
+After this, save the file to Diablo II\ProjectD2\filters\local. Be sure that it is saved as a .filter file
+
+In the launcher under Item Filter Properties, click Local Author, select the file, then click Save Filter
+    
+<img width="979" height="729" alt="image" src="https://github.com/user-attachments/assets/3c6ac94d-bac9-4585-b821-2823207b92ad" />
 
 # **Contact and Support:**
 
