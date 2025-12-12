@@ -9,10 +9,10 @@ After selecting the version of the filter from the launcher, be sure to click "S
 - The **Erazure - Main** version displays standard names for all high runes and super rare items
 - The **Erazure - BIG GG** version shows "BIG GG" or "LIL GG" when the following items drop while your character is outside of town:
   - BIG GG
-    - Demonic Cube 
     - Sur, Ber, Jah, Cham, Zod
     - Vial of Lightsong, Lilith's Mirror
   - LIL GG
+    - Demonic Cube 
     - Vex, Ohm, Lo
     - Larzuk's Puzzlebox
 - The PoE version of each filter adds sound notifications from PoE to certain items
@@ -23,13 +23,17 @@ After selecting the version of the filter from the launcher, be sure to click "S
 
 # **Loot Filter Customization and Edits**
 
-- I recommend using either [VS Code](https://code.visualstudio.com/download) or [Notepad++](https://notepad-plus-plus.org/downloads/v8.8.8/) for editing a customized version of the filter
+- I recommend using either [VS Code](https://code.visualstudio.com/download) or [Notepad++](https://notepad-plus-plus.org/downloads/) for editing a customized version of the filter
   
 - Because the filter uses custom symbols that require a specific encoding, we will need to follow the steps below to ensure that the file does not default to UTF-8 encoding
+
+- Avoid using the copy to local button in the launcher as it results in encoding issues
   
 ## VS Code
 
-- Open up the program after downloading and installing it
+- Download [VS Code](https://code.visualstudio.com/download) from Visual Studio Code's website
+
+- Open up the program after installing it
 
 - Under File - Preferences - Settings - Search for "Encoding"
 
@@ -66,7 +70,10 @@ After selecting the version of the filter from the launcher, be sure to click "S
 <img width="979" height="729" alt="image" src="https://github.com/user-attachments/assets/3c6ac94d-bac9-4585-b821-2823207b92ad" />
 
 ## Notepad++
-- Open up the program after downloading and installing it
+
+- Download the latest version of [Notepad++](https://notepad-plus-plus.org/downloads/)
+
+- Open up the program after installing it
 
 - Under Settings - Preferences - New Document - Encoding - Select **ANSI**
     
