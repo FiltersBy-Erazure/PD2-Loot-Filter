@@ -65,7 +65,7 @@ After selecting the version of the filter from the launcher, be sure to click "S
 
 - After this, save the file to Diablo II\ProjectD2\filters\local. Be sure that it is saved as a .filter file
 
-- In the launcher under Item Filter Properties, click Local Author, select the file, then click Save Filter
+- In the launcher under Item Filter Properties, click Local Filter, select the file, then click Save Filter
     
 <img width="979" height="729" alt="image" src="https://github.com/user-attachments/assets/3c6ac94d-bac9-4585-b821-2823207b92ad" />
 
@@ -98,7 +98,7 @@ You are then free to make the edits you want
 
 After this, save the file to Diablo II\ProjectD2\filters\local. Be sure that it is saved as a .filter file
 
-In the launcher under Item Filter Properties, click Local Author, select the file, then click Save Filter
+In the launcher under Item Filter Properties, click Local Filter, select the file, then click Save Filter
     
 <img width="979" height="729" alt="image" src="https://github.com/user-attachments/assets/3c6ac94d-bac9-4585-b821-2823207b92ad" />
 
