@@ -131,7 +131,7 @@ Please consider donating to my [**PayPal**](https://paypal.me/ErazurePD2LootFilt
 - This filter level is recommended for the ladder start and for characters level 1-80 as it shows all magic and rare items.
 - When your character exceeds specific level thresholds, some low-value non-magical items start to get filtered out.
 
-**Tier 2 = Relaxed Filtering: Filter Levels 2-5**
+**Tier 2 = Relaxed Filtering: Filter Levels 2**
 
 - **Magic and Rare Items:**
   - Low-value magic and rare items are hidden when your character exceeds specific level thresholds.
@@ -145,7 +145,7 @@ Please consider donating to my [**PayPal**](https://paypal.me/ErazurePD2LootFilt
   - Every 5 levels after character level 80, filtering applies to larger gold piles.
   - Scrolls of TP and ID are hidden at character levels 80+
 
-**Tier 3 = Strict Filtering: Filter Levels 6-10**
+**Tier 3 = Strict Filtering: Filter Levels 3-7**
 
 - **Magic and Rare Items:**
   - Filtering for magic and rare items becomes more strict when your character exceeds specific level thresholds
@@ -167,15 +167,14 @@ Please consider donating to my [**PayPal**](https://paypal.me/ErazurePD2LootFilt
   - Antidote potions (for non-sorceresses) and thawing potions will be hidden (unless the character is in the zones pertaining to the Rathma fight)
   - Every 5 levels after character level 80, filtering applies to larger gold piles.
 
-**Tier 4 = Endgame Filtering: Filter Level 11**
+**Tier 4 = Endgame Filtering: Filter Levels 8-11**
 
 - **Unique Items**
   - Low-value unique items will show but not notify upon drop
 - **Magic and Rare Items:**
   - Select exceptional and elite-tier magic/rare armors and weapons (particularly non-ethereal weapons) are hidden past specific level thresholds.
-  - Rare class items are hidden unless your character is playing that class
-  - Rare arrows and bolts are hidden unless your character is an Amazon
-  - Magic class items are hidden (except for specific eth assassin claws)
+  - Most rare class items are hidden unless your character is playing that class
+  - Most magic class items are hidden (except for specific eth crafting bases such as assassin claws)
   - Magic amulets are hidden
 - **Set Items:**
   - Set rings and amulets are hidden
@@ -197,5 +196,6 @@ Please consider donating to my [**PayPal**](https://paypal.me/ErazurePD2LootFilt
 - **Set Items:**
   - Most set items are hidden
 - **Magic and Rare Items:**
+  - Rare arrows and bolts are hidden unless your character is an Amazon
   - Rare armors (except circlets, belts, and boots), weapons, arrows, and bolts are hidden
   - Magic armors, weapons, and large charms are hidden
