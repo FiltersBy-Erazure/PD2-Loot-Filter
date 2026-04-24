@@ -1,6 +1,6 @@
-# **Season 12 Suffering Update:**
+# **Season 13 Betrayal Update:**
 
-My loot filters are updated for the Season 12 Suffering ladder reset on November 28th 2025
+My loot filters are updated for the Season 12 Betrayal ladder reset on April 24th 2025
 
 After selecting the version of the filter from the launcher, be sure to click "Save Filter" on the right side afterwards
 
@@ -24,25 +24,11 @@ After selecting the version of the filter from the launcher, be sure to click "S
 # **Loot Filter Customization and Edits**
 
 - I recommend using either [VS Code](https://code.visualstudio.com/download) or [Notepad++](https://notepad-plus-plus.org/downloads/) for editing a customized version of the filter
-  
-- Because the filter uses custom symbols that require a specific encoding, we will need to follow the steps below to ensure that the file does not default to UTF-8 encoding
 
-- Avoid using the copy to local button in the launcher as it results in encoding issues
-  
 ## VS Code
 
 - Download [VS Code](https://code.visualstudio.com/download) from Visual Studio Code's website
-
-- Open up the program after installing it
-
-- Under File - Preferences - Settings - Search for "Encoding"
-
-<img width="1167" height="408" alt="image" src="https://github.com/user-attachments/assets/c8336ebe-08d2-4ccb-87d3-bac83795ff4d" />
-
-- De-select **Auto Guess Encoding**
-
-- Set **Western (Windows 1252)** as the default character set encoding
-      
+  
 - Under File - Preferences - Extensions - Search for "TommyC90"
 
 - Install the Diablo 2 Loot Filter Hints Extension
@@ -51,15 +37,13 @@ After selecting the version of the filter from the launcher, be sure to click "S
 
 <img width="1125" height="160" alt="image" src="https://github.com/user-attachments/assets/f5e425a0-6db7-43eb-81fc-53110fb7ba8e" />
 
-- Then navigate to the file of the filter version you would like to edit. Click on Raw to start the download
+- Then navigate to the file of the filter version you would like to edit. Click on the three dots on the top right of the screen then click Download
     
-<img width="865" height="191" alt="image" src="https://github.com/user-attachments/assets/4037ffb0-5aa4-463d-be57-cda15a2cea0d" />
+<img width="1540" height="312" alt="image" src="https://github.com/user-attachments/assets/cca16f05-b088-4e36-bde0-f841ca7b6c5c" />
 
 - Under File - Open File - Navigate to where the file was downloaded and open it
 
 - In the bottom right of your screen, you should see a section where the encoding reads Windows 1252
-    
-<img width="365" height="21" alt="image" src="https://github.com/user-attachments/assets/1dbc4aab-0c58-45f2-b4de-25a48ac81d2a" />
 
 - You are then free to make the edits you want
 
@@ -75,38 +59,23 @@ After selecting the version of the filter from the launcher, be sure to click "S
 
 - Open up the program after installing it
 
-- Under Settings - Preferences - New Document - Encoding - Select **ANSI**
-    
-<img width="857" height="403" alt="image" src="https://github.com/user-attachments/assets/5c3cbe76-6196-46cf-968e-c824507156ef" />
+- Then navigate to the file of the filter version you would like to edit. Click on the three dots on the top right of the screen then click Download
 
-- Under Settings - Preferences - MISC. - Encoding - De-select **Autodetect character encoding**
-    
-<img width="859" height="403" alt="image" src="https://github.com/user-attachments/assets/5e6d7fdf-4f15-4da1-84d4-cde7c7cfa1b9" />
+<img width="1540" height="312" alt="image" src="https://github.com/user-attachments/assets/cca16f05-b088-4e36-bde0-f841ca7b6c5c" />
 
-- Then navigate to the file of the filter version you would like to edit. Click on Raw to start the download
-    
-<img width="865" height="191" alt="image" src="https://github.com/user-attachments/assets/4037ffb0-5aa4-463d-be57-cda15a2cea0d" />
+- You are then free to make the edits you want
 
+- After this, save the file to Diablo II\ProjectD2\filters\local. Be sure that it is saved as a .filter file
 
-Under File - Open File - Navigate to where the file was downloaded and open it
-
-In the bottom right of your screen, you should see a section where the encoding reads ANSI
-    
-<img width="283" height="21" alt="image" src="https://github.com/user-attachments/assets/d8f065d3-ec69-4753-bc49-d21f9149e396" />
-
-You are then free to make the edits you want
-
-After this, save the file to Diablo II\ProjectD2\filters\local. Be sure that it is saved as a .filter file
-
-In the launcher under Item Filter Properties, click Local Filter, select the file, then click Save Filter
+- In the launcher under Item Filter Properties, click Local Filter, select the file, then click Save Filter
     
 <img width="979" height="729" alt="image" src="https://github.com/user-attachments/assets/3c6ac94d-bac9-4585-b821-2823207b92ad" />
 
 # **Contact and Support:**
 
-Message me on Discord if you have any questions, feedback, or suggestions: **erazure**
+- Message me on Discord if you have any questions, feedback, or suggestions: **erazure**
 
-Please consider donating to my [**PayPal**](https://paypal.me/ErazurePD2LootFilter) or subscribing to my [**Patreon**](https://www.patreon.com/erazure_pd2/membership) if you like my work and want to support the development of my filters
+- Please consider donating to my [**PayPal**](https://paypal.me/ErazurePD2LootFilter) or subscribing to my [**Patreon**](https://www.patreon.com/erazure_pd2/membership) if you like my work and want to support the development of my filters
 
 ![heart medium](https://github.com/FiltersBy-Erazure/PD2-Loot-Filter/assets/76863417/cb45f82f-26ca-49ec-b5c7-bb3d67583fe1)
 
