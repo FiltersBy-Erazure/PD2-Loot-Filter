@@ -16,6 +16,7 @@ After selecting the version of the filter from the launcher, be sure to click "S
     - Vex, Ohm, Lo
     - Larzuk's Puzzlebox
 - The PoE version of each filter adds sound notifications from PoE to certain items
+- The Revealed version of each filter shows the identified names of unique and set items
 
 <img width="994" height="737" alt="image" src="https://github.com/user-attachments/assets/c53910f3-788e-4f6e-aa7b-4e7b42bd80f2" />
 
