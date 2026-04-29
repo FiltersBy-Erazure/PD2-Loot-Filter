@@ -38,31 +38,53 @@ ItemDisplay[!BIG_GG !POE_SOUNDS !REVEALED box]:%NAME%{%NAME%%CL%%TEAL%Erazure - 
 ItemDisplay[!BIG_GG !POE_SOUNDS REVEALED box]:%NAME%{%NAME%%CL%%TEAL%Erazure - Revealed}%CONTINUE%//
 ItemDisplay[!BIG_GG POE_SOUNDS !REVEALED box]:%NAME%{%NAME%%CL%%TEAL%Erazure - Main - PoE}%CONTINUE%//
 ItemDisplay[!BIG_GG POE_SOUNDS REVEALED box]:%NAME%{%NAME%%CL%%TEAL%Erazure - Revealed - PoE}%CONTINUE%//
-ItemDisplay[BIG_GG !POE_SOUNDS box]:%NAME%{%NAME%%CL%%TEAL%Erazure - Big GG}%CONTINUE%//
-ItemDisplay[BIG_GG POE_SOUNDS box]:%NAME%{%NAME%%CL%%TEAL%Erazure - Big GG - PoE}%CONTINUE%//
-ItemDisplay[box]:%NAME%{%NAME%%CL%%WHITE%Season 13 - Apr 28th}//
+ItemDisplay[BIG_GG !POE_SOUNDS !REVEALED box]:%NAME%{%NAME%%CL%%TEAL%Erazure - Big GG}%CONTINUE%//
+ItemDisplay[BIG_GG !POE_SOUNDS REVEALED box]:%NAME%{%NAME%%CL%%TEAL%Erazure - Revealed - Big GG}%CONTINUE%//
+ItemDisplay[BIG_GG POE_SOUNDS !REVEALED box]:%NAME%{%NAME%%CL%%TEAL%Erazure - Big GG - PoE}%CONTINUE%//
+ItemDisplay[BIG_GG POE_SOUNDS REVEALED box]:%NAME%{%NAME%%CL%%TEAL%Erazure - Revealed - Big GG - PoE}%CONTINUE%//
+ItemDisplay[box]:%NAME%{%NAME%%CL%%WHITE%Season 13 - Apr 29th}//
 
 // =====================================  Toggles  ==================================
 
-//  BIG_GG=FALSE + POE_SOUNDS=FALSE  =  Erazure - Main
+//  Erazure - Main
 //Alias[BIG_GG]:FALSE
 //Alias[POE_SOUNDS]:FALSE
+//Alias[REVEALED]:FALSE
 
-//  BIG_GG=TRUE  + POE_SOUNDS=FALSE  =  Erazure - BIG GG
+//  Erazure - Revealed
+//Alias[BIG_GG]:FALSE
+//Alias[POE_SOUNDS]:FALSE
+//Alias[REVEALED]:TRUE
+
+//  Erazure - BIG GG
 Alias[BIG_GG]:TRUE
 Alias[POE_SOUNDS]:FALSE
+Alias[REVEALED]:FALSE
 
-//  BIG_GG=FALSE + POE_SOUNDS=TRUE   =  Erazure - Main - PoE
+//  Erazure - Revealed - BIG GG
+//Alias[BIG_GG]:TRUE
+//Alias[POE_SOUNDS]:FALSE
+//Alias[REVEALED]:TRUE
+
+//  Erazure - Main - PoE
 //Alias[BIG_GG]:FALSE
 //Alias[POE_SOUNDS]:TRUE
+//Alias[REVEALED]:FALSE
 
-//  BIG_GG=TRUE  + POE_SOUNDS=TRUE   =  Erazure - BIG GG - PoE
+//  Erazure - Revealed - PoE
+//Alias[BIG_GG]:FALSE
+//Alias[POE_SOUNDS]:TRUE
+//Alias[REVEALED]:TRUE
+
+//  Erazure - BIG GG - PoE
 //Alias[BIG_GG]:TRUE
 //Alias[POE_SOUNDS]:TRUE
+//Alias[REVEALED]:FALSE
 
-// Displays identified names for unique and set items
+//  Erazure - Revealed - BIG GG - PoE
+//Alias[BIG_GG]:TRUE
+//Alias[POE_SOUNDS]:TRUE
 //Alias[REVEALED]:TRUE
-Alias[REVEALED]:FALSE
 
 // =====================================  Aliases  ==================================
 
@@ -165,8 +187,8 @@ Alias[UNI_HIGH_VALUE_LEFT]:%BLUE%\\%PURPLE%\\%RED%\\%ORANGE%\\  %GOLD%>  %WHITE%
 Alias[UNI_HIGH_VALUE_RIGHT]:%WHITE%O  %GOLD%<  %ORANGE%/%ORANGE%/%RED%/%RED%/%PURPLE%/%PURPLE%/%BLUE%/%BLUE%/%GOLD%
 
 // Unique Medium Value
-Alias[UNI_MEDIUM_VALUE_LEFT]:%RED%\\%ORANGE%\\  %GOLD%>  %WHITE%•
-Alias[UNI_MEDIUM_VALUE_RIGHT]:%WHITE%•  %GOLD%<  %ORANGE%/%ORANGE%/%RED%/%RED%/%GOLD%
+Alias[UNI_MEDIUM_VALUE_LEFT]:%RED%\\%ORANGE%\\%YELLOW%\  %GOLD%>  %WHITE%•
+Alias[UNI_MEDIUM_VALUE_RIGHT]:%WHITE%•  %GOLD%<  %YELLOW%/%ORANGE%/%ORANGE%/%RED%/%RED%/%GOLD%
 
 // Unique LLD
 Alias[UNI_LLD_LEFT]:%GRAY%*%TEAL%* %WHITE%>
@@ -2029,10 +2051,11 @@ ItemDisplay[t52]:%GOLD%Warlord of Blood{%NAME%}%CONTINUE%//
 ItemDisplay[t54]:%GOLD%Imperial Palace{%NAME%}%CONTINUE%//
 ItemDisplay[t55]:%GOLD%Outer Void{%NAME%}%CONTINUE%//
 ItemDisplay[t56]:%GOLD%City of Ureh{%NAME%}%CONTINUE%//
-ItemDisplay[t58]:%GOLD%Na-Krul's Abyss{%NAME%}%CONTINUE%//
 // (Tier 2)
 ItemDisplay[t53]:%GOLD%Fallen Gardens{%NAME%}%CONTINUE%//
 ItemDisplay[t57]:%GOLD%Djinn's Domain{%NAME%}%CONTINUE%//
+// (Tier 1)
+ItemDisplay[t58]:%GOLD%Na-Krul's Abyss{%NAME%}%CONTINUE%//
 
 // Dungeon Names (Tier 4)
 ItemDisplay[t41]:%RED%Cathedral of Light%CONTINUE%//
@@ -2041,15 +2064,15 @@ ItemDisplay[t43]:%RED%Sanctuary of Sin%CONTINUE%//
 ItemDisplay[t44]:%RED%Steppes of Daken-Shar%CONTINUE%//
 
 // Add Area Level
-ItemDisplay[STAT374=0 MAPTIER=1]:%NAME%{%WHITE%Area Level: 87%CL%%NAME%}%CONTINUE%//
-ItemDisplay[STAT374=0 (MAPTIER=2 OR t53)]:%NAME%{%WHITE%Area Level: 88%CL%%NAME%}%CONTINUE%//
-ItemDisplay[STAT374=0 (MAPTIER=3 OR t51 OR t52 OR t54 OR t55 OR t56 OR t57 OR t58)]:%NAME%{%WHITE%Area Level: 89%CL%%NAME%}%CONTINUE%//
+ItemDisplay[STAT374=0 (MAPTIER=1 OR t58)]:%NAME%{%WHITE%Area Level: 87%CL%%NAME%}%CONTINUE%//
+ItemDisplay[STAT374=0 (MAPTIER=2 OR t53 OR t57)]:%NAME%{%WHITE%Area Level: 88%CL%%NAME%}%CONTINUE%//
+ItemDisplay[STAT374=0 (MAPTIER=3 OR t51 OR t52 OR t54 OR t55 OR t56)]:%NAME%{%WHITE%Area Level: 89%CL%%NAME%}%CONTINUE%//
 ItemDisplay[STAT374=0 MAPTIER=4]:%NAME%{%WHITE%Area Level: 92%CL%%NAME%}%CONTINUE%//
 
 // +1 Area Level
-ItemDisplay[STAT374=1 MAPTIER=1]:%NAME%{%GOLD%Area Level: 88%CL%%NAME%}%CONTINUE%//
-ItemDisplay[STAT374=1 (MAPTIER=2 OR t53)]:%NAME%{%GOLD%Area Level: 89%CL%%NAME%}%CONTINUE%//
-ItemDisplay[STAT374=1 (MAPTIER=3 OR t51 OR t52 OR t54 OR t55 OR t56 OR t57 OR t58)]:%NAME%{%GOLD%Area Level: 90%CL%%NAME%}%CONTINUE%//
+ItemDisplay[STAT374=1 (MAPTIER=1 OR t58)]:%NAME%{%GOLD%Area Level: 88%CL%%NAME%}%CONTINUE%//
+ItemDisplay[STAT374=1 (MAPTIER=2 OR t53 OR t57)]:%NAME%{%GOLD%Area Level: 89%CL%%NAME%}%CONTINUE%//
+ItemDisplay[STAT374=1 (MAPTIER=3 OR t51 OR t52 OR t54 OR t55 OR t56)]:%NAME%{%GOLD%Area Level: 90%CL%%NAME%}%CONTINUE%//
 ItemDisplay[STAT374=1 MAPTIER=4]:%NAME%{%GOLD%Area Level: 93%CL%%NAME%}%CONTINUE%//
 
 // =========================================================================
@@ -2057,12 +2080,12 @@ ItemDisplay[STAT374=1 MAPTIER=4]:%NAME%{%GOLD%Area Level: 93%CL%%NAME%}%CONTINUE
 // =========================================================================
 //
 // Guest Monster Resistance Values:
-//   STAT439 = Vampire Lords    (Phys 75%, Cold 75%)
-//   STAT440 = Hell Bovines     (Phys 50%)
-//   STAT441 = Reanimated       (Phys 50%, Magic 50%, Fire 75%, Poison 80%)
-//   STAT442 = Ghosts           (Phys 50%, Magic 50%, Light 65%, Poison 95%)
-//   STAT437 = Dolls            (Poison 80%)
-//   STAT470 = Souls            (Light 80%, Poison 75%)
+//   STAT439 = Vampire Lords     (Phys 75%, Cold 75%)
+//   STAT440 = Hell Bovines      (Phys 50%)
+//   STAT441 = Reanimated        (Phys 50%, Magic 50%, Fire 75%, Poison 80%)
+//   STAT442 = Ghosts            (Phys 50%, Magic 50%, Light 65%, Poison 95%)
+//   STAT437 = Dolls             (Poison 80%)
+//   STAT470 = Souls             (Light 80%, Poison 75%)
 //   STAT499 = Shrieking Terrors (Cold 80%)
 //
 // File order (top-to-bottom): Phys, Magic, Poison, Cold, Lightning, Fire
@@ -2443,7 +2466,7 @@ ItemDisplay[t39]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
 ItemDisplay[t39]:%NAME%{%TAN%115%%NAME%}%CONTINUE%// Phys 115
 ItemDisplay[t39]:%NAME%{%RED%120% %WHITE%* %NAME%}%CONTINUE%// Fire 120
 
-// ========================= Unique Maps (Area Level 88-89) =========================
+// ========================= Unique Maps (Area Level 87-89) =========================
 
 // ===== Fallen Gardens (t53) =====
 // S13: P=65 M=80 F=70 L=65 C=75 Psn=80
@@ -2759,8 +2782,9 @@ ItemDisplay[(NMAG OR MAG OR RARE) MAPTIER=3]:%NAME%%BORDER-8F%%MAP-9B%{%NAME%}%C
 
 ItemDisplay[MAPTIER=4]:%NAME% %ORANGE%T4%BORDER-05%%MAP-62%%DOT-68%%PX-6D%{%RED%145% %WHITE%* %YELLOW%145% %WHITE%* %BLUE%145% %WHITE%* %DARK_GREEN%145% %WHITE%* %ORANGE%120% %WHITE%* %TAN%120%%CL%%NAME%}//
 
-ItemDisplay[(t51 OR t52 OR t54 OR t55 OR t56 OR t58)]:%PURPLE%\V/  %NAME% %PURPLE%T3 %GOLD%Map  %PURPLE%\V/%BORDER-8F%%MAP-9B%%DOT-5A%%PX-AA%{%NAME%}//
+ItemDisplay[(t51 OR t52 OR t54 OR t55 OR t56)]:%PURPLE%\V/  %NAME% %PURPLE%T3 %GOLD%Map  %PURPLE%\V/%BORDER-8F%%MAP-9B%%DOT-5A%%PX-AA%{%NAME%}//
 ItemDisplay[(t53 OR t57)]:%RED%\V/  %NAME% %RED%T2 %GOLD%Map  %RED%\V/%BORDER-05%%MAP-0A%%DOT-5A%%PX-AA%{%NAME%}//
+ItemDisplay[t58]:%DARK_GREEN%\V/  %NAME% %DARK_GREEN%T2 %GOLD%Map  %DARK_GREEN%\V/%BORDER-71%%MAP-75%%DOT-5A%%PX-AA%{%NAME%}//
 
 ItemDisplay[MAPTIER~1-3 (((MAPTIER=1 STAT372>59) OR (MAPTIER=2 STAT372>69) OR (MAPTIER=3 STAT372>79)) OR STAT375>29 OR STAT370>99 OR STAT373>14)]:%CL%%NAME%{%NAME%}%CONTINUE%//
 ItemDisplay[MAPTIER~1-3 (STAT370>99 OR ((((MAPTIER=1 STAT372>59) OR (MAPTIER=2 STAT372>69) OR (MAPTIER=3 STAT372>79)) OR STAT375>29)))]:%WHITE%%STAT370%%YELLOW%mf %NAME%{%NAME%}%CONTINUE%//
@@ -2785,6 +2809,8 @@ ItemDisplay[(t61 OR t62)]:%BLUE%\%WHITE%\%BLUE%V%WHITE%/%BLUE%/  %WHITE%%NAME%  
 // --------------------------------------------------------------------------------------------------------
 
 
+// Show revealed names when REAVEALED=TRUE toggle is turned on
+
 ItemDisplay[REVEALED !ID UNI ram]:The Third Eye%CONTINUE%
 ItemDisplay[REVEALED !ID UNI jew]:Rainbow Facet%CONTINUE%
 ItemDisplay[REVEALED !ID UNI cm1]:Annihilus%CONTINUE%
@@ -2796,7 +2822,7 @@ ItemDisplay[REVEALED !ID UNI aqv3]:Aetherwing%WHITE%/%GOLD%Basilisk%WHITE%/%GOLD
 ItemDisplay[REVEALED !ID UNI cqv]:Ramfodder%CONTINUE%
 ItemDisplay[REVEALED !ID UNI cqv2]:Anvilguard Strap%WHITE%/%GOLD%Shatterhead%CONTINUE%
 ItemDisplay[REVEALED !ID UNI cqv3]:Abyssal%WHITE%/%GOLD%Bannerlord%WHITE%/%GOLD%Sorrow%CONTINUE%
-//Helm
+
 ItemDisplay[REVEALED !ID UNI cap]:Biggin's Bonnet%CONTINUE%
 ItemDisplay[REVEALED !ID UNI xap]:Peasant Crown%CONTINUE%
 ItemDisplay[REVEALED !ID UNI uap]:Harlequin Crest%CONTINUE%
@@ -2823,7 +2849,6 @@ ItemDisplay[REVEALED !ID UNI urn]:Crown of Ages%CONTINUE%
 ItemDisplay[REVEALED !ID UNI ci2]:Kira's Guardian%CONTINUE%
 ItemDisplay[REVEALED !ID UNI ci3]:Griffon's Eye%CONTINUE%
 
-//Chest
 ItemDisplay[REVEALED !ID UNI qui]:Greyform%CONTINUE%
 ItemDisplay[REVEALED !ID UNI xui]:Spirit Shroud%CONTINUE%
 ItemDisplay[REVEALED !ID UNI uui]:Ormus' Robes%CONTINUE%
@@ -2865,7 +2890,6 @@ ItemDisplay[REVEALED !ID UNI xar]:Corpsemourn%CONTINUE%
 ItemDisplay[REVEALED !ID UNI uar]:Templar's%WHITE%/%GOLD%Tyrael's Might%CONTINUE%
 ItemDisplay[REVEALED !ID UNI rar]:Cage of the Unsullied%CONTINUE%
 
-//Gloves
 ItemDisplay[REVEALED !ID UNI lgl]:The Hand of Broc%CONTINUE%
 ItemDisplay[REVEALED !ID UNI xlg]:Venom Grip%CONTINUE%
 ItemDisplay[REVEALED !ID UNI ulg]:Titan's Grip%CONTINUE%
@@ -2882,7 +2906,6 @@ ItemDisplay[REVEALED !ID UNI hgl]:Frostburn%CONTINUE%
 ItemDisplay[REVEALED !ID UNI xhg]:Hellmouth%CONTINUE%
 ItemDisplay[REVEALED !ID UNI uhg]:Steelrend%CONTINUE%
 
-//Belt
 ItemDisplay[REVEALED !ID UNI lbl]:Lenymo%CONTINUE%
 ItemDisplay[REVEALED !ID UNI zlb]:String of Ears%CONTINUE%
 ItemDisplay[REVEALED !ID UNI ulc]:Arachnid Mesh%CONTINUE%
@@ -2899,7 +2922,6 @@ ItemDisplay[REVEALED !ID UNI zhb]:Thundergod's Vigor%CONTINUE%
 ItemDisplay[REVEALED !ID UNI uhc]:Siggard's Staunch%CONTINUE%
 ItemDisplay[REVEALED !ID UNI rbe]:Band of Skulls%CONTINUE%
 
-//Boots
 ItemDisplay[REVEALED !ID UNI lbt]:Hotspur%CONTINUE%
 ItemDisplay[REVEALED !ID UNI xlb]:Infernostride%CONTINUE%
 ItemDisplay[REVEALED !ID UNI ulb]:Merman's Sprocket%CONTINUE%
@@ -2916,7 +2938,6 @@ ItemDisplay[REVEALED !ID UNI hbt]:Tearhaunch%CONTINUE%
 ItemDisplay[REVEALED !ID UNI xhb]:Gore Rider%CONTINUE%
 ItemDisplay[REVEALED !ID UNI uhb]:Shadow Dancer%CONTINUE%
 
-//Shield
 ItemDisplay[REVEALED !ID UNI buc]:Pelta Lunata%CONTINUE%
 ItemDisplay[REVEALED !ID UNI xuc]:Visceratuant%CONTINUE%
 ItemDisplay[REVEALED !ID UNI sml]:Umbral Disk%CONTINUE%
@@ -2941,7 +2962,6 @@ ItemDisplay[REVEALED !ID UNI gts]:The Ward%CONTINUE%
 ItemDisplay[REVEALED !ID UNI xts]:Radament's Sphere%CONTINUE%
 ItemDisplay[REVEALED !ID UNI uts]:Spirit Ward%CONTINUE%
 
-//Class Helm
 ItemDisplay[REVEALED !ID UNI dr6]:Fenris%CONTINUE%
 ItemDisplay[REVEALED !ID UNI drb]:Cerebus' Bite%CONTINUE%
 ItemDisplay[REVEALED !ID UNI dr2]:Quetzalcoatl%CONTINUE%
@@ -2958,7 +2978,6 @@ ItemDisplay[REVEALED !ID UNI bae]:Halaberd's Reign%CONTINUE%
 ItemDisplay[REVEALED !ID UNI baa]:Arreat's Face%CONTINUE%
 ItemDisplay[REVEALED !ID UNI baf]:Raekor's Virtue%CONTINUE%
 
-//Class Shield
 ItemDisplay[REVEALED !ID UNI pab]:Ephemeral%CONTINUE%
 ItemDisplay[REVEALED !ID UNI pac]:Alma Negra%CONTINUE%
 ItemDisplay[REVEALED !ID UNI pa3]:Sankekur's Fall%CONTINUE%
@@ -2972,7 +2991,6 @@ ItemDisplay[REVEALED !ID UNI nee]:Boneflame%CONTINUE%
 ItemDisplay[REVEALED !ID UNI nea]:Homunculus%CONTINUE%
 ItemDisplay[REVEALED !ID UNI nef]:Darkforce Spawn%CONTINUE%
 
-//Axe
 ItemDisplay[REVEALED !ID UNI hax]:The Gnasher%CONTINUE%
 ItemDisplay[REVEALED !ID UNI 9ha]:Coldkill%CONTINUE%
 ItemDisplay[REVEALED !ID UNI 7ha]:Razor's Edge%CONTINUE%
@@ -3001,12 +3019,11 @@ ItemDisplay[REVEALED !ID UNI 7ga]:Messerschmidt's Reaver%CONTINUE%
 ItemDisplay[REVEALED !ID UNI gix]:Humongous%CONTINUE%
 ItemDisplay[REVEALED !ID UNI 9gi]:The Minotaur%CONTINUE%
 ItemDisplay[REVEALED !ID UNI 7gi]:Executioner's Justice%CONTINUE%
-//ItemDisplay[REVEALED !ID UNI 9ta]:The Scalper%CONTINUE%
+ItemDisplay[REVEALED !ID UNI 9ta]:The Scalper%CONTINUE%
 ItemDisplay[REVEALED !ID UNI 7ta]:Gimmershred%CONTINUE%
 ItemDisplay[REVEALED !ID UNI 9b8]:Achilles Strike%CONTINUE%
 ItemDisplay[REVEALED !ID UNI 7b8]:Lacerator%CONTINUE%
 
-//Bow
 ItemDisplay[REVEALED !ID UNI sbw]:Pluckeye%CONTINUE%
 ItemDisplay[REVEALED !ID UNI 8sb]:Skystrike%CONTINUE%
 ItemDisplay[REVEALED !ID UNI hbw]:Witherstring%CONTINUE%
@@ -3038,7 +3055,6 @@ ItemDisplay[REVEALED !ID UNI rxb]:Doomslinger%CONTINUE%
 ItemDisplay[REVEALED !ID UNI 8rx]:Demon Machine%CONTINUE%
 ItemDisplay[REVEALED !ID UNI 6rx]:Gut Siphon%CONTINUE%
 
-//Dagger
 ItemDisplay[REVEALED !ID UNI dgr]:Gull%CONTINUE%
 ItemDisplay[REVEALED !ID UNI 9dg]:Spineripper%CONTINUE%
 ItemDisplay[REVEALED !ID UNI 7dg]:Wizardspike%CONTINUE%
@@ -3054,7 +3070,6 @@ ItemDisplay[REVEALED !ID UNI 7bl]:Ghostflame%CONTINUE%
 ItemDisplay[REVEALED !ID UNI 9tk]:Deathbit%CONTINUE%
 ItemDisplay[REVEALED !ID UNI 7bk]:Warshrike%CONTINUE%
 
-//Mace
 ItemDisplay[REVEALED !ID UNI clb]:Felloak%CONTINUE%
 ItemDisplay[REVEALED !ID UNI 9cl]:Dark Clan Crusher%CONTINUE%
 ItemDisplay[REVEALED !ID UNI 7cl]:Nord's Tenderizer%CONTINUE%
@@ -3088,7 +3103,6 @@ ItemDisplay[REVEALED !ID UNI wsp]:Stormeye%CONTINUE%
 ItemDisplay[REVEALED !ID UNI 9ws]:Hand of Blessed Light%CONTINUE%
 ItemDisplay[REVEALED !ID UNI 7ws]:Astreon's Iron Ward%CONTINUE%
 
-//Polearm
 ItemDisplay[REVEALED !ID UNI bar]:Dimoak's Hew%CONTINUE%
 ItemDisplay[REVEALED !ID UNI 9b7]:The Meat Scraper%CONTINUE%
 ItemDisplay[REVEALED !ID UNI 7o7]:Bonehew%CONTINUE%
@@ -3107,7 +3121,6 @@ ItemDisplay[REVEALED !ID UNI wsc]:The Grim Reaper%CONTINUE%
 ItemDisplay[REVEALED !ID UNI 9wc]:Grim's Burning Dead%CONTINUE%
 ItemDisplay[REVEALED !ID UNI 7wc]:Stormspire%CONTINUE%
 
-//Spear
 ItemDisplay[REVEALED !ID UNI spr]:The Dragon Chang%CONTINUE%
 ItemDisplay[REVEALED !ID UNI 9sr]:The Impaler%CONTINUE%
 ItemDisplay[REVEALED !ID UNI 7sr]:Arioc's Needle%CONTINUE%
@@ -3125,7 +3138,7 @@ ItemDisplay[REVEALED !ID UNI 7p7]:Steel Pillar%CONTINUE%
 ItemDisplay[REVEALED !ID UNI 7s7]:Demon's Arch%CONTINUE%
 ItemDisplay[REVEALED !ID UNI 7gl]:Wraith Flight%CONTINUE%
 ItemDisplay[REVEALED !ID UNI 7ts]:Gargoyle's Bite%CONTINUE%
-//Staff
+
 ItemDisplay[REVEALED !ID UNI sst]:Bane Ash%CONTINUE%
 ItemDisplay[REVEALED !ID UNI 8ss]:Razorswitch%CONTINUE%
 ItemDisplay[REVEALED !ID UNI lst]:Serpent Lord%CONTINUE%
@@ -3151,7 +3164,6 @@ ItemDisplay[REVEALED !ID UNI 9gw]:Blackhand Key%CONTINUE%
 ItemDisplay[REVEALED !ID UNI 7yw]:Nethercrux%CONTINUE%
 ItemDisplay[REVEALED !ID UNI 7gw]:Death's Web%CONTINUE%
 
-//Sword
 ItemDisplay[REVEALED !ID UNI ssd]:Rixot's Keen%CONTINUE%
 ItemDisplay[REVEALED !ID UNI 9ss]:Bloodletter%CONTINUE%
 ItemDisplay[REVEALED !ID UNI scm]:Blood Crescent%CONTINUE%
@@ -3190,7 +3202,6 @@ ItemDisplay[REVEALED !ID UNI gsd]:The Patriarch%CONTINUE%
 ItemDisplay[REVEALED !ID UNI 9gd]:Swordguard%CONTINUE%
 ItemDisplay[REVEALED !ID UNI 7gd]:The Grandfather%CONTINUE%
 
-//Class Weapon
 ItemDisplay[REVEALED !ID UNI amb]:Blood Raven's Charge%CONTINUE%
 ItemDisplay[REVEALED !ID UNI am7]:Lycander's Aim%CONTINUE%
 ItemDisplay[REVEALED !ID UNI amc]:Ebonbane%CONTINUE%
@@ -3550,13 +3561,13 @@ ItemDisplay[UNI !ID gix CLVL<60]:%NAME%%CONTINUE%// Humongous Giant Axe
 ItemDisplay[UNI !ID 9gi CLVL<60]:%NAME%%CONTINUE%// The Minotaur Ancient Axe
 ItemDisplay[UNI !ID 9ax CLVL<60]:%NAME%%CONTINUE%// Butcher's Pupil Cleaver
 ItemDisplay[UNI !ID 9ba CLVL<80]:%NAME%%CONTINUE%// Spellsteal Bearded Axe
-ItemDisplay[UNI !ID 72a]:%NAME%%CONTINUE%// Runemaster Ettin Axe
+ItemDisplay[UNI !ID 72a CLVL<90]:%NAME%%CONTINUE%// Runemaster Ettin Axe
 ItemDisplay[UNI !ID 7bt CLVL>89]:%NAME%%CONTINUE%// Hellslayer Decapitator
 ItemDisplay[UNI !ID 9la (ETH CLVL>89)]:%NAME%%CONTINUE%// Warlord's Trust Military Axe
 ItemDisplay[UNI !ID 7ga CLVL>89]:%NAME%%CONTINUE%// Messerschmidt's Reaver Champion Axe
 ItemDisplay[UNI !ID 7ha CLVL>89]:%NAME%%CONTINUE%// Razor's Edge Tomahwak
 ItemDisplay[UNI !ID 7mp]:%NAME%%CONTINUE%// Razor's Edge Tomahwak
-ItemDisplay[UNI !ID ((9ha CLVL<60) OR (gix CLVL<60) OR (9gi CLVL<60) OR (9ax CLVL<60) OR (9ba CLVL<80) OR 72a OR (7bt CLVL>89) OR (9la (ETH CLVL>89)) OR (7ga CLVL>89) OR (7ha CLVL>89) OR 7mp)]:%UNI_MEDIUM_VALUE_LEFT%  %NAME%  %UNI_MEDIUM_VALUE_RIGHT%%BORDER-08%%MAP-50%%DOT-59%%PX-6A%//
+ItemDisplay[UNI !ID ((9ha CLVL<60) OR (gix CLVL<60) OR (9gi CLVL<60) OR (9ax CLVL<60) OR (9ba CLVL<80) OR (72a CLVL<90) OR (7bt CLVL>89) OR (9la (ETH CLVL>89)) OR (7ga CLVL>89) OR (7ha CLVL>89) OR 7mp)]:%UNI_MEDIUM_VALUE_LEFT%  %NAME%  %UNI_MEDIUM_VALUE_RIGHT%%BORDER-08%%MAP-50%%DOT-59%%PX-6A%//
 
 //     High Value Throwing Weapons
 ItemDisplay[UNI !ID 7bk ETH]:%NAME%%SOUNDID-2594%%CONTINUE%// Warshrike Winged Knife
@@ -3762,7 +3773,8 @@ ItemDisplay[UNI ELT !ID FILTLVL=12 !TOWN]://
 // =============================================  Set Items  =============================================
 // -------------------------------------------------------------------------------------------------------
 
-// Keep orginal coloring for Set items
+// Show revealed names when REAVEALED=TRUE toggle is turned on
+
 ItemDisplay[REVEALED !ID SET cap]:Infernal Cranium%WHITE%/%GREEN%Sander's Paragon%CONTINUE%
 ItemDisplay[REVEALED !ID SET xap]:Cow King's Horns%CONTINUE%
 ItemDisplay[REVEALED !ID SET skp]:Arcanna's Head%CONTINUE%
@@ -6225,7 +6237,7 @@ ItemDisplay[(MAG OR RARE OR CRAFT) RES>4 ID QUIVER]:%WHITE%%RES%%PURPLE%res %NAM
 // Curse Resistance 
 ItemDisplay[(MAG OR RARE OR CRAFT) (STAT360=49 OR STAT360=62) STAT504>0 ID QUIVER]:%WHITE%%STAT504%%GOLD%cr %NAME%{%NAME%}%CONTINUE%
 // Knockback
-ItemDisplay[(MAG OR RARE OR CRAFT) STAT81=1 ID QUIVER]:%LIGHT_GRAY%Knckbk %NAME%{%NAME%}%CONTINUE%
+ItemDisplay[(MAG OR RARE OR CRAFT) STAT81=1 ID QUIVER]:%LIGHT_GRAY%Knbk %NAME%{%NAME%}%CONTINUE%
 // Open Wounds
 ItemDisplay[(MAG OR RARE OR CRAFT) STAT135>9 ID QUIVER]:%WHITE%%STAT135%%CORAL%ow %NAME%{%NAME%}%CONTINUE%
 // Deadly Strike
@@ -6254,8 +6266,8 @@ ItemDisplay[(MAG OR RARE OR CRAFT) ED>0 ED<40 ID QUIVER]:%WHITE%%ED%%TAN%ed %NAM
 ItemDisplay[(MAG OR RARE OR CRAFT) ED>39 ED<60 ID QUIVER]:%WHITE%%ED%%RED%ed %NAME%{%NAME%}%CONTINUE%
 ItemDisplay[(MAG OR RARE OR CRAFT) ED>59 ID QUIVER]:%WHITE%%ED%%PURPLE%ed %NAME%{%NAME%}%CONTINUE%
 // Pierce
-ItemDisplay[(MAG OR RARE OR CRAFT) STAT156>9 STAT156<20 ID QUIVER]:%WHITE%%STAT156%%ORANGE%prce %NAME%{%NAME%}%CONTINUE%
-ItemDisplay[(MAG OR RARE OR CRAFT) STAT156>19 ID QUIVER]:%WHITE%%STAT156%%PURPLE%prce %NAME%{%NAME%}%CONTINUE%
+ItemDisplay[(MAG OR RARE OR CRAFT) STAT156>9 STAT156<20 ID QUIVER]:%WHITE%%STAT156%%ORANGE%prc %NAME%{%NAME%}%CONTINUE%
+ItemDisplay[(MAG OR RARE OR CRAFT) STAT156>19 ID QUIVER]:%WHITE%%STAT156%%PURPLE%prc %NAME%{%NAME%}%CONTINUE%
 // Increased Attack Speed
 ItemDisplay[(MAG OR RARE OR CRAFT) IAS>9 IAS<30 ID QUIVER]:%WHITE%%IAS%%ORANGE%ias %NAME%{%NAME%}%CONTINUE%
 ItemDisplay[(MAG OR RARE OR CRAFT) IAS>29 ID QUIVER]:%WHITE%%IAS%%PURPLE%ias %NAME%{%NAME%}%CONTINUE%
@@ -7720,8 +7732,8 @@ ItemDisplay[CHEST (MAG OR RARE OR CRAFT) EDAM>179]:%WHITE%%EDAM%%PURPLE%ed%CS%%N
 // --------------------------------------------------------------------------
 
 // % Chance to Pierce
-ItemDisplay[(GLOVES OR BELT OR amu OR ram) (MAG OR RARE OR CRAFT OR UNI OR SET) STAT360=63]:%WHITE%%STAT156%%ORANGE%prce%CS%%NAME%{%NAME%}%CONTINUE%
-ItemDisplay[QUIVER (UNI OR SET) STAT360=63]:%WHITE%%STAT156%%ORANGE%prce%CS%%NAME%{%NAME%}%CONTINUE%
+ItemDisplay[(GLOVES OR BELT OR amu OR ram) (MAG OR RARE OR CRAFT OR UNI OR SET) STAT360=63]:%WHITE%%STAT156%%ORANGE%prc%CS%%NAME%{%NAME%}%CONTINUE%
+ItemDisplay[QUIVER (UNI OR SET) STAT360=63]:%WHITE%%STAT156%%ORANGE%prc%CS%%NAME%{%NAME%}%CONTINUE%
 
 // ---------------------------------------------------------------------------
 // ==========================  Faster Hit Recovery  ==========================
