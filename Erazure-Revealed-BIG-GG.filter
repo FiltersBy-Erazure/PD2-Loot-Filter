@@ -42,7 +42,7 @@ ItemDisplay[BIG_GG !POE_SOUNDS !REVEALED box]:%NAME%{%NAME%%CL%%TEAL%Erazure - B
 ItemDisplay[BIG_GG !POE_SOUNDS REVEALED box]:%NAME%{%NAME%%CL%%TEAL%Erazure - Revealed - Big GG}%CONTINUE%//
 ItemDisplay[BIG_GG POE_SOUNDS !REVEALED box]:%NAME%{%NAME%%CL%%TEAL%Erazure - Big GG - PoE}%CONTINUE%//
 ItemDisplay[BIG_GG POE_SOUNDS REVEALED box]:%NAME%{%NAME%%CL%%TEAL%Erazure - Revealed - Big GG - PoE}%CONTINUE%//
-ItemDisplay[box]:%NAME%{%NAME%%CL%%WHITE%Season 13 - May 3rd}//
+ItemDisplay[box]:%NAME%{%NAME%%CL%%WHITE%Season 13 - May 3rd v2}//
 
 // =====================================  Toggles  ==================================
 
@@ -3626,9 +3626,7 @@ ItemDisplay[UNI !ID 7fl CLVL>79 !DRUID]:%NAME%%CONTINUE%// Stormlash or Horizons
 ItemDisplay[UNI !ID 9gm]:%NAME%%CONTINUE%// The Gavel Of Pain Martel de Fer
 ItemDisplay[UNI !ID 9wh]:%NAME%%CONTINUE%// Earthshaker Battle Hammer
 ItemDisplay[UNI !ID 7m7]:%NAME%%CONTINUE%// Windhammer Ogre Maul
-ItemDisplay[UNI !ID 7sp]:%NAME%%CONTINUE%// Bloodtree Stump War Club
-ItemDisplay[UNI !ID mau]:%NAME%%CONTINUE%// Bonesnap Maul
-ItemDisplay[UNI !ID ((9sp CLVL<50 DRUID) OR (9cl CLVL<50 DRUID) OR (7sp CLVL<80) OR (7cl CLVL<80) OR (7fl CLVL>79 !DRUID) OR 9gm OR 9wh OR 7m7 OR 7sp OR mau)]:%UNI_MEDIUM_VALUE_LEFT%  %NAME%  %UNI_MEDIUM_VALUE_RIGHT%%BORDER-08%%MAP-50%%DOT-59%%PX-6A%//
+ItemDisplay[UNI !ID ((9sp CLVL<50 DRUID) OR (9cl CLVL<50 DRUID) OR (7sp CLVL<80) OR (7cl CLVL<80) OR (7fl CLVL>79 !DRUID) OR 9gm OR 9wh OR 7m7)]:%UNI_MEDIUM_VALUE_LEFT%  %NAME%  %UNI_MEDIUM_VALUE_RIGHT%%BORDER-08%%MAP-50%%DOT-59%%PX-6A%//
 
 //     High Value Polearms
 ItemDisplay[UNI !ID 7s8]:%NAME%%SOUNDID-2594%%CONTINUE%// The Reaper's Toll Thresher
@@ -4009,7 +4007,7 @@ ItemDisplay[ETH CRAFT]:%WHITE%Eth %NAME%{%NAME%}%CONTINUE%//
 // --------------------------------------------------------------------------------------------------------
 
 // Hide Rare Items on Filter Level 12
-ItemDisplay[RARE !ID (FILTLVL=10 OR FILTLVL=12) (QUIVER OR (ARMOR !CIRC !BOOTS !BELT !(CHEST ALVL>84)) OR WEAPON) !TOWN]://
+ItemDisplay[RARE !ID (FILTLVL=10 OR FILTLVL=12) (QUIVER OR (ARMOR !CIRC !BOOTS !BELT !(CHEST (ALVL>84 OR CRAFTALVL>84))) OR WEAPON) !TOWN]://
 
 // Keep orginal coloring for items
 ItemDisplay[RARE]:%YELLOW%%NAME%%CONTINUE%//
@@ -4046,10 +4044,9 @@ ItemDisplay[RARE !ID GLOVES CLVL>89 FILTLVL<8]:%RARE_MEDIUM_VALUE_LEFT%  %NAME% 
 ItemDisplay[RARE !ID GLOVES CLVL>89 (FILTLVL~8-9 OR FILTLVL=11) (ASSASSIN OR AMAZON)]:%RARE_MEDIUM_VALUE_LEFT%  %NAME%  %RARE_MEDIUM_VALUE_RIGHT%%YELLOW%// No chat notification above character level 89
 
 // Rare Chests
-ItemDisplay[RARE !ID CHEST ALVL>84 FILTLVL=12]:%RARE_MEDIUM_VALUE_LEFT%  %NAME%  %RARE_MEDIUM_VALUE_RIGHT%%YELLOW%// 
-ItemDisplay[RARE !ID CHEST ALVL>84 FILTLVL~8-11]:%RARE_MEDIUM_VALUE_LEFT%  %NAME%  %RARE_MEDIUM_VALUE_RIGHT%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%%TIER-0%// 
-ItemDisplay[RARE !ID CHEST CLVL>89 ILVL>93 FILTLVL<8]:%RARE_MEDIUM_VALUE_LEFT%  %NAME%  %RARE_MEDIUM_VALUE_RIGHT%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%%TIER-0%// Minimap icon for rare armors with affix levels 94 or higher on filter levels 0-8
-ItemDisplay[RARE !ID CHEST CLVL<90 ILVL>93 FILTLVL<8]:%RARE_MEDIUM_VALUE_LEFT%  %NAME%  %RARE_MEDIUM_VALUE_RIGHT%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%// Notify for rare armors with affix levels 94 or higher on filter levels 0-8
+ItemDisplay[RARE !ID CHEST (ALVL>84 OR CRAFTALVL>84) FILTLVL=12]:%RARE_MEDIUM_VALUE_LEFT%  %NAME%  %RARE_MEDIUM_VALUE_RIGHT%%YELLOW%// 
+ItemDisplay[RARE !ID CHEST (ALVL>84 OR CRAFTALVL>84) FILTLVL~8-11]:%RARE_MEDIUM_VALUE_LEFT%  %NAME%  %RARE_MEDIUM_VALUE_RIGHT%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%%TIER-0%// 
+ItemDisplay[RARE !ID CHEST (ALVL>84 OR CRAFTALVL>84) FILTLVL<8]:%RARE_MEDIUM_VALUE_LEFT%  %NAME%  %RARE_MEDIUM_VALUE_RIGHT%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%// Minimap icon for rare armors with affix levels 94 or higher on filter levels 0-8
 // Rare Shields
 ItemDisplay[RARE !ID SHIELD NORM !NEC !DIN FILTLVL>7 ALVL<85 !TOWN]:// Hide specific Normal quality Rare Shields After Level 39
 ItemDisplay[RARE !ID SHIELD EXC !NEC !DIN FILTLVL>7 ALVL<85 !TOWN]:// Hide specific Exceptional quality Rare Shields After Level 89
@@ -4208,7 +4205,7 @@ ItemDisplay[RARE !ID ETH (FILTLVL~8-9 OR FILTLVL=11) (wrb OR 9wb OR 7wb OR ces O
 // -------------------------------------------------------------------------------------------------------
 
 // Hide Magic Items on Filter Level 12
-ItemDisplay[MAG !ID (FILTLVL=10 OR FILTLVL=12) (ARMOR OR WEAPON) !TOWN]://
+ItemDisplay[MAG !ID (FILTLVL=10 OR FILTLVL=12) (ARMOR OR WEAPON) !((uts OR uow OR uit) CRAFTALVL>84) !TOWN]://
 
 // Keep orginal coloring for items
 ItemDisplay[MAG]:%BLUE%%NAME%{%NAME%}%CONTINUE%//
@@ -4259,10 +4256,10 @@ ItemDisplay[MAG !ID cm2 FILTLVL<8]:%TEAL%\%BLUE%(%PURPLE%(  %NAME%  %PURPLE%)%BL
 
 // Magic Rings
 ItemDisplay[MAG !ID rin CLVL>79 FILTLVL>1 !TOWN]:// Hide unidentified magic rings on filter level 5 or higher
-ItemDisplay[MAG !ID rin CLVL<80 FILTLVL>1]:%TAN%*  %NAME%  %TAN%*%BLUE%//
+ItemDisplay[MAG !ID rin CLVL<80 FILTLVL>1]:%TAN%•  %NAME%  %TAN%•%BLUE%//
 
-ItemDisplay[MAG !ID rin CLVL<20 FILTLVL<2]:%TAN%*  %NAME%  %TAN%*%BLUE%%MAP-91%%DOT-97%%PX-0E%// All unidentified rings
-ItemDisplay[MAG !ID rin CLVL>19 FILTLVL<2]:%TAN%*  %NAME%  %TAN%*%BLUE%// Do not notify for magic rings after character level 19
+ItemDisplay[MAG !ID rin CLVL<20 FILTLVL<2]:%TAN%•  %NAME%  %TAN%•%BLUE%%MAP-91%%DOT-97%%PX-0E%// All unidentified rings
+ItemDisplay[MAG !ID rin CLVL>19 FILTLVL<2]:%TAN%•  %NAME%  %TAN%•%BLUE%// Do not notify for magic rings after character level 19
 
 // Magic Circlets
 ItemDisplay[MAG !ID !ETH CIRC FILTLVL<8]:%TAN%o  %NAME%  %TAN%o%BLUE%%BORDER-91%%MAP-97%%DOT-5A%%PX-DA%// Notify for magic circlets before character level 80
@@ -4307,9 +4304,9 @@ ItemDisplay[MAG !ID (aqv OR aqv2 OR aqv3)]:%BLUE%Arrows//
 ItemDisplay[MAG !ID (cqv OR cqv2 OR cqv3)]:%BLUE%Bolts//
 
 // Magic Assassin Claws
-ItemDisplay[MAG !ID NORM ASSASSIN SIN (ktr OR wrb OR ces OR clw OR skr OR !ETH) FILTLVL>7 !TOWN]://
-ItemDisplay[MAG !ID EXC ASSASSIN SIN (9ar OR 9wb OR 9cs OR 9lw OR 9qr OR !ETH) FILTLVL>7 !TOWN]://
-ItemDisplay[MAG !ID ELT ASSASSIN SIN (7ar OR 7wb OR 7cs OR 7lw OR 7qr OR !ETH) FILTLVL>7 !TOWN]://
+ItemDisplay[MAG !ID NORM ASSASSIN SIN (wrb OR ces OR clw OR !ETH) FILTLVL>7 !TOWN]://
+ItemDisplay[MAG !ID EXC ASSASSIN SIN (9wb OR 9cs OR 9lw OR !ETH) FILTLVL>7 !TOWN]://
+ItemDisplay[MAG !ID ELT ASSASSIN SIN (7wb OR 7cs OR 7lw OR !ETH) FILTLVL>7 !TOWN]://
 
 ItemDisplay[MAG !ID NORM !ASSASSIN SIN (ktr OR wrb OR ces OR clw OR skr OR !ETH) FILTLVL>2 !TOWN]://
 ItemDisplay[MAG !ID EXC !ASSASSIN SIN (9ar OR 9wb OR 9cs OR 9lw OR 9qr OR !ETH) FILTLVL>2 !TOWN]://
@@ -4325,7 +4322,7 @@ ItemDisplay[MAG !ID EXC !(ASSASSIN OR NECROMANCER) DAGGER !THROWING FILTLVL>2 !T
 ItemDisplay[MAG !ID ELT !(ASSASSIN OR NECROMANCER) DAGGER !THROWING FILTLVL>2 !TOWN]://
 
 // Magic Barbarian Helmets
-ItemDisplay[MAG !ID BARBARIAN BAR FILTLVL>7 !TOWN]:// Hide all Barbarian helms for Barbarians on filter levels 8+ 
+ItemDisplay[MAG !ID BARBARIAN BAR (FILTLVL=10 OR FILTLVL=12) !TOWN]:// Hide all Barbarian helms for Barbarians on filter levels 8+ 
 ItemDisplay[MAG !ID !BARBARIAN BAR (ba4 OR ba9 OR bae OR ba5 OR baa OR baf) FILTLVL>7 !TOWN]:// Hide all desirable-base Barbarian helms for non-Barbarians on filter levels 8+ 
 ItemDisplay[MAG !ID !BARBARIAN BAR !(ba4 OR ba9 OR bae OR ba5 OR baa OR baf) FILTLVL>2 !TOWN]:// Hide all non-desirable-base Barbarian helms for non-Barbarians on filter levels 3+ 
 
@@ -4384,7 +4381,7 @@ ItemDisplay[MAG !ID ETH CHEST FILTLVL>7 !TOWN]://
 
 ItemDisplay[MAG !ID NORM CHEST ((ILVL<94 CLVL>19 FILTLVL>1) OR FILTLVL>7) !TOWN]:// 
 ItemDisplay[MAG !ID EXC CHEST ((ILVL<94 CLVL>59 FILTLVL>1) OR FILTLVL>7) !TOWN]:// 
-ItemDisplay[MAG !ID ELT CHEST FILTLVL<8 CRAFTALVL>84]:%ORANGE%*  %NAME%  %ORANGE%*//
+ItemDisplay[MAG !ID ELT CHEST FILTLVL<8 CRAFTALVL>84]:%ORANGE%•  %NAME%  %ORANGE%•//
 ItemDisplay[MAG !ID ELT CHEST FILTLVL>7 !TOWN]://
 
 // Magic Belts
@@ -4420,6 +4417,7 @@ ItemDisplay[MAG !ID ETH SHIELD !NEC !DIN FILTLVL>1 !TOWN]://
 
 ItemDisplay[MAG !ID NORM SHIELD !NEC !DIN ((CLVL>19 FILTLVL>1) OR FILTLVL>7) !TOWN]://
 ItemDisplay[MAG !ID EXC SHIELD !NEC !DIN ((CLVL>59 FILTLVL>1) OR FILTLVL>7) !TOWN]://
+ItemDisplay[MAG !ID ELT (uts OR uow OR uit) CRAFTALVL>84]:%ORANGE%•  %NAME%  %ORANGE%•//
 ItemDisplay[MAG !ID ELT SHIELD !NEC !DIN ((CLVL>79 FILTLVL>2) OR FILTLVL>7) !TOWN !(uts OR uow OR uit)]:// 
 
 // Magic Axes
@@ -5361,9 +5359,8 @@ ItemDisplay[NMAG !INF !RW (8lx OR 8mx OR 8hx) CLVL>69 FILTLVL>0 !TOWN]://
 
 ItemDisplay[NMAG !INF !RW 8rx SOCK=0 FILTLVL>0 !TOWN]://
 ItemDisplay[NMAG !INF !RW 8rx (SOCK=2 OR SOCK=3 OR SOCK=5) CLVL>49 FILTLVL>0 !TOWN]://
-ItemDisplay[NMAG !INF !RW 8rx SOCK=4 FILTLVL<3]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 4os Chu-Ko-Nus//
-ItemDisplay[NMAG !INF !RW 8rx SOCK=4 SUP ED>4 FILTLVL<8]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 4os Chu-Ko-Nus//
-ItemDisplay[NMAG !INF !RW 8rx SOCK=4 FILTLVL>7 !TOWN]:// 4os Chu-Ko-Nus//
+ItemDisplay[NMAG !INF !RW 8rx ED<5 FILTLVL>2 !TOWN]://
+ItemDisplay[NMAG !INF !RW 8rx SOCK=4 FILTLVL>7 !TOWN]://
 
 //  Hide other Elite tiers
 ItemDisplay[NMAG !INF !RW 6hx (SOCK=2 OR SOCK=3) FILTLVL>0 !TOWN]://
@@ -5374,13 +5371,13 @@ ItemDisplay[NMAG !INF !RW (6lx OR 6mx) SOCK=0 ED<5 FILTLVL>0 !TOWN]://
 ItemDisplay[NMAG !INF !RW (6lx OR 6mx) (SOCK=2 OR SOCK=3) FILTLVL>1 !TOWN]://
 ItemDisplay[NMAG !INF !RW (6lx OR 6mx) SOCK=4 FILTLVL<3]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// All 4os Pellet Bows and Gorgon Crossbows
 ItemDisplay[NMAG !INF !RW (6lx OR 6mx) (SOCK=0 OR SOCK=4) ED<5 FILTLVL>2 !TOWN]:// After filter level 5, hide Pellet Bows and Gorgon Crossbows without 5% or more ED
-ItemDisplay[NMAG !INF !RW (6lx OR 6mx) (SOCK=0 OR SOCK=4) SUP ED>9 FILTLVL<3]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 10ED+ 4os Pellet Bows and Gorgon Crossbows filter levels 1-2
-ItemDisplay[NMAG !INF !RW (6lx OR 6mx) (SOCK=0 OR SOCK=4) SUP ED>14 FILTLVL>2]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 12ED+ 4os Pellet Bows and Gorgon Crossbows filter levels 3+
+ItemDisplay[NMAG !INF !RW (6lx OR 6mx) (SOCK=0 OR SOCK=4) ED<15 FILTLVL>7 !TOWN]:// After filter level 5, hide Pellet Bows and Gorgon Crossbows without 5% or more ED
+ItemDisplay[NMAG !INF !RW (6lx OR 6mx) (SOCK=0 OR SOCK=4) ED>14 FILTLVL>2]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 12ED+ 4os Pellet Bows and Gorgon Crossbows filter levels 3+
 
 ItemDisplay[NMAG !INF !RW 6rx SOCK=0 ED<5 FILTLVL>0 !TOWN]://
 ItemDisplay[NMAG !INF !RW 6rx (SOCK=2 OR SOCK=3) FILTLVL>2 !TOWN]://
 ItemDisplay[NMAG !INF !RW 6rx !SOCK=4 ED<5 FILTLVL>2 CLVL>79 !TOWN]:// After filter level 5, hide Demon crossbows without 5% or more ED
-ItemDisplay[NMAG !INF !RW 6rx SOCK=0 SUP ED>14 FILTLVL<3]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 14%+ED 4os Demon crossbows//
+ItemDisplay[NMAG !INF !RW 6rx SOCK=0 ED>14 FILTLVL<3]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 14%+ED 4os Demon crossbows//
 
 ItemDisplay[NMAG !INF !RW 6rx SOCK=4 (FILTLVL<8 OR (FILTLVL>7 ED>14))]:%ORANGE%Wrath %GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 4os Demon crossbow
 ItemDisplay[NMAG !INF !RW 6rx SOCK=4 FILTLVL>7 ED<15]:%ORANGE%Wrath %GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%TIER-0%%CONTINUE%// 4os Demon crossbow
@@ -5504,14 +5501,15 @@ ItemDisplay[NMAG !INF !RW EXC POLEARM ETH CLVL>79 FILTLVL>0 !TOWN !(SOCK=3 NECRO
 
 // 					Elite tiers
 ItemDisplay[NMAG !INF !RW ELT POLEARM !(ETH (SOCK=3 OR SOCK=4 OR SOCK=5)) ED<5 CLVL>79 FILTLVL>2 !TOWN]://
+ItemDisplay[NMAG !INF !RW ELT POLEARM ED<5 FILTLVL>7 !TOWN]://
 
 ItemDisplay[NMAG !INF !RW ELT POLEARM ((!ETH (SOCK=0 OR SOCK=3)) OR SOCK=2) FILTLVL>0 !TOWN]:// 
 ItemDisplay[NMAG !INF !RW ELT POLEARM !ETH (CLVL>89 OR FILTLVL>2) ED<5 FILTLVL>0 !TOWN]://
 
 ItemDisplay[NMAG !INF !RW ELT POLEARM ETH (SOCK=0 OR SOCK=3 OR SOCK=4 OR SOCK=5) FILTLVL<3]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
 
-ItemDisplay[NMAG !INF !RW ELT POLEARM ETH SUP ED>4 (SOCK=0 OR SOCK=3 OR SOCK=5 OR SOCK=6) FILTLVL~3-7]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// All Elite tiers 4os, Eth
-ItemDisplay[NMAG !INF !RW ELT POLEARM ETH SUP ED>14 (SOCK=0 OR SOCK=3 OR SOCK=5 OR SOCK=6) FILTLVL>7]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// All Elite tiers 4os, Eth
+ItemDisplay[NMAG !INF !RW ELT POLEARM ETH ED>4 (SOCK=0 OR SOCK=3 OR SOCK=5 OR SOCK=6) FILTLVL~3-7]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// All Elite tiers 4os, Eth
+ItemDisplay[NMAG !INF !RW ELT POLEARM ETH ED>14 (SOCK=0 OR SOCK=3 OR SOCK=5 OR SOCK=6) FILTLVL>7]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// All Elite tiers 4os, Eth
 
 // ------------------------------------------------------------------------------
 //    =============================  Spears  =================================
@@ -6365,7 +6363,7 @@ ItemDisplay[(RARE OR CRAFT) rin ID STAT110>24 (($f(COUNT(AR>59,MINDMG>8,MAXDMG>9
 ItemDisplay[(RARE OR CRAFT) SHIELD ID STAT110>74 ($f(COUNT(LIFE>59,STR>19,DEX>19,STAT216>0,CLSK0>0,CLSK1>0,CLSK2>0,CLSK3>0,CLSK5>0,CLSK6>0,FCR>19,FHR>16,FBR>29,SOCK>1,RES>14,STAT36>7,IF(STAT360==43,0,STAT76>4),STAT360==0,STAT360==43,STAT360==45,STAT360==50,STAT360==53,STAT360==54,STAT360==56)>=4) OR (EDAM>119 $f(COUNT(LIFE>59,STR>19,DEX>19,STAT216>0,CLSK0>0,CLSK3>0,CLSK4>0,CLSK5>0,CLSK6>0,FHR>16,FBR>29,SOCK>1,RES>14,STAT36>7,IF(STAT360==43,0,STAT76>4),STAT360==0,STAT360==43,STAT360==45,STAT360==50,STAT360==53,STAT360==54,STAT360==56)>=3))) ]:%NAME%{%RED%Rathma Shield%CL%%NAME%}%CONTINUE%//
 
 // Rare/Crafted Belts - Uncorrupted or 2% all max resistances corruption, 4+ desirable affixes
-ItemDisplay[(RARE OR CRAFT) BELT ID (STAT360=0 OR MAXRES>1) $f(COUNT(STAT110>24,LIFE>59,STR>19,FCR>9,FHR>14,FRES>19,CRES>19,PRES>19,STAT36>7)>=5)]:%NAME%{%RED%Rathma Belt%CL%%NAME%}%CONTINUE%//
+ItemDisplay[(RARE OR CRAFT) BELT ID (STAT360=0 OR MAXRES>1) $f(COUNT(STAT110>24,LIFE>89,LIFE>49,STR>19,FCR>9,FHR>14,FRES>19,CRES>19,PRES>19,STAT36>7)>=5)]:%NAME%{%RED%Rathma Belt%CL%%NAME%}%CONTINUE%//
 
 // Rare/Crafted Chest - Caster - 75+ PLR mandatory, 4+ desirable affixes
 // Rare/Crafted Chest - Physical - 75+ PLR and 120+ ED mandatory, 3+ desirable affixes
@@ -6514,10 +6512,10 @@ ItemDisplay[SHOP MAG SHIELD SOCK=3 CLVL<70 (STAT36>4 OR FCR>9 OR FBR>9 OR LIFE>1
 ItemDisplay[SHOP MAG SHIELD SOCK>1 STAT36>9]:%NAME%%GREEN%{%NAME%}%CONTINUE%//
 
 //  PDR Shield
-ItemDisplay[SHOP MAG SHIELD ((STAT36>9 EDAM>139) OR (STAT36>14 (EDAM>99 OR CLSK0=1 OR CLSK1=1 OR CLSK2=1 OR CLSK3=1 OR CLSK4=1 OR CLSK5=1 OR CLSK6=1 OR SOCK>2 OR RES>14)))]:%NAME%%GREEN%{%HIGHLIGHT_1_LEFT%   %GREEN%PDR Shield   %HIGHLIGHT_1_RIGHT%%CL%%NAME%}%CONTINUE%//
+ItemDisplay[SHOP MAG SHIELD ((STAT36>9 EDAM>139) OR (STAT36>17 (EDAM>99 OR CLSK0=1 OR CLSK1=1 OR CLSK2=1 OR CLSK3=1 OR CLSK4=1 OR CLSK5=1 OR CLSK6=1 OR SOCK>2 OR RES>14)))]:%NAME%%GREEN%{%HIGHLIGHT_1_LEFT%   %GREEN%PDR Shield   %HIGHLIGHT_1_RIGHT%%CL%%NAME%}%CONTINUE%//
 
 //  PDR Chest
-ItemDisplay[SHOP MAG CHEST ((STAT36>4 EDAM>159) OR (STAT36>9 EDAM>139) OR (STAT36>14 (EDAM>99 OR CLSK0=1 OR CLSK1=1 OR CLSK2=1 OR CLSK3=1 OR CLSK4=1 OR CLSK5=1 OR CLSK6=1 OR SOCK>2 OR RES>14)))]:%NAME%%GREEN%{%HIGHLIGHT_1_LEFT%   %GREEN%PDR Chest   %HIGHLIGHT_1_RIGHT%%CL%%NAME%}%CONTINUE%//
+ItemDisplay[SHOP MAG CHEST ((STAT36>9 EDAM>159) OR (STAT36>14 EDAM>139) OR (STAT36>17 (EDAM>99 OR CLSK0=1 OR CLSK1=1 OR CLSK2=1 OR CLSK3=1 OR CLSK4=1 OR CLSK5=1 OR CLSK6=1 OR SOCK>2 OR RES>14)))]:%NAME%%GREEN%{%HIGHLIGHT_1_LEFT%   %GREEN%PDR Chest   %HIGHLIGHT_1_RIGHT%%CL%%NAME%}%CONTINUE%//
 
 //  4 Socket Armor with Useful Mods
 ItemDisplay[SHOP MAG CHEST SOCK=4 (CLVL<70 OR STAT36>14 OR FCR>19 OR STAT110=75 OR (CLVL<87 (STAT36>9 OR LIFE>59 OR FHR>16 OR STR>14 OR DEX>14)))]:%NAME%%GREEN%{%HIGHLIGHT_1_LEFT%   %GREEN%Jeweler's Armor   %HIGHLIGHT_1_RIGHT%%CL%%NAME%}%CONTINUE%//
@@ -7556,14 +7554,12 @@ ItemDisplay[(amu OR ram OR BOOTS OR BELT OR rin OR HELM OR CIRC OR CHEST OR SHIE
 // ---------------------------------------------------------------------------
 
 // 2% Maximum Resistances
-ItemDisplay[BELT (RARE OR CRAFT) STAT360=72]:%WHITE%2%PURPLE%max%CS%%NAME%{%NAME%}%CONTINUE%
-ItemDisplay[BELT (MAG OR UNI OR SET) STAT360=72]:%WHITE%2%PURPLE%max%GRAY%res%CS%%NAME%{%NAME%}%CONTINUE%
+ItemDisplay[BELT (RARE OR CRAFT) STAT360=72 MAXRES>0]:%WHITE%%MAXRES%%PURPLE%max%CS%%NAME%{%NAME%}%CONTINUE%
+ItemDisplay[BELT (MAG OR UNI OR SET) STAT360=72 MAXRES>0]:%WHITE%%MAXRES%%PURPLE%max%GRAY%res%CS%%NAME%{%NAME%}%CONTINUE%
 
-ItemDisplay[amu (RARE OR CRAFT) ((STAT360=72 !STAT206=72) OR (!STAT360=72 STAT206=72))]:%WHITE%2%PURPLE%max%CS%%NAME%{%NAME%}%CONTINUE%
-ItemDisplay[amu (RARE OR CRAFT) STAT360=72 STAT206=72]:%WHITE%4%PURPLE%max%CS%%NAME%{%NAME%}%CONTINUE%
+ItemDisplay[amu (RARE OR CRAFT) MAXRES>0]:%WHITE%%MAXRES%%PURPLE%max%CS%%NAME%{%NAME%}%CONTINUE%
 
-ItemDisplay[amu OR ram (MAG OR UNI OR SET) ((STAT360=72 !STAT206=72) OR (!STAT360=72 STAT206=72))]:%WHITE%2%PURPLE%max%GRAY%res%CS%%NAME%{%NAME%}%CONTINUE%
-ItemDisplay[amu OR ram (MAG OR UNI OR SET) STAT360=72 STAT206=72]:%WHITE%4%PURPLE%max%GRAY%res%CS%%NAME%{%NAME%}%CONTINUE%
+ItemDisplay[amu OR ram (MAG OR UNI OR SET) MAXRES>0]:%WHITE%%MAXRES%%PURPLE%max%GRAY%res%CS%%NAME%{%NAME%}%CONTINUE%
 
 // Individual Maximum Resistances
 ItemDisplay[(BOOTS OR CHEST OR SHIELD OR HELM OR CIRC) (MAG OR RARE OR CRAFT) STAT40>0]:%WHITE%%STAT40%%RED%max%CS%%NAME%{%NAME%}%CONTINUE%
