@@ -11,9 +11,11 @@ After selecting the version of the filter from the launcher, be sure to click "S
   - BIG GG
     - Sur, Ber, Jah, Cham, Zod
     - Vial of Lightsong, Lilith's Mirror
+    - Horadric Navigator, Horadric Almanac
   - LIL GG
     - Demonic Cube 
     - Vex, Ohm, Lo
+    - Skeleton Key
     - Larzuk's Puzzlebox
 - The PoE version of each filter adds sound notifications from PoE to certain items
 - The Revealed version of each filter shows the identified names of unique and set items
