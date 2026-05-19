@@ -79,14 +79,14 @@ ItemDisplay[box]:%NAME%{%NAME%%CL%%WHITE%Season 13 - May 18th}//
 //Alias[REVEALED]:TRUE
 
 //  Erazure - BIG GG - PoE
-//Alias[BIG_GG]:TRUE
-//Alias[POE_SOUNDS]:TRUE
-//Alias[REVEALED]:FALSE
-
-//  Erazure - Revealed - BIG GG - PoE
 Alias[BIG_GG]:TRUE
 Alias[POE_SOUNDS]:TRUE
-Alias[REVEALED]:TRUE
+Alias[REVEALED]:FALSE
+
+//  Erazure - Revealed - BIG GG - PoE
+//Alias[BIG_GG]:TRUE
+//Alias[POE_SOUNDS]:TRUE
+//Alias[REVEALED]:TRUE
 
 // =====================================  Aliases  ==================================
 
@@ -4757,16 +4757,16 @@ ItemDisplay[NMAG (aqv3 OR cqv3) CLVL>69 !TOWN]:// Hides elite tier quivers at le
 //      =========================  Armors/Chests ===========================
 // ------------------------------------------------------------------------------
 
-// Hide nonsuperior noneth 0 socket armors
-ItemDisplay[NMAG !INF !RW ED<5 !ETH CHEST FILTLVL>0 SOCK=0 !TOWN]://
+// Hide nonsuperior noneth 0 socket armors after character level 70
+ItemDisplay[NMAG !INF !RW ED<5 !ETH CHEST CLVL>69 FILTLVL>0 SOCK=0 !TOWN]://
 
-// Hide nonsuperior noneth armors after character level 80 and on filter levels 6+
-ItemDisplay[NMAG !INF !RW ED<5 !ETH CHEST CLVL>79 FILTLVL>2 (!GEMMED SOCK>0) !EQUIPPED !TOWN]://
+// Hide nonsuperior noneth armors after character level 80 and on filter levels 3+
+ItemDisplay[NMAG !INF !RW ED<5 !ETH CHEST CLVL>79 FILTLVL>2 !GEMMED SOCK>0 !EQUIPPED !TOWN]://
 
-// Hide nonsuperior noneth armors after character level 90 and on filter levels 11+
+// Hide nonsuperior noneth armors after character level 90 and on filter levels 8+
 ItemDisplay[NMAG !INF !RW ED<18 !ETH CHEST CLVL>89 FILTLVL>7 (SOCK=0 OR (!GEMMED SOCK>0)) !EQUIPPED !TOWN]://
 
-// Hide nonsuperior eth armors after character level 90 and on filter levels 6+
+// Hide nonsuperior eth armors after character level 90 and on filter levels 3+
 ItemDisplay[NMAG !INF !RW ED<5 ETH CHEST CLVL>89 FILTLVL>2 (SOCK=0 OR (!GEMMED SOCK>0)) !EQUIPPED !TOWN]://
 
 // Notifications for 2os and 3os armors while leveling
@@ -5995,8 +5995,8 @@ ItemDisplay[MAG STAT357>0 (cm2 OR cm2p)]:%WHITE%%STAT357%%PERCENT%%ORANGE%dmg%CS
 ItemDisplay[MAG (((cm1 OR cm1p) STAT55~1-19) OR ((cm2 OR cm2p) STAT55~1-39) OR ((cm3 OR cm3p) STAT55~1-53))]:%WHITE%+%STAT54%-%STAT55%%BLUE%cold%CS%%NAME%{%NAME%}%CONTINUE%
 ItemDisplay[MAG (((cm1 OR cm1p) STAT55>19) OR ((cm2 OR cm2p) STAT55>39) OR ((cm3 OR cm3p) STAT55>53))]:%BLUE%+%WHITE%%STAT54%%BLUE%-%WHITE%%STAT55%%BLUE%cold%CS%%NAME%{%NAME%}%CONTINUE%
 // Light Damage
-ItemDisplay[MAG (((cm1 OR cm1p) STAT51~1-29) OR ((cm2 OR cm2p) STAT51~1-61) OR ((cm3 OR cm3p) STAT51~1-83))]:%WHITE%+%STAT50%-%STAT51%%YELLOW%light%CS%%NAME%{%NAME%}%CONTINUE%
-ItemDisplay[MAG (((cm1 OR cm1p) STAT51>29) OR ((cm2 OR cm2p) STAT51>61) OR ((cm3 OR cm3p) STAT51>83))]:%YELLOW%+%WHITE%%STAT50%%YELLOW%-%WHITE%%STAT51%%YELLOW%light%CS%%NAME%{%NAME%}%CONTINUE%
+ItemDisplay[MAG (((cm1 OR cm1p) STAT51~1-30) OR ((cm2 OR cm2p) STAT51~1-61) OR ((cm3 OR cm3p) STAT51~1-83))]:%WHITE%+%STAT50%-%STAT51%%YELLOW%light%CS%%NAME%{%NAME%}%CONTINUE%
+ItemDisplay[MAG (((cm1 OR cm1p) STAT51>30) OR ((cm2 OR cm2p) STAT51>61) OR ((cm3 OR cm3p) STAT51>83))]:%YELLOW%+%WHITE%%STAT50%%YELLOW%-%WHITE%%STAT51%%YELLOW%light%CS%%NAME%{%NAME%}%CONTINUE%
 // Fire Damage
 ItemDisplay[MAG (((cm1 OR cm1p) STAT49~1-19) OR ((cm2 OR cm2p) STAT49~1-39) OR ((cm3 OR cm3p) STAT49~1-53))]:%WHITE%+%STAT48%-%STAT49%%RED%fire%CS%%NAME%{%NAME%}%CONTINUE%
 ItemDisplay[MAG (((cm1 OR cm1p) STAT49>19) OR ((cm2 OR cm2p) STAT49>39) OR ((cm3 OR cm3p) STAT49>53))]:%RED%+%WHITE%%STAT48%%RED%-%WHITE%%STAT49%%RED%fire%CS%%NAME%{%NAME%}%CONTINUE%
