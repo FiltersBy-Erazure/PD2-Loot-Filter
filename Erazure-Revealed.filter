@@ -29,8 +29,7 @@ ItemDisplay[box FILTLVL=8]:%NAME%{%WHITE%Filter Level: 8%CL%%GRAY%Hides H5, 35%%
 ItemDisplay[box FILTLVL=9]:%NAME%{%WHITE%Filter Level: 9%CL%%GRAY%Hides H5, M5, 35%%CL%Endgame Filtering}%CONTINUE%//
 ItemDisplay[box FILTLVL=10]:%NAME%{%WHITE%Filter Level: 10%CL%%GRAY%Hides H5, M5, 35%%CL%Endgame Filtering}%CONTINUE%//
 ItemDisplay[box FILTLVL=11]:%NAME%{%WHITE%Filter Level: 11%CL%%GRAY%Hides H5, M5, 35%%CL%Endgame Filtering}%CONTINUE%//
-ItemDisplay[box FILTLVL=12 (!SORCERESS OR (SORCERESS CHARSTAT1<150))]:%NAME%{%WHITE%Filter Level: 12%CL%%GRAY%Hides H5, M5, 35%%CL%Extreme Filtering}%CONTINUE%//
-ItemDisplay[box FILTLVL=12 SORCERESS CHARSTAT1>149]:%NAME%{%WHITE%Filter Level: 12%CL%%GRAY%Hides H5, 35%%CL%Extreme Filtering}%CONTINUE%//
+ItemDisplay[box FILTLVL=12]:%NAME%{%WHITE%Filter Level: 12%CL%%GRAY%Hides H5, M5, 35%%CL%Extreme Filtering}%CONTINUE%//
 
 ItemDisplay[box FILTLVL=0]:%NAME%{%NAME%%CL%%GRAY%Level 12 Hides Crafting Bases, Flawless Gems, and Low Value Items%CL%%GRAY%Levels 8-9-10-11 Hide Most Non-Eth and Non-Magic Class Items%CL%%GRAY%Levels 3-4-5-6-7 Hide Some Rares and Non-Superior Items%CL%%GRAY%Level 2 Hides Additional Non-Magic/Magic Items%CL%Level 1 Shows Most Non-Magic/Magic Items}%CONTINUE%//
 ItemDisplay[box CLVL<50 !FILTLVL=0]:%NAME%{%NAME%%CL%%GRAY%For %GOLD%Increase and Decrease Filter Level%CL%%GRAY%For %GOLD%Always Show Items %GRAY%and Hotkeys%CL%Open Settings to Create a Toggle}%CONTINUE%//
@@ -42,7 +41,7 @@ ItemDisplay[BIG_GG !POE_SOUNDS !REVEALED box]:%NAME%{%NAME%%CL%%TEAL%Erazure - B
 ItemDisplay[BIG_GG !POE_SOUNDS REVEALED box]:%NAME%{%NAME%%CL%%TEAL%Erazure - Revealed - Big GG}%CONTINUE%//
 ItemDisplay[BIG_GG POE_SOUNDS !REVEALED box]:%NAME%{%NAME%%CL%%TEAL%Erazure - Big GG - PoE}%CONTINUE%//
 ItemDisplay[BIG_GG POE_SOUNDS REVEALED box]:%NAME%{%NAME%%CL%%TEAL%Erazure - Revealed - Big GG - PoE}%CONTINUE%//
-ItemDisplay[box]:%NAME%{%NAME%%CL%%WHITE%Season 13 - May 19th}//
+ItemDisplay[box]:%NAME%{%NAME%%CL%%WHITE%Season 13 - May 21th}//
 
 // =====================================  Toggles  ==================================
 
@@ -245,16 +244,12 @@ Alias[MAGIC_CHARM_LEFT]:%TEAL%\(%PURPLE%(
 Alias[MAGIC_CHARM_RIGHT]:%PURPLE%)%TEAL%)/
 
 // Green Teal Blue Highlight
-Alias[HIGHLIGHT_1_LEFT]:%DARK_GREEN%**%TEAL%**%BLUE%**%GRAY%**
-Alias[HIGHLIGHT_1_RIGHT]:%GRAY%**%BLUE%**%TEAL%**%DARK_GREEN%**
+Alias[HIGHLIGHT_1_LEFT]:%GRAY%**%BLUE%**%TEAL%***
+Alias[HIGHLIGHT_1_RIGHT]:%TEAL%***%BLUE%**%GRAY%**
 
 // Blue Purple Red Orange Highlight
 Alias[HIGHLIGHT_2_LEFT]:%BLUE%**%PURPLE%**%RED%**%ORANGE%***
 Alias[HIGHLIGHT_2_RIGHT]:%ORANGE%***%RED%**%PURPLE%**%BLUE%**
-
-// Teal Blue Gray Highlight
-Alias[HIGHLIGHT_3_LEFT]:%GRAY%**%BLUE%**%TEAL%***
-Alias[HIGHLIGHT_3_RIGHT]:%TEAL%***%BLUE%**%GRAY%**
 
 // Amplify Damage
 Alias[AMPLIFY_LEFT]:%PURPLE%**%RED%**%ORANGE%**%YELLOW%*
@@ -641,8 +636,10 @@ ItemDisplay[vps CLVL>9 !SHOP]:{%WHITE%Stamina Potion}// Hides Stamina Potions wh
 // Antidote
 ItemDisplay[yps FILTLVL=0]:%GRAY%i%DARK_GREEN%(%WHITE%A%DARK_GREEN%)%GRAY%i%WHITE%{%WHITE%+25% poison resistance for 30 seconds%CL%%WHITE%Cures %DARK_GREEN%poison %WHITE%affliction and grants%CL%Antidote Potion}//
 ItemDisplay[yps SHOP]:%GRAY%i%DARK_GREEN%( %WHITE%Anti %DARK_GREEN%)%GRAY%i%WHITE%{%WHITE%+25% poison resistance for 30 seconds%CL%%WHITE%Cures %DARK_GREEN%poison %WHITE%affliction and grants%CL%Antidote Potion}//
-ItemDisplay[yps MAPID~161-163]:%GRAY%i%DARK_GREEN%(%WHITE%A%DARK_GREEN%)%GRAY%i%WHITE%{%WHITE%+25% poison resistance for 30 seconds%CL%%WHITE%Cures %DARK_GREEN%poison %WHITE%affliction and grants%CL%%WHITE%Antidote Potion}//      
-ItemDisplay[yps !MAPID~161-163 CLVL>79 FILTLVL>1 !SHOP]:{%WHITE%+25% poison resistance for 30 seconds%CL%%WHITE%Cures %DARK_GREEN%poison %WHITE%affliction and grants%CL%%WHITE%Antidote Potion}//
+ItemDisplay[yps MAPID~161-163]:%GRAY%i%DARK_GREEN%(%WHITE%A%DARK_GREEN%)%GRAY%i%WHITE%{%WHITE%+25% poison resistance for 30 seconds%CL%%WHITE%Cures %DARK_GREEN%poison %WHITE%affliction and grants%CL%Antidote Potion}//      
+ItemDisplay[yps !MAPID~161-163 CLVL>79 !SORCERESS FILTLVL>1 !SHOP]:{%WHITE%+25% poison resistance for 30 seconds%CL%%WHITE%Cures %DARK_GREEN%poison %WHITE%affliction and grants%CL%Antidote Potion}//
+ItemDisplay[yps !MAPID~161-163 CLVL>79 SORCERESS CHARSTAT1<150 FILTLVL>2 !SHOP]:{%WHITE%+25% poison resistance for 30 seconds%CL%%WHITE%Cures %DARK_GREEN%poison %WHITE%affliction and grants%CL%Antidote Potion}//
+ItemDisplay[yps !MAPID~161-163 CLVL>79 SORCERESS CHARSTAT1>149 FILTLVL>2 !SHOP]:%GRAY%i%DARK_GREEN%(%WHITE%A%DARK_GREEN%)%GRAY%i%WHITE%{%WHITE%+25% poison resistance for 30 seconds%CL%%WHITE%Cures %DARK_GREEN%poison %WHITE%affliction and grants%CL%Antidote Potion}//
 ItemDisplay[yps CLVL>24]:%GRAY%i%DARK_GREEN%(%WHITE%A%DARK_GREEN%)%GRAY%i%WHITE%{%WHITE%+25% poison resistance for 30 seconds%CL%%WHITE%Cures %DARK_GREEN%poison %WHITE%affliction and grants%CL%Antidote Potion}//
 ItemDisplay[yps CLVL<25 !FILTLVL=0]:%GRAY%i%DARK_GREEN%( %WHITE%Anti %DARK_GREEN%)%GRAY%i%WHITE%%PX-76%%TIER-0%{%WHITE%+25% poison resistance for 30 seconds%CL%%WHITE%Cures %DARK_GREEN%poison %WHITE%affliction and grants%CL%Antidote Potion}//
 
@@ -1885,43 +1882,53 @@ ItemDisplay[fort QTY=1]:%GOLD%O   %WHITE%Orb of Fortification   %GOLD%O%WHITE%//
 //----------------------------------------------------------------------------------------------------------
 
 ItemDisplay[rrra QTY>1]:%TAN%|%BLUE%|%TAN%O%BLUE%|%TAN%|   %WHITE%Infused Horadrim Orbs %TAN%x %WHITE%%QTY%   %TAN%|%BLUE%|%TAN%O%BLUE%|%TAN%|%WHITE%//
-ItemDisplay[rrra QTY=1]:%TAN%|%BLUE%|%TAN%O%BLUE%|%TAN%|   %WHITE%Infused Horadrim Orb   %TAN%|%BLUE%|%TAN%O%BLUE%|%TAN%|%WHITE%//
+ItemDisplay[rrra QTY=1 GROUND !TOWN]:%TAN%O   %WHITE%Infused Horadrim Orb   %TAN%O%WHITE%//
+ItemDisplay[rrra QTY=1 (TOWN OR INVENTORY)]:%TAN%|%BLUE%|%TAN%O%BLUE%|%TAN%|   %WHITE%Infused Horadrim Orb   %TAN%|%BLUE%|%TAN%O%BLUE%|%TAN%|%WHITE%//
 
 ItemDisplay[irra QTY>1]:%LIGHT_GRAY%|%BLUE%|%LIGHT_GRAY%O%BLUE%|%LIGHT_GRAY%|   %WHITE%Infused Zakarum Orbs %TAN%x %WHITE%%QTY%   %LIGHT_GRAY%|%BLUE%|%LIGHT_GRAY%O%BLUE%|%LIGHT_GRAY%|%WHITE%//
-ItemDisplay[irra QTY=1]:%LIGHT_GRAY%|%BLUE%|%LIGHT_GRAY%O%BLUE%|%LIGHT_GRAY%|   %WHITE%Infused Zakarum Orb   %LIGHT_GRAY%|%BLUE%|%LIGHT_GRAY%O%BLUE%|%LIGHT_GRAY%|%WHITE%//
+ItemDisplay[irra QTY=1 GROUND !TOWN]:%LIGHT_GRAY%O   %WHITE%Infused Zakarum Orb   %LIGHT_GRAY%O%WHITE%//
+ItemDisplay[irra QTY=1 (TOWN OR INVENTORY)]:%LIGHT_GRAY%|%BLUE%|%LIGHT_GRAY%O%BLUE%|%LIGHT_GRAY%|   %WHITE%Infused Zakarum Orb   %LIGHT_GRAY%|%BLUE%|%LIGHT_GRAY%O%BLUE%|%LIGHT_GRAY%|%WHITE%//
 
 ItemDisplay[irma QTY>1]:%WHITE%|%BLUE%|%WHITE%O%BLUE%|%WHITE%|   %WHITE%Infused Arcane Orbs %TAN%x %WHITE%%QTY%   %WHITE%|%BLUE%|%WHITE%O%BLUE%|%WHITE%|//
-ItemDisplay[irma QTY=1]:%WHITE%|%BLUE%|%WHITE%O%BLUE%|%WHITE%|   %WHITE%Infused Arcane Orb   %WHITE%|%BLUE%|%WHITE%O%BLUE%|%WHITE%|//
+ItemDisplay[irma QTY=1 GROUND !TOWN]:%WHITE%O   %WHITE%Infused Arcane Orb   %WHITE%O//
+ItemDisplay[irma QTY=1 (TOWN OR INVENTORY)]:%WHITE%|%BLUE%|%WHITE%O%BLUE%|%WHITE%|   %WHITE%Infused Arcane Orb   %WHITE%|%BLUE%|%WHITE%O%BLUE%|%WHITE%|//
 
 ItemDisplay[urma QTY>1]:%BLUE%|%TAN%|%BLUE%O%TAN%|%BLUE%|   %WHITE%Infused Angelic Orbs %TAN%x %WHITE%%QTY%   %BLUE%|%TAN%|%BLUE%O%TAN%|%BLUE%|%WHITE%//
 ItemDisplay[urma QTY=1 GROUND !TOWN FILTLVL>2]://
-ItemDisplay[urma QTY=1 (INVENTORY OR TOWN OR FILTLVL<3)]:%BLUE%|%TAN%|%BLUE%O%TAN%|%BLUE%|   %WHITE%Infused Angelic Orb   %BLUE%|%TAN%|%BLUE%O%TAN%|%BLUE%|%WHITE%//
+ItemDisplay[urma QTY=1 GROUND !TOWN FILTLVL<3]:%BLUE%O   %WHITE%Infused Angelic Orb   %BLUE%O%WHITE%//
+ItemDisplay[urma QTY=1 (INVENTORY OR TOWN)]:%BLUE%|%TAN%|%BLUE%O%TAN%|%BLUE%|   %WHITE%Infused Angelic Orb   %BLUE%|%TAN%|%BLUE%O%TAN%|%BLUE%|%WHITE%//
 
 //----------------------------------------------------------------------------------------------------------
 // ==========================================  Crafting Infusions  ========================================
 //----------------------------------------------------------------------------------------------------------
 
-
 ItemDisplay[crfb QTY>1]:%TAN%|(%RED%O%TAN%)|   %RED%Blood %ORANGE%Craft %TAN%Infusions %TAN%x %WHITE%%QTY%   %TAN%|(%RED%O%TAN%)|%WHITE%%MAP-0A%%DOT-0E%%PX-68%//
-ItemDisplay[crfb QTY=1]:%TAN%|(%RED%O%TAN%)|   %RED%Blood %ORANGE%Craft %TAN%Infusion   %TAN%|(%RED%O%TAN%)|%WHITE%%MAP-0A%%DOT-0E%%PX-68%%TIER-0%//
+ItemDisplay[crfb QTY=1 GROUND !TOWN]:%RED%O   %ORANGE%Craft %TAN%Infusion   %RED%O%WHITE%%MAP-0A%%DOT-0E%%PX-68%%TIER-0%//
+ItemDisplay[crfb QTY=1 (TOWN OR INVENTORY)]:%TAN%|(%RED%O%TAN%)|   %RED%Blood %ORANGE%Craft %TAN%Infusion   %TAN%|(%RED%O%TAN%)|%WHITE%%MAP-0A%%DOT-0E%%PX-68%%TIER-0%//
 
 ItemDisplay[crfc QTY>1]:%TAN%|(%PURPLE%O%TAN%)|   %PURPLE%Caster %ORANGE%Craft %TAN%Infusions %TAN%x %WHITE%%QTY%   %TAN%|(%PURPLE%O%TAN%)|%WHITE%%MAP-9B%%DOT-0E%%PX-68%//
-ItemDisplay[crfc QTY=1]:%TAN%|(%PURPLE%O%TAN%)|   %PURPLE%Caster %ORANGE%Craft %TAN%Infusion   %TAN%|(%PURPLE%O%TAN%)|%WHITE%%MAP-9B%%DOT-0E%%PX-68%%TIER-0%//
+ItemDisplay[crfc QTY=1 GROUND !TOWN]:%PURPLE%O   %ORANGE%Craft %TAN%Infusion   %PURPLE%O%WHITE%%MAP-9B%%DOT-0E%%PX-68%%TIER-0%//
+ItemDisplay[crfc QTY=1 (TOWN OR INVENTORY)]:%TAN%|(%PURPLE%O%TAN%)|   %PURPLE%Caster %ORANGE%Craft %TAN%Infusion   %TAN%|(%PURPLE%O%TAN%)|%WHITE%%MAP-9B%%DOT-0E%%PX-68%%TIER-0%//
 
 ItemDisplay[crfs QTY>1]:%TAN%|(%DARK_GREEN%O%TAN%)|   %DARK_GREEN%Safety %ORANGE%Craft %TAN%Infusions %TAN%x %WHITE%%QTY%   %TAN%|(%DARK_GREEN%O%TAN%)|%WHITE%%MAP-79%%DOT-0E%%PX-68%//
-ItemDisplay[crfs QTY=1]:%TAN%|(%DARK_GREEN%O%TAN%)|   %DARK_GREEN%Safety %ORANGE%Craft %TAN%Infusion   %TAN%|(%DARK_GREEN%O%TAN%)|%WHITE%%MAP-79%%DOT-0E%%PX-68%%TIER-0%//
+ItemDisplay[crfs QTY=1 GROUND !TOWN]:%DARK_GREEN%O   %ORANGE%Craft %TAN%Infusion   %DARK_GREEN%O%WHITE%%MAP-79%%DOT-0E%%PX-68%%TIER-0%//
+ItemDisplay[crfs QTY=1 (TOWN OR INVENTORY)]:%TAN%|(%DARK_GREEN%O%TAN%)|   %DARK_GREEN%Safety %ORANGE%Craft %TAN%Infusion   %TAN%|(%DARK_GREEN%O%TAN%)|%WHITE%%MAP-79%%DOT-0E%%PX-68%%TIER-0%//
 
 ItemDisplay[crfh QTY>1]:%TAN%|(%BLUE%O%TAN%)|   %BLUE%Hitpower %ORANGE%Craft %TAN%Infusions %TAN%x %WHITE%%QTY%   %TAN%|(%BLUE%O%TAN%)|%WHITE%%MAP-97%%DOT-0E%%PX-68%//
-ItemDisplay[crfh QTY=1]:%TAN%|(%BLUE%O%TAN%)|   %BLUE%Hitpower %ORANGE%Craft %TAN%Infusion   %TAN%|(%BLUE%O%TAN%)|%WHITE%%MAP-97%%DOT-0E%%PX-68%%TIER-0%//
+ItemDisplay[crfh QTY=1 GROUND !TOWN]:%BLUE%O   %ORANGE%Craft %TAN%Infusion   %BLUE%O%WHITE%%MAP-97%%DOT-0E%%PX-68%%TIER-0%//
+ItemDisplay[crfh QTY=1 (TOWN OR INVENTORY)]:%TAN%|(%BLUE%O%TAN%)|   %BLUE%Hitpower %ORANGE%Craft %TAN%Infusion   %TAN%|(%BLUE%O%TAN%)|%WHITE%%MAP-97%%DOT-0E%%PX-68%%TIER-0%//
 
 ItemDisplay[crfv QTY>1]:%TAN%|(%GRAY%O%TAN%)|   %GRAY%Vampiric %ORANGE%Craft %TAN%Infusions %TAN%x %WHITE%%QTY%   %TAN%|(%GRAY%O%TAN%)|%WHITE%%MAP-15%%DOT-0E%%PX-68%//
-ItemDisplay[crfv QTY=1]:%TAN%|(%GRAY%O%TAN%)|   %GRAY%Vampiric %ORANGE%Craft %TAN%Infusion   %TAN%|(%GRAY%O%TAN%)|%WHITE%%MAP-15%%DOT-0E%%PX-68%%TIER-0%//
+ItemDisplay[crfv QTY=1 GROUND !TOWN]:%GRAY%O   %ORANGE%Craft %TAN%Infusion   %GRAY%O%WHITE%%MAP-15%%DOT-0E%%PX-68%%TIER-0%//
+ItemDisplay[crfv QTY=1 (TOWN OR INVENTORY)]:%TAN%|(%GRAY%O%TAN%)|   %GRAY%Vampiric %ORANGE%Craft %TAN%Infusion   %TAN%|(%GRAY%O%TAN%)|%WHITE%%MAP-15%%DOT-0E%%PX-68%%TIER-0%//
 
 ItemDisplay[crfu QTY>1]:%TAN%|(%YELLOW%O%TAN%)|   %YELLOW%Bountiful %ORANGE%Craft %TAN%Infusions %TAN%x %WHITE%%QTY%   %TAN%|(%YELLOW%O%TAN%)|%WHITE%%MAP-6F%%DOT-0E%%PX-68%//
-ItemDisplay[crfu QTY=1]:%TAN%|(%YELLOW%O%TAN%)|   %YELLOW%Bountiful %ORANGE%Craft %TAN%Infusion   %TAN%|(%YELLOW%O%TAN%)|%WHITE%%MAP-6F%%DOT-0E%%PX-68%%TIER-0%//
+ItemDisplay[crfu QTY=1 GROUND !TOWN]:%YELLOW%O   %ORANGE%Craft %TAN%Infusion   %YELLOW%O%WHITE%%MAP-6F%%DOT-0E%%PX-68%%TIER-0%//
+ItemDisplay[crfu QTY=1 (TOWN OR INVENTORY)]:%TAN%|(%YELLOW%O%TAN%)|   %YELLOW%Bountiful %ORANGE%Craft %TAN%Infusion   %TAN%|(%YELLOW%O%TAN%)|%WHITE%%MAP-6F%%DOT-0E%%PX-68%%TIER-0%//
 
 ItemDisplay[crfp QTY>1]:%TAN%|(%WHITE%O%TAN%)|   %WHITE%Brilliant %ORANGE%Craft %TAN%Infusions %TAN%x %WHITE%%QTY%   %TAN%|(%WHITE%O%TAN%)|%WHITE%%MAP-20%%DOT-0E%%PX-68%//
-ItemDisplay[crfp QTY=1]:%TAN%|(%WHITE%O%TAN%)|   %WHITE%Brilliant %ORANGE%Craft %TAN%Infusion   %TAN%|(%WHITE%O%TAN%)|%WHITE%%MAP-20%%DOT-0E%%PX-68%%TIER-0%//
+ItemDisplay[crfp QTY=1 GROUND !TOWN]:%WHITE%O   %ORANGE%Craft %TAN%Infusion   %WHITE%O%WHITE%%MAP-20%%DOT-0E%%PX-68%%TIER-0%//
+ItemDisplay[crfp QTY=1 (TOWN OR INVENTORY)]:%TAN%|(%WHITE%O%TAN%)|   %WHITE%Brilliant %ORANGE%Craft %TAN%Infusion   %TAN%|(%WHITE%O%TAN%)|%WHITE%%MAP-20%%DOT-0E%%PX-68%%TIER-0%//
 
 //----------------------------------------------------------------------------------------------------------
 // ============================================  Corrupted Ears  ==========================================
@@ -3361,15 +3368,15 @@ ItemDisplay[UNI !ID bae]:%NAME%%SOUNDID-2585%%CONTINUE%// Halaberd's Reign Conqu
 ItemDisplay[UNI !ID ((baa FILTLVL<8) OR bae)]:%UNI_HIGH_VALUE_LEFT%  %NAME%  %UNI_HIGH_VALUE_RIGHT%%BORDER-91%%MAP-9B%%DOT-62%%PX-68%%SOUNDID-2585%//
 //     Medium Value Barbarian Helms
 ItemDisplay[UNI !ID baa FILTLVL>7]:%NAME%%SOUNDID-2585%%CONTINUE%// Arreat's Face Slayer Guard
-ItemDisplay[UNI !ID baf]:%NAME%%SOUNDID-2585%%CONTINUE%// Raekor's Virtue Guardian Crown
-ItemDisplay[UNI !ID bad]:%NAME%%SOUNDID-2585%%CONTINUE%// Demonhorn's Edge Destroyer Helm
 ItemDisplay[UNI !ID bac FILTLVL<8]:%NAME%%SOUNDID-2346%%CONTINUE%// Wolfhowl Fury Visor
-ItemDisplay[UNI !ID ((baa FILTLVL>7) OR baf OR bad OR (bac FILTLVL<8))]:%UNI_MEDIUM_VALUE_LEFT%  %NAME%  %UNI_MEDIUM_VALUE_RIGHT%%BORDER-08%%MAP-50%%DOT-59%%PX-6A%//
+ItemDisplay[UNI !ID baf]:%NAME%%SOUNDID-2585%%CONTINUE%// Raekor's Virtue Guardian Crown
+ItemDisplay[UNI !ID ((baa FILTLVL>7) OR (bac FILTLVL<8) OR baf)]:%UNI_MEDIUM_VALUE_LEFT%  %NAME%  %UNI_MEDIUM_VALUE_RIGHT%%BORDER-08%%MAP-50%%DOT-59%%PX-6A%//
 //     Minimal Value 
 ItemDisplay[UNI !ID bac FILTLVL>7]:%NAME%%CONTINUE%// Wolfhowl Fury Visor
+ItemDisplay[UNI !ID bad]:%NAME%%CONTINUE%// Demonhorn's Edge Destroyer Helm
 ItemDisplay[UNI !ID ba6]:%NAME%%CONTINUE%// Cyclopean Roar Jawbone Visor
 ItemDisplay[UNI !ID ba2 BARBARIAN CLVL<60]:%NAME%%CONTINUE%// Wildspeaker Fanged Helm
-ItemDisplay[UNI !ID ((bac FILTLVL>7) OR ba6 OR (ba2 BARBARIAN CLVL<60))]:%UNI_MINIMAL_VALUE_LEFT%  %NAME%  %UNI_MINIMAL_VALUE_RIGHT%%MAP-50%%DOT-59%%PX-6A%//
+ItemDisplay[UNI !ID ((bac FILTLVL>7) OR bad OR ba6 OR (ba2 BARBARIAN CLVL<60))]:%UNI_MINIMAL_VALUE_LEFT%  %NAME%  %UNI_MINIMAL_VALUE_RIGHT%%MAP-50%%DOT-59%%PX-6A%//
 
 //     High Value Sorceress Orbs
 ItemDisplay[UNI !ID obc]:%NAME%%SOUNDID-1257%%CONTINUE%// Eschuta's Temper Eldritch Orb
@@ -5941,6 +5948,13 @@ ItemDisplay[(mpi OR wax OR gax OR gix) 2H (RARE OR CRAFT OR UNI OR SET OR MAG) S
 ItemDisplay[wst (RARE OR CRAFT OR UNI OR SET OR MAG) SOCK=0 STAT360=0 ILVL<26]:%NAME%{%NAME% %RED%C:%WHITE%5}%CONTINUE%
 ItemDisplay[wst (RARE OR CRAFT OR UNI OR SET OR MAG) SOCK=0 STAT360=0 ILVL>25]:%NAME%{%NAME% %RED%C:%WHITE%6}%CONTINUE%
 
+// ------------------------------------------------------------------------------
+// =========================  Maximum Block Dexterity ===========================
+// ------------------------------------------------------------------------------
+
+ItemDisplay[EQUIPPED PALADIN SHIELD]:%NAME%{%NAME%%CL%%WHITE%Max Block Dex: $f(CEIL(CHARSTAT12*150/(CHARSTAT20+30)+15))}%CONTINUE%//
+ItemDisplay[EQUIPPED (AMAZON OR ASSASSIN OR BARBARIAN) SHIELD]:%NAME%{%NAME%%CL%%WHITE%Max Block Dex: $f(CEIL(CHARSTAT12*150/(CHARSTAT20+25)+15))}%CONTINUE%//
+ItemDisplay[EQUIPPED (DRUID OR NECROMANCER OR SORCERESS) SHIELD]:%NAME%{%NAME%%CL%%WHITE%Max Block Dex: $f(CEIL(CHARSTAT12*150/(CHARSTAT20+20)+15))}%CONTINUE%//
 
 // ------------------------------------------------------------------------------
 // ===========================  Magic Charm Display =============================
@@ -5951,13 +5965,13 @@ ItemDisplay[MAG ID (cm1 OR cm2 OR cm3 OR cm1p OR cm2p OR cm3p)]:%CL%%NAME%{%NAME
 
 // Low Level Dueling Tag
 // Small Charms
-ItemDisplay[MAG ID cm1 LVLREQ<31 (MANA>9 OR RES>0 OR STAT31>14 OR MAXDMG>1 OR CRES>6 OR FRES>6 OR LRES>6 OR PRES>6 OR STAT54>0) (LIFE>11 OR DEX>1 OR STR>1 OR FRW>0)]:%TEAL%LLD%CS%%NAME%{%TEAL%Low Level Dueling%CL%%NAME%}%CONTINUE%
-ItemDisplay[MAG ID cm1 LVLREQ<31 (MANA>9 OR RES>0 OR STAT31>14 OR MAXDMG>1 OR CRES>7 OR FRES>7 OR LRES>7 OR PRES>7 OR STAT54>0) FHR>0]:%TEAL%LLD%CS%%NAME%{%TEAL%Low Level Dueling%CL%%NAME%}%CONTINUE%
+ItemDisplay[MAG ID cm1 LVLREQ<31 (MANA>9 OR RES>0 OR STAT31>14 OR MAXDMG>1 OR CRES>6 OR FRES>6 OR LRES>6 OR PRES>6 OR STAT54>0) (LIFE>11 OR DEX>1 OR STR>1 OR FRW>0)]:%TEAL%LLD%CS%%NAME%{%NAME%}%CONTINUE%
+ItemDisplay[MAG ID cm1 LVLREQ<31 (MANA>9 OR RES>0 OR STAT31>14 OR MAXDMG>1 OR CRES>7 OR FRES>7 OR LRES>7 OR PRES>7 OR STAT54>0) FHR>0]:%TEAL%LLD%CS%%NAME%{%NAME%}%CONTINUE%
 // Large Charms
-ItemDisplay[MAG ID cm2 LVLREQ<31 ((MANA>19 OR RES>5 OR MAXDMG>4) (LIFE>15 OR DEX>3 OR STR>3 OR FRW>0 OR FHR>0))]:%TEAL%LLD%CS%%NAME%{%TEAL%Low Level Dueling%CL%%NAME%}%CONTINUE%
-ItemDisplay[MAG ID cm2 LVLREQ<31 ((STAT329>2 OR STAT330>2 OR STAT331>2 OR STAT332>2 OR STAT357>2) (LIFE>11 OR DEX>3 OR STR>3 OR FRW>0 OR FHR>0))]:%TEAL%LLD%CS%%NAME%{%TEAL%Low Level Dueling%CL%%NAME%}%CONTINUE%
+ItemDisplay[MAG ID cm2 LVLREQ<31 ((MANA>19 OR RES>5 OR MAXDMG>4) (LIFE>15 OR DEX>3 OR STR>3 OR FRW>0 OR FHR>0))]:%TEAL%LLD%CS%%NAME%{%NAME%}%CONTINUE%
+ItemDisplay[MAG ID cm2 LVLREQ<31 ((STAT329>2 OR STAT330>2 OR STAT331>2 OR STAT332>2 OR STAT357>2) (LIFE>11 OR DEX>3 OR STR>3 OR FRW>0 OR FHR>0))]:%TEAL%LLD%CS%%NAME%{%NAME%}%CONTINUE%
 // Grand Charms
-ItemDisplay[MAG ID cm3 LVLREQ<31 ((MANA>30 OR RES>9 OR MAXDMG>7 OR AR>79) (LIFE>17 OR DEX>5 OR STR>5 OR FRW>0 OR FHR>0))]:%TEAL%LLD%CS%%NAME%{%TEAL%Low Level Dueling%CL%%NAME%}%CONTINUE%
+ItemDisplay[MAG ID cm3 LVLREQ<31 ((MANA>30 OR RES>9 OR MAXDMG>7 OR AR>79) (LIFE>17 OR DEX>5 OR STR>5 OR FRW>0 OR FHR>0))]:%TEAL%LLD%CS%%NAME%{%NAME%}%CONTINUE%
 
 // Gold Find
 ItemDisplay[MAG GFIND>0 (cm1 OR cm2 OR cm3 OR cm1p OR cm2p OR cm3p)]:%WHITE%%GFIND%%GOLD%gf%CS%%NAME%{%NAME%}%CONTINUE%
@@ -6054,14 +6068,27 @@ ItemDisplay[(cm3 OR cm3p) TABSK49>0]:%PURPLE%Shadow %TAN%Skills %NAME%{%NAME%}%C
 ItemDisplay[(cm3 OR cm3p) TABSK50>0]:%PURPLE%Martial Arts %TAN%Skills %NAME%{%NAME%}%CONTINUE%
 
 // Physical
-ItemDisplay[MAG cm1 ((MAXDMG>1 LIFE>16) OR (MAXDMG>2 LIFE>9) OR MAXDMG>3)]:%NAME%{%HIGHLIGHT_3_LEFT%   %GREEN%Physical   %HIGHLIGHT_3_RIGHT%%%CL%%NAME%}//
-ItemDisplay[MAG cm2 ((MAXDMG>4 LIFE>29) OR (MAXDMG>5 LIFE>19) OR MAXDMG>7)]:%NAME%{%HIGHLIGHT_3_LEFT%   %GREEN%Physical   %HIGHLIGHT_3_RIGHT%%CL%%NAME%}//
-ItemDisplay[MAG cm3 ((MAXDMG>7 LIFE>34) OR (MAXDMG>8 LIFE>29) OR (MAXDMG>9 LIFE>24) OR MAXDMG>11)]:%NAME%{%HIGHLIGHT_3_LEFT%   %GREEN%Physical   %HIGHLIGHT_3_RIGHT%%CL%%NAME%}//
+ItemDisplay[MAG cm1 ((MAXDMG>1 (LIFE>16 OR FHR>4 OR FRW>2 OR GFIND>9 OR MFIND>5)) OR (MAXDMG>2 (LIFE>9 OR MFIND>4 OR STR>1 OR DEX>1)) OR MAXDMG>3)]:%NAME%{%HIGHLIGHT_1_LEFT%   %GREEN%Physical   %HIGHLIGHT_1_RIGHT%%CL%%NAME%}//
+ItemDisplay[MAG cm2 ((MAXDMG>4 (LIFE>29 OR FHR>7 OR FRW>4 OR STR>3 OR DEX>3 OR GFIND>19)) OR (MAXDMG>5 (LIFE>19 OR STR>2 OR DEX>2)) OR MAXDMG>7)]:%NAME%{%HIGHLIGHT_1_LEFT%   %GREEN%Physical   %HIGHLIGHT_1_RIGHT%%CL%%NAME%}//
+ItemDisplay[MAG cm3 ((MAXDMG>7 (LIFE>34 OR FHR>11 OR FRW>6 OR STR>5 OR DEX>5 OR GFIND>29)) OR (MAXDMG>8 LIFE>29) OR (MAXDMG>9 LIFE>24) OR MAXDMG>11)]:%NAME%{%HIGHLIGHT_1_LEFT%   %GREEN%Physical   %HIGHLIGHT_1_RIGHT%%CL%%NAME%}//
+
+// Increased Attack Speed
+ItemDisplay[MAG cm2 ((IAS>5 (LIFE>29 OR FHR>7 OR FRW>4 OR STR>4 OR DEX>4 OR GFIND>19)) OR ((IAS>6 (LIFE>24 OR STR>3 OR DEX>3))))]:%NAME%{%HIGHLIGHT_1_LEFT%   %GREEN%Attack Speed   %HIGHLIGHT_1_RIGHT%%CL%%NAME%}//
+
+// Faster Cast Rate
+ItemDisplay[MAG cm2 ((FCR>4 (LIFE>29 OR FHR>7 OR FRW>4 OR STR>4 OR DEX>4 OR GFIND>19)) OR ((FCR>5 (LIFE>24 OR STR>3 OR DEX>3))))]:%NAME%{%HIGHLIGHT_1_LEFT%   %GREEN%Cast Rate   %HIGHLIGHT_1_RIGHT%%CL%%NAME%}//
+
+// Skill Damage
+ItemDisplay[MAG cm2 STAT329=3 (LIFE>24 OR FHR>7 OR FRW>4 OR STR>4 OR DEX>4)]:%NAME%{%HIGHLIGHT_1_LEFT%   %GREEN%Fire Damage   %HIGHLIGHT_1_RIGHT%%CL%%NAME%}//
+ItemDisplay[MAG cm2 STAT330=3 (LIFE>24 OR FHR>7 OR FRW>4 OR STR>4 OR DEX>4)]:%NAME%{%HIGHLIGHT_1_LEFT%   %GREEN%Light Damage   %HIGHLIGHT_1_RIGHT%%CL%%NAME%}//
+ItemDisplay[MAG cm2 STAT331=3 (LIFE>24 OR FHR>7 OR FRW>4 OR STR>4 OR DEX>4)]:%NAME%{%HIGHLIGHT_1_LEFT%   %GREEN%Cold Damage   %HIGHLIGHT_1_RIGHT%%CL%%NAME%}//
+ItemDisplay[MAG cm2 STAT332=3 (LIFE>24 OR FHR>7 OR FRW>4 OR STR>4 OR DEX>4)]:%NAME%{%HIGHLIGHT_1_LEFT%   %GREEN%Poison Damage   %HIGHLIGHT_1_RIGHT%%CL%%NAME%}//
+ItemDisplay[MAG cm2 STAT357=3 (LIFE>24 OR FHR>7 OR FRW>4 OR STR>4 OR DEX>4)]:%NAME%{%HIGHLIGHT_1_LEFT%   %GREEN%Magic Damage   %HIGHLIGHT_1_RIGHT%%CL%%NAME%}//
 
 // Vengeance
-ItemDisplay[MAG cm1 ((STAT55>19 (STAT55>29 OR STAT49>9 OR STAT51>16 OR LIFE>9 OR FHR>4 OR MFIND>4 OR FRW>2 OR GFIND>9)) OR (STAT49>19 (STAT55>9 OR STAT49>29 OR STAT51>16 OR LIFE>9 OR FHR>4 OR MFIND>4 OR FRW>2 OR GFIND>9)) OR (STAT51>30 (STAT55>9 OR STAT49>9 OR STAT51>47 OR LIFE>9 OR FHR>4 OR MFIND>4 OR FRW>2 OR GFIND>9)))]:%NAME%{%HIGHLIGHT_3_LEFT%   %GREEN%Vengeance   %HIGHLIGHT_3_RIGHT%%CL%%NAME%}//
-ItemDisplay[MAG cm2 ((STAT55>39 (STAT55>59 OR STAT49>19 OR STAT51>33 OR LIFE>19 OR FHR>7 OR FRW>4 OR GFIND>19 OR STR>4 OR DEX>4)) OR (STAT49>39 (STAT55>19 OR STAT49>59 OR STAT51>33 OR LIFE>19 OR FHR>7 OR FRW>4 OR GFIND>19 OR STR>4 OR DEX>4)) OR (STAT51>61 (STAT55>19 OR STAT49>19 OR STAT51>95 OR LIFE>19 OR FHR>7 OR FRW>4 OR GFIND>19 OR STR>4 OR DEX>4)))]:%NAME%{%HIGHLIGHT_3_LEFT%   %GREEN%Vengeance   %HIGHLIGHT_3_RIGHT%%CL%%NAME%}//
-ItemDisplay[MAG cm3 ((STAT55>53 (STAT55>80 OR STAT49>26 OR STAT51>45 OR LIFE>29 OR FHR>11 OR FRW>6 OR GFIND>29 OR STR>5 OR DEX>5)) OR (STAT49>53 (STAT55>26 OR STAT49>80 OR STAT51>45 OR LIFE>29 OR FHR>11 OR FRW>6 OR GFIND>29 OR STR>5 OR DEX>5)) OR (STAT51>83 (STAT55>26 OR STAT49>26 OR STAT51>129 OR LIFE>29 OR FHR>11 OR FRW>6 OR GFIND>29 OR STR>5 OR DEX>5)))]:%NAME%{%HIGHLIGHT_3_LEFT%   %GREEN%Vengeance   %HIGHLIGHT_3_RIGHT%%CL%%NAME%}//
+ItemDisplay[MAG cm1 ((STAT55>19 (STAT55>29 OR STAT49>9 OR STAT51>16 OR LIFE>9 OR FHR>4 OR MFIND>4 OR FRW>2 OR GFIND>9)) OR (STAT49>19 (STAT55>9 OR STAT49>29 OR STAT51>16 OR LIFE>9 OR FHR>4 OR MFIND>4 OR FRW>2 OR GFIND>9)) OR (STAT51>30 (STAT55>9 OR STAT49>9 OR STAT51>47 OR LIFE>9 OR FHR>4 OR MFIND>4 OR FRW>2 OR GFIND>9)))]:%NAME%{%HIGHLIGHT_1_LEFT%   %GREEN%Vengeance   %HIGHLIGHT_1_RIGHT%%CL%%NAME%}//
+ItemDisplay[MAG cm2 ((STAT55>39 (STAT55>59 OR STAT49>19 OR STAT51>33 OR LIFE>19 OR FHR>7 OR FRW>4 OR GFIND>19 OR STR>4 OR DEX>4)) OR (STAT49>39 (STAT55>19 OR STAT49>59 OR STAT51>33 OR LIFE>19 OR FHR>7 OR FRW>4 OR GFIND>19 OR STR>4 OR DEX>4)) OR (STAT51>61 (STAT55>19 OR STAT49>19 OR STAT51>95 OR LIFE>19 OR FHR>7 OR FRW>4 OR GFIND>19 OR STR>4 OR DEX>4)))]:%NAME%{%HIGHLIGHT_1_LEFT%   %GREEN%Vengeance   %HIGHLIGHT_1_RIGHT%%CL%%NAME%}//
+ItemDisplay[MAG cm3 ((STAT55>53 (STAT55>80 OR STAT49>26 OR STAT51>45 OR LIFE>29 OR FHR>11 OR FRW>6 OR GFIND>29 OR STR>5 OR DEX>5)) OR (STAT49>53 (STAT55>26 OR STAT49>80 OR STAT51>45 OR LIFE>29 OR FHR>11 OR FRW>6 OR GFIND>29 OR STR>5 OR DEX>5)) OR (STAT51>83 (STAT55>26 OR STAT49>26 OR STAT51>129 OR LIFE>29 OR FHR>11 OR FRW>6 OR GFIND>29 OR STR>5 OR DEX>5)))]:%NAME%{%HIGHLIGHT_1_LEFT%   %GREEN%Vengeance   %HIGHLIGHT_1_RIGHT%%CL%%NAME%}//
 
 // Grand Charms with relevant mods don't have reroll details in description
 ItemDisplay[MAG ID cm3 (TABSK40=1 OR TABSK41=1 OR TABSK42=1 OR TABSK32=1 OR TABSK33=1 OR TABSK34=1 OR TABSK24=1 OR TABSK25=1 OR TABSK16=1 OR TABSK17=1 OR TABSK18=1 OR TABSK8=1 OR TABSK9=1 OR TABSK10=1 OR TABSK48=1 OR TABSK49=1 OR TABSK50=1 OR TABSK0=1 OR TABSK1=1 OR TABSK2=1 OR MAXDMG>8 OR RES>11 OR ((LIFE>29 OR FHR>0) (FRES>23 OR PRES>23 OR CRES>23 OR LRES>23 OR MANA>44 OR MAXDMG>5 OR AR>124)) OR (MANA>50 (LIFE>20 OR FHR>0)))]:%NAME%{%NAME%}//
@@ -6328,8 +6355,8 @@ ItemDisplay[(RARE OR CRAFT) rin ID STAT110>24 (($f(COUNT(AR>59,MINDMG>8,MAXDMG>9
 // Rare/Crafted Shield - Physical - 75+ PLR and 80+ ED mandatory, 3+ desirable affixes
 ItemDisplay[(RARE OR CRAFT) SHIELD ID STAT110>74 ($f(COUNT(LIFE>49,STR>14,DEX>14,STAT216>0,CLSK0>0,CLSK1>0,CLSK2>0,CLSK3>0,CLSK5>0,CLSK6>0,FCR>19,FHR>16,FBR>19,SOCK>1,RES>9,STAT36>7,IF(STAT360==43,0,STAT76>4),STAT360==0,STAT360==43,STAT360==45,STAT360==50,STAT360==53,STAT360==54,STAT360==56)>=4) OR (EDAM>79 $f(COUNT(LIFE>49,STR>14,DEX>14,STAT216>0,CLSK0>0,CLSK3>0,CLSK4>0,CLSK5>0,CLSK6>0,FHR>16,FBR>19,SOCK>1,RES>9,STAT36>7,IF(STAT360==43,0,STAT76>4),STAT360==0,STAT360==43,STAT360==45,STAT360==50,STAT360==53,STAT360==54,STAT360==56)>=3))) ]:%NAME%{%RED%Rathma Shield%CL%%NAME%}%CONTINUE%//
 
-// Rare/Crafted Belts - Uncorrupted or 2% all max resistances corruption, 4+ desirable affixes
-ItemDisplay[(RARE OR CRAFT) BELT ID (STAT360=0 OR MAXRES>1) $f(COUNT(STAT110>24,LIFE>89,LIFE>49,STR>19,FCR>9,FHR>14,FRES>14,CRES>14,PRES>14,STAT36>7)>=5)]:%NAME%{%RED%Rathma Belt%CL%%NAME%}%CONTINUE%//
+// Rare/Crafted Belts - Uncorrupted or 2% all max resistances corruption, 5+ desirable affixes
+ItemDisplay[(RARE OR CRAFT) BELT ID (STAT360=0 OR MAXRES>1) $f(COUNT(STAT110>24,LIFE>89,LIFE>49,STR>19,FCR>9,FHR>14,FRES>14,CRES>14,PRES>14,STAT36>7,STAT360==0)>=5)]:%NAME%{%RED%Rathma Belt%CL%%NAME%}%CONTINUE%//
 
 // Rare/Crafted Chest - Caster - 75+ PLR mandatory, 4+ desirable affixes
 // Rare/Crafted Chest - Physical - 75+ PLR and 80+ ED mandatory, 3+ desirable affixes
@@ -7587,7 +7614,7 @@ ItemDisplay[(rin OR amu OR CIRC OR HELM OR BELT OR BOOTS OR GLOVES OR CHEST OR S
 // ==========================  All Attributes  ==========================
 // ----------------------------------------------------------------------
 
-ItemDisplay[(rin OR amu OR ram OR BELT OR BOOTS OR GLOVES) (MAG OR RARE OR CRAFT OR STAT360=65) ALLATTRIB>2 !(STAT0>3 STAT1>3 STAT2>3 STAT3>3)]:%WHITE%3%GRAY%attr%CS%%NAME%{%NAME%}%CONTINUE%
+ItemDisplay[(rin OR amu OR ram OR BELT OR BOOTS OR GLOVES) (MAG OR RARE OR CRAFT OR STAT360=65) ALLATTRIB>0]:%WHITE%%ALLATTRIB%%GRAY%att%CS%%NAME%{%NAME%}%CONTINUE%
 
 // -----------------------------------------------------------------------
 // =========================  Single Attributes  =========================
@@ -7713,7 +7740,7 @@ ItemDisplay[(rin OR amu OR CIRC OR HELM) MAG MAXDMG>0]:%WHITE%%MAXDMG%%TAN%max%C
 ItemDisplay[(rin OR amu OR CIRC OR HELM) MAG MINDMG>0]:%WHITE%%MINDMG%%TAN%min%CS%%NAME%{%NAME%}%CONTINUE%
 
 ItemDisplay[(UNI OR SET) QUIVER STAT360=75]:%WHITE%%MAXDMG%%TAN%max%CS%%NAME%{%NAME%}%CONTINUE%
-ItemDisplay[(UNI OR SET) QUIVER STAT360=74]:%WHITE%%MINDMG%%TAN%max%CS%%NAME%{%NAME%}%CONTINUE%
+ItemDisplay[(UNI OR SET) QUIVER STAT360=74]:%WHITE%%MINDMG%%TAN%min%CS%%NAME%{%NAME%}%CONTINUE%
 
 
 // --------------------------------------------------------------------------
