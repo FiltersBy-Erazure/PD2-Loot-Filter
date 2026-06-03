@@ -22,11 +22,9 @@ After selecting the version of the filter from the launcher, be sure to click "S
 
 <img width="994" height="741" alt="image" src="https://github.com/user-attachments/assets/9835b0c1-36c6-402a-8bfa-51288c6f46a9" />
 
-# **Contact and Support:**
+# **Contact:**
 
 - Message me on Discord if you have any questions, feedback, or suggestions: **erazure**
-
-- Please consider donating to my [**PayPal**](https://paypal.me/ErazurePD2LootFilter) or subscribing to my [**Patreon**](https://www.patreon.com/erazure_pd2/membership) if you like my work and want to support the development of my filters
 
 ![heart medium](https://github.com/FiltersBy-Erazure/PD2-Loot-Filter/assets/76863417/cb45f82f-26ca-49ec-b5c7-bb3d67583fe1)
 
