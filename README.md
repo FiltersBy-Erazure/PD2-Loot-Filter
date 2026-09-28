@@ -142,8 +142,6 @@ After selecting the version of the filter from the launcher, be sure to click "S
 
 - Under File - Open File - Navigate to where the file was downloaded and open it
 
-- In the bottom right of your screen, you should see a section where the encoding reads Windows 1252
-
 - You are then free to make the edits you want
 
 - After this, save the file to Diablo II\ProjectD2\filters\local. Be sure that it is saved as a .filter file
