@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python tools/build_variants.py *)",
+      "PowerShell(python tools/build_variants.py *)"
+    ],
+    "deny": [
+      "Edit(Erazure-Main-PoE.filter)",
+      "Edit(Erazure-Revealed*.filter)",
+      "Edit(Erazure-BIG-GG*.filter)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/rebuild_variants.py\"",
+            "timeout": 60,
+            "statusMessage": "Rebuilding filter variants..."
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,220 @@
+This is an unlisted page that is transcluded on [[Item Filtering]].
+
+<onlyinclude>
+
+===Formal Definition===
+
+Formulas can be defined anywhere in the loot filter using <code>Formula[KEY]: FORMULA</code>. References to a formula must be in the form of <code>FORMULAKEY</code>. <code>Formula[_A]: STAT1!=STAT2</code> can be referenced by <code>FORMULA_A</code> or <code>%FORMULA_A%</code>.
+
+Only '_' or 'A' to 'Z' may be used in a formula's key.
+
+Aliases cannot be used in the definition.
+
+===Inline Definition===
+
+An inline formula definition is a formula inside a block <code>$f(STAT1!=STAT2)</code>. The 'f' must be lowercase and parentheses must match.
+
+Aliases can be used in the definition.
+
+===Item Input===
+
+A formula can be used as a boolean, value or a part of an add condition.
+
+{| class="wikitable"
+! condition !! description
+|-
+| ItemDisplay[$f(STAT1+STAT2)>25] || value comparison
+|-
+| ItemDisplay[$f(STAT1+STAT2>20)] || boolean condition
+|-
+| ItemDisplay[$f(STAT1)+STAT2>15] || add condition
+|}
+
+The "truthiness" of a formula is based on a value being NOT equal to zero.
+{| class="wikitable"
+! formula !! description
+|-
+| 1.5 || true, since 1.5 != 0
+|-
+| TRUE || true, since TRUE (1) != 0
+|-
+| FALSE || false, since FALSE (0) == 0
+|-
+| 0 || false, since 0 == 0
+|-
+| .0000001 || true, x != 0
+|}
+
+===Item Output===
+
+The result of a formula is a real number. It is rendered with either 0-2 decimal places depending on the fractional part with two decimal places. If a math error occurs or the value is too large to be rendered, the text is <code>f_err</code>. The maximum absolute value of a renderable result is 2^31 (2147483648).
+
+{| class="wikitable"
+! formula !! intermediate text !! rendered text
+|-
+| 1.49 || 1.49 || 1.49
+|-
+| 1.495 || 1.50 || 1.5
+|-
+| 1.494 || 1.49 || 1.49
+|-
+| 1.5 || 1.50 || 1.5
+|-
+| TRUE || 1.00 || 1
+|-
+| FALSE || 0.00 || 0
+|-
+| 0 || 0.00 || 0
+|-
+| .0000001 || 0.00 || 0
+|}
+
+===Operators===
+
+<code>==</code>, <code>&gt;</code>, <code>&lt;</code>, <code>!=</code>, <code>&gt;=</code>, <code>&lt;=</code>, <code>+</code>, <code>-</code>, <code>*</code>, <code>&#47;</code>, <code>^</code>, <code>!</code>
+
+===Variables===
+
+All variables are case-insensitive. Each variable mirrors the code used in input or output.
+
+====Parameterized====
+
+Parameters are integers separated by a ','.
+
+{| class="wikitable"
+|-
+! code !! example !! details || parameters
+|-
+| stat || stat3 || vitality || 1
+|-
+| multi || MULTI83,2 || Necromancer skills; must have two parameters || 2
+|-
+| charstat || CHARSTAT15 || gold in stash || 1
+|}
+
+====Parameterless====
+{| class="wikitable"
+! colspan="5" | code
+|-
+|allattrib||allsk||alvl||amazon||ar
+|-
+|area||armor||arper||assassin||automod
+|-
+|axe||bar||barbarian||baseblock||basemaxkick
+|-
+|basemaxoneh||basemaxsmite||basemaxthrow||basemaxtwoh||baseminkick
+|-
+|baseminoneh||baseminsmite||baseminthrow||basemintwoh||belt
+|-
+|boots||bow||buyprice||charm||charstat
+|-
+|chest||chsk||circ||cl||class
+|-
+|clsk||club||clvl||craft||craftalvl
+|-
+|cres||cube||dagger||def||dex
+|-
+|diff||din||dru||druid||dtm
+|-
+|ed||edam||edef||elt||eq
+|-
+|equipped||eth||exc||false||fbr
+|-
+|fcr||fhr||filtlvl||fools||fres
+|-
+|frw||gem||gemlevel||gemmed||gemtype
+|-
+|gfind||gloves||gold||ground||hammer
+|-
+|height||helm||ias||id||ilvl
+|-
+|inf||inventory||jav||jewelry||life
+|-
+|lres||lvlreq||mace||maek||mag
+|-
+|mana||mapid||maptier||maxdmg||maxdur
+|-
+|maxres||maxsockets||merc||mfind||mindmg
+|-
+|misc||multi||nec||necromancer||nmag
+|-
+|norm||onehand||os||paladin||polearm
+|-
+|pres||price||qlvl||qty||quiver
+|-
+|rare||repair||replife||repquant||reqdex
+|-
+|reqlvl||reqstr||rerollalvl||res||rune
+|-
+|rw||scepter||sellprice||set||shield
+|-
+|shop||sin||sk||sock||sockets
+|-
+|sor||sorceress||spear||staff||stash
+|-
+|stat||str||sup||sword||tabsk
+|-
+|throwing||tmace||true||twohand||uni
+|-
+|updex||uplvl||upstr||wand||weapon
+|-
+|width||wp||xbow||zon
+|}
+
+===Functions===
+
+All functions require one or more arguments (arity).
+
+{| class="wikitable"
+|-
+! name !! details !! arity !! example
+|-
+| if || second arg if true, otherwise the third || 3 || IF(STAT3>100,TRUE,FALSE)
+|-
+| and || true if all values are true, false otherwise || 1+ || AND(STAT3>100,STAT0>100)
+|-
+| or || true if any values are true, false otherwise || 1+ || OR(STAT3>100,STAT0>100)
+|-
+| exp || Euler's number (e) raised to a power || 1 || exp(ln(STAT2))==STAT2
+|-
+| ln || logarithm of a number, base e || 1 || ln(STAT2)
+|-
+| floor || rounds a number down to the nearest integer || 1 || floor(1.5)==1
+|-
+| ceil || rounds a number up to the nearest integer || 1 || ceil(1.49)==2
+|-
+| round || rounds a number according to standard rules || 1 || round(1.49)==1; round(1.5)==2
+|-
+| min || minimum value || 1+ || MIN(STAT2,50)<=50
+|-
+| max || maximum value || 1+ || MAX(STAT2,50)>=50
+|-
+| mod || modulus of A/B || 2 || MOD(-17,5)==-2
+|-
+| average || average of n-args || 1+ || AVERAGE(8,8,8,8,8)==8
+|-
+| sqrt || square root of a non-negative number || 1 || SQRt(4)==2
+|-
+| pow || a number raised to a power || 2 || pow(2, 2)==4
+|-
+| count || number of true values || 1+ || COUNT(1,0,1,TRUE)==3
+|-
+| countif || number of values equal to the last value || 2+ || COUNTIF(1,0,1)==1
+|-
+| xor || true if an odd number of args are true || 1+ || XOR(1,0)==1
+|-
+| abs || absolute value of x || 1 || abs(-1)==1
+|-
+| sign || sign of x || 1 || sign(-1)==-1; sign(0)==0; sign(1)==1
+|}
+
+===Minor Details===
+
+Tidbits that may or may not change.
+
+* <code>AND</code> and <code>OR</code> are [https://en.wikipedia.org/wiki/Short-circuit_evaluation short-circuited]
+* constant expressions such as <code>POW(3,3)</code> or <code>IF(TRUE,STAT1,STAT2)</code> are evaluated once
+* an input reference only requires the first letter (F) to be capitalized the rest is case-insensitive
+* an output reference is always case-insensitive
+
+</onlyinclude>

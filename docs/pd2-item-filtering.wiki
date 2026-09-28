@@ -1,0 +1,3351 @@
+<!-- Source: https://wiki.projectdiablo2.com/wiki/Item_Filtering (raw wikitext, action=raw). Saved 2026-09-27. Wiki content, typically CC BY-SA. Refresh at each season start. -->
+<!-- CORRECTION (from the filter author, 2026-09-27): As of Season 13, UTF-8 filter files display the extended Latin/special characters correctly (e.g. • ÿ § ¹ ² ³). The wiki text below saying ANSI encoding is required for special characters is outdated. Treat UTF-8 as correct; do not flag it. -->
+<!-- NOT INCLUDED: this page transcludes {{:Filter_Info}}, {{:Item Codes}} and {{:Formula_Info}}; their content is not in this file. Download them separately with ?action=raw (Item_Codes matters most) and save next to this file. -->
+Item filtering allows players to filter out items they don't want to see, and also change the appearance of items that are not filtered out. While there are in-game options for simple item filtering, players can use item filters to customize this to their liking. [https://github.com/Project-Diablo-2/BH PD2's Filtering] is open-source and based on [https://github.com/planqi/slashdiablo-maphack BH 1.9.9].
+
+For other out-of-game customization options, see '''[[Customization]]'''.
+
+== Filters ==
+Item filters (often called lootfilters) are text files which contain rules for describing how items should be displayed in-game. The default filter only has a few simple rules for adding descriptions to some items (map orbs and stackable gems/runes), and otherwise displays all items the same as they would be in vanilla.
+
+By default, filtering is done using '''default.filter''' in the ''ProjectD2'' directory - unless changed, it only has a few simple rules. If '''loot.filter''' is present in the same directory, it will be used instead of the default file. If a filter is selected from the launcher, it will be saved in ''ProjectD2\filters'' and be used instead via a '''loot.filter''' system link from the ''ProjectD2'' directory.
+
+These files will function if encoded in UTF-8 (default), but ANSI encoding is needed to allow [[Item_Filtering#Output|special characters]] to display properly.
+
+
+Filters can be selected from the [https://github.com/Project-Diablo-2/LootFilters#project-diablo-2-loot-filters launcher] and enabled via the in-game Settings menu.
+
+To install manually, download a filter file and save it to ''Diablo II\ProjectD2\filters\local'' and then select it from the launcher. Make sure the relevant in-game settings are enabled.
+{{:Filter_Info}}
+
+<!-- End of "Filters" category -->
+
+== Filter Syntax ==
+Filters contain rules for how items should be displayed in-game. Each rule has '''''Input''''' and '''''Output''''' and follows this basic format:
+
+ ItemDisplay[ '''''Input''''' ]: '''''Output'''''
+
+The '''''Input''''' specifies a set of ''conditions'' an item must satisfy for the rule to apply to it, and '''''Output''''' specifies the actions (''text'' or ''keywords'') used when a matching item is found.
+
+If a line doesn't follow this format, it won't be considered a rule, which means it won't affect how items will be displayed in-game. If a line is intentionally ignored like this, it should begin with '''''//''''' (double slash) so the computer can ignore it immediately rather than spend time checking the rest of the line to determine whether it's a rule or not.
+
+
+Filter rules are processed in-order from top to bottom. Items are displayed according to the output of the first rule whose conditions they satisfy. If the matching rule doesn't include '''''%CONTINUE%''''', the procedure is halted and no additional rules are checked. In this way, rules that are higher than others have higher priority. The only exception is for [[Item_Filtering#Notification_Keywords|notification keywords]], which apply regardless of where they are in the filter.
+
+
+The simplest rule is one without any conditions or output. Sans conditions, the rule will apply to all items. Sans output, nothing will be displayed for those items.
+
+<code>ItemDisplay[]:</code> <span style="color:gray;">''hides all items''</span>
+
+
+The next simplest rule is one that displays all items with their default appearances. The output keyword '''''%NAME%''''' refers to an item's default appearance, and varies depending on which item is being shown. All items are displayed by default - the game essentially adds this rule to the bottom of the filter before beginning to process the filter's rules.
+
+<code>ItemDisplay[]: %NAME%</code> <span style="color:gray;">''displays all items with their default names''</span>
+
+<code>ItemDisplay[]: %NAME%{%NAME%}</code> <span style="color:gray;">''displays all items with their default names and descriptions''</span>
+
+=== Conditions ===
+Conditions describe which item(s) the rule should apply to.
+
+Many conditions refer to a single item or item group. These boolean conditions will be either true or false, depending on which item is being looked at.
+
+<code>ItemDisplay[key]:</code> <span style="color:gray;">''hides keys (they can still be purchased from merchants)''</span>
+
+
+Value conditions typically refer to the value of a specific property on the item being looked at. They each have three parts: code, comparison operator ('''<''','''>''','''='''), and value to compare against.
+
+<code>ItemDisplay[GOLD<100]:</code> <span style="color:gray;">''hides gold stacks if they are less than 100''</span>
+
+
+Rules with multiple conditions may use logic operators ('''AND''','''OR''','''!''') to specify how the conditions relate to each other. If no operator is used between conditions, '''AND''' will be assumed.
+
+<code>ItemDisplay[NMAG AND SOCKETS=1 AND CLVL>10]:</code> <span style="color:gray;">''hides regular 1-socket items if the character is above level 10''</span>
+
+<code>ItemDisplay[NMAG SOCKETS=1 CLVL>10]:</code> <span style="color:gray;">''hides regular 1-socket items if the character is above level 10 (same as above)''</span>
+
+
+To make a rule apply to any item from within a group of conditions, use '''OR''' and parentheses.
+
+<code>ItemDisplay[NMAG (BOOTS OR GLOVES OR BELT) CLVL>10]:</code> <span style="color:gray;">''hides regular boots/gloves/belts if the character is above level 10''</span>
+
+Parentheses can help combine conditions in other ways too.
+
+<code>ItemDisplay[(GOLD<100 OR (GOLD<1000 CLVL>50))]:</code> <span style="color:gray;">''hides gold stacks if they are less than 100, or less than 1000 if the character is above level 50''</span>
+
+
+Negation (sometimes called the "NOT" operator) makes conditions mean the opposite of what they would otherwise. To negate a condition, use "'''!'''" in front of it.
+
+<code>ItemDisplay[MAG ETH ARMOR !ID]:</code> <span style="color:gray;">''hides magic ethereal armor that is not identified''</span>
+
+Groups of conditions can be negated in the same way.
+
+<code>ItemDisplay[MAG !ID HELM !(BAR OR DRU OR ELT)]:</code> <span style="color:gray;">''hides magic unidentified helms that are not barbarian helms, druid pelts, or elite''</span>
+
+
+In addition to the standard comparison operators, value conditions can also be used with the "BETWEEN" operator  ('''~''') to specify value ranges.
+
+<code>ItemDisplay[NMAG SOCKETS~1-2]:</code> <span style="color:gray;">''hides regular items with 1-2 sockets''</span>
+
+<code>ItemDisplay[NMAG SOCKETS>0 SOCKETS<3]:</code> <span style="color:gray;">''hides regular items with 1-2 sockets (same as above)''</span>
+
+Any STAT and MULTI attribute code can have addition applied between them prior to the condition being evaluated.
+The following shortcut codes can be used as is: '''STR''', '''DEX''', '''LIFE''', '''MANA''', '''FRES''', '''CRES''', '''LRES''', '''PRES''', '''EDEF''', '''EDAM''', '''FCR''', '''AR''', '''REPLIFE'''
+
+<code>ItemDisplay[RARE FRES+CRES+LRES+PRES>79]: %NAME% %RED%!</code> <span style="color:gray;">''appends a red '''!''' to rares with 80+ total resistance''</span>
+
+<code>ItemDisplay[RARE STAT60+STAT62>10]: %NAME% %RED%!</code> <span style="color:gray;">''appends a red '''!''' to rares with 10+ total life/mana leech''</span>
+
+=== Output ===
+A rule's output (text and keywords in the second part of the rule) describe how the matching item(s) should be displayed.
+
+An item's default name can be referenced with the '''''%NAME%''''' keyword and modified by adding text. To shorten a name or change it entirely, write-out the new name instead. Valid text characters include all those in the [https://en.wikipedia.org/wiki/List_of_Unicode_characters#Basic_Latin '''Basic Latin'''] and [https://en.wikipedia.org/wiki/List_of_Unicode_characters#Latin-1_Supplement '''Latin-1 Supplement'''] Unicode blocks.
+
+{| class="wikitable"
+|+ Valid Text Characters
+|-
+! Category !! Characters
+|-
+| capital letters (eng) || <code>ABCDEFGHIJKLMNOPQRSTUVWXYZ</code>
+|-
+| small letters (eng) || <code>abcdefghijklmnopqrstuvwxyz</code>
+|-
+| numerals || <code>0123456789</code>
+|-
+| common symbols || <code>~!?@#$%^&*=-+_"'`,.:;<>&#124;\()[]{}</code>
+|-
+| space || <code>&nbsp;</code>
+|-
+| other symbols || <code>µ¶¢£¥®©§¿¡¯¨¬­¦«»÷×±ªº´¤°¹²³¼½¾·¸</code>
+|-
+| other capital letters || <code>ÐÞÆØÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝ</code>
+|-
+| other small letters || <code>ðþæøáàâäãåçéèêëíìîïñóòôöõúùûüýÿß</code>
+|}
+* The last three categories require the filter file to be encoded in ANSI rather than the default UTF-8
+* The soft hyphen character doesn't display correctly in many places (including this wiki) but does show up in-game
+* These characters display as "?" if HD text is disabled: ·¸
+* These characters aren't displayed at all if HD text is enabled: ¬­÷±¤ (including soft hyphen)
+
+
+<code>ItemDisplay[hdm]: %NAME%</code> <span style="color:gray;">''Horadric Malus''</span>
+
+<code>ItemDisplay[hdm]: Charsi's %NAME%</code> <span style="color:gray;">''Charsi's Horadric Malus''</span>
+
+<code>ItemDisplay[hdm]: Charsi's Favorite Hammer</code> <span style="color:gray;">''Charsi's Favorite Hammer''</span>
+
+
+Text and keywords can be used together to add extra information, change parts of the name to be different colors, and more. See [[Item_Filtering#Output_Keywords | all keywords]] below.
+
+<code>ItemDisplay[SOCKETS>0]: %NAME% %GRAY%[%SOCKETS%]</code> <span style="color:gray;">''displays socketed items with '''[X]''' appended in gray, where X is the number of sockets''</span>
+
+
+The price of an item (displayed above the name when a merchant is selling it) can be recolored by using a color keyword after the rest of the output.
+
+<code>ItemDisplay[SHOP]: %NAME%%WHITE%</code> <span style="color:gray;">''changes the price color for shop items to white</span>
+
+
+As with elsewhere, the double slash ('''//''') functions as an in-file way to write comments that will be ignored by the computer. Everything afterward will be ignored.
+
+<code>ItemDisplay[NMAG (aqv OR cqv)]: // hides regular arrows/bolts</code>
+
+
+When frequently enabling or disabling parts of a filter, putting '''//''' in front of those parts instead of deleting them can result in faster editing.
+
+<code>ItemDisplay[tsc]: //%NAME%</code> <span style="color:gray;">''this rule hides TP scrolls, but can be changed to display them instead by deleting '''//''' in front of %NAME%''</span>
+
+<code>//ItemDisplay[MAG (aqv OR cqv)]: // hides magic quivers if enabled</code> <span style="color:gray;">''this "rule" is ignored, but can be quickly re-enabled by deleting '''//''' from in front of ItemDisplay''</span>
+
+
+Items can be highlighted by adding spaces to either side of their name, so long as there is a keyword or non-space character between them and the edge of the name. Whitespace surrounding the '''''Output''''' of each rule gets removed prior to evaluation (spaces first, followed by tabs), so tabs are often the best non-space character to use.
+
+<code>ItemDisplay[RUNE>9]: %ORANGE% %NAME% %ORANGE%</code> <span style="color:gray;">''adds 1 space of highlighting for runes above #9 (tabs don't display properly on the wiki, so '''%ORANGE%''' is used instead)''</span>
+
+
+The '''''%CONTINUE%''''' keyword replaces the contents of '''''%NAME%''''' with the current rule's '''''Output''''' (overwriting the default name or previously stored output) and makes the program continue checking rules. This allows multiple rules to modify an item's appearance based on different conditions.
+
+<code>ItemDisplay[SOCKETS>0]: %NAME% [%SOCKETS%]%CONTINUE%</code> <span style="color:gray;">''appends '''[X]''' to socketed items, where X is the number of sockets (continues)''</span>
+
+<code>ItemDisplay[ETH]: eth %NAME%%CONTINUE%</code> <span style="color:gray;">''prepends '''eth''' to ethereal items (continues)''</span>
+
+<code>ItemDisplay[]: %NAME%</code> <span style="color:gray;">''displays all items (with modifications from previous rules)''</span>
+
+Without '''''%CONTINUE%''''', this would require a separate rule for every possible combination of different conditions, the number of rules growing exponentially with each additional condition:
+
+<code>ItemDisplay[ETH SOCKETS>0]: eth %NAME% [%SOCKETS%]</code>
+
+<code>ItemDisplay[!ETH SOCKETS>0]: %NAME% [%SOCKETS%]</code>
+
+<code>ItemDisplay[ETH SOCKETS=0]: eth %NAME%</code>
+
+<code>ItemDisplay[!ETH SOCKETS=0]: %NAME%</code>
+
+
+
+Item descriptions can be modified by using text and keywords within '''''{}''''' (braces). Anything outside the braces applies to the item name while anything inside the braces applies to the item description.
+
+[[File:DescEx1.png|thumb|Item Description Example]]<code>ItemDisplay[]: %NAME%{$DARK_GREEN%$%PRICE%}</code> <span style="color:gray;">''item price is shown in the description like '''$35000''''' in dark green''</span>
+
+Item descriptions aren't taken into account when hiding items, so descriptions can still be shown for hidden items if they have one.
+
+<code>ItemDisplay[]: %NAME%{%NAME%}</code> <span style="color:gray;">''items displayed with their descriptions''</span>
+
+<code>ItemDisplay[]: {%NAME%}</code> <span style="color:gray;">''items hidden but their descriptions still shown''</span>
+
+<code>ItemDisplay[]:</code> <span style="color:gray;">''items hidden and their descriptions hidden too''</span>
+
+
+The '''''%CONTINUE%''''' keyword only functions when used ''outside'' the braces and applies to both the item name and the item description.
+
+<code>ItemDisplay[]: %NAME%{Item Level: %ILVL%}%CONTINUE%</code> <span style="color:gray;">''Shows item level in description (continues)''</span>
+
+<code>ItemDisplay[]: %NAME%{%NAME%, Affix Level: %ALVL%}</code> <span style="color:gray;">''Appends affix level in description with comma separator''</span>
+
+
+The '''''%NL%''''' keyword adds a new line above the previous line and can be used in item descriptions for any item, or item names for the following: identified items whose rarity is magic or higher, runewords, and items within shops.
+
+<code>ItemDisplay[]: %NAME%{Affix Level: %ALVL%%NL%Item Level: %ILVL%}</code> <span style="color:gray;">''Shows item/affix levels on separate lines in description (same effect as '''Show Item Level''' setting)''</span>
+
+
+The number of displayed characters for an item's name is capped at 56. The internal limit for an item's name includes additional characters for color keywords (3 characters each) and %NL% (2 characters each) and goes up to 125.
+
+For example, a name that uses all 56 text characters and also uses 23 color keywords (69 internal characters) would have an internal size of 125 (56+69) and work as expected, but attempting to add another color will break things.
+
+The cap for item descriptions is much higher at 500 total characters and, unlike for item names, is the same for both displayed characters and internal characters.
+
+=== Aliases ===
+
+Custom aliases can be defined to ease readability of filters or to condense common condition combinations or output text.
+
+Aliases act as a very simple Find-and-Replace that occurs when a filter is loaded. As such, they can be defined anywhere in the filter.
+
+These are defined using the following format
+
+ Alias[ '''''TextToReplace''''' ]: '''''TextToBeInserted'''''
+
+Example:
+
+<code>Alias[RWBASES]: (NMAG !INF !RW SOCK=0)</code><br>
+<code>ItemDisplay[FILTLVL>1 RWBASES]: %NAME% Socket Me</code>
+
+when loaded would be expanded to
+
+<code>ItemDisplay[FILTLVL>1 (NMAG !INF !RW SOCK=0)]: %NAME% Socket Me</code>
+
+On the output side, aliases follow the same convention as other keywords.
+
+Example:
+
+<code>Alias[SOCKETCOUNT]: %WHITE% [%GRAY%%SOCK%%WHITE%]</code><br>
+<code>ItemDisplay[NMAG SOCK>0]: %NAME%%SOCKETCOUNT%</code>
+
+when loaded would be expanded to
+
+<code>ItemDisplay[NMAG SOCK>0]: %NAME%%WHITE% [%GRAY%%SOCK%%WHITE%]</code>
+
+<!-- End of "Filter Syntax" category -->
+
+== Filter Strictness ==
+Filter levels can be selected from the in-game settings menu and will change which rules/notifications are enabled based on the FILTLVL/TIER codes used in the filter. By default, there are two levels: "Standard" and "Show All Items". The "Standard" level is the normal filter behavior that would be seen without any filter level changes, whereas "Show All Items" will just prevent any items from being filtered out (hidden).
+
+To enable custom filter levels, use the following format at the top of the filter:
+
+<code>ItemDisplayFilterName[]: Low Strictness</code> <span style="color:gray;">''Adds a new filter strictness level named "Low Strictness"''</span>
+
+<code>ItemDisplayFilterName[]: Medium Strictness</code> <span style="color:gray;">''Adds a new filter strictness level named "Medium Strictness"''</span>
+
+<code>ItemDisplayFilterName[]: High Strictness</code> <span style="color:gray;">''Adds a new filter strictness level named "High Strictness"''</span>
+
+
+In addition to level 0 ("Show All Items") which is always available, up to 12 other levels can be enabled and the order in which they're listed at the top of the filter determines which number will reference them when used with the FILTLVL/TIER codes (e.g. '''''FILTLVL=1''''' and '''''%TIER-1%''''' for the first custom level).
+
+These codes can be used to create separate versions of the same filter with varying levels of strictness, make separate versions which includes extra info so that players can more easily reference niche item info without it cluttering item tooltips during normal gameplay (the levels could be swapped to when needed), or even combine drastically different filters into one just so they can be more easily swapped between.
+
+<code>ItemDisplay[yps FILTLVL>1]:</code> <span style="color:gray;">''Hides Antidote Potions if filter level 2+ is selected''</span>
+
+<code>ItemDisplay[MAG !ID cm1]: %NAME%%TIER-2%%DOT-97%</code> <span style="color:gray;">''Shows notifications for unidentified magic small charms if filter level 2 or lower is selected (still shows map icons at all levels)''</span>
+
+
+If a rule doesn't include '''''FILTLVL''''' as a condition, it won't be restricted by whatever filter level is selected.
+
+If a rule includes a [[Item_Filtering#Notification_Keywords|notification keyword]] and ''doesn't'' include a TIER keyword, it'll act as if '''''%TIER-9%''''' is included - it'll notify at all filter levels instead of being restricted by whatever filter level is selected.
+
+<!-- End of "Filter Strictness" category -->
+
+== Filter Codes ==
+=== Output Keywords ===
+==== Colors ====
+[[File:Text_Colors.png|200px|thumb|Text Colors:<br>Ddraw (left)<br>Glide without HD Text (center)<br>Glide with HD Text (right)]]
+These keywords change the color for subsequent text. If absent, the item's default color will be used instead.
+{| class="wikitable"
+! Code !! Color !! Default Use
+|-
+| %WHITE% || <span class="d2-white">White</span> || regular items
+|-
+| %GRAY% || <span class="d2-gray">Gray</span> || regular items (ethereal or socketed)
+|-
+| %BLUE% || <span class="d2-blue">Blue</span> || magic items, item descriptions
+|-
+| %YELLOW% || <span class="d2-yellow">Yellow</span> || rare items
+|-
+| %GOLD% || <span class="d2-gold">Gold</span> || unique items, runeword names
+|-
+| %GREEN% || <span class="d2-green">Green</span> || set items
+|-
+| %DARK_GREEN% || <span class="d2-dark-green">Dark Green</span> || 
+|-
+| %TAN% || <span class="d2-tan">Tan</span> || 
+|-
+| %BLACK% || <span class="d2-black">Black</span> || 
+|-
+| %PURPLE% || <span class="d2-purple">Purple</span> || 
+|-
+| %RED% || <span class="d2-red">Red</span> || broken/unusable items
+|-
+| %ORANGE% || <span class="d2-orange">Orange</span> || crafted items, endgame quest items, runes
+|-
+| %CORAL% || <span class="d2-coral">Coral</span> || ''custom''
+|-
+| %SAGE% || <span class="d2-sage">Sage</span> || ''custom''
+|-
+| %TEAL% || <span class="d2-teal">Teal</span> || ''custom''
+|-
+| %LIGHT_GRAY% || <span class="d2-light-gray">Light Gray</span> || ''custom''
+|}
+* Custom text colors only work with Glide or if HD text is enabled, and will otherwise revert to the most similar non-Glide color
+
+Some items have their default color built into '''''%NAME%''''', so their color won't change unless their name is rewritten completely. This is likely [[Bugs|unintended behavior]], and applies to runes, Standard of Heroes, and the PD2-specific non-equipment items other than map/arena scrolls and jewel fragments.
+
+<code>ItemDisplay[wss]: %RED%%NAME%</code> <span class="d2-purple">''Worldstone Shard''</span>
+
+<code>ItemDisplay[wss]: %RED%Worldstone Shard</code> <span class="d2-red">''Worldstone Shard''</span>
+
+==== Value References ====
+{| class="wikitable"
+! Code !! Output !! Details
+|-
+| %NAME% || item name || item's default appearance - can be modified/replaced with %CONTINUE%
+|-
+| %BASENAME% || item base name || item's base name stripped of quality descriptors and color
+|-
+| %ILVL% || item level || 1 - 99
+|-
+| %ALVL% || affix level || 1 - 99<br>used to determine which affixes can roll for magic/rare/crafted items
+|-
+| %CRAFTALVL% || prospective crafted ALVL || 1 - 99<br>what the resulting crafted item's ALVL will be if the item is used by the character as a crafting ingredient
+|-
+| %REROLLALVL% || prospective reroll ALVL || 1 - 99<br>what the resulting item's ALVL will be if the item is rerolled using the cube recipe
+|-
+| %LVLREQ% || level requirement || 0 - 99
+|-
+| %PRICE% || price of item when selling to a vendor || 1 - 35000
+|-
+| %SELLPRICE% || Identical to %PRICE% || 1 - 35000
+|-
+| %BUYPRICE% || price of item when buying from a vendor ||
+|-
+| %QTY% || quantity || 0 - 350
+|-
+| %RANGE% || melee range adder || 0 - 5
+|-
+| %WPNSPD% || weapon speed modifier || -60 - 20
+|-
+| %RUNENUM% || rune number || 0 - 33
+|-
+| %RUNENAME% || rune name || excludes "Rune" (e.g. "Vex" instead of "Vex Rune")
+|-
+| %GEMLEVEL% || gem quality || Chipped, Flawed, Normal, Flawless, Perfect
+|-
+| %GEMTYPE% || gem type || Amethyst, Diamond, Emerald, Ruby, Sapphire, Topaz, Skull
+|-
+| %CODE% || item code || 
+|-
+| %MAXSOCKETS% || max sockets possible || 
+|-
+| %BASEMINONEH% || min 1h damage || 
+|-
+| %BASEMINTWOH% || min 2h damage || 
+|-
+| %BASEMINTHROW% || min throw damage || 
+|-
+| %BASEMINKICK% || min kick damage || 
+|-
+| %BASEMINSMITE% || min smite damage || 
+|-
+| %BASEMAXTWOH% || max 2h damage || 
+|-
+| %BASEMAXTHROW% || max throw damage || 
+|-
+| %BASEMAXKICK% || max kick damage || 
+|-
+| %BASEMAXSMITE% || max smite damage || 
+|-
+| %BASEMAXONEH% || max 1h damage || 
+|-
+| %REQDEX% || required dexterity || 
+|-
+| %REQSTR% || required strength || 
+|-
+| %REQLVL% || required character level || 
+|-
+| %UPDEX% || required dexterity when upgraded || 0 if no upgrade exists
+|-
+| %UPSTR% || required strength when upgraded || 0 if no upgrade exists
+|-
+| %UPLVL% || required character level when upgraded || 0 if no upgrade exists
+|-
+| %MAXRES% || max all res || 
+|-
+| %ALLATTRIB% || +X to all stats || 
+|-
+| %BASEBLOCK% || base block chance || 
+|-
+| %HEIGHT% || height || how tall the item is in an inventory
+|-
+| %WIDTH% || width || how wide the item is in an inventory
+|-
+| %AREA% || area || height * width
+|}
+
+Additionally, keywords also exist for each [[Item_Filtering#Named_Attribute_Codes|named attribute code]] (except '''MAXDUR''') and each [[Item_Filtering#Numbered_Attribute_Codes|numbered attribute code]]. Some examples are:
+{| class="wikitable"
+! Code !! Output !! Details
+|-
+| %SOCKETS% || total sockets || 
+|-
+| %DEF% || total defense || 
+|-
+| %ED% || enhanced defense/damage || refers to defense for armor,<br>damage for weapons
+|-
+| %EDEF% || +N% Enhanced Defense || Includes bonuses from runewords and sockets<br>(ED does '''not''' include these)
+|-
+| %EDAM% || +N% Enhanced Damage || Includes bonuses from runewords and sockets<br>(ED does '''not''' include these)
+|-
+| %AR% || +N to Attack Rating || 
+|-
+| %RES% || All Resistances +N || 
+|-
+| %STR% || +N to Strength || 
+|-
+| %DEX% || +N to Dexterity || 
+|-
+| %STAT1% || +N to Energy || 
+|-
+| %STAT3% || +N to Vitality || 
+|-
+| %STAT36% || Physical Damage Taken Reduced by N% || 
+|-
+| %STAT58% || +X Poison Damage over Y Seconds<br>''bitrate N = (256X) / (25Y)'' || 
+|-
+| %STAT60% || N% Life Stolen per Hit || 
+|-
+| %STAT62% || N% Mana Stolen per Hit || 
+|-
+| %STAT86% || +N Life after each Kill || 
+|-
+| %STAT91% || Requirements +N% || 
+|-
+| %STAT329% || N% to Fire Skill Damage || 
+|-
+| %STAT330% || N% to Lightning Skill Damage || 
+|-
+| %STAT331% || N% to Cold Skill Damage || 
+|-
+| %STAT332% || N% to Poison Skill Damage || 
+|-
+| %STAT357% || N% to Magic Skill Damage || 
+|-
+| %SK48% || +N to Nova (Sorceress Only) || see [[Item_Filtering#Multi-layered_Stats|multi-layered stats]]
+|}
+
+==== Notification Keywords ====
+[[File:MapNotificationColors.png|thumb|Minimap Icon Colors]]
+These keywords add the item to the notification list and create a minimap icon for it.
+
+The color of the minimap icon corresponds to the keyword's hexadecimal 2-digit color code. The icon may be black (row 0, column 0 = 00), green (row 8, column 4 = 84), red (row 6, column 2 = 62), or any of the other colors shown in the chart image. Note that '''%MAP%''' may be used without a 2-digit color code, in which case the icon will use the current text color (or white if no color has been set).
+
+Multiple keywords can be used together to create multi-colored minimap icons.
+
+{| class="wikitable"
+! Code !! Details
+|-
+| %BORDER-00% || notification & minimap icon (large)
+|-
+| %MAP-00% || notification & minimap icon (medium)
+|-
+| %DOT-00% || notification & minimap icon (small)
+|-
+| %PX-00% || notification & minimap icon (tiny)
+|}
+
+The 2-digit hexadecimal codes which correspond to the [[Item_Filtering#Colors|text colors]] are listed below. Text colors have a solid inner color and their edges are blended to improve readability, so their average colors appear slightly different in some cases.
+{| class="wikitable"
+! Text Color !! Hex (Inner) !! Hex (Average)
+|-
+| <span class="d2-white">White</span> || 1F || 20
+|-
+| <span class="d2-gray">Gray</span> || C6 || 1D
+|-
+| <span class="d2-blue">Blue</span> || 94 || 97
+|-
+| <span class="d2-yellow">Yellow</span> || 6A || 6D
+|-
+| <span class="d2-gold">Gold</span> || D3 || 53
+|-
+| <span class="d2-green">Green</span> || 7D || 84
+|-
+| <span class="d2-dark-green">Dark Green</span> || 76 || 77
+|-
+| <span class="d2-tan">Tan</span> || 0E || 5A
+|-
+| <span class="d2-black">Black</span> || 21 || 21
+|-
+| <span class="d2-purple">Purple</span> || 9B || 9B
+|-
+| <span class="d2-red">Red</span> || 55 || 62
+|-
+| <span class="d2-orange">Orange</span> || 0B || 60
+|-
+| <span class="d2-coral">Coral</span> || ? || ?
+|-
+| <span class="d2-sage">Sage</span> || ? || ?
+|-
+| <span class="d2-teal">Teal</span> || ? || 9F
+|-
+| <span class="d2-light-gray">Light Gray</span> || ? || ?
+|}
+
+<br>
+
+Sounds can be played by using the %SOUNDID-#% keyword where # is the sound index from sounds.txt. All of the sounds in sounds.txt are available (with the exception of looping sounds). The command .playsound [sound-id] may be used ingame to test the sound.
+
+Indeces 4714-4729 correspond to Path of Exile-inspired drop sounds.
+{| class="wikitable"
+! Code !! Details
+|-
+| %SOUNDID-0% || Plays the sound corresponding to the index in sounds.txt when the item drops
+|-
+|}
+
+
+The following keyword only applies if '''Detailed Notifications''' is disabled, which is not recommended. To disable text notifications for items while keeping their minimap icons, use '''%TIER-0%''' instead.
+
+{| class="wikitable"
+! Code !! Details
+|-
+| %NOTIFY-0% || changes the item's text notification color
+|-
+| %NOTIFY-DEAD% || disables text notifications for the item
+|}
+
+The ''NOTIFY'' keyword may use a 1-digit color code (0-F) which corresponds to these colors in order: WHITE, RED, GREEN, BLUE, GOLD, GRAY, BLACK, TAN, ORANGE, YELLOW, DARK_GREEN, PURPLE, GREEN, WHITE, BLACK, WHITE. If ''DEAD'' is used instead of a color code, the item's notifications will be disabled instead.
+
+Most filters are made to be used with '''Detailed Notifications''', so ''NOTIFY'' is incompatible with them. Note that without '''Detailed Notifications''' enabled, '''Drop Notifications''' will only apply to items when they initially drop (prior to being picked up for the first time).
+
+
+All notification keywords bypass the normal rule-handling procedure. Normally, the rules are processed top-to-bottom and this process halts when a matching rule (without '''%CONTINUE%''') is found. Notification keywords, however, can apply even after the process has halted. This is most likely due to the game making a separate pass through the filter file for notification keywords - the first pass ignores notification keywords, and the second pass ignores everything else.
+
+==== Special Keywords ====
+{| class="wikitable"
+! Code !! Details
+|-
+| %CONTINUE% || the item is compared against additional rules instead of being displayed by the current rule<br>the current rule's output is stored in %NAME%
+|-
+| %NL% || specifies a new line (lines are constructed bottom-up)<br>only works within braces (descriptions) or for '''ID !NMAG''', '''RW''', or '''SHOP''' items (identified items which are magic or higher rarity, runewords, or items within shops)
+|-
+| %CL% || specifies a new line if not already at the start of a new line.<br>works like %NL%, except will not create blank lines or multiple consecutive new lines, even when used repeatedly.
+|-
+| %CS% || specifies a space if not a space would separate non-whitespace. similar to %CL% except it checks blank lines and spaces.
+|-
+| {} || anything within the braces applies to the item's description rather than the item's name/title
+|-
+| %TIER-0% || disables text notifications (but not map icons) for the item if the [[Item_Filtering#Filter_Strictness|filter strictness]] level is above 0 (value can be 0-12)
+|}
+
+<!-- End of "Output Keywords" category -->
+
+=== Boolean Conditions ===
+==== Mutable Codes ====
+Contrary to most "immutable" codes which refer to static item properties, these conditions depend on where and how the item is being viewed. Some value conditions are also "mutable" in this way: [[Item_Filtering#Info_Codes|CLVL, CRAFTALVL, DIFF, FILTLVL, MAPID]], and [[Item_Filtering#Numbered_Attribute_Codes|CHARSTAT codes]].
+{| class="wikitable"
+! Code !! Description
+|-
+| AMAZON || character is an Amazon
+|-
+| ASSASSIN || character is an Assassin
+|-
+| BARBARIAN || character is a Barbarian
+|-
+| DRUID || character is a Druid
+|-
+| NECROMANCER || character is a Necromancer
+|-
+| PALADIN || character is a Paladin
+|-
+| SORCERESS || character is a Sorceress
+|-
+| SHOP || item is in a merchant's shop window
+|-
+| EQUIPPED || item is equipped by the character
+|-
+| MERC || item is equipped by the mercenary
+|-
+| INVENTORY || item is in the inventory
+|-
+| CUBE || item is in the Horadric cube
+|-
+| STASH || item is in the stash
+|-
+| GROUND || item is on the ground
+|}
+<code>ItemDisplay[key ASSASSIN]:</code> <span style="color:gray;">''hides keys when playing as an Assassin''</span>
+
+==== Item Group Codes ====
+===== General Groups =====
+<div><ul style="margin-left:0px;">
+<li style="display:inline-table; margin-left:0px; margin-right:8px;">
+====== Item Rarities ======
+{| class="wikitable"
+! Code !! Group
+|-
+| NMAG || Regular<br>most non-equipment items
+|-
+| MAG || Magic
+|-
+| RARE || Rare
+|-
+| UNI || Unique
+|-
+| SET || Set
+|-
+| CRAFT || Crafted
+|}
+</li>
+<li style="display:inline-table; margin-left:0px; margin-right:8px;">
+====== Item Tiers ======
+{| class="wikitable"
+! Code !! Group
+|-
+| NORM || Normal
+|-
+| EXC || Exceptional
+|-
+| ELT || Elite
+|}
+</li>
+<li style="display:inline-table; margin-left:0px; margin-right:8px;">
+====== Item Properties ======
+{| class="wikitable"
+! Code !! Group
+|-
+| ID || Identified
+|-
+| INF || Inferior
+|-
+| SUP || Superior
+|-
+| ETH || Ethereal
+|-
+| RW || Runeword
+|-
+| GEMMED || Socketed with a gem/rune/jewel
+|}
+</li>
+</ul></div>
+
+===== Misc Groups =====
+{| class="wikitable"
+! Code !! Group !! Details
+|-
+| JEWELRY || Jewelry || Rings and amulets
+|-
+| CHARM || Charms || Small, large and grand charms
+|-
+| QUIVER || Quivers || Arrows and bolts
+|-
+| MISC || Misc || Items in misc.txt, e.g potions, gems, runes, ingredients and quest items
+|-
+|}
+
+===== Armor Groups =====
+{| class="wikitable"
+! Code !! Code !! Group !! Details
+|-
+| EQ1 || HELM || Helms || includes class helms
+|-
+| EQ2 || CHEST || Chests || 
+|-
+| EQ3 || SHIELD || Shields || includes class shields
+|-
+| EQ4 || GLOVES || Gloves || 
+|-
+| EQ5 || BOOTS || Boots || 
+|-
+| EQ6 || BELT || Belts || 
+|-
+| EQ7 || CIRC || Circlets || 
+|-
+| ARMOR ||  || All armors || includes class-restricted armors
+|}
+
+===== Weapon Groups =====
+{| class="wikitable"
+! Code !! Code !! Group !! Details
+|-
+| WP1 || AXE || Axes || includes throwing axes
+|-
+| WP2 || MACE || Maces || 
+|-
+| WP3 || SWORD || Swords || 
+|-
+| WP4 || DAGGER || Daggers || includes throwing knives
+|-
+| WP5 || THROWING || Throwing Weapons || includes throwing knives/axes, all javelins, throwing potions
+|-
+| WP6 || JAV || Javelins || includes Amazon javelins
+|-
+| WP7 || SPEAR || Spears || includes Amazon spears
+|-
+| WP8 || POLEARM || Polearms || 
+|-
+| WP9 || BOW || Bows || includes Amazon bows
+|-
+| WP10 || XBOW || Crossbows || 
+|-
+| WP11 || STAFF || Staves || 
+|-
+| WP12 || WAND || Wands || 
+|-
+| WP13 || SCEPTER || Scepters || 
+|-
+| WEAPON ||  || All weapons || includes class-restricted weapons
+|-
+| 1H ||  || 1-Handed Weapons || 
+|-
+| 2H ||  || 2-Handed Weapons || 
+|-
+| CLUB ||  || Clubs (mace subtype) || 
+|-
+| TMACE ||  || Tipped Maces (mace subtype) || 
+|-
+| HAMMER ||  || Hammers (mace subtype) || 
+|}
+
+===== Class-Restricted Item Groups =====
+{| class="wikitable"
+! Code !! Code !! Group
+|-
+| CL1 || DRU || Druid pelts
+|-
+| CL2 || BAR || Barbarian helms
+|-
+| CL3 || DIN || Paladin shields
+|-
+| CL4 || NEC || Necromancer shields
+|-
+| CL5 || SIN || Assassin weapons
+|-
+| CL6 || SOR || Sorceress weapons (Orbs)
+|-
+| CL7 || ZON || Amazon weapons
+|-
+| CLASS ||  || All class-restricted items
+|}
+
+{{:Item Codes}}
+
+===== Corrupted Hero Ears =====
+Corrupted Hero Ears are map event items from the '''Corrupted Heroes Invasion''' event. Corrupted heroes can invade maps, attack the player, and drop their items on death. They can also drop class-specific ears, which may be combined with a map to increase the map's difficulty and rewards.
+
+{| class="wikitable"
+! Code !! Item
+|-
+| ivea || Corrupted Assassin Ear
+|-
+| ivez || Corrupted Amazon Ear
+|-
+| iveb || Corrupted Barbarian Ear
+|-
+| ived || Corrupted Druid Ear
+|-
+| iven || Corrupted Necromancer Ear
+|-
+| ivep || Corrupted Paladin Ear
+|-
+| ives || Corrupted Sorceress Ear
+|}
+
+<code>Alias[CORRUPTEDHEROEAR]: (ivea OR ivez OR iveb OR ived OR iven OR ivep OR ives)</code>
+<code>ItemDisplay[CORRUPTEDHEROEAR]: %PURPLE%%NAME%%MAP-9B%%SOUNDID-4714%</code>
+
+<!-- End of "Boolean Conditions" category -->
+
+=== Value Conditions ===
+==== Info Codes ====
+{| class="wikitable"
+! Code !! Description !! Details
+|-
+| GOLD || Gold || can be hidden, but not modified (always displays as "N Gold")<br>gold is automatically picked up (hiding it does not prevent this)
+|-
+| GEMLEVEL<br>GEM || gem quality level || 1 - 5 (Chipped-Perfect)
+|-
+| GEMTYPE || gem type || 1 - 7 (Amethyst, Diamond, Emerald, Ruby, Sapphire, Topaz, Skull)
+|-
+| RUNE || rune number || 1 - 33 (El-Zod)
+|-
+| QTY || quantity || 
+|-
+| LVLREQ || level requirement || 
+|-
+| PRICE || vendor sell value || 
+|-
+| ALVL || affix level || used to determine which affixes can roll for magic/rare/crafted items
+|-
+| CRAFTALVL || prospective crafted ALVL || what the resulting crafted item's ALVL will be if the item is used as a crafting ingredient by the character
+|-
+| REROLLALVL || prospective rerolled ALVL || what the resulting item's ALVL will be if the item is rerolled using the cube recipe
+|-
+| QLVL || quality level || 
+|-
+| ILVL || item level || 
+|-
+| CLVL || character level || 
+|-
+| DIFF || difficulty || 0 - 2 (Normal, Nightmare, Hell)
+|-
+| MAPID || current zone || 1 - 175 (see [[Item_Filtering#MAPID_IDs|details]])
+|-
+| MAPTIER || map tier || 0 - 5 (PvP, T1, T2, T3, Dungeon, Unique)
+|-
+| PREFIX || item prefix || 1 - 805 (see [[Item_Filtering#SUFFIX,_PREFIX,_and_AUTOMOD_IDs|details]])
+|-
+| SUFFIX || item suffix || 1 - 900 (see [[Item_Filtering#SUFFIX,_PREFIX,_and_AUTOMOD_IDs|details]])
+|-
+| AUTOMOD || item automod || 1 - 44 (see [[Item_Filtering#SUFFIX,_PREFIX,_and_AUTOMOD_IDs|details]])
+|-
+| FILTLVL || filter strictness level || 0 - 12 (Show All Items, up to 12 custom levels)
+|-
+| TRUE || Evaluates to boolean TRUE || Useful for toggling global settings via aliases
+|-
+| FALSE || Evaluates to boolean FALSE || Useful for toggling global settings via aliases
+|-
+| MAXSOCKETS || max sockets possible || 
+|-
+| BASEMINONEH || min 1h damage || 
+|-
+| BASEMINTWOH || min 2h damage || 
+|-
+| BASEMINTHROW || min throw damage || 
+|-
+| BASEMINKICK || min kick damage || 
+|-
+| BASEMINSMITE || min smite damage || 
+|-
+| BASEMAXTWOH || max 2h damage || 
+|-
+| BASEMAXTHROW || max throw damage || 
+|-
+| BASEMAXKICK || max kick damage || 
+|-
+| BASEMAXSMITE || max smite damage || 
+|-
+| BASEMAXONEH || max 1h damage || 
+|-
+| REQDEX || required dexterity || 
+|-
+| REQSTR || required strength || 
+|-
+| REQLVL || required character level || 
+|-
+| UPDEX || required dexterity when upgraded || 0 if no upgrade exists
+|-
+| UPSTR || required strength when upgraded || 0 if no upgrade exists
+|-
+| UPLVL || required character level when upgraded || 0 if no upgrade exists
+|-
+| MAXRES || max all res || 
+|-
+| ALLATTRIB || +X to all stats || 
+|-
+| BASEBLOCK || base block chance || 
+|-
+| HEIGHT || height || how tall the item is in an inventory
+|-
+| WIDTH || width || how wide the item is in an inventory
+|-
+| AREA || area || height * width
+|}
+
+==== Named Attribute Codes ====
+{| class="wikitable"
+! Code !! Description !! Item Appearance !! Details
+|-
+| SOCKETS<br>SOCK || total sockets || Socketed (N) || 
+|-
+| DEF || total defense || Defense: N<br>+N Defense || 
+|-
+| ED || enhanced defense/damage || +N% Enhanced Defense<br>+N% Enhanced Damage || refers to defense for armor,<br>damage for weapons
+|-
+| EDEF || enhanced defense || +N% Enhanced Defense || Includes bonuses from runewords and sockets<br>(ED does '''not''' include these)
+|-
+| EDAM || enhanced damage || +N% Enhanced Damage || Includes bonuses from runewords and sockets<br>(ED does '''not''' include these)
+|-
+| MAXDUR || max durability || Increase Maximum Durability N% || 
+|-
+| AR || attack rating || +N to Attack Rating || 
+|-
+| RES || all res || All Resistances +N || 
+|-
+| FRES || fire res || Fire Resist +N% || 
+|-
+| CRES || cold res || Cold Resist +N% || 
+|-
+| LRES || lightning res || Lightning Resist +N% || 
+|-
+| PRES || poison res || Poison Resist +N% || 
+|-
+| FRW || faster run/walk || +N% Faster Run/Walk || 
+|-
+| IAS || attack rate || +N% Increased Attack Speed || 
+|-
+| FCR || Faster Cast Rate || +N% Faster Cast Rate || 
+|-
+| FHR || Faster Hit Recovery || +N% Faster Hit Recovery || 
+|-
+| FBR || Faster Block Rate || +N% Faster Block Rate || 
+|-
+| MINDMG || minimum damage || +N to Minimum Damage || 
+|-
+| MAXDMG || maximum damage || +N to Maximum Damage || 
+|-
+| STR || strength || +N to Strength || 
+|-
+| DEX || dexterity || +N to Dexterity || 
+|-
+| LIFE || max hp || +N to Life || 
+|-
+| MANA || max mana || +N to Mana || 
+|-
+| MFIND || magic find || N% Better Chance of Getting Magic Items || 
+|-
+| GFIND || gold find || N% Extra Gold from Monsters || 
+|-
+| MAEK || mana per kill || +N to Mana after each Kill || 
+|-
+| DTM || damage to mana || N% Damage Taken Gained as Mana when Hit || 
+|-
+| REPLIFE || life replenish || Replenish Life +N || 
+|-
+| REPAIR || auto-repair || Repairs X Durability in Y Seconds || N = 100 / Y
+|-
+| ARPER || AR bonus || N% Bonus to Attack Rating || 
+|-
+| FOOLS || fool's mod || +X to Attack Rating (Based on Character Level)<br>+Y to Maximum Damage (Based on Character Level) || boolean condition
+|}
+
+==== Numbered Attribute Codes ====
+The relevant number for each code is shown as N. If N is absent, it is often either 0 or 1. For codes that refer to attributes which are based on character level, N is often a multiple of Y (as in "+Y per Character Level") such as 8Y for STAT214 or 2Y for STAT224.
+
+Some numbered attribute codes (shown in <span style="color:gray;">gray</span>) refer to the same attributes as [[Item_Filtering#Named_Attribute_Codes|named attribute codes]] or other named codes, which can be used instead for better readability.
+
+To refer to stats that have multiple parts such as chance-to-cast effects or skill charges, the '''MULTI''' condition must be used instead of '''STAT''': see [[Item_Filtering#Multi-layered_Stats|Multi-Layered Stats]]
+
+All these numbered attribute '''STAT''' codes refer to individual items in the same way that most codes do - they are "immutable" and don't change depending on the character viewing the item. There are also corresponding '''CHARSTAT''' codes for each attribute which are "mutable" and can change based on other factors - rather than checking whether an ''item'' has the attribute, these codes check whether the ''character'' has the attribute. In most cases, that means checking whether the character is wearing an item with the attribute. But there are also some "non-item" codes such as '''CHARSTAT14''' and '''CHARSTAT15''' which refer to how much gold the character is carrying and how much gold they have in their stash, respectively.
+
+<div><ul style="margin-left:0px;">
+<li style="display:inline-table; margin-left:0px; margin-right:8px;">
+===== General =====
+{| class="wikitable"
+! Code !! Item Appearance
+|-
+| <span style="color:gray;">STAT0</span> || +N to Strength
+|-
+| STAT1 || +N to Energy
+|-
+| <span style="color:gray;">STAT2</span> || +N to Dexterity
+|-
+| STAT3 || +N to Vitality
+|-
+| <span style="color:gray;">STAT7</span> || +X to Life ''(N = 256X)''
+|-
+| <span style="color:gray;">STAT9</span> || +X to Mana ''(N = 256X)''
+|-
+| STAT11 || +N Maximum Stamina
+|-
+| STAT16 || +N% Enhanced Defense
+|-
+| <span style="color:gray;">STAT19</span> || +N to Attack Rating
+|-
+| STAT20 || Chance to Block: N%
+|-
+| STAT27 || Regenerate Mana N%
+|-
+| STAT28 || Heal Stamina +N%
+|-
+| <span style="color:gray;">STAT31</span> || +N Defense
+|-
+| STAT32 || +N Defense vs. Missile
+|-
+| STAT33 || +N Defense vs. Melee
+|-
+| STAT34 || style="font-size:95%;" | Physical Damage Taken Reduced by N
+|-
+| STAT35 || style="font-size:75%;" | Magic & Elemental Damage Taken Reduced by N
+|-
+| STAT36 || style="font-size:90%;" | Physical Damage Taken Reduced by N%
+|-
+| STAT60 || N% Life Stolen per Hit
+|-
+| STAT62 || N% Mana Stolen per Hit
+|-
+| <span style="color:gray;">STAT68</span> || +N% Increased Attack Speed
+|-
+| <span style="color:gray;">STAT70</span> || Quantity: N
+|-
+| STAT72 || Durability: N of Y
+|-
+| STAT73 || Durability: X of N
+|-
+| <span style="color:gray;">STAT74</span> || Replenish Life +N
+|-
+| <span style="color:gray;">STAT75</span> || Increase Maximum Durability N%
+|-
+| STAT76 || Increase Maximum Life N%
+|-
+| STAT77 || Increase Maximum Mana N%
+|-
+| STAT78 || Attacker Takes Damage of N
+|-
+| <span style="color:gray;">STAT79</span> || N% Extra Gold from Monsters
+|-
+| <span style="color:gray;">STAT80</span> || style="font-size:86%;" | N% Better Chance of Getting Magic Items
+|-
+| STAT81 || Knockback
+|-
+| STAT85 || +N% to Experience Gained
+|-
+| STAT86 || +N Life after each Kill
+|-
+| STAT87 || Reduces All Vendor Prices N%
+|-
+| STAT89 || +N to Light Radius
+|-
+| STAT91 || Requirements +N%
+|-
+| <span style="color:gray;">STAT93</span> || +N% Increased Attack Speed
+|-
+| <span style="color:gray;">STAT96</span> || +N% Faster Run/Walk
+|-
+| <span style="color:gray;">STAT99</span> || +N% Faster Hit Recovery
+|-
+| style="font-size:90%;" | <span style="color:gray;">STAT102</span> || +N% Faster Block Rate
+|-
+| style="font-size:90%;" | <span style="color:gray;">STAT105</span> || +N% Faster Cast Rate
+|-
+| style="font-size:90%;" | STAT108 || Slain Monsters Rest in Peace
+|-
+| style="font-size:90%;" | STAT109 || N% Reduced Curse Duration
+|-
+| style="font-size:90%;" | STAT110 || Poison Length Reduced by N%
+|-
+| style="font-size:90%;" | STAT112 || Hit Causes Monster to Flee N%
+|-
+| style="font-size:90%;" | STAT113 || Hit Blinds Target +N
+|-
+| style="font-size:90%;" | <span style="color:gray;">STAT114</span> || style="font-size:79%;" | N% Damage Taken Gained as Mana when Hit
+|-
+| style="font-size:90%;" | STAT115 || Ignore Target's Defense
+|-
+| style="font-size:90%;" | STAT116 || -N% Target Defense
+|-
+| style="font-size:90%;" | STAT117 || Prevent Monster Heal
+|-
+| style="font-size:90%;" | STAT118 || Half Freeze Duration
+|-
+| style="font-size:90%;" | <span style="color:gray;">STAT119</span> || N% Bonus to Attack Rating
+|-
+| style="font-size:90%;" | STAT120 || -N to Monster Defense per Hit
+|-
+| style="font-size:90%;" | STAT123 || style="font-size:97%;" | +N to Attack Rating against Demons
+|-
+| style="font-size:90%;" | STAT124 || style="font-size:98%;" | +N to Attack Rating against Undead
+|-
+| style="font-size:90%;" | <span style="color:gray;">STAT127</span> || +N to All Skills
+|-
+| style="font-size:90%;" | STAT128 || style="font-size:94%;" | Attacker Takes Lightning Damage of N
+|-
+| style="font-size:90%;" | STAT134 || Freezes Target +N
+|-
+| style="font-size:90%;" | STAT135 || N% Chance of Open Wounds
+|-
+| style="font-size:90%;" | STAT136 || N% Chance of Crushing Blow
+|-
+| style="font-size:90%;" | <span style="color:gray;">STAT138</span> || +N to Mana after each Kill
+|-
+| style="font-size:90%;" | STAT139 || +N Life after each Demon Kill
+|-
+| style="font-size:90%;" | STAT140 || style="font-size:98%;" | N% Extra Bloody ''(Hidden Cosmetic)''
+|-
+| style="font-size:90%;" | STAT141 || N% Deadly Strike
+|-
+| style="font-size:90%;" | STAT150 || Slows Target by N%
+|-
+| style="font-size:90%;" | STAT152 || Indestructible
+|-
+| style="font-size:90%;" | STAT153 || Cannot Be Frozen
+|-
+| style="font-size:90%;" | STAT154 || N% Slower Stamina Drain
+|-
+| style="font-size:90%;" | STAT156 || +N% Chance to Pierce
+|-
+| style="font-size:90%;" | STAT157 || Fires Magic Arrows
+|-
+| style="font-size:90%;" | STAT158 || Fires Explosive Arrows or Bolts
+|-
+| style="font-size:90%;" | <span style="color:gray;">STAT194</span> || Socketed (N)
+|-
+| style="font-size:90%;" | <span style="color:gray;">STAT252</span> || style="font-size:78%;" | Repairs X Durability in Y Seconds ''(N = 100/Y)''
+|-
+| style="font-size:90%;" | STAT360 || Corrupted ''([[Item_Filtering#STAT360_IDs|values for N]])''
+|-
+| style="font-size:90%;" | STAT422 || Replenishes 1 Charge in 3 Seconds
+|-
+| style="font-size:90%;" | STAT424 || +N Life after each Hit
+|-
+| style="font-size:90%;" | STAT425 || -N% to Enemy Physical Resistance
+|-
+| style="font-size:90%;" | STAT486 || Mirrored
+|-
+| style="font-size:90%;" | STAT477 || style="font-size:90%;" | ''transform_dye (N: black=4, white=21)''
+|-
+| style="font-size:90%;" | STAT501 || style="font-size:92%;" | +N Open Wounds Damage per Second
+|-
+| style="font-size:90%;" | STAT504 || Curse Resistance +N%
+|}
+</li>
+<li style="display:inline-table; margin-left:0px; margin-right:8px;">
+
+===== Elements =====
+{| class="wikitable"
+! Code !! Item Appearance
+|-
+| STAT37 || Magic Resist +N%
+|-
+| STAT38 || style="font-size:83%;" | +N% to Maximum Magic Resist
+|-
+| <span style="color:gray;">STAT39</span> || Fire Resist +N%
+|-
+| STAT40 || style="font-size:89%;" | +N% to Maximum Fire Resist
+|-
+| <span style="color:gray;">STAT41</span> || Lightning Resist +N%
+|-
+| STAT42 || style="font-size:75%;" | +N% to Maximum Lightning Resist
+|-
+| <span style="color:gray;">STAT43</span> || Cold Resist +N%
+|-
+| STAT44 || style="font-size:87%;" | +N% to Maximum Cold Resist
+|-
+| <span style="color:gray;">STAT45</span> || Poison Resist +N%
+|-
+| STAT46 || style="font-size:81%;" | +N% to Maximum Poison Resist
+|-
+| style="font-size:90%;" | STAT142 || Fire Absorb N%
+|-
+| style="font-size:90%;" | STAT143 || +N Fire Absorb
+|-
+| style="font-size:90%;" | STAT144 || Lightning Absorb N%
+|-
+| style="font-size:90%;" | STAT145 || +N Lightning Absorb
+|-
+| style="font-size:90%;" | STAT146 || Magic Absorb N%
+|-
+| style="font-size:90%;" | STAT147 || +N Magic Absorb
+|-
+| style="font-size:90%;" | STAT148 || Cold Absorb N%
+|-
+| style="font-size:90%;" | STAT149 || +N Cold Absorb
+|-
+| style="font-size:90%;" | STAT333 || style="font-size:87%;" | -N% to Enemy Fire Resistance
+|-
+| style="font-size:90%;" | STAT334 || style="font-size:75%;" | -N% to Enemy Lightning Resistance
+|-
+| style="font-size:90%;" | STAT335 || style="font-size:86%;" | -N% to Enemy Cold Resistance
+|-
+| style="font-size:90%;" | STAT336 || style="font-size:80%;" | -N% to Enemy Poison Resistance
+|-
+| style="font-size:90%;" | STAT362 || +N to Cold Skills
+|-
+| style="font-size:90%;" | STAT363 || +N to Fire Skills
+|-
+| style="font-size:90%;" | STAT364 || +N to Lightning Skills
+|-
+| style="font-size:90%;" | STAT365 || +N to Poison Skills
+|-
+| style="font-size:90%;" | STAT366 || +N to Magic Skills
+|}
+</li>
+<li style="display:inline-table; margin-left:0px; margin-right:8px;">
+===== Damage =====
+{| class="wikitable"
+! Code !! Item Appearance
+|-
+| STAT17 || +N% Enhanced Damage<br>''(off-weapon minimum)''
+|-
+| STAT18 || +N% Enhanced Damage<br>''(off-weapon maximum)''
+|-
+| <span style="color:gray;">STAT21</span> || Damage: N to Y<br>+N to Minimum Damage<br>''(one-handed weapons)''
+|-
+| <span style="color:gray;">STAT22</span> || Damage: X to N<br>+N to Maximum Damage<br>''(one-handed weapons)''
+|-
+| <span style="color:gray;">STAT23</span> || +N to Minimum Damage<br>''(two-handed weapons)''
+|-
+| <span style="color:gray;">STAT24</span> || +N to Maximum Damage<br>''(two-handed weapons)''
+|-
+| STAT25 || +N% Damage
+|-
+| STAT48 || Adds N-Y Fire Damage
+|-
+| STAT49 || Adds X-N Fire Damage
+|-
+| STAT50 || style="font-size:93%;" | Adds N-Y Lightning Damage
+|-
+| STAT51 || style="font-size:93%;" | Adds 1-N Lightning Damage
+|-
+| STAT52 || Adds N-Y Magic Damage
+|-
+| STAT53 || Adds X-N Magic Damage
+|-
+| STAT54 || Adds N-Y Cold Damage
+|-
+| STAT55 || Adds X-N Cold Damage
+|-
+| STAT56 || Adds X-Y Cold Damage<br>''N = duration''
+|-
+| STAT57 || style="font-size:75%;" | +X Poison Damage over Y Seconds<br>''bitrate N = (256X) / (25Y)''
+|-
+| STAT58 || style="font-size:75%;" | +X Poison Damage over Y Seconds<br>''bitrate N = (256X) / (25Y)''
+|-
+| STAT59 || style="font-size:75%;" | +X Poison Damage over N Seconds
+|-
+| style="font-size:90%;" | STAT111 || Damage +N
+|-
+| style="font-size:90%;" | STAT121 || +N% Damage to Demons
+|-
+| style="font-size:90%;" | STAT122 || +N% Damage to Undead
+|-
+| style="font-size:90%;" | <span style="color:gray;">STAT159</span> || Damage: N to Y<br>+N to Minimum Damage<br>''(throwing weapons)''
+|-
+| style="font-size:90%;" | <span style="color:gray;">STAT160</span> || Damage: X to N<br>+N to Maximum Damage<br>''(throwing weapons)''
+|-
+| style="font-size:90%;" | STAT326 || style="font-size:75%;" | +X Poison Damage over Y Seconds
+|-
+| style="font-size:90%;" | STAT329 || style="font-size:98%;" | +N% to Fire Skill Damage
+|-
+| style="font-size:90%;" | STAT330 || style="font-size:82%;" | +N% to Lightning Skill Damage
+|-
+| style="font-size:90%;" | STAT331 || style="font-size:96%;" | +N% to Cold Skill Damage
+|-
+| style="font-size:90%;" | STAT332 || style="font-size:90%;" | +N% to Poison Skill Damage
+|-
+| style="font-size:90%;" | STAT357 || style="font-size:92%;" | +N% to Magic Skill Damage
+|}
+</li>
+<li style="display:inline-table; margin-left:0px; margin-right:0px;">
+
+===== Based on Character Level =====
+{| class="wikitable"
+! Code !! Item Appearance
+|-
+| style="font-size:90%;" | STAT214 || +X Defense (...) <!-- N = 8Y (+Y per Character Level) -->
+|-
+| style="font-size:90%;" | STAT216 || +X to Life (...)
+|-
+| style="font-size:90%;" | STAT217 || +X to Mana (...)
+|-
+| style="font-size:90%;" | STAT218 || +X to Maximum Damage (...)
+|-
+| style="font-size:90%;" | STAT219 || style="font-size:87%;" | +X% Enhanced Maximum Damage (...)
+|-
+| style="font-size:90%;" | STAT220 || +X to Strength (...)
+|-
+| style="font-size:90%;" | STAT221 || +X to Dexterity (...)
+|-
+| style="font-size:90%;" | STAT222 || +X to Energy (...)
+|-
+| style="font-size:90%;" | STAT223 || +X to Vitality (...)
+|-
+| style="font-size:90%;" | STAT224 || +X to Attack Rating (...) <!-- N = 2Y (+Y per Character Level) -->
+|-
+| style="font-size:90%;" | STAT225 || X% Bonus to Attack Rating (...)
+|-
+| style="font-size:90%;" | STAT226 || style="font-size:98%;" | +X to Maximum Cold Damage (...)
+|-
+| style="font-size:90%;" | STAT227 || +X to Maximum Fire Damage (...)
+|-
+| style="font-size:90%;" | STAT228 || style="font-size:87%;" | +X to Maximum Lightning Damage (...)
+|-
+| style="font-size:90%;" | STAT229 || style="font-size:93%;" | +X to Maximum Poison Damage (...)
+|-
+| style="font-size:90%;" | STAT230 || Cold Resist +X% (...)
+|-
+| style="font-size:90%;" | STAT231 || Fire Resist +X% (...)
+|-
+| style="font-size:90%;" | STAT232 || Lightning Resist +X% (...)
+|-
+| style="font-size:90%;" | STAT233 || Poison Resist +X% (...)
+|-
+| style="font-size:90%;" | STAT234 || +X Absorbs Cold Damage (...)
+|-
+| style="font-size:90%;" | STAT235 || +X Absorbs Fire Damage (...)
+|-
+| style="font-size:90%;" | STAT236 || style="font-size:97%;" | +X Absorbs Lightning Damage (...)
+|-
+| style="font-size:90%;" | STAT237 || +X Absorbs Poison Damage (...)
+|-
+| style="font-size:90%;" | STAT238 || Attacker Takes Damage of X (...)
+|-
+| style="font-size:90%;" | STAT239 || X% Extra Gold from Monsters (...)
+|-
+| style="font-size:90%;" | STAT240 || style="font-size:75%;" | X% Better Chance of Getting Magic Items (...)
+|-
+| style="font-size:90%;" | STAT241 || Heal Stamina Plus X% (...)
+|-
+| style="font-size:90%;" | STAT242 || +X Maximum Stamina (...)
+|-
+| style="font-size:90%;" | STAT243 || +X% Damage to Demons (...)
+|-
+| style="font-size:90%;" | STAT244 || +X% Damage to Undead (...)
+|-
+| style="font-size:90%;" | STAT245 || style="font-size:84%;" | +X to Attack Rating against Demons (...)
+|-
+| style="font-size:90%;" | STAT246 || style="font-size:85%;" | +X to Attack Rating against Undead (...)
+|-
+| style="font-size:90%;" | STAT249 || +X Kick Damage (...)
+|-
+| style="font-size:90%;" | STAT250 || X% Deadly Strike (...)
+|}
+</li>
+</ul></div>
+{| class="wikitable mw-collapsible mw-collapsed"
+|+ style="white-space:nowrap; text-align:left;" | Maps
+|-
+! Code !! Item Appearance
+|-
+| style="font-size:90%;" | STAT369 || ''map_defense''
+|-
+| style="font-size:90%;" | STAT370 || ''Map'' Magic Find: +N%
+|-
+| style="font-size:90%;" | STAT371 || ''Map'' Gold Find: +N%
+|-
+| style="font-size:90%;" | STAT372 || ''Map'' Monster Density: +N%
+|-
+| style="font-size:90%;" | STAT373 || ''Map'' Experience: +N%
+|-
+| style="font-size:90%;" | STAT374 || ''Map'' Area Level: +N
+|-
+| style="font-size:90%;" | STAT375 || ''map_glob_monsterrarity''
+|-
+| style="font-size:90%;" | STAT376 || ''map_mon_firemindam''
+|-
+| style="font-size:90%;" | STAT377 || ''map_mon_firemaxdam''
+|-
+| style="font-size:90%;" | STAT378 || ''map_mon_lightmindam''
+|-
+| style="font-size:90%;" | STAT379 || ''map_mon_lightmaxdam''
+|-
+| style="font-size:90%;" | STAT380 || ''map_mon_magicmindam''
+|-
+| style="font-size:90%;" | STAT381 || ''map_mon_magicmaxdam''
+|-
+| style="font-size:90%;" | STAT382 || ''map_mon_coldmindam''
+|-
+| style="font-size:90%;" | STAT383 || ''map_mon_coldmaxdam''
+|-
+| style="font-size:90%;" | STAT384 || ''map_mon_coldlength''
+|-
+| style="font-size:90%;" | STAT385 || ''map_mon_poisonmindam''
+|-
+| style="font-size:90%;" | STAT386 || ''map_mon_poisonmaxdam''
+|-
+| style="font-size:90%;" | STAT387 || ''map_mon_poisonlength''
+|-
+| style="font-size:90%;" | STAT388 || Monsters have +N% to Fire Skill Damage
+|-
+| style="font-size:90%;" | STAT389 || Monsters have +N% to Lightning Skill Damage
+|-
+| style="font-size:90%;" | STAT390 || Monsters have +N% to Cold Skill Damage
+|-
+| style="font-size:90%;" | STAT391 || Monsters have +N% to Poison Skill Damage
+|-
+| style="font-size:90%;" | STAT392 || Monsters have +N% Increased Cast Speed
+|-
+| style="font-size:90%;" | STAT393 || Monsters have +N% Increased Attack Speed
+|-
+| style="font-size:90%;" | STAT394 || Monsters have +N% Attack Rating
+|-
+| style="font-size:90%;" | STAT395 || Monsters have +N% Enhanced Defense
+|-
+| style="font-size:90%;" | STAT396 || Monsters have N% Cold Absorb
+|-
+| style="font-size:90%;" | STAT397 || Monsters have N% Magic Absorb
+|-
+| style="font-size:90%;" | STAT398 || Monsters have N% Lightning Absorb
+|-
+| style="font-size:90%;" | STAT399 || Monsters have N% Fire Absorb
+|-
+| style="font-size:90%;" | STAT400 || Monsters take N Reduced Physical Damage
+|-
+| style="font-size:90%;" | STAT401 || Monsters have N% Increased Velocity
+|-
+| style="font-size:90%;" | STAT402 || Monsters have +N Replenish Life
+|-
+| style="font-size:90%;" | STAT403 || Monsters have N% Life Stolen per Hit
+|-
+| style="font-size:90%;" | STAT404 || Monsters have +N% Faster Hit Recovery
+|-
+| style="font-size:90%;" | STAT405 || Monsters have N% Increased Maximum Life
+|-
+| style="font-size:90%;" | STAT406 || Monsters have +N% Chance to Pierce
+|-
+| style="font-size:90%;" | STAT407 || Monsters have N% Chance of Open Wounds
+|-
+| style="font-size:90%;" | STAT408 || Monsters have N% Chance of Crushing Blow
+|-
+| style="font-size:90%;" | STAT409 || Monsters have N% Curse Duration Reduction
+|-
+| style="font-size:90%;" | STAT410 || Players have -N% Enhanced Defense
+|-
+| style="font-size:90%;" | STAT411 || Players have -N% Faster Hit Recovery
+|-
+| style="font-size:90%;" | STAT412 || Players have -N% Chance to Block
+|-
+| style="font-size:90%;" | STAT413 || Players have -N Drain Life
+|-
+| style="font-size:90%;" | STAT414 || ''map_mon_passive_fire_pierce''
+|-
+| style="font-size:90%;" | STAT415 || ''map_mon_passive_ltng_pierce''
+|-
+| style="font-size:90%;" | STAT416 || ''map_mon_passive_cold_pierce''
+|-
+| style="font-size:90%;" | STAT417 || ''map_mon_passive_pois_pierce''
+|-
+| style="font-size:90%;" | STAT418 || ''map_play_maxfireresist''
+|-
+| style="font-size:90%;" | STAT419 || ''map_play_maxlightresist''
+|-
+| style="font-size:90%;" | STAT420 || ''map_play_maxcoldresist''
+|-
+| style="font-size:90%;" | STAT421 || ''map_play_maxpoisonresist''
+|-
+| style="font-size:90%;" | STAT426 || Monsters have +N% Enhanced Physical Damage
+|-
+| style="font-size:90%;" | STAT428 || Players have -N% to All Resistances
+|-
+| style="font-size:90%;" | STAT429 || Players have -N% to All Resistances
+|-
+| style="font-size:90%;" | STAT430 || Players have -N% to All Resistances
+|-
+| style="font-size:90%;" | STAT431 || Players have -N% to All Resistances
+|-
+| style="font-size:90%;" | STAT432 || style="font-size:88%;" | Monsters have +N% of Physical Damage as Extra Lightning Damage
+|-
+| style="font-size:90%;" | STAT433 || style="font-size:95%;" | Monsters have +N% of Physical Damage as Extra Cold Damage
+|-
+| style="font-size:90%;" | STAT434 || style="font-size:96%;" | Monsters have +N% of Physical Damage as Extra Fire Damage
+|-
+| style="font-size:90%;" | STAT435 || style="font-size:75%;" | Monsters have +N% of Physical Damage as Extra Poison Damage over 5 seconds
+|-
+| style="font-size:90%;" | STAT436 || style="font-size:93%;" | Monsters have +N% of Physical Damage as Extra Magic Damage
+|-
+| style="font-size:90%;" | STAT437 || Map contains Stygian Dolls
+|-
+| style="font-size:90%;" | STAT438 || Map contains Succubus Witches
+|-
+| style="font-size:90%;" | STAT439 || Map contains Vampire Lords
+|-
+| style="font-size:90%;" | STAT440 || Map contains Hell Bovines
+|-
+| style="font-size:90%;" | STAT441 || Map contains Reanimated Horde
+|-
+| style="font-size:90%;" | STAT442 || Map contains Ghosts
+|-
+| style="font-size:90%;" | STAT449 || Monsters have N% Deadly Strike
+|-
+| style="font-size:90%;" | STAT450 || Monsters have Cannot Be Frozen
+|-
+| style="font-size:90%;" | STAT451 || Players have N% Attack and Cast Speed
+|-
+| style="font-size:90%;" | STAT452 || Players have N% Attack and Cast Speed
+|-
+| style="font-size:90%;" | STAT454 || ''map_play_maxhp_percent''
+|-
+| style="font-size:90%;" | STAT455 || ''map_play_maxmana_percent''
+|-
+| style="font-size:90%;" | STAT456 || ''map_play_damageresist''
+|-
+| style="font-size:90%;" | STAT457 || Players have N% to Velocity
+|-
+| style="font-size:90%;" | STAT458 || Heoric
+|-
+| style="font-size:90%;" | STAT467 || ''map_play_lightradius''
+|-
+| style="font-size:90%;" | STAT470 || Map contains Burning Souls
+|-
+| style="font-size:90%;" | STAT471 || Map contains Fetishes
+|-
+| style="font-size:90%;" | STAT493 || ''map_glob_skirmish_mode''
+|-
+| style="font-size:90%;" | STAT494 || ''map_mon_dropjewelry''
+|-
+| style="font-size:90%;" | STAT495 || ''map_mon_dropweapons''
+|-
+| style="font-size:90%;" | STAT496 || ''map_mon_droparmor''
+|-
+| style="font-size:90%;" | STAT497 || ''map_mon_dropcrafting''
+|-
+| style="font-size:90%;" | STAT498 || ''map_glob_extra_boss''
+|-
+| style="font-size:90%;" | STAT499 || ''map_glob_add_mon_shriek''
+|-
+| style="font-size:90%;" | STAT500 || Area Contains a Random Event
+|-
+| style="font-size:90%;" | STAT502 || ''map_mon_dropcharms''
+|-
+| style="font-size:90%;" | STAT503 || ''map_glob_dropcorrupted''
+|-
+| style="font-size:90%;" | STAT186 || ''map_glob_boss_dropskillers''
+|-
+| style="font-size:90%;" | STAT187 || ''map_glob_boss_dropcorruptedunique''
+|-
+| style="font-size:90%;" | STAT505 || ''map_glob_boss_dropfacet''
+|-
+| style="font-size:90%;" | STAT506 || ''map_mon_dropjewels''
+|-
+|}
+{| class="wikitable mw-collapsible mw-collapsed"
+|+ style="white-space:nowrap; text-align:left;" | Other
+|-
+! Code !! Item Appearance
+|-
+| STAT4 || ''statpts''
+|-
+| STAT5 || ''newskills''
+|-
+| STAT6 || ''hitpoints''
+|-
+| STAT8 || ''mana''
+|-
+| STAT10 || ''stamina''
+|-
+| STAT12 || ''level''
+|-
+| STAT13 || ''experience''
+|-
+| STAT14 || ''gold''
+|-
+| STAT15 || ''goldbank''
+|-
+| STAT26 || ''manarecovery''
+|-
+| STAT29 || ''lastexp''
+|-
+| STAT30 || ''nextexp''
+|-
+| STAT47 || ''damageaura''
+|-
+| STAT61 || ''lifedrainmaxdam''
+|-
+| STAT63 || ''manadrainmaxdam''
+|-
+| STAT64 || ''stamdrainmindam''
+|-
+| STAT65 || ''stamdrainmaxdam''
+|-
+| STAT66 || ''stunlength''
+|-
+| STAT67 || ''velocitypercent''
+|-
+| STAT69 || ''other_animrate''
+|-
+| STAT71 || ''value''
+|-
+| STAT82 || ''item_timeduration''
+|-
+| STAT90 || ''item_lightcolor''
+|-
+| STAT92 || ''item_levelreq''
+|-
+| STAT94 || ''item_levelreqpct''
+|-
+| STAT95 || ''lastblockframe''
+|-
+| STAT98 || ''state''
+|-
+| style="font-size:90%;" | STAT100 || ''monster_playercount''
+|-
+| style="font-size:90%;" | STAT101 || ''skill_poison_override_length''
+|-
+| style="font-size:90%;" | STAT103 || ''skill_bypass_undead''
+|-
+| style="font-size:90%;" | STAT104 || ''skill_bypass_demons''
+|-
+| style="font-size:90%;" | STAT106 || ''skill_bypass_beasts''
+|-
+| style="font-size:90%;" | STAT125 || ''item_throwable''
+|-
+| style="font-size:90%;" | STAT129 || ''ironmaiden_level''
+|-
+| style="font-size:90%;" | STAT130 || ''lifetap_level''
+|-
+| style="font-size:90%;" | STAT131 || ''thorns_percent''
+|-
+| style="font-size:90%;" | STAT132 || ''bonearmor''
+|-
+| style="font-size:90%;" | STAT133 || ''bonearmormax''
+|-
+| style="font-size:90%;" | STAT137 || ''item_kickdamage''
+|-
+| style="font-size:90%;" | STAT156 || ''item_pierce''
+|-
+| style="font-size:90%;" | STAT161 || ''skill_handofathena''
+|-
+| style="font-size:90%;" | STAT162 || ''skill_staminapercent''
+|-
+| style="font-size:90%;" | STAT163 || ''skill_passive_staminapercent''
+|-
+| style="font-size:90%;" | STAT164 || ''skill_concentration''
+|-
+| style="font-size:90%;" | STAT165 || ''skill_enchant''
+|-
+| style="font-size:90%;" | STAT166 || ''skill_pierce''
+|-
+| style="font-size:90%;" | STAT167 || ''skill_conviction''
+|-
+| style="font-size:90%;" | STAT168 || ''skill_chillingarmor''
+|-
+| style="font-size:90%;" | STAT169 || ''skill_frenzy''
+|-
+| style="font-size:90%;" | STAT170 || ''skill_decrepify''
+|-
+| style="font-size:90%;" | STAT171 || ''skill_armor_percent''
+|-
+| style="font-size:90%;" | STAT172 || ''alignment''
+|-
+| style="font-size:90%;" | STAT173 || ''target0''
+|-
+| style="font-size:90%;" | STAT174 || ''target1''
+|-
+| style="font-size:90%;" | STAT175 || ''goldlost''
+|-
+| style="font-size:90%;" | STAT176 || ''conversion_level''
+|-
+| style="font-size:90%;" | STAT177 || ''conversion_maxhp''
+|-
+| style="font-size:90%;" | STAT178 || ''unit_dooverlay''
+|-
+| style="font-size:90%;" | STAT179 || ''attack_vs_montype''
+|-
+| style="font-size:90%;" | STAT180 || ''damage_vs_montype''
+|-
+| style="font-size:90%;" | STAT181 || ''fade''
+|-
+| style="font-size:90%;" | STAT182 || ''armor_override_percent''
+|-
+| style="font-size:90%;" | STAT183 || ''equipped_eth''
+|-
+| style="font-size:90%;" | STAT184 || ''missing_hp''
+|-
+| style="font-size:90%;" | STAT185 || ''uber_difficulty''
+|-
+| style="font-size:90%;" | STAT189 || ''openwounds_stack''
+|-
+| style="font-size:90%;" | STAT190 || ''curse_slots''
+|-
+| style="font-size:90%;" | STAT191 || ''item_skillonequip''
+|-
+| style="font-size:90%;" | STAT213 || ''item_mindamage_energy''
+|-
+| style="font-size:90%;" | STAT215 || ''item_armorpercent_perlevel''
+|-
+| style="font-size:90%;" | STAT247 || ''item_crushingblow_perlevel''
+|-
+| style="font-size:90%;" | STAT248 || ''item_openwounds_perlevel''
+|-
+| style="font-size:90%;" | STAT251 || ''item_find_gems_perlevel''
+|-
+| style="font-size:90%;" | STAT253 || ''item_replenish_quantity''
+|-
+| style="font-size:90%;" | STAT254 || ''item_extra_stack''
+|-
+| style="font-size:90%;" | STAT255 || ''item_find_item''
+|-
+| style="font-size:90%;" | STAT256 || ''item_slash_damage''
+|-
+| style="font-size:90%;" | STAT257 || ''item_slash_damage_percent''
+|-
+| style="font-size:90%;" | STAT258 || ''item_crush_damage''
+|-
+| style="font-size:90%;" | STAT259 || ''item_crush_damage_percent''
+|-
+| style="font-size:90%;" | STAT260 || ''item_thrust_damage''
+|-
+| style="font-size:90%;" | STAT261 || ''item_thrust_damage_percent''
+|-
+| style="font-size:90%;" | STAT262 || ''item_absorb_slash''
+|-
+| style="font-size:90%;" | STAT263 || ''item_absorb_crush''
+|-
+| style="font-size:90%;" | STAT264 || ''item_absorb_thrust''
+|-
+| style="font-size:90%;" | STAT265 || ''item_absorb_slash_percent''
+|-
+| style="font-size:90%;" | STAT266 || ''item_absorb_crush_percent''
+|-
+| style="font-size:90%;" | STAT267 || ''item_absorb_thrust_percent''
+|-
+| style="font-size:90%;" | STAT305 || ''item_pierce_cold''
+|-
+| style="font-size:90%;" | STAT306 || ''item_pierce_fire''
+|-
+| style="font-size:90%;" | STAT307 || ''item_pierce_ltng''
+|-
+| style="font-size:90%;" | STAT308 || ''item_pierce_pois''
+|-
+| style="font-size:90%;" | STAT309 || ''item_damage_vs_monster''
+|-
+| style="font-size:90%;" | STAT310 || ''item_damage_percent_vs_monster''
+|-
+| style="font-size:90%;" | STAT311 || ''item_tohit_vs_monster''
+|-
+| style="font-size:90%;" | STAT312 || ''item_tohit_percent_vs_monster''
+|-
+| style="font-size:90%;" | STAT313 || ''item_ac_vs_monster''
+|-
+| style="font-size:90%;" | STAT314 || ''item_ac_percent_vs_monster''
+|-
+| style="font-size:90%;" | STAT315 || ''firelength''
+|-
+| style="font-size:90%;" | STAT316 || ''burningmin''
+|-
+| style="font-size:90%;" | STAT317 || ''burningmax''
+|-
+| style="font-size:90%;" | STAT318 || ''progressive_damage''
+|-
+| style="font-size:90%;" | STAT319 || ''progressive_steal''
+|-
+| style="font-size:90%;" | STAT320 || ''progressive_other''
+|-
+| style="font-size:90%;" | STAT321 || ''progressive_fire''
+|-
+| style="font-size:90%;" | STAT322 || ''progressive_cold''
+|-
+| style="font-size:90%;" | STAT323 || ''progressive_lightning''
+|-
+| style="font-size:90%;" | STAT324 || ''item_extra_charges''
+|-
+| style="font-size:90%;" | STAT325 || ''progressive_tohit''
+|-
+| style="font-size:90%;" | STAT327 || ''damage_framerate''
+|-
+| style="font-size:90%;" | STAT328 || ''pierce_idx''
+|-
+| style="font-size:90%;" | STAT337 || ''passive_critical_strike''
+|-
+| style="font-size:90%;" | STAT338 || ''passive_dodge''
+|-
+| style="font-size:90%;" | STAT339 || ''passive_avoid''
+|-
+| style="font-size:90%;" | STAT340 || ''passive_evade''
+|-
+| style="font-size:90%;" | STAT341 || ''passive_warmth''
+|-
+| style="font-size:90%;" | STAT342 || ''passive_mastery_melee_th''
+|-
+| style="font-size:90%;" | STAT343 || ''passive_mastery_melee_dmg''
+|-
+| style="font-size:90%;" | STAT344 || ''passive_mastery_melee_crit''
+|-
+| style="font-size:90%;" | STAT345 || ''passive_mastery_throw_th''
+|-
+| style="font-size:90%;" | STAT346 || ''passive_mastery_throw_dmg''
+|-
+| style="font-size:90%;" | STAT347 || ''passive_mastery_throw_crit''
+|-
+| style="font-size:90%;" | STAT348 || ''passive_weaponblock''
+|-
+| style="font-size:90%;" | STAT349 || ''passive_summon_resist''
+|-
+| style="font-size:90%;" | STAT350 || ''modifierlist_skill''
+|-
+| style="font-size:90%;" | STAT351 || ''modifierlist_level''
+|-
+| style="font-size:90%;" | STAT352 || ''last_sent_hp_pct''
+|-
+| style="font-size:90%;" | STAT353 || ''source_unit_type''
+|-
+| style="font-size:90%;" | STAT354 || ''source_unit_id''
+|-
+| style="font-size:90%;" | STAT355 || ''shortparam1''
+|-
+| style="font-size:90%;" | STAT356 || ''questitemdifficulty''
+|-
+| style="font-size:90%;" | STAT358 || ''passive_mag_pierce''
+|-
+| style="font-size:90%;" | STAT361 || ''corruptor''
+|-
+| style="font-size:90%;" | STAT367 || ''skill_cold_enchant''
+|-
+| style="font-size:90%;" | STAT368 || You May Apply an Additional Curse
+|-
+| style="font-size:90%;" | STAT423 || style="font-size:76%;" | +N% to Leap and Leap Attack Movement Speed
+|-
+| style="font-size:90%;" | STAT443 || ''extra_bonespears''
+|-
+| style="font-size:90%;" | STAT444 || style="font-size:82%;" | You May Now Summon N Additional Revives
+|-
+| style="font-size:90%;" | STAT445 || ''immune_stat''
+|-
+| style="font-size:90%;" | STAT446 || ''mon_cooldown1''
+|-
+| style="font-size:90%;" | STAT447 || ''mon_cooldown2''
+|-
+| style="font-size:90%;" | STAT448 || ''mon_cooldown3''
+|-
+| style="font-size:90%;" | STAT459 || style="font-size:87%;" | You May Now Summon 1 Additional Spirit
+|-
+| style="font-size:90%;" | STAT460 || style="font-size:86%;" | Gust's Cooldown is Reduced by N Seconds
+|-
+| style="font-size:90%;" | STAT461 || style="font-size:78%;" | You May Summon N Additional Skeleton Mages
+|-
+| style="font-size:90%;" | STAT462 || style="font-size:75%;" | You May Summon N Additional Skeleton Warriors
+|-
+| style="font-size:90%;" | STAT463 || style="font-size:98%;" | You May Summon 1 Additional Hydra
+|-
+| style="font-size:90%;" | STAT464 || style="font-size:93%;" | You May Summon 1 Additional Valkyrie
+|-
+| style="font-size:90%;" | STAT465 || style="font-size:85%;" | Joust's Cooldown is Reduced by N Seconds
+|-
+| style="font-size:90%;" | STAT466 || style="font-size:78%;" | You May Summon N Additional Skeleton Mages
+|-
+| style="font-size:90%;" | STAT468 || Blood Warp Costs N% Less Health
+|-
+| style="font-size:90%;" | STAT469 || ''pierce_count''
+|-
+| style="font-size:90%;" | STAT472 || ''dclone_clout''
+|-
+| style="font-size:90%;" | STAT473 || ''maxlevel_clout''
+|-
+| style="font-size:90%;" | STAT474 || ''dev_clout''
+|-
+| style="font-size:90%;" | STAT475 || ''extra_skele_archer''
+|-
+| style="font-size:90%;" | STAT476 || ''extra_golem''
+|-
+| style="font-size:90%;" | STAT478 || ''inc_splash_radius''
+|-
+| style="font-size:90%;" | STAT479 || ''item_numsockets_textonly''
+|-
+| style="font-size:90%;" | STAT480 || ''rathma_clout''
+|-
+| style="font-size:90%;" | STAT481 || ''extra_holybolts''
+|-
+| style="font-size:90%;" | STAT482 || ''pvp_cd''
+|-
+| style="font-size:90%;" | STAT483 || style="font-size:70%;" | Dragon Flight's Cooldown is Reduced by N Seconds
+|-
+| style="font-size:90%;" | STAT484 || ''item_dmgpercent_pereth''
+|-
+| style="font-size:90%;" | STAT485 || style="font-size:78%;" | Corpse Explosion Radius Increased by N Yards
+|-
+| style="font-size:90%;" | STAT487 || style="font-size:90%;" | ''item_dmgpercent_permissinghppercent''
+|-
+| style="font-size:90%;" | STAT488 || ''lifedrain_percentcap''
+|-
+| style="font-size:90%;" | STAT489 || ''inc_splash_radius_permissinghp''
+|-
+| style="font-size:90%;" | STAT490 || ''eaglehorn_raven''
+|-
+| style="font-size:90%;" | STAT491 || ''pvp_disable''
+|-
+| style="font-size:90%;" | STAT492 || ''pvp_lld_cd''
+|}
+{| class="wikitable mw-collapsible mw-collapsed"
+|+ style="white-space:nowrap; text-align:left;" | Unused
+|-
+! Code !! Item Appearance
+|-
+| STAT84 || ''unsentparam1''
+|-
+| STAT88 || ''item_doubleherbduration''
+|-
+| style="font-size:90%;" | STAT192 || ''unused192''
+|-
+| style="font-size:90%;" | STAT193 || ''unused193''
+|-
+| style="font-size:90%;" | STAT202 || ''unused202''
+|-
+| style="font-size:90%;" | STAT203 || ''unused203''
+|-
+| style="font-size:90%;" | STAT205 || ''unused204''
+|-
+| style="font-size:90%;" | STAT206 || ''unused205''
+|-
+| style="font-size:90%;" | STAT207 || ''unused206''
+|-
+| style="font-size:90%;" | STAT208 || ''unused207''
+|-
+| style="font-size:90%;" | STAT209 || ''unused208''
+|-
+| style="font-size:90%;" | STAT210 || ''unused209''
+|-
+| style="font-size:90%;" | STAT211 || ''unused210''
+|-
+| style="font-size:90%;" | STAT212 || ''unused211''
+|-
+| style="font-size:90%;" | STAT268 || ''item_armor_bytime''
+|-
+| style="font-size:90%;" | STAT269 || ''item_armorpercent_bytime''
+|-
+| style="font-size:90%;" | STAT270 || ''item_hp_bytime''
+|-
+| style="font-size:90%;" | STAT271 || ''item_mana_bytime''
+|-
+| style="font-size:90%;" | STAT272 || ''item_maxdamage_bytime''
+|-
+| style="font-size:90%;" | STAT273 || ''item_maxdamage_percent_bytime''
+|-
+| style="font-size:90%;" | STAT274 || ''item_strength_bytime''
+|-
+| style="font-size:90%;" | STAT275 || ''item_dexterity_bytime''
+|-
+| style="font-size:90%;" | STAT276 || ''item_energy_bytime''
+|-
+| style="font-size:90%;" | STAT277 || ''item_vitality_bytime''
+|-
+| style="font-size:90%;" | STAT278 || ''item_tohit_bytime''
+|-
+| style="font-size:90%;" | STAT279 || ''item_tohitpercent_bytime''
+|-
+| style="font-size:90%;" | STAT280 || ''item_cold_damagemax_bytime''
+|-
+| style="font-size:90%;" | STAT281 || ''item_fire_damagemax_bytime''
+|-
+| style="font-size:90%;" | STAT282 || ''item_ltng_damagemax_bytime''
+|-
+| style="font-size:90%;" | STAT283 || ''item_pois_damagemax_bytime''
+|-
+| style="font-size:90%;" | STAT284 || ''item_resist_cold_bytime''
+|-
+| style="font-size:90%;" | STAT285 || ''item_resist_fire_bytime''
+|-
+| style="font-size:90%;" | STAT286 || ''item_resist_ltng_bytime''
+|-
+| style="font-size:90%;" | STAT287 || ''item_resist_pois_bytime''
+|-
+| style="font-size:90%;" | STAT288 || ''item_absorb_cold_bytime''
+|-
+| style="font-size:90%;" | STAT289 || ''item_absorb_fire_bytime''
+|-
+| style="font-size:90%;" | STAT290 || ''item_absorb_ltng_bytime''
+|-
+| style="font-size:90%;" | STAT291 || ''item_absorb_pois_bytime''
+|-
+| style="font-size:90%;" | STAT292 || ''item_find_gold_bytime''
+|-
+| style="font-size:90%;" | STAT293 || ''item_find_magic_bytime''
+|-
+| style="font-size:90%;" | STAT294 || ''item_regenstamina_bytime''
+|-
+| style="font-size:90%;" | STAT295 || ''item_stamina_bytime''
+|-
+| style="font-size:90%;" | STAT296 || ''item_damage_demon_bytime''
+|-
+| style="font-size:90%;" | STAT297 || ''item_damage_undead_bytime''
+|-
+| style="font-size:90%;" | STAT298 || ''item_tohit_demon_bytime''
+|-
+| style="font-size:90%;" | STAT299 || ''item_tohit_undead_bytime''
+|-
+| style="font-size:90%;" | STAT300 || ''item_crushingblow_bytime''
+|-
+| style="font-size:90%;" | STAT301 || ''item_openwounds_bytime''
+|-
+| style="font-size:90%;" | STAT302 || ''item_kick_damage_bytime''
+|-
+| style="font-size:90%;" | STAT303 || ''item_deadlystrike_bytime''
+|-
+| style="font-size:90%;" | STAT304 || ''item_find_gems_bytime''
+|}
+
+===== Multi-layered Stats =====
+Some stats have an additional layer that needs to be specified in order for the stat to filter properly. To access these layers, the '''MULTI''' condition can be used - if follows this format:
+
+  MULTI '''''Stat_ID''''' , '''''Layer_ID''''' = '''''Value'''''
+
+Any of the comparison operators ('''<''','''>''','''=''') may be used - below is a list of stats with extra layers:
+
+{| class="wikitable" 
+! Name !! Stat ID !! Layer ID !! Value !! Example
+|-
+| Class Skill || 83 || [[Item_Filtering#Group_Skills|class_id]] || skill_bonus || <code>MULTI83,2=2</code> ([[Hellfire Torch]] with Necromancer skills)
+|-
+| OSkill || 97 || [[Item_Filtering#Individual_Skills|skill_id]] || skill_bonus || <code>MULTI97,74=20</code> ([[Corpsemourn]])
+|-
+| Single Skill || 107 || [[Item_Filtering#Individual_Skills|skill_id]] || skill_bonus || <code>MULTI107,20=3</code> ([[Thunderstroke]])
+|-
+| Elemental Skill || 126 || elemental_id (<span class="d2-red">1</span>, <span class="d2-yellow">2</span>, <span class="d2-orange">3</span>, <span class="d2-blue">4</span>, <span class="d2-green">5</span>) || skill_bonus || <code>MULTI126,4>0</code> ([[Snowclash]])
+|-
+| Aura when Equipped || 151 || [[Item_Filtering#Individual_Skills|skill_id]] || aura_level || <code>MULTI151,98>5</code> ([[Templar's Might]])
+|-
+| Reanimate as: || 155 || monster_id || % chance || <code>MULTI155,492=6</code> ([[Demon Machine]])
+|-
+| Class Skill Tab || 188 || [[Item_Filtering#Group_Skills|skilltab_id]] || skill_bonus || <code>MULTI188,25>4</code> ([[Cloudcrack]])
+|-
+| Skill Buff when Equipped || 191 || [[Item_Filtering#Individual_Skills|skill_id]] || skill_level || <code>MULTI191,555=11</code> ([[Blackoak Shield]])
+|-
+| Cast on Attack || 195 || (skill_id * 64) + skill_level || % chance || <code>MULTI195,3028=15</code> ([[Todesfaelle Flamme]])
+|-
+| Cast when you Kill an Enemy || 196 || (skill_id * 64) + skill_level || % chance || <code>MULTI196,28569=50</code> ([[Executioner's Justice]])
+|-
+| Cast when you Die || 197 || (skill_id * 64) + skill_level || % chance || <code>MULTI197,3615=100</code> ([[Rainbow_Facet_(Cold)|Rainbow Facet]])
+|-
+| Cast on Striking || 198 || (skill_id * 64) + skill_level || % chance || <code>MULTI198,792=8</code> ([[Demon Machine]])
+|-
+| Cast on Level-up || 199 || (skill_id * 64) + skill_level || % chance || <code>MULTI199,2973=100</code> ([[Rainbow_Facet_(Cold)|Rainbow Facet]])
+|-
+| Cast on Casting || 200 || (skill_id * 64) + skill_level || % chance || <code>MULTI200,7196=20</code> ([[Akarat's Devotion]])
+|-
+| Cast when Struck || 201 || (skill_id * 64) + skill_level || % chance || <code>MULTI201,2821=10</code> ([[Coldkill]])
+|-
+| Cast on Block || 202 || (skill_id * 64) + skill_level || % chance || <code>MULTI202,16910=6</code> ([[Shields#Twilight's_Reflection|Twilight's Reflection]])
+|-
+| Charge Skill || 204 || (skill_id * 64) + skill_level || current_charges + (max_charges * 256) || <code>MULTI204,5455=7453</code> ([[Bloodmoon]])
+|-
+| Melee Splash || 359 || (skill_id * 64) + skill_level || % chance || <code>MULTI359,22913=100</code>
+|-
+| Melee Splash (map mod) || 427 || (skill_id * 64) + skill_level || % chance || <code>MULTI427,22913=100</code>
+|-
+| Skill on Death (map mod) || 453 || (skill_id * 64) + skill_level || % chance || 
+|}
+
+There are also alternative ways to replicate what '''MULTI''' does for specific stats:
+
+{| class="wikitable"
+! Stat !! MULTI !! Alternative !! Example
+|-
+| Class Skill || MULTI83 || CLSK || <code>CLSK2=2</code> ([[Hellfire Torch]] with Necromancer skills)
+|-
+| OSkill || MULTI97 || OS || <code>OS74=20</code> ([[Corpsemourn]])
+|-
+| Single Skill || MULTI107 || SK || <code>SK20=3</code> ([[Thunderstroke]])
+|-
+| Class Skill Tab || MULTI188 || TABSK || <code>TABSK25>4</code> ([[Cloudcrack]])
+|}
+
+==== Skill Codes ====
+===== Group Skills =====
+Also see [[Item_Filtering#Elements|STAT362-STAT366]] (Cold, Fire, Lightning, Poison, Magic)
+<div><ul style="margin-left:0px;">
+<li style="display:inline-table; margin-left:0px; margin-right:8px;">
+{| class="wikitable"
+|-
+! Code !! Skill Group
+|-
+| ALLSK || All Skills
+|-
+| CLSK0 || Amazon Skills
+|-
+| CLSK1 || Sorceress Skills
+|-
+| CLSK2 || Necromancer Skills
+|-
+| CLSK3 || Paladin Skills
+|-
+| CLSK4 || Barbarian Skills
+|-
+| CLSK5 || Druid Skills
+|-
+| CLSK6 || Assassin Skills
+|}
+</li>
+<li style="display:inline-table; margin-left:0px; margin-right:8px;">
+{| class="wikitable"
+|-
+! Code !! Class !! Skill Group
+|-
+| TABSK0 || Amazon || Bow and Crossbow Skills
+|-
+| TABSK1 || Amazon || Passive and Magic Skills
+|-
+| TABSK2 || Amazon || Javelin and Spear Skills
+|-
+| TABSK8 || Sorceress || Fire Spells
+|-
+| TABSK9 || Sorceress || Lightning Spells
+|-
+| TABSK10 || Sorceress || Cold Spells
+|-
+| TABSK16 || Necromancer || Curses
+|-
+| TABSK17 || Necromancer || Poison & Bone Spells
+|-
+| TABSK18 || Necromancer || Summoning Spells
+|-
+| TABSK24 || Paladin || Combat Skills
+|-
+| TABSK25 || Paladin || Offensive Auras
+|-
+| TABSK26 || Paladin || Defensive Auras
+|-
+| TABSK32 || Barbarian || Combat Skills
+|-
+| TABSK33 || Barbarian || Combat Masteries
+|-
+| TABSK34 || Barbarian || Warcries
+|-
+| TABSK40 || Druid || Summoning
+|-
+| TABSK41 || Druid || Shape Shifting
+|-
+| TABSK42 || Druid || Elemental
+|-
+| TABSK48 || Assassin || Traps
+|-
+| TABSK49 || Assassin || Shadow Disciplines
+|-
+| TABSK50 || Assassin || Martial Arts
+|}
+</li>
+<ul></div>
+
+===== Individual Skills =====
+In addition to these "SK" codes, there are equivalent "CHSK" codes for skill charges and "OS" codes for oskills. For example, '''CHSK54''' refers to skill charges for Teleport. "CHSK" codes for curse charges use separate 'proc' versions of those skills: '''CHSK445''' for Life Tap and '''CHSK447''' for Lower Resist.
+
+* Skills with gray names are not in the skill tree.
+* Skills with gray codes do not appear on items as pointmods/staffmods under normal circumstances.
+
+<div><ul style="margin-left:0px;">
+<li style="display:inline-table; margin-left:0px; margin-right:8px;">
+====== Amazon ======
+{| class="wikitable"
+|-
+! Code !! Skill
+|-
+| <span style="color:gray;">SK6</span> || Magic Arrow
+|-
+| <span style="color:gray;">SK7</span> || Fire Arrow
+|-
+| <span style="color:gray;">SK8</span> || Inner Sight
+|-
+| <span style="color:gray;">SK9</span> || Critical Strike
+|-
+| <span style="color:gray;">SK10</span> || Jab
+|-
+| <span style="color:gray;">SK11</span> || Cold Arrow
+|-
+| <span style="color:gray;">SK12</span> || Multiple Shot
+|-
+| <span style="color:gray;">SK13</span> || Dodge
+|-
+| <span style="color:gray;">SK14</span> || Power Strike
+|-
+| <span style="color:gray;">SK15</span> || Poison Javelin
+|-
+| <span style="color:gray;">SK16</span> || Exploding Arrow
+|-
+| <span style="color:gray;">SK17</span> || Slow Movement
+|-
+| <span style="color:gray;">SK18</span> || <span style="color:gray;">Avoid</span>
+|-
+| <span style="color:gray;">SK19</span> || style="font-size:75%;" | Javelin and Spear Mastery
+|-
+| <span style="color:gray;">SK20</span> || Lightning Bolt
+|-
+| <span style="color:gray;">SK21</span> || Ice Arrow
+|-
+| <span style="color:gray;">SK22</span> || Guided Arrow
+|-
+| <span style="color:gray;">SK23</span> || Penetrate
+|-
+| <span style="color:gray;">SK24</span> || Charged Strike
+|-
+| <span style="color:gray;">SK25</span> || Plague Javelin
+|-
+| <span style="color:gray;">SK26</span> || Strafe
+|-
+| <span style="color:gray;">SK27</span> || Immolation Arrow
+|-
+| <span style="color:gray;">SK28</span> || Decoy
+|-
+| <span style="color:gray;">SK29</span> || Evade
+|-
+| <span style="color:gray;">SK30</span> || Fend
+|-
+| <span style="color:gray;">SK31</span> || Freezing Arrow
+|-
+| <span style="color:gray;">SK32</span> || Valkyrie
+|-
+| <span style="color:gray;">SK33</span> || Pierce
+|-
+| <span style="color:gray;">SK34</span> || Lightning Strike
+|-
+| <span style="color:gray;">SK35</span> || Lightning Fury
+|}
+</li>
+<li style="display:inline-table; margin-left:0px; margin-right:8px;">
+====== Sorceress ======
+{| class="wikitable"
+|-
+! Code !! Skill
+|-
+| SK36 || Fire Bolt
+|-
+| SK37 || Warmth
+|-
+| SK38 || Charged Bolt
+|-
+| SK39 || Ice Bolt
+|-
+| SK40 || Cold Enchant
+|-
+| SK41 || Inferno
+|-
+| SK42 || Static Field
+|-
+| SK43 || Telekinesis
+|-
+| SK44 || Frost Nova
+|-
+| SK45 || Ice Blast
+|-
+| SK46 || Blaze
+|-
+| SK47 || Fire Ball
+|-
+| SK48 || Nova
+|-
+| SK49 || Lightning
+|-
+| SK50 || Shiver Armor
+|-
+| SK51 || Fire Wall
+|-
+| SK52 || Enchant Fire
+|-
+| SK53 || Chain Lightning
+|-
+| SK54 || Teleport
+|-
+| SK55 || Glacial Spike
+|-
+| SK56 || Meteor
+|-
+| SK57 || Thunder Storm
+|-
+| SK58 || Energy Shield
+|-
+| SK59 || Blizzard
+|-
+| SK60 || Chilling Armor
+|-
+| SK61 || Fire Mastery
+|-
+| SK62 || Hydra
+|-
+| SK63 || Lightning Mastery
+|-
+| SK64 || Frozen Orb
+|-
+| SK65 || Cold Mastery
+|-
+| SK369 || Ice Barrage
+|-
+| SK376 || Combustion
+|-
+| SK383 || Lesser Hydra
+|}
+</li>
+<li style="display:inline-table; margin-left:0px; margin-right:8px;">
+====== Necromancer ======
+{| class="wikitable"
+|-
+! Code !! Skill
+|-
+| SK66 || Amplify Damage
+|-
+| SK67 || Teeth
+|-
+| SK68 || Bone Armor
+|-
+| SK69 || Skeleton Mastery
+|-
+| SK70 || style="font-size:90%;" | Raise Skeleton Warrior
+|-
+| SK71 || Dim Vision
+|-
+| SK72 || Weaken
+|-
+| SK73 || Poison Strike
+|-
+| SK74 || Corpse Explosion
+|-
+| SK75 || Clay Golem
+|-
+| SK76 || Iron Maiden
+|-
+| SK77 || Terror
+|-
+| SK78 || Bone Wall
+|-
+| SK79 || Golem Mastery
+|-
+| SK80 || Raise Skeletal Mage
+|-
+| SK81 || Confuse
+|-
+| SK82 || Life Tap
+|-
+| SK83 || Desecrate
+|-
+| SK84 || Bone Spear
+|-
+| SK85 || Blood Golem
+|-
+| SK86 || Attract
+|-
+| SK87 || Decrepify
+|-
+| SK88 || Bone Prison
+|-
+| SK89 || style="font-size:90%;" | Raise Skeleton Archer
+|-
+| SK90 || Iron Golem
+|-
+| SK91 || Lower Resist
+|-
+| SK92 || Poison Nova
+|-
+| SK93 || Bone Spirit
+|-
+| SK94 || Fire Golem
+|-
+| SK95 || Revive
+|-
+| SK367 || Blood Warp
+|-
+| SK374 || Curse Mastery
+|-
+| SK381 || Dark Pact
+|}
+</li>
+<li style="display:inline-table; margin-left:0px; margin-right:8px;">
+
+====== Paladin ======
+{| class="wikitable"
+|-
+! Code !! Skill
+|-
+| SK96 || Sacrifice
+|-
+| SK97 || Smite
+|-
+| SK98 || Might
+|-
+| SK99 || Prayer
+|-
+| SK100 || Resist Fire
+|-
+| SK101 || Holy Bolt
+|-
+| SK102 || Holy Fire
+|-
+| SK103 || Thorns
+|-
+| SK104 || Defiance
+|-
+| SK105 || Resist Cold
+|-
+| SK106 || Zeal
+|-
+| SK107 || Charge
+|-
+| SK108 || Blessed Aim
+|-
+| SK109 || Cleansing
+|-
+| SK110 || Resist Lightning
+|-
+| SK111 || Vengeance
+|-
+| SK112 || Blessed Hammer
+|-
+| SK113 || Concentration
+|-
+| SK114 || Holy Freeze
+|-
+| SK115 || Vigor
+|-
+| SK116 || Holy Sword
+|-
+| SK117 || Holy Shield
+|-
+| SK118 || Holy Shock
+|-
+| SK119 || Sanctuary
+|-
+| SK120 || Meditation
+|-
+| SK121 || style="font-size:90%;" | Fist of the Heavens
+|-
+| SK122 || Fanaticism
+|-
+| SK123 || Conviction
+|-
+| SK124 || Redemption
+|-
+| SK125 || Salvation
+|-
+| SK364 || Holy Nova
+|-
+| SK371 || Holy Light
+|-
+| SK378 || Joust
+|}
+</li>
+<li style="display:inline-table; margin-left:0px; margin-right:8px;">
+
+====== Barbarian ======
+{| class="wikitable"
+|-
+! Code !! Skill
+|-
+| SK126 || Bash
+|-
+| <span style="color:gray;">SK127</span> || <span style="color:gray;">Sword Mastery</span>
+|-
+| SK128 || General Mastery
+|-
+| <span style="color:gray;">SK129</span> || <span style="color:gray;">Mace Mastery</span>
+|-
+| SK130 || Howl
+|-
+| SK131 || Find Potion
+|-
+| SK132 || Leap
+|-
+| SK133 || Double Swing
+|-
+| SK134 || style="font-size:75%;" | Polearm and Spear Mastery
+|-
+| SK135 || Throwing Mastery
+|-
+| <span style="color:gray;">SK136</span> || <span style="color:gray;">Spear Mastery</span>
+|-
+| SK137 || Taunt
+|-
+| SK138 || Shout
+|-
+| SK139 || Stun
+|-
+| SK140 || Double Throw
+|-
+| SK141 || Combat Reflexes
+|-
+| SK142 || Find Item
+|-
+| SK143 || Leap Attack
+|-
+| SK144 || Concentrate
+|-
+| SK145 || Iron Skin
+|-
+| SK146 || Battle Cry
+|-
+| SK147 || Frenzy
+|-
+| SK148 || Increased Speed
+|-
+| SK149 || Battle Orders
+|-
+| SK150 || Grim Ward
+|-
+| SK151 || Whirlwind
+|-
+| SK152 || Berserk
+|-
+| SK153 || Natural Resistance
+|-
+| SK154 || War Cry
+|-
+| SK155 || Battle Command
+|-
+| SK368 || Deep Wounds
+|-
+| SK375 || Split Throw
+|}
+</li>
+<li style="display:inline-table; margin-left:0px; margin-right:8px;">
+
+====== Druid ======
+{| class="wikitable"
+|-
+! Code !! Skill
+|-
+| SK221 || Raven
+|-
+| SK222 || Poison Creeper
+|-
+| SK223 || Werewolf
+|-
+| SK224 || Lycanthropy
+|-
+| SK225 || Firestorm
+|-
+| SK226 || Oak Sage
+|-
+| SK227 || style="font-size:95%;" | Summon Spirit Wolf
+|-
+| SK228 || Werebear
+|-
+| SK229 || Molten Boulder
+|-
+| SK230 || Arctic Blast
+|-
+| SK231 || Carrion Vine
+|-
+| SK232 || Feral Rage
+|-
+| SK233 || Maul
+|-
+| SK234 || Fissure
+|-
+| SK235 || Cyclone Armor
+|-
+| SK236 || Heart of Wolverine
+|-
+| SK237 || Summon Dire Wolf
+|-
+| SK238 || Rabies
+|-
+| SK239 || Fire Claws
+|-
+| SK240 || Twister
+|-
+| SK241 || Solar Creeper
+|-
+| SK242 || Hunger
+|-
+| SK243 || Shock Wave
+|-
+| SK244 || Volcano
+|-
+| SK245 || Tornado
+|-
+| SK246 || Spirit of Barbs
+|-
+| SK247 || Summon Grizzly
+|-
+| SK248 || Fury
+|-
+| SK249 || Armageddon
+|-
+| SK250 || Hurricane
+|-
+| SK370 || Gust
+|}
+</li>
+<li style="display:inline-table; margin-left:0px; margin-right:8px;">
+====== Assassin ======
+{| class="wikitable"
+|-
+! Code !! Skill
+|-
+| SK251 || Fire Blast
+|-
+| SK252 || style="font-size:80%;" | Claw and Dagger Mastery
+|-
+| SK253 || Psychic Hammer
+|-
+| SK254 || Tiger Strike
+|-
+| SK255 || Dragon Talon
+|-
+| SK256 || Shock Web
+|-
+| SK257 || Blade Sentinel
+|-
+| SK258 || Burst of Speed
+|-
+| SK259 || Fists of Fire
+|-
+| SK260 || Dragon Claw
+|-
+| SK261 || Charged Bolt Sentry
+|-
+| SK262 || Wake of Fire
+|-
+| SK263 || Weapon Block
+|-
+| SK264 || Cloak of Shadows
+|-
+| SK265 || Cobra Strike
+|-
+| SK266 || Blade Fury
+|-
+| SK267 || Fade
+|-
+| SK268 || Shadow Warrior
+|-
+| SK269 || Claws of Thunder
+|-
+| SK270 || Dragon Tail
+|-
+| SK271 || style="font-size:90%;" | Chain Lightning Sentry
+|-
+| SK272 || Wake of Inferno
+|-
+| SK273 || Mind Blast
+|-
+| SK274 || Blades of Ice
+|-
+| SK275 || Dragon Flight
+|-
+| SK276 || Death Sentry
+|-
+| SK277 || Blade Shield
+|-
+| SK278 || Venom
+|-
+| SK279 || Shadow Master
+|-
+| SK280 || Phoenix Strike
+|-
+| SK366 || Lightning Sentry
+|}
+</li>
+<li style="display:inline-table; margin-left:0px; margin-right:8px;">
+
+====== Other ======
+{| class="wikitable"
+|-
+! Code !! Skill
+|-
+| <span style="color:gray;">SK357</span> || <span style="color:gray;">Blink</span>
+|-
+| <span style="color:gray;">SK380</span> || <span style="color:gray;">Blade Dance</span>
+|-
+| <span style="color:gray;">SK391</span> || <span style="color:gray;">Lesser Fade</span>
+|-
+| <span style="color:gray;">SK400</span> || <span style="color:gray;">Bone Nova</span>
+|-
+| <span style="color:gray;">SK442</span> || <span style="color:gray;">Amplify Damage (Proc)</span>
+|-
+| <span style="color:gray;">SK443</span> || <span style="color:gray;">Weaken (Proc)</span>
+|-
+| <span style="color:gray;">SK444</span> || <span style="color:gray;">Iron Maiden (Proc)</span>
+|-
+| <span style="color:gray;">SK445</span> || <span style="color:gray;">Life Tap (Proc)</span>
+|-
+| <span style="color:gray;">SK446</span> || <span style="color:gray;">Decrepify (Proc)</span>
+|-
+| <span style="color:gray;">SK447</span> || <span style="color:gray;">Lower Resist (Proc)</span>
+|-
+| <span style="color:gray;">SK554</span> || <span style="color:gray;">Energy Shield (Item Supplied)</span>
+|-
+| <span style="color:gray;">SK555</span> || <span style="color:gray;">Chilling Armor (Item Supplied)</span>
+|-
+| <span style="color:gray;">SK556</span> || <span style="color:gray;">Burst of Speed (Item Supplied)</span>
+|-
+| <span style="color:gray;">SK557</span> || <span style="color:gray;">Blade Shield (Item Supplied)</span>
+|}
+</li>
+<ul></div>
+
+=== Value Condition IDs ===
+Certain value conditions (MAPID, PREFIX, SUFFIX, AUTOMOD, STAT360) are slightly different than most others, referring to distinct zone/affix/corruption IDs instead of the value for attributes or other item stats with value ranges. Some other value conditions such as [[Item_Filtering#Info_Codes|GEMLEVEL, GEMTYPE, RUNE, or DIFF]] behave in a similar fashion, but their IDs aren't listed in this section due to having relatively few possible values.
+
+==== MAPID IDs ====
+MAPID refers to the [[Zones|zone]] (or [[Maps|map]]) the character is currently in. When using a portal, nearby items are [[Bugs|updated before the zone ID]] so any items within a screen length of the portal will be displayed as if the character was still in the previous zone. If the character walks a couple screen lengths away and returns, the ID will be updated and those items will be displayed as expected.
+
+<code>ItemDisplay[(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)]: %NAME%{%NAME%}</code> <span style="color:gray;">''shows all items in town''</span>
+
+<code>ItemDisplay[yps CLVL>89 !(MAPID>160 MAPID<164)]:</code> <span style="color:gray;">''hides antidotes at level 90+ unless they're found in Rathma zones''</span>
+
+<code>ItemDisplay[key !MAPID=39]:</code> <span style="color:gray;">''hides keys outside of the cow level''</span>
+
+<code>ItemDisplay[ear (MAPID=157 OR MAPID=159)]:</code> <span style="color:gray;">''hides player ears within the PvP duel arenas''</span>
+
+<div><ul style="margin-left:0px;">
+<li style="display:inline-table; margin-left:0px; margin-right:8px;">
+{| class="wikitable"
+|-
+! ID !! Zone
+|-
+| 1 || Rogue Encampment
+|-
+| 2 || Blood Moor
+|-
+| 3 || Cold Plains
+|-
+| 4 || Stony Field
+|-
+| 5 || Dark Wood
+|-
+| 6 || Black Marsh
+|-
+| 7 || Tamoe Highland
+|-
+| 8 || Den of Evil
+|-
+| 9 || Cave Level 1
+|-
+| 10 || style="font-size:75%;" | Underground Passage Level 1
+|-
+| 11 || Hole Level 1
+|-
+| 12 || Pit Level 1
+|-
+| 13 || Cave Level 2
+|-
+| 14 || style="font-size:75%;" | Underground Passage Level 2
+|-
+| 15 || Hole Level 2
+|-
+| 16 || Pit Level 2
+|-
+| 17 || Burial Grounds
+|-
+| 18 || Crypt
+|-
+| 19 || Mausoleum
+|-
+| 20 || Forgotten Tower
+|-
+| 21 || Tower Cellar Level 1
+|-
+| 22 || Tower Cellar Level 2
+|-
+| 23 || Tower Cellar Level 3
+|-
+| 24 || Tower Cellar Level 4
+|-
+| 25 || Tower Cellar Level 5
+|-
+| 26 || Monastery Gate
+|-
+| 27 || Outer Cloister
+|-
+| 28 || Barracks
+|-
+| 29 || Jail Level 1
+|-
+| 30 || Jail Level 2
+|-
+| 31 || Jail Level 3
+|-
+| 32 || Inner Cloister
+|-
+| 33 || Cathedral
+|-
+| 34 || Catacombs Level 1
+|-
+| 35 || Catacombs Level 2
+|-
+| 36 || Catacombs Level 3
+|-
+| 37 || Catacombs Level 4
+|-
+| 38 || Tristram
+|-
+| 39 || style="font-size:95%;" | Moo Moo Farm (Cows)
+|}
+</li>
+<li style="display:inline-table; margin-left:0px; margin-right:8px;">
+{| class="wikitable"
+|-
+! ID !! Zone
+|-
+| 40 || Lut Gholein
+|-
+| 41 || Rocky Waste
+|-
+| 42 || Dry Hills
+|-
+| 43 || Far Oasis
+|-
+| 44 || Lost City
+|-
+| 45 || Valley of Snakes
+|-
+| 46 || Canyon of the Magi
+|-
+| 47 || Sewers Level 1 ''(Act 2)''
+|-
+| 48 || Sewers Level 2 ''(Act 2)''
+|-
+| 49 || Sewers Level 3
+|-
+| 50 || Harem Level 1
+|-
+| 51 || Harem Level 2
+|-
+| 52 || Palace Cellar Level 1
+|-
+| 53 || Palace Cellar Level 2
+|-
+| 54 || Palace Cellar Level 3
+|-
+| 55 || Stony Tomb Level 1
+|-
+| 56 || style="font-size:90%;" | Halls of the Dead Level 1
+|-
+| 57 || style="font-size:90%;" | Halls of the Dead Level 2
+|-
+| 58 || style="font-size:86%;" | Claw Viper Temple Level 1
+|-
+| 59 || Stony Tomb Level 2
+|-
+| 60 || style="font-size:90%;" | Halls of the Dead Level 3
+|-
+| 61 || style="font-size:86%;" | Claw Viper Temple Level 2
+|-
+| 62 || Maggot Lair Level 1
+|-
+| 63 || Maggot Lair Level 2
+|-
+| 64 || Maggot Lair Level 3
+|-
+| 65 || Ancient Tunnels
+|-
+| 66 || Tal Rasha's Tomb 1
+|-
+| 67 || Tal Rasha's Tomb 2
+|-
+| 68 || Tal Rasha's Tomb 3
+|-
+| 69 || Tal Rasha's Tomb 4
+|-
+| 70 || Tal Rasha's Tomb 5
+|-
+| 71 || Tal Rasha's Tomb 6
+|-
+| 72 || Tal Rasha's Tomb 7
+|-
+| 73 || Tal Rasha's Chamber
+|-
+| 74 || Arcane Sanctuary
+|}
+</li>
+<li style="display:inline-table; margin-left:0px; margin-right:8px;">
+{| class="wikitable"
+|-
+! ID !! Zone
+|-
+| 75 || Kurast Docks
+|-
+| 76 || Spider Forest
+|-
+| 77 || Great Marsh
+|-
+| 78 || Flayer Jungle
+|-
+| 79 || Lower Kurast
+|-
+| 80 || Kurast Bazaar
+|-
+| 81 || Upper Kurast
+|-
+| 82 || Kurast Causeway
+|-
+| 83 || Travincal
+|-
+| 84 || Arachnid Lair
+|-
+| 85 || Spider Cavern
+|-
+| 86 || Swampy Pit Level 1
+|-
+| 87 || Swampy Pit Level 2
+|-
+| 88 || style="font-size:95%;" | Flayer Dungeon Level 1
+|-
+| 89 || style="font-size:95%;" | Flayer Dungeon Level 2
+|-
+| 90 || Swampy Pit Level 3
+|-
+| 91 || style="font-size:95%;" | Flayer Dungeon Level 3
+|-
+| 92 || Sewers Level 1 ''(Act 3)''
+|-
+| 93 || Sewers Level 2 ''(Act 3)''
+|-
+| 94 || Ruined Temple
+|-
+| 95 || Disused Fane
+|-
+| 96 || Forgotten Reliquary
+|-
+| 97 || Forgotten Temple
+|-
+| 98 || Ruined Fane
+|-
+| 99 || Disused Reliquary
+|-
+| 100 || style="font-size:93%;" | Durance of Hate Level 1
+|-
+| 101 || style="font-size:93%;" | Durance of Hate Level 2
+|-
+| 102 || style="font-size:93%;" | Durance of Hate Level 3
+|}
+</li>
+<li style="display:inline-table; margin-left:0px; margin-right:8px;">
+{| class="wikitable"
+|-
+! ID !! Zone
+|-
+| 103 || style="font-size:80%;" | The Pandemonium Fortress
+|-
+| 104 || Outer Steppes
+|-
+| 105 || Plains of Despair
+|-
+| 106 || City of the Damned
+|-
+| 107 || River of Flame
+|-
+| 108 || Chaos Sanctuary
+|-
+| 109 || Harrogath
+|-
+| 110 || Bloody Foothills
+|-
+| 111 || Frigid Highlands
+|-
+| 112 || Arreat Plateau
+|-
+| 113 || Crystalline Passage
+|-
+| 114 || Frozen River
+|-
+| 115 || Glacial Trail
+|-
+| 116 || Drifter Cavern
+|-
+| 117 || Frozen Tundra
+|-
+| 118 || The Ancients' Way
+|-
+| 119 || Icy Cellar
+|-
+| 120 || Arreat Summit
+|-
+| 121 || Nihlathak's Temple
+|-
+| 122 || Halls of Anguish
+|-
+| 123 || Halls of Pain
+|-
+| 124 || Halls of Vaught
+|-
+| 125 || Abaddon
+|-
+| 126 || Pit of Acheron
+|-
+| 127 || Infernal Pit
+|-
+| 128 || style="font-size:89%;" | Worldstone Keep Level 1
+|-
+| 129 || style="font-size:89%;" | Worldstone Keep Level 2
+|-
+| 130 || style="font-size:89%;" | Worldstone Keep Level 3
+|-
+| 131 || Throne of Destruction
+|-
+| 132 || Worldstone Chamber
+|}
+</li>
+<li style="display:inline-table; margin-left:0px; margin-right:8px;">
+{| class="wikitable"
+|-
+! ID !! Zone
+|-
+| 133 || Matron's Den
+|-
+| 134 || Forgotten Sands
+|-
+| 135 || Furnace of Pain
+|-
+| 136 || <span class="omod">''Uber Tristram''</span>
+|-
+| 137 || Diablo-Clone's Fortress
+|-
+| 138 || <span class="omod">''Unused''</span>
+|-
+| 139 || Arreat Battlefield 
+|-
+| 140 || <span class="omod">''Unused''</span>
+|-
+| 141 || Sewers of Harrogath 
+|-
+| 142 || Horazon's Memory 
+|-
+| 143 || Ruins of Viz-Jun 
+|-
+| 144 || River Of Blood 
+|-
+| 145 || Phlegethon 
+|-
+| 146 || Ancestral Trial 
+|-
+| 147 || Kehjistan Marketplace 
+|-
+| 148 || Torajan Jungle 
+|-
+| 149 || Bastion Keep 
+|-
+| 150 || Throne of Insanity 
+|-
+| 151 || Tomb of Zoltun Kulle 
+|-
+| 152 || Cathedral of Light
+|-
+| 153 || style="font-size:82%;" | Cathedral of Light Basement
+|-
+| 154 || Blood Moon 
+|-
+| 155 || Fall of Caldeum 
+|-
+| 156 || Pandemonium Citadel 
+|-
+| 157 || Desert PvP Duel Arena
+|-
+| 158 || Lost Temple
+|-
+| 159 || Moor PvP Duel Arena
+|-
+| 160 || Canyon of Sescheron 
+|-	
+| 161 || Ruins of Necropolis
+|-
+| 162 || Decaying Swamplands
+|-
+| 163 || The Void
+|-
+| 164 || Plains of Torment
+|-
+| 165 || Pit of Despair
+|-
+| 166 || ''Battle Royale Arena''
+|-
+| 167 || Sanatorium
+|-
+| 168 || ''Uber Ancients''
+|-
+| 169 || Shadows of Westmarch
+|-
+| 170 || Royal Crypts
+|-
+| 171 || Sanctuary of Sin
+|-
+| 172 || Black Abyss
+|-
+| 173 || <span class="omod">''Unused''</span>
+|-
+| 174 || Ruined Cistern
+|-
+| 175 || Ashen Plains
+|-
+| 176 || Zhar's Sanctum
+|-
+| 177 || Hidden Waterways
+|-
+| 178 || Colonnades of Madness
+|-
+| 179 || Counselor's Causeway
+|-
+| 180 || Outer Void
+|-
+| 181 || Stygian Caverns
+|-
+| 182 || Stronghold of Acheron
+|-
+| 183 || Fallen Gardens
+|-
+| 184 || Diamond Gate
+|-
+| 185 || Fallen Gardens
+|-
+| 186 || Diamond Gate
+|-
+| 187 || PD2 Uber Tristram
+|-
+| 188 || Lucion Arena
+|-
+| 189 || Lucion Vault
+|-
+| 190 || Skovos Stronghold
+|-
+| 191 || Demon Road
+|-
+| 192 || Imperial Palace
+|-
+| 193 || Halls of Torture
+|-
+| 194 || Imperial Boss
+|}
+</li>
+<ul></div>
+
+==== SUFFIX, PREFIX, and AUTOMOD IDs ====
+SUFFIX refers to the suffixes items have whereas PREFIX refers to the prefixes they have. They're similar to the [[Item_Filtering#Numbered_Attribute_Codes|numbered attribute codes]], but refer to affixes rather than affix attributes.
+
+Unlike other value conditions, IDs for SUFFIX and PREFIX are not all mutually exclusive with eachother. Rules can have multiple SUFFIX or PREFIX conditions and still match with valid items.
+
+<code>ItemDisplay[RARE SUFFIX=662 SUFFIX=158]: %NAME% %RED%!</code> <span style="color:gray;">''appends a red '''!''' to rare items that have a chance to cast Amplify Damage on hit and also have Ignore Target's Defense''</span>
+
+AUTOMOD functions much the same as SUFFIX and PREFIX.
+
+Two of the three basic comparison operators ('''<''' and '''>''') cannot be reliably used with SUFFIX or PREFIX, but the "BETWEEN" comparison operator ('''~''') works well with them - it was actually developed specifically for them. Since multiple PREFIX or SUFFIX conditions are not mutually exclusive with themselves, ID ranges would not be able to be referred to accurately with only '''<''' and '''>'''. The "BETWEEN" operator condenses the ranges to a single condition so that it can be evaluated as either true or fase, and is much more convenient than creating large groups of conditions using only '''=''' as comparison operators.
+
+<code>ItemDisplay[cm3 PREFIX>1278 PREFIX<1354]: %NAME% +1</code> <span style="color:gray;">''no effect (don't use)''</span>
+
+<code>ItemDisplay[cm3 (PREFIX=1279 OR PREFIX=1280 OR PREFIX=1281 OR PREFIX=1291 OR PREFIX=1292 OR PREFIX=1293 OR PREFIX=1303 OR PREFIX=1304 OR PREFIX=1305 OR PREFIX=1315 OR PREFIX=1316 OR PREFIX=1317 OR PREFIX=1327 OR PREFIX=1328 OR PREFIX=1329 OR PREFIX=1339 OR PREFIX=1340 OR PREFIX=1341 OR PREFIX=1351 OR PREFIX=1352 OR PREFIX=1353)]: %NAME% +1</code> <span style="color:gray;">''appends '''+1''' to any grand charm with a skill''</span>
+
+<code>ItemDisplay[cm3 PREFIX~1279-1353]: %NAME% +1</code> <span style="color:gray;">''appends '''+1''' to any grand charm with a skill (same as above)''</span>
+
+External Chart of IDs: [https://docs.google.com/spreadsheets/d/1J5_V3bIloualyzb5_lDFueSSCcQyyPEkKYvoQR9Ve9Y/ Affix IDs]
+
+
+==== STAT360 IDs ====
+[[Item_Filtering#General|STAT360]] refers to which corruption items have.
+
+<code>ItemDisplay[STAT360>0]: %NAME% %RED%*</code> <span style="color:gray;">''appends a red '''*''' to corrupted items''</span>
+
+<div><ul style="margin-left:0px;">
+<li style="display:inline-table; margin-left:0px; margin-right:8px;">
+{| class="wikitable"
+|-
+! ID !! Corruption
+|-
+| 0 || Not Corrupted
+|-
+| 1 || ?
+|-
+| 2 || Enhanced Damage
+|-
+| 3 || Attack Rating <span class="omod">(Weapons[T1] & non-weapons)</span>
+|-
+| 4 || Life after Hit
+|-
+| 5 || Attack Rating vs Demons, Damage to Demons
+|-
+| 6 || Reduced Requirements
+|-
+| 7 || Magic Find
+|-
+| 8 || Life After Each Kill
+|-
+| 9 || Mana After Each Kill
+|-
+| 10 || Max Mana
+|-
+| 11 || <span class="omod">Faster Hit Recovery (unused)</span>
+|-
+| 12 || Ps Enemy Fire Res Reduc
+|-
+| 13 || Ps Enemy Lightn Res Reduc
+|-
+| 14 || Ps Enemy Cold Res Reduc
+|-
+| 15 || Ps Enemy Psn Res Reduc
+|-
+| 16 || Faster Cast <span class="omod">(Weapons)</span>
+|-
+| 17 || Life Leech, Enhanced Damage
+|-
+| 18 || Attack Rating <span class="omod">(Weapons[T2])</span>
+|-
+| 19 || Deadly Strike
+|-
+| 20 || Increased Attack Speed
+|-
+| 21 || Crushing Blow
+|-
+| 22 || Increased Attack Speed, Enhanced Damage
+|-
+| 23 || Increased Attack Speed, Crushing Blow
+|-
+| 24 || Ignore Targets Defense, Enhanced Damage
+|-
+| 25 || Deadly Strike, Enhanced Damage
+|}
+</li>
+<li style="display:inline-table; margin-left:0px; margin-right:8px;">
+{| class="wikitable"
+|-
+! ID !! Corruption
+|-
+| 26 || Attack Rating, Enhanced Damage
+|-
+| 27 || All Skills <span class="omod">(Weapons)</span>
+|-
+| 28 || Fire Mastery, Faster Cast
+|-
+| 29 || Cold Mastery, Faster Cast
+|-
+| 30 || Lightning Mastery, Faster Cast
+|-
+| 31 || Poison Mastery, Faster Cast
+|-
+| 32 || Sockets
+|-
+| 33 || Enhanced Defense
+|-
+| 34 || Replenish Life
+|-
+| 35 || Faster Hit Recovery
+|-
+| 36 || Fire Resist
+|-
+| 37 || Cold Resist
+|-
+| 38 || Lightning Resist
+|-
+| 39 || Poison Resist
+|-
+| 40 || Mana Recovery Bonus
+|-
+| 41 || Thorns per Level
+|-
+| 42 || Faster Cast <span class="omod">(Non-weapons)</span>
+|-
+| 43 || Increase Maximum Life %
+|-
+| 44 || Faster Run Walk
+|-
+| 45 || Cannot Be Frozen
+|-
+| 46 || Dmg Reduction
+|-
+| 47 || Magic Dmg Reduction
+|-
+| 48 || Indestructible, Enhanced Defense
+|-
+| 49 || Curse Resistance <span class="omod">(Chest, Helm, Quiver, Shield)</span>
+|-
+| 50 || All Skills <span class="omod">(Non-weapons)</span>
+|}
+</li>
+<li style="display:inline-table; margin-left:0px; margin-right:8px;">
+{| class="wikitable"
+|-
+! ID !! Corruption
+|-
+| 51 || All Res
+|-
+| 52 || Dmg Reduction Pct
+|-
+| 53 || Max Fire Resist, Fire Resist
+|-
+| 54 || Max Cold Resist, Cold Resist
+|-
+| 55 || Max Lightning Resist, Lightning Resist
+|-
+| 56 || Max Poison Resist, Poison Resist
+|-
+| 57 || Life Leech
+|-
+| 58 || Mana Leech
+|-
+| 59 || Attack Rating, Light Radius
+|-
+| 60 || Gold Find
+|-
+| 61 || Life
+|-
+| 62 || Curse Resistance <span class="omod">(Boots, Belt, Ring)</span>
+|-
+| 63 || Piercing Attack
+|-
+| 64 || Faster Block
+|-
+| 65 || All Attributes
+|-
+| 66 || Reduce Targets Defense
+|-
+| 67 || To Block
+|-
+| 68 || Strength
+|-
+| 69 || Dexterity
+|-
+| 70 || Vitality
+|-
+| 71 || Energy
+|-
+| 72 || All Res Max
+|-
+| 73 || To Block, Faster Block
+|-
+| 74 || Minimum Damage
+|-
+| 75 || Maximum Damage
+|}
+</li>
+<li style="display:inline-table; margin-left:0px; margin-right:8px;">
+{| class="wikitable"
+|-
+! ID !! Corruption
+|-
+| 76 || Ignore Targets Defense
+|-
+| 77 || Attack Rating vs Undead, Damage to Undead
+|-
+| 78 || Deadly Strike (mon), Density, Experience
+|-
+| 79 || Cannot be Frozen (mon), Increased Maximum Life (mon), Experience, Density
+|-
+| 80 || Faster Attack Rate, Faster Cast Rate, Density, Rarity
+|-
+| 81 || Physical Resist, Density, Rarity
+|-
+| 82 || Faster Attack Rate, Faster Cast Rate, Velocity, Density, Rarity
+|-
+| 83 || Magic Find, Gold Find, Rarity
+|-
+| 84 || Density
+|-
+| 85 || Area Level, Density
+|-
+| 86 || Rarity
+|-
+| 87 || All Maximum Resistances, Density, Rarity
+|-
+| 88 || Extra Jewelry
+|-
+| 89 || Experience Gained
+|-
+| 90 || Vitality, Energy
+|}
+</li>
+<ul></div>
+
+<!-- spacing -->
+
+<!-- spacing -->
+
+== Formulas ==
+
+A formula is a way to perform calculations for conditions or output. They closely resemble Excel or Sheets formulas.
+{{:Formula_Info}}
+
+<span class="emphasis">Source of Information on this Page</span>
+
+Corruption IDs can be determined from [https://github.com/Project-Diablo-2/BH/blob/587b7199ed07debbaf730bb4e1e4d8a1f2d76421/BH/Constants.h#L1162 PD2's BH files].
+
+See PD2's [https://github.com/BetweenWalls/PD2-Singleplayer/tree/main/Diablo%20II/ProjectD2/data/global/excel/modpacks/official text files] for updated info when game changes are made. The files are best viewed in table format since they are tab-delineated, so they should be opened with Microsoft Excel (or similar programs) or their text should be copy/pasted into a spreadsheet. For convenience, many of the game's text files are also saved on Google Drive: [https://drive.google.com/drive/folders/1kLTpnQ6NWD9G-9dki-4X8T_2ClGDik4o D2 Text File Tables].
+
+Prefix/suffix IDs can be determined from PD2's [https://github.com/BetweenWalls/PD2-Singleplayer/blob/main/Diablo%20II/ProjectD2/data/global/excel/modpacks/official/MagicPrefix.txt MagicPrefix.txt] and [https://github.com/BetweenWalls/PD2-Singleplayer/blob/main/Diablo%20II/ProjectD2/data/global/excel/modpacks/official/MagicSuffix.txt MagicSuffix.txt] files. All lines have their own ID except the line between the classic affixes and the expansion affixes, which is skipped. The suffix IDs begin counting from 1 and the prefix IDs continue from where the suffixes end.
+
+Zone IDs can be determined from PD2's [https://github.com/BetweenWalls/PD2-Singleplayer/blob/main/Diablo%20II/ProjectD2/data/global/excel/modpacks/official/Levels.txt Levels.txt] file.
+
+If the files in these locations are not updated by others, you can extract them yourself from ''pd2data.mpq'' (found in ''Diablo II/ProjectD2'') using an [http://www.zezula.net/en/mpq/download.html MPQ editor and D2 listfile] - the text files will be in ''/data/global/excel''.
