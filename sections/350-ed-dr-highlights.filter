@@ -1,0 +1,37 @@
+// ---------------------------------------------------------------------
+// ====================  Enhanced Damage Highlights  ==================
+// ---------------------------------------------------------------------
+
+// 100-180 % Enhanced Damage - Magic with %PDR | Rare/Crafted - Gold Highlight
+ItemDisplay[CHEST ((MAG STAT36>9) OR RARE OR CRAFT) EDAM>99 EDAM<180]:%NAME%{%GOLD%***   %RED%%EDAM%% Enhanced Damage   %GOLD%***%CL%%NAME%}%CONTINUE%
+// 180+ % Enhanced Damage - Magic with %PDR  |  Rare/Crafted - Purple Highlight
+ItemDisplay[CHEST ((MAG STAT36>9) OR RARE OR CRAFT) EDAM>179]:%NAME%{%PURPLE%***%RED%**   %EDAM%% Enhanced Damage   **%PURPLE%***%CL%%NAME%}%CONTINUE%
+
+// 10+ %PDR with 0-180 Enhanced Damage - Gold Highlight
+ItemDisplay[SHIELD (MAG OR RARE OR CRAFT) STAT36>9 EDAM>99 EDAM<180]:%NAME%{%GOLD%***   %RED%%EDAM%% Enhanced Damage   %GOLD%***%CL%%NAME%}%CONTINUE%
+// 10+ %PDR with 180+ % Enhanced Damage - Purple Highlight
+ItemDisplay[SHIELD (MAG OR RARE OR CRAFT) STAT36>9 EDAM>179]:%NAME%{%PURPLE%***%RED%**   %EDAM%% Enhanced Damage   **%PURPLE%***%CL%%NAME%}%CONTINUE%
+
+// ---------------------------------------------------------------------
+// ====================  Damage Reduction Highlights  ==================
+// ---------------------------------------------------------------------
+
+// 0-19 %PDR with % Enhanced Damage or 14-19 %PDR when under character level 87 or 20-24 %PDR - Red Highlight
+ItemDisplay[(CHEST OR SHIELD) MAG ((STAT36>0 STAT36<20 EDAM>99) OR (STAT36~14-19 CLVL<87) OR (STAT36>19 STAT36<25))]:%NAME%{%RED%***%GOLD%**   %STAT36%% Damage Reduction   **%RED%***%CL%%NAME%}%CONTINUE%
+// 24+ %PDR - Purple Highlight
+ItemDisplay[(CHEST OR SHIELD) MAG STAT36>24]:%NAME%{%PURPLE%***%GOLD%**   %STAT36%% Damage Reduction   **%PURPLE%***%CL%%NAME%}%CONTINUE%
+
+// Rare/Crafted - Chests and Shields
+// 0-7 %PDR
+ItemDisplay[(CHEST OR SHIELD) (RARE OR CRAFT) STAT36>0 STAT36<8 CLVL<90]:%NAME%{%RED%***%GOLD%**   %STAT36%% Damage Reduction   **%RED%***%CL%%NAME%}%CONTINUE%
+// 8-14 %PDR
+ItemDisplay[(CHEST OR SHIELD) (RARE OR CRAFT) STAT36>7 STAT36<18]:%NAME%{%RED%***%GOLD%**   %STAT36%% Damage Reduction   **%RED%***%CL%%NAME%}%CONTINUE%
+// 15+ %PDR
+ItemDisplay[(CHEST OR SHIELD) (RARE OR CRAFT) STAT36>17]:%NAME%{%PURPLE%***%GOLD%**   %STAT36%% Damage Reduction   **%PURPLE%***%CL%%NAME%}%CONTINUE%
+
+// Unique/Set - Chests and Shields
+// 0-7 %PDR
+ItemDisplay[(CHEST OR SHIELD) (UNI OR SET) STAT36>0 STAT36<8 STAT360=52]:%NAME%{%RED%***%GOLD%**   %STAT36%% Damage Reduction   **%RED%***%CL%%NAME%}%CONTINUE%
+// 8+ %PDR
+ItemDisplay[(CHEST OR SHIELD) (UNI OR SET) STAT36>7 STAT360=52]:%NAME%{%PURPLE%***%GOLD%**   %STAT36%% Damage Reduction   **%PURPLE%***%CL%%NAME%}%CONTINUE%
+

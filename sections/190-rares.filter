@@ -1,0 +1,217 @@
+// --------------------------------------------------------------------------------------------------------
+// =============================================  Rare Items  =============================================
+// --------------------------------------------------------------------------------------------------------
+
+// Hide Rare Items on Filter Level 12
+ItemDisplay[RARE !ID (FILTLVL=10 OR FILTLVL=12) (QUIVER OR (ARMOR !CIRC !BOOTS !BELT !(CHEST (ALVL>84 OR CRAFTALVL>84))) OR WEAPON) !TOWN]://
+
+// Keep orginal coloring for items
+ItemDisplay[RARE]:%YELLOW%%NAME%%CONTINUE%//
+ItemDisplay[ETH RARE]:%WHITE%Eth %NAME%{%NAME%}%CONTINUE%//
+
+// Rare Jewels
+ItemDisplay[!POE_SOUNDS RARE !ID jew]:%RARE_HIGH_VALUE_LEFT%  %TAN%(x  %YELLOW%%NAME%  %TAN%x)  %RARE_HIGH_VALUE_RIGHT%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%%SOUNDID-31%// All unidentified rare Jewels
+ItemDisplay[POE_SOUNDS RARE !ID jew]:%RARE_HIGH_VALUE_LEFT%  %TAN%(x  %YELLOW%%NAME%  %TAN%x)  %RARE_HIGH_VALUE_RIGHT%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%%SOUNDID-4715%// All unidentified rare Jewels
+
+// Filter level 12 
+ItemDisplay[RARE !ID (CIRC OR rin OR amu) FILTLVL=12]:%NAME%%DOT-5E%%PX-6D%%TIER-0%// No notifications or flair for rare circlets, rings, or amulets on filter level 12
+
+// Rare Circlets
+ItemDisplay[RARE !ID CIRC FILTLVL<12]:%RARE_HIGH_VALUE_LEFT%  %YELLOW%%NAME%  %RARE_HIGH_VALUE_RIGHT%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%%SOUNDID-31%// All unidentified rare Circlets
+// Rare Rings
+ItemDisplay[RARE !ID rin FILTLVL<12]:%RARE_HIGH_VALUE_LEFT%  %YELLOW%%NAME%  %RARE_HIGH_VALUE_RIGHT%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%%SOUNDID-31%// All unidentified rare Rings
+// Rare Amulets
+ItemDisplay[RARE !ID amu FILTLVL<12]:%RARE_HIGH_VALUE_LEFT%  %YELLOW%%NAME%  %RARE_HIGH_VALUE_RIGHT%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%%SOUNDID-31%// All unidentified rare Amulets
+
+// Rare Arrows and Bolts
+ItemDisplay[RARE !ID QUIVER FILTLVL>11 !AMAZON !TOWN]:// Hide rare arrows on filter levels 12 if character is not an Amazon
+ItemDisplay[RARE !ID (aqv OR aqv2 OR aqv3)]:%LIGHT_GRAY%*  %YELLOW%Arrows  %LIGHT_GRAY%*%YELLOW%// Rename all unidentified rare to "Arrows"
+ItemDisplay[RARE !ID (cqv OR cqv2 OR cqv3)]:%LIGHT_GRAY%*  %YELLOW%Bolts  %LIGHT_GRAY%*%YELLOW%// Rename all unidentified rare to "Bolts"
+
+// Rare Belts
+ItemDisplay[RARE !ID BELT FILTLVL<12]:%RARE_MEDIUM_VALUE_LEFT%  %NAME%  %RARE_MEDIUM_VALUE_RIGHT%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%//
+ItemDisplay[RARE !ID BELT FILTLVL=12]:%NAME%%DOT-5E%%PX-6D%%TIER-0%//
+// Rare Boots
+ItemDisplay[RARE !ID BOOTS FILTLVL<8]:%RARE_MEDIUM_VALUE_LEFT%  %NAME%  %RARE_MEDIUM_VALUE_RIGHT%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%//
+ItemDisplay[RARE !ID BOOTS FILTLVL~8-11]:%NAME%%DOT-5E%%PX-6D%%TIER-0%// 
+ItemDisplay[RARE !ID BOOTS FILTLVL=12]:%NAME%// 
+// Rare Gloves
+ItemDisplay[RARE !ID GLOVES (CLVL<90 OR FILTLVL<3) !(FILTLVL=10 OR FILTLVL=12)]:%RARE_MEDIUM_VALUE_LEFT%  %NAME%  %RARE_MEDIUM_VALUE_RIGHT%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%// Notify for rare gloves under character level 90
+ItemDisplay[RARE !ID GLOVES (ASSASSIN OR AMAZON) CLVL>89 (FILTLVL<10 OR FILTLVL=11)]:%NAME%%DOT-5E%%PX-6D%%TIER-0%//
+ItemDisplay[RARE !ID GLOVES !(ASSASSIN OR AMAZON) CLVL>89 FILTLVL<8]:%NAME%// No chat notification above character level 89
+
+// Rare Chests
+ItemDisplay[RARE !ID CHEST (ALVL>84 OR CRAFTALVL>84) FILTLVL=12]:%RARE_MEDIUM_VALUE_LEFT%  %NAME%  %RARE_MEDIUM_VALUE_RIGHT%%YELLOW%// 
+ItemDisplay[RARE !ID CHEST (ALVL>84 OR CRAFTALVL>84) FILTLVL~8-11]:%RARE_MEDIUM_VALUE_LEFT%  %NAME%  %RARE_MEDIUM_VALUE_RIGHT%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%%TIER-0%// 
+ItemDisplay[RARE !ID CHEST (ALVL>84 OR CRAFTALVL>84) FILTLVL<8]:%RARE_MEDIUM_VALUE_LEFT%  %NAME%  %RARE_MEDIUM_VALUE_RIGHT%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%// Minimap icon for rare armors with affix levels 94 or higher on filter levels 0-8
+
+// Rare Shields
+ItemDisplay[RARE !ID SHIELD !NEC !DIN (buc OR sml OR xuc OR xml OR uuc OR uml) FILTLVL>7 !TOWN]:// Hide specific Rare Shields on filter levels 8+
+ItemDisplay[RARE !ID SHIELD !NEC !DIN !(ALVL>84 OR CRAFTALVL>84) (lrg OR spk OR kit OR bsh OR tow OR gts OR xrg OR xpk OR xit OR xsh OR xow OR xts OR urg OR upk OR uit OR ush OR uow OR uts) FILTLVL=12 !TOWN]://
+ItemDisplay[RARE !ID SHIELD !NEC !DIN (ALVL>84 OR CRAFTALVL>84) (lrg OR spk OR kit OR bsh OR tow OR gts OR xrg OR xpk OR xit OR xsh OR xow OR xts OR urg OR upk OR uit OR ush OR uow OR uts) FILTLVL=12]:%RARE_MEDIUM_VALUE_LEFT%  %NAME%  %RARE_MEDIUM_VALUE_RIGHT%%YELLOW%//
+ItemDisplay[RARE !ID SHIELD !NEC !DIN (ALVL>84 OR CRAFTALVL>84) (lrg OR spk OR kit OR bsh OR tow OR gts OR xrg OR xpk OR xit OR xsh OR xow OR xts OR urg OR upk OR uit OR ush OR uow OR uts) FILTLVL~8-11]:%RARE_MEDIUM_VALUE_LEFT%  %NAME%  %RARE_MEDIUM_VALUE_RIGHT%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%%TIER-0%//
+ItemDisplay[RARE !ID SHIELD !NEC !DIN (ALVL>84 OR CRAFTALVL>84) (lrg OR spk OR kit OR bsh OR tow OR gts OR xrg OR xpk OR xit OR xsh OR xow OR xts OR urg OR upk OR uit OR ush OR uow OR uts) FILTLVL<8]:%RARE_MEDIUM_VALUE_LEFT%  %NAME%  %RARE_MEDIUM_VALUE_RIGHT%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%//
+
+// Rare Helmets
+ItemDisplay[RARE !ID HELM !CIRC !DRU !BAR (cap OR xap OR uap OR skp OR xkp OR ukp OR hlm OR xlm OR ulm OR fhl OR xhl OR uhl OR bhm OR xh9) FILTLVL>2 !TOWN]:// Hide Normal quality Rare Helms After Level 39
+
+ItemDisplay[RARE !ID HELM !CIRC !DRU !BAR (msk OR xsk OR usk OR ghm OR xhm OR uhm OR crn OR xrn OR urn OR uh9) FILTLVL>7 !TOWN]:// Hide Normal quality Rare Helms After Level 39
+
+// Rare Clubs
+ItemDisplay[RARE !ID !DRUID FILTLVL>7 (clb OR spc OR 9cl OR 9sp OR 7cl OR 7sp) !TOWN]:// Hide Clubs on filter levels 8+
+ItemDisplay[RARE !ID DRUID (FILTLVL~2-7 OR (FILTLVL=1 CLVL>49)) (clb OR spc OR 9cl OR 9sp OR 7cl OR 7sp) CLVL<80]:%YELLOW%•  %NAME%  •%YELLOW%// 
+ItemDisplay[RARE !ID DRUID FILTLVL=1 CLVL<50 (clb OR spc OR 9cl OR 9sp OR 7cl OR 7sp)]:%RARE_MEDIUM_VALUE_LEFT%  %NAME%  %RARE_MEDIUM_VALUE_RIGHT%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%// 
+// Rare Druid Pelts
+ItemDisplay[RARE !ID !DRUID FILTLVL>7 DRU !TOWN]:// Hide Druid Pelts on filter levels 8+
+ItemDisplay[RARE !ID DRUID (FILTLVL~2-7 OR (FILTLVL=1 CLVL>49)) DRU CLVL<80]:%YELLOW%•  %NAME%  •%YELLOW%// 
+ItemDisplay[RARE !ID DRUID FILTLVL=1 CLVL<50 DRU]:%RARE_MEDIUM_VALUE_LEFT%  %NAME%  %RARE_MEDIUM_VALUE_RIGHT%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%// 
+
+// Rare Barbarian Helms
+ItemDisplay[RARE !ID (FILTLVL=10 OR FILTLVL=12) BAR !TOWN]:// Hide Barbarian Helms on filter levels 10 and 12+
+ItemDisplay[RARE !ID BARBARIAN (FILTLVL~2-7 OR (FILTLVL=1 CLVL>49)) BAR CLVL<80]:%YELLOW%•  %NAME%  •%YELLOW%// 
+ItemDisplay[RARE !ID BARBARIAN FILTLVL=1 CLVL<50 BAR]:%RARE_MEDIUM_VALUE_LEFT%  %NAME%  %RARE_MEDIUM_VALUE_RIGHT%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%// 
+
+// Rare Sorceress Orbs
+ItemDisplay[RARE !ID !SORCERESS FILTLVL>7 SOR !TOWN]:// Hide all Sorceress Orbs for non-Sorceresses on filter levels 8+
+ItemDisplay[RARE !ID SORCERESS FILTLVL>7 SOR !(ob5 OR oba OR obf) !TOWN]:// Hide all but 3 slots Sorceress Orbs on filter levels 8+ for Sorceresses
+ItemDisplay[RARE !ID SORCERESS (FILTLVL~2-7 OR (FILTLVL=1 CLVL>49)) SOR CLVL<80]:%YELLOW%•  %NAME%  •%YELLOW%// 
+ItemDisplay[RARE !ID SORCERESS FILTLVL=1 CLVL<50 SOR]:%RARE_MEDIUM_VALUE_LEFT%  %NAME%  %RARE_MEDIUM_VALUE_RIGHT%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%// 
+// Rare Staves
+ItemDisplay[RARE !ID !SORCERESS FILTLVL>7 STAFF !TOWN]:// Hide Staves on filter levels 8+
+ItemDisplay[RARE !ID SORCERESS FILTLVL>7 STAFF !(wst OR 8ws OR 6ws) !TOWN]:// Hide Staves on filter levels 8+
+ItemDisplay[RARE !ID SORCERESS (FILTLVL~2-7 OR (FILTLVL=1 CLVL>49)) STAFF CLVL<80]:%YELLOW%•  %NAME%  •%YELLOW%// 
+ItemDisplay[RARE !ID SORCERESS FILTLVL=1 CLVL<50 STAFF]:%RARE_MEDIUM_VALUE_LEFT%  %NAME%  %RARE_MEDIUM_VALUE_RIGHT%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%// 
+
+// Rare Wands
+ItemDisplay[RARE !ID !NECROMANCER FILTLVL>7 WAND !TOWN]:// Hide Wands on filter levels 8+
+ItemDisplay[RARE !ID NECROMANCER (FILTLVL~2-7 OR (FILTLVL=1 CLVL>49)) WAND CLVL<80]:%YELLOW%•  %NAME%  •%YELLOW%// 
+ItemDisplay[RARE !ID NECROMANCER FILTLVL=1 CLVL<50 WAND]:%RARE_MEDIUM_VALUE_LEFT%  %NAME%  %RARE_MEDIUM_VALUE_RIGHT%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%// 
+// Rare Necromancer Heads
+ItemDisplay[RARE !ID !NECROMANCER FILTLVL>7 NEC !TOWN]:// Hide Necromancer Heads on filter levels 8+
+ItemDisplay[RARE !ID NECROMANCER (FILTLVL~2-7 OR (FILTLVL=1 CLVL>49)) NEC CLVL<80]:%YELLOW%•  %NAME%  •%YELLOW%// 
+ItemDisplay[RARE !ID NECROMANCER FILTLVL=1 CLVL<50 NEC]:%RARE_MEDIUM_VALUE_LEFT%  %NAME%  %RARE_MEDIUM_VALUE_RIGHT%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%// 
+
+// Rare Scepters
+ItemDisplay[RARE !ID !PALADIN FILTLVL>7 SCEPTER !TOWN]:// Hide Scepters on filter levels 8+
+ItemDisplay[RARE !ID PALADIN (FILTLVL~2-7 OR (FILTLVL=1 CLVL>49)) SCEPTER CLVL<80]:%YELLOW%•  %NAME%  •%YELLOW%// 
+ItemDisplay[RARE !ID PALADIN FILTLVL=1 CLVL<50 SCEPTER]:%RARE_MEDIUM_VALUE_LEFT%  %NAME%  %RARE_MEDIUM_VALUE_RIGHT%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%// 
+// Rare Paladin Shields
+ItemDisplay[RARE !ID DIN (ALVL>84 OR CRAFTALVL>84) FILTLVL~0-7]:%RARE_MEDIUM_VALUE_LEFT%  %NAME%  %RARE_MEDIUM_VALUE_RIGHT%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%%TIER-0%//
+ItemDisplay[RARE !ID DIN NORM !PALADIN FILTLVL>7 !TOWN]:// Hide Normal quality Rare Paladin Shields on filter levels 8+
+ItemDisplay[RARE !ID DIN EXC !PALADIN FILTLVL>7 !TOWN]:// Hide Exceptional quality Rare Paladin Shields on filter levels 8+
+ItemDisplay[RARE !ID DIN ELT !PALADIN FILTLVL>7 !TOWN]:// Hide Elite quality Rare Paladin Shields on filter levels 8+
+
+// Rare Assassin Claws
+ItemDisplay[RARE !ID SIN NORM !ASSASSIN (wrb OR ces OR clw OR !ETH) FILTLVL>7 !TOWN]:// Hide specific Normal quality Rare Claws on filter levels 8+
+ItemDisplay[RARE !ID SIN EXC !ASSASSIN (9wb OR 9cs OR 9lw OR !ETH) FILTLVL>7 !TOWN]:// Hide Exceptional quality Rare Claws on filter levels 8+
+ItemDisplay[RARE !ID SIN ELT !ASSASSIN (7wb OR 7cs OR 7lw OR !ETH) FILTLVL>7 !TOWN]:// Hide Elite quality Rare Claws After on filter levels 8+
+ItemDisplay[RARE !ID SIN ASSASSIN (FILTLVL~2-7 OR (FILTLVL=1 CLVL>49)) CLVL<80]:%YELLOW%•  %NAME%  •%YELLOW%// 
+ItemDisplay[RARE !ID SIN ASSASSIN FILTLVL=1 CLVL<50]:%RARE_MEDIUM_VALUE_LEFT%  %NAME%  %RARE_MEDIUM_VALUE_RIGHT%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%// 
+// Rare Daggers
+ItemDisplay[RARE !ID NORM !ETH !THROWING DAGGER FILTLVL>2 !TOWN]:// Hide non-Ethereal Normal quality Rare Daggers on filter levels 8+
+ItemDisplay[RARE !ID EXC !ETH !THROWING DAGGER FILTLVL>7 !TOWN]:// Hide non-Ethereal Exceptional quality Rare Daggers on filter levels 8+
+ItemDisplay[RARE !ID ELT !ETH !THROWING DAGGER FILTLVL>7 !TOWN]:// Hide non-Ethereal Elite quality Rare Daggers on filter levels 8+
+
+// Rare Bows
+ItemDisplay[RARE !ID !ZON BOW NORM !(lwb OR lbb) FILTLVL>2 !TOWN]:// Hide Normal quality Rare Bows on filter levels 8+
+ItemDisplay[RARE !ID !ZON BOW EXC !(8lw OR 8l8) FILTLVL>7 !TOWN]:// Hide Exceptional quality Rare Bows on filter levels 8+
+ItemDisplay[RARE !ID !ZON BOW ELT !(6lw OR 6l7) FILTLVL>7 !TOWN]:// Hide Elite quality Rare Bows on filter levels 8+
+// Rare Crossbows
+ItemDisplay[RARE !ID XBOW NORM !(hxb OR mxb) FILTLVL>2 !TOWN]:// Hide Normal quality Rare Crossbows on filter levels 8+
+ItemDisplay[RARE !ID XBOW EXC !(8hx OR 8mx) FILTLVL>7 !TOWN]:// Hide Exceptional quality Rare Crossbows on filter levels 8+
+ItemDisplay[RARE !ID XBOW ELT !(6hx OR 6mx) FILTLVL>7 !TOWN]:// Hide Elite quality Rare Crossbows on filter levels 8+
+
+// Rare Amazon Spears
+ItemDisplay[RARE !ID !ETH NORM AMAZON (am4 OR am3) FILTLVL>7 !TOWN]:// Hide Normal Rare quality noneth Amazon spears
+ItemDisplay[RARE !ID !ETH EXC AMAZON (am9 OR am8) FILTLVL>7 !TOWN]:// Hide Exceptional Rare quality noneth Amazon spears
+ItemDisplay[RARE !ID !ETH ELT AMAZON (ame OR amd) FILTLVL>7 !TOWN]:// Hide Elite Rare quality noneth Amazon spears
+
+ItemDisplay[RARE !ID !ETH NORM !AMAZON (am4 OR am3) ((CLVL>29 FILTLVL>1) OR FILTLVL>2) !TOWN]:// Hide Normal Rare quality noneth Amazon spears
+ItemDisplay[RARE !ID !ETH EXC !AMAZON (am9 OR am8) ((CLVL>59 FILTLVL>2) OR FILTLVL>7) !TOWN]:// Hide Exceptional Rare quality noneth Amazon spears
+ItemDisplay[RARE !ID !ETH ELT !AMAZON (ame OR amd) ((CLVL>79 FILTLVL>2) OR FILTLVL>7) !TOWN]:// Hide Elite Rare quality noneth Amazon spears
+
+// Amazon Javelins
+//ItemDisplay[RARE !ID !ETH (am5 OR ama OR amf) AMAZON (FILTLVL=10 OR FILTLVL=12) !TOWN]://
+//ItemDisplay[RARE !ID !ETH (am5 OR ama OR amf) !AMAZON FILTLVL>7 !TOWN]://
+
+// Rare Spears
+ItemDisplay[RARE !ID !ETH NORM (spr OR tri OR brn OR spt) !(BARBARIAN (spt OR tri)) FILTLVL>2 !TOWN]:// Hide non-Ethereal Normal quality Rare Spears on filter levels 8+
+ItemDisplay[RARE !ID !ETH EXC (9sr OR 9tr OR 9br OR 9st) !(BARBARIAN (9st OR 9tr)) FILTLVL>7 !TOWN]:// Hide non-Ethereal Exceptional quality Rare Spears on filter levels 8+
+ItemDisplay[RARE !ID !ETH ELT (7sr OR 7tr OR 7br OR 7st) !(BARBARIAN (7st OR 7tr)) FILTLVL>7 !TOWN]:// Hide non-Ethereal Elite quality Rare Spears on filter levels 8+
+// Rare Polearms
+ItemDisplay[RARE !ID !ETH NORM POLEARM !(BARBARIAN (vou OR pax)) FILTLVL>2 !TOWN]:// Hide non-Ethereal Normal quality Rare Polearms on filter levels 8+
+ItemDisplay[RARE !ID !ETH EXC POLEARM !(BARBARIAN (9vo OR 9pa)) FILTLVL>7 !TOWN]:// Hide non-Ethereal Exceptional quality Rare Polearms on filter levels 8+
+ItemDisplay[RARE !ID !ETH ELT POLEARM !(BARBARIAN (7vo OR 7pa)) FILTLVL>7 !TOWN]:// Hide non-Ethereal Elite quality Rare Polearms on filter levels 8+
+
+// Rare Throwing Weapons
+ItemDisplay[RARE !ID !ETH (tkf OR tax OR bkf OR bal) FILTLVL>2 !TOWN]:// Hide non-Ethereal Normal quality Rare Throwing Weapons that aren't Zon class specific on filter levels 8+
+ItemDisplay[RARE !ID !ETH (9tk OR 9ta OR 9bk OR 9b8) FILTLVL>7 !TOWN]:// Hide non-Ethereal Exceptional quality Rare Throwing Weapons that aren't Zon class on filter levels 8+
+ItemDisplay[RARE !ID !ETH (7tk OR 7ta OR 7bk OR 7b8) FILTLVL>7 !TOWN]:// Hide non-Ethereal Elite quality Rare Throwing Weapons that aren't Zon class on filter levels 8+
+// Rare Javelins
+ItemDisplay[RARE !ID !ETH (jav OR pil OR ssp OR tsp) FILTLVL>2 !TOWN]:// Hide non-Ethereal Normal quality Javs on filter levels 8+
+ItemDisplay[RARE !ID !ETH (9ja OR 9pi OR 9s9 OR 9ts) FILTLVL>7 !TOWN]:// Hide non-Ethereal Exceptional quality on filter levels 8+
+ItemDisplay[RARE !ID !ETH (7ja OR 7pi OR 7s7 OR 7ts) FILTLVL>7 !TOWN]:// Hide non-Ethereal Elite quality Javs on filter levels 8+
+
+// Rare Swords
+ItemDisplay[RARE !ID !ETH NORM SWORD FILTLVL>2 !TOWN]:// Hide non-Ethereal Normal quality Rare Swords on filter levels 8+
+ItemDisplay[RARE !ID !ETH EXC SWORD FILTLVL>7 !TOWN]:// Hide non-Ethereal Exceptional quality Rare Swords on filter levels 8+
+ItemDisplay[RARE !ID !ETH ELT SWORD FILTLVL>7 !TOWN]:// Hide non-Ethereal Elite quality Rare Swords on filter levels 8+
+// Rare Maces
+ItemDisplay[RARE !ID !ETH NORM MACE !(clb OR spc OR mau OR gma) FILTLVL>2 !TOWN]:// Hide non-Ethereal Normal quality Rare Maces on filter levels 8+
+ItemDisplay[RARE !ID !ETH EXC MACE !(9cl OR 9sp OR 9m9 OR 9gm) FILTLVL>7 !TOWN]:// Hide non-Ethereal Exceptional quality Rare Rare Maces on filter levels 8+
+ItemDisplay[RARE !ID !ETH ELT MACE !(7cl OR 7sp OR 7m7 OR 7gm) FILTLVL>7 !TOWN]:// Hide non-Ethereal Elite quality Rare Rare Maces on filter levels 8+
+// Rare Axes
+ItemDisplay[RARE !ID !ETH NORM AXE !(THROWING OR gax) FILTLVL>2 !TOWN]:// Hide non-Ethereal Normal quality Rare Axes on filter levels 8+
+ItemDisplay[RARE !ID !ETH EXC AXE !(THROWING OR 9ga) FILTLVL>7 !TOWN]:// Hide non-Ethereal Exceptional quality Rare Axes on filter levels 8+
+ItemDisplay[RARE !ID !ETH ELT AXE !(THROWING OR 7ga) FILTLVL>7 !TOWN]:// Hide non-Ethereal Elite quality Rare Axes on filter levels 8+
+
+// ------------------------------------------------------------------------
+// =================  Notifications for Eth Rare Weapons  =================
+// ------------------------------------------------------------------------
+
+// Ethereal Throwing Weapons
+ItemDisplay[BARBARIAN RARE !ID ETH (FILTLVL~8-9 OR FILTLVL=11) (glv OR 9gl OR 7gl)]:%RARE_ETH_CRAFT_LEFT%  %NAME%  %RARE_ETH_CRAFT_RIGHT%%MAP-0B%%DOT-6A%%PX-20%//
+ItemDisplay[BARBARIAN RARE !ID ETH (FILTLVL~8-9 OR FILTLVL=11) (tax OR 9ta OR 7ta OR bkf OR 9bk OR 7bk OR bal OR 9b8 OR 7b8 OR tsp OR 9ts OR 7ts OR ssp OR 9s9 OR 7s7)]:%NAME%%MAP-0B%%DOT-6A%%PX-20%%TIER-0%//
+ItemDisplay[BARBARIAN RARE !ID ETH FILTLVL<8 (tax OR 9ta OR 7ta OR bkf OR 9bk OR 7bk OR bal OR 9b8 OR 7b8 OR glv OR 9gl OR 7gl OR tsp OR 9ts OR 7ts OR ssp OR 9s9 OR 7s7)]:%NAME%%MAP-0B%%DOT-6A%%PX-20%%SOUNDID-259%//
+
+ItemDisplay[!BARBARIAN RARE !ID ETH (FILTLVL<10 OR FILTLVL=11) (glv OR 9gl OR 7gl)]:%RARE_ETH_CRAFT_LEFT%  %NAME%  %RARE_ETH_CRAFT_RIGHT%%MAP-0B%%DOT-6A%%PX-20%//
+ItemDisplay[!BARBARIAN RARE !ID ETH (FILTLVL<10 OR FILTLVL=11) (tax OR 9ta OR 7ta OR bkf OR 9bk OR 7bk OR bal OR 9b8 OR 7b8 OR tsp OR 9ts OR 7ts OR ssp OR 9s9 OR 7s7)]:%NAME%%MAP-0B%%DOT-6A%%PX-20%%TIER-0%//
+
+ItemDisplay[RARE !ID ETH FILTLVL<8 (jav OR 9ja OR 7ja)]:%NAME%%MAP-0B%%DOT-6A%%PX-20%%TIER-0%//
+ItemDisplay[RARE !ID ETH (FILTLVL~8-9 OR FILTLVL=11) (tkf OR 9tk OR 7tk OR pil OR 9pi OR 7pi) !TOWN]://
+
+// Eth Rare Axes
+ItemDisplay[RARE !ID ETH FILTLVL<8 (2ax OR 92a OR 72a OR wax OR 9wa OR 7wa OR lax OR 9la OR 7la)]:%NAME%%MAP-0B%%DOT-6A%%PX-20%%TIER-0%//
+ItemDisplay[RARE !ID ETH (FILTLVL<10 OR FILTLVL=11) (gax OR 9ga OR 7ga)]:%RARE_ETH_CRAFT_LEFT%  %NAME%  %RARE_ETH_CRAFT_RIGHT%%MAP-0B%%DOT-6A%%PX-20%//
+ItemDisplay[RARE !ID ETH (FILTLVL<10 OR FILTLVL=11) (btx OR 9bt OR 7bt OR gix OR 9gi OR 7gi)]:%NAME%%MAP-0B%%DOT-6A%%PX-20%%TIER-0%//
+ItemDisplay[RARE !ID ETH (FILTLVL~8-9 OR FILTLVL=11) (mpi OR 9mp OR 7mp OR bax OR 9ba OR 7ba) !TOWN]://
+
+// Eth Rare Maces
+ItemDisplay[RARE !ID ETH FILTLVL<8 (mac OR 9ma OR 7ma OR mst OR 9mt OR 7mt)]:%NAME%%MAP-0B%%DOT-6A%%PX-20%%TIER-0%//
+ItemDisplay[RARE !ID ETH (FILTLVL<10 OR FILTLVL=11) (mau OR 9m9 OR 7m7)]:%RARE_ETH_CRAFT_LEFT%  %NAME%  %RARE_ETH_CRAFT_RIGHT%%MAP-0B%%DOT-6A%%PX-20%//
+ItemDisplay[RARE !ID ETH (FILTLVL<10 OR FILTLVL=11) (fla OR 9fl OR 7fl OR whm OR 9wh OR 7wh OR gma OR 9gm OR 7gm)]:%NAME%%MAP-0B%%DOT-6A%%PX-20%%TIER-0%//
+
+// Eth Rare Swords
+ItemDisplay[RARE !ID ETH FILTLVL<8 (ssd OR 9ss OR 7ss OR flc OR 9fc OR 7fc OR crs OR 9cr OR bsd OR 9bs OR 7bs OR wsd OR 9wd OR 7wd OR clm OR 9cm OR 7cm OR gis OR 9gs OR 7gs OR bsw OR 9b9 OR 7b7)]:%NAME%%MAP-0B%%DOT-6A%%PX-20%%TIER-0%//
+ItemDisplay[RARE !ID ETH (FILTLVL<10 OR FILTLVL=11) (flb OR gsd OR 9fb OR 9gd OR 7fb OR 7gd)]:%NAME%%MAP-0B%%DOT-6A%%PX-20%%TIER-0%//
+ItemDisplay[RARE !ID ETH (FILTLVL~8-9 OR FILTLVL=11) (scm OR 9sm OR 7sm OR sbr OR 9sb OR 7sb OR lsd OR 9ls OR 7ls OR 2hs OR 92h OR 72h) !TOWN]://
+
+// Eth Rare Spears
+ItemDisplay[RARE !ID ETH FILTLVL<8 (spr OR 9sr OR 7sr OR brn OR 9br OR 7br)]:%NAME%%MAP-0B%%DOT-6A%%PX-20%%TIER-0%//
+ItemDisplay[RARE !ID ETH (FILTLVL<10 OR FILTLVL=11) (tri OR 9tr OR 7tr OR spt OR 9st OR 7st)]:%NAME%%MAP-0B%%DOT-6A%%PX-20%%TIER-0%//
+ItemDisplay[RARE !ID ETH (FILTLVL<10 OR FILTLVL=11) (pik OR 9p9 OR 7p7)]:%RARE_ETH_CRAFT_LEFT%  %NAME%  %RARE_ETH_CRAFT_RIGHT%%MAP-0B%%DOT-6A%%PX-20%//
+
+// Eth Rare Polearms
+ItemDisplay[RARE !ID ETH FILTLVL<8 (scy OR 9s8 OR 7s8 OR wsc OR 9wc OR 7wc OR hal OR 9h9 OR 7h7 OR bar OR 9b7 OR 7o7)]:%NAME%%MAP-0B%%DOT-6A%%PX-20%%TIER-0%//
+ItemDisplay[RARE !ID ETH (FILTLVL<10 OR FILTLVL=11) (pax OR 9pa OR 7pa OR vou OR 9vo OR 7vo)]:%NAME%%MAP-0B%%DOT-6A%%PX-20%%TIER-0%//
+
+// Eth Rare Assassin Claws
+ItemDisplay[ASSASSIN RARE !ID ETH (FILTLVL<10 OR FILTLVL=11) (axf OR 9xf OR 7xf OR btl OR 9tw OR 7tw)]:%NAME%%MAP-0B%%DOT-6A%%PX-20%//
+ItemDisplay[ASSASSIN RARE !ID ETH (FILTLVL~8-9 OR FILTLVL=11) (ktr OR 9ar OR 7ar OR skr OR 9qr OR 7qr)]:%NAME%%MAP-0B%%DOT-6A%%PX-20%%TIER-0%//
+ItemDisplay[ASSASSIN RARE !ID ETH FILTLVL<8 (ktr OR 9ar OR 7ar OR skr OR 9qr OR 7qr)]:%NAME%%MAP-0B%%DOT-6A%%PX-20%//
+
+ItemDisplay[!ASSASSIN RARE !ID ETH (FILTLVL<10 OR FILTLVL=11) (axf OR 9xf OR 7xf OR btl OR 9tw OR 7tw)]:%NAME%%MAP-0B%%DOT-6A%%PX-20%%TIER-0%//
+ItemDisplay[!ASSASSIN RARE !ID ETH FILTLVL<8 (ktr OR 9ar OR 7ar OR skr OR 9qr OR 7qr)]:%NAME%%MAP-0B%%DOT-6A%%PX-20%%TIER-0%//
+
+ItemDisplay[RARE !ID ETH (FILTLVL~8-9 OR FILTLVL=11) (wrb OR 9wb OR 7wb OR ces OR 9cs OR 7cs OR clw OR 9lw OR 7lw) !TOWN]://
+

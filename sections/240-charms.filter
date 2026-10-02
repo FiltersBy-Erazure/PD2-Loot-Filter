@@ -1,0 +1,181 @@
+// ------------------------------------------------------------------------------
+// ===========================  Magic Charm Display =============================
+// ------------------------------------------------------------------------------
+
+// Add new line
+ItemDisplay[MAG ID (cm1 OR cm2 OR cm3 OR cm1p OR cm2p OR cm3p)]:%CL%%NAME%{%NAME%}%CONTINUE%//
+
+// Low Level Dueling Tag
+// Small Charms - LLD
+ItemDisplay[MAG ID cm1 LVLREQ<31 $f(COUNT(MANA>9,RES>3,MAXDMG>2,LIFE>11,DEX>1,STR>1,FRW>0,FHR>0,CRES>7,FRES>7,LRES>7,PRES>7,STAT54>0,STAT31>14)>=2)]:%TEAL%LLD%CS%%NAME%{%TEAL%Low Level Dueling%CL%%NAME%}%CONTINUE%
+// Large Charms - LLD
+ItemDisplay[MAG ID cm2 LVLREQ<31 $f(COUNT(MANA>19,RES>7,MAXDMG>5,LIFE>14,DEX>3,STR>3,FRW>0,FHR>0,STAT329>2,STAT330>2,STAT331>2,STAT332>2,STAT357>2)>=2)]:%TEAL%LLD%CS%%NAME%{%TEAL%Low Level Dueling%CL%%NAME%}%CONTINUE%
+// Grand Charms - LLD
+ItemDisplay[MAG ID cm3 LVLREQ<31 $f(COUNT(MANA>29,RES>11,MAXDMG>8,LIFE>19,DEX>5,STR>5,FRW>0,FHR>0,CRES>27,FRES>27,LRES>27,PRES>27)>=2)]:%TEAL%LLD%CS%%NAME%{%TEAL%Low Level Dueling%CL%%NAME%}%CONTINUE%
+
+// Gold Find
+ItemDisplay[MAG GFIND>0 (cm1 OR cm2 OR cm3 OR cm1p OR cm2p OR cm3p)]:%WHITE%%GFIND%%GOLD%gf%CS%%NAME%{%NAME%}%CONTINUE%
+// Magic Find
+ItemDisplay[MAG MFIND>0 (cm1 OR cm2 OR cm3 OR cm1p OR cm2p OR cm3p)]:%WHITE%%MFIND%%YELLOW%mf%CS%%NAME%{%NAME%}%CONTINUE%
+// Mana
+ItemDisplay[MAG MANA>0 (cm1 OR cm2 OR cm3 OR cm1p OR cm2p OR cm3p)]:%WHITE%%MANA%%BLUE%mana%CS%%NAME%{%NAME%}%CONTINUE%
+// All Resist
+ItemDisplay[MAG RES>0 (cm1 OR cm2 OR cm3 OR cm1p OR cm2p OR cm3p)]:%WHITE%%RES%%PURPLE%res%CS%%NAME%{%NAME%}%CONTINUE%
+// Fire Resist
+ItemDisplay[MAG FRES>0 (cm1 OR cm2 OR cm3 OR cm1p OR cm2p OR cm3p) !RES>0]:%WHITE%%FRES%%RED%res%CS%%NAME%{%NAME%}%CONTINUE%
+// Light Resist
+ItemDisplay[MAG LRES>0 (cm1 OR cm2 OR cm3 OR cm1p OR cm2p OR cm3p) !RES>0]:%WHITE%%LRES%%YELLOW%res%CS%%NAME%{%NAME%}%CONTINUE%
+// Poison Resist
+ItemDisplay[MAG PRES>0 (cm1 OR cm2 OR cm3 OR cm1p OR cm2p OR cm3p) !RES>0]:%WHITE%%PRES%%DARK_GREEN%res%CS%%NAME%{%NAME%}%CONTINUE%
+// Cold Resist
+ItemDisplay[MAG CRES>0 (cm1 OR cm2 OR cm3 OR cm1p OR cm2p OR cm3p) !RES>0]:%WHITE%%CRES%%BLUE%res%CS%%NAME%{%NAME%}%CONTINUE%
+// Dexterity
+ItemDisplay[MAG DEX>0 (cm1 OR cm2 OR cm3 OR cm1p OR cm2p OR cm3p)]:%WHITE%%DEX%%GRAY%dex%CS%%NAME%{%NAME%}%CONTINUE%
+// Strength
+ItemDisplay[MAG STR>0 (cm1 OR cm2 OR cm3 OR cm1p OR cm2p OR cm3p)]:%WHITE%%STR%%GRAY%str%CS%%NAME%{%NAME%}%CONTINUE%
+// Life
+ItemDisplay[MAG LIFE>0 (cm1 OR cm2 OR cm3 OR cm1p OR cm2p OR cm3p)]:%WHITE%%LIFE%%RED%life%CS%%NAME%{%NAME%}%CONTINUE%
+// Defense
+ItemDisplay[MAG DEF>0 (cm1 OR cm2 OR cm3 OR cm1p OR cm2p OR cm3p)]:%WHITE%%DEF%%GRAY%def%CS%%NAME%{%NAME%}%CONTINUE%
+
+// Fire Damage
+ItemDisplay[MAG STAT329>0 (cm2 OR cm2p)]:%WHITE%%STAT329%%PERCENT%%RED%dmg%CS%%NAME%{%NAME%}%CONTINUE%
+// Light Damage
+ItemDisplay[MAG STAT330>0 (cm2 OR cm2p)]:%WHITE%%STAT330%%PERCENT%%YELLOW%dmg%CS%%NAME%{%NAME%}%CONTINUE%
+// Cold Damage
+ItemDisplay[MAG STAT331>0 (cm2 OR cm2p)]:%WHITE%%STAT331%%PERCENT%%BLUE%dmg%CS%%NAME%{%NAME%}%CONTINUE%
+// Poison Damage
+ItemDisplay[MAG STAT332>0 (cm2 OR cm2p)]:%WHITE%%STAT332%%PERCENT%%DARK_GREEN%dmg%CS%%NAME%{%NAME%}%CONTINUE%
+// Magic Damage
+ItemDisplay[MAG STAT357>0 (cm2 OR cm2p)]:%WHITE%%STAT357%%PERCENT%%ORANGE%dmg%CS%%NAME%{%NAME%}%CONTINUE%
+
+// Poison Damage
+ItemDisplay[MAG (cm1 OR cm2 OR cm3 OR cm1p OR cm2p OR cm3p) !STAT57+STAT58=0]:%WHITE%$f(FLOOR((STAT57*FLOOR(STAT59/STAT326)+128)/256))%DARK_GREEN%psn%CS%%NAME%{%NAME%}%CONTINUE%
+// Cold Damage
+ItemDisplay[MAG (((cm1 OR cm1p) STAT55~1-19) OR ((cm2 OR cm2p) STAT55~1-39) OR ((cm3 OR cm3p) STAT55~1-53))]:%WHITE%+%STAT54%-%STAT55%%BLUE%cold%CS%%NAME%{%NAME%}%CONTINUE%
+ItemDisplay[MAG (((cm1 OR cm1p) STAT55>19) OR ((cm2 OR cm2p) STAT55>39) OR ((cm3 OR cm3p) STAT55>53))]:%BLUE%+%WHITE%%STAT54%%BLUE%-%WHITE%%STAT55%%BLUE%cold%CS%%NAME%{%NAME%}%CONTINUE%
+// Light Damage
+ItemDisplay[MAG (((cm1 OR cm1p) STAT51~1-30) OR ((cm2 OR cm2p) STAT51~1-61) OR ((cm3 OR cm3p) STAT51~1-83))]:%WHITE%+%STAT50%-%STAT51%%YELLOW%light%CS%%NAME%{%NAME%}%CONTINUE%
+ItemDisplay[MAG (((cm1 OR cm1p) STAT51>30) OR ((cm2 OR cm2p) STAT51>61) OR ((cm3 OR cm3p) STAT51>83))]:%YELLOW%+%WHITE%%STAT50%%YELLOW%-%WHITE%%STAT51%%YELLOW%light%CS%%NAME%{%NAME%}%CONTINUE%
+// Fire Damage
+ItemDisplay[MAG (((cm1 OR cm1p) STAT49~1-19) OR ((cm2 OR cm2p) STAT49~1-39) OR ((cm3 OR cm3p) STAT49~1-53))]:%WHITE%+%STAT48%-%STAT49%%RED%fire%CS%%NAME%{%NAME%}%CONTINUE%
+ItemDisplay[MAG (((cm1 OR cm1p) STAT49>19) OR ((cm2 OR cm2p) STAT49>39) OR ((cm3 OR cm3p) STAT49>53))]:%RED%+%WHITE%%STAT48%%RED%-%WHITE%%STAT49%%RED%fire%CS%%NAME%{%NAME%}%CONTINUE%
+// Attack Rating
+ItemDisplay[MAG AR>0 AR<120 (cm1 OR cm2 OR cm3 OR cm1p OR cm2p OR cm3p)]:%WHITE%%AR%%DARK_GREEN%ar%CS%%NAME%{%NAME%}%CONTINUE%
+ItemDisplay[MAG AR>119 (cm1 OR cm2 OR cm3 OR cm1p OR cm2p OR cm3p)]:%WHITE%%AR%%PURPLE%ar%CS%%NAME%{%NAME%}%CONTINUE%
+// Max Damage
+ItemDisplay[MAG MAXDMG>0 MAXDMG<3 (cm1 OR cm1p)]:%WHITE%%MAXDMG%%TAN%max%CS%%NAME%{%NAME%}%CONTINUE%
+ItemDisplay[MAG MAXDMG>2 (cm1 OR cm1p)]:%WHITE%%MAXDMG%%PURPLE%max%CS%%NAME%{%NAME%}%CONTINUE%
+ItemDisplay[MAG MAXDMG>0 MAXDMG<6 (cm2 OR cm2p)]:%WHITE%%MAXDMG%%TAN%max%CS%%NAME%{%NAME%}%CONTINUE%
+ItemDisplay[MAG MAXDMG>5 (cm2 OR cm2p)]:%WHITE%%MAXDMG%%PURPLE%max%CS%%NAME%{%NAME%}%CONTINUE%
+ItemDisplay[MAG MAXDMG>0 MAXDMG<10 (cm3 OR cm3p)]:%WHITE%%MAXDMG%%TAN%max%CS%%NAME%{%NAME%}%CONTINUE%
+ItemDisplay[MAG MAXDMG>9 (cm3 OR cm3p)]:%WHITE%%MAXDMG%%PURPLE%max%CS%%NAME%{%NAME%}%CONTINUE%
+// Faster Hit Recovery
+ItemDisplay[MAG FHR>0 (cm1 OR cm2 OR cm3 OR cm1p OR cm2p OR cm3p)]:%WHITE%%FHR%%TAN%fhr%CS%%NAME%{%NAME%}%CONTINUE%
+// Min Damage
+ItemDisplay[MAG MINDMG>0 (cm1 OR cm2 OR cm3 OR cm1p OR cm2p OR cm3p)]:%WHITE%%MINDMG%%TAN%min%CS%%NAME%{%NAME%}%CONTINUE%
+// Faster Cast Rate
+ItemDisplay[MAG FCR~1-5 (cm1 OR cm2 OR cm3 OR cm1p OR cm2p OR cm3p)]:%WHITE%%FCR%%TEAL%fcr%CS%%NAME%{%NAME%}%CONTINUE%
+ItemDisplay[MAG FCR>5 (cm1 OR cm2 OR cm3 OR cm1p OR cm2p OR cm3p)]:%WHITE%%FCR%%PURPLE%fcr%CS%%NAME%{%NAME%}%CONTINUE%
+// Increased Attack Speed
+ItemDisplay[MAG IAS~1-6 (cm1 OR cm2 OR cm3 OR cm1p OR cm2p OR cm3p)]:%WHITE%%IAS%%ORANGE%ias%CS%%NAME%{%NAME%}%CONTINUE%
+ItemDisplay[MAG IAS>6 (cm1 OR cm2 OR cm3 OR cm1p OR cm2p OR cm3p)]:%WHITE%%IAS%%PURPLE%ias%CS%%NAME%{%NAME%}%CONTINUE%
+// Faster Run Walk
+ItemDisplay[MAG FRW>0 (cm1 OR cm2 OR cm3 OR cm1p OR cm2p OR cm3p)]:%WHITE%%FRW%%TAN%frw%CS%%NAME%{%NAME%}%CONTINUE%
+
+// Grand Charm Class Skills
+ItemDisplay[(cm3 OR cm3p) TABSK0>0]:%PURPLE%Bow %TAN%Skills %NAME%{%NAME%}%CONTINUE%
+ItemDisplay[(cm3 OR cm3p) TABSK2>0]:%PURPLE%Javelin %TAN%Skills %NAME%{%NAME%}%CONTINUE%
+ItemDisplay[(cm3 OR cm3p) TABSK1>0]:%PURPLE%Passive %TAN%Skills %NAME%{%NAME%}%CONTINUE%
+ItemDisplay[(cm3 OR cm3p) TABSK8>0]:%PURPLE%Fire %TAN%Skills %NAME%{%NAME%}%CONTINUE%
+ItemDisplay[(cm3 OR cm3p) TABSK9>0]:%PURPLE%Lightning %TAN%Skills %NAME%{%NAME%}%CONTINUE%
+ItemDisplay[(cm3 OR cm3p) TABSK10>0]:%PURPLE%Cold %TAN%Skills %NAME%{%NAME%}%CONTINUE%
+ItemDisplay[(cm3 OR cm3p) TABSK16>0]:%PURPLE%Curse %TAN%Skills %NAME%{%NAME%}%CONTINUE%
+ItemDisplay[(cm3 OR cm3p) TABSK17>0]:%PURPLE%Poison & Bone %TAN%Skills %NAME%{%NAME%}%CONTINUE%
+ItemDisplay[(cm3 OR cm3p) TABSK18>0]:%PURPLE%Summoning %TAN%Skills %NAME%{%NAME%}%CONTINUE%
+ItemDisplay[(cm3 OR cm3p) TABSK24>0]:%PURPLE%Combat %TAN%Skills %NAME%{%NAME%}%CONTINUE%
+ItemDisplay[(cm3 OR cm3p) TABSK25>0]:%PURPLE%Offensive %TAN%Auras %NAME%{%NAME%}%CONTINUE%
+ItemDisplay[(cm3 OR cm3p) TABSK26>0]:%PURPLE%Defensive %TAN%Auras %NAME%{%NAME%}%CONTINUE%
+ItemDisplay[(cm3 OR cm3p) TABSK32>0]:%PURPLE%Combat %TAN%Skills %NAME%{%NAME%}%CONTINUE%
+ItemDisplay[(cm3 OR cm3p) TABSK33>0]:%PURPLE%Mastery %TAN%Skills %NAME%{%NAME%}%CONTINUE%
+ItemDisplay[(cm3 OR cm3p) TABSK34>0]:%PURPLE%Warcry %TAN%Skills %NAME%{%NAME%}%CONTINUE%
+ItemDisplay[(cm3 OR cm3p) TABSK40>0]:%PURPLE%Summoning %TAN%Skills %NAME%{%NAME%}%CONTINUE%
+ItemDisplay[(cm3 OR cm3p) TABSK41>0]:%PURPLE%Shape Shifting %TAN%Skills %NAME%{%NAME%}%CONTINUE%
+ItemDisplay[(cm3 OR cm3p) TABSK42>0]:%PURPLE%Elemental %TAN%Skills %NAME%{%NAME%}%CONTINUE%
+ItemDisplay[(cm3 OR cm3p) TABSK48>0]:%PURPLE%Trap %TAN%Skills %NAME%{%NAME%}%CONTINUE%
+ItemDisplay[(cm3 OR cm3p) TABSK49>0]:%PURPLE%Shadow %TAN%Skills %NAME%{%NAME%}%CONTINUE%
+ItemDisplay[(cm3 OR cm3p) TABSK50>0]:%PURPLE%Martial Arts %TAN%Skills %NAME%{%NAME%}%CONTINUE%
+
+// Physical
+ItemDisplay[MAG cm1 ((MAXDMG>1 (LIFE>16 OR FHR>4 OR FRW>2 OR GFIND>9 OR MFIND>5)) OR (MAXDMG>2 (LIFE>9 OR MFIND>4 OR STR>1 OR DEX>1)) OR MAXDMG>3)]:%NAME%{%HIGHLIGHT_1_LEFT%   %GREEN%Physical   %HIGHLIGHT_1_RIGHT%%CL%%NAME%}//
+ItemDisplay[MAG cm2 ((MAXDMG>4 (LIFE>29 OR FHR>7 OR FRW>4 OR STR>3 OR DEX>3 OR GFIND>19)) OR (MAXDMG>5 (LIFE>19 OR STR>2 OR DEX>2)) OR MAXDMG>7)]:%NAME%{%HIGHLIGHT_1_LEFT%   %GREEN%Physical   %HIGHLIGHT_1_RIGHT%%CL%%NAME%}//
+ItemDisplay[MAG cm3 ((MAXDMG>7 (LIFE>34 OR FHR>11 OR FRW>6 OR STR>5 OR DEX>5 OR GFIND>29)) OR (MAXDMG>8 LIFE>29) OR (MAXDMG>9 LIFE>24) OR MAXDMG>11)]:%NAME%{%HIGHLIGHT_1_LEFT%   %GREEN%Physical   %HIGHLIGHT_1_RIGHT%%CL%%NAME%}//
+
+// Increased Attack Speed
+ItemDisplay[MAG cm2 ((IAS>5 (LIFE>29 OR FHR>7 OR FRW>4 OR STR>4 OR DEX>4 OR GFIND>19)) OR ((IAS>6 (LIFE>24 OR STR>3 OR DEX>3))))]:%NAME%{%HIGHLIGHT_1_LEFT%   %GREEN%Attack Speed   %HIGHLIGHT_1_RIGHT%%CL%%NAME%}//
+
+// Faster Cast Rate
+ItemDisplay[MAG cm2 ((FCR>4 (LIFE>29 OR FHR>7 OR FRW>4 OR STR>4 OR DEX>4 OR GFIND>19)) OR ((FCR>5 (LIFE>24 OR STR>3 OR DEX>3))))]:%NAME%{%HIGHLIGHT_1_LEFT%   %GREEN%Cast Rate   %HIGHLIGHT_1_RIGHT%%CL%%NAME%}//
+
+// Skill Damage
+ItemDisplay[MAG cm2 STAT329=3 (LIFE>24 OR FHR>7 OR FRW>4 OR STR>4 OR DEX>4)]:%NAME%{%HIGHLIGHT_1_LEFT%   %GREEN%Fire Damage   %HIGHLIGHT_1_RIGHT%%CL%%NAME%}//
+ItemDisplay[MAG cm2 STAT330=3 (LIFE>24 OR FHR>7 OR FRW>4 OR STR>4 OR DEX>4)]:%NAME%{%HIGHLIGHT_1_LEFT%   %GREEN%Light Damage   %HIGHLIGHT_1_RIGHT%%CL%%NAME%}//
+ItemDisplay[MAG cm2 STAT331=3 (LIFE>24 OR FHR>7 OR FRW>4 OR STR>4 OR DEX>4)]:%NAME%{%HIGHLIGHT_1_LEFT%   %GREEN%Cold Damage   %HIGHLIGHT_1_RIGHT%%CL%%NAME%}//
+ItemDisplay[MAG cm2 STAT332=3 (LIFE>24 OR FHR>7 OR FRW>4 OR STR>4 OR DEX>4)]:%NAME%{%HIGHLIGHT_1_LEFT%   %GREEN%Poison Damage   %HIGHLIGHT_1_RIGHT%%CL%%NAME%}//
+ItemDisplay[MAG cm2 STAT357=3 (LIFE>24 OR FHR>7 OR FRW>4 OR STR>4 OR DEX>4)]:%NAME%{%HIGHLIGHT_1_LEFT%   %GREEN%Magic Damage   %HIGHLIGHT_1_RIGHT%%CL%%NAME%}//
+
+// Vengeance
+ItemDisplay[MAG cm1 ((STAT55>19 (STAT55>29 OR STAT49>9 OR STAT51>16 OR LIFE>9 OR FHR>4 OR MFIND>4 OR FRW>2 OR GFIND>9)) OR (STAT49>19 (STAT55>9 OR STAT49>29 OR STAT51>16 OR LIFE>9 OR FHR>4 OR MFIND>4 OR FRW>2 OR GFIND>9)) OR (STAT51>30 (STAT55>9 OR STAT49>9 OR STAT51>47 OR LIFE>9 OR FHR>4 OR MFIND>4 OR FRW>2 OR GFIND>9)))]:%NAME%{%HIGHLIGHT_1_LEFT%   %GREEN%Vengeance   %HIGHLIGHT_1_RIGHT%%CL%%NAME%}//
+ItemDisplay[MAG cm2 ((STAT55>39 (STAT55>59 OR STAT49>19 OR STAT51>33 OR LIFE>19 OR FHR>7 OR FRW>4 OR GFIND>19 OR STR>4 OR DEX>4)) OR (STAT49>39 (STAT55>19 OR STAT49>59 OR STAT51>33 OR LIFE>19 OR FHR>7 OR FRW>4 OR GFIND>19 OR STR>4 OR DEX>4)) OR (STAT51>61 (STAT55>19 OR STAT49>19 OR STAT51>95 OR LIFE>19 OR FHR>7 OR FRW>4 OR GFIND>19 OR STR>4 OR DEX>4)))]:%NAME%{%HIGHLIGHT_1_LEFT%   %GREEN%Vengeance   %HIGHLIGHT_1_RIGHT%%CL%%NAME%}//
+ItemDisplay[MAG cm3 ((STAT55>53 (STAT55>80 OR STAT49>26 OR STAT51>45 OR LIFE>29 OR FHR>11 OR FRW>6 OR GFIND>29 OR STR>5 OR DEX>5)) OR (STAT49>53 (STAT55>26 OR STAT49>80 OR STAT51>45 OR LIFE>29 OR FHR>11 OR FRW>6 OR GFIND>29 OR STR>5 OR DEX>5)) OR (STAT51>83 (STAT55>26 OR STAT49>26 OR STAT51>129 OR LIFE>29 OR FHR>11 OR FRW>6 OR GFIND>29 OR STR>5 OR DEX>5)))]:%NAME%{%HIGHLIGHT_1_LEFT%   %GREEN%Vengeance   %HIGHLIGHT_1_RIGHT%%CL%%NAME%}//
+
+// Grand Charms with relevant mods don't have reroll details in description
+ItemDisplay[MAG ID cm3 (TABSK40=1 OR TABSK41=1 OR TABSK42=1 OR TABSK32=1 OR TABSK33=1 OR TABSK34=1 OR TABSK24=1 OR TABSK25=1 OR TABSK16=1 OR TABSK17=1 OR TABSK18=1 OR TABSK8=1 OR TABSK9=1 OR TABSK10=1 OR TABSK48=1 OR TABSK49=1 OR TABSK50=1 OR TABSK0=1 OR TABSK1=1 OR TABSK2=1 OR MAXDMG>8 OR RES>11 OR ((LIFE>29 OR FHR>0) (FRES>23 OR PRES>23 OR CRES>23 OR LRES>23 OR MANA>44 OR MAXDMG>5 OR AR>124)) OR (MANA>50 (LIFE>20 OR FHR>0)))]:%NAME%{%NAME%}//
+// Grand Charms without relevant mods have reroll details in description
+ItemDisplay[MAG ID cm3 ILVL>90]:%NAME%{%NL%%WHITE%continuously by cubing with any 3 %LIGHT_GRAY%Perfect %WHITE%Gems%CL%Item Level 91+ %BLUE%Grand Charms %WHITE%can be rerolled%NL%%NL%%WHITE%Rerolled Affix Level: %BLUE%%REROLLALVL%}//
+
+ItemDisplay[MAG ID cm1 ILVL>89 REROLLALVL<85]:%NAME%{%WHITE%Rerolled Affix Level: %BLUE%%REROLLALVL%%CL%%NAME%}//
+
+// Magic Charm End of Continue Statements
+ItemDisplay[MAG ID cm3]:%NAME%{%NAME%}//
+ItemDisplay[MAG ID cm2]:%NAME%{%NAME%}//
+ItemDisplay[MAG ID cm1]:%NAME%{%NAME%}//
+
+// Unique Charms
+ItemDisplay[UNI ID cm1]:%CL%%NAME%{%NAME%}%CONTINUE%//
+ItemDisplay[UNI ID cm2]:%CL%%NAME%{%NAME%}%CONTINUE%//
+ItemDisplay[UNI ID cm3]:%CL%%NAME%{%NAME%}%CONTINUE%//
+
+// Add Magic Find % to Gheeds
+ItemDisplay[UNI MFIND>19 cm3]:%WHITE%%STAT80%%YELLOW%mf%NAME%{%NAME%}%CONTINUE%
+// Add Vendor Price Reduction to Gheeds
+ItemDisplay[UNI STAT87>9 cm3]:%WHITE%%STAT87%%ORANGE%vp%CS%%NAME%{%NAME%}%CONTINUE%
+// Add Gold Find % to Gheeds
+ItemDisplay[UNI GFIND>79 cm3]:%WHITE%%STAT79%%GOLD%gf%CS%%NAME%{%NAME%}%CONTINUE%
+// Add Experience % to Anni
+ItemDisplay[UNI STAT85>4 cm1]:%WHITE%%STAT85%%ORANGE%exp%NAME%{%NAME%}%CONTINUE%
+// Add Light Radius to Torches
+ItemDisplay[UNI STAT89>0 cm2]:%WHITE%%STAT89%%YELLOW%lr%NAME%{%NAME%}%CONTINUE%
+// Add All Res % to Anni and Torches
+ItemDisplay[UNI RES>9 cm1]:%WHITE%%RES%%PURPLE%res %NAME%{%NAME%}%CONTINUE%
+ItemDisplay[UNI RES>9 cm2]:%WHITE%%RES%%PURPLE%res %NAME%{%NAME%}%CONTINUE%
+// Add Energy to Anni and Torches
+ItemDisplay[UNI STAT1>9 (cm1 OR cm2)]:%WHITE%%STAT1%%BLUE%nrg %NAME%{%NAME%}%CONTINUE%
+// Add Vitality to Anni and Torches
+ItemDisplay[UNI STAT3>29 (cm1 OR cm2)]:%WHITE%%STAT3%%RED%vit %NAME%{%NAME%}%CONTINUE%
+// Add Skills to Anni
+ItemDisplay[UNI cm1 ALLSK=1]:%WHITE%1%GOLD%all %NAME%{%NAME%}%CONTINUE%
+ItemDisplay[UNI cm1 ALLSK=2]:%WHITE%2%GOLD%all %NAME%{%NAME%}%CONTINUE%
+// Add Class Skill to Torches
+ItemDisplay[UNI CLSK0=2 cm2]:%WHITE%%CLSK0%%GOLD%ama %NAME%{%NAME%}%CONTINUE%
+ItemDisplay[UNI CLSK1=2 cm2]:%WHITE%%CLSK1%%GOLD%sor %NAME%{%NAME%}%CONTINUE%
+ItemDisplay[UNI CLSK2=2 cm2]:%WHITE%%CLSK2%%GOLD%nec %NAME%{%NAME%}%CONTINUE%
+ItemDisplay[UNI CLSK3=2 cm2]:%WHITE%%CLSK3%%GOLD%pal %NAME%{%NAME%}%CONTINUE%
+ItemDisplay[UNI CLSK4=2 cm2]:%WHITE%%CLSK4%%GOLD%bar %NAME%{%NAME%}%CONTINUE%
+ItemDisplay[UNI CLSK5=2 cm2]:%WHITE%%CLSK5%%GOLD%dru %NAME%{%NAME%}%CONTINUE%
+ItemDisplay[UNI CLSK6=2 cm2]:%WHITE%%CLSK6%%GOLD%sin %NAME%{%NAME%}%CONTINUE%
+// End of Continue Statements
+ItemDisplay[UNI ID cm1]:%NAME%{%NAME%}//
+ItemDisplay[UNI ID cm2]:%NAME%{%NAME%}//
+ItemDisplay[UNI ID cm3]:%NAME%{%NAME%}//
+

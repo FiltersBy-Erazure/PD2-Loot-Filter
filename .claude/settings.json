@@ -1,13 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "Bash(python tools/build_variants.py *)",
-      "PowerShell(python tools/build_variants.py *)"
+      "Bash(python tools/build.py *)",
+      "PowerShell(python tools/build.py *)"
     ],
     "deny": [
-      "Edit(Erazure-Main-PoE.filter)",
-      "Edit(Erazure-Revealed*.filter)",
-      "Edit(Erazure-BIG-GG*.filter)"
+      "Edit(Erazure-*.filter)"
     ]
   },
   "hooks": {
@@ -17,9 +15,9 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/rebuild_variants.py\"",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/rebuild.py\"",
             "timeout": 60,
-            "statusMessage": "Rebuilding filter variants..."
+            "statusMessage": "Rebuilding filters..."
           }
         ]
       }
