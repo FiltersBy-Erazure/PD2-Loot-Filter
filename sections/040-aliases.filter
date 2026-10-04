@@ -3,6 +3,12 @@
 // When character is in one of the five town MAP IDs
 Alias[TOWN]:(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)
 
+// S14: Grail (Discovery Progress). A unique or set item not yet discovered; an unidentified one counts
+// as discovered only when every unique/set it could be is. Hide rules for uniques and sets end with
+// !GRAIL_NEW, so these items are never hidden until discovered. Without discovery data (Season 13
+// clients) those hide rules never match.
+Alias[GRAIL_NEW]:((UNI OR SET) !ALLDISCOVERED)
+
 // Lowest Runes
 Alias[LOWEST_RUNE_LOW_QTY_LEFT]:%DARK_GREEN%x%GRAY%x%LIGHT_GRAY%x
 Alias[LOWEST_RUNE_LOW_QTY_RIGHT]:%LIGHT_GRAY%x%GRAY%x%DARK_GREEN%x

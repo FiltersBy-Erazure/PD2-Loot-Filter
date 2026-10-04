@@ -92,6 +92,12 @@ Alias[REVEALED]:FALSE
 // When character is in one of the five town MAP IDs
 Alias[TOWN]:(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109)
 
+// S14: Grail (Discovery Progress). A unique or set item not yet discovered; an unidentified one counts
+// as discovered only when every unique/set it could be is. Hide rules for uniques and sets end with
+// !GRAIL_NEW, so these items are never hidden until discovered. Without discovery data (Season 13
+// clients) those hide rules never match.
+Alias[GRAIL_NEW]:((UNI OR SET) !ALLDISCOVERED)
+
 // Lowest Runes
 Alias[LOWEST_RUNE_LOW_QTY_LEFT]:%DARK_GREEN%x%GRAY%x%LIGHT_GRAY%x
 Alias[LOWEST_RUNE_LOW_QTY_RIGHT]:%LIGHT_GRAY%x%GRAY%x%DARK_GREEN%x
@@ -3802,7 +3808,7 @@ ItemDisplay[UNI !ID FILTLVL~3-7]:%UNI_NORMAL_LEFT%  %NAME%  %UNI_NORMAL_RIGHT%%M
 // Don't notify for other Normal Unique Items on filter levels 11-12
 ItemDisplay[UNI !ID FILTLVL~8-11]:%NAME%//
 // Hide Minimal Value normal unique items on filter level 12
-ItemDisplay[UNI !ID FILTLVL=12 !TOWN]://
+ItemDisplay[UNI !ID FILTLVL=12 !TOWN !GRAIL_NEW]://
 
 // -------------------------------------------------------------------------------------------------------
 // =============================================  Set Items  =============================================
@@ -3974,27 +3980,27 @@ ItemDisplay[SET !ID rin CLVL>79 FILTLVL>11 !TOWN]:%NAME%//
 ItemDisplay[SET !ID rin CLVL>79 FILTLVL<12]:%SET_LEFT%  %GREEN%%NAME%  %SET_RIGHT%%GREEN%%MAP-71%%DOT-76%%PX-81%%TIER-0%//
 ItemDisplay[SET !ID rin CLVL<80]:%SET_LEFT%  %NAME%  %SET_RIGHT%%GREEN%%BORDER-71%%MAP-76%%DOT-7D%%PX-84%//
 
-ItemDisplay[SET !ID amu CLVL>89 FILTLVL>7 !TOWN]://
+ItemDisplay[SET !ID amu CLVL>89 FILTLVL>7 !TOWN !GRAIL_NEW]://
 ItemDisplay[SET !ID amu CLVL>89 FILTLVL<8]:%SET_LEFT%  %GREEN%%NAME%  %SET_RIGHT%%GREEN%%MAP-71%%DOT-76%%PX-81%%TIER-0%//
 ItemDisplay[SET !ID amu CLVL<90]:%SET_LEFT%  %NAME%  %SET_RIGHT%%GREEN%%BORDER-71%%MAP-76%%DOT-7D%%PX-84%//
 
 // Normal Set Items
 ItemDisplay[SET !ID NORM lbt FILTLVL~8-12]:%SET_LEFT%  %NAME%  %SET_RIGHT%%GREEN%%BORDER-71%%MAP-76%%DOT-7D%%PX-84%//
 ItemDisplay[SET !ID NORM (ba5 OR lbl OR lgl OR tow) FILTLVL~8-12]:%SET_LEFT%  %NAME%  %SET_RIGHT%%GREEN%%MAP-71%%DOT-76%%PX-81%%TIER-0%//
-ItemDisplay[SET !ID NORM !(lbt OR ba5 OR lbl OR lgl OR tow) FILTLVL~8-12 !TOWN]://
+ItemDisplay[SET !ID NORM !(lbt OR ba5 OR lbl OR lgl OR tow) FILTLVL~8-12 !TOWN !GRAIL_NEW]://
 
 ItemDisplay[SET !ID NORM (lbt OR ba5 OR lbl OR lgl OR tow) FILTLVL<8]:%SET_LEFT%  %NAME%  %SET_RIGHT%%GREEN%%BORDER-71%%MAP-76%%DOT-7D%%PX-84%//
-ItemDisplay[SET !ID NORM !(lbt OR ba5 OR lbl OR lgl OR tow) FILTLVL~3-7]://
+ItemDisplay[SET !ID NORM !(lbt OR ba5 OR lbl OR lgl OR tow) FILTLVL~3-7 !GRAIL_NEW]://
 
 ItemDisplay[SET !ID NORM CLVL>59 FILTLVL<3]:%DARK_GREEN%*%GREEN%* >  %NAME%  %GREEN%< *%DARK_GREEN%*%GREEN%%MAP-71%%DOT-76%%PX-81%%TIER-0%//
 ItemDisplay[SET !ID NORM CLVL<60 FILTLVL<3]:%SET_LEFT%  %NAME%  %SET_RIGHT%%GREEN%%BORDER-71%%MAP-76%%DOT-7D%%PX-84%//
 
 // Exceptional Set items
 ItemDisplay[SET !ID EXC (xhm OR dr8 OR xtb OR xar OR zvb OR xtg OR xmb OR xsk OR zmb OR oba OR xul OR xhb OR zhb OR xhg OR xh9 OR xvg) FILTLVL=12 !TOWN]:%NAME%//
-ItemDisplay[SET !ID EXC !(xhm OR dr8 OR xtb OR xar OR zvb OR xtg OR xmb OR xsk OR zmb OR oba OR xul OR xhb OR zhb OR xhg OR xh9 OR xvg) FILTLVL=12 !TOWN]://
+ItemDisplay[SET !ID EXC !(xhm OR dr8 OR xtb OR xar OR zvb OR xtg OR xmb OR xsk OR zmb OR oba OR xul OR xhb OR zhb OR xhg OR xh9 OR xvg) FILTLVL=12 !TOWN !GRAIL_NEW]://
 
 ItemDisplay[SET !ID EXC (xhm OR dr8 OR xtb OR xar OR zvb OR xtg OR xmb OR xsk OR zmb OR oba OR xul OR xhb OR zhb OR xhg OR xh9 OR xvg) FILTLVL~8-11]:%SET_LEFT%  %NAME%  %SET_RIGHT%%GREEN%%MAP-71%%DOT-76%%PX-81%%TIER-0%//
-ItemDisplay[SET !ID EXC !(xhm OR dr8 OR xtb OR xar OR zvb OR xtg OR xmb OR xsk OR zmb OR oba OR xul OR xhb OR zhb OR xhg OR xh9 OR xvg) FILTLVL~8-11 !TOWN]://
+ItemDisplay[SET !ID EXC !(xhm OR dr8 OR xtb OR xar OR zvb OR xtg OR xmb OR xsk OR zmb OR oba OR xul OR xhb OR zhb OR xhg OR xh9 OR xvg) FILTLVL~8-11 !TOWN !GRAIL_NEW]://
 
 ItemDisplay[SET !ID EXC (xhm OR dr8 OR xtb OR xar OR zvb OR xtg OR xmb OR xsk OR zmb OR oba OR xul OR xhb OR zhb OR xhg OR xh9 OR xvg) FILTLVL~3-7]:%SET_LEFT%  %NAME%  %SET_RIGHT%%GREEN%%BORDER-71%%MAP-76%%DOT-7D%%PX-84%//
 ItemDisplay[SET !ID EXC !(xhm OR dr8 OR xtb OR xar OR zvb OR xtg OR xmb OR xsk OR zmb OR oba OR xul OR xhb OR zhb OR xhg OR xh9 OR xvg) FILTLVL~3-7]:%SET_LEFT%  %NAME%  %SET_RIGHT%%GREEN%%MAP-71%%DOT-76%%PX-81%%TIER-0%//
@@ -4002,10 +4008,10 @@ ItemDisplay[SET !ID EXC FILTLVL<3]:%SET_LEFT%  %NAME%  %SET_RIGHT%%GREEN%%MAP-71
 
 // Elite Set items
 ItemDisplay[SET !ID ELT (ulg OR uhm OR uld OR amc OR ucl OR 6cs OR 7m7 OR uar) FILTLVL=12 !TOWN]:%NAME%//
-ItemDisplay[SET !ID ELT !(ulg OR uhm OR uld OR amc OR ucl OR 6cs OR 7m7 OR uar) FILTLVL=12 !TOWN]://
+ItemDisplay[SET !ID ELT !(ulg OR uhm OR uld OR amc OR ucl OR 6cs OR 7m7 OR uar) FILTLVL=12 !TOWN !GRAIL_NEW]://
 
 ItemDisplay[SET !ID ELT (ulg OR uhm OR uld OR amc OR ucl OR 6cs OR 7m7 OR uar) FILTLVL~8-11]:%SET_LEFT%  %NAME%  %SET_RIGHT%%GREEN%%MAP-71%%DOT-76%%PX-81%%TIER-0%//
-ItemDisplay[SET !ID ELT !(ulg OR uhm OR uld OR amc OR ucl OR 6cs OR 7m7 OR uar) FILTLVL~8-11 !TOWN]://
+ItemDisplay[SET !ID ELT !(ulg OR uhm OR uld OR amc OR ucl OR 6cs OR 7m7 OR uar) FILTLVL~8-11 !TOWN !GRAIL_NEW]://
 
 ItemDisplay[SET !ID ELT (ulg OR uhm OR uld OR amc OR 6cs OR 7m7 OR uar) FILTLVL~3-7]:%SET_LEFT%  %NAME%  %SET_RIGHT%%GREEN%%BORDER-71%%MAP-76%%DOT-7D%%PX-84%//
 ItemDisplay[SET !ID ELT !(ulg OR uhm OR uld OR amc OR 6cs OR 7m7 OR uar) FILTLVL~3-7]:%SET_LEFT%  %NAME%  %SET_RIGHT%%GREEN%%MAP-71%%DOT-76%%PX-81%%TIER-0%//
