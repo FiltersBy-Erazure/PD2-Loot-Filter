@@ -50,6 +50,8 @@ The exact labels are in that file. A rule without `FILTLVL` applies at every lev
 - References, searched on demand (never @-import them here, they are large):
   `docs/pd2-item-filtering.wiki` (syntax, keywords, conditions), `docs/pd2-item-codes.wiki`,
   `docs/pd2-filter-info.wiki`, `docs/pd2-formula-info.wiki`, `docs/patch-notes/`.
+- How the game really reads the filter: the PD2 BH source, github.com/Project-Diablo-2/BH
+  (`BH/Modules/Item/ItemDisplay.cpp`, `BH/Modules/MapNotify/MapNotify.cpp`). The wiki lags behind it.
 
 ## Adding or splitting a section
 - Name it `NNN-topic.filter` with a number between its neighbours (e.g. `115-...`). The build rejects other
@@ -73,11 +75,19 @@ The exact labels are in that file. A rule without `FILTLVL` applies at every lev
   `%CONTINUE%` layers; later rules see the modified `%NAME%`.
 - An empty output (`ItemDisplay[...]:` or output only inside `{}`) HIDES the item's name.
 - Notification keywords (`%BORDER-xx%`, `%MAP-xx%`, `%DOT-xx%`, `%PX-xx%`, `%SOUNDID-n%`) are applied
-  in a separate pass: they fire even if an earlier rule stopped evaluation. Without `%TIER-n%`
-  they act as `%TIER-9%` (notify at all levels).
-- Aliases (`Alias[X]:...`) are find-and-replace at load time.
-- Limits: name ≤ 56 displayed / ≤ 125 internal chars (each color keyword costs 3, `%NL%` costs 2).
-  Descriptions ≤ 500 chars.
+  in a separate pass over only the rules that have one, so they fire even if an earlier rule stopped
+  (or hid) the display. In that pass the FIRST matching rule alone decides the drop sound and the
+  text notification, `%CONTINUE%` or not: a `%SOUNDID%` after an earlier matching notification rule
+  never plays. Minimap icons stack until the first matching notification rule without `%CONTINUE%`.
+- `%TIER-n%` limits a notification to levels 0–n; BH reads one digit, so n is 0–9. Without it the
+  notification fires at every level (so `%TIER-9%` is not the same: it skips levels 10–12).
+- AND and OR have EQUAL precedence and are read left to right: `A OR B C` means `(A OR B) AND C`,
+  not `A OR (B AND C)`. Bracket every OR group.
+- Aliases (`Alias[X]:...`) are find-and-replace at load time, in definition order. In conditions the
+  name is replaced wherever it occurs, even inside another word; in output only as `%X%`.
+- Output keywords must be uppercase. An unknown `%word%` is shown as text. `%PERCENT%` shows a `%`.
+- Limits (BH): a name shows 56 characters (512 for shop items), color codes not counted; 511 in all.
+  Descriptions are cut with "..." past about 500 (less when the item's own text is long).
 - `{}` = description text. `%CONTINUE%` only works outside braces.
 - The last rule is the catch-all `ItemDisplay[]:%NAME%{%NAME%}//`. Nothing goes after it.
 
@@ -94,7 +104,8 @@ The exact labels are in that file. A rule without `FILTLVL` applies at every lev
 
 ## Development workflow
 1. Edit `sections/` (the hook rebuilds the 8 filters). Show the diff of the section files changed.
-2. `python tools/build.py --check` must pass. (When `tools/lint_filter.py` exists, it must pass too.)
+2. `python tools/build.py --check` and `python tools/lint_filter.py` must pass. Findings the author
+   accepts go in `tools/lint_allow.txt` with a reason; never allow-list one on your own.
 3. The author runs `build.bat` when ready to publish (stamps the date) and tests in game.
 4. Commit `sections/`, `version.json` and all 8 filters together, on a branch (currently `setup`).
 5. Merge to `main` only with the author's explicit go-ahead: the launcher may serve it to players.
@@ -102,9 +113,12 @@ The exact labels are in that file. A rule without `FILTLVL` applies at every lev
 ## Things to never do
 - Never edit the 8 root `.filter` files; never stamp or edit `version.json` unless asked.
 - Never invent item codes, stat IDs or keywords. Look them up in `docs/`, or in existing rules.
-  If something is not documented, say so and ask.
+  If something is not documented, say so and ask. Some PD2 items have their own code that the wiki
+  lacks or files under a base (Band of Skulls is `rbe`, not Troll Belt `utc`; `7cr2` is a 2-handed
+  Phase Blade): check the filter's own rules before concluding which code an item drops as.
 - Never trust general Diablo 2 / D2R / other-mod knowledge for PD2 specifics. When the wiki and your
-  prior knowledge disagree, the wiki wins; when the wiki and the author disagree, the author wins.
+  prior knowledge disagree, the wiki wins; when the BH source and the wiki disagree, BH wins; when
+  any of them and the author disagree, the author wins.
 - Never push to `main` without the author's explicit go-ahead.
 
 ## Communication

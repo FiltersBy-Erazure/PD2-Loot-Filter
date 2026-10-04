@@ -139,11 +139,15 @@ The full reference is `docs/pd2-item-filtering.wiki`. These are the points that 
 1. **Order is behavior.** Rules are checked top to bottom. The first match *without* `%CONTINUE%` wins and evaluation stops.
 2. **`%CONTINUE%`** writes the current output into `%NAME%` and keeps going, so later rules build on the modified name. Adding a CONTINUE rule early can change what dozens of later rules produce.
 3. **Hiding** happens when the name output is empty: `ItemDisplay[...]:` or text only inside `{}`. Descriptions can still show for hidden items.
-4. **Notifications are processed separately.** `%BORDER-xx%`, `%MAP-xx%`, `%DOT-xx%`, `%PX-xx%` (and sounds) are applied in their own pass, so they can fire even after an earlier rule has stopped evaluation. Without `%TIER-n%`, a notification behaves as `%TIER-9%` and fires at every level.
+4. **Notifications are processed separately.** `%BORDER-xx%`, `%MAP-xx%`, `%DOT-xx%`, `%PX-xx%` and `%SOUNDID-n%` are applied in their own pass over only the rules that have one, so they can fire even after an earlier rule has stopped (or hidden) the display. In that pass the *first* matching rule alone decides the drop sound and text notification, `%CONTINUE%` or not (BH `MapNotify.cpp`), so a sound rule placed after another matching notification rule never plays. Minimap icons stack until the first matching notification rule without `%CONTINUE%`. `%TIER-n%` limits a notification to levels 0–n, and BH reads only one digit (0–9); without it, a notification fires at every level, which with 12 levels is *not* the same as `%TIER-9%`.
 5. **Filter levels:** the order of the `ItemDisplayFilterName` lines defines levels 1–12, and level 0 = "Show All Items". A rule without `FILTLVL` applies at every level.
-6. **Aliases are find-and-replace at load.** `Alias[BIG_GG]:FALSE` means `ItemDisplay[BIG_GG ...]` becomes `ItemDisplay[FALSE ...]`.
-7. **Length limits:** names are capped at 56 displayed / 125 internal characters (each color keyword counts 3, `%NL%` counts 2). Descriptions are capped at 500. A heavily decorated rune name can silently break past these limits.
+6. **Aliases are find-and-replace at load,** in definition order. `Alias[BIG_GG]:FALSE` means `ItemDisplay[BIG_GG ...]` becomes `ItemDisplay[FALSE ...]`. In conditions BH replaces the name wherever it occurs, even inside a longer word; in output only `%NAME%`-style uses.
+7. **Length limits (BH `TrimItemText`):** a name shows 56 characters (512 for items in a shop); color codes don't count toward that, and everything together is cut at 511. Descriptions are cut with "..." past about 500, less when the item's own text is long. (The wiki's "125 internal" is not what BH does.)
 8. **Encoding (author correction):** since S13, UTF-8 displays `•`, `ÿ`, `§`, `¹²³` correctly. The wiki's ANSI advice is out of date. Don't convert.
+9. **AND and OR have equal precedence** and are read left to right (BH `ProcessConditions`): `A OR B C` means `(A OR B) AND C`, not `A OR (B AND C)`. Always bracket OR groups. The linter flags an AND that follows an OR inside the same brackets.
+10. **Keywords are uppercase.** BH only recognizes `%[A-Z_]+%` (plus digits for `%STAT36%`-style ones); anything else, including a lowercase `%white%` or an unknown `%BLK%`, is shown as text. `%PERCENT%` displays a literal `%`.
+
+The wiki lags behind new features. What the game actually does is in the PD2 BH source, https://github.com/Project-Diablo-2/BH (`BH/Modules/Item/ItemDisplay.cpp` for parsing and display, `BH/Modules/MapNotify/MapNotify.cpp` for notifications and sounds); points 4, 6, 7, 9 and 10 were checked there on 2026-10-03 (commit `caa2b93`). When the wiki and BH disagree, BH wins; the author wins over both.
 
 The wiki page pulls in three other pages. They were downloaded raw on 2026-09-28 and live next to it: `docs/pd2-item-codes.wiki` (the item-code table: `hp5`, `yps`, `r30`, base codes…), `docs/pd2-filter-info.wiki` and `docs/pd2-formula-info.wiki`. For anything not in them, the agent should confirm codes against existing rules in the filter, or ask you, and never guess.
 
@@ -204,7 +208,11 @@ Optional first agent task, to make sure the agent has understood the project:
 
 Check its answer against what you know. If it's wrong, fix `CLAUDE.md` rather than the prompt, so the correction applies to every future chat.
 
-### Phase 2: A linter (agent task)
+### Phase 2: A linter (done 2026-10-03)
+**Status:** `tools/lint_filter.py` exists and runs in the GitHub Action after the build check. It takes its keyword, condition and formula tables from the BH source (not the wiki), item codes from `docs/`, and accepted findings from `tools/lint_allow.txt`. `--all` also shows allow-listed findings and info notes; `--customization` lints the commented-out player options in `050-customization` as if enabled (§9 Q5). Its docstring lists every check. Beyond the list below it also checks: duplicate notification keywords in one rule, `%TIER-n%` above 9, item codes not in `docs/`, aliases that would hang BH or rewrite other words, and AND-after-OR grouping (§3 point 9).
+
+The original brief:
+
 Have the agent write `tools/lint_filter.py`. It should check the built `Erazure-Main.filter` but report locations as `sections/<file>:<line>`:
 - Unbalanced `[` `]`, `(` `)` or `{` `}`, and `ItemDisplay` lines missing `]:`.
 - `%KEYWORD%` tokens not in the wiki's keyword lists, and alias names used but never defined. Catches typos like `%GOLF%`.
@@ -233,7 +241,8 @@ At each ladder reset:
 2. Save that season's patch notes to `docs/patch-notes/season-NN.wiki`. Use `https://wiki.projectdiablo2.com/w/index.php?title=Patch_Notes&action=raw&templates=expand`; if it comes back as mostly `{{...}}` lines, download the individual season page instead.
 3. Agent prompt:
    > Read @docs/patch-notes/season-NN.wiki. List every new or changed item, base, rune, map, stat or filter-syntax feature. For each, search `sections/` and say whether the filter already handles it (with section file and line), and propose where and how to add or change rules. Don't edit yet.
-4. Work through the list. Set the new season name in `version.json` (`"season": "Season NN"`), then run `build.bat` (it stamps the date), run the linter, test in game, and push.
+4. Re-check the BH tables at the top of `tools/lint_filter.py` (conditions, keywords, formula variables, notification keywords) against the current `BH/Modules/Item/ItemDisplay.cpp`, and update the commit noted there.
+5. Work through the list. Set the new season name in `version.json` (`"season": "Season NN"`), then run `build.bat` (it stamps the date), run the linter, test in game, and push.
 
 ---
 
@@ -279,7 +288,7 @@ The agent should ask you back about which levels, classes and variants a change 
 ## 8. In-game test checklist (before each push)
 
 - [ ] `build.bat` → BUILD OK (or `python tools/build.py --check` → in sync, if you don't want a new date)
-- [ ] Linter clean (once Phase 2 exists)
+- [ ] `python tools/lint_filter.py` clean (accepted findings in `tools/lint_allow.txt`)
 - [ ] Load `Erazure-Main.filter` locally (`Diablo II\ProjectD2\filters\local`, Local Filter, Save Filter)
 - [ ] Horadric Cube description shows the right variant name and version string
 - [ ] Spot-check the items you changed at the lowest and highest filter level they apply to
@@ -294,7 +303,7 @@ The agent should ask you back about which levels, classes and variants a change 
 2. ~~Is `Erazure-Main.filter` always the right source?~~ **Settled 2026-09-29:** `sections/` is the source; `Erazure-Main.filter` is generated like the other 7.
 3. **Duplicate section names** (Indestructible, Maximum Resistances; see §2.4): intentional?
 4. **README encoding instructions:** update from "Windows 1252" to UTF-8 for S13+?
-5. **Player customization section (`sections/050-customization.filter`):** should the linter check those commented-out rules as if enabled, so they don't break when a player uncomments one?
+5. **Player customization section (`sections/050-customization.filter`):** *(partly settled 2026-10-03: `python tools/lint_filter.py --customization` lints them as if enabled; not part of CI.)* Should the linter check those commented-out rules as if enabled, so they don't break when a player uncomments one?
 
 ---
 
