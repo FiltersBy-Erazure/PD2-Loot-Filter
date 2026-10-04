@@ -229,6 +229,10 @@ Have the agent write `tools/lint_filter.py`. It should check the built `Erazure-
 Be realistic about the limits: a linter catches syntax and typos. It can't tell you whether hiding something at level 8 is the right *design* call. Only you and in-game testing can.
 
 ### Phase 3: A "which rules match this item?" tool (optional, more ambitious)
+**Status (2026-10-04):** a first version exists. `python tools/explain_item.py <code> <quality> --level N [--set K=V ...]` lists the matching rules in order with BH semantics, where the display stops (shown or hidden), and which rule decides the drop sound. Unspecified values (stats, class, map...) make rules "maybe". Item groups are not derived from the code yet (pass `--groups`), and there is no file of expected results yet.
+
+The original brief:
+
 `tools/explain_item.py`: you describe an item (code, quality, ethereal, sockets, a few stats, character level, class, filter level, variant), and it walks the filter top to bottom showing which rules match, what `%NAME%` becomes after each CONTINUE, where evaluation stops, and which notifications fire.
 - This is the closest thing to a test suite this project can have. You'd keep a file of items with expected output, e.g. "Ber at FILTLVL 12 in BIG_GG outside town shows BIG GG".
 - It's a real project, because it needs a parser for the condition language (AND/OR/!/parentheses/comparisons/`~` ranges) and a model of every code you use.
@@ -243,6 +247,8 @@ At each ladder reset:
    > Read @docs/patch-notes/season-NN.wiki. List every new or changed item, base, rune, map, stat or filter-syntax feature. For each, search `sections/` and say whether the filter already handles it (with section file and line), and propose where and how to add or change rules. Don't edit yet.
 4. Re-check the BH tables at the top of `tools/lint_filter.py` (conditions, keywords, formula variables, notification keywords) against the current `BH/Modules/Item/ItemDisplay.cpp`, and update the commit noted there.
 5. Work through the list. Set the new season name in `version.json` (`"season": "Season NN"`), then run `build.bat` (it stamps the date), run the linter, test in game, and push.
+
+**With a beta (as for Season 14, 2026-10):** do the work on a `beta` branch made from `setup`, with `"season": "Season NN Beta"` in `version.json` so the Cube shows it. The launcher only serves `main`, so to let beta testers pick the beta build, `python tools/publish_beta.py` copies `beta`'s `Erazure-Main.filter` to `main` as `Erazure-S14-Beta.filter` plus a `filter_definitions.json` entry, never touching the 8 live files (`--push` only with the author's go-ahead). Patch notes change during a beta: diff each update against what is done. At launch: merge `beta` → `setup` → `main`, set the final season name, `build.bat`, and `python tools/publish_beta.py --remove`. The S14 list is in `docs/patch-notes/s14-dev-streams.md`.
 
 ---
 
@@ -299,7 +305,7 @@ The agent should ask you back about which levels, classes and variants a change 
 
 ## 9. Open questions to settle (the agent can't answer these)
 
-1. **Does the PD2 launcher serve your `main` branch directly to players?** If it does, every push reaches players immediately. Work on a branch (`setup` now) and merge to `main` only after in-game testing.
+1. ~~Does the PD2 launcher serve your `main` branch directly to players?~~ **Settled 2026-10-04: yes.** The launcher's `filters.json` entry is `https://api.github.com/repos/FiltersBy-Erazure/PD2-Loot-Filter/contents` (GitHub contents API, no `?ref=`), which returns the default branch, `main`. Every push to `main` reaches players on their next Play; other branches never do.
 2. ~~Is `Erazure-Main.filter` always the right source?~~ **Settled 2026-09-29:** `sections/` is the source; `Erazure-Main.filter` is generated like the other 7.
 3. **Duplicate section names** (Indestructible, Maximum Resistances; see §2.4): intentional?
 4. **README encoding instructions:** update from "Windows 1252" to UTF-8 for S13+?

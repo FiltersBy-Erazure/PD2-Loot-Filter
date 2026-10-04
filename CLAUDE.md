@@ -107,8 +107,15 @@ The exact labels are in that file. A rule without `FILTLVL` applies at every lev
 2. `python tools/build.py --check` and `python tools/lint_filter.py` must pass. Findings the author
    accepts go in `tools/lint_allow.txt` with a reason; never allow-list one on your own.
 3. The author runs `build.bat` when ready to publish (stamps the date) and tests in game.
-4. Commit `sections/`, `version.json` and all 8 filters together, on a branch (currently `setup`).
-5. Merge to `main` only with the author's explicit go-ahead: the launcher may serve it to players.
+4. Commit `sections/`, `version.json` and all 8 filters together, on a branch: `beta` for Season 14
+   work until launch (2026-10-23), `setup` for Season 13 fixes (merge `setup` into `beta` afterwards;
+   on conflicts in the 8 filters, resolve the sections and rebuild).
+5. Merge to `main` only with the author's explicit go-ahead: the launcher serves `main` to players
+   (GitHub contents API, default branch). During the S14 beta, `python tools/publish_beta.py` puts the
+   beta build on `main` as an extra "Erazure - S14 Beta" entry without touching the 8 live filters;
+   its `--push` also needs the author's go-ahead each time.
+6. To see which rules an item hits (and where it stops, and which rule plays its drop sound):
+   `python tools/explain_item.py <code> <quality> --level N [--set K=V ...]`.
 
 ## Things to never do
 - Never edit the 8 root `.filter` files; never stamp or edit `version.json` unless asked.
@@ -128,4 +135,6 @@ The exact labels are in that file. A rule without `FILTLVL` applies at every lev
 
 ## Key files
 `sections/` (source) · `tools/build.py` · `build.bat` · `version.json` · `filter_definitions.json` ·
-`.claude/settings.json` + `.claude/hooks/rebuild.py` · `.github/workflows/check-filters.yml` · `docs/` · `HANDOFF.md`
+`tools/lint_filter.py` + `tools/lint_allow.txt` · `tools/explain_item.py` · `tools/publish_beta.py` ·
+`.claude/settings.json` + `.claude/hooks/rebuild.py` · `.github/workflows/check-filters.yml` · `docs/` ·
+`docs/patch-notes/s14-dev-streams.md` (S14 to-do list) · `HANDOFF.md`
