@@ -34,7 +34,7 @@ HEAD_RE = re.compile(r'^={3,4}\s*<span class="d2-(gold|green)">(.+?)</span>\s*={
 NEXT_HEAD_RE = re.compile(r"^={2,4}[^=]", re.M)
 BASE_RE = re.compile(r"<p><b>(.+?)</b>")  # the base is the first bold text that is not a "Label:"
 RANGE_RE = re.compile(r"\[(-?\d+(?:\.\d+)?)-(-?\d+(?:\.\d+)?)\]")
-NOT_A_ROLL = re.compile(r"per Character Level|Based on Character Level|\(\d+ Items\)|Full Set", re.I)
+NOT_A_ROLL = re.compile(r"per Character Level|Based on Character Level|\(\d+ Items\)|Full Set|\(with ", re.I)
 
 
 # ---------------------------------------------------------------- fetch
@@ -102,9 +102,10 @@ def parse_stats(block):
         lines = [l for l in row.split("\n") if l.startswith("|") and not l.startswith(("|-", "|}", "{|"))]
         for line in lines:
             cells = line.lstrip("|").split("||")
-            text = clean(cells[-1])
-            if text:
-                stats.append(text)
+            for part in re.split(r"<br\s*/?>", cells[-1]):  # one cell can hold several stats
+                text = clean(part)
+                if text:
+                    stats.append(text)
     return stats
 
 

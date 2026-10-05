@@ -23,6 +23,9 @@
   by hand: edit the picks file (remove `auto` from a line to keep your change) and the hook regenerates.
   The author picks rolls in a page: `pick_rolls.bat` (double-click) = `python tools/gen_unique_rolls.py --picker`, which writes and opens
   `tools/roll_picker.html` (gitignored); it saves the picks file, and `build.bat` regenerates and builds.
+  Every variable roll is pickable; a pick of a roll with no tag line yet (`*` in the picks file) is a request:
+  `--requests` lists them (add the 300 line + `COVER` slot) and the rolls with no known filter code
+  (codes the author finds go in `AUTHOR_CODES`).
   Its aliases `ROLL_<X>_TAG` are wired into the tag lines of `300-affix-tags`; the slots each tag covers
   are listed in `COVER` in the generator and must match those lines.
 

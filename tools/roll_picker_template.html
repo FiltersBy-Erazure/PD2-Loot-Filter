@@ -52,6 +52,9 @@
   .chip { border-radius: 999px; padding: 4px 11px; font-size: 14px; }
   .chip[aria-pressed=true] { background: var(--chip-on); border-color: var(--chip-on); color: var(--chip-on-text); }
   .chip small { opacity: .75; margin-left: 4px; }
+  .chip.new { border-style: dashed; background: transparent; }
+  .chip.new[aria-pressed=true] { background: transparent; color: var(--text); border: 2px dashed var(--accent); }
+  .label .req { font-style: italic; opacity: .7; }
   .grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; align-items: start; }
   @media (max-width: 640px) { .grid { grid-template-columns: minmax(0, 1fr); } }
   .meter { font-size: 13.5px; color: var(--muted); }
@@ -94,8 +97,10 @@
   <p class="help">Click a roll to show or hide it as a tag (changing an item marks it reviewed). The black box
     previews the label: tags appear left to right in this order in game. <b>room</b> = characters left for roll
     tags after the name, base, line breaks, sockets and the corruption tag(s); a roll's number is its width at
-    its highest roll. Your clicks are kept in this browser until you press <b>Save picks file</b>; save it over
-    <code>tools/unique_roll_picks.txt</code>, then double-click <code>build.bat</code>.</p>
+    its highest roll. <b>Dashed</b> rolls have no tag line in the filter yet: picking one asks for it to be added
+    (shown in italics with "?", width estimated). Your clicks are kept in this browser until you press
+    <b>Save picks file</b>; save it over <code>tools/unique_roll_picks.txt</code>, then double-click
+    <code>build.bat</code>.</p>
   <div id="list"></div>
 </main>
 <script>
@@ -148,9 +153,13 @@ function card(it) {
   const chips = el("div", {class: "chips"});
   for (const c of it.cands) {
     const on = st.picks.includes(c.k);
-    const b = el("button", {class: "chip", type: "button", "aria-pressed": String(on),
-                            title: `Shows as "${c.text}" (${c.w} characters at its highest roll)`},
-                 `${c.k} ${rangeText(c)}`, el("small", {text: `· ${c.w}`}));
+    const b = c.tagged
+      ? el("button", {class: "chip", type: "button", "aria-pressed": String(on),
+                      title: `${c.line}\nShows as "${c.text}" (${c.w} characters at its highest roll)`},
+           `${c.k} ${rangeText(c)}`, el("small", {text: `· ${c.w}`}))
+      : el("button", {class: "chip new", type: "button", "aria-pressed": String(on),
+                      title: `No tag line for this roll yet: picking it asks for one (about ${c.w} characters).`},
+           c.line, el("small", {text: `· ~${c.w} · new`}));
     b.addEventListener("click", () => {
       const picks = on ? st.picks.filter((k) => k !== c.k) : [...st.picks, c.k];
       setState(it.key, {picks, reviewed: true});
@@ -159,16 +168,22 @@ function card(it) {
   }
   art.append(chips);
   const u = used(it, st.picks);
+  const req = it.cands.filter((c) => !c.tagged && st.picks.includes(c.k));
   const meter = el("div", {class: "meter" + (u > it.room ? " over" : "")},
-    el("span", {}, "uses ", el("b", {text: String(u)}), ` of room ${it.room}` + (u > it.room ? " — too long, the name gets cut" : "")),
+    el("span", {}, "uses ", el("b", {text: String(u)}), ` of room ${it.room}` +
+       (req.length ? ` (~${req.reduce((s, c) => s + c.w, 0)} of it requested, no tag line yet)` : "") +
+       (u > it.room ? " — too long, the name gets cut" : "")),
     el("div", {class: "bar"}, el("span", {style: `width:${Math.min(100, it.room > 0 ? 100 * u / it.room : 100)}%`})));
-  const tags = it.cands.filter((c) => st.picks.includes(c.k)).sort((a, b) => b.order - a.order).map((c) => c.text).join(" ");
+  const tagLine = el("div", {class: "ln-tags"});
+  it.cands.filter((c) => st.picks.includes(c.k)).sort((a, b) => b.order - a.order)
+    .forEach((c, i) => { if (i) tagLine.append(" "); tagLine.append(c.tagged ? c.text : el("span", {class: "req", text: c.text})); });
   const label = el("div", {class: "label", "aria-label": "In-game label preview"},
     el("div", {class: `ln-name ${it.kind}`, text: it.name}),
     el("div", {class: "ln-base", text: it.bases[0] || ""}),
-    el("div", {class: "ln-tags", text: tags}));
+    tagLine);
   art.append(el("div", {class: "grid"}, meter, label));
-  if (it.untaggable.length) art.append(el("div", {class: "untag", text: `No tag line yet: ${it.untaggable.join(" · ")}`}));
+  if (it.untaggable.length) art.append(el("div", {class: "untag",
+    text: `No filter code known (can't be picked yet): ${it.untaggable.join(" · ")}`}));
   const det = el("details", {}, el("summary", {text: "All stats"}));
   const ul = el("ul");
   for (const s of it.stats) ul.append(el("li", {text: s}));
@@ -191,7 +206,7 @@ function visible() {
     if (kind && it.kind !== kind) return false;
     if (slot && it.slot !== slot) return false;
     if (page && it.page !== page) return false;
-    if ($("needs").checked && !(it.cands.length > it.auto.length)) return false;
+    if ($("needs").checked && !(it.cands.filter((c) => c.tagged).length > it.auto.length)) return false;
     if ($("unrev").checked && st.reviewed) return false;
     if (q && !`${it.name} ${it.bases.join(" ")} ${it.codes.join(" ")}`.toLowerCase().includes(q)) return false;
     return true;
