@@ -269,7 +269,8 @@ TEXT_FIXES = [(r"Damaged Taken", "Damage Taken"), (r"Enhance Defense", "Enhanced
               (r"Stolen Her Hit", "Stolen per Hit"), (r"^Regenerate Mana \+", "Regenerate Mana "),
               (r"% Enemy (\w+) Resistance$", r"% to Enemy \1 Resistance"), (r"Absorb \+", "Absorb "),
               (r"^\+(\S+)% (Fire|Cold|Lightning|Poison) Resist$", r"\2 Resist +\1%"),
-              (r"(Fire|Cold|Lightning|Poison)Resist", r"\1 Resist"), (r" \(Cold Duration: [^)]*\)$", "")]
+              (r"(Fire|Cold|Lightning|Poison)Resist", r"\1 Resist"), (r" \(Cold Duration: [^)]*\)$", ""),
+              (r"^\+([^%\s]+) Enhanced Damage$", r"+\1% Enhanced Damage")]
 AUTHOR_CODES = [  # (stat text with # for each number, filter code): codes the wiki tables lack, looked up by the author
 ]
 # "Adds X to Y <element> Damage": (minimum code, maximum code), from the wiki's attribute table
