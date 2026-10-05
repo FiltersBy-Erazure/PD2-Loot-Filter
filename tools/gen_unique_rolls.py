@@ -412,20 +412,30 @@ def read_picks():
 
 def render_picks(items, old):
     out = ["# Unique/set variable-roll tags: the rolls each item shows (tools/gen_unique_rolls.py).",
-           "# 'KIND Name: tag, tag' - the filter shows the tags in the item's affix order. Lines ending in",
-           "# '# auto' are the generator's defaults and are rewritten on every run: delete 'auto' to keep",
-           "# your change. Tags: " + ", ".join(TAGS), ""]
+           "# 'KIND Name: tag, tag' - the filter shows the tags in the item's affix order. Lines whose comment",
+           "# starts with 'auto' are the generator's defaults and are rewritten on every run: delete 'auto' to",
+           "# keep your change. Everything after '#' is rewritten on every run.",
+           "# room = characters left for roll tags (56 minus name, base, line breaks, one corruption tag and",
+           "# sockets); uses = what the picked tags take at their highest roll. Each candidate shows its",
+           "# range and (width), e.g. 'ed 50-75 (5)' = '75ed '. Tags: " + ", ".join(TAGS), ""]
     for it in sorted(items, key=lambda x: (x.kind, x.page, x.name)):
         if not it.rolls:
             continue
         auto, budget = default_picks(it)
         mine = old.get(it.key)
-        cands = " ".join(f"{k} {lo}-{hi}" if lo != hi else f"{k} {hi}" for k, (lo, hi) in it.rolls.items())
+        cands = " ".join((f"{k} {lo}-{hi}" if lo != hi else f"{k} {hi}") + f" ({tag_width(k, hi)})"
+                         for k, (lo, hi) in it.rolls.items())
+        picks = mine[0] if mine and not mine[1] else auto
+        used = sum(tag_width(k, it.rolls[k][1]) for k in picks if k in it.rolls)
+        info = f"room {budget}, uses {used}" + (" - TOO LONG" if used > budget else "")
+        unknown = [k for k in picks if k not in it.rolls]
+        if unknown:
+            info += f" - not a candidate here: {', '.join(unknown)}"
         if mine and not mine[1]:
-            out.append(f"{it.key}: {', '.join(mine[0])}")
+            out.append(f"{it.key}: {', '.join(picks)}    # {info} | {cands}")
         else:
             flag = " CHOOSE" if len(it.rolls) > len(auto) else ""
-            out.append(f"{it.key}: {', '.join(auto)}    # auto{flag} | room {budget} | {cands}")
+            out.append(f"{it.key}: {', '.join(picks)}    # auto{flag} | {info} | {cands}")
     return "\n".join(out) + "\n"
 
 
