@@ -9,7 +9,7 @@ Unique and set item data from the PD2 wiki, for generating the unique/set variab
 The pages are read from docs/items/*.wiki (raw wikitext). Base names are mapped to item codes, and to
 the codes of the base's other tiers (an upgraded unique keeps its identity), with docs/pd2-item-codes.wiki.
 A stat line is a variable roll when its current text has a range like +[140-180]%; ranges that come
-from character level and set bonuses ("(2 Items)") are not rolls.
+from character level, other conditions ("(Based on Missing Life)") and set bonuses ("(2 Items)") are not rolls.
 """
 import argparse
 import datetime
@@ -34,7 +34,8 @@ HEAD_RE = re.compile(r'^={3,4}\s*<span class="d2-(gold|green)">(.+?)</span>\s*={
 NEXT_HEAD_RE = re.compile(r"^={2,4}[^=]", re.M)
 BASE_RE = re.compile(r"<p><b>(.+?)</b>")  # the base is the first bold text that is not a "Label:"
 RANGE_RE = re.compile(r"\[(-?\d+(?:\.\d+)?)-(-?\d+(?:\.\d+)?)\]")
-NOT_A_ROLL = re.compile(r"per Character Level|Based on Character Level|\(\d+ Items\)|Full Set|\(with ", re.I)
+NOT_A_ROLL = re.compile(r"per Character Level|Based on Character Level|\(Based on |\(\d+ Items\)|Full Set|\(with ",
+                        re.I)
 
 
 # ---------------------------------------------------------------- fetch
