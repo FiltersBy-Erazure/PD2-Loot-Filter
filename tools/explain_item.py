@@ -48,7 +48,7 @@ DAGGER THROWING JAV SPEAR POLEARM BOW XBOW STAFF WAND SCEPTER 1H 2H NORM EXC ELT
 SIN SOR ZON MISC JEWELRY CHARM QUIVER EQ1 EQ2 EQ3 EQ4 EQ5 EQ6 EQ7 WP1 WP2 WP3 WP4 WP5 WP6 WP7 WP8 WP9
 WP10 WP11 WP12 WP13 CL1 CL2 CL3 CL4 CL5 CL6 CL7""".split())
 COMPARE_RE = re.compile(r"^(.+?)([<>=~])(-?\d+)(?:-(\d+))?$")
-GEM_RE = re.compile(r"(g[a-z]{2}|sk[a-z])s?")
+GEM_RE = re.compile(r"(g[cfslzp][vybgrwk]|sk[cfulz])s?")  # chipped..perfect x color, skulls
 KIND_KEYS = {"RUNE": re.compile(r"r\d\ds?"), "GOLD": re.compile(r"gld"),
              "GEM": GEM_RE, "GEMLEVEL": GEM_RE, "GEMTYPE": GEM_RE}
 MAYBE = 0.5

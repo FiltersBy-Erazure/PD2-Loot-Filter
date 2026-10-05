@@ -30,7 +30,7 @@ PAGES = [  # what All_Unique_Weapons, All_Unique_Non-Weapons and All_Set_Items t
     "Normal", "Exceptional", "Elite",
 ]
 
-HEAD_RE = re.compile(r'^====\s*<span class="d2-(gold|green)">(.+?)</span>\s*====\s*$', re.M)
+HEAD_RE = re.compile(r'^={3,4}\s*<span class="d2-(gold|green)">(.+?)</span>\s*={3,4}\s*$', re.M)
 NEXT_HEAD_RE = re.compile(r"^={2,4}[^=]", re.M)
 BASE_RE = re.compile(r"<p><b>(.+?)</b>")  # the base is the first bold text that is not a "Label:"
 RANGE_RE = re.compile(r"\[(-?\d+(?:\.\d+)?)-(-?\d+(?:\.\d+)?)\]")

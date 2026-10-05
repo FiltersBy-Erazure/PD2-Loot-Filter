@@ -248,6 +248,8 @@ At each ladder reset:
 4. Re-check the BH tables at the top of `tools/lint_filter.py` (conditions, keywords, formula variables, notification keywords) against the current `BH/Modules/Item/ItemDisplay.cpp`, and update the commit noted there.
 5. Work through the list. Set the new season name in `version.json` (`"season": "Season NN"`), then run `build.bat` (it stamps the date), run the linter, test in game, and push.
 
+**Unique/set roll tags:** `python tools/item_data.py fetch` refreshes `docs/items/` from the wiki (the git diff shows what changed on uniques and sets), then `python tools/gen_unique_rolls.py` regenerates the fingerprints and default picks; review lines marked `CHOOSE` in `tools/unique_roll_picks.txt`.
+
 **With a beta (as for Season 14, 2026-10):** do the work on a `beta` branch made from `setup`, with `"season": "Season NN Beta"` in `version.json` so the Cube shows it. The launcher only serves `main`, so to let beta testers pick the beta build, `python tools/publish_beta.py` copies `beta`'s `Erazure-Main.filter` to `main` as `Erazure-S14-Beta.filter` plus a `filter_definitions.json` entry, never touching the 8 live files (`--push` only with the author's go-ahead). Patch notes change during a beta: diff each update against what is done. At launch: merge `beta` → `setup` → `main`, set the final season name, `build.bat`, and `python tools/publish_beta.py --remove`. The S14 list is in `docs/patch-notes/s14-dev-streams.md`.
 
 ---
