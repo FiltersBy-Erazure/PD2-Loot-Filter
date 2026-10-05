@@ -31,7 +31,11 @@ ROOT = item_data.ROOT
 PICKS = ROOT / "tools" / "unique_roll_picks.txt"
 OUT = ROOT / "sections" / "045-unique-set-rolls.filter"
 FILTER_WIKI = ROOT / "docs" / "pd2-item-filtering.wiki"
-NAME_MAX, CORRUPTION_RESERVE, MAX_PICKS = 56, 8, 3
+# Name budget (BH shows 56 characters): unique name + line break + base name, the line break that
+# 300-affix-tags adds before the tags (%CL%), one corruption tag, and " N" for sockets (210-nonmagic-armor)
+# on items that can have them.
+NAME_MAX, LINE_BREAK, CORRUPTION_RESERVE, SOCKET_RESERVE, MAX_PICKS = 56, 1, 8, 2, 3
+SOCKET_SLOTS = {"WEAPON", "HELM", "CIRC", "CHEST", "SHIELD"}
 WEAPON_PAGES = {"Axes", "Maces", "Swords", "Daggers", "Throwing", "Spears", "Polearms", "Bows",
                 "Crossbows", "Scepters", "Staves", "Wands", "Class_Weapons"}
 CASTER_PAGES = {"Scepters", "Staves", "Wands"}
@@ -386,7 +390,8 @@ def tag_width(key, hi):
 
 
 def default_picks(it):
-    budget = NAME_MAX - len(it.name) - 1 - max((len(b) for b in it.base_names), default=0) - CORRUPTION_RESERVE
+    budget = (NAME_MAX - len(it.name) - 1 - max((len(b) for b in it.base_names), default=0) - LINE_BREAK
+              - CORRUPTION_RESERVE - (SOCKET_RESERVE if it.where in SOCKET_SLOTS else 0))
     picks, used = [], 0
     for key in PRIORITY[it.slot]:
         if key in it.rolls and len(picks) < MAX_PICKS:
