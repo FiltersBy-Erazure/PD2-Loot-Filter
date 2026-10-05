@@ -129,6 +129,7 @@ COVER = {
     "lpk": {"WEAPON", "rin"}, "mpk": {"WEAPON", "rin"},
     "mf": ALL, "gf": {"rin", "amu", "CIRC", "HELM", "BELT", "BOOTS", "GLOVES", "QUIVER"},
     "ar": {"WEAPON", "GLOVES", "BELT", "rin", "QUIVER"},
+    "ar%": {"GLOVES", "rin", "amu", "CIRC", "HELM", "CHEST"},
     "fdmg": {"WEAPON"}, "ldmg": {"WEAPON"}, "cdmg": {"WEAPON"}, "pdmg": {"WEAPON"},
     "res": RES_SLOTS, "fres": RES_SLOTS, "lres": RES_SLOTS, "cres": RES_SLOTS, "pres": RES_SLOTS,
     **{k: {"BOOTS", "CHEST", "SHIELD", "HELM", "CIRC"} for k in ("maxfr", "maxlr", "maxcr", "maxpr")},
@@ -148,7 +149,7 @@ PRIORITY = {  # default pick order; the author's lines in the picks file overrid
           "ar%", "dem", "und", "fdmg", "ldmg", "cdmg", "pdmg"],
     "A": ["allsk", *CLSK_KEYS, "tabsk", "fcr", "fhr", "frw", "fbr", "res", "maxfr", "maxlr", "maxcr",
           "maxpr", "fres", "lres", "cres", "pres", "life", "mana", "mf", "gf", "str", "dex", "vit", "nrg",
-          "ls", "ms", "lpk", "mpk", "mdr", "pdr%", "pdr", "replife", "regen", "cr", "dtm", "ar", "ias",
+          "ls", "ms", "lpk", "mpk", "mdr", "pdr%", "pdr", "replife", "regen", "cr", "dtm", "ar", "ar%", "ias",
           "min", "max", "ds", "cb", "fdmg", "ldmg", "cdmg", "pdmg", "ed"],
 }
 CODE_TO_TAG = {}
