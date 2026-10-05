@@ -231,7 +231,7 @@ function counts() {
 
 function fillSelect(sel, values, label, names = {}) {
   sel.append(el("option", {value: "", text: label}));
-  for (const v of values) sel.append(el("option", {value: v, text: names[v] || v.replace("_", " ")}));
+  for (const v of values) if (v) sel.append(el("option", {value: v, text: names[v] || v.replace("_", " ")}));
 }
 
 function buildText() {

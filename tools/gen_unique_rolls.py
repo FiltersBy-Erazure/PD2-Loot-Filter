@@ -358,14 +358,15 @@ class Item:
                         family[0] if family else None)
         self.codes = family[family.index(own_code):] if own_code in family else family
         self.base_names = [tier_names.get(c, self.base) for c in self.codes]
-        self.weapon = self.page in WEAPON_PAGES
-        self.slot = "W" if self.weapon else "A"
-        self.where = "WEAPON" if self.weapon else PAGE_SLOT.get(self.page)
+        self.where = "WEAPON" if self.page in WEAPON_PAGES else PAGE_SLOT.get(self.page)
         if any(c.startswith("ci") for c in self.codes):
             self.where = "CIRC"
-        if self.where is None:  # set items: the slot of the base family, learnt from the uniques
-            self.where = CODE_SLOT.get(self.codes[0]) if self.codes else None
-        self.caster = self.page in CASTER_PAGES or any(c.startswith("ob") for c in self.codes)
+        if self.where is None and self.codes:  # set items: the slot of the base family, learnt from the uniques
+            self.where = CODE_SLOT.get(self.codes[0]) or ("WEAPON" if self.codes[0] in WEAPON_CODES else None)
+        self.weapon = self.where == "WEAPON"
+        self.slot = "W" if self.weapon else "A"
+        page = self.page if self.page in WEAPON_PAGES else CODE_PAGE.get(self.codes[0]) if self.codes else None
+        self.caster = page in CASTER_PAGES or any(c.startswith("ob") for c in self.codes)
         self.stats = {}  # code -> (lo, hi), all current stat lines with a filter code
         for line in raw["stats"]:
             for code, lo, hi in parse_stat(line):
@@ -410,8 +411,19 @@ def used_aliases():
     return used
 
 
+def weapon_codes():
+    """Item codes listed under the item-code wiki's Weapons heading (the slot of a set weapon whose base
+    no unique uses)."""
+    text = item_data.CODES_WIKI.read_text(encoding="utf-8")
+    start = text.index("===== Weapons =====")
+    end = text.index("\n=====", start + 1)
+    return set(re.findall(r"\|\s*([a-z0-9]*[a-z][a-z0-9]*)\s*\|\|", text[start:end]))
+
+
 USED = used_aliases()
-CODE_SLOT = {}
+WEAPON_CODES = weapon_codes()
+CODE_SLOT = {}  # base code -> slot, and base code -> unique page: learnt from the unique pages in load()
+CODE_PAGE = {}
 
 
 def roll_key(code):
@@ -664,6 +676,7 @@ def load():
         for c in r["codes"]:
             if slot:
                 CODE_SLOT.setdefault(c, "CIRC" if c.startswith("ci") else slot)
+                CODE_PAGE.setdefault(c, r["page"])
     items = [Item(r, families) for r in raw]
     build_fingerprints(items)
     return items
