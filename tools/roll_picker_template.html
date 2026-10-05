@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Roll Picker</title>
+<!-- Template for tools/roll_picker.html, which tools/gen_unique_rolls.py --picker writes (data embedded). -->
+<style>
+  :root {
+    --bg: #f4f2ee; --panel: #ffffff; --text: #23211d; --muted: #6b665d; --line: #dcd7cc;
+    --accent: #8a6d1f; --chip: #f1ede4; --chip-on: #8a6d1f; --chip-on-text: #ffffff;
+    --ok: #3f7d3a; --bad: #b3261e; --label-bg: #0d0c0b;
+    --uni: #c7b377; --set: #2fd12f; --tag: #e8e6e3; --base: #c8c8c8;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #161513; --panel: #201e1b; --text: #ece8e1; --muted: #a39d92; --line: #36332e;
+      --accent: #d6b25e; --chip: #2b2925; --chip-on: #d6b25e; --chip-on-text: #1b1a17;
+      --ok: #7cc474; --bad: #ef7a72; --label-bg: #000000;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  header.top { position: sticky; top: 0; z-index: 5; background: var(--panel); border-bottom: 1px solid var(--line);
+               padding: 10px 16px; }
+  .row { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; max-width: 960px; margin: 0 auto; }
+  .row + .row { margin-top: 8px; }
+  h1 { font-size: 17px; margin: 0 auto 0 0; }
+  .stat { color: var(--muted); font-size: 14px; }
+  .stat b { color: var(--text); }
+  input[type=search], select { font: inherit; padding: 5px 8px; border: 1px solid var(--line); border-radius: 6px;
+                               background: var(--bg); color: var(--text); }
+  input[type=search] { flex: 1 1 180px; }
+  label.check { display: inline-flex; gap: 6px; align-items: center; font-size: 14px; cursor: pointer; }
+  button { font: inherit; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--line);
+           background: var(--chip); color: var(--text); cursor: pointer; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: var(--chip-on-text); font-weight: 600; }
+  main { max-width: 960px; margin: 0 auto; padding: 12px 16px 80px; }
+  .help { color: var(--muted); font-size: 13.5px; margin: 4px 0 12px; }
+  .banner { display: none; margin: 0 0 12px; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--ok);
+            background: color-mix(in srgb, var(--ok) 12%, var(--panel)); }
+  .banner.show { display: block; }
+  article { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px;
+            margin-bottom: 10px; }
+  article.reviewed { border-left: 4px solid var(--ok); }
+  article:focus { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .head { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; }
+  .name { font-weight: 700; font-size: 16px; }
+  .sub { color: var(--muted); font-size: 13.5px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 8px; }
+  .chip { border-radius: 999px; padding: 4px 11px; font-size: 14px; }
+  .chip[aria-pressed=true] { background: var(--chip-on); border-color: var(--chip-on); color: var(--chip-on-text); }
+  .chip small { opacity: .75; margin-left: 4px; }
+  .grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; align-items: start; }
+  @media (max-width: 640px) { .grid { grid-template-columns: minmax(0, 1fr); } }
+  .meter { font-size: 13.5px; color: var(--muted); }
+  .bar { height: 6px; border-radius: 3px; background: var(--chip); margin-top: 4px; overflow: hidden; }
+  .bar span { display: block; height: 100%; background: var(--ok); }
+  .over .bar span { background: var(--bad); }
+  .over b { color: var(--bad); }
+  .label { background: var(--label-bg); border-radius: 6px; padding: 8px 10px; text-align: center;
+           font-family: "Exocet", "Palatino Linotype", Georgia, serif; font-size: 14px; line-height: 1.35; }
+  .label .ln-name.UNI { color: var(--uni); } .label .ln-name.SET { color: var(--set); }
+  .label .ln-base { color: var(--base); } .label .ln-tags { color: var(--tag); min-height: 1.35em; }
+  .untag { color: var(--muted); font-size: 13px; margin-top: 8px; }
+  details { margin-top: 6px; font-size: 13.5px; }
+  details ul { margin: 6px 0 0; padding-left: 18px; color: var(--muted); }
+  .foot { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; margin-top: 10px; font-size: 14px; }
+  .foot .muted { color: var(--muted); font-size: 13px; }
+  .empty { color: var(--muted); text-align: center; padding: 40px 0; }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="row">
+    <h1>Unique &amp; set roll picks</h1>
+    <span class="stat"><b id="nReviewed">0</b> / <span id="nTotal">0</span> reviewed</span>
+    <span class="stat" id="unsaved"></span>
+    <button id="nextBtn" type="button">Next unreviewed</button>
+    <button id="saveBtn" class="primary" type="button">Save picks file</button>
+  </div>
+  <div class="row">
+    <input id="q" type="search" placeholder="Search name, base or code" aria-label="Search">
+    <select id="kind" aria-label="Kind"><option value="">Uniques &amp; sets</option><option value="UNI">Uniques</option><option value="SET">Sets</option></select>
+    <select id="slot" aria-label="Slot"></select>
+    <select id="page" aria-label="Item type"></select>
+    <label class="check"><input id="needs" type="checkbox"> Needs a choice</label>
+    <label class="check"><input id="unrev" type="checkbox"> Unreviewed only</label>
+  </div>
+</header>
+<main>
+  <div class="banner" id="banner"></div>
+  <p class="help">Click a roll to show or hide it as a tag (changing an item marks it reviewed). The black box
+    previews the label: tags appear left to right in this order in game. <b>room</b> = characters left for roll
+    tags after the name, base, line breaks, sockets and the corruption tag(s); a roll's number is its width at
+    its highest roll. Your clicks are kept in this browser until you press <b>Save picks file</b>; save it over
+    <code>tools/unique_roll_picks.txt</code>, then double-click <code>build.bat</code>.</p>
+  <div id="list"></div>
+</main>
+<script>
+const DATA = /*__DATA__*/null;
+const STORE = "erazure-roll-picker-edits";
+const SLOT_NAMES = {WEAPON: "Weapon", HELM: "Helm", CIRC: "Circlet", CHEST: "Chest", SHIELD: "Shield",
+  GLOVES: "Gloves", BOOTS: "Boots", BELT: "Belt", QUIVER: "Quiver", amu: "Amulet", rin: "Ring"};
+const $ = (id) => document.getElementById(id);
+const byKey = new Map(DATA.items.map((it) => [it.key, it]));
+const state = new Map(DATA.items.map((it) => [it.key, {picks: [...it.picks], reviewed: it.reviewed}]));
+
+function loadEdits() { try { return JSON.parse(localStorage.getItem(STORE) || "{}"); } catch { return {}; } }
+function saveEdits(edits) { try { localStorage.setItem(STORE, JSON.stringify(edits)); } catch {} }
+let edits = loadEdits();
+for (const [key, e] of Object.entries(edits)) {
+  if (state.has(key)) state.set(key, {picks: e.picks.filter((k) => byKey.get(key).cands.some((c) => c.k === k)),
+                                      reviewed: e.reviewed});
+  else delete edits[key];
+}
+
+function el(tag, attrs = {}, ...kids) {
+  const n = document.createElement(tag);
+  for (const [a, v] of Object.entries(attrs)) {
+    if (a === "class") n.className = v; else if (a === "text") n.textContent = v; else n.setAttribute(a, v);
+  }
+  for (const k of kids) if (k != null) n.append(k);
+  return n;
+}
+const used = (it, picks) => it.cands.filter((c) => picks.includes(c.k)).reduce((s, c) => s + c.w, 0);
+const rangeText = (c) => (c.lo === c.hi ? `${c.hi}` : `${c.lo}-${c.hi}`);
+
+function setState(key, next) {
+  state.set(key, next);
+  const it = byKey.get(key);
+  const same = next.reviewed === it.reviewed && next.picks.join() === it.picks.join();
+  if (same) delete edits[key]; else edits[key] = next;
+  saveEdits(edits);
+  const old = document.querySelector(`article[data-key="${CSS.escape(key)}"]`);
+  if (old) old.replaceWith(card(it));
+  counts();
+}
+
+function card(it) {
+  const st = state.get(it.key);
+  const art = el("article", {class: st.reviewed ? "reviewed" : "", "data-key": it.key, tabindex: "-1"});
+  const bases = it.bases.join(" → ");
+  art.append(el("div", {class: "head"},
+    el("span", {class: `name ${it.kind}`, text: it.name}),
+    el("span", {class: "sub", text: `${bases} (${it.codes.join(" ")})`})));
+  const chips = el("div", {class: "chips"});
+  for (const c of it.cands) {
+    const on = st.picks.includes(c.k);
+    const b = el("button", {class: "chip", type: "button", "aria-pressed": String(on),
+                            title: `Shows as "${c.text}" (${c.w} characters at its highest roll)`},
+                 `${c.k} ${rangeText(c)}`, el("small", {text: `· ${c.w}`}));
+    b.addEventListener("click", () => {
+      const picks = on ? st.picks.filter((k) => k !== c.k) : [...st.picks, c.k];
+      setState(it.key, {picks, reviewed: true});
+    });
+    chips.append(b);
+  }
+  art.append(chips);
+  const u = used(it, st.picks);
+  const meter = el("div", {class: "meter" + (u > it.room ? " over" : "")},
+    el("span", {}, "uses ", el("b", {text: String(u)}), ` of room ${it.room}` + (u > it.room ? " — too long, the name gets cut" : "")),
+    el("div", {class: "bar"}, el("span", {style: `width:${Math.min(100, it.room > 0 ? 100 * u / it.room : 100)}%`})));
+  const tags = it.cands.filter((c) => st.picks.includes(c.k)).sort((a, b) => b.order - a.order).map((c) => c.text).join(" ");
+  const label = el("div", {class: "label", "aria-label": "In-game label preview"},
+    el("div", {class: `ln-name ${it.kind}`, text: it.name}),
+    el("div", {class: "ln-base", text: it.bases[0] || ""}),
+    el("div", {class: "ln-tags", text: tags}));
+  art.append(el("div", {class: "grid"}, meter, label));
+  if (it.untaggable.length) art.append(el("div", {class: "untag", text: `No tag line yet: ${it.untaggable.join(" · ")}`}));
+  const det = el("details", {}, el("summary", {text: "All stats"}));
+  const ul = el("ul");
+  for (const s of it.stats) ul.append(el("li", {text: s}));
+  det.append(ul);
+  art.append(det);
+  const rev = el("input", {type: "checkbox"});
+  rev.checked = st.reviewed;
+  rev.addEventListener("change", () => setState(it.key, {picks: st.picks, reviewed: rev.checked}));
+  const reset = el("button", {type: "button", text: "Back to default"});
+  reset.addEventListener("click", () => setState(it.key, {picks: [...it.auto], reviewed: false}));
+  art.append(el("div", {class: "foot"}, el("label", {class: "check"}, rev, "Reviewed"), reset,
+    el("span", {class: "muted", text: `Default: ${it.auto.join(", ") || "none"}`})));
+  return art;
+}
+
+function visible() {
+  const q = $("q").value.trim().toLowerCase(), kind = $("kind").value, slot = $("slot").value, page = $("page").value;
+  return DATA.items.filter((it) => {
+    const st = state.get(it.key);
+    if (kind && it.kind !== kind) return false;
+    if (slot && it.slot !== slot) return false;
+    if (page && it.page !== page) return false;
+    if ($("needs").checked && !(it.cands.length > it.auto.length)) return false;
+    if ($("unrev").checked && st.reviewed) return false;
+    if (q && !`${it.name} ${it.bases.join(" ")} ${it.codes.join(" ")}`.toLowerCase().includes(q)) return false;
+    return true;
+  });
+}
+
+function render() {
+  const list = $("list");
+  list.replaceChildren();
+  const items = visible();
+  if (!items.length) list.append(el("p", {class: "empty", text: "No items match these filters."}));
+  for (const it of items) list.append(card(it));
+  counts();
+}
+
+function counts() {
+  $("nTotal").textContent = DATA.items.length;
+  $("nReviewed").textContent = [...state.values()].filter((s) => s.reviewed).length;
+  const n = Object.keys(edits).length;
+  $("unsaved").textContent = n ? `${n} unsaved change${n === 1 ? "" : "s"}` : "";
+}
+
+function fillSelect(sel, values, label, names = {}) {
+  sel.append(el("option", {value: "", text: label}));
+  for (const v of values) sel.append(el("option", {value: v, text: names[v] || v.replace("_", " ")}));
+}
+
+function buildText() {
+  const lines = [...DATA.header, ""];
+  for (const it of DATA.items) {
+    const st = state.get(it.key);
+    if (st.reviewed) lines.push(`${it.key}: ${it.cands.filter((c) => st.picks.includes(c.k)).map((c) => c.k).join(", ")}`);
+  }
+  return lines.join("\n") + "\n";
+}
+
+async function save() {
+  const text = buildText();
+  try {
+    if (window.showSaveFilePicker) {
+      const handle = await window.showSaveFilePicker({suggestedName: "unique_roll_picks.txt",
+        types: [{description: "Picks file", accept: {"text/plain": [".txt"]}}]});
+      const w = await handle.createWritable();
+      await w.write(text);
+      await w.close();
+    } else {
+      const a = el("a", {href: URL.createObjectURL(new Blob([text], {type: "text/plain"})), download: "unique_roll_picks.txt"});
+      document.body.append(a); a.click(); a.remove();
+    }
+  } catch (e) {
+    if (e.name !== "AbortError") alert(`Could not save: ${e.message}`);
+    return;
+  }
+  edits = {};
+  saveEdits(edits);
+  counts();
+  const b = $("banner");
+  b.textContent = "Saved. If you saved it over tools/unique_roll_picks.txt, double-click build.bat: it regenerates the tags " +
+                  "and builds the 8 filters (python tools/gen_unique_rolls.py --picker reopens this page with the new data).";
+  b.classList.add("show");
+}
+
+function nextUnreviewed() {
+  const target = [...document.querySelectorAll("article")].find((a) => !a.classList.contains("reviewed"));
+  if (target) { target.scrollIntoView({behavior: "smooth", block: "start"}); target.focus({preventScroll: true}); }
+}
+
+fillSelect($("slot"), [...new Set(DATA.items.map((it) => it.slot))], "All slots", SLOT_NAMES);
+fillSelect($("page"), [...new Set(DATA.items.map((it) => it.page))].sort(), "All item types");
+for (const id of ["q", "kind", "slot", "page", "needs", "unrev"]) $(id).addEventListener("input", render);
+$("saveBtn").addEventListener("click", save);
+$("nextBtn").addEventListener("click", nextUnreviewed);
+if (Object.keys(edits).length) {
+  const b = $("banner");
+  b.textContent = `Restored ${Object.keys(edits).length} unsaved change(s) from your last visit.`;
+  b.classList.add("show");
+}
+render();
+</script>
+</body>
+</html>

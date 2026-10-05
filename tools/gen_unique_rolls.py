@@ -19,6 +19,9 @@ remove "auto" from a line (or write your own) to keep it. Output: sections/045-u
 Unique charms and jewels are left out: their tags live in 240-charms and 250-jewels.
 """
 import argparse
+import datetime
+import json
+import os
 import re
 import sys
 from pathlib import Path
@@ -36,8 +39,12 @@ FILTER_WIKI = ROOT / "docs" / "pd2-item-filtering.wiki"
 # on items that can have them. This is the usual case, by the author's choice (2026-10-04): "Eth " and
 # corruptions that add two tags (e.g. "10fcr 5%dmg", "Ind 60ed") are rarer and may occasionally cut the
 # end of a long name; reserving for them as well would leave most items a single tag.
+# Amulets can be corrupted and desecrated (STAT206), so they keep room for two such tags.
 NAME_MAX, LINE_BREAK, CORRUPTION_RESERVE, SOCKET_RESERVE, MAX_PICKS = 56, 1, 8, 2, 3
-SOCKET_SLOTS = {"WEAPON", "HELM", "CIRC", "CHEST", "SHIELD"}
+CORRUPTION_TAGS = {"amu": 2}  # how many corruption-type tags a slot can carry (default 1)
+SOCKET_SLOTS = {"WEAPON", "HELM", "CIRC", "CHEST", "SHIELD"}  # gloves, belts, boots, jewelry: no sockets
+PICKER = ROOT / "tools" / "roll_picker.html"
+PICKER_TEMPLATE = ROOT / "tools" / "roll_picker_template.html"
 WEAPON_PAGES = {"Axes", "Maces", "Swords", "Daggers", "Throwing", "Spears", "Polearms", "Bows",
                 "Crossbows", "Scepters", "Staves", "Wands", "Class_Weapons"}
 CASTER_PAGES = {"Scepters", "Staves", "Wands"}
@@ -61,10 +68,10 @@ TAGS = {
     "max": ("ROLL_MAXDMG_TAG", "MAXDMG", "max", "WA"),
     "ds": ("ROLL_DS_TAG", "STAT141", "ds", "WA"),
     "cb": ("ROLL_CB_TAG", "STAT136", "cb", "WA"),
-    "-fres": ("ROLL_EFRES_TAG", "STAT333", "-%res", "WA"),
-    "-lres": ("ROLL_ELRES_TAG", "STAT334", "-%res", "WA"),
-    "-cres": ("ROLL_ECRES_TAG", "STAT335", "-%res", "WA"),
-    "-pres": ("ROLL_EPRES_TAG", "STAT336", "-%res", "WA"),
+    "-fres": ("ROLL_EFRES_TAG", "STAT333", "%res", "WA"),
+    "-lres": ("ROLL_ELRES_TAG", "STAT334", "%res", "WA"),
+    "-cres": ("ROLL_ECRES_TAG", "STAT335", "%res", "WA"),
+    "-pres": ("ROLL_EPRES_TAG", "STAT336", "%res", "WA"),
     "ls": ("ROLL_LS_TAG", "STAT60", "ls", "WA"),
     "ms": ("ROLL_MS_TAG", "STAT62", "ms", "WA"),
     "lpk": ("ROLL_LPK_TAG", "STAT86", "lpk", "WA"),
@@ -95,8 +102,8 @@ TAGS = {
     "vit": ("ROLL_VIT_TAG", "STAT3", "vit", "A"),
     "nrg": ("ROLL_NRG_TAG", "STAT1", "nrg", "A"),
     "mdr": ("ROLL_MDR_TAG", "STAT35", "mdr", "A"),
-    "pdr": ("ROLL_PDR_TAG", "STAT36", "pdr", "A"),
-    "pdr#": ("ROLL_PDRF_TAG", "STAT34", "pdr", "A"),
+    "pdr%": ("ROLL_PDR_TAG", "STAT36", "pdr", "A"),   # Physical Damage Taken Reduced by N%
+    "pdr": ("ROLL_PDRF_TAG", "STAT34", "pdr", "A"),   # Physical Damage Taken Reduced by N (flat)
     "replife": ("ROLL_REPLIFE_TAG", "STAT74", "replife", "A"),
     "regen": ("ROLL_REGEN_TAG", "STAT27", "regen", "A"),
     "cr": ("ROLL_CR_TAG", "STAT504", "cr", "A"),
@@ -127,8 +134,8 @@ COVER = {
     **{k: {"BOOTS", "CHEST", "SHIELD", "HELM", "CIRC"} for k in ("maxfr", "maxlr", "maxcr", "maxpr")},
     "life": {"rin", "SHIELD", "BOOTS", "GLOVES", "QUIVER"}, "mana": {"CHEST"},
     **{k: {"rin", "amu", "CIRC", "HELM", "BELT", "BOOTS", "GLOVES"} for k in ("str", "dex", "vit", "nrg")},
-    "mdr": {"rin", "CHEST", "SHIELD"}, "pdr#": {"rin", "CHEST", "SHIELD"},
-    "pdr": {"CHEST", "SHIELD", "rin", "BOOTS", "BELT", "HELM", "CIRC"},
+    "mdr": {"rin", "CHEST", "SHIELD"}, "pdr": {"rin", "CHEST", "SHIELD"},
+    "pdr%": {"CHEST", "SHIELD", "rin", "BOOTS", "BELT", "HELM", "CIRC"},
     "replife": ALL, "regen": ALL,
     "cr": {"amu", "BOOTS", "BELT", "rin", "HELM", "CIRC", "CHEST", "SHIELD", "QUIVER"},
     "dtm": {"rin", "amu", "CIRC", "HELM", "CHEST", "SHIELD", "BELT", "BOOTS", "GLOVES"},
@@ -141,7 +148,7 @@ PRIORITY = {  # default pick order; the author's lines in the picks file overrid
           "ar%", "dem", "und", "fdmg", "ldmg", "cdmg", "pdmg"],
     "A": ["allsk", *CLSK_KEYS, "tabsk", "fcr", "fhr", "frw", "fbr", "res", "maxfr", "maxlr", "maxcr",
           "maxpr", "fres", "lres", "cres", "pres", "life", "mana", "mf", "gf", "str", "dex", "vit", "nrg",
-          "ls", "ms", "lpk", "mpk", "mdr", "pdr", "pdr#", "replife", "regen", "cr", "dtm", "ar", "ias",
+          "ls", "ms", "lpk", "mpk", "mdr", "pdr%", "pdr", "replife", "regen", "cr", "dtm", "ar", "ias",
           "min", "max", "ds", "cb", "fdmg", "ldmg", "cdmg", "pdmg", "ed"],
 }
 CODE_TO_TAG = {}
@@ -293,6 +300,7 @@ class Item:
             for code, lo, hi in parse_stat(line):
                 old = self.stats.get(code)
                 self.stats[code] = (lo + (old[0] if old else 0), hi + (old[1] if old else 0))
+        self.raw_stats = raw["stats"]
         self.rolls = {}   # tag key -> (lo, hi) for variable rolls that have a tag
         self.unmapped = []
         for line in raw["rolls"]:
@@ -393,7 +401,8 @@ def tag_width(key, hi):
 
 def default_picks(it):
     budget = (NAME_MAX - len(it.name) - 1 - max((len(b) for b in it.base_names), default=0) - LINE_BREAK
-              - CORRUPTION_RESERVE - (SOCKET_RESERVE if it.where in SOCKET_SLOTS else 0))
+              - CORRUPTION_RESERVE * CORRUPTION_TAGS.get(it.where, 1)
+              - (SOCKET_RESERVE if it.where in SOCKET_SLOTS else 0))
     picks, used = [], 0
     for key in PRIORITY[it.slot]:
         if key in it.rolls and len(picks) < MAX_PICKS:
@@ -463,6 +472,52 @@ def render_section(items, picks):
     return "\r\n".join(lines)
 
 
+def tag_order():
+    """{(alias, slot): position}: where each tag's line sits in 300-affix-tags for that slot. Each tag line
+    prepends its tag, so in game a tag from a later line appears further left."""
+    order = {}
+    lines = (ROOT / "sections" / "300-affix-tags.filter").read_text(encoding="utf-8").splitlines()
+    for n, line in enumerate(lines):
+        if not line.startswith("ItemDisplay["):
+            continue
+        cond = line[12:line.index("]:")]
+        words = set(re.findall(r"\b(WEAPON|HELM|CIRC|CHEST|SHIELD|GLOVES|BOOTS|BELT|QUIVER|amu|rin)\b", cond))
+        for alias in re.findall(r"\bROLL_[A-Z0-9]+_TAG\b", cond):
+            for slot in (words or ALL):
+                order.setdefault((alias, slot), n)
+    return order
+
+
+def tag_text(key, hi):
+    label = TAGS[key][2]
+    return f"-{abs(hi)}{label}" if key.startswith("-") else f"{hi}{label}"
+
+
+def write_picker(items, old):
+    """tools/roll_picker.html: the picks as a clickable page (data embedded in the template)."""
+    order = tag_order()
+    data = []
+    for it in sorted(items, key=lambda x: (x.page, x.kind, x.name)):
+        if not it.rolls:
+            continue
+        auto, budget = default_picks(it)
+        mine = old.get(it.key)
+        reviewed = bool(mine and not mine[1])
+        data.append({
+            "key": it.key, "kind": it.kind, "name": it.name, "page": it.page, "slot": it.where,
+            "bases": it.base_names, "codes": it.codes, "room": budget,
+            "cands": [{"k": k, "lo": lo, "hi": hi, "w": tag_width(k, hi), "text": tag_text(k, hi),
+                       "order": order.get((TAGS[k][0], it.where), 0)} for k, (lo, hi) in it.rolls.items()],
+            "auto": auto, "picks": mine[0] if reviewed else auto, "reviewed": reviewed,
+            "untaggable": it.unmapped, "stats": it.raw_stats,
+        })
+    header = render_picks([], {}).rstrip("\n").split("\n")
+    payload = {"generated": datetime.date.today().isoformat(), "header": header, "items": data}
+    blob = json.dumps(payload, ensure_ascii=False).replace("</", "<\\/")
+    html = PICKER_TEMPLATE.read_text(encoding="utf-8").replace("/*__DATA__*/null", blob)
+    PICKER.write_text(html, encoding="utf-8", newline="\n")
+
+
 def load():
     families = item_data.base_codes()
     names = {}
@@ -486,8 +541,14 @@ def main():
     ap = argparse.ArgumentParser(description="Generate the unique/set variable-roll tag aliases.")
     ap.add_argument("--check", action="store_true")
     ap.add_argument("--report", nargs="?", const="", metavar="NAME")
+    ap.add_argument("--picker", action="store_true", help="write tools/roll_picker.html and open it")
     args = ap.parse_args()
     items = load()
+    if args.picker:
+        write_picker(items, read_picks())
+        print(f"wrote {PICKER.relative_to(ROOT)}; opening it")
+        os.startfile(PICKER) if hasattr(os, "startfile") else __import__("webbrowser").open(PICKER.as_uri())
+        return
     if args.report is not None:
         for it in items:
             if args.report.lower() not in it.name.lower():
