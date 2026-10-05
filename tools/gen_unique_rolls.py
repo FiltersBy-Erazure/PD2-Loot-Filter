@@ -33,7 +33,9 @@ OUT = ROOT / "sections" / "045-unique-set-rolls.filter"
 FILTER_WIKI = ROOT / "docs" / "pd2-item-filtering.wiki"
 # Name budget (BH shows 56 characters): unique name + line break + base name, the line break that
 # 300-affix-tags adds before the tags (%CL%), one corruption tag, and " N" for sockets (210-nonmagic-armor)
-# on items that can have them.
+# on items that can have them. This is the usual case, by the author's choice (2026-10-04): "Eth " and
+# corruptions that add two tags (e.g. "10fcr 5%dmg", "Ind 60ed") are rarer and may occasionally cut the
+# end of a long name; reserving for them as well would leave most items a single tag.
 NAME_MAX, LINE_BREAK, CORRUPTION_RESERVE, SOCKET_RESERVE, MAX_PICKS = 56, 1, 8, 2, 3
 SOCKET_SLOTS = {"WEAPON", "HELM", "CIRC", "CHEST", "SHIELD"}
 WEAPON_PAGES = {"Axes", "Maces", "Swords", "Daggers", "Throwing", "Spears", "Polearms", "Bows",
