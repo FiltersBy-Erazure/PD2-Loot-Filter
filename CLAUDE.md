@@ -27,7 +27,9 @@
   D2-style font downloaded once into the gitignored `tools/.cache/`).
   Every variable roll is pickable; a pick of a roll with no tag line yet (`*` in the picks file) is a request:
   `--requests` lists them (add the 300 line + `COVER` slot) and the rolls with no known filter code
-  (codes the author finds go in `AUTHOR_CODES`).
+  (codes the author finds go in `AUTHOR_CODES`). `--order` lists items whose tags don't read in their stat order
+  (a later 300 line puts its tag further left). A roll-only line must skip (`!STAT360=n`) any corruption that
+  another line already tags with the same stat on that slot, or the item shows the tag twice.
   Its aliases `ROLL_<X>_TAG` are wired into the tag lines of `300-affix-tags`; the slots each tag covers
   are listed in `COVER` in the generator and must match those lines.
 

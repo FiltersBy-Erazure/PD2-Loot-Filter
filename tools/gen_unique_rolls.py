@@ -937,6 +937,32 @@ def print_requests(items, picks):
         print(f"  {text}    <- {', '.join(names)}")
 
 
+def print_order(items, picks):
+    """Items whose picked tags do not read in the item's stat order in game. Each 300-affix-tags line puts its
+    tag before the name, so a later line's tag sits further left; the item's stats read top to bottom."""
+    lines, wrong, shown_items = tag_lines(), [], 0
+    for it in sorted(items, key=lambda x: x.key):
+        shown = []
+        for k in picks.get(it.key, ([], True))[0]:
+            r = it.roll(k)
+            if not r or not r["tagged"]:
+                continue
+            fmt, _ = tag_format(it, r, lines)
+            v = abs(r["hi"]) if k.startswith("-") else r["hi"]
+            f = next((f for f in fmt if all(v > n if op == ">" else v < n if op == "<" else v == n
+                                             for op, n in f["cmps"])), fmt[0])
+            shown.append((f["n"], k, it.all_rolls.index(r)))
+        if len(shown) < 2:
+            continue
+        shown_items += 1
+        game = [k for _, k, _ in sorted(shown, key=lambda x: -x[0])]
+        item = [k for _, k, _ in sorted(shown, key=lambda x: x[2])]
+        if game != item:
+            wrong.append(f"  {it.key} ({it.where}): in game {', '.join(game)}; on the item {', '.join(item)}")
+    print(f"{shown_items - len(wrong)} of {shown_items} items with 2+ tags read in their stat order; not:")
+    print("\n".join(wrong) or "  none")
+
+
 def load():
     families = item_data.base_codes()
     names = {}
@@ -962,12 +988,16 @@ def main():
     ap.add_argument("--check", action="store_true")
     ap.add_argument("--report", nargs="?", const="", metavar="NAME")
     ap.add_argument("--picker", action="store_true", help="write tools/roll_picker.html and open it")
+    ap.add_argument("--order", action="store_true", help="list items whose tags do not read in their stat order")
     ap.add_argument("--requests", action="store_true",
                     help="list picked rolls that still need a tag line, and rolls with no filter code")
     args = ap.parse_args()
     items = load()
     if args.requests:
         print_requests(items, read_picks())
+        return
+    if args.order:
+        print_order(items, read_picks())
         return
     if args.picker:
         write_picker(items, read_picks())
