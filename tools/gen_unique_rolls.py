@@ -56,7 +56,7 @@ CLASSES = ["Amazon", "Sorceress", "Necromancer", "Paladin", "Barbarian", "Druid"
 # ---------------------------------------------------------------- tags
 # key: (alias, filter code, label as shown, where it applies: W weapons, A everything else, WA both)
 TAGS = {
-    "allsk": ("ROLL_ALLSK_TAG", "ALLSK", "allsk", "WA"),
+    "allsk": ("ROLL_ALLSK_TAG", "ALLSK", "all", "WA"),
     **{f"clsk{i}": (f"ROLL_CLSK{i}_TAG", f"CLSK{i}", "ama sor nec pal bar dru sin".split()[i], "WA")
        for i in range(7)},
     "tabsk": ("ROLL_TABSK_TAG", "TABSK", "tab", "WA"),  # one alias for all skill tabs
@@ -84,19 +84,19 @@ TAGS = {
     "ar%": ("ROLL_ARPER_TAG", "STAT119", "%ar", "WA"),
     "dem": ("ROLL_DEM_TAG", "STAT121", "dem", "W"),
     "und": ("ROLL_UND_TAG", "STAT122", "und", "W"),
-    "fdmg": ("ROLL_FSKD_TAG", "STAT329", "dmg", "WA"),
-    "ldmg": ("ROLL_LSKD_TAG", "STAT330", "dmg", "WA"),
-    "cdmg": ("ROLL_CSKD_TAG", "STAT331", "dmg", "WA"),
-    "pdmg": ("ROLL_PSKD_TAG", "STAT332", "dmg", "WA"),
+    "fdmg": ("ROLL_FSKD_TAG", "STAT329", "%f", "WA"),
+    "ldmg": ("ROLL_LSKD_TAG", "STAT330", "%l", "WA"),
+    "cdmg": ("ROLL_CSKD_TAG", "STAT331", "%c", "WA"),
+    "pdmg": ("ROLL_PSKD_TAG", "STAT332", "%p", "WA"),
     "res": ("ROLL_RES_TAG", "RES", "res", "A"),
     "fres": ("ROLL_FRES_TAG", "FRES", "res", "A"),
     "lres": ("ROLL_LRES_TAG", "LRES", "res", "A"),
     "cres": ("ROLL_CRES_TAG", "CRES", "res", "A"),
     "pres": ("ROLL_PRES_TAG", "PRES", "res", "A"),
-    "maxfr": ("ROLL_MAXFR_TAG", "STAT40", "maxres", "A"),
-    "maxlr": ("ROLL_MAXLR_TAG", "STAT42", "maxres", "A"),
-    "maxcr": ("ROLL_MAXCR_TAG", "STAT44", "maxres", "A"),
-    "maxpr": ("ROLL_MAXPR_TAG", "STAT46", "maxres", "A"),
+    "maxfr": ("ROLL_MAXFR_TAG", "STAT40", "%max", "A"),
+    "maxlr": ("ROLL_MAXLR_TAG", "STAT42", "%max", "A"),
+    "maxcr": ("ROLL_MAXCR_TAG", "STAT44", "%max", "A"),
+    "maxpr": ("ROLL_MAXPR_TAG", "STAT46", "%max", "A"),
     "life": ("ROLL_LIFE_TAG", "LIFE", "life", "A"),
     "mana": ("ROLL_MANA_TAG", "MANA", "mana", "A"),
     "str": ("ROLL_STR_TAG", "STR", "str", "A"),
@@ -106,7 +106,7 @@ TAGS = {
     "mdr": ("ROLL_MDR_TAG", "STAT35", "mdr", "A"),
     "pdr%": ("ROLL_PDR_TAG", "STAT36", "pdr", "A"),   # Physical Damage Taken Reduced by N%
     "pdr": ("ROLL_PDRF_TAG", "STAT34", "pdr", "A"),   # Physical Damage Taken Reduced by N (flat)
-    "replife": ("ROLL_REPLIFE_TAG", "STAT74", "replife", "A"),
+    "replife": ("ROLL_REPLIFE_TAG", "STAT74", "rep", "A"),
     "regen": ("ROLL_REGEN_TAG", "STAT27", "regen", "A"),
     "cr": ("ROLL_CR_TAG", "STAT504", "cr", "A"),
     "dtm": ("ROLL_DTM_TAG", "DTM", "dtm", "A"),
