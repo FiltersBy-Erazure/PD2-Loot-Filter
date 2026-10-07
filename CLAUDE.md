@@ -23,6 +23,8 @@
   by hand: edit the picks file (remove `auto` from a line to keep your change) and the hook regenerates.
   The author picks rolls in a page: `pick_rolls.bat` (double-click) = `python tools/gen_unique_rolls.py --picker`, which writes and opens
   `tools/roll_picker.html` (gitignored); it saves the picks file, and `build.bat` regenerates and builds.
+  Its preview draws each label as the game does (tag formats read from `300-affix-tags`, BH's name cut, a
+  D2-style font downloaded once into the gitignored `tools/.cache/`).
   Every variable roll is pickable; a pick of a roll with no tag line yet (`*` in the picks file) is a request:
   `--requests` lists them (add the 300 line + `COVER` slot) and the rolls with no known filter code
   (codes the author finds go in `AUTHOR_CODES`).

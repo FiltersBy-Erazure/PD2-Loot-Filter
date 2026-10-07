@@ -19,11 +19,13 @@ remove "auto" from a line (or write your own) to keep it. Output: sections/045-u
 Unique charms and jewels are left out: their tags live in 240-charms and 250-jewels.
 """
 import argparse
+import base64
 import datetime
 import json
 import os
 import re
 import sys
+import urllib.request
 from pathlib import Path
 
 sys.dont_write_bytecode = True
@@ -385,7 +387,7 @@ class Item:
             if any(r["key"] == key for r in self.all_rolls):
                 continue
             tagged = key in TAGS and self.covers(key)
-            self.all_rolls.append({"key": key, "lo": lo, "hi": hi, "line": line, "tagged": tagged})
+            self.all_rolls.append({"key": key, "code": code, "lo": lo, "hi": hi, "line": line, "tagged": tagged})
             if tagged:
                 self.rolls[key] = (lo, hi)
         self.unmapped = [r["line"] for r in self.all_rolls if not r["tagged"]]
@@ -581,30 +583,104 @@ def render_section(items, picks):
     return "\r\n".join(lines)
 
 
-def tag_order():
-    """{(alias, slot): position}: where each tag's line sits in 300-affix-tags for that slot. Each tag line
-    prepends its tag, so in game a tag from a later line appears further left."""
-    order = {}
+SLOT_WORDS = re.compile(r"\b(WEAPON|HELM|CIRC|CHEST|SHIELD|GLOVES|BOOTS|BELT|QUIVER|amu|rin)\b")
+COLOR_WORDS = {"WHITE", "RED", "GREEN", "BLUE", "GOLD", "GRAY", "BLACK", "TAN", "ORANGE", "YELLOW", "PURPLE",
+               "DARK_GREEN", "CORAL", "SAGE", "TEAL", "LIGHT_GRAY"}
+
+
+def tag_lines():
+    """The lines of 300-affix-tags that put a tag before the item name: position n, aliases, slots, value
+    comparisons [(code, op, number)] and the tag as chunks (split at its spaces), each with parts
+    [[color, text]] ("{v}" where the value goes) and the value keyword it shows."""
+    out = []
     lines = (ROOT / "sections" / "300-affix-tags.filter").read_text(encoding="utf-8").splitlines()
     for n, line in enumerate(lines):
-        if not line.startswith("ItemDisplay["):
+        if not line.startswith("ItemDisplay[") or "]:" not in line:
             continue
-        cond = line[12:line.index("]:")]
-        words = set(re.findall(r"\b(WEAPON|HELM|CIRC|CHEST|SHIELD|GLOVES|BOOTS|BELT|QUIVER|amu|rin)\b", cond))
-        for alias in re.findall(r"\bROLL_[A-Z0-9]+_TAG\b", cond):
-            for slot in (words or ALL):
-                order.setdefault((alias, slot), n)
-    return order
+        cond, name_part = line[12:line.index("]:")], line[line.index("]:") + 2:].split("{")[0]
+        if "%NAME%" not in name_part:
+            continue
+        chunks, chunk, color = [], {"parts": [], "kw": None}, "WHITE"
+        for tok in re.split(r"(%[A-Z_]+[0-9]*(?:,[0-9]+)?%)", name_part.split("%NAME%")[0]):
+            word = tok[1:-1] if re.fullmatch(r"%[A-Z_]+[0-9]*(?:,[0-9]+)?%", tok) else None
+            if word in COLOR_WORDS:
+                color = word
+            elif word in ("CS", "CL", "NL"):
+                continue
+            elif word == "PERCENT":
+                chunk["parts"].append([color, "%"])
+            elif word:
+                chunk["parts"].append([color, "{v}"])
+                chunk["kw"] = chunk["kw"] or word
+            else:
+                for i, piece in enumerate(tok.split(" ")):
+                    if i:
+                        chunks.append(chunk)
+                        chunk = {"parts": [], "kw": None}
+                    if piece:
+                        chunk["parts"].append([color, piece])
+        chunks.append(chunk)
+        out.append({"n": n, "aliases": set(re.findall(r"\bROLL_[A-Z0-9]+_TAG\b", cond)),
+                    "slots": set(SLOT_WORDS.findall(cond)), "chunks": [c for c in chunks if c["parts"]],
+                    "cmps": re.findall(r"(?<![!A-Za-z0-9_])([A-Z]+[0-9]*(?:,[0-9]+)?)([<>=])(-?\d+)", cond)})
+    return out
 
 
-def tag_text(key, hi):
-    label = TAGS[key][2]
-    return f"-{abs(hi)}{label}" if key.startswith("-") else f"{hi}{label}"
+def tag_format(it, r, lines):
+    """How the filter draws roll r of item it: variants [{n, cmps, parts}] (the first whose comparisons hold
+    for the value applies; n = its line, which sets its place), and whether the look is borrowed. A roll with
+    no tag line borrows the look of a line that shows the same stat (another slot's, or a magic item's)."""
+    code, alias = r["code"], TAGS[r["key"]][0] if r["key"] in TAGS else None
+
+    def variant(line, kw=None, n=None):
+        chunks = [c for c in line["chunks"] if kw is None or c["kw"] == kw]
+        parts = []
+        for c in chunks:
+            parts += ([[parts[-1][0], " "]] if parts else []) + c["parts"]
+        return parts and {"n": line["n"] if n is None else n, "parts": parts,
+                          "cmps": [[op, int(num)] for c, op, num in line["cmps"] if c == code]}
+
+    def other_skill(line):  # a +skill tab/class line for another tab/class than this roll's
+        return any(re.fullmatch(r"(TABSK|CLSK)\d+", c["kw"] or "") and c["kw"] != code for c in line["chunks"])
+
+    if r["tagged"]:
+        found = [variant(l) for l in lines if alias in l["aliases"] and not other_skill(l)
+                 and (not l["slots"] or it.where in l["slots"])]
+        if any(found):
+            return [v for v in found if v], False
+    same = [l for l in lines if alias and alias in l["aliases"] and not other_skill(l)]
+    kw = None if same else code
+    same = same or [l for l in lines if any(c["kw"] == code for c in l["chunks"])]
+    kind = [l for l in same if ("WEAPON" in l["slots"]) == (it.where == "WEAPON")]  # weapon vs armor look
+    found = [variant(l, kw, n=-1) for l in ([l for l in same if it.where in l["slots"]] or kind or same)]
+    found = [v for v in found if v]
+    return (found or [{"n": -1, "cmps": [], "parts": [["WHITE", "{v}"], ["GRAY", "?"]]}]), True
+
+
+FONT_URL = "https://raw.githubusercontent.com/BetweenWalls/filterbird/master/data/AvQest.ttf"
+FONT_CACHE = ROOT / "tools" / ".cache" / "AvQest.ttf"
+
+
+def picker_font():
+    """The D2-style font AvQest (GemFonts; the one filterbird uses) for the label preview, base64. Downloaded
+    once into tools/.cache (gitignored: the font is not part of this repo). None if that fails: the page then
+    uses a serif font."""
+    if not FONT_CACHE.exists():
+        try:
+            font = urllib.request.urlopen(FONT_URL, timeout=15).read()
+        except OSError as e:
+            print(f"could not download the preview font ({e}); using a fallback font")
+            return None
+        if font[:4] != b"\x00\x01\x00\x00":
+            return None
+        FONT_CACHE.parent.mkdir(exist_ok=True)
+        FONT_CACHE.write_bytes(font)
+    return base64.b64encode(FONT_CACHE.read_bytes()).decode("ascii")
 
 
 def write_picker(items, old):
     """tools/roll_picker.html: the picks as a clickable page (data embedded in the template)."""
-    order = tag_order()
+    lines = tag_lines()
     data = []
     for it in sorted(items, key=lambda x: (x.page, x.kind, x.name)):
         keyed = [r for r in it.all_rolls if r["key"]]
@@ -613,21 +689,26 @@ def write_picker(items, old):
         auto, budget = default_picks(it)
         mine = old.get(it.key)
         reviewed = bool(mine and not mine[1])
+        cands = []
+        for idx, r in enumerate(it.all_rolls):
+            if r["key"]:
+                fmt, approx = tag_format(it, r, lines)
+                cands.append({"k": r["key"], "lo": r["lo"], "hi": r["hi"], "w": tag_width(r["key"], r["hi"]),
+                              "v": abs(r["hi"]) if r["key"].startswith("-") else r["hi"],
+                              "tagged": r["tagged"], "line": r["line"], "idx": idx, "fmt": fmt, "approx": approx})
         data.append({
             "key": it.key, "kind": it.kind, "name": it.name, "page": it.page, "slot": it.where,
-            "bases": it.base_names, "codes": it.codes, "room": budget,
-            "cands": [{"k": r["key"], "lo": r["lo"], "hi": r["hi"], "w": tag_width(r["key"], r["hi"]),
-                       "tagged": r["tagged"], "line": r["line"],
-                       "text": tag_text(r["key"], r["hi"]) if r["tagged"] else f"{abs(r['hi'])}?",
-                       "order": order.get((TAGS[r["key"]][0], it.where), 0) if r["tagged"] else -1}
-                      for r in keyed],
-            "auto": auto, "picks": mine[0] if reviewed else auto, "reviewed": reviewed,
+            "bases": it.base_names, "codes": it.codes, "room": budget, "sockets": it.where in SOCKET_SLOTS,
+            "cands": cands, "auto": auto, "picks": mine[0] if reviewed else auto, "reviewed": reviewed,
             "untaggable": [r["line"] for r in it.all_rolls if not r["key"]], "stats": it.raw_stats,
         })
     header = render_picks([], {}).rstrip("\n").split("\n")
     payload = {"generated": datetime.date.today().isoformat(), "header": header, "items": data}
     blob = json.dumps(payload, ensure_ascii=False).replace("</", "<\\/")
     html = PICKER_TEMPLATE.read_text(encoding="utf-8").replace("/*__DATA__*/null", blob)
+    font = picker_font()
+    if font:
+        html = html.replace('/*__FONT__*/local("AvQest")', f"url(data:font/ttf;base64,{font})")
     PICKER.write_text(html, encoding="utf-8", newline="\n")
 
 

@@ -4,19 +4,19 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Roll Picker</title>
-<!-- Template for tools/roll_picker.html, which tools/gen_unique_rolls.py --picker writes (data embedded). -->
+<!-- Template for tools/roll_picker.html, which tools/gen_unique_rolls.py --picker writes (data and font embedded). -->
 <style>
+  @font-face { font-family: "AvQest"; src: /*__FONT__*/local("AvQest"); }
   :root {
     --bg: #f4f2ee; --panel: #ffffff; --text: #23211d; --muted: #6b665d; --line: #dcd7cc;
-    --accent: #8a6d1f; --chip: #f1ede4; --chip-on: #8a6d1f; --chip-on-text: #ffffff;
-    --ok: #3f7d3a; --bad: #b3261e; --label-bg: #0d0c0b;
-    --uni: #c7b377; --set: #2fd12f; --tag: #e8e6e3; --base: #c8c8c8;
+    --accent: #8a6d1f; --chip: #f1ede4; --chip-on-text: #ffffff;
+    --ok: #3f7d3a; --bad: #b3261e;
   }
   @media (prefers-color-scheme: dark) {
     :root {
       --bg: #161513; --panel: #201e1b; --text: #ece8e1; --muted: #a39d92; --line: #36332e;
-      --accent: #d6b25e; --chip: #2b2925; --chip-on: #d6b25e; --chip-on-text: #1b1a17;
-      --ok: #7cc474; --bad: #ef7a72; --label-bg: #000000;
+      --accent: #d6b25e; --chip: #2b2925; --chip-on-text: #1b1a17;
+      --ok: #7cc474; --bad: #ef7a72;
     }
   }
   * { box-sizing: border-box; }
@@ -24,7 +24,7 @@
          font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
   header.top { position: sticky; top: 0; z-index: 5; background: var(--panel); border-bottom: 1px solid var(--line);
                padding: 10px 16px; }
-  .row { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; max-width: 960px; margin: 0 auto; }
+  .row { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; max-width: 1040px; margin: 0 auto; }
   .row + .row { margin-top: 8px; }
   h1 { font-size: 17px; margin: 0 auto 0 0; }
   .stat { color: var(--muted); font-size: 14px; }
@@ -36,7 +36,8 @@
   button { font: inherit; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--line);
            background: var(--chip); color: var(--text); cursor: pointer; }
   button.primary { background: var(--accent); border-color: var(--accent); color: var(--chip-on-text); font-weight: 600; }
-  main { max-width: 960px; margin: 0 auto; padding: 12px 16px 80px; }
+  .preview-opts { font-size: 14px; color: var(--muted); }
+  main { max-width: 1040px; margin: 0 auto; padding: 12px 16px 80px; }
   .help { color: var(--muted); font-size: 13.5px; margin: 4px 0 12px; }
   .banner { display: none; margin: 0 0 12px; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--ok);
             background: color-mix(in srgb, var(--ok) 12%, var(--panel)); }
@@ -48,27 +49,45 @@
   .head { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; }
   .name { font-weight: 700; font-size: 16px; }
   .sub { color: var(--muted); font-size: 13.5px; }
-  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 8px; }
-  .chip { border-radius: 999px; padding: 4px 11px; font-size: 14px; }
-  .chip[aria-pressed=true] { background: var(--chip-on); border-color: var(--chip-on); color: var(--chip-on-text); }
-  .chip small { opacity: .75; margin-left: 4px; }
-  .chip.new { border-style: dashed; background: transparent; }
-  .chip.new[aria-pressed=true] { background: transparent; color: var(--text); border: 2px dashed var(--accent); }
-  .label .req { font-style: italic; opacity: .7; }
-  .grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; align-items: start; }
-  @media (max-width: 640px) { .grid { grid-template-columns: minmax(0, 1fr); } }
-  .meter { font-size: 13.5px; color: var(--muted); }
+  .grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 14px; align-items: start;
+          margin-top: 8px; }
+  @media (max-width: 720px) { .grid { grid-template-columns: minmax(0, 1fr); } }
+
+  /* stats with show/hide switches */
+  details { font-size: 14px; }
+  summary { cursor: pointer; color: var(--muted); }
+  ul.stats { list-style: none; margin: 6px 0 0; padding: 0; }
+  ul.stats li { display: flex; gap: 8px; align-items: center; padding: 2px 0; min-height: 26px; }
+  ul.stats li.fixed { color: var(--muted); }
+  ul.stats li.fixed::before { content: ""; flex: none; width: 34px; }
+  ul.stats small { color: var(--muted); font-size: 12.5px; white-space: nowrap; }
+  .sw { flex: none; position: relative; width: 34px; height: 20px; padding: 0; border-radius: 999px;
+        background: var(--chip); border: 1px solid var(--line); }
+  .sw::after { content: ""; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%;
+               background: var(--muted); transition: left .12s; }
+  .sw[aria-checked=true] { background: var(--accent); border-color: var(--accent); }
+  .sw[aria-checked=true]::after { left: 16px; background: var(--chip-on-text); }
+  .sw.new { border-style: dashed; border-color: var(--accent); }
+  li.on > span { font-weight: 600; }
+
+  /* in-game label preview (colors approximate the game's text palette) */
+  .ground { border-radius: 6px; padding: 18px 8px; display: flex; justify-content: center;
+            background: radial-gradient(ellipse at 50% 45%, #3a3428 0%, #26221b 50%, #15130f 100%); }
+  .d2label { font-family: "AvQest", "Palatino Linotype", Georgia, serif; font-size: 18px; line-height: 1.15;
+             text-align: center; white-space: pre; background: rgba(0, 0, 0, .74); padding: 3px 7px 1px; }
+  .c-WHITE { color: #e8e8e8; } .c-RED { color: #ff4d4d; } .c-GREEN { color: #00ff00; } .c-BLUE { color: #6969ff; }
+  .c-GOLD { color: #c7b377; } .c-GRAY { color: #696969; } .c-BLACK { color: #000000; } .c-TAN { color: #d0c27d; }
+  .c-ORANGE { color: #ffa800; } .c-YELLOW { color: #ffff64; } .c-PURPLE { color: #ae00ff; }
+  .c-DARK_GREEN { color: #008000; } .c-CORAL { color: #ff7f6e; } .c-SAGE { color: #a3b88f; }
+  .c-TEAL { color: #3fb5b5; } .c-LIGHT_GRAY { color: #a8a8a8; }
+  .d2label .req { text-decoration: underline dotted; text-underline-offset: 3px; }
+  .notes { font-size: 13px; color: var(--muted); margin-top: 6px; }
+  .notes .cut { color: var(--bad); }
+  .meter { font-size: 13.5px; color: var(--muted); margin-top: 8px; }
   .bar { height: 6px; border-radius: 3px; background: var(--chip); margin-top: 4px; overflow: hidden; }
   .bar span { display: block; height: 100%; background: var(--ok); }
   .over .bar span { background: var(--bad); }
   .over b { color: var(--bad); }
-  .label { background: var(--label-bg); border-radius: 6px; padding: 8px 10px; text-align: center;
-           font-family: "Exocet", "Palatino Linotype", Georgia, serif; font-size: 14px; line-height: 1.35; }
-  .label .ln-name.UNI { color: var(--uni); } .label .ln-name.SET { color: var(--set); }
-  .label .ln-base { color: var(--base); } .label .ln-tags { color: var(--tag); min-height: 1.35em; }
-  .untag { color: var(--muted); font-size: 13px; margin-top: 8px; }
-  details { margin-top: 6px; font-size: 13.5px; }
-  details ul { margin: 6px 0 0; padding-left: 18px; color: var(--muted); }
   .foot { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; margin-top: 10px; font-size: 14px; }
   .foot .muted { color: var(--muted); font-size: 13px; }
   .empty { color: var(--muted); text-align: center; padding: 40px 0; }
@@ -91,14 +110,30 @@
     <label class="check"><input id="needs" type="checkbox"> Needs a choice</label>
     <label class="check"><input id="unrev" type="checkbox"> Unreviewed only</label>
   </div>
+  <div class="row preview-opts">
+    <span>Preview:</span>
+    <label class="check">Sockets
+      <select id="sockets" aria-label="Sockets shown in the preview">
+        <option value="0">None</option><option>1</option><option>2</option><option>3</option>
+        <option>4</option><option>5</option><option>6</option>
+      </select></label>
+    <label class="check"><input id="corrupt" type="checkbox"> Corrupted sockets (*)</label>
+    <label class="check">Name limit
+      <select id="limit" aria-label="Name length limit">
+        <option value="today">BH today: 56 in total</option>
+        <option value="pr">Proposed PR: 56 per line, 72 in total</option>
+      </select></label>
+  </div>
 </header>
 <main>
   <div class="banner" id="banner"></div>
-  <p class="help">Click a roll to show or hide it as a tag (changing an item marks it reviewed). The black box
-    previews the label: tags appear left to right in this order in game. <b>room</b> = characters left for roll
-    tags after the name, base, line breaks, sockets and the corruption tag(s); a roll's number is its width at
-    its highest roll. <b>Dashed</b> rolls have no tag line in the filter yet: picking one asks for it to be added
-    (shown in italics with "?", width estimated). Your clicks are kept in this browser until you press
+  <p class="help">Switch a variable roll on to show it as a tag (changing an item marks it reviewed). The black
+    box shows the label as the game draws it: tags in their in-game order and colors, and cut where BH cuts long
+    names (from the right end of the top line). Sockets only show on items that can have them. A <b>dashed</b>
+    switch is a roll with no tag line in the filter yet: picking it asks for one, and its tag shows
+    <span style="text-decoration: underline dotted">dotted</span>, in the look of a similar tag. <b>room</b> =
+    characters left for roll tags after the name, base, line breaks, sockets and the corruption tag(s); a roll's
+    number is its width at its highest roll. Your clicks are kept in this browser until you press
     <b>Save picks file</b>; save it over <code>tools/unique_roll_picks.txt</code>, then double-click
     <code>build.bat</code>.</p>
   <div id="list"></div>
@@ -106,20 +141,25 @@
 <script>
 const DATA = /*__DATA__*/null;
 const STORE = "erazure-roll-picker-edits";
+const VIEW_STORE = "erazure-roll-picker-view";
 const SLOT_NAMES = {WEAPON: "Weapon", HELM: "Helm", CIRC: "Circlet", CHEST: "Chest", SHIELD: "Shield",
   GLOVES: "Gloves", BOOTS: "Boots", BELT: "Belt", QUIVER: "Quiver", amu: "Amulet", rin: "Ring"};
+const KIND_COLOR = {UNI: "GOLD", SET: "GREEN"};
+const LIMITS = {today: {line: Infinity, total: 56}, pr: {line: 56, total: 72}};
 const $ = (id) => document.getElementById(id);
 const byKey = new Map(DATA.items.map((it) => [it.key, it]));
 const state = new Map(DATA.items.map((it) => [it.key, {picks: [...it.picks], reviewed: it.reviewed}]));
 
-function loadEdits() { try { return JSON.parse(localStorage.getItem(STORE) || "{}"); } catch { return {}; } }
-function saveEdits(edits) { try { localStorage.setItem(STORE, JSON.stringify(edits)); } catch {} }
-let edits = loadEdits();
+function loadJSON(key, fallback) { try { return JSON.parse(localStorage.getItem(key) || "null") || fallback; } catch { return fallback; } }
+function saveJSON(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch {} }
+let edits = loadJSON(STORE, {});
 for (const [key, e] of Object.entries(edits)) {
   if (state.has(key)) state.set(key, {picks: e.picks.filter((k) => byKey.get(key).cands.some((c) => c.k === k)),
                                       reviewed: e.reviewed});
   else delete edits[key];
 }
+const view = Object.assign({sockets: 0, corrupt: false, limit: "today"}, loadJSON(VIEW_STORE, {}));
+if (!LIMITS[view.limit]) view.limit = "today";
 
 function el(tag, attrs = {}, ...kids) {
   const n = document.createElement(tag);
@@ -130,65 +170,152 @@ function el(tag, attrs = {}, ...kids) {
   return n;
 }
 const used = (it, picks) => it.cands.filter((c) => picks.includes(c.k)).reduce((s, c) => s + c.w, 0);
-const rangeText = (c) => (c.lo === c.hi ? `${c.hi}` : `${c.lo}-${c.hi}`);
 
-function setState(key, next) {
+function setState(key, next, focusK) {
   state.set(key, next);
   const it = byKey.get(key);
   const same = next.reviewed === it.reviewed && next.picks.join() === it.picks.join();
   if (same) delete edits[key]; else edits[key] = next;
-  saveEdits(edits);
+  saveJSON(STORE, edits);
   const old = document.querySelector(`article[data-key="${CSS.escape(key)}"]`);
-  if (old) old.replaceWith(card(it));
+  if (old) {
+    const neu = card(it);
+    old.replaceWith(neu);
+    if (focusK) neu.querySelector(`[data-k="${CSS.escape(focusK)}"]`)?.focus();
+  }
   counts();
+}
+
+// ---- the label as the game draws it
+function variantFor(c) {  // the filter line that applies at this value (lines can color by value range)
+  const ok = ([op, n]) => (op === ">" ? c.v > n : op === "<" ? c.v < n : c.v === n);
+  return c.fmt.find((f) => f.cmps.every(ok)) || c.fmt[0];
+}
+
+function orderedTags(it, picks) {
+  // Each tag line puts its tag before the name, so a tag from a later line sits further left. A roll with no
+  // tag line yet goes right after the shown roll that comes before it on the item.
+  const shown = it.cands.filter((c) => picks.includes(c.k)).map((c) => {
+    const f = variantFor(c);
+    return {c, n: f.n, req: !c.tagged, parts: f.parts.map(([col, t]) => [col, t.replace("{v}", String(c.v))])};
+  });
+  const out = shown.filter((t) => !t.req).sort((a, b) => b.n - a.n);
+  for (const t of shown.filter((t) => t.req).sort((a, b) => a.c.idx - b.c.idx)) {
+    let pos = 0;
+    out.forEach((o, i) => { if (o.c.idx < t.c.idx) pos = Math.max(pos, i + 1); });
+    out.splice(pos, 0, t);
+  }
+  return out;
+}
+
+function labelLines(it, picks) {  // top to bottom; each line a list of [color, text, requested]
+  const kc = KIND_COLOR[it.kind] || "WHITE";
+  const top = [[kc, it.name, false]];
+  if (it.sockets && view.sockets > 0) {
+    top.push([kc, " ", false], ["WHITE", String(view.sockets), false]);
+    if (view.corrupt) top.push(["RED", "*", false]);
+  }
+  const lines = [top, [[kc, it.bases[0] || "", false]]];
+  const tags = orderedTags(it, picks);
+  if (tags.length) {
+    const ln = [];
+    tags.forEach((t, i) => {
+      if (i) ln.push(["WHITE", " ", false]);
+      for (const [col, s] of t.parts) ln.push([col, s, t.req]);
+    });
+    lines.push(ln);
+  }
+  return lines;
+}
+
+function bhTrim(lines, mode) {
+  // BH builds the name bottom-up (the tag line comes first in the text) and counts visible characters,
+  // line breaks included. Today: 56 in total, cut from the end of the text = the right end of the top line.
+  const lim = LIMITS[mode];
+  const seq = lines.slice().reverse();
+  let count = 0, stop = false;
+  const kept = seq.map((segs, li) => {
+    if (stop) return null;
+    if (li > 0) { if (count >= lim.total) { stop = true; return null; } count++; }
+    let n = 0;
+    const out = [];
+    for (const [col, text, req] of segs) {
+      let s = "";
+      for (const ch of text) {
+        if (count >= lim.total) { stop = true; break; }
+        if (n >= lim.line) break;
+        s += ch; n++; count++;
+      }
+      if (s) out.push([col, s, req]);
+      if (stop) break;
+    }
+    return out;
+  });
+  return kept.reverse();
+}
+
+function preview(it, picks) {
+  const lines = labelLines(it, picks);
+  const kept = bhTrim(lines, view.limit);
+  const box = el("div", {class: "d2label", role: "img"});
+  const said = [];
+  kept.forEach((segs) => {
+    if (!segs || !segs.length) return;
+    const d = el("div");
+    for (const [col, s, req] of segs) d.append(el("span", {class: `c-${col}` + (req ? " req" : ""), text: s}));
+    box.append(d);
+    said.push(segs.map((x) => x[1]).join(""));
+  });
+  box.setAttribute("aria-label", `In-game label: ${said.join(" / ")}`);
+  const text = (segs) => (segs || []).map((x) => x[1]).join("");
+  const cut = lines.map((l, i) => text(l).slice(text(kept[i]).length)).filter((s) => s.trim());
+  const nCut = lines.reduce((s, l, i) => s + text(l).length - text(kept[i]).length, 0);
+  const notes = el("div", {class: "notes"});
+  if (cut.length) notes.append(el("span", {class: "cut", text: `BH cuts ${nCut} character${nCut === 1 ? "" : "s"}: “${cut.join("” “")}”`}));
+  if (lines.some((l) => l.some((x) => x[2]))) {
+    if (cut.length) notes.append(el("br"));
+    notes.append("Dotted tags have no tag line in the filter yet.");
+  }
+  return [el("div", {class: "ground"}, box), notes];
+}
+
+// ---- one item
+function statRow(it, st, s) {
+  const c = it.cands.find((x) => x.line === s);
+  if (!c) {
+    const why = it.untaggable.includes(s) ? el("small", {text: "· no filter code"}) : null;
+    return el("li", {class: "fixed"}, el("span", {text: s}), why);
+  }
+  const on = st.picks.includes(c.k);
+  const sw = el("button", {class: "sw" + (c.tagged ? "" : " new"), type: "button", role: "switch",
+                           "aria-checked": String(on), "data-k": c.k, "aria-label": `Show ${s}`,
+                           title: c.tagged ? `Shown as a tag (${c.w} characters at its highest roll)`
+                                           : "No tag line for this roll yet: switching it on asks for one"});
+  sw.addEventListener("click", () => {
+    const picks = on ? st.picks.filter((k) => k !== c.k) : [...st.picks, c.k];
+    setState(it.key, {picks, reviewed: true}, c.k);
+  });
+  const meta = c.tagged ? `· ${c.w}` : `· ~${c.w} · no tag line yet`;
+  return el("li", {class: "roll" + (on ? " on" : "")}, sw, el("span", {text: s}), el("small", {text: meta}));
 }
 
 function card(it) {
   const st = state.get(it.key);
   const art = el("article", {class: st.reviewed ? "reviewed" : "", "data-key": it.key, tabindex: "-1"});
-  const bases = it.bases.join(" → ");
   art.append(el("div", {class: "head"},
     el("span", {class: `name ${it.kind}`, text: it.name}),
-    el("span", {class: "sub", text: `${bases} (${it.codes.join(" ")})`})));
-  const chips = el("div", {class: "chips"});
-  for (const c of it.cands) {
-    const on = st.picks.includes(c.k);
-    const b = c.tagged
-      ? el("button", {class: "chip", type: "button", "aria-pressed": String(on),
-                      title: `${c.line}\nShows as "${c.text}" (${c.w} characters at its highest roll)`},
-           `${c.k} ${rangeText(c)}`, el("small", {text: `· ${c.w}`}))
-      : el("button", {class: "chip new", type: "button", "aria-pressed": String(on),
-                      title: `No tag line for this roll yet: picking it asks for one (about ${c.w} characters).`},
-           c.line, el("small", {text: `· ~${c.w} · new`}));
-    b.addEventListener("click", () => {
-      const picks = on ? st.picks.filter((k) => k !== c.k) : [...st.picks, c.k];
-      setState(it.key, {picks, reviewed: true});
-    });
-    chips.append(b);
-  }
-  art.append(chips);
+    el("span", {class: "sub", text: `${it.bases.join(" → ")} (${it.codes.join(" ")})`})));
+  const ul = el("ul", {class: "stats"});
+  for (const s of it.stats) ul.append(statRow(it, st, s));
+  const det = el("details", {open: ""}, el("summary", {text: "All stats"}), ul);
   const u = used(it, st.picks);
   const req = it.cands.filter((c) => !c.tagged && st.picks.includes(c.k));
   const meter = el("div", {class: "meter" + (u > it.room ? " over" : "")},
     el("span", {}, "uses ", el("b", {text: String(u)}), ` of room ${it.room}` +
        (req.length ? ` (~${req.reduce((s, c) => s + c.w, 0)} of it requested, no tag line yet)` : "") +
-       (u > it.room ? " — too long, the name gets cut" : "")),
+       (u > it.room ? " — over the usual-case room" : "")),
     el("div", {class: "bar"}, el("span", {style: `width:${Math.min(100, it.room > 0 ? 100 * u / it.room : 100)}%`})));
-  const tagLine = el("div", {class: "ln-tags"});
-  it.cands.filter((c) => st.picks.includes(c.k)).sort((a, b) => b.order - a.order)
-    .forEach((c, i) => { if (i) tagLine.append(" "); tagLine.append(c.tagged ? c.text : el("span", {class: "req", text: c.text})); });
-  const label = el("div", {class: "label", "aria-label": "In-game label preview"},
-    el("div", {class: `ln-name ${it.kind}`, text: it.name}),
-    el("div", {class: "ln-base", text: it.bases[0] || ""}),
-    tagLine);
-  art.append(el("div", {class: "grid"}, meter, label));
-  if (it.untaggable.length) art.append(el("div", {class: "untag",
-    text: `No filter code known (can't be picked yet): ${it.untaggable.join(" · ")}`}));
-  const det = el("details", {open: ""}, el("summary", {text: "All stats"}));
-  const ul = el("ul");
-  for (const s of it.stats) ul.append(el("li", {text: s}));
-  det.append(ul);
-  art.append(det);
+  art.append(el("div", {class: "grid"}, det, el("div", {}, ...preview(it, st.picks), meter)));
   const rev = el("input", {type: "checkbox"});
   rev.checked = st.reviewed;
   rev.addEventListener("change", () => setState(it.key, {picks: st.picks, reviewed: rev.checked}));
@@ -199,6 +326,7 @@ function card(it) {
   return art;
 }
 
+// ---- list, filters, saving
 function visible() {
   const q = $("q").value.trim().toLowerCase(), kind = $("kind").value, slot = $("slot").value, page = $("page").value;
   return DATA.items.filter((it) => {
@@ -261,7 +389,7 @@ async function save() {
     return;
   }
   edits = {};
-  saveEdits(edits);
+  saveJSON(STORE, edits);
   counts();
   const b = $("banner");
   b.textContent = "Saved. If you saved it over tools/unique_roll_picks.txt, double-click build.bat: it regenerates the tags " +
@@ -277,6 +405,14 @@ function nextUnreviewed() {
 fillSelect($("slot"), [...new Set(DATA.items.map((it) => it.slot))], "All slots", SLOT_NAMES);
 fillSelect($("page"), [...new Set(DATA.items.map((it) => it.page))].sort(), "All item types");
 for (const id of ["q", "kind", "slot", "page", "needs", "unrev"]) $(id).addEventListener("input", render);
+$("sockets").value = String(view.sockets);
+$("corrupt").checked = view.corrupt;
+$("limit").value = view.limit;
+for (const id of ["sockets", "corrupt", "limit"]) $(id).addEventListener("input", () => {
+  Object.assign(view, {sockets: Number($("sockets").value), corrupt: $("corrupt").checked, limit: $("limit").value});
+  saveJSON(VIEW_STORE, view);
+  render();
+});
 $("saveBtn").addEventListener("click", save);
 $("nextBtn").addEventListener("click", nextUnreviewed);
 if (Object.keys(edits).length) {
