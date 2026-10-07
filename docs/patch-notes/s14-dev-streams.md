@@ -61,7 +61,7 @@ Mark every S14 rule block with `// S14:`. Line numbers as of 2026-10-04.
 | Stacked/unstacked forms merged | ~140 rules use stacked codes (`rNNs`, `gXXs`, `skXs`) in `090-gems`, `100-sound-ids` (rune drop sounds `(r20s OR r21s) QTY=1`), `110-runes`. Find which code survives and a single drop's `QTY`, then rewrite | 090, 100, 110 |
 | New maps (Poisoned Well; Isaidwhatever's map) | Per map, like S13's `t57`/`t3b`: alias in `040` (`UNIQUE_MAPS` or tier), names and area level in `130`, resistance block in `140`, tier and notification in `145` | 040, 130, 140, 145 |
 | Guild Hall works like a town | Add its `MAPID` to `Alias[TOWN]` (`040-aliases.filter:4`) | 040 |
-| Corruption changes | "Ind" tags on `STAT360=48`: `300-affix-tags.filter:620, 841, 1010, 1017, 1018` (roll lines skip it with `!STAT360=48`); rep-life tags on `STAT360=34`: `300:504, 506, 510` (boots/gloves/belt move to the "Half Freeze Duration" tags, `300:303`); curse resistance on `STAT360=49/62`: `260:35`, `300:454, 675` | 260, 300 |
+| Corruption changes | "Ind" tags on `STAT360=48`: `300-affix-tags.filter:619, 839, 1008, 1015, 1016` (roll lines skip it with `!STAT360=48`); rep-life tags on `STAT360=34`: `300:503, 505, 509` (boots/gloves/belt move to the "Half Freeze Duration" tags, `300:302`); curse resistance on `STAT360=49/62`: `260:35`, `300:453, 674` | 260, 300 |
 | New runewords | Add to the "Possible Runewords" notes in `230`; keep the bases visible: `220-nonmagic-weapons.filter:72-79` hide white Amazon javelins by `TABSK2` (79 hides +3 javelin-skill `amf`, the Jealousy base); check 3-socket armor and helm hiding in `210` | 210, 220, 230 |
 | Max sockets 2 → 3 (`spl plt fld xui xea xla xtu ulm uhl amf`) | Socket notes in `230`: "Corrupt After Upgrade: C:3" (`:147-148`), corruption C: values (`:183` helms, `:191` chests, `:210` weapons), "upgrade first" lists (`:142-161`) | 230 |
 | Jewel +5% elemental damage prefix | Tag it in `250` (new stat, or the existing `STAT329-332` skill damage) | 250 |
@@ -81,8 +81,8 @@ those lines also tag magic/rare items, so their order changes too:
 
 | Items | Cause |
 |---|---|
-| Ghostflame, Stormspire, The Grim Reaper | weapon `%f %c %l %p` lines (`300:174-180`) sit after the weapon ED lines (`300:163-165`) |
-| Husoldal Evo | the replenish-life line covers every slot (`300:504`) |
+| Ghostflame, Stormspire, The Grim Reaper | weapon `%f %c %l %p` lines (`300:173-179`) sit after the weapon ED lines (`300:162-164`) |
+| Husoldal Evo | the replenish-life line covers every slot (`300:503`) |
 | Biggin's Bonnet, Raekor's Virtue, Fenris, Gravepalm, Balefire, Deathbit, Demon Machine, Boneflesh | armor/quiver/weapon lines in other sections; `--order` shows the order wanted |
 
 Kira's Guardian (circlet) and Mang Song's Lesson (weapon) list their -res rolls in opposite orders on the wiki,
@@ -96,6 +96,6 @@ wiki page is off and the lines need adjusting.
   (tan abbreviations; Holy Fire and Vigor share their label with the aura, colored differently).
 - A unique/set with a roll **and** a corruption of the same stat shows the tag once (roll lines skip those
   corruptions, e.g. `!STAT360=48`).
-- Existing, unrelated to the roll tags: a set ring with the FCR corruption matches both `300:789-790`
-  (`rin (MAG OR RARE OR CRAFT OR SET) FCR=10/20`) and `300:792-793` (`(UNI OR SET) (STAT360=42 OR ...)`), so it
+- Existing, unrelated to the roll tags: a set ring with the FCR corruption matches both `300:787-788`
+  (`rin (MAG OR RARE OR CRAFT OR SET) FCR=10/20`) and `300:790-791` (`(UNI OR SET) (STAT360=42 OR ...)`), so it
   may show `fcr` twice.

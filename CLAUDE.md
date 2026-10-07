@@ -28,8 +28,10 @@
   Every variable roll is pickable; a pick of a roll with no tag line yet (`*` in the picks file) is a request:
   `--requests` lists them (add the 300 line + `COVER` slot) and the rolls with no known filter code
   (codes the author finds go in `AUTHOR_CODES`). `--order` lists items whose tags don't read in their stat order
-  (a later 300 line puts its tag further left). A roll-only line must skip (`!STAT360=n`) any corruption that
-  another line already tags with the same stat on that slot, or the item shows the tag twice.
+  (a later 300 line puts its tag further left). One tag per stat when a roll and a corruption overlap (author's
+  format, the rule): put the roll into the corruption line, `(STAT360=n OR ROLL_<X>_TAG)`. Only when that line's
+  tag shows a second stat (e.g. `Ind 150ed`, `und ... ar`) or its slots mean another stat does a separate roll line
+  skip the corruption instead (`!STAT360=n`).
   Its aliases `ROLL_<X>_TAG` are wired into the tag lines of `300-affix-tags`; the slots each tag covers
   are listed in `COVER` in the generator and must match those lines.
 
