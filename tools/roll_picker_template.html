@@ -197,7 +197,8 @@ function orderedTags(it, picks) {
   // tag line yet goes right after the shown roll that comes before it on the item.
   const shown = it.cands.filter((c) => picks.includes(c.k)).map((c) => {
     const f = variantFor(c);
-    return {c, n: f.n, req: !c.tagged, parts: f.parts.map(([col, t]) => [col, t.replace("{v}", String(c.v))])};
+    const value = (m, kw) => String(kw && c.vals && c.vals[kw] != null ? c.vals[kw] : c.v);
+    return {c, n: f.n, req: !c.tagged, parts: f.parts.map(([col, t]) => [col, t.replace(/\{v(?::([^}]+))?\}/g, value)])};
   });
   const out = shown.filter((t) => !t.req).sort((a, b) => b.n - a.n);
   for (const t of shown.filter((t) => t.req).sort((a, b) => a.c.idx - b.c.idx)) {

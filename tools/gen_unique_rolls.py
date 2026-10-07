@@ -122,6 +122,44 @@ TAGS = {
     "stat124": ("ROLL_ARUND_TAG", "STAT124", "ar", "WA"),
     "stat424": ("ROLL_LPH_TAG", "STAT424", "lph", "WA"),
 }
+# New roll tags for the author's picks (labels and colors chosen by the author, 2026-10-07)
+NEW_ROLL_TAGS = {
+    "def": ("ROLL_DEF_TAG", "DEF", "def"),
+    "stat501": ("ROLL_OWD_TAG", "STAT501", "ow"),
+    "multi126_1": ("ROLL_FSK_TAG", "MULTI126,1", "fsk"),
+    "multi126_3": ("ROLL_MSK_TAG", "MULTI126,3", "msk"),
+    "multi126_4": ("ROLL_CSK_TAG", "MULTI126,4", "csk"),
+    "multi126_5": ("ROLL_PSK_TAG", "MULTI126,5", "psk"),
+    "stat425": ("ROLL_EPHYS_TAG", "STAT425", "%phys"),
+    "stat49": ("ROLL_FIREDMG_TAG", "STAT49", "fire"),
+    "stat55": ("ROLL_COLDDMG_TAG", "STAT55", "cold"),
+    "stat142": ("ROLL_FABSP_TAG", "STAT142", "%abs"),
+    "stat143": ("ROLL_FABS_TAG", "STAT143", "abs"),
+    "stat144": ("ROLL_LABSP_TAG", "STAT144", "%abs"),
+    "stat145": ("ROLL_LABS_TAG", "STAT145", "abs"),
+    "stat148": ("ROLL_CABSP_TAG", "STAT148", "%abs"),
+    "stat128": ("ROLL_LATD_TAG", "STAT128", "atd"),
+    "multi151_119": ("ROLL_SANC_TAG", "MULTI151,119", "sanc"),
+    "multi151_102": ("ROLL_HFIRE_TAG", "MULTI151,102", "hfire"),
+    "multi151_115": ("ROLL_VIGOR_TAG", "MULTI151,115", "vigor"),
+    "multi151_98": ("ROLL_MIGHT_TAG", "MULTI151,98", "might"),
+    "stat111": ("ROLL_DMG_TAG", "STAT111", "dmg"),
+    "stat139": ("ROLL_LPDK_TAG", "STAT139", "lpk"),
+    "stat150": ("ROLL_SLOW_TAG", "STAT150", "%slow"),
+    "stat423": ("ROLL_LEAP_TAG", "STAT423", "%leap"),
+    "stat87": ("ROLL_VP_TAG", "STAT87", "vp"),
+}
+SKILL_TAG_LABELS = {  # +N to a single skill: the value, then a tan abbreviation
+    6: "marw",    9: "crit",    10: "jab",    11: "carw",    12: "multi",    14: "power",    16: "expl",    19: "jmas",
+    22: "guide",    24: "cs",    26: "straf",    30: "fend",    32: "valk",    37: "warm",    51: "fwall",    58: "es",
+    61: "fmas",    63: "lmas",    65: "cmas",    66: "amp",    67: "teeth",    68: "barm",    69: "smas",    70: "skel",
+    74: "ce",    80: "mage",    84: "bspr",    89: "arch",    95: "rev",    101: "hbolt",    102: "hfire",    106: "zeal",
+    110: "rlght",    112: "hamm",    115: "vigor",    121: "foh",    128: "gmas",    145: "iskin",    151: "ww",    154: "wcry",
+    221: "raven",    223: "wolf",    224: "lyc",    225: "fstrm",    232: "feral",    233: "maul",    238: "rab",    240: "twist",
+    245: "tndo",    247: "griz",    248: "fury",    367: "bwarp",    369: "ibar",    381: "dpact",
+}
+TAGS.update({k: (a, c, l, "WA") for k, (a, c, l) in NEW_ROLL_TAGS.items()})
+TAGS.update({f"sk{s}": (f"ROLL_SK{s}_TAG", f"SK{s}", lab, "WA") for s, lab in SKILL_TAG_LABELS.items()})
 CLSK_KEYS = [f"clsk{i}" for i in range(7)]
 # Which item slots the 300-affix-tags lines that use each alias cover (keep in sync when wiring lines)
 ALL = {"WEAPON", "HELM", "CIRC", "CHEST", "SHIELD", "GLOVES", "BOOTS", "BELT", "QUIVER", "amu", "rin"}
@@ -209,6 +247,84 @@ ROLL_ONLY_SLOTS = {
     "tabsk": {'BOOTS'},
     "und": {'WEAPON', 'CHEST', 'GLOVES', 'QUIVER', 'amu'},
     "vit": {'WEAPON', 'SHIELD'},
+    "def": {'WEAPON', 'HELM', 'CIRC', 'CHEST', 'SHIELD', 'GLOVES', 'BOOTS', 'amu'},
+    "multi126_1": {'WEAPON', 'CHEST', 'amu'},
+    "multi126_3": {'WEAPON'},
+    "multi126_4": {'WEAPON', 'CHEST', 'BELT'},
+    "multi126_5": {'WEAPON', 'SHIELD'},
+    "multi151_102": {'WEAPON'},
+    "multi151_115": {'SHIELD'},
+    "multi151_119": {'WEAPON', 'CHEST'},
+    "multi151_98": {'CHEST'},
+    "sk10": {'WEAPON'},
+    "sk101": {'WEAPON'},
+    "sk102": {'WEAPON'},
+    "sk106": {'WEAPON'},
+    "sk11": {'WEAPON'},
+    "sk110": {'WEAPON'},
+    "sk112": {'WEAPON'},
+    "sk115": {'BOOTS'},
+    "sk12": {'WEAPON'},
+    "sk121": {'WEAPON'},
+    "sk128": {'WEAPON'},
+    "sk14": {'WEAPON'},
+    "sk145": {'BELT'},
+    "sk151": {'WEAPON'},
+    "sk154": {'WEAPON'},
+    "sk16": {'WEAPON'},
+    "sk19": {'WEAPON'},
+    "sk22": {'WEAPON'},
+    "sk221": {'WEAPON', 'CHEST'},
+    "sk223": {'HELM'},
+    "sk224": {'WEAPON'},
+    "sk225": {'WEAPON'},
+    "sk232": {'HELM'},
+    "sk233": {'WEAPON', 'HELM'},
+    "sk238": {'WEAPON'},
+    "sk24": {'WEAPON'},
+    "sk240": {'WEAPON'},
+    "sk245": {'WEAPON'},
+    "sk247": {'HELM'},
+    "sk248": {'WEAPON'},
+    "sk26": {'WEAPON'},
+    "sk30": {'WEAPON'},
+    "sk32": {'WEAPON'},
+    "sk367": {'WEAPON', 'CHEST'},
+    "sk369": {'WEAPON'},
+    "sk37": {'WEAPON'},
+    "sk381": {'WEAPON'},
+    "sk51": {'WEAPON'},
+    "sk58": {'WEAPON'},
+    "sk6": {'WEAPON'},
+    "sk61": {'WEAPON'},
+    "sk63": {'WEAPON'},
+    "sk65": {'WEAPON'},
+    "sk66": {'WEAPON'},
+    "sk67": {'WEAPON'},
+    "sk68": {'WEAPON'},
+    "sk69": {'WEAPON', 'HELM', 'BOOTS'},
+    "sk70": {'WEAPON', 'HELM'},
+    "sk74": {'WEAPON', 'CHEST'},
+    "sk80": {'WEAPON'},
+    "sk84": {'WEAPON'},
+    "sk89": {'WEAPON'},
+    "sk9": {'WEAPON'},
+    "sk95": {'WEAPON'},
+    "stat111": {'WEAPON'},
+    "stat128": {'WEAPON', 'amu'},
+    "stat139": {'WEAPON'},
+    "stat142": {'rin'},
+    "stat143": {'HELM'},
+    "stat144": {'WEAPON', 'BELT', 'rin'},
+    "stat145": {'WEAPON', 'HELM'},
+    "stat148": {'WEAPON'},
+    "stat150": {'WEAPON'},
+    "stat423": {'BOOTS'},
+    "stat425": {'WEAPON', 'HELM', 'GLOVES', 'QUIVER'},
+    "stat49": {'WEAPON', 'CHEST'},
+    "stat501": {'WEAPON', 'CHEST', 'BOOTS'},
+    "stat55": {'WEAPON', 'amu'},
+    "stat87": {'rin'},
 }
 for _key, _slots in ROLL_ONLY_SLOTS.items():
     COVER[_key] = COVER.get(_key, set()) | _slots
@@ -562,9 +678,15 @@ def fingerprint_text(it):
 NEW_LABEL = 3  # assumed label length of a tag that has no line yet
 
 
+RANGE_TAGS, MINUS_TAGS = {"stat49", "stat55"}, {"stat425"}  # shown as "+min-max<label>" / "-N<label>"
+
+
 def tag_width(key, hi):
     label = TAGS[key][2] if key in TAGS else "x" * NEW_LABEL
-    return len(str(abs(hi))) + len(label) + (1 if key.startswith("-") else 0) + 1
+    digits = len(str(abs(hi)))
+    if key in RANGE_TAGS:  # the minimum has about as many digits as the maximum
+        digits = 2 * digits + 2
+    return digits + len(label) + (1 if key.startswith("-") or key in MINUS_TAGS else 0) + 1
 
 
 def default_picks(it):
@@ -660,7 +782,7 @@ COLOR_WORDS = {"WHITE", "RED", "GREEN", "BLUE", "GOLD", "GRAY", "BLACK", "TAN", 
 def tag_lines():
     """The lines of 300-affix-tags that put a tag before the item name: position n, aliases, slots, value
     comparisons [(code, op, number)] and the tag as chunks (split at its spaces), each with parts
-    [[color, text]] ("{v}" where the value goes) and the value keyword it shows."""
+    [[color, text]] ("{v:KEYWORD}" where a value goes) and the value keyword it shows."""
     out = []
     lines = (ROOT / "sections" / "300-affix-tags.filter").read_text(encoding="utf-8").splitlines()
     for n, line in enumerate(lines):
@@ -679,7 +801,7 @@ def tag_lines():
             elif word == "PERCENT":
                 chunk["parts"].append([color, "%"])
             elif word:
-                chunk["parts"].append([color, "{v}"])
+                chunk["parts"].append([color, "{v:%s}" % word])
                 chunk["kw"] = chunk["kw"] or word
             else:
                 for i, piece in enumerate(tok.split(" ")):
@@ -762,7 +884,9 @@ def write_picker(items, old):
         for idx, r in enumerate(it.all_rolls):
             if r["key"]:
                 fmt, approx = tag_format(it, r, lines)
+                kws = {kw for f in fmt for _, t in f["parts"] for kw in re.findall(r"\{v:([^}]+)\}", t)}
                 cands.append({"k": r["key"], "lo": r["lo"], "hi": r["hi"], "w": tag_width(r["key"], r["hi"]),
+                              "vals": {kw: abs(it.stats[kw][1]) for kw in kws if kw in it.stats and kw != r["code"]},
                               "v": abs(r["hi"]) if r["key"].startswith("-") else r["hi"],
                               "tagged": r["tagged"], "line": r["line"], "idx": idx, "fmt": fmt, "approx": approx})
         data.append({
