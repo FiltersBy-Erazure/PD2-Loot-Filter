@@ -12,6 +12,9 @@ if errorlevel 1 (
 rem Unique/set roll tags: picks file (e.g. saved from the roll picker page) -> generated section
 python tools\gen_unique_rolls.py
 if errorlevel 1 goto failed
+rem Runeword roll tags: picks file (e.g. saved from the runeword picker page) -> generated section
+python tools\gen_runeword_rolls.py
+if errorlevel 1 goto failed
 python tools\build.py --stamp
 if errorlevel 1 goto failed
 python tools\build.py --check

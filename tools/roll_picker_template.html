@@ -4,7 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Roll Picker</title>
-<!-- Template for tools/roll_picker.html, which tools/gen_unique_rolls.py --picker writes (data and font embedded). -->
+<!-- Template for tools/roll_picker.html (tools/gen_unique_rolls.py --picker) and tools/runeword_picker.html
+     (tools/gen_runeword_rolls.py --picker): each embeds its data and the font. The data's title, kinds, picksFile,
+     generator, store and roomHelp set the page up; without them it is the unique/set picker. -->
+
 <style>
   @font-face { font-family: "AvQest"; src: /*__FONT__*/local("AvQest"); }
   :root {
@@ -20,6 +23,7 @@
     }
   }
   * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
   body { margin: 0; background: var(--bg); color: var(--text);
          font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
   header.top { position: sticky; top: 0; z-index: 5; background: var(--panel); border-bottom: 1px solid var(--line);
@@ -90,13 +94,15 @@
   .over b { color: var(--bad); }
   .foot { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; margin-top: 10px; font-size: 14px; }
   .foot .muted { color: var(--muted); font-size: 13px; }
+  .base-pick { margin-top: 8px; font-size: 13.5px; color: var(--muted); }
+  .base-pick select { max-width: 100%; }
   .empty { color: var(--muted); text-align: center; padding: 40px 0; }
 </style>
 </head>
 <body>
 <header class="top">
   <div class="row">
-    <h1>Unique &amp; set roll picks</h1>
+    <h1 id="title">Unique &amp; set roll picks</h1>
     <span class="stat"><b id="nReviewed">0</b> / <span id="nTotal">0</span> reviewed</span>
     <span class="stat" id="unsaved"></span>
     <button id="nextBtn" type="button">Next unreviewed</button>
@@ -104,7 +110,7 @@
   </div>
   <div class="row">
     <input id="q" type="search" placeholder="Search name, base or code" aria-label="Search">
-    <select id="kind" aria-label="Kind"><option value="">Uniques &amp; sets</option><option value="UNI">Uniques</option><option value="SET">Sets</option></select>
+    <select id="kind" aria-label="Kind"></select>
     <select id="slot" aria-label="Slot"></select>
     <select id="page" aria-label="Item type"></select>
     <label class="check"><input id="needs" type="checkbox"> Needs a choice</label>
@@ -112,12 +118,13 @@
   </div>
   <div class="row preview-opts">
     <span>Preview:</span>
-    <label class="check">Sockets
+    <label class="check sock-opt">Sockets
       <select id="sockets" aria-label="Sockets shown in the preview">
         <option value="0">None</option><option>1</option><option>2</option><option>3</option>
         <option>4</option><option>5</option><option>6</option>
       </select></label>
-    <label class="check"><input id="corrupt" type="checkbox"> Corrupted sockets (*)</label>
+    <label class="check sock-opt"><input id="corrupt" type="checkbox"> Corrupted sockets (*)</label>
+    <label class="check rw-opt"><input id="ethereal" type="checkbox"> Ethereal base (Eth)</label>
     <label class="check">Name limit
       <select id="limit" aria-label="Name length limit">
         <option value="today">BH today: 56 in total</option>
@@ -132,19 +139,22 @@
     names (from the right end of the top line). Sockets only show on items that can have them. A <b>dashed</b>
     switch is a roll with no tag line in the filter yet: picking it asks for one, and its tag shows
     <span style="text-decoration: underline dotted">dotted</span>, in the look of a similar tag. <b>room</b> =
-    characters left for roll tags after the name, base, line breaks, sockets and the corruption tag(s); a roll's
-    number is its width at its highest roll. Your clicks are kept in this browser until you press
-    <b>Save picks file</b>; save it over <code>tools/unique_roll_picks.txt</code>, then double-click
-    <code>build.bat</code>.</p>
+    <span id="roomHelp">characters left for roll tags after the name, base, line breaks, sockets and the corruption
+    tag(s)</span>; a roll's number is its width at its highest roll. Your clicks are kept in this browser until you
+    press <b>Save picks file</b>; save it over <code class="picks-file">tools/unique_roll_picks.txt</code>, then
+    double-click <code>build.bat</code>.</p>
   <div id="list"></div>
 </main>
 <script>
 const DATA = /*__DATA__*/null;
-const STORE = "erazure-roll-picker-edits";
+const PAGE = Object.assign({title: "Unique & set roll picks", kinds: [["", "Uniques & sets"], ["UNI", "Uniques"],
+  ["SET", "Sets"]], picksFile: "unique_roll_picks.txt", generator: "gen_unique_rolls.py",
+  store: "erazure-roll-picker-edits", roomHelp: null}, DATA);
+const STORE = PAGE.store;
 const VIEW_STORE = "erazure-roll-picker-view";
 const SLOT_NAMES = {WEAPON: "Weapon", HELM: "Helm", CIRC: "Circlet", CHEST: "Chest", SHIELD: "Shield",
   GLOVES: "Gloves", BOOTS: "Boots", BELT: "Belt", QUIVER: "Quiver", amu: "Amulet", rin: "Ring"};
-const KIND_COLOR = {UNI: "GOLD", SET: "GREEN"};
+const KIND_COLOR = {UNI: "GOLD", SET: "GREEN", RW: "GOLD"};
 const LIMITS = {today: {line: Infinity, total: 56}, pr: {line: 56, total: 72}};
 const $ = (id) => document.getElementById(id);
 const byKey = new Map(DATA.items.map((it) => [it.key, it]));
@@ -158,7 +168,8 @@ for (const [key, e] of Object.entries(edits)) {
                                       reviewed: e.reviewed});
   else delete edits[key];
 }
-const view = Object.assign({sockets: 0, corrupt: false, limit: "today"}, loadJSON(VIEW_STORE, {}));
+const view = Object.assign({sockets: 0, corrupt: false, limit: "today", ethereal: true}, loadJSON(VIEW_STORE, {}));
+const baseSel = new Map();  // runeword key -> the base its preview shows (default: its longest elite base)
 if (!LIMITS[view.limit]) view.limit = "today";
 
 function el(tag, attrs = {}, ...kids) {
@@ -210,13 +221,13 @@ function orderedTags(it, picks) {
 }
 
 function labelLines(it, picks) {  // top to bottom; each line a list of [color, text, requested]
-  const kc = KIND_COLOR[it.kind] || "WHITE";
-  const top = [[kc, it.name, false]];
+  const kc = it.nameColor || KIND_COLOR[it.kind] || "WHITE";
+  const top = [[kc, it.shown || it.name, false]];
   if (it.sockets && view.sockets > 0) {
     top.push([kc, " ", false], ["WHITE", String(view.sockets), false]);
     if (view.corrupt) top.push(["RED", "*", false]);
   }
-  const lines = [top, [[kc, it.bases[0] || "", false]]];
+  const lines = it.baseChoices ? [top, baseLine(it)] : [top, [[kc, it.bases[0] || "", false]]];
   const tags = orderedTags(it, picks);
   if (tags.length) {
     const ln = [];
@@ -227,6 +238,25 @@ function labelLines(it, picks) {  // top to bottom; each line a list of [color, 
     lines.push(ln);
   }
   return lines;
+}
+
+function baseOf(it) {  // the base a runeword's preview shows: [name, tier, kind, the roll keys of its version]
+  return it.baseChoices.find((b) => b[0] === baseSel.get(it.key)) || it.baseChoices[0];
+}
+
+function baseLine(it) {  // a runeword's base as 220-nonmagic-weapons labels it: "Eth Ghost Spear" (no Sup/Inf)
+  const segs = view.ethereal ? [["WHITE", "Eth ", false]] : [];
+  segs.push(["GRAY", baseOf(it)[0], false]);
+  return segs;
+}
+
+function shownPicks(it, picks) {  // a runeword shows the picked rolls its base's version has (Loyalty: bow or spear)
+  const keys = it.baseChoices && baseOf(it)[3];
+  return keys ? picks.filter((k) => keys.includes(k)) : picks;
+}
+
+function roomOf(it) {  // a runeword's room depends on the base and tags its preview shows
+  return it.baseChoices ? it.roomBase - baseLine(it).reduce((n, s) => n + s[1].length, 0) : it.room;
 }
 
 function bhTrim(lines, mode) {
@@ -305,18 +335,31 @@ function card(it) {
   const art = el("article", {class: st.reviewed ? "reviewed" : "", "data-key": it.key, tabindex: "-1"});
   art.append(el("div", {class: "head"},
     el("span", {class: `name ${it.kind}`, text: it.name}),
-    el("span", {class: "sub", text: `${it.bases.join(" → ")} (${it.codes.join(" ")})`})));
+    el("span", {class: "sub", text: it.sub || `${it.bases.join(" → ")} (${it.codes.join(" ")})`})));
   const ul = el("ul", {class: "stats"});
   for (const s of it.stats) ul.append(statRow(it, st, s));
   const det = el("details", {open: ""}, el("summary", {text: "All stats"}), ul);
-  const u = used(it, st.picks);
-  const req = it.cands.filter((c) => !c.tagged && st.picks.includes(c.k));
-  const meter = el("div", {class: "meter" + (u > it.room ? " over" : "")},
-    el("span", {}, "uses ", el("b", {text: String(u)}), ` of room ${it.room}` +
+  const shownNow = shownPicks(it, st.picks), u = used(it, shownNow), room = roomOf(it);
+  const req = it.cands.filter((c) => !c.tagged && shownNow.includes(c.k));
+  const meter = el("div", {class: "meter" + (u > room ? " over" : "")},
+    el("span", {}, "uses ", el("b", {text: String(u)}), ` of room ${room}` +
        (req.length ? ` (~${req.reduce((s, c) => s + c.w, 0)} of it requested, no tag line yet)` : "") +
-       (u > it.room ? " — over the usual-case room" : "")),
-    el("div", {class: "bar"}, el("span", {style: `width:${Math.min(100, it.room > 0 ? 100 * u / it.room : 100)}%`})));
-  art.append(el("div", {class: "grid"}, det, el("div", {}, ...preview(it, st.picks), meter)));
+       (u > room ? " — over the usual-case room" : "")),
+    el("div", {class: "bar"}, el("span", {style: `width:${Math.min(100, room > 0 ? 100 * u / room : 100)}%`})));
+  let pickBase = null;
+  if (it.baseChoices) {  // which base the preview shows (the room is for the first: the longest elite one)
+    pickBase = el("select", {"aria-label": `Base of ${it.name} in the preview`});
+    for (const [name, tier] of it.baseChoices) pickBase.append(el("option", {value: name, text: `${name} (${tier})`}));
+    pickBase.value = baseSel.get(it.key) || it.baseChoices[0][0];
+    pickBase.addEventListener("input", () => {
+      baseSel.set(it.key, pickBase.value);
+      const neu = card(it);
+      art.replaceWith(neu);
+      neu.querySelector("select")?.focus();
+    });
+  }
+  art.append(el("div", {class: "grid"}, det, el("div", {}, ...preview(it, shownNow), meter,
+    pickBase && el("label", {class: "check base-pick"}, "Base in the preview ", pickBase))));
   const rev = el("input", {type: "checkbox"});
   rev.checked = st.reviewed;
   rev.addEventListener("change", () => setState(it.key, {picks: st.picks, reviewed: rev.checked}));
@@ -376,13 +419,13 @@ async function save() {
   const text = buildText();
   try {
     if (window.showSaveFilePicker) {
-      const handle = await window.showSaveFilePicker({suggestedName: "unique_roll_picks.txt",
+      const handle = await window.showSaveFilePicker({suggestedName: PAGE.picksFile,
         types: [{description: "Picks file", accept: {"text/plain": [".txt"]}}]});
       const w = await handle.createWritable();
       await w.write(text);
       await w.close();
     } else {
-      const a = el("a", {href: URL.createObjectURL(new Blob([text], {type: "text/plain"})), download: "unique_roll_picks.txt"});
+      const a = el("a", {href: URL.createObjectURL(new Blob([text], {type: "text/plain"})), download: PAGE.picksFile});
       document.body.append(a); a.click(); a.remove();
     }
   } catch (e) {
@@ -393,8 +436,8 @@ async function save() {
   saveJSON(STORE, edits);
   counts();
   const b = $("banner");
-  b.textContent = "Saved. If you saved it over tools/unique_roll_picks.txt, double-click build.bat: it regenerates the tags " +
-                  "and builds the 8 filters (python tools/gen_unique_rolls.py --picker reopens this page with the new data).";
+  b.textContent = `Saved. If you saved it over tools/${PAGE.picksFile}, double-click build.bat: it regenerates the tags ` +
+                  `and builds the 8 filters (python tools/${PAGE.generator} --picker reopens this page with the new data).`;
   b.classList.add("show");
 }
 
@@ -403,14 +446,23 @@ function nextUnreviewed() {
   if (target) { target.scrollIntoView({behavior: "smooth", block: "start"}); target.focus({preventScroll: true}); }
 }
 
+document.title = PAGE.title;
+$("title").textContent = PAGE.title;
+for (const [value, text] of PAGE.kinds) $("kind").append(el("option", {value, text}));
+if (PAGE.roomHelp) $("roomHelp").textContent = PAGE.roomHelp;
+for (const c of document.querySelectorAll(".picks-file")) c.textContent = `tools/${PAGE.picksFile}`;
+if (!DATA.items.some((it) => it.sockets)) for (const s of document.querySelectorAll(".sock-opt")) s.hidden = true;
+if (!DATA.items.some((it) => it.baseChoices)) for (const s of document.querySelectorAll(".rw-opt")) s.hidden = true;
 fillSelect($("slot"), [...new Set(DATA.items.map((it) => it.slot))], "All slots", SLOT_NAMES);
 fillSelect($("page"), [...new Set(DATA.items.map((it) => it.page))].sort(), "All item types");
 for (const id of ["q", "kind", "slot", "page", "needs", "unrev"]) $(id).addEventListener("input", render);
 $("sockets").value = String(view.sockets);
 $("corrupt").checked = view.corrupt;
 $("limit").value = view.limit;
-for (const id of ["sockets", "corrupt", "limit"]) $(id).addEventListener("input", () => {
-  Object.assign(view, {sockets: Number($("sockets").value), corrupt: $("corrupt").checked, limit: $("limit").value});
+$("ethereal").checked = view.ethereal;
+for (const id of ["sockets", "corrupt", "limit", "ethereal"]) $(id).addEventListener("input", () => {
+  Object.assign(view, {sockets: Number($("sockets").value), corrupt: $("corrupt").checked, limit: $("limit").value,
+                       ethereal: $("ethereal").checked});
   saveJSON(VIEW_STORE, view);
   render();
 });

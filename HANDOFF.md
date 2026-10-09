@@ -91,6 +91,7 @@ About 825 KB is roughly 200k+ tokens per file. **No conversation will "see the w
 | `020-horadric-cube` | 16–45 | Filter level, variant name and `<<VERSION>>` in the Cube description |
 | `030-toggles` | 46–89 | The 8 variant alias blocks (Main active) |
 | `040-aliases` | 90–276 | `TOWN`, rune / item / unique / set / rare / map group aliases |
+| `045-unique-set-rolls` | (added S14) | GENERATED (`tools/gen_unique_rolls.py`): the `ROLL_<X>_TAG` aliases of the unique/set roll tags |
 | `050-customization` | 277–542 | Commented-out opt-in rules for players |
 | `060-gold-potions-tomes` | 543–736 | Gold; health, mana, rejuvenation, utility and throwing potions; tomes and scrolls |
 | `070-keys` | 737–1305 | MAPID list and key rules |
@@ -118,6 +119,7 @@ About 825 KB is roughly 200k+ tokens per file. **No conversation will "see the w
 | `280-skills-shop-highlights` | 6359–7113 | +Skills items and shop highlights (largest file, ~27k tokens) |
 | `290-sell-value-tags` | 7114–7171 | High sell value ($), low cost vendor |
 | `300-affix-tags` | 7172–7990 | ~45 stat-tag groups: MF, GF, resists, FCR, IAS, skills… |
+| `305-runeword-rolls` | (added S14) | GENERATED (`tools/gen_runeword_rolls.py`): runeword roll tags, aliases and tag lines in 300's stat order |
 | `310-staffmods` | 7991–8267 | |
 | `320-highlights-ed-amp-lr` | 8268–8314 | |
 | `330-tooltip-tags` | 8315–8336 | Cannot Be Frozen, weapon speed & range, item tier type (commented out) |
@@ -249,6 +251,8 @@ At each ladder reset:
 5. Work through the list. Set the new season name in `version.json` (`"season": "Season NN"`), then run `build.bat` (it stamps the date), run the linter, test in game, and push.
 
 **Unique/set roll tags:** `python tools/item_data.py fetch` refreshes `docs/items/` from the wiki (the git diff shows what changed on uniques and sets), then `python tools/gen_unique_rolls.py` regenerates the fingerprints and default picks; review lines marked `CHOOSE` in `tools/unique_roll_picks.txt`.
+
+**Runeword roll tags:** `python tools/pd2_data.py --extract "<Diablo II folder>"` also rewrites `docs/pd2-runewords.tsv` (the git diff shows new and changed runewords), then `python tools/gen_runeword_rolls.py` regenerates `305-runeword-rolls` and the default picks; it reports any runeword it can't tell apart from another (`--report NAME` shows why). Review new runewords in `pick_runewords.bat`; `--requests` lists picked rolls that still need a look in 300.
 
 **With a beta (as for Season 14, 2026-10):** do the work on a `beta` branch made from `setup`, with `"season": "Season NN Beta"` in `version.json` so the Cube shows it. The launcher only serves `main`, so to let beta testers pick the beta build, `python tools/publish_beta.py` copies `beta`'s `Erazure-Main.filter` to `main` as `Erazure-S14-Beta.filter` plus a `filter_definitions.json` entry, never touching the 8 live files (`--push` only with the author's go-ahead). Patch notes change during a beta: diff each update against what is done. At launch: merge `beta` → `setup` → `main`, set the final season name, `build.bat`, and `python tools/publish_beta.py --remove`. The S14 list is in `docs/patch-notes/s14-dev-streams.md`.
 

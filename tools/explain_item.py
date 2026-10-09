@@ -129,8 +129,10 @@ def expand_condition(cond, aliases):
     return cond
 
 
-def evaluate(cond, item):
-    """BH ProcessConditions (shunting-yard, equal precedence) and Convert/EvaluateTree, 3-valued."""
+def evaluate(cond, item, atom_of=None):
+    """BH ProcessConditions (shunting-yard, equal precedence) and Convert/EvaluateTree, 3-valued.
+    atom_of(word): another item model's value of one condition word (default: atom(word, item))."""
+    atom_of = atom_of or (lambda word: atom(word, item))
     out, ops = [], []
     for t in L.bh_tokens(cond):
         if t in ("AND", "OR"):
@@ -155,7 +157,7 @@ def evaluate(cond, item):
     stack = []
     for t in out:
         if isinstance(t, tuple):
-            stack.append(atom(t[1], item))
+            stack.append(atom_of(t[1]))
         elif t == "!":
             if not stack:
                 return 0

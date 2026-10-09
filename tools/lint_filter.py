@@ -38,6 +38,11 @@ Checks (the id in [brackets] is what tools/lint_allow.txt refers to):
     unreachable     same conditions as an earlier rule without %CONTINUE%: its display part never
                     applies (its notification keywords still fire, they run in a separate pass)
     tier            (info) notification without %TIER-n% in a section that sets TIER elsewhere
+    tag-order       300-affix-tags and 305-runeword-rolls: a tag line whose tag would show on the wrong side of
+                    another stat's tag (the game lists stats by PD2's descpriority; python tools/tag_order.py
+                    --fix re-sorts 300, python tools/gen_runeword_rolls.py regenerates 305)
+    rw-tag          300-affix-tags: a tag line that can also match a runeword. 305-runeword-rolls tags runewords'
+                    rolls in the game's order, so such a tag would come out of that order, or twice
 
 Lengths are lower bounds: %NAME% and other value references count as 0 characters, because
 their real length depends on the item and on earlier %CONTINUE% layers.
@@ -280,6 +285,8 @@ class Linter:
             self.check_output(r)
         self.check_order()
         self.check_tiers()
+        self.check_tag_order()
+        self.check_runeword_tags()
         return self.findings
 
     def check_aliases(self):
@@ -412,6 +419,58 @@ class Linter:
                     if not has_tier:
                         self.report(r.idx, "info", "tier",
                                     "notification without %TIER-n% (notifies at every level)", r.line)
+
+    def check_tag_order(self):
+        import tag_order  # the affix and runeword tags must follow the game's stat order (tools/tag_order.py)
+        for name in tag_order.FIX_HINTS:
+            prefix = name + ":"
+            idx_of = {}
+            for idx in range(len(self.lines)):
+                loc = self.where(idx)
+                if loc.startswith(prefix):
+                    idx_of[int(loc[len(prefix):])] = idx
+            if not idx_of:
+                continue
+            lines = [self.lines[idx_of[n]] for n in sorted(idx_of)]
+            for n, severity, message, key in tag_order.check(lines, tag_order.FIX_HINTS[name]):
+                self.report(idx_of[n], severity, "tag-order", message, key)
+
+    def check_runeword_tags(self):
+        """A 300 tag line that can match a runeword (evaluated for 'some runeword': see runeword_atom)."""
+        import explain_item
+        import tag_order
+        prefix = tag_order.SECTION_NAME + ":"
+        for r in self.rules:
+            if r.commented or not self.where(r.idx).startswith(prefix):
+                continue
+            if not tag_order.tag_text(split_output(expand_output_aliases(r.output, self.aliases))[0]):
+                continue
+            cond = explain_item.expand_condition(r.cond, self.aliases)
+            if any(explain_item.evaluate(cond, None, lambda w, s=s: runeword_atom(w, s)) for s in (0, 32)):
+                self.report(r.idx, "warning", "rw-tag",
+                            "this tag line can also match a runeword (RW): 305-runeword-rolls tags runewords in the "
+                            "game's order, so gate the line (e.g. !RW) or tag the stat there", r.line)
+
+
+RW_COMPARE_RE = re.compile(r"^(STAT360|STAT206)([<>=~])(-?\d+)(?:-(\d+))?$")
+NOT_RUNEWORD = {"MAG", "RARE", "UNI", "SET", "CRAFT", "FALSE", "GLOVES", "BOOTS", "BELT", "JEWELRY", "CHARM",
+                "MISC", "amu", "rin", "ram", "jew", "cm1", "cm2", "cm3"}  # qualities and items no runeword can be
+
+
+def runeword_atom(word, corruption):
+    """A condition word's value for some runeword, 1 / 0 / 0.5 (may be): an identified white item (normal or
+    superior) that is a runeword (a weapon, body armor, helm, shield or quiver); corrupted (STAT360) only for
+    sockets (32) if at all, never desecrated (STAT206). Everything else may hold."""
+    if word in ("RW", "ID", "NMAG", "TRUE"):
+        return 1
+    if word in NOT_RUNEWORD:
+        return 0
+    m = RW_COMPARE_RE.match(word)
+    if m:
+        value = corruption if m.group(1) == "STAT360" else 0
+        a, b = int(m.group(3)), int(m.group(4) or m.group(3))
+        return int({"=": value == a, "<": value < a, ">": value > a, "~": a <= value <= b}[m.group(2)])
+    return 0.5
 
 
 def balanced(text, open_, close):

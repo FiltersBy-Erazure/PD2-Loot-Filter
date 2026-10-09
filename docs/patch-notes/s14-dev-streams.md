@@ -62,7 +62,7 @@ Mark every S14 rule block with `// S14:`. Line numbers as of 2026-10-04.
 | New maps (Poisoned Well; Isaidwhatever's map) | Per map, like S13's `t57`/`t3b`: alias in `040` (`UNIQUE_MAPS` or tier), names and area level in `130`, resistance block in `140`, tier and notification in `145` | 040, 130, 140, 145 |
 | Guild Hall works like a town | Add its `MAPID` to `Alias[TOWN]` (`040-aliases.filter:4`) | 040 |
 | Corruption changes | "Ind" tags on `STAT360=48`: `300-affix-tags.filter:619, 839, 1008, 1015, 1016` (roll lines skip it with `!STAT360=48`); rep-life tags on `STAT360=34`: `300:503, 505, 509` (boots/gloves/belt move to the "Half Freeze Duration" tags, `300:302`); curse resistance on `STAT360=49/62`: `260:35`, `300:453, 674` | 260, 300 |
-| New runewords | Add to the "Possible Runewords" notes in `230`; keep the bases visible: `220-nonmagic-weapons.filter:72-79` hide white Amazon javelins by `TABSK2` (79 hides +3 javelin-skill `amf`, the Jealousy base); check 3-socket armor and helm hiding in `210` | 210, 220, 230 |
+| New runewords | Add to the "Possible Runewords" notes in `230`; keep the bases visible: `220-nonmagic-weapons.filter:72-79` hide white Amazon javelins by `TABSK2` (79 hides +3 javelin-skill `amf`, the Jealousy base); check 3-socket armor and helm hiding in `210`. Roll tags: `pd2_data.py --extract` on the beta client, then `gen_runeword_rolls.py` (305) | 210, 220, 230, 305 |
 | Max sockets 2 → 3 (`spl plt fld xui xea xla xtu ulm uhl amf`) | Socket notes in `230`: "Corrupt After Upgrade: C:3" (`:147-148`), corruption C: values (`:183` helms, `:191` chests, `:210` weapons), "upgrade first" lists (`:142-161`) | 230 |
 | Jewel +5% elemental damage prefix | Tag it in `250` (new stat, or the existing `STAT329-332` skill damage) | 250 |
 | Alternate skins/arts (18 uniques) | In game: check they keep their base item code; new codes would bypass every code-based rule | ? |
@@ -74,21 +74,21 @@ Use `python tools/explain_item.py` to see which rules an item hits before and af
 
 Spawn the items and compare with the roll picker's preview (`pick_rolls.bat`).
 
-**Tag order (deferred to the beta, author's choice 2026-10-07).** A later line in `300-affix-tags` puts its
-tag further left, and the tags should read in the item's stat order. 370 of the 382 items with 2+ picked tags
-do; `python tools/gen_unique_rolls.py --order` lists the rest. Fixing them means moving **existing** lines, and
-those lines also tag magic/rare items, so their order changes too:
+**Tag order (done 2026-10-08).** `300-affix-tags` is sorted into one block per stat in PD2's display order
+(`descpriority`, `tools/tag_order.py --fix`; lint flags a misplaced line). Stats of equal priority come in an
+order that differs per item (Kira's Guardian: -cold, -fire, -lightning; Ormus' Robes: cold, lightning, fire
+skill damage), so those can still read out of order on some items.
 
-| Items | Cause |
-|---|---|
-| Ghostflame, Stormspire, The Grim Reaper | weapon `%f %c %l %p` lines (`300:173-179`) sit after the weapon ED lines (`300:162-164`) |
-| Husoldal Evo | the replenish-life line covers every slot (`300:503`) |
-| Biggin's Bonnet, Raekor's Virtue, Fenris, Gravepalm, Balefire, Deathbit, Demon Machine, Boneflesh | armor/quiver/weapon lines in other sections; `--order` shows the order wanted |
+**-res group.** Kira's Guardian and Mang Song's Lesson show their three -% enemy resistances from one line
+(`-10%/-15%/-10%`, gray slashes) in the item's own order: cold/fire/lightning on both (screenshots 2026-10-08).
+`ERES_ORDER` in `gen_unique_rolls.py` holds it; another order needs its own `ROLL_ERES<ORDER>_TAG` line in 300
+and on the weapon -res corruption lines.
 
-Kira's Guardian (circlet) and Mang Song's Lesson (weapon) list their -res rolls in opposite orders on the wiki,
-so each got its own lines (the weapon roll lines after the `-% Enemy Poison Resist` line). Check in game that
-both read as on the items: D2 sorts an item's stats by a fixed priority, so if both show the same order, one
-wiki page is off and the lines need adjusting.
+**Game data.** The roll tags now come from PD2's own item tables (`docs/pd2-unique-set-items.tsv`), extracted from
+the live S13 client on 2026-10-08. When the beta client is installed, run
+`python tools/pd2_data.py --extract "<Diablo II folder>"` on it, then `python tools/gen_unique_rolls.py`, to pick up
+S14 item changes. Spot-check items that had no tags before: Marrowwalk, Metalgrid, Atma's Scarab, Soul Drainer,
+Witchwild String, Anvilguard Strap, Blood Raven's Charge, Ebonbane, the Kadala's Heirloom versions.
 
 **Also check:**
 - Drain life shows `15drain` (red, no minus sign: `$f(ABS(STAT74))`), max resistance `5%max`.
@@ -96,6 +96,31 @@ wiki page is off and the lines need adjusting.
   (tan abbreviations; Holy Fire and Vigor share their label with the aura, colored differently).
 - A unique/set with a roll **and** a corruption of the same stat shows the tag once (roll lines skip those
   corruptions, e.g. `!STAT360=48`).
-- Existing, unrelated to the roll tags: a set ring with the FCR corruption matches both `300:787-788`
-  (`rin (MAG OR RARE OR CRAFT OR SET) FCR=10/20`) and `300:790-791` (`(UNI OR SET) (STAT360=42 OR ...)`), so it
-  may show `fcr` twice.
+- Existing, unrelated to the roll tags: a set ring with the FCR corruption matches both the
+  `rin (MAG OR RARE OR CRAFT OR SET) FCR=10/20` lines and the `(UNI OR SET) (STAT360=42 OR ...)` lines (Faster
+  Cast Rate block of `300-affix-tags`), so it may show `fcr` twice.
+
+## Closed beta: runeword roll tags to check in game
+
+`sections/305-runeword-rolls.filter` (generated by `tools/gen_runeword_rolls.py`, picks in `pick_runewords.bat`) tags
+every runeword's variable rolls on a line under its name, in the look of the same stat's 300 tag. Made from the
+S13 client's tables on 2026-10-08: re-extract on the beta client for Madness, Finesse, Deception and Jealousy.
+
+**Settled (author's screenshots, 2026-10-08):** the label is the runeword's name (gold), its base line and the tag
+line, so the base line counts toward BH's 56 characters (Lionheart and Insight were cut to "Lionhea" / "Insig").
+The superior `NNed`, `Sup` and `Inf` tags no longer go on runeword bases (`!RW` on those `220` lines): a base line
+is now at most `Eth <base>`. New labels: `abs` (magic absorb, orange), `X%crit` (crit chance), `dvm`
+(defense vs missile), `dcoy` (+Decoy); mana regeneration is `rgn` (was `regen`). Lionheart shows `25s 15d 20v`
+(its own short labels); Loyalty shows power strike on spears and strafe on bows (each version its own rolls).
+
+**Check:**
+- Spirit (sword and shield), Insight, Enigma, Call to Arms, Infinity: each tag is there, in the tooltip's
+  order (top to bottom = left to right), with the tooltip's value (runes included: Call to Arms' ED counts Ohm).
+- Enigma: `775def 0.75str 0.75mf`. The per-level tags show the stat as BH reads it divided by 8 (`$f(STAT220/8)`);
+  check they match the tooltip's per-level value. Fortitude's life per level (not picked yet) assumes the stored
+  value is shifted like life (`$f(STAT216/2048)`): check before picking it.
+- Enigma's `def`: BH's DEF is the item's defense stat, so it may show base + roll rather than the roll alone.
+- Famine's `-15%/-15%/-15%` follows its properties' order (cold, fire, lightning); check the tooltip agrees.
+- Quiver runewords (Echo, Ancient's Scripture / Foresight): the tables give their runes the armor stats.
+- Insight is 1 character over in an ethereal Matriarchal Spear (its longest elite base; the picks file says
+  TOO LONG): "Insigh". It fits its other bases.

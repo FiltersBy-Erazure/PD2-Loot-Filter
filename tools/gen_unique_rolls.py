@@ -13,7 +13,11 @@ stats that tell it apart from every other unique (or set item) that can have one
     python tools/gen_unique_rolls.py --check     change nothing; exit 1 if either is out of date
     python tools/gen_unique_rolls.py --report [NAME]   candidates, picks and fingerprint per item
 
-Inputs: docs/items/*.wiki (python tools/item_data.py fetch) and tools/unique_roll_picks.txt.
+Inputs: docs/pd2-unique-set-items.tsv (PD2's own item tables, python tools/pd2_data.py --extract): each item's
+base, slot, stats and roll ranges, so its fingerprint; docs/items/*.wiki (python tools/item_data.py fetch): the
+item names and the stat text the picker shows, and the items the game tables lack (Kadala's Heirloom, made by
+PD2's server: its versions are split into one item each); and tools/unique_roll_picks.txt. Rows of the game
+data with the same name are versions of one item: they share its picks line.
 In the picks file, a line ending in "# auto ..." is the generator's default and is rewritten each run;
 remove "auto" from a line (or write your own) to keep it. Output: sections/045-unique-set-rolls.filter.
 Unique charms and jewels are left out: their tags live in 240-charms and 250-jewels.
@@ -31,6 +35,8 @@ from pathlib import Path
 sys.dont_write_bytecode = True
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import item_data  # noqa: E402
+import pd2_data  # noqa: E402
+import tag_order  # noqa: E402
 
 ROOT = item_data.ROOT
 PICKS = ROOT / "tools" / "unique_roll_picks.txt"
@@ -97,6 +103,7 @@ TAGS = {
     "maxlr": ("ROLL_MAXLR_TAG", "STAT42", "%max", "A"),
     "maxcr": ("ROLL_MAXCR_TAG", "STAT44", "%max", "A"),
     "maxpr": ("ROLL_MAXPR_TAG", "STAT46", "%max", "A"),
+    "maxres": ("ROLL_MAXRES_TAG", "MAXRES", "%max", "A"),  # items with all four: "6%/5%/4%/4%", "5%max" if equal (author, 2026-10-08)
     "life": ("ROLL_LIFE_TAG", "LIFE", "life", "A"),
     "mana": ("ROLL_MANA_TAG", "MANA", "mana", "A"),
     "str": ("ROLL_STR_TAG", "STR", "str", "A"),
@@ -104,10 +111,10 @@ TAGS = {
     "vit": ("ROLL_VIT_TAG", "STAT3", "vit", "A"),
     "nrg": ("ROLL_NRG_TAG", "STAT1", "nrg", "A"),
     "mdr": ("ROLL_MDR_TAG", "STAT35", "mdr", "A"),
-    "pdr%": ("ROLL_PDR_TAG", "STAT36", "pdr", "A"),   # Physical Damage Taken Reduced by N%
+    "pdr%": ("ROLL_PDR_TAG", "STAT36", "%pdr", "A"),  # Physical Damage Taken Reduced by N%
     "pdr": ("ROLL_PDRF_TAG", "STAT34", "pdr", "A"),   # Physical Damage Taken Reduced by N (flat)
     "replife": ("ROLL_REPLIFE_TAG", "STAT74", "rep", "A"),
-    "regen": ("ROLL_REGEN_TAG", "STAT27", "regen", "A"),
+    "regen": ("ROLL_REGEN_TAG", "STAT27", "rgn", "A"),
     "cr": ("ROLL_CR_TAG", "STAT504", "cr", "A"),
     "dtm": ("ROLL_DTM_TAG", "DTM", "dtm", "A"),
     # tags that magic items or corruptions had: unique/set-only lines added for the author's picks
@@ -127,6 +134,7 @@ NEW_ROLL_TAGS = {
     "def": ("ROLL_DEF_TAG", "DEF", "def"),
     "stat501": ("ROLL_OWD_TAG", "STAT501", "ow"),
     "multi126_1": ("ROLL_FSK_TAG", "MULTI126,1", "fsk"),
+    "multi126_2": ("ROLL_LSK_TAG", "MULTI126,2", "lsk"),
     "multi126_3": ("ROLL_MSK_TAG", "MULTI126,3", "msk"),
     "multi126_4": ("ROLL_CSK_TAG", "MULTI126,4", "csk"),
     "multi126_5": ("ROLL_PSK_TAG", "MULTI126,5", "psk"),
@@ -139,27 +147,45 @@ NEW_ROLL_TAGS = {
     "stat145": ("ROLL_LABS_TAG", "STAT145", "abs"),
     "stat148": ("ROLL_CABSP_TAG", "STAT148", "%abs"),
     "stat128": ("ROLL_LATD_TAG", "STAT128", "atd"),
-    "multi151_119": ("ROLL_SANC_TAG", "MULTI151,119", "sanc"),
-    "multi151_102": ("ROLL_HFIRE_TAG", "MULTI151,102", "hfire"),
-    "multi151_115": ("ROLL_VIGOR_TAG", "MULTI151,115", "vigor"),
-    "multi151_98": ("ROLL_MIGHT_TAG", "MULTI151,98", "might"),
+    "multi151_119": ("ROLL_SANC_TAG", "MULTI151,119", "snct"),  # auras: the skill's staffmods label
+    "multi151_102": ("ROLL_HFIRE_TAG", "MULTI151,102", "hfir"),
+    "multi151_115": ("ROLL_VIGOR_TAG", "MULTI151,115", "vigr"),
+    "multi151_98": ("ROLL_MIGHT_TAG", "MULTI151,98", "migh"),
     "stat111": ("ROLL_DMG_TAG", "STAT111", "dmg"),
     "stat139": ("ROLL_LPDK_TAG", "STAT139", "lpk"),
     "stat150": ("ROLL_SLOW_TAG", "STAT150", "%slow"),
     "stat423": ("ROLL_LEAP_TAG", "STAT423", "%leap"),
     "stat87": ("ROLL_VP_TAG", "STAT87", "vp"),
+    # Runeword rolls first (Spirit, Insight, Lawbringer...), also on some uniques (author, 2026-10-08)
+    "stat147": ("ROLL_MABS_TAG", "STAT147", "abs"),     # Magic Absorb
+    "stat258": ("ROLL_CRIT_TAG", "STAT258", "%crit"),   # Chance of Critical Strike
+    "stat32": ("ROLL_DVM_TAG", "STAT32", "dvm"),        # Defense vs. Missile
 }
-SKILL_TAG_LABELS = {  # +N to a single skill: the value, then a tan abbreviation
+# +N to a single skill: the value, then a tan abbreviation. The author's staffmods abbreviations
+# (310-staffmods, 2026-10-08); Amazon skills have no staffmods line, so theirs are the generator's own.
+SKILL_TAG_LABELS = {
     6: "marw",    9: "crit",    10: "jab",    11: "carw",    12: "multi",    14: "power",    16: "expl",    19: "jmas",
-    22: "guide",    24: "cs",    26: "straf",    30: "fend",    32: "valk",    37: "warm",    51: "fwall",    58: "es",
-    61: "fmas",    63: "lmas",    65: "cmas",    66: "amp",    67: "teeth",    68: "barm",    69: "smas",    70: "skel",
-    74: "ce",    80: "mage",    84: "bspr",    89: "arch",    95: "rev",    101: "hbolt",    102: "hfire",    106: "zeal",
-    110: "rlght",    112: "hamm",    115: "vigor",    121: "foh",    128: "gmas",    145: "iskin",    151: "ww",    154: "wcry",
-    221: "raven",    223: "wolf",    224: "lyc",    225: "fstrm",    232: "feral",    233: "maul",    238: "rab",    240: "twist",
-    245: "tndo",    247: "griz",    248: "fury",    367: "bwarp",    369: "ibar",    381: "dpact",
+    22: "guide",    24: "cs",    26: "straf",    28: "dcoy",    30: "fend",    32: "valk",    37: "wrmt",    51: "fwll",    58: "eshl",
+    61: "fmst",    63: "lmst",    65: "cmas",    66: "ampd",    67: "teth",    68: "barm",    69: "skms",    70: "skwa",
+    74: "cexp",    80: "skmg",    84: "bspe",    89: "skar",    95: "reve",    101: "hblt",    102: "hfir",    106: "zeal",
+    110: "resl",    112: "bhmr",    115: "vigr",    121: "fhvn",    128: "onhm",    145: "iskn",    151: "wind",    154: "wcry",
+    221: "ravn",    223: "wwlf",    224: "lycn",    225: "fstr",    232: "frag",    233: "maul",    238: "rabi",    240: "twst",
+    245: "trnd",    247: "grzl",    248: "fury",    367: "bwrp",    369: "icbr",    381: "dpct",
 }
 TAGS.update({k: (a, c, l, "WA") for k, (a, c, l) in NEW_ROLL_TAGS.items()})
 TAGS.update({f"sk{s}": (f"ROLL_SK{s}_TAG", f"SK{s}", lab, "WA") for s, lab in SKILL_TAG_LABELS.items()})
+# +N to a skill without "(Class Only)" is an oskill: stat 97, read with OS<n> (same label as the class skill)
+TAGS.update({f"os{s}": (f"ROLL_OS{s}_TAG", f"OS{s}", lab, "WA") for s, lab in SKILL_TAG_LABELS.items()})
+# All three -% enemy resistances on one line, "-10%/-15%/-10%" with gray slashes (author, 2026-10-08), in the order
+# the item lists them: c cold, f fire, l lightning. The game lists stats of equal priority in an order that differs between
+# items, so the order comes from the item in game; an item not in ERES_ORDER uses ERES_DEFAULT. Each order
+# has its own 300 line (ROLL_ERES<ORDER>_TAG), and the weapon -res corruption lines skip these items.
+ERES_KEYS = {"c": "-cres", "f": "-fres", "l": "-lres"}
+ERES_ORDER = {"UNI Kira's Guardian": "cfl",  # the author's screenshots, 2026-10-08
+              "UNI Mang Song's Lesson": "cfl"}
+ERES_DEFAULT = "cfl"
+TAGS.update({f"eres_{o}": (f"ROLL_ERES{o.upper()}_TAG", f"ERES{o.upper()}", "%res", "WA")
+             for o in ("cfl", "clf", "fcl", "flc", "lcf", "lfc")})
 CLSK_KEYS = [f"clsk{i}" for i in range(7)]
 # Which item slots the 300-affix-tags lines that use each alias cover (keep in sync when wiring lines)
 ALL = {"WEAPON", "HELM", "CIRC", "CHEST", "SHIELD", "GLOVES", "BOOTS", "BELT", "QUIVER", "amu", "rin"}
@@ -184,6 +210,7 @@ COVER = {
     "fdmg": {"WEAPON"}, "ldmg": {"WEAPON"}, "cdmg": {"WEAPON"}, "pdmg": {"WEAPON"},
     "res": RES_SLOTS, "fres": RES_SLOTS, "lres": RES_SLOTS, "cres": RES_SLOTS, "pres": RES_SLOTS,
     **{k: {"BOOTS", "CHEST", "SHIELD", "HELM", "CIRC"} for k in ("maxfr", "maxlr", "maxcr", "maxpr")},
+    "maxres": ALL, **{k: ALL for k in TAGS if k.startswith("eres_")},
     "life": {"rin", "SHIELD", "BOOTS", "GLOVES", "QUIVER"}, "mana": {"CHEST"},
     **{k: {"rin", "amu", "CIRC", "HELM", "BELT", "BOOTS", "GLOVES"} for k in ("str", "dex", "vit", "nrg")},
     "mdr": {"rin", "CHEST", "SHIELD"}, "pdr": {"rin", "CHEST", "SHIELD"},
@@ -249,34 +276,28 @@ ROLL_ONLY_SLOTS = {
     "und": {'WEAPON', 'CHEST', 'GLOVES', 'QUIVER', 'amu'},
     "vit": {'WEAPON', 'SHIELD'},
     "def": {'WEAPON', 'HELM', 'CIRC', 'CHEST', 'SHIELD', 'GLOVES', 'BOOTS', 'amu'},
-    "multi126_1": {'WEAPON', 'CHEST', 'amu'},
-    "multi126_3": {'WEAPON'},
-    "multi126_4": {'WEAPON', 'CHEST', 'BELT'},
-    "multi126_5": {'WEAPON', 'SHIELD'},
+    "multi126_1": {'WEAPON', 'CHEST', 'amu', 'rin'},
+    "multi126_2": {'rin'},
+    "multi126_3": {'WEAPON', 'rin'},
+    "multi126_4": {'WEAPON', 'CHEST', 'BELT', 'rin'},
+    "multi126_5": {'WEAPON', 'SHIELD', 'rin'},
     "multi151_102": {'WEAPON'},
     "multi151_115": {'SHIELD'},
     "multi151_119": {'WEAPON', 'CHEST'},
     "multi151_98": {'CHEST'},
-    "sk10": {'WEAPON'},
     "sk101": {'WEAPON'},
     "sk102": {'WEAPON'},
-    "sk106": {'WEAPON'},
-    "sk11": {'WEAPON'},
     "sk110": {'WEAPON'},
     "sk112": {'WEAPON'},
     "sk115": {'BOOTS'},
-    "sk12": {'WEAPON'},
     "sk121": {'WEAPON'},
     "sk128": {'WEAPON'},
     "sk14": {'WEAPON'},
-    "sk145": {'BELT'},
     "sk151": {'WEAPON'},
     "sk154": {'WEAPON'},
-    "sk16": {'WEAPON'},
     "sk19": {'WEAPON'},
     "sk22": {'WEAPON'},
-    "sk221": {'WEAPON', 'CHEST'},
-    "sk223": {'HELM'},
+    "sk221": {'WEAPON'},
     "sk224": {'WEAPON'},
     "sk225": {'WEAPON'},
     "sk232": {'HELM'},
@@ -287,8 +308,6 @@ ROLL_ONLY_SLOTS = {
     "sk245": {'WEAPON'},
     "sk247": {'HELM'},
     "sk248": {'WEAPON'},
-    "sk26": {'WEAPON'},
-    "sk30": {'WEAPON'},
     "sk32": {'WEAPON'},
     "sk367": {'WEAPON', 'CHEST'},
     "sk369": {'WEAPON'},
@@ -303,9 +322,9 @@ ROLL_ONLY_SLOTS = {
     "sk66": {'WEAPON'},
     "sk67": {'WEAPON'},
     "sk68": {'WEAPON'},
-    "sk69": {'WEAPON', 'HELM', 'BOOTS'},
-    "sk70": {'WEAPON', 'HELM'},
-    "sk74": {'WEAPON', 'CHEST'},
+    "sk69": {'WEAPON'},
+    "sk70": {'WEAPON'},
+    "sk74": {'WEAPON'},
     "sk80": {'WEAPON'},
     "sk84": {'WEAPON'},
     "sk89": {'WEAPON'},
@@ -323,9 +342,26 @@ ROLL_ONLY_SLOTS = {
     "stat423": {'BOOTS'},
     "stat425": {'WEAPON', 'HELM', 'GLOVES', 'QUIVER'},
     "stat49": {'WEAPON', 'CHEST'},
-    "stat501": {'WEAPON', 'CHEST', 'BOOTS'},
+    "stat501": {'WEAPON', 'CHEST', 'BOOTS', 'amu'},
     "stat55": {'WEAPON', 'amu'},
     "stat87": {'rin'},
+    "os10": {'WEAPON'},
+    "os11": {'WEAPON'},
+    "os12": {'WEAPON'},
+    "os16": {'WEAPON'},
+    "os19": {'WEAPON'},
+    "os22": {'WEAPON'},
+    "os26": {'WEAPON'},
+    "os30": {'WEAPON'},
+    "os69": {'HELM', 'BOOTS'},
+    "os70": {'HELM'},
+    "os74": {'CHEST'},
+    "os106": {'WEAPON'},
+    "os145": {'BELT'},
+    "os221": {'CHEST'},
+    "os223": {'HELM'},
+    "os232": {'HELM'},
+    "stat147": ALL, "stat258": ALL, "stat32": ALL,  # their 300 lines have no slot words
 }
 for _key, _slots in ROLL_ONLY_SLOTS.items():
     COVER[_key] = COVER.get(_key, set()) | _slots
@@ -335,11 +371,12 @@ PRIORITY = {  # default pick order; the author's lines in the picks file overrid
     "W": ["allsk", *CLSK_KEYS, "tabsk", "ed", "ias", "fcr", "min", "max", "ds", "cb",
           "-fres", "-lres", "-cres", "-pres", "ls", "ms", "lpk", "mpk", "mf", "ar",
           "ar%", "dem", "und", "fdmg", "ldmg", "cdmg", "pdmg"],
-    "A": ["allsk", *CLSK_KEYS, "tabsk", "fcr", "fhr", "frw", "fbr", "res", "maxfr", "maxlr", "maxcr",
+    "A": ["allsk", *CLSK_KEYS, "tabsk", "fcr", "fhr", "frw", "fbr", "res", "maxres", "maxfr", "maxlr", "maxcr",
           "maxpr", "fres", "lres", "cres", "pres", "life", "mana", "mf", "gf", "str", "dex", "vit", "nrg",
           "ls", "ms", "lpk", "mpk", "mdr", "pdr%", "pdr", "replife", "regen", "cr", "dtm", "ar", "ar%", "ias",
           "min", "max", "ds", "cb", "fdmg", "ldmg", "cdmg", "pdmg", "ed"],
 }
+MAXRES_KEYS = ["maxfr", "maxlr", "maxcr", "maxpr"]
 CODE_TO_TAG = {}
 for key, (_, code, _, _) in TAGS.items():
     CODE_TO_TAG.setdefault(code, key)
@@ -400,7 +437,8 @@ CTC_EVENTS = {"on attack": 195, "when you kill an enemy": 196, "on kill": 196, "
 # corruption, so a rival counts as ruled out once a weight-1 stat, or two other stats, exclude it.
 WEIGHT1 = re.compile(r"^(SK|OS|CLSK|TABSK|MULTI)|^STAT(113|117|81)$")
 WEIGHT3 = re.compile(r"^(ED|STAT89|STAT20)$")
-UNRELIABLE = {"DEF"}  # total defense also depends on the base tier and ethereal: never a fingerprint
+UNRELIABLE = {"DEF", "SOCK"}  # total defense also depends on the base tier and ethereal; sockets can be added
+COMPANIONS = {"stat48", "stat50", "stat52", "stat54"}  # the minimum of "Adds X-Y damage": shown with its maximum
 
 
 def wiki_skill_ids():
@@ -540,6 +578,7 @@ def parse_stat(text):
 class Item:
     def __init__(self, raw, families):
         self.kind, self.name, self.page, self.base = raw["kind"], raw["name"], raw["page"], raw["base"]
+        self.display = raw.get("display", self.name)  # the name in game (a version's name adds its label)
         family = raw["codes"]
         tier_names = families["__names__"]
         own_code = next((c for c in family if item_data.norm(tier_names.get(c, "")) == item_data.norm(self.base)),
@@ -556,28 +595,89 @@ class Item:
         page = self.page if self.page in WEAPON_PAGES else CODE_PAGE.get(self.codes[0]) if self.codes else None
         self.caster = page in CASTER_PAGES or any(c.startswith("ob") for c in self.codes)
         self.stats = {}  # code -> (lo, hi), all current stat lines with a filter code
+        self.raw_stats = raw["stats"]
+        self.rolls = {}      # key -> (lo, hi): variable rolls the filter can show as a tag on this item
+        self.all_rolls = []  # every variable roll: key (None = no filter code), lo, hi, line, tagged
+        self.game = raw.get("game")
+        if self.game:
+            self.from_game(raw, tier_names)
+        else:
+            self.from_wiki(raw)
+        four = [self.roll(k) for k in MAXRES_KEYS]
+        if all(four):  # all four max resists: one more candidate, a single tag for the four
+            lo, hi = min(r["lo"] for r in four), max(r["hi"] for r in four)
+            tagged = self.covers("maxres")
+            self.all_rolls.insert(min(self.all_rolls.index(r) for r in four),
+                                  {"key": "maxres", "code": "MAXRES", "lo": lo, "hi": hi,
+                                   "line": "All four Maximum Resistances", "tagged": tagged})
+            if tagged:
+                self.rolls["maxres"] = (lo, hi)
+        three = [self.roll(k) for k in ERES_KEYS.values()]
+        if all(three):  # all three -% enemy resistances: one more candidate, one tag in the item's order
+            key = f"eres_{ERES_ORDER.get(self.key, ERES_DEFAULT)}"
+            lo, hi = min(r["lo"] for r in three), max(r["hi"] for r in three)
+            tagged = self.covers(key)
+            self.all_rolls.insert(min(self.all_rolls.index(r) for r in three),
+                                  {"key": key, "code": TAGS[key][1], "lo": lo, "hi": hi,
+                                   "line": "All three -% Enemy Resistances", "tagged": tagged})
+            if tagged:
+                self.rolls[key] = (lo, hi)
+        self.unmapped = [r["line"] for r in self.all_rolls if not r["tagged"]]
+        self.fingerprint, self.unresolved, self.weak = [], [], []
+
+    def add_roll(self, key, code, lo, hi, line):
+        if any(r["key"] == key for r in self.all_rolls):
+            return
+        tagged = key in TAGS and self.covers(key)
+        self.all_rolls.append({"key": key, "code": code, "lo": lo, "hi": hi, "line": line, "tagged": tagged})
+        if tagged:
+            self.rolls[key] = (lo, hi)
+
+    def from_wiki(self, raw):
+        """Stats and rolls from the wiki's text (an item the game data lacks, e.g. Kadala's Heirloom)."""
         for line in raw["stats"]:
             for code, lo, hi in parse_stat(line):
                 old = self.stats.get(code)
                 self.stats[code] = (lo + (old[0] if old else 0), hi + (old[1] if old else 0))
-        self.raw_stats = raw["stats"]
-        self.rolls = {}      # key -> (lo, hi): variable rolls the filter can show as a tag on this item
-        self.all_rolls = []  # every variable roll: key (None = no filter code), lo, hi, line, tagged
         for line in raw["rolls"]:
             parsed = parse_stat(line)[:1]  # one roll, one tag: All Resistances is res, not five tags
             if not parsed:
                 self.all_rolls.append({"key": None, "lo": 0, "hi": 0, "line": line, "tagged": False})
                 continue
             code, lo, hi = parsed[0]
+            self.add_roll(roll_key(code), code, lo, hi, line)
+
+    def from_game(self, raw, tier_names):
+        """Base, slot, stats and rolls from PD2's own tables (docs/pd2-unique-set-items.tsv); the wiki only
+        lends the text of a roll for the picker."""
+        game = self.game
+        family = CODE_FAMILY.get(game["code"], [game["code"]])
+        self.codes = family[family.index(game["code"]):]
+        self.base_names = [tier_names.get(c, self.base) for c in self.codes]
+        self.where = game["slot"]
+        self.weapon = self.where == "WEAPON"
+        self.slot = "W" if self.weapon else "A"
+        self.caster = game["caster"] or any(c.startswith("ob") for c in self.codes)
+        for prop in game["props"]:
+            for code, lo, hi in prop:
+                old = self.stats.get(code)
+                self.stats[code] = (lo + (old[0] if old else 0), hi + (old[1] if old else 0))
+        wiki = {}
+        for line in raw["rolls"]:
+            parsed = parse_stat(line)[:1]
+            if parsed:
+                wiki.setdefault(roll_key(parsed[0][0]), line)
+        for prop in game["props"]:
+            code, lo, hi = prop[0]  # the stat a tag of this line shows
             key = roll_key(code)
-            if any(r["key"] == key for r in self.all_rolls):
-                continue
-            tagged = key in TAGS and self.covers(key)
-            self.all_rolls.append({"key": key, "code": code, "lo": lo, "hi": hi, "line": line, "tagged": tagged})
-            if tagged:
-                self.rolls[key] = (lo, hi)
-        self.unmapped = [r["line"] for r in self.all_rolls if not r["tagged"]]
-        self.fingerprint, self.unresolved, self.weak = [], [], []
+            if lo != hi and key not in COMPANIONS:  # (the wiki writes an oskill like a class skill)
+                text = wiki.get(key) or (wiki.get("sk" + key[2:]) if key.startswith("os") else None)
+                self.add_roll(key, code, lo, hi, text or stat_text(code, lo, hi))
+        for line in raw["rolls"]:  # wiki rolls with no filter code: listed in the picker as untaggable
+            if not parse_stat(line):
+                self.all_rolls.append({"key": None, "lo": 0, "hi": 0, "line": line, "tagged": False})
+        if not self.raw_stats:
+            self.raw_stats = [stat_text(*prop[0]) for prop in game["props"]]
 
     def roll(self, key):
         return next((r for r in self.all_rolls if r["key"] == key), None)
@@ -612,6 +712,21 @@ USED = used_aliases()
 WEAPON_CODES = weapon_codes()
 CODE_SLOT = {}  # base code -> slot, and base code -> unique page: learnt from the unique pages in load()
 CODE_PAGE = {}
+CODE_FAMILY = {}  # base code -> the codes of its family, normal to elite (docs/pd2-item-codes.wiki)
+GAME_PAGE = "Game data"  # picker group of the items the wiki lacks
+GAME_NAMES = {"Spirit Shroud": "The Spirit Shroud",  # wiki name -> the game's, where they differ
+              "Infernal Spire (Infernal Torch)": "Infernal Spire"}
+NO_GAME_DATA, GAME_ONLY = [], []  # wiki items the game data lacks / game items the wiki lacks (load())
+CODE_STAT = {code: sid for sid, code in pd2_data.NAMED.items()}
+
+
+def stat_text(code, lo, hi):
+    """Readable text of a stat the wiki does not list (for the picker)."""
+    m = re.fullmatch(r"STAT(\d+)", code)
+    sid = int(m.group(1)) if m else CODE_STAT.get(code)
+    title = ("% Enhanced Damage/Defense" if code == "ED" else
+             tag_order.TITLES.get(sid) or tag_order.STAT_NAMES.get(sid) if sid is not None else code)
+    return f"{title} {f'[{lo}-{hi}]' if lo != hi else lo}"
 
 
 def roll_key(code):
@@ -631,13 +746,19 @@ def weight(code):
     return 1 if WEIGHT1.search(code) else 3 if WEIGHT3.search(code) else 2
 
 
+def one_per_key(items):
+    """Versions of one item (rows of the same name in the game data) share a picks line: list it once."""
+    seen = set()
+    return [it for it in items if not (it.key in seen or seen.add(it.key))]
+
+
 def build_fingerprints(items):
     by_code = {}
     for it in items:
         for c in it.codes:
             by_code.setdefault((it.kind, c), []).append(it)
     for it in items:
-        rivals = {id(j): j for c in it.codes for j in by_code.get((it.kind, c), []) if j is not it}
+        rivals = {id(j): j for c in it.codes for j in by_code.get((it.kind, c), []) if j.key != it.key}
         conds = []
         need = {k: 2 for k in rivals}  # a weight-1 exclusion counts 2, any other 1
         options = [(code, lo) for code, (lo, hi) in it.stats.items() if lo >= 1 and code not in UNRELIABLE]
@@ -687,12 +808,16 @@ def tag_width(key, hi):
     digits = len(str(abs(hi)))
     if key in RANGE_TAGS:  # the minimum has about as many digits as the maximum
         digits = 2 * digits + 2
+    elif key == "maxres":  # "6%/5%/4%/4%"
+        return 4 * (digits + 1) + 3 + 1
+    elif key.startswith("eres_"):  # "-10%/-15%/-10%"
+        return 3 * (digits + 3)
     return digits + len(label) + (1 if key.startswith("-") or key in MINUS_TAGS else 0) + 1
 
 
 def default_picks(it):
     """The generator's choice: the most important rolls with a tag line that fit (FCR only on caster weapons)."""
-    budget = (NAME_MAX - len(it.name) - 1 - max((len(b) for b in it.base_names), default=0) - LINE_BREAK
+    budget = (NAME_MAX - len(it.display) - 1 - max((len(b) for b in it.base_names), default=0) - LINE_BREAK
               - CORRUPTION_RESERVE * CORRUPTION_TAGS.get(it.where, 1)
               - (SOCKET_RESERVE if it.where in SOCKET_SLOTS else 0))
     picks, used = [], 0
@@ -722,7 +847,7 @@ def render_picks(items, old):
            "# sockets); uses = what the picked tags take at their highest roll. Each candidate shows its",
            "# range and (width), e.g. 'ed 50-75 (5)' = '75ed '. A '*' marks a roll with no tag line yet:",
            "# picking it requests one (its width is an estimate). Tags: " + ", ".join(TAGS), ""]
-    for it in sorted(items, key=lambda x: (x.kind, x.page, x.name)):
+    for it in one_per_key(sorted(items, key=lambda x: (x.kind, x.page, x.name))):
         keyed = [r for r in it.all_rolls if r["key"]]
         if not keyed:
             continue
@@ -874,7 +999,7 @@ def write_picker(items, old):
     """tools/roll_picker.html: the picks as a clickable page (data embedded in the template)."""
     lines = tag_lines()
     data = []
-    for it in sorted(items, key=lambda x: (x.page, x.kind, x.name)):
+    for it in one_per_key(sorted(items, key=lambda x: (x.page, x.kind, x.name))):
         keyed = [r for r in it.all_rolls if r["key"]]
         if not keyed:
             continue
@@ -891,7 +1016,7 @@ def write_picker(items, old):
                               "v": abs(r["hi"]) if r["key"].startswith("-") else r["hi"],
                               "tagged": r["tagged"], "line": r["line"], "idx": idx, "fmt": fmt, "approx": approx})
         data.append({
-            "key": it.key, "kind": it.kind, "name": it.name, "page": it.page, "slot": it.where,
+            "key": it.key, "kind": it.kind, "name": it.name, "shown": it.display, "page": it.page, "slot": it.where,
             "bases": it.base_names, "codes": it.codes, "room": budget, "sockets": it.where in SOCKET_SLOTS,
             "cands": cands, "auto": auto, "picks": mine[0] if reviewed else auto, "reviewed": reviewed,
             "untaggable": [r["line"] for r in it.all_rolls if not r["key"]], "stats": it.raw_stats,
@@ -909,7 +1034,7 @@ def write_picker(items, old):
 def requests(items, picks):
     """{roll key: [(item, roll)]}: the author's picks of rolls that have no tag line yet."""
     out = {}
-    for it in sorted(items, key=lambda x: x.key):
+    for it in one_per_key(sorted(items, key=lambda x: x.key)):
         chosen, auto = picks.get(it.key, ([], True))
         for k in chosen if not auto else []:
             r = it.roll(k)
@@ -938,32 +1063,6 @@ def print_requests(items, picks):
         print(f"  {text}    <- {', '.join(names)}")
 
 
-def print_order(items, picks):
-    """Items whose picked tags do not read in the item's stat order in game. Each 300-affix-tags line puts its
-    tag before the name, so a later line's tag sits further left; the item's stats read top to bottom."""
-    lines, wrong, shown_items = tag_lines(), [], 0
-    for it in sorted(items, key=lambda x: x.key):
-        shown = []
-        for k in picks.get(it.key, ([], True))[0]:
-            r = it.roll(k)
-            if not r or not r["tagged"]:
-                continue
-            fmt, _ = tag_format(it, r, lines)
-            v = abs(r["hi"]) if k.startswith("-") else r["hi"]
-            f = next((f for f in fmt if all(v > n if op == ">" else v < n if op == "<" else v == n
-                                             for op, n in f["cmps"])), fmt[0])
-            shown.append((f["n"], k, it.all_rolls.index(r)))
-        if len(shown) < 2:
-            continue
-        shown_items += 1
-        game = [k for _, k, _ in sorted(shown, key=lambda x: -x[0])]
-        item = [k for _, k, _ in sorted(shown, key=lambda x: x[2])]
-        if game != item:
-            wrong.append(f"  {it.key} ({it.where}): in game {', '.join(game)}; on the item {', '.join(item)}")
-    print(f"{shown_items - len(wrong)} of {shown_items} items with 2+ tags read in their stat order; not:")
-    print("\n".join(wrong) or "  none")
-
-
 def load():
     families = item_data.base_codes()
     names = {}
@@ -971,6 +1070,10 @@ def load():
         for code, name in re.findall(r"\|\s*([a-z0-9]{2,5})\s*\|\|\s*([A-Z][^|<]*?)\s*(?=\|\||$)", line):
             names.setdefault(code, name.replace("’", "'"))
     families["__names__"] = names
+    for codes in families.values():
+        if isinstance(codes, list):
+            for c in codes:
+                CODE_FAMILY.setdefault(c, codes)
     raw = [r for r in item_data.items(families) if r["codes"] and r["page"] not in SKIP_PAGES]
     for r in raw:  # slot of each base code, from the typed unique pages
         slot = "WEAPON" if r["page"] in WEAPON_PAGES else PAGE_SLOT.get(r["page"])
@@ -978,9 +1081,38 @@ def load():
             if slot:
                 CODE_SLOT.setdefault(c, "CIRC" if c.startswith("ci") else slot)
                 CODE_PAGE.setdefault(c, r["page"])
+    match_game(raw, names)
     items = [Item(r, families) for r in raw]
     build_fingerprints(items)
     return items
+
+
+def match_game(raw, names):
+    """Give each wiki item its row of PD2's own data (same kind and name, as the game shows it), and add the
+    game's items the wiki lacks: they get tags too, and their stats keep other items' fingerprints honest."""
+    game = [g for g in pd2_data.load_items() if g["slot"] not in ("?", "") and g["code"] in CODE_FAMILY]
+    by_name = {}  # (quest items have no code in the item-code tables: left out above)
+    for g in game:
+        by_name.setdefault((g["kind"], pd2_data.norm_name(g["name"])), []).append(g)
+    used, versions = set(), []
+    for r in raw:
+        name = pd2_data.norm_name(GAME_NAMES.get(r["name"], r["name"]))
+        cands = [g for g in by_name.get((r["kind"], name), []) if id(g) not in used]
+        cands.sort(key=lambda g: g["code"] not in r["codes"])
+        if not cands:
+            NO_GAME_DATA.append(f"{r['kind']} {r['name']}")
+        for i, g in enumerate(cands):  # a second row of the same name is another version of the item
+            used.add(id(g))
+            if i == 0:
+                r["game"] = g
+            else:
+                versions.append({**r, "game": g})
+    raw += versions
+    for g in game:
+        if id(g) not in used:
+            raw.append({"kind": g["kind"], "name": g["name"], "page": GAME_PAGE, "base": names.get(g["code"], g["code"]),
+                        "codes": CODE_FAMILY.get(g["code"], [g["code"]]), "stats": [], "rolls": [], "game": g})
+            GAME_ONLY.append(f"{g['kind']} {g['name']}")
 
 
 def main():
@@ -989,16 +1121,12 @@ def main():
     ap.add_argument("--check", action="store_true")
     ap.add_argument("--report", nargs="?", const="", metavar="NAME")
     ap.add_argument("--picker", action="store_true", help="write tools/roll_picker.html and open it")
-    ap.add_argument("--order", action="store_true", help="list items whose tags do not read in their stat order")
     ap.add_argument("--requests", action="store_true",
                     help="list picked rolls that still need a tag line, and rolls with no filter code")
     args = ap.parse_args()
     items = load()
     if args.requests:
         print_requests(items, read_picks())
-        return
-    if args.order:
-        print_order(items, read_picks())
         return
     if args.picker:
         write_picker(items, read_picks())

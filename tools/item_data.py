@@ -30,8 +30,8 @@ PAGES = [  # what All_Unique_Weapons, All_Unique_Non-Weapons and All_Set_Items t
     "Normal", "Exceptional", "Elite",
 ]
 
-HEAD_RE = re.compile(r'^={3,4}\s*<span class="d2-(gold|green)">(.+?)</span>\s*={3,4}\s*$', re.M)
-NEXT_HEAD_RE = re.compile(r"^={2,4}[^=]", re.M)
+HEAD_RE = re.compile(r'^={3,5}\s*<span class="d2-(gold|green)">(.+?)</span>\s*={3,5}\s*$', re.M)
+NEXT_HEAD_RE = re.compile(r"^={2,5}[^=]", re.M)  # Class_Weapons puts its items under ===== headings
 BASE_RE = re.compile(r"<p><b>(.+?)</b>")  # the base is the first bold text that is not a "Label:"
 RANGE_RE = re.compile(r"\[(-?\d+(?:\.\d+)?)-(-?\d+(?:\.\d+)?)\]")
 NOT_A_ROLL = re.compile(r"per Character Level|Based on Character Level|\(Based on |\(\d+ Items\)|Full Set|\(with ",
@@ -110,6 +110,41 @@ def parse_stats(block):
     return stats
 
 
+def versions(block):
+    """An item that comes in versions (Kadala's Heirloom: rows "or" between the versions, then "and" before
+    what all have): [(label, its own stat lines, the shared stat lines)], or [] for an ordinary item."""
+    start = block.find("{|")
+    end = block.find("|}", start)
+    if start < 0 or end < 0:
+        return []
+    groups, shared, current, in_shared, has_or = [], [], [], False, False
+    for row in block[start:end].split("\n|-"):
+        lines = [l for l in row.split("\n") if l.startswith("|") and not l.startswith(("|-", "|}", "{|"))]
+        word = clean(" ".join(l.lstrip("|") for l in lines)).lower()
+        if word == "or":
+            groups.append(current)
+            current, has_or = [], True
+        elif word == "and":
+            groups.append(current)
+            current, in_shared = [], True
+        else:
+            for line in lines:
+                for part in re.split(r"<br\s*/?>", line.lstrip("|").split("||")[-1]):
+                    text = clean(part)
+                    if text:
+                        (shared if in_shared else current).append(text)
+    if not in_shared:
+        groups.append(current)
+    if not has_or:
+        return []
+    out = []
+    for i, own in enumerate(g for g in groups if g):
+        m = re.search(r"to (Fire|Cold|Lightning|Poison|Magic) Skills", own[0])
+        label = m.group(1) if m else "Physical" if re.search(r"Enhanced Damage", own[0]) else f"version {i + 1}"
+        out.append((label, own, shared))
+    return out
+
+
 def items(families=None):
     families = families or base_codes()
     out = []
@@ -126,17 +161,19 @@ def items(families=None):
             bases = [clean(b) for b in BASE_RE.findall(block)]
             bases = [b for b in bases if ":" not in b and not re.fullmatch(r"\(.+ Only\)", b)]
             base = bases[0] if bases else "?"
+            common = {"kind": "UNI" if m.group(1) == "gold" else "SET", "page": page, "base": base,
+                      "codes": families.get(norm(base), [])}
+            split = versions(block)
+            if split:  # one item per version; its own lines (the version's identity) are pickable too
+                for label, own, shared in split:
+                    stats = own + shared
+                    rolls = own + [s for s in shared if RANGE_RE.search(s) and not NOT_A_ROLL.search(s)]
+                    out.append({**common, "name": f"{clean(m.group(2))} ({label})", "display": clean(m.group(2)),
+                                "stats": stats, "rolls": rolls})
+                continue
             stats = parse_stats(block)
             rolls = [s for s in stats if RANGE_RE.search(s) and not NOT_A_ROLL.search(s)]
-            out.append({
-                "kind": "UNI" if m.group(1) == "gold" else "SET",
-                "name": clean(m.group(2)),
-                "page": page,
-                "base": base,
-                "codes": families.get(norm(base), []),
-                "stats": stats,
-                "rolls": rolls,
-            })
+            out.append({**common, "name": clean(m.group(2)), "stats": stats, "rolls": rolls})
     return out
 
 
