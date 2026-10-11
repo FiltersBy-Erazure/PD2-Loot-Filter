@@ -16,20 +16,21 @@ ItemDisplay[(NMAG OR MAG) !EQUIPPED !RW (SK96>0 OR SK97>0 OR SK98>0 OR SK99>0 OR
 // Sorceress Orbs and Staves
 ItemDisplay[(NMAG OR MAG) !EQUIPPED !RW (SK36>0 OR SK37>0 OR SK38>0 OR SK39>0 OR SK40>0 OR SK41>0 OR SK42>0 OR SK43>0 OR SK44>0 OR SK45>0 OR SK46>0 OR SK47>0 OR SK48>0 OR SK49>0 OR SK50>0 OR SK51>0 OR SK52>0 OR SK53>0 OR SK54>0 OR SK55>0 OR SK56>0 OR SK57>0 OR SK58>0 OR SK59>0 OR SK60>0 OR SK61>0 OR SK62>0 OR SK63>0 OR SK64>0 OR SK65>0 OR SK369>0 OR SK376>0 OR SK383>0)]:%CL%%NAME%{%NAME%}%CONTINUE%//
 
+// White items: ED and res tags go on the tag line with the staffmods, in the game's order (S14 descpriority: skill
+// tabs 151, enhanced damage 129-130, single skills 81, enhanced defense 74, resistances 34-40). A later rule puts its
+// tag further left, so: res and enhanced defense here, the single skills below, enhanced damage and the Amazon skill
+// tabs at the end. The ** markers stay on the name line (220). BH gives a white item one line break (superior, or
+// with staffmods or automods).
+ItemDisplay[NMAG !RW !INF ((DIN RES>4) OR (SUP ED>4 !SOCK=1 (CHEST OR HELM OR SHIELD OR WEAPON)))]:%CL%%NAME%{%NAME%}%CONTINUE%
+
+// Label All Res Paladin shields when leveling
+ItemDisplay[NMAG !INF !RW RES>4 DIN]:%WHITE%%RES%%PURPLE%res%CS%%NAME%{%NAME%}%CONTINUE%//
+
+// Enhanced Defense Armors
+ItemDisplay[(CHEST OR HELM OR SHIELD) !SOCK=1 !INF SUP NMAG !RW ED~5-13]:%WHITE%%ED%%LIGHT_GRAY%ed%CS%%NAME%{%NAME%}%CONTINUE%//
+ItemDisplay[(CHEST OR HELM OR SHIELD) !SOCK=1 !INF SUP NMAG !RW ED>13]:%WHITE%%ED%%BLUE%ed%CS%%NAME%{%NAME%}%CONTINUE%//
+
 // Show staffmods on NMAG items
-
-
-// Add +skills tag to Amazon spears and javelins
-ItemDisplay[NMAG !RW TABSK2>0]:%CL%%NAME%{%NAME%}%CONTINUE%
-ItemDisplay[NMAG !RW TABSK2=1]:%WHITE%+1%DARK_GREEN%jav%TAN%sk%CS%%GRAY%%NAME%{%NAME%}%CONTINUE%
-ItemDisplay[NMAG !RW TABSK2=2]:%WHITE%+2%DARK_GREEN%jav%TAN%sk%CS%%GRAY%%NAME%{%NAME%}%CONTINUE%
-ItemDisplay[NMAG !RW TABSK2=3]:%WHITE%+3%DARK_GREEN%jav%TAN%sk%CS%%GRAY%%NAME%{%NAME%}%CONTINUE%
-
-// Add +skills tag to Amazon bows
-ItemDisplay[NMAG !RW TABSK0>0]:%CL%%NAME%{%NAME%}%CONTINUE%
-ItemDisplay[NMAG !RW TABSK0=1]:%WHITE%+1%DARK_GREEN%bow%TAN%sk%CS%%NAME%{%NAME%}%CONTINUE%
-ItemDisplay[NMAG !RW TABSK0=2]:%WHITE%+2%DARK_GREEN%bow%TAN%sk%CS%%NAME%{%NAME%}%CONTINUE%
-ItemDisplay[NMAG !RW TABSK0=3]:%WHITE%+3%DARK_GREEN%bow%TAN%sk%CS%%NAME%{%NAME%}%CONTINUE%
 
 
 // Daggers
@@ -274,4 +275,23 @@ ItemDisplay[(NMAG OR MAG) !EQUIPPED !RW ((SK376=1 (CLVL<40 OR FILTLVL=0)) OR (SK
 ItemDisplay[(NMAG OR MAG OR RARE OR CRAFT) !RW SOR SORCERESS FILTLVL<3 CLVL<80 (SK40=3 OR SK41=3 OR SK44=3 OR SK47=3 OR SK48=3 OR SK49=3 OR SK51=3 OR SK52=3 OR SK53=3 OR SK55=3 OR SK56=3 OR SK59=3 OR SK61=3 OR SK62=3 OR SK63=3 OR SK64=3 OR SK65=3 OR SK369=3 OR SK376=3 OR SK383=3)]:%NAME%%PX-76%{%NAME%}%CONTINUE%//
 // Notification for +3 Low Level Skill Items for Sorceresses under character level 10 and under filter level 6
 ItemDisplay[(NMAG OR MAG OR RARE OR CRAFT) !RW (SOR OR STAFF) SORCERESS FILTLVL<3 CLVL<10 (SK36=3 OR SK38=3 OR SK39=3 OR SK42=3 OR SK45=3)]:%NAME%%PX-76%{%NAME%}%CONTINUE%//
+
+// White items: Enhanced Damage, left of the single skills above and right of the Amazon skill tabs below
+// Bonus % Attack Rating Weapons
+//ItemDisplay[(WEAPON !((STAFF (NORM OR (EXC !(ETH 8ws CLVL<80 (SOCK=0 OR SOCK=4))) OR (ELT !(ETH (6ws OR 6bs OR 6ls OR 6cs) (SOCK=0 OR SOCK=4 OR SOCK=5 OR SOCK=6))))) OR SOR OR WAND)) !SOCK=1 !INF SUP NMAG !RW (STAT119>19 OR (STAT119>14 ED>4) OR (STAT119>9 ED>9))]:%WHITE%%STAT119%%LIGHT_GRAY%ar%CS%%NAME%{%NAME%}%CONTINUE%//
+// Enhanced Damage Weapons
+ItemDisplay[(WEAPON !((STAFF (NORM OR (EXC !(ETH 8ws CLVL<80 (SOCK=0 OR SOCK=4))) OR (ELT !(ETH (6ws OR 6bs OR 6ls OR 6cs) (SOCK=0 OR SOCK=4 OR SOCK=5 OR SOCK=6))))) OR SOR OR WAND)) !SOCK=1 !INF SUP NMAG !RW ED~5-13]:%WHITE%%ED%%LIGHT_GRAY%ed%CS%%NAME%{%NAME%}%CONTINUE%//
+ItemDisplay[(WEAPON !((STAFF (NORM OR (EXC !(ETH 8ws CLVL<80 (SOCK=0 OR SOCK=4))) OR (ELT !(ETH (6ws OR 6bs OR 6ls OR 6cs) (SOCK=0 OR SOCK=4 OR SOCK=5 OR SOCK=6))))) OR SOR OR WAND)) !SOCK=1 !INF SUP NMAG !RW ED>13]:%WHITE%%ED%%RED%ed%CS%%NAME%{%NAME%}%CONTINUE%//
+
+// Add +skills tag to Amazon spears and javelins
+ItemDisplay[NMAG !RW TABSK2>0]:%CL%%NAME%{%NAME%}%CONTINUE%
+ItemDisplay[NMAG !RW TABSK2=1]:%WHITE%1%DARK_GREEN%jav%TAN%sk%CS%%GRAY%%NAME%{%NAME%}%CONTINUE%
+ItemDisplay[NMAG !RW TABSK2=2]:%WHITE%2%DARK_GREEN%jav%TAN%sk%CS%%GRAY%%NAME%{%NAME%}%CONTINUE%
+ItemDisplay[NMAG !RW TABSK2=3]:%WHITE%3%DARK_GREEN%jav%TAN%sk%CS%%GRAY%%NAME%{%NAME%}%CONTINUE%
+
+// Add +skills tag to Amazon bows
+ItemDisplay[NMAG !RW TABSK0>0]:%CL%%NAME%{%NAME%}%CONTINUE%
+ItemDisplay[NMAG !RW TABSK0=1]:%WHITE%1%DARK_GREEN%bow%TAN%sk%CS%%NAME%{%NAME%}%CONTINUE%
+ItemDisplay[NMAG !RW TABSK0=2]:%WHITE%2%DARK_GREEN%bow%TAN%sk%CS%%NAME%{%NAME%}%CONTINUE%
+ItemDisplay[NMAG !RW TABSK0=3]:%WHITE%3%DARK_GREEN%bow%TAN%sk%CS%%NAME%{%NAME%}%CONTINUE%
 

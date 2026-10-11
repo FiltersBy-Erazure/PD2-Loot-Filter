@@ -52,23 +52,35 @@ are updated during the beta (moderator reply on stream #2), so confirm everythin
 - A new map event (area with super chests and a boss with extra loot); a new map by Isaidwhatever.
 - Guild vault tabs lockable by rank; skill (Concentrate, Chilling/Shiver Armor) and controller changes.
 
-## Filter impact checklist (tentative; work on the `beta` branch)
-Mark every S14 rule block with `// S14:`. Line numbers as of 2026-10-04.
+## Filter impact checklist (`beta` branch; updated 2026-10-10 from the S14 closed-beta game data)
+Every S14 rule block is marked `// S14:`. Game data: `ProjectD2\Beta\` (BH.dll built 2026-10-10), diffed against `ProjectD2\Live\`.
 
-| Change | What to do in the filter | Sections |
+| Change | Status | Sections |
 |---|---|---|
-| Grail over uniques and sets | **Done (beta):** `Alias[GRAIL_NEW]` + `!GRAIL_NEW` on the 8 hide rules that can hide a unique or set; the look of undiscovered items is to be designed in the beta | 040, 160, 170 |
-| Stacked/unstacked forms merged | ~140 rules use stacked codes (`rNNs`, `gXXs`, `skXs`) in `090-gems`, `100-sound-ids` (rune drop sounds `(r20s OR r21s) QTY=1`), `110-runes`. Find which code survives and a single drop's `QTY`, then rewrite | 090, 100, 110 |
-| New maps (Poisoned Well; Isaidwhatever's map) | Per map, like S13's `t57`/`t3b`: alias in `040` (`UNIQUE_MAPS` or tier), names and area level in `130`, resistance block in `140`, tier and notification in `145` | 040, 130, 140, 145 |
-| Guild Hall works like a town | Add its `MAPID` to `Alias[TOWN]` (`040-aliases.filter:4`) | 040 |
-| Corruption changes | "Ind" tags on `STAT360=48`: `300-affix-tags.filter:619, 839, 1008, 1015, 1016` (roll lines skip it with `!STAT360=48`); rep-life tags on `STAT360=34`: `300:503, 505, 509` (boots/gloves/belt move to the "Half Freeze Duration" tags, `300:302`); curse resistance on `STAT360=49/62`: `260:35`, `300:453, 674` | 260, 300 |
-| New runewords | Add to the "Possible Runewords" notes in `230`; keep the bases visible: `220-nonmagic-weapons.filter:72-79` hide white Amazon javelins by `TABSK2` (79 hides +3 javelin-skill `amf`, the Jealousy base); check 3-socket armor and helm hiding in `210`. Roll tags: `pd2_data.py --extract` on the beta client, then `gen_runeword_rolls.py` (305) | 210, 220, 230, 305 |
-| Max sockets 2 → 3 (`spl plt fld xui xea xla xtu ulm uhl amf`) | Socket notes in `230`: "Corrupt After Upgrade: C:3" (`:147-148`), corruption C: values (`:183` helms, `:191` chests, `:210` weapons), "upgrade first" lists (`:142-161`) | 230 |
-| Jewel +5% elemental damage prefix | Tag it in `250` (new stat, or the existing `STAT329-332` skill damage) | 250 |
-| Alternate skins/arts (18 uniques) | In game: check they keep their base item code; new codes would bypass every code-based rule | ? |
-| New map event | Check for an event stat worth tagging on maps | 145 |
+| Grail over uniques and sets | Done: `Alias[GRAIL_NEW]` (`!ALLDISCOVERED`; BH PR #95 adds ANYDISCOVERED, ALLDISCOVERED, ANYOWNED, ALLOWNED) on the hide rules. Open: the look of undiscovered items, designed in game | 040, 160, 170 |
+| Stacked/unstacked forms merged | Done: runes, gems and skulls drop and stack as their plain code (QTY=1 on the ground); the `...s` codes are "(old)" legacy items and left the rules. BIG GG (author's lines) and LIL GG; stack/unstack notes and "+ Key" removed; plural and `x QTY` for every gem stack and for the four boss items (Relics of the Ancients, Visions of Terror, Voidstones, Shadows of Hatred) | 090, 100, 110, 120, 250 |
+| New maps: Poisoned Well `t18` (T1), Dark Temple `t29` (T2), Descent from Mount Arreat `t2a` (T2) | Done: names (130), resistance blocks (140), Cursing Knights (`t29`) and native Succubus Witches (`t2a`) in 145; codes allow-listed for lint. The tier aliases use MAPTIER (no change). 130 and 140 tier groups re-sorted to S14 tiers (Sanatorium `t14` is T1) | 130, 140, 145 |
+| Map resistances | Done: all blocks checked against the S14 data (start area = Misc.txt `len`; Levels.txt `nmon` monsters, MonStats.txt hell resistances). Only Throne of Insanity changed: magic 75 to 50 (75 was the wiki's Demon Rascal; the game data has 50 in S13 and S14). Zhar's Sanctum counts areas 177-179 (176 is the portal entrance), Djinn's Domain 197-198. Guest monsters from the game data's map-mod rows (author): STAT499 is Minions of Destruction (PD2 gave them the Shrieking Terrors code), so the "Cold with Shrieking Terrors" lines are gone and Minions give Poison 95 (also Fire 75 on Blood Moon, Fallen Gardens, Warlord of Blood and Imperial Palace, Phys 50 on Imperial Palace); Ghost poison is 50, which only tops Outer Void's 30 (as do Vampire Lords); Souls give Imperial Palace Magic 25. `!STAT360>0` (no resistances on corrupted maps) now also on t18, t29, t2a, t35, t3b | 140 |
+| Guild Halls | Done: MAPID 202-206 in `Alias[TOWN]`; the town gamble rule (210) also takes TOWN, so if the hall's "Anya and Gheed" (guild tier 4, S14 string table) gamble there, those items don't get the Gheed-event lines. Whether they gamble there: not checked in game | 040, 210 |
+| Corruption changes | Done (S14 CubeMain.txt: same ids, new outcomes): 48 = repair durability + 50-80% ED, a gray "Rep" (Repair Durability block) and its ED on the ED lines; 34 on boots/gloves/belts = half freeze duration (UNI/SET Hfd line; rep-life lines only for helms, which fixes a "0drain"); chest 62 = Reduced Curse Duration (rcd line for MAG/RARE/CRAFT) | 300 |
+| New runewords | Done: 230 notes (Finesse 3os chests, Deception 3os helms, Madness every 4os weapon, Jealousy 3os `amf`), rune notes in 110 (Madness on Sur/Mal/Vex, Deception on Fal, Jealousy on Lo/Gul), 305 regenerated. Bases (220): eth +3 `amf` with 0 or 3 sockets and eth 4os Ettin Axe, Berserker Axe, Scourge, Phase Blade show on levels 0-7, with ED 15+ on 8-12 | 110, 220, 230, 305 |
+| Max sockets 2 to 3 (`spl plt fld xui xea xla xtu ulm uhl amf`) | Done: 230 C:3 values and "upgrade first" list (adds `hlm xlm fhl xhl`, drops the seven bases); 3os Ghost/Serpentskin/Demonhide/Trellised like Cuirass/Mesh and 3os Armet/Giant Conch like Spired Helm/Corona (210). Also fixed `spk`/`xpk` to C:3 (wrong since before S14) | 210, 230 |
+| Jewel prefixes (+2-5% elemental, +2-3% magic skill damage) | Done: MAG/RARE jewel tags in the large charm look (`cm2`, 240) | 250 |
+| Curse proc levels | Done: Amplify Damage / Lower Resist proc tags show the S14 levels (11/19/27 and 1/1/6) | 300 |
+| Alternate skins (Special Edition) | No tag (author) | - |
+| New map event "The Bitter Depths" (area 207) | Work in progress in the beta | 145 |
 
 Use `python tools/explain_item.py` to see which rules an item hits before and after a change.
+
+## Closed beta: to circle back to
+- 145: the "+X% Fire/Cold/Light/Poison Damage" lines for the new maps, after testing.
+- 145: the red "Additional Boss" list, after seeing the three new map bosses.
+- 140: Hell Bovines, Reanimated Horde and Stygian Dolls have no map-mod row. The legend's values match reanimatedhorde6 (in game "Unholy Corpse") and bonefetish6 ("Undead Stygian Doll"; bonefetish7 "Undead Soul Killer" is the same), and every hellbovine row has Phys 50. Check in game which monsters those map mods add. If it is these rows: Dolls give Imperial Palace Phys 33, Hell Bovines give it Magic 33 and give Outer Void Poison 33 (hellbovine) or 65 (hellbovineMap/Mage).
+- 160 unique tiers (author's flags): Warshrike (review); up: Sage's Defiance, Stalker's Cull, Frostburn, Wraith Flight, Uldyssian's Awakening, Shadow Killer; down: Whispering Mirage; Cliff Killer and Mageslayer to minimal?; Skyfall (proc fix). Warriv's Warder and Spectral Plate: community review (default look until then).
+- Roll picks (`pick_rolls.bat`, `pick_runewords.bat`): CHOOSE items (Lycander's Flank, Stoneraven, Titan's Revenge, True Silver, Zerae's Resolve, Spectral Plate, Warriv's Warder); picks naming rolls the item lost in S14 (Rogue's Bow `sk22`, now +2-3 Multiple Shot `sk12`; Stalker's Cull `ds`; Whispering Mirage `stat425`; Pus Spitter `allsk`; Blackhand Key `clsk2`; Gloom `fhr`); looks still needed: crit multiplier (`stat256`: Deception, Stalker's Cull, Warshrike), Multiple Shot (`sk12`), the Dodge oskill (`os13`, Warriv's Warder).
+- BH's affix level formula (`GetAffixLevel` still subtracts qlvl/2): asked in `docs/dev-feedback.md`; then 190 (unidentified rare chests/shields at levels 10 and 12), 340 and the reroll levels in 240/250.
+- Next beta update (affixes: rare-only affixes, max res on shields/belts, gloves and helm ED, circlets): re-diff Live vs Beta, then 190, 300, 350/360.
+- Zhar's Sanctum's area level: the data says 87; the filter keeps 89 (author).
 
 ## Closed beta: unique/set roll tags to check in game
 

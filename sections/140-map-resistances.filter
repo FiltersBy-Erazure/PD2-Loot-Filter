@@ -1,15 +1,25 @@
 // =========================================================================
-// Season 13 Map Resistance Display (Per-Map, Element-by-Element)
+// Season 14 Map Resistance Display (Per-Map, Element-by-Element)
 // =========================================================================
 //
+// S14: every block checked against the S14 game data (2026-10-10). A map item's start area is its Misc.txt
+// "len"; the values are the highest hell resistances (MonStats.txt) of the monsters its areas spawn
+// (Levels.txt nmon lists). Multi-area maps count every area with monsters: Warlord of Blood 181-182,
+// City of Ureh 195-196, Djinn's Domain 197-198 (not the Wishing Well's list), Zhar's Sanctum 177-179
+// (176 is the portal entrance).
+//
 // Guest Monster Resistance Values:
-//   STAT439 = Vampire Lords     (Phys 75%, Cold 75%)
+//   STAT439 = Vampire Lords     (Phys 75%, Cold 75%, Poison 50%)
 //   STAT440 = Hell Bovines      (Phys 50%)
 //   STAT441 = Reanimated        (Phys 50%, Magic 50%, Fire 75%, Poison 80%)
-//   STAT442 = Ghosts            (Phys 50%, Magic 50%, Light 65%, Poison 95%)
+//   STAT442 = Ghosts            (Phys 50%, Magic 50%, Light 65%, Poison 50%)
 //   STAT437 = Dolls             (Poison 80%)
-//   STAT470 = Souls             (Light 80%, Poison 75%)
-//   STAT499 = Shrieking Terrors (Cold 80%)
+//   STAT470 = Souls             (Magic 25%, Light 80%, Poison 75%)
+//   STAT499 = Minions of Destruction (Phys 50%, Fire 75%, Poison 95%)
+//   S14: Vampire Lords, Ghosts, Souls and Minions of Destruction are the hell resistances of the game data's
+//   map-mod monsters (vampire8MapMod Dark Lord, wraithMapMod, willowisp1MapMod, baalminion3MapMod; PD2 gave
+//   the Shrieking Terrors code to Minions of Destruction). Hell Bovines, Reanimated and Dolls have no map-mod
+//   row; their values match hellbovine*, reanimatedhorde6 (Unholy Corpse) and bonefetish6 (Undead Stygian Doll).
 //
 // File order (top-to-bottom): Phys, Magic, Poison, Cold, Lightning, Fire
 // Each line prepends via %CONTINUE%, visual order: Fire * Light * Cold * Psn * Magic * Phys
@@ -25,11 +35,10 @@ ItemDisplay[t34 !STAT360>0]:%NAME%{%CL%%WHITE%Highest Resistances:%CL%%NAME%}%CO
 ItemDisplay[t34 STAT439>0 !STAT360>0]:%NAME%{%GOLD%75%%NAME%}%CONTINUE%// Phys with Vampire Lords (75)
 ItemDisplay[t34 !STAT439>0 !STAT360>0]:%NAME%{%GOLD%50%%NAME%}%CONTINUE%// Phys base (50)
 ItemDisplay[t34 !STAT360>0]:%NAME%{%ORANGE%50% %WHITE%* %NAME%}%CONTINUE%// Magic 50
-ItemDisplay[t34 STAT442>0 !STAT360>0]:%NAME%{%DARK_GREEN%95% %WHITE%* %NAME%}%CONTINUE%// Poison with Ghosts (95)
-ItemDisplay[t34 !STAT442>0 (STAT441>0 OR STAT437>0) !STAT360>0]:%NAME%{%DARK_GREEN%80% %WHITE%* %NAME%}%CONTINUE%// Poison with Reanimated/Dolls (80)
-ItemDisplay[t34 !STAT442>0 !STAT441>0 !STAT437>0 !STAT360>0]:%NAME%{%DARK_GREEN%75% %WHITE%* %NAME%}%CONTINUE%// Poison base (75)
-ItemDisplay[t34 STAT499>0 !STAT360>0]:%NAME%{%BLUE%80% %WHITE%* %NAME%}%CONTINUE%// Cold with Shrieking Terrors (80)
-ItemDisplay[t34 !STAT499>0 !STAT360>0]:%NAME%{%BLUE%75% %WHITE%* %NAME%}%CONTINUE%// Cold base (75)
+ItemDisplay[t34 STAT499>0 !STAT360>0]:%NAME%{%DARK_GREEN%95% %WHITE%* %NAME%}%CONTINUE%// Poison with Minions of Destruction (95)
+ItemDisplay[t34 !STAT499>0 (STAT441>0 OR STAT437>0) !STAT360>0]:%NAME%{%DARK_GREEN%80% %WHITE%* %NAME%}%CONTINUE%// Poison with Reanimated/Dolls (80)
+ItemDisplay[t34 !STAT499>0 !STAT441>0 !STAT437>0 !STAT360>0]:%NAME%{%DARK_GREEN%75% %WHITE%* %NAME%}%CONTINUE%// Poison base (75)
+ItemDisplay[t34 !STAT360>0]:%NAME%{%BLUE%75% %WHITE%* %NAME%}%CONTINUE%// Cold base (75)
 ItemDisplay[t34]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
 ItemDisplay[t34]:%NAME%{%YELLOW%120%%NAME%}%CONTINUE%// Light 120
 ItemDisplay[t34]:%NAME%{%RED%120% %WHITE%* %NAME%}%CONTINUE%// Fire 120
@@ -51,8 +60,7 @@ ItemDisplay[t22]:%NAME%{%BLUE%120% %WHITE%* %NAME%}%CONTINUE%// Cold 120
 // S13: P=115 M=50 F=75 L=75 C=75 Psn=120
 ItemDisplay[t24 !STAT360>0]:%NAME%{%CL%%WHITE%Highest Resistances:%CL%%NAME%}%CONTINUE%//
 ItemDisplay[t24 !STAT360>0]:%NAME%{%ORANGE%50%%NAME%}%CONTINUE%// Magic 50
-ItemDisplay[t24 STAT499>0 !STAT360>0]:%NAME%{%BLUE%80% %WHITE%* %NAME%}%CONTINUE%// Cold with Shrieking Terrors (80)
-ItemDisplay[t24 !STAT499>0 !STAT360>0]:%NAME%{%BLUE%75% %WHITE%* %NAME%}%CONTINUE%// Cold base (75)
+ItemDisplay[t24 !STAT360>0]:%NAME%{%BLUE%75% %WHITE%* %NAME%}%CONTINUE%// Cold base (75)
 ItemDisplay[t24 STAT470>0 !STAT360>0]:%NAME%{%YELLOW%80% %WHITE%* %NAME%}%CONTINUE%// Light with Souls (80)
 ItemDisplay[t24 !STAT470>0 !STAT360>0]:%NAME%{%YELLOW%75% %WHITE%* %NAME%}%CONTINUE%// Light base (75)
 ItemDisplay[t24 !STAT360>0]:%NAME%{%RED%75% %WHITE%* %NAME%}%CONTINUE%// Fire 75
@@ -63,10 +71,9 @@ ItemDisplay[t24]:%NAME%{%DARK_GREEN%120% %WHITE%* %NAME%}%CONTINUE%// Poison 120
 // ===== Fall of Caldeum (t36) =====
 // S13: P=115 M=105 F=75 L=120 C=75 Psn=80
 ItemDisplay[t36 !STAT360>0]:%NAME%{%CL%%WHITE%Highest Resistances:%CL%%NAME%}%CONTINUE%//
-ItemDisplay[t36 STAT442>0 !STAT360>0]:%NAME%{%DARK_GREEN%95%%NAME%}%CONTINUE%// Poison with Ghosts (95)
-ItemDisplay[t36 !STAT442>0 !STAT360>0]:%NAME%{%DARK_GREEN%80%%NAME%}%CONTINUE%// Poison base (80)
-ItemDisplay[t36 STAT499>0 !STAT360>0]:%NAME%{%BLUE%80% %WHITE%* %NAME%}%CONTINUE%// Cold with Shrieking Terrors (80)
-ItemDisplay[t36 !STAT499>0 !STAT360>0]:%NAME%{%BLUE%75% %WHITE%* %NAME%}%CONTINUE%// Cold base (75)
+ItemDisplay[t36 STAT499>0 !STAT360>0]:%NAME%{%DARK_GREEN%95%%NAME%}%CONTINUE%// Poison with Minions of Destruction (95)
+ItemDisplay[t36 !STAT499>0 !STAT360>0]:%NAME%{%DARK_GREEN%80%%NAME%}%CONTINUE%// Poison base (80)
+ItemDisplay[t36 !STAT360>0]:%NAME%{%BLUE%75% %WHITE%* %NAME%}%CONTINUE%// Cold base (75)
 ItemDisplay[t36 !STAT360>0]:%NAME%{%RED%75% %WHITE%* %NAME%}%CONTINUE%// Fire 75
 ItemDisplay[t36]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
 ItemDisplay[t36]:%NAME%{%GOLD%115%%NAME%}%CONTINUE%// Phys 115
@@ -79,8 +86,7 @@ ItemDisplay[t21 !STAT360>0]:%NAME%{%CL%%WHITE%Highest Resistances:%CL%%NAME%}%CO
 ItemDisplay[t21 STAT439>0 !STAT360>0]:%NAME%{%GOLD%75%%NAME%}%CONTINUE%// Phys with Vampire Lords (75)
 ItemDisplay[t21 !STAT439>0 !STAT360>0]:%NAME%{%GOLD%50%%NAME%}%CONTINUE%// Phys base (50)
 ItemDisplay[t21 !STAT360>0]:%NAME%{%ORANGE%50% %WHITE%* %NAME%}%CONTINUE%// Magic 50
-ItemDisplay[t21 STAT499>0 !STAT360>0]:%NAME%{%BLUE%80% %WHITE%* %NAME%}%CONTINUE%// Cold with Shrieking Terrors (80)
-ItemDisplay[t21 !STAT499>0 !STAT360>0]:%NAME%{%BLUE%75% %WHITE%* %NAME%}%CONTINUE%// Cold base (75)
+ItemDisplay[t21 !STAT360>0]:%NAME%{%BLUE%75% %WHITE%* %NAME%}%CONTINUE%// Cold base (75)
 ItemDisplay[t21 !STAT360>0]:%NAME%{%YELLOW%80% %WHITE%* %NAME%}%CONTINUE%// Light 80
 ItemDisplay[t21]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
 ItemDisplay[t21]:%NAME%{%DARK_GREEN%120%%NAME%}%CONTINUE%// Poison 120
@@ -91,9 +97,9 @@ ItemDisplay[t21]:%NAME%{%RED%120% %WHITE%* %NAME%}%CONTINUE%// Fire 120
 ItemDisplay[t26 !STAT360>0]:%NAME%{%CL%%WHITE%Highest Resistances:%CL%%NAME%}%CONTINUE%//
 ItemDisplay[t26 STAT439>0 !STAT360>0]:%NAME%{%GOLD%75%%NAME%}%CONTINUE%// Phys with Vampire Lords (75)
 ItemDisplay[t26 !STAT439>0 !STAT360>0]:%NAME%{%GOLD%50%%NAME%}%CONTINUE%// Phys base (50)
-ItemDisplay[t26 STAT442>0 !STAT360>0]:%NAME%{%DARK_GREEN%95% %WHITE%* %NAME%}%CONTINUE%// Poison with Ghosts (95)
-ItemDisplay[t26 !STAT442>0 (STAT441>0 OR STAT437>0) !STAT360>0]:%NAME%{%DARK_GREEN%80% %WHITE%* %NAME%}%CONTINUE%// Poison with Reanimated/Dolls (80)
-ItemDisplay[t26 !STAT442>0 !STAT441>0 !STAT437>0 !STAT360>0]:%NAME%{%DARK_GREEN%75% %WHITE%* %NAME%}%CONTINUE%// Poison base (75)
+ItemDisplay[t26 STAT499>0 !STAT360>0]:%NAME%{%DARK_GREEN%95% %WHITE%* %NAME%}%CONTINUE%// Poison with Minions of Destruction (95)
+ItemDisplay[t26 !STAT499>0 (STAT441>0 OR STAT437>0) !STAT360>0]:%NAME%{%DARK_GREEN%80% %WHITE%* %NAME%}%CONTINUE%// Poison with Reanimated/Dolls (80)
+ItemDisplay[t26 !STAT499>0 !STAT441>0 !STAT437>0 !STAT360>0]:%NAME%{%DARK_GREEN%75% %WHITE%* %NAME%}%CONTINUE%// Poison base (75)
 ItemDisplay[t26 !STAT360>0]:%NAME%{%BLUE%85% %WHITE%* %NAME%}%CONTINUE%// Cold 85
 ItemDisplay[t26 STAT470>0 !STAT360>0]:%NAME%{%YELLOW%80% %WHITE%* %NAME%}%CONTINUE%// Light with Souls (80)
 ItemDisplay[t26 !STAT470>0 !STAT360>0]:%NAME%{%YELLOW%75% %WHITE%* %NAME%}%CONTINUE%// Light base (75)
@@ -105,8 +111,8 @@ ItemDisplay[t26]:%NAME%{%RED%120% %WHITE%* %NAME%}%CONTINUE%// Fire 120
 // S13: P=115 M=50 F=75 L=75 C=120 Psn=80
 ItemDisplay[t11 !STAT360>0]:%NAME%{%CL%%WHITE%Highest Resistances:%CL%%NAME%}%CONTINUE%//
 ItemDisplay[t11 !STAT360>0]:%NAME%{%ORANGE%50%%NAME%}%CONTINUE%// Magic 50
-ItemDisplay[t11 STAT442>0 !STAT360>0]:%NAME%{%DARK_GREEN%95% %WHITE%* %NAME%}%CONTINUE%// Poison with Ghosts (95)
-ItemDisplay[t11 !STAT442>0 !STAT360>0]:%NAME%{%DARK_GREEN%80% %WHITE%* %NAME%}%CONTINUE%// Poison base (80)
+ItemDisplay[t11 STAT499>0 !STAT360>0]:%NAME%{%DARK_GREEN%95% %WHITE%* %NAME%}%CONTINUE%// Poison with Minions of Destruction (95)
+ItemDisplay[t11 !STAT499>0 !STAT360>0]:%NAME%{%DARK_GREEN%80% %WHITE%* %NAME%}%CONTINUE%// Poison base (80)
 ItemDisplay[t11 STAT470>0 !STAT360>0]:%NAME%{%YELLOW%80% %WHITE%* %NAME%}%CONTINUE%// Light with Souls (80)
 ItemDisplay[t11 !STAT470>0 !STAT360>0]:%NAME%{%YELLOW%75% %WHITE%* %NAME%}%CONTINUE%// Light base (75)
 ItemDisplay[t11 !STAT360>0]:%NAME%{%RED%75% %WHITE%* %NAME%}%CONTINUE%// Fire 75
@@ -119,13 +125,41 @@ ItemDisplay[t11]:%NAME%{%BLUE%120% %WHITE%* %NAME%}%CONTINUE%// Cold 120
 ItemDisplay[t33 !STAT360>0]:%NAME%{%CL%%WHITE%Highest Resistances:%CL%%NAME%}%CONTINUE%//
 ItemDisplay[t33 STAT439>0 !STAT360>0]:%NAME%{%GOLD%75%%NAME%}%CONTINUE%// Phys with Vampire Lords (75)
 ItemDisplay[t33 !STAT439>0 !STAT360>0]:%NAME%{%GOLD%55%%NAME%}%CONTINUE%// Phys base (55)
-ItemDisplay[t33 STAT442>0 !STAT360>0]:%NAME%{%DARK_GREEN%95% %WHITE%* %NAME%}%CONTINUE%// Poison with Ghosts (95)
-ItemDisplay[t33 !STAT442>0 !STAT360>0]:%NAME%{%DARK_GREEN%80% %WHITE%* %NAME%}%CONTINUE%// Poison base (80)
+ItemDisplay[t33 STAT499>0 !STAT360>0]:%NAME%{%DARK_GREEN%95% %WHITE%* %NAME%}%CONTINUE%// Poison with Minions of Destruction (95)
+ItemDisplay[t33 !STAT499>0 !STAT360>0]:%NAME%{%DARK_GREEN%80% %WHITE%* %NAME%}%CONTINUE%// Poison base (80)
 ItemDisplay[t33 !STAT360>0]:%NAME%{%YELLOW%80% %WHITE%* %NAME%}%CONTINUE%// Light 80
 ItemDisplay[t33 !STAT360>0]:%NAME%{%RED%75% %WHITE%* %NAME%}%CONTINUE%// Fire 75
 ItemDisplay[t33]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
 ItemDisplay[t33]:%NAME%{%ORANGE%105%%NAME%}%CONTINUE%// Magic 105
 ItemDisplay[t33]:%NAME%{%BLUE%120% %WHITE%* %NAME%}%CONTINUE%// Cold 120
+
+// ===== Poisoned Well (t18) =====
+// S14: P=60 M=55 F=75 L=75 C=75 Psn=75 (S14 game data: Levels.txt monsters, MonStats.txt hell resistances; no immunities)
+ItemDisplay[t18 !STAT360>0]:%NAME%{%CL%%WHITE%Highest Resistances:%CL%%NAME%}%CONTINUE%//
+ItemDisplay[t18 STAT439>0 !STAT360>0]:%NAME%{%GOLD%75%%NAME%}%CONTINUE%// Phys with Vampire Lords (75)
+ItemDisplay[t18 !STAT439>0 !STAT360>0]:%NAME%{%GOLD%60%%NAME%}%CONTINUE%// Phys base (60)
+ItemDisplay[t18 !STAT360>0]:%NAME%{%ORANGE%55% %WHITE%* %NAME%}%CONTINUE%// Magic 55
+ItemDisplay[t18 STAT499>0 !STAT360>0]:%NAME%{%DARK_GREEN%95% %WHITE%* %NAME%}%CONTINUE%// Poison with Minions of Destruction (95)
+ItemDisplay[t18 !STAT499>0 (STAT441>0 OR STAT437>0) !STAT360>0]:%NAME%{%DARK_GREEN%80% %WHITE%* %NAME%}%CONTINUE%// Poison with Reanimated/Dolls (80)
+ItemDisplay[t18 !STAT499>0 !STAT441>0 !STAT437>0 !STAT360>0]:%NAME%{%DARK_GREEN%75% %WHITE%* %NAME%}%CONTINUE%// Poison base (75)
+ItemDisplay[t18 !STAT360>0]:%NAME%{%BLUE%75% %WHITE%* %NAME%}%CONTINUE%// Cold base (75)
+ItemDisplay[t18 STAT470>0 !STAT360>0]:%NAME%{%YELLOW%80% %WHITE%* %NAME%}%CONTINUE%// Light with Souls (80)
+ItemDisplay[t18 !STAT470>0 !STAT360>0]:%NAME%{%YELLOW%75% %WHITE%* %NAME%}%CONTINUE%// Light base (75)
+ItemDisplay[t18 !STAT360>0]:%NAME%{%RED%75% %WHITE%* %NAME%}%CONTINUE%// Fire 75
+
+// ===== Sanatorium (t14) =====
+// S13: P=60 M=105 F=75 L=120 C=75 Psn=75
+ItemDisplay[t14 !STAT360>0]:%NAME%{%CL%%WHITE%Highest Resistances:%CL%%NAME%}%CONTINUE%//
+ItemDisplay[t14 STAT439>0 !STAT360>0]:%NAME%{%GOLD%75%%NAME%}%CONTINUE%// Phys with Vampire Lords (75)
+ItemDisplay[t14 !STAT439>0 !STAT360>0]:%NAME%{%GOLD%60%%NAME%}%CONTINUE%// Phys base (60)
+ItemDisplay[t14 STAT499>0 !STAT360>0]:%NAME%{%DARK_GREEN%95% %WHITE%* %NAME%}%CONTINUE%// Poison with Minions of Destruction (95)
+ItemDisplay[t14 !STAT499>0 (STAT441>0 OR STAT437>0) !STAT360>0]:%NAME%{%DARK_GREEN%80% %WHITE%* %NAME%}%CONTINUE%// Poison with Reanimated/Dolls (80)
+ItemDisplay[t14 !STAT499>0 !STAT441>0 !STAT437>0 !STAT360>0]:%NAME%{%DARK_GREEN%75% %WHITE%* %NAME%}%CONTINUE%// Poison base (75)
+ItemDisplay[t14 !STAT360>0]:%NAME%{%BLUE%75% %WHITE%* %NAME%}%CONTINUE%// Cold base (75)
+ItemDisplay[t14 !STAT360>0]:%NAME%{%RED%75% %WHITE%* %NAME%}%CONTINUE%// Fire 75
+ItemDisplay[t14]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
+ItemDisplay[t14]:%NAME%{%ORANGE%105%%NAME%}%CONTINUE%// Magic 105
+ItemDisplay[t14]:%NAME%{%YELLOW%120% %WHITE%* %NAME%}%CONTINUE%// Light 120
 
 // ========================= Tier 2 Maps (Area Level 88) =========================
 
@@ -134,8 +168,7 @@ ItemDisplay[t33]:%NAME%{%BLUE%120% %WHITE%* %NAME%}%CONTINUE%// Cold 120
 ItemDisplay[t16 !STAT360>0]:%NAME%{%CL%%WHITE%Highest Resistances:%CL%%NAME%}%CONTINUE%//
 ItemDisplay[t16 STAT439>0 !STAT360>0]:%NAME%{%GOLD%75%%NAME%}%CONTINUE%// Phys with Vampire Lords (75)
 ItemDisplay[t16 !STAT439>0 !STAT360>0]:%NAME%{%GOLD%60%%NAME%}%CONTINUE%// Phys base (60)
-ItemDisplay[t16 STAT499>0 !STAT360>0]:%NAME%{%BLUE%80% %WHITE%* %NAME%}%CONTINUE%// Cold with Shrieking Terrors (80)
-ItemDisplay[t16 !STAT499>0 !STAT360>0]:%NAME%{%BLUE%75% %WHITE%* %NAME%}%CONTINUE%// Cold base (75)
+ItemDisplay[t16 !STAT360>0]:%NAME%{%BLUE%75% %WHITE%* %NAME%}%CONTINUE%// Cold base (75)
 ItemDisplay[t16 STAT470>0 !STAT360>0]:%NAME%{%YELLOW%80% %WHITE%* %NAME%}%CONTINUE%// Light with Souls (80)
 ItemDisplay[t16 !STAT470>0 !STAT360>0]:%NAME%{%YELLOW%75% %WHITE%* %NAME%}%CONTINUE%// Light base (75)
 ItemDisplay[t16 !STAT360>0]:%NAME%{%RED%75% %WHITE%* %NAME%}%CONTINUE%// Fire 75
@@ -147,11 +180,10 @@ ItemDisplay[t16]:%NAME%{%DARK_GREEN%120% %WHITE%* %NAME%}%CONTINUE%// Poison 120
 // S13: P=115 M=50 F=75 L=120 C=75 Psn=75
 ItemDisplay[t12 !STAT360>0]:%NAME%{%CL%%WHITE%Highest Resistances:%CL%%NAME%}%CONTINUE%//
 ItemDisplay[t12 !STAT360>0]:%NAME%{%ORANGE%50%%NAME%}%CONTINUE%// Magic 50
-ItemDisplay[t12 STAT442>0 !STAT360>0]:%NAME%{%DARK_GREEN%95% %WHITE%* %NAME%}%CONTINUE%// Poison with Ghosts (95)
-ItemDisplay[t12 !STAT442>0 (STAT441>0 OR STAT437>0) !STAT360>0]:%NAME%{%DARK_GREEN%80% %WHITE%* %NAME%}%CONTINUE%// Poison with Reanimated/Dolls (80)
-ItemDisplay[t12 !STAT442>0 !STAT441>0 !STAT437>0 !STAT360>0]:%NAME%{%DARK_GREEN%75% %WHITE%* %NAME%}%CONTINUE%// Poison base (75)
-ItemDisplay[t12 STAT499>0 !STAT360>0]:%NAME%{%BLUE%80% %WHITE%* %NAME%}%CONTINUE%// Cold with Shrieking Terrors (80)
-ItemDisplay[t12 !STAT499>0 !STAT360>0]:%NAME%{%BLUE%75% %WHITE%* %NAME%}%CONTINUE%// Cold base (75)
+ItemDisplay[t12 STAT499>0 !STAT360>0]:%NAME%{%DARK_GREEN%95% %WHITE%* %NAME%}%CONTINUE%// Poison with Minions of Destruction (95)
+ItemDisplay[t12 !STAT499>0 (STAT441>0 OR STAT437>0) !STAT360>0]:%NAME%{%DARK_GREEN%80% %WHITE%* %NAME%}%CONTINUE%// Poison with Reanimated/Dolls (80)
+ItemDisplay[t12 !STAT499>0 !STAT441>0 !STAT437>0 !STAT360>0]:%NAME%{%DARK_GREEN%75% %WHITE%* %NAME%}%CONTINUE%// Poison base (75)
+ItemDisplay[t12 !STAT360>0]:%NAME%{%BLUE%75% %WHITE%* %NAME%}%CONTINUE%// Cold base (75)
 ItemDisplay[t12 !STAT360>0]:%NAME%{%RED%75% %WHITE%* %NAME%}%CONTINUE%// Fire 75
 ItemDisplay[t12]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
 ItemDisplay[t12]:%NAME%{%GOLD%115%%NAME%}%CONTINUE%// Phys 115
@@ -163,9 +195,9 @@ ItemDisplay[t3a !STAT360>0]:%NAME%{%CL%%WHITE%Highest Resistances:%CL%%NAME%}%CO
 ItemDisplay[t3a STAT439>0 !STAT360>0]:%NAME%{%GOLD%75%%NAME%}%CONTINUE%// Phys with Vampire Lords (75)
 ItemDisplay[t3a !STAT439>0 !STAT360>0]:%NAME%{%GOLD%50%%NAME%}%CONTINUE%// Phys base (50)
 ItemDisplay[t3a !STAT360>0]:%NAME%{%ORANGE%50% %WHITE%* %NAME%}%CONTINUE%// Magic 50
-ItemDisplay[t3a STAT442>0 !STAT360>0]:%NAME%{%DARK_GREEN%95% %WHITE%* %NAME%}%CONTINUE%// Poison with Ghosts (95)
-ItemDisplay[t3a !STAT442>0 (STAT441>0 OR STAT437>0) !STAT360>0]:%NAME%{%DARK_GREEN%80% %WHITE%* %NAME%}%CONTINUE%// Poison with Reanimated/Dolls (80)
-ItemDisplay[t3a !STAT442>0 !STAT441>0 !STAT437>0 !STAT360>0]:%NAME%{%DARK_GREEN%75% %WHITE%* %NAME%}%CONTINUE%// Poison base (75)
+ItemDisplay[t3a STAT499>0 !STAT360>0]:%NAME%{%DARK_GREEN%95% %WHITE%* %NAME%}%CONTINUE%// Poison with Minions of Destruction (95)
+ItemDisplay[t3a !STAT499>0 (STAT441>0 OR STAT437>0) !STAT360>0]:%NAME%{%DARK_GREEN%80% %WHITE%* %NAME%}%CONTINUE%// Poison with Reanimated/Dolls (80)
+ItemDisplay[t3a !STAT499>0 !STAT441>0 !STAT437>0 !STAT360>0]:%NAME%{%DARK_GREEN%75% %WHITE%* %NAME%}%CONTINUE%// Poison base (75)
 ItemDisplay[t3a STAT470>0 !STAT360>0]:%NAME%{%YELLOW%80% %WHITE%* %NAME%}%CONTINUE%// Light with Souls (80)
 ItemDisplay[t3a !STAT470>0 !STAT360>0]:%NAME%{%YELLOW%75% %WHITE%* %NAME%}%CONTINUE%// Light base (75)
 ItemDisplay[t3a]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
@@ -177,8 +209,8 @@ ItemDisplay[t3a]:%NAME%{%RED%120% %WHITE%* %NAME%}%CONTINUE%// Fire 120
 ItemDisplay[t37 !STAT360>0]:%NAME%{%CL%%WHITE%Highest Resistances:%CL%%NAME%}%CONTINUE%//
 ItemDisplay[t37 STAT439>0 !STAT360>0]:%NAME%{%GOLD%75%%NAME%}%CONTINUE%// Phys with Vampire Lords (75)
 ItemDisplay[t37 !STAT439>0 !STAT360>0]:%NAME%{%GOLD%50%%NAME%}%CONTINUE%// Phys base (50)
-ItemDisplay[t37 STAT442>0 !STAT360>0]:%NAME%{%DARK_GREEN%95% %WHITE%* %NAME%}%CONTINUE%// Poison with Ghosts (95)
-ItemDisplay[t37 !STAT442>0 !STAT360>0]:%NAME%{%DARK_GREEN%80% %WHITE%* %NAME%}%CONTINUE%// Poison base (80)
+ItemDisplay[t37 STAT499>0 !STAT360>0]:%NAME%{%DARK_GREEN%95% %WHITE%* %NAME%}%CONTINUE%// Poison with Minions of Destruction (95)
+ItemDisplay[t37 !STAT499>0 !STAT360>0]:%NAME%{%DARK_GREEN%80% %WHITE%* %NAME%}%CONTINUE%// Poison base (80)
 ItemDisplay[t37 STAT470>0 !STAT360>0]:%NAME%{%YELLOW%80% %WHITE%* %NAME%}%CONTINUE%// Light with Souls (80)
 ItemDisplay[t37 !STAT470>0 !STAT360>0]:%NAME%{%YELLOW%75% %WHITE%* %NAME%}%CONTINUE%// Light base (75)
 ItemDisplay[t37 !STAT360>0]:%NAME%{%RED%75% %WHITE%* %NAME%}%CONTINUE%// Fire 75
@@ -199,28 +231,13 @@ ItemDisplay[t25]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
 ItemDisplay[t25]:%NAME%{%DARK_GREEN%120%%NAME%}%CONTINUE%// Poison 120
 ItemDisplay[t25]:%NAME%{%RED%120% %WHITE%* %NAME%}%CONTINUE%// Fire 120
 
-// ===== Sanatorium (t14) =====
-// S13: P=60 M=105 F=75 L=120 C=75 Psn=75
-ItemDisplay[t14 !STAT360>0]:%NAME%{%CL%%WHITE%Highest Resistances:%CL%%NAME%}%CONTINUE%//
-ItemDisplay[t14 STAT439>0 !STAT360>0]:%NAME%{%GOLD%75%%NAME%}%CONTINUE%// Phys with Vampire Lords (75)
-ItemDisplay[t14 !STAT439>0 !STAT360>0]:%NAME%{%GOLD%60%%NAME%}%CONTINUE%// Phys base (60)
-ItemDisplay[t14 STAT442>0 !STAT360>0]:%NAME%{%DARK_GREEN%95% %WHITE%* %NAME%}%CONTINUE%// Poison with Ghosts (95)
-ItemDisplay[t14 !STAT442>0 (STAT441>0 OR STAT437>0) !STAT360>0]:%NAME%{%DARK_GREEN%80% %WHITE%* %NAME%}%CONTINUE%// Poison with Reanimated/Dolls (80)
-ItemDisplay[t14 !STAT442>0 !STAT441>0 !STAT437>0 !STAT360>0]:%NAME%{%DARK_GREEN%75% %WHITE%* %NAME%}%CONTINUE%// Poison base (75)
-ItemDisplay[t14 STAT499>0 !STAT360>0]:%NAME%{%BLUE%80% %WHITE%* %NAME%}%CONTINUE%// Cold with Shrieking Terrors (80)
-ItemDisplay[t14 !STAT499>0 !STAT360>0]:%NAME%{%BLUE%75% %WHITE%* %NAME%}%CONTINUE%// Cold base (75)
-ItemDisplay[t14 !STAT360>0]:%NAME%{%RED%75% %WHITE%* %NAME%}%CONTINUE%// Fire 75
-ItemDisplay[t14]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
-ItemDisplay[t14]:%NAME%{%ORANGE%105%%NAME%}%CONTINUE%// Magic 105
-ItemDisplay[t14]:%NAME%{%YELLOW%120% %WHITE%* %NAME%}%CONTINUE%// Light 120
-
 // ===== Canyon of Sescheron (t38) =====
 // S13: P=115 M=55 F=120 L=75 C=80 Psn=75
 ItemDisplay[t38 !STAT360>0]:%NAME%{%CL%%WHITE%Highest Resistances:%CL%%NAME%}%CONTINUE%//
 ItemDisplay[t38 !STAT360>0]:%NAME%{%ORANGE%55%%NAME%}%CONTINUE%// Magic 55
-ItemDisplay[t38 STAT442>0 !STAT360>0]:%NAME%{%DARK_GREEN%95% %WHITE%* %NAME%}%CONTINUE%// Poison with Ghosts (95)
-ItemDisplay[t38 !STAT442>0 (STAT441>0 OR STAT437>0) !STAT360>0]:%NAME%{%DARK_GREEN%80% %WHITE%* %NAME%}%CONTINUE%// Poison with Reanimated/Dolls (80)
-ItemDisplay[t38 !STAT442>0 !STAT441>0 !STAT437>0 !STAT360>0]:%NAME%{%DARK_GREEN%75% %WHITE%* %NAME%}%CONTINUE%// Poison base (75)
+ItemDisplay[t38 STAT499>0 !STAT360>0]:%NAME%{%DARK_GREEN%95% %WHITE%* %NAME%}%CONTINUE%// Poison with Minions of Destruction (95)
+ItemDisplay[t38 !STAT499>0 (STAT441>0 OR STAT437>0) !STAT360>0]:%NAME%{%DARK_GREEN%80% %WHITE%* %NAME%}%CONTINUE%// Poison with Reanimated/Dolls (80)
+ItemDisplay[t38 !STAT499>0 !STAT441>0 !STAT437>0 !STAT360>0]:%NAME%{%DARK_GREEN%75% %WHITE%* %NAME%}%CONTINUE%// Poison base (75)
 ItemDisplay[t38 !STAT360>0]:%NAME%{%BLUE%80% %WHITE%* %NAME%}%CONTINUE%// Cold 80
 ItemDisplay[t38 STAT470>0 !STAT360>0]:%NAME%{%YELLOW%80% %WHITE%* %NAME%}%CONTINUE%// Light with Souls (80)
 ItemDisplay[t38 !STAT470>0 !STAT360>0]:%NAME%{%YELLOW%75% %WHITE%* %NAME%}%CONTINUE%// Light base (75)
@@ -229,11 +246,10 @@ ItemDisplay[t38]:%NAME%{%GOLD%115%%NAME%}%CONTINUE%// Phys 115
 ItemDisplay[t38]:%NAME%{%RED%120% %WHITE%* %NAME%}%CONTINUE%// Fire 120
 
 // ===== Throne of Insanity (t32) =====
-// S13: P=115 M=75 F=75 L=75 C=75 Psn=120
+// S14: P=115 M=50 F=75 L=75 C=75 Psn=120 (magic was 75, the wiki's Demon Rascal; the game data gives impThrone 50 in S13 and S14)
 ItemDisplay[t32 !STAT360>0]:%NAME%{%CL%%WHITE%Highest Resistances:%CL%%NAME%}%CONTINUE%//
-ItemDisplay[t32 !STAT360>0]:%NAME%{%ORANGE%75%%NAME%}%CONTINUE%// Magic 75
-ItemDisplay[t32 STAT499>0 !STAT360>0]:%NAME%{%BLUE%80% %WHITE%* %NAME%}%CONTINUE%// Cold with Shrieking Terrors (80)
-ItemDisplay[t32 !STAT499>0 !STAT360>0]:%NAME%{%BLUE%75% %WHITE%* %NAME%}%CONTINUE%// Cold base (75)
+ItemDisplay[t32 !STAT360>0]:%NAME%{%ORANGE%50%%NAME%}%CONTINUE%// Magic 50
+ItemDisplay[t32 !STAT360>0]:%NAME%{%BLUE%75% %WHITE%* %NAME%}%CONTINUE%// Cold base (75)
 ItemDisplay[t32 STAT470>0 !STAT360>0]:%NAME%{%YELLOW%80% %WHITE%* %NAME%}%CONTINUE%// Light with Souls (80)
 ItemDisplay[t32 !STAT470>0 !STAT360>0]:%NAME%{%YELLOW%75% %WHITE%* %NAME%}%CONTINUE%// Light base (75)
 ItemDisplay[t32 !STAT360>0]:%NAME%{%RED%75% %WHITE%* %NAME%}%CONTINUE%// Fire 75
@@ -248,48 +264,75 @@ ItemDisplay[t17 STAT439>0 !STAT360>0]:%NAME%{%GOLD%75%%NAME%}%CONTINUE%// Phys w
 ItemDisplay[t17 !STAT439>0 !STAT360>0]:%NAME%{%GOLD%50%%NAME%}%CONTINUE%// Phys base (50)
 ItemDisplay[t17 (STAT442>0 OR STAT441>0) !STAT360>0]:%NAME%{%ORANGE%50% %WHITE%* %NAME%}%CONTINUE%// Magic with Ghosts/Reanimated (50)
 ItemDisplay[t17 !STAT442>0 !STAT441>0 !STAT360>0]:%NAME%{%ORANGE%35% %WHITE%* %NAME%}%CONTINUE%// Magic base (35)
-ItemDisplay[t17 STAT442>0 !STAT360>0]:%NAME%{%DARK_GREEN%95% %WHITE%* %NAME%}%CONTINUE%// Poison with Ghosts (95)
-ItemDisplay[t17 !STAT442>0 !STAT360>0]:%NAME%{%DARK_GREEN%85% %WHITE%* %NAME%}%CONTINUE%// Poison base (85)
+ItemDisplay[t17 STAT499>0 !STAT360>0]:%NAME%{%DARK_GREEN%95% %WHITE%* %NAME%}%CONTINUE%// Poison with Minions of Destruction (95)
+ItemDisplay[t17 !STAT499>0 !STAT360>0]:%NAME%{%DARK_GREEN%85% %WHITE%* %NAME%}%CONTINUE%// Poison base (85)
 ItemDisplay[t17 !STAT360>0]:%NAME%{%RED%75% %WHITE%* %NAME%}%CONTINUE%// Fire 75
 ItemDisplay[t17]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
 ItemDisplay[t17]:%NAME%{%BLUE%120%%NAME%}%CONTINUE%// Cold 120
 ItemDisplay[t17]:%NAME%{%YELLOW%120% %WHITE%* %NAME%}%CONTINUE%// Light 120
 
+// ===== Dark Temple (t29) =====
+// S14: P=50 M=45 F=75 L=75 C=75 Psn=75 (S14 game data: Levels.txt monsters, MonStats.txt hell resistances; no immunities)
+ItemDisplay[t29 !STAT360>0]:%NAME%{%CL%%WHITE%Highest Resistances:%CL%%NAME%}%CONTINUE%//
+ItemDisplay[t29 STAT439>0 !STAT360>0]:%NAME%{%GOLD%75%%NAME%}%CONTINUE%// Phys with Vampire Lords (75)
+ItemDisplay[t29 !STAT439>0 !STAT360>0]:%NAME%{%GOLD%50%%NAME%}%CONTINUE%// Phys base (50)
+ItemDisplay[t29 (STAT442>0 OR STAT441>0) !STAT360>0]:%NAME%{%ORANGE%50% %WHITE%* %NAME%}%CONTINUE%// Magic with Ghosts/Reanimated (50)
+ItemDisplay[t29 !STAT442>0 !STAT441>0 !STAT360>0]:%NAME%{%ORANGE%45% %WHITE%* %NAME%}%CONTINUE%// Magic base (45)
+ItemDisplay[t29 STAT499>0 !STAT360>0]:%NAME%{%DARK_GREEN%95% %WHITE%* %NAME%}%CONTINUE%// Poison with Minions of Destruction (95)
+ItemDisplay[t29 !STAT499>0 (STAT441>0 OR STAT437>0) !STAT360>0]:%NAME%{%DARK_GREEN%80% %WHITE%* %NAME%}%CONTINUE%// Poison with Reanimated/Dolls (80)
+ItemDisplay[t29 !STAT499>0 !STAT441>0 !STAT437>0 !STAT360>0]:%NAME%{%DARK_GREEN%75% %WHITE%* %NAME%}%CONTINUE%// Poison base (75)
+ItemDisplay[t29 !STAT360>0]:%NAME%{%BLUE%75% %WHITE%* %NAME%}%CONTINUE%// Cold base (75)
+ItemDisplay[t29 STAT470>0 !STAT360>0]:%NAME%{%YELLOW%80% %WHITE%* %NAME%}%CONTINUE%// Light with Souls (80)
+ItemDisplay[t29 !STAT470>0 !STAT360>0]:%NAME%{%YELLOW%75% %WHITE%* %NAME%}%CONTINUE%// Light base (75)
+ItemDisplay[t29 !STAT360>0]:%NAME%{%RED%75% %WHITE%* %NAME%}%CONTINUE%// Fire 75
+
+// ===== Descent from Mount Arreat (t2a) =====
+// S14: P=60 M=55 F=75 L=75 C=75 Psn=75 (S14 game data: Levels.txt monsters, MonStats.txt hell resistances; no immunities)
+ItemDisplay[t2a !STAT360>0]:%NAME%{%CL%%WHITE%Highest Resistances:%CL%%NAME%}%CONTINUE%//
+ItemDisplay[t2a STAT439>0 !STAT360>0]:%NAME%{%GOLD%75%%NAME%}%CONTINUE%// Phys with Vampire Lords (75)
+ItemDisplay[t2a !STAT439>0 !STAT360>0]:%NAME%{%GOLD%60%%NAME%}%CONTINUE%// Phys base (60)
+ItemDisplay[t2a !STAT360>0]:%NAME%{%ORANGE%55% %WHITE%* %NAME%}%CONTINUE%// Magic 55
+ItemDisplay[t2a STAT499>0 !STAT360>0]:%NAME%{%DARK_GREEN%95% %WHITE%* %NAME%}%CONTINUE%// Poison with Minions of Destruction (95)
+ItemDisplay[t2a !STAT499>0 (STAT441>0 OR STAT437>0) !STAT360>0]:%NAME%{%DARK_GREEN%80% %WHITE%* %NAME%}%CONTINUE%// Poison with Reanimated/Dolls (80)
+ItemDisplay[t2a !STAT499>0 !STAT441>0 !STAT437>0 !STAT360>0]:%NAME%{%DARK_GREEN%75% %WHITE%* %NAME%}%CONTINUE%// Poison base (75)
+ItemDisplay[t2a !STAT360>0]:%NAME%{%BLUE%75% %WHITE%* %NAME%}%CONTINUE%// Cold base (75)
+ItemDisplay[t2a STAT470>0 !STAT360>0]:%NAME%{%YELLOW%80% %WHITE%* %NAME%}%CONTINUE%// Light with Souls (80)
+ItemDisplay[t2a !STAT470>0 !STAT360>0]:%NAME%{%YELLOW%75% %WHITE%* %NAME%}%CONTINUE%// Light base (75)
+ItemDisplay[t2a !STAT360>0]:%NAME%{%RED%75% %WHITE%* %NAME%}%CONTINUE%// Fire 75
+
 // ========================= Tier 3 Maps (Area Level 89) =========================
 
 // ===== Blood Moon (t35) =====
 // S13: P=50 M=33 F=65 L=65 C=65 Psn=65
-ItemDisplay[t35]:%NAME%{%CL%%WHITE%Highest Resistances:%CL%%NAME%}%CONTINUE%//
-ItemDisplay[t35 STAT439>0]:%NAME%{%GOLD%75%%NAME%}%CONTINUE%// Phys with Vampire Lords (75)
-ItemDisplay[t35 !STAT439>0]:%NAME%{%GOLD%50%%NAME%}%CONTINUE%// Phys base (50)
-ItemDisplay[t35 (STAT442>0 OR STAT441>0)]:%NAME%{%ORANGE%50% %WHITE%* %NAME%}%CONTINUE%// Magic with Ghosts/Reanimated (50)
-ItemDisplay[t35 !STAT442>0 !STAT441>0]:%NAME%{%ORANGE%33% %WHITE%* %NAME%}%CONTINUE%// Magic base (33)
-ItemDisplay[t35 STAT442>0]:%NAME%{%DARK_GREEN%95% %WHITE%* %NAME%}%CONTINUE%// Poison with Ghosts (95)
-ItemDisplay[t35 !STAT442>0 (STAT441>0 OR STAT437>0)]:%NAME%{%DARK_GREEN%80% %WHITE%* %NAME%}%CONTINUE%// Poison with Reanimated/Dolls (80)
-ItemDisplay[t35 !STAT442>0 !STAT441>0 !STAT437>0 STAT470>0]:%NAME%{%DARK_GREEN%75% %WHITE%* %NAME%}%CONTINUE%// Poison with Souls (75)
-ItemDisplay[t35 !STAT442>0 !STAT441>0 !STAT437>0 !STAT470>0]:%NAME%{%DARK_GREEN%65% %WHITE%* %NAME%}%CONTINUE%// Poison base (65)
-ItemDisplay[t35 STAT499>0]:%NAME%{%BLUE%80% %WHITE%* %NAME%}%CONTINUE%// Cold with Shrieking Terrors (80)
-ItemDisplay[t35 !STAT499>0 STAT439>0]:%NAME%{%BLUE%75% %WHITE%* %NAME%}%CONTINUE%// Cold with Vampire Lords (75)
-ItemDisplay[t35 !STAT499>0 !STAT439>0]:%NAME%{%BLUE%65% %WHITE%* %NAME%}%CONTINUE%// Cold base (65)
-ItemDisplay[t35 STAT470>0]:%NAME%{%YELLOW%80% %WHITE%* %NAME%}%CONTINUE%// Light with Souls (80)
-ItemDisplay[t35 !STAT470>0]:%NAME%{%YELLOW%65% %WHITE%* %NAME%}%CONTINUE%// Light base (65)
-ItemDisplay[t35 STAT441>0]:%NAME%{%RED%75% %WHITE%* %NAME%}%CONTINUE%// Fire with Reanimated (75)
-ItemDisplay[t35 !STAT441>0]:%NAME%{%RED%65% %WHITE%* %NAME%}%CONTINUE%// Fire base (65)
+ItemDisplay[t35 !STAT360>0]:%NAME%{%CL%%WHITE%Highest Resistances:%CL%%NAME%}%CONTINUE%//
+ItemDisplay[t35 STAT439>0 !STAT360>0]:%NAME%{%GOLD%75%%NAME%}%CONTINUE%// Phys with Vampire Lords (75)
+ItemDisplay[t35 !STAT439>0 !STAT360>0]:%NAME%{%GOLD%50%%NAME%}%CONTINUE%// Phys base (50)
+ItemDisplay[t35 (STAT442>0 OR STAT441>0) !STAT360>0]:%NAME%{%ORANGE%50% %WHITE%* %NAME%}%CONTINUE%// Magic with Ghosts/Reanimated (50)
+ItemDisplay[t35 !STAT442>0 !STAT441>0 !STAT360>0]:%NAME%{%ORANGE%33% %WHITE%* %NAME%}%CONTINUE%// Magic base (33)
+ItemDisplay[t35 STAT499>0 !STAT360>0]:%NAME%{%DARK_GREEN%95% %WHITE%* %NAME%}%CONTINUE%// Poison with Minions of Destruction (95)
+ItemDisplay[t35 !STAT499>0 (STAT441>0 OR STAT437>0) !STAT360>0]:%NAME%{%DARK_GREEN%80% %WHITE%* %NAME%}%CONTINUE%// Poison with Reanimated/Dolls (80)
+ItemDisplay[t35 !STAT499>0 !STAT441>0 !STAT437>0 STAT470>0 !STAT360>0]:%NAME%{%DARK_GREEN%75% %WHITE%* %NAME%}%CONTINUE%// Poison with Souls (75)
+ItemDisplay[t35 !STAT499>0 !STAT441>0 !STAT437>0 !STAT470>0 !STAT360>0]:%NAME%{%DARK_GREEN%65% %WHITE%* %NAME%}%CONTINUE%// Poison base (65)
+ItemDisplay[t35 STAT439>0 !STAT360>0]:%NAME%{%BLUE%75% %WHITE%* %NAME%}%CONTINUE%// Cold with Vampire Lords (75)
+ItemDisplay[t35 !STAT439>0 !STAT360>0]:%NAME%{%BLUE%65% %WHITE%* %NAME%}%CONTINUE%// Cold base (65)
+ItemDisplay[t35 STAT470>0 !STAT360>0]:%NAME%{%YELLOW%80% %WHITE%* %NAME%}%CONTINUE%// Light with Souls (80)
+ItemDisplay[t35 !STAT470>0 !STAT360>0]:%NAME%{%YELLOW%65% %WHITE%* %NAME%}%CONTINUE%// Light base (65)
+ItemDisplay[t35 (STAT441>0 OR STAT499>0) !STAT360>0]:%NAME%{%RED%75% %WHITE%* %NAME%}%CONTINUE%// Fire with Reanimated/Minions of Destruction (75)
+ItemDisplay[t35 !STAT441>0 !STAT499>0 !STAT360>0]:%NAME%{%RED%65% %WHITE%* %NAME%}%CONTINUE%// Fire base (65)
 
 // ===== Kyovashad (t3b) =====
 // S13: P=66 M=50 F=75 L=75 C=75 Psn=75
-ItemDisplay[t3b]:%NAME%{%CL%%WHITE%Highest Resistances:%CL%%NAME%}%CONTINUE%//
-ItemDisplay[t3b STAT439>0]:%NAME%{%GOLD%75%%NAME%}%CONTINUE%// Phys with Vampire Lords (75)
-ItemDisplay[t3b !STAT439>0]:%NAME%{%GOLD%66%%NAME%}%CONTINUE%// Phys base (66)
-ItemDisplay[t3b]:%NAME%{%ORANGE%50% %WHITE%* %NAME%}%CONTINUE%// Magic 50
-ItemDisplay[t3b STAT442>0]:%NAME%{%DARK_GREEN%95% %WHITE%* %NAME%}%CONTINUE%// Poison with Ghosts (95)
-ItemDisplay[t3b !STAT442>0 (STAT441>0 OR STAT437>0)]:%NAME%{%DARK_GREEN%80% %WHITE%* %NAME%}%CONTINUE%// Poison with Reanimated/Dolls (80)
-ItemDisplay[t3b !STAT442>0 !STAT441>0 !STAT437>0]:%NAME%{%DARK_GREEN%75% %WHITE%* %NAME%}%CONTINUE%// Poison base (75)
-ItemDisplay[t3b STAT499>0]:%NAME%{%BLUE%80% %WHITE%* %NAME%}%CONTINUE%// Cold with Shrieking Terrors (80)
-ItemDisplay[t3b !STAT499>0]:%NAME%{%BLUE%75% %WHITE%* %NAME%}%CONTINUE%// Cold base (75)
-ItemDisplay[t3b STAT470>0]:%NAME%{%YELLOW%80% %WHITE%* %NAME%}%CONTINUE%// Light with Souls (80)
-ItemDisplay[t3b !STAT470>0]:%NAME%{%YELLOW%75% %WHITE%* %NAME%}%CONTINUE%// Light base (75)
-ItemDisplay[t3b]:%NAME%{%RED%75% %WHITE%* %NAME%}%CONTINUE%// Fire 75
+ItemDisplay[t3b !STAT360>0]:%NAME%{%CL%%WHITE%Highest Resistances:%CL%%NAME%}%CONTINUE%//
+ItemDisplay[t3b STAT439>0 !STAT360>0]:%NAME%{%GOLD%75%%NAME%}%CONTINUE%// Phys with Vampire Lords (75)
+ItemDisplay[t3b !STAT439>0 !STAT360>0]:%NAME%{%GOLD%66%%NAME%}%CONTINUE%// Phys base (66)
+ItemDisplay[t3b !STAT360>0]:%NAME%{%ORANGE%50% %WHITE%* %NAME%}%CONTINUE%// Magic 50
+ItemDisplay[t3b STAT499>0 !STAT360>0]:%NAME%{%DARK_GREEN%95% %WHITE%* %NAME%}%CONTINUE%// Poison with Minions of Destruction (95)
+ItemDisplay[t3b !STAT499>0 (STAT441>0 OR STAT437>0) !STAT360>0]:%NAME%{%DARK_GREEN%80% %WHITE%* %NAME%}%CONTINUE%// Poison with Reanimated/Dolls (80)
+ItemDisplay[t3b !STAT499>0 !STAT441>0 !STAT437>0 !STAT360>0]:%NAME%{%DARK_GREEN%75% %WHITE%* %NAME%}%CONTINUE%// Poison base (75)
+ItemDisplay[t3b !STAT360>0]:%NAME%{%BLUE%75% %WHITE%* %NAME%}%CONTINUE%// Cold base (75)
+ItemDisplay[t3b STAT470>0 !STAT360>0]:%NAME%{%YELLOW%80% %WHITE%* %NAME%}%CONTINUE%// Light with Souls (80)
+ItemDisplay[t3b !STAT470>0 !STAT360>0]:%NAME%{%YELLOW%75% %WHITE%* %NAME%}%CONTINUE%// Light base (75)
+ItemDisplay[t3b !STAT360>0]:%NAME%{%RED%75% %WHITE%* %NAME%}%CONTINUE%// Fire 75
 
 // ===== Royal Crypts (t15) =====
 // S13: P=50 M=45 F=120 L=80 C=120 Psn=75
@@ -298,9 +341,9 @@ ItemDisplay[t15 STAT439>0 !STAT360>0]:%NAME%{%GOLD%75%%NAME%}%CONTINUE%// Phys w
 ItemDisplay[t15 !STAT439>0 !STAT360>0]:%NAME%{%GOLD%50%%NAME%}%CONTINUE%// Phys base (50)
 ItemDisplay[t15 (STAT442>0 OR STAT441>0) !STAT360>0]:%NAME%{%ORANGE%50% %WHITE%* %NAME%}%CONTINUE%// Magic with Ghosts/Reanimated (50)
 ItemDisplay[t15 !STAT442>0 !STAT441>0 !STAT360>0]:%NAME%{%ORANGE%45% %WHITE%* %NAME%}%CONTINUE%// Magic base (45)
-ItemDisplay[t15 STAT442>0 !STAT360>0]:%NAME%{%DARK_GREEN%95% %WHITE%* %NAME%}%CONTINUE%// Poison with Ghosts (95)
-ItemDisplay[t15 !STAT442>0 (STAT441>0 OR STAT437>0) !STAT360>0]:%NAME%{%DARK_GREEN%80% %WHITE%* %NAME%}%CONTINUE%// Poison with Reanimated/Dolls (80)
-ItemDisplay[t15 !STAT442>0 !STAT441>0 !STAT437>0 !STAT360>0]:%NAME%{%DARK_GREEN%75% %WHITE%* %NAME%}%CONTINUE%// Poison base (75)
+ItemDisplay[t15 STAT499>0 !STAT360>0]:%NAME%{%DARK_GREEN%95% %WHITE%* %NAME%}%CONTINUE%// Poison with Minions of Destruction (95)
+ItemDisplay[t15 !STAT499>0 (STAT441>0 OR STAT437>0) !STAT360>0]:%NAME%{%DARK_GREEN%80% %WHITE%* %NAME%}%CONTINUE%// Poison with Reanimated/Dolls (80)
+ItemDisplay[t15 !STAT499>0 !STAT441>0 !STAT437>0 !STAT360>0]:%NAME%{%DARK_GREEN%75% %WHITE%* %NAME%}%CONTINUE%// Poison base (75)
 ItemDisplay[t15 !STAT360>0]:%NAME%{%YELLOW%80% %WHITE%* %NAME%}%CONTINUE%// Light 80
 ItemDisplay[t15]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
 ItemDisplay[t15]:%NAME%{%BLUE%120%%NAME%}%CONTINUE%// Cold 120
@@ -311,8 +354,7 @@ ItemDisplay[t15]:%NAME%{%RED%120% %WHITE%* %NAME%}%CONTINUE%// Fire 120
 ItemDisplay[t23 !STAT360>0]:%NAME%{%CL%%WHITE%Highest Resistances:%CL%%NAME%}%CONTINUE%//
 ItemDisplay[t23 STAT439>0 !STAT360>0]:%NAME%{%GOLD%75%%NAME%}%CONTINUE%// Phys with Vampire Lords (75)
 ItemDisplay[t23 !STAT439>0 !STAT360>0]:%NAME%{%GOLD%50%%NAME%}%CONTINUE%// Phys base (50)
-ItemDisplay[t23 STAT499>0 !STAT360>0]:%NAME%{%BLUE%80% %WHITE%* %NAME%}%CONTINUE%// Cold with Shrieking Terrors (80)
-ItemDisplay[t23 !STAT499>0 !STAT360>0]:%NAME%{%BLUE%75% %WHITE%* %NAME%}%CONTINUE%// Cold base (75)
+ItemDisplay[t23 !STAT360>0]:%NAME%{%BLUE%75% %WHITE%* %NAME%}%CONTINUE%// Cold base (75)
 ItemDisplay[t23 !STAT360>0]:%NAME%{%RED%75% %WHITE%* %NAME%}%CONTINUE%// Fire 75
 ItemDisplay[t23]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
 ItemDisplay[t23]:%NAME%{%ORANGE%105%%NAME%}%CONTINUE%// Magic 105
@@ -322,8 +364,8 @@ ItemDisplay[t23]:%NAME%{%YELLOW%120% %WHITE%* %NAME%}%CONTINUE%// Light 120
 // ===== Bastion Keep (t13) =====
 // S13: P=115 M=105 F=75 L=75 C=120 Psn=85
 ItemDisplay[t13 !STAT360>0]:%NAME%{%CL%%WHITE%Highest Resistances:%CL%%NAME%}%CONTINUE%//
-ItemDisplay[t13 STAT442>0 !STAT360>0]:%NAME%{%DARK_GREEN%95%%NAME%}%CONTINUE%// Poison with Ghosts (95)
-ItemDisplay[t13 !STAT442>0 !STAT360>0]:%NAME%{%DARK_GREEN%85%%NAME%}%CONTINUE%// Poison base (85)
+ItemDisplay[t13 STAT499>0 !STAT360>0]:%NAME%{%DARK_GREEN%95%%NAME%}%CONTINUE%// Poison with Minions of Destruction (95)
+ItemDisplay[t13 !STAT499>0 !STAT360>0]:%NAME%{%DARK_GREEN%85%%NAME%}%CONTINUE%// Poison base (85)
 ItemDisplay[t13 STAT470>0 !STAT360>0]:%NAME%{%YELLOW%80% %WHITE%* %NAME%}%CONTINUE%// Light with Souls (80)
 ItemDisplay[t13 !STAT470>0 !STAT360>0]:%NAME%{%YELLOW%75% %WHITE%* %NAME%}%CONTINUE%// Light base (75)
 ItemDisplay[t13 !STAT360>0]:%NAME%{%RED%75% %WHITE%* %NAME%}%CONTINUE%// Fire 75
@@ -351,11 +393,10 @@ ItemDisplay[t28]:%NAME%{%BLUE%120% %WHITE%* %NAME%}%CONTINUE%// Cold 120
 ItemDisplay[t27 !STAT360>0]:%NAME%{%CL%%WHITE%Highest Resistances:%CL%%NAME%}%CONTINUE%//
 ItemDisplay[t27 (STAT442>0 OR STAT441>0) !STAT360>0]:%NAME%{%ORANGE%50%%NAME%}%CONTINUE%// Magic with Ghosts/Reanimated (50)
 ItemDisplay[t27 !STAT442>0 !STAT441>0 !STAT360>0]:%NAME%{%ORANGE%40%%NAME%}%CONTINUE%// Magic base (40)
-ItemDisplay[t27 STAT442>0 !STAT360>0]:%NAME%{%DARK_GREEN%95% %WHITE%* %NAME%}%CONTINUE%// Poison with Ghosts (95)
-ItemDisplay[t27 !STAT442>0 (STAT441>0 OR STAT437>0) !STAT360>0]:%NAME%{%DARK_GREEN%80% %WHITE%* %NAME%}%CONTINUE%// Poison with Reanimated/Dolls (80)
-ItemDisplay[t27 !STAT442>0 !STAT441>0 !STAT437>0 !STAT360>0]:%NAME%{%DARK_GREEN%75% %WHITE%* %NAME%}%CONTINUE%// Poison base (75)
-ItemDisplay[t27 STAT499>0 !STAT360>0]:%NAME%{%BLUE%80% %WHITE%* %NAME%}%CONTINUE%// Cold with Shrieking Terrors (80)
-ItemDisplay[t27 !STAT499>0 !STAT360>0]:%NAME%{%BLUE%75% %WHITE%* %NAME%}%CONTINUE%// Cold base (75)
+ItemDisplay[t27 STAT499>0 !STAT360>0]:%NAME%{%DARK_GREEN%95% %WHITE%* %NAME%}%CONTINUE%// Poison with Minions of Destruction (95)
+ItemDisplay[t27 !STAT499>0 (STAT441>0 OR STAT437>0) !STAT360>0]:%NAME%{%DARK_GREEN%80% %WHITE%* %NAME%}%CONTINUE%// Poison with Reanimated/Dolls (80)
+ItemDisplay[t27 !STAT499>0 !STAT441>0 !STAT437>0 !STAT360>0]:%NAME%{%DARK_GREEN%75% %WHITE%* %NAME%}%CONTINUE%// Poison base (75)
+ItemDisplay[t27 !STAT360>0]:%NAME%{%BLUE%75% %WHITE%* %NAME%}%CONTINUE%// Cold base (75)
 ItemDisplay[t27]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
 ItemDisplay[t27]:%NAME%{%GOLD%115%%NAME%}%CONTINUE%// Phys 115
 ItemDisplay[t27]:%NAME%{%YELLOW%120% %WHITE%* %NAME%}%CONTINUE%// Light 120
@@ -366,8 +407,7 @@ ItemDisplay[t27]:%NAME%{%RED%120% %WHITE%* %NAME%}%CONTINUE%// Fire 120
 ItemDisplay[t31 !STAT360>0 !STAT360>0]:%NAME%{%CL%%WHITE%Highest Resistances:%CL%%NAME%}%CONTINUE%//
 ItemDisplay[t31 STAT439>0 !STAT360>0 !STAT360>0]:%NAME%{%GOLD%75%%NAME%}%CONTINUE%// Phys with Vampire Lords (75)
 ItemDisplay[t31 !STAT439>0 !STAT360>0 !STAT360>0]:%NAME%{%GOLD%66%%NAME%}%CONTINUE%// Phys base (66)
-ItemDisplay[t31 STAT499>0 !STAT360>0 !STAT360>0]:%NAME%{%BLUE%80% %WHITE%* %NAME%}%CONTINUE%// Cold with Shrieking Terrors (80)
-ItemDisplay[t31 !STAT499>0 !STAT360>0 !STAT360>0]:%NAME%{%BLUE%75% %WHITE%* %NAME%}%CONTINUE%// Cold base (75)
+ItemDisplay[t31 !STAT360>0 !STAT360>0]:%NAME%{%BLUE%75% %WHITE%* %NAME%}%CONTINUE%// Cold base (75)
 ItemDisplay[t31 !STAT360>0 !STAT360>0]:%NAME%{%RED%75% %WHITE%* %NAME%}%CONTINUE%// Fire 75
 ItemDisplay[t31]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
 ItemDisplay[t31]:%NAME%{%ORANGE%105%%NAME%}%CONTINUE%// Magic 105
@@ -378,11 +418,10 @@ ItemDisplay[t31]:%NAME%{%YELLOW%120% %WHITE%* %NAME%}%CONTINUE%// Light 120
 // S13: P=115 M=50 F=120 L=75 C=75 Psn=75
 ItemDisplay[t39 !STAT360>0]:%NAME%{%CL%%WHITE%Highest Resistances:%CL%%NAME%}%CONTINUE%//
 ItemDisplay[t39 !STAT360>0]:%NAME%{%ORANGE%50%%NAME%}%CONTINUE%// Magic 50
-ItemDisplay[t39 STAT442>0 !STAT360>0]:%NAME%{%DARK_GREEN%95% %WHITE%* %NAME%}%CONTINUE%// Poison with Ghosts (95)
-ItemDisplay[t39 !STAT442>0 (STAT441>0 OR STAT437>0) !STAT360>0]:%NAME%{%DARK_GREEN%80% %WHITE%* %NAME%}%CONTINUE%// Poison with Reanimated/Dolls (80)
-ItemDisplay[t39 !STAT442>0 !STAT441>0 !STAT437>0 !STAT360>0]:%NAME%{%DARK_GREEN%75% %WHITE%* %NAME%}%CONTINUE%// Poison base (75)
-ItemDisplay[t39 STAT499>0 !STAT360>0]:%NAME%{%BLUE%80% %WHITE%* %NAME%}%CONTINUE%// Cold with Shrieking Terrors (80)
-ItemDisplay[t39 !STAT499>0 !STAT360>0]:%NAME%{%BLUE%75% %WHITE%* %NAME%}%CONTINUE%// Cold base (75)
+ItemDisplay[t39 STAT499>0 !STAT360>0]:%NAME%{%DARK_GREEN%95% %WHITE%* %NAME%}%CONTINUE%// Poison with Minions of Destruction (95)
+ItemDisplay[t39 !STAT499>0 (STAT441>0 OR STAT437>0) !STAT360>0]:%NAME%{%DARK_GREEN%80% %WHITE%* %NAME%}%CONTINUE%// Poison with Reanimated/Dolls (80)
+ItemDisplay[t39 !STAT499>0 !STAT441>0 !STAT437>0 !STAT360>0]:%NAME%{%DARK_GREEN%75% %WHITE%* %NAME%}%CONTINUE%// Poison base (75)
+ItemDisplay[t39 !STAT360>0]:%NAME%{%BLUE%75% %WHITE%* %NAME%}%CONTINUE%// Cold base (75)
 ItemDisplay[t39 STAT470>0 !STAT360>0]:%NAME%{%YELLOW%80% %WHITE%* %NAME%}%CONTINUE%// Light with Souls (80)
 ItemDisplay[t39 !STAT470>0 !STAT360>0]:%NAME%{%YELLOW%75% %WHITE%* %NAME%}%CONTINUE%// Light base (75)
 ItemDisplay[t39]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
@@ -397,14 +436,13 @@ ItemDisplay[t53]:%NAME%{%CL%%WHITE%Highest Resistances:%CL%%NAME%}%CONTINUE%//
 ItemDisplay[t53 STAT439>0]:%NAME%{%GOLD%75%%NAME%}%CONTINUE%// Phys with Vampire Lords (75)
 ItemDisplay[t53 !STAT439>0]:%NAME%{%GOLD%65%%NAME%}%CONTINUE%// Phys base (65)
 ItemDisplay[t53]:%NAME%{%ORANGE%80% %WHITE%* %NAME%}%CONTINUE%// Magic 80
-ItemDisplay[t53 STAT442>0]:%NAME%{%DARK_GREEN%95% %WHITE%* %NAME%}%CONTINUE%// Poison with Ghosts (95)
-ItemDisplay[t53 !STAT442>0]:%NAME%{%DARK_GREEN%80% %WHITE%* %NAME%}%CONTINUE%// Poison base (80)
-ItemDisplay[t53 STAT499>0]:%NAME%{%BLUE%80% %WHITE%* %NAME%}%CONTINUE%// Cold with Shrieking Terrors (80)
-ItemDisplay[t53 !STAT499>0]:%NAME%{%BLUE%75% %WHITE%* %NAME%}%CONTINUE%// Cold base (75)
+ItemDisplay[t53 STAT499>0]:%NAME%{%DARK_GREEN%95% %WHITE%* %NAME%}%CONTINUE%// Poison with Minions of Destruction (95)
+ItemDisplay[t53 !STAT499>0]:%NAME%{%DARK_GREEN%80% %WHITE%* %NAME%}%CONTINUE%// Poison base (80)
+ItemDisplay[t53]:%NAME%{%BLUE%75% %WHITE%* %NAME%}%CONTINUE%// Cold base (75)
 ItemDisplay[t53 STAT470>0]:%NAME%{%YELLOW%80% %WHITE%* %NAME%}%CONTINUE%// Light with Souls (80)
 ItemDisplay[t53 !STAT470>0]:%NAME%{%YELLOW%65% %WHITE%* %NAME%}%CONTINUE%// Light base (65)
-ItemDisplay[t53 STAT441>0]:%NAME%{%RED%75% %WHITE%* %NAME%}%CONTINUE%// Fire with Reanimated (75)
-ItemDisplay[t53 !STAT441>0]:%NAME%{%RED%70% %WHITE%* %NAME%}%CONTINUE%// Fire base (70)
+ItemDisplay[t53 (STAT441>0 OR STAT499>0)]:%NAME%{%RED%75% %WHITE%* %NAME%}%CONTINUE%// Fire with Reanimated/Minions of Destruction (75)
+ItemDisplay[t53 !STAT441>0 !STAT499>0]:%NAME%{%RED%70% %WHITE%* %NAME%}%CONTINUE%// Fire base (70)
 
 // ===== Zhar's Sanctum (t51) =====
 // S13: P=65 M=50 F=85 L=85 C=85 Psn=95
@@ -423,36 +461,35 @@ ItemDisplay[t52]:%NAME%{%CL%%WHITE%Highest Resistances:%CL%%NAME%}%CONTINUE%//
 ItemDisplay[t52 STAT439>0]:%NAME%{%GOLD%75%%NAME%}%CONTINUE%// Phys with Vampire Lords (75)
 ItemDisplay[t52 !STAT439>0]:%NAME%{%GOLD%55%%NAME%}%CONTINUE%// Phys base (55)
 ItemDisplay[t52]:%NAME%{%ORANGE%50% %WHITE%* %NAME%}%CONTINUE%// Magic 50
-ItemDisplay[t52 STAT442>0]:%NAME%{%DARK_GREEN%95% %WHITE%* %NAME%}%CONTINUE%// Poison with Ghosts (95)
-ItemDisplay[t52 !STAT442>0 (STAT441>0 OR STAT437>0)]:%NAME%{%DARK_GREEN%80% %WHITE%* %NAME%}%CONTINUE%// Poison with Reanimated/Dolls (80)
-ItemDisplay[t52 !STAT442>0 !STAT441>0 !STAT437>0]:%NAME%{%DARK_GREEN%75% %WHITE%* %NAME%}%CONTINUE%// Poison base (75)
-ItemDisplay[t52 STAT499>0]:%NAME%{%BLUE%80% %WHITE%* %NAME%}%CONTINUE%// Cold with Shrieking Terrors (80)
-ItemDisplay[t52 !STAT499>0 STAT439>0]:%NAME%{%BLUE%75% %WHITE%* %NAME%}%CONTINUE%// Cold with Vampire Lords (75)
-ItemDisplay[t52 !STAT499>0 !STAT439>0]:%NAME%{%BLUE%65% %WHITE%* %NAME%}%CONTINUE%// Cold base (65)
+ItemDisplay[t52 STAT499>0]:%NAME%{%DARK_GREEN%95% %WHITE%* %NAME%}%CONTINUE%// Poison with Minions of Destruction (95)
+ItemDisplay[t52 !STAT499>0 (STAT441>0 OR STAT437>0)]:%NAME%{%DARK_GREEN%80% %WHITE%* %NAME%}%CONTINUE%// Poison with Reanimated/Dolls (80)
+ItemDisplay[t52 !STAT499>0 !STAT441>0 !STAT437>0]:%NAME%{%DARK_GREEN%75% %WHITE%* %NAME%}%CONTINUE%// Poison base (75)
+ItemDisplay[t52 STAT439>0]:%NAME%{%BLUE%75% %WHITE%* %NAME%}%CONTINUE%// Cold with Vampire Lords (75)
+ItemDisplay[t52 !STAT439>0]:%NAME%{%BLUE%65% %WHITE%* %NAME%}%CONTINUE%// Cold base (65)
 ItemDisplay[t52 STAT470>0]:%NAME%{%YELLOW%80% %WHITE%* %NAME%}%CONTINUE%// Light with Souls (80)
 ItemDisplay[t52 !STAT470>0]:%NAME%{%YELLOW%65% %WHITE%* %NAME%}%CONTINUE%// Light base (65)
-ItemDisplay[t52 STAT441>0]:%NAME%{%RED%75% %WHITE%* %NAME%}%CONTINUE%// Fire with Reanimated (75)
-ItemDisplay[t52 !STAT441>0]:%NAME%{%RED%70% %WHITE%* %NAME%}%CONTINUE%// Fire base (70)
+ItemDisplay[t52 (STAT441>0 OR STAT499>0)]:%NAME%{%RED%75% %WHITE%* %NAME%}%CONTINUE%// Fire with Reanimated/Minions of Destruction (75)
+ItemDisplay[t52 !STAT441>0 !STAT499>0]:%NAME%{%RED%70% %WHITE%* %NAME%}%CONTINUE%// Fire base (70)
 
 // ===== Imperial Palace (t54) =====
 // S13: P=20 M=20 F=65 L=65 C=65 Psn=65
 ItemDisplay[t54]:%NAME%{%CL%%WHITE%Highest Resistances:%CL%%NAME%}%CONTINUE%//
 ItemDisplay[t54 STAT439>0]:%NAME%{%GOLD%75%%NAME%}%CONTINUE%// Phys with Vampire Lords (75)
-ItemDisplay[t54 !STAT439>0 (STAT442>0 OR STAT441>0 OR STAT440>0)]:%NAME%{%GOLD%50%%NAME%}%CONTINUE%// Phys with Ghosts/Reanimated/Hell Bovines (50)
-ItemDisplay[t54 !STAT439>0 !STAT442>0 !STAT441>0 !STAT440>0]:%NAME%{%GOLD%20%%NAME%}%CONTINUE%// Phys base (20)
+ItemDisplay[t54 !STAT439>0 (STAT442>0 OR STAT441>0 OR STAT440>0 OR STAT499>0)]:%NAME%{%GOLD%50%%NAME%}%CONTINUE%// Phys with Ghosts/Reanimated/Hell Bovines/Minions of Destruction (50)
+ItemDisplay[t54 !STAT439>0 !STAT442>0 !STAT441>0 !STAT440>0 !STAT499>0]:%NAME%{%GOLD%20%%NAME%}%CONTINUE%// Phys base (20)
 ItemDisplay[t54 (STAT442>0 OR STAT441>0)]:%NAME%{%ORANGE%50% %WHITE%* %NAME%}%CONTINUE%// Magic with Ghosts/Reanimated (50)
-ItemDisplay[t54 !STAT442>0 !STAT441>0]:%NAME%{%ORANGE%20% %WHITE%* %NAME%}%CONTINUE%// Magic base (20)
-ItemDisplay[t54 STAT442>0]:%NAME%{%DARK_GREEN%95% %WHITE%* %NAME%}%CONTINUE%// Poison with Ghosts (95)
-ItemDisplay[t54 !STAT442>0 (STAT441>0 OR STAT437>0)]:%NAME%{%DARK_GREEN%80% %WHITE%* %NAME%}%CONTINUE%// Poison with Reanimated/Dolls (80)
-ItemDisplay[t54 !STAT442>0 !STAT441>0 !STAT437>0 STAT470>0]:%NAME%{%DARK_GREEN%75% %WHITE%* %NAME%}%CONTINUE%// Poison with Souls (75)
-ItemDisplay[t54 !STAT442>0 !STAT441>0 !STAT437>0 !STAT470>0]:%NAME%{%DARK_GREEN%65% %WHITE%* %NAME%}%CONTINUE%// Poison base (65)
-ItemDisplay[t54 STAT499>0]:%NAME%{%BLUE%80% %WHITE%* %NAME%}%CONTINUE%// Cold with Shrieking Terrors (80)
-ItemDisplay[t54 !STAT499>0 STAT439>0]:%NAME%{%BLUE%75% %WHITE%* %NAME%}%CONTINUE%// Cold with Vampire Lords (75)
-ItemDisplay[t54 !STAT499>0 !STAT439>0]:%NAME%{%BLUE%65% %WHITE%* %NAME%}%CONTINUE%// Cold base (65)
+ItemDisplay[t54 !STAT442>0 !STAT441>0 STAT470>0]:%NAME%{%ORANGE%25% %WHITE%* %NAME%}%CONTINUE%// Magic with Souls (25)
+ItemDisplay[t54 !STAT442>0 !STAT441>0 !STAT470>0]:%NAME%{%ORANGE%20% %WHITE%* %NAME%}%CONTINUE%// Magic base (20)
+ItemDisplay[t54 STAT499>0]:%NAME%{%DARK_GREEN%95% %WHITE%* %NAME%}%CONTINUE%// Poison with Minions of Destruction (95)
+ItemDisplay[t54 !STAT499>0 (STAT441>0 OR STAT437>0)]:%NAME%{%DARK_GREEN%80% %WHITE%* %NAME%}%CONTINUE%// Poison with Reanimated/Dolls (80)
+ItemDisplay[t54 !STAT499>0 !STAT441>0 !STAT437>0 STAT470>0]:%NAME%{%DARK_GREEN%75% %WHITE%* %NAME%}%CONTINUE%// Poison with Souls (75)
+ItemDisplay[t54 !STAT499>0 !STAT441>0 !STAT437>0 !STAT470>0]:%NAME%{%DARK_GREEN%65% %WHITE%* %NAME%}%CONTINUE%// Poison base (65)
+ItemDisplay[t54 STAT439>0]:%NAME%{%BLUE%75% %WHITE%* %NAME%}%CONTINUE%// Cold with Vampire Lords (75)
+ItemDisplay[t54 !STAT439>0]:%NAME%{%BLUE%65% %WHITE%* %NAME%}%CONTINUE%// Cold base (65)
 ItemDisplay[t54 STAT470>0]:%NAME%{%YELLOW%80% %WHITE%* %NAME%}%CONTINUE%// Light with Souls (80)
 ItemDisplay[t54 !STAT470>0]:%NAME%{%YELLOW%65% %WHITE%* %NAME%}%CONTINUE%// Light base (65)
-ItemDisplay[t54 STAT441>0]:%NAME%{%RED%75% %WHITE%* %NAME%}%CONTINUE%// Fire with Reanimated (75)
-ItemDisplay[t54 !STAT441>0]:%NAME%{%RED%65% %WHITE%* %NAME%}%CONTINUE%// Fire base (65)
+ItemDisplay[t54 (STAT441>0 OR STAT499>0)]:%NAME%{%RED%75% %WHITE%* %NAME%}%CONTINUE%// Fire with Reanimated/Minions of Destruction (75)
+ItemDisplay[t54 !STAT441>0 !STAT499>0]:%NAME%{%RED%65% %WHITE%* %NAME%}%CONTINUE%// Fire base (65)
 
 // ===== Outer Void (t55) =====
 // S13: P=50 M=50 F=75 L=75 C=50 Psn=30
@@ -460,13 +497,13 @@ ItemDisplay[t55]:%NAME%{%CL%%WHITE%Highest Resistances:%CL%%NAME%}%CONTINUE%//
 ItemDisplay[t55 STAT439>0]:%NAME%{%GOLD%75%%NAME%}%CONTINUE%// Phys with Vampire Lords (75)
 ItemDisplay[t55 !STAT439>0]:%NAME%{%GOLD%50%%NAME%}%CONTINUE%// Phys base (50)
 ItemDisplay[t55]:%NAME%{%ORANGE%50% %WHITE%* %NAME%}%CONTINUE%// Magic 50
-ItemDisplay[t55 STAT442>0]:%NAME%{%DARK_GREEN%95% %WHITE%* %NAME%}%CONTINUE%// Poison with Ghosts (95)
-ItemDisplay[t55 !STAT442>0 (STAT441>0 OR STAT437>0)]:%NAME%{%DARK_GREEN%80% %WHITE%* %NAME%}%CONTINUE%// Poison with Reanimated/Dolls (80)
-ItemDisplay[t55 !STAT442>0 !STAT441>0 !STAT437>0 STAT470>0]:%NAME%{%DARK_GREEN%75% %WHITE%* %NAME%}%CONTINUE%// Poison with Souls (75)
-ItemDisplay[t55 !STAT442>0 !STAT441>0 !STAT437>0 !STAT470>0]:%NAME%{%DARK_GREEN%30% %WHITE%* %NAME%}%CONTINUE%// Poison base (30)
-ItemDisplay[t55 STAT499>0]:%NAME%{%BLUE%80% %WHITE%* %NAME%}%CONTINUE%// Cold with Shrieking Terrors (80)
-ItemDisplay[t55 !STAT499>0 STAT439>0]:%NAME%{%BLUE%75% %WHITE%* %NAME%}%CONTINUE%// Cold with Vampire Lords (75)
-ItemDisplay[t55 !STAT499>0 !STAT439>0]:%NAME%{%BLUE%50% %WHITE%* %NAME%}%CONTINUE%// Cold base (50)
+ItemDisplay[t55 STAT499>0]:%NAME%{%DARK_GREEN%95% %WHITE%* %NAME%}%CONTINUE%// Poison with Minions of Destruction (95)
+ItemDisplay[t55 !STAT499>0 (STAT441>0 OR STAT437>0)]:%NAME%{%DARK_GREEN%80% %WHITE%* %NAME%}%CONTINUE%// Poison with Reanimated/Dolls (80)
+ItemDisplay[t55 !STAT499>0 !STAT441>0 !STAT437>0 STAT470>0]:%NAME%{%DARK_GREEN%75% %WHITE%* %NAME%}%CONTINUE%// Poison with Souls (75)
+ItemDisplay[t55 !STAT499>0 !STAT441>0 !STAT437>0 !STAT470>0 (STAT442>0 OR STAT439>0)]:%NAME%{%DARK_GREEN%50% %WHITE%* %NAME%}%CONTINUE%// Poison with Ghosts/Vampire Lords (50)
+ItemDisplay[t55 !STAT499>0 !STAT441>0 !STAT437>0 !STAT470>0 !STAT442>0 !STAT439>0]:%NAME%{%DARK_GREEN%30% %WHITE%* %NAME%}%CONTINUE%// Poison base (30)
+ItemDisplay[t55 STAT439>0]:%NAME%{%BLUE%75% %WHITE%* %NAME%}%CONTINUE%// Cold with Vampire Lords (75)
+ItemDisplay[t55 !STAT439>0]:%NAME%{%BLUE%50% %WHITE%* %NAME%}%CONTINUE%// Cold base (50)
 ItemDisplay[t55 STAT470>0]:%NAME%{%YELLOW%80% %WHITE%* %NAME%}%CONTINUE%// Light with Souls (80)
 ItemDisplay[t55 !STAT470>0]:%NAME%{%YELLOW%75% %WHITE%* %NAME%}%CONTINUE%// Light base (75)
 ItemDisplay[t55]:%NAME%{%RED%75% %WHITE%* %NAME%}%CONTINUE%// Fire 75
@@ -477,9 +514,9 @@ ItemDisplay[t56]:%NAME%{%CL%%WHITE%Highest Resistances:%CL%%NAME%}%CONTINUE%//
 ItemDisplay[t56 STAT439>0]:%NAME%{%GOLD%75%%NAME%}%CONTINUE%// Phys with Vampire Lords (75)
 ItemDisplay[t56 !STAT439>0]:%NAME%{%GOLD%65%%NAME%}%CONTINUE%// Phys base (65)
 ItemDisplay[t56]:%NAME%{%ORANGE%50% %WHITE%* %NAME%}%CONTINUE%// Magic 50
-ItemDisplay[t56 STAT442>0]:%NAME%{%DARK_GREEN%95% %WHITE%* %NAME%}%CONTINUE%// Poison with Ghosts (95)
-ItemDisplay[t56 !STAT442>0 (STAT441>0 OR STAT437>0)]:%NAME%{%DARK_GREEN%80% %WHITE%* %NAME%}%CONTINUE%// Poison with Reanimated/Dolls (80)
-ItemDisplay[t56 !STAT442>0 !STAT441>0 !STAT437>0]:%NAME%{%DARK_GREEN%75% %WHITE%* %NAME%}%CONTINUE%// Poison base (75)
+ItemDisplay[t56 STAT499>0]:%NAME%{%DARK_GREEN%95% %WHITE%* %NAME%}%CONTINUE%// Poison with Minions of Destruction (95)
+ItemDisplay[t56 !STAT499>0 (STAT441>0 OR STAT437>0)]:%NAME%{%DARK_GREEN%80% %WHITE%* %NAME%}%CONTINUE%// Poison with Reanimated/Dolls (80)
+ItemDisplay[t56 !STAT499>0 !STAT441>0 !STAT437>0]:%NAME%{%DARK_GREEN%75% %WHITE%* %NAME%}%CONTINUE%// Poison base (75)
 ItemDisplay[t56]:%NAME%{%BLUE%80% %WHITE%* %NAME%}%CONTINUE%// Cold 80
 ItemDisplay[t56]:%NAME%{%RED%85% %WHITE%* %NAME%}%CONTINUE%// Fire 85
 ItemDisplay[t56]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
@@ -491,11 +528,10 @@ ItemDisplay[t57]:%NAME%{%CL%%WHITE%Highest Resistances:%CL%%NAME%}%CONTINUE%//
 ItemDisplay[t57 STAT439>0]:%NAME%{%GOLD%75%%NAME%}%CONTINUE%// Phys with Vampire Lords (75)
 ItemDisplay[t57 !STAT439>0]:%NAME%{%GOLD%55%%NAME%}%CONTINUE%// Phys base (55)
 ItemDisplay[t57]:%NAME%{%ORANGE%50% %WHITE%* %NAME%}%CONTINUE%// Magic 50
-ItemDisplay[t57 STAT442>0]:%NAME%{%DARK_GREEN%95% %WHITE%* %NAME%}%CONTINUE%// Poison with Ghosts (95)
-ItemDisplay[t57 !STAT442>0 (STAT441>0 OR STAT437>0)]:%NAME%{%DARK_GREEN%80% %WHITE%* %NAME%}%CONTINUE%// Poison with Reanimated/Dolls (80)
-ItemDisplay[t57 !STAT442>0 !STAT441>0 !STAT437>0]:%NAME%{%DARK_GREEN%75% %WHITE%* %NAME%}%CONTINUE%// Poison base (75)
-ItemDisplay[t57 STAT499>0]:%NAME%{%BLUE%80% %WHITE%* %NAME%}%CONTINUE%// Cold with Shrieking Terrors (80)
-ItemDisplay[t57 !STAT499>0]:%NAME%{%BLUE%75% %WHITE%* %NAME%}%CONTINUE%// Cold base (75)
+ItemDisplay[t57 STAT499>0]:%NAME%{%DARK_GREEN%95% %WHITE%* %NAME%}%CONTINUE%// Poison with Minions of Destruction (95)
+ItemDisplay[t57 !STAT499>0 (STAT441>0 OR STAT437>0)]:%NAME%{%DARK_GREEN%80% %WHITE%* %NAME%}%CONTINUE%// Poison with Reanimated/Dolls (80)
+ItemDisplay[t57 !STAT499>0 !STAT441>0 !STAT437>0]:%NAME%{%DARK_GREEN%75% %WHITE%* %NAME%}%CONTINUE%// Poison base (75)
+ItemDisplay[t57]:%NAME%{%BLUE%75% %WHITE%* %NAME%}%CONTINUE%// Cold base (75)
 ItemDisplay[t57 STAT470>0]:%NAME%{%YELLOW%80% %WHITE%* %NAME%}%CONTINUE%// Light with Souls (80)
 ItemDisplay[t57 !STAT470>0]:%NAME%{%YELLOW%75% %WHITE%* %NAME%}%CONTINUE%// Light base (75)
 ItemDisplay[t57]:%NAME%{%RED%75% %WHITE%* %NAME%}%CONTINUE%// Fire 75
@@ -506,9 +542,9 @@ ItemDisplay[t58]:%NAME%{%CL%%WHITE%Highest Resistances:%CL%%NAME%}%CONTINUE%//
 ItemDisplay[t58 STAT439>0]:%NAME%{%GOLD%75%%NAME%}%CONTINUE%// Phys with Vampire Lords (75)
 ItemDisplay[t58 !STAT439>0]:%NAME%{%GOLD%50%%NAME%}%CONTINUE%// Phys base (50)
 ItemDisplay[t58]:%NAME%{%ORANGE%50% %WHITE%* %NAME%}%CONTINUE%// Magic 50
-ItemDisplay[t58 STAT442>0]:%NAME%{%DARK_GREEN%95% %WHITE%* %NAME%}%CONTINUE%// Poison with Ghosts (95)
-ItemDisplay[t58 !STAT442>0 (STAT441>0 OR STAT437>0)]:%NAME%{%DARK_GREEN%80% %WHITE%* %NAME%}%CONTINUE%// Poison with Reanimated/Dolls (80)
-ItemDisplay[t58 !STAT442>0 !STAT441>0 !STAT437>0]:%NAME%{%DARK_GREEN%75% %WHITE%* %NAME%}%CONTINUE%// Poison base (75)
+ItemDisplay[t58 STAT499>0]:%NAME%{%DARK_GREEN%95% %WHITE%* %NAME%}%CONTINUE%// Poison with Minions of Destruction (95)
+ItemDisplay[t58 !STAT499>0 (STAT441>0 OR STAT437>0)]:%NAME%{%DARK_GREEN%80% %WHITE%* %NAME%}%CONTINUE%// Poison with Reanimated/Dolls (80)
+ItemDisplay[t58 !STAT499>0 !STAT441>0 !STAT437>0]:%NAME%{%DARK_GREEN%75% %WHITE%* %NAME%}%CONTINUE%// Poison base (75)
 ItemDisplay[t58]:%NAME%{%BLUE%85% %WHITE%* %NAME%}%CONTINUE%// Cold 85
 ItemDisplay[t58]:%NAME%{%YELLOW%80% %WHITE%* %NAME%}%CONTINUE%// Light 80
 ItemDisplay[t58]:%NAME%{%RED%75% %WHITE%* %NAME%}%CONTINUE%// Fire 75
