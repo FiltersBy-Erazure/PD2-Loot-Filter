@@ -32,6 +32,7 @@ PAGES = [  # what All_Unique_Weapons, All_Unique_Non-Weapons and All_Set_Items t
 
 HEAD_RE = re.compile(r'^={3,5}\s*<span class="d2-(gold|green)">(.+?)</span>\s*={3,5}\s*$', re.M)
 NEXT_HEAD_RE = re.compile(r"^={2,5}[^=]", re.M)  # Class_Weapons puts its items under ===== headings
+SET_HEAD_RE = re.compile(r"^===\s*([^=<]+?)\s*===\s*$", re.M)  # Normal/Exceptional/Elite: a set's items follow its name
 BASE_RE = re.compile(r"<p><b>(.+?)</b>")  # the base is the first bold text that is not a "Label:"
 RANGE_RE = re.compile(r"\[(-?\d+(?:\.\d+)?)-(-?\d+(?:\.\d+)?)\]")
 NOT_A_ROLL = re.compile(r"per Character Level|Based on Character Level|\(Based on |\(\d+ Items\)|Full Set|\(with ",
@@ -153,6 +154,7 @@ def items(families=None):
         if not path.exists():
             sys.exit(f"missing {path.relative_to(ROOT)}: run python tools/item_data.py fetch")
         text = path.read_text(encoding="utf-8")
+        set_heads = [(s.start(), s.group(1)) for s in SET_HEAD_RE.finditer(text)]
         for m in HEAD_RE.finditer(text):
             nxt = NEXT_HEAD_RE.search(text, m.end())
             block = text[m.end():nxt.start() if nxt else len(text)]
@@ -163,6 +165,8 @@ def items(families=None):
             base = bases[0] if bases else "?"
             common = {"kind": "UNI" if m.group(1) == "gold" else "SET", "page": page, "base": base,
                       "codes": families.get(norm(base), [])}
+            if common["kind"] == "SET":
+                common["set"] = next((clean(s) for pos, s in reversed(set_heads) if pos < m.start()), "")
             split = versions(block)
             if split:  # one item per version; its own lines (the version's identity) are pickable too
                 for label, own, shared in split:

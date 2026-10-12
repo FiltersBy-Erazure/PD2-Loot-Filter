@@ -17,6 +17,10 @@ python tools\gen_runeword_rolls.py
 if errorlevel 1 goto failed
 python tools\build.py --stamp
 if errorlevel 1 goto failed
+rem Unique/set tier page for players (Erazure-Unique-Set-Tiers.html, read from the filter's rules): after the
+rem stamp, because its footer shows the date
+python tools\tier_map.py
+if errorlevel 1 goto failed
 python tools\build.py --check
 if errorlevel 1 goto failed
 

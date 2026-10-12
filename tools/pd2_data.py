@@ -14,7 +14,11 @@ roll picker shows.
         item types and bases, AutoMagic, QualityItems, string tables) and the base game's string tables, and
         writes docs/pd2-unique-set-items.tsv, docs/pd2-runewords.tsv and tools/pd2_stat_priority.tsv. Run it
         each season and after a PD2 patch that changes items, then python tools/gen_unique_rolls.py,
-        python tools/gen_runeword_rolls.py and python tools/tag_order.py --fix.
+        python tools/gen_runeword_rolls.py and python tools/tag_order.py --fix. Also does --tier-data.
+    python tools/pd2_data.py --tier-data "C:\\Users\\<you>\\Diablo II"
+        only writes what tools/tier_map.py reads: docs/pd2-bases.tsv (each base's name, tier and item types),
+        docs/pd2-sounds.tsv (Sounds.txt: the sound each %SOUNDID-n% plays) and docs/pd2-palette.tsv (the
+        colors of %BORDER-xx% %MAP-xx% %DOT-xx% %PX-xx%)
     python tools/pd2_data.py --report NAME
         the stats of the items and runewords whose name contains NAME (as the generators read them)
 
@@ -47,6 +51,9 @@ ROOT = TOOLS.parent
 ITEMS_FILE = ROOT / "docs" / "pd2-unique-set-items.tsv"
 RUNEWORDS_FILE = ROOT / "docs" / "pd2-runewords.tsv"
 PRIORITY_FILE = TOOLS / "pd2_stat_priority.tsv"
+BASES_FILE = ROOT / "docs" / "pd2-bases.tsv"
+SOUNDS_FILE = ROOT / "docs" / "pd2-sounds.tsv"
+PALETTE_FILE = ROOT / "docs" / "pd2-palette.tsv"
 BS = chr(92)
 
 # Stats the filter has a name for (the generator's vocabulary); others are STAT<id>
@@ -546,6 +553,38 @@ def extract(game_dir):
             out.append(f"{int(sid)}\t{r['Stat']}\t{r.get('descpriority', '').strip()}")
     PRIORITY_FILE.write_text("\n".join(out) + "\n", encoding="utf-8", newline="\n")
     print(f"wrote {PRIORITY_FILE.relative_to(ROOT)} ({len(out) - 2} stats)")
+    extract_tier_data(game_dir, game)
+
+
+def extract_tier_data(game_dir, game=None):
+    """For tools/tier_map.py: docs/pd2-bases.tsv (code, name, tier as BH reads it, the base's item type and its
+    ancestors), docs/pd2-sounds.tsv (PD2's Sounds.txt: index, name, file) and docs/pd2-palette.tsv (the act 1
+    palette BH draws minimap icons with: index as the filter writes it, hex color)."""
+    import pd2_mpq
+    game_dir = Path(game_dir)
+    game = game or Game(game_dir)
+    stamp = datetime.date.today().isoformat()
+    out = [f"# PD2 item bases (Weapons, Armor, Misc) from pd2data.mpq, extracted {stamp} by tools/pd2_data.py: code,",
+           "# name, tier (BH's NORM/EXC/ELT: the code against its ubercode/ultracode), item type and its ancestors.",
+           "code\tname\ttier\ttypes"]
+    # a quest item's name can hold a line break ("Right Click to learn skill...\nBook of Skill"): its last line
+    out += [f"{code}\t{game.base_name(code).splitlines()[-1]}\t{game.tier(code)}\t{','.join(game.ancestors(code))}"
+            for code in sorted(game.base_rows)]
+    BASES_FILE.write_text("\n".join(out) + "\n", encoding="utf-8", newline="\n")
+    print(f"wrote {BASES_FILE.relative_to(ROOT)} ({len(out) - 3} bases)")
+    pd2 = pd2_mpq.MPQ(game_dir / "ProjectD2" / "pd2data.mpq")
+    rows = read_table(pd2.read(BS.join(["data", "global", "excel", "Sounds.txt"])).decode("latin-1"))
+    out = [f"# PD2 Sounds.txt from pd2data.mpq, extracted {stamp} by tools/pd2_data.py: the sound %SOUNDID-n% plays.",
+           "index\tsound\tfile"]
+    out += [f"{int(r['Index'])}\t{r['Sound']}\t{r['FileName']}" for r in rows if r.get("Index", "").strip().isdigit()]
+    SOUNDS_FILE.write_text("\n".join(out) + "\n", encoding="utf-8", newline="\n")
+    print(f"wrote {SOUNDS_FILE.relative_to(ROOT)} ({len(out) - 2} sounds)")
+    pal = pd2_mpq.MPQ(game_dir / "d2data.mpq").read(BS.join(["data", "global", "palette", "ACT1", "pal.dat"]))
+    out = [f"# D2's act 1 palette (d2data.mpq pal.dat, stored blue-green-red), extracted {stamp} by tools/pd2_data.py:",
+           "# the colors of %BORDER-xx% %MAP-xx% %DOT-xx% %PX-xx%.", "index\tcolor"]
+    out += [f"{i:02X}\t#{pal[3 * i + 2]:02x}{pal[3 * i + 1]:02x}{pal[3 * i]:02x}" for i in range(256)]
+    PALETTE_FILE.write_text("\n".join(out) + "\n", encoding="utf-8", newline="\n")
+    print(f"wrote {PALETTE_FILE.relative_to(ROOT)} (256 colors)")
 
 
 # ---------------------------------------------------------------- for the generator
@@ -598,10 +637,13 @@ def main():
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     ap = argparse.ArgumentParser(description="PD2's unique and set item data.")
     ap.add_argument("--extract", metavar="DIABLO_II_FOLDER")
+    ap.add_argument("--tier-data", metavar="DIABLO_II_FOLDER")
     ap.add_argument("--report", metavar="NAME")
     args = ap.parse_args()
     if args.extract:
         extract(args.extract)
+    elif args.tier_data:
+        extract_tier_data(args.tier_data)
     if args.report is not None:
         for it in load_items():
             if args.report.lower() in it["name"].lower():
@@ -617,7 +659,7 @@ def main():
                 for text, p in zip(rw["runetexts"], rw["runestats"]):
                     print(f"    {text:48} " + "  ".join(f"{c} {lo}" + (f"-{hi}" if hi != lo else "") for c, lo, hi in p))
                 print(f"    a white base can bring: {', '.join(rw['addable']) or 'nothing'}")
-    if not args.extract and args.report is None:
+    if not args.extract and not args.tier_data and args.report is None:
         ap.print_help()
 
 

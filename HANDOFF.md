@@ -105,7 +105,7 @@ About 825 KB is roughly 200k+ tokens per file. **No conversation will "see the w
 | `145-map-rolls-and-notifications` | 2641–2844 | Map contents and modifier highlights, catalyzed, tier tags, map icons and notifications, mf/den/rar/exp prefixes, arenas |
 | `150-uniques` | 2845–3301 | Revealed names, DClone/Rathma uniques, BIG GG display |
 | `160-uniques-value-tiers` | 3302–3806 | High / medium / minimal value, low-level duel, all other uniques |
-| `170-sets` | 3807–4013 | |
+| `170-sets` | 3807–4013 | Revealed names, high / medium value, low-level duel, rings and amulets, normal / exceptional / elite sets |
 | `180-crafted` | 4014–4020 | |
 | `190-rares` | 4021–4237 | Heavy on hide rules; eth rare weapon notifications |
 | `200-magic` | 4238–4541 | Heavy on hide rules; magic charms; eth magic weapon notifications |
@@ -253,6 +253,8 @@ At each ladder reset:
 **Unique/set roll tags:** `python tools/item_data.py fetch` refreshes `docs/items/` from the wiki (the git diff shows what changed on uniques and sets), then `python tools/gen_unique_rolls.py` regenerates the fingerprints and default picks; review lines marked `CHOOSE` in `tools/unique_roll_picks.txt`.
 
 **Runeword roll tags:** `python tools/pd2_data.py --extract "<Diablo II folder>"` also rewrites `docs/pd2-runewords.tsv` (the git diff shows new and changed runewords), then `python tools/gen_runeword_rolls.py` regenerates `305-runeword-rolls` and the default picks; it reports any runeword it can't tell apart from another (`--report NAME` shows why). Review new runewords in `pick_runewords.bat`; `--requests` lists picked rolls that still need a look in 300.
+
+**Unique/set tier page:** `python tools/tier_map.py` regenerates `Erazure-Unique-Set-Tiers.html` (the players' page: each unique and set item's tier and conditions, from the filter's own rules; `build.bat` and the hook run it, CI checks it). It goes to `main` with the filters, and GitHub Pages serves it from there. `--findings` lists the filter checks (tier rules on a base no such item drops as, rule comments naming an item that is not on its base, labels BH cuts at 56 characters). After `--extract` (new items or bases), run it and read the findings.
 
 **With a beta (as for Season 14, 2026-10):** do the work on a `beta` branch made from `setup`, with `"season": "Season NN Beta"` in `version.json` so the Cube shows it. The launcher only serves `main`, so to let beta testers pick the beta build, `python tools/publish_beta.py` copies `beta`'s `Erazure-Main.filter` to `main` as `Erazure-S14-Beta.filter` plus a `filter_definitions.json` entry, never touching the 8 live files (`--push` only with the author's go-ahead). Patch notes change during a beta: diff each update against what is done. At launch: merge `beta` → `setup` → `main`, set the final season name, `build.bat`, and `python tools/publish_beta.py --remove`. The S14 list is in `docs/patch-notes/s14-dev-streams.md`.
 
