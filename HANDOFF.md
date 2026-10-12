@@ -117,10 +117,10 @@ About 825 KB is roughly 200k+ tokens per file. **No conversation will "see the w
 | `260-arrow-bolt-affixes` | 6242–6329 | |
 | `270-rathma-gear-tags` | 6330–6358 | |
 | `280-skills-shop-highlights` | 6359–7113 | +Skills items and shop highlights (largest file, ~27k tokens) |
-| `290-sell-value-tags` | 7114–7171 | High sell value ($), low cost vendor |
 | `300-affix-tags` | 7172–7990 | ~45 stat-tag groups: MF, GF, resists, FCR, IAS, skills… |
 | `305-runeword-rolls` | (added S14) | GENERATED (`tools/gen_runeword_rolls.py`): runeword roll tags, aliases and tag lines in 300's stat order |
 | `310-staffmods` | 7991–8267 | |
+| `315-sell-value-tags` | (was 290 until S14) | Sell value ($6k below character level 30, then ($)) and low cost vendor ($): left-most tag of the lower line, so after every tag section |
 | `320-highlights-ed-amp-lr` | 8268–8314 | |
 | `330-tooltip-tags` | 8315–8336 | Cannot Be Frozen, weapon speed & range, item tier type (commented out) |
 | `340-high-alvl-crafting-bases` | 8337–8385 | |

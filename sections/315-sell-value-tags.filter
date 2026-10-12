@@ -2,7 +2,9 @@
 //    =========================  High Sell Value Tag ($)  ====================
 // ------------------------------------------------------------------------------
 
-// These lines add a "$" to the start of an item name if it's more than 10,000 in normal, more than 20,000 in nightmare, more than 25,000 in hell
+// These lines add a "$" as the left-most tag of the lower (affix) line if the item sells for more than 10,000 in normal,
+// more than 20,000 in nightmare, more than 25,000 in hell. They come after 300-affix-tags, 305-runeword-rolls and
+// 310-staffmods, since a later line puts its tag further left.
 // Normal difficulty
 ItemDisplay[(NMAG OR MAG OR RARE) !leg STAT360=0 !SHOP ID !EQUIPPED !RW DIFF=0 FILTLVL<8 !STASH SELLPRICE~1000-1999 ((SELLPRICE>999 CLVL<5) OR (SELLPRICE>2999 CLVL~5-9) OR (SELLPRICE>4999 CLVL~10-19) OR (SELLPRICE>9999 CLVL~20-29)) !(NMAG (CHEST OR (HELM !DRU) OR (SHIELD !NEC) OR GLOVES OR BELT OR BOOTS))]:%TAN%$%WHITE%1%TAN%k %NAME%{%NAME%}%CONTINUE%// 
 ItemDisplay[(NMAG OR MAG OR RARE) !leg STAT360=0 !SHOP ID !EQUIPPED !RW DIFF=0 FILTLVL<8 !STASH SELLPRICE~2000-2999 ((SELLPRICE>999 CLVL<5) OR (SELLPRICE>2999 CLVL~5-9) OR (SELLPRICE>4999 CLVL~10-19) OR (SELLPRICE>9999 CLVL~20-29)) !(NMAG (CHEST OR (HELM !DRU) OR (SHIELD !NEC) OR GLOVES OR BELT OR BOOTS))]:%TAN%$%WHITE%2%TAN%k %NAME%{%NAME%}%CONTINUE%// 

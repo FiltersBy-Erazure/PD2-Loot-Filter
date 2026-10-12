@@ -43,6 +43,8 @@ Checks (the id in [brackets] is what tools/lint_allow.txt refers to):
                     --fix re-sorts 300, python tools/gen_runeword_rolls.py regenerates 305)
     rw-tag          300-affix-tags: a tag line that can also match a runeword. 305-runeword-rolls tags runewords'
                     rolls in the game's order, so such a tag would come out of that order, or twice
+    town-hide       a rule that hides the item (empty name, no %CONTINUE%) without !TOWN: nothing is ever hidden
+                    in town (the author, 2026-10-11); TOWN (040-aliases) includes the Guild Halls
 
 Lengths are lower bounds: %NAME% and other value references count as 0 characters, because
 their real length depends on the item and on earlier %CONTINUE% layers.
@@ -287,6 +289,7 @@ class Linter:
         self.check_tiers()
         self.check_tag_order()
         self.check_runeword_tags()
+        self.check_town_hide()
         return self.findings
 
     def check_aliases(self):
@@ -450,6 +453,20 @@ class Linter:
                 self.report(r.idx, "warning", "rw-tag",
                             "this tag line can also match a runeword (RW): 305-runeword-rolls tags runewords in the "
                             "game's order, so gate the line (e.g. !RW) or tag the stat there", r.line)
+
+
+    def check_town_hide(self):
+        """A rule that hides the item without !TOWN: no item is ever hidden in town (the author, 2026-10-11)."""
+        import explain_item
+        for r in self.rules:
+            if r.commented:
+                continue
+            name, continues, *_ = explain_item.action(r.output, self.aliases)
+            name = re.sub(r"%SOUNDID-\d+%", "", name, flags=re.I)
+            if continues or explain_item.shows_name(name) or "!TOWN" in r.cond.replace(" ", ""):
+                continue
+            self.report(r.idx, "warning", "town-hide", "this rule hides the item in town too (TOWN includes "
+                        "the Guild Halls): add !TOWN", r.line)
 
 
 RW_COMPARE_RE = re.compile(r"^(STAT360|STAT206)([<>=~])(-?\d+)(?:-(\d+))?$")

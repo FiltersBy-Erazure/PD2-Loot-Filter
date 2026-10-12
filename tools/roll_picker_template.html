@@ -123,7 +123,7 @@
         <option value="0">None</option><option>1</option><option>2</option><option>3</option>
         <option>4</option><option>5</option><option>6</option>
       </select></label>
-    <label class="check sock-opt"><input id="corrupt" type="checkbox"> Corrupted sockets (*)</label>
+    <label class="check sock-opt" title="The red * on corrupted sockets, and a long set name's short name (Tal Rasha's...)"><input id="corrupt" type="checkbox"> Corrupted</label>
     <label class="check rw-opt"><input id="ethereal" type="checkbox"> Ethereal base (Eth)</label>
     <label class="check">Name limit
       <select id="limit" aria-label="Name length limit">
@@ -220,9 +220,14 @@ function orderedTags(it, picks) {
   return out;
 }
 
+function shortMode(it, picks) {  // a long set name's short name: when corrupted, or always if the tags need its room
+  return it.short ? (used(it, picks) > it.room ? "always" : "corrupted") : null;
+}
+
 function labelLines(it, picks) {  // top to bottom; each line a list of [color, text, requested]
   const kc = it.nameColor || KIND_COLOR[it.kind] || "WHITE";
-  const top = [[kc, it.shown || it.name, false]];
+  const mode = shortMode(it, picks);
+  const top = [[kc, mode === "always" || (mode && view.corrupt) ? it.short : it.shown || it.name, false]];
   if (it.sockets && view.sockets > 0) {
     top.push([kc, " ", false], ["WHITE", String(view.sockets), false]);
     if (view.corrupt) top.push(["RED", "*", false]);
@@ -255,8 +260,9 @@ function shownPicks(it, picks) {  // a runeword shows the picked rolls its base'
   return keys ? picks.filter((k) => keys.includes(k)) : picks;
 }
 
-function roomOf(it) {  // a runeword's room depends on the base and tags its preview shows
-  return it.baseChoices ? it.roomBase - baseLine(it).reduce((n, s) => n + s[1].length, 0) : it.room;
+function roomOf(it, picks) {  // a runeword's room depends on the base its preview shows; a short name's on its mode
+  if (it.baseChoices) return it.roomBase - baseLine(it).reduce((n, s) => n + s[1].length, 0);
+  return shortMode(it, picks) === "always" ? it.roomShort : it.room;
 }
 
 function bhTrim(lines, mode) {
@@ -339,7 +345,7 @@ function card(it) {
   const ul = el("ul", {class: "stats"});
   for (const s of it.stats) ul.append(statRow(it, st, s));
   const det = el("details", {open: ""}, el("summary", {text: "All stats"}), ul);
-  const shownNow = shownPicks(it, st.picks), u = used(it, shownNow), room = roomOf(it);
+  const shownNow = shownPicks(it, st.picks), u = used(it, shownNow), room = roomOf(it, shownNow);
   const req = it.cands.filter((c) => !c.tagged && shownNow.includes(c.k));
   const meter = el("div", {class: "meter" + (u > room ? " over" : "")},
     el("span", {}, "uses ", el("b", {text: String(u)}), ` of room ${room}` +

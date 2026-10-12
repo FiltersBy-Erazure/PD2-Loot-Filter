@@ -325,10 +325,8 @@ class Variant:
             self.rolls.setdefault(rw_key(code), {"code": code, "lo": total[0], "hi": total[1], "roll": (lo, hi),
                                                  "line": line})
         eres = [self.rolls.get(k) for k in U.ERES_KEYS.values()]
-        if all(eres):  # all three -% enemy resistances: one grouped tag, as on Kira's Guardian, in the item's order
-            letters = {"STAT335": "c", "STAT333": "f", "STAT334": "l"}  # (its properties' order, Famine: cfl)
-            order = "".join(dict.fromkeys(letters[p[0][0]] for p in self.props if p and p[0][0] in letters))
-            key = f"eres_{order}"
+        if all(eres):  # all three -% enemy resistances: one grouped tag, as on Kira's Guardian, in the game's order
+            key = f"eres_{U.ERES_DEFAULT}"  # S14 lists them fire, lightning, cold, whatever the property order (Famine)
             self.rolls[key] = {"code": U.TAGS[key][1], "lo": min(r["lo"] for r in eres),
                                "hi": max(r["hi"] for r in eres), "roll": None, "line": "All three -% Enemy Resistances"}
         self.fingerprint, self.unresolved = [], []
@@ -628,10 +626,15 @@ def render_section(rws, picks):
                 if not guard:  # the stat must be there (a version of the runeword may lack the roll)
                     code = ERES_STAT[key[5]] if key.startswith("eres_") else c["code"]
                     guard = [f"{code}<0" if c["hi"] < 0 else f"{code}>0"]
-                line = (f"ItemDisplay[{where}{rw_alias(key, label)} {' '.join(guard)}]:{raw(var['parts'])}%CS%%NAME%"
-                        "{%NAME%}%CONTINUE%")
-                if line not in lines:
-                    lines.append(line)
+                shown = [(guard, var["parts"])]
+                if c["code"] in PER_LEVEL:  # per level (0.75s) unless your character wears it: then the total at its level
+                    total = [[col, re.sub(r"\{f:([^/}]+)/(\d+)\}", r"{f:FLOOR(\1*CLVL/\2)}", t)] for col, t in var["parts"]]
+                    shown = [(guard + ["!EQUIPPED"], var["parts"]), (guard + ["EQUIPPED"], total)]
+                for g, parts in shown:
+                    line = (f"ItemDisplay[{where}{rw_alias(key, label)} {' '.join(g)}]:{raw(parts)}%CS%%NAME%"
+                            "{%NAME%}%CONTINUE%")
+                    if line not in lines:
+                        lines.append(line)
     return "\r\n".join(lines)
 
 

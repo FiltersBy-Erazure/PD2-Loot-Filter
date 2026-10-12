@@ -1,23 +1,23 @@
 // ================================  Gold  =======================================
 
-ItemDisplay[GOLD<10 CLVL>4]://                          Hide under 10 gold if level 5+
-ItemDisplay[GOLD<50 CLVL>9]://                          Hide under 50 gold if level 10+
-ItemDisplay[GOLD<100 CLVL>19]://                        Hide under 100 gold if level 20+
-ItemDisplay[GOLD<200 CLVL>29]://                        Hide under 200 gold if level 30+
-ItemDisplay[GOLD<300 CLVL>39]://                        Hide under 300 gold if level 40+
-ItemDisplay[GOLD<400 CLVL>49]://                        Hide under 400 gold if level 50+
-ItemDisplay[GOLD<500 CLVL>59]://                        Hide under 500 gold if level 60+
-ItemDisplay[GOLD<600 CLVL>69]://                        Hide under 600 gold if level 70+
+ItemDisplay[GOLD<10 CLVL>4 !TOWN]://                          Hide under 10 gold if level 5+
+ItemDisplay[GOLD<50 CLVL>9 !TOWN]://                          Hide under 50 gold if level 10+
+ItemDisplay[GOLD<100 CLVL>19 !TOWN]://                        Hide under 100 gold if level 20+
+ItemDisplay[GOLD<200 CLVL>29 !TOWN]://                        Hide under 200 gold if level 30+
+ItemDisplay[GOLD<300 CLVL>39 !TOWN]://                        Hide under 300 gold if level 40+
+ItemDisplay[GOLD<400 CLVL>49 !TOWN]://                        Hide under 400 gold if level 50+
+ItemDisplay[GOLD<500 CLVL>59 !TOWN]://                        Hide under 500 gold if level 60+
+ItemDisplay[GOLD<600 CLVL>69 !TOWN]://                        Hide under 600 gold if level 70+
 
-ItemDisplay[GOLD<1500 CLVL>79 FILTLVL~1-7]://           Hide under 1500 gold if level 80+ on loot filter levels 1-7
-ItemDisplay[GOLD<2500 CLVL>84 FILTLVL~1-7]://           Hide under 2500 gold if level 85+ on loot filter levels 1-7
-ItemDisplay[GOLD<5000 CLVL>89 FILTLVL~1-7]://           Hide under 5000 gold if level 90+ on loot filter levels 1-7
-ItemDisplay[GOLD<7500 CLVL>94 FILTLVL~1-7]://           Hide under 7500 gold if level 95+ on loot filter levels 1-7
+ItemDisplay[GOLD<1500 CLVL>79 FILTLVL~1-7 !TOWN]://           Hide under 1500 gold if level 80+ on loot filter levels 1-7
+ItemDisplay[GOLD<2500 CLVL>84 FILTLVL~1-7 !TOWN]://           Hide under 2500 gold if level 85+ on loot filter levels 1-7
+ItemDisplay[GOLD<5000 CLVL>89 FILTLVL~1-7 !TOWN]://           Hide under 5000 gold if level 90+ on loot filter levels 1-7
+ItemDisplay[GOLD<7500 CLVL>94 FILTLVL~1-7 !TOWN]://           Hide under 7500 gold if level 95+ on loot filter levels 1-7
 
-ItemDisplay[GOLD<2500 CLVL>79 FILTLVL>7]://             Hide under 2500 gold if level 80+ on loot filter levels 8-12
-ItemDisplay[GOLD<5000 CLVL>84 FILTLVL>7]://             Hide under 5000 gold if level 85+ on loot filter levels 8-12
-ItemDisplay[GOLD<7500 CLVL>89 FILTLVL>7]://             Hide under 7500 gold if level 90+ on loot filter levels 8-12
-ItemDisplay[GOLD<10000 CLVL>94 FILTLVL>7]://            Hide under 10000 gold if level 95+ on loot filter levels 8-12
+ItemDisplay[GOLD<2500 CLVL>79 FILTLVL>7 !TOWN]://             Hide under 2500 gold if level 80+ on loot filter levels 8-12
+ItemDisplay[GOLD<5000 CLVL>84 FILTLVL>7 !TOWN]://             Hide under 5000 gold if level 85+ on loot filter levels 8-12
+ItemDisplay[GOLD<7500 CLVL>89 FILTLVL>7 !TOWN]://             Hide under 7500 gold if level 90+ on loot filter levels 8-12
+ItemDisplay[GOLD<10000 CLVL>94 FILTLVL>7 !TOWN]://            Hide under 10000 gold if level 95+ on loot filter levels 8-12
 
 // ================================  Health Potions  =================================
 
@@ -36,11 +36,16 @@ ItemDisplay[hp4 !FILTLVL=0 (CLVL~1-49 OR DIFF=0 OR SHOP)]:%GRAY%i%RED%( %WHITE%H
 ItemDisplay[hp5 !FILTLVL=0 (CLVL~1-49 OR DIFF=0 OR SHOP)]:%CORAL%i%RED%( %WHITE%H5 %RED%)%CORAL%i%WHITE%%PX-50%%TIER-0%{%WHITE% Super Healing Potion }//
 
 // Hide lower quality potions based on character level
-ItemDisplay[hp1 !SHOP CLVL>14]:{%WHITE% Minor Healing Potion }//
-ItemDisplay[hp2 !SHOP CLVL>19]:{%WHITE% Light Healing Potion }//
-ItemDisplay[hp3 !SHOP CLVL>22]:{%WHITE% Healing Potion }//
-ItemDisplay[hp4 !SHOP (CLVL>49 OR FILTLVL>2)]:{%WHITE% Greater Healing Potion }//
-ItemDisplay[hp5 !SHOP CLVL>49 (FILTLVL=4 OR FILTLVL~6-12)]:{%WHITE% Super Healing Potion }//
+ItemDisplay[hp1 !SHOP CLVL>14 !TOWN]:{%WHITE% Minor Healing Potion }//
+ItemDisplay[hp1 !SHOP CLVL>14 TOWN]:%WHITE%h%RED%¹%WHITE%{%WHITE% Minor Healing Potion }//
+ItemDisplay[hp2 !SHOP CLVL>19 !TOWN]:{%WHITE% Light Healing Potion }//
+ItemDisplay[hp2 !SHOP CLVL>19 TOWN]:%WHITE%h%RED%²%WHITE%{%WHITE% Light Healing Potion }//
+ItemDisplay[hp3 !SHOP CLVL>22 !TOWN]:{%WHITE% Healing Potion }//
+ItemDisplay[hp3 !SHOP CLVL>22 TOWN]:%WHITE%h%RED%³%WHITE%{%WHITE% Healing Potion }//
+ItemDisplay[hp4 !SHOP (CLVL>49 OR FILTLVL>2) !TOWN]:{%WHITE% Greater Healing Potion }//
+ItemDisplay[hp4 !SHOP (CLVL>49 OR FILTLVL>2) TOWN]:%WHITE%H%RED%•%WHITE%{%WHITE% Greater Healing Potion }//
+ItemDisplay[hp5 !SHOP CLVL>49 (FILTLVL=4 OR FILTLVL~6-12) !TOWN]:{%WHITE% Super Healing Potion }//
+ItemDisplay[hp5 !SHOP CLVL>49 (FILTLVL=4 OR FILTLVL~6-12) TOWN]:%WHITE% H%RED%+ %WHITE%{%WHITE% Super Healing Potion }//
 
 // Super Healing Potion
 ItemDisplay[hp5 CLVL>49 (FILTLVL~1-3 OR FILTLVL=5)]:%CORAL%i%RED%IOI%CORAL%i%WHITE%{%WHITE% Super Healing Potion }//
@@ -62,11 +67,16 @@ ItemDisplay[mp4 !FILTLVL=0 (CLVL~1-49 OR DIFF=0 OR SHOP)]:%GRAY%i%BLUE%( %WHITE%
 ItemDisplay[mp5 !FILTLVL=0 (CLVL~1-49 OR DIFF=0 OR SHOP)]:%TEAL%i%BLUE%( %WHITE%M5 %BLUE%)%TEAL%i%WHITE%%PX-97%%TIER-0%{%WHITE% Super Mana Potion }//
 
 // Hide lower quality potions based on character level
-ItemDisplay[mp1 !SHOP CLVL>14]:{%WHITE% Minor Mana Potion }//
-ItemDisplay[mp2 !SHOP CLVL>19]:{%WHITE% Light Mana Potion }//
-ItemDisplay[mp3 !SHOP CLVL>22]:{%WHITE% Mana Potion }//
-ItemDisplay[mp4 !SHOP (CLVL>49 OR FILTLVL>2)]:{%WHITE% Greater Mana Potion }//
-ItemDisplay[mp5 !SHOP CLVL>49 (FILTLVL~5-7 OR FILTLVL~9-12)]:{%WHITE% Super Mana Potion }//
+ItemDisplay[mp1 !SHOP CLVL>14 !TOWN]:{%WHITE% Minor Mana Potion }//
+ItemDisplay[mp1 !SHOP CLVL>14 TOWN]:%WHITE%m%BLUE%¹%WHITE%{%WHITE% Minor Mana Potion }//
+ItemDisplay[mp2 !SHOP CLVL>19 !TOWN]:{%WHITE% Light Mana Potion }//
+ItemDisplay[mp2 !SHOP CLVL>19 TOWN]:%WHITE%m%BLUE%²%WHITE%{%WHITE% Light Mana Potion }//
+ItemDisplay[mp3 !SHOP CLVL>22 !TOWN]:{%WHITE% Mana Potion }//
+ItemDisplay[mp3 !SHOP CLVL>22 TOWN]:%WHITE%m%BLUE%³%WHITE%{%WHITE% Mana Potion }//
+ItemDisplay[mp4 !SHOP (CLVL>49 OR FILTLVL>2) !TOWN]:{%WHITE% Greater Mana Potion }//
+ItemDisplay[mp4 !SHOP (CLVL>49 OR FILTLVL>2) TOWN]:%WHITE%M%BLUE%•%WHITE%{%WHITE% Greater Mana Potion }//
+ItemDisplay[mp5 !SHOP CLVL>49 (FILTLVL~5-7 OR FILTLVL~9-12) !TOWN]:{%WHITE% Super Mana Potion }//
+ItemDisplay[mp5 !SHOP CLVL>49 (FILTLVL~5-7 OR FILTLVL~9-12) TOWN]:%WHITE% M%BLUE%+ %WHITE%{%WHITE% Super Mana Potion }//
 
 // Super Mana Potion
 ItemDisplay[mp5 CLVL>49 (FILTLVL~1-4 OR FILTLVL=8)]:%TEAL%i%BLUE%IOI%TEAL%i%WHITE%{%WHITE% Super Mana Potion }//
@@ -100,20 +110,24 @@ ItemDisplay[rvl !(MAPID~161-163 OR MAPID=137 OR MAPID~188-189) FILTLVL~1-6 CLVL>
 ItemDisplay[rvl !(MAPID~161-163 OR MAPID=137 OR MAPID~188-189) FILTLVL>6 CLVL<80]:%PURPLE%i%GRAY%I%PURPLE%(O)%GRAY%I%PURPLE%i%WHITE%{%WHITE% Full Rejuvenation Potion }%DOT-9B%%PX-20%%TIER-0%//
 ItemDisplay[rvl !(MAPID~161-163 OR MAPID=137 OR MAPID~188-189) FILTLVL>6 CLVL>79]:%PURPLE%i%GRAY%I%PURPLE%(O)%GRAY%I%PURPLE%i%WHITE%{%WHITE% Full Rejuvenation Potion }//
 
-ItemDisplay[rvs !(MAPID~161-163 OR MAPID=137 OR MAPID~188-189) FILTLVL>6]:{%WHITE% Rejuvenation Potion }//
+ItemDisplay[rvs !(MAPID~161-163 OR MAPID=137 OR MAPID~188-189) FILTLVL>6 !TOWN]:{%WHITE% Rejuvenation Potion }//
+ItemDisplay[rvs !(MAPID~161-163 OR MAPID=137 OR MAPID~188-189) FILTLVL>6 TOWN]:%GRAY%i%PURPLE%(%WHITE% 35% %PURPLE%)%GRAY%i{%WHITE% Rejuvenation Potion }//
 
 // =====================================  Utility Potions  ==================================
 
 //Stamina
 ItemDisplay[vps (CLVL<10 OR FILTLVL=0 OR SHOP)]:%GRAY%i%WHITE%( %WHITE%Stam %WHITE%)%GRAY%i%WHITE%{%WHITE%Stamina Potion}//
-ItemDisplay[vps CLVL>9 !SHOP]:{%WHITE%Stamina Potion}// Hides Stamina Potions when character level 10+
+ItemDisplay[vps CLVL>9 !SHOP !TOWN]:{%WHITE%Stamina Potion}// Hides Stamina Potions when character level 10+
+ItemDisplay[vps CLVL>9 !SHOP TOWN]:%GRAY%i%WHITE%( %WHITE%Stam %WHITE%)%GRAY%i%WHITE%{%WHITE%Stamina Potion}// Hides Stamina Potions when character level 10+
 
 // Antidote
 ItemDisplay[yps FILTLVL=0]:%GRAY%i%DARK_GREEN%(%WHITE%A%DARK_GREEN%)%GRAY%i%WHITE%{%WHITE%+25% poison resistance for 30 seconds%CL%%WHITE%Cures %DARK_GREEN%poison %WHITE%affliction and grants%CL%Antidote Potion}//
 ItemDisplay[yps SHOP]:%GRAY%i%DARK_GREEN%( %WHITE%Anti %DARK_GREEN%)%GRAY%i%WHITE%{%WHITE%+25% poison resistance for 30 seconds%CL%%WHITE%Cures %DARK_GREEN%poison %WHITE%affliction and grants%CL%Antidote Potion}//
 ItemDisplay[yps MAPID~161-163]:%GRAY%i%DARK_GREEN%(%WHITE%A%DARK_GREEN%)%GRAY%i%WHITE%{%WHITE%+25% poison resistance for 30 seconds%CL%%WHITE%Cures %DARK_GREEN%poison %WHITE%affliction and grants%CL%Antidote Potion}//      
-ItemDisplay[yps !MAPID~161-163 CLVL>79 !SORCERESS FILTLVL>1 !SHOP]:{%WHITE%+25% poison resistance for 30 seconds%CL%%WHITE%Cures %DARK_GREEN%poison %WHITE%affliction and grants%CL%Antidote Potion}//
-ItemDisplay[yps !MAPID~161-163 CLVL>79 SORCERESS CHARSTAT1<150 FILTLVL>2 !SHOP]:{%WHITE%+25% poison resistance for 30 seconds%CL%%WHITE%Cures %DARK_GREEN%poison %WHITE%affliction and grants%CL%Antidote Potion}//
+ItemDisplay[yps !MAPID~161-163 CLVL>79 !SORCERESS FILTLVL>1 !SHOP !TOWN]:{%WHITE%+25% poison resistance for 30 seconds%CL%%WHITE%Cures %DARK_GREEN%poison %WHITE%affliction and grants%CL%Antidote Potion}//
+ItemDisplay[yps !MAPID~161-163 CLVL>79 !SORCERESS FILTLVL>1 !SHOP TOWN]:%GRAY%i%DARK_GREEN%(%WHITE%A%DARK_GREEN%)%GRAY%i%WHITE%{%WHITE%+25% poison resistance for 30 seconds%CL%%WHITE%Cures %DARK_GREEN%poison %WHITE%affliction and grants%CL%Antidote Potion}//
+ItemDisplay[yps !MAPID~161-163 CLVL>79 SORCERESS CHARSTAT1<150 FILTLVL>2 !SHOP !TOWN]:{%WHITE%+25% poison resistance for 30 seconds%CL%%WHITE%Cures %DARK_GREEN%poison %WHITE%affliction and grants%CL%Antidote Potion}//
+ItemDisplay[yps !MAPID~161-163 CLVL>79 SORCERESS CHARSTAT1<150 FILTLVL>2 !SHOP TOWN]:%GRAY%i%DARK_GREEN%(%WHITE%A%DARK_GREEN%)%GRAY%i%WHITE%{%WHITE%+25% poison resistance for 30 seconds%CL%%WHITE%Cures %DARK_GREEN%poison %WHITE%affliction and grants%CL%Antidote Potion}//
 ItemDisplay[yps !MAPID~161-163 CLVL>79 SORCERESS CHARSTAT1>149 FILTLVL>2 !SHOP]:%GRAY%i%DARK_GREEN%(%WHITE%A%DARK_GREEN%)%GRAY%i%WHITE%{%WHITE%+25% poison resistance for 30 seconds%CL%%WHITE%Cures %DARK_GREEN%poison %WHITE%affliction and grants%CL%Antidote Potion}//
 ItemDisplay[yps CLVL>24]:%GRAY%i%DARK_GREEN%(%WHITE%A%DARK_GREEN%)%GRAY%i%WHITE%{%WHITE%+25% poison resistance for 30 seconds%CL%%WHITE%Cures %DARK_GREEN%poison %WHITE%affliction and grants%CL%Antidote Potion}//
 ItemDisplay[yps CLVL<25 !FILTLVL=0]:%GRAY%i%DARK_GREEN%( %WHITE%Anti %DARK_GREEN%)%GRAY%i%WHITE%%PX-76%%TIER-0%{%WHITE%+25% poison resistance for 30 seconds%CL%%WHITE%Cures %DARK_GREEN%poison %WHITE%affliction and grants%CL%Antidote Potion}//
@@ -121,52 +135,65 @@ ItemDisplay[yps CLVL<25 !FILTLVL=0]:%GRAY%i%DARK_GREEN%( %WHITE%Anti %DARK_GREEN
 // Thawing
 ItemDisplay[wms FILTLVL=0]:%GRAY%i%YELLOW%(%WHITE%T%YELLOW%)%GRAY%i%WHITE%{%WHITE%+25% cold resistance for 30 seconds%CL%%WHITE%Clears %BLUE%frozen %WHITE%affliction and grants%CL%Thawing Potion}//
 ItemDisplay[wms SHOP]:%GRAY%i%YELLOW%( %WHITE%Thaw %YELLOW%)%GRAY%i%WHITE%{%WHITE%+25% cold resistance for 30 seconds%CL%%WHITE%Clears %BLUE%frozen %WHITE%affliction and grants%CL%Thawing Potion}//
-ItemDisplay[wms CLVL>79 FILTLVL>2 !SHOP]:{%WHITE%+25% cold resistance for 30 seconds%CL%%WHITE%Clears %BLUE%frozen %WHITE%affliction and grants%CL%%WHITE%Thawing Potion}//
+ItemDisplay[wms CLVL>79 FILTLVL>2 !SHOP !TOWN]:{%WHITE%+25% cold resistance for 30 seconds%CL%%WHITE%Clears %BLUE%frozen %WHITE%affliction and grants%CL%%WHITE%Thawing Potion}//
+ItemDisplay[wms CLVL>79 FILTLVL>2 !SHOP TOWN]:%GRAY%i%YELLOW%(%WHITE%T%YELLOW%)%GRAY%i%WHITE%{%WHITE%+25% cold resistance for 30 seconds%CL%%WHITE%Clears %BLUE%frozen %WHITE%affliction and grants%CL%%WHITE%Thawing Potion}//
 ItemDisplay[wms CLVL>24]:%GRAY%i%YELLOW%(%WHITE%T%YELLOW%)%GRAY%i%WHITE%{%WHITE%+25% cold resistance for 30 seconds%CL%%WHITE%Clears %BLUE%frozen %WHITE%affliction and grants%CL%Thawing Potion}//
 ItemDisplay[wms CLVL<25 !FILTLVL=0]:%GRAY%i%YELLOW%( %WHITE%Thaw %YELLOW%)%GRAY%i%WHITE%%PX-6C%%TIER-0%{%WHITE%+25% cold resistance for 30 seconds%CL%%WHITE%Clears %BLUE%frozen %WHITE%affliction and grants%CL%Thawing Potion}//
 
 // =====================================  Throwing Potions  =================================
 
 ItemDisplay[tpgs (FILTLVL=0 OR SHOP)]:%GRAY%Strangling%WHITE%{ %GRAY%Strangling Potion }//
-ItemDisplay[tpgs (CLVL>8 OR FILTLVL>1)]:{%WHITE% Strangling Potion }//
+ItemDisplay[tpgs (CLVL>8 OR FILTLVL>1) !TOWN]:{%WHITE% Strangling Potion }//
+ItemDisplay[tpgs (CLVL>8 OR FILTLVL>1) TOWN]:%GRAY%Strangling%WHITE%{%WHITE% Strangling Potion }//
 ItemDisplay[tpgs CLVL<9]:%GRAY%i%DARK_GREEN%(  %GRAY%Strangling  %DARK_GREEN%)%GRAY%i%WHITE%{ %WHITE%Strangling Potion }// Strangling Gas Potion (Level 6 Req)
 ItemDisplay[tpgm (FILTLVL=0 OR SHOP)]:%GRAY%Choking%WHITE%{ %GRAY%Choking Potion }//
-ItemDisplay[tpgm (CLVL>19 OR FILTLVL>1)]:{%WHITE% Choking Potion }//
+ItemDisplay[tpgm (CLVL>19 OR FILTLVL>1) !TOWN]:{%WHITE% Choking Potion }//
+ItemDisplay[tpgm (CLVL>19 OR FILTLVL>1) TOWN]:%GRAY%Choking%WHITE%{%WHITE% Choking Potion }//
 ItemDisplay[tpgm CLVL<20]:%GRAY%i%DARK_GREEN%(  %GRAY%Choking  %DARK_GREEN%)%GRAY%i%WHITE%{ %WHITE%Choking Potion }// Choking Gas Potion (Level 16 Req)
 ItemDisplay[tpgl (FILTLVL=0 OR SHOP)]:%GRAY%Rancid%WHITE%{ %GRAY%Rancid Potion }//
-ItemDisplay[tpgl (CLVL>27 OR FILTLVL>1)]:{%WHITE% Rancid Potion }//
+ItemDisplay[tpgl (CLVL>27 OR FILTLVL>1) !TOWN]:{%WHITE% Rancid Potion }//
+ItemDisplay[tpgl (CLVL>27 OR FILTLVL>1) TOWN]:%GRAY%Rancid%WHITE%{%WHITE% Rancid Potion }//
 ItemDisplay[tpgl CLVL<28]:%GRAY%i%DARK_GREEN%(  %GRAY%Rancid  %DARK_GREEN%)%GRAY%i%WHITE%{ %WHITE%Rancid Potion }// Rancid Gas Potion (Level 24 Req)
 
 ItemDisplay[tpfs (FILTLVL=0 OR SHOP)]:%GRAY%Fulminating%WHITE%{ %GRAY%Fulminating Potion }//
-ItemDisplay[tpfs (CLVL>6 OR FILTLVL>1)]:{%WHITE% Fulminating Potion }//
+ItemDisplay[tpfs (CLVL>6 OR FILTLVL>1) !TOWN]:{%WHITE% Fulminating Potion }//
+ItemDisplay[tpfs (CLVL>6 OR FILTLVL>1) TOWN]:%GRAY%Fulminating%WHITE%{%WHITE% Fulminating Potion }//
 ItemDisplay[tpfs CLVL<5]:%GRAY%i%RED%( %GRAY%Fulminating %RED%)%GRAY%i%WHITE%%PX-50%{ %WHITE%Fulminating Potion }// Fulminating Potion (Level 1 Req)
 ItemDisplay[tpfs CLVL~5-6]:%GRAY%i%RED%( %GRAY%Fulminating %RED%)%GRAY%i%WHITE%{ %WHITE%Fulminating Potion }// Fulminating Potion (Level 1 Req)
 ItemDisplay[tpfm (FILTLVL=0 OR SHOP)]:%GRAY%Exploding%WHITE%{ %GRAY%Exploding Potion }//
-ItemDisplay[tpfm (CLVL>15 OR FILTLVL>1)]:{%WHITE% Exploding Potion }//
+ItemDisplay[tpfm (CLVL>15 OR FILTLVL>1) !TOWN]:{%WHITE% Exploding Potion }//
+ItemDisplay[tpfm (CLVL>15 OR FILTLVL>1) TOWN]:%GRAY%Exploding%WHITE%{%WHITE% Exploding Potion }//
 ItemDisplay[tpfm CLVL<16]:%GRAY%i%RED%( %GRAY%Exploding %RED%)%GRAY%i%WHITE%{ %WHITE%Exploding Potion }// Exploding Potion (Level 12 Req)
 ItemDisplay[tpfl (FILTLVL=0 OR SHOP)]:%GRAY%Oil%WHITE%{ %GRAY%Oil Potion }//
-ItemDisplay[tpfl (CLVL>23 OR FILTLVL>1)]:{%WHITE% Oil Potion }//
+ItemDisplay[tpfl (CLVL>23 OR FILTLVL>1) !TOWN]:{%WHITE% Oil Potion }//
+ItemDisplay[tpfl (CLVL>23 OR FILTLVL>1) TOWN]:%GRAY%Oil%WHITE%{%WHITE% Oil Potion }//
 ItemDisplay[tpfl CLVL<24]:%GRAY%i%RED%( %GRAY%Oil Potion %RED%)%GRAY%i%WHITE%{ %WHITE%Oil Potion }// Oil Potion (Level 20 Req)
 
 ItemDisplay[tpcs (FILTLVL=0 OR SHOP)]:%GRAY%Chilling%WHITE%{ %GRAY%Chilling Potion }//
-ItemDisplay[tpcs (CLVL>6 OR FILTLVL>1)]:{%WHITE% Chilling Potion }//
+ItemDisplay[tpcs (CLVL>6 OR FILTLVL>1) !TOWN]:{%WHITE% Chilling Potion }//
+ItemDisplay[tpcs (CLVL>6 OR FILTLVL>1) TOWN]:%GRAY%Chilling%WHITE%{%WHITE% Chilling Potion }//
 ItemDisplay[tpcs CLVL<5]:%GRAY%i%BLUE%( %GRAY%Chilling %BLUE%)%GRAY%i%WHITE%%PX-97%{ %WHITE%Chilling Potion }// Chilling Potion (Level 1 Req)
 ItemDisplay[tpcs CLVL~5-6]:%GRAY%i%BLUE%( %GRAY%Chilling %BLUE%)%GRAY%i%WHITE%{ %WHITE%Chilling Potion }// Chilling Potion (Level 1 Req)
 ItemDisplay[tpcm (FILTLVL=0 OR SHOP)]:%GRAY%Frost%WHITE%{ %GRAY%Frost Potion }//
-ItemDisplay[tpcm (CLVL>15 OR FILTLVL>1)]:{%WHITE% Frost Potion }//
+ItemDisplay[tpcm (CLVL>15 OR FILTLVL>1) !TOWN]:{%WHITE% Frost Potion }//
+ItemDisplay[tpcm (CLVL>15 OR FILTLVL>1) TOWN]:%GRAY%Frost%WHITE%{%WHITE% Frost Potion }//
 ItemDisplay[tpcm CLVL<16]:%GRAY%i%BLUE%( %GRAY%Frost %BLUE%)%GRAY%i%WHITE%{ %WHITE%Frost Potion }// Frost Potion (Level 12 Req)
 ItemDisplay[tpcl (FILTLVL=0 OR SHOP)]:%GRAY%Freezing%WHITE%{ %GRAY%Freezing Potion }// 
-ItemDisplay[tpcl (CLVL>23 OR FILTLVL>1)]:{%WHITE% Freezing Potion }//
+ItemDisplay[tpcl (CLVL>23 OR FILTLVL>1) !TOWN]:{%WHITE% Freezing Potion }//
+ItemDisplay[tpcl (CLVL>23 OR FILTLVL>1) TOWN]:%GRAY%Freezing%WHITE%{%WHITE% Freezing Potion }//
 ItemDisplay[tpcl CLVL<24]:%GRAY%i%BLUE%( %GRAY%Freezing %BLUE%)%GRAY%i%WHITE%{ %WHITE%Freezing Potion }// Freezing Potion (Level 20 Req)
 
 ItemDisplay[tpls (FILTLVL=0 OR SHOP)]:%GRAY%Charged%WHITE%{ %GRAY%Charged Potion }//
-ItemDisplay[tpls (CLVL>8 OR FILTLVL>1)]:{%WHITE% Charged Potion }//
+ItemDisplay[tpls (CLVL>8 OR FILTLVL>1) !TOWN]:{%WHITE% Charged Potion }//
+ItemDisplay[tpls (CLVL>8 OR FILTLVL>1) TOWN]:%GRAY%Charged%WHITE%{%WHITE% Charged Potion }//
 ItemDisplay[tpls CLVL<9]:%GRAY%i%YELLOW%(  %GRAY%Charged  %YELLOW%)%GRAY%i%WHITE%{ %WHITE%Charged Potion }// Charged Potion (Level 6 Req)
 ItemDisplay[tplm (FILTLVL=0 OR SHOP)]:%GRAY%Static%WHITE%{ %GRAY%Static Potion }//
-ItemDisplay[tplm (CLVL>19 OR FILTLVL>1)]:{%WHITE% Static Potion }//
+ItemDisplay[tplm (CLVL>19 OR FILTLVL>1) !TOWN]:{%WHITE% Static Potion }//
+ItemDisplay[tplm (CLVL>19 OR FILTLVL>1) TOWN]:%GRAY%Static%WHITE%{%WHITE% Static Potion }//
 ItemDisplay[tplm CLVL<20]:%GRAY%i%YELLOW%(  %GRAY%Static  %YELLOW%)%GRAY%i%WHITE%{ %WHITE%Static Potion }// Static Potion (Level 16 Req)
 ItemDisplay[tpll (FILTLVL=0 OR SHOP)]:%GRAY%Shock%WHITE%{ %GRAY%Shock Potion }//
-ItemDisplay[tpll (CLVL>27 OR FILTLVL>1)]:{%WHITE% Shock Potion }//
+ItemDisplay[tpll (CLVL>27 OR FILTLVL>1) !TOWN]:{%WHITE% Shock Potion }//
+ItemDisplay[tpll (CLVL>27 OR FILTLVL>1) TOWN]:%GRAY%Shock%WHITE%{%WHITE% Shock Potion }//
 ItemDisplay[tpll CLVL<28]:%GRAY%i%YELLOW%( %GRAY%Shock %YELLOW%)%GRAY%i%WHITE%{ %WHITE%Shock Potion }// Shock Potion (Level 24 Req)
 
 // =================================  Tomes and Scrolls  =================================
@@ -185,14 +212,16 @@ ItemDisplay[isc CLVL<15]:%RED%+ %GRAY%ID %WHITE%Scroll{%WHITE% Scroll of Identif
 // Scroll of Identify between 15 and 49
 ItemDisplay[isc CLVL~15-49]:%RED%+%GRAY%id%WHITE%{%WHITE% Scroll of Identify }//
 // Scroll of Identify after level 49
-ItemDisplay[isc ((CLVL>49 FILTLVL=1) OR FILTLVL=0)]:%RED%+%WHITE%{%WHITE% Scroll of Identify }//
-ItemDisplay[isc CLVL>49 FILTLVL>1]:{%WHITE% Scroll of Identify }//
+ItemDisplay[isc ((CLVL>49 FILTLVL=1 !TOWN) OR FILTLVL=0)]:%RED%+%WHITE%{%WHITE% Scroll of Identify }//
+ItemDisplay[isc CLVL>49 FILTLVL>1 !TOWN]:{%WHITE% Scroll of Identify }//
+ItemDisplay[isc CLVL>49 FILTLVL>0 TOWN]:%RED%+%GRAY%id%WHITE%{%WHITE% Scroll of Identify }//
 
 // Scroll of Town Portal before level 15
 ItemDisplay[tsc CLVL<15]:%BLUE%+ %GRAY%TP %WHITE%Scroll{%WHITE% Scroll of Town Portal }//
 // Scroll of Town Portal between 15 and 49
 ItemDisplay[tsc CLVL~15-49]:%BLUE%+%GRAY%tp%WHITE%{%WHITE% Scroll of Town Portal }//
 // Scroll of Town Portal after level 49
-ItemDisplay[tsc ((CLVL>49 FILTLVL=1) OR FILTLVL=0)]:%BLUE%+%WHITE%{%WHITE% Scroll of Town Portal }//
-ItemDisplay[tsc CLVL>49 FILTLVL>1]:{%WHITE% Scroll of Town Portal }//
+ItemDisplay[tsc ((CLVL>49 FILTLVL=1 !TOWN) OR FILTLVL=0)]:%BLUE%+%WHITE%{%WHITE% Scroll of Town Portal }//
+ItemDisplay[tsc CLVL>49 FILTLVL>1 !TOWN]:{%WHITE% Scroll of Town Portal }//
+ItemDisplay[tsc CLVL>49 FILTLVL>0 TOWN]:%BLUE%+%GRAY%tp%WHITE%{%WHITE% Scroll of Town Portal }//
 

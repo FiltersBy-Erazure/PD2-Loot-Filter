@@ -21,6 +21,11 @@ roll picker shows.
 Each item is one line: kind, name (as the game shows it), the table's own name, base code, slot, caster
 (1 for staves, wands, scepters, orbs), required level, then its properties as JSON: one list per property
 line of the item, each [code, low, high] in the filter's terms (the first is what a tag of that line shows).
++% damage is EDAM and +% defense ED: BH's ED reads enhanced defense on armor, so on a helm or shield only
+EDAM reads +% damage (Biggin's Bonnet, Alma Negra). A per-level stat is stored as the item holds it, N shifted
+by its ValShift (as for runewords: perlevel). "+N to a random skill" is RANDSK<skill IDs> (Ormus' Robes, Spirit
+Keeper) and "+N to a random class's skills" RANDCLSK<class numbers> (Spirit Ward), with N as low and high: the
+item gets one of them, which the filter reads as SK<id> / CLSK<n>.
 
 Each runeword is one line per kind of base it can be made in (weapon, armor or shield: the runes give each
 their own stats, Gems.txt): name, Runes.txt row, that kind, sockets, runes, the filter's slot words, the item
@@ -58,6 +63,9 @@ CLASS_CODES = ["ama", "sor", "nec", "pal", "bar", "dru", "ass"]
 # Elemental "Adds X-Y damage" properties: (element as shown)
 ADDS_DAMAGE = {"dmg-fire": "Fire", "dmg-ltng": "Lightning", "dmg-cold": "Cold", "dmg-mag": "Magic", "dmg-norm": "",
                "dmg-elem": "Fire, Lightning and Cold"}
+# PD2's own random-skill properties (function 25, its code, no stat): the class whose skills they pick from.
+# Ormus' Robes: any direct-damage Sorceress skill (the wiki); all her skills are listed, the extra ones never roll.
+RAND_SKILL_CLASS = {"sorc-skill-rand-ctc": "sor"}
 
 
 # ---------------------------------------------------------------- reading the game files
@@ -78,6 +86,26 @@ def bh_number(x):
     """A number as BH shows a formula's result: two decimals, without trailing zeros (0.75, 0.5, 1)."""
     text = f"{x:.2f}"
     return text[:-3] if text.endswith("00") else text[:-1] if text.endswith("0") else text
+
+
+def id_ranges(ids):
+    """[36, 37, 38, 40] -> '36-38,40'."""
+    out, start = [], None
+    for i, x in enumerate(ids):
+        start = x if start is None else start
+        if i + 1 == len(ids) or ids[i + 1] != x + 1:
+            out.append(f"{start}-{x}" if x != start else str(x))
+            start = None
+    return ",".join(out)
+
+
+def id_list(text):
+    """'36-38,40' -> [36, 37, 38, 40]."""
+    out = []
+    for part in text.split(","):
+        a, _, b = part.partition("-")
+        out += list(range(int(a), int(b or a) + 1))
+    return out
 
 
 def compact(value):
@@ -179,7 +207,8 @@ class Game:
 
     def prop_stats(self, prop, par, lo, hi, split_ed=False):
         """[(code, low, high)] for one property line, the shown stat first; [] if none is usable.
-        split_ed: +% damage is EDAM and +% defense EDEF (what BH reads on runewords) instead of ED."""
+        +% damage is always EDAM (BH's ED reads enhanced defense on armor).
+        split_ed: +% defense is EDEF (what BH reads on runewords) instead of ED."""
         if prop.lower().startswith("map-") or prop.lower() == "splash":
             return []
         row = self.properties.get(prop.lower())
@@ -198,7 +227,7 @@ class Game:
                 if code:
                     out.append((code, lo, hi))
             elif f == 7:  # +% enhanced damage (max and min damage %)
-                out.append(("EDAM" if split_ed else "ED", lo, hi))
+                out.append(("EDAM", lo, hi))
             elif f == 5:
                 out.append(("MINDMG", lo, hi))
             elif f == 6:
@@ -218,6 +247,15 @@ class Game:
                 skill = self.skill(par)
                 if skill is not None:
                     out.append((f"MULTI{sid},{skill * 64 + hi}", 1, 1))
+            elif f == 12 and sid is not None:  # +N to a random skill (skill-rand): param N, min-max the skill IDs
+                out.append((f"RANDSK{lo}-{hi}", to_int(par), to_int(par)))
+            elif f == 36 and sid == 83:  # +N to a random class's skills (randclassskill): val N, min-max the classes
+                n = to_int(row.get(f"val{i}"))
+                out.append((f"RANDCLSK{lo}-{hi}", n, n))
+            elif f == 25 and prop.lower() in RAND_SKILL_CLASS:  # PD2's own: +N to a random skill of a class (param N)
+                cls = RAND_SKILL_CLASS[prop.lower()]
+                ids = sorted(s for s, c in self.skill_class.items() if c == cls)
+                out.append((f"RANDSK{id_ranges(ids)}", to_int(par), to_int(par)))
             elif f == 20:
                 out.append(("STAT152", 1, 1))
             elif f == 21 and sid is not None:
@@ -252,17 +290,35 @@ class Game:
                 slot = self.slot(code)
                 if not slot:
                     continue  # charms and jewels: done by hand in 240-charms / 250-jewels
-                props = []
+                props, per_level = [], {}
                 for i in range(1, count + 1):
                     p = r.get(f"prop{i}", "").strip()
                     if p:
-                        stats = self.prop_stats(p, r.get(f"par{i}", ""), r.get(f"min{i}", ""), r.get(f"max{i}", ""))
+                        par, lo, hi = r.get(f"par{i}", ""), r.get(f"min{i}", ""), r.get(f"max{i}", "")
+                        level = self.per_level_prop(p, par, lo, hi)
+                        if level:
+                            props.append([level[0]])
+                            per_level[level[0][0]] = level[1]
+                            continue
+                        stats = self.prop_stats(p, par, lo, hi)
                         if stats:
                             props.append([list(s) for s in stats])
                 caster = int(bool(CASTER_TYPES & set(self.ancestors(code))))
                 out.append([kind, self.strings.get(r["index"], r["index"]), r["index"], code, slot, str(caster),
-                            r.get("lvl req", "").strip(), json.dumps(props, separators=(",", ":"))])
+                            r.get("lvl req", "").strip(), json.dumps(props, separators=(",", ":")),
+                            compact(per_level)])
         return out
+
+    def per_level_prop(self, prop, par, lo, hi):
+        """([code, low, high], [the stat it adds to, divisor]) of a per-level property, or None. The item holds N
+        shifted by the stat's ValShift, which BH reads; shown per level as STAT/(8 << ValShift)."""
+        level = self.per_level(prop)
+        if not level:
+            return None
+        sid, base = level
+        a, b = (to_int(lo), to_int(hi)) if (lo.strip() or hi.strip()) else (to_int(par), to_int(par))
+        shift = 1 << to_int(self.statcost_by_id[sid].get("ValShift"))
+        return [f"STAT{sid}", a * shift, b * shift], [self.stat_code(base) or f"STAT{base}", 8 * shift]
 
     # ---------------------------------------------------------------- runewords
 
@@ -411,13 +467,10 @@ class Game:
                 if to_int(hi) < to_int(lo) and self.first_func(code) not in (11, 19):
                     lo, hi = hi, lo  # a range written high to low (Voice of Reason's damage to undead)
                 texts.append(self.describe(code, par, lo, hi))
-                level = self.per_level(code)
-                if level:  # BH reads the stat as stored: N << ValShift, shown per level as STAT/(8 << ValShift)
-                    sid, base = level
-                    a, b = (to_int(lo), to_int(hi)) if (lo.strip() or hi.strip()) else (to_int(par), to_int(par))
-                    shift = 1 << to_int(self.statcost_by_id[sid].get("ValShift"))
-                    per_level[f"STAT{sid}"] = [self.stat_code(base) or f"STAT{base}", 8 * shift]
-                    props.append([[f"STAT{sid}", a * shift, b * shift]])
+                level = self.per_level_prop(code, par, lo, hi)
+                if level:
+                    per_level[level[0][0]] = level[1]
+                    props.append([level[0]])
                     continue
                 props.append([list(s) for s in self.prop_stats(code, par, lo, hi, split_ed=True)])
             kinds = {}  # the bases it fits (enough sockets), by the rune stats they get
@@ -466,8 +519,11 @@ def extract(game_dir):
     rows = game.items()
     stamp = datetime.date.today().isoformat()
     lines = [f"# PD2 unique and set items from pd2data.mpq, extracted {stamp} by tools/pd2_data.py --extract.",
-             "# kind, name, table name, base code, slot, caster, required level, properties as [[code, low, high], ...]",
-             "\t".join(["kind", "name", "index", "code", "slot", "caster", "lvlreq", "props"])]
+             "# kind, name, table name, base code, slot, caster, required level, properties as [[code, low, high], ...];",
+             "# +% damage is EDAM, +% defense ED; RANDSK<skill IDs> / RANDCLSK<classes> = +N to a random skill / class's",
+             "# skills; perlevel = per-level stats as {code: [the stat it adds to, divisor]} (STAT216 8-12 << 8 / 2048 =",
+             "# 1-1.5 Life per level)",
+             "\t".join(["kind", "name", "index", "code", "slot", "caster", "lvlreq", "props", "perlevel"])]
     lines += ["\t".join(r) for r in rows]
     ITEMS_FILE.write_text("\n".join(lines) + "\n", encoding="utf-8", newline="\n")
     print(f"wrote {ITEMS_FILE.relative_to(ROOT)} ({len(rows)} items)")
@@ -495,17 +551,18 @@ def extract(game_dir):
 # ---------------------------------------------------------------- for the generator
 
 def load_items():
-    """[{kind, name, index, code, slot, caster, lvlreq, props}] from docs/pd2-unique-set-items.tsv."""
+    """[{kind, name, index, code, slot, caster, lvlreq, props, perlevel}] from docs/pd2-unique-set-items.tsv."""
     out = []
     if not ITEMS_FILE.exists():
         return out
     for line in ITEMS_FILE.read_text(encoding="utf-8").splitlines():
         if not line or line.startswith("#") or line.startswith("kind\t"):
             continue
-        kind, name, index, code, slot, caster, lvlreq, props = line.split("\t")
+        kind, name, index, code, slot, caster, lvlreq, props, *per_level = line.split("\t")
         out.append({"kind": kind, "name": name, "index": index, "code": code, "slot": slot,
                     "caster": caster == "1", "lvlreq": int(lvlreq) if lvlreq.isdigit() else None,
-                    "props": [[tuple(s) for s in p] for p in json.loads(props)]})
+                    "props": [[tuple(s) for s in p] for p in json.loads(props)],
+                    "perlevel": {k: tuple(v) for k, v in json.loads(per_level[0] if per_level else "{}").items()}})
     return out
 
 

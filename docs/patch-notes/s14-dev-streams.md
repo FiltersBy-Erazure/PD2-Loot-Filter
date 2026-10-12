@@ -77,9 +77,18 @@ Use `python tools/explain_item.py` to see which rules an item hits before and af
 - 145: the red "Additional Boss" list, after seeing the three new map bosses.
 - 140: Hell Bovines, Reanimated Horde and Stygian Dolls have no map-mod row. The legend's values match reanimatedhorde6 (in game "Unholy Corpse") and bonefetish6 ("Undead Stygian Doll"; bonefetish7 "Undead Soul Killer" is the same), and every hellbovine row has Phys 50. Check in game which monsters those map mods add. If it is these rows: Dolls give Imperial Palace Phys 33, Hell Bovines give it Magic 33 and give Outer Void Poison 33 (hellbovine) or 65 (hellbovineMap/Mage).
 - 160 unique tiers (author's flags): Warshrike (review); up: Sage's Defiance, Stalker's Cull, Frostburn, Wraith Flight, Uldyssian's Awakening, Shadow Killer; down: Whispering Mirage; Cliff Killer and Mageslayer to minimal?; Skyfall (proc fix). Warriv's Warder and Spectral Plate: community review (default look until then).
-- Roll picks (`pick_rolls.bat`, `pick_runewords.bat`): CHOOSE items (Lycander's Flank, Stoneraven, Titan's Revenge, True Silver, Zerae's Resolve, Spectral Plate, Warriv's Warder); picks naming rolls the item lost in S14 (Rogue's Bow `sk22`, now +2-3 Multiple Shot `sk12`; Stalker's Cull `ds`; Whispering Mirage `stat425`; Pus Spitter `allsk`; Blackhand Key `clsk2`; Gloom `fhr`); looks still needed: crit multiplier (`stat256`: Deception, Stalker's Cull, Warshrike), Multiple Shot (`sk12`), the Dodge oskill (`os13`, Warriv's Warder).
+- Roll picks (`pick_rolls.bat`, `pick_runewords.bat`): uniques and sets all picked by the author (2026-10-12); the runeword Gloom still names `fhr` (a fixed 20% in S14; its new roll is Curse Resistance `cr`); Bannerlord's Call's `os17` (+2-3 Slow Movement) waits for a label; Stalker's Cull can now pick `stat256` (`mult`).
 - BH's affix level formula (`GetAffixLevel` still subtracts qlvl/2): asked in `docs/dev-feedback.md`; then 190 (unidentified rare chests/shields at levels 10 and 12), 340 and the reroll levels in 240/250.
 - Next beta update (affixes: rare-only affixes, max res on shields/belts, gloves and helm ED, circlets): re-diff Live vs Beta, then 190, 300, 350/360.
+  Prepared 2026-10-11: magic/rare gloves ED tag (tan up to 29, red 30-69, purple 70+, one tag with an ED
+  corruption); rare Cannot Be Frozen joins the corruption's `Cbf` tag; all four max res on magic/rare shields and
+  belts as one `max` tag (single-element lines skip them; also handles a per-element affix on belts); the rare belt
+  "Max Resistances" highlight takes `MAXRES>1`. Already fine: +2 class skills, FCR 20/30, FRW 40, gloves DS/CB,
+  rare helm PDR, helm ED (red). Snapshot of the old beta data: `tools/.cache/pd2data-beta-2026-10-10.mpq`.
+  After the update: diff its MagicPrefix/MagicSuffix with the new Beta data (exact max-res affix, ranges, affix
+  levels); spawn the items above; for the rare-only affixes, use their affix levels in 190 (levels 10/12 hide rare
+  helms, shields, gloves; helms hidden from 3/8; gloves above char level 89 only for Asn/Ama) and review 350's PDR
+  tiers for prefix plus suffix.
 - Zhar's Sanctum's area level: the data says 87; the filter keeps 89 (author).
 
 ## Closed beta: unique/set roll tags to check in game

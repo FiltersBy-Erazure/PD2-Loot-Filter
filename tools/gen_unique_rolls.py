@@ -67,6 +67,7 @@ TAGS = {
        for i in range(7)},
     "tabsk": ("ROLL_TABSK_TAG", "TABSK", "tab", "WA"),  # one alias for all skill tabs
     "ed": ("ROLL_ED_TAG", "ED", "ed", "WA"),
+    "edam": ("ROLL_EDAM_TAG", "EDAM", "ed", "A"),  # +% damage on armor, where BH's ED reads +% defense
     "ias": ("ROLL_IAS_TAG", "IAS", "ias", "WA"),
     "fcr": ("ROLL_FCR_TAG", "FCR", "fcr", "WA"),
     "fhr": ("ROLL_FHR_TAG", "FHR", "fhr", "A"),
@@ -104,12 +105,12 @@ TAGS = {
     "maxcr": ("ROLL_MAXCR_TAG", "STAT44", "%max", "A"),
     "maxpr": ("ROLL_MAXPR_TAG", "STAT46", "%max", "A"),
     "maxres": ("ROLL_MAXRES_TAG", "MAXRES", "%max", "A"),  # items with all four: "6%/5%/4%/4%", "5%max" if equal (author, 2026-10-08)
-    "life": ("ROLL_LIFE_TAG", "LIFE", "life", "A"),
-    "mana": ("ROLL_MANA_TAG", "MANA", "mana", "A"),
-    "str": ("ROLL_STR_TAG", "STR", "str", "A"),
-    "dex": ("ROLL_DEX_TAG", "DEX", "dex", "A"),
-    "vit": ("ROLL_VIT_TAG", "STAT3", "vit", "A"),
-    "nrg": ("ROLL_NRG_TAG", "STAT1", "nrg", "A"),
+    "life": ("ROLL_LIFE_TAG", "LIFE", "lf", "A"),
+    "mana": ("ROLL_MANA_TAG", "MANA", "mn", "A"),
+    "str": ("ROLL_STR_TAG", "STR", "s", "A"),  # s d v e: the author, 2026-10-11
+    "dex": ("ROLL_DEX_TAG", "DEX", "d", "A"),
+    "vit": ("ROLL_VIT_TAG", "STAT3", "v", "A"),
+    "nrg": ("ROLL_NRG_TAG", "STAT1", "e", "A"),
     "mdr": ("ROLL_MDR_TAG", "STAT35", "mdr", "A"),
     "pdr%": ("ROLL_PDR_TAG", "STAT36", "%pdr", "A"),  # Physical Damage Taken Reduced by N%
     "pdr": ("ROLL_PDRF_TAG", "STAT34", "pdr", "A"),   # Physical Damage Taken Reduced by N (flat)
@@ -160,11 +161,48 @@ NEW_ROLL_TAGS = {
     "stat147": ("ROLL_MABS_TAG", "STAT147", "abs"),     # Magic Absorb
     "stat258": ("ROLL_CRIT_TAG", "STAT258", "%crit"),   # Chance of Critical Strike
     "stat32": ("ROLL_DVM_TAG", "STAT32", "dvm"),        # Defense vs. Missile
+    # S14 stats (author, 2026-10-12)
+    "stat256": ("ROLL_CSM_TAG", "STAT256", "mult"),     # Critical Strike Multiplier
+    "stat268": ("ROLL_CBE_TAG", "STAT268", "cbe"),      # Crushing Blow Efficiency
+    "stat269": ("ROLL_ARW_TAG", "STAT269", "arw"),      # Cold Arrow fires N additional arrows
+    # Per-level rolls (PER_LEVEL): per level, or the total at your level while your character wears the item
+    "life/lvl": ("ROLL_LIFELVL_TAG", "STAT216", "lf"),
+    "mf/lvl": ("ROLL_MFLVL_TAG", "STAT240", "mf"),
+    # +N to a random skill / class's skills: the one the item got, in the look of a skill / class skill tag
+    "randsk": ("ROLL_RANDSK_TAG", "RANDSK", "fbal"),
+    "randclsk": ("ROLL_RANDCLSK_TAG", "RANDCLSK", "sor"),
+    # Cold, Lightning and Fire Mastery as one tag, "3/3/3" with gray slashes, in that order (as the game lists them)
+    "masteries": ("ROLL_MASTERIES_TAG", "MASTERIES", "//"),
+    # Items that come in versions (rows of one name): a tag that names the version, picked as "ver" (VERSION_TAGS)
+    "ver_strk": ("ROLL_STRK_TAG", "MULTI198", "Strk"),  # chance to cast on striking
+    "ver_cast": ("ROLL_CAST_TAG", "MULTI200", "Cast"),  # chance to cast on casting
+    "ver_msw": ("ROLL_MSW_TAG", "STAT461", "msw"),      # +N to Maximum Skeleton Warriors
+    "ver_msa": ("ROLL_MSA_TAG", "STAT475", "msa"),      # +N to Maximum Skeleton Archers
 }
+# The version tag by the stat that tells an item's versions apart (Cyclopean Roar, Akarat's Devotion, Arm of King
+# Leoric; the author, 2026-10-12)
+VERSION_TAGS = {198: "ver_strk", 200: "ver_cast", 461: "ver_msw", 475: "ver_msa"}
+VERSION_TEXT = {"ver_strk": "Version: casts on striking (Strk)", "ver_cast": "Version: casts on casting (Cast)",
+                "ver_msw": "Version: +N to Maximum Skeleton Warriors (msw)",
+                "ver_msa": "Version: +N to Maximum Skeleton Archers (msa)"}
+MASTERY_KEYS = ["sk65", "sk63", "sk61"]  # in the order the game lists them: the higher skill ID first
+# Short names (the author, 2026-10-12): set items whose name line plus a corruption tag leaves too little room for their
+# tags show the set owner's name instead, their base line kept: when corrupted, or always if the picked tags don't fit
+# beside the full name even uncorrupted (short_name_mode). 045 writes the rule (%BASENAME%%NL%<short name>) before
+# every other rule.
+SHORT_NAMES = {f"SET {owner} {item}": owner for owner, names in [
+    ("Tal Rasha's", ["Lidless Eye", "Horadric Crest", "Adjudication", "Fine-Spun Cloth", "Guardianship"]),
+    ("Immortal King's", ["Detail", "Pillar", "Soul Cage", "Stone Crusher"]),
+    ("Sazabi's", ["Ghost Liberator", "Mental Sheath"]),
+    ("Bul-Kathos'", ["Sacred Charge", "Tribal Guardian"]),
+    ("Dangoon's", ["Teaching"]),
+] for item in names}
+RANDOM_LINE = re.compile(r"\[Random [^\]]*(?:Skill|Class)")  # the wiki's "+2 to [Random Sorceress Skill]"
 # +N to a single skill: the value, then a tan abbreviation. The author's staffmods abbreviations
 # (310-staffmods, 2026-10-08); Amazon skills have no staffmods line, so theirs are the generator's own.
 SKILL_TAG_LABELS = {
-    6: "marw",    9: "crit",    10: "jab",    11: "carw",    12: "multi",    14: "power",    16: "expl",    19: "jmas",
+    6: "marw",    9: "crit",    10: "jab",    11: "carw",    12: "multi",    13: "dodge",    14: "power",    16: "expl",    19: "jmas",
+    17: "slow",    42: "stat",    138: "shou",    150: "gwar",
     22: "guide",    24: "cs",    26: "straf",    28: "dcoy",    30: "fend",    32: "valk",    37: "wrmt",    51: "fwll",    58: "eshl",
     61: "fmst",    63: "lmst",    65: "cmas",    66: "ampd",    67: "teth",    68: "barm",    69: "skms",    70: "skwa",
     74: "cexp",    80: "skmg",    84: "bspe",    89: "skar",    95: "reve",    101: "hblt",    102: "hfir",    106: "zeal",
@@ -181,19 +219,21 @@ TAGS.update({f"os{s}": (f"ROLL_OS{s}_TAG", f"OS{s}", lab, "WA") for s, lab in SK
 # items, so the order comes from the item in game; an item not in ERES_ORDER uses ERES_DEFAULT. Each order
 # has its own 300 line (ROLL_ERES<ORDER>_TAG), and the weapon -res corruption lines skip these items.
 ERES_KEYS = {"c": "-cres", "f": "-fres", "l": "-lres"}
-ERES_ORDER = {"UNI Kira's Guardian": "cfl",  # the author's screenshots, 2026-10-08
-              "UNI Mang Song's Lesson": "cfl"}
-ERES_DEFAULT = "cfl"
+ERES_ORDER = {"UNI Kira's Guardian": "flc",  # the author's screenshots (S14 beta, 2026-10-11; both were cfl in S13)
+              "UNI Mang Song's Lesson": "flc"}
+ERES_DEFAULT = "flc"
 TAGS.update({f"eres_{o}": (f"ROLL_ERES{o.upper()}_TAG", f"ERES{o.upper()}", "%res", "WA")
              for o in ("cfl", "clf", "fcl", "flc", "lcf", "lfc")})
 CLSK_KEYS = [f"clsk{i}" for i in range(7)]
 # Which item slots the 300-affix-tags lines that use each alias cover (keep in sync when wiring lines)
 ALL = {"WEAPON", "HELM", "CIRC", "CHEST", "SHIELD", "GLOVES", "BOOTS", "BELT", "QUIVER", "amu", "rin"}
+ARMOR_SLOTS = {"HELM", "CIRC", "CHEST", "SHIELD", "GLOVES", "BOOTS", "BELT"}  # BH's ED reads +% defense here
 SKILL_SLOTS = {"WEAPON", "amu", "CIRC", "HELM", "CHEST", "SHIELD"}
 RES_SLOTS = ALL - {"WEAPON"}
 COVER = {
     "allsk": ALL, **{k: SKILL_SLOTS for k in CLSK_KEYS}, "tabsk": SKILL_SLOTS,
     "ed": {"WEAPON", "CHEST", "GLOVES", "HELM", "CIRC", "BOOTS"},
+    "edam": {"HELM", "CIRC", "SHIELD", "CHEST"},
     "ias": {"WEAPON", "GLOVES", "BELT", "HELM", "QUIVER"},
     "fcr": {"WEAPON", "rin", "amu", "CIRC", "GLOVES", "BELT", "CHEST", "SHIELD"},
     "fhr": {"amu", "CIRC", "HELM", "CHEST", "SHIELD", "BELT", "BOOTS", "QUIVER"},
@@ -225,7 +265,7 @@ ROLL_ONLY_SLOTS = {
     "-cres": {'HELM', 'CIRC', 'SHIELD', 'GLOVES'},
     "-fres": {'HELM', 'CIRC', 'GLOVES', 'amu'},
     "-lres": {'CIRC', 'QUIVER'},
-    "-pres": {'HELM', 'QUIVER'},
+    "-pres": {'HELM', 'QUIVER', 'CHEST'},
     "allattrib": {'WEAPON', 'SHIELD', 'GLOVES', 'BOOTS', 'BELT', 'QUIVER', 'amu', 'rin'},
     "ar": {'HELM', 'CHEST', 'SHIELD', 'BOOTS', 'amu'},
     "ar%": {'WEAPON', 'SHIELD'},
@@ -237,15 +277,17 @@ ROLL_ONLY_SLOTS = {
     "dex": {'WEAPON', 'CHEST', 'SHIELD', 'QUIVER'},
     "ds": {'CHEST', 'SHIELD', 'BOOTS', 'QUIVER'},
     "ed": {'SHIELD', 'BELT', 'QUIVER', 'amu', 'rin'},
+    "edam": {'GLOVES', 'BOOTS'},
     "fdmg": {'CHEST', 'SHIELD'},
     "fres": {'WEAPON'},
     "frw": {'SHIELD'},
     "gf": {'WEAPON', 'CHEST'},
+    "ias": {'CHEST'},
     "ldmg": {'CIRC', 'CHEST', 'SHIELD'},
-    "life": {'WEAPON', 'CHEST', 'BELT', 'amu'},
+    "life": {'WEAPON', 'CHEST', 'BELT', 'amu', 'HELM'},
     "lpk": {'HELM', 'CIRC', 'CHEST', 'SHIELD', 'GLOVES', 'amu'},
     "lres": {'WEAPON'},
-    "ls": {'CHEST'},
+    "ls": {'CHEST', 'SHIELD'},
     "mana": {'WEAPON', 'HELM', 'CIRC', 'SHIELD', 'BELT', 'amu', 'rin'},
     "max": {'WEAPON', 'GLOVES', 'BELT'},
     "maxcr": {'BELT', 'QUIVER', 'rin'},
@@ -263,14 +305,14 @@ ROLL_ONLY_SLOTS = {
     "pres": {'WEAPON'},
     "res": {'WEAPON'},
     "stat109": {'HELM', 'CIRC', 'CHEST', 'SHIELD', 'GLOVES', 'BOOTS', 'BELT', 'QUIVER', 'rin'},
-    "stat123": {'WEAPON'},
-    "stat124": {'GLOVES', 'QUIVER'},
+    "stat123": {'WEAPON', 'CHEST'},
+    "stat124": {'GLOVES', 'QUIVER', 'HELM'},
     "stat156": {'WEAPON', 'HELM', 'QUIVER'},
     "stat20": {'WEAPON', 'CHEST', 'SHIELD', 'GLOVES', 'BOOTS', 'BELT'},
     "stat424": {'WEAPON'},
     "stat76": {'WEAPON', 'HELM', 'CIRC', 'CHEST', 'SHIELD', 'BELT'},
     "stat77": {'WEAPON', 'CHEST', 'SHIELD', 'GLOVES', 'BOOTS', 'BELT', 'rin'},
-    "stat78": {'WEAPON', 'SHIELD', 'BELT', 'QUIVER', 'amu'},
+    "stat78": {'WEAPON', 'SHIELD', 'BELT', 'QUIVER', 'amu', 'rin'},
     "str": {'WEAPON', 'CHEST', 'SHIELD', 'QUIVER'},
     "tabsk": {'BOOTS'},
     "und": {'WEAPON', 'CHEST', 'GLOVES', 'QUIVER', 'amu'},
@@ -293,6 +335,9 @@ ROLL_ONLY_SLOTS = {
     "sk121": {'WEAPON'},
     "sk128": {'WEAPON'},
     "sk14": {'WEAPON'},
+    "sk42": {'WEAPON'},
+    "sk138": {'HELM'},
+    "sk150": {'HELM'},
     "sk151": {'WEAPON'},
     "sk154": {'WEAPON'},
     "sk19": {'WEAPON'},
@@ -331,7 +376,7 @@ ROLL_ONLY_SLOTS = {
     "sk9": {'WEAPON'},
     "sk95": {'WEAPON'},
     "stat111": {'WEAPON'},
-    "stat128": {'WEAPON', 'amu'},
+    "stat128": {'WEAPON', 'amu', 'CHEST', 'SHIELD'},
     "stat139": {'WEAPON'},
     "stat142": {'rin'},
     "stat143": {'HELM'},
@@ -342,13 +387,15 @@ ROLL_ONLY_SLOTS = {
     "stat423": {'BOOTS'},
     "stat425": {'WEAPON', 'HELM', 'GLOVES', 'QUIVER'},
     "stat49": {'WEAPON', 'CHEST'},
-    "stat501": {'WEAPON', 'CHEST', 'BOOTS', 'amu'},
+    "stat501": {'WEAPON', 'CHEST', 'BOOTS', 'amu', 'GLOVES'},
     "stat55": {'WEAPON', 'amu'},
     "stat87": {'rin'},
     "os10": {'WEAPON'},
     "os11": {'WEAPON'},
     "os12": {'WEAPON'},
+    "os13": {'SHIELD'},
     "os16": {'WEAPON'},
+    "os17": {'QUIVER'},
     "os19": {'WEAPON'},
     "os22": {'WEAPON'},
     "os26": {'WEAPON'},
@@ -362,6 +409,10 @@ ROLL_ONLY_SLOTS = {
     "os223": {'HELM'},
     "os232": {'HELM'},
     "stat147": ALL, "stat258": ALL, "stat32": ALL,  # their 300 lines have no slot words
+    "stat256": ALL, "stat268": ALL, "stat269": ALL, "life/lvl": ALL, "mf/lvl": ALL, "randsk": ALL,
+    **{k: ALL for k in VERSION_TAGS.values()},
+    "randclsk": SKILL_SLOTS,  # the class skill lines
+    "masteries": {"WEAPON"},
 }
 for _key, _slots in ROLL_ONLY_SLOTS.items():
     COVER[_key] = COVER.get(_key, set()) | _slots
@@ -374,17 +425,19 @@ PRIORITY = {  # default pick order; the author's lines in the picks file overrid
     "A": ["allsk", *CLSK_KEYS, "tabsk", "fcr", "fhr", "frw", "fbr", "res", "maxres", "maxfr", "maxlr", "maxcr",
           "maxpr", "fres", "lres", "cres", "pres", "life", "mana", "mf", "gf", "str", "dex", "vit", "nrg",
           "ls", "ms", "lpk", "mpk", "mdr", "pdr%", "pdr", "replife", "regen", "cr", "dtm", "ar", "ar%", "ias",
-          "min", "max", "ds", "cb", "fdmg", "ldmg", "cdmg", "pdmg", "ed"],
+          "min", "max", "ds", "cb", "fdmg", "ldmg", "cdmg", "pdmg", "ed", "edam"],
 }
 MAXRES_KEYS = ["maxfr", "maxlr", "maxcr", "maxpr"]
 CODE_TO_TAG = {}
 for key, (_, code, _, _) in TAGS.items():
-    CODE_TO_TAG.setdefault(code, key)
+    if not key.startswith("ver_") and key not in ("randsk", "randclsk", "masteries"):  # not a stat's own tag
+        CODE_TO_TAG.setdefault(code, key)
+PER_LEVEL = {}  # per-level stat code -> (the stat it adds to, divisor), from docs/pd2-unique-set-items.tsv (load())
 
 # ---------------------------------------------------------------- stat text -> codes
 V = r"(?P<v>-?\[-?\d+(?:\.\d+)?--?\d+(?:\.\d+)?\]|-?\d+(?:\.\d+)?)"  # 5, [5-10], -[5-10]
 SIMPLE = [  # (pattern with V for the value, codes that get the value)
-    (r"\+V% Enhanced Damage", ["ED"]), (r"\+V% Enhanced Defense", ["ED"]),
+    (r"\+V% Enhanced Damage", ["EDAM"]), (r"\+V% Enhanced Defense", ["ED"]),  # EDAM: ED off armor (Item.filter_code)
     (r"\+V Defense", ["DEF"]),
     (r"All Resistances \+V%?", ["RES", "FRES", "CRES", "LRES", "PRES"]),
     (r"Fire Resist \+V%", ["FRES"]), (r"Cold Resist \+V%", ["CRES"]),
@@ -436,7 +489,7 @@ CTC_EVENTS = {"on attack": 195, "when you kill an enemy": 196, "on kill": 196, "
 # flags); 2 = possible from a corruption or sockets; 3 = common or tier-dependent. An item has at most one
 # corruption, so a rival counts as ruled out once a weight-1 stat, or two other stats, exclude it.
 WEIGHT1 = re.compile(r"^(SK|OS|CLSK|TABSK|MULTI)|^STAT(113|117|81)$")
-WEIGHT3 = re.compile(r"^(ED|STAT89|STAT20)$")
+WEIGHT3 = re.compile(r"^(ED|EDAM|STAT89|STAT20)$")
 UNRELIABLE = {"DEF", "SOCK"}  # total defense also depends on the base tier and ethereal; sockets can be added
 COMPANIONS = {"stat48", "stat50", "stat52", "stat54"}  # the minimum of "Adds X-Y damage": shown with its maximum
 
@@ -499,6 +552,11 @@ TEXT_FIXES = [(r"Damaged Taken", "Damage Taken"), (r"Enhance Defense", "Enhanced
               (r"^\+([^%\s]+) Enhanced Damage$", r"+\1% Enhanced Damage")]
 AUTHOR_CODES = [  # (stat text with # for each number, filter code): codes the wiki tables lack, looked up by the author
     ("+#% Leap and Leap Attack Movement Speed", "STAT423"),  # wiki: "+N% to Leap and Leap Attack Movement Speed"
+    # S14 stats in ID slots the filtering wiki still gives their old names (PD2's ItemStatCost.txt)
+    ("+#% Chance of Critical Strike", "STAT258"),  # item_crit_chance
+    ("+#% Critical Strike Multiplier", "STAT256"),  # item_crit_multiplier
+    ("+#% Crushing Blow Efficiency", "STAT268"),  # item_crushingblow_efficiency
+    ("Cold Arrow Fires # Additional Arrows", "STAT269"),  # extra_cold_arrows
 ]
 # "Adds X to Y <element> Damage": (minimum code, maximum code), from the wiki's attribute table
 ADDS_DAMAGE = {"": ("MINDMG", "MAXDMG"), "fire": ("STAT48", "STAT49"), "lightning": ("STAT50", "STAT51"),
@@ -573,6 +631,13 @@ def parse_stat(text):
     return []
 
 
+def per_level_code(text):
+    """The per-level stat a wiki line shows ("+[1-149] to Life (+[1.0-1.5] per Character Level)": STAT216), or None."""
+    m = re.fullmatch(r"(.+?) \([^()]*per Character Level\)", text)
+    parsed = parse_stat(m.group(1)) if m else []
+    return next((c for c, (base, _) in PER_LEVEL.items() if parsed and base == parsed[0][0]), None)
+
+
 # ---------------------------------------------------------------- items, fingerprints, picks
 
 class Item:
@@ -598,6 +663,7 @@ class Item:
         self.raw_stats = raw["stats"]
         self.rolls = {}      # key -> (lo, hi): variable rolls the filter can show as a tag on this item
         self.all_rolls = []  # every variable roll: key (None = no filter code), lo, hi, line, tagged
+        self.version = None  # its version tag (VERSION_TAGS), if the item comes in versions
         self.game = raw.get("game")
         if self.game:
             self.from_game(raw, tier_names)
@@ -622,13 +688,22 @@ class Item:
                                    "line": "All three -% Enemy Resistances", "tagged": tagged})
             if tagged:
                 self.rolls[key] = (lo, hi)
+        three = [self.roll(k) for k in MASTERY_KEYS]
+        if all(three):  # Cold, Lightning and Fire Mastery: one more candidate, one tag "3/3/3" (author, 2026-10-12)
+            lo, hi = min(r["lo"] for r in three), max(r["hi"] for r in three)
+            tagged = self.covers("masteries")
+            self.all_rolls.insert(min(self.all_rolls.index(r) for r in three),
+                                  {"key": "masteries", "code": "MASTERIES", "lo": lo, "hi": hi,
+                                   "line": "Cold, Lightning and Fire Mastery as one tag (3/3/3)", "tagged": tagged})
+            if tagged:
+                self.rolls["masteries"] = (lo, hi)
         self.unmapped = [r["line"] for r in self.all_rolls if not r["tagged"]]
         self.fingerprint, self.unresolved, self.weak = [], [], []
 
     def add_roll(self, key, code, lo, hi, line):
         if any(r["key"] == key for r in self.all_rolls):
             return
-        tagged = key in TAGS and self.covers(key)
+        tagged = (key in TAGS or key == "ver") and self.covers(key)
         self.all_rolls.append({"key": key, "code": code, "lo": lo, "hi": hi, "line": line, "tagged": tagged})
         if tagged:
             self.rolls[key] = (lo, hi)
@@ -637,6 +712,7 @@ class Item:
         """Stats and rolls from the wiki's text (an item the game data lacks, e.g. Kadala's Heirloom)."""
         for line in raw["stats"]:
             for code, lo, hi in parse_stat(line):
+                code = self.filter_code(code)
                 old = self.stats.get(code)
                 self.stats[code] = (lo + (old[0] if old else 0), hi + (old[1] if old else 0))
         for line in raw["rolls"]:
@@ -645,6 +721,7 @@ class Item:
                 self.all_rolls.append({"key": None, "lo": 0, "hi": 0, "line": line, "tagged": False})
                 continue
             code, lo, hi = parsed[0]
+            code = self.filter_code(code)
             self.add_roll(roll_key(code), code, lo, hi, line)
 
     def from_game(self, raw, tier_names):
@@ -660,30 +737,50 @@ class Item:
         self.caster = game["caster"] or any(c.startswith("ob") for c in self.codes)
         for prop in game["props"]:
             for code, lo, hi in prop:
+                if code.startswith("RAND"):  # a random skill: which one is not known before the item drops
+                    continue
+                code = self.filter_code(code)
                 old = self.stats.get(code)
                 self.stats[code] = (lo + (old[0] if old else 0), hi + (old[1] if old else 0))
         wiki = {}
         for line in raw["rolls"]:
             parsed = parse_stat(line)[:1]
             if parsed:
-                wiki.setdefault(roll_key(parsed[0][0]), line)
+                wiki.setdefault(roll_key(self.filter_code(parsed[0][0])), line)
+        for line in raw["rolls"] + raw["stats"]:  # per-level lines (the wiki lists them as stats)
+            if per_level_code(line):
+                wiki.setdefault(roll_key(per_level_code(line)), line)
         for prop in game["props"]:
             code, lo, hi = prop[0]  # the stat a tag of this line shows
+            m = re.fullmatch(r"RAND(SK|CLSK)[\d,\-]+", code)
+            if m:  # +N to a random skill or class: which one is the roll
+                key = "randsk" if m.group(1) == "SK" else "randclsk"
+                what = "skill" if key == "randsk" else "class's skills"
+                text = next((l for l in raw["rolls"] + raw["stats"] if RANDOM_LINE.search(l) and l.startswith("+")),
+                            f"+{lo} to a random {what}")
+                self.add_roll(key, code, lo, hi, text)
+                continue
+            code = self.filter_code(code)
             key = roll_key(code)
             if lo != hi and key not in COMPANIONS:  # (the wiki writes an oskill like a class skill)
                 text = wiki.get(key) or (wiki.get("sk" + key[2:]) if key.startswith("os") else None)
                 self.add_roll(key, code, lo, hi, text or stat_text(code, lo, hi))
         for line in raw["rolls"]:  # wiki rolls with no filter code: listed in the picker as untaggable
-            if not parse_stat(line):
+            if not (parse_stat(line) or per_level_code(line) or RANDOM_LINE.search(line)):
                 self.all_rolls.append({"key": None, "lo": 0, "hi": 0, "line": line, "tagged": False})
         if not self.raw_stats:
             self.raw_stats = [stat_text(*prop[0]) for prop in game["props"]]
+
+    def filter_code(self, code):
+        """+% damage is EDAM on armor (BH's ED reads +% defense there) and ED on everything else."""
+        return "ED" if code == "EDAM" and self.where not in ARMOR_SLOTS else code
 
     def roll(self, key):
         return next((r for r in self.all_rolls if r["key"] == key), None)
 
     def covers(self, key):
-        return TAGS[key][0] in USED and self.where in COVER.get(key, ())
+        key = self.version if key == "ver" else key
+        return bool(key) and TAGS[key][0] in USED and self.where in COVER.get(key, ())
 
     @property
     def key(self):
@@ -720,12 +817,18 @@ NO_GAME_DATA, GAME_ONLY = [], []  # wiki items the game data lacks / game items 
 CODE_STAT = {code: sid for sid, code in pd2_data.NAMED.items()}
 
 
+def shown_value(code, x):
+    """A roll's value as its tag shows it: a per-level stat per level (1.25)."""
+    return pd2_data.bh_number(x / PER_LEVEL[code][1]) if code in PER_LEVEL else x
+
+
 def stat_text(code, lo, hi):
     """Readable text of a stat the wiki does not list (for the picker)."""
     m = re.fullmatch(r"STAT(\d+)", code)
     sid = int(m.group(1)) if m else CODE_STAT.get(code)
-    title = ("% Enhanced Damage/Defense" if code == "ED" else
+    title = ("% Enhanced Damage/Defense" if code == "ED" else "% Enhanced Damage" if code == "EDAM" else
              tag_order.TITLES.get(sid) or tag_order.STAT_NAMES.get(sid) if sid is not None else code)
+    lo, hi = shown_value(code, lo), shown_value(code, hi)
     return f"{title} {f'[{lo}-{hi}]' if lo != hi else lo}"
 
 
@@ -761,8 +864,9 @@ def build_fingerprints(items):
         rivals = {id(j): j for c in it.codes for j in by_code.get((it.kind, c), []) if j.key != it.key}
         conds = []
         need = {k: 2 for k in rivals}  # a weight-1 exclusion counts 2, any other 1
-        options = [(code, lo) for code, (lo, hi) in it.stats.items() if lo >= 1 and code not in UNRELIABLE]
-        options += [(code, hi) for code, (lo, hi) in it.stats.items() if hi <= -1 and code not in UNRELIABLE]
+        options = [(code, lo) for code, (lo, hi) in it.stats.items() if lo >= 1]
+        options += [(code, hi) for code, (lo, hi) in it.stats.items() if hi <= -1]
+        options = [(c, lim) for c, lim in options if c not in UNRELIABLE and c not in PER_LEVEL]  # (per-level: unused)
 
         def excluded(code, lim):
             if lim < 0:  # "at most lim": rivals whose lowest value is above it are out
@@ -791,41 +895,72 @@ def build_fingerprints(items):
         it.fingerprint = conds
 
 
-def fingerprint_text(it):
+def fingerprint_text(it, extra=None):
+    """(its base codes, the stats that tell it apart[, extra: a version's own stat])."""
     codes = it.codes[0] if len(it.codes) == 1 else "(" + " OR ".join(it.codes) + ")"
-    conds = " ".join(f"{c}<{lo + 1}" if lo < 0 else f"{c}>{lo - 1}" for c, lo in it.fingerprint)
+    conds = [f"{c}<{lo + 1}" if lo < 0 else f"{c}>{lo - 1}" for c, lo in it.fingerprint]
+    conds = " ".join(conds + ([extra] if extra and extra not in conds else []))
     return f"({codes}{' ' + conds if conds else ''})"
 
 
 NEW_LABEL = 3  # assumed label length of a tag that has no line yet
 
 
-RANGE_TAGS, MINUS_TAGS = {"stat49", "stat55"}, {"stat425"}  # shown as "+min-max<label>" / "-N<label>"
+RANGE_TAGS, MINUS_TAGS = {"stat49", "stat55"}, {"stat425"}  # shown as "min-max<label>" / "-N<label>"
 
 
-def tag_width(key, hi):
+def tag_width(key, hi, lo=None):
+    """Characters a tag takes at its widest (with the space after it)."""
     label = TAGS[key][2] if key in TAGS else "x" * NEW_LABEL
     digits = len(str(abs(hi)))
+    code = TAGS[key][1] if key in TAGS else None
     if key in RANGE_TAGS:  # the minimum has about as many digits as the maximum
-        digits = 2 * digits + 2
+        digits = 2 * digits + 1
+    elif code in PER_LEVEL:  # per level: 1.38lf (two decimals at most)
+        step = max(PER_LEVEL[code][1] // 8, 1)
+        digits = max(len(shown_value(code, x)) for x in range(hi if lo is None else lo, hi + 1, step))
     elif key == "maxres":  # "6%/5%/4%/4%"
         return 4 * (digits + 1) + 3 + 1
     elif key.startswith("eres_"):  # "-10%/-15%/-10%"
         return 3 * (digits + 3)
+    elif key == "masteries":  # "3/3/3"
+        return 3 * digits + 2 + 1
+    elif key == "ver":  # "Strk", "Cast", "2msw", "2msa"
+        return 5
     return digits + len(label) + (1 if key.startswith("-") or key in MINUS_TAGS else 0) + 1
+
+
+def picks_width(it, picks):
+    """What the picked tags take (a tag with no line yet: its estimate)."""
+    return sum(tag_width(k, it.roll(k)["hi"], it.roll(k)["lo"]) for k in picks if it.roll(k))
+
+
+def short_name_mode(it, picks=None, always=False):
+    """(mode, room) of an item's name line. mode None: its full name, room beside it with a corruption tag.
+    "corrupted" (SHORT_NAMES): its short name when corrupted; room = the smaller of beside its full name uncorrupted
+    and beside its short name with a corruption tag. "always": the picked tags don't fit that, so its short name
+    always; room beside it with a corruption tag."""
+    rest = (NAME_MAX - 1 - max((len(b) for b in it.base_names), default=0) - LINE_BREAK
+            - (SOCKET_RESERVE if it.where in SOCKET_SLOTS else 0))
+    corruption = CORRUPTION_RESERVE * CORRUPTION_TAGS.get(it.where, 1)
+    if it.key not in SHORT_NAMES:
+        return None, rest - len(it.display) - corruption
+    short = rest - len(SHORT_NAMES[it.key]) - corruption
+    room = min(rest - len(it.display), short)
+    if always or (picks is not None and picks_width(it, picks) > room):
+        return "always", short
+    return "corrupted", room
 
 
 def default_picks(it):
     """The generator's choice: the most important rolls with a tag line that fit (FCR only on caster weapons)."""
-    budget = (NAME_MAX - len(it.display) - 1 - max((len(b) for b in it.base_names), default=0) - LINE_BREAK
-              - CORRUPTION_RESERVE * CORRUPTION_TAGS.get(it.where, 1)
-              - (SOCKET_RESERVE if it.where in SOCKET_SLOTS else 0))
+    budget = short_name_mode(it)[1]
     picks, used = [], 0
     for key in PRIORITY[it.slot]:
         if key == "fcr" and it.weapon and not it.caster:
             continue
         if key in it.rolls and len(picks) < MAX_PICKS:
-            w = tag_width(key, it.rolls[key][1])
+            w = tag_width(key, it.rolls[key][1], it.rolls[key][0])
             if used + w <= budget or not picks:
                 picks.append(key)
                 used += w
@@ -846,21 +981,24 @@ def render_picks(items, old):
            "# room = characters left for roll tags (56 minus name, base, line breaks, one corruption tag and",
            "# sockets); uses = what the picked tags take at their highest roll. Each candidate shows its",
            "# range and (width), e.g. 'ed 50-75 (5)' = '75ed '. A '*' marks a roll with no tag line yet:",
-           "# picking it requests one (its width is an estimate). Tags: " + ", ".join(TAGS), ""]
+           "# picking it requests one (its width is an estimate); a per-level roll shows per level ('life/lvl",
+           "# 1-1.5'); 'ver' names an item's version (Strk/Cast, msw/msa). Tags: "
+           + ", ".join([k for k in TAGS if not k.startswith("ver_")] + ["ver"]), ""]
     for it in one_per_key(sorted(items, key=lambda x: (x.kind, x.page, x.name))):
         keyed = [r for r in it.all_rolls if r["key"]]
         if not keyed:
             continue
         auto, budget = default_picks(it)
         mine = old.get(it.key)
-        cands = " ".join(f"{r['key']}{'' if r['tagged'] else '*'} "
-                         + (f"{r['lo']}-{r['hi']}" if r["lo"] != r["hi"] else f"{r['hi']}")
-                         + f" ({tag_width(r['key'], r['hi'])})" for r in keyed)
+        cands = " ".join(cand_text(it, r) for r in keyed)
         picks = mine[0] if mine and not mine[1] else auto
-        used = sum(tag_width(k, it.rolls[k][1]) for k in picks if k in it.rolls)
+        mode, budget = short_name_mode(it, picks)
+        used = sum(tag_width(k, it.rolls[k][1], it.rolls[k][0]) for k in picks if k in it.rolls)
         waiting = [k for k in picks if it.roll(k) and not it.roll(k)["tagged"]]
-        wait_w = sum(tag_width(k, it.roll(k)["hi"]) for k in waiting)
+        wait_w = sum(tag_width(k, it.roll(k)["hi"], it.roll(k)["lo"]) for k in waiting)
         info = f"room {budget}, uses {used}"
+        if mode:
+            info += f" (short name {'when corrupted' if mode == 'corrupted' else 'always'}: {SHORT_NAMES[it.key]})"
         if waiting:
             info += f" + ~{wait_w} waiting for a tag line ({', '.join(waiting)})"
         if used + wait_w > budget:
@@ -874,6 +1012,16 @@ def render_picks(items, old):
             flag = " CHOOSE" if len(it.rolls) > len(auto) else ""
             out.append(f"{it.key}: {', '.join(picks)}    # auto{flag} | {info} | {cands}")
     return "\n".join(out) + "\n"
+
+
+def cand_text(it, r):
+    """A candidate in the picks file: key, range as its tag shows it, (width); '*' = no tag line yet."""
+    if r["key"] == "ver":
+        shown = TAGS[it.version][2] if it.version else "?"
+    else:
+        lo, hi = shown_value(r["code"], r["lo"]), shown_value(r["code"], r["hi"])
+        shown = f"{lo}-{hi}" if lo != hi else f"{hi}"
+    return f"{r['key']}{'' if r['tagged'] else '*'} {shown} ({tag_width(r['key'], r['hi'], r['lo'])})"
 
 
 # ---------------------------------------------------------------- section
@@ -890,13 +1038,29 @@ def render_section(items, picks):
         parts = {"UNI": [], "SET": []}
         for it in sorted(items, key=lambda x: x.name):
             chosen = picks.get(it.key, ([], True))[0]
-            if key in chosen and key in it.rolls and not it.unresolved:
+            if key.startswith("ver_"):  # picked as "ver": each version in its own tag, told apart by its own stat
+                if "ver" in chosen and it.version == key and "ver" in it.rolls and not it.unresolved:
+                    parts[it.kind].append(fingerprint_text(it, f"{it.roll('ver')['code']}>0"))
+            elif key in chosen and key in it.rolls and not it.unresolved:
                 parts[it.kind].append(fingerprint_text(it))
-        clauses = [f"({kind} ID ({' OR '.join(fps)}))" for kind, fps in parts.items() if fps]
+        clauses = [f"({kind} ID ({' OR '.join(dict.fromkeys(fps))}))" for kind, fps in parts.items() if fps]
         value = "(" + " OR ".join(clauses) + ")" if clauses else "FALSE"
         lines.append(f"// {key}: {code}")
         lines.append(f"Alias[{alias}]:{value}")
         lines.append("")
+    rules = []
+    for it in sorted(items, key=lambda x: x.key):
+        if it.key in SHORT_NAMES and not it.unresolved:
+            mode = short_name_mode(it, picks.get(it.key, ([], True))[0])[0]
+            cond = f"{it.kind} ID {fingerprint_text(it)}{' STAT360>0' if mode == 'corrupted' else ''}"
+            rule = f"ItemDisplay[{cond}]:%BASENAME%%NL%{SHORT_NAMES[it.key]}{{%NAME%}}%CONTINUE%"
+            if rule not in rules:
+                rules.append(rule)
+    if rules:
+        lines += ["// Short names (SHORT_NAMES): the set owner's name instead of the item's own name line, its base line kept:",
+                  "// when corrupted (STAT360>0), or always where the tags need the room. Before every other rule (they build",
+                  "// on it). The game draws a name's lines bottom up: %NAME% holds the base line first.",
+                  *rules, ""]
     return "\r\n".join(lines)
 
 
@@ -937,7 +1101,7 @@ def tag_lines():
                     if piece:
                         chunk["parts"].append([color, piece])
         chunks.append(chunk)
-        out.append({"n": n, "aliases": set(re.findall(r"\bROLL_[A-Z0-9]+_TAG\b", cond)),
+        out.append({"n": n, "aliases": set(re.findall(r"(?<!!)\bROLL_[A-Z0-9]+_TAG\b", cond)),  # not "!ROLL_X_TAG"
                     "slots": set(SLOT_WORDS.findall(cond)), "chunks": [c for c in chunks if c["parts"]],
                     "cmps": re.findall(r"(?<![!A-Za-z0-9_])([A-Z]+[0-9]*(?:,[0-9]+)?)([<>=])(-?\d+)", cond)})
     return out
@@ -948,12 +1112,26 @@ def tag_format(it, r, lines):
     for the value applies; n = its line, which sets its place), and whether the look is borrowed. A roll with
     no tag line borrows the look of a line that shows the same stat (another slot's, or a magic item's)."""
     code, alias = r["code"], TAGS[r["key"]][0] if r["key"] in TAGS else None
+    if r["key"] == "ver" and it.version:
+        alias = TAGS[it.version][0]
+
+    def can_get(line):  # randsk / randclsk: a line for a skill / class the item can get, and for its value
+        ids = pd2_data.id_list(re.sub(r"^RAND(?:SK|CLSK)", "", code))
+        kw = (line["chunks"][0]["kw"] if line["chunks"] else None) or ""
+        m = re.fullmatch(r"(?:SK|CLSK)(\d+)", kw)
+        holds = {"=": r["lo"].__eq__, ">": r["lo"].__gt__, "<": r["lo"].__lt__}
+        return bool(m) and int(m.group(1)) in ids and all(holds[op](int(n)) for c, op, n in line["cmps"] if c == kw)
+
+    def formula_value(m):  # $f(STAT20-BASEBLOCK) previews as the roll, like the stat it reads
+        stat = tag_order.formula_stat(m)
+        return "{v:%s}" % stat[1:-1] if stat.startswith("%") else stat
 
     def variant(line, kw=None, n=None):
         chunks = [c for c in line["chunks"] if kw is None or c["kw"] == kw]
         parts = []
         for c in chunks:
             parts += ([[parts[-1][0], " "]] if parts else []) + c["parts"]
+        parts = [[col, tag_order.FORMULA.sub(formula_value, t)] for col, t in parts]
         return parts and {"n": line["n"] if n is None else n, "parts": parts,
                           "cmps": [[op, int(num)] for c, op, num in line["cmps"] if c == code]}
 
@@ -963,6 +1141,8 @@ def tag_format(it, r, lines):
     if r["tagged"]:
         found = [variant(l) for l in lines if alias in l["aliases"] and not other_skill(l)
                  and (not l["slots"] or it.where in l["slots"])]
+        if r["key"] in ("randsk", "randclsk"):  # a line per skill / class: the first the item can get
+            found = [variant(l) for l in lines if alias in l["aliases"] and can_get(l)][:1]
         if any(found):
             return [v for v in found if v], False
     same = [l for l in lines if alias and alias in l["aliases"] and not other_skill(l)]
@@ -1011,12 +1191,14 @@ def write_picker(items, old):
             if r["key"]:
                 fmt, approx = tag_format(it, r, lines)
                 kws = {kw for f in fmt for _, t in f["parts"] for kw in re.findall(r"\{v:([^}]+)\}", t)}
-                cands.append({"k": r["key"], "lo": r["lo"], "hi": r["hi"], "w": tag_width(r["key"], r["hi"]),
+                cands.append({"k": r["key"], "lo": r["lo"], "hi": r["hi"], "w": tag_width(r["key"], r["hi"], r["lo"]),
                               "vals": {kw: abs(it.stats[kw][1]) for kw in kws if kw in it.stats and kw != r["code"]},
-                              "v": abs(r["hi"]) if r["key"].startswith("-") else r["hi"],
+                              "v": abs(r["hi"]) if r["key"].startswith("-") else
+                              float(shown_value(r["code"], r["hi"])) if r["code"] in PER_LEVEL else r["hi"],
                               "tagged": r["tagged"], "line": r["line"], "idx": idx, "fmt": fmt, "approx": approx})
         data.append({
             "key": it.key, "kind": it.kind, "name": it.name, "shown": it.display, "page": it.page, "slot": it.where,
+            "short": SHORT_NAMES.get(it.key), "roomShort": short_name_mode(it, always=True)[1] if it.key in SHORT_NAMES else None,
             "bases": it.base_names, "codes": it.codes, "room": budget, "sockets": it.where in SOCKET_SLOTS,
             "cands": cands, "auto": auto, "picks": mine[0] if reviewed else auto, "reviewed": reviewed,
             "untaggable": [r["line"] for r in it.all_rolls if not r["key"]], "stats": it.raw_stats,
@@ -1083,14 +1265,43 @@ def load():
                 CODE_PAGE.setdefault(c, r["page"])
     match_game(raw, names)
     items = [Item(r, families) for r in raw]
+    add_versions(items)
     build_fingerprints(items)
     return items
+
+
+def stat_id(code):
+    """The stat a filter code reads: STAT461 -> 461, MULTI198,9350 -> 198 (None for a named code)."""
+    m = re.fullmatch(r"(?:STAT|MULTI)(\d+)(?:,\d+)?", code)
+    return int(m.group(1)) if m else None
+
+
+def add_versions(items):
+    """Items that come in versions (rows of one name: Cyclopean Roar casts its Battle Cry on striking or on
+    casting) get one more candidate, 'ver': a tag that names the version (VERSION_TAGS), by the stat only it has."""
+    groups = {}
+    for it in items:
+        if it.game:
+            groups.setdefault(it.key, []).append(it)
+    for versions in groups.values():
+        if len(versions) < 2:
+            continue
+        codes = [{p[0][0] for p in v.game["props"] if p} for v in versions]
+        common = set.intersection(*codes)
+        for v, own in zip(versions, codes):
+            mine = [c for c in sorted(own - common) if VERSION_TAGS.get(stat_id(c))]
+            if len(mine) == 1:
+                v.version = VERSION_TAGS[stat_id(mine[0])]
+                value = next(p[0][1] for p in v.game["props"] if p and p[0][0] == mine[0])
+                v.add_roll("ver", mine[0], value, value, VERSION_TEXT[v.version])
 
 
 def match_game(raw, names):
     """Give each wiki item its row of PD2's own data (same kind and name, as the game shows it), and add the
     game's items the wiki lacks: they get tags too, and their stats keep other items' fingerprints honest."""
     game = [g for g in pd2_data.load_items() if g["slot"] not in ("?", "") and g["code"] in CODE_FAMILY]
+    for g in game:
+        PER_LEVEL.update(g["perlevel"])
     by_name = {}  # (quest items have no code in the item-code tables: left out above)
     for g in game:
         by_name.setdefault((g["kind"], pd2_data.norm_name(g["name"])), []).append(g)

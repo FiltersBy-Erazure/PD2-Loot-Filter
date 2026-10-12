@@ -24,7 +24,10 @@
   `tools/unique_roll_picks.txt` (which rolls each item shows). Never edit it by hand: edit the picks file
   (remove `auto` from a line to keep your change) and the hook regenerates. The wiki is often wrong about how
   the game stores a stat (oskills are `OS<n>`, not `SK<n>`; chance-to-cast uses PD2's "Proc" skill IDs), so the
-  game data wins. Each season and after a PD2 item patch: `python tools/pd2_data.py --extract "<Diablo II folder>"`
+  game data wins. BH's `ED` reads +% defense on armor, so there a unique's +% damage roll is `edam` (`EDAM`,
+  `ROLL_EDAM_TAG`) and `ed` is +% defense; on weapons and jewelry `ed` is +% damage. `DEF` is the item's total
+  defense: no BH code reads a `+N Defense` roll alone (Griffon's Eye: `195def` for +145).
+  Each season and after a PD2 item patch: `python tools/pd2_data.py --extract "<Diablo II folder>"`
   (reads `ProjectD2\pd2data.mpq`; also refreshes `tools/pd2_stat_priority.tsv`), then regenerate and `--fix`.
   The author picks rolls in a page: `pick_rolls.bat` (double-click) = `python tools/gen_unique_rolls.py --picker`, which writes and opens
   `tools/roll_picker.html` (gitignored); it saves the picks file, and `build.bat` regenerates and builds.
@@ -37,7 +40,17 @@
   stat, lowest-listed first: put a new tag line anywhere and run `python tools/tag_order.py --fix` (lint flags a
   line out of place; a tag line's description is split off so description notes keep their order). Stats of
   equal priority come in an order that differs per item; the -res group tag follows each item's own order
-  (`ERES_ORDER` in the generator, from in-game screenshots). One tag per stat when a roll and a corruption overlap (author's
+  (`ERES_ORDER` in the generator, from in-game screenshots). One stat with several skills (classes, tabs, auras)
+  lists the higher number first (Arm of King Leoric: Raise Skeleton Archer 89, Warrior 70, Skeleton Mastery 69),
+  so a block's lines go from the lowest number to the highest (`--fix` sorts them; 310-staffmods' class runs too).
+  Special picks: per-level rolls (`life/lvl`, `mf/lvl`) show per level, or the total at your level while worn
+  (`EQUIPPED`); `randsk` / `randclsk` show the random skill / class an item got (Ormus' Robes, Spirit Keeper,
+  Spirit Ward); `ver` names an item's version (`Strk`/`Cast`, `2msw`/`2msa`); `masteries` is `3/3/3` (cold,
+  lightning, fire). `SHORT_NAMES` (long set names: Tal Rasha's, Immortal King's...) shows the set owner's name
+  when corrupted (`STAT360>0`), or always where the picked tags don't fit beside the full name even uncorrupted
+  (the picks file says which): 045 rebuilds the name as `%BASENAME%%NL%<short name>` before every other rule (a
+  name's lines are stored bottom up, base line first).
+  One tag per stat when a roll and a corruption overlap (author's
   format, the rule): put the roll into the corruption line, `(STAT360=n OR ROLL_<X>_TAG)`. Only when that line's
   tag shows a second stat (e.g. `Ind 150ed`, `und ... ar`) or its slots mean another stat does a separate roll line
   skip the corruption instead (`!STAT360=n`).
@@ -57,7 +70,7 @@
   Sup, Inf and superior `NNed` tags skip runewords, `!RW`, so names fit) and tags; the room assumes each version's
   longest elite base with `Eth `. A per-level roll (Enigma's `str/lvl`, `mf/lvl`) shows per level with a formula,
   `$f(STAT220/8)` = 0.75 (eighths, shifted by the stat's ValShift). All three -res rolls: one grouped tag as on Kira's
-  Guardian, in the runeword's property order. A runeword's own shorter labels (Lionheart `25s 15d 20v`) are
+  Guardian, in the game's order (S14: fire, lightning, cold). A runeword's own shorter labels (Lionheart `25s 15d 20v`) are
   `SHORT_LABELS` in the generator; they get their own alias (`RW_STR_S_TAG`). Versions show only the picked rolls
   they have (Loyalty: power strike on spears, strafe on bows). The author picks in `pick_runewords.bat` (= `--picker`,
   the same page template, `tools/runeword_picker.html`; a card previews any of its bases, ethereal or not).
@@ -97,6 +110,11 @@ The exact labels are in that file. A rule without `FILTLVL` applies at every lev
   `docs/pd2-filter-info.wiki`, `docs/pd2-formula-info.wiki`, `docs/patch-notes/`.
 - How the game really reads the filter: the PD2 BH source, github.com/Project-Diablo-2/BH
   (`BH/Modules/Item/ItemDisplay.cpp`, `BH/Modules/MapNotify/MapNotify.cpp`). The wiki lags behind it.
+  A local clone is in `tools/.cache/BH` (gitignored; `git -C tools/.cache/BH pull` updates it): search it there.
+  Minimap icons: BH draws BORDER, MAP, DOT, PX as nested 8/6/4/2-pixel boxes in that order, each in D2's draw
+  mode 7 (`MapNotify.cpp`). With an outer `BORDER-00` the Vial of Lightsong's whole icon showed black (S14 beta);
+  it now uses `21`, its Season 12 value. Keep `00` for the last layer (the `PX-00` centre dots) until `21` is
+  confirmed in game.
 
 ## Adding or splitting a section
 - Name it `NNN-topic.filter` with a number between its neighbours (e.g. `115-...`). The build rejects other

@@ -5,7 +5,7 @@
 // look like the same stat's tag in 300-affix-tags and sit in the game's stat order, like its blocks.
 
 // mf/lvl: Enigma
-Alias[RW_MF_LVL_TAG]:(RW ((SOCK=3 CHEST MULTI204,22849>0)))
+Alias[RW_MFLVL_TAG]:(RW ((SOCK=3 CHEST MULTI204,22849>0)))
 
 // mf: Dream, Splendor
 Alias[RW_MF_TAG]:(RW ((SOCK=3 (HELM OR CIRC) MULTI151,118>13) OR (SOCK=3 SHIELD MULTI151,118>13) OR (SOCK=2 SHIELD ALLSK>0)))
@@ -127,6 +127,9 @@ Alias[RW_SK79_TAG]:(RW ((SOCK=2 WEAPON CLSK2>1)))
 // stat258: Insight
 Alias[RW_CRIT_TAG]:(RW ((SOCK=4 WEAPON MULTI151,120>11)))
 
+// stat256: Deception
+Alias[RW_CSM_TAG]:(RW ((SOCK=3 (HELM OR CIRC) LIFE<-49)))
+
 // cb: Last Wish
 Alias[RW_CB_TAG]:(RW ((SOCK=6 WEAPON MULTI151,98>19)))
 
@@ -145,8 +148,8 @@ Alias[RW_EFRES_TAG]:(RW ((SOCK=3 (HELM OR CIRC) MULTI126,1>1) OR (SOCK=4 WEAPON 
 // -lres: Crescent Moon, Infinity
 Alias[RW_ELRES_TAG]:(RW ((SOCK=3 WEAPON MULTI198,2701>0) OR (SOCK=4 WEAPON MULTI151,123>11)))
 
-// eres_cfl: Famine
-Alias[RW_ERESCFL_TAG]:(RW ((SOCK=4 WEAPON STAT48>124)))
+// eres_flc: Famine
+Alias[RW_ERESFLC_TAG]:(RW ((SOCK=4 WEAPON STAT48>124)))
 
 // -cres: Doom
 Alias[RW_ECRES_TAG]:(RW ((SOCK=5 WEAPON MULTI151,114>15)))
@@ -246,7 +249,8 @@ ItemDisplay[RW]:%CL%%NAME%{%NAME%}%CONTINUE%
 
 // ---- Magic Find per Level (stat 240, priority 7) ----
 
-ItemDisplay[RW_MF_LVL_TAG STAT240>0]:%WHITE%$f(STAT240/8)%YELLOW%mf%CS%%NAME%{%NAME%}%CONTINUE%
+ItemDisplay[RW_MFLVL_TAG STAT240>0 !EQUIPPED]:%WHITE%$f(STAT240/8)%YELLOW%mf%CS%%NAME%{%NAME%}%CONTINUE%
+ItemDisplay[RW_MFLVL_TAG STAT240>0 EQUIPPED]:%WHITE%$f(FLOOR(STAT240*CLVL/8))%YELLOW%mf%CS%%NAME%{%NAME%}%CONTINUE%
 
 // ---- Magic Find (stat 80, priority 8) ----
 
@@ -317,8 +321,8 @@ ItemDisplay[RW_MAXMANA_TAG STAT77>0]:%WHITE%%STAT77%%BLUE%%PERCENT%m%CS%%NAME%{%
 
 // ---- Mana (stat 9, priority 55) ----
 
-ItemDisplay[(WEAPON OR SHIELD) RW_MANA_TAG MANA>0]:%WHITE%%MANA%%BLUE%mana%CS%%NAME%{%NAME%}%CONTINUE%
-ItemDisplay[CHEST RW_MANA_TAG MANA>0]:%WHITE%%MANA%%BLUE%mana%CS%%NAME%{%NAME%}%CONTINUE%
+ItemDisplay[(WEAPON OR SHIELD) RW_MANA_TAG MANA>0]:%WHITE%%MANA%%BLUE%mn%CS%%NAME%{%NAME%}%CONTINUE%
+ItemDisplay[CHEST RW_MANA_TAG MANA>0]:%WHITE%%MANA%%BLUE%mn%CS%%NAME%{%NAME%}%CONTINUE%
 
 // ---- % Maximum Life (stat 76, priority 58) ----
 
@@ -326,16 +330,16 @@ ItemDisplay[RW_MAXLIFE_TAG STAT76>0]:%WHITE%%STAT76%%RED%%PERCENT%l%CS%%NAME%{%N
 
 // ---- Life (stat 7, priority 59) ----
 
-ItemDisplay[(WEAPON OR CHEST) RW_LIFE_TAG LIFE>0]:%WHITE%%LIFE%%RED%life%CS%%NAME%{%NAME%}%CONTINUE%
-ItemDisplay[SHIELD RW_LIFE_TAG LIFE>0]:%WHITE%%LIFE%%RED%life%CS%%NAME%{%NAME%}%CONTINUE%
+ItemDisplay[(WEAPON OR CHEST) RW_LIFE_TAG LIFE>0]:%WHITE%%LIFE%%RED%lf%CS%%NAME%{%NAME%}%CONTINUE%
+ItemDisplay[SHIELD RW_LIFE_TAG LIFE>0]:%WHITE%%LIFE%%RED%lf%CS%%NAME%{%NAME%}%CONTINUE%
 
 // ---- Energy (stat 1, priority 61) ----
 
-ItemDisplay[RW_NRG_TAG STAT1>0]:%WHITE%%STAT1%%BLUE%nrg%CS%%NAME%{%NAME%}%CONTINUE%
+ItemDisplay[RW_NRG_TAG STAT1>0]:%WHITE%%STAT1%%BLUE%e%CS%%NAME%{%NAME%}%CONTINUE%
 
 // ---- Vitality (stat 3, priority 63) ----
 
-ItemDisplay[RW_VIT_TAG STAT3>0]:%WHITE%%STAT3%%RED%vit%CS%%NAME%{%NAME%}%CONTINUE%
+ItemDisplay[RW_VIT_TAG STAT3>0]:%WHITE%%STAT3%%RED%v%CS%%NAME%{%NAME%}%CONTINUE%
 ItemDisplay[RW_VIT_V_TAG STAT3>0]:%WHITE%%STAT3%%RED%v%CS%%NAME%{%NAME%}%CONTINUE%
 
 // ---- Dexterity (stat 2, priority 65) ----
@@ -344,12 +348,13 @@ ItemDisplay[RW_DEX_D_TAG DEX>0]:%WHITE%%STAT2%%GRAY%d%CS%%NAME%{%NAME%}%CONTINUE
 
 // ---- Strength per Level (stat 220, priority 66) ----
 
-ItemDisplay[RW_STR_LVL_TAG STAT220>0]:%WHITE%$f(STAT220/8)%GRAY%str%CS%%NAME%{%NAME%}%CONTINUE%
+ItemDisplay[RW_STR_LVL_TAG STAT220>0 !EQUIPPED]:%WHITE%$f(STAT220/8)%GRAY%s%CS%%NAME%{%NAME%}%CONTINUE%
+ItemDisplay[RW_STR_LVL_TAG STAT220>0 EQUIPPED]:%WHITE%$f(FLOOR(STAT220*CLVL/8))%GRAY%s%CS%%NAME%{%NAME%}%CONTINUE%
 
 // ---- Strength (stat 0, priority 67) ----
 
-ItemDisplay[(HELM OR CIRC) RW_STR_TAG STR>0]:%WHITE%%STAT0%%GRAY%str%CS%%NAME%{%NAME%}%CONTINUE%
-ItemDisplay[CHEST RW_STR_TAG STR>0]:%WHITE%%STAT0%%GRAY%str%CS%%NAME%{%NAME%}%CONTINUE%
+ItemDisplay[(HELM OR CIRC) RW_STR_TAG STR>0]:%WHITE%%STAT0%%GRAY%s%CS%%NAME%{%NAME%}%CONTINUE%
+ItemDisplay[CHEST RW_STR_TAG STR>0]:%WHITE%%STAT0%%GRAY%s%CS%%NAME%{%NAME%}%CONTINUE%
 ItemDisplay[RW_STR_S_TAG STR>0]:%WHITE%%STAT0%%GRAY%s%CS%%NAME%{%NAME%}%CONTINUE%
 
 // ---- All Attributes (stat 0+, priority 67) ----
@@ -385,6 +390,10 @@ ItemDisplay[RW_SK79_TAG SK79>0]:%WHITE%%SK79%%TAN%gmas%CS%%NAME%{%NAME%}%CONTINU
 
 ItemDisplay[RW_CRIT_TAG STAT258>0]:%WHITE%%STAT258%%RED%%PERCENT%crit%CS%%NAME%{%NAME%}%CONTINUE%
 
+// ---- Critical Strike Multiplier (stat 256, priority 85) ----
+
+ItemDisplay[RW_CSM_TAG STAT256>0]:%WHITE%%STAT256%%CORAL%mult%CS%%NAME%{%NAME%}%CONTINUE%
+
 // ---- Crushing Blow (stat 136, priority 87) ----
 
 ItemDisplay[RW_CB_TAG STAT136>9]:%WHITE%%STAT136%%CORAL%cb%CS%%NAME%{%NAME%}%CONTINUE%
@@ -411,7 +420,7 @@ ItemDisplay[RW_ELRES_TAG STAT334>0]:%WHITE%-%STAT334%%YELLOW%%PERCENT%res%CS%%NA
 
 // ---- -% Enemy Cold Resist (stat 335, priority 88) ----
 
-ItemDisplay[RW_ERESCFL_TAG STAT335>0]:%WHITE%-%STAT335%%BLUE%%PERCENT%%GRAY%/%WHITE%-%STAT333%%RED%%PERCENT%%GRAY%/%WHITE%-%STAT334%%YELLOW%%PERCENT%%CS%%NAME%{%NAME%}%CONTINUE%
+ItemDisplay[RW_ERESFLC_TAG STAT333>0]:%WHITE%-%STAT333%%RED%%PERCENT%%GRAY%/%WHITE%-%STAT334%%YELLOW%%PERCENT%%GRAY%/%WHITE%-%STAT335%%BLUE%%PERCENT%%CS%%NAME%{%NAME%}%CONTINUE%
 ItemDisplay[RW_ECRES_TAG STAT335>0]:%WHITE%-%STAT335%%BLUE%%PERCENT%res%CS%%NAME%{%NAME%}%CONTINUE%
 
 // ---- -% Enemy Poison Resist (stat 336, priority 88) ----
@@ -483,7 +492,7 @@ ItemDisplay[RW_OS155_TAG OS155>0]:%WHITE%%OS155%%TAN%bcom%CS%%NAME%{%NAME%}%CONT
 // ---- + Class Skills (stat 83, priority 157) ----
 
 ItemDisplay[RW_CLSK4_TAG CLSK4=1]:%WHITE%%CLSK4%%TAN%bar%CS%%NAME%{%NAME%}%CONTINUE%
-ItemDisplay[RW_CLSK4_TAG CLSK4>1]:%WHITE%%CLSK4%%GREEN%bar%CS%%NAME%{%NAME%}%CONTINUE%
+ItemDisplay[RW_CLSK4_TAG CLSK4>1]:%WHITE%%CLSK4%%GOLD%bar%CS%%NAME%{%NAME%}%CONTINUE%
 
 // ---- + All Skills (stat 127, priority 158) ----
 

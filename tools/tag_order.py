@@ -11,7 +11,9 @@ its lines in the order they had.
 Stats with the same priority come in an order that differs between items (Ormus' Robes and Nature's Peace list
 the higher stat ID first, Kira's Guardian lists -cold, -fire, -lightning). Here the higher stat ID goes further
 left; where that matters, a grouped tag can follow each item's own order (the -res group, ERES_ORDER in
-gen_unique_rolls.py).
+gen_unique_rolls.py). One stat with several skills (classes, tabs, auras) lists the higher skill first (Arm of
+King Leoric: Raise Skeleton Archer 89, Raise Skeleton Warrior 70, Skeleton Mastery 69; Chromatic Ire: Cold,
+Lightning, Fire Mastery), so within a block those lines go from the lowest skill number to the highest.
 
 Description notes stay in their own order: a tag line that also writes a description is split in two, and
 the description lines sit together at the end of the section, in the order they had.
@@ -53,7 +55,8 @@ NAMED = {"ALLSK": [127], "FCR": [105], "FHR": [99], "FBR": [102], "FRW": [96], "
 ELEM_SKILLS = {1: 363, 2: 364, 3: 366, 4: 362, 5: 365}  # MULTI126,<element>: the +N to <element> Skills line
 # Tags without a value keyword: their label -> the stat they show
 LABELS = {"Rep": [252], "Hfd": [118], "ATD": [78], "Cbf": [153], "Res": [39, 41, 43, 45], "drain": [74],
-          "itd": [115], "ITD": [115], "blk": [20], "all": [127], "Ind": [152]}
+          "itd": [115], "ITD": [115], "blk": [20], "all": [127], "Ind": [152],
+          "Strk": [198], "Cast": [200]}  # a version's tag: its chance to cast on striking / on casting
 CHANCE_TO_CAST = {"amp", "lr"}  # weapon suffixes: on striking (198), on casting for staves (200)
 GROUPS = {frozenset([39, 41, 43, 45]): "All Resistances", frozenset([40, 42, 44, 46]): "All Maximum Resistances",
           frozenset([0, 1, 2, 3]): "All Attributes"}
@@ -85,6 +88,8 @@ TITLES = {
     357: "+% Magic Skill Damage", 362: "+ Cold Skills", 363: "+ Fire Skills", 364: "+ Lightning Skills",
     365: "+ Poison Skills", 366: "+ Magic Skills", 423: "Leap Speed", 424: "Life per Hit",
     425: "-% Enemy Physical Resist", 501: "Open Wounds Damage", 504: "Curse Resistance",
+    256: "Critical Strike Multiplier", 268: "Crushing Blow Efficiency", 269: "Cold Arrow Extra Arrows",
+    461: "Maximum Skeleton Warriors", 475: "Maximum Skeleton Archers",
 }
 COLORS = set("""WHITE RED GREEN BLUE GOLD GRAY BLACK TAN ORANGE YELLOW PURPLE DARK_GREEN CORAL SAGE TEAL
 LIGHT_GRAY CS CL NL PERCENT""".split())
@@ -181,6 +186,15 @@ def tag_stats(pre, cond):
     return chunks
 
 
+def tag_param(pre):
+    """The skill (class, tab, aura) number of a tag's first value: SK89 -> 89, MULTI151,119 -> 119; 0 if none."""
+    for kw in KEYWORD.findall(FORMULA.sub(formula_stat, pre)):
+        if kw not in COLORS:
+            m = re.fullmatch(r"(?:SK|OS|CLSK|TABSK|CHSK)(\d+)|MULTI\d+,(\d+)", kw)
+            return int(m.group(1) or m.group(2)) if m else 0
+    return 0
+
+
 def block_key(chunks):
     """A tag's place: its leftmost chunk. A group shown as one line (all resistances...) sits just above its
     highest member's block."""
@@ -263,7 +277,7 @@ def check(lines=None, hint=FIX_HINTS[SECTION_NAME]):
         if u["desc"] is not None and u["desc"].strip() != "%NAME%":
             found.append((u["n"], "warning", "a tag line that also writes a description: --fix splits it so "
                           "the description keeps its order", u["line"]))
-        placed.append((block_key(chunks), u, chunks))
+        placed.append((block_key(chunks) + (tag_param(u["pre"]),), u, chunks))
     # The lines out of place: those outside the longest run that is already in order (fewest to move)
     tails, prev = [], [None] * len(placed)
     for i, (key, _, _) in enumerate(placed):
@@ -276,9 +290,10 @@ def check(lines=None, hint=FIX_HINTS[SECTION_NAME]):
         k = prev[k]
     for i, (key, u, chunks) in enumerate(placed):
         if i not in keep:
+            skill = " (same-stat lines: from the lowest skill number to the highest)" if key[3] else ""
             found.append((u["n"], "error",
                           f"this {STAT_NAMES.get(key[1], key[1])} tag is out of the game's stat order (it belongs "
-                          f"under '{block_title(key, chunks)[8:-5]}'): {hint}", u["line"]))
+                          f"under '{block_title(key, chunks)[8:-5]}'{skill}): {hint}", u["line"]))
     return sorted(found, key=lambda f: f[0])
 
 
@@ -300,13 +315,14 @@ def fix():
             line = f"{head}{u['name']}{{%NAME%}}{u['rest']}"
             notes.append((u["comments"], f"{head}%NAME%{{{u['desc']}}}{u['rest']}"))
         blocks.setdefault(key, {"title": block_title(key, chunks), "units": []})["units"].append(
-            (u["comments"], line))
+            (tag_param(u["pre"]), u["comments"], line))
     for c in units.dropped:
         print(f"note: comment not directly above a rule, left out: {c.strip()}")
     out = list(preamble)
     for key in sorted(blocks):
         out += ["", blocks[key]["title"], ""]
-        for i, (comments, line) in enumerate(blocks[key]["units"]):
+        ordered = sorted(blocks[key]["units"], key=lambda unit: unit[0])  # (stable: same number, same order)
+        for i, (_, comments, line) in enumerate(ordered):
             if comments and i:
                 out.append("")
             out += comments + [line]
