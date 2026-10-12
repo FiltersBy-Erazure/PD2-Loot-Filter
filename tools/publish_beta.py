@@ -5,16 +5,20 @@ Publish the Season 14 beta filter on `main`, the branch the PD2 launcher serves 
 The launcher reads this repository's default branch (`main`) through the GitHub contents API. During
 the S14 beta, `main` keeps its 8 Season 13 filters untouched and gets one extra launcher entry,
 "Erazure - S14 Beta": Erazure-S14-Beta.filter, a byte copy of the `beta` branch's Erazure-Main.filter.
+It also gets the players' unique/set tier page, Erazure-Unique-Set-Tiers.html (a byte copy of `beta`'s),
+which GitHub Pages serves from `main`.
 
 Usage (from the repo root, on the `beta` branch with no uncommitted changes):
-    python tools/publish_beta.py            update a worktree of `main` and show what would change
-    python tools/publish_beta.py --commit   ...and commit it there (only with the author's go-ahead)
-    python tools/publish_beta.py --push     ...and push `main` (implies --commit; author's go-ahead)
-    python tools/publish_beta.py --remove   take the beta entry and file off `main` again (launch day)
+    python tools/publish_beta.py              update a worktree of `main` and show what would change
+    python tools/publish_beta.py --commit     ...and commit it there (only with the author's go-ahead)
+    python tools/publish_beta.py --push       ...and push `main` (implies --commit; author's go-ahead)
+    python tools/publish_beta.py --page-only  publish the tier page alone (with --commit / --push)
+    python tools/publish_beta.py --remove     take the beta entry and file off `main` again (launch day; the
+                                              tier page stays: the launch merge brings the S14 one)
 
 It runs the build check and the linter on `beta` first, then works in the worktree
 ../PD2-Loot-Filter-main (created on first use), and refuses to touch anything on `main` except
-Erazure-S14-Beta.filter and its entry in filter_definitions.json.
+Erazure-S14-Beta.filter, its entry in filter_definitions.json and Erazure-Unique-Set-Tiers.html.
 """
 import argparse
 import datetime
@@ -38,7 +42,8 @@ ENTRY = {
     "file_name": BETA_FILE,
 }
 DEFS = "filter_definitions.json"
-ALLOWED = {BETA_FILE, DEFS}
+PAGE_FILE = "Erazure-Unique-Set-Tiers.html"  # the tier page (tools/tier_map.py), served by GitHub Pages
+ALLOWED = {BETA_FILE, DEFS, PAGE_FILE}
 
 
 def git(*args, cwd=ROOT, check=True):
@@ -109,8 +114,11 @@ def main():
     ap.add_argument("--commit", action="store_true", help="commit on main (author's go-ahead)")
     ap.add_argument("--push", action="store_true", help="commit and push main (author's go-ahead)")
     ap.add_argument("--remove", action="store_true", help="remove the beta entry and file from main")
+    ap.add_argument("--page-only", action="store_true", help="publish only the tier page, not the beta filter")
     ap.add_argument("--trailer", default="", help="extra line(s) for the commit message")
     args = ap.parse_args()
+    if args.remove and args.page_only:
+        sys.exit("--remove and --page-only do not go together")
 
     run_checks()
     prepare_worktree()
@@ -118,8 +126,11 @@ def main():
     if args.remove:
         (WORKTREE / BETA_FILE).unlink(missing_ok=True)
     else:
-        (WORKTREE / BETA_FILE).write_bytes(git("show", "beta:Erazure-Main.filter"))
-    update_definitions(args.remove)
+        if not args.page_only:
+            (WORKTREE / BETA_FILE).write_bytes(git("show", "beta:Erazure-Main.filter"))
+        (WORKTREE / PAGE_FILE).write_bytes(git("show", f"beta:{PAGE_FILE}"))
+    if not args.page_only:
+        update_definitions(args.remove)
 
     changed = {line[3:] for line in git("status", "--porcelain", cwd=WORKTREE).decode().splitlines()}
     if not changed:
@@ -135,11 +146,16 @@ def main():
         return
     v = json.loads(git("show", "beta:version.json"))
     version = build.version_text(v["season"], datetime.date.fromisoformat(v["date"]))
+    page_line = f"- {PAGE_FILE}: the unique/set tier page (GitHub Pages), copy of beta's at {sha}\n"
     if args.remove:
         message = "Remove the S14 beta filter from the launcher list"
+    elif args.page_only:
+        message = (f"S14 beta: publish the unique/set tier page ({version})\n\n" + page_line +
+                   f"- {BETA_FILE} and the 8 Season 13 filters are unchanged")
     else:
         message = (f"S14 beta: publish Erazure - S14 Beta ({version})\n\n"
                    f"- {BETA_FILE}: copy of beta:Erazure-Main.filter at {sha}\n"
+                   + (page_line if PAGE_FILE in changed else "") +
                    f"- The 8 Season 13 filters are unchanged")
     if args.trailer:
         message += "\n\n" + args.trailer

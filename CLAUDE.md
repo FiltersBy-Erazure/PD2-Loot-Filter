@@ -188,8 +188,9 @@ The exact labels are in that file. A rule without `FILTLVL` applies at every lev
    on conflicts in the 8 filters, resolve the sections and rebuild).
 5. Merge to `main` only with the author's explicit go-ahead: the launcher serves `main` to players
    (GitHub contents API, default branch). During the S14 beta, `python tools/publish_beta.py` puts the
-   beta build on `main` as an extra "Erazure - S14 Beta" entry without touching the 8 live filters;
-   its `--push` also needs the author's go-ahead each time.
+   beta build on `main` as an extra "Erazure - S14 Beta" entry without touching the 8 live filters, plus
+   the tier page `Erazure-Unique-Set-Tiers.html` (GitHub Pages serves it from `main`; `--page-only`: the
+   page alone); its `--push` also needs the author's go-ahead each time.
 6. To see which rules an item hits (and where it stops, and which rule plays its drop sound):
    `python tools/explain_item.py <code> <quality> --level N [--set K=V ...]`.
 
