@@ -21,6 +21,9 @@ rem Unique/set tier page for players (Erazure-Unique-Set-Tiers.html, read from t
 rem stamp, because its footer shows the date
 python tools\tier_map.py
 if errorlevel 1 goto failed
+rem Non-magic bases page for players (Erazure-Non-Magic-Bases.html, read from the filter's rules)
+python tools\base_map.py
+if errorlevel 1 goto failed
 python tools\build.py --check
 if errorlevel 1 goto failed
 

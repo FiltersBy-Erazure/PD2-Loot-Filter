@@ -5,8 +5,8 @@ Publish the Season 14 beta filter on `main`, the branch the PD2 launcher serves 
 The launcher reads this repository's default branch (`main`) through the GitHub contents API. During
 the S14 beta, `main` keeps its 8 Season 13 filters untouched and gets one extra launcher entry,
 "Erazure - S14 Beta": Erazure-S14-Beta.filter, a byte copy of the `beta` branch's Erazure-Main.filter.
-It also gets the website: the players' unique/set tier page Erazure-Unique-Set-Tiers.html, the site's
-pages in website/ and the workflow .github/workflows/pages.yml that builds them into GitHub Pages (byte copies
+It also gets the website: the players' pages Erazure-Unique-Set-Tiers.html and Erazure-Non-Magic-Bases.html, the
+site's pages in website/ and the workflow .github/workflows/pages.yml that builds them into GitHub Pages (byte copies
 of `beta`'s; website files `beta` no longer has are removed).
 
 Usage (from the repo root, on the `beta` branch with no uncommitted changes):
@@ -44,10 +44,11 @@ ENTRY = {
     "file_name": BETA_FILE,
 }
 DEFS = "filter_definitions.json"
-PAGE_FILE = "Erazure-Unique-Set-Tiers.html"  # the tier page (tools/tier_map.py), part of the website
+PAGE_FILES = ["Erazure-Unique-Set-Tiers.html",  # the tier page (tools/tier_map.py), part of the website
+              "Erazure-Non-Magic-Bases.html"]  # the bases page (tools/base_map.py), part of the website
 WEBSITE = "website"  # the website's pages and MkDocs config
 WORKFLOW = ".github/workflows/pages.yml"  # builds the website into GitHub Pages on every push to main
-ALLOWED = {BETA_FILE, DEFS, PAGE_FILE, WORKFLOW}
+ALLOWED = {BETA_FILE, DEFS, WORKFLOW, *PAGE_FILES}
 
 
 def allowed(path):
@@ -55,15 +56,15 @@ def allowed(path):
 
 
 def sync_website():
-    """Copy beta's website/, the Pages workflow and the tier page to the main worktree; drop website files that
-    beta no longer has."""
+    """Copy beta's website/, the Pages workflow and the players' pages to the main worktree; drop website files
+    that beta no longer has."""
     paths = git("ls-tree", "-r", "--name-only", "beta", "--", WEBSITE, WORKFLOW).decode().splitlines()
     wanted = set(paths)
     folder = WORKTREE / WEBSITE
     for old in (folder.rglob("*") if folder.exists() else []):
         if old.is_file() and old.relative_to(WORKTREE).as_posix() not in wanted:
             old.unlink()
-    for rel in paths + [PAGE_FILE]:
+    for rel in paths + PAGE_FILES:
         dest = WORKTREE / rel
         dest.parent.mkdir(parents=True, exist_ok=True)
         dest.write_bytes(git("show", f"beta:{rel}"))
@@ -174,7 +175,7 @@ def main():
     site = sorted(p for p in changed if p not in (BETA_FILE, DEFS))
     site_line = (f"- The website (GitHub Pages), copy of beta's at {sha}: {', '.join(site)}\n" if len(site) <= 4 else
                  f"- The website (GitHub Pages), copy of beta's at {sha}: {len(site)} files in {WEBSITE}/, "
-                 f"{PAGE_FILE} and {WORKFLOW}\n") if site else ""
+                 f"{', '.join(PAGE_FILES)} and {WORKFLOW}\n") if site else ""
     if args.remove:
         message = "Remove the S14 beta filter from the launcher list"
     elif args.site_only:

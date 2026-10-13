@@ -16,9 +16,10 @@ roll picker shows.
         each season and after a PD2 patch that changes items, then python tools/gen_unique_rolls.py,
         python tools/gen_runeword_rolls.py and python tools/tag_order.py --fix. Also does --tier-data.
     python tools/pd2_data.py --tier-data "C:\\Users\\<you>\\Diablo II"
-        only writes what tools/tier_map.py reads: docs/pd2-bases.tsv (each base's name, tier and item types),
-        docs/pd2-sounds.tsv (Sounds.txt: the sound each %SOUNDID-n% plays) and docs/pd2-palette.tsv (the
-        colors of %BORDER-xx% %MAP-xx% %DOT-xx% %PX-xx%)
+        only writes what tools/tier_map.py and tools/base_map.py read: docs/pd2-bases.tsv (each base's name,
+        tier, item types, sockets and size), docs/pd2-skills.tsv (skill names), docs/pd2-sounds.tsv (Sounds.txt:
+        the sound each %SOUNDID-n% plays) and docs/pd2-palette.tsv (the colors of %BORDER-xx% %MAP-xx% %DOT-xx%
+        %PX-xx%)
     python tools/pd2_data.py --report NAME
         the stats of the items and runewords whose name contains NAME (as the generators read them)
 
@@ -54,6 +55,7 @@ PRIORITY_FILE = TOOLS / "pd2_stat_priority.tsv"
 BASES_FILE = ROOT / "docs" / "pd2-bases.tsv"
 SOUNDS_FILE = ROOT / "docs" / "pd2-sounds.tsv"
 PALETTE_FILE = ROOT / "docs" / "pd2-palette.tsv"
+SKILLS_FILE = ROOT / "docs" / "pd2-skills.tsv"
 BS = chr(92)
 
 # Stats the filter has a name for (the generator's vocabulary); others are STAT<id>
@@ -557,21 +559,32 @@ def extract(game_dir):
 
 
 def extract_tier_data(game_dir, game=None):
-    """For tools/tier_map.py: docs/pd2-bases.tsv (code, name, tier as BH reads it, the base's item type and its
-    ancestors), docs/pd2-sounds.tsv (PD2's Sounds.txt: index, name, file) and docs/pd2-palette.tsv (the act 1
+    """For tools/tier_map.py and tools/base_map.py: docs/pd2-bases.tsv (code, name, tier as BH reads it, the base's
+    item type and its ancestors, sockets, size), docs/pd2-skills.tsv (ID, name, class), docs/pd2-sounds.tsv (PD2's Sounds.txt: index, name, file) and docs/pd2-palette.tsv (the act 1
     palette BH draws minimap icons with: index as the filter writes it, hex color)."""
     import pd2_mpq
     game_dir = Path(game_dir)
     game = game or Game(game_dir)
     stamp = datetime.date.today().isoformat()
     out = [f"# PD2 item bases (Weapons, Armor, Misc) from pd2data.mpq, extracted {stamp} by tools/pd2_data.py: code,",
-           "# name, tier (BH's NORM/EXC/ELT: the code against its ubercode/ultracode), item type and its ancestors.",
-           "code\tname\ttier\ttypes"]
+           "# name, tier (BH's NORM/EXC/ELT: the code against its ubercode/ultracode), item type and its ancestors,",
+           "# most sockets (gemsockets), inventory width and height (BH's AREA is width x height), spawnable (0: no",
+           "# white drop of this base: a base only some unique uses).",
+           "code\tname\ttier\ttypes\tsockets\twidth\theight\tspawnable"]
     # a quest item's name can hold a line break ("Right Click to learn skill...\nBook of Skill"): its last line
-    out += [f"{code}\t{game.base_name(code).splitlines()[-1]}\t{game.tier(code)}\t{','.join(game.ancestors(code))}"
-            for code in sorted(game.base_rows)]
+    for code in sorted(game.base_rows):
+        r = game.base_rows[code]
+        out.append(f"{code}\t{game.base_name(code).splitlines()[-1]}\t{game.tier(code)}\t{','.join(game.ancestors(code))}"
+                   f"\t{to_int(r.get('gemsockets'))}\t{to_int(r.get('invwidth'))}\t{to_int(r.get('invheight'))}"
+                   f"\t{to_int(r.get('spawnable'))}")
     BASES_FILE.write_text("\n".join(out) + "\n", encoding="utf-8", newline="\n")
-    print(f"wrote {BASES_FILE.relative_to(ROOT)} ({len(out) - 3} bases)")
+    print(f"wrote {BASES_FILE.relative_to(ROOT)} ({len(out) - 5} bases)")
+    out = [f"# PD2 skills (Skills.txt, names from the string tables) from pd2data.mpq, extracted {stamp} by",
+           "# tools/pd2_data.py: the skill ID the filter's SK<n> / OS<n> read, its name and class (Skills.txt charclass).",
+           "id\tname\tclass"]
+    out += [f"{sid}\t{name}\t{game.skill_class.get(sid, '')}" for sid, name in sorted(game.skill_names.items())]
+    SKILLS_FILE.write_text("\n".join(out) + "\n", encoding="utf-8", newline="\n")
+    print(f"wrote {SKILLS_FILE.relative_to(ROOT)} ({len(out) - 3} skills)")
     pd2 = pd2_mpq.MPQ(game_dir / "ProjectD2" / "pd2data.mpq")
     rows = read_table(pd2.read(BS.join(["data", "global", "excel", "Sounds.txt"])).decode("latin-1"))
     out = [f"# PD2 Sounds.txt from pd2data.mpq, extracted {stamp} by tools/pd2_data.py: the sound %SOUNDID-n% plays.",

@@ -18,6 +18,7 @@ afterwards.
 - [Versions](versions.md): Main, Revealed, BIG GG and PoE, and what each one changes
 - [Filter Levels](filter-levels.md): what each filter level filters out
 - [Unique & Set Tiers](tiers.md): how every unique and set item shows when it drops
+- [Bases](bases.md): when each white armor and weapon base is tagged, notified or hidden
 - [Customization](customization.md): edit your own copy of the filter
 - [Examples](examples.md): the filter's style in game
 

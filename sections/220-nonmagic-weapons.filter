@@ -2,13 +2,13 @@
 // ===============================  Necro Wands  ===============================
 // ---------------------------------------------------------------------------------
 
-// On filter levels 11-12, hide nonmagical necromancer wands
-ItemDisplay[NMAG !RW WAND (FILTLVL~3-7 CLVL>79) !((7wn OR 9yw OR 7yw OR bwn OR 9bw OR 7bw OR gwn OR 9gw OR 7gw) (SOCK=0 OR SOCK=2) (((SK75>2 OR SK85>2) ((SK367>0 (SK68>0 OR SK95>0 OR SK66>0 OR SK87>0)) OR (SK68>0 (SK95>0 OR SK66>0 OR SK87>0)) OR (SK95>0 (SK66>0 OR SK87>0)))) OR (SK94>2 ((SK367>0 (SK91>0 OR SK68>0 OR SK95>0)) OR (SK91>0 (SK68>0 OR SK95>0)) OR (SK68>0 SK95>0))) OR (SK367>2 (SK91>0 OR SK95>0)) OR (SK91>2 SK95>0) OR (SK68>0 SK95>0 (SK91>0 OR SK66>0 OR SK87>0)) OR (SK367>0 ((SK91>0 SK95>0) OR (SK91>0 SK68>0) OR (SK95>0 SK66>0) OR (SK95>0 SK87>0) OR (SK95>0 SK68>0) OR (SK66>0 SK68>0) OR (SK87>0 SK68>0))))) GROUND !TOWN SELLPRICE>24999 AREA<3]:%GRAY%(%TAN%$%GRAY%)//
-ItemDisplay[NMAG !RW WAND (FILTLVL~3-7 CLVL>79) !((7wn OR 9yw OR 7yw OR bwn OR 9bw OR 7bw OR gwn OR 9gw OR 7gw) (SOCK=0 OR SOCK=2) (((SK75>2 OR SK85>2) ((SK367>0 (SK68>0 OR SK95>0 OR SK66>0 OR SK87>0)) OR (SK68>0 (SK95>0 OR SK66>0 OR SK87>0)) OR (SK95>0 (SK66>0 OR SK87>0)))) OR (SK94>2 ((SK367>0 (SK91>0 OR SK68>0 OR SK95>0)) OR (SK91>0 (SK68>0 OR SK95>0)) OR (SK68>0 SK95>0))) OR (SK367>2 (SK91>0 OR SK95>0)) OR (SK91>2 SK95>0) OR (SK68>0 SK95>0 (SK91>0 OR SK66>0 OR SK87>0)) OR (SK367>0 ((SK91>0 SK95>0) OR (SK91>0 SK68>0) OR (SK95>0 SK66>0) OR (SK95>0 SK87>0) OR (SK95>0 SK68>0) OR (SK66>0 SK68>0) OR (SK87>0 SK68>0))))) GROUND !TOWN (SELLPRICE<25000 OR AREA>2)]://
-ItemDisplay[NMAG !RW WAND FILTLVL>7 !((7wn OR 9yw OR 7yw OR bwn OR 9bw OR 7bw OR gwn OR 9gw OR 7gw) (SOCK=0 OR SOCK=2) (((SK75>2 OR SK85>2) ((SK367>0 (SK68>0 OR SK95>0 OR SK66>0 OR SK87>0)) OR (SK68>0 (SK95>0 OR SK66>0 OR SK87>0)) OR (SK95>0 (SK66>0 OR SK87>0)))) OR (SK94>2 ((SK367>0 (SK91>0 OR SK68>0 OR SK95>0)) OR (SK91>0 (SK68>0 OR SK95>0)) OR (SK68>0 SK95>0))) OR (SK367>2 (SK91>0 OR SK95>0)) OR (SK91>2 SK95>0) OR (SK68>0 SK95>0 (SK91>0 OR SK66>0 OR SK87>0)) OR (SK367>0 ((SK91>0 SK95>0) OR (SK91>0 SK68>0) OR (SK95>0 SK66>0) OR (SK95>0 SK87>0) OR (SK95>0 SK68>0) OR (SK66>0 SK68>0) OR (SK87>0 SK68>0))))) !TOWN]:// On filter levels 11-12, hide nonmagical necromancer wands 
+// Hide nonmagical necromancer wands that are not Dominion bases: on filter levels 3-7 from character level 80 (only a ($) shows when one sells for 25,000+ gold and takes 2 inventory squares or less), and on filter levels 8+
+ItemDisplay[NMAG !RW WAND (FILTLVL~3-7 CLVL>79) !RWB_DOMINION_WAND GROUND !TOWN SELLPRICE>24999 AREA<3]:%GRAY%(%TAN%$%GRAY%)//
+ItemDisplay[NMAG !RW WAND (FILTLVL~3-7 CLVL>79) !RWB_DOMINION_WAND GROUND !TOWN (SELLPRICE<25000 OR AREA>2)]://
+ItemDisplay[NMAG !RW WAND FILTLVL>7 !RWB_DOMINION_WAND !TOWN]:// On filter levels 8+, hide nonmagical necromancer wands that are not Dominion bases
 
 //      Dominion runeword wand bases
-ItemDisplay[NMAG !RW WAND (7wn OR 9yw OR 7yw OR bwn OR 9bw OR 7bw OR gwn OR 9gw OR 7gw) (SOCK=0 OR SOCK=2) (((SK75>2 OR SK85>2) ((SK367>0 (SK68>0 OR SK95>0 OR SK66>0 OR SK87>0)) OR (SK68>0 (SK95>0 OR SK66>0 OR SK87>0)) OR (SK95>0 (SK66>0 OR SK87>0)))) OR (SK94>2 ((SK367>0 (SK91>0 OR SK68>0 OR SK95>0)) OR (SK91>0 (SK68>0 OR SK95>0)) OR (SK68>0 SK95>0))) OR (SK367>2 (SK91>0 OR SK95>0)) OR (SK91>2 SK95>0) OR (SK68>0 SK95>0 (SK91>0 OR SK66>0 OR SK87>0)) OR (SK367>0 ((SK91>0 SK95>0) OR (SK91>0 SK68>0) OR (SK95>0 SK66>0) OR (SK95>0 SK87>0) OR (SK95>0 SK68>0) OR (SK66>0 SK68>0) OR (SK87>0 SK68>0))))]:%ORANGE%Dominion %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
+ItemDisplay[NMAG !RW WAND RWB_DOMINION_WAND]:%ORANGE%Dominion %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
 
 //      White runeword wand bases: 
 //      Teeth, Bone Spear, and Corpse Explosion
@@ -75,7 +75,7 @@ ItemDisplay[NMAG TABSK2<2 (am3 OR am4 OR am8 OR am9 OR amd OR ame OR am5 OR ama 
 // Hide Amazon Class Spears and Javelins that don't have at least +3 to Javelin Skills above character level 69
 ItemDisplay[NMAG TABSK2<3 (am3 OR am4 OR am8 OR am9 OR amd OR ame OR am5 OR ama OR amf) CLVL>69 FILTLVL>0 !TOWN]://
 
-// Hides nonmagical Zon Class Javelins above character level 80 (Above this level, most Amazons have used their imbue quests)
+// Hides nonmagical Zon Class Javelins from character level 80 or on filter levels 3+ (by then most Amazons have used their imbue quests)
 ItemDisplay[NMAG TABSK2=3 (am5 OR ama OR amf) (CLVL>79 OR FILTLVL>2) FILTLVL>0 !(amf ETH (SOCK=0 OR SOCK=3) (FILTLVL<8 OR ED>14)) !TOWN]:// S14: eth +3 Matriarchal Javelins with 0 or 3 sockets (Jealousy base) show on levels 0-7, and with 15+ ED on 8-12
 
 //           Maiden Spear, Maiden Pike
@@ -88,11 +88,11 @@ ItemDisplay[NMAG !INF !RW (am8 OR am9) !AMAZON (SOCK=0 OR CLVL>39) FILTLVL>0 !TO
 ItemDisplay[NMAG !INF !RW (am8 OR am9) AMAZON CLVL>49 FILTLVL>1 !TOWN]://
 
 //           Matriarchal Spear, Matriarchal Pike
-// Hide amazon spears above filter level 5 unless character is an amazon
+// Hide amazon spears on filter levels 3+ unless character is an amazon
 ItemDisplay[NMAG !INF !RW (amd OR ame) !AMAZON FILTLVL>2 !TOWN]://
-// Hide matriarchal spears without ED after filter level 5 if character is an amazon
+// Hide matriarchal spears without ED on filter levels 3+ if character is an amazon
 ItemDisplay[NMAG !INF !RW amd AMAZON FILTLVL>2 ED<5 !TOWN]://
-// Hide matriarchal pikes after filter level 5 if character is an amazon
+// Hide matriarchal pikes on filter levels 3+ if character is an amazon
 ItemDisplay[NMAG !INF !RW ame AMAZON FILTLVL>2 !TOWN]://
 // Hide noneth matriarchal spears and pikes that are not 0, 3, or 4 sockets
 ItemDisplay[NMAG !INF !RW (amd OR ame) !ETH TABSK2=3 !(SOCK=0 OR SOCK=3 OR SOCK=4) FILTLVL>0 !TOWN]://
@@ -103,60 +103,60 @@ ItemDisplay[NMAG !INF !RW (amd OR ame) ETH TABSK2=3 !(SOCK=0 OR SOCK=6) FILTLVL>
 //    ============================  Assassin Claws  ==========================
 // ------------------------------------------------------------------------------
 
-// On filter levels 11-12, hide nonmagical assassin claws that are not plague or chaos bases
-ItemDisplay[NMAG !RW SIN (FILTLVL~3-7 CLVL>79) !(((((clw OR btl OR skr OR 9ar OR 9wb OR 9xf OR 9cs OR 9lw OR 9tw) (SOCK=0 OR SOCK=3) ((SK262>1 SK272>2) OR (SK262>2 SK272>1) OR (SK271>1 SK366>2) OR (SK271>2 SK366>1))) OR ((btl OR 9tw OR 7tw OR 9lw OR 7lw) (SOCK=0 OR SOCK=3) ((SK257>2 (SK252>1 OR SK263>1 OR SK275>0)))) OR ((btl OR 9tw OR 7tw OR 9lw OR 7lw) (SOCK=0 OR SOCK=3) ((SK271>2 (SK258>2 OR SK263>2 OR SK267>2 OR SK275>0 OR SK366>2)) OR (SK262>2 (SK258>2 OR SK263>2 OR SK267>2 OR SK275>0 OR SK272>1)) OR (SK272>2 SK262>1))) OR (!ETH (7lw OR 7tw OR 9lw OR 9tw) (SOCK=0 OR SOCK=3) (SK265>2 OR SK280>2 OR SK269>2 OR SK274>2) (SK252>0 OR SK258>0 OR SK263>0 OR SK267>0 OR SK268>0 OR SK275>0 OR SK277>0 OR SK279>0)) OR (SIN ASSASSIN !(ktr OR wrb OR axf OR ces) (SOCK=0 OR SOCK=3) SK273>2 (SK253>2 OR SK258>2 OR SK263>2 OR SK267>2 OR SK275>0 OR SK276>0)))) OR (ETH (7qr OR 7ar OR 7xf) (SOCK=0 OR SOCK=3) $f(COUNT(ED>9,SK252>0,SK263>0,SK275>0,SK277>0,SK278>0)>=2)) OR ((btl OR clw) (SOCK=0 OR SOCK=3) SK252=3)) GROUND !TOWN SELLPRICE>24999 AREA<3]:%GRAY%(%TAN%$%GRAY%)//
-ItemDisplay[NMAG !RW SIN (FILTLVL~3-7 CLVL>79) !(((((clw OR btl OR skr OR 9ar OR 9wb OR 9xf OR 9cs OR 9lw OR 9tw) (SOCK=0 OR SOCK=3) ((SK262>1 SK272>2) OR (SK262>2 SK272>1) OR (SK271>1 SK366>2) OR (SK271>2 SK366>1))) OR ((btl OR 9tw OR 7tw OR 9lw OR 7lw) (SOCK=0 OR SOCK=3) ((SK257>2 (SK252>1 OR SK263>1 OR SK275>0)))) OR ((btl OR 9tw OR 7tw OR 9lw OR 7lw) (SOCK=0 OR SOCK=3) ((SK271>2 (SK258>2 OR SK263>2 OR SK267>2 OR SK275>0 OR SK366>2)) OR (SK262>2 (SK258>2 OR SK263>2 OR SK267>2 OR SK275>0 OR SK272>1)) OR (SK272>2 SK262>1))) OR (!ETH (7lw OR 7tw OR 9lw OR 9tw) (SOCK=0 OR SOCK=3) (SK265>2 OR SK280>2 OR SK269>2 OR SK274>2) (SK252>0 OR SK258>0 OR SK263>0 OR SK267>0 OR SK268>0 OR SK275>0 OR SK277>0 OR SK279>0)) OR (SIN ASSASSIN !(ktr OR wrb OR axf OR ces) (SOCK=0 OR SOCK=3) SK273>2 (SK253>2 OR SK258>2 OR SK263>2 OR SK267>2 OR SK275>0 OR SK276>0)))) OR (ETH (7qr OR 7ar OR 7xf) (SOCK=0 OR SOCK=3) $f(COUNT(ED>9,SK252>0,SK263>0,SK275>0,SK277>0,SK278>0)>=2)) OR ((btl OR clw) (SOCK=0 OR SOCK=3) SK252=3)) GROUND !TOWN (SELLPRICE<25000 OR AREA>2)]://
-ItemDisplay[NMAG !RW SIN FILTLVL>7 !(((((clw OR btl OR skr OR 9ar OR 9wb OR 9xf OR 9cs OR 9lw OR 9tw) (SOCK=0 OR SOCK=3) ((SK262>1 SK272>2) OR (SK262>2 SK272>1) OR (SK271>1 SK366>2) OR (SK271>2 SK366>1))) OR ((btl OR 9tw OR 7tw OR 9lw OR 7lw) (SOCK=0 OR SOCK=3) ((SK257>2 (SK252>1 OR SK263>1 OR SK275>0)))) OR ((btl OR 9tw OR 7tw OR 9lw OR 7lw) (SOCK=0 OR SOCK=3) ((SK271>2 (SK258>2 OR SK263>2 OR SK267>2 OR SK275>0 OR SK366>2)) OR (SK262>2 (SK258>2 OR SK263>2 OR SK267>2 OR SK275>0 OR SK272>1)) OR (SK272>2 SK262>1))) OR (!ETH (7lw OR 7tw OR 9lw OR 9tw) (SOCK=0 OR SOCK=3) (SK265>2 OR SK280>2 OR SK269>2 OR SK274>2) (SK252>0 OR SK258>0 OR SK263>0 OR SK267>0 OR SK268>0 OR SK275>0 OR SK277>0 OR SK279>0)) OR (SIN ASSASSIN !(ktr OR wrb OR axf OR ces) (SOCK=0 OR SOCK=3) SK273>2 (SK253>2 OR SK258>2 OR SK263>2 OR SK267>2 OR SK275>0 OR SK276>0)))) OR (ETH (7qr OR 7ar OR 7xf) (SOCK=0 OR SOCK=3) $f(COUNT(ED>9,SK252>0,SK263>0,SK275>0,SK277>0,SK278>0)>=2)) OR ((btl OR clw) (SOCK=0 OR SOCK=3) SK252=3)) !TOWN]:// Hides nonmagical assassin claws that are not plague or chaos bases
+// Hide nonmagical assassin claws that are not Plague, Chaos or Malice bases: on filter levels 3-7 from character level 80 (only a ($) shows when one sells for 25,000+ gold and takes 2 inventory squares or less), and on filter levels 8+
+ItemDisplay[NMAG !RW SIN (FILTLVL~3-7 CLVL>79) !(RWB_PLAGUE_CLAW OR RWB_CHAOS_CLAW OR RWB_MALICE_CLAW) GROUND !TOWN SELLPRICE>24999 AREA<3]:%GRAY%(%TAN%$%GRAY%)//
+ItemDisplay[NMAG !RW SIN (FILTLVL~3-7 CLVL>79) !(RWB_PLAGUE_CLAW OR RWB_CHAOS_CLAW OR RWB_MALICE_CLAW) GROUND !TOWN (SELLPRICE<25000 OR AREA>2)]://
+ItemDisplay[NMAG !RW SIN FILTLVL>7 !(RWB_PLAGUE_CLAW OR RWB_CHAOS_CLAW OR RWB_MALICE_CLAW) !TOWN]:// On filter levels 8+, hide nonmagical assassin claws that are not Plague, Chaos or Malice bases
 
 //      Plague: +3 Wake of Fire or +3 Chain Lightning Sentry on fast bases, or +3 Wake of Fire or +3 Chain Lightning Sentry with +2-3 to Weapon Block/Fade/Dragon Flight/Wake of Inferno/Lightning Sentry
 //      Plague: +3 Cobra Strike, +3 Phoenix Strike, +3 Claws of Thunder, +3 Blades of Ice, +3 Fists of Fire
 //      Plague: +3 Blade Sentinel with (+3 to Claw and Dagger Mastery/Weapon Block or +1-3 Dragon Flight)
 //      Plague: +3 Mind Blast with (+3 Psychic Hammer/Burst of Speed/Weapon Block/Fade or +1-3 Dragon Flight/Death Sentry) when playing as Assassin
-ItemDisplay[NMAG !INF !RW (((clw OR btl OR skr OR 9ar OR 9wb OR 9xf OR 9cs OR 9lw OR 9tw) (SOCK=0 OR SOCK=3) ((SK262>1 SK272>2) OR (SK262>2 SK272>1) OR (SK271>1 SK366>2) OR (SK271>2 SK366>1))) OR ((btl OR 9tw OR 7tw OR 9lw OR 7lw) (SOCK=0 OR SOCK=3) ((SK257>2 (SK252>1 OR SK263>1 OR SK275>0)))) OR ((btl OR 9tw OR 7tw OR 9lw OR 7lw) (SOCK=0 OR SOCK=3) ((SK271>2 (SK258>2 OR SK263>2 OR SK267>2 OR SK275>0 OR SK366>2)) OR (SK262>2 (SK258>2 OR SK263>2 OR SK267>2 OR SK275>0 OR SK272>1)) OR (SK272>2 SK262>1))) OR (!ETH (7lw OR 7tw OR 9lw OR 9tw) (SOCK=0 OR SOCK=3) (SK265>2 OR SK280>2 OR SK269>2 OR SK274>2) (SK252>0 OR SK258>0 OR SK263>0 OR SK267>0 OR SK268>0 OR SK275>0 OR SK277>0 OR SK279>0)) OR (SIN ASSASSIN !(ktr OR wrb OR axf OR ces) (SOCK=0 OR SOCK=3) SK273>2 (SK253>2 OR SK258>2 OR SK263>2 OR SK267>2 OR SK275>0 OR SK276>0)))]:%ORANGE%Plague %NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 
+ItemDisplay[NMAG !INF !RW RWB_PLAGUE_CLAW]:%ORANGE%Plague %NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 
 
 //      Neophyte: +3 Mind Blast or +3 Psychic Hammer
-ItemDisplay[NMAG !INF !RW ASSASSIN ((CLVL<90 FILTLVL<8) OR FILTLVL<3) ((!ASSASSIN CLVL<60) OR (ASSASSIN CLVL<80)) SIN ((SOCK=0 (((ILVL<26 (clw OR btl OR skr))) (ktr OR wrb OR axf OR ces))) OR SOCK=2) (SK273>2 OR SK253>2) !FILTLVL>7]:%ORANGE%Neophyte %NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
-ItemDisplay[NMAG !INF !RW !ASSASSIN ((CLVL<90 FILTLVL<8) OR FILTLVL<3) ((!ASSASSIN CLVL<60) OR (ASSASSIN CLVL<80)) SIN ((SOCK=0 (((ILVL<26 (clw OR btl OR skr))) (ktr OR wrb OR axf OR ces))) OR SOCK=2) (SK273>2 OR SK253>2) !FILTLVL>7]:%TEAL%Neophyte %NAME%{%NAME%}%CONTINUE%//
+ItemDisplay[NMAG !INF !RW ASSASSIN ((CLVL<90 FILTLVL<8) OR FILTLVL<3) ((!ASSASSIN CLVL<60) OR (ASSASSIN CLVL<80)) RWB_NEOPHYTE_CLAW !FILTLVL>7]:%ORANGE%Neophyte %NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
+ItemDisplay[NMAG !INF !RW !ASSASSIN ((CLVL<90 FILTLVL<8) OR FILTLVL<3) ((!ASSASSIN CLVL<60) OR (ASSASSIN CLVL<80)) RWB_NEOPHYTE_CLAW !FILTLVL>7]:%TEAL%Neophyte %NAME%{%NAME%}%CONTINUE%//
 
 //      Eth Base for Chaos
-ItemDisplay[NMAG !INF !RW ETH (7qr OR 7ar OR 7xf) (SOCK=0 OR SOCK=3) $f(COUNT(ED>9,SK252>0,SK263>0,SK275>0,SK277>0,SK278>0)>=2)]:%ORANGE%Chaos %NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
+ItemDisplay[NMAG !INF !RW RWB_CHAOS_CLAW]:%ORANGE%Chaos %NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
 
 //      Low Req Malice Base for Bossing
-ItemDisplay[NMAG !INF !RW ASSASSIN (btl OR clw) (SOCK=0 OR SOCK=3) SK252=3]:%ORANGE%Malice %NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 
-ItemDisplay[NMAG !INF !RW !ASSASSIN (btl OR clw) (SOCK=0 OR SOCK=3) SK252=3]:%TEAL%Malice %NAME%{%NAME%}%CONTINUE%// 
+ItemDisplay[NMAG !INF !RW ASSASSIN RWB_MALICE_CLAW]:%ORANGE%Malice %NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 
+ItemDisplay[NMAG !INF !RW !ASSASSIN RWB_MALICE_CLAW]:%TEAL%Malice %NAME%{%NAME%}%CONTINUE%// 
 
 //      Hides assassin claws that do no have +1 to at least 1 skill past level 10
-ItemDisplay[NMAG !RW SIN CLVL>9 FILTLVL>0 !(SK251>1 OR SK252>0 OR SK253>0 OR SK254>0 OR SK255>0 OR SK256>0 OR SK257>0 OR SK258>0 OR SK259>0 OR SK260>0 OR SK261>0 OR SK262>0 OR SK263>0 OR SK264>0 OR SK265>0 OR SK266>0 OR SK267>0 OR SK268>0 OR SK269>0 OR SK270>0 OR SK271>0 OR SK272>0 OR SK273>0 OR SK274>0 OR SK275>0 OR SK276>0 OR SK277>0 OR SK278>0 OR SK279>0 OR SK280>0 OR SK366>0 OR ((7qr OR 7ar OR 7xf) (SOCK=0 OR SOCK=3) ETH $f(COUNT(ED>9,SK252>0,SK263>0,SK275>0,SK277>0,SK278>0)>=2))) !TOWN]:// All tiers, 0os
+ItemDisplay[NMAG !RW SIN CLVL>9 FILTLVL>0 !(SK251>1 OR SK252>0 OR SK253>0 OR SK254>0 OR SK255>0 OR SK256>0 OR SK257>0 OR SK258>0 OR SK259>0 OR SK260>0 OR SK261>0 OR SK262>0 OR SK263>0 OR SK264>0 OR SK265>0 OR SK266>0 OR SK267>0 OR SK268>0 OR SK269>0 OR SK270>0 OR SK271>0 OR SK272>0 OR SK273>0 OR SK274>0 OR SK275>0 OR SK276>0 OR SK277>0 OR SK278>0 OR SK279>0 OR SK280>0 OR SK366>0 OR RWB_CHAOS_CLAW) !TOWN]:// All tiers
 
 // ------------------------------------------------------------------------------
 //     ===============================  Daggers  ============================= 
 // ------------------------------------------------------------------------------
 
-// On filter levels 11-12, hide nonmagical daggers that are not plague or venom bases
-ItemDisplay[NMAG !RW DAGGER (FILTLVL~3-7 CLVL>79) !(!ETH SK73=3 (kri OR 9kr OR 7kr) (SOCK=0 OR SOCK=3) (CLVL<90 OR SK68>0 OR SK91>0 OR SK95>0 OR SK367>0)) GROUND !TOWN SELLPRICE>24999 AREA<3]:%GRAY%(%TAN%$%GRAY%)//
-ItemDisplay[NMAG !RW DAGGER (FILTLVL~3-7 CLVL>79) !(!ETH SK73=3 (kri OR 9kr OR 7kr) (SOCK=0 OR SOCK=3) (CLVL<90 OR SK68>0 OR SK91>0 OR SK95>0 OR SK367>0)) GROUND !TOWN (SELLPRICE<25000 OR AREA>2)]://
-ItemDisplay[NMAG !RW DAGGER FILTLVL>7 !(!ETH SK73=3 (kri OR 9kr OR 7kr) (SOCK=0 OR SOCK=3) (CLVL<90 OR SK68>0 OR SK91>0 OR SK95>0 OR SK367>0)) !TOWN]:// Hides nonmagical daggers that are not Venom/Plague bases
+// Hide nonmagical daggers that are not Venom bases: on filter levels 3-7 from character level 80 (only a ($) shows when one sells for 25,000+ gold and takes 2 inventory squares or less), and on filter levels 8+
+ItemDisplay[NMAG !RW DAGGER (FILTLVL~3-7 CLVL>79) !RWB_VENOM_DAGGER GROUND !TOWN SELLPRICE>24999 AREA<3]:%GRAY%(%TAN%$%GRAY%)//
+ItemDisplay[NMAG !RW DAGGER (FILTLVL~3-7 CLVL>79) !RWB_VENOM_DAGGER GROUND !TOWN (SELLPRICE<25000 OR AREA>2)]://
+ItemDisplay[NMAG !RW DAGGER FILTLVL>7 !RWB_VENOM_DAGGER !TOWN]:// On filter levels 8+, hide nonmagical daggers that are not Venom bases
 
-//      Plague: +3 Poison Strike
-ItemDisplay[NMAG !INF !RW !ETH NECROMANCER SK73=3 (kri OR 9kr OR 7kr) (SOCK=0 OR SOCK=3) (CLVL<90 OR SK68>0 OR SK91>0 OR SK95>0 OR SK367>0)]:%ORANGE%Venom %NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 
-ItemDisplay[NMAG !INF !RW !ETH !NECROMANCER SK73=3 (kri OR 9kr OR 7kr) (SOCK=0 OR SOCK=3) (CLVL<90 OR SK68>0 OR SK91>0 OR SK95>0 OR SK367>0)]:%TEAL%Venom %NAME%{%NAME%}%CONTINUE%// 
+//      Venom: +3 Poison Strike
+ItemDisplay[NMAG !INF !RW NECROMANCER RWB_VENOM_DAGGER]:%ORANGE%Venom %NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 
+ItemDisplay[NMAG !INF !RW !NECROMANCER RWB_VENOM_DAGGER]:%TEAL%Venom %NAME%{%NAME%}%CONTINUE%// 
 
 //      Hides dagger that do no have +1 to at least 1 skill past level 10
-ItemDisplay[NMAG !RW DAGGER CLVL>9 FILTLVL>0 !(SK73>0 OR SK254>0 OR SK257>0 OR SK259>0 OR SK265>0 OR SK266>0 OR SK269>0 OR SK270>0 OR SK274>0 OR SK275>0 OR SK280>0) !TOWN]:// All tiers, 0os
+ItemDisplay[NMAG !RW DAGGER CLVL>9 FILTLVL>0 !(SK73>0 OR SK254>0 OR SK257>0 OR SK259>0 OR SK265>0 OR SK266>0 OR SK269>0 OR SK270>0 OR SK274>0 OR SK275>0 OR SK280>0) !TOWN]:// All tiers
 
 // ------------------------------------------------------------------------------
 //     ===========================  Sorceress Orbs  =========================   
 // ------------------------------------------------------------------------------
 
-// On filter levels 11-12, hide nonmagical orbs
+// Hide nonmagical orbs: on filter levels 3-7 from character level 80 (only a ($) shows when one sells for 25,000+ gold and takes 2 inventory squares or less), and on filter levels 8+
 ItemDisplay[NMAG !RW SOR (FILTLVL~3-7 CLVL>79) GROUND !TOWN SELLPRICE>24999 AREA<3]:%GRAY%(%TAN%$%GRAY%)//
 ItemDisplay[NMAG !RW SOR (FILTLVL~3-7 CLVL>79) GROUND !TOWN (SELLPRICE<25000 OR AREA>2)]://
-ItemDisplay[NMAG !RW SOR FILTLVL>7 !TOWN]:// On filter levels 11-12, hide nonmagical orbs
+ItemDisplay[NMAG !RW SOR FILTLVL>7 !TOWN]:// On filter levels 8+, hide nonmagical orbs
 
 //      Neophyte runeword orb bases: 
 //     Character=SORCERESS levels 1-79, +3 to Frost Nova, Fire Ball, Nova, Lightning, Fire Wall, Chain Lightning, Meteor, Blizzard, Hydra, Frozen Orb, Ice Barrage, Combustion
-ItemDisplay[NMAG !RW SOR SORCERESS ((CLVL<90 FILTLVL<8) OR FILTLVL<3) ((!SORCERESS CLVL<60) OR (SORCERESS CLVL<80)) (((SOCK=0 OR SOCK=2) (ob1 OR ob2 OR ob3 OR ob4 OR ob6 OR ob7 OR ob8 OR ob9 OR obb OR obc OR obd OR obe)) OR (SOCK=2 (ob5 OR oba OR obf))) (SK44>2 OR SK47>2 OR SK48>2 OR SK49>2 OR SK51>2 OR SK53>2 OR SK56>2 OR SK59>2 OR SK62>2 OR SK64>2 OR SK369>2 OR SK367>2)]:%ORANGE%Neophyte %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
-ItemDisplay[NMAG !RW SOR !SORCERESS ((CLVL<90 FILTLVL<8) OR FILTLVL<3) ((!SORCERESS CLVL<60) OR (SORCERESS CLVL<80)) (((SOCK=0 OR SOCK=2) (ob1 OR ob2 OR ob3 OR ob4 OR ob6 OR ob7 OR ob8 OR ob9 OR obb OR obc OR obd OR obe)) OR (SOCK=2 (ob5 OR oba OR obf))) (SK44>2 OR SK47>2 OR SK48>2 OR SK49>2 OR SK51>2 OR SK53>2 OR SK56>2 OR SK59>2 OR SK62>2 OR SK64>2 OR SK369>2 OR SK367>2)]:%TEAL%Neophyte %WHITE%%NAME%{%NAME%}%CONTINUE%//
+ItemDisplay[NMAG !RW SOR SORCERESS ((CLVL<90 FILTLVL<8) OR FILTLVL<3) ((!SORCERESS CLVL<60) OR (SORCERESS CLVL<80)) RWB_NEOPHYTE_ORB]:%ORANGE%Neophyte %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
+ItemDisplay[NMAG !RW SOR !SORCERESS ((CLVL<90 FILTLVL<8) OR FILTLVL<3) ((!SORCERESS CLVL<60) OR (SORCERESS CLVL<80)) RWB_NEOPHYTE_ORB]:%TEAL%Neophyte %WHITE%%NAME%{%NAME%}%CONTINUE%//
 
 // Hides all other orbs that don't have + to skills
 ItemDisplay[NMAG !RW SOR CLVL>9 FILTLVL>0 !(SK36>0 OR SK37>0 OR SK38>0 OR SK39>0 OR SK40>0 OR SK41>0 OR SK42>0 OR SK43>0 OR SK44>0 OR SK45>0 OR SK46>0 OR SK47>0 OR SK48>0 OR SK49>0 OR SK50>0 OR SK51>0 OR SK52>0 OR SK53>0 OR SK54>0 OR SK55>0 OR SK56>0 OR SK57>0 OR SK58>0 OR SK59>0 OR SK60>0 OR SK61>0 OR SK62>0 OR SK63>0 OR SK64>0 OR SK65>0 OR SK369>0 OR SK383>0) !TOWN]://
@@ -165,28 +165,28 @@ ItemDisplay[NMAG !RW SOR CLVL>9 FILTLVL>0 !(SK36>0 OR SK37>0 OR SK38>0 OR SK39>0
 //     ==========================  Sorceress Staves  ========================   
 // ------------------------------------------------------------------------------
 
-// On filter levels 11-12, hide nonmagical staves
-ItemDisplay[NMAG !RW STAFF (FILTLVL~3-7 CLVL>79) !((((((cst OR bst OR 8cs OR 8bs OR 6cs OR 6bs OR 6ls OR wst OR 8ws OR 6ws) (SOCK=0 OR SOCK=4)) ((SK58>2 (FILTLVL<8 OR SK50>0 OR SK60>0 OR SK57>0 OR SK40>0 OR SK52>0)) OR (SK40>2 SK52>0) OR (SK40>0 SK52>2) OR (SK57>2 (SK50>0 OR SK60>0)))) OR ((((((8cs OR 8bs) (SOCK=0 OR SOCK=4)) OR (8ws SOCK=4)) CLVL<90) OR ((6cs OR 6bs OR 6ls OR 6ws) (SOCK=0 OR SOCK=4))) (((SK47>2 OR SK51>2 OR SK56>2 OR SK376>2 OR SK62>2) (CLVL<90 OR SK61>0 OR SK54>0 OR SK50>0 OR SK60>0 OR SK58>0)) OR ((SK38>2 OR SK49>2 OR SK53>2 OR SK48>2) (CLVL<90 OR SK63>0 OR SK54>0 OR SK57>0 OR SK50>0 OR SK60>0 OR SK58>0)) OR ((SK59>2 OR SK369>2 OR SK64>2) (CLVL<90 OR SK65>0 OR SK54>0 OR SK50>0 OR SK60>0 OR SK58>0)))))) OR ((wst OR 8ws OR 6ws) (SK58>2 OR (SK40>2 SK52>0) OR (SK40>0 SK52>2) OR (SK58>0 (SK50>0 OR SK60>0 OR SK57>0)) OR (SK57>0 (SK50>0 OR SK60>0))) (SOCK=0 OR SOCK=5)) OR ((6ws OR 6cs OR 6bs OR 6ls) (SOCK=0 OR SOCK=4) ((SK38>2 (SK37>0 OR SK42>0 OR SK50>0 OR SK54>0 OR SK57>0 OR SK58>0 OR SK60>0 OR SK63>0)) OR (SK53>2 (SK37>0 OR SK42>0 OR SK49>0 OR SK50>0 OR SK54>0 OR SK57>0 OR SK58>0 OR SK60>0 OR SK63>0)) OR (SK48>2 (SK37>0 OR SK42>0 OR SK50>0 OR SK54>0 OR SK57>0 OR SK58>0 OR SK60>0 OR SK63>0)))) OR ((ob5 OR oba OR obf) (SOCK=0 OR SOCK=3) (((SK48>2 OR SK53>2 OR SK38>2) (SK54>2 OR SK63>2)) OR ((SK56>2 OR ((SK47>2 SK376>1) OR (SK47>1 SK376>2))) (SK54>2 OR SK61>2)))) OR (6ws (SK44>2 OR SK59>2 OR SK64>2 OR SK369>2) (SOCK=0 OR SOCK=5)) OR (6ws (SK51>2 OR SK64>2 OR SK39>2 OR SK59>2 OR SK56>2) (SOCK=0 OR SOCK=6)) OR (6ws FILTLVL<8 (SOCK=5 OR SOCK=6))) GROUND !TOWN SELLPRICE>24999 AREA<3]:%GRAY%(%TAN%$%GRAY%)//
-ItemDisplay[NMAG !RW STAFF (FILTLVL~3-7 CLVL>79) !((((((cst OR bst OR 8cs OR 8bs OR 6cs OR 6bs OR 6ls OR wst OR 8ws OR 6ws) (SOCK=0 OR SOCK=4)) ((SK58>2 (FILTLVL<8 OR SK50>0 OR SK60>0 OR SK57>0 OR SK40>0 OR SK52>0)) OR (SK40>2 SK52>0) OR (SK40>0 SK52>2) OR (SK57>2 (SK50>0 OR SK60>0)))) OR ((((((8cs OR 8bs) (SOCK=0 OR SOCK=4)) OR (8ws SOCK=4)) CLVL<90) OR ((6cs OR 6bs OR 6ls OR 6ws) (SOCK=0 OR SOCK=4))) (((SK47>2 OR SK51>2 OR SK56>2 OR SK376>2 OR SK62>2) (CLVL<90 OR SK61>0 OR SK54>0 OR SK50>0 OR SK60>0 OR SK58>0)) OR ((SK38>2 OR SK49>2 OR SK53>2 OR SK48>2) (CLVL<90 OR SK63>0 OR SK54>0 OR SK57>0 OR SK50>0 OR SK60>0 OR SK58>0)) OR ((SK59>2 OR SK369>2 OR SK64>2) (CLVL<90 OR SK65>0 OR SK54>0 OR SK50>0 OR SK60>0 OR SK58>0)))))) OR ((wst OR 8ws OR 6ws) (SK58>2 OR (SK40>2 SK52>0) OR (SK40>0 SK52>2) OR (SK58>0 (SK50>0 OR SK60>0 OR SK57>0)) OR (SK57>0 (SK50>0 OR SK60>0))) (SOCK=0 OR SOCK=5)) OR ((6ws OR 6cs OR 6bs OR 6ls) (SOCK=0 OR SOCK=4) ((SK38>2 (SK37>0 OR SK42>0 OR SK50>0 OR SK54>0 OR SK57>0 OR SK58>0 OR SK60>0 OR SK63>0)) OR (SK53>2 (SK37>0 OR SK42>0 OR SK49>0 OR SK50>0 OR SK54>0 OR SK57>0 OR SK58>0 OR SK60>0 OR SK63>0)) OR (SK48>2 (SK37>0 OR SK42>0 OR SK50>0 OR SK54>0 OR SK57>0 OR SK58>0 OR SK60>0 OR SK63>0)))) OR ((ob5 OR oba OR obf) (SOCK=0 OR SOCK=3) (((SK48>2 OR SK53>2 OR SK38>2) (SK54>2 OR SK63>2)) OR ((SK56>2 OR ((SK47>2 SK376>1) OR (SK47>1 SK376>2))) (SK54>2 OR SK61>2)))) OR (6ws (SK44>2 OR SK59>2 OR SK64>2 OR SK369>2) (SOCK=0 OR SOCK=5)) OR (6ws (SK51>2 OR SK64>2 OR SK39>2 OR SK59>2 OR SK56>2) (SOCK=0 OR SOCK=6)) OR (6ws FILTLVL<8 (SOCK=5 OR SOCK=6))) GROUND !TOWN (SELLPRICE<25000 OR AREA>2)]://
-ItemDisplay[NMAG !RW STAFF FILTLVL>7 !((((((cst OR bst OR 8cs OR 8bs OR 6cs OR 6bs OR 6ls OR wst OR 8ws OR 6ws) (SOCK=0 OR SOCK=4)) ((SK58>2 (FILTLVL<8 OR SK50>0 OR SK60>0 OR SK57>0 OR SK40>0 OR SK52>0)) OR (SK40>2 SK52>0) OR (SK40>0 SK52>2) OR (SK57>2 (SK50>0 OR SK60>0)))) OR ((((((8cs OR 8bs) (SOCK=0 OR SOCK=4)) OR (8ws SOCK=4)) CLVL<90) OR ((6cs OR 6bs OR 6ls OR 6ws) (SOCK=0 OR SOCK=4))) (((SK47>2 OR SK51>2 OR SK56>2 OR SK376>2 OR SK62>2) (CLVL<90 OR SK61>0 OR SK54>0 OR SK50>0 OR SK60>0 OR SK58>0)) OR ((SK38>2 OR SK49>2 OR SK53>2 OR SK48>2) (CLVL<90 OR SK63>0 OR SK54>0 OR SK57>0 OR SK50>0 OR SK60>0 OR SK58>0)) OR ((SK59>2 OR SK369>2 OR SK64>2) (CLVL<90 OR SK65>0 OR SK54>0 OR SK50>0 OR SK60>0 OR SK58>0)))))) OR ((wst OR 8ws OR 6ws) (SK58>2 OR (SK40>2 SK52>0) OR (SK40>0 SK52>2) OR (SK58>0 (SK50>0 OR SK60>0 OR SK57>0)) OR (SK57>0 (SK50>0 OR SK60>0))) (SOCK=0 OR SOCK=5)) OR ((6ws OR 6cs OR 6bs OR 6ls) (SOCK=0 OR SOCK=4) ((SK38>2 (SK37>0 OR SK42>0 OR SK50>0 OR SK54>0 OR SK57>0 OR SK58>0 OR SK60>0 OR SK63>0)) OR (SK53>2 (SK37>0 OR SK42>0 OR SK49>0 OR SK50>0 OR SK54>0 OR SK57>0 OR SK58>0 OR SK60>0 OR SK63>0)) OR (SK48>2 (SK37>0 OR SK42>0 OR SK50>0 OR SK54>0 OR SK57>0 OR SK58>0 OR SK60>0 OR SK63>0)))) OR ((ob5 OR oba OR obf) (SOCK=0 OR SOCK=3) (((SK48>2 OR SK53>2 OR SK38>2) (SK54>2 OR SK63>2)) OR ((SK56>2 OR ((SK47>2 SK376>1) OR (SK47>1 SK376>2))) (SK54>2 OR SK61>2)))) OR (6ws (SK44>2 OR SK59>2 OR SK64>2 OR SK369>2) (SOCK=0 OR SOCK=5)) OR (6ws (SK51>2 OR SK64>2 OR SK39>2 OR SK59>2 OR SK56>2) (SOCK=0 OR SOCK=6)) OR (6ws FILTLVL<8 (SOCK=5 OR SOCK=6))) !TOWN]:// On filter levels 11-12, hide nonmagical staves
+// Hide nonmagical staves that are not Memory, CTA, Infinity, Doom or Obsession bases (or 5-6 socket Archon Staves on filter levels 3-7): on filter levels 3-7 from character level 80 (only a ($) shows when one sells for 25,000+ gold and takes 2 inventory squares or less), and on filter levels 8+
+ItemDisplay[NMAG !RW STAFF (FILTLVL~3-7 CLVL>79) !(RWB_MEMORY_STAFF OR RWB_CTA_STAFF OR RWB_INFINITY_STAFF OR RWB_PLAGUE_ORB OR RWB_DOOM_STAFF OR RWB_OBSESSION_STAFF OR (6ws FILTLVL<8 (SOCK=5 OR SOCK=6))) GROUND !TOWN SELLPRICE>24999 AREA<3]:%GRAY%(%TAN%$%GRAY%)//
+ItemDisplay[NMAG !RW STAFF (FILTLVL~3-7 CLVL>79) !(RWB_MEMORY_STAFF OR RWB_CTA_STAFF OR RWB_INFINITY_STAFF OR RWB_PLAGUE_ORB OR RWB_DOOM_STAFF OR RWB_OBSESSION_STAFF OR (6ws FILTLVL<8 (SOCK=5 OR SOCK=6))) GROUND !TOWN (SELLPRICE<25000 OR AREA>2)]://
+ItemDisplay[NMAG !RW STAFF FILTLVL>7 !(RWB_MEMORY_STAFF OR RWB_CTA_STAFF OR RWB_INFINITY_STAFF OR RWB_PLAGUE_ORB OR RWB_DOOM_STAFF OR RWB_OBSESSION_STAFF OR (6ws FILTLVL<8 (SOCK=5 OR SOCK=6))) !TOWN]:// On filter levels 8+, hide nonmagical staves that are not Memory, CTA, Infinity, Doom or Obsession bases
 
 // Memory:
-ItemDisplay[NMAG !RW ((((cst OR bst OR 8cs OR 8bs OR 6cs OR 6bs OR 6ls OR wst OR 8ws OR 6ws) (SOCK=0 OR SOCK=4)) ((SK58>2 (FILTLVL<8 OR SK50>0 OR SK60>0 OR SK57>0 OR SK40>0 OR SK52>0)) OR (SK40>2 SK52>0) OR (SK40>0 SK52>2) OR (SK57>2 (SK50>0 OR SK60>0)))) OR ((((((8cs OR 8bs) (SOCK=0 OR SOCK=4)) OR (8ws SOCK=4)) CLVL<90) OR ((6cs OR 6bs OR 6ls OR 6ws) (SOCK=0 OR SOCK=4))) (((SK47>2 OR SK51>2 OR SK56>2 OR SK376>2 OR SK62>2) (CLVL<90 OR SK61>0 OR SK54>0 OR SK50>0 OR SK60>0 OR SK58>0)) OR ((SK38>2 OR SK49>2 OR SK53>2 OR SK48>2) (CLVL<90 OR SK63>0 OR SK54>0 OR SK57>0 OR SK50>0 OR SK60>0 OR SK58>0)) OR ((SK59>2 OR SK369>2 OR SK64>2) (CLVL<90 OR SK65>0 OR SK54>0 OR SK50>0 OR SK60>0 OR SK58>0)))))]:%ORANGE%Memory %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
+ItemDisplay[NMAG !RW RWB_MEMORY_STAFF]:%ORANGE%Memory %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
 
 // CTA: +3 to Energy Shield | +3 to Cold Enchant +1-3 to Fire Enchant | +3 to Fire Enchant +1-3 to Cold Enchant | +1-3 Energy Shield +1-3 Shiver Armor | +1-3 Energy Shield +1-3 Chilling Armor | +1-3 Energy Shield +1-3 Thunderstorm | +1-3 Shiver Armor +1-3 Thunderstorm | +1-3 Chilling Armor +1-3 Thunderstorm
-ItemDisplay[NMAG !RW (wst OR 8ws OR 6ws) (SK58>2 OR (SK40>2 SK52>0) OR (SK40>0 SK52>2) OR (SK58>0 (SK50>0 OR SK60>0 OR SK57>0)) OR (SK57>0 (SK50>0 OR SK60>0))) (SOCK=0 OR SOCK=5)]:%ORANGE%CTA %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
+ItemDisplay[NMAG !RW RWB_CTA_STAFF]:%ORANGE%CTA %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
 
-// Infinity - Nova, Chain Lightning, Charged Bolt and either Filter level <8 or +1-3 to Lightning Mastery, Teleport, Thunder Storm, Static Field, Energy Shield, Warmth, Shiver Armor, or Chilling Armor
-ItemDisplay[NMAG !RW (6ws OR 6cs OR 6bs OR 6ls) (SOCK=0 OR SOCK=4) ((SK38>2 (SK37>0 OR SK42>0 OR SK50>0 OR SK54>0 OR SK57>0 OR SK58>0 OR SK60>0 OR SK63>0)) OR (SK53>2 (SK37>0 OR SK42>0 OR SK49>0 OR SK50>0 OR SK54>0 OR SK57>0 OR SK58>0 OR SK60>0 OR SK63>0)) OR (SK48>2 (SK37>0 OR SK42>0 OR SK50>0 OR SK54>0 OR SK57>0 OR SK58>0 OR SK60>0 OR SK63>0)))]:%ORANGE%Infinity %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
+// Infinity - +3 Nova, Chain Lightning or Charged Bolt, with +1-3 to Lightning Mastery, Teleport, Thunder Storm, Static Field, Energy Shield, Warmth, Shiver Armor or Chilling Armor (or Lightning, with Chain Lightning)
+ItemDisplay[NMAG !RW RWB_INFINITY_STAFF]:%ORANGE%Infinity %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
 
-// Plague - Nova, Chain Lightning, Charged Bolt
-ItemDisplay[NMAG !RW (ob5 OR oba OR obf) (SOCK=0 OR SOCK=3) (((SK48>2 OR SK53>2 OR SK38>2) (SK54>2 OR SK63>2)) OR ((SK56>2 OR ((SK47>2 SK376>1) OR (SK47>1 SK376>2))) (SK54>2 OR SK61>2)))]:%ORANGE%Plague %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
+// Plague (orbs) - +3 Nova, Chain Lightning or Charged Bolt with +3 Teleport or Lightning Mastery, or +3 Meteor (or Fire Ball and Combustion, one +3 and the other +2-3) with +3 Teleport or Fire Mastery
+ItemDisplay[NMAG !RW RWB_PLAGUE_ORB]:%ORANGE%Plague %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
 
 // Doom - Frost Nova, Blizzard, Frozen Orb, Ice Barrage
-ItemDisplay[NMAG !RW 6ws (SK44>2 OR SK59>2 OR SK64>2 OR SK369>2) (SOCK=0 OR SOCK=5)]:%ORANGE%Doom %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
+ItemDisplay[NMAG !RW RWB_DOOM_STAFF]:%ORANGE%Doom %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
 
 // Obsession - Fire Wall, Frozen Orb, Ice Bolt, Blizzard, Meteor
-ItemDisplay[NMAG !RW 6ws (SK51>2 OR SK64>2 OR SK39>2 OR SK59>2 OR SK56>2) (SOCK=0 OR SOCK=6)]:%ORANGE%Obsession %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
+ItemDisplay[NMAG !RW RWB_OBSESSION_STAFF]:%ORANGE%Obsession %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
 
 // Leaf - Inferno, Fire Wall
 ItemDisplay[NMAG !RW (SK41>2 OR SK51>2) SOCK=2 STAFF ((NORM CLVL<30) OR (EXC CLVL<60) OR (ELT CLVL<80))]:%ORANGE%Leaf %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
@@ -198,22 +198,22 @@ ItemDisplay[NMAG !INF !RW STAFF CLVL>9 FILTLVL>0 !(SK36>0 OR SK37>0 OR SK38>0 OR
 //    ============================  Scepters  ================================   
 // ------------------------------------------------------------------------------
 
-// On filter levels 11-12, hide nonmagical scepters
-ItemDisplay[NMAG !RW SCEPTER (FILTLVL~3-7 CLVL>79) !(((SOCK=0 OR SOCK=4) (SK102>2 OR SK123>2)) OR ((SOCK=0 OR SOCK=5) (SK98>2 OR SK113>2 OR SK119>2 OR SK123>2)) OR ((((gsc OR 9sc OR 9qs OR 7sc OR 7qs) (SOCK=0 OR SOCK=3)) OR ((wsp OR 9ws OR 7ws) SOCK=3)) ((SK101>2 SK121>1) OR (SK101>1 SK121>2))) OR (((wsp ILVL>25) OR 9ws OR 7ws) (SOCK=0 OR SOCK=5) (SK116>2 OR SK117>2 OR SK124>2 OR SK115>2)) OR (((wsp ILVL>25) OR 9ws OR 7ws) (SOCK=0 OR SOCK=5) (SK109>2 OR SK99>2 OR SK118>2)) OR (7ws SUP ED>9 (SOCK=0 OR SOCK=4 OR SOCK=5))) GROUND !TOWN SELLPRICE>24999 AREA<3]:%GRAY%(%TAN%$%GRAY%)//
-ItemDisplay[NMAG !RW SCEPTER (FILTLVL~3-7 CLVL>79) !(((SOCK=0 OR SOCK=4) (SK102>2 OR SK123>2)) OR ((SOCK=0 OR SOCK=5) (SK98>2 OR SK113>2 OR SK119>2 OR SK123>2)) OR ((((gsc OR 9sc OR 9qs OR 7sc OR 7qs) (SOCK=0 OR SOCK=3)) OR ((wsp OR 9ws OR 7ws) SOCK=3)) ((SK101>2 SK121>1) OR (SK101>1 SK121>2))) OR (((wsp ILVL>25) OR 9ws OR 7ws) (SOCK=0 OR SOCK=5) (SK116>2 OR SK117>2 OR SK124>2 OR SK115>2)) OR (((wsp ILVL>25) OR 9ws OR 7ws) (SOCK=0 OR SOCK=5) (SK109>2 OR SK99>2 OR SK118>2)) OR (7ws SUP ED>9 (SOCK=0 OR SOCK=4 OR SOCK=5))) GROUND !TOWN (SELLPRICE<25000 OR AREA>2)]://
-ItemDisplay[NMAG !RW SCEPTER FILTLVL>7 !(((SOCK=0 OR SOCK=4) (SK102>2 OR SK123>2)) OR ((SOCK=0 OR SOCK=5) (SK98>2 OR SK113>2 OR SK119>2 OR SK123>2)) OR ((((gsc OR 9sc OR 9qs OR 7sc OR 7qs) (SOCK=0 OR SOCK=3)) OR ((wsp OR 9ws OR 7ws) SOCK=3)) ((SK101>2 SK121>1) OR (SK101>1 SK121>2))) OR (((wsp ILVL>25) OR 9ws OR 7ws) (SOCK=0 OR SOCK=5) (SK116>2 OR SK117>2 OR SK124>2 OR SK115>2)) OR (((wsp ILVL>25) OR 9ws OR 7ws) (SOCK=0 OR SOCK=5) (SK109>2 OR SK99>2 OR SK118>2)) OR (7ws SUP ED>9 (SOCK=0 OR SOCK=4 OR SOCK=5))) !TOWN]:// On filter levels 11-12, hide nonmagical scepters
+// Hide nonmagical scepters that are not Plague, CTA or Beast bases, 0 or 4 socket +3 Holy Fire or Conviction, 0 or 5 socket +3 Might, Concentration, Sanctuary or Conviction, or superior Caduceus with 10%+ ED and 0, 4 or 5 sockets: on filter levels 3-7 from character level 80 (only a ($) shows when one sells for 25,000+ gold and takes 2 inventory squares or less), and on filter levels 8+
+ItemDisplay[NMAG !RW SCEPTER (FILTLVL~3-7 CLVL>79) !(((SOCK=0 OR SOCK=4) (SK102>2 OR SK123>2)) OR ((SOCK=0 OR SOCK=5) (SK98>2 OR SK113>2 OR SK119>2 OR SK123>2)) OR RWB_PLAGUE_SCEPTER OR RWB_CTA_SCEPTER OR RWB_BEAST_SCEPTER OR (7ws SUP ED>9 (SOCK=0 OR SOCK=4 OR SOCK=5))) GROUND !TOWN SELLPRICE>24999 AREA<3]:%GRAY%(%TAN%$%GRAY%)//
+ItemDisplay[NMAG !RW SCEPTER (FILTLVL~3-7 CLVL>79) !(((SOCK=0 OR SOCK=4) (SK102>2 OR SK123>2)) OR ((SOCK=0 OR SOCK=5) (SK98>2 OR SK113>2 OR SK119>2 OR SK123>2)) OR RWB_PLAGUE_SCEPTER OR RWB_CTA_SCEPTER OR RWB_BEAST_SCEPTER OR (7ws SUP ED>9 (SOCK=0 OR SOCK=4 OR SOCK=5))) GROUND !TOWN (SELLPRICE<25000 OR AREA>2)]://
+ItemDisplay[NMAG !RW SCEPTER FILTLVL>7 !(((SOCK=0 OR SOCK=4) (SK102>2 OR SK123>2)) OR ((SOCK=0 OR SOCK=5) (SK98>2 OR SK113>2 OR SK119>2 OR SK123>2)) OR RWB_PLAGUE_SCEPTER OR RWB_CTA_SCEPTER OR RWB_BEAST_SCEPTER OR (7ws SUP ED>9 (SOCK=0 OR SOCK=4 OR SOCK=5))) !TOWN]:// On filter levels 8+, hide nonmagical scepters (the same bases are kept)
 
 ItemDisplay[NMAG !INF !RW 7ws (SOCK=0 OR SOCK=4) (SK102>2 OR SK123>2)]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
 ItemDisplay[NMAG !INF !RW 7ws (SOCK=0 OR SOCK=5) (SK98>2 OR SK113>2 OR SK119>2 OR SK123>2)]:%ORANGE%Doom %NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
 
-ItemDisplay[NMAG !INF !RW (((gsc OR 9sc OR 9qs OR 7sc OR 7qs) (SOCK=0 OR SOCK=3)) OR ((wsp OR 9ws OR 7ws) SOCK=3)) ((SK101>2 SK121>1) OR (SK101>1 SK121>2))]:%ORANGE%Plague %NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
+ItemDisplay[NMAG !INF !RW RWB_PLAGUE_SCEPTER]:%ORANGE%Plague %NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
 
-ItemDisplay[NMAG !INF !RW PALADIN ((CLVL<90 FILTLVL<8) OR FILTLVL<3) ((!PALADIN CLVL<60) OR (PALADIN CLVL<80)) SCEPTER SOCK=2 (SK101>2 OR SK112>2 OR SK121>2)]:%ORANGE%Neophyte %NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
-ItemDisplay[NMAG !INF !RW !PALADIN ((CLVL<90 FILTLVL<8) OR FILTLVL<3) ((!PALADIN CLVL<60) OR (PALADIN CLVL<80)) SCEPTER SOCK=2 (SK101>2 OR SK112>2 OR SK121>2)]:%TEAL%Neophyte %NAME%{%NAME%}%CONTINUE%//
+ItemDisplay[NMAG !INF !RW PALADIN ((CLVL<90 FILTLVL<8) OR FILTLVL<3) ((!PALADIN CLVL<60) OR (PALADIN CLVL<80)) RWB_NEOPHYTE_SCEPTER]:%ORANGE%Neophyte %NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
+ItemDisplay[NMAG !INF !RW !PALADIN ((CLVL<90 FILTLVL<8) OR FILTLVL<3) ((!PALADIN CLVL<60) OR (PALADIN CLVL<80)) RWB_NEOPHYTE_SCEPTER]:%TEAL%Neophyte %NAME%{%NAME%}%CONTINUE%//
 
-ItemDisplay[NMAG !INF !RW ((wsp ILVL>25) OR 9ws OR 7ws) (SOCK=0 OR SOCK=5) (SK116>2 OR SK117>2 OR SK124>2 OR SK115>2)]:%ORANGE%CTA %NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
+ItemDisplay[NMAG !INF !RW RWB_CTA_SCEPTER]:%ORANGE%CTA %NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
 
-ItemDisplay[NMAG !INF !RW ((wsp ILVL>25) OR 9ws OR 7ws) (SOCK=0 OR SOCK=5) (SK109>2 OR SK99>2 OR SK118>2)]:%ORANGE%Beast %NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
+ItemDisplay[NMAG !INF !RW RWB_BEAST_SCEPTER]:%ORANGE%Beast %NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
 
 ItemDisplay[NMAG !INF !RW ((wsp ILVL>25) OR 9ws OR 7ws) (SOCK=0 OR SOCK=4) ((SK111>2 OR SK114>2) SK123>2) ((CLVL<90 FILTLVL<8) OR FILTLVL<3)]:%ORANGE%Voice of Reason %NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
 
@@ -331,7 +331,7 @@ ItemDisplay[NMAG !RW !INF (9ta OR 9bk OR 9b8 OR 9ja OR 9s9 OR 9ts OR 9gl) ETH ED
 ItemDisplay[NMAG !RW !INF (7ta OR 7bk OR 7ja OR 7s7 OR 7b8 OR 7ts OR 7gl) ETH ED<5 CLVL>79 FILTLVL>2 !TOWN]:// Hide Elite eth good Throwing Weapons with ED<5 at clvl 80+ on filter levels 3+
 ItemDisplay[NMAG !RW !INF (7ta OR 7bk OR 7ja OR 7s7 OR 7b8 OR 7ts OR 7gl) ETH ED>4 (SOCK=0 OR SOCK=2 OR SOCK=3) CLVL<90 FILTLVL<8]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Show Elite eth Throwing Axe, Balanced Knife, Javelin, Short Spear with ED>4 and 0, 2, or 3os below clvl 90 on filter levels 0-7
 ItemDisplay[NMAG !RW !INF (7ta OR 7bk OR 7ja OR 7s7 OR 7b8 OR 7ts OR 7gl) ETH ED<15 (SOCK=0 OR SOCK=2 OR SOCK=3) CLVL>89 FILTLVL<8 !TOWN]://
-ItemDisplay[NMAG !RW !INF (7ta OR 7bk OR 7ja OR 7s7 OR 7b8 OR 7ts OR 7gl) ETH CLVL>79 FILTLVL>7 !TOWN]:// Hide Elite eth good Throwing Weapons with ED<15 at clvl 80+ on filter levels 8+
+ItemDisplay[NMAG !RW !INF (7ta OR 7bk OR 7ja OR 7s7 OR 7b8 OR 7ts OR 7gl) ETH CLVL>79 FILTLVL>7 !TOWN]:// Hide Elite eth good Throwing Weapons at clvl 80+ on filter levels 8+
 
 // ------------------------------------------------------------------------------
 //     ==============================  Hammers  =============================
@@ -511,8 +511,8 @@ ItemDisplay[NMAG !RW !INF (72h OR 7cm OR 7b7 OR 7gs) ETH SUP ED>14 (SOCK=0 OR SO
 ItemDisplay[NMAG !RW !INF (72h OR 7cm OR 7b7 OR 7gs) ED<5 CLVL>79 FILTLVL>2 !TOWN]:// Hide Legend Sword, Highland Blade, Champion Sword, Balrog Blade with ED<5 at clvl 80+ on filter levels 3+
 ItemDisplay[NMAG !RW !INF (72h OR 7cm OR 7b7 OR 7gs) ED<15 FILTLVL>7 !TOWN]:// Hide Legend Sword, Highland Blade, Champion Sword, Balrog Blade with ED<15 on filter levels 8+
 //      Colossus Blade (7gd), Colossus Sword (7fb)
-ItemDisplay[NMAG !RW !INF (7gd OR 7fb) !ETH ED<5 SOCK=0 FILTLVL>0 !TOWN]:// Hide Colossus Blade, Colossus Sword noneth with ED<5 and 0, 4, 5, or 6os on filter levels 1+
-ItemDisplay[NMAG !RW !INF (7gd OR 7fb) !ETH ED<5 (SOCK=4 OR SOCK=5 OR SOCK=6) CLVL>79 FILTLVL>0 !TOWN]:// Hide Colossus Blade, Colossus Sword noneth with ED<5 and 0, 4, 5, or 6os at clvl 80+ on filter levels 1+
+ItemDisplay[NMAG !RW !INF (7gd OR 7fb) !ETH ED<5 SOCK=0 FILTLVL>0 !TOWN]:// Hide Colossus Blade, Colossus Sword noneth with ED<5 and 0os on filter levels 1+
+ItemDisplay[NMAG !RW !INF (7gd OR 7fb) !ETH ED<5 (SOCK=4 OR SOCK=5 OR SOCK=6) CLVL>79 FILTLVL>0 !TOWN]:// Hide Colossus Blade, Colossus Sword noneth with ED<5 and 4, 5, or 6os at clvl 80+ on filter levels 1+
 ItemDisplay[NMAG !RW !INF (7gd OR 7fb) !ETH SOCK=3 CLVL>79 FILTLVL>0 !TOWN]:// Hide Colossus Blade, Colossus Sword noneth with 3os at clvl 80+ on filter levels 1+
 ItemDisplay[NMAG !RW !INF (7gd OR 7fb) SOCK=2 FILTLVL>0 !TOWN]:// Hide Colossus Blade, Colossus Sword with 2os on filter levels 1+
 ItemDisplay[NMAG !RW !INF (7gd OR 7fb) ED<5 CLVL>79 FILTLVL>2 !TOWN]:// Hide Colossus Blade, Colossus Sword with ED<5 at clvl 80+ on filter levels 3+
@@ -530,7 +530,7 @@ ItemDisplay[NMAG !RW !INF (7gd OR 7fb) ETH SUP ED>14 (SOCK=0 OR SOCK~3-6) FILTLV
 ItemDisplay[ETH NMAG]:%WHITE%Eth %NAME%{%NAME%}%CONTINUE%//
 
 
-// Adds "Sup" tag for superiors with less than 5% ED
+// Adds "Sup" tag for superiors with less than 10% ED
 ItemDisplay[(WEAPON OR ARMOR) SUP NMAG ED<10 !ETH SOCK=0]:%WHITE%Sup %NAME%{%NAME%}%CONTINUE%//
 ItemDisplay[(WEAPON OR ARMOR) SUP NMAG !RW ED<10 (SOCK>0 OR ETH)]:%GRAY%Sup %NAME%{%NAME%}%CONTINUE%//
 
@@ -567,7 +567,7 @@ ItemDisplay[NMAG !INF !RW RES<10 DIN CLVL>29 FILTLVL>0 !TOWN]://
 ItemDisplay[NMAG !INF !RW RES<20 DIN CLVL>59 FILTLVL>0 !TOWN]://
 // Hide all non-eth paladin shields with less than 25 all res at character level 70+
 ItemDisplay[NMAG !INF !RW !ETH RES<25 DIN CLVL>69 FILTLVL>0 !TOWN]://
-// Hide all non-eth normal and exceptional paladin shields with less than 29 all res at character level 80+ on filter level 6+
+// Hide all non-eth normal and exceptional paladin shields with less than 29 all res at character level 80+ on filter levels 3+
 ItemDisplay[NMAG !INF !RW !ETH (NORM OR EXC) RES<29 DIN CLVL>79 FILTLVL>2 !TOWN]://
 
 // Paladin Exile/Shattered Wall Bases

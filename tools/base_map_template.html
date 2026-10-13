@@ -1,0 +1,412 @@
+<title>Erazure Non-Magic Bases</title>
+<!-- Template for Erazure-Non-Magic-Bases.html (tools/base_map.py writes it; build.bat runs it): the data is embedded
+     at generation. Everything shown comes from the filter's own rules. The website's Bases page shows the same map:
+     website/hooks.py takes the styles, the markup between the base-map markers and the script out of the generated
+     file, so keep those markers. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Source+Sans+3:wght@400;600;700&display=swap">
+<!-- base-map:css -->
+<style>
+  @font-face { font-family: "AvQest"; src: local("AvQest"); }  /* the D2-style font, if the viewer has it installed */
+  /* Layout: the title; "how to read it" with the filter levels; then the filter bar, which stays at the top while
+     scrolling (under the website's header on the website); then one table per item type: a header row per group of
+     bases with the same rows, then one row per case (filter levels, what happens, then one column per condition).
+     Phones: each row is a card. Every rule is scoped to .base-map, so the website's theme and this page leave each
+     other alone. Dark by default; light when the website (Material) is switched to light. */
+  .base-map {
+    --bg: #151412; --panel: #1f1d1a; --fg: #ece7de; --muted: #a59e91; --line: #36322c; --soft: #2a2723;
+    --accent: #d8b45e;
+    --k-tag: #f0a04b; --k-notify: #8bb4e8; --k-show: #c9b27a; --k-hide: #9a9385;
+    --ground-1: #3a3428; --ground-2: #26221b; --ground-3: #15130f;
+    --display: "Cinzel", "Trajan Pro", Georgia, serif;
+    --body: "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --label: "AvQest", "Palatino Linotype", Palatino, Georgia, serif;
+    --top: 0px;  /* where the filter bar stops while scrolling */
+    color-scheme: dark;
+    color: var(--fg); font: 15px/1.45 var(--body);
+  }
+  [data-md-color-scheme="default"] .base-map {
+    --bg: #f3f1ec; --panel: #fffdf8; --fg: #23211c; --muted: #6b655a; --line: #ded7c9; --soft: #ece6da;
+    --accent: #8a6d1f;
+    --k-tag: #b8610f; --k-notify: #2f6db3; --k-show: #8a6d1f; --k-hide: #8b8579;
+    color-scheme: light;
+  }
+  .md-content .base-map { --top: 2.4rem; }  /* on the website: under its header, which stays at the top */
+  .base-map *, .base-map *::before, .base-map *::after { box-sizing: border-box; }
+  .base-map .wrap { max-width: 1400px; margin: 0 auto; padding-inline: 16px; }
+  .md-content .base-map .wrap { padding-inline: 0; }
+  .base-map h1.bm-title { font: 700 26px/1.2 var(--display); letter-spacing: .02em; margin: 0; padding-block: 16px 10px;
+                          color: var(--fg); text-wrap: balance; }
+  .base-map .bar { position: sticky; top: var(--top); z-index: 3; background: var(--panel);
+                   border-block: 1px solid var(--line); padding-block: 8px; margin-block: 12px 0; }
+  .base-map .bar .wrap { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
+  .md-content .base-map .bar .wrap { padding-inline: 10px; }
+  .base-map .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; min-width: 0; max-width: 100%; }
+  .base-map #level { width: 16rem; }  /* the closed select: its long options do not widen the page (phones) */
+  .base-map input[type=search], .base-map select {
+    font: inherit; font-size: 14.5px; padding: 5px 8px; border: 1px solid var(--line); border-radius: 6px;
+    background: var(--bg); color: var(--fg); min-width: 0; max-width: 100%; margin: 0; }
+  .base-map input[type=search] { flex: 1 1 220px; }
+  .base-map .count { font-size: 13px; color: var(--muted); }
+  .base-map button:focus-visible, .base-map select:focus-visible, .base-map input:focus-visible,
+  .base-map summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* how to read it */
+  .base-map .howto { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 4px 24px;
+                     background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; }
+  @media (max-width: 900px) { .base-map .howto { grid-template-columns: minmax(0, 1fr); } }
+  .base-map .howto h2 { font: 700 12.5px/1.3 var(--body); text-transform: uppercase; letter-spacing: .08em;
+                        color: var(--muted); margin: 0 0 6px; }
+  .base-map .howto p, .base-map .howto li { max-width: 76ch; font-size: 14.5px; line-height: 1.45; }
+  .base-map .howto p { margin: 0 0 6px; }
+  .base-map .howto ul { margin: 0 0 6px; padding-left: 18px; list-style: disc; }
+  .base-map .howto li { margin: 0; }
+  .base-map .levels { font-size: 13.5px; margin: 4px 0 0; padding-left: 24px; list-style: decimal; }
+  .base-map .levels li { font-size: 13.5px; margin: 0; }
+  .base-map .kinds { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 2px 0 8px; font-size: 13.5px; }
+  .base-map .kinds > span { display: inline-flex; align-items: center; gap: 6px; }
+
+  /* the tables */
+  .base-map section.cat { margin-top: 22px; }
+  .base-map h3.cat { font: 600 19px/1.25 var(--display); margin: 0 0 4px; letter-spacing: 0; color: var(--fg); }
+  .base-map table.bm { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.4; margin: 0; }
+  .base-map table.bm th, .base-map table.bm td { text-align: left; vertical-align: top; padding: 4px 8px; border: 0; }
+  .base-map table.bm thead th { font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
+                                color: var(--muted); white-space: nowrap; border-bottom: 2px solid var(--line);
+                                padding-block: 6px; }
+  .base-map tr.ghead th { padding: 14px 8px 4px; border-bottom: 1px solid var(--line); font-weight: 400;
+                          background: none; text-transform: none; letter-spacing: 0; font-size: 14px; }
+  .base-map tr.ghead .nm { font-weight: 700; font-size: 15px; }
+  .base-map tr.ghead .code { color: var(--muted); font-size: 12.5px; font-weight: 400; }
+  .base-map tr.ghead .sub { display: block; color: var(--muted); font-size: 12.5px; margin-top: 1px; }
+  .base-map tr.row td { border-bottom: 1px solid var(--soft); }
+  .base-map tr.row:hover td { background: var(--soft); }
+  .base-map td.lv { white-space: nowrap; color: var(--muted); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .base-map td.c-eth, .base-map td.c-quality, .base-map td.c-ed, .base-map td.c-sockets, .base-map td.c-ilvl,
+  .base-map td.c-res, .base-map td.c-class { white-space: nowrap; }
+  .base-map td.c-clvl { min-width: 9em; }
+  .base-map td.c-skills { min-width: 14em; }
+  .base-map td.c-other { min-width: 11em; }
+  .base-map .anyw { color: var(--muted); opacity: .6; }
+  .base-map tr.low td.c-quality { color: var(--muted); font-style: italic; }
+  .base-map tr.none td { color: var(--muted); font-size: 13px; font-style: italic; }
+  .base-map tr.lowbar td { padding-block: 2px 6px; }
+  .base-map .lowbtn { font: inherit; font-size: 13px; color: var(--muted); background: none; border: 0; padding: 0;
+                      margin: 0; cursor: pointer; }
+  .base-map .lowbtn::before { content: "\25B8"; display: inline-block; width: 1.1em; }
+  .base-map .lowbtn[aria-expanded=true]::before { content: "\25BE"; }
+  .base-map .pill { display: inline-block; font-size: 11.5px; font-weight: 700; letter-spacing: .05em;
+                    text-transform: uppercase; padding: 1px 7px; border-radius: 999px; border: 1px solid var(--kc);
+                    color: var(--kc); white-space: nowrap; line-height: 1.45; }
+  .base-map .k-tag { --kc: var(--k-tag); } .base-map .k-notify { --kc: var(--k-notify); }
+  .base-map .k-show { --kc: var(--k-show); } .base-map .k-hide { --kc: var(--k-hide); }
+  .base-map .text.clamp { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .base-map .more { font: inherit; font-size: 12.5px; color: var(--accent); background: none; border: 0; padding: 0;
+                    margin: 0; cursor: pointer; }
+
+  /* <details> (a named base's skill combinations): the page's own marker; on the website, none of Material's
+     admonition look */
+  .md-typeset .base-map details, .base-map details { border: 0; border-radius: 0; box-shadow: none; background: none;
+    padding: 0; margin: 0; overflow: visible; font-size: inherit; display: block; }
+  .md-typeset .base-map details > summary, .base-map details > summary { list-style: none; display: block; position: static;
+    padding: 0; margin: 0; border: 0; background: none; min-height: 0; font-weight: inherit; cursor: pointer;
+    color: var(--k-tag); }
+  .base-map details > summary::-webkit-details-marker { display: none; }
+  .md-typeset .base-map details > summary::before, .base-map details > summary::before {
+    content: "\25B8"; position: static; display: inline-block; width: 1.1em; height: auto; background: none;
+    -webkit-mask-image: none; mask-image: none; transform: none; color: var(--muted); }
+  .md-typeset .base-map details[open] > summary::before, .base-map details[open] > summary::before { content: "\25BE"; }
+  .md-typeset .base-map details > summary::after { display: none; content: none; }
+  .base-map details.named ul { margin: 3px 0 2px; padding-left: 20px; font-size: 13.5px; }
+  .base-map details.named li { margin: 1px 0; }
+
+  /* the in-game look */
+  .base-map .ground { display: inline-block; max-width: 100%; text-align: center; border-radius: 5px; padding: 2px 5px;
+                      background: radial-gradient(ellipse at 50% 45%, var(--ground-1) 0%, var(--ground-2) 55%, var(--ground-3) 100%); }
+  .base-map .d2label { display: inline-block; font-family: var(--label); font-size: 14px; line-height: 1.12;
+                       text-align: center; white-space: pre; background: rgba(0, 0, 0, .74); padding: 2px 6px 0;
+                       vertical-align: middle; max-width: 100%; }
+  /* A backslash is drawn as the slash mirrored: the web fonts space "\" wide, the game draws it like "/" */
+  .base-map .d2label .bs { display: inline-block; transform: scaleX(-1); }
+  .base-map .c-WHITE { color: #e8e8e8; } .base-map .c-RED { color: #ff4d4d; } .base-map .c-GREEN { color: #00ff00; }
+  .base-map .c-BLUE { color: #6969ff; } .base-map .c-GOLD { color: #c7b377; } .base-map .c-GRAY { color: #696969; }
+  .base-map .c-BLACK { color: #000000; } .base-map .c-TAN { color: #d0c27d; } .base-map .c-ORANGE { color: #ffa800; }
+  .base-map .c-YELLOW { color: #ffff64; } .base-map .c-PURPLE { color: #ae00ff; }
+  .base-map .c-DARK_GREEN { color: #008000; } .base-map .c-CORAL { color: #ff7f6e; } .base-map .c-SAGE { color: #a3b88f; }
+  .base-map .c-TEAL { color: #3fb5b5; } .base-map .c-LIGHT_GRAY { color: #a8a8a8; }
+  .base-map .icon { position: relative; display: inline-block; width: 16px; height: 16px; background: #0c0b09;
+                    border-radius: 2px; vertical-align: middle; }
+  .base-map .icon span { position: absolute; }
+  .base-map .chat { display: inline-flex; color: var(--muted); vertical-align: middle; cursor: help; }
+  .base-map .chat svg { width: 22px; height: 22px; }
+  .base-map .sound { white-space: nowrap; font-size: 12.5px; color: var(--muted); border-bottom: 1px dotted var(--muted);
+                     cursor: help; margin-left: 4px; }
+  .base-map p.empty { color: var(--muted); text-align: center; padding: 40px 0; margin: 0; }
+  .base-map footer { color: var(--muted); font-size: 13px; padding-block: 24px; }
+
+  .base-map [hidden] { display: none !important; }  /* (collapsed low quality rows, also in the phone layout) */
+
+  /* phones: each row a card (levels, what happens and its icons on top, then the conditions that are not "any") */
+  @media (max-width: 760px) {
+    .base-map table.bm, .base-map table.bm tbody, .base-map table.bm tr, .base-map table.bm th,
+    .base-map table.bm td { display: block; width: auto; }
+    .base-map table.bm thead { display: none; }
+    .base-map table.bm tr.ghead th { padding: 12px 0 4px; }
+    .base-map table.bm tr.row { display: flex; flex-wrap: wrap; align-items: center; gap: 3px 12px; padding: 7px 0;
+                                border-bottom: 1px solid var(--soft); }
+    .base-map table.bm tr.row td { display: inline-block; border: 0; padding: 0; min-width: 0; white-space: normal; }
+    .base-map table.bm tr.row:hover td { background: none; }
+    .base-map table.bm tr.row td.cond::before { content: attr(data-label) ": "; color: var(--muted); }
+    .base-map table.bm tr.row td.cond .text:not(.clamp) { display: inline; }
+    .base-map table.bm tr.row td.c-skills, .base-map table.bm tr.row td.c-other { flex-basis: 100%; }
+    .base-map table.bm tr.row td.any { display: none; }
+    .base-map table.bm tr.lowbar td, .base-map table.bm tr.none td { padding: 4px 0; }
+  }
+</style>
+
+<div class="base-map">
+<div class="wrap"><h1 class="bm-title">Erazure Non-Magic Bases</h1></div>
+<!-- base-map:start -->
+<div class="wrap">
+  <div class="howto">
+   <div>
+    <h2>How to read it</h2>
+    <p>How the Erazure loot filter shows white (non-magic) armor and weapons that drop on the ground, read from the
+      filter's own rules. Anything a base's rows don't cover is shown as usual.</p>
+    <div class="kinds">
+      <span><span class="pill k-tag">Tag</span> a word before the name (shown as the game draws it)</span>
+      <span><span class="pill k-notify">Notify</span> minimap icon and chat line</span>
+      <span><span class="pill k-show">Shows as</span> a display of its own</span>
+      <span><span class="pill k-hide">Hidden</span> the item is not shown</span>
+    </div>
+    <ul>
+      <li>Each row is one case: the filter levels it applies to, what happens, and what the item needs. Every column
+        must hold; <b>any</b> means no condition. Pick your filter level in the bar to see only your rows.</li>
+      <li><b>ED</b> is enhanced defense on armor and enhanced damage on weapons (superior items). Class items roll
+        <b>+1–3</b> to skills; a runeword base with several skill combinations opens to list them.</li>
+      <li>Bases of one type and tier with exactly the same rows share a group.</li>
+      <li><b>Hidden items still show in town.</b> The minimap icon and chat line come on their own, even for a hidden
+        item. Low quality items (Cracked, Crude, Damaged) have their own rows when they differ.</li>
+    </ul>
+   </div>
+   <div>
+    <h2>Filter levels</h2>
+    <ol class="levels" id="levels" start="0"></ol>
+   </div>
+  </div>
+</div>
+<div class="bar">
+  <div class="wrap">
+    <div class="controls">
+      <select id="level" aria-label="Filter level"></select>
+      <select id="cat" aria-label="Item type"></select>
+      <select id="tier" aria-label="Tier">
+        <option value="">All tiers</option><option>Normal</option><option>Exceptional</option><option>Elite</option>
+      </select>
+    </div>
+    <input id="q" type="search" placeholder="Search a base (name or code)" aria-label="Search a base">
+    <span class="count" id="count"></span>
+  </div>
+</div>
+<div class="wrap" id="list"></div>
+<div class="wrap"><footer id="foot"></footer></div>
+<!-- base-map:end -->
+</div>
+
+<script>
+(() => {
+const DATA = /*__DATA__*/null;
+const $ = (id) => document.getElementById(id);
+const STORE = "erazure-base-map-view";
+function load() { try { return JSON.parse(localStorage.getItem(STORE) || "{}") || {}; } catch { return {}; } }
+function save() { try { localStorage.setItem(STORE, JSON.stringify({level: view.level, cat: view.cat, tier: view.tier})); } catch {} }
+const view = Object.assign({level: "", cat: "", tier: "", q: ""}, load());
+if (!(view.level === "" || (Number.isInteger(+view.level) && +view.level >= 0 && +view.level <= 12))) view.level = "";
+if (view.cat && !DATA.cats.includes(view.cat)) view.cat = "";
+if (!["", "Normal", "Exceptional", "Elite"].includes(view.tier)) view.tier = "";
+view.q = "";
+const T = (i) => DATA.texts[i];
+const KIND = {tag: "Tag", notify: "Notify", show: "Shows as", hide: "Hidden"};
+// the condition columns: [key, header, "any" when the row has no condition there]
+const COLUMNS = [["eth", "Eth", true], ["quality", "Quality", true], ["ed", "ED", true], ["sockets", "Sockets", true],
+  ["clvl", "Character level", true], ["class", "Class", false], ["ilvl", "Item level", false],
+  ["res", "All res", false], ["skills", "Skills", false], ["other", "Other", false]];
+const AT = Object.fromEntries(DATA.cols.map((c, i) => [c, i]));
+
+function el(tag, attrs = {}, ...kids) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === "text") e.textContent = v;
+    else e.setAttribute(k, v);
+  }
+  for (const k of kids) if (k !== null && k !== undefined && k !== false) e.append(k);
+  return e;
+}
+function colored(color, text) {
+  const s = el("span", {class: `c-${color}`});
+  text.split("\\").forEach((part, i) => {
+    if (i) s.append(el("span", {class: "bs", text: "/"}));  // a backslash: the slash mirrored (.bs)
+    if (part) s.append(part);
+  });
+  return s;
+}
+function label(lines, title) {
+  const box = el("div", {class: "d2label", role: "img"});
+  const said = [];
+  for (const segs of lines) {
+    const d = el("div");
+    for (const [c, t] of segs) d.append(colored(c, t));
+    box.append(d);
+    said.push(segs.map((s) => s[1]).join(""));
+  }
+  box.setAttribute("aria-label", `In-game label: ${said.join(" / ")}`);
+  const g = el("div", {class: "ground"}, box);
+  if (title) g.title = title;
+  return g;
+}
+// the minimap icon: the rule's BORDER / MAP / DOT / PX boxes (8 / 6 / 4 / 2 px), shown 2x
+function icon(layers) {
+  if (!layers || !layers.length) return null;
+  const box = el("span", {class: "icon", title: "Minimap icon"});
+  for (const layer of layers) {
+    [16, 12, 8, 4].forEach((size, i) => {
+      if (!layer[i]) return;
+      const off = (16 - size) / 2;
+      box.append(el("span", {style: `left:${off}px;top:${off}px;width:${size}px;height:${size}px;background:${DATA.palette[layer[i]] || "#fff"}`}));
+    });
+  }
+  return box;
+}
+function chat() {
+  const s = el("span", {class: "chat", title: "Chat notification when it drops", "aria-label": "Chat notification when it drops"});
+  s.innerHTML = '<svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M2 3.5A1.5 1.5 0 0 1 3.5 2h9A1.5 1.5 0 0 1 14 3.5v6a1.5 1.5 0 0 1-1.5 1.5H7l-3 3v-3h-.5A1.5 1.5 0 0 1 2 9.5z"/></svg>';
+  return s;
+}
+function sound(n) {
+  if (!n) return null;
+  return el("span", {class: "sound", title: `Type ".playsound ${n}" to hear it in game`, text: `♪ ${DATA.sounds[n] || n}`});
+}
+const levelText = (lo, hi) => lo === 0 && hi === 12 ? "All levels" : lo === hi ? `Level ${lo}` : `Levels ${lo}–${hi}`;
+function textEl(text) {  // long conditions: two lines, then "more"
+  const t = el("div", {class: "text", text});
+  if (text.length <= 170) return t;
+  t.classList.add("clamp");
+  const b = el("button", {class: "more", type: "button", "aria-expanded": "false", text: "more"});
+  b.addEventListener("click", () => {
+    const closed = t.classList.toggle("clamp");
+    b.textContent = closed ? "more" : "less";
+    b.setAttribute("aria-expanded", String(!closed));
+  });
+  return el("div", {}, t, b);
+}
+function named(cases) {
+  return el("details", {class: "named"}, el("summary", {text: `one of ${cases.length} skill combinations`}),
+    el("ul", {}, ...cases.map((c) => el("li", {text: T(c)}))));
+}
+// the columns a type's rows use (the same for all its groups, so their columns line up)
+function usedColumns(groups) {
+  const used = new Set();
+  let ic = false, ch = false;
+  for (const g of groups) {
+    for (const r of g.l.concat(g.q || [])) {
+      r[3].forEach((v, i) => { if (v) used.add(DATA.cols[i]); });
+      if (r[4].d) used.add("skills");
+      if (r[4].i) ic = true;
+      if (r[4].h || r[4].o) ch = true;
+    }
+  }
+  return {cols: COLUMNS.filter(([k]) => used.has(k)), icon: ic, chat: ch};
+}
+function headRow(used) {
+  return el("thead", {}, el("tr", {}, el("th", {scope: "col", text: "Levels"}), el("th", {scope: "col", text: "Shows"}),
+    used.icon ? el("th", {scope: "col", text: "Icon"}) : null, used.chat ? el("th", {scope: "col", text: "Chat"}) : null,
+    ...used.cols.map(([, h]) => el("th", {scope: "col", text: h}))));
+}
+function rowEl(row, used, low) {
+  const [kind, lo, hi, cells, x] = row;
+  const tr = el("tr", {class: `row k-${kind}${low ? " low" : ""}`, title: `Filter rule: ${T(x.w)}`});
+  tr.append(el("td", {class: "lv", text: levelText(lo, hi)}));
+  tr.append(el("td", {class: "shows"}, x.b && x.b.length ? label(x.b, x.bt !== undefined ? T(x.bt) : "") :
+    el("span", {class: "pill", text: KIND[kind]})));
+  if (used.icon) tr.append(el("td", {class: "ic"}, icon(x.i)));
+  if (used.chat) tr.append(el("td", {class: "ch"}, x.h ? chat() : null, sound(x.o)));
+  for (const [key, head, any] of used.cols) {
+    let v = cells[AT[key]] ? T(cells[AT[key]] - 1) : "";
+    if (low && key === "quality") v = "low quality";
+    const td = el("td", {class: `cond c-${key}${v || (key === "skills" && x.d) ? "" : " any"}`, "data-label": head},
+      v ? textEl(v) : any ? el("span", {class: "anyw", text: "any"}) : null);
+    if (key === "skills" && x.d) td.append(named(x.d));
+    tr.append(td);
+  }
+  return tr;
+}
+const atLevel = (row) => view.level === "" || (row[1] <= +view.level && +view.level <= row[2]);
+function groupBody(g, used) {
+  const span = 2 + (used.icon ? 1 : 0) + (used.chat ? 1 : 0) + used.cols.length;
+  const head = el("th", {colspan: String(span), scope: "rowgroup"});
+  g.n.forEach(([code, name], i) => head.append(i ? " · " : "", el("span", {class: "nm", text: name}),
+    el("span", {class: "code", text: ` ${code}`})));
+  const s = typeof g.s === "number" ? (g.s ? `up to ${g.s} socket${g.s === 1 ? "" : "s"}` : "no sockets") : `up to ${g.s} sockets`;
+  head.append(el("span", {class: "sub", text: [g.t, s, g.z].filter(Boolean).join(" · ")}));
+  const tb = el("tbody", {}, el("tr", {class: "ghead"}, head));
+  const rows = g.l.filter(atLevel);
+  for (const r of rows) tb.append(rowEl(r, used, false));
+  if (!rows.length) tb.append(el("tr", {class: "none"}, el("td", {colspan: String(span),
+    text: view.level === "" ? "Always shown." : "Nothing tags, notifies or hides these at this filter level."})));
+  const lows = (g.q || []).filter(atLevel);
+  if (g.q && lows.length) {
+    const btn = el("button", {class: "lowbtn", type: "button", "aria-expanded": "false", text: "Low quality (Cracked, Crude, Damaged)"});
+    const lowRows = lows.map((r) => rowEl(r, used, true));
+    lowRows.forEach((tr) => { tr.hidden = true; });
+    btn.addEventListener("click", () => {
+      const open = btn.getAttribute("aria-expanded") !== "true";
+      btn.setAttribute("aria-expanded", String(open));
+      lowRows.forEach((tr) => { tr.hidden = !open; });
+    });
+    tb.append(el("tr", {class: "lowbar"}, el("td", {colspan: String(span)}, btn)), ...lowRows);
+  }
+  return tb;
+}
+function matches(g) {
+  if (view.cat && g.k !== view.cat) return false;
+  if (view.tier && g.t !== view.tier) return false;
+  const q = view.q.trim().toLowerCase();
+  return !q || g.n.some(([code, name]) => `${name} ${code}`.toLowerCase().includes(q));
+}
+function render() {
+  const list = $("list");
+  list.replaceChildren();
+  let n = 0;
+  for (const cat of DATA.cats) {
+    if (view.cat && view.cat !== cat) continue;
+    const groups = DATA.groups.filter((g) => g.k === cat && matches(g));
+    if (!groups.length) continue;
+    n += groups.reduce((s, g) => s + g.n.length, 0);
+    const used = usedColumns(DATA.groups.filter((g) => g.k === cat));
+    const table = el("table", {class: "bm"}, headRow(used), ...groups.map((g) => groupBody(g, used)));
+    list.append(el("section", {class: "cat", id: `cat-${cat}`.replace(/[^A-Za-z0-9_-]/g, "-")},
+      el("h3", {class: "cat", text: cat}), table));
+  }
+  if (!n) list.append(el("p", {class: "empty", text: "No base matches. Clear the search or pick another type."}));
+  $("count").textContent = `${n} base${n === 1 ? "" : "s"}`;
+}
+function init() {
+  $("levels").replaceChildren(...DATA.levels.map((n) => el("li", {text: n})));
+  $("level").replaceChildren(el("option", {value: "", text: "All filter levels"}),
+    ...DATA.levels.map((n, i) => el("option", {value: String(i), text: `Level ${i}: ${n}`})));
+  $("cat").replaceChildren(el("option", {value: "", text: "All types"}), ...DATA.cats.map((c) => el("option", {value: c, text: c})));
+  $("level").value = view.level;
+  $("cat").value = view.cat;
+  $("tier").value = view.tier;
+  $("level").addEventListener("change", (e) => { view.level = e.target.value; save(); render(); });
+  $("cat").addEventListener("change", (e) => { view.cat = e.target.value; save(); render(); });
+  $("tier").addEventListener("change", (e) => { view.tier = e.target.value; save(); render(); });
+  let timer = 0;
+  $("q").addEventListener("input", (e) => { view.q = e.target.value; clearTimeout(timer); timer = setTimeout(render, 120); });
+  $("foot").textContent = `Built from the filter's sections (${DATA.version}) by tools/base_map.py: every white armor and weapon base run through the filter's own rules at every filter level (the Main version).`;
+  render();
+}
+init();
+})();
+</script>
