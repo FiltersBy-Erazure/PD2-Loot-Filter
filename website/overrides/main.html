@@ -1,0 +1,16 @@
+{#- The Erazure website's pages: Material's own, plus one script in the head (mkdocs.yml: theme custom_dir). -#}
+{% extends "base.html" %}
+
+{% block extrahead %}
+  {{ super() }}
+  <script>
+    /* Every visit starts dark. Material keeps the light / dark switch in the browser (localStorage); forget a choice
+       from an earlier visit before Material reads it. During a visit the switch still works, from page to page. */
+    try {
+      if (!sessionStorage.getItem("erazure-visit")) {
+        sessionStorage.setItem("erazure-visit", "1");
+        localStorage.removeItem(__md_scope.pathname + ".__palette");
+      }
+    } catch (e) {}
+  </script>
+{% endblock %}
