@@ -132,26 +132,26 @@ ItemDisplay[NMAG !RW SIN CLVL>9 FILTLVL>0 !(SK251>1 OR SK252>0 OR SK253>0 OR SK2
 //     ===============================  Daggers  ============================= 
 // ------------------------------------------------------------------------------
 
-// Hide nonmagical daggers that are not Venom bases: on filter levels 3-7 from character level 80 (only a ($) shows when one sells for 25,000+ gold and takes 2 inventory squares or less), and on filter levels 8+
-ItemDisplay[NMAG !RW DAGGER (FILTLVL~3-7 CLVL>79) !RWB_VENOM_DAGGER GROUND !TOWN SELLPRICE>24999 AREA<3]:%GRAY%(%TAN%$%GRAY%)//
-ItemDisplay[NMAG !RW DAGGER (FILTLVL~3-7 CLVL>79) !RWB_VENOM_DAGGER GROUND !TOWN (SELLPRICE<25000 OR AREA>2)]://
-ItemDisplay[NMAG !RW DAGGER FILTLVL>7 !RWB_VENOM_DAGGER !TOWN]:// On filter levels 8+, hide nonmagical daggers that are not Venom bases
+// Hide nonmagical daggers that are not Venom bases (throwing knives: see Javelins and Throwing Weapons): on filter levels 3-7 from character level 80 (only a ($) shows when one sells for 25,000+ gold and takes 2 inventory squares or less), and on filter levels 8+
+ItemDisplay[NMAG !RW DAGGER !THROWING (FILTLVL~3-7 CLVL>79) !RWB_VENOM_DAGGER GROUND !TOWN SELLPRICE>24999 AREA<3]:%GRAY%(%TAN%$%GRAY%)//
+ItemDisplay[NMAG !RW DAGGER !THROWING (FILTLVL~3-7 CLVL>79) !RWB_VENOM_DAGGER GROUND !TOWN (SELLPRICE<25000 OR AREA>2)]://
+ItemDisplay[NMAG !RW DAGGER !THROWING FILTLVL>7 !RWB_VENOM_DAGGER !TOWN]:// On filter levels 8+, hide nonmagical daggers that are not Venom bases
 
 //      Venom: +3 Poison Strike
 ItemDisplay[NMAG !INF !RW NECROMANCER RWB_VENOM_DAGGER]:%ORANGE%Venom %NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 
 ItemDisplay[NMAG !INF !RW !NECROMANCER RWB_VENOM_DAGGER]:%TEAL%Venom %NAME%{%NAME%}%CONTINUE%// 
 
 //      Hides dagger that do no have +1 to at least 1 skill past level 10
-ItemDisplay[NMAG !RW DAGGER CLVL>9 FILTLVL>0 !(SK73>0 OR SK254>0 OR SK257>0 OR SK259>0 OR SK265>0 OR SK266>0 OR SK269>0 OR SK270>0 OR SK274>0 OR SK275>0 OR SK280>0) !TOWN]:// All tiers
+ItemDisplay[NMAG !RW DAGGER !THROWING CLVL>9 FILTLVL>0 !(SK73>0 OR SK254>0 OR SK257>0 OR SK259>0 OR SK265>0 OR SK266>0 OR SK269>0 OR SK270>0 OR SK274>0 OR SK275>0 OR SK280>0) !TOWN]:// All tiers
 
 // ------------------------------------------------------------------------------
 //     ===========================  Sorceress Orbs  =========================   
 // ------------------------------------------------------------------------------
 
-// Hide nonmagical orbs: on filter levels 3-7 from character level 80 (only a ($) shows when one sells for 25,000+ gold and takes 2 inventory squares or less), and on filter levels 8+
-ItemDisplay[NMAG !RW SOR (FILTLVL~3-7 CLVL>79) GROUND !TOWN SELLPRICE>24999 AREA<3]:%GRAY%(%TAN%$%GRAY%)//
-ItemDisplay[NMAG !RW SOR (FILTLVL~3-7 CLVL>79) GROUND !TOWN (SELLPRICE<25000 OR AREA>2)]://
-ItemDisplay[NMAG !RW SOR FILTLVL>7 !TOWN]:// On filter levels 8+, hide nonmagical orbs
+// Hide nonmagical orbs that are not Plague bases: on filter levels 3-7 from character level 80 (only a ($) shows when one sells for 25,000+ gold and takes 2 inventory squares or less), and on filter levels 8+
+ItemDisplay[NMAG !RW SOR (FILTLVL~3-7 CLVL>79) !RWB_PLAGUE_ORB GROUND !TOWN SELLPRICE>24999 AREA<3]:%GRAY%(%TAN%$%GRAY%)//
+ItemDisplay[NMAG !RW SOR (FILTLVL~3-7 CLVL>79) !RWB_PLAGUE_ORB GROUND !TOWN (SELLPRICE<25000 OR AREA>2)]://
+ItemDisplay[NMAG !RW SOR FILTLVL>7 !RWB_PLAGUE_ORB !TOWN]:// On filter levels 8+, hide nonmagical orbs that are not Plague bases
 
 //      Neophyte runeword orb bases: 
 //     Character=SORCERESS levels 1-79, +3 to Frost Nova, Fire Ball, Nova, Lightning, Fire Wall, Chain Lightning, Meteor, Blizzard, Hydra, Frozen Orb, Ice Barrage, Combustion
@@ -166,9 +166,9 @@ ItemDisplay[NMAG !RW SOR CLVL>9 FILTLVL>0 !(SK36>0 OR SK37>0 OR SK38>0 OR SK39>0
 // ------------------------------------------------------------------------------
 
 // Hide nonmagical staves that are not Memory, CTA, Infinity, Doom or Obsession bases (or 5-6 socket Archon Staves on filter levels 3-7): on filter levels 3-7 from character level 80 (only a ($) shows when one sells for 25,000+ gold and takes 2 inventory squares or less), and on filter levels 8+
-ItemDisplay[NMAG !RW STAFF (FILTLVL~3-7 CLVL>79) !(RWB_MEMORY_STAFF OR RWB_CTA_STAFF OR RWB_INFINITY_STAFF OR RWB_PLAGUE_ORB OR RWB_DOOM_STAFF OR RWB_OBSESSION_STAFF OR (6ws FILTLVL<8 (SOCK=5 OR SOCK=6))) GROUND !TOWN SELLPRICE>24999 AREA<3]:%GRAY%(%TAN%$%GRAY%)//
-ItemDisplay[NMAG !RW STAFF (FILTLVL~3-7 CLVL>79) !(RWB_MEMORY_STAFF OR RWB_CTA_STAFF OR RWB_INFINITY_STAFF OR RWB_PLAGUE_ORB OR RWB_DOOM_STAFF OR RWB_OBSESSION_STAFF OR (6ws FILTLVL<8 (SOCK=5 OR SOCK=6))) GROUND !TOWN (SELLPRICE<25000 OR AREA>2)]://
-ItemDisplay[NMAG !RW STAFF FILTLVL>7 !(RWB_MEMORY_STAFF OR RWB_CTA_STAFF OR RWB_INFINITY_STAFF OR RWB_PLAGUE_ORB OR RWB_DOOM_STAFF OR RWB_OBSESSION_STAFF OR (6ws FILTLVL<8 (SOCK=5 OR SOCK=6))) !TOWN]:// On filter levels 8+, hide nonmagical staves that are not Memory, CTA, Infinity, Doom or Obsession bases
+ItemDisplay[NMAG !RW STAFF (FILTLVL~3-7 CLVL>79) !(RWB_MEMORY_STAFF OR RWB_CTA_STAFF OR RWB_INFINITY_STAFF OR RWB_DOOM_STAFF OR RWB_OBSESSION_STAFF OR (6ws FILTLVL<8 (SOCK=5 OR SOCK=6))) GROUND !TOWN SELLPRICE>24999 AREA<3]:%GRAY%(%TAN%$%GRAY%)//
+ItemDisplay[NMAG !RW STAFF (FILTLVL~3-7 CLVL>79) !(RWB_MEMORY_STAFF OR RWB_CTA_STAFF OR RWB_INFINITY_STAFF OR RWB_DOOM_STAFF OR RWB_OBSESSION_STAFF OR (6ws FILTLVL<8 (SOCK=5 OR SOCK=6))) GROUND !TOWN (SELLPRICE<25000 OR AREA>2)]://
+ItemDisplay[NMAG !RW STAFF FILTLVL>7 !(RWB_MEMORY_STAFF OR RWB_CTA_STAFF OR RWB_INFINITY_STAFF OR RWB_DOOM_STAFF OR RWB_OBSESSION_STAFF OR (6ws FILTLVL<8 (SOCK=5 OR SOCK=6))) !TOWN]:// On filter levels 8+, hide nonmagical staves that are not Memory, CTA, Infinity, Doom or Obsession bases
 
 // Memory:
 ItemDisplay[NMAG !RW RWB_MEMORY_STAFF]:%ORANGE%Memory %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
@@ -188,8 +188,8 @@ ItemDisplay[NMAG !RW RWB_DOOM_STAFF]:%ORANGE%Doom %WHITE%%NAME%{%NAME%}%DOT-20%%
 // Obsession - Fire Wall, Frozen Orb, Ice Bolt, Blizzard, Meteor
 ItemDisplay[NMAG !RW RWB_OBSESSION_STAFF]:%ORANGE%Obsession %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
 
-// Leaf - Inferno, Fire Wall
-ItemDisplay[NMAG !RW (SK41>2 OR SK51>2) SOCK=2 STAFF ((NORM CLVL<30) OR (EXC CLVL<60) OR (ELT CLVL<80))]:%ORANGE%Leaf %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
+// Leaf - Inferno, Fire Wall (filter levels 0-7)
+ItemDisplay[NMAG !RW (SK41>2 OR SK51>2) SOCK=2 STAFF ((NORM CLVL<30) OR (EXC CLVL<60) OR (ELT CLVL<80)) FILTLVL<8]:%ORANGE%Leaf %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
 
 // Hides all other Staves that don't have + to skills past level 10
 ItemDisplay[NMAG !INF !RW STAFF CLVL>9 FILTLVL>0 !(SK36>0 OR SK37>0 OR SK38>0 OR SK39>0 OR SK40>0 OR SK41>0 OR SK42>0 OR SK43>0 OR SK44>0 OR SK45>0 OR SK46>0 OR SK47>0 OR SK48>0 OR SK49>0 OR SK50>0 OR SK51>0 OR SK52>0 OR SK53>0 OR SK54>0 OR SK55>0 OR SK56>0 OR SK57>0 OR SK58>0 OR SK59>0 OR SK60>0 OR SK61>0 OR SK62>0 OR SK63>0 OR SK64>0 OR SK65>0 OR SK369>0 OR SK383>0 OR (6ws FILTLVL<8 (SOCK=5 OR SOCK=6))) FILTLVL>0 !TOWN]:// 
@@ -198,10 +198,10 @@ ItemDisplay[NMAG !INF !RW STAFF CLVL>9 FILTLVL>0 !(SK36>0 OR SK37>0 OR SK38>0 OR
 //    ============================  Scepters  ================================   
 // ------------------------------------------------------------------------------
 
-// Hide nonmagical scepters that are not Plague, CTA or Beast bases, 0 or 4 socket +3 Holy Fire or Conviction, 0 or 5 socket +3 Might, Concentration, Sanctuary or Conviction, or superior Caduceus with 10%+ ED and 0, 4 or 5 sockets: on filter levels 3-7 from character level 80 (only a ($) shows when one sells for 25,000+ gold and takes 2 inventory squares or less), and on filter levels 8+
-ItemDisplay[NMAG !RW SCEPTER (FILTLVL~3-7 CLVL>79) !(((SOCK=0 OR SOCK=4) (SK102>2 OR SK123>2)) OR ((SOCK=0 OR SOCK=5) (SK98>2 OR SK113>2 OR SK119>2 OR SK123>2)) OR RWB_PLAGUE_SCEPTER OR RWB_CTA_SCEPTER OR RWB_BEAST_SCEPTER OR (7ws SUP ED>9 (SOCK=0 OR SOCK=4 OR SOCK=5))) GROUND !TOWN SELLPRICE>24999 AREA<3]:%GRAY%(%TAN%$%GRAY%)//
-ItemDisplay[NMAG !RW SCEPTER (FILTLVL~3-7 CLVL>79) !(((SOCK=0 OR SOCK=4) (SK102>2 OR SK123>2)) OR ((SOCK=0 OR SOCK=5) (SK98>2 OR SK113>2 OR SK119>2 OR SK123>2)) OR RWB_PLAGUE_SCEPTER OR RWB_CTA_SCEPTER OR RWB_BEAST_SCEPTER OR (7ws SUP ED>9 (SOCK=0 OR SOCK=4 OR SOCK=5))) GROUND !TOWN (SELLPRICE<25000 OR AREA>2)]://
-ItemDisplay[NMAG !RW SCEPTER FILTLVL>7 !(((SOCK=0 OR SOCK=4) (SK102>2 OR SK123>2)) OR ((SOCK=0 OR SOCK=5) (SK98>2 OR SK113>2 OR SK119>2 OR SK123>2)) OR RWB_PLAGUE_SCEPTER OR RWB_CTA_SCEPTER OR RWB_BEAST_SCEPTER OR (7ws SUP ED>9 (SOCK=0 OR SOCK=4 OR SOCK=5))) !TOWN]:// On filter levels 8+, hide nonmagical scepters (the same bases are kept)
+// Hide nonmagical scepters that are not Plague, CTA or Beast bases, or Caduceus with 0 or 4 sockets and +3 Holy Fire or Conviction, 0 or 5 sockets and +3 Might, Concentration, Sanctuary or Conviction, or superior with 10%+ ED and 0, 4 or 5 sockets: on filter levels 3-7 from character level 80 (only a ($) shows when one sells for 25,000+ gold and takes 2 inventory squares or less), and on filter levels 8+
+ItemDisplay[NMAG !RW SCEPTER (FILTLVL~3-7 CLVL>79) !((7ws (SOCK=0 OR SOCK=4) (SK102>2 OR SK123>2)) OR (7ws (SOCK=0 OR SOCK=5) (SK98>2 OR SK113>2 OR SK119>2 OR SK123>2)) OR RWB_PLAGUE_SCEPTER OR RWB_CTA_SCEPTER OR RWB_BEAST_SCEPTER OR (7ws SUP ED>9 (SOCK=0 OR SOCK=4 OR SOCK=5))) GROUND !TOWN SELLPRICE>24999 AREA<3]:%GRAY%(%TAN%$%GRAY%)//
+ItemDisplay[NMAG !RW SCEPTER (FILTLVL~3-7 CLVL>79) !((7ws (SOCK=0 OR SOCK=4) (SK102>2 OR SK123>2)) OR (7ws (SOCK=0 OR SOCK=5) (SK98>2 OR SK113>2 OR SK119>2 OR SK123>2)) OR RWB_PLAGUE_SCEPTER OR RWB_CTA_SCEPTER OR RWB_BEAST_SCEPTER OR (7ws SUP ED>9 (SOCK=0 OR SOCK=4 OR SOCK=5))) GROUND !TOWN (SELLPRICE<25000 OR AREA>2)]://
+ItemDisplay[NMAG !RW SCEPTER FILTLVL>7 !((7ws (SOCK=0 OR SOCK=4) (SK102>2 OR SK123>2)) OR (7ws (SOCK=0 OR SOCK=5) (SK98>2 OR SK113>2 OR SK119>2 OR SK123>2)) OR RWB_PLAGUE_SCEPTER OR RWB_CTA_SCEPTER OR RWB_BEAST_SCEPTER OR (7ws SUP ED>9 (SOCK=0 OR SOCK=4 OR SOCK=5))) !TOWN]:// On filter levels 8+, hide nonmagical scepters (the same bases are kept)
 
 ItemDisplay[NMAG !INF !RW 7ws (SOCK=0 OR SOCK=4) (SK102>2 OR SK123>2)]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
 ItemDisplay[NMAG !INF !RW 7ws (SOCK=0 OR SOCK=5) (SK98>2 OR SK113>2 OR SK119>2 OR SK123>2)]:%ORANGE%Doom %NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
@@ -483,7 +483,7 @@ ItemDisplay[NMAG !RW !INF (7ss OR 7fc OR 7wd OR 7sm OR 7sb OR 7bs OR 7ls) ED<15 
 
 //          Phase Blade
 ItemDisplay[NMAG !RW !INF 7cr SOCK=2 FILTLVL>0 !TOWN]:// Hide Phase Blade with 2os on filter levels 1+
-ItemDisplay[NMAG !RW !INF 7cr ED<5 !(SOCK=0 FILTLVL<3) !(ETH SOCK=4 FILTLVL<8) FILTLVL>0 !TOWN]:// Hide Phase Blade with ED<5 (except 0os on filter levels 0-2) on filter levels 1+ (S14: not eth 4os on levels 0-7, Madness base)
+ItemDisplay[NMAG !RW !INF 7cr ED<5 !((SOCK=0 OR SOCK=3 OR SOCK=5) FILTLVL<3) !(ETH SOCK=4 FILTLVL<8) FILTLVL>0 !TOWN]:// Hide Phase Blade with ED<5 (except 0, 3 or 5os on filter levels 0-2) on filter levels 1+ (S14: not eth 4os on levels 0-7, Madness base)
 ItemDisplay[NMAG !RW !INF 7cr ED<5 !(SOCK=0 FILTLVL<3) !(ETH SOCK=4 FILTLVL<8) CLVL>79 FILTLVL>2 !TOWN]:// Hide Phase Blade with ED<5 (except 0os on filter levels 0-2) at clvl 80+ on filter levels 3+
 ItemDisplay[NMAG !RW !INF 7cr ETH SOCK=4 ED<15 FILTLVL>7 !TOWN]:// S14: Madness base: eth 4os Phase Blade shows on filter levels 8+ only with 15+ ED
 ItemDisplay[NMAG !RW !INF 7cr ED<15 !(SOCK=0 FILTLVL<3) FILTLVL>7 !TOWN]:// Hide Phase Blade with ED<15 (except 0os on filter levels 0-2) on filter levels 8+

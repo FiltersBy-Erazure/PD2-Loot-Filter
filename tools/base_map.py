@@ -1421,9 +1421,11 @@ def findings(an):
     for w, where in sorted(an.words.unknown.items()):
         out.append(f"words left as they are: {w} ({', '.join(sorted(where)[:3])})")
     for r in an.kept:
-        if r.where.startswith(TAG_SECTIONS) and r.kind in ("tag", "hide", "show") and not an.used.get(r.n):
-            what = " (a ($) only for bases of 2 inventory squares or less)" if "AREA" in r.keys else ""
-            out.append(f"{r.where}: applies to no white base on the ground ({r.kind}){what}")
+        # A ($) is only for bases of 2 inventory squares or less (the author's choice): a class without one leaves its
+        # ($) rule unused on purpose.
+        if r.where.startswith(TAG_SECTIONS) and r.kind in ("tag", "hide", "show") and not an.used.get(r.n) \
+                and "AREA" not in r.keys:
+            out.append(f"{r.where}: applies to no white base on the ground ({r.kind})")
     names = {b.code: b.name for b in an.bases}
     for (n, h), by_base in sorted(an.hidden_icons.items()):
         r, hide = an.rules[n], an.rules[h]
