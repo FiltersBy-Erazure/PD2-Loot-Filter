@@ -1095,7 +1095,8 @@ def build_data(groups, variants, sounds, palette):
 
 DOC_HEAD = ("<!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n"
             "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, viewport-fit=cover\">\n"
-            "<style>body { margin: 0; } [hidden] { display: none !important; }</style>\n")
+            "<style>html { color-scheme: dark; } body { margin: 0; background: #151412; }"  # the tier map's dark --bg
+            " [hidden] { display: none !important; }</style>\n")
 # (no </head><body>: the template's <title>, <link> and <style> join the head; its first element opens the body)
 
 

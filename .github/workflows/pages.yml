@@ -1,0 +1,45 @@
+name: Publish the website (GitHub Pages)
+
+# The website (website/, MkDocs with the Material theme) plus the tier page Erazure-Unique-Set-Tiers.html, built and
+# deployed on every push to main. tools/publish_beta.py puts these files on main. Repo setting needed once:
+# Settings > Pages > Build and deployment > Source: GitHub Actions.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Install MkDocs Material
+        run: pip install --quiet mkdocs-material==9.7.7
+      - name: Build the website
+        run: mkdocs build --strict -f website/mkdocs.yml
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: website/site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

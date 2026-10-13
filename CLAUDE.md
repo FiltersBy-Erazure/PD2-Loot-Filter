@@ -88,6 +88,17 @@
   (`Sounds.txt`) and the icon palette come from `python tools/pd2_data.py --tier-data "<Diablo II folder>"` (also
   run by `--extract`). Sets have High and Medium tiers (`SET_HIGH_VALUE_*`, `SET_MEDIUM_VALUE_*`) and no Minimal:
   the author sees no room between Medium and the standard set look.
+- The website (https://filtersby-erazure.github.io/PD2-Loot-Filter/) is MkDocs with the Material theme:
+  `website/mkdocs.yml` and the pages in `website/docs/*.md` (text from the README, in the author's words). Never use
+  the repo's `docs/` for it: that is reference material, not for players. `website/hooks.py` adds the tier page as
+  a file of its own, and puts the same tier map straight into the Unique & Set Tiers page (`website/docs/tiers.md`,
+  its placeholder): the styles, the markup between the `tier-map` markers of `tools/tier_map_template.html` and the
+  script, taken from the generated page. No frame is used, so its filter bar stays under the site's header while
+  scrolling. Its styles are all scoped to `.tier-map`, and it turns light only with the site's light mode
+  (`[data-md-color-scheme="default"]`). `site_preview.bat`
+  (double-click) previews it at http://127.0.0.1:8000/PD2-Loot-Filter/ with MkDocs Material 9.7.7 in
+  `tools/.cache/mkdocs-venv`. CI builds it with `--strict`. On `main`, `.github/workflows/pages.yml` builds and
+  deploys it on every push (Pages source: GitHub Actions).
 
 ## Variants (all 8 built from the same sections)
 | display_name | File | BIG_GG | POE_SOUNDS | REVEALED |
@@ -189,8 +200,8 @@ The exact labels are in that file. A rule without `FILTLVL` applies at every lev
 5. Merge to `main` only with the author's explicit go-ahead: the launcher serves `main` to players
    (GitHub contents API, default branch). During the S14 beta, `python tools/publish_beta.py` puts the
    beta build on `main` as an extra "Erazure - S14 Beta" entry without touching the 8 live filters, plus
-   the tier page `Erazure-Unique-Set-Tiers.html` (GitHub Pages serves it from `main`; `--page-only`: the
-   page alone); its `--push` also needs the author's go-ahead each time.
+   the website (`website/`, `.github/workflows/pages.yml` and the tier page `Erazure-Unique-Set-Tiers.html`;
+   `--site-only`: the website alone); its `--push` also needs the author's go-ahead each time.
 6. To see which rules an item hits (and where it stops, and which rule plays its drop sound):
    `python tools/explain_item.py <code> <quality> --level N [--set K=V ...]`.
 
@@ -216,6 +227,7 @@ The exact labels are in that file. A rule without `FILTLVL` applies at every lev
 `tools/item_data.py` + `tools/gen_unique_rolls.py` + `tools/unique_roll_picks.txt` ·
 `tools/gen_runeword_rolls.py` + `tools/runeword_roll_picks.txt` + `docs/pd2-runewords.tsv` ·
 `tools/tier_map.py` + `tools/tier_map_template.html` + `Erazure-Unique-Set-Tiers.html` ·
+`website/` + `site_preview.bat` + `.github/workflows/pages.yml` ·
 `tools/tag_order.py` + `tools/pd2_stat_priority.tsv` · `tools/pd2_data.py` + `docs/pd2-unique-set-items.tsv` +
 `tools/pd2_mpq.py` ·
 `.claude/settings.json` + `.claude/hooks/rebuild.py` · `.github/workflows/check-filters.yml` · `docs/` ·

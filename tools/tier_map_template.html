@@ -1,145 +1,190 @@
 <title>Erazure Unique &amp; Set Tiers</title>
 <!-- Template for Erazure-Unique-Set-Tiers.html (tools/tier_map.py writes it; build.bat runs it): the data is
-     embedded at generation. Everything shown comes from the filter's own rules. -->
+     embedded at generation. Everything shown comes from the filter's own rules. The website's Unique & Set Tiers
+     page shows the same tier map: website/hooks.py takes the styles, the markup between the tier-map markers and
+     the script out of the generated file, so keep those markers. -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Source+Sans+3:wght@400;600;700&display=swap">
+<!-- tier-map:css -->
 <style>
   @font-face { font-family: "AvQest"; src: local("AvQest"); }  /* the D2-style font, if the viewer has it installed */
-  /* Layout: a sticky filter bar; a short "how to read" block with each tier's real in-game look; then one section
-     per item type with its tiers in order. Each item is one thin, wide row: the item on the left, then one line
-     per condition (when, tier, the label as the game draws it, minimap icon, drop sound). */
-  :root {
-    --bg: #f3f1ec; --panel: #fffdf8; --fg: #23211c; --muted: #6b655a; --line: #ded7c9; --chip: #efe9dd;
-    --accent: #8a6d1f; --tip-bg: #23211c; --tip-fg: #f3f1ec;
-    --t-dclone: #4b5fc4; --t-high: #c2410c; --t-medium: #b7791f; --t-minimal: #8c7a4f; --t-lld: #2f8f86;
-    --t-else: #8b8579; --set: #3d8b3d; --bad: #b3261e;
+  /* Layout: the title; a "how to read it" block with each tier's real in-game look; then the filter bar, which stays
+     at the top while scrolling (under the website's header on the website); then one section per item type with its
+     tiers in order. Each item is one thin, wide row: the item on the left, then one line per condition (when, tier,
+     the label as the game draws it, minimap icon, drop sound). Every rule is scoped to .tier-map, so the website's
+     theme and this page leave each other alone. */
+  /* Dark by default; light when the website (Material) is switched to light */
+  .tier-map {
+    --bg: #151412; --panel: #1f1d1a; --fg: #ece7de; --muted: #a59e91; --line: #36322c; --chip: #2a2723;
+    --accent: #d8b45e; --tip-bg: #ece7de; --tip-fg: #151412;
+    --t-dclone: #8b9cf0; --t-high: #f08a52; --t-medium: #e0b45a; --t-minimal: #c2b38a; --t-lld: #62c2b8;
+    --t-else: #9a9385; --set: #7cc474; --bad: #ef7a72;
     --ground-1: #3a3428; --ground-2: #26221b; --ground-3: #15130f;
     --display: "Cinzel", "Trajan Pro", Georgia, serif;
     --body: "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     --label: "AvQest", "Palatino Linotype", Palatino, Georgia, serif;
+    --top: 0px;  /* where the filter bar stops while scrolling */
+    color-scheme: dark;
+    color: var(--fg); font: 15px/1.45 var(--body);
   }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --bg: #151412; --panel: #1f1d1a; --fg: #ece7de; --muted: #a59e91; --line: #36322c; --chip: #2a2723;
-      --accent: #d8b45e; --tip-bg: #ece7de; --tip-fg: #151412;
-      --t-dclone: #8b9cf0; --t-high: #f08a52; --t-medium: #e0b45a; --t-minimal: #c2b38a; --t-lld: #62c2b8;
-      --t-else: #9a9385; --set: #7cc474; --bad: #ef7a72; color-scheme: dark;
-    }
+  [data-md-color-scheme="default"] .tier-map {
+    --bg: #f3f1ec; --panel: #fffdf8; --fg: #23211c; --muted: #6b655a; --line: #ded7c9; --chip: #efe9dd;
+    --accent: #8a6d1f; --tip-bg: #23211c; --tip-fg: #f3f1ec;
+    --t-dclone: #4b5fc4; --t-high: #c2410c; --t-medium: #b7791f; --t-minimal: #8c7a4f; --t-lld: #2f8f86;
+    --t-else: #8b8579; --set: #3d8b3d; --bad: #b3261e;
+    color-scheme: light;
   }
-  :root[data-theme="dark"] {
-    --bg: #151412; --panel: #1f1d1a; --fg: #ece7de; --muted: #a59e91; --line: #36322c; --chip: #2a2723;
-    --accent: #d8b45e; --tip-bg: #ece7de; --tip-fg: #151412;
-    --t-dclone: #8b9cf0; --t-high: #f08a52; --t-medium: #e0b45a; --t-minimal: #c2b38a; --t-lld: #62c2b8;
-    --t-else: #9a9385; --set: #7cc474; --bad: #ef7a72; color-scheme: dark;
-  }
-  * { box-sizing: border-box; }
-  body { background: var(--bg); color: var(--fg); font: 15px/1.45 var(--body); }
-  .wrap { max-width: 1320px; margin: 0 auto; padding-inline: 16px; }
-  header.bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--panel);
-               border-bottom: 1px solid var(--line); padding-block: 8px; }
-  .bar .wrap { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
-  h1 { font: 700 19px/1.2 var(--display); letter-spacing: .02em; margin: 0 auto 0 0; text-wrap: balance; }
-  .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-  input[type=search], select { font: inherit; font-size: 14.5px; padding: 5px 8px; border: 1px solid var(--line);
-                               border-radius: 6px; background: var(--bg); color: var(--fg); min-width: 0; }
-  input[type=search] { flex: 1 1 220px; }
-  .bar .row2 { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; width: 100%; }
-  .chipbtn { font: inherit; font-size: 13px; padding: 2px 10px; border-radius: 999px; border: 1px solid var(--line);
-             background: var(--chip); color: var(--fg); cursor: pointer; display: inline-flex; gap: 6px; align-items: center; }
-  .chipbtn[aria-pressed=false] { opacity: .5; }
-  .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--tc); flex: none; }
-  .muted { color: var(--muted); }
-  button:focus-visible, select:focus-visible, input:focus-visible, summary:focus-visible, .sound:focus-visible {
-    outline: 2px solid var(--accent); outline-offset: 2px; }
-  main { padding-block: 14px 72px; }
+  .md-content .tier-map { --top: 2.4rem; }  /* on the website: under its header, which stays at the top */
+  .tier-map *, .tier-map *::before, .tier-map *::after { box-sizing: border-box; }
+  .tier-map .wrap { max-width: 1320px; margin: 0 auto; padding-inline: 16px; }
+  .md-content .tier-map .wrap { padding-inline: 0; }
+  .tier-map h1.tm-title { font: 700 26px/1.2 var(--display); letter-spacing: .02em; margin: 0; padding-block: 16px 10px;
+                          color: var(--fg); text-wrap: balance; }
+  .tier-map .bar { position: sticky; top: var(--top); z-index: 3; background: var(--panel);
+                   border-block: 1px solid var(--line); padding-block: 8px; margin-block: 12px 0; }
+  .tier-map .bar .wrap { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
+  .md-content .tier-map .bar .wrap { padding-inline: 10px; }
+  .tier-map .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .tier-map input[type=search], .tier-map select {
+    font: inherit; font-size: 14.5px; padding: 5px 8px; border: 1px solid var(--line); border-radius: 6px;
+    background: var(--bg); color: var(--fg); min-width: 0; margin: 0; }
+  .tier-map input[type=search] { flex: 1 1 220px; }
+  .tier-map .row2 { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; width: 100%; }
+  .tier-map .chipbtn { font: inherit; font-size: 13px; padding: 2px 10px; border-radius: 999px; border: 1px solid var(--line);
+                       background: var(--chip); color: var(--fg); cursor: pointer; display: inline-flex; gap: 6px;
+                       align-items: center; margin: 0; }
+  .tier-map .chipbtn[aria-pressed=false] { opacity: .5; }
+  .tier-map .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--tc); flex: none; }
+  .tier-map .muted { color: var(--muted); }
+  .tier-map button:focus-visible, .tier-map select:focus-visible, .tier-map input:focus-visible,
+  .tier-map .sound:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
   /* how to read it */
-  .intro { display: grid; gap: 12px; }
-  .howto { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 4px 24px; }
-  @media (max-width: 900px) { .howto { grid-template-columns: minmax(0, 1fr); } }
-  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; min-width: 0; }
-  .panel h2 { font: 700 12.5px/1.3 var(--body); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 0 0 6px; }
-  .panel p, .panel li { max-width: 72ch; font-size: 14.5px; }
-  .panel p { margin: 0 0 6px; }
-  .panel ul { margin: 0 0 6px; padding-left: 18px; }
-  .levels { columns: 2 230px; font-size: 13.5px; margin: 4px 0 0; padding-left: 24px; }
-  .levels li { break-inside: avoid; }
+  .tier-map .intro { display: grid; gap: 12px; }
+  .tier-map .howto { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 4px 24px; }
+  @media (max-width: 900px) { .tier-map .howto { grid-template-columns: minmax(0, 1fr); } }
+  .tier-map .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px;
+                     min-width: 0; }
+  .tier-map .panel h2 { font: 700 12.5px/1.3 var(--body); text-transform: uppercase; letter-spacing: .08em;
+                        color: var(--muted); margin: 0 0 6px; }
+  .tier-map .panel p, .tier-map .panel li { max-width: 72ch; font-size: 14.5px; line-height: 1.45; }
+  .tier-map .panel p { margin: 0 0 6px; }
+  .tier-map .panel ul { margin: 0 0 6px; padding-left: 18px; list-style: disc; }
+  .tier-map .panel li { margin: 0; }
+  .tier-map .levels { columns: 2 230px; font-size: 13.5px; margin: 4px 0 0; padding-left: 24px; list-style: decimal; }
+  .tier-map .levels li { break-inside: avoid; font-size: 13.5px; margin: 0; }
   /* the tiers legend: one table-like grid, so every column lines up (name | example label | icon | meaning) */
-  .legend { display: grid; grid-template-columns: 15rem max-content auto minmax(0, 1fr); gap: 5px 14px;
-            align-items: center; }
-  .legend .lrow { display: contents; }
-  .legend .ground { justify-self: start; }
-  .legend .lname { font-size: 14px; }
-  .legend .lname b { color: var(--tc); }
-  .legend .lwhat { font-size: 13.5px; color: var(--muted); }
+  .tier-map .legend { display: grid; grid-template-columns: 15rem max-content auto minmax(0, 1fr); gap: 5px 14px;
+                      align-items: center; }
+  .tier-map .legend .lrow { display: contents; }
+  .tier-map .legend .ground { justify-self: start; }
+  .tier-map .legend .lname { font-size: 14px; }
+  .tier-map .legend .lname b { color: var(--tc); }
+  .tier-map .legend .lwhat { font-size: 13.5px; color: var(--muted); }
   @media (max-width: 900px) {
-    .legend { grid-template-columns: minmax(0, 1fr); }
-    .legend .lrow { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 10px; padding-block: 3px; }
-    .legend .lname, .legend .lwhat { flex: 1 1 100%; }
+    .tier-map .legend { grid-template-columns: minmax(0, 1fr); }
+    .tier-map .legend .lrow { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 10px; padding-block: 3px; }
+    .tier-map .legend .lname, .tier-map .legend .lwhat { flex: 1 1 100%; }
   }
-  .low { display: grid; gap: 6px; margin-top: 10px; }
-  .low .rule { font-size: 14px; }
+  .tier-map .low { display: grid; gap: 6px; margin-top: 10px; }
+  .tier-map .low .rule { font-size: 14px; }
 
   /* items */
-  h2.kind { font: 700 24px/1.2 var(--display); margin: 30px 0 2px; letter-spacing: .02em; }
-  section.cat { margin-top: 18px; }
-  h3.cat { font: 600 18px/1.25 var(--display); margin: 0 0 4px; padding-bottom: 3px; border-bottom: 1px solid var(--line); }
-  .tier-head { display: flex; gap: 8px; align-items: center; font-size: 12.5px; font-weight: 700; text-transform: uppercase;
-               letter-spacing: .07em; color: var(--tc); margin: 10px 0 5px; }
-  .rows { display: grid; gap: 5px; }
-  article.row { display: grid; grid-template-columns: 15rem minmax(0, 1fr); gap: 3px 14px; align-items: start;
-                background: var(--panel); border: 1px solid var(--line); border-left: 3px solid var(--tc);
-                border-radius: 6px; padding: 5px 10px; }
-  article.row.group { grid-template-columns: minmax(0, 1fr); }
-  @media (max-width: 760px) { article.row { grid-template-columns: minmax(0, 1fr); } }
-  .who { min-width: 0; }
-  .who .nm { font-weight: 700; line-height: 1.3; }
-  .who .sub { font-size: 13px; color: var(--muted); }
-  .who .setname { font-size: 13px; color: var(--set); }
-  .who .setname.inline { font-weight: 400; }
-  .who .sub { margin-top: 1px; }
-  .who.names { font-size: 13.5px; }
-  .who.names b { font-weight: 700; }
-  .who.names .base { color: var(--muted); }
-  .rules { display: grid; gap: 2px; min-width: 0; }
-  .run { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 12px; min-width: 0; }
-  .run .when { flex: 0 0 13rem; font-size: 14px; }
-  .run .what { flex: 0 0 12.5rem; font-size: 14px; font-weight: 600; }
-  @media (max-width: 760px) { .run .when, .run .what { flex: 1 1 auto; } }
-  .ground { flex: 0 1 auto; max-width: 100%; min-width: 0; text-align: center; border-radius: 5px; padding: 3px 6px;
-            background: radial-gradient(ellipse at 50% 45%, var(--ground-1) 0%, var(--ground-2) 55%, var(--ground-3) 100%); }
-  .d2label { display: inline-block; font-family: var(--label); font-size: 15px; line-height: 1.12; text-align: center;
-             white-space: pre; background: rgba(0, 0, 0, .74); padding: 2px 6px 0; vertical-align: middle; }
-  .d2label .cut, .d2label .cut .bs { text-decoration: underline dotted var(--bad); text-decoration-thickness: 2px;
-                                     text-underline-offset: 3px; }
+  .tier-map h2.kind { font: 700 24px/1.2 var(--display); margin: 30px 0 2px; letter-spacing: .02em; color: var(--fg); }
+  .tier-map section.cat { margin-top: 18px; }
+  .tier-map h3.cat { font: 600 18px/1.25 var(--display); margin: 0 0 4px; padding-bottom: 3px; letter-spacing: 0;
+                     border-bottom: 1px solid var(--line); color: var(--fg); }
+  .tier-map .tier-head { display: flex; gap: 8px; align-items: center; font-size: 12.5px; font-weight: 700;
+                         text-transform: uppercase; letter-spacing: .07em; color: var(--tc); margin: 10px 0 5px; }
+  .tier-map .rows { display: grid; gap: 5px; }
+  .tier-map article.row { display: grid; grid-template-columns: 15rem minmax(0, 1fr); gap: 3px 14px; align-items: start;
+                          background: var(--panel); border: 1px solid var(--line); border-left: 3px solid var(--tc);
+                          border-radius: 6px; padding: 5px 10px; }
+  .tier-map article.row.group { grid-template-columns: minmax(0, 1fr); }
+  @media (max-width: 760px) { .tier-map article.row { grid-template-columns: minmax(0, 1fr); } }
+  .tier-map .who { min-width: 0; }
+  .tier-map .who .nm { font-weight: 700; line-height: 1.3; }
+  .tier-map .who .sub { font-size: 13px; color: var(--muted); margin-top: 1px; }
+  .tier-map .who .setname { font-size: 13px; color: var(--set); }
+  .tier-map .who .setname.inline { font-weight: 400; }
+  .tier-map .who.names { font-size: 13.5px; }
+  .tier-map .who.names b { font-weight: 700; }
+  .tier-map .who.names .base { color: var(--muted); }
+  .tier-map .rules { display: grid; gap: 2px; min-width: 0; }
+  .tier-map .run { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 12px; min-width: 0; }
+  .tier-map .run .when { flex: 0 0 13rem; font-size: 14px; }
+  .tier-map .run .what { flex: 0 0 12.5rem; font-size: 14px; font-weight: 600; }
+  @media (max-width: 760px) { .tier-map .run .when, .tier-map .run .what { flex: 1 1 auto; } }
+  .tier-map .ground { flex: 0 1 auto; max-width: 100%; min-width: 0; text-align: center; border-radius: 5px; padding: 3px 6px;
+                      background: radial-gradient(ellipse at 50% 45%, var(--ground-1) 0%, var(--ground-2) 55%, var(--ground-3) 100%); }
+  .tier-map .d2label { display: inline-block; font-family: var(--label); font-size: 15px; line-height: 1.12;
+                       text-align: center; white-space: pre; background: rgba(0, 0, 0, .74); padding: 2px 6px 0;
+                       vertical-align: middle; }
+  .tier-map .d2label .cut, .tier-map .d2label .cut .bs { text-decoration: underline dotted var(--bad);
+                                                          text-decoration-thickness: 2px; text-underline-offset: 3px; }
   /* A backslash is drawn as the slash mirrored: the web fonts space "\" wide, the game draws it like "/" */
-  .d2label .bs { display: inline-block; transform: scaleX(-1); }
-  .c-WHITE { color: #e8e8e8; } .c-RED { color: #ff4d4d; } .c-GREEN { color: #00ff00; } .c-BLUE { color: #6969ff; }
-  .c-GOLD { color: #c7b377; } .c-GRAY { color: #696969; } .c-BLACK { color: #000000; } .c-TAN { color: #d0c27d; }
-  .c-ORANGE { color: #ffa800; } .c-YELLOW { color: #ffff64; } .c-PURPLE { color: #ae00ff; }
-  .c-DARK_GREEN { color: #008000; } .c-CORAL { color: #ff7f6e; } .c-SAGE { color: #a3b88f; }
-  .c-TEAL { color: #3fb5b5; } .c-LIGHT_GRAY { color: #a8a8a8; }
-  .hidden-label { font-size: 12.5px; color: #a8a8a8; font-style: italic; padding-inline: 6px; }
-  .meta { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--muted); }
-  .icon { position: relative; width: 16px; height: 16px; background: #0c0b09; border-radius: 2px; flex: none; }
-  .icon span { position: absolute; }
-  .sound { position: relative; white-space: nowrap; cursor: help; border-bottom: 1px dotted var(--muted); }
-  .sound .tip { display: none; position: absolute; right: 0; bottom: calc(100% + 6px); z-index: 30;
-                background: var(--tip-bg); color: var(--tip-fg); padding: 6px 9px; border-radius: 6px;
-                font-size: 12.5px; line-height: 1.45; white-space: nowrap; box-shadow: 0 3px 10px rgba(0, 0, 0, .25); }
-  @media (max-width: 760px) { .sound .tip { right: auto; left: 0; white-space: normal; width: max-content; max-width: 78vw; } }
-  .sound .tip span { display: block; }
-  .sound:hover .tip, .sound:focus .tip { display: block; }
-  .note { font-size: 13px; color: var(--muted); }
-  .empty { color: var(--muted); text-align: center; padding: 40px 0; }
-  footer { color: var(--muted); font-size: 13px; padding-block: 24px; }
-  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+  .tier-map .d2label .bs { display: inline-block; transform: scaleX(-1); }
+  .tier-map .c-WHITE { color: #e8e8e8; } .tier-map .c-RED { color: #ff4d4d; } .tier-map .c-GREEN { color: #00ff00; }
+  .tier-map .c-BLUE { color: #6969ff; } .tier-map .c-GOLD { color: #c7b377; } .tier-map .c-GRAY { color: #696969; }
+  .tier-map .c-BLACK { color: #000000; } .tier-map .c-TAN { color: #d0c27d; } .tier-map .c-ORANGE { color: #ffa800; }
+  .tier-map .c-YELLOW { color: #ffff64; } .tier-map .c-PURPLE { color: #ae00ff; }
+  .tier-map .c-DARK_GREEN { color: #008000; } .tier-map .c-CORAL { color: #ff7f6e; } .tier-map .c-SAGE { color: #a3b88f; }
+  .tier-map .c-TEAL { color: #3fb5b5; } .tier-map .c-LIGHT_GRAY { color: #a8a8a8; }
+  .tier-map .hidden-label { font-size: 12.5px; color: #a8a8a8; font-style: italic; padding-inline: 6px; }
+  .tier-map .meta { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--muted); }
+  .tier-map .icon { position: relative; width: 16px; height: 16px; background: #0c0b09; border-radius: 2px; flex: none; }
+  .tier-map .icon span { position: absolute; }
+  .tier-map .sound { position: relative; white-space: nowrap; cursor: help; border-bottom: 1px dotted var(--muted); }
+  .tier-map .sound .tip { display: none; position: absolute; right: 0; bottom: calc(100% + 6px); z-index: 4;
+                          background: var(--tip-bg); color: var(--tip-fg); padding: 6px 9px; border-radius: 6px;
+                          font-size: 12.5px; line-height: 1.45; white-space: nowrap; box-shadow: 0 3px 10px rgba(0, 0, 0, .25); }
+  @media (max-width: 760px) {
+    .tier-map .sound .tip { right: auto; left: 0; white-space: normal; width: max-content; max-width: 78vw; }
+  }
+  .tier-map .sound .tip span { display: block; }
+  .tier-map .sound:hover .tip, .tier-map .sound:focus .tip { display: block; }
+  .tier-map .note { font-size: 13px; color: var(--muted); }
+  .tier-map p.empty { color: var(--muted); text-align: center; padding: 40px 0; margin: 0; }
+  .tier-map footer { color: var(--muted); font-size: 13px; padding-block: 24px; }
+  @media (prefers-reduced-motion: reduce) { .tier-map * { transition: none !important; } }
 </style>
 
-<header class="bar">
+<div class="tier-map">
+<div class="wrap"><h1 class="tm-title">Erazure Unique &amp; Set Tiers</h1></div>
+<!-- tier-map:start -->
+<div class="wrap intro">
+  <div class="panel howto">
+   <div>
+    <h2>How to read it</h2>
+    <p>How the Erazure loot filter shows unique and set items that drop <b>unidentified</b>: the tier each one is in,
+      and when the others are shown quietly or hidden. Everything here is read from the filter's own rules. Once
+      identified, an item shows its stats instead.</p>
+    <ul>
+      <li>Each line is one case: when it applies, the tier, the label as the game draws it, the minimap icon and
+        the drop sound. A tier named alone notifies as usual (see Tiers); otherwise the difference follows in
+        brackets.</li>
+      <li>Point at a sound for its number: type <b>.playsound</b> and that number in game to hear it.</li>
+      <li><b>Items on the same base share a tier.</b> Unidentified, the filter cannot tell them apart: Lightsabre
+        and Azurewrath are both a Phase Blade.</li>
+      <li><b>Hidden items still show their name</b> in town, and until you've discovered them (as part of the Holy
+        Grail Discovery Progress). An item on a base with several uniques, like Thunder Maul, counts as discovered
+        once you've found all of them.</li>
+    </ul>
+   </div>
+   <div>
+    <h2>Filter levels</h2>
+    <ol class="levels" id="levels" start="0"></ol>
+   </div>
+  </div>
+  <div class="panel">
+    <h2>Tiers</h2>
+    <div class="legend" id="legend"></div>
+    <div class="low" id="low"></div>
+  </div>
+</div>
+<div class="bar">
   <div class="wrap">
-    <h1>Erazure Unique &amp; Set Tiers</h1>
     <div class="controls">
       <label class="muted" for="variant">Version</label>
       <select id="variant"></select>
@@ -153,44 +198,14 @@
     <input id="q" type="search" placeholder="Search an item, base or set" aria-label="Search">
     <div class="row2" id="tiers" role="group" aria-label="Tiers shown"></div>
   </div>
-</header>
-
-<main class="wrap">
-  <div class="intro">
-    <div class="panel howto">
-     <div>
-      <h2>How to read it</h2>
-      <p>How the Erazure loot filter shows unique and set items that drop <b>unidentified</b>: the tier each one is in,
-        and when the others are shown quietly or hidden. Everything here is read from the filter's own rules. Once
-        identified, an item shows its stats instead.</p>
-      <ul>
-        <li>Each line is one case: when it applies, the tier, the label as the game draws it, the minimap icon and
-          the drop sound. A tier named alone notifies as usual (see Tiers); otherwise the difference follows in
-          brackets.</li>
-        <li>Point at a sound for its number: type <b>.playsound</b> and that number in game to hear it.</li>
-        <li><b>Items on the same base share a tier.</b> Unidentified, the filter cannot tell them apart: Lightsabre
-          and Azurewrath are both a Phase Blade.</li>
-        <li><b>Hidden items still show their name</b> in town, and until you've discovered them (as part of the Holy
-          Grail Discovery Progress). An item on a base with several uniques, like Thunder Maul, counts as discovered
-          once you've found all of them.</li>
-      </ul>
-     </div>
-     <div>
-      <h2>Filter levels</h2>
-      <ol class="levels" id="levels" start="0"></ol>
-     </div>
-    </div>
-    <div class="panel">
-      <h2>Tiers</h2>
-      <div class="legend" id="legend"></div>
-      <div class="low" id="low"></div>
-    </div>
-  </div>
-  <div id="list"></div>
-  <footer id="foot"></footer>
-</main>
+</div>
+<div class="wrap" id="list"></div>
+<div class="wrap"><footer id="foot"></footer></div>
+<!-- tier-map:end -->
+</div>
 
 <script>
+(() => {
 const DATA = /*__DATA__*/null;
 const $ = (id) => document.getElementById(id);
 const TIER_COLOR = {"Diablo Clone & Rathma": "--t-dclone", "High value": "--t-high", "Medium value": "--t-medium",
@@ -414,7 +429,7 @@ function render() {
 }
 // A label wider than its whole line (phones) gets a smaller font instead of being clipped or scrolled.
 function fit() {
-  const labels = [...document.querySelectorAll(".d2label")];
+  const labels = [...document.querySelectorAll(".tier-map .d2label")];
   labels.forEach((l) => { l.style.fontSize = ""; });
   const sizes = labels.map((l) => {
     const avail = l.parentElement.clientWidth - 12, need = l.scrollWidth;
@@ -451,4 +466,5 @@ function init() {
   tierButtons(); intro(); render();
 }
 init();
+})();
 </script>

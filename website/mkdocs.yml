@@ -1,0 +1,62 @@
+# The Erazure website (GitHub Pages), built by MkDocs with the Material theme.
+# Preview: double-click site_preview.bat. Publish: tools/publish_beta.py copies website/ to main, where
+# .github/workflows/pages.yml builds and deploys it. The pages are in docs/ (next to this file).
+site_name: Erazure's PD2 Loot Filter
+site_url: https://filtersby-erazure.github.io/PD2-Loot-Filter/
+site_author: Erazure
+site_description: >-
+  Erazure's loot filter for Project Diablo 2: its versions, filter levels, unique and set item tiers, and how to
+  customize it.
+
+repo_name: FiltersBy-Erazure/PD2-Loot-Filter
+repo_url: https://github.com/FiltersBy-Erazure/PD2-Loot-Filter
+edit_uri: ""
+
+theme:
+  name: material
+  language: en
+  icon:
+    logo: material/treasure-chest
+    repo: fontawesome/brands/github
+  features:
+    - navigation.tabs
+    - navigation.top
+    - search.suggest
+    - search.highlight
+  palette:  # dark first: the default for every visitor; the sun/moon icon switches (and remembers the choice)
+    - scheme: slate
+      primary: black
+      accent: amber
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+    - scheme: default
+      primary: black
+      accent: amber
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+extra_css:
+  - stylesheets/erazure.css
+
+# Adds the tier page (the repo-root Erazure-Unique-Set-Tiers.html, written by build.bat) to the site
+hooks:
+  - hooks.py
+watch:
+  - ../Erazure-Unique-Set-Tiers.html
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - Versions: versions.md
+  - Filter Levels: filter-levels.md
+  - Unique & Set Tiers: tiers.md
+  - Customization: customization.md
+  - Examples: examples.md

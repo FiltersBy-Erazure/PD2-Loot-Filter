@@ -22,3 +22,7 @@ jobs:
         run: python tools/gen_runeword_rolls.py --check
       - name: Unique/set tier page (Erazure-Unique-Set-Tiers.html) matches the filter
         run: python tools/tier_map.py --check
+      - name: The website builds (website/, MkDocs Material; no broken links)
+        run: |
+          pip install --quiet mkdocs-material==9.7.7
+          mkdocs build --strict -f website/mkdocs.yml
