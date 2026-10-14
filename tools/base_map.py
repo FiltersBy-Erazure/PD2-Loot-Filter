@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-The players' page of white (non-magic) armor and weapon bases: Erazure-Non-Magic-Bases.html. For every base, when
+The players' page of non-magical armor and weapon bases: Erazure-Non-Magic-Bases.html. For every base, when
 the filter tags it as a runeword base or notifies, shows it in its own way, and hides it, filter level by filter
 level, read from the filter's own rules.
 

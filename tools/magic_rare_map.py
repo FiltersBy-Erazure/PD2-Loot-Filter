@@ -18,9 +18,9 @@ column. Map tests other than the town's stay conditions (magic jewels in The Fal
 base's quality level (QLVL, docs/pd2-bases.tsv) is folded in per base: S14's affix level is the higher of item level and
 quality level, so 190's 85+ look is always on for a Sacred Armor (quality level 85).
 
-The pages (the Bases page's layout): one table per item type, a header per group of bases of one tier and socket
-maximum with the same rows, then one row per case: Levels, Shows (Notify / Hidden pill, or the look as the game draws
-it: the quality's color, "Eth" when the row is for ethereal items, a charm's item level), Icon, Chat, then the
+The pages (the Non-magical Bases page's layout): one table per item type, a header per group of bases of one tier and
+socket maximum with the same rows, then one row per case: Levels, Shows (Notify / Hidden pill, or the look as the game
+draws it: the quality's color, "Eth" when the row is for ethereal items, a charm's item level), Icon, Chat, then the
 conditions: Eth, Character level, Class, Item level, Crafted affix level, Other. Levels without a row show the plain
 name. The Main version (the variants differ only in the rare jewel's PoE drop sound, 190:13-14).
 """
@@ -234,7 +234,7 @@ def area_words(iv):
 
 
 class Words(B.Words):
-    """The Bases page's words, plus the crafted affix level (a column of its own) and areas."""
+    """The Non-magical Bases page's words, plus the crafted affix level (a column of its own) and areas."""
     RANK = dict(B.Words.RANK, CRAFTALVL=4, MAPID=8)
 
     def set_words(self, key, iv, base, where):
