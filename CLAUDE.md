@@ -101,8 +101,9 @@
   display as the game draws it, the tag without the base name), Icon, Chat, Eth, Quality, ED, Sockets, Character
   level ("Above level 89", the rule's CLVL>89), then Class, Item level, All res, Skills, Other where a type uses them.
   Rows go Tag, Notify, Shows as, Hidden, each by first and last level, then non-eth before eth, nonsuperior before
-  superior, then ED, sockets, character level. Bases of one type and tier with identical rows share a group; low
-  quality rows are a toggle. Every alias is expanded but the `RWB_` ones ("unless a Plague base"); a tag's named base
+  superior, then ED, sockets, character level. Bases of one type, tier, socket maximum and size with identical rows
+  share a group (its header's sockets and size hold for each); low quality rows are a toggle. Every alias is
+  expanded but the `RWB_` ones ("unless a Plague base"); a tag's named base
   is put inline, its shared parts in the columns and its skill combinations in a drop-down. An OR that mixes columns
   becomes one row per case (`(ED<19 OR SOCK=2)`: two rows). Each rule is folded per base (code, item groups, tier,
   most sockets, inventory size for `AREA`) and per level; a stopping rule loses the cases an earlier one with another

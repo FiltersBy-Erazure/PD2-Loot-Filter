@@ -22,7 +22,7 @@ The page (the author's layout): one table per item type, one row per case. What 
 put in columns (Eth, Quality, ED, Sockets, Character level, then Class, Item level, All res, Skills, Other); an OR
 that mixes columns becomes one row per case, and a tag's named base is put inline, its skill combinations in a
 drop-down. Rows go Tag, Notify, Shows as, Hidden, each by levels, then eth, quality, ED, sockets and character level;
-bases of one type and tier whose rows are the same share one group.
+bases of one type, tier, socket maximum and size whose rows are the same share one group.
 """
 import argparse
 import json
@@ -1385,7 +1385,8 @@ def build_data(an):
             cats.append(base.cat)
         rows = [an.rows(base, inf) for inf in (0, 1)]
         data = [[row_data(x, ref) for x in rs] for rs in rows]
-        key = (base.cat, base.tier, json.dumps(data))  # bases of one type and tier with the same rows: one group
+        # bases of one type, tier, socket maximum and size with the same rows: one group (its header holds for each)
+        key = (base.cat, base.tier, base.sockets, base.info["width"], base.info["height"], json.dumps(data))
         if key not in by_key:
             by_key[key] = {"names": [], "bases": [], "data": data, "wheres": [[set() for _ in rs] for rs in rows]}
             groups.append(by_key[key])
@@ -1398,14 +1399,12 @@ def build_data(an):
     out = []
     for g in groups:
         b0 = g["bases"][0]
-        socks = sorted({b.sockets for b in g["bases"]})
-        sizes = sorted({f"{b.info['width']}×{b.info['height']}" for b in g["bases"]})
         lists = []
         for data, wheres in zip(g["data"], g["wheres"]):  # each row's rules, for all the group's bases
             lists.append([row[:4] + [dict(row[4], w=ref(where_text(sorted(w, key=lambda r: r.n))))]
                           for row, w in zip(data, wheres)])
         out.append({"n": g["names"], "t": TIER_NAMES.get(b0.tier, ""), "k": b0.cat,
-                    "s": socks[0] if len(socks) == 1 else f"{socks[0]}–{socks[-1]}", "z": ", ".join(sizes),
+                    "s": b0.sockets, "z": f"{b0.info['width']}×{b0.info['height']}",
                     "l": lists[0], "q": None if g["data"][1] == g["data"][0] else lists[1]})
     sounds = {}
     for g in out:
