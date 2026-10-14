@@ -11,9 +11,9 @@
   @font-face { font-family: "AvQest"; src: local("AvQest"); }  /* the D2-style font, if the viewer has it installed */
   /* Layout: the title; "how to read it" with the filter levels; then the filter bar, which stays at the top while
      scrolling (under the website's header on the website); then one table per item type: a header row per group of
-     bases with the same rows, then one row per case (filter levels, what happens, then one column per condition).
-     Phones: each row is a card. Every rule is scoped to .base-map, so the website's theme and this page leave each
-     other alone. Dark by default; light when the website (Material) is switched to light. */
+     bases with the same socket maximum, size and rows, then one row per case (filter levels, what happens, then one
+     column per condition). Phones: each row is a card. Every rule is scoped to .base-map, so the website's theme and
+     this page leave each other alone. Dark by default; light when the website (Material) is switched to light. */
   .base-map {
     --bg: #151412; --panel: #1f1d1a; --fg: #ece7de; --muted: #a59e91; --line: #36322c; --soft: #2a2723;
     --accent: #d8b45e;
@@ -185,7 +185,7 @@
         must hold; <b>any</b> means no condition. Pick your filter level in the bar to see only your rows.</li>
       <li><b>ED</b> is enhanced defense on armor and enhanced damage on weapons (superior items). Class items roll
         <b>+1–3</b> to skills; a runeword base with several skill combinations opens to list them.</li>
-      <li>Bases of one type and tier with exactly the same rows share a group.</li>
+      <li>Bases of one type and tier with the same socket maximum, size and rows share a group.</li>
       <li><b>Hidden items still show in town.</b> The minimap icon and chat line come on their own, even for a hidden
         item. Low quality items (Cracked, Crude, Damaged) have their own rows when they differ.</li>
     </ul>
@@ -347,7 +347,7 @@ function groupBody(g, used) {
   const head = el("th", {colspan: String(span), scope: "rowgroup"});
   g.n.forEach(([code, name], i) => head.append(i ? " · " : "", el("span", {class: "nm", text: name}),
     el("span", {class: "code", text: ` ${code}`})));
-  const s = typeof g.s === "number" ? (g.s ? `up to ${g.s} socket${g.s === 1 ? "" : "s"}` : "no sockets") : `up to ${g.s} sockets`;
+  const s = g.s ? `up to ${g.s} socket${g.s === 1 ? "" : "s"}` : "no sockets";
   head.append(el("span", {class: "sub", text: [g.t, s, g.z].filter(Boolean).join(" · ")}));
   const tb = el("tbody", {}, el("tr", {class: "ghead"}, head));
   const rows = g.l.filter(atLevel);
