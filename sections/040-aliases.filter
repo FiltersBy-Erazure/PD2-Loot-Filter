@@ -10,6 +10,13 @@ Alias[TOWN]:(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109 OR MAPID~
 // clients) those hide rules never match.
 Alias[GRAIL_NEW]:((UNI OR SET) !ALLDISCOVERED)
 
+// S14 (beta 2026-10-12): a rare whose item level lets it roll the new dropped-rare affixes (S14's affix level is the
+// item level; BH's ALVL still subtracts qlvl/2). Helms 50+ (+2 class skills), chests, gloves and shields 49+ (FCR
+// 30/20), class helms and shields 50+/49+ for their class; weapons 75+ (Visceral; not staves, wands, orbs), class
+// weapons 60+ for their class (+3 skill tabs; Barbarian: all weapons but bows, crossbows, staves, wands, scepters,
+// daggers and clubs). The 190 hide rules skip it on levels 3-11; level 12 is unchanged.
+Alias[NEW_RARE_AFFIX]:(((HELM !CIRC !BAR !DRU) ILVL>49) OR (BAR BARBARIAN ILVL>49) OR (DRU DRUID ILVL>49) OR ((CHEST OR GLOVES OR (SHIELD !DIN !NEC)) ILVL>48) OR (DIN PALADIN ILVL>48) OR (NEC NECROMANCER ILVL>48) OR (WEAPON !STAFF !WAND !SOR !SIN !ZON ILVL>74) OR ((SIN OR (DAGGER !THROWING)) ASSASSIN ILVL>59) OR ((STAFF OR SOR) SORCERESS ILVL>59) OR (WAND NECROMANCER ILVL>59) OR ((clb OR spc OR 9cl OR 9sp OR 7cl OR 7sp) DRUID ILVL>59) OR ((BOW OR XBOW OR ZON) AMAZON ILVL>59) OR (WEAPON BARBARIAN !(BOW OR XBOW OR STAFF OR WAND OR SCEPTER OR DAGGER OR SOR OR SIN OR ZON OR clb OR spc OR 9cl OR 9sp OR 7cl OR 7sp) ILVL>59))
+
 // Lowest Runes
 Alias[LOWEST_RUNE_LOW_QTY_LEFT]:%DARK_GREEN%x%GRAY%x%LIGHT_GRAY%x
 Alias[LOWEST_RUNE_LOW_QTY_RIGHT]:%LIGHT_GRAY%x%GRAY%x%DARK_GREEN%x
