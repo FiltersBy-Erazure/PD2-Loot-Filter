@@ -24,6 +24,9 @@ if errorlevel 1 goto failed
 rem Non-magic bases page for players (Erazure-Non-Magic-Bases.html, read from the filter's rules)
 python tools\base_map.py
 if errorlevel 1 goto failed
+rem Magic and rare items pages for players (Erazure-Magic-Items.html, Erazure-Rare-Items.html, from the filter's rules)
+python tools\magic_rare_map.py
+if errorlevel 1 goto failed
 python tools\build.py --check
 if errorlevel 1 goto failed
 

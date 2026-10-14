@@ -104,7 +104,9 @@
   .tier-map .tier-head { display: flex; gap: 8px; align-items: center; font-size: 12.5px; font-weight: 700;
                          text-transform: uppercase; letter-spacing: .07em; color: var(--tc); margin: 10px 0 5px; }
   .tier-map .rows { display: grid; gap: 5px; }
-  .tier-map article.row { display: grid; grid-template-columns: 15rem minmax(0, 1fr); gap: 3px 14px; align-items: start;
+  /* the item lines' columns in px, not rem: the website's theme sets a bigger root font, and the line must fit there
+     as on the page itself */
+  .tier-map article.row { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 3px 14px; align-items: start;
                           background: var(--panel); border: 1px solid var(--line); border-left: 3px solid var(--tc);
                           border-radius: 6px; padding: 5px 10px; }
   .tier-map article.row.group { grid-template-columns: minmax(0, 1fr); }
@@ -119,9 +121,14 @@
   .tier-map .who.names .base { color: var(--muted); }
   .tier-map .rules { display: grid; gap: 2px; min-width: 0; }
   .tier-map .run { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 12px; min-width: 0; }
-  .tier-map .run .when { flex: 0 0 13rem; font-size: 14px; }
-  .tier-map .run .what { flex: 0 0 12.5rem; font-size: 14px; font-weight: 600; }
-  @media (max-width: 760px) { .tier-map .run .when, .tier-map .run .what { flex: 1 1 auto; } }
+  .tier-map .run .when { flex: 0 0 208px; font-size: 14px; }
+  .tier-map .run .what { flex: 0 0 200px; font-size: 14px; font-weight: 600; }
+  /* the label's cell: at least as wide on every line, so the icons and sounds after it line up */
+  .tier-map .run .lab { flex: 0 0 auto; min-width: 368px; display: flex; }
+  .tier-map .run .meta { flex: 1 1 60px; min-width: 0; }  /* stays beside the label: a long sound name wraps */
+  .tier-map .run .meta .sound { white-space: normal; }
+  @media (max-width: 760px) { .tier-map .run .when, .tier-map .run .what, .tier-map .run .lab { flex: 1 1 auto; }
+                              .tier-map .run .lab { min-width: 0; } }
   .tier-map .ground { flex: 0 1 auto; max-width: 100%; min-width: 0; text-align: center; border-radius: 5px; padding: 3px 6px;
                       background: radial-gradient(ellipse at 50% 45%, var(--ground-1) 0%, var(--ground-2) 55%, var(--ground-3) 100%); }
   .tier-map .d2label { display: inline-block; font-family: var(--label); font-size: 15px; line-height: 1.12;
@@ -298,7 +305,7 @@ function runLine(when, o) {
   return el("div", {class: "run"},
     el("div", {class: "when", text: when}),
     el("div", {class: "what", text: cap(o.phrase)}),
-    label(o.label, o.look, o.cut),
+    el("div", {class: "lab"}, label(o.label, o.look, o.cut)),
     el("div", {class: "meta"}, icon(o.icons), sound(o.sound)));
 }
 function rules(v, extra = []) {

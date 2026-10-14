@@ -569,16 +569,17 @@ def extract_tier_data(game_dir, game=None):
     out = [f"# PD2 item bases (Weapons, Armor, Misc) from pd2data.mpq, extracted {stamp} by tools/pd2_data.py: code,",
            "# name, tier (BH's NORM/EXC/ELT: the code against its ubercode/ultracode), item type and its ancestors,",
            "# most sockets (gemsockets), inventory width and height (BH's AREA is width x height), spawnable (0: no",
-           "# white drop of this base: a base only some unique uses).",
-           "code\tname\ttier\ttypes\tsockets\twidth\theight\tspawnable"]
+           "# white drop of this base: a base only some unique uses), quality level (level: BH's QLVL; S14's affix",
+           "# level is the higher of item level and quality level, plus the base's magic level).",
+           "code\tname\ttier\ttypes\tsockets\twidth\theight\tspawnable\tqlvl"]
     # a quest item's name can hold a line break ("Right Click to learn skill...\nBook of Skill"): its last line
     for code in sorted(game.base_rows):
         r = game.base_rows[code]
         out.append(f"{code}\t{game.base_name(code).splitlines()[-1]}\t{game.tier(code)}\t{','.join(game.ancestors(code))}"
                    f"\t{to_int(r.get('gemsockets'))}\t{to_int(r.get('invwidth'))}\t{to_int(r.get('invheight'))}"
-                   f"\t{to_int(r.get('spawnable'))}")
+                   f"\t{to_int(r.get('spawnable'))}\t{to_int(r.get('level'))}")
     BASES_FILE.write_text("\n".join(out) + "\n", encoding="utf-8", newline="\n")
-    print(f"wrote {BASES_FILE.relative_to(ROOT)} ({len(out) - 5} bases)")
+    print(f"wrote {BASES_FILE.relative_to(ROOT)} ({len(out) - 6} bases)")
     out = [f"# PD2 skills (Skills.txt, names from the string tables) from pd2data.mpq, extracted {stamp} by",
            "# tools/pd2_data.py: the skill ID the filter's SK<n> / OS<n> read, its name and class (Skills.txt charclass).",
            "id\tname\tclass"]
