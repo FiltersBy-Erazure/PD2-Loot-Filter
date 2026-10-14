@@ -69,7 +69,7 @@ Every S14 rule block is marked `// S14:`. Game data: `ProjectD2\Beta\` (BH.dll b
 | Curse proc levels | Done: Amplify Damage / Lower Resist proc tags show the S14 levels (11/19/27 and 1/1/6) | 300 |
 | Alternate skins (Special Edition) | No tag (author) | - |
 | New map event "The Bitter Depths" (area 207) | Work in progress in the beta | 145 |
-| Beta update of 2026-10-12 (affixes, Deception, Madness, Demon Machine; `s14-beta-patch-notes-2026-10-12.md`) | Done 2026-10-13 from the game data (`Projects\PD2-Game-Data`: `beta-2026-10-10-2141` to `beta-2026-10-12-2351`). Re-extracted: Demon Machine's Multiple Shot proc is skill 606 (045 fingerprint `MULTI198,38796`), Deception's crit chance a roll (+5-10, auto pick adds `crit`). 190: unidentified rare helms, chests, shields, gloves and weapons show on levels 3-11 from the item level of their best new dropped-rare affix (`Alias[NEW_RARE_AFFIX]`: helms 50, chests/gloves/shields 49, weapons 75, class weapons 60 for their class); the 85+ chest/shield rules use ILVL. 300: the max res affix is one element (a corrupted belt shows `2max` and the element's total). 340: belts 80+, helms 65+. PDR tiers kept (author). Notes vs data: `docs/dev-feedback.md` | 040, 045, 190, 300, 305, 340, 360 |
+| Beta update of 2026-10-12 (affixes, Deception, Madness, Demon Machine; `s14-beta-patch-notes-2026-10-12.md`) | Done 2026-10-13 from the game data (`Projects\PD2-Game-Data`: `beta-2026-10-10-2141` to `beta-2026-10-12-2351`). Re-extracted: Demon Machine's Multiple Shot proc is skill 606 (045 fingerprint `MULTI198,38796`), Deception's crit chance a roll (+5-10, auto pick adds `crit`). 190 (redone per type with the author 2026-10-14; the first version's `Alias[NEW_RARE_AFFIX]` showed nearly every endgame rare and was reverted): helms by most sockets (2-socket ones hidden from level 8; 3-socket ones, now with Armet and Giant Conch, only on 10 and 12); 3- and 4-socket shields show on 10 and 12 as the plain name with the small minimap dot; the 85+ chest, shield and paladin shield look uses S14's affix level (`ILVL>84 OR QLVL>84`). Weapons, class items, gloves, boots, belts and jewelry unchanged. 300: the max res affix is one element (a corrupted belt shows `2max` and the element's total). 340: belts 80+, helms 65+. PDR tiers kept (author). Notes vs data: `docs/dev-feedback.md` | 045, 190, 300, 305, 340, 360 |
 
 Use `python tools/explain_item.py` to see which rules an item hits before and after a change.
 
@@ -79,16 +79,16 @@ Use `python tools/explain_item.py` to see which rules an item hits before and af
 - 140: Hell Bovines, Reanimated Horde and Stygian Dolls have no map-mod row. The legend's values match reanimatedhorde6 (in game "Unholy Corpse") and bonefetish6 ("Undead Stygian Doll"; bonefetish7 "Undead Soul Killer" is the same), and every hellbovine row has Phys 50. Check in game which monsters those map mods add. If it is these rows: Dolls give Imperial Palace Phys 33, Hell Bovines give it Magic 33 and give Outer Void Poison 33 (hellbovine) or 65 (hellbovineMap/Mage).
 - 160 unique tiers (author's flags): Warshrike (review); up: Sage's Defiance, Stalker's Cull, Frostburn, Wraith Flight, Uldyssian's Awakening, Shadow Killer; down: Whispering Mirage; Cliff Killer and Mageslayer to minimal?; Skyfall (proc fix). Warriv's Warder and Spectral Plate: community review (default look until then).
 - Roll picks (`pick_rolls.bat`, `pick_runewords.bat`): uniques and sets all picked by the author (2026-10-12); the runeword Gloom still names `fhr` (a fixed 20% in S14; its new roll is Curse Resistance `cr`); Bannerlord's Call's `os17` (+2-3 Slow Movement) waits for a label; Stalker's Cull can now pick `stat256` (`mult`).
-- BH's affix level formula (`GetAffixLevel` still subtracts qlvl/2): asked in `docs/dev-feedback.md`; then 340 and the reroll levels in 240/250 (190 uses ILVL since 2026-10-13).
+- BH's affix level formula (`GetAffixLevel` still subtracts qlvl/2): asked in `docs/dev-feedback.md`; then 340 and the reroll levels in 240/250 (190's 85+ rules use `ILVL>84 OR QLVL>84` since 2026-10-14).
 - Beta update of 2026-10-12 (affixes): done 2026-10-13, see the checklist row. Left: spawn in game a rare helm with
   +2 class skills / DS 20-30, a chest with FCR 30 and Cannot Be Frozen, gloves with DS/CB/ED, a belt with a max res
   affix with and without the all-max-res corruption (`2max` and the element's `N%max`), Demon Machine (`ar`),
   Deception (`crit`, auto
   pick: confirm in `pick_runewords.bat`). The devs' answer on `rare=1` for five +2 class skill rows and Vanguard's /
-  Immortal's: if it stays, 200's magic helm/chest/shield hides get item-level exceptions too (50, 85). Vanguard's and
+  Immortal's: if it stays, review 200's magic helm/chest/shield hides per type with the author, as 190 was. Vanguard's and
   Immortal's can't combine with the PDR suffixes (all group 251; the game's group check covers prefixes and suffixes),
-  so PDR from affixes still tops out at 25% (of Guardianship); in dev feedback. 190:51 (rare
-  shields 85+ at level 12) never fires because 190:6 hides shields first: author to decide.
+  so PDR from affixes still tops out at 25% (of Guardianship); in dev feedback.
+- 190: the eth rare weapon notifications, in a later update (author).
 - Zhar's Sanctum's area level: the data says 87; the filter keeps 89 (author).
 
 ## Closed beta: unique/set roll tags to check in game

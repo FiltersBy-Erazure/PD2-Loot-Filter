@@ -3,7 +3,7 @@
 // --------------------------------------------------------------------------------------------------------
 
 // Hide Rare Items on Filter Level 12
-ItemDisplay[RARE !ID (FILTLVL=10 OR FILTLVL=12) (QUIVER OR (ARMOR !CIRC !BOOTS !BELT !(CHEST (ALVL>84 OR CRAFTALVL>84))) OR WEAPON) !TOWN]://
+ItemDisplay[RARE !ID (FILTLVL=10 OR FILTLVL=12) (QUIVER OR (ARMOR !CIRC !BOOTS !BELT !(CHEST (ILVL>84 OR QLVL>84 OR CRAFTALVL>84)) !(SHIELD !NEC !DIN (lrg OR spk OR kit OR bsh OR tow OR gts OR xrg OR xpk OR xit OR xsh OR xow OR xts OR urg OR upk OR uit OR ush OR uow OR uts))) OR WEAPON) !TOWN]://
 
 // Keep orginal coloring for items
 ItemDisplay[RARE]:%YELLOW%%NAME%%CONTINUE%//
@@ -41,21 +41,20 @@ ItemDisplay[RARE !ID GLOVES (ASSASSIN OR AMAZON) CLVL>89 (FILTLVL<10 OR FILTLVL=
 ItemDisplay[RARE !ID GLOVES !(ASSASSIN OR AMAZON) CLVL>89 FILTLVL<8]:%NAME%// No chat notification above character level 89
 
 // Rare Chests
-ItemDisplay[RARE !ID CHEST (ALVL>84 OR CRAFTALVL>84) FILTLVL=12]:%RARE_MEDIUM_VALUE_LEFT%  %NAME%  %RARE_MEDIUM_VALUE_RIGHT%%YELLOW%// 
-ItemDisplay[RARE !ID CHEST (ALVL>84 OR CRAFTALVL>84) FILTLVL~8-11]:%RARE_MEDIUM_VALUE_LEFT%  %NAME%  %RARE_MEDIUM_VALUE_RIGHT%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%%TIER-0%// 
-ItemDisplay[RARE !ID CHEST (ALVL>84 OR CRAFTALVL>84) FILTLVL<8]:%RARE_MEDIUM_VALUE_LEFT%  %NAME%  %RARE_MEDIUM_VALUE_RIGHT%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%// Minimap icon for rare armors with affix levels 94 or higher on filter levels 0-8
+ItemDisplay[RARE !ID CHEST (ILVL>84 OR QLVL>84 OR CRAFTALVL>84) FILTLVL=12]:%RARE_MEDIUM_VALUE_LEFT%  %NAME%  %RARE_MEDIUM_VALUE_RIGHT%%YELLOW%// 
+ItemDisplay[RARE !ID CHEST (ILVL>84 OR QLVL>84 OR CRAFTALVL>84) FILTLVL~8-11]:%RARE_MEDIUM_VALUE_LEFT%  %NAME%  %RARE_MEDIUM_VALUE_RIGHT%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%%TIER-0%// 
+ItemDisplay[RARE !ID CHEST (ILVL>84 OR QLVL>84 OR CRAFTALVL>84) FILTLVL<8]:%RARE_MEDIUM_VALUE_LEFT%  %NAME%  %RARE_MEDIUM_VALUE_RIGHT%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%// Minimap icon for rare armors with affix levels 94 or higher on filter levels 0-8
 
 // Rare Shields
 ItemDisplay[RARE !ID SHIELD !NEC !DIN (buc OR sml OR xuc OR xml OR uuc OR uml) FILTLVL>7 !TOWN]:// Hide specific Rare Shields on filter levels 8+
-ItemDisplay[RARE !ID SHIELD !NEC !DIN !(ALVL>84 OR CRAFTALVL>84) (lrg OR spk OR kit OR bsh OR tow OR gts OR xrg OR xpk OR xit OR xsh OR xow OR xts OR urg OR upk OR uit OR ush OR uow OR uts) FILTLVL=12 !TOWN]://
-ItemDisplay[RARE !ID SHIELD !NEC !DIN (ALVL>84 OR CRAFTALVL>84) (lrg OR spk OR kit OR bsh OR tow OR gts OR xrg OR xpk OR xit OR xsh OR xow OR xts OR urg OR upk OR uit OR ush OR uow OR uts) FILTLVL=12]:%RARE_MEDIUM_VALUE_LEFT%  %NAME%  %RARE_MEDIUM_VALUE_RIGHT%%YELLOW%//
-ItemDisplay[RARE !ID SHIELD !NEC !DIN (ALVL>84 OR CRAFTALVL>84) (lrg OR spk OR kit OR bsh OR tow OR gts OR xrg OR xpk OR xit OR xsh OR xow OR xts OR urg OR upk OR uit OR ush OR uow OR uts) FILTLVL~8-11]:%RARE_MEDIUM_VALUE_LEFT%  %NAME%  %RARE_MEDIUM_VALUE_RIGHT%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%%TIER-0%//
-ItemDisplay[RARE !ID SHIELD !NEC !DIN (ALVL>84 OR CRAFTALVL>84) (lrg OR spk OR kit OR bsh OR tow OR gts OR xrg OR xpk OR xit OR xsh OR xow OR xts OR urg OR upk OR uit OR ush OR uow OR uts) FILTLVL<8]:%RARE_MEDIUM_VALUE_LEFT%  %NAME%  %RARE_MEDIUM_VALUE_RIGHT%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%//
+ItemDisplay[RARE !ID SHIELD !NEC !DIN (lrg OR spk OR kit OR bsh OR tow OR gts OR xrg OR xpk OR xit OR xsh OR xow OR xts OR urg OR upk OR uit OR ush OR uow OR uts) (FILTLVL=10 OR FILTLVL=12)]:%NAME%%DOT-5E%%PX-6D%%TIER-0%//
+ItemDisplay[RARE !ID SHIELD !NEC !DIN (ILVL>84 OR QLVL>84 OR CRAFTALVL>84) (lrg OR spk OR kit OR bsh OR tow OR gts OR xrg OR xpk OR xit OR xsh OR xow OR xts OR urg OR upk OR uit OR ush OR uow OR uts) FILTLVL~8-11]:%RARE_MEDIUM_VALUE_LEFT%  %NAME%  %RARE_MEDIUM_VALUE_RIGHT%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%%TIER-0%//
+ItemDisplay[RARE !ID SHIELD !NEC !DIN (ILVL>84 OR QLVL>84 OR CRAFTALVL>84) (lrg OR spk OR kit OR bsh OR tow OR gts OR xrg OR xpk OR xit OR xsh OR xow OR xts OR urg OR upk OR uit OR ush OR uow OR uts) FILTLVL<8]:%RARE_MEDIUM_VALUE_LEFT%  %NAME%  %RARE_MEDIUM_VALUE_RIGHT%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%//
 
 // Rare Helmets
-ItemDisplay[RARE !ID HELM !CIRC !DRU !BAR (cap OR xap OR uap OR skp OR xkp OR ukp OR hlm OR xlm OR ulm OR fhl OR xhl OR uhl OR bhm OR xh9) FILTLVL>2 !TOWN]:// Hide Normal quality Rare Helms After Level 39
+ItemDisplay[RARE !ID HELM !CIRC !DRU !BAR (cap OR xap OR uap OR skp OR xkp OR ukp OR hlm OR xlm OR fhl OR xhl OR bhm OR xh9) FILTLVL>7 !TOWN]:// 
 
-ItemDisplay[RARE !ID HELM !CIRC !DRU !BAR (msk OR xsk OR usk OR ghm OR xhm OR uhm OR crn OR xrn OR urn OR uh9) FILTLVL>7 !TOWN]:// Hide Normal quality Rare Helms After Level 39
+ItemDisplay[RARE !ID HELM !CIRC !DRU !BAR (msk OR xsk OR usk OR ghm OR xhm OR uhm OR crn OR xrn OR urn OR uh9 OR uhl OR ulm) (FILTLVL=10 OR FILTLVL=12) !TOWN]:// 
 
 // Rare Clubs
 ItemDisplay[RARE !ID !DRUID FILTLVL>7 (clb OR spc OR 9cl OR 9sp OR 7cl OR 7sp) !TOWN]:// Hide Clubs on filter levels 8+
@@ -96,7 +95,7 @@ ItemDisplay[RARE !ID !PALADIN FILTLVL>7 SCEPTER !TOWN]:// Hide Scepters on filte
 ItemDisplay[RARE !ID PALADIN (FILTLVL~2-7 OR (FILTLVL=1 CLVL>49)) SCEPTER CLVL<80]:%YELLOW%•  %NAME%  •%YELLOW%// 
 ItemDisplay[RARE !ID PALADIN FILTLVL=1 CLVL<50 SCEPTER]:%RARE_MEDIUM_VALUE_LEFT%  %NAME%  %RARE_MEDIUM_VALUE_RIGHT%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%// 
 // Rare Paladin Shields
-ItemDisplay[RARE !ID DIN (ALVL>84 OR CRAFTALVL>84) FILTLVL~0-7]:%RARE_MEDIUM_VALUE_LEFT%  %NAME%  %RARE_MEDIUM_VALUE_RIGHT%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%%TIER-0%//
+ItemDisplay[RARE !ID DIN (ILVL>84 OR QLVL>84 OR CRAFTALVL>84) FILTLVL~0-7]:%RARE_MEDIUM_VALUE_LEFT%  %NAME%  %RARE_MEDIUM_VALUE_RIGHT%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%%TIER-0%//
 ItemDisplay[RARE !ID DIN NORM !PALADIN FILTLVL>7 !TOWN]:// Hide Normal quality Rare Paladin Shields on filter levels 8+
 ItemDisplay[RARE !ID DIN EXC !PALADIN FILTLVL>7 !TOWN]:// Hide Exceptional quality Rare Paladin Shields on filter levels 8+
 ItemDisplay[RARE !ID DIN ELT !PALADIN FILTLVL>7 !TOWN]:// Hide Elite quality Rare Paladin Shields on filter levels 8+
