@@ -205,7 +205,7 @@
         <option value="">All tiers</option><option>Normal</option><option>Exceptional</option><option>Elite</option>
       </select>
     </div>
-    <input id="q" type="search" placeholder="Search a base (name or code)" aria-label="Search a base">
+    <input id="q" type="search" placeholder="Search a base, code or tag" aria-label="Search a base, code or tag">
     <span class="count" id="count"></span>
   </div>
 </div>
@@ -368,11 +368,14 @@ function groupBody(g, used) {
   }
   return tb;
 }
+// a tag or display as its label reads ("Purity", "Diadem [Imbue]")
+const shown = (row) => (row[4].b || []).map((segs) => segs.map((s) => s[1]).join("")).join(" ");
 function matches(g) {
   if (view.cat && g.k !== view.cat) return false;
   if (view.tier && g.t !== view.tier) return false;
   const q = view.q.trim().toLowerCase();
-  return !q || g.n.some(([code, name]) => `${name} ${code}`.toLowerCase().includes(q));
+  return !q || g.n.some(([code, name]) => `${name} ${code}`.toLowerCase().includes(q)) ||
+    g.l.concat(g.q || []).some((r) => atLevel(r) && shown(r).toLowerCase().includes(q));
 }
 function render() {
   const list = $("list");
@@ -388,7 +391,7 @@ function render() {
     list.append(el("section", {class: "cat", id: `cat-${cat}`.replace(/[^A-Za-z0-9_-]/g, "-")},
       el("h3", {class: "cat", text: cat}), table));
   }
-  if (!n) list.append(el("p", {class: "empty", text: "No base matches. Clear the search or pick another type."}));
+  if (!n) list.append(el("p", {class: "empty", text: "No base matches. Clear the search or pick another type or level."}));
   $("count").textContent = `${n} base${n === 1 ? "" : "s"}`;
 }
 function init() {

@@ -194,7 +194,7 @@ class Base:
         self.name, self.tier = info["name"], info["tier"]
         self.cat = category(info)
         types = set(info["types"])
-        self.groups = {g for g, ts in T.GROUP_TYPES.items() if ts & types}
+        self.groups = T.item_groups(types)
         if self.tier in T.TIER_GROUP:
             self.groups.add(T.TIER_GROUP[self.tier])
         self.sockets = info["sockets"]
@@ -207,7 +207,7 @@ class Base:
                 return inf
             if inf and word == "SUP":
                 return 0
-            if word in T.GROUP_TYPES or word in T.TIER_GROUP.values():
+            if word in T.GROUP_WORDS or word in T.TIER_GROUP.values():
                 return int(word in self.groups)
             m = T.COMPARE_RE.match(word)
             if m:

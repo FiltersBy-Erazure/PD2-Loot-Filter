@@ -87,15 +87,19 @@ CATEGORY_ORDER = ["Jewels", "Rings", "Amulets", "Charms", "Circlets", "Amazon We
                   "Paladin Weapons", "Armors", "Belts", "Boots", "Gloves", "Helms", "Shields", "Bows and Crossbows",
                   "Daggers", "Axes", "Throwing Weapons", "Javelins", "Maces", "Polearms", "Spears", "Scepters",
                   "Staves", "Swords", "Wands", "Quivers", "Other"]
-# BH's item group words (Item.cpp: from the base's item types and tier)
+# BH's item group words (Item.cpp: from the base's item types and tier). A weapon is in one weapon group: the first
+# of WEAPON_GROUPS its types include. PD2's javelins are spears too (jave's Equiv2 is spea), but BH makes them JAV,
+# never SPEAR; MACE is all three kinds. A circlet is CIRC, never HELM.
 GROUP_TYPES = {"HELM": {"helm"}, "CIRC": {"circ"}, "CHEST": {"tors"}, "SHIELD": {"shld"}, "GLOVES": {"glov"},
-               "BOOTS": {"boot"}, "BELT": {"belt"}, "ARMOR": {"armo"}, "WEAPON": {"weap"}, "AXE": {"axe"},
-               "MACE": {"mace"}, "CLUB": {"club"}, "HAMMER": {"hamm"}, "SWORD": {"swor"}, "DAGGER": {"knif"},
-               "THROWING": {"thro"}, "JAV": {"jave"}, "SPEAR": {"spea"}, "POLEARM": {"pole"}, "BOW": {"bow"},
-               "XBOW": {"xbow"}, "STAFF": {"staf"}, "WAND": {"wand"}, "SCEPTER": {"scep"}, "CLASS": {"clas"},
-               "DRU": {"drui"}, "BAR": {"barb"}, "DIN": {"pala"}, "NEC": {"necr"}, "SIN": {"assn"},
+               "BOOTS": {"boot"}, "BELT": {"belt"}, "ARMOR": {"armo"}, "WEAPON": {"weap"}, "THROWING": {"thro"},
+               "CLASS": {"clas"}, "DRU": {"drui"}, "BAR": {"barb"}, "DIN": {"pala"}, "NEC": {"necr"}, "SIN": {"assn"},
                "SOR": {"sorc"}, "ZON": {"amaz"}, "JEWELRY": {"ring", "amul"}, "CHARM": {"char"},
                "QUIVER": {"bowq", "xboq"}, "1H": {"1han"}, "2H": {"2han"}, "MISC": {"misc"}}
+WEAPON_GROUPS = [("club", {"CLUB", "MACE"}), ("mace", {"TMACE", "MACE"}), ("hamm", {"HAMMER", "MACE"}),
+                 ("wand", {"WAND"}), ("staf", {"STAFF"}), ("bow", {"BOW"}), ("axe", {"AXE"}), ("scep", {"SCEPTER"}),
+                 ("swor", {"SWORD"}), ("knif", {"DAGGER"}), ("jave", {"JAV"}), ("spea", {"SPEAR"}),
+                 ("pole", {"POLEARM"}), ("xbow", {"XBOW"})]
+GROUP_WORDS = set(GROUP_TYPES).union(*(words for _, words in WEAPON_GROUPS))
 TIER_GROUP = {"normal": "NORM", "exceptional": "EXC", "elite": "ELT"}
 TIER_NAMES = {"normal": "Normal", "exceptional": "Exceptional", "elite": "Elite"}
 
@@ -173,6 +177,15 @@ def category(base):
         if t in types:
             return name
     return "Other"
+
+
+def item_groups(types):
+    """BH's item group words for a base of these item types (its tier aside)."""
+    groups = {g for g, ts in GROUP_TYPES.items() if ts & types}
+    groups.update(next((words for t, words in WEAPON_GROUPS if t in types), ()))
+    if "circ" in types:
+        groups.discard("HELM")
+    return groups
 
 
 def load_items(bases):
@@ -401,7 +414,7 @@ def kind_atom(kind):
             return 0
         if word in TOGGLES or word in CLASSES or word in ("ETH", "ALLDISCOVERED", "ANYDISCOVERED"):
             return None
-        if word in GROUP_TYPES or word in TIER_GROUP.values():
+        if word in GROUP_WORDS or word in TIER_GROUP.values():
             return None
         m = COMPARE_RE.match(word)
         if m:
@@ -475,7 +488,7 @@ class Group:
     def __init__(self, kind, code, items, base, index):
         self.kind, self.code, self.items, self.base = kind, code, items, base
         types = set(base["types"]) if base else set()
-        self.groups = {g for g, ts in GROUP_TYPES.items() if ts & types}
+        self.groups = item_groups(types)
         if base and base["tier"] in TIER_GROUP:
             self.groups.add(TIER_GROUP[base["tier"]])
         self.category = category(base)
@@ -524,7 +537,7 @@ class Group:
             return 1
         if word in OTHER_PLACES:
             return 0
-        if word in GROUP_TYPES or word in TIER_GROUP.values():
+        if word in GROUP_WORDS or word in TIER_GROUP.values():
             return int(word in self.groups)
         if word in ("ID", "INF", "SUP", "RW", "GEMMED"):
             return 0

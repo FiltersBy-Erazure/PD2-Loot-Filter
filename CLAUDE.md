@@ -200,6 +200,11 @@ The exact labels are in that file. A rule without `FILTLVL` applies at every lev
 - Limits (BH): a name shows 56 characters (512 for shop items), color codes not counted; 511 in all.
   Descriptions are cut with "..." past about 500 (less when the item's own text is long).
 - `{}` = description text. `%CONTINUE%` only works outside braces.
+- Item groups (BH `Item.cpp`): a weapon is in one weapon group, the first of club, mace, hammer, wand, staff, bow,
+  axe, scepter, sword, dagger, javelin, spear, polearm, crossbow its item types include. So javelins (Amazon ones
+  too) are `JAV`, never `SPEAR`, though PD2's item types make them spears (runewords for spears take them);
+  Amazon spears are `SPEAR`. `MACE` is clubs, maces and hammers (`TMACE` the maces alone). Circlets are `CIRC`,
+  never `HELM`. The pages' generators follow this (`item_groups` in `tools/tier_map.py`).
 - The last rule is the catch-all `ItemDisplay[]:%NAME%{%NAME%}//`. Nothing goes after it.
 
 ## Before adding or changing a rule
