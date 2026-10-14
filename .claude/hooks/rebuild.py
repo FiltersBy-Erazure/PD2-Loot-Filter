@@ -4,7 +4,8 @@ Claude Code PostToolUse hook: after Claude edits a file in sections/, version.js
 filter_definitions.json, tools/unique_roll_picks.txt or tools/runeword_roll_picks.txt, regenerate the
 unique/set and runeword roll tags (for section and picks edits: tools/gen_unique_rolls.py and
 tools/gen_runeword_rolls.py) and the players' pages (tools/tier_map.py: Erazure-Unique-Set-Tiers.html,
-tools/base_map.py: Erazure-Non-Magic-Bases.html), and rebuild the 8 filters with tools/build.py (never stamps the version).
+tools/base_map.py: Erazure-Non-Magic-Bases.html, tools/magic_rare_map.py: Erazure-Magic-Items.html and
+Erazure-Rare-Items.html), and rebuild the 8 filters with tools/build.py (never stamps the version).
 
 Silent on success. If the build fixed a section file's format (line endings, BOM, final line
 break), that note is passed back to Claude. On failure, exits 2 so the error goes back to Claude.
@@ -17,7 +18,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 ROOT_FILES = {"version.json", "filter_definitions.json"}
 PICKS = [["tools", "unique_roll_picks.txt"], ["tools", "runeword_roll_picks.txt"]]
-GENERATORS = ["gen_unique_rolls.py", "gen_runeword_rolls.py", "tier_map.py", "base_map.py"]  # in this order: all read sections/
+GENERATORS = ["gen_unique_rolls.py", "gen_runeword_rolls.py", "tier_map.py", "base_map.py",
+              "magic_rare_map.py"]  # in this order: all read sections/
 
 
 def watched(file_path):

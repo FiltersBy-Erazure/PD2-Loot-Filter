@@ -1161,7 +1161,7 @@ class Analysis:
             elif r.kind == "tag" or r.notify:
                 entries.append(["tag" if r.kind == "tag" else "notify", r, per])
         # (findings) a notification whose every case a hide rule hides at that level: an icon on a hidden item
-        if not inf:
+        if self.icon_findings(inf):
             for kind, r, per in entries:
                 if kind not in ("tag", "notify") or not r.icons:
                     continue
@@ -1195,6 +1195,11 @@ class Analysis:
         for kind, r, per in cases:
             out += self.segments(kind, r, per)
         return self.merge(out, simp)
+
+    @staticmethod
+    def icon_findings(inf):
+        """Whether lines() looks for minimap icons on hidden items (white bases: not for low quality rows)."""
+        return not inf
 
     @staticmethod
     def inline(cond, lv, named, simp):

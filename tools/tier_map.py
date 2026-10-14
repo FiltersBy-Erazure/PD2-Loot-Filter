@@ -140,10 +140,10 @@ def read_tsv(path):
 
 
 def load_bases():
-    """{code: {name, tier, types, sockets, width, height, spawnable}} from docs/pd2-bases.tsv."""
+    """{code: {name, tier, types, sockets, width, height, spawnable, qlvl}} from docs/pd2-bases.tsv."""
     return {code: {"name": name, "tier": tier, "types": types.split(",") if types else [], "sockets": int(sockets),
-                   "width": int(width), "height": int(height), "spawnable": spawnable == "1"}
-            for code, name, tier, types, sockets, width, height, spawnable in read_tsv(BASES)}
+                   "width": int(width), "height": int(height), "spawnable": spawnable == "1", "qlvl": int(qlvl)}
+            for code, name, tier, types, sockets, width, height, spawnable, qlvl in read_tsv(BASES)}
 
 
 def load_sounds():

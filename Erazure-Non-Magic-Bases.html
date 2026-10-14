@@ -76,24 +76,32 @@
   /* the tables */
   .base-map section.cat { margin-top: 22px; }
   .base-map h3.cat { font: 600 19px/1.25 var(--display); margin: 0 0 4px; letter-spacing: 0; color: var(--fg); }
-  .base-map table.bm { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.4; margin: 0; }
-  .base-map table.bm th, .base-map table.bm td { text-align: left; vertical-align: top; padding: 4px 8px; border: 0; }
+  /* Every table of the page has the same columns (Levels, Shows, Icon, Chat, then each condition the page uses) at
+     the same widths, so they line up from one item type to the next; Skills and Other share the room that is left.
+     A window narrower than that scrolls the table sideways. */
+  .base-map .tw { overflow-x: auto; }
+  .base-map table.bm { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 14px; line-height: 1.4;
+                       margin: 0; }
+  .base-map table.bm col.w-lv { width: 8em; } .base-map table.bm col.w-shows { width: 10em; }
+  .base-map table.bm col.w-ic { width: 3.5em; } .base-map table.bm col.w-ch { width: 3.5em; }
+  .base-map table.bm col.w-eth { width: 4.5em; } .base-map table.bm col.w-quality { width: 6.5em; }
+  .base-map table.bm col.w-ed { width: 7.5em; } .base-map table.bm col.w-sockets { width: 6.5em; }
+  .base-map table.bm col.w-clvl { width: 8em; } .base-map table.bm col.w-class { width: 8em; }
+  .base-map table.bm col.w-ilvl { width: 5em; } .base-map table.bm col.w-res { width: 4.5em; }
+  .base-map table.bm th, .base-map table.bm td { text-align: left; vertical-align: top; padding: 4px 8px; border: 0;
+                                                 overflow-wrap: anywhere; }
   .base-map table.bm thead th { font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
-                                color: var(--muted); white-space: nowrap; border-bottom: 2px solid var(--line);
-                                padding-block: 6px; }
+                                color: var(--muted); border-bottom: 2px solid var(--line); padding-block: 6px;
+                                vertical-align: bottom; overflow-wrap: normal; }
   .base-map tr.ghead th { padding: 14px 8px 4px; border-bottom: 1px solid var(--line); font-weight: 400;
                           background: none; text-transform: none; letter-spacing: 0; font-size: 14px; }
   .base-map tr.ghead .nm { font-weight: 700; font-size: 15px; }
   .base-map tr.ghead .code { color: var(--muted); font-size: 12.5px; font-weight: 400; }
   .base-map tr.ghead .sub { display: block; color: var(--muted); font-size: 12.5px; margin-top: 1px; }
-  .base-map tr.row td { border-bottom: 1px solid var(--soft); }
+  .base-map tr.row td { border-bottom: 1px solid var(--soft); vertical-align: middle; }  /* text level with labels */
   .base-map tr.row:hover td { background: var(--soft); }
-  .base-map td.lv { white-space: nowrap; color: var(--muted); font-weight: 600; font-variant-numeric: tabular-nums; }
-  .base-map td.c-eth, .base-map td.c-quality, .base-map td.c-ed, .base-map td.c-sockets, .base-map td.c-ilvl,
-  .base-map td.c-res, .base-map td.c-class { white-space: nowrap; }
-  .base-map td.c-clvl { min-width: 9em; }
-  .base-map td.c-skills { min-width: 14em; }
-  .base-map td.c-other { min-width: 11em; }
+  .base-map td.lv { color: var(--muted); font-weight: 600; font-variant-numeric: tabular-nums; overflow-wrap: normal; }
+  .base-map td.shows .ground { max-width: none; }
   .base-map .anyw { color: var(--muted); opacity: .6; }
   .base-map tr.low td.c-quality { color: var(--muted); font-style: italic; }
   .base-map tr.none td { color: var(--muted); font-size: 13px; font-style: italic; }
@@ -166,7 +174,9 @@
     .base-map table.bm tr.row td.cond::before { content: attr(data-label) ": "; color: var(--muted); }
     .base-map table.bm tr.row td.cond .text:not(.clamp) { display: inline; }
     .base-map table.bm tr.row td.c-skills, .base-map table.bm tr.row td.c-other { flex-basis: 100%; }
-    .base-map table.bm tr.row td.any { display: none; }
+    .base-map table.bm tr.row td.any, .base-map table.bm tr.row td.nu, .base-map table.bm tr.row td.ic:empty,
+    .base-map table.bm tr.row td.ch:empty { display: none; }
+    .base-map table.bm colgroup { display: none; }
     .base-map table.bm tr.lowbar td, .base-map table.bm tr.none td { padding: 4px 0; }
   }
 </style>
@@ -310,24 +320,31 @@ function named(cases) {
   return el("details", {class: "named"}, el("summary", {text: `one of ${cases.length} skill combinations`}),
     el("ul", {}, ...cases.map((c) => el("li", {text: T(c)}))));
 }
-// the columns a type's rows use (the same for all its groups, so their columns line up)
+// the condition columns a type's rows use (the same for all its groups)
 function usedColumns(groups) {
   const used = new Set();
-  let ic = false, ch = false;
   for (const g of groups) {
     for (const r of g.l.concat(g.q || [])) {
       r[3].forEach((v, i) => { if (v) used.add(DATA.cols[i]); });
       if (r[4].d) used.add("skills");
-      if (r[4].i) ic = true;
-      if (r[4].h || r[4].o) ch = true;
     }
+    if (g.q) used.add("quality");  // its low quality rows say so there
   }
-  return {cols: COLUMNS.filter(([k]) => used.has(k)), icon: ic, chat: ch};
+  return used;
 }
-function headRow(used) {
+// every table has the page's columns, so they line up from one item type to the next (CSS: col.w-*); Skills and
+// Other share what room is left, or an empty last column takes it
+const PAGE = COLUMNS.filter(([k]) => usedColumns(DATA.groups).has(k));
+const FILL = !PAGE.some(([k]) => k === "skills" || k === "other");
+const SPAN = 4 + PAGE.length + (FILL ? 1 : 0);
+function colGroup() {
+  return el("colgroup", {}, ...["lv", "shows", "ic", "ch"].concat(PAGE.map(([k]) => k))
+    .map((k) => el("col", {class: `w-${k}`})), FILL ? el("col") : null);
+}
+function headRow() {
   return el("thead", {}, el("tr", {}, el("th", {scope: "col", text: "Levels"}), el("th", {scope: "col", text: "Shows"}),
-    used.icon ? el("th", {scope: "col", text: "Icon"}) : null, used.chat ? el("th", {scope: "col", text: "Chat"}) : null,
-    ...used.cols.map(([, h]) => el("th", {scope: "col", text: h}))));
+    el("th", {scope: "col", text: "Icon"}), el("th", {scope: "col", text: "Chat"}),
+    ...PAGE.map(([, h]) => el("th", {scope: "col", text: h})), FILL ? el("th", {"aria-hidden": "true"}) : null));
 }
 function rowEl(row, used, low) {
   const [kind, lo, hi, cells, x] = row;
@@ -335,9 +352,13 @@ function rowEl(row, used, low) {
   tr.append(el("td", {class: "lv", text: levelText(lo, hi)}));
   tr.append(el("td", {class: "shows"}, x.b && x.b.length ? label(x.b, x.bt !== undefined ? T(x.bt) : "") :
     el("span", {class: "pill", text: KIND[kind]})));
-  if (used.icon) tr.append(el("td", {class: "ic"}, icon(x.i)));
-  if (used.chat) tr.append(el("td", {class: "ch"}, x.h ? chat() : null, sound(x.o)));
-  for (const [key, head, any] of used.cols) {
+  tr.append(el("td", {class: "ic"}, icon(x.i)));
+  tr.append(el("td", {class: "ch"}, x.h ? chat() : null, sound(x.o)));
+  for (const [key, head, any] of PAGE) {
+    if (!used.has(key)) {  // a condition this item type never has: blank
+      tr.append(el("td", {class: `cond c-${key} nu`}));
+      continue;
+    }
     let v = cells[AT[key]] ? T(cells[AT[key]] - 1) : "";
     if (low && key === "quality") v = "low quality";
     const td = el("td", {class: `cond c-${key}${v || (key === "skills" && x.d) ? "" : " any"}`, "data-label": head},
@@ -345,11 +366,12 @@ function rowEl(row, used, low) {
     if (key === "skills" && x.d) td.append(named(x.d));
     tr.append(td);
   }
+  if (FILL) tr.append(el("td", {class: "nu"}));
   return tr;
 }
 const atLevel = (row) => view.level === "" || (row[1] <= +view.level && +view.level <= row[2]);
 function groupBody(g, used) {
-  const span = 2 + (used.icon ? 1 : 0) + (used.chat ? 1 : 0) + used.cols.length;
+  const span = SPAN;
   const head = el("th", {colspan: String(span), scope: "rowgroup"});
   g.n.forEach(([code, name], i) => head.append(i ? " · " : "", el("span", {class: "nm", text: name}),
     el("span", {class: "code", text: ` ${code}`})));
@@ -393,9 +415,9 @@ function render() {
     if (!groups.length) continue;
     n += groups.reduce((s, g) => s + g.n.length, 0);
     const used = usedColumns(DATA.groups.filter((g) => g.k === cat));
-    const table = el("table", {class: "bm"}, headRow(used), ...groups.map((g) => groupBody(g, used)));
+    const table = el("table", {class: "bm"}, colGroup(), headRow(), ...groups.map((g) => groupBody(g, used)));
     list.append(el("section", {class: "cat", id: `cat-${cat}`.replace(/[^A-Za-z0-9_-]/g, "-")},
-      el("h3", {class: "cat", text: cat}), table));
+      el("h3", {class: "cat", text: cat}), el("div", {class: "tw"}, table)));
   }
   if (!n) list.append(el("p", {class: "empty", text: "No base matches. Clear the search or pick another type or level."}));
   $("count").textContent = `${n} base${n === 1 ? "" : "s"}`;
