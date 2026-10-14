@@ -16,9 +16,9 @@ afterwards.
 ## On this site
 
 - [Versions](versions.md): Main, Revealed, BIG GG and PoE, and what each one changes
-- [Filter Levels](filter-levels.md): what each filter level filters out
+- [Filter Levels](filter-levels.md): what each filter level shows, notifies and hides, at every character level
 - [Unique & Set Tiers](tiers.md): how every unique and set item shows when it drops
-- [Bases](bases.md): when each white armor and weapon base is tagged, notified or hidden
+- [Non-magical Bases](bases.md): when each non-magical armor and weapon base is tagged, notified or hidden
 - [Customization](customization.md): edit your own copy of the filter
 - [Examples](examples.md): the filter's style in game
 
