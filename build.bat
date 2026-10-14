@@ -27,6 +27,9 @@ if errorlevel 1 goto failed
 rem Magic and rare items pages for players (Erazure-Magic-Items.html, Erazure-Rare-Items.html, from the filter's rules)
 python tools\magic_rare_map.py
 if errorlevel 1 goto failed
+rem Filter levels page for players (Erazure-Filter-Levels.html, what each filter level does, from the filter's rules)
+python tools\level_map.py
+if errorlevel 1 goto failed
 python tools\build.py --check
 if errorlevel 1 goto failed
 

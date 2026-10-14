@@ -1,0 +1,608 @@
+<title>Erazure Filter Levels</title>
+<!-- Template for Erazure-Filter-Levels.html (tools/level_map.py writes it; build.bat runs it): the data is embedded at
+     generation. Everything shown comes from the filter's own rules. The website's Filter Levels page shows the same
+     map: website/hooks.py takes the styles, the markup between the level-map markers and the script out of the
+     generated file, so keep those markers. The look follows tools/base_map_template.html (the Non-magical Bases
+     page). -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Source+Sans+3:wght@400;600;700&display=swap">
+<!-- level-map:css -->
+<style>
+  /* Layout: the title; "how to read it" with the legend and the filter levels; then the bar (character level, jump
+     to a section), which stays at the top while scrolling (under the website's header on the website); then the
+     table, one column per group of filter levels and one row per kind of item (sections: gold and potions, gems and
+     runes, ...), each cell what that kind of item does there, with a strip for character levels 1-99; a click opens
+     the cell's details. Then "what changes", one card per group of levels. Every rule is scoped to .level-map, so the
+     website's theme and this page leave each other alone. Dark by default; light when the website (Material) is
+     switched to light. */
+  .level-map {
+    --bg: #151412; --panel: #1f1d1a; --fg: #ece7de; --muted: #a59e91; --line: #36322c; --soft: #2a2723;
+    --accent: #d8b45e;
+    --s-chat: #7cc474; --s-icon: #8bb4e8; --s-mixed: #b6c48f; --s-shown: #b9b2a3; --s-some: #e0b45a;
+    --s-hidden: #ef7a72;
+    --c-white: #e8e8e8; --c-tan: #d0c27d; --c-gold: #c7b377; --c-set: #00ff00; --c-rare: #ffff64;
+    --c-magic: #6969ff; --c-rune: #ffa800;  /* the sections' colors: the items' colors in game */
+    --display: "Cinzel", "Trajan Pro", Georgia, serif;
+    --body: "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --top: 0px;  /* where the bar stops while scrolling */
+    color-scheme: dark;
+    color: var(--fg); font: 15px/1.45 var(--body);
+  }
+  [data-md-color-scheme="default"] .level-map {
+    --bg: #f3f1ec; --panel: #fffdf8; --fg: #23211c; --muted: #6b655a; --line: #ded7c9; --soft: #ece6da;
+    --accent: #8a6d1f;
+    --s-chat: #2f8a3a; --s-icon: #2f6db3; --s-mixed: #6f7d3c; --s-shown: #7c7568; --s-some: #a8690c;
+    --s-hidden: #b3261e;
+    --c-white: #23211c; --c-tan: #7d6834; --c-gold: #8a6d1f; --c-set: #13861a; --c-rare: #7a6e00;
+    --c-magic: #3434c9; --c-rune: #a05f00;
+    color-scheme: light;
+  }
+  .md-content .level-map { --top: 2.4rem; }  /* on the website: under its header, which stays at the top */
+  .level-map *, .level-map *::before, .level-map *::after { box-sizing: border-box; }
+  .level-map .wrap { max-width: 1400px; margin: 0 auto; padding-inline: 16px; }
+  .md-content .level-map .wrap { padding-inline: 0; }
+  .level-map h1.lm-title { font: 700 26px/1.2 var(--display); letter-spacing: .02em; margin: 0;
+                           padding-block: 16px 10px;
+                           color: var(--fg); text-wrap: balance; }
+  .level-map .bar { position: sticky; top: var(--top); z-index: 3; background: var(--panel);
+                    border-block: 1px solid var(--line); padding-block: 8px; margin-block: 12px 0; }
+  .level-map .bar .wrap { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
+  .md-content .level-map .bar .wrap { padding-inline: 10px; }
+  .level-map .bar label { font-size: 14px; color: var(--muted); display: inline-flex; gap: 8px; align-items: center; }
+  .level-map input[type=number], .level-map select {
+    font: inherit; font-size: 14.5px; padding: 4px 8px; border: 1px solid var(--line); border-radius: 6px;
+    background: var(--bg); color: var(--fg); min-width: 0; max-width: 100%; margin: 0; }
+  .level-map input[type=number] { width: 5.5em; }
+  .level-map .bar .hint { font-size: 13px; color: var(--muted); }
+  .level-map .jump { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 13.5px; }
+  .level-map a { color: var(--accent); text-decoration: none; }
+  .level-map a:hover { text-decoration: underline; }
+  .level-map button:focus-visible, .level-map select:focus-visible, .level-map input:focus-visible,
+  .level-map a:focus-visible, .level-map summary:focus-visible {
+    outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* how to read it */
+  .level-map .howto { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 4px 24px;
+                      background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; }
+  @media (max-width: 900px) { .level-map .howto { grid-template-columns: minmax(0, 1fr); } }
+  .level-map .howto h2 { font: 700 12.5px/1.3 var(--body); text-transform: uppercase; letter-spacing: .08em;
+                         color: var(--muted); margin: 0 0 6px; }
+  .level-map .howto p, .level-map .howto li { max-width: 76ch; font-size: 14.5px; line-height: 1.45; }
+  .level-map .howto p { margin: 0 0 6px; }
+  .level-map .howto ul { margin: 0 0 8px; padding-left: 18px; list-style: disc; }
+  .level-map .howto li { margin: 0; }
+  .level-map .legend { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 4px 0 8px; font-size: 14px; }
+  .level-map .legend > span { display: inline-flex; align-items: center; gap: 6px; }
+  .level-map ol.levels { font-size: 13.5px; margin: 4px 0 0; padding-left: 26px; list-style: decimal; }
+  .level-map ol.levels li { margin: 0; }
+  .level-map ol.levels .grp { color: var(--muted); }
+
+  /* states: a symbol and a word, colored */
+  .level-map .st { display: inline-flex; align-items: baseline; gap: 5px; color: var(--sc); }
+  .level-map .st .g { font-size: 13px; width: 1em; text-align: center; flex: none; }
+  .level-map .s-chat { --sc: var(--s-chat); } .level-map .s-icon { --sc: var(--s-icon); }
+  .level-map .s-mixed { --sc: var(--s-mixed); } .level-map .s-shown { --sc: var(--s-shown); }
+  .level-map .s-some { --sc: var(--s-some); } .level-map .s-hidden { --sc: var(--s-hidden); }
+
+  /* the table */
+  .level-map h2.part { font: 700 22px/1.2 var(--display); margin: 26px 0 8px; letter-spacing: .02em; color: var(--fg); }
+  .level-map .tw { overflow-x: auto; }
+  .level-map table.lm { width: 100%; min-width: 1040px; table-layout: fixed; border-collapse: collapse; font-size: 14px;
+                        line-height: 1.35; margin: 0; }
+  .level-map table.lm col.w-item { width: 15em; }
+  .level-map table.lm th, .level-map table.lm td { text-align: left; vertical-align: top; padding: 5px 8px; border: 0; }
+  .level-map table.lm thead th { background: var(--bg); border-bottom: 2px solid var(--line); vertical-align: bottom; }
+  .level-map thead .lv { font: 700 16px/1.1 var(--display); color: var(--fg); font-variant-numeric: tabular-nums; }
+  .level-map thead .nm { display: block; font-size: 12px; font-weight: 700; text-transform: uppercase;
+                         letter-spacing: .05em; color: var(--muted); margin-top: 2px; }
+  .level-map thead .hd { display: block; font-size: 12px; color: var(--accent); margin-top: 1px; font-weight: 600; }
+  .level-map section.sec { margin-top: 22px; }
+  .level-map section.sec, .level-map h2.part, .level-map details.card {  /* a jump lands below the bar */
+    scroll-margin-top: calc(var(--top) + var(--bar, 0px) + 8px); }
+  .level-map h3.sn { font: 600 19px/1.25 var(--display); margin: 0 0 2px; letter-spacing: 0; color: var(--fg); }
+  .level-map h3.sn .sl { font: 400 13px/1.3 var(--body); margin-left: 10px; letter-spacing: 0; }
+  .level-map p.sx { max-width: 90ch; font-size: 13.5px; color: var(--muted); margin: 0 0 4px; }
+  .level-map .dp { background: var(--panel); border: 1px solid var(--line); border-top: 2px solid var(--accent);
+                   border-radius: 0 0 8px 8px; padding: 8px 14px 10px; margin-top: 2px; }
+  .level-map .dp .dh { font-weight: 700; margin-bottom: 4px; }
+  .level-map .dp .dh .muted { font-weight: 400; }
+  .level-map .dp ul.notes { margin: 6px 0 0; padding-left: 18px; }
+  .level-map .dp ul.notes li { margin: 2px 0; max-width: 120ch; }
+  /* the small tables (a cell's details, the change lines), flowing into columns where there is room */
+  .level-map .items { column-width: 360px; column-gap: 26px; }
+  .level-map .it { break-inside: avoid; display: inline-block; width: 100%; margin: 0 0 12px; }
+  .level-map .it.wide { column-span: all; display: block; }
+  .level-map .oc.lines > span { display: block; }
+  .level-map .it .nm { font-weight: 700; margin-bottom: 2px; }
+  .level-map .it .inl { font-size: 14px; }
+  .level-map .it .arr { color: var(--muted); }
+  .level-map .mtw { overflow-x: auto; }
+  .level-map table.mt { border-collapse: collapse; font-size: 13.5px; line-height: 1.35; margin: 0; width: 100%; }
+  .level-map table.mt th, .level-map table.mt td { padding: 2px 8px; text-align: left; vertical-align: top;
+                                                   border-bottom: 1px solid var(--soft); }
+  .level-map table.mt thead th { font-size: 11.5px; text-transform: uppercase; letter-spacing: .05em; font-weight: 700;
+                                 color: var(--muted); border-bottom: 1px solid var(--line); white-space: nowrap; }
+  .level-map table.mt tbody th { font-weight: 600; white-space: nowrap; width: 1%; }
+  .level-map table.mt.kinds tbody th { white-space: normal; width: 30%; }  /* a line per kind of change: its items */
+  .level-map table.mt.kinds td { width: 35%; }
+  .level-map table.mt td.was { opacity: .72; }
+  .level-map table.mt tr.chg th, .level-map table.mt tr.chg td {
+    background: color-mix(in srgb, var(--accent) 16%, transparent); }
+  .level-map table.mt tr.chg td:not(.was) { font-weight: 600; }
+  .level-map .k-hidden { color: var(--s-hidden); } .level-map .k-some { color: var(--s-some); }
+  .level-map .k-chat { color: var(--s-chat); } .level-map .k-icon { color: var(--s-icon); }
+  .level-map .k-mixed { color: var(--s-mixed); } .level-map .k-shown { color: var(--s-shown); }
+  .level-map .k-look { color: var(--fg); }
+  .level-map .dp .x { float: right; font: inherit; color: var(--muted); background: none; border: 0; cursor: pointer;
+                      padding: 0 0 0 10px; margin: 0; }
+  .level-map tr.r td, .level-map tr.r th { border-bottom: 1px solid var(--soft); }
+  .level-map tr.r th { font-weight: 600; }
+  .level-map tr.r.sub th { font-weight: 400; padding-left: 26px; color: var(--muted); }
+  .level-map tr.r.sub td, .level-map tr.r.sub th { background: color-mix(in srgb, var(--soft) 45%, transparent); }
+  .level-map .tog { font: inherit; color: var(--muted); background: none; border: 0; padding: 0; margin: 0 4px 0 -2px;
+                    cursor: pointer; width: 1.1em; }
+  .level-map .cnt { font-size: 12px; color: var(--muted); font-weight: 400; margin-left: 4px; }
+  .level-map .tag { font-size: 12px; color: var(--accent); font-weight: 600; margin-left: 6px; }
+  .level-map td.c { cursor: pointer; }
+  .level-map td.c:hover { background: var(--soft); }
+  .level-map td.c.on { background: var(--soft); box-shadow: inset 0 -2px 0 var(--accent); }
+  .level-map td.c .t { display: block; }
+  .level-map .strip { display: flex; height: 4px; margin-top: 5px; border-radius: 2px; overflow: hidden; gap: 1px; }
+  .level-map .strip + .strip { margin-top: 2px; }
+  .level-map .strip span { background: var(--sc); opacity: .85; }
+  .level-map .muted { color: var(--muted); }
+
+  /* what changes */
+  .level-map .cards { display: grid; gap: 14px; }
+  .md-typeset .level-map details.card, .level-map details.card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 0; margin: 0;
+    box-shadow: none; overflow: visible; font-size: inherit; display: block; }
+  /* a card's header stays at the top, under the bar, while its card scrolls by */
+  .md-typeset .level-map details.card > summary, .level-map details.card > summary {
+    list-style: none; display: block; position: sticky; top: calc(var(--top) + var(--bar, 0px)); z-index: 2;
+    padding: 10px 14px; margin: 0; border: 0; border-radius: 8px 8px 0 0; background: var(--panel);
+    min-height: 0; font-weight: inherit; cursor: pointer; color: var(--fg); }
+  .md-typeset .level-map details.card[open] > summary, .level-map details.card[open] > summary {
+    box-shadow: 0 1px 0 var(--line); }
+  .md-typeset .level-map details.card:not([open]) > summary, .level-map details.card:not([open]) > summary {
+    border-radius: 8px; }
+  .level-map details.card > summary::-webkit-details-marker { display: none; }
+  .md-typeset .level-map details.card > summary::before, .level-map details.card > summary::before {
+    content: "\25B8"; position: static; display: inline-block; width: 1.1em; height: auto; background: none;
+    -webkit-mask-image: none; mask-image: none; transform: none; color: var(--muted); }
+  .md-typeset .level-map details.card[open] > summary::before, .level-map details.card[open] > summary::before {
+    content: "\25BE"; }
+  .md-typeset .level-map details.card > summary::after { display: none; content: none; }
+  .level-map .card .ct { font: 700 18px/1.25 var(--display); }
+  .level-map .card .chd { color: var(--accent); font-weight: 600; font-size: 14px; margin-left: 6px; }
+  .level-map .card .cs { display: block; font-size: 13.5px; color: var(--muted); margin: 2px 0 0 1.1em; }
+  .level-map .card .body { padding: 0 14px 12px calc(14px + 1.1em); }
+  .level-map .card h4 { font-size: 12.5px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted);
+                        margin: 10px 0 3px; font-weight: 700; }
+  /* a card's section: its heading stays under the card's header while its tables scroll by */
+  .level-map .card .grp { margin-top: 6px; }
+  .level-map .card .grp > h4 { position: sticky; top: calc(var(--top) + var(--bar, 0px) + var(--head, 0px));
+                               z-index: 1; background: var(--panel); margin: 0 0 4px; padding: 10px 0 5px;
+                               border-bottom: 1px solid var(--line); }
+  .level-map .card .as { font-size: 12px; font-weight: 400; color: var(--muted); border: 1px solid var(--line);
+                         border-radius: 999px; padding: 0 7px; margin-left: 6px; white-space: nowrap; }
+  .level-map .card .none { color: var(--muted); font-style: italic; }
+  .level-map footer { color: var(--muted); font-size: 13px; padding-block: 24px; }
+  .level-map [hidden] { display: none !important; }
+  .level-map h3.sc-white, .level-map h4.sc-white { color: var(--c-white); }
+  .level-map h3.sc-tan, .level-map h4.sc-tan { color: var(--c-tan); }
+  .level-map h3.sc-gold, .level-map h4.sc-gold { color: var(--c-gold); }
+  .level-map h3.sc-set, .level-map h4.sc-set { color: var(--c-set); }
+  .level-map h3.sc-rare, .level-map h4.sc-rare { color: var(--c-rare); }
+  .level-map h3.sc-magic, .level-map h4.sc-magic { color: var(--c-magic); }
+  .level-map h3.sc-rune, .level-map h4.sc-rune { color: var(--c-rune); }
+  /* the item column stays while the table scrolls sideways */
+  .level-map table.lm thead th:first-child, .level-map table.lm tr.r th {
+    position: sticky; left: 0; z-index: 1; background: var(--bg); }
+  .level-map table.lm tr.r.sub th { background: color-mix(in srgb, var(--soft) 45%, var(--bg)); }
+  @media (max-width: 760px) {
+    .level-map table.lm { min-width: 860px; }
+    .level-map table.lm col.w-item { width: 9.5em; }
+    .level-map .bar .hint { display: none; }
+    .level-map .jump { flex-wrap: nowrap; overflow-x: auto; width: 100%; white-space: nowrap; padding-bottom: 2px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .level-map * { transition: none !important; } }
+</style>
+
+<div class="level-map">
+<div class="wrap"><h1 class="lm-title">Erazure Filter Levels</h1></div>
+<!-- level-map:start -->
+<div class="wrap">
+  <div class="howto">
+   <div>
+    <h2>How to read it</h2>
+    <p>What each filter level of the Erazure loot filter shows, notifies and hides, for every kind of item that drops,
+      read from the filter's own rules. Pick your level in the launcher, or in game with the filter level hotkeys;
+      the Horadric Cube's description says which level you are on.</p>
+    <ul>
+      <li>Each column is a group of filter levels that behave the same; levels that only hide different potions share
+        one (Super Healing H5, Super Mana M5, Rejuvenation 35%).</li>
+      <li>Many items hide only once your character reaches a level: <b>from 80</b> means from character level 80.
+        The strip under a cell shows character levels 1 to 99. Type your character level in the bar to see your
+        own.</li>
+      <li>Click a cell for its details: which items, when, and what changes in Normal difficulty and special areas.
+        The rows link to the pages with every base and item.</li>
+      <li><b>Hidden items still show in town</b>, and unique and set items still show until you've discovered them
+        (Discovery Progress). Level 0 hides nothing.</li>
+      <li>Unique and set items drop unidentified: one row per value tier. Non-magical items: two rows each, <b>plain</b>
+        (no sockets, not superior, no skills) and <b>best case</b> (the most a base can show with any sockets,
+        enhanced defense or damage, or skills); the Non-magical Bases page has every base.</li>
+    </ul>
+    <div class="legend" id="legend"></div>
+   </div>
+   <div>
+    <h2>Filter levels</h2>
+    <ol class="levels" id="levels" start="0"></ol>
+   </div>
+  </div>
+</div>
+<div class="bar" id="bar">
+  <div class="wrap">
+    <label for="clvl">Character level <input id="clvl" type="number" min="1" max="99" inputmode="numeric"
+      placeholder="any"></label>
+    <span class="hint" id="hint">Cells show when things change with character level.</span>
+    <nav class="jump" id="jump" aria-label="Jump to"></nav>
+  </div>
+</div>
+<div class="wrap">
+  <h2 class="part" id="glance">At a glance</h2>
+  <div id="tables"></div>
+  <h2 class="part" id="changes">What changes, level by level</h2>
+  <div class="cards" id="cards"></div>
+  <footer id="foot"></footer>
+</div>
+<!-- level-map:end -->
+</div>
+
+<script>
+(() => {
+const DATA = /*__DATA__*/null;
+const $ = (id) => document.getElementById(id);
+const T = (i) => DATA.texts[i];
+const GLYPH = {chat: "●", icon: "◆", mixed: "◐", shown: "○", some: "◑", hidden: "✕"};
+const WORDS = {chat: "Notifies: minimap icon and chat line", icon: "Icon only: minimap icon, no chat line",
+  mixed: "Some notify: some of the items, or only in some cases", shown: "Shown, no notification",
+  some: "Some hidden: some of the items, or only in some cases", hidden: "Hidden"};
+const STORE = "erazure-level-map-clvl";
+const onSite = !!document.querySelector(".md-content");
+
+function el(tag, cls, text) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text !== undefined) e.textContent = text;
+  return e;
+}
+function state(kind, text) {
+  const s = el("span", "st s-" + kind);
+  s.append(el("span", "g", GLYPH[kind]), el("span", "w", text));
+  s.firstChild.setAttribute("aria-hidden", "true");
+  return s;
+}
+function link(key) {
+  const [file, site, name] = DATA.links[key];
+  const a = el("a", null, name + " page →");
+  a.href = onSite ? "../" + site : file;
+  return a;
+}
+function levelsText(lv) {
+  return lv.length === 1 ? "Level " + lv[0] : "Levels " + lv[0] + "–" + lv[lv.length - 1];
+}
+// the legend and the filter levels
+for (const k of ["chat", "icon", "mixed", "shown", "some", "hidden"]) $("legend").append(state(k, WORDS[k]));
+DATA.levels.forEach((name, i) => {
+  const li = el("li");
+  const col = DATA.cols.findIndex((c) => c.levels.includes(i));
+  li.append(document.createTextNode(name + " "));
+  if (DATA.cols[col].levels.length > 1) li.append(el("span", "grp", "(column " + colLabel(DATA.cols[col]) + ")"));
+  $("levels").append(li);
+});
+
+// the tables: one per section, with the same columns (so they line up), the section's name above and its details
+// panel below, outside the box that scrolls sideways on phones
+let clvl = null;
+try { const v = parseInt(localStorage.getItem(STORE), 10); if (v >= 1 && v <= 99) clvl = v; } catch (e) {}
+const cellViews = [];  // [td, cell] to redraw when the character level changes
+
+function colLabel(c) {
+  return c.levels.length > 1 ? c.levels[0] + "–" + c.levels[c.levels.length - 1] : String(c.levels[0]);
+}
+
+function newTable() {
+  const table = el("table", "lm");
+  const cg = el("colgroup");
+  cg.append(el("col", "w-item"));
+  DATA.cols.forEach(() => cg.append(el("col")));
+  table.append(cg);
+  const thead = el("thead"), hr = el("tr");
+  hr.append(el("th", null, "Item"));
+  DATA.cols.forEach((c) => {
+    const th = el("th");
+    th.title = c.levels.map((l) => l + ": " + DATA.levels[l]).join("\n");
+    th.append(el("span", "lv", colLabel(c)));
+    th.append(el("span", "nm", c.title.replace(" Filtering", "").replace("!", "")));
+    if (c.hides.length) th.append(el("span", "hd", "Hides " + c.hides.join(", ")));
+    hr.append(th);
+  });
+  thead.append(hr);
+  table.append(thead);
+  return table;
+}
+
+function drawCell(td, cell) {
+  td.textContent = "";
+  if (clvl === null) {
+    if (cell.gt) {  // levels that differ (potions): a line each
+      for (const [lv, text, kind] of cell.gt) {
+        const line = el("span", "t");
+        line.append(el("span", "muted", lv + ": "), state(kind, text));
+        td.append(line);
+      }
+    } else {
+      td.append(state(cell.k, cell.t));
+    }
+    for (const [, rs] of cell.g) {
+      const strip = el("span", "strip");
+      for (const [lo, hi, k] of rs) {
+        const seg = el("span", "s-" + k);
+        seg.style.flex = String(hi - lo + 1);
+        strip.append(seg);
+      }
+      strip.setAttribute("aria-hidden", "true");
+      td.append(strip);
+    }
+  } else {
+    const parts = cell.g.map(([lv, rs]) => [lv, rs.find((r) => r[0] <= clvl && clvl <= r[1])]);
+    if (parts.length === 1 || parts.every((p) => p[1][3] === parts[0][1][3])) {
+      td.append(state(parts[0][1][2], parts[0][1][3]));
+    } else {
+      for (const [lv, r] of parts) {
+        const line = el("span", "t");
+        line.append(el("span", "muted", lv.join(", ") + ": "), state(r[2], r[3]));
+        td.append(line);
+      }
+    }
+  }
+}
+
+function addRow(tbody, panel, row, cells, name, cls, count) {
+  const tr = el("tr", "r " + cls);
+  const th = el("th");
+  th.scope = "row";
+  th.append(document.createTextNode(name));
+  if (row.tag && cls === "") th.append(el("span", "tag", row.tag));
+  if (count > 1) th.append(el("span", "cnt", "(" + count + ")"));
+  tr.append(th);
+  cells.forEach((cell, ci) => {
+    const td = el("td", "c");
+    td.tabIndex = 0;
+    td.setAttribute("role", "button");
+    td.setAttribute("aria-label", name + ", " + levelsText(DATA.cols[ci].levels) + ": " + cell.t);
+    drawCell(td, cell);
+    cellViews.push([td, cell]);
+    const open = () => showDetails(panel, td, cell, ci, name, row);
+    td.addEventListener("click", open);
+    td.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(); } });
+    tr.append(td);
+  });
+  tbody.append(tr);
+  return tr;
+}
+
+function showDetails(panel, td, cell, ci, name, row) {
+  const again = td.classList.contains("on");
+  document.querySelectorAll(".level-map td.c.on").forEach((x) => x.classList.remove("on"));
+  document.querySelectorAll(".level-map .dp").forEach((p) => { p.hidden = true; p.textContent = ""; });
+  if (again) return;
+  td.classList.add("on");
+  const col = DATA.cols[ci];
+  const head = el("div", "dh", name + (row.tag ? " (" + row.tag + ")" : "") + " · " + levelsText(col.levels) + " ");
+  head.append(el("span", "muted", col.title + (col.hides.length ? ", hides " + col.hides.join(", ") : "")));
+  const close = el("button", "x", "✕");
+  close.setAttribute("aria-label", "Close");
+  close.addEventListener("click", () => showDetails(panel, td, cell, ci, name, row));
+  head.prepend(close);
+  panel.append(head);
+  const items = el("div", "items");
+  const notes = el("ul", "notes");
+  for (const e of cell.d) {
+    if (e.t !== undefined) { notes.append(el("li", null, T(e.t))); continue; }
+    const it = el("div", "it");
+    if (T(e.n)) it.append(el("div", "nm", T(e.n)));
+    it.append(blockEl(e.b, e.c.map(T), 0));
+    items.append(it);
+  }
+  panel.append(items);
+  if (notes.children.length) panel.append(notes);
+  if (row.link) { const p = el("div", "muted"); p.style.marginTop = "6px"; p.append(link(row.link)); panel.append(p); }
+  panel.hidden = false;
+  if (panel.getBoundingClientRect().bottom > window.innerHeight) panel.scrollIntoView({block: "nearest"});
+}
+
+DATA.sections.forEach((sec, si) => {
+  const box = el("section", "sec");
+  box.id = "sec-" + si;
+  const h = el("h3", "sn" + (sec.color ? " sc-" + sec.color : ""), sec.name);
+  if (sec.link) { const sl = el("span", "sl"); sl.append(link(sec.link)); h.append(sl); }
+  box.append(h);
+  if (sec.note) box.append(el("p", "sx", sec.note));
+  const tw = el("div", "tw"), table = newTable(), tbody = el("tbody"), panel = el("div", "dp");
+  panel.hidden = true;
+  panel.setAttribute("aria-live", "polite");
+  for (const row of sec.rows) {
+    const tr = addRow(tbody, panel, row, row.cells, row.name, "", row.n);
+    if (row.subs.length) {
+      const btn = el("button", "tog", "▸");
+      btn.setAttribute("aria-expanded", "false");
+      btn.setAttribute("aria-label", "Show " + row.name + " one by one");
+      tr.firstChild.prepend(btn);
+      const subs = row.subs.map((s) => {
+        const x = addRow(tbody, panel, row, s.cells, s.name, "sub", s.n);
+        x.hidden = true;
+        return x;
+      });
+      btn.addEventListener("click", () => {
+        const open = btn.getAttribute("aria-expanded") !== "true";
+        btn.setAttribute("aria-expanded", String(open));
+        btn.textContent = open ? "▾" : "▸";
+        for (const x of subs) x.hidden = !open;
+      });
+    }
+  }
+  table.append(tbody);
+  tw.append(table);
+  box.append(tw, panel);
+  $("tables").append(box);
+  const a = el("a", null, sec.name);
+  a.href = "#sec-" + si;
+  $("jump").append(a);
+});
+const ca = el("a", null, "What changes");
+ca.href = "#changes";
+$("jump").append(ca);
+
+// the small tables: a cell's details and the change lines. Each outcome is colored by what it says ("Minimap icon
+// only; hidden from 50": each part its own color)
+function kindOf(t) {
+  const x = t.toLowerCase();
+  if (x.startsWith("hidden")) return "hidden";
+  if (x.startsWith("some hidden")) return "some";
+  if (x.startsWith("notifies") || x.startsWith("chat line")) return "chat";
+  if (x.startsWith("minimap icon")) return "icon";
+  if (x.startsWith("some notify")) return "mixed";
+  if (x.startsWith("shown")) return "shown";
+  return "look";
+}
+function outcomeEl(text) {  // a long one: each part on a line of its own
+  const parts = text.split("; ");
+  const lines = parts.length > 2 || text.length > 36;
+  const span = el("span", lines ? "oc lines" : "oc");
+  parts.forEach((part, i) => {
+    if (i && !lines) span.append(document.createTextNode("; "));
+    span.append(el("span", "k-" + kindOf(part), (i && lines ? part[0].toUpperCase() + part.slice(1) : part)));
+  });
+  return span;
+}
+function cellsEl(cells, cols) {  // "Levels 3, 5: Shown · Levels 4, 6–7: Hidden", or one outcome alone
+  const span = el("span");
+  cells.forEach((c, i) => {
+    if (i) span.append(el("span", "muted", " \u00B7 "));
+    if (cols.length > 1) span.append(el("span", "muted", cols[i] + ": "));
+    span.append(outcomeEl(c));
+  });
+  return span;
+}
+function blockEl(b, cols, was) {
+  if (b.i) {
+    const cells = b.i.map(T);
+    const div = el("div", "inl");
+    if (was) {
+      div.append(cellsEl(cells.slice(0, was), cols.slice(0, was)), el("span", "arr", " \u2192 "),
+                 cellsEl(cells.slice(was), cols.slice(was)));
+    } else {
+      div.append(cellsEl(cells, cols));
+    }
+    return div;
+  }
+  const t = el("table", b.x ? "mt kinds" : "mt");
+  const head = T(b.h);
+  if (head || cols.length) {
+    const tr = el("tr");
+    tr.append(el("th", null, head));
+    if (cols.length) cols.forEach((c, i) => tr.append(el("th", i < was ? "was" : "", c)));
+    else tr.append(el("th"));
+    const th = el("thead");
+    th.append(tr);
+    t.append(th);
+  }
+  const tb = el("tbody");
+  for (const r of b.r) {
+    const tr = el("tr", r[2] ? "chg" : "");
+    tr.append(el("th", null, T(r[0])));
+    r[1].forEach((ci, i) => {
+      const td = el("td", i < was ? "was" : "");
+      td.append(outcomeEl(T(ci)));
+      tr.append(td);
+    });
+    tb.append(tr);
+  }
+  t.append(tb);
+  const w = el("div", "mtw");  // a wide table scrolls in its own box
+  w.append(t);
+  return w;
+}
+
+// what changes, level by level
+DATA.cards.forEach((card) => {
+  const col = DATA.cols[card.col], parent = DATA.cols[card.parent];
+  const d = el("details", "card");
+  d.open = true;
+  const s = el("summary");
+  s.append(el("span", "ct", levelsText(col.levels) + " · " + col.title));
+  if (col.hides.length) s.append(el("span", "chd", "Hides " + col.hides.join(", ")));
+  const sub = card.parent === 0 ? "What it hides; level 0 hides nothing"
+    : "On top of " + levelsText(parent.levels).toLowerCase();
+  s.append(el("span", "cs", (col.intro ? col.intro + " " : "") + sub + "."));
+  d.append(s);
+  const body = el("div", "body");
+  let last = null, items = null;
+  for (const ln of card.lines) {
+    if (ln.sec !== last) {
+      last = ln.sec;
+      const sec = DATA.sections[ln.sec], grp = el("section", "grp");
+      items = el("div", "items");
+      grp.append(el("h4", sec.color ? "sc-" + sec.color : null, sec.name), items);
+      body.append(grp);
+    }
+    const it = el("div", ln.b.x ? "it wide" : "it");  // a table of many kinds of change: the card's whole width
+    const nm = el("div", "nm", ln.name);
+    if (ln.as !== undefined) nm.append(el("span", "as", "as on " + levelsText(DATA.cols[ln.as].levels).toLowerCase()));
+    it.append(nm, blockEl(ln.b, ln.cols.map(T), ln.was));
+    items.append(it);
+  }
+  if (!card.lines.length) body.append(el("p", "none", "Nothing changes."));
+  d.append(body);
+  $("cards").append(d);
+});
+$("foot").textContent = DATA.foot;
+
+// the character level box
+const box = $("clvl");
+if (clvl !== null) box.value = clvl;
+function redraw() {
+  const v = parseInt(box.value, 10);
+  clvl = v >= 1 && v <= 99 ? v : null;
+  try {
+    if (clvl === null) localStorage.removeItem(STORE); else localStorage.setItem(STORE, String(clvl));
+  } catch (e) {}
+  $("hint").textContent = clvl === null ? "Cells show when things change with character level."
+    : "Cells show character level " + clvl + ".";
+  for (const [td, cell] of cellViews) drawCell(td, cell);
+}
+box.addEventListener("input", redraw);
+redraw();
+
+// the bar's height: the cards' headers stay right under it while scrolling, and jumps land below it; each card's
+// header height: its sections' headings stay right under that
+const root = document.querySelector(".level-map");
+const setBar = () => root.style.setProperty("--bar", $("bar").offsetHeight + "px");
+const cards = [...document.querySelectorAll(".level-map details.card")];
+const setHeads = () => cards.forEach((c) => {
+  c.style.setProperty("--head", c.querySelector("summary").offsetHeight + "px");
+});
+if (window.ResizeObserver) {
+  new ResizeObserver(setBar).observe($("bar"));
+  const ro = new ResizeObserver(setHeads);
+  cards.forEach((c) => ro.observe(c.querySelector("summary")));
+} else {
+  window.addEventListener("resize", () => { setBar(); setHeads(); });
+}
+setBar();
+setHeads();
+})();
+</script>

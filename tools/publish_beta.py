@@ -6,9 +6,9 @@ The launcher reads this repository's default branch (`main`) through the GitHub 
 the S14 beta, `main` keeps its 8 Season 13 filters untouched and gets one extra launcher entry,
 "Erazure - S14 Beta": Erazure-S14-Beta.filter, a byte copy of the `beta` branch's Erazure-Main.filter.
 It also gets the website: the players' pages Erazure-Unique-Set-Tiers.html, Erazure-Non-Magic-Bases.html,
-Erazure-Magic-Items.html and Erazure-Rare-Items.html, the site's pages in website/ and the workflow
-.github/workflows/pages.yml that builds them into GitHub Pages (byte copies of `beta`'s; website files `beta` no
-longer has are removed).
+Erazure-Magic-Items.html, Erazure-Rare-Items.html and Erazure-Filter-Levels.html, the site's pages in website/ and
+the workflow .github/workflows/pages.yml that builds them into GitHub Pages (byte copies of `beta`'s; website files
+`beta` no longer has are removed).
 
 Usage (from the repo root, on the `beta` branch with no uncommitted changes):
     python tools/publish_beta.py              update a worktree of `main` and show what would change
@@ -48,7 +48,8 @@ DEFS = "filter_definitions.json"
 PAGE_FILES = ["Erazure-Unique-Set-Tiers.html",  # the tier page (tools/tier_map.py), part of the website
               "Erazure-Non-Magic-Bases.html",  # the bases page (tools/base_map.py), part of the website
               "Erazure-Magic-Items.html",  # the magic and rare items pages (tools/magic_rare_map.py), part of the
-              "Erazure-Rare-Items.html"]  # website
+              "Erazure-Rare-Items.html",  # website
+              "Erazure-Filter-Levels.html"]  # the filter levels page (tools/level_map.py), part of the website
 WEBSITE = "website"  # the website's pages and MkDocs config
 WORKFLOW = ".github/workflows/pages.yml"  # builds the website into GitHub Pages on every push to main
 ALLOWED = {BETA_FILE, DEFS, WORKFLOW, *PAGE_FILES}
