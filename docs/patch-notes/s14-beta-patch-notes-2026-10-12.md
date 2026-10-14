@@ -2,7 +2,7 @@
 
 The closed-beta update of 2026-10-12 (client built 2026-10-12 23:5x UTC), as posted. The game
 data differs in places: see the game-data repo's diff (`PD2-Game-Data`, `beta-2026-10-10-2141` to
-`beta-2026-10-12-2351`) and `docs/dev-feedback.md`.
+`beta-2026-10-12-2351`) and `private/dev-feedback.md`.
 
 
 # Skill Changes

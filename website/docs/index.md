@@ -19,6 +19,8 @@ afterwards.
 - [Filter Levels](filter-levels.md): what each filter level shows, notifies and hides, at every character level
 - [Unique & Set Tiers](tiers.md): how every unique and set item shows when it drops
 - [Non-magical Bases](bases.md): when each non-magical armor and weapon base is tagged, notified or hidden
+- [Magic Items](magic.md): how every magic item shows when it drops, and when it is hidden
+- [Rare Items](rare.md): how every rare item shows when it drops, and when it is hidden
 - [Customization](customization.md): edit your own copy of the filter
 - [Examples](examples.md): the filter's style in game
 
