@@ -196,8 +196,9 @@
 ## Filter levels
 0 = Show All Items. 1–12 are the `ItemDisplayFilterName[]` lines in `sections/010-filter-levels.filter`;
 their order is their number. Roughly: 1 Lowest Strictness, 2–6 Stricter (hiding H5 / M5 / 35% in
-combinations), 7–8 Endgame - More Rares (Endgame, but the unidentified rares of `190-rares` as on 2–6; 7 shows
-M5, 8 hides it), 9–11 Endgame (10–11 also hide Crafting Bases, or Flawless Gems and Large Charms), 12 Extreme.
+combinations), 7–8 Advanced (Endgame, but as on 2–6 for magic amulets and Large Charms, the unique looks of
+`160` and the unidentified rares of `190-rares` except low helms and small shields; 7 shows M5, 8 hides it),
+9–11 Endgame (10–11 also hide Crafting Bases, or Flawless Gems and Large Charms), 12 Extreme.
 The exact labels are in that file. A rule without `FILTLVL` applies at every level.
 
 ## Searching (the filter is ~8,500 lines / ~200k tokens; never read it whole)
