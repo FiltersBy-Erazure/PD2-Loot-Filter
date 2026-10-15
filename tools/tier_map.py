@@ -140,10 +140,33 @@ def read_tsv(path):
 
 
 def load_bases():
-    """{code: {name, tier, types, sockets, width, height, spawnable, qlvl}} from docs/pd2-bases.tsv."""
+    """{code: {name, tier, types, sockets, width, height, spawnable, qlvl, mlvl}} from docs/pd2-bases.tsv."""
     return {code: {"name": name, "tier": tier, "types": types.split(",") if types else [], "sockets": int(sockets),
-                   "width": int(width), "height": int(height), "spawnable": spawnable == "1", "qlvl": int(qlvl)}
-            for code, name, tier, types, sockets, width, height, spawnable, qlvl in read_tsv(BASES)}
+                   "width": int(width), "height": int(height), "spawnable": spawnable == "1", "qlvl": int(qlvl),
+                   "mlvl": int(mlvl)}
+            for code, name, tier, types, sockets, width, height, spawnable, qlvl, mlvl in read_tsv(BASES)}
+
+
+def affix_level(ilvl, qlvl, mlvl):
+    """BH's ALVL (GetAffixLevel, ItemDisplay.cpp), the game's own formula again since the 2026-10-15 beta."""
+    ilvl = max(min(ilvl, 99), qlvl)
+    if mlvl:
+        return min(ilvl + mlvl, 99)
+    return ilvl - qlvl // 2 if ilvl < 99 - qlvl // 2 else ilvl * 2 - 99
+
+
+def alvl_node(m, qlvl, mlvl):
+    """An ALVL comparison on one base, as the item levels that pass it: ("c", 0 / 1) or an ILVL word. The affix
+    level never drops as the item level rises (and stops at item level 99), so they are one run."""
+    ok = [i for i in range(1, 100) if compare(affix_level(i, qlvl, mlvl), m)]
+    if not ok:
+        return ("c", 0)
+    lo, hi = ok[0], ok[-1]
+    if lo == 1 and hi == 99:
+        return ("c", 1)
+    word = f"ILVL>{lo - 1}" if hi == 99 else f"ILVL<{hi + 1}" if lo == 1 else \
+        f"ILVL={lo}" if lo == hi else f"ILVL~{lo}-{hi}"
+    return ("w", word)
 
 
 def load_sounds():
@@ -239,7 +262,8 @@ def compile_rpn(cond):
 
 def fold(rpn, atom):
     """The condition with every word `atom` knows (1 / 0 / MAYBE) folded in: a tree of ("c", value), ("w", word),
-    ("not", x), ("and", a, b), ("or", a, b). BH's 3-valued AND = min, OR = max (explain_item.evaluate)."""
+    ("not", x), ("and", a, b), ("or", a, b). BH's 3-valued AND = min, OR = max (explain_item.evaluate). An atom may
+    also answer with a node that takes the word's place (alvl_node)."""
     if rpn is None:
         return ("c", 0)
     if not rpn:
@@ -248,7 +272,7 @@ def fold(rpn, atom):
     for t in rpn:
         if isinstance(t, tuple):
             v = atom(t[1])
-            stack.append(("c", v) if v is not None else ("w", t[1]))
+            stack.append(v if isinstance(v, tuple) else ("c", v) if v is not None else ("w", t[1]))
         elif t == "!":
             if not stack:
                 return ("c", 0)
@@ -439,7 +463,7 @@ def fold_tree(node, atom):
         return node
     if k == "w":
         v = atom(node[1])
-        return ("c", v) if v is not None else node
+        return v if isinstance(v, tuple) else ("c", v) if v is not None else node
     if k == "not":
         a = fold_tree(node[1], atom)
         return ("c", 1 - a[1]) if a[0] == "c" else ("not", a)

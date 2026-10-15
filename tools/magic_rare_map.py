@@ -15,8 +15,9 @@ How it reads the filter: the engine of tools/base_map.py (its rules, folding, si
 what every fresh magic or rare drop has instead of a white one's: its quality, unidentified, on the ground outside
 town (in town nothing is hidden), never superior, low quality, a runeword, gemmed or corrupted; ethereal or not is a
 column. Map tests other than the town's stay conditions (magic jewels in The Fallen Gardens and The Diamond Gate). A
-base's quality level (QLVL, docs/pd2-bases.tsv) is folded in per base: S14's affix level is the higher of item level and
-quality level, so 190's 85+ look is always on for a Sacred Armor (quality level 85).
+base's quality level (QLVL, docs/pd2-bases.tsv) is folded in per base, and its affix level (ALVL: BH's formula, the
+game's again since the 2026-10-15 beta) becomes the item levels where it holds, so 190's 85+ look reads "item level 92+"
+on a Sacred Armor (quality level 85).
 
 The pages (the Non-magical Bases page's layout): one table per item type, a header per group of bases of one tier and
 socket maximum with the same rows, then one row per case: Levels, Shows (Notify / Hidden pill, or the look as the game
@@ -125,10 +126,10 @@ class Base:
             self.groups.add(T.TIER_GROUP[self.tier])
         self.sockets = info["sockets"]
         self.area = info["width"] * info["height"]
-        self.qlvl = info["qlvl"]
+        self.qlvl, self.mlvl = info["qlvl"], info["mlvl"]
 
     def atom(self):
-        """Words this base decides."""
+        """Words this base decides (an affix level: as the item levels where it holds)."""
         def atom(word):
             if word in T.GROUP_WORDS or word in T.TIER_GROUP.values():
                 return int(word in self.groups)
@@ -137,6 +138,8 @@ class Base:
                 key = m.group(1)
                 if key == "QLVL":
                     return T.compare(self.qlvl, m)
+                if key == "ALVL":
+                    return T.alvl_node(m, self.qlvl, self.mlvl)
                 if key == "AREA":
                     return T.compare(self.area, m)
                 return None
@@ -306,12 +309,12 @@ class Analysis(B.Analysis):
 
     def fold_rule(self, r, base, q, atom, simp, named):
         """{level: condition} of one rule for this base; the same for every base with the same item groups (and
-        sockets, quality level or size where the rule tests them) unless it names the base's code."""
+        sockets, quality level, affix level or size where the rule tests them) unless it names the base's code."""
         w = r.words
         key = None if r.named else (
             q, r.n, base.code if base.code in r.codes else None, frozenset(g for g in base.groups if g in w),
             base.sockets if "SOCK" in r.keys else None, base.qlvl if "QLVL" in r.keys else None,
-            base.area if "AREA" in r.keys else None)
+            base.area if "AREA" in r.keys else None, (base.qlvl, base.mlvl) if "ALVL" in r.keys else None)
         if key is not None and key in self.cache:
             return self.cache[key]
         t = T.fold_tree(r.tree, atom)

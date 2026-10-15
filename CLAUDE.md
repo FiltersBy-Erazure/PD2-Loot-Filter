@@ -127,8 +127,9 @@
   own. A look is drawn with the quality's color and the name layers its case always meets (Eth, a charm's item
   level); bases of one type, tier and socket maximum with the same rows share a group, its looks drawn with the first
   base's name. Rows merge across levels ("Levels 10, 12"), a hide row takes the levels a wider hide row covers, and
-  "not (A or B)" is pushed into the columns. `QLVL` is folded per base from `docs/pd2-bases.tsv`'s `qlvl` column (S14's
-  affix level is the higher of item and quality level: a Sacred Armor is always 85+); `MAPID` tests other than the
+  "not (A or B)" is pushed into the columns. `QLVL` is folded per base from `docs/pd2-bases.tsv`'s `qlvl` column, and
+  `ALVL` per base into the item levels where it holds (`T.alvl_node`: BH's formula with the base's `qlvl` and `mlvl`,
+  the game's own again since the 2026-10-15 beta: a Sacred Armor needs item level 92 for 85); `MAPID` tests other than the
   town's stay a condition (magic jewels in The Fallen Gardens / The Diamond Gate, areas 183-184). `--base uar,jew
   [--quality RARE]` prints rows; `--findings` lists minimap icons on hidden items and 190/200 rules that apply to no
   base. `build.bat`, the hook and CI run it as the other pages.
@@ -143,10 +144,10 @@
   drop, then every case of a drop at once as bitmasks (filter level, place, Discovery Progress, Eth, class,
   difficulty, item level, stack size, gold, character level; cut points read from the rules), BH's two passes as
   `tier_map` (level 0 never hides); a word no case decides (sockets, stats) stays a "maybe". Columns: levels whose
-  drops behave the same, potions aside (`POTIONS`), joined: 0 | 1 | 2 | 3-7 | 8-9 | 10 | 11 | 12. Each cell: a state
+  drops behave the same, potions aside (`POTIONS`), joined: 0 | 1 | 2-6 | 7-8 | 9 | 10 | 11 | 12. Each cell: a state
   per character level run (the page's strip), its words ("Hidden from 80"; potion level groups a line each) and
   details. "What changes" cards compare each column with its parent, item by item; a launcher name's "Hides ..."
-  decides siblings (11 against 8-9, not 10). Details and change lines are small tables (author, 2026-10-14: no
+  decides siblings (11 against 9, not 10). Details and change lines are small tables (author, 2026-10-14: no
   run-on text): `block()`'s rows are the cases that matter (character levels, gold piles, ethereal or not, class,
   stack, item level), its columns the levels (before, then now; potion groups apart), a changed row marked; a cell's
   words are the first case's outcome, then the others with their conditions ("Minimap icon only; hidden from 50",
@@ -194,8 +195,9 @@
 
 ## Filter levels
 0 = Show All Items. 1–12 are the `ItemDisplayFilterName[]` lines in `sections/010-filter-levels.filter`;
-their order is their number. Roughly: 1 Lowest Strictness, 2 Relaxed, 3–7 Stricter (hiding H5 / M5 / 35%
-in combinations), 8–11 Endgame (10–11 also hide Crafting Bases, or Flawless Gems and Large Charms), 12 Extreme.
+their order is their number. Roughly: 1 Lowest Strictness, 2–6 Stricter (hiding H5 / M5 / 35% in
+combinations), 7–8 Endgame - More Rares (Endgame, but the unidentified rares of `190-rares` as on 2–6; 7 shows
+M5, 8 hides it), 9–11 Endgame (10–11 also hide Crafting Bases, or Flawless Gems and Large Charms), 12 Extreme.
 The exact labels are in that file. A rule without `FILTLVL` applies at every level.
 
 ## Searching (the filter is ~8,500 lines / ~200k tokens; never read it whole)
