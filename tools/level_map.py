@@ -1468,8 +1468,16 @@ class Page:
         if len(groups) == 1 and len(next(iter(groups.values()))) == len(row.specs):
             ((now, _), specs), = groups.items()
             return [line(head, now, specs[0])]
+        def line_title(specs):
+            """A line's title: the items' own names alone (author: "Light Healing Potion", not "Healing potions:
+            Light Healing Potion"); the row's name first for a tier or kind ("Helms: Elite"), a unique or set tier
+            ("Medium value: Gargoyle's Bite") and a non-magical row ("Body armor (plain): ...", "Low quality items:
+            ...")."""
+            words, names = self.label(row, specs, kind=True)
+            own = names and not row.look and not row.tag and not any(s.low for s in specs)
+            return words if own else f"{head}: {words}"
         if len(groups) <= 6:
-            return [line(f"{head}: {self.label(row, specs)}", now, specs[0]) for (now, _), specs in groups.items()]
+            return [line(line_title(specs), now, specs[0]) for (now, _), specs in groups.items()]
         # many kinds of change: one table, a line per kind (its items, then what they did and do, in short)
         rows = []
         for (now, was), specs in groups.items():
@@ -1481,8 +1489,9 @@ class Page:
         return [{"sec": title, "name": head, "link": row.link, "cols": cols, "was": 1 if p else 0,
                  "b": {"head": "Items", "rows": rows, "items": True}, "key": json.dumps(sorted(g[0] for g in groups))}]
 
-    def label(self, row, specs):
-        """Some of a row's drops in words: its tier or kind when they are all of it, else their names."""
+    def label(self, row, specs, kind=False):
+        """Some of a row's drops in words: its tier or kind when they are all of it, else their names. With kind:
+        (the words, whether they are the items' own names)."""
         codes = {(s.code, s.quality) for s in specs}
         if row.split and not row.look:
             keys = {}
@@ -1490,8 +1499,9 @@ class Page:
                 keys.setdefault(self.split_key(row, s), set()).add((s.code, s.quality))
             whole = [k for k, cs in keys.items() if cs <= codes]
             if whole and set().union(*(keys[k] for k in whole)) == codes:
-                return join_and(whole)
-        return rune_label(specs) or names_of(specs)
+                return (join_and(whole), row.split == "name") if kind else join_and(whole)
+        words = rune_label(specs) or names_of(specs)
+        return (words, True) if kind else words
 
     def data(self):
         """Everything the page shows; with `ref`, its texts in one list (cells and lines give their index)."""
