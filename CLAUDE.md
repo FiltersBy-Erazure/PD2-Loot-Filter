@@ -151,8 +151,12 @@
   stack, item level), its columns the levels (before, then now; potion groups apart), a changed row marked; a cell's
   words are the first case's outcome, then the others with their conditions ("Minimap icon only; hidden from 50",
   "shown; " left off), a long one a part per line; a row with more than 6 kinds of change gets one table with a line
-  per kind, the card's full width. `INTROS` holds the author's line per level
-  group, `SECTION_NOTES` the sections' notes. `--row NAME` prints a row, `--changes` the cards; `--findings` lists a
+  per kind, the card's full width. A line's title is the items' own names alone (author: "Light Healing Potion", not
+  "Healing potions: Light Healing Potion"); a tier or kind, a unique or set tier and a non-magical row keep the row's
+  name first ("Helms: Elite"). Section names (At a glance) and a card's header and section headings stay under the bar
+  while scrolling. The character level box starts empty every visit (author: a level kept from an earlier visit read as
+  the page's answer); with a level typed, the box is outlined and each table's corner reads "At character level 60".
+  `INTROS` holds the author's line per level group, `SECTION_NOTES` the sections' notes. `--row NAME` prints a row, `--changes` the cards; `--findings` lists a
   launcher name's "Hides H5 / M5 / 35%" the rules don't do, a level group split by more than potions and `MAPID` cuts
   with no place of their own. Checked 2026-10-14 against the rules evaluated one case at a time (127k cases, every
   drop, no differences). `build.bat`, the hook and CI run it as the other pages.
