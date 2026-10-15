@@ -1025,6 +1025,23 @@ def display_name(g):
     return " / ".join(names) if len(names) <= 4 else f"{', '.join(names[:3])} and {len(names) - 3} more"
 
 
+def negated_only(rpn):
+    """The words a condition names only under a negation: an exclusion, '!(hst OR vip)'."""
+    stack = []
+    for t in rpn or []:
+        if isinstance(t, tuple):
+            stack.append(({t[1]}, set()))
+        elif t == "!":
+            if stack:
+                pos, neg = stack.pop()
+                stack.append((neg, pos))
+        elif len(stack) >= 2:
+            (bp, bn), (ap, an) = stack.pop(), stack.pop()
+            stack.append((ap | bp, an | bn))
+    pos = set().union(*(p for p, _ in stack))
+    return set().union(*(n for _, n in stack)) - pos
+
+
 def findings(groups, rules, bases):
     """Rules and game data that disagree, as text lines."""
     out = []
@@ -1033,13 +1050,14 @@ def findings(groups, rules, bases):
         by_kind[g.kind].add(g.code)
         names[(g.kind, g.code)] += [it["name"] for it in g.items]
     seen = set()
-    for r in rules:  # a tier rule on a base that no item of its kind drops as
+    for r in rules:  # a tier rule on a base that no item of its kind drops as (a base it only excludes is not one)
         if not r.where.startswith(TIER_SECTIONS) or "!ID" not in r.cond:
             continue
         kinds = [k for k in ("UNI", "SET") if k in r.words]
         if len(kinds) != 1:
             continue
-        for c in sorted(w for w in r.words if w in bases and w not in by_kind[kinds[0]]):
+        excluded = negated_only(r.rpn)
+        for c in sorted(w for w in r.words if w in bases and w not in by_kind[kinds[0]] and w not in excluded):
             if (r.where, c) not in seen:
                 seen.add((r.where, c))
                 out.append(f"{r.where}: {c} ({bases[c]['name']}): no {'unique' if kinds[0] == 'UNI' else 'set'} "

@@ -92,7 +92,8 @@ INTROS = {
     "Show All Items": "Hides nothing and plays every notification.",
     "Lowest Strictness": "For the ladder start and characters up to level 80.",
     "Stricter Filtering": "Hides many non-magical bases and low-value magic and rare items.",
-    "Endgame Filtering - More Rares": "Endgame filtering that keeps showing rare items.",
+    "Advanced Filtering": "Hides like Endgame, but keeps most rares, magic amulets and Large Charms, and the Stricter "
+                          "look for uniques.",
     "Endgame Filtering": "Hides most low-value items for endgame characters.",
     "Extreme Filtering!": "Hides everything but the most valuable items.",
 }
@@ -1297,11 +1298,10 @@ class Page:
         return cols
 
     def column_title(self, levels):
-        """(the launcher name of these levels up to " - Hides ": 'Endgame Filtering - More Rares', what they hide
-        besides potions: 'Crafting Bases'...)."""
+        """(the launcher name of these levels, what they hide besides potions: 'Crafting Bases'...)."""
         names = [self.levels[lv] for lv in levels]
         hides = [[h.strip() for h in n.split(" - Hides ")[1].split(",")] if " - Hides " in n else [] for n in names]
-        return names[0].split(" - Hides ")[0].strip(), [h for h in hides[0] if h not in POTION_WORDS and
+        return names[0].split(" - ")[0].strip(), [h for h in hides[0] if h not in POTION_WORDS and
                                                     all(h in other for other in hides)]
 
     def cell(self, specs, levels, row):
