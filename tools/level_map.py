@@ -24,7 +24,7 @@ tools/explain_item.py), and a drop such a rule could hide or show is "some hidde
 The page shows a drop on the ground outside town (uniques and sets: already discovered), in the Main version. Filter
 levels whose rows all behave the same, potions aside (the launcher names' H5, M5 and 35%), share a column. "What
 changes" compares each column with the one before it, or with the last one before that whose hiding it keeps (11 with
-8-9: 10 and 11 each hide their own things).
+9: 10 and 11 each hide their own things).
 """
 import argparse
 import json
@@ -91,8 +91,8 @@ SECTION_COLORS = {"Gold, potions, scrolls and keys": "white", "Gems and runes": 
 INTROS = {
     "Show All Items": "Hides nothing and plays every notification.",
     "Lowest Strictness": "For the ladder start and characters up to level 80.",
-    "Relaxed Filtering": "Hides more low-value magic, rare and non-magical items as your character levels.",
     "Stricter Filtering": "Hides many non-magical bases and low-value magic and rare items.",
+    "Endgame Filtering - More Rares": "Endgame filtering that keeps showing rare items.",
     "Endgame Filtering": "Hides most low-value items for endgame characters.",
     "Extreme Filtering!": "Hides everything but the most valuable items.",
 }
@@ -131,8 +131,9 @@ class Spec:
         self.drop = None  # its Drop (Rules.drop)
 
     def key(self, size=True):
-        """What the rules can tell apart, besides the item code (`size` False: and its quality level and size)."""
-        sized = (self.info["qlvl"], self.info["width"] * self.info["height"]) if size else ()
+        """What the rules can tell apart, besides the item code (`size` False: and its quality level, magic level and
+        size)."""
+        sized = (self.info["qlvl"], self.info["mlvl"], self.info["width"] * self.info["height"]) if size else ()
         return (self.quality, frozenset(self.groups), self.rune, self.gem, self.maptier, self.gold, self.can_eth,
                 self.gear, self.low, self.plain) + sized
 
@@ -171,9 +172,9 @@ PLAIN_ZERO = {"SOCK", "ED", "EDEF", "EDAM", "RES", "SK", "OS", "CLSK", "TABSK", 
 
 
 def item_atom(spec, size=True):
-    """Words this drop decides: its code, item groups, rune, gem, map tier, quality level and size (and for a plain
-    non-magical item, its stats). `size` False: quality level and size left in (bases that share the rest fold
-    alike)."""
+    """Words this drop decides: its code, item groups, rune, gem, map tier, quality level, affix level (as the item
+    levels where it holds) and size (and for a plain non-magical item, its stats). `size` False: quality level, affix
+    level and size left in (bases that share the rest fold alike)."""
     memo = {}
 
     def atom(word):
@@ -206,6 +207,8 @@ def item_atom(spec, size=True):
                 return T.compare(spec.maptier, m)
             if key == "QLVL":
                 return T.compare(spec.info["qlvl"], m) if size else None
+            if key == "ALVL":
+                return T.alvl_node(m, spec.info["qlvl"], spec.info["mlvl"]) if size else None
             if key == "AREA":
                 return T.compare(spec.info["width"] * spec.info["height"], m) if size else None
             return None
@@ -471,7 +474,7 @@ class Rules:
             for r, t in generic:
                 t = T.fold_tree(t, part)
                 if t != ("c", 0):
-                    sized = any((m := T.COMPARE_RE.match(w)) and m.group(1) in ("QLVL", "AREA")
+                    sized = any((m := T.COMPARE_RE.match(w)) and m.group(1) in ("QLVL", "ALVL", "AREA")
                                 for w in T.tree_words(t, set()))
                     self.generic_folds[shared].append((r, t, sized))
         folded = []
@@ -1294,10 +1297,11 @@ class Page:
         return cols
 
     def column_title(self, levels):
-        """(the launcher name of these levels, what they hide besides potions: 'Crafting Bases'...)."""
+        """(the launcher name of these levels up to " - Hides ": 'Endgame Filtering - More Rares', what they hide
+        besides potions: 'Crafting Bases'...)."""
         names = [self.levels[lv] for lv in levels]
         hides = [[h.strip() for h in n.split(" - Hides ")[1].split(",")] if " - Hides " in n else [] for n in names]
-        return names[0].split(" - ")[0].strip(), [h for h in hides[0] if h not in POTION_WORDS and
+        return names[0].split(" - Hides ")[0].strip(), [h for h in hides[0] if h not in POTION_WORDS and
                                                     all(h in other for other in hides)]
 
     def cell(self, specs, levels, row):
@@ -1403,7 +1407,7 @@ class Page:
 
     def parents(self, cols):
         """Each column's parent: the column before it, or the last one before that whose launcher name hides
-        nothing this one does not (11, Flawless Gems and Large Charms, against 8-9: not 10, Crafting Bases)."""
+        nothing this one does not (11, Flawless Gems and Large Charms, against 9: not 10, Crafting Bases)."""
         out = {}
         for c in range(1, len(cols)):
             p = c - 1
