@@ -158,8 +158,8 @@
   while scrolling. The character level box starts empty every visit (author: a level kept from an earlier visit read as
   the page's answer); with a level typed, the box is outlined and each table's corner reads "At character level 60".
   `INTROS` holds the author's line per level group, `SECTION_NOTES` the sections' notes. `--row NAME` prints a row, `--changes` the cards; `--findings` lists a
-  launcher name's "Hides H5 / M5 / 35%" the rules don't do, a level group split by more than potions and `MAPID` cuts
-  with no place of their own. Checked 2026-10-14 against the rules evaluated one case at a time (127k cases, every
+  launcher name's "Hides H5 / M5 / 35%" the rules don't do, a level group split by more than potions or with no
+  `INTROS` line, and `MAPID` cuts with no place of their own. Checked 2026-10-14 against the rules evaluated one case at a time (127k cases, every
   drop, no differences). `build.bat`, the hook and CI run it as the other pages.
 - The website (https://filtersby-erazure.github.io/PD2-Loot-Filter/) is MkDocs with the Material theme:
   `website/mkdocs.yml` and the pages in `website/docs/*.md` (text from the README, in the author's words). Never use
@@ -199,7 +199,9 @@ their order is their number. Roughly: 1 Lowest Strictness, 2–6 Stricter (hidin
 combinations), 7–8 Advanced (Endgame, but as on 2–6 for magic amulets and Large Charms, the unique looks of
 `160` and the unidentified rares of `190-rares` except low helms and small shields; 7 shows M5, 8 hides it),
 9–11 Endgame (10–11 also hide Crafting Bases, or Flawless Gems and Large Charms), 12 Extreme.
-The exact labels are in that file. A rule without `FILTLVL` applies at every level.
+The exact labels are in that file. A rule without `FILTLVL` applies at every level. The players' pages take the
+levels, their names and their number from that file (`tier_map.FILTER_LEVELS`), so they follow a renamed, merged or
+removed level on the next run; a new level group's intro is `INTROS` in `tools/level_map.py`.
 
 ## Searching (the filter is ~8,500 lines / ~200k tokens; never read it whole)
 - Search `sections/` only. Never search the root `.filter` files (every hit 8 times), and never @-mention

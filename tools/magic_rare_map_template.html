@@ -216,7 +216,7 @@ const STORE = "erazure-__MAP__-view";
 function load() { try { return JSON.parse(localStorage.getItem(STORE) || "{}") || {}; } catch { return {}; } }
 function save() { try { localStorage.setItem(STORE, JSON.stringify({level: view.level, cat: view.cat, tier: view.tier})); } catch {} }
 const view = Object.assign({level: "", cat: "", tier: "", q: ""}, load());
-if (!(view.level === "" || (Number.isInteger(+view.level) && +view.level >= 0 && +view.level <= 12))) view.level = "";
+if (!(view.level === "" || (Number.isInteger(+view.level) && +view.level >= 0 && +view.level < DATA.levels.length))) view.level = "";
 if (view.cat && !DATA.cats.includes(view.cat)) view.cat = "";
 if (!["", "Normal", "Exceptional", "Elite"].includes(view.tier)) view.tier = "";
 view.q = "";
@@ -284,7 +284,7 @@ function sound(n) {
 // a row's filter levels: lo–hi, or its list when they have a gap ("Levels 8–9, 11")
 function levelText(row) {
   const [, lo, hi, , x] = row;
-  if (!x.v) return lo === 0 && hi === 12 ? "All levels" : lo === hi ? `Level ${lo}` : `Levels ${lo}–${hi}`;
+  if (!x.v) return lo === 0 && hi === DATA.levels.length - 1 ? "All levels" : lo === hi ? `Level ${lo}` : `Levels ${lo}–${hi}`;
   const runs = [];
   for (const v of x.v) {
     const last = runs[runs.length - 1];

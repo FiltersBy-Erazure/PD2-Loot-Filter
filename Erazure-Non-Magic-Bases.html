@@ -238,7 +238,7 @@ const STORE = "erazure-base-map-view";
 function load() { try { return JSON.parse(localStorage.getItem(STORE) || "{}") || {}; } catch { return {}; } }
 function save() { try { localStorage.setItem(STORE, JSON.stringify({level: view.level, cat: view.cat, tier: view.tier})); } catch {} }
 const view = Object.assign({level: "", cat: "", tier: "", q: ""}, load());
-if (!(view.level === "" || (Number.isInteger(+view.level) && +view.level >= 0 && +view.level <= 12))) view.level = "";
+if (!(view.level === "" || (Number.isInteger(+view.level) && +view.level >= 0 && +view.level < DATA.levels.length))) view.level = "";
 if (view.cat && !DATA.cats.includes(view.cat)) view.cat = "";
 if (!["", "Normal", "Exceptional", "Elite"].includes(view.tier)) view.tier = "";
 view.q = "";
@@ -303,7 +303,7 @@ function sound(n) {
   if (!n) return null;
   return el("span", {class: "sound", title: `Type ".playsound ${n}" to hear it in game`, text: `♪ ${DATA.sounds[n] || n}`});
 }
-const levelText = (lo, hi) => lo === 0 && hi === 12 ? "All levels" : lo === hi ? `Level ${lo}` : `Levels ${lo}–${hi}`;
+const levelText = (lo, hi) => lo === 0 && hi === DATA.levels.length - 1 ? "All levels" : lo === hi ? `Level ${lo}` : `Levels ${lo}–${hi}`;
 function textEl(text) {  // long conditions: two lines, then "more"
   const t = el("div", {class: "text", text});
   if (text.length <= 170) return t;

@@ -185,13 +185,16 @@ def load_palette():
 
 
 def load_levels():
-    """Filter level names, 0-12, as the launcher lists them (color codes removed)."""
+    """Filter level names from 0, as the launcher lists them (color codes removed)."""
     names = ["Show All Items"]
     for line in LEVELS_FILE.read_text(encoding="utf-8").splitlines():
         m = re.match(r"^ItemDisplayFilterName\[\]:(.*?)(?://.*)?$", line)
         if m:
             names.append(re.sub(r"ÿc.", "", m.group(1)).strip())
     return names
+
+
+FILTER_LEVELS = range(len(load_levels()))  # 0 (Show All Items) and one per ItemDisplayFilterName line of 010
 
 
 def category(base):
@@ -658,7 +661,7 @@ class Dims:
         self.values["CLVL"] = ([1] + cuts) if cuts else [99]
         self.values["LOC"] = (["field", "town"] + sorted(ids)) if mapid else ["field"]
         self.values["GRAIL"] = ["found", "new"] if words & {"ALLDISCOVERED", "ANYDISCOVERED"} else ["found"]
-        self.values["FILTLVL"] = list(range(13))
+        self.values["FILTLVL"] = list(FILTER_LEVELS)
         self.index = {d: i for i, d in enumerate(DIMS)}
 
     def clvl_range(self, v):
@@ -811,11 +814,11 @@ def class_label(values):
 
 
 def level_clauses(by_level):
-    """[(levels text or None, outcome)] for {level: outcome}: None when one outcome covers all 13 levels."""
+    """[(levels text or None, outcome)] for {level: outcome}: None when one outcome covers every level."""
     merged = {}
     for lvl in sorted(by_level):
         merged.setdefault(by_level[lvl], []).append(lvl)
-    if len(merged) == 1 and len(by_level) == 13:
+    if len(merged) == 1 and len(by_level) == len(FILTER_LEVELS):
         return [(None, next(iter(merged)))]
     return [(level_runs(merged[k]), k) for k in sorted(merged, key=lambda k: merged[k][0])]
 
