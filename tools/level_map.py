@@ -90,10 +90,9 @@ SECTION_COLORS = {"Gold, potions, scrolls and keys": "white", "Gems and runes": 
 # The author's line about each level group, by its launcher name (no thresholds or items: the rows say those)
 INTROS = {
     "Show All Items": "Hides nothing and plays every notification.",
-    "Lowest Strictness": "For the ladder start and characters up to level 80.",
+    "Lowest Strictness": "For the ladder start and characters up to level ~80.",
     "Stricter Filtering": "Hides many non-magical bases and low-value magic and rare items.",
-    "Advanced Filtering": "Hides like Endgame, but keeps most rares, magic amulets and Large Charms, and the Stricter "
-                          "look for uniques.",
+    "Advanced Filtering": "Similar to Endgame, but shows more rares, magic amulets and Large Charms.",
     "Endgame Filtering": "Hides most low-value items for endgame characters.",
     "Extreme Filtering!": "Hides everything but the most valuable items.",
 }
@@ -380,7 +379,7 @@ class Drop:
     def dim_values(words, spec, unknown):
         def has(key):
             return any((m := T.COMPARE_RE.match(w)) and m.group(1) == key for w in words)
-        values = {"FILTLVL": list(range(13)),
+        values = {"FILTLVL": list(T.FILTER_LEVELS),
                   "ETH": [0, 1] if "ETH" in words and spec.can_eth else [0],
                   "CLASS": list(T.CLASSES) if words & set(T.CLASSES) else [None],
                   "DIFF": [0, 1, 2] if has("DIFF") else [2],
@@ -1278,19 +1277,19 @@ class Page:
 
     def find_columns(self):
         """Filter levels whose drops all behave the same, potions aside, share a column."""
-        sigs = {lv: [] for lv in range(13)}
+        sigs = {lv: [] for lv in T.FILTER_LEVELS}
         for _, row in self.all_rows():
             for spec in row.specs:
                 if spec.code in POTIONS:
                     continue
                 d = spec.drop
                 block = (1 << d.space.per_level) - 1
-                for lv in range(13):
+                for lv in T.FILTER_LEVELS:
                     shift = lv * d.space.per_level
                     looks = tuple(sorted((k, (m >> shift) & block) for k, m in d.looks.items())) if row.look else ()
                     sigs[lv].append(tuple((x >> shift) & block for x in (d.H, d.S, d.chat, d.icon)) + looks)
         cols = []
-        for lv in range(13):
+        for lv in T.FILTER_LEVELS:
             if cols and sigs[cols[-1][-1]] == sigs[lv]:
                 cols[-1].append(lv)
             else:
@@ -1630,6 +1629,10 @@ def findings(page):
     for name, cs in groups.items():
         if len(set(cs)) > 1 and name not in ("Endgame Filtering",):
             out.append(f"{name}: its levels fall in {len(set(cs))} columns (they differ in more than potions)")
+    for levels in page.columns:  # a new or renamed launcher group: its column shows no intro
+        title, _ = page.column_title(levels)
+        if title not in INTROS:
+            out.append(f"{T.level_runs(levels)} ({title}): no line in INTROS, so its column has no intro")
     return out
 
 

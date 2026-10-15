@@ -352,7 +352,7 @@ class Analysis(B.Analysis):
         for r, _ in folded:
             self.used[r.n].add(base.code)
         out = []
-        for lv in range(13):
+        for lv in T.FILTER_LEVELS:
             shown, earlier = [], []  # display cases [(rule, case)]; the stopping rules so far, with their conditions
             for r, per in folded:
                 if r.kind not in ("hide", "show") or lv not in per:

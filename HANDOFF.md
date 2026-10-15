@@ -83,55 +83,55 @@ About 825 KB is roughly 200k+ tokens per file. **No conversation will "see the w
 
 ### 2.4 Section map
 
-`sections/` at the split (2026-09-29). "Main lines" are where each file's content sits in `Erazure-Main.filter` as of the S14 beta (2026-10-14); they shift as sections grow. Each file starts at its header's top border line, so it opens with the complete header box.
+`sections/` at the split (2026-09-29). "Main lines" are where each file's content sits in `Erazure-Main.filter` as of the S14 beta (2026-10-15); they shift as sections grow. Each file starts at its header's top border line, so it opens with the complete header box.
 
 | File | Main lines | Contents |
 |---|---|---|
 | `010-filter-levels` | 1–15 | 12 `ItemDisplayFilterName[]` lines; their order defines FILTLVL 1–12 |
-| `020-horadric-cube` | 16–45 | Filter level, variant name and `<<VERSION>>` in the Cube description |
-| `030-toggles` | 46–89 | The 8 variant alias blocks (Main active) |
-| `040-aliases` | 90–287 | `TOWN`, rune / item / unique / set / rare / map group aliases |
-| `045-unique-set-rolls` | 288–844 | GENERATED (`tools/gen_unique_rolls.py`): the `ROLL_<X>_TAG` aliases of the unique/set roll tags (added S14) |
-| `050-customization` | 845–1110 | Commented-out opt-in rules for players |
-| `060-gold-potions-tomes` | 1111–1337 | Gold; health, mana, rejuvenation, utility and throwing potions; tomes and scrolls |
-| `070-keys` | 1338–1907 | MAPID list and key rules |
-| `080-quest-items` | 1908–1936 | |
-| `090-gems` | 1937–2067 | |
-| `100-sound-ids` | 2068–2121 | |
-| `110-runes` | 2122–2302 | El-Tal → Sur-Zod, rune notifications and map icons |
-| `120-pd2-items` | 2303–2588 | Shards, Puzzlepiece/box, Demonic Cube, Almanac, Navigator, Skeleton Key, Vial, Mirror, Essences, Uber keys/organs/ancients, DClone/Rathma/Lucion items, orbs, infusions, ears, Scarab (BIG GG items) |
-| `130-maps` | 2589–2746 | Map names (T1–T3, unique, T4 dungeons), area level |
-| `140-map-resistances` | 2747–3297 | S13 per-map resistance display: explanation, then one block per map |
-| `145-map-rolls-and-notifications` | 3298–3501 | Map contents and modifier highlights, catalyzed, tier tags, map icons and notifications, mf/den/rar/exp prefixes, arenas |
-| `150-uniques` | 3502–3960 | Revealed names, DClone/Rathma uniques, BIG GG display |
-| `160-uniques-value-tiers` | 3961–4465 | High / medium / minimal value, low-level duel, all other uniques |
-| `170-sets` | 4466–4677 | Revealed names, high / medium value, low-level duel, rings and amulets, normal / exceptional / elite sets |
-| `180-crafted` | 4678–4684 | |
-| `190-rares` | 4685–4891 | Heavy on hide rules; eth rare weapon notifications |
-| `200-magic` | 4892–5195 | Heavy on hide rules; magic charms; eth magic weapon notifications |
-| `205-white-runeword-bases` | 5196–5277 | The `RWB_<TAG>_<TYPE>` aliases: each +skill runeword base of white class items (codes, sockets, skills) that 210/220 tag and keep from their hide rules (added S14) |
-| `210-nonmagic-armor` | 5278–5832 | General non-magic rules, arrows/bolts, armors, shields, circlets, helms, belts, boots, gloves, barbarian helms, druid pelts and clubs, necromancer heads |
-| `220-nonmagic-weapons` | 5833–6426 | Necro wands through swords, ethereal non-magic, %ED tag on superior items, paladin shields |
-| `230-item-description-notes` | 6427–6688 | CONTINUE-only notes; maximum block dexterity |
-| `240-charms` | 6689–6869 | Magic charm display |
-| `250-jewels` | 6870–6989 | |
-| `260-arrow-bolt-affixes` | 6990–7077 | |
-| `270-rathma-gear-tags` | 7078–7106 | |
-| `280-skills-shop-highlights` | 7107–7861 | +Skills items and shop highlights (~27k tokens) |
-| `300-affix-tags` | 7862–9125 | 113 stat blocks, one per stat in the game's stat order: MF, GF, resists, FCR, IAS, skills… (largest file, ~28k tokens) |
-| `305-runeword-rolls` | 9126–9639 | GENERATED (`tools/gen_runeword_rolls.py`): runeword roll tags, aliases and tag lines in 300's stat order (added S14) |
-| `310-staffmods` | 9640–9936 | |
-| `315-sell-value-tags` | 9937–9996 | Sell value ($6k below character level 30, then ($)) and low cost vendor ($): left-most tag of the lower line, so after every tag section (was `290` until S14) |
-| `320-highlights-ed-amp-lr` | 9997–10043 | |
-| `330-tooltip-tags` | 10044–10065 | Cannot Be Frozen, weapon speed & range, item tier type (commented out) |
-| `340-high-alvl-crafting-bases` | 10066–10112 | |
-| `350-ed-dr-highlights` | 10113–10149 | Chest/shield ED and damage-reduction highlights |
-| `360-max-res-resist-tags` | 10150–10191 | Maximum resistances, resistance tags |
-| `370-catch-all` | 10192–10193 | `ItemDisplay[]:%NAME%{%NAME%}//` (must stay last) |
+| `020-horadric-cube` | 16–50 | Filter level, variant name and `<<VERSION>>` in the Cube description |
+| `030-toggles` | 51–94 | The 8 variant alias blocks (Main active) |
+| `040-aliases` | 95–292 | `TOWN`, rune / item / unique / set / rare / map group aliases |
+| `045-unique-set-rolls` | 293–849 | GENERATED (`tools/gen_unique_rolls.py`): the `ROLL_<X>_TAG` aliases of the unique/set roll tags (added S14) |
+| `050-customization` | 850–1115 | Commented-out opt-in rules for players |
+| `060-gold-potions-tomes` | 1116–1342 | Gold; health, mana, rejuvenation, utility and throwing potions; tomes and scrolls |
+| `070-keys` | 1343–1912 | MAPID list and key rules |
+| `080-quest-items` | 1913–1941 | |
+| `090-gems` | 1942–2072 | |
+| `100-sound-ids` | 2073–2126 | |
+| `110-runes` | 2127–2307 | El-Tal → Sur-Zod, rune notifications and map icons |
+| `120-pd2-items` | 2308–2593 | Shards, Puzzlepiece/box, Demonic Cube, Almanac, Navigator, Skeleton Key, Vial, Mirror, Essences, Uber keys/organs/ancients, DClone/Rathma/Lucion items, orbs, infusions, ears, Scarab (BIG GG items) |
+| `130-maps` | 2594–2751 | Map names (T1–T3, unique, T4 dungeons), area level |
+| `140-map-resistances` | 2752–3302 | S13 per-map resistance display: explanation, then one block per map |
+| `145-map-rolls-and-notifications` | 3303–3506 | Map contents and modifier highlights, catalyzed, tier tags, map icons and notifications, mf/den/rar/exp prefixes, arenas |
+| `150-uniques` | 3507–3965 | Revealed names, DClone/Rathma uniques, BIG GG display |
+| `160-uniques-value-tiers` | 3966–4470 | High / medium / minimal value, low-level duel, all other uniques |
+| `170-sets` | 4471–4682 | Revealed names, high / medium value, low-level duel, rings and amulets, normal / exceptional / elite sets |
+| `180-crafted` | 4683–4689 | |
+| `190-rares` | 4690–4896 | Heavy on hide rules; eth rare weapon notifications |
+| `200-magic` | 4897–5200 | Heavy on hide rules; magic charms; eth magic weapon notifications |
+| `205-white-runeword-bases` | 5201–5282 | The `RWB_<TAG>_<TYPE>` aliases: each +skill runeword base of white class items (codes, sockets, skills) that 210/220 tag and keep from their hide rules (added S14) |
+| `210-nonmagic-armor` | 5283–5837 | General non-magic rules, arrows/bolts, armors, shields, circlets, helms, belts, boots, gloves, barbarian helms, druid pelts and clubs, necromancer heads |
+| `220-nonmagic-weapons` | 5838–6431 | Necro wands through swords, ethereal non-magic, %ED tag on superior items, paladin shields |
+| `230-item-description-notes` | 6432–6693 | CONTINUE-only notes; maximum block dexterity |
+| `240-charms` | 6694–6874 | Magic charm display |
+| `250-jewels` | 6875–6994 | |
+| `260-arrow-bolt-affixes` | 6995–7082 | |
+| `270-rathma-gear-tags` | 7083–7111 | |
+| `280-skills-shop-highlights` | 7112–7866 | +Skills items and shop highlights (~27k tokens) |
+| `300-affix-tags` | 7867–9130 | 113 stat blocks, one per stat in the game's stat order: MF, GF, resists, FCR, IAS, skills… (largest file, ~28k tokens) |
+| `305-runeword-rolls` | 9131–9644 | GENERATED (`tools/gen_runeword_rolls.py`): runeword roll tags, aliases and tag lines in 300's stat order (added S14) |
+| `310-staffmods` | 9645–9941 | |
+| `315-sell-value-tags` | 9942–10001 | Sell value ($6k below character level 30, then ($)) and low cost vendor ($): left-most tag of the lower line, so after every tag section (was `290` until S14) |
+| `320-highlights-ed-amp-lr` | 10002–10048 | |
+| `330-tooltip-tags` | 10049–10070 | Cannot Be Frozen, weapon speed & range, item tier type (commented out) |
+| `340-high-alvl-crafting-bases` | 10071–10117 | |
+| `350-ed-dr-highlights` | 10118–10154 | Chest/shield ED and damage-reduction highlights |
+| `360-max-res-resist-tags` | 10155–10196 | Maximum resistances, resistance tags |
+| `370-catch-all` | 10197–10198 | `ItemDisplay[]:%NAME%{%NAME%}//` (must stay last) |
 
 To add a section, give it a number between its neighbours (`115-new-topic.filter`). To split one, move lines into a new file; `python tools/build.py --check` then proves the 8 filters didn't change.
 
-Worth having the agent explain once: "Maximum Resistances" appears in `300-affix-tags` (Main 8208) and `360-max-res-resist-tags` (10151). That's probably deliberate, one for tagging and one for highlighting, but it's worth confirming. (S13 also had "Indestructible" twice in `300-affix-tags`; in S14 the first one heads corruption 48's ED tag, Main 8371.)
+Worth having the agent explain once: "Maximum Resistances" appears in `300-affix-tags` (Main 8213) and `360-max-res-resist-tags` (10156). That's probably deliberate, one for tagging and one for highlighting, but it's worth confirming. (S13 also had "Indestructible" twice in `300-affix-tags`; in S14 the first one heads corruption 48's ED tag, Main 8376.)
 
 ---
 
@@ -261,7 +261,7 @@ At each ladder reset:
 
 **Magic and rare items pages:** `python tools/magic_rare_map.py` regenerates `Erazure-Magic-Items.html` and `Erazure-Rare-Items.html` (the players' pages: how each armor, weapon, quiver, ring, amulet, jewel and charm base shows when it drops unidentified as a magic or rare item, per filter level, from the filter's own rules; `build.bat` and the hook run it, CI checks it; the website's Magic Items and Rare Items pages show them). It runs on `base_map.py`'s engine with the Non-magical Bases page's layout; its rows join BH's display pass and notification pass, so a hidden item with a minimap icon shows as a Hidden row with that icon. `QLVL` comes from the `qlvl` column of `docs/pd2-bases.tsv` (`--tier-data`). `--base uar,jew [--quality RARE]` prints bases' rows; `--findings` lists minimap icons on hidden items and 190/200 rules that apply to no base. Built and checked 2026-10-14 against the filter's rules evaluated directly, every base over hundreds of thousands of drop cases.
 
-**Filter levels page:** `python tools/level_map.py` regenerates `Erazure-Filter-Levels.html` (the players' page that replaced the README's "Differences Between Filter Level Tiers": what each filter level shows, notifies and hides for every kind of item that drops, at every character level, from the filter's own rules; `build.bat` and the hook run it, CI checks it; the website's Filter Levels page shows it). Columns are the levels that behave the same, potions aside (0 | 1 | 2-6 | 7-8 | 9 | 10 | 11 | 12, found by the tool); rows are kinds of items (gold, potions, scrolls, keys, gems, runes, PD2 items, maps, quest items, uniques and sets by tier, rare, magic and non-magical items by type, non-magical ones as a plain and a best-case row) with sub-rows where their items behave differently; a cell has its state per character level (a strip), words and details (Normal difficulty and the special areas as notes). Below the table, "What changes" cards list each level group's changes from the one before it, item by item, as small tables (rows: character levels, gold piles, ethereal or not, classes...; columns: the levels before, then now; changed rows marked; "High value → Medium value" when nothing else matters), level 11 against 9 and level 12 marking what it shares with 10. A cell's details use the same tables. The author's one-line intros are `INTROS` in the tool. `--row NAME`, `--changes`, `--findings` (launcher names' "Hides H5 / M5 / 35%" the rules don't do, a level group split by more than potions). Its engine evaluates every case of a drop at once as bitmasks (about 10 s for the whole page); checked 2026-10-14 against the rules evaluated one case at a time, no differences.
+**Filter levels page:** `python tools/level_map.py` regenerates `Erazure-Filter-Levels.html` (the players' page that replaced the README's "Differences Between Filter Level Tiers": what each filter level shows, notifies and hides for every kind of item that drops, at every character level, from the filter's own rules; `build.bat` and the hook run it, CI checks it; the website's Filter Levels page shows it). Columns are the levels that behave the same, potions aside (0 | 1 | 2-6 | 7-8 | 9 | 10 | 11 | 12, found by the tool); rows are kinds of items (gold, potions, scrolls, keys, gems, runes, PD2 items, maps, quest items, uniques and sets by tier, rare, magic and non-magical items by type, non-magical ones as a plain and a best-case row) with sub-rows where their items behave differently; a cell has its state per character level (a strip), words and details (Normal difficulty and the special areas as notes). Below the table, "What changes" cards list each level group's changes from the one before it, item by item, as small tables (rows: character levels, gold piles, ethereal or not, classes...; columns: the levels before, then now; changed rows marked; "High value → Medium value" when nothing else matters), level 11 against 9 and level 12 marking what it shares with 10. A cell's details use the same tables. The author's one-line intros are `INTROS` in the tool. `--row NAME`, `--changes`, `--findings` (launcher names' "Hides H5 / M5 / 35%" the rules don't do, a level group split by more than potions or with no `INTROS` line). Its engine evaluates every case of a drop at once as bitmasks (about 10 s for the whole page); checked 2026-10-14 against the rules evaluated one case at a time, no differences.
 
 **Website:** https://filtersby-erazure.github.io/PD2-Loot-Filter/ is MkDocs with the Material theme. Its pages are `website/docs/*.md` (the README's text) and its config is `website/mkdocs.yml`; `website/hooks.py` puts the tier map into the Unique & Set Tiers page, the bases map into the Non-magical Bases page, the magic and rare maps into the Magic Items and Rare Items pages and the level map into the Filter Levels page at build time (from `Erazure-Unique-Set-Tiers.html`, `Erazure-Non-Magic-Bases.html`, `Erazure-Magic-Items.html`, `Erazure-Rare-Items.html` and `Erazure-Filter-Levels.html`, between their templates' `tier-map` / `base-map` / `magic-map` / `rare-map` / `level-map` markers). Every visit starts dark (`website/overrides/main.html` forgets a light/dark switch saved by an earlier visit). `site_preview.bat` previews it locally (it installs MkDocs Material 9.7.7 into `tools/.cache/mkdocs-venv` on first use). `publish_beta.py` copies `website/` and `.github/workflows/pages.yml` to `main`, where that workflow builds and deploys the site on every push. Pages source: GitHub Actions.
 

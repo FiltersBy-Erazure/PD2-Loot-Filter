@@ -1008,7 +1008,7 @@ class Words:
 # ---------------------------------------------------------------- per base: the rows
 
 def level_text(lo, hi):
-    return "All levels" if (lo, hi) == (0, 12) else f"Level {lo}" if lo == hi else f"Levels {lo}–{hi}"
+    return "All levels" if (lo, hi) == (0, T.FILTER_LEVELS[-1]) else f"Level {lo}" if lo == hi else f"Levels {lo}–{hi}"
 
 
 def nots(x):
@@ -1107,7 +1107,7 @@ class Analysis:
         tests = [(w, T.COMPARE_RE.match(w)) for w in sorted(words) if w.startswith("FILTLVL")]
         names = [w for w in sorted(words) if w.startswith(NAMED)]
         runs_by = defaultdict(list)
-        for lv in range(13):
+        for lv in T.FILTER_LEVELS:
             k = tuple(T.compare(lv, m) for _, m in tests) + tuple(
                 canon(named[w].get(lv, ("c", 0))) if named.get(w) else None for w in names)
             runs_by[k].append(lv)
@@ -1135,7 +1135,7 @@ class Analysis:
         """The base's lines: [{kind, lo, hi, cond, rules, chat}], one case each, conditions not yet in words."""
         folded, named, simp = self.fold_base(base, inf)
         entries = []  # [kind, rule, {level: condition}]
-        earlier = {lv: [] for lv in range(13)}  # stopping rules so far, with their own conditions
+        earlier = {lv: [] for lv in T.FILTER_LEVELS}  # stopping rules so far, with their own conditions
         for r, per in folded:
             self.used[r.n].add(base.code)
             if r.kind in ("hide", "show"):
@@ -1181,7 +1181,7 @@ class Analysis:
                     by.setdefault(canon(t), {})[lv] = t
             cases += [[kind, r, p] for p in by.values()]
         # a hide case another hide case has at the same level says nothing new
-        for lv in range(13):
+        for lv in T.FILTER_LEVELS:
             hides = [e for e in cases if e[0] == "hide" and lv in e[2]]
             for i, e in enumerate(hides):
                 for j, f in enumerate(hides):
