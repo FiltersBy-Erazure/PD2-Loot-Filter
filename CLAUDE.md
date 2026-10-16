@@ -197,7 +197,8 @@
 0 = Show All Items. 1–12 are the `ItemDisplayFilterName[]` lines in `sections/010-filter-levels.filter`;
 their order is their number. Roughly: 1 Lowest Strictness, 2–6 Stricter (hiding H5 / M5 / 35% in
 combinations), 7–8 Advanced (Endgame, but as on 2–6 for magic amulets and Large Charms, the unique looks of
-`160` and the unidentified rares of `190-rares` except low helms and small shields; 7 shows M5, 8 hides it),
+`160` but Athena's Wrath (Minimal on 0–6 only) and the unidentified rares of `190-rares` except low helms and
+small shields; 7 shows M5, 8 hides it),
 9–11 Endgame (10–11 also hide Crafting Bases, or Flawless Gems and Large Charms), 12 Extreme.
 The exact labels are in that file. A rule without `FILTLVL` applies at every level. The players' pages take the
 levels, their names and their number from that file (`tier_map.FILTER_LEVELS`), so they follow a renamed, merged or
