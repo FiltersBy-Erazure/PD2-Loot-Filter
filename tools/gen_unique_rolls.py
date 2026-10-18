@@ -45,7 +45,7 @@ FILTER_WIKI = ROOT / "docs" / "pd2-item-filtering.wiki"
 # Name budget (BH shows 56 characters): unique name + line break + base name, the line break that
 # 300-affix-tags adds before the tags (%CL%), one corruption tag, and " N" for sockets (210-nonmagic-armor)
 # on items that can have them. This is the usual case, by the author's choice (2026-10-04): "Eth " and
-# corruptions that add two tags (e.g. "10fcr 5%dmg", "Ind 60ed") are rarer and may occasionally cut the
+# corruptions that add two tags (e.g. "10fcr 5%f", "Ind 60ed") are rarer and may occasionally cut the
 # end of a long name; reserving for them as well would leave most items a single tag.
 # Amulets can be corrupted and desecrated (STAT206), so they keep room for two such tags.
 NAME_MAX, LINE_BREAK, CORRUPTION_RESERVE, SOCKET_RESERVE, MAX_PICKS = 56, 1, 8, 2, 3
@@ -491,6 +491,7 @@ CTC_EVENTS = {"on attack": 195, "when you kill an enemy": 196, "on kill": 196, "
 WEIGHT1 = re.compile(r"^(SK|OS|CLSK|TABSK|MULTI)|^STAT(113|117|81)$")
 WEIGHT3 = re.compile(r"^(ED|EDAM|STAT89|STAT20)$")
 UNRELIABLE = {"DEF", "SOCK"}  # total defense also depends on the base tier and ethereal; sockets can be added
+NO_ABSENCE = {"RES", "ALLATTRIB", "MAXRES", "MINDMG", "MAXDMG", "ED", "EDAM", "EDEF"}  # never as "the item lacks it"
 COMPANIONS = {"stat48", "stat50", "stat52", "stat54"}  # the minimum of "Adds X-Y damage": shown with its maximum
 
 
@@ -698,7 +699,7 @@ class Item:
             if tagged:
                 self.rolls["masteries"] = (lo, hi)
         self.unmapped = [r["line"] for r in self.all_rolls if not r["tagged"]]
-        self.fingerprint, self.unresolved, self.weak = [], [], []
+        self.fingerprint, self.unresolved, self.weak, self.excluded = [], [], [], []
 
     def add_roll(self, key, code, lo, hi, line):
         if any(r["key"] == key for r in self.all_rolls):
@@ -814,7 +815,51 @@ GAME_PAGE = "Game data"  # picker group of the items the wiki lacks
 GAME_NAMES = {"Spirit Shroud": "The Spirit Shroud",  # wiki name -> the game's, where they differ
               "Infernal Spire (Infernal Torch)": "Infernal Spire"}
 NO_GAME_DATA, GAME_ONLY = [], []  # wiki items the game data lacks / game items the wiki lacks (load())
+# Items PD2 makes in its code, not from a table row with stats: base codes the item-code wiki
+# lacks and stat lines (the wiki's wording) where the wiki is behind the game. Armageddon's Blade, a Charsi imbue of
+# a Phase Blade, is on its own 2-handed base 7cr2 (BH compares all four characters: 7cr is never it); S14 beta
+# 2026-10-15: +4 Paladin skills, level 45 Armageddon, -20 to -30% enemy fire resistance (S13: +2, 30, -20).
+CODE_ITEMS = {("UNI", "Armageddon's Blade"): {"codes": ["7cr2"], "stats": [
+    "75% Chance to Cast Level 50 Firestorm on Striking", "Level 45 Armageddon when Equipped",
+    "+4 to Paladin Skill Levels", "+[20-30]% Increased Chance of Blocking", "+[280-320]% Enhanced Damage",
+    "-[20-30]% to Enemy Fire Resistance", "+6 to All Attributes", "+[5-10]% to Maximum Fire Resist"]}}
 CODE_STAT = {code: sid for sid, code in pd2_data.NAMED.items()}
+CORRUPTIONS = pd2_data.load_corruptions()  # docs/pd2-corruptions.tsv: what each corruption outcome adds
+CORRUPT_TYPE = {"WEAPON": "weap", "HELM": "helm", "CIRC": "helm", "CHEST": "tors", "SHIELD": "shld", "GLOVES": "glov",
+                "BOOTS": "boot", "BELT": "belt", "amu": "amul", "rin": "rin", "QUIVER": "misl"}  # slot -> cube input
+CUBE_QUALITIES = {"nor", "hiq", "low", "mag", "rar", "set", "uni", "crf"}
+TAB_LABELS = dict(re.findall(r"%(TABSK\d+)%%[A-Z_]+%([A-Za-z]+)%CS%",
+                             (ROOT / "sections" / "300-affix-tags.filter").read_text(encoding="utf-8")))
+
+
+def corruption_bonuses(it):
+    """What a corruption can add to the item: [(outcomes, {code: (lowest, highest)})], one per stat set its slot and
+    quality can get (the cube's rows, docs/pd2-corruptions.tsv), outcomes = the STAT360 values that give it. An
+    amulet can be corrupted and desecrated (STAT206): every pair of stat sets too, outcomes as (STAT360, STAT206)."""
+    quality = "uni" if it.kind == "UNI" else "set"
+    by_sig = {}
+    for o in CORRUPTIONS:
+        if o["type"] != CORRUPT_TYPE.get(it.where) or (o["words"] & CUBE_QUALITIES) - {quality} or not o["props"]:
+            continue
+        bonus = {}
+        for prop in o["props"]:
+            for code, lo, hi in prop:
+                code = it.filter_code(code)
+                old = bonus.get(code, (0, 0))
+                bonus[code] = (old[0] + min(lo, hi), old[1] + max(lo, hi))
+        by_sig.setdefault(tuple(sorted(bonus.items())), (set(), bonus))[0].add(o["outcome"])
+    singles = [(sorted(ids), bonus) for ids, bonus in by_sig.values()]
+    if it.where not in CORRUPTION_TAGS:
+        return singles
+    pairs = []
+    for i, (a_ids, a) in enumerate(singles):
+        for b_ids, b in singles[i:]:
+            both = dict(a)
+            for code, (lo, hi) in b.items():
+                old = both.get(code, (0, 0))
+                both[code] = (old[0] + lo, old[1] + hi)
+            pairs.append((sorted({(x, y) for x in a_ids for y in b_ids} | {(y, x) for x in a_ids for y in b_ids}), both))
+    return singles + pairs
 
 
 def shown_value(code, x):
@@ -860,18 +905,44 @@ def build_fingerprints(items):
     for it in items:
         for c in it.codes:
             by_code.setdefault((it.kind, c), []).append(it)
+    bonuses = {id(it): corruption_bonuses(it) for it in items}
     for it in items:
         rivals = {id(j): j for c in it.codes for j in by_code.get((it.kind, c), []) if j.key != it.key}
+        cases, outcomes = {}, {}  # each rival as it drops and as each corruption leaves it: none may pass
+        for k, j in rivals.items():
+            cases[(k, 0)] = j.stats
+            for n, (ids, bonus) in enumerate(bonuses[k], 1):
+                stats = dict(j.stats)
+                for code, (lo, hi) in bonus.items():
+                    old = stats.get(code, (0, 0))
+                    stats[code] = (old[0] + lo, old[1] + hi)
+                cases[(k, n)], outcomes[(k, n)] = stats, ids
         conds = []
-        need = {k: 2 for k in rivals}  # a weight-1 exclusion counts 2, any other 1
+        # a weight-1 exclusion counts 2, any other 1; a rival as it drops needs 2, one corruption of it (modeled
+        # exactly) is out once
+        need = {k: 2 if k[1] == 0 else 1 for k in cases}
         options = [(code, lo) for code, (lo, hi) in it.stats.items() if lo >= 1]
         options += [(code, hi) for code, (lo, hi) in it.stats.items() if hi <= -1]
         options = [(c, lim) for c, lim in options if c not in UNRELIABLE and c not in PER_LEVEL]  # (per-level: unused)
+        # a corruption of its own may not take the item out of its fingerprint
+        lowers = {c for _, b in bonuses[id(it)] for c, (lo, hi) in b.items() if lo < 0}
+        raises = {c for _, b in bonuses[id(it)] for c, (lo, hi) in b.items() if hi > 0}
+        options = [(c, lim) for c, lim in options if c not in (lowers if lim > 0 else raises)]
+        # last resort ("SK134<1"): a stat a rival has and the item never gets, from a corruption, a random skill or a
+        # per-level stat of its own either (Bonesnap from a Bloodtree Stump corrupted with +% damage to undead)
+        mine = {c for c, (lo, hi) in it.stats.items() if lo or hi}
+        random_skill = any(c.startswith("RAND") for p in (it.game or {}).get("props", []) for c, *_ in p)
+        level_based = {PER_LEVEL[c][0] for c in it.stats if c in PER_LEVEL}
+        lacks = {c for st in cases.values() for c, (lo, hi) in st.items() if lo >= 1} - mine
+        options += [(c, 0) for c in sorted(lacks) if c not in UNRELIABLE | NO_ABSENCE and c not in PER_LEVEL
+                    and c not in raises and c not in level_based and not (random_skill and re.match(r"(SK|CLSK)\d", c))]
 
         def excluded(code, lim):
+            if lim == 0:  # "never has it": rivals that always have it are out
+                return [k for k in need if need[k] > 0 and cases[k].get(code, (0, 0))[0] > 0]
             if lim < 0:  # "at most lim": rivals whose lowest value is above it are out
-                return [k for k in need if need[k] > 0 and rivals[k].stats.get(code, (0, 0))[0] > lim]
-            return [k for k in need if need[k] > 0 and rivals[k].stats.get(code, (0, 0))[1] < lim]
+                return [k for k in need if need[k] > 0 and cases[k].get(code, (0, 0))[0] > lim]
+            return [k for k in need if need[k] > 0 and cases[k].get(code, (0, 0))[1] < lim]
 
         while any(n > 0 for n in need.values()):
             best = None
@@ -882,7 +953,7 @@ def build_fingerprints(items):
                 if gone:
                     w = weight(code)
                     gain = sum(min(need[k], 2 if w == 1 else 1) for k in gone)
-                    score = (w, -gain, code)
+                    score = (lim == 0, w, -gain, code)
                     if best is None or score < best[0]:
                         best = (score, code, lim, gone)
             if best is None:
@@ -890,15 +961,19 @@ def build_fingerprints(items):
             conds.append((best[1], best[2]))
             for k in best[3]:
                 need[k] -= 2 if weight(best[1]) == 1 else 1
-        it.unresolved = sorted(rivals[k].name for k, n in need.items() if n == 2)
-        it.weak = sorted(rivals[k].name for k, n in need.items() if n == 1)
+        # a corruption no stat tells apart (Arkaine's Valor with magic damage reduction looks like Skullder's Ire):
+        # the fingerprint leaves that corruption out, so the item's own roll tags skip it too (its corruption tag stays)
+        left = sorted({o for k, n in need.items() if k[1] and n > 0 for o in outcomes[k]}, key=str)
+        it.excluded = [f"!STAT360={o}" if isinstance(o, int) else f"!(STAT360={o[0]} STAT206={o[1]})" for o in left]
+        it.unresolved = sorted({rivals[k[0]].name for k, n in need.items() if k[1] == 0 and n == 2})
+        it.weak = sorted({rivals[k[0]].name for k, n in need.items() if k[1] == 0 and n == 1} - set(it.unresolved))
         it.fingerprint = conds
 
 
 def fingerprint_text(it, extra=None):
     """(its base codes, the stats that tell it apart[, extra: a version's own stat])."""
     codes = it.codes[0] if len(it.codes) == 1 else "(" + " OR ".join(it.codes) + ")"
-    conds = [f"{c}<{lo + 1}" if lo < 0 else f"{c}>{lo - 1}" for c, lo in it.fingerprint]
+    conds = [f"{c}<{lo + 1}" if lo <= 0 else f"{c}>{lo - 1}" for c, lo in it.fingerprint] + it.excluded
     conds = " ".join(conds + ([extra] if extra and extra not in conds else []))
     return f"({codes}{' ' + conds if conds else ''})"
 
@@ -930,9 +1005,25 @@ def tag_width(key, hi, lo=None):
     return digits + len(label) + (1 if key.startswith("-") or key in MINUS_TAGS else 0) + 1
 
 
+def tab_codes(it):
+    """The skill tabs the item has: picked, tabsk shows each as a tag of its own (300's line per tab)."""
+    return sorted((c for c, (lo, hi) in it.stats.items() if re.fullmatch(r"TABSK\d+", c) and hi),
+                  key=lambda c: int(c[5:]))
+
+
+def roll_width(it, key):
+    """Characters roll `key` of the item takes as tags at its highest roll: tabsk one tag per tab the item has, each
+    with its own label (3nsum 3pnb 3curs)."""
+    r = it.roll(key)
+    tabs = tab_codes(it) if key == "tabsk" and r["tagged"] else []
+    if tabs:
+        return sum(len(str(abs(it.stats[c][1]))) + len(TAB_LABELS.get(c, TAGS["tabsk"][2])) + 1 for c in tabs)
+    return tag_width(key, r["hi"], r["lo"])
+
+
 def picks_width(it, picks):
     """What the picked tags take (a tag with no line yet: its estimate)."""
-    return sum(tag_width(k, it.roll(k)["hi"], it.roll(k)["lo"]) for k in picks if it.roll(k))
+    return sum(roll_width(it, k) for k in picks if it.roll(k))
 
 
 def short_name_mode(it, picks=None, always=False):
@@ -960,7 +1051,7 @@ def default_picks(it):
         if key == "fcr" and it.weapon and not it.caster:
             continue
         if key in it.rolls and len(picks) < MAX_PICKS:
-            w = tag_width(key, it.rolls[key][1], it.rolls[key][0])
+            w = roll_width(it, key)
             if used + w <= budget or not picks:
                 picks.append(key)
                 used += w
@@ -993,9 +1084,9 @@ def render_picks(items, old):
         cands = " ".join(cand_text(it, r) for r in keyed)
         picks = mine[0] if mine and not mine[1] else auto
         mode, budget = short_name_mode(it, picks)
-        used = sum(tag_width(k, it.rolls[k][1], it.rolls[k][0]) for k in picks if k in it.rolls)
+        used = sum(roll_width(it, k) for k in picks if k in it.rolls)
         waiting = [k for k in picks if it.roll(k) and not it.roll(k)["tagged"]]
-        wait_w = sum(tag_width(k, it.roll(k)["hi"], it.roll(k)["lo"]) for k in waiting)
+        wait_w = sum(roll_width(it, k) for k in waiting)
         info = f"room {budget}, uses {used}"
         if mode:
             info += f" (short name {'when corrupted' if mode == 'corrupted' else 'always'}: {SHORT_NAMES[it.key]})"
@@ -1021,7 +1112,7 @@ def cand_text(it, r):
     else:
         lo, hi = shown_value(r["code"], r["lo"]), shown_value(r["code"], r["hi"])
         shown = f"{lo}-{hi}" if lo != hi else f"{hi}"
-    return f"{r['key']}{'' if r['tagged'] else '*'} {shown} ({tag_width(r['key'], r['hi'], r['lo'])})"
+    return f"{r['key']}{'' if r['tagged'] else '*'} {shown} ({roll_width(it, r['key'])})"
 
 
 # ---------------------------------------------------------------- section
@@ -1101,10 +1192,35 @@ def tag_lines():
                     if piece:
                         chunk["parts"].append([color, piece])
         chunks.append(chunk)
-        out.append({"n": n, "aliases": set(re.findall(r"(?<!!)\bROLL_[A-Z0-9]+_TAG\b", cond)),  # not "!ROLL_X_TAG"
+        out.append({"n": n, "cond": cond, "aliases": set(re.findall(r"(?<!!)\bROLL_[A-Z0-9]+_TAG\b", cond)),  # not "!ROLL_X_TAG"
                     "slots": set(SLOT_WORDS.findall(cond)), "chunks": [c for c in chunks if c["parts"]],
                     "cmps": re.findall(r"(?<![!A-Za-z0-9_])([A-Z]+[0-9]*(?:,[0-9]+)?)([<>=])(-?\d+)", cond)})
     return out
+
+
+def value_fits(cond, code, v):
+    """Whether a tag line's comparison of `code` (TABSK0~1-2, TABSK0>2) holds for value v."""
+    m = re.search(rf"\b{code}~(\d+)-(\d+)", cond)
+    if m:
+        return int(m.group(1)) <= v <= int(m.group(2))
+    m = re.search(rf"\b{code}([<>=])(\d+)", cond)
+    return not m or {"<": v < int(m.group(2)), ">": v > int(m.group(2)), "=": v == int(m.group(2))}[m.group(1)]
+
+
+def tab_tags(it, lines):
+    """tabsk on an item with several skill tabs: a tag per tab, each from its own line and in its color for the
+    tab's highest value, a later line further left (as the game shows them: 3nsum 3pnb 3curs)."""
+    alias, shown = TAGS["tabsk"][0], []
+    for code in tab_codes(it):
+        own = [l for l in lines if alias in l["aliases"] and any(c["kw"] == code for c in l["chunks"])
+               and (not l["slots"] or it.where in l["slots"])]
+        if own:
+            line = next((l for l in own if value_fits(l["cond"], code, abs(it.stats[code][1]))), own[0])
+            shown.append((line["n"], [p for c in line["chunks"] if c["kw"] == code for p in c["parts"]]))
+    parts = []
+    for _, own in sorted(shown, key=lambda s: -s[0]):
+        parts += ([[parts[-1][0], " "]] if parts else []) + own
+    return shown and {"n": max(n for n, _ in shown), "parts": parts, "cmps": []}
 
 
 def tag_format(it, r, lines):
@@ -1112,6 +1228,9 @@ def tag_format(it, r, lines):
     for the value applies; n = its line, which sets its place), and whether the look is borrowed. A roll with
     no tag line borrows the look of a line that shows the same stat (another slot's, or a magic item's)."""
     code, alias = r["code"], TAGS[r["key"]][0] if r["key"] in TAGS else None
+    tabs = r["key"] == "tabsk" and r["tagged"] and len(tab_codes(it)) > 1 and tab_tags(it, lines)
+    if tabs:
+        return [tabs], False
     if r["key"] == "ver" and it.version:
         alias = TAGS[it.version][0]
 
@@ -1191,7 +1310,7 @@ def write_picker(items, old):
             if r["key"]:
                 fmt, approx = tag_format(it, r, lines)
                 kws = {kw for f in fmt for _, t in f["parts"] for kw in re.findall(r"\{v:([^}]+)\}", t)}
-                cands.append({"k": r["key"], "lo": r["lo"], "hi": r["hi"], "w": tag_width(r["key"], r["hi"], r["lo"]),
+                cands.append({"k": r["key"], "lo": r["lo"], "hi": r["hi"], "w": roll_width(it, r["key"]),
                               "vals": {kw: abs(it.stats[kw][1]) for kw in kws if kw in it.stats and kw != r["code"]},
                               "v": abs(r["hi"]) if r["key"].startswith("-") else
                               float(shown_value(r["code"], r["hi"])) if r["code"] in PER_LEVEL else r["hi"],
@@ -1257,6 +1376,11 @@ def load():
             for c in codes:
                 CODE_FAMILY.setdefault(c, codes)
     raw = [r for r in item_data.items(families) if r["codes"] and r["page"] not in SKIP_PAGES]
+    for r in raw:  # items PD2 makes in its code: base and stats as the game makes them
+        fix = CODE_ITEMS.get((r["kind"], r["name"]))
+        if fix:
+            r["codes"], r["stats"] = fix["codes"], fix["stats"]
+            r["rolls"] = [s for s in r["stats"] if item_data.RANGE_RE.search(s) and not item_data.NOT_A_ROLL.search(s)]
     for r in raw:  # slot of each base code, from the typed unique pages
         slot = "WEAPON" if r["page"] in WEAPON_PAGES else PAGE_SLOT.get(r["page"])
         for c in r["codes"]:
@@ -1382,6 +1506,8 @@ def main():
         print(f"  cannot tell {it.key} [{' '.join(it.codes)}] apart from: {', '.join(it.unresolved)}")
     weak = [it for it in items if it.weak and it.rolls]
     print(f"{len(weak)} fingerprints rule out some rival with only one corruptible stat (--report shows them)")
+    for it in (it for it in items if it.excluded and it.rolls):
+        print(f"  {it.key}: no roll tags when {' / '.join(it.excluded)} (a rival so corrupted looks the same)")
     asked = requests(items, new_picks)
     if asked:
         print(f"{len(asked)} picked roll(s) wait for a tag line: {', '.join(asked)} (--requests lists them)")

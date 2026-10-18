@@ -33,7 +33,8 @@ Checks (the id in [brackets] is what tools/lint_allow.txt refers to):
                     (512 for SHOP rules), 511 in all with color codes
     desc-length     a rule's own text already exceeds about 500 description characters
     alias           alias whose value contains its own name (BH loops forever), alias name inside
-                    another condition word (BH replaces substrings), alias defined twice, never used
+                    another condition word (BH replaces substrings), alias defined twice, never used,
+                    %ALIAS% in another alias's value defined before it (output pass: file order)
     duplicate       exact duplicate rule
     unreachable     same conditions as an earlier rule without %CONTINUE%: its display part never
                     applies (its notification keywords still fire, they run in a separate pass)
@@ -299,6 +300,16 @@ class Linter:
         used = set(words)
         for r in self.rules:
             used.update(n for n in self.aliases if f"%{n.upper()}%" in r.output)
+        # %NAME% inside another alias's value: BH's output pass applies aliases in file order, so it expands only
+        # when NAME is defined after that alias (146's experience lines share penalty aliases this way)
+        for outer, value in self.aliases.items():
+            for n in self.aliases:
+                if n != outer and f"%{n.upper()}%" in value:
+                    used.add(n)
+                    if self.alias_lines[n][0] < self.alias_lines[outer][0]:
+                        self.report(self.alias_lines[outer][0], "warning", "alias",
+                                    f"Alias[{outer}] uses %{n.upper()}%, but Alias[{n}] comes before it: BH applies "
+                                    "aliases in file order, so it stays unexpanded", outer)
         for name, idxs in self.alias_lines.items():
             for idx in idxs[1:]:
                 self.report(idx, "warning", "alias",
@@ -366,9 +377,9 @@ class Linter:
             self.report(r.idx, "error", "continue-desc",
                         "%CONTINUE% inside { } is shown as text there", r.line)
 
-        name = name.strip(" ").strip("\t")
+        name = shown_islands(name.strip(" ").strip("\t"))
         used, unknown, literal = replacements(name)
-        d_used, d_unknown, d_literal = replacements(desc)
+        d_used, d_unknown, d_literal = replacements(shown_islands(desc))
         for tok in dict.fromkeys(unknown + d_unknown):
             if tok != "%CONTINUE%":
                 self.report(r.idx, "error", "keyword", f"unknown keyword {tok} (shown as text)", tok)
@@ -550,6 +561,13 @@ def formula_ranges(cond):
             i += 1
         spans.append((m.start(), i + 1))
     return spans
+
+
+def shown_islands(text):
+    """Output text with each $f(...) island as BH shows it: its value (at least one character), not its text."""
+    for a, b in reversed(formula_ranges(text)):
+        text = text[:a] + "0" + text[b:]
+    return text
 
 
 def normalize_cond(cond):

@@ -11,8 +11,9 @@ roll picker shows.
 
     python tools/pd2_data.py --extract "C:\\Users\\<you>\\Diablo II"
         reads ProjectD2\\pd2data.mpq (UniqueItems, SetItems, Runes, Gems, Properties, ItemStatCost, Skills,
-        item types and bases, AutoMagic, QualityItems, string tables) and the base game's string tables, and
-        writes docs/pd2-unique-set-items.tsv, docs/pd2-runewords.tsv and tools/pd2_stat_priority.tsv. Run it
+        item types and bases, AutoMagic, QualityItems, CubeMain, string tables) and the base game's string tables,
+        and writes docs/pd2-unique-set-items.tsv, docs/pd2-runewords.tsv, docs/pd2-corruptions.tsv (what each
+        corruption outcome adds) and tools/pd2_stat_priority.tsv. Run it
         each season and after a PD2 patch that changes items, then python tools/gen_unique_rolls.py,
         python tools/gen_runeword_rolls.py and python tools/tag_order.py --fix. Also does --tier-data.
     python tools/pd2_data.py --tier-data "C:\\Users\\<you>\\Diablo II"
@@ -51,6 +52,7 @@ TOOLS = Path(__file__).resolve().parent
 ROOT = TOOLS.parent
 ITEMS_FILE = ROOT / "docs" / "pd2-unique-set-items.tsv"
 RUNEWORDS_FILE = ROOT / "docs" / "pd2-runewords.tsv"
+CORRUPTIONS_FILE = ROOT / "docs" / "pd2-corruptions.tsv"
 PRIORITY_FILE = TOOLS / "pd2_stat_priority.tsv"
 BASES_FILE = ROOT / "docs" / "pd2-bases.tsv"
 SOUNDS_FILE = ROOT / "docs" / "pd2-sounds.tsv"
@@ -168,6 +170,7 @@ class Game:
                     self.base_rows.setdefault(r["code"], r)
         self.statcost_by_id = {self.stat_id[r["Stat"]]: r for r in self.statcost if r["Stat"] in self.stat_id}
         self.runewords, self.automagic, self.superior = excel("Runes.txt"), excel("AutoMagic.txt"), excel("QualityItems.txt")
+        self.cube = excel("CubeMain.txt")
         self.gems = {r["code"]: r for r in excel("Gems.txt") if r.get("code")}
         self.charstats = {r["class"]: r for r in excel("CharStats.txt") if r.get("class")}
         skill_desc = {r["skilldesc"]: r.get("str name", "") for r in excel("SkillDesc.txt") if r.get("skilldesc")}
@@ -328,6 +331,34 @@ class Game:
         a, b = (to_int(lo), to_int(hi)) if (lo.strip() or hi.strip()) else (to_int(par), to_int(par))
         shift = 1 << to_int(self.statcost_by_id[sid].get("ValShift"))
         return [f"STAT{sid}", a * shift, b * shift], [self.stat_code(base) or f"STAT{base}", 8 * shift]
+
+    # ---------------------------------------------------------------- corruptions
+
+    def corruption_rows(self):
+        """The cube's corruption outcomes (CubeMain.txt rows that set 'corrupt'): [input, outcome, sockets, props],
+        props as [[code, low, high], ...] per property (as an item's); sockets: the most a socket outcome adds."""
+        out = []
+        for r in self.cube:
+            if r.get("enabled", "").strip() != "1":
+                continue
+            outcome, sockets, props = None, "", []
+            for k in range(1, 6):
+                mod = r.get(f"mod {k}", "").strip()
+                if not mod:
+                    continue
+                par, lo, hi = r.get(f"mod {k} param", ""), r.get(f"mod {k} min", ""), r.get(f"mod {k} max", "")
+                if mod == "corrupt":
+                    outcome = to_int(lo)
+                elif mod == "sock":
+                    sockets = str(max(to_int(lo), to_int(hi)))
+                elif mod != "corruptnum":
+                    stats = self.prop_stats(mod, par, lo, hi)
+                    if stats:
+                        props.append([list(s) for s in stats])
+            if outcome is not None and (props or sockets):  # (map corruptions: no item stats)
+                out.append([r.get("input 1", "").strip().strip('"'), str(outcome), sockets,
+                            json.dumps(props, separators=(",", ":"))])
+        return out
 
     # ---------------------------------------------------------------- runewords
 
@@ -547,6 +578,7 @@ def extract(game_dir):
     lines += ["\t".join(r) for r in rows]
     RUNEWORDS_FILE.write_text("\n".join(lines) + "\n", encoding="utf-8", newline="\n")
     print(f"wrote {RUNEWORDS_FILE.relative_to(ROOT)} ({len({r[1] for r in rows})} runewords, {len(rows)} lines)")
+    write_corruptions(game)
     out = ["# PD2 ItemStatCost.txt: stat id, stat, descpriority (higher = listed higher on the item).",
            f"# Extracted {stamp} from pd2data.mpq by tools/pd2_data.py --extract."]
     for r in game.statcost:
@@ -556,6 +588,21 @@ def extract(game_dir):
     PRIORITY_FILE.write_text("\n".join(out) + "\n", encoding="utf-8", newline="\n")
     print(f"wrote {PRIORITY_FILE.relative_to(ROOT)} ({len(out) - 2} stats)")
     extract_tier_data(game_dir, game)
+
+
+def write_corruptions(game):
+    """docs/pd2-corruptions.tsv: what a corruption can add to an item (tools/gen_unique_rolls.py keeps another item's
+    corrupted stats from passing an item's fingerprint)."""
+    rows = game.corruption_rows()
+    lines = [f"# PD2 corruption outcomes (CubeMain.txt rows that set 'corrupt', stat 360) from pd2data.mpq, extracted "
+             f"{datetime.date.today().isoformat()}",
+             "# by tools/pd2_data.py --extract: the cube input (item type, then nos / sock and a quality: the items the",
+             "# row takes), the outcome (STAT360=n), the most sockets a socket outcome adds, and the properties it adds",
+             "# as [[code, low, high], ...] per property (as in pd2-unique-set-items.tsv).",
+             "\t".join(["input", "outcome", "sockets", "props"])]
+    lines += ["\t".join(r) for r in rows]
+    CORRUPTIONS_FILE.write_text("\n".join(lines) + "\n", encoding="utf-8", newline="\n")
+    print(f"wrote {CORRUPTIONS_FILE.relative_to(ROOT)} ({len(rows)} outcome rows)")
 
 
 def extract_tier_data(game_dir, game=None):
@@ -616,6 +663,22 @@ def load_items():
                     "caster": caster == "1", "lvlreq": int(lvlreq) if lvlreq.isdigit() else None,
                     "props": [[tuple(s) for s in p] for p in json.loads(props)],
                     "perlevel": {k: tuple(v) for k, v in json.loads(per_level[0] if per_level else "{}").items()}})
+    return out
+
+
+def load_corruptions():
+    """[{type, words, outcome, sockets, props}] from docs/pd2-corruptions.tsv: type = the cube input's item type
+    ("weap", "helm", "rin"...), words = the rest of the input ({"sock", "uni"}), props as an item's."""
+    out = []
+    if not CORRUPTIONS_FILE.exists():
+        return out
+    for line in CORRUPTIONS_FILE.read_text(encoding="utf-8").splitlines():
+        if not line or line.startswith("#") or line.startswith("input\t"):
+            continue
+        cube_input, outcome, sockets, props = line.split("\t")
+        kind, *words = cube_input.split(",")
+        out.append({"type": kind, "words": set(words), "outcome": int(outcome), "sockets": to_int(sockets),
+                    "props": [[tuple(s) for s in p] for p in json.loads(props)]})
     return out
 
 
