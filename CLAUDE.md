@@ -26,7 +26,9 @@
   the game stores a stat (oskills are `OS<n>`, not `SK<n>`; chance-to-cast uses PD2's "Proc" skill IDs), so the
   game data wins. BH's `ED` reads +% defense on armor, so there a unique's +% damage roll is `edam` (`EDAM`,
   `ROLL_EDAM_TAG`) and `ed` is +% defense; on weapons and jewelry `ed` is +% damage. `DEF` is the item's total
-  defense: no BH code reads a `+N Defense` roll alone (Griffon's Eye: `195def` for +145).
+  defense (Griffon's Eye: `195def` for +145). The author's `PLUSDEF` (condition, `%PLUSDEF%`, formula `plusdef`:
+  the defense from affixes, runeword and sockets) is in BH main since PR #105 (2026-10-18), not in a shipped BH.dll
+  yet: keep `def` on `DEF` until one ships (an older BH.dll doesn't know the word; `%PLUSDEF%` would show as text).
   Each season and after a PD2 item patch: `python tools/pd2_data.py --extract "<Diablo II folder>"`
   (reads `ProjectD2\pd2data.mpq`; also refreshes `tools/pd2_stat_priority.tsv`), then regenerate and `--fix`.
   The author picks rolls in a page: `pick_rolls.bat` (double-click) = `python tools/gen_unique_rolls.py --picker`, which writes and opens
@@ -308,13 +310,14 @@ removed level on the next run; a new level group's intro is `INTROS` in `tools/l
   too) are `JAV`, never `SPEAR`, though PD2's item types make them spears (runewords for spears take them);
   Amazon spears are `SPEAR`. `MACE` is clubs, maces and hammers (`TMACE` the maces alone). Circlets are `CIRC`,
   never `HELM`. The pages' generators follow this (`item_groups` in `tools/tier_map.py`).
-- The game's Loot Filter options (BH c37b344, 2026-10-18; the filter can't read them): Hide Healing Potions /
-  Hide Mana Potions (default off) hide every `hp1`-`hp5` / `mp1`-`mp5` before any rule, on every level, even level
-  0 (rejuvenation and utility potions stay the filter's); the name is emptied everywhere (shops, inventory, belt,
-  stash too), and the filter's minimap icons still draw (MapNotify ignores BH's invisible flag). Force Show
-  Undiscovered (default ON) / Unowned (default off): a unique or set not all-discovered / all-owned is never
-  hidden and shows the game's plain name, skipping the filter's name (description, icons and sound stay the
-  filter's). `GRAIL_NEW` (040) keeps such items shown with the filter's looks for players who turn it off.
+- The game's Loot Filter options (BH c37b344 and PRs #107-#109, 2026-10-18; the filter can't read them): Hide
+  Healing Potions / Hide Mana Potions (default off) hide every `hp1`-`hp5` / `mp1`-`mp5` before any rule, on every
+  level, even level 0 (rejuvenation and utility potions stay the filter's); the name is emptied everywhere (shops,
+  inventory, belt, stash too). BH's minimap pass skips every item BH made invisible (#108): no icon, no chat line.
+  Force Show Undiscovered (default ON) / Unowned (default off): BH runs the filter first (#107); only a unique or
+  set the filter hides that is not all-discovered / all-owned is shown anyway, with BH's own name (the game's,
+  plus BH's item level / socket options). `GRAIL_NEW` (040) never hides undiscovered items, so they keep the
+  filter's looks with the option on or off.
 - The last rule is the catch-all `ItemDisplay[]:%NAME%{%NAME%}//`. Nothing goes after it.
 
 ## Before adding or changing a rule
