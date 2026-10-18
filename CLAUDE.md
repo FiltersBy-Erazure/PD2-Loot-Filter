@@ -187,10 +187,10 @@
   drop, then every case of a drop at once as bitmasks (filter level, place, Discovery Progress, Eth, class,
   difficulty, item level, stack size, gold, character level; cut points read from the rules), BH's two passes as
   `tier_map` (level 0 never hides); a word no case decides (sockets, stats) stays a "maybe". Columns: levels whose
-  drops behave the same, potions aside (`POTIONS`), joined: 0 | 1 | 2-6 | 7-8 | 9 | 10 | 11 | 12. Each cell: a state
+  drops behave the same, potions aside (`POTIONS`), joined: 0 | 1 | 2 | 3-4 | 5-7 | 8-9 | 10 | 11 | 12. Each cell: a state
   per character level run (the page's strip), its words ("Hidden from 80"; potion level groups a line each) and
   details. "What changes" cards compare each column with its parent, item by item; a launcher name's "Hides ..."
-  decides siblings (11 against 9, not 10). Details and change lines are small tables (author, 2026-10-14: no
+  decides siblings (11 against 8-9, not 10). Details and change lines are small tables (author, 2026-10-14: no
   run-on text): `block()`'s rows are the cases that matter (character levels, gold piles, ethereal or not, class,
   stack, item level), its columns the levels (before, then now; potion groups apart), a changed row marked; a cell's
   words are the first case's outcome, then the others with their conditions ("Minimap icon only; hidden from 50",
@@ -201,7 +201,7 @@
   while scrolling. The character level box starts empty every visit (author: a level kept from an earlier visit read as
   the page's answer); with a level typed, the box is outlined and each table's corner reads "At character level 60".
   `INTROS` holds the author's line per level group, `SECTION_NOTES` the sections' notes. `--row NAME` prints a row, `--changes` the cards; `--findings` lists a
-  launcher name's "Hides H5 / M5 / 35%" the rules don't do, a level group split by more than potions or with no
+  launcher name's "Hides 35%" (or H5 / M5) the rules don't do, a level group split by more than potions or with no
   `INTROS` line, and `MAPID` cuts with no place of their own. Checked 2026-10-14 against the rules evaluated one case at a time (127k cases, every
   drop, no differences). `build.bat`, the hook and CI run it as the other pages.
 - The website (https://filtersby-erazure.github.io/PD2-Loot-Filter/) is MkDocs with the Material theme:
@@ -238,12 +238,14 @@
 
 ## Filter levels
 0 = Show All Items. 1–12 are the `ItemDisplayFilterName[]` lines in `sections/010-filter-levels.filter`;
-their order is their number. Roughly: 1 Lowest Strictness, 2–6 Stricter (hiding H5 / M5 / 35% in
-combinations), 7–8 Advanced (Endgame, but as on 2–6 for magic amulets and Large Charms, the unique looks of
-`160` but Athena's Wrath (Minimal on 0–6 only) and the unidentified rares of `190-rares` except low helms and
-small shields; 7 shows M5, 8 hides it),
-9–11 Endgame (10–11 also hide Crafting Bases, or Flawless Gems and Large Charms), 12 Extreme.
-The exact labels are in that file. A rule without `FILTLVL` applies at every level. The players' pages take the
+their order is their number (BH reads 12 at most). Since 2026-10-18 (the game's own Hide Healing / Mana Potions
+options took over the potion variants): 1 Lowest Strictness, 2 Relaxed (restored from before commit f991a84,
+which had merged it into 1), 3–4 Stricter, 5–7 Advanced (Endgame, but as on 3–4 for magic amulets and Large
+Charms, the unique looks of `160` but Athena's Wrath (Minimal on 0–4 only) and the unidentified rares of
+`190-rares` except low helms and small shields), 8–11 Endgame (10–11 also hide Crafting Bases, or Flawless Gems
+and Large Charms), 12 Extreme. The 35% Rejuvenation Potion is hidden on 4, 6–12 (the names say so; Full
+Rejuvenation's bigger look goes with it); H5 / M5 are shown on 1–7 and hidden from 8 (CLVL 50+). 7 is a copy of
+6 and 9 of 8 until the author picks what each also hides. The exact labels are in that file. A rule without `FILTLVL` applies at every level. The players' pages take the
 levels, their names and their number from that file (`tier_map.FILTER_LEVELS`), so they follow a renamed, merged or
 removed level on the next run; a new level group's intro is `INTROS` in `tools/level_map.py`.
 
@@ -306,6 +308,13 @@ removed level on the next run; a new level group's intro is `INTROS` in `tools/l
   too) are `JAV`, never `SPEAR`, though PD2's item types make them spears (runewords for spears take them);
   Amazon spears are `SPEAR`. `MACE` is clubs, maces and hammers (`TMACE` the maces alone). Circlets are `CIRC`,
   never `HELM`. The pages' generators follow this (`item_groups` in `tools/tier_map.py`).
+- The game's Loot Filter options (BH c37b344, 2026-10-18; the filter can't read them): Hide Healing Potions /
+  Hide Mana Potions (default off) hide every `hp1`-`hp5` / `mp1`-`mp5` before any rule, on every level, even level
+  0 (rejuvenation and utility potions stay the filter's); the name is emptied everywhere (shops, inventory, belt,
+  stash too), and the filter's minimap icons still draw (MapNotify ignores BH's invisible flag). Force Show
+  Undiscovered (default ON) / Unowned (default off): a unique or set not all-discovered / all-owned is never
+  hidden and shows the game's plain name, skipping the filter's name (description, icons and sound stay the
+  filter's). `GRAIL_NEW` (040) keeps such items shown with the filter's looks for players who turn it off.
 - The last rule is the catch-all `ItemDisplay[]:%NAME%{%NAME%}//`. Nothing goes after it.
 
 ## Before adding or changing a rule

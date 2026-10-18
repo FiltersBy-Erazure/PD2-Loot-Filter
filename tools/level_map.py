@@ -91,6 +91,7 @@ SECTION_COLORS = {"Gold, potions, scrolls and keys": "white", "Gems and runes": 
 INTROS = {
     "Show All Items": "Hides nothing and plays every notification.",
     "Lowest Strictness": "For the ladder start and characters up to level ~80.",
+    "Relaxed Filtering": "Hides more low-value magic, rare and non-magical items as your character levels.",
     "Stricter Filtering": "Hides many non-magical bases and low-value magic and rare items.",
     "Advanced Filtering": "Similar to Endgame, but shows more rares, magic amulets and Large Charms.",
     "Endgame Filtering": "Hides most low-value items for endgame characters.",

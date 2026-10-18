@@ -10,10 +10,10 @@ ItemDisplay[glr QTY=1 FILTLVL~11-12 !TOWN]:// Flawless Ruby
 ItemDisplay[glb QTY=1 FILTLVL~11-12 !TOWN]:// Flawless Sapphire
 ItemDisplay[gly QTY=1 FILTLVL~11-12 !TOWN]:// Flawless Topaz
 //ItemDisplay[skl QTY=1 FILTLVL~11-12 !TOWN]:// Flawless Skull
-// Hides Chipped, Flawed, and Normal at higher character levels or on filter levels 2+
-ItemDisplay[GEMLEVEL=1 ((CLVL>19 !FILTLVL=0) OR FILTLVL>1) !TOWN]:// Hides Chipped
-ItemDisplay[GEMLEVEL=2 ((CLVL>29 !FILTLVL=0) OR FILTLVL>1) !TOWN]:// Hides Flawed
-ItemDisplay[GEMLEVEL=3 ((CLVL>49 !FILTLVL=0) OR FILTLVL>1) !TOWN]:// Hides Normal
+// Hides Chipped, Flawed, and Normal at higher character levels or on filter levels 3+
+ItemDisplay[GEMLEVEL=1 ((CLVL>29 !FILTLVL=0) OR (CLVL>19 FILTLVL>1) OR FILTLVL>2) !TOWN]:// Hides Chipped
+ItemDisplay[GEMLEVEL=2 ((CLVL>39 !FILTLVL=0) OR (CLVL>29 FILTLVL>1) OR FILTLVL>2) !TOWN]:// Hides Flawed
+ItemDisplay[GEMLEVEL=3 ((CLVL>79 !FILTLVL=0) OR (CLVL>49 FILTLVL>1) OR FILTLVL>2) !TOWN]:// Hides Normal
 // Colors for Gem Types
 ItemDisplay[GEMTYPE=1]:%PURPLE%%CONTINUE%// Purple for Amethyst
 ItemDisplay[GEMTYPE=2]:%WHITE%%CONTINUE%// White for Diamond
@@ -29,16 +29,16 @@ ItemDisplay[GEMLEVEL=3]:%NAME%+%CONTINUE%// "+" Normal
 ItemDisplay[GEMLEVEL=4]:%NAME%o%CONTINUE%// "o" Flawless
 ItemDisplay[GEMLEVEL=5]:%NAME%O%CONTINUE%// "O" Perfect
 // Quality Levels
-ItemDisplay[GEMLEVEL=1 (FILTLVL>6 QTY=1)]:%NAME%  %WHITE%Chipped%CONTINUE%// Chipped quality
-ItemDisplay[GEMLEVEL=2 (FILTLVL>6 QTY=1)]:%NAME%  %WHITE%Flawed%CONTINUE%// Flawed quality
-ItemDisplay[GEMLEVEL=3 (FILTLVL>6 QTY=1)]:%NAME%  %WHITE%Normal%CONTINUE%// Normal quality
-ItemDisplay[GEMLEVEL=4 (FILTLVL>6 QTY=1)]:%NAME%  %WHITE%Flawless%CONTINUE%// Flawless quality
-ItemDisplay[GEMLEVEL=5 (FILTLVL~7-12 QTY=1) !skz]:%NAME%  %WHITE%Perfect%CONTINUE%// Perfect quality
-ItemDisplay[GEMLEVEL=1 (FILTLVL<7 OR QTY>1)]:%NAME%  %LIGHT_GRAY%Chipped%CONTINUE%// Chipped quality
-ItemDisplay[GEMLEVEL=2 (FILTLVL<7 OR QTY>1)]:%NAME%  %LIGHT_GRAY%Flawed%CONTINUE%// Flawed quality
-ItemDisplay[GEMLEVEL=3 (FILTLVL<7 OR QTY>1)]:%NAME%  %LIGHT_GRAY%Normal%CONTINUE%// Normal quality
-ItemDisplay[GEMLEVEL=4 (FILTLVL<7 OR QTY>1)]:%NAME%  %LIGHT_GRAY%Flawless%CONTINUE%// Flawless quality
-ItemDisplay[GEMLEVEL=5 (FILTLVL<7 OR QTY>1 OR skz)]:%NAME%  %LIGHT_GRAY%Perfect%CONTINUE%// Perfect quality
+ItemDisplay[GEMLEVEL=1 (FILTLVL>4 QTY=1)]:%NAME%  %WHITE%Chipped%CONTINUE%// Chipped quality
+ItemDisplay[GEMLEVEL=2 (FILTLVL>4 QTY=1)]:%NAME%  %WHITE%Flawed%CONTINUE%// Flawed quality
+ItemDisplay[GEMLEVEL=3 (FILTLVL>4 QTY=1)]:%NAME%  %WHITE%Normal%CONTINUE%// Normal quality
+ItemDisplay[GEMLEVEL=4 (FILTLVL>4 QTY=1)]:%NAME%  %WHITE%Flawless%CONTINUE%// Flawless quality
+ItemDisplay[GEMLEVEL=5 (FILTLVL~5-12 QTY=1) !skz]:%NAME%  %WHITE%Perfect%CONTINUE%// Perfect quality
+ItemDisplay[GEMLEVEL=1 (FILTLVL<5 OR QTY>1)]:%NAME%  %LIGHT_GRAY%Chipped%CONTINUE%// Chipped quality
+ItemDisplay[GEMLEVEL=2 (FILTLVL<5 OR QTY>1)]:%NAME%  %LIGHT_GRAY%Flawed%CONTINUE%// Flawed quality
+ItemDisplay[GEMLEVEL=3 (FILTLVL<5 OR QTY>1)]:%NAME%  %LIGHT_GRAY%Normal%CONTINUE%// Normal quality
+ItemDisplay[GEMLEVEL=4 (FILTLVL<5 OR QTY>1)]:%NAME%  %LIGHT_GRAY%Flawless%CONTINUE%// Flawless quality
+ItemDisplay[GEMLEVEL=5 (FILTLVL<5 OR QTY>1 OR skz)]:%NAME%  %LIGHT_GRAY%Perfect%CONTINUE%// Perfect quality
 // Names of Gems QTY>1
 ItemDisplay[GEMTYPE=1 QTY>1]:%NAME% %WHITE%Amethysts%CONTINUE%//
 ItemDisplay[GEMTYPE=2 QTY>1]:%NAME% %WHITE%Diamonds%CONTINUE%//
@@ -48,13 +48,13 @@ ItemDisplay[GEMTYPE=5 QTY>1]:%NAME% %WHITE%Sapphires%CONTINUE%//
 ItemDisplay[GEMTYPE=6 QTY>1]:%NAME% %WHITE%Topazes%CONTINUE%//
 ItemDisplay[GEMTYPE=7 QTY>1]:%NAME% %WHITE%Skulls%CONTINUE%//
 // Names of Gems QTY=1
-ItemDisplay[GEMTYPE=1 (QTY=1 FILTLVL<7)]:%NAME% %WHITE%Amethyst%CONTINUE%//
-ItemDisplay[GEMTYPE=2 (QTY=1 FILTLVL<7)]:%NAME% %WHITE%Diamond%CONTINUE%//
-ItemDisplay[GEMTYPE=3 (QTY=1 FILTLVL<7)]:%NAME% %WHITE%Emerald%CONTINUE%//
-ItemDisplay[GEMTYPE=4 (QTY=1 FILTLVL<7)]:%NAME% %WHITE%Ruby%CONTINUE%//
-ItemDisplay[GEMTYPE=5 (QTY=1 FILTLVL<7)]:%NAME% %WHITE%Sapphire%CONTINUE%//
-ItemDisplay[GEMTYPE=6 (QTY=1 FILTLVL<7)]:%NAME% %WHITE%Topaz%CONTINUE%//
-ItemDisplay[GEMTYPE=7 ((QTY=1 FILTLVL<7) OR (skz QTY=1))]:%NAME% %WHITE%Skull%CONTINUE%//
+ItemDisplay[GEMTYPE=1 (QTY=1 FILTLVL<5)]:%NAME% %WHITE%Amethyst%CONTINUE%//
+ItemDisplay[GEMTYPE=2 (QTY=1 FILTLVL<5)]:%NAME% %WHITE%Diamond%CONTINUE%//
+ItemDisplay[GEMTYPE=3 (QTY=1 FILTLVL<5)]:%NAME% %WHITE%Emerald%CONTINUE%//
+ItemDisplay[GEMTYPE=4 (QTY=1 FILTLVL<5)]:%NAME% %WHITE%Ruby%CONTINUE%//
+ItemDisplay[GEMTYPE=5 (QTY=1 FILTLVL<5)]:%NAME% %WHITE%Sapphire%CONTINUE%//
+ItemDisplay[GEMTYPE=6 (QTY=1 FILTLVL<5)]:%NAME% %WHITE%Topaz%CONTINUE%//
+ItemDisplay[GEMTYPE=7 ((QTY=1 FILTLVL<5) OR (skz QTY=1))]:%NAME% %WHITE%Skull%CONTINUE%//
 // Quantity of 2x or more 
 ItemDisplay[GEMLEVEL>0 QTY>1]:%NAME% %TAN%x %WHITE%%QTY%%CONTINUE%// Quantity of any gem stack
 // Colors for Gem Types
@@ -72,13 +72,13 @@ ItemDisplay[GEMLEVEL=3]:%NAME%+%WHITE%%CONTINUE%// "+" Normal
 ItemDisplay[GEMLEVEL=4]:%NAME%o%WHITE%%CONTINUE%// "o" Flawless
 ItemDisplay[GEMLEVEL=5]:%NAME%O%WHITE%%CONTINUE%// "O" Perfect
 // Notify for Chipped, Flawed, Normal at low levels
-ItemDisplay[((gcv CLVL<15) OR (gfv CLVL<20) OR (gsv CLVL<30)) FILTLVL<2]:%NAME%%DOT-9B%%PX-1E%%CONTINUE%// Amethyst
-ItemDisplay[((gcw CLVL<15) OR (gfw CLVL<20) OR (gsw CLVL<30)) FILTLVL<2]:%NAME%%DOT-DC%%PX-1E%%CONTINUE%// Diamond
-ItemDisplay[((gcg CLVL<15) OR (gfg CLVL<20) OR (gsg CLVL<30)) FILTLVL<2]:%NAME%%DOT-79%%PX-1E%%CONTINUE%// Emerald
-ItemDisplay[((gcr CLVL<15) OR (gfr CLVL<20) OR (gsr CLVL<30)) FILTLVL<2]:%NAME%%DOT-0A%%PX-1E%%CONTINUE%// Ruby
-ItemDisplay[((gcb CLVL<15) OR (gfb CLVL<20) OR (gsb CLVL<30)) FILTLVL<2]:%NAME%%DOT-97%%PX-1E%%CONTINUE%// Sapphire
-ItemDisplay[((gcy CLVL<15) OR (gfy CLVL<20) OR (gsy CLVL<30)) FILTLVL<2]:%NAME%%DOT-6F%%PX-1E%%CONTINUE%// Topaz
-ItemDisplay[((skc CLVL<15) OR (skf CLVL<20) OR (sku CLVL<30)) FILTLVL<2]:%NAME%%DOT-15%%PX-1E%%CONTINUE%// Skull
+ItemDisplay[((gcv CLVL<15) OR (gfv CLVL<20) OR (gsv CLVL<30)) FILTLVL<3]:%NAME%%DOT-9B%%PX-1E%%CONTINUE%// Amethyst
+ItemDisplay[((gcw CLVL<15) OR (gfw CLVL<20) OR (gsw CLVL<30)) FILTLVL<3]:%NAME%%DOT-DC%%PX-1E%%CONTINUE%// Diamond
+ItemDisplay[((gcg CLVL<15) OR (gfg CLVL<20) OR (gsg CLVL<30)) FILTLVL<3]:%NAME%%DOT-79%%PX-1E%%CONTINUE%// Emerald
+ItemDisplay[((gcr CLVL<15) OR (gfr CLVL<20) OR (gsr CLVL<30)) FILTLVL<3]:%NAME%%DOT-0A%%PX-1E%%CONTINUE%// Ruby
+ItemDisplay[((gcb CLVL<15) OR (gfb CLVL<20) OR (gsb CLVL<30)) FILTLVL<3]:%NAME%%DOT-97%%PX-1E%%CONTINUE%// Sapphire
+ItemDisplay[((gcy CLVL<15) OR (gfy CLVL<20) OR (gsy CLVL<30)) FILTLVL<3]:%NAME%%DOT-6F%%PX-1E%%CONTINUE%// Topaz
+ItemDisplay[((skc CLVL<15) OR (skf CLVL<20) OR (sku CLVL<30)) FILTLVL<3]:%NAME%%DOT-15%%PX-1E%%CONTINUE%// Skull
 // Cube 3 for next gem level
 ItemDisplay[GEMLEVEL=1]:%NAME%{%TAN%Cube %WHITE%Chipped %TAN%x %WHITE%3 %TAN%= %WHITE%Flawed}// Chipped
 ItemDisplay[GEMLEVEL=2]:%NAME%{%TAN%Cube %WHITE%Flawed %TAN%x %WHITE%3 %TAN%= %WHITE%Normal}// Flawed
