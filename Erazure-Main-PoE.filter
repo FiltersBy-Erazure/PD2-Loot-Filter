@@ -158,8 +158,8 @@ Alias[PUZZLEPIECE_LEFT]:%GOLD%[%ORANGE%X%GOLD%][%YELLOW%X%GOLD%][%TAN%X%GOLD%]
 Alias[PUZZLEPIECE_RIGHT]:%GOLD%[%TAN%X%GOLD%][%YELLOW%X%GOLD%][%ORANGE%X%GOLD%]
 
 // Puzzlebox
-Alias[PUZZLEBOX_LEFT]:%GOLD%[%BLUE%X%GOLD%][%PURPLE%X%GOLD%][%ORANGE%X%GOLD%][%TAN%X%GOLD%]
-Alias[PUZZLEBOX_RIGHT]:%GOLD%[%TAN%X%GOLD%][%ORANGE%X%GOLD%][%PURPLE%X%GOLD%][%BLUE%X%GOLD%]
+Alias[PUZZLEBOX_LEFT]:%GOLD%[%BLUE%X%GOLD%][%ORANGE%X%GOLD%][%YELLOW%X%GOLD%][%TAN%X%GOLD%]
+Alias[PUZZLEBOX_RIGHT]:%GOLD%[%TAN%X%GOLD%][%YELLOW%X%GOLD%][%ORANGE%X%GOLD%][%BLUE%X%GOLD%]
 
 // Demonic Cube
 Alias[DEMONIC_CUBE]:%RED%xX%CORAL%\X%WHITE%\XOX/%CORAL%X/%RED%Xx
@@ -2778,7 +2778,7 @@ ItemDisplay[STAT374=1 !STAT360>0 !STAT276>0 MAPTIER=4]:%NAME%{%GOLD%Area Level: 
 // First element per section (file order) has NO trailing *  (rightmost visually)
 // Subsequent elements have trailing " %WHITE%* " to connect to element below
 // Highest Resistances lines skip corrupted (STAT360) and treacherous (STAT276: the Cube's map + ear) maps;
-// Monster Immunities lines show on every map.
+// Monster Immunities lines skip treacherous maps only.
 //
 
 // ========================= Tier 1 Maps (Area Level 87) =========================
@@ -2793,9 +2793,9 @@ ItemDisplay[t34 STAT499>0 !STAT360>0 !STAT276>0]:%NAME%{%DARK_GREEN%95% %WHITE%*
 ItemDisplay[t34 !STAT499>0 (STAT441>0 OR STAT437>0) !STAT360>0 !STAT276>0]:%NAME%{%DARK_GREEN%80% %WHITE%* %NAME%}%CONTINUE%// Poison with Reanimated/Dolls (80)
 ItemDisplay[t34 !STAT499>0 !STAT441>0 !STAT437>0 !STAT360>0 !STAT276>0]:%NAME%{%DARK_GREEN%75% %WHITE%* %NAME%}%CONTINUE%// Poison base (75)
 ItemDisplay[t34 !STAT360>0 !STAT276>0]:%NAME%{%BLUE%75% %WHITE%* %NAME%}%CONTINUE%// Cold base (75)
-ItemDisplay[t34]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
-ItemDisplay[t34]:%NAME%{%YELLOW%120%%NAME%}%CONTINUE%// Light 120
-ItemDisplay[t34]:%NAME%{%RED%120% %WHITE%* %NAME%}%CONTINUE%// Fire 120
+ItemDisplay[t34 !STAT276>0]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
+ItemDisplay[t34 !STAT276>0]:%NAME%{%YELLOW%120%%NAME%}%CONTINUE%// Light 120
+ItemDisplay[t34 !STAT276>0]:%NAME%{%RED%120% %WHITE%* %NAME%}%CONTINUE%// Fire 120
 
 // ===== Torajan Jungle (t22) =====
 // S13: P=50 M=50 F=75 L=75 C=120 Psn=120
@@ -2806,9 +2806,9 @@ ItemDisplay[t22 !STAT360>0 !STAT276>0]:%NAME%{%ORANGE%50% %WHITE%* %NAME%}%CONTI
 ItemDisplay[t22 STAT470>0 !STAT360>0 !STAT276>0]:%NAME%{%YELLOW%80% %WHITE%* %NAME%}%CONTINUE%// Light with Souls (80)
 ItemDisplay[t22 !STAT470>0 !STAT360>0 !STAT276>0]:%NAME%{%YELLOW%75% %WHITE%* %NAME%}%CONTINUE%// Light base (75)
 ItemDisplay[t22 !STAT360>0 !STAT276>0]:%NAME%{%RED%75% %WHITE%* %NAME%}%CONTINUE%// Fire 75
-ItemDisplay[t22]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
-ItemDisplay[t22]:%NAME%{%DARK_GREEN%120%%NAME%}%CONTINUE%// Poison 120
-ItemDisplay[t22]:%NAME%{%BLUE%120% %WHITE%* %NAME%}%CONTINUE%// Cold 120
+ItemDisplay[t22 !STAT276>0]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
+ItemDisplay[t22 !STAT276>0]:%NAME%{%DARK_GREEN%120%%NAME%}%CONTINUE%// Poison 120
+ItemDisplay[t22 !STAT276>0]:%NAME%{%BLUE%120% %WHITE%* %NAME%}%CONTINUE%// Cold 120
 
 // ===== Tomb of Zoltun Kulle (t24) =====
 // S13: P=115 M=50 F=75 L=75 C=75 Psn=120
@@ -2818,9 +2818,9 @@ ItemDisplay[t24 !STAT360>0 !STAT276>0]:%NAME%{%BLUE%75% %WHITE%* %NAME%}%CONTINU
 ItemDisplay[t24 STAT470>0 !STAT360>0 !STAT276>0]:%NAME%{%YELLOW%80% %WHITE%* %NAME%}%CONTINUE%// Light with Souls (80)
 ItemDisplay[t24 !STAT470>0 !STAT360>0 !STAT276>0]:%NAME%{%YELLOW%75% %WHITE%* %NAME%}%CONTINUE%// Light base (75)
 ItemDisplay[t24 !STAT360>0 !STAT276>0]:%NAME%{%RED%75% %WHITE%* %NAME%}%CONTINUE%// Fire 75
-ItemDisplay[t24]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
-ItemDisplay[t24]:%NAME%{%GOLD%115%%NAME%}%CONTINUE%// Phys 115
-ItemDisplay[t24]:%NAME%{%DARK_GREEN%120% %WHITE%* %NAME%}%CONTINUE%// Poison 120
+ItemDisplay[t24 !STAT276>0]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
+ItemDisplay[t24 !STAT276>0]:%NAME%{%GOLD%115%%NAME%}%CONTINUE%// Phys 115
+ItemDisplay[t24 !STAT276>0]:%NAME%{%DARK_GREEN%120% %WHITE%* %NAME%}%CONTINUE%// Poison 120
 
 // ===== Fall of Caldeum (t36) =====
 // S13: P=115 M=105 F=75 L=120 C=75 Psn=80
@@ -2829,10 +2829,10 @@ ItemDisplay[t36 STAT499>0 !STAT360>0 !STAT276>0]:%NAME%{%DARK_GREEN%95%%NAME%}%C
 ItemDisplay[t36 !STAT499>0 !STAT360>0 !STAT276>0]:%NAME%{%DARK_GREEN%80%%NAME%}%CONTINUE%// Poison base (80)
 ItemDisplay[t36 !STAT360>0 !STAT276>0]:%NAME%{%BLUE%75% %WHITE%* %NAME%}%CONTINUE%// Cold base (75)
 ItemDisplay[t36 !STAT360>0 !STAT276>0]:%NAME%{%RED%75% %WHITE%* %NAME%}%CONTINUE%// Fire 75
-ItemDisplay[t36]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
-ItemDisplay[t36]:%NAME%{%GOLD%115%%NAME%}%CONTINUE%// Phys 115
-ItemDisplay[t36]:%NAME%{%ORANGE%105% %WHITE%* %NAME%}%CONTINUE%// Magic 105
-ItemDisplay[t36]:%NAME%{%YELLOW%120% %WHITE%* %NAME%}%CONTINUE%// Light 120
+ItemDisplay[t36 !STAT276>0]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
+ItemDisplay[t36 !STAT276>0]:%NAME%{%GOLD%115%%NAME%}%CONTINUE%// Phys 115
+ItemDisplay[t36 !STAT276>0]:%NAME%{%ORANGE%105% %WHITE%* %NAME%}%CONTINUE%// Magic 105
+ItemDisplay[t36 !STAT276>0]:%NAME%{%YELLOW%120% %WHITE%* %NAME%}%CONTINUE%// Light 120
 
 // ===== Phlegethon (t21) =====
 // S13: P=50 M=50 F=120 L=80 C=75 Psn=120
@@ -2842,9 +2842,9 @@ ItemDisplay[t21 !STAT439>0 !STAT360>0 !STAT276>0]:%NAME%{%GOLD%50%%NAME%}%CONTIN
 ItemDisplay[t21 !STAT360>0 !STAT276>0]:%NAME%{%ORANGE%50% %WHITE%* %NAME%}%CONTINUE%// Magic 50
 ItemDisplay[t21 !STAT360>0 !STAT276>0]:%NAME%{%BLUE%75% %WHITE%* %NAME%}%CONTINUE%// Cold base (75)
 ItemDisplay[t21 !STAT360>0 !STAT276>0]:%NAME%{%YELLOW%80% %WHITE%* %NAME%}%CONTINUE%// Light 80
-ItemDisplay[t21]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
-ItemDisplay[t21]:%NAME%{%DARK_GREEN%120%%NAME%}%CONTINUE%// Poison 120
-ItemDisplay[t21]:%NAME%{%RED%120% %WHITE%* %NAME%}%CONTINUE%// Fire 120
+ItemDisplay[t21 !STAT276>0]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
+ItemDisplay[t21 !STAT276>0]:%NAME%{%DARK_GREEN%120%%NAME%}%CONTINUE%// Poison 120
+ItemDisplay[t21 !STAT276>0]:%NAME%{%RED%120% %WHITE%* %NAME%}%CONTINUE%// Fire 120
 
 // ===== Shadows of Westmarch (t26) =====
 // S13: P=50 M=105 F=120 L=75 C=85 Psn=75
@@ -2857,9 +2857,9 @@ ItemDisplay[t26 !STAT499>0 !STAT441>0 !STAT437>0 !STAT360>0 !STAT276>0]:%NAME%{%
 ItemDisplay[t26 !STAT360>0 !STAT276>0]:%NAME%{%BLUE%85% %WHITE%* %NAME%}%CONTINUE%// Cold 85
 ItemDisplay[t26 STAT470>0 !STAT360>0 !STAT276>0]:%NAME%{%YELLOW%80% %WHITE%* %NAME%}%CONTINUE%// Light with Souls (80)
 ItemDisplay[t26 !STAT470>0 !STAT360>0 !STAT276>0]:%NAME%{%YELLOW%75% %WHITE%* %NAME%}%CONTINUE%// Light base (75)
-ItemDisplay[t26]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
-ItemDisplay[t26]:%NAME%{%ORANGE%105%%NAME%}%CONTINUE%// Magic 105
-ItemDisplay[t26]:%NAME%{%RED%120% %WHITE%* %NAME%}%CONTINUE%// Fire 120
+ItemDisplay[t26 !STAT276>0]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
+ItemDisplay[t26 !STAT276>0]:%NAME%{%ORANGE%105%%NAME%}%CONTINUE%// Magic 105
+ItemDisplay[t26 !STAT276>0]:%NAME%{%RED%120% %WHITE%* %NAME%}%CONTINUE%// Fire 120
 
 // ===== Ruins of Viz-Jun (t11) =====
 // S13: P=115 M=50 F=75 L=75 C=120 Psn=80
@@ -2870,9 +2870,9 @@ ItemDisplay[t11 !STAT499>0 !STAT360>0 !STAT276>0]:%NAME%{%DARK_GREEN%80% %WHITE%
 ItemDisplay[t11 STAT470>0 !STAT360>0 !STAT276>0]:%NAME%{%YELLOW%80% %WHITE%* %NAME%}%CONTINUE%// Light with Souls (80)
 ItemDisplay[t11 !STAT470>0 !STAT360>0 !STAT276>0]:%NAME%{%YELLOW%75% %WHITE%* %NAME%}%CONTINUE%// Light base (75)
 ItemDisplay[t11 !STAT360>0 !STAT276>0]:%NAME%{%RED%75% %WHITE%* %NAME%}%CONTINUE%// Fire 75
-ItemDisplay[t11]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
-ItemDisplay[t11]:%NAME%{%GOLD%115%%NAME%}%CONTINUE%// Phys 115
-ItemDisplay[t11]:%NAME%{%BLUE%120% %WHITE%* %NAME%}%CONTINUE%// Cold 120
+ItemDisplay[t11 !STAT276>0]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
+ItemDisplay[t11 !STAT276>0]:%NAME%{%GOLD%115%%NAME%}%CONTINUE%// Phys 115
+ItemDisplay[t11 !STAT276>0]:%NAME%{%BLUE%120% %WHITE%* %NAME%}%CONTINUE%// Cold 120
 
 // ===== Lost Temple (t33) =====
 // S13: P=55 M=105 F=75 L=80 C=120 Psn=80
@@ -2883,9 +2883,9 @@ ItemDisplay[t33 STAT499>0 !STAT360>0 !STAT276>0]:%NAME%{%DARK_GREEN%95% %WHITE%*
 ItemDisplay[t33 !STAT499>0 !STAT360>0 !STAT276>0]:%NAME%{%DARK_GREEN%80% %WHITE%* %NAME%}%CONTINUE%// Poison base (80)
 ItemDisplay[t33 !STAT360>0 !STAT276>0]:%NAME%{%YELLOW%80% %WHITE%* %NAME%}%CONTINUE%// Light 80
 ItemDisplay[t33 !STAT360>0 !STAT276>0]:%NAME%{%RED%75% %WHITE%* %NAME%}%CONTINUE%// Fire 75
-ItemDisplay[t33]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
-ItemDisplay[t33]:%NAME%{%ORANGE%105%%NAME%}%CONTINUE%// Magic 105
-ItemDisplay[t33]:%NAME%{%BLUE%120% %WHITE%* %NAME%}%CONTINUE%// Cold 120
+ItemDisplay[t33 !STAT276>0]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
+ItemDisplay[t33 !STAT276>0]:%NAME%{%ORANGE%105%%NAME%}%CONTINUE%// Magic 105
+ItemDisplay[t33 !STAT276>0]:%NAME%{%BLUE%120% %WHITE%* %NAME%}%CONTINUE%// Cold 120
 
 // ===== Poisoned Well (t18) =====
 // S14: P=60 M=55 F=75 L=75 C=75 Psn=75 (S14 game data: Levels.txt monsters, MonStats.txt hell resistances; no immunities)
@@ -2911,9 +2911,9 @@ ItemDisplay[t14 !STAT499>0 (STAT441>0 OR STAT437>0) !STAT360>0 !STAT276>0]:%NAME
 ItemDisplay[t14 !STAT499>0 !STAT441>0 !STAT437>0 !STAT360>0 !STAT276>0]:%NAME%{%DARK_GREEN%75% %WHITE%* %NAME%}%CONTINUE%// Poison base (75)
 ItemDisplay[t14 !STAT360>0 !STAT276>0]:%NAME%{%BLUE%75% %WHITE%* %NAME%}%CONTINUE%// Cold base (75)
 ItemDisplay[t14 !STAT360>0 !STAT276>0]:%NAME%{%RED%75% %WHITE%* %NAME%}%CONTINUE%// Fire 75
-ItemDisplay[t14]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
-ItemDisplay[t14]:%NAME%{%ORANGE%105%%NAME%}%CONTINUE%// Magic 105
-ItemDisplay[t14]:%NAME%{%YELLOW%120% %WHITE%* %NAME%}%CONTINUE%// Light 120
+ItemDisplay[t14 !STAT276>0]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
+ItemDisplay[t14 !STAT276>0]:%NAME%{%ORANGE%105%%NAME%}%CONTINUE%// Magic 105
+ItemDisplay[t14 !STAT276>0]:%NAME%{%YELLOW%120% %WHITE%* %NAME%}%CONTINUE%// Light 120
 
 // ========================= Tier 2 Maps (Area Level 88) =========================
 
@@ -2926,9 +2926,9 @@ ItemDisplay[t16 !STAT360>0 !STAT276>0]:%NAME%{%BLUE%75% %WHITE%* %NAME%}%CONTINU
 ItemDisplay[t16 STAT470>0 !STAT360>0 !STAT276>0]:%NAME%{%YELLOW%80% %WHITE%* %NAME%}%CONTINUE%// Light with Souls (80)
 ItemDisplay[t16 !STAT470>0 !STAT360>0 !STAT276>0]:%NAME%{%YELLOW%75% %WHITE%* %NAME%}%CONTINUE%// Light base (75)
 ItemDisplay[t16 !STAT360>0 !STAT276>0]:%NAME%{%RED%75% %WHITE%* %NAME%}%CONTINUE%// Fire 75
-ItemDisplay[t16]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
-ItemDisplay[t16]:%NAME%{%ORANGE%105%%NAME%}%CONTINUE%// Magic 105
-ItemDisplay[t16]:%NAME%{%DARK_GREEN%120% %WHITE%* %NAME%}%CONTINUE%// Poison 120
+ItemDisplay[t16 !STAT276>0]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
+ItemDisplay[t16 !STAT276>0]:%NAME%{%ORANGE%105%%NAME%}%CONTINUE%// Magic 105
+ItemDisplay[t16 !STAT276>0]:%NAME%{%DARK_GREEN%120% %WHITE%* %NAME%}%CONTINUE%// Poison 120
 
 // ===== Horazon's Memory (t12) =====
 // S13: P=115 M=50 F=75 L=120 C=75 Psn=75
@@ -2939,9 +2939,9 @@ ItemDisplay[t12 !STAT499>0 (STAT441>0 OR STAT437>0) !STAT360>0 !STAT276>0]:%NAME
 ItemDisplay[t12 !STAT499>0 !STAT441>0 !STAT437>0 !STAT360>0 !STAT276>0]:%NAME%{%DARK_GREEN%75% %WHITE%* %NAME%}%CONTINUE%// Poison base (75)
 ItemDisplay[t12 !STAT360>0 !STAT276>0]:%NAME%{%BLUE%75% %WHITE%* %NAME%}%CONTINUE%// Cold base (75)
 ItemDisplay[t12 !STAT360>0 !STAT276>0]:%NAME%{%RED%75% %WHITE%* %NAME%}%CONTINUE%// Fire 75
-ItemDisplay[t12]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
-ItemDisplay[t12]:%NAME%{%GOLD%115%%NAME%}%CONTINUE%// Phys 115
-ItemDisplay[t12]:%NAME%{%YELLOW%120% %WHITE%* %NAME%}%CONTINUE%// Light 120
+ItemDisplay[t12 !STAT276>0]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
+ItemDisplay[t12 !STAT276>0]:%NAME%{%GOLD%115%%NAME%}%CONTINUE%// Phys 115
+ItemDisplay[t12 !STAT276>0]:%NAME%{%YELLOW%120% %WHITE%* %NAME%}%CONTINUE%// Light 120
 
 // ===== Ashen Plains (t3a) =====
 // S13: P=50 M=50 F=120 L=75 C=130 Psn=75
@@ -2954,9 +2954,9 @@ ItemDisplay[t3a !STAT499>0 (STAT441>0 OR STAT437>0) !STAT360>0 !STAT276>0]:%NAME
 ItemDisplay[t3a !STAT499>0 !STAT441>0 !STAT437>0 !STAT360>0 !STAT276>0]:%NAME%{%DARK_GREEN%75% %WHITE%* %NAME%}%CONTINUE%// Poison base (75)
 ItemDisplay[t3a STAT470>0 !STAT360>0 !STAT276>0]:%NAME%{%YELLOW%80% %WHITE%* %NAME%}%CONTINUE%// Light with Souls (80)
 ItemDisplay[t3a !STAT470>0 !STAT360>0 !STAT276>0]:%NAME%{%YELLOW%75% %WHITE%* %NAME%}%CONTINUE%// Light base (75)
-ItemDisplay[t3a]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
-ItemDisplay[t3a]:%NAME%{%BLUE%130%%NAME%}%CONTINUE%// Cold 130
-ItemDisplay[t3a]:%NAME%{%RED%120% %WHITE%* %NAME%}%CONTINUE%// Fire 120
+ItemDisplay[t3a !STAT276>0]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
+ItemDisplay[t3a !STAT276>0]:%NAME%{%BLUE%130%%NAME%}%CONTINUE%// Cold 130
+ItemDisplay[t3a !STAT276>0]:%NAME%{%RED%120% %WHITE%* %NAME%}%CONTINUE%// Fire 120
 
 // ===== Pandemonium Citadel (t37) =====
 // S13: P=50 M=105 F=75 L=75 C=120 Psn=80
@@ -2968,9 +2968,9 @@ ItemDisplay[t37 !STAT499>0 !STAT360>0 !STAT276>0]:%NAME%{%DARK_GREEN%80% %WHITE%
 ItemDisplay[t37 STAT470>0 !STAT360>0 !STAT276>0]:%NAME%{%YELLOW%80% %WHITE%* %NAME%}%CONTINUE%// Light with Souls (80)
 ItemDisplay[t37 !STAT470>0 !STAT360>0 !STAT276>0]:%NAME%{%YELLOW%75% %WHITE%* %NAME%}%CONTINUE%// Light base (75)
 ItemDisplay[t37 !STAT360>0 !STAT276>0]:%NAME%{%RED%75% %WHITE%* %NAME%}%CONTINUE%// Fire 75
-ItemDisplay[t37]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
-ItemDisplay[t37]:%NAME%{%ORANGE%105%%NAME%}%CONTINUE%// Magic 105
-ItemDisplay[t37]:%NAME%{%BLUE%120% %WHITE%* %NAME%}%CONTINUE%// Cold 120
+ItemDisplay[t37 !STAT276>0]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
+ItemDisplay[t37 !STAT276>0]:%NAME%{%ORANGE%105%%NAME%}%CONTINUE%// Magic 105
+ItemDisplay[t37 !STAT276>0]:%NAME%{%BLUE%120% %WHITE%* %NAME%}%CONTINUE%// Cold 120
 
 // ===== Sewers of Harrogath (t25) =====
 // S13: P=66 M=50 F=120 L=75 C=80 Psn=120
@@ -2981,9 +2981,9 @@ ItemDisplay[t25 !STAT360>0 !STAT276>0]:%NAME%{%ORANGE%50% %WHITE%* %NAME%}%CONTI
 ItemDisplay[t25 !STAT360>0 !STAT276>0]:%NAME%{%BLUE%80% %WHITE%* %NAME%}%CONTINUE%// Cold 80
 ItemDisplay[t25 STAT470>0 !STAT360>0 !STAT276>0]:%NAME%{%YELLOW%80% %WHITE%* %NAME%}%CONTINUE%// Light with Souls (80)
 ItemDisplay[t25 !STAT470>0 !STAT360>0 !STAT276>0]:%NAME%{%YELLOW%75% %WHITE%* %NAME%}%CONTINUE%// Light base (75)
-ItemDisplay[t25]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
-ItemDisplay[t25]:%NAME%{%DARK_GREEN%120%%NAME%}%CONTINUE%// Poison 120
-ItemDisplay[t25]:%NAME%{%RED%120% %WHITE%* %NAME%}%CONTINUE%// Fire 120
+ItemDisplay[t25 !STAT276>0]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
+ItemDisplay[t25 !STAT276>0]:%NAME%{%DARK_GREEN%120%%NAME%}%CONTINUE%// Poison 120
+ItemDisplay[t25 !STAT276>0]:%NAME%{%RED%120% %WHITE%* %NAME%}%CONTINUE%// Fire 120
 
 // ===== Canyon of Sescheron (t38) =====
 // S13: P=115 M=55 F=120 L=75 C=80 Psn=75
@@ -2995,9 +2995,9 @@ ItemDisplay[t38 !STAT499>0 !STAT441>0 !STAT437>0 !STAT360>0 !STAT276>0]:%NAME%{%
 ItemDisplay[t38 !STAT360>0 !STAT276>0]:%NAME%{%BLUE%80% %WHITE%* %NAME%}%CONTINUE%// Cold 80
 ItemDisplay[t38 STAT470>0 !STAT360>0 !STAT276>0]:%NAME%{%YELLOW%80% %WHITE%* %NAME%}%CONTINUE%// Light with Souls (80)
 ItemDisplay[t38 !STAT470>0 !STAT360>0 !STAT276>0]:%NAME%{%YELLOW%75% %WHITE%* %NAME%}%CONTINUE%// Light base (75)
-ItemDisplay[t38]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
-ItemDisplay[t38]:%NAME%{%GOLD%115%%NAME%}%CONTINUE%// Phys 115
-ItemDisplay[t38]:%NAME%{%RED%120% %WHITE%* %NAME%}%CONTINUE%// Fire 120
+ItemDisplay[t38 !STAT276>0]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
+ItemDisplay[t38 !STAT276>0]:%NAME%{%GOLD%115%%NAME%}%CONTINUE%// Phys 115
+ItemDisplay[t38 !STAT276>0]:%NAME%{%RED%120% %WHITE%* %NAME%}%CONTINUE%// Fire 120
 
 // ===== Throne of Insanity (t32) =====
 // S14: P=115 M=50 F=75 L=75 C=75 Psn=120 (magic was 75, the wiki's Demon Rascal; the game data gives impThrone 50 in S13 and S14)
@@ -3007,9 +3007,9 @@ ItemDisplay[t32 !STAT360>0 !STAT276>0]:%NAME%{%BLUE%75% %WHITE%* %NAME%}%CONTINU
 ItemDisplay[t32 STAT470>0 !STAT360>0 !STAT276>0]:%NAME%{%YELLOW%80% %WHITE%* %NAME%}%CONTINUE%// Light with Souls (80)
 ItemDisplay[t32 !STAT470>0 !STAT360>0 !STAT276>0]:%NAME%{%YELLOW%75% %WHITE%* %NAME%}%CONTINUE%// Light base (75)
 ItemDisplay[t32 !STAT360>0 !STAT276>0]:%NAME%{%RED%75% %WHITE%* %NAME%}%CONTINUE%// Fire 75
-ItemDisplay[t32]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
-ItemDisplay[t32]:%NAME%{%GOLD%115%%NAME%}%CONTINUE%// Phys 115
-ItemDisplay[t32]:%NAME%{%DARK_GREEN%120% %WHITE%* %NAME%}%CONTINUE%// Poison 120
+ItemDisplay[t32 !STAT276>0]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
+ItemDisplay[t32 !STAT276>0]:%NAME%{%GOLD%115%%NAME%}%CONTINUE%// Phys 115
+ItemDisplay[t32 !STAT276>0]:%NAME%{%DARK_GREEN%120% %WHITE%* %NAME%}%CONTINUE%// Poison 120
 
 // ===== Halls of Torture (t17) =====
 // S13: P=50 M=35 F=75 L=120 C=120 Psn=85
@@ -3021,9 +3021,9 @@ ItemDisplay[t17 !STAT442>0 !STAT441>0 !STAT360>0 !STAT276>0]:%NAME%{%ORANGE%35% 
 ItemDisplay[t17 STAT499>0 !STAT360>0 !STAT276>0]:%NAME%{%DARK_GREEN%95% %WHITE%* %NAME%}%CONTINUE%// Poison with Minions of Destruction (95)
 ItemDisplay[t17 !STAT499>0 !STAT360>0 !STAT276>0]:%NAME%{%DARK_GREEN%85% %WHITE%* %NAME%}%CONTINUE%// Poison base (85)
 ItemDisplay[t17 !STAT360>0 !STAT276>0]:%NAME%{%RED%75% %WHITE%* %NAME%}%CONTINUE%// Fire 75
-ItemDisplay[t17]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
-ItemDisplay[t17]:%NAME%{%BLUE%120%%NAME%}%CONTINUE%// Cold 120
-ItemDisplay[t17]:%NAME%{%YELLOW%120% %WHITE%* %NAME%}%CONTINUE%// Light 120
+ItemDisplay[t17 !STAT276>0]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
+ItemDisplay[t17 !STAT276>0]:%NAME%{%BLUE%120%%NAME%}%CONTINUE%// Cold 120
+ItemDisplay[t17 !STAT276>0]:%NAME%{%YELLOW%120% %WHITE%* %NAME%}%CONTINUE%// Light 120
 
 // ===== Dark Temple (t29) =====
 // S14: P=50 M=45 F=75 L=75 C=75 Psn=75 (S14 game data: Levels.txt monsters, MonStats.txt hell resistances; no immunities)
@@ -3099,9 +3099,9 @@ ItemDisplay[t15 STAT499>0 !STAT360>0 !STAT276>0]:%NAME%{%DARK_GREEN%95% %WHITE%*
 ItemDisplay[t15 !STAT499>0 (STAT441>0 OR STAT437>0) !STAT360>0 !STAT276>0]:%NAME%{%DARK_GREEN%80% %WHITE%* %NAME%}%CONTINUE%// Poison with Reanimated/Dolls (80)
 ItemDisplay[t15 !STAT499>0 !STAT441>0 !STAT437>0 !STAT360>0 !STAT276>0]:%NAME%{%DARK_GREEN%75% %WHITE%* %NAME%}%CONTINUE%// Poison base (75)
 ItemDisplay[t15 !STAT360>0 !STAT276>0]:%NAME%{%YELLOW%80% %WHITE%* %NAME%}%CONTINUE%// Light 80
-ItemDisplay[t15]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
-ItemDisplay[t15]:%NAME%{%BLUE%120%%NAME%}%CONTINUE%// Cold 120
-ItemDisplay[t15]:%NAME%{%RED%120% %WHITE%* %NAME%}%CONTINUE%// Fire 120
+ItemDisplay[t15 !STAT276>0]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
+ItemDisplay[t15 !STAT276>0]:%NAME%{%BLUE%120%%NAME%}%CONTINUE%// Cold 120
+ItemDisplay[t15 !STAT276>0]:%NAME%{%RED%120% %WHITE%* %NAME%}%CONTINUE%// Fire 120
 
 // ===== Arreat Battlefield (t23) =====
 // S13: P=50 M=105 F=75 L=120 C=75 Psn=120
@@ -3110,10 +3110,10 @@ ItemDisplay[t23 STAT439>0 !STAT360>0 !STAT276>0]:%NAME%{%GOLD%75%%NAME%}%CONTINU
 ItemDisplay[t23 !STAT439>0 !STAT360>0 !STAT276>0]:%NAME%{%GOLD%50%%NAME%}%CONTINUE%// Phys base (50)
 ItemDisplay[t23 !STAT360>0 !STAT276>0]:%NAME%{%BLUE%75% %WHITE%* %NAME%}%CONTINUE%// Cold base (75)
 ItemDisplay[t23 !STAT360>0 !STAT276>0]:%NAME%{%RED%75% %WHITE%* %NAME%}%CONTINUE%// Fire 75
-ItemDisplay[t23]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
-ItemDisplay[t23]:%NAME%{%ORANGE%105%%NAME%}%CONTINUE%// Magic 105
-ItemDisplay[t23]:%NAME%{%DARK_GREEN%120% %WHITE%* %NAME%}%CONTINUE%// Poison 120
-ItemDisplay[t23]:%NAME%{%YELLOW%120% %WHITE%* %NAME%}%CONTINUE%// Light 120
+ItemDisplay[t23 !STAT276>0]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
+ItemDisplay[t23 !STAT276>0]:%NAME%{%ORANGE%105%%NAME%}%CONTINUE%// Magic 105
+ItemDisplay[t23 !STAT276>0]:%NAME%{%DARK_GREEN%120% %WHITE%* %NAME%}%CONTINUE%// Poison 120
+ItemDisplay[t23 !STAT276>0]:%NAME%{%YELLOW%120% %WHITE%* %NAME%}%CONTINUE%// Light 120
 
 // ===== Bastion Keep (t13) =====
 // S13: P=115 M=105 F=75 L=75 C=120 Psn=85
@@ -3123,10 +3123,10 @@ ItemDisplay[t13 !STAT499>0 !STAT360>0 !STAT276>0]:%NAME%{%DARK_GREEN%85%%NAME%}%
 ItemDisplay[t13 STAT470>0 !STAT360>0 !STAT276>0]:%NAME%{%YELLOW%80% %WHITE%* %NAME%}%CONTINUE%// Light with Souls (80)
 ItemDisplay[t13 !STAT470>0 !STAT360>0 !STAT276>0]:%NAME%{%YELLOW%75% %WHITE%* %NAME%}%CONTINUE%// Light base (75)
 ItemDisplay[t13 !STAT360>0 !STAT276>0]:%NAME%{%RED%75% %WHITE%* %NAME%}%CONTINUE%// Fire 75
-ItemDisplay[t13]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
-ItemDisplay[t13]:%NAME%{%GOLD%115%%NAME%}%CONTINUE%// Phys 115
-ItemDisplay[t13]:%NAME%{%ORANGE%105% %WHITE%* %NAME%}%CONTINUE%// Magic 105
-ItemDisplay[t13]:%NAME%{%BLUE%120% %WHITE%* %NAME%}%CONTINUE%// Cold 120
+ItemDisplay[t13 !STAT276>0]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
+ItemDisplay[t13 !STAT276>0]:%NAME%{%GOLD%115%%NAME%}%CONTINUE%// Phys 115
+ItemDisplay[t13 !STAT276>0]:%NAME%{%ORANGE%105% %WHITE%* %NAME%}%CONTINUE%// Magic 105
+ItemDisplay[t13 !STAT276>0]:%NAME%{%BLUE%120% %WHITE%* %NAME%}%CONTINUE%// Cold 120
 
 // ===== Skovos Stronghold (t28) =====
 // S13: P=55 M=40 F=75 L=75 C=120 Psn=120
@@ -3138,9 +3138,9 @@ ItemDisplay[t28 !STAT442>0 !STAT441>0 !STAT360>0 !STAT276>0]:%NAME%{%ORANGE%40% 
 ItemDisplay[t28 STAT470>0 !STAT360>0 !STAT276>0]:%NAME%{%YELLOW%80% %WHITE%* %NAME%}%CONTINUE%// Light with Souls (80)
 ItemDisplay[t28 !STAT470>0 !STAT360>0 !STAT276>0]:%NAME%{%YELLOW%75% %WHITE%* %NAME%}%CONTINUE%// Light base (75)
 ItemDisplay[t28 !STAT360>0 !STAT276>0]:%NAME%{%RED%75% %WHITE%* %NAME%}%CONTINUE%// Fire 75
-ItemDisplay[t28]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
-ItemDisplay[t28]:%NAME%{%DARK_GREEN%120%%NAME%}%CONTINUE%// Poison 120
-ItemDisplay[t28]:%NAME%{%BLUE%120% %WHITE%* %NAME%}%CONTINUE%// Cold 120
+ItemDisplay[t28 !STAT276>0]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
+ItemDisplay[t28 !STAT276>0]:%NAME%{%DARK_GREEN%120%%NAME%}%CONTINUE%// Poison 120
+ItemDisplay[t28 !STAT276>0]:%NAME%{%BLUE%120% %WHITE%* %NAME%}%CONTINUE%// Cold 120
 
 // ===== Demon Road (t27) =====
 // S13: P=115 M=40 F=120 L=120 C=75 Psn=75
@@ -3151,10 +3151,10 @@ ItemDisplay[t27 STAT499>0 !STAT360>0 !STAT276>0]:%NAME%{%DARK_GREEN%95% %WHITE%*
 ItemDisplay[t27 !STAT499>0 (STAT441>0 OR STAT437>0) !STAT360>0 !STAT276>0]:%NAME%{%DARK_GREEN%80% %WHITE%* %NAME%}%CONTINUE%// Poison with Reanimated/Dolls (80)
 ItemDisplay[t27 !STAT499>0 !STAT441>0 !STAT437>0 !STAT360>0 !STAT276>0]:%NAME%{%DARK_GREEN%75% %WHITE%* %NAME%}%CONTINUE%// Poison base (75)
 ItemDisplay[t27 !STAT360>0 !STAT276>0]:%NAME%{%BLUE%75% %WHITE%* %NAME%}%CONTINUE%// Cold base (75)
-ItemDisplay[t27]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
-ItemDisplay[t27]:%NAME%{%GOLD%115%%NAME%}%CONTINUE%// Phys 115
-ItemDisplay[t27]:%NAME%{%YELLOW%120% %WHITE%* %NAME%}%CONTINUE%// Light 120
-ItemDisplay[t27]:%NAME%{%RED%120% %WHITE%* %NAME%}%CONTINUE%// Fire 120
+ItemDisplay[t27 !STAT276>0]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
+ItemDisplay[t27 !STAT276>0]:%NAME%{%GOLD%115%%NAME%}%CONTINUE%// Phys 115
+ItemDisplay[t27 !STAT276>0]:%NAME%{%YELLOW%120% %WHITE%* %NAME%}%CONTINUE%// Light 120
+ItemDisplay[t27 !STAT276>0]:%NAME%{%RED%120% %WHITE%* %NAME%}%CONTINUE%// Fire 120
 
 // ===== River of Blood (t31) =====
 // S13: P=66 M=105 F=75 L=120 C=75 Psn=120
@@ -3163,10 +3163,10 @@ ItemDisplay[t31 STAT439>0 !STAT360>0 !STAT276>0]:%NAME%{%GOLD%75%%NAME%}%CONTINU
 ItemDisplay[t31 !STAT439>0 !STAT360>0 !STAT276>0]:%NAME%{%GOLD%66%%NAME%}%CONTINUE%// Phys base (66)
 ItemDisplay[t31 !STAT360>0 !STAT276>0]:%NAME%{%BLUE%75% %WHITE%* %NAME%}%CONTINUE%// Cold base (75)
 ItemDisplay[t31 !STAT360>0 !STAT276>0]:%NAME%{%RED%75% %WHITE%* %NAME%}%CONTINUE%// Fire 75
-ItemDisplay[t31]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
-ItemDisplay[t31]:%NAME%{%ORANGE%105%%NAME%}%CONTINUE%// Magic 105
-ItemDisplay[t31]:%NAME%{%DARK_GREEN%120% %WHITE%* %NAME%}%CONTINUE%// Poison 120
-ItemDisplay[t31]:%NAME%{%YELLOW%120% %WHITE%* %NAME%}%CONTINUE%// Light 120
+ItemDisplay[t31 !STAT276>0]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
+ItemDisplay[t31 !STAT276>0]:%NAME%{%ORANGE%105%%NAME%}%CONTINUE%// Magic 105
+ItemDisplay[t31 !STAT276>0]:%NAME%{%DARK_GREEN%120% %WHITE%* %NAME%}%CONTINUE%// Poison 120
+ItemDisplay[t31 !STAT276>0]:%NAME%{%YELLOW%120% %WHITE%* %NAME%}%CONTINUE%// Light 120
 
 // ===== Kehjistan Marketplace (t39) =====
 // S13: P=115 M=50 F=120 L=75 C=75 Psn=75
@@ -3178,9 +3178,9 @@ ItemDisplay[t39 !STAT499>0 !STAT441>0 !STAT437>0 !STAT360>0 !STAT276>0]:%NAME%{%
 ItemDisplay[t39 !STAT360>0 !STAT276>0]:%NAME%{%BLUE%75% %WHITE%* %NAME%}%CONTINUE%// Cold base (75)
 ItemDisplay[t39 STAT470>0 !STAT360>0 !STAT276>0]:%NAME%{%YELLOW%80% %WHITE%* %NAME%}%CONTINUE%// Light with Souls (80)
 ItemDisplay[t39 !STAT470>0 !STAT360>0 !STAT276>0]:%NAME%{%YELLOW%75% %WHITE%* %NAME%}%CONTINUE%// Light base (75)
-ItemDisplay[t39]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
-ItemDisplay[t39]:%NAME%{%GOLD%115%%NAME%}%CONTINUE%// Phys 115
-ItemDisplay[t39]:%NAME%{%RED%120% %WHITE%* %NAME%}%CONTINUE%// Fire 120
+ItemDisplay[t39 !STAT276>0]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
+ItemDisplay[t39 !STAT276>0]:%NAME%{%GOLD%115%%NAME%}%CONTINUE%// Phys 115
+ItemDisplay[t39 !STAT276>0]:%NAME%{%RED%120% %WHITE%* %NAME%}%CONTINUE%// Fire 120
 
 // ========================= Unique Maps (Area Level 87-89) =========================
 
@@ -3273,8 +3273,8 @@ ItemDisplay[t56 !STAT499>0 (STAT441>0 OR STAT437>0) !STAT360>0 !STAT276>0]:%NAME
 ItemDisplay[t56 !STAT499>0 !STAT441>0 !STAT437>0 !STAT360>0 !STAT276>0]:%NAME%{%DARK_GREEN%75% %WHITE%* %NAME%}%CONTINUE%// Poison base (75)
 ItemDisplay[t56 !STAT360>0 !STAT276>0]:%NAME%{%BLUE%80% %WHITE%* %NAME%}%CONTINUE%// Cold 80
 ItemDisplay[t56 !STAT360>0 !STAT276>0]:%NAME%{%RED%85% %WHITE%* %NAME%}%CONTINUE%// Fire 85
-ItemDisplay[t56]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
-ItemDisplay[t56]:%NAME%{%YELLOW%100%%NAME%}%CONTINUE%// Light 100
+ItemDisplay[t56 !STAT276>0]:%NAME%{%CL%%WHITE%Monster Immunities:%CL%%NAME%}%CONTINUE%//
+ItemDisplay[t56 !STAT276>0]:%NAME%{%YELLOW%100%%NAME%}%CONTINUE%// Light 100
 
 // ===== Djinn's Domain (t57) =====
 // S13: P=55 M=50 F=75 L=75 C=75 Psn=75
@@ -3372,8 +3372,8 @@ ItemDisplay[STAT441>0 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQUE_MAPS)
 ItemDisplay[STAT449>0 STAT449<7 !STAT360>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQUE_MAPS)]:%NAME%{%GRAY%+%STAT449%% Deadly Strike%CL%%NAME%}%CONTINUE%//
 
 // Map % Maximum Life Highlight
-ItemDisplay[STAT405>0 STAT405<10 !STAT360>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQUE_MAPS)]:%NAME%{%GRAY%+%STAT405%% Maximum Life%CL%%NAME%}%CONTINUE%//
-ItemDisplay[STAT405>9 STAT405<30 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQUE_MAPS)]:%NAME%{%RED%+%STAT405%% Maximum Life%CL%%NAME%}%CONTINUE%//
+ItemDisplay[STAT405>0 STAT405<15 !STAT360>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQUE_MAPS)]:%NAME%{%GRAY%+%STAT405%% Maximum Life%CL%%NAME%}%CONTINUE%//
+ItemDisplay[STAT405>14 STAT405<30 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQUE_MAPS)]:%NAME%{%RED%+%STAT405%% Maximum Life%CL%%NAME%}%CONTINUE%//
 ItemDisplay[STAT405>29 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQUE_MAPS)]:%NAME%{%PURPLE%+%STAT405%% Maximum Life%CL%%NAME%}%CONTINUE%//
 
 // Poison Skill Damage
@@ -5042,7 +5042,8 @@ ItemDisplay[SET !ID ETH 7fb]:%NAME%%SOUNDID-2594%%CONTINUE%// Eth Bul-Kathos' Tr
 ItemDisplay[SET !ID ETH 7gd]:%NAME%%SOUNDID-2594%%CONTINUE%// Eth Bul-Kathos' Sacred Charge Colossus Blade
 ItemDisplay[SET !ID ETH 7ls]:%NAME%%SOUNDID-2594%%CONTINUE%// Eth Sazabi's Cobalt Redeemer Cryptic Sword
 
-ItemDisplay[SET !ID (dr8 OR uul OR xtb OR ci3 OR uh9 OR xmg OR ne9 OR xhm OR ulg OR 7qr OR ucl OR (ETH (7fb OR 7gd OR 7ls)))]:%SET_MEDIUM_VALUE_LEFT%  %GREEN%%NAME%  %SET_MEDIUM_VALUE_RIGHT%%GREEN%%BORDER-71%%MAP-76%%DOT-84%%PX-20%//
+ItemDisplay[SET !ID FILTLVL<7 (dr8 OR uul OR xtb OR ci3 OR uh9 OR xmg OR ne9 OR xhm OR ulg OR 7qr OR ucl OR (ETH (7fb OR 7gd OR 7ls)))]:%SET_HIGH_VALUE_LEFT%  %GREEN%%NAME%  %SET_HIGH_VALUE_RIGHT%%GREEN%%BORDER-71%%MAP-76%%DOT-84%%PX-20%// The high value look on levels 0-6
+ItemDisplay[SET !ID FILTLVL>6 (dr8 OR uul OR xtb OR ci3 OR uh9 OR xmg OR ne9 OR xhm OR ulg OR 7qr OR ucl OR (ETH (7fb OR 7gd OR 7ls)))]:%SET_MEDIUM_VALUE_LEFT%  %GREEN%%NAME%  %SET_MEDIUM_VALUE_RIGHT%%GREEN%%BORDER-71%%MAP-76%%DOT-84%%PX-20%//
 
 // Low Level Duel Set Items
 ItemDisplay[SET !ID !ETH FILTLVL<7 (vbt OR vgl OR xlb)]:%SET_LLD_LEFT%  %NAME%  %SET_LLD_RIGHT%%GREEN%%BORDER-71%%MAP-C5%%DOT-9F%%PX-A2%//
@@ -5479,9 +5480,9 @@ ItemDisplay[MAG !ID ELT !PALADIN DIN CLVL>79 FILTLVL>1 !TOWN]://
 // Magic Chests
 ItemDisplay[MAG !ID ETH CHEST FILTLVL>6 !TOWN]:// 
 
+ItemDisplay[MAG !ID CHEST FILTLVL<7 CRAFTALVL>84]:%MAGIC_ETH_CRAFT_LEFT%  %NAME%  %MAGIC_ETH_CRAFT_RIGHT%%MAP-91%%DOT-97%%PX-1F%%TIER-0%// Craftable to affix level 85+ (every tier)
 ItemDisplay[MAG !ID NORM CHEST ((ILVL<94 CLVL>19 FILTLVL>0) OR FILTLVL>6) !TOWN]:// 
 ItemDisplay[MAG !ID EXC CHEST ((ILVL<94 CLVL>59 FILTLVL>0) OR FILTLVL>6) !TOWN]://
-ItemDisplay[MAG !ID ELT CHEST FILTLVL<7 CRAFTALVL>84]:%MAGIC_ETH_CRAFT_LEFT%  %NAME%  %MAGIC_ETH_CRAFT_RIGHT%%MAP-91%%DOT-97%%PX-1F%%TIER-0%//
 ItemDisplay[MAG !ID ELT CHEST FILTLVL>6 !TOWN]://
 
 // Magic Belts
@@ -5515,10 +5516,11 @@ ItemDisplay[MAG !ID HELM ELT !DRU !BAR !CIRC ((CLVL>79 FILTLVL>1) OR FILTLVL>6) 
 // Magic Shields
 ItemDisplay[MAG !ID ETH SHIELD !NEC !DIN FILTLVL>1 !TOWN]://
 
-ItemDisplay[MAG !ID NORM SHIELD !NEC !DIN ((CLVL>19 FILTLVL>0 !ETH) OR FILTLVL>6) !TOWN]:// Eth ones: hidden above on levels 2+, shown on level 1
-ItemDisplay[MAG !ID EXC SHIELD !NEC !DIN ((CLVL>59 FILTLVL>0 !ETH) OR FILTLVL>6) !TOWN]://
+ItemDisplay[MAG !ID (lrg OR spk OR kit OR bsh OR tow OR gts OR xrg OR xpk OR xit OR xsh OR xow OR xts OR urg OR upk OR ush) FILTLVL<7 CRAFTALVL>84 !(ETH FILTLVL>1)]:%MAGIC_ETH_CRAFT_LEFT%  %NAME%  %MAGIC_ETH_CRAFT_RIGHT%%MAP-91%%DOT-97%%PX-1F%%TIER-0%// Good shields (3 sockets most, and Bone Shield), craftable to affix level 85+ (Monarch, Aegis, Ward: below, every level)
+ItemDisplay[MAG !ID NORM SHIELD !NEC !DIN ((CLVL>19 FILTLVL>0 !ETH !(ILVL>93 (lrg OR spk OR kit OR bsh OR tow OR gts))) OR FILTLVL>6) !TOWN]:// Eth ones: hidden above on levels 2+, shown on level 1
+ItemDisplay[MAG !ID EXC SHIELD !NEC !DIN ((CLVL>59 FILTLVL>0 !ETH !(ILVL>93 (xrg OR xpk OR xit OR xsh OR xow OR xts))) OR FILTLVL>6) !TOWN]://
 ItemDisplay[MAG !ID ELT (uts OR uow OR uit) CRAFTALVL>84]:%MAGIC_ETH_CRAFT_LEFT%  %NAME%  %MAGIC_ETH_CRAFT_RIGHT%%MAP-91%%DOT-97%%PX-1F%%TIER-0%//
-ItemDisplay[MAG !ID ELT SHIELD !NEC !DIN ((CLVL>79 FILTLVL>1) OR FILTLVL>6) !TOWN !(uts OR uow OR uit)]:// 
+ItemDisplay[MAG !ID ELT SHIELD !NEC !DIN ((CLVL>79 FILTLVL>1 !(ILVL>93 (urg OR upk OR ush))) OR FILTLVL>6) !TOWN !(uts OR uow OR uit)]:// 
 
 // Magic Axes
 ItemDisplay[MAG NORM !ID !ETH AXE !THROWING ((CLVL>19 FILTLVL>0) OR FILTLVL>6) !TOWN]://

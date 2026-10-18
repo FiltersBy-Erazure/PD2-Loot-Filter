@@ -107,29 +107,29 @@ About 825 KB is roughly 200k+ tokens per file. **No conversation will "see the w
 | `147-map-display-end` | 3880–3900 | Every map's last rule (closing minimap icons for T1–T3, T4 and unique maps), arenas |
 | `150-uniques` | 3901–4359 | Revealed names, DClone/Rathma uniques, BIG GG display |
 | `160-uniques-value-tiers` | 4360–4881 | High / medium / minimal value, low-level duel, all other uniques |
-| `170-sets` | 4882–5093 | Revealed names, high / medium value, low-level duel, rings and amulets, normal / exceptional / elite sets |
-| `180-crafted` | 5094–5100 | |
-| `190-rares` | 5101–5307 | Heavy on hide rules; eth rare weapon notifications |
-| `200-magic` | 5308–5611 | Heavy on hide rules; magic charms; eth magic weapon notifications |
-| `205-white-runeword-bases` | 5612–5693 | The `RWB_<TAG>_<TYPE>` aliases: each +skill runeword base of white class items (codes, sockets, skills) that 210/220 tag and keep from their hide rules (added S14) |
-| `210-nonmagic-armor` | 5694–6248 | General non-magic rules, arrows/bolts, armors, shields, circlets, helms, belts, boots, gloves, barbarian helms, druid pelts and clubs, necromancer heads |
-| `220-nonmagic-weapons` | 6249–6842 | Necro wands through swords, ethereal non-magic, %ED tag on superior items, paladin shields |
-| `230-item-description-notes` | 6843–7104 | CONTINUE-only notes; maximum block dexterity |
-| `240-charms` | 7105–7285 | Magic charm display |
-| `250-jewels` | 7286–7405 | |
-| `260-arrow-bolt-affixes` | 7406–7493 | |
-| `270-rathma-gear-tags` | 7494–7522 | |
-| `280-skills-shop-highlights` | 7523–8277 | +Skills items and shop highlights (~27k tokens) |
-| `300-affix-tags` | 8278–9541 | 113 stat blocks, one per stat in the game's stat order: MF, GF, resists, FCR, IAS, skills… (largest file, ~28k tokens) |
-| `305-runeword-rolls` | 9542–10055 | GENERATED (`tools/gen_runeword_rolls.py`): runeword roll tags, aliases and tag lines in 300's stat order (added S14) |
-| `310-staffmods` | 10056–10352 | |
-| `315-sell-value-tags` | 10353–10412 | Sell value ($6k below character level 30, then ($)) and low cost vendor ($): left-most tag of the lower line, so after every tag section (was `290` until S14) |
-| `320-highlights-ed-amp-lr` | 10413–10459 | |
-| `330-tooltip-tags` | 10460–10481 | Cannot Be Frozen, weapon speed & range, item tier type (commented out) |
-| `340-high-alvl-crafting-bases` | 10482–10528 | |
-| `350-ed-dr-highlights` | 10529–10565 | Chest/shield ED and damage-reduction highlights |
-| `360-max-res-resist-tags` | 10566–10607 | Maximum resistances, resistance tags |
-| `370-catch-all` | 10608–10609 | `ItemDisplay[]:%NAME%{%NAME%}//` (must stay last) |
+| `170-sets` | 4882–5094 | Revealed names, high / medium value, low-level duel, rings and amulets, normal / exceptional / elite sets |
+| `180-crafted` | 5095–5101 | |
+| `190-rares` | 5102–5308 | Heavy on hide rules; eth rare weapon notifications |
+| `200-magic` | 5309–5613 | Heavy on hide rules; magic charms; eth magic weapon notifications |
+| `205-white-runeword-bases` | 5614–5695 | The `RWB_<TAG>_<TYPE>` aliases: each +skill runeword base of white class items (codes, sockets, skills) that 210/220 tag and keep from their hide rules (added S14) |
+| `210-nonmagic-armor` | 5696–6250 | General non-magic rules, arrows/bolts, armors, shields, circlets, helms, belts, boots, gloves, barbarian helms, druid pelts and clubs, necromancer heads |
+| `220-nonmagic-weapons` | 6251–6844 | Necro wands through swords, ethereal non-magic, %ED tag on superior items, paladin shields |
+| `230-item-description-notes` | 6845–7106 | CONTINUE-only notes; maximum block dexterity |
+| `240-charms` | 7107–7287 | Magic charm display |
+| `250-jewels` | 7288–7407 | |
+| `260-arrow-bolt-affixes` | 7408–7495 | |
+| `270-rathma-gear-tags` | 7496–7524 | |
+| `280-skills-shop-highlights` | 7525–8279 | +Skills items and shop highlights (~27k tokens) |
+| `300-affix-tags` | 8280–9543 | 113 stat blocks, one per stat in the game's stat order: MF, GF, resists, FCR, IAS, skills… (largest file, ~28k tokens) |
+| `305-runeword-rolls` | 9544–10057 | GENERATED (`tools/gen_runeword_rolls.py`): runeword roll tags, aliases and tag lines in 300's stat order (added S14) |
+| `310-staffmods` | 10058–10354 | |
+| `315-sell-value-tags` | 10355–10414 | Sell value ($6k below character level 30, then ($)) and low cost vendor ($): left-most tag of the lower line, so after every tag section (was `290` until S14) |
+| `320-highlights-ed-amp-lr` | 10415–10461 | |
+| `330-tooltip-tags` | 10462–10483 | Cannot Be Frozen, weapon speed & range, item tier type (commented out) |
+| `340-high-alvl-crafting-bases` | 10484–10530 | |
+| `350-ed-dr-highlights` | 10531–10567 | Chest/shield ED and damage-reduction highlights |
+| `360-max-res-resist-tags` | 10568–10609 | Maximum resistances, resistance tags |
+| `370-catch-all` | 10610–10611 | `ItemDisplay[]:%NAME%{%NAME%}//` (must stay last) |
 
 To add a section, give it a number between its neighbours (`115-new-topic.filter`). To split one, move lines into a new file; `python tools/build.py --check` then proves the 8 filters didn't change.
 
