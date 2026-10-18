@@ -88,9 +88,11 @@
   purple from the 95th: gold / red / purple from T1 1.4x / 1.7x / 2.0x, T2 1.5 / 1.8 / 2.2, T3 1.6 / 2.0 / 2.5, T4
   2.3 / 2.6 / 3.0 (its rare maps; dungeons only come from the cube, a T3 map + Dungeon Scarab, whose recipe adds
   +40-50% experience and four monster mods to the six affixes: `recipe_mods` in `map_exp.py`); unique maps use the
-  tier of their area level (87 T1, 88 T2, 89 T3). Identified maps only. The experience line (the author's
-  wording, 2026-10-17: gold `14.3x Experience`, a description line under 145's density / rarity highlights; BH
-  draws description lines bottom up, so a later rule's line sits lower): a full clear of this map with its rolls
+  tier of their area level (87 T1, 88 T2, 89 T3). Identified maps only. The tag and the experience line are two
+  description lines under 145's density / rarity highlights (the author's layout, tested in game 2026-10-18; BH
+  draws description lines bottom up, so a later rule's line sits lower): the tag `2.0x Experience` in its band's
+  colour, then the experience line, gold `2.6x at Level 98` (the viewer's level, `$f(CHARSTAT12)`). The experience
+  line: a full clear of this map with its rolls
   for the viewer (level penalty per monster kind: normals, champions +2, uniques +3; their own +XP %,
   `CHARSTAT12`/`CHARSTAT85`) over the average white T1-T3 map for the same viewer (dungeons: the average white T3
   map; the author, 2026-10-17: at level 97 nobody weighs a dungeon against T1 maps), characters of level 80-98
@@ -98,10 +100,8 @@
   up to 100% at level 96-98). Alias `MXX_<code>`; the penalties (`MXPEN<level>_<k>`) and the averages (`MXAVG`,
   dungeons `MXT3AVG`: `BASELINES` in the generator) are aliases at the end of 146, used as `%NAME%` inside `MXX_`
   bodies: in output BH applies aliases in file order,
-  so an alias may use a later one there (never in conditions); lint warns when such an alias comes first. T1-T3:
-  leftmost on the tag line
-  that 145's rule `%CL%` opens for every T1-T3 map (BH drops a line break nothing precedes); T4 and unique maps: a
-  tag line under the name. `sections/147-map-display-end.filter` ends every map's display after it and holds the
+  so an alias may use a later one there (never in conditions); lint warns when such an alias comes first.
+  `sections/147-map-display-end.filter` ends every map's display after it and holds the
   maps' closing minimap icons (145's T4 and unique-map looks continue into it). A band test sits inside the formula
   (`$f(ABS(2*t-35)<=3)` = 16 <= t <= 19, the long multiplier once): the repo's tools read a `$f(...)` island as one
   unknown word. Guest monsters ("Map contains ...", STAT437-442/470/471/499, one at most; T1-T3 affixes, Imperial

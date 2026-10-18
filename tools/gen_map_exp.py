@@ -24,11 +24,11 @@ then 19% less per level, at least 5% (this line is within 0.7% of the game's 207
 monsters and layout monsters at the monster level, champions +2, uniques and minions +3 (their base experience is
 the area's). A character's own +XP % (stat 85) is added after the penalty, and the map's +XP % joins it there.
 
-The filter shows the roll multiplier as a tag on a map's tag line (sections/146-map-experience.filter, written
-here), truncated to one decimal (the colour always matches the digits), in bands per tier (BANDS): T1 from 1.4x
-gold, 1.7x red, 2.0x purple; T2 1.5x / 1.8x / 2.2x; T3 1.6x / 2.0x / 2.5x; T4 2.3x / 2.6x / 3.0x; no tag below.
-T1-T3 maps: leftmost on the tag line that 145's rule %CL% opens; T4 and unique maps: a tag line under their name.
-Identified maps only (an unidentified map has no stats yet).
+The filter shows the roll multiplier as a description line, "2.0x Experience" (sections/146-map-experience.filter,
+written here), truncated to one decimal (the colour always matches the digits), in bands per tier (BANDS): T1 from
+1.4x gold, 1.7x red, 2.0x purple; T2 1.5x / 1.8x / 2.2x; T3 1.6x / 2.0x / 2.5x; T4 2.3x / 2.6x / 3.0x; no line
+below. Under it the experience line, gold "2.6x at Level 98" (the viewer's level). Identified maps only (an
+unidentified map has no stats yet).
 
     python tools/gen_map_exp.py              write sections/146-map-experience.filter
     python tools/gen_map_exp.py --check      change nothing; exit 1 if the section is out of date
@@ -430,27 +430,27 @@ def render_section(maps):
             f"T{t} {' / '.join(f'{v / 10:.1f}x' for v in BANDS[t])}" for t in (1, 2)) + ",",
         "// " + ", ".join(f"T{t} {' / '.join(f'{v / 10:.1f}x' for v in BANDS[t])}" for t in (3, 4)) + "; no tag below.",
         "// The same percentiles of rare maps in every tier (10th / 60th / 95th); unique maps by their area level's",
-        "// tier. Tenths cut off, so the colour matches the digits. T1-T3: leftmost on the tag line (145 opens it);",
-        "// T4 and unique maps: a tag line under the name; 147 ends every map's display. MXR_<code>: the multiplier.",
-        "// The experience line (description, under 145's density / rarity highlights; BH draws description lines",
-        "// bottom up): a full clear of this map with its rolls for the viewer (level penalty, their own +XP %) over",
-        "// the average white T1-T3 map for the same viewer (dungeons: the average white T3 map), characters of level",
-        "// 80-98. MXX_<code>: that ratio, with the penalties and the averages as aliases at the end (output only, so",
-        "// an alias may use a later one).",
+        "// tier. Tenths cut off, so the colour matches the digits. Both lines are description lines under 145's",
+        "// density / rarity highlights (BH draws description lines bottom up, so a later rule's line sits lower):",
+        "// the tag (`1.7x Experience`, its band's colour), then the experience line (`2.6x at Level 98`, gold).",
+        "// 147 ends every map's display. MXR_<code>: the multiplier. The experience line: a full clear of this map",
+        "// with its rolls for the viewer (level penalty, their own +XP %) over the average white T1-T3 map for the",
+        "// same viewer (dungeons: the average white T3 map), characters of level 80-98, their level from CHARSTAT12.",
+        "// MXX_<code>: that ratio, with the penalties and the averages as aliases at the end (output only, so an",
+        "// alias may use a later one).",
     ]
     for mp in sorted(maps.values(), key=lambda m: (m.tier, m.code)):
         c = mp.code.upper()
         tenths = f"FLOOR(10*(%MXR_{c}%)+0.0001)"
         shown = f"$f(FLOOR({tenths}/10)).$f(MOD({tenths},10))x"
-        join = "%CS%" if mp.tier <= 3 else "%CL%"  # T4 and unique maps: no tag line of their own yet
         tier = TIER_NAMES[mp.tier] + (f", T{band_tier(mp)} bands" if mp.tier == 5 else "")
         lines += ["", f"// {mp.name} ({tier})", f"Alias[MXR_{c}]:{roll_txt(mp)}"]
         for color, test in band_tests(mp, f"FLOOR(10*(MXR_{c})+0.0001)"):
-            lines.append(f"ItemDisplay[{mp.code} ID $f({test})]:{color}{shown}{join}%NAME%{{%NAME%}}%CONTINUE%//")
+            lines.append(f"ItemDisplay[{mp.code} ID $f({test})]:%NAME%{{{color}{shown} Experience%CL%%NAME%}}%CONTINUE%//")
         x_tenths = f"FLOOR(10*(%MXX_{c}%)+0.0001)"
         lines += [f"Alias[MXX_{c}]:{exp_txt(mp, avg0)}",
                   f"ItemDisplay[{mp.code} ID CLVL>79 CLVL<99]:%NAME%{{%GOLD%$f(FLOOR({x_tenths}/10)).$f(MOD({x_tenths},10))"
-                  f"x Experience%CL%%NAME%}}%CONTINUE%//"]
+                  f"x at Level $f(CHARSTAT12)%CL%%NAME%}}%CONTINUE%//"]
     lines += ["", "// Shared by the experience lines: the level penalty of normal monsters, champions (+2) and uniques",
               "// (+3) per map level, and the average white T1-T3 map's (MXAVG) and T3 map's (MXT3AVG, dungeons')",
               "// experience at the viewer's level."]
