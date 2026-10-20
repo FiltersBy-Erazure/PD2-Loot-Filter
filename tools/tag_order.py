@@ -48,7 +48,7 @@ TABLE = TOOLS / "pd2_stat_priority.tsv"
 # ---------------------------------------------------------------- which stats a tag shows
 
 NAMED = {"ALLSK": [127], "FCR": [105], "FHR": [99], "FBR": [102], "FRW": [96], "IAS": [93], "EDAM": [17],
-         "EDEF": [16], "DEF": [31], "AR": [19], "ARPER": [119], "MINDMG": [21], "MAXDMG": [22], "LIFE": [7],
+         "EDEF": [16], "DEF": [31], "PLUSDEF": [31], "AR": [19], "ARPER": [119], "MINDMG": [21], "MAXDMG": [22], "LIFE": [7],
          "MANA": [9], "STR": [0], "DEX": [2], "MFIND": [80], "GFIND": [79], "DTM": [114], "MAEK": [138],
          "REPLIFE": [74], "ITD": [115], "FRES": [39], "LRES": [41], "CRES": [43], "PRES": [45],
          "RES": [39, 41, 43, 45], "MAXRES": [40, 42, 44, 46], "ALLATTRIB": [0, 1, 2, 3]}

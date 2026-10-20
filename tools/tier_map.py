@@ -140,11 +140,16 @@ def read_tsv(path):
 
 
 def load_bases():
-    """{code: {name, tier, types, sockets, width, height, spawnable, qlvl, mlvl}} from docs/pd2-bases.tsv."""
-    return {code: {"name": name, "tier": tier, "types": types.split(",") if types else [], "sockets": int(sockets),
-                   "width": int(width), "height": int(height), "spawnable": spawnable == "1", "qlvl": int(qlvl),
-                   "mlvl": int(mlvl)}
-            for code, name, tier, types, sockets, width, height, spawnable, qlvl, mlvl in read_tsv(BASES)}
+    """{code: {name, tier, types, sockets, width, height, spawnable, qlvl, mlvl, eth, maxac, block}} from
+    docs/pd2-bases.tsv (eth: the base has durability, so it can drop ethereal)."""
+    out = {}
+    for row in read_tsv(BASES):
+        code, name, tier, types, sockets, width, height, spawnable, qlvl, mlvl = row[:10]
+        eth, maxac, block = (row[10:13] + ["0", "0", "0"])[:3]
+        out[code] = {"name": name, "tier": tier, "types": types.split(",") if types else [], "sockets": int(sockets),
+                     "width": int(width), "height": int(height), "spawnable": spawnable == "1", "qlvl": int(qlvl),
+                     "mlvl": int(mlvl), "eth": eth == "1", "maxac": int(maxac), "block": int(block)}
+    return out
 
 
 def affix_level(ilvl, qlvl, mlvl):

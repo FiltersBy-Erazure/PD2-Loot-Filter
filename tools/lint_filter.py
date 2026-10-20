@@ -77,7 +77,7 @@ BH_CONDITIONS = set("""
 AND && OR || TRUE FALSE ETH SOCK SOCKETS SET MAG RARE UNI AMAZON SORCERESS NECROMANCER PALADIN
 BARBARIAN DRUID ASSASSIN CRAFTALVL REROLLALVL PREFIX SUFFIX AUTOMOD MAPID MAPTIER CRAFT RW NMAG
 SUP INF NORM EXC ELT CLASS ID ILVL QLVL ALVL CLVL FILTLVL DIFF RUNE GOLD GEMMED GEMTYPE GEM
-GEMLEVEL ED EDEF EDAM DEF MAXDUR RES FRES CRES LRES PRES IAS FCR FHR FBR LIFE MANA QTY GOODSK
+GEMLEVEL ED EDEF EDAM DEF PLUSDEF MAXDUR RES FRES CRES LRES PRES IAS FCR FHR FBR LIFE MANA QTY GOODSK
 GOODTBSK FOOLS LVLREQ ARPER MFIND GFIND STR DEX FRW MINDMG MAXDMG AR DTM MAEK REPLIFE REPQUANT
 REPAIR ARMOR BELT CHEST HELM SHIELD GLOVES BOOTS CIRC DRU BAR DIN NEC SIN SOR ZON MISC JEWELRY
 CHARM QUIVER SHOP EQUIPPED MERC CUBE INVENTORY STASH GROUND 1H 2H AXE MACE CLUB TMACE HAMMER
@@ -99,7 +99,7 @@ NAME BASENAME SOCKETS RUNENUM RUNENAME GEMLEVEL GEMTYPE ILVL ALVL CRAFTALVL RERO
 WPNSPD RANGE CODE LBRACE RBRACE PERCENT BUYPRICE SELLPRICE PRICE QTY RES ED CS CL NL REQSTR REQDEX
 REQLVL BASEMINONEH BASEMAXONEH BASEMINTWOH BASEMAXTWOH BASEMINTHROW BASEMAXTHROW BASEMINKICK
 BASEMAXKICK BASEMINSMITE BASEMAXSMITE BASEBLOCK ALLATTRIB MAXRES UPSTR UPDEX UPLVL MAXSOCKETS
-MINDMG MAXDMG EDEF EDAM DEF FRES CRES LRES PRES IAS FCR FHR FBR LIFE MANA ARPER MFIND GFIND STR
+MINDMG MAXDMG EDEF EDAM DEF PLUSDEF FRES CRES LRES PRES IAS FCR FHR FBR LIFE MANA ARPER MFIND GFIND STR
 DEX FRW AR DTM MAEK REPLIFE REPQUANT REPAIR
 """.split())
 BH_KEYWORD_PARAMS = {"STAT": 1, "SK": 1, "OS": 1, "CLSK": 1, "TABSK": 1, "CHARSTAT": 1, "MULTI": 2}
@@ -122,7 +122,7 @@ alvl amazon ar armor arper assassin automod axe bar barbarian belt boots bow buy
 circ class club clvl craft craftalvl cres cube dagger def dex diff din dru druid dtm ed edam edef
 elt equipped eth exc false fbr fcr fhr filtlvl fools fres frw gem gemlevel gemmed gemtype gfind
 gloves gold ground hammer helm ias id ilvl inf inventory jav jewelry life lres lvlreq mace maek mag
-mana mapid maptier maxdmg maxdur merc mfind mindmg misc nec necromancer nmag norm paladin polearm
+mana mapid maptier maxdmg maxdur merc mfind mindmg misc nec necromancer nmag norm paladin plusdef polearm
 pres price qlvl qty quiver rare repair replife repquant rerollalvl res rune rw scepter sellprice set
 shield shop sin sock sockets sor sorceress spear staff stash str sup sword throwing tmace true uni
 wand weapon xbow zon width height area maxsockets uplvl upstr updex maxres allattrib baseblock

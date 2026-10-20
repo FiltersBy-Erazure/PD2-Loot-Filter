@@ -19,7 +19,9 @@ item names and the stat text the picker shows, and the items the game tables lac
 PD2's server: its versions are split into one item each); and tools/unique_roll_picks.txt. Rows of the game
 data with the same name are versions of one item: they share its picks line.
 In the picks file, a line ending in "# auto ..." is the generator's default and is rewritten each run;
-remove "auto" from a line (or write your own) to keep it. Output: sections/045-unique-set-rolls.filter.
+remove "auto" from a line (or write your own) to keep it. Where a label would be cut, tools/unique_cut_rules.txt (the
+author's steps) and tools/unique_cut_cases.tsv (where each applies: python tools/label_cuts.py, run it first).
+Output: sections/045-unique-set-rolls.filter, which also renames bases (BASE_RENAMES: Holy Sprinkler).
 Unique charms and jewels are left out: their tags live in 240-charms and 250-jewels.
 """
 import argparse
@@ -77,10 +79,10 @@ TAGS = {
     "max": ("ROLL_MAXDMG_TAG", "MAXDMG", "max", "WA"),
     "ds": ("ROLL_DS_TAG", "STAT141", "ds", "WA"),
     "cb": ("ROLL_CB_TAG", "STAT136", "cb", "WA"),
-    "-fres": ("ROLL_EFRES_TAG", "STAT333", "%res", "WA"),
-    "-lres": ("ROLL_ELRES_TAG", "STAT334", "%res", "WA"),
-    "-cres": ("ROLL_ECRES_TAG", "STAT335", "%res", "WA"),
-    "-pres": ("ROLL_EPRES_TAG", "STAT336", "%res", "WA"),
+    "-fres": ("ROLL_EFRES_TAG", "STAT333", "%r", "WA"),
+    "-lres": ("ROLL_ELRES_TAG", "STAT334", "%r", "WA"),
+    "-cres": ("ROLL_ECRES_TAG", "STAT335", "%r", "WA"),
+    "-pres": ("ROLL_EPRES_TAG", "STAT336", "%r", "WA"),
     "ls": ("ROLL_LS_TAG", "STAT60", "ls", "WA"),
     "ms": ("ROLL_MS_TAG", "STAT62", "ms", "WA"),
     "lpk": ("ROLL_LPK_TAG", "STAT86", "lpk", "WA"),
@@ -139,7 +141,7 @@ NEW_ROLL_TAGS = {
     "multi126_3": ("ROLL_MSK_TAG", "MULTI126,3", "msk"),
     "multi126_4": ("ROLL_CSK_TAG", "MULTI126,4", "csk"),
     "multi126_5": ("ROLL_PSK_TAG", "MULTI126,5", "psk"),
-    "stat425": ("ROLL_EPHYS_TAG", "STAT425", "%phys"),
+    "stat425": ("ROLL_EPHYS_TAG", "STAT425", "%phy"),
     "stat49": ("ROLL_FIREDMG_TAG", "STAT49", "fire"),
     "stat55": ("ROLL_COLDDMG_TAG", "STAT55", "cold"),
     "stat142": ("ROLL_FABSP_TAG", "STAT142", "%abs"),
@@ -186,28 +188,28 @@ VERSION_TEXT = {"ver_strk": "Version: casts on striking (Strk)", "ver_cast": "Ve
                 "ver_msw": "Version: +N to Maximum Skeleton Warriors (msw)",
                 "ver_msa": "Version: +N to Maximum Skeleton Archers (msa)"}
 MASTERY_KEYS = ["sk65", "sk63", "sk61"]  # in the order the game lists them: the higher skill ID first
-# Short names (the author, 2026-10-12): set items whose name line plus a corruption tag leaves too little room for their
-# tags show the set owner's name instead, their base line kept: when corrupted, or always if the picked tags don't fit
-# beside the full name even uncorrupted (short_name_mode). 045 writes the rule (%BASENAME%%NL%<short name>) before
-# every other rule.
-SHORT_NAMES = {f"SET {owner} {item}": owner for owner, names in [
-    ("Tal Rasha's", ["Lidless Eye", "Horadric Crest", "Adjudication", "Fine-Spun Cloth", "Guardianship"]),
-    ("Immortal King's", ["Detail", "Pillar", "Soul Cage", "Stone Crusher"]),
-    ("Sazabi's", ["Ghost Liberator", "Mental Sheath"]),
-    ("Bul-Kathos'", ["Sacred Charge", "Tribal Guardian"]),
-    ("Dangoon's", ["Teaching"]),
-] for item in names}
+# What changes on a label BH would cut (56 characters; the author's review, 2026-10-19): tools/unique_cut_rules.txt
+# holds each item's steps (leave out a picked roll's tag, a short name, short skill tab labels, two skill tags as one),
+# tools/label_cuts.py the cases where each applies (tools/unique_cut_cases.tsv, BH conditions), 045 puts them in.
+CUT_RULES = ROOT / "tools" / "unique_cut_rules.txt"
+CUT_CASES = ROOT / "tools" / "unique_cut_cases.tsv"
+CUT_STEP = re.compile(r"^(drop|short|tabs|slash)\b\s*(.*)$")
+TABS_SHORT_ALIAS = "ROLL_TABSKS_TAG"  # the skill tab tags with their short labels (300)
+# Base names (the author, 2026-10-19): the name every item of the base shows where BH can name it again: unidentified
+# ones of any quality, non-magical ones, identified uniques and sets (045), runewords (047, gen_runeword_rolls.py). BH
+# has no keyword for affix or rare names: an identified magic, rare or crafted one keeps the game's name.
+BASE_RENAMES = {"9qs": "Holy Sprinkler"}
 RANDOM_LINE = re.compile(r"\[Random [^\]]*(?:Skill|Class)")  # the wiki's "+2 to [Random Sorceress Skill]"
 # +N to a single skill: the value, then a tan abbreviation. The author's staffmods abbreviations
 # (310-staffmods, 2026-10-08); Amazon skills have no staffmods line, so theirs are the generator's own.
 SKILL_TAG_LABELS = {
     6: "marw",    9: "crit",    10: "jab",    11: "carw",    12: "multi",    13: "dodge",    14: "power",    16: "expl",    19: "jmas",
     17: "slow",    42: "stat",    138: "shou",    150: "gwar",
-    22: "guide",    24: "cs",    26: "straf",    28: "dcoy",    30: "fend",    32: "valk",    37: "wrmt",    51: "fwll",    58: "eshl",
+    22: "guide",    24: "cs",    26: "straf",    28: "dcoy",    30: "fend",    32: "valk",    37: "wrm",    51: "fwll",    58: "eshl",
     61: "fmst",    63: "lmst",    65: "cmas",    66: "ampd",    67: "teth",    68: "barm",    69: "skms",    70: "skwa",
-    74: "cexp",    80: "skmg",    84: "bspe",    89: "skar",    95: "reve",    101: "hblt",    102: "hfir",    106: "zeal",
-    110: "resl",    112: "bhmr",    115: "vigr",    121: "fhvn",    128: "onhm",    145: "iskn",    151: "wind",    154: "wcry",
-    221: "ravn",    223: "wwlf",    224: "lycn",    225: "fstr",    232: "frag",    233: "maul",    238: "rabi",    240: "twst",
+    74: "cexp",    80: "skmg",    84: "bspe",    89: "skar",    95: "rev",    101: "hb",    102: "hfir",    106: "zeal",
+    110: "resl",    112: "bhmr",    115: "vigr",    121: "fh",    128: "onhm",    145: "iskn",    151: "wind",    154: "wcry",
+    221: "ravn",    223: "wwlf",    224: "lycn",    225: "fstr",    232: "fral",    233: "maul",    238: "rabi",    240: "twst",
     245: "trnd",    247: "grzl",    248: "fury",    367: "bwrp",    369: "icbr",    381: "dpct",
 }
 TAGS.update({k: (a, c, l, "WA") for k, (a, c, l) in NEW_ROLL_TAGS.items()})
@@ -793,7 +795,7 @@ def used_aliases():
     used = set()
     for f in sorted((ROOT / "sections").glob("*.filter")):
         if f.name != OUT.name:
-            used.update(re.findall(r"\bROLL_[A-Z0-9]+_TAG\b", f.read_text(encoding="utf-8")))
+            used.update(re.findall(r"\bROLL_[A-Z0-9_]+_TAG\b", f.read_text(encoding="utf-8")))
     return used
 
 
@@ -828,8 +830,11 @@ CORRUPTIONS = pd2_data.load_corruptions()  # docs/pd2-corruptions.tsv: what each
 CORRUPT_TYPE = {"WEAPON": "weap", "HELM": "helm", "CIRC": "helm", "CHEST": "tors", "SHIELD": "shld", "GLOVES": "glov",
                 "BOOTS": "boot", "BELT": "belt", "amu": "amul", "rin": "rin", "QUIVER": "misl"}  # slot -> cube input
 CUBE_QUALITIES = {"nor", "hiq", "low", "mag", "rar", "set", "uni", "crf"}
-TAB_LABELS = dict(re.findall(r"%(TABSK\d+)%%[A-Z_]+%([A-Za-z]+)%CS%",
-                             (ROOT / "sections" / "300-affix-tags.filter").read_text(encoding="utf-8")))
+TAB_LABELS = {}  # skill tab -> its label in 300 (the cut rules' short labels aside)
+for _line in (ROOT / "sections" / "300-affix-tags.filter").read_text(encoding="utf-8").splitlines():
+    if TABS_SHORT_ALIAS not in _line:
+        for _code, _label in re.findall(r"%(TABSK\d+)%%[A-Z_]+%([A-Za-z]+)%CS%", _line):
+            TAB_LABELS.setdefault(_code, _label)
 
 
 def corruption_bonuses(it):
@@ -970,12 +975,35 @@ def build_fingerprints(items):
         it.fingerprint = conds
 
 
-def fingerprint_text(it, extra=None):
-    """(its base codes, the stats that tell it apart[, extra: a version's own stat])."""
+def fingerprint_text(it, extra=None, when=None, unless=None):
+    """(its base codes, the stats that tell it apart[, extra: a version's own stat][, when: a condition it also
+    needs][, unless: a condition that leaves it out])."""
     codes = it.codes[0] if len(it.codes) == 1 else "(" + " OR ".join(it.codes) + ")"
     conds = [f"{c}<{lo + 1}" if lo <= 0 else f"{c}>{lo - 1}" for c, lo in it.fingerprint] + it.excluded
-    conds = " ".join(conds + ([extra] if extra and extra not in conds else []))
-    return f"({codes}{' ' + conds if conds else ''})"
+    conds += [extra] if extra and extra not in conds else []
+    conds += ([term(when)] if when else []) + ([negate(unless)] if unless else [])
+    return f"({codes}{' ' + ' '.join(conds) if conds else ''})"
+
+
+def one_group(cond):
+    """Whether cond is one bracketed group, "(...)"."""
+    depth = 0
+    for i, ch in enumerate(cond):
+        depth += (ch == "(") - (ch == ")")
+        if depth == 0 and i < len(cond) - 1:
+            return False
+    return cond.startswith("(") and cond.endswith(")")
+
+
+def term(cond):
+    """A condition as one term: bracketed unless it is one word (BH reads AND and OR left to right)."""
+    return cond if re.fullmatch(r"!?[^\s()]+", cond) or one_group(cond) else f"({cond})"
+
+
+def negate(cond):
+    if re.fullmatch(r"![^\s()!]+", cond):
+        return cond[1:]
+    return "!" + term(cond).lstrip()
 
 
 NEW_LABEL = 3  # assumed label length of a tag that has no line yet
@@ -1021,31 +1049,95 @@ def roll_width(it, key):
     return tag_width(key, r["hi"], r["lo"])
 
 
-def picks_width(it, picks):
-    """What the picked tags take (a tag with no line yet: its estimate)."""
-    return sum(roll_width(it, k) for k in picks if it.roll(k))
-
-
-def short_name_mode(it, picks=None, always=False):
-    """(mode, room) of an item's name line. mode None: its full name, room beside it with a corruption tag.
-    "corrupted" (SHORT_NAMES): its short name when corrupted; room = the smaller of beside its full name uncorrupted
-    and beside its short name with a corruption tag. "always": the picked tags don't fit that, so its short name
-    always; room beside it with a corruption tag."""
-    rest = (NAME_MAX - 1 - max((len(b) for b in it.base_names), default=0) - LINE_BREAK
+def room_of(it):
+    """Characters left for roll tags beside the item's name: 56 minus name, longest base, line breaks, sockets and the
+    corruption reserve. (Where the label would still be cut: tools/unique_cut_rules.txt.)"""
+    rest = (NAME_MAX - 1 - max((len(base_name(c, b)) for c, b in zip(it.codes, it.base_names)), default=0) - LINE_BREAK
             - (SOCKET_RESERVE if it.where in SOCKET_SLOTS else 0))
-    corruption = CORRUPTION_RESERVE * CORRUPTION_TAGS.get(it.where, 1)
-    if it.key not in SHORT_NAMES:
-        return None, rest - len(it.display) - corruption
-    short = rest - len(SHORT_NAMES[it.key]) - corruption
-    room = min(rest - len(it.display), short)
-    if always or (picks is not None and picks_width(it, picks) > room):
-        return "always", short
-    return "corrupted", room
+    return rest - len(it.display) - CORRUPTION_RESERVE * CORRUPTION_TAGS.get(it.where, 1)
+
+
+def base_name(code, name):
+    return BASE_RENAMES.get(code, name)
+
+
+def read_cut_rules():
+    """{item key: [step, ...]} from tools/unique_cut_rules.txt, in the order the steps apply: ("drop", roll key),
+    ("short", name), ("tabs",) or ("slash", roll key, roll key)."""
+    rules = {}
+    if not CUT_RULES.exists():
+        return rules
+    for n, line in enumerate(CUT_RULES.read_text(encoding="utf-8").splitlines(), 1):
+        if not line.strip() or line.startswith("#"):
+            continue
+        key, _, body = line.partition(":")
+        steps = []
+        for part in (p.strip() for p in body.split(";")):
+            m = CUT_STEP.match(part)
+            args = m.group(2).split() if m else []
+            if not m or (m.group(1) == "slash" and len(args) != 2) or (m.group(1) in ("drop", "short") and not args):
+                sys.exit(f"{CUT_RULES.relative_to(ROOT)}:{n}: unknown step '{part}'")
+            steps.append(("short", m.group(2).strip()) if m.group(1) == "short" else (m.group(1), *args))
+        rules[key.strip()] = steps
+    return rules
+
+
+def read_cut_cases():
+    """{item key: {step number (1 = the first): BH condition}} from tools/unique_cut_cases.tsv."""
+    cases = {}
+    if CUT_CASES.exists():
+        for line in CUT_CASES.read_text(encoding="utf-8").splitlines():
+            if line and not line.startswith(("#", "item\t")):
+                key, step, cond = line.split("\t")
+                cases.setdefault(key, {})[int(step)] = cond
+    return cases
+
+
+def step_text(step):
+    return " ".join(step)
+
+
+def cut_rule_problems(items, picks, rules, cases):
+    """What in tools/unique_cut_rules.txt does nothing: an unknown item, a step on a roll the item doesn't show,
+    a skill tab with no short label line (300), or a cases file older than the rules."""
+    by_key = {it.key: it for it in items}
+    lines = tag_lines()
+    out = []
+    for key, steps in rules.items():
+        it = by_key.get(key)
+        if it is None:
+            out.append(f"{key}: no such unique or set item (the picks file's name)")
+            continue
+        chosen = picks.get(key, ([], True))[0]
+        for step in steps:
+            need = [step[1]] if step[0] == "drop" else ["tabsk"] if step[0] == "tabs" else list(step[1:]) \
+                if step[0] == "slash" else []
+            missing = [k for k in need if k not in chosen or k not in it.rolls]
+            if missing:
+                out.append(f"{key}: '{step_text(step)}' does nothing: {', '.join(missing)} is not a picked roll it shows")
+            if step[0] == "tabs":
+                for code in tab_codes(it):
+                    if not any(TABS_SHORT_ALIAS in l["aliases"] and any(c["kw"] == code for c in l["chunks"])
+                               for l in lines):
+                        out.append(f"{key}: 'tabs': 300-affix-tags has no {TABS_SHORT_ALIAS} line for {code}")
+            if step[0] == "slash" and slash_alias(*step[1:]) not in USED:
+                out.append(f"{key}: '{step_text(step)}': 300-affix-tags has no {slash_alias(*step[1:])} line")
+        stale = [n for n in cases.get(key, {}) if n > len(steps)]
+        if stale:
+            out.append(f"{key}: {CUT_CASES.relative_to(ROOT)} is older than the rules (run python tools/label_cuts.py)")
+    out += [f"{key}: in {CUT_CASES.relative_to(ROOT)} but has no rule (run python tools/label_cuts.py)"
+            for key in cases if key not in rules]
+    return out
+
+
+def short_of(it, rules):
+    """The short name an item's cut rules give it, or None."""
+    return next((s[1] for s in rules.get(it.key, []) if s[0] == "short"), None)
 
 
 def default_picks(it):
     """The generator's choice: the most important rolls with a tag line that fit (FCR only on caster weapons)."""
-    budget = short_name_mode(it)[1]
+    budget = room_of(it)
     picks, used = [], 0
     for key in PRIORITY[it.slot]:
         if key == "fcr" and it.weapon and not it.caster:
@@ -1064,7 +1156,8 @@ def read_picks():
     return read_picks_text(PICKS.read_text(encoding="utf-8")) if PICKS.exists() else {}
 
 
-def render_picks(items, old):
+def render_picks(items, old, rules=None):
+    rules = rules or {}
     out = ["# Unique/set variable-roll tags: the rolls each item shows (tools/gen_unique_rolls.py).",
            "# 'KIND Name: tag, tag' - the filter shows the tags in the item's affix order. Lines whose comment",
            "# starts with 'auto' are the generator's defaults and are rewritten on every run: delete 'auto' to",
@@ -1073,7 +1166,8 @@ def render_picks(items, old):
            "# sockets); uses = what the picked tags take at their highest roll. Each candidate shows its",
            "# range and (width), e.g. 'ed 50-75 (5)' = '75ed '. A '*' marks a roll with no tag line yet:",
            "# picking it requests one (its width is an estimate); a per-level roll shows per level ('life/lvl",
-           "# 1-1.5'); 'ver' names an item's version (Strk/Cast, msw/msa). Tags: "
+           "# 1-1.5'); 'ver' names an item's version (Strk/Cast, msw/msa). 'when cut': the item's steps in",
+           "# tools/unique_cut_rules.txt, taken in order where its label would be cut. Tags: "
            + ", ".join([k for k in TAGS if not k.startswith("ver_")] + ["ver"]), ""]
     for it in one_per_key(sorted(items, key=lambda x: (x.kind, x.page, x.name))):
         keyed = [r for r in it.all_rolls if r["key"]]
@@ -1083,16 +1177,16 @@ def render_picks(items, old):
         mine = old.get(it.key)
         cands = " ".join(cand_text(it, r) for r in keyed)
         picks = mine[0] if mine and not mine[1] else auto
-        mode, budget = short_name_mode(it, picks)
         used = sum(roll_width(it, k) for k in picks if k in it.rolls)
         waiting = [k for k in picks if it.roll(k) and not it.roll(k)["tagged"]]
         wait_w = sum(roll_width(it, k) for k in waiting)
         info = f"room {budget}, uses {used}"
-        if mode:
-            info += f" (short name {'when corrupted' if mode == 'corrupted' else 'always'}: {SHORT_NAMES[it.key]})"
+        steps = rules.get(it.key)
+        if steps:
+            info += f" (when cut: {'; '.join(step_text(s) for s in steps)})"
         if waiting:
             info += f" + ~{wait_w} waiting for a tag line ({', '.join(waiting)})"
-        if used + wait_w > budget:
+        if used + wait_w > budget and not steps:
             info += " - TOO LONG"
         unknown = [k for k in picks if not it.roll(k)]
         if unknown:
@@ -1117,11 +1211,42 @@ def cand_text(it, r):
 
 # ---------------------------------------------------------------- section
 
-def render_section(items, picks):
+def slash_alias(a, b):
+    return f"ROLL_SLASH_{a.upper()}_{b.upper()}_TAG"
+
+
+def step_cases(it, rules, cases):
+    """[(step, condition)] of the item's cut rules that apply somewhere: "TRUE" = everywhere (tools/label_cuts.py)."""
+    found = cases.get(it.key, {})
+    return [(s, found[n]) for n, s in enumerate(rules.get(it.key, []), 1) if n in found]
+
+
+def cut_off(it, key, cuts):
+    """Where the item leaves roll `key`'s alias: the conditions of its steps that take that tag away, or None."""
+    conds = [c for s, c in step_cases(it, *cuts)
+             if (s[0] == "drop" and s[1] == key) or (s[0] == "tabs" and key == "tabsk") or (s[0] == "slash" and key in s[1:])]
+    if "TRUE" in conds:
+        return "TRUE"
+    return " OR ".join(term(c) for c in conds) if conds else None
+
+
+def alias_value(parts):
+    clauses = [f"({kind} ID ({' OR '.join(dict.fromkeys(fps))}))" for kind, fps in parts.items() if fps]
+    return "(" + " OR ".join(clauses) + ")" if clauses else "FALSE"
+
+
+def render_section(items, picks, cuts=None):
+    """The generated section. cuts = (cut rules, cut cases), or None: no label is cut (tools/label_cuts.py measures the
+    labels with that)."""
+    cuts = cuts or ({}, {})
+    rules, cases = cuts
     lines = ["// ==============================  Unique and Set Variable Roll Tags  ==============================",
              "// GENERATED by tools/gen_unique_rolls.py - do not edit. Change tools/unique_roll_picks.txt and run it.",
              "// Each alias: the identified uniques/sets that show this tag (300-affix-tags lines have",
              "// 'OR ROLL_<X>_TAG' in their gate), each as (its possible base codes + stats that tell it apart).",
+             "// Where an item's label would be cut (BH shows 56 characters), the steps of tools/unique_cut_rules.txt in the",
+             "// cases tools/label_cuts.py found (tools/unique_cut_cases.tsv): the item leaves a roll's alias there (!(...)), shows",
+             "// short skill tab labels (ROLL_TABSKS_TAG) or two skill tags as one (ROLL_SLASH_<A>_<B>_TAG), or its short name.",
              ""]
     for key, (alias, code, label, _) in TAGS.items():
         if alias not in USED:
@@ -1130,29 +1255,72 @@ def render_section(items, picks):
         for it in sorted(items, key=lambda x: x.name):
             chosen = picks.get(it.key, ([], True))[0]
             if key.startswith("ver_"):  # picked as "ver": each version in its own tag, told apart by its own stat
-                if "ver" in chosen and it.version == key and "ver" in it.rolls and not it.unresolved:
-                    parts[it.kind].append(fingerprint_text(it, f"{it.roll('ver')['code']}>0"))
+                off = cut_off(it, "ver", cuts)
+                if "ver" in chosen and it.version == key and "ver" in it.rolls and not it.unresolved and off != "TRUE":
+                    parts[it.kind].append(fingerprint_text(it, f"{it.roll('ver')['code']}>0", unless=off))
             elif key in chosen and key in it.rolls and not it.unresolved:
-                parts[it.kind].append(fingerprint_text(it))
-        clauses = [f"({kind} ID ({' OR '.join(dict.fromkeys(fps))}))" for kind, fps in parts.items() if fps]
-        value = "(" + " OR ".join(clauses) + ")" if clauses else "FALSE"
+                off = cut_off(it, key, cuts)
+                if off != "TRUE":
+                    parts[it.kind].append(fingerprint_text(it, unless=off))
         lines.append(f"// {key}: {code}")
-        lines.append(f"Alias[{alias}]:{value}")
+        lines.append(f"Alias[{alias}]:{alias_value(parts)}")
         lines.append("")
-    rules = []
+    special = {TABS_SHORT_ALIAS: {"UNI": [], "SET": []}}
+    special.update({a: {"UNI": [], "SET": []} for a in sorted(USED) if a.startswith("ROLL_SLASH_")})
+    for it in sorted(items, key=lambda x: x.name):
+        for step, cond in step_cases(it, *cuts):
+            if step[0] in ("tabs", "slash") and not it.unresolved:
+                alias = TABS_SHORT_ALIAS if step[0] == "tabs" else slash_alias(*step[1:])
+                special.setdefault(alias, {"UNI": [], "SET": []})[it.kind].append(
+                    fingerprint_text(it, when=None if cond == "TRUE" else cond))
+    lines.append("// The cut rules' own tags: short skill tab labels (tabs), two skill tags as one (slash: 3/3)")
+    for alias, parts in special.items():
+        lines.append(f"Alias[{alias}]:{alias_value(parts)}")
+    lines += ["", "// Base names (BASE_RENAMES in the generator): the name every item of the base shows where BH can name it",
+              "// again: unidentified and non-magical items (210-nonmagic-armor's Superior/Inferior trim skips them:",
+              "// !RENAMED_BASES), identified uniques and sets (their own name above it), runewords (047). Identified magic,",
+              "// rare and crafted items keep the game's name: BH has no word for their affixes or rare name.",
+              "Alias[RENAMED_BASES]:" + ("(" + " OR ".join(BASE_RENAMES) + ")" if len(BASE_RENAMES) > 1 else
+                                          next(iter(BASE_RENAMES), "FALSE"))]
+    for code, name in BASE_RENAMES.items():
+        lines.append(f"ItemDisplay[{code} !RW (!ID OR NMAG)]:{name}{{%NAME%}}%CONTINUE%")
+        for it in sorted(items, key=lambda x: x.key):
+            if code in it.codes and not it.unresolved:
+                rule = (f"ItemDisplay[{it.kind} ID {code} {fingerprint_text(it)}]:{name}%NL%{game_name(it)}"
+                        "{%NAME%}%CONTINUE%")
+                if rule not in lines:
+                    lines.append(rule)
+    short = []
     for it in sorted(items, key=lambda x: x.key):
-        if it.key in SHORT_NAMES and not it.unresolved:
-            mode = short_name_mode(it, picks.get(it.key, ([], True))[0])[0]
-            cond = f"{it.kind} ID {fingerprint_text(it)}{' STAT360>0' if mode == 'corrupted' else ''}"
-            rule = f"ItemDisplay[{cond}]:%BASENAME%%NL%{SHORT_NAMES[it.key]}{{%NAME%}}%CONTINUE%"
-            if rule not in rules:
-                rules.append(rule)
-    if rules:
-        lines += ["// Short names (SHORT_NAMES): the set owner's name instead of the item's own name line, its base line kept:",
-                  "// when corrupted (STAT360>0), or always where the tags need the room. Before every other rule (they build",
-                  "// on it). The game draws a name's lines bottom up: %NAME% holds the base line first.",
-                  *rules, ""]
+        for step, cond in step_cases(it, *cuts):
+            if step[0] != "short" or it.unresolved:
+                continue
+            fp = fingerprint_text(it, when=None if cond == "TRUE" else cond)
+            renamed = [c for c in it.codes if c in BASE_RENAMES and can_hold(cond, c)]
+            for c in renamed:
+                short.append(f"ItemDisplay[{it.kind} ID {c} {fp}]:{BASE_RENAMES[c]}%NL%{step[1]}{{%NAME%}}%CONTINUE%")
+            if any(c not in BASE_RENAMES and can_hold(cond, c) for c in it.codes):
+                skip = "".join(f"!{c} " for c in renamed)
+                short.append(f"ItemDisplay[{it.kind} ID {skip}{fp}]:%BASENAME%%NL%{step[1]}{{%NAME%}}%CONTINUE%")
+    if short:
+        lines += ["", "// Short names (tools/unique_cut_rules.txt): where the label would be cut, the short name instead of the",
+                  "// item's own name line, its base line kept. Before every other rule (they build on it). The game draws a",
+                  "// name's lines bottom up: %NAME% holds the base line first.",
+                  *dict.fromkeys(short)]
+    lines.append("")
     return "\r\n".join(lines)
+
+
+def game_name(it):
+    """The item's name in game (a version's too: versions share it)."""
+    return it.game["name"] if it.game else it.name
+
+
+def can_hold(cond, code):
+    """Whether a cut case condition can hold on an item of this base code (its other words unknown)."""
+    import explain_item  # (BH's condition reading)
+    return cond == "TRUE" or explain_item.evaluate(cond, None, lambda w: int(w == code) if re.fullmatch(
+        r"[a-z0-9]+", w) else explain_item.MAYBE) != 0
 
 
 SLOT_WORDS = re.compile(r"\b(WEAPON|HELM|CIRC|CHEST|SHIELD|GLOVES|BOOTS|BELT|QUIVER|amu|rin)\b")
@@ -1192,7 +1360,7 @@ def tag_lines():
                     if piece:
                         chunk["parts"].append([color, piece])
         chunks.append(chunk)
-        out.append({"n": n, "cond": cond, "aliases": set(re.findall(r"(?<!!)\bROLL_[A-Z0-9]+_TAG\b", cond)),  # not "!ROLL_X_TAG"
+        out.append({"n": n, "cond": cond, "aliases": set(re.findall(r"(?<!!)\bROLL_[A-Z0-9_]+_TAG\b", cond)),  # not "!ROLL_X_TAG"
                     "slots": set(SLOT_WORDS.findall(cond)), "chunks": [c for c in chunks if c["parts"]],
                     "cmps": re.findall(r"(?<![!A-Za-z0-9_])([A-Z]+[0-9]*(?:,[0-9]+)?)([<>=])(-?\d+)", cond)})
     return out
@@ -1294,8 +1462,9 @@ def picker_font():
     return base64.b64encode(FONT_CACHE.read_bytes()).decode("ascii")
 
 
-def write_picker(items, old):
+def write_picker(items, old, rules=None):
     """tools/roll_picker.html: the picks as a clickable page (data embedded in the template)."""
+    rules = rules or {}
     lines = tag_lines()
     data = []
     for it in one_per_key(sorted(items, key=lambda x: (x.page, x.kind, x.name))):
@@ -1317,8 +1486,9 @@ def write_picker(items, old):
                               "tagged": r["tagged"], "line": r["line"], "idx": idx, "fmt": fmt, "approx": approx})
         data.append({
             "key": it.key, "kind": it.kind, "name": it.name, "shown": it.display, "page": it.page, "slot": it.where,
-            "short": SHORT_NAMES.get(it.key), "roomShort": short_name_mode(it, always=True)[1] if it.key in SHORT_NAMES else None,
-            "bases": it.base_names, "codes": it.codes, "room": budget, "sockets": it.where in SOCKET_SLOTS,
+            "short": short_of(it, rules), "cuts": [step_text(s) for s in rules.get(it.key, [])],
+            "bases": [base_name(c, b) for c, b in zip(it.codes, it.base_names)], "codes": it.codes, "room": budget,
+            "sockets": it.where in SOCKET_SLOTS,
             "cands": cands, "auto": auto, "picks": mine[0] if reviewed else auto, "reviewed": reviewed,
             "untaggable": [r["line"] for r in it.all_rolls if not r["key"]], "stats": it.raw_stats,
         })
@@ -1460,11 +1630,12 @@ def main():
                     help="list picked rolls that still need a tag line, and rolls with no filter code")
     args = ap.parse_args()
     items = load()
+    rules, cases = read_cut_rules(), read_cut_cases()
     if args.requests:
         print_requests(items, read_picks())
         return
     if args.picker:
-        write_picker(items, read_picks())
+        write_picker(items, read_picks(), rules)
         print(f"wrote {PICKER.relative_to(ROOT)}; opening it")
         os.startfile(PICKER) if hasattr(os, "startfile") else __import__("webbrowser").open(PICKER.as_uri())
         return
@@ -1478,16 +1649,21 @@ def main():
                   + (f"  weak vs {it.weak}" if it.weak else ""))
             if it.unmapped:
                 print(f"    rolls without a tag here: {it.unmapped}")
+            for step, cond in step_cases(it, rules, cases):
+                print(f"    when cut: {step_text(step)} where {cond}")
         return
     old = read_picks()
-    picks_text = render_picks(items, old)
+    picks_text = render_picks(items, old, rules)
     new_picks = {k: v for k, v in read_picks_text(picks_text).items()}
-    section = render_section(items, new_picks).encode("utf-8") + b"\r\n"
+    problems = cut_rule_problems(items, new_picks, rules, cases)
+    section = render_section(items, new_picks, (rules, cases)).encode("utf-8") + b"\r\n"
     stale = []
     if not PICKS.exists() or PICKS.read_text(encoding="utf-8") != picks_text:
         stale.append(str(PICKS.relative_to(ROOT)))
     if not OUT.exists() or OUT.read_bytes() != section:
         stale.append(str(OUT.relative_to(ROOT)))
+    for msg in problems:
+        print(f"{CUT_RULES.relative_to(ROOT)}: {msg}")
     if args.check:
         if stale:
             sys.exit("out of date (run: python tools/gen_unique_rolls.py): " + ", ".join(stale))

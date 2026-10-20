@@ -16,6 +16,8 @@ jobs:
         run: python tools/build.py --check
       - name: Lint the filter (tools/lint_allow.txt lists accepted findings)
         run: python tools/lint_filter.py
+      - name: Unique/set label cut cases match the filter and tools/unique_cut_rules.txt
+        run: python tools/label_cuts.py --check
       - name: Unique/set roll tags match docs/items and tools/unique_roll_picks.txt
         run: python tools/gen_unique_rolls.py --check
       - name: Runeword roll tags match docs/pd2-runewords.tsv and tools/runeword_roll_picks.txt

@@ -302,10 +302,12 @@ class Game:
                 slot = self.slot(code)
                 if not slot:
                     continue  # charms and jewels: done by hand in 240-charms / 250-jewels
-                props, per_level = [], {}
+                props, per_level, eth = [], {}, 0
                 for i in range(1, count + 1):
                     p = r.get(f"prop{i}", "").strip()
-                    if p:
+                    if p and self.first_func(p) == 23:  # "ethereal": the item always drops ethereal (Ethereal Edge)
+                        eth = 1
+                    elif p:
                         par, lo, hi = r.get(f"par{i}", ""), r.get(f"min{i}", ""), r.get(f"max{i}", "")
                         level = self.per_level_prop(p, par, lo, hi)
                         if level:
@@ -318,7 +320,7 @@ class Game:
                 caster = int(bool(CASTER_TYPES & set(self.ancestors(code))))
                 out.append([kind, self.strings.get(r["index"], r["index"]), r["index"], code, slot, str(caster),
                             r.get("lvl req", "").strip(), json.dumps(props, separators=(",", ":")),
-                            compact(per_level)])
+                            compact(per_level), str(eth)])
         return out
 
     def per_level_prop(self, prop, par, lo, hi):
@@ -562,8 +564,8 @@ def extract(game_dir):
              "# kind, name, table name, base code, slot, caster, required level, properties as [[code, low, high], ...];",
              "# +% damage is EDAM, +% defense ED; RANDSK<skill IDs> / RANDCLSK<classes> = +N to a random skill / class's",
              "# skills; perlevel = per-level stats as {code: [the stat it adds to, divisor]} (STAT216 8-12 << 8 / 2048 =",
-             "# 1-1.5 Life per level)",
-             "\t".join(["kind", "name", "index", "code", "slot", "caster", "lvlreq", "props", "perlevel"])]
+             "# 1-1.5 Life per level); eth 1 = the item always drops ethereal (its 'ethereal' property)",
+             "\t".join(["kind", "name", "index", "code", "slot", "caster", "lvlreq", "props", "perlevel", "eth"])]
     lines += ["\t".join(r) for r in rows]
     ITEMS_FILE.write_text("\n".join(lines) + "\n", encoding="utf-8", newline="\n")
     print(f"wrote {ITEMS_FILE.relative_to(ROOT)} ({len(rows)} items)")
@@ -617,16 +619,20 @@ def extract_tier_data(game_dir, game=None):
            "# name, tier (BH's NORM/EXC/ELT: the code against its ubercode/ultracode), item type and its ancestors,",
            "# most sockets (gemsockets), inventory width and height (BH's AREA is width x height), spawnable (0: no",
            "# white drop of this base: a base only some unique uses), quality level (level: BH's QLVL) and magic level",
-           "# (magic lvl): the affix level is BH's ALVL, the game's formula again since the 2026-10-15 beta.",
-           "code\tname\ttier\ttypes\tsockets\twidth\theight\tspawnable\tqlvl\tmlvl"]
+           "# (magic lvl): the affix level is BH's ALVL, the game's formula again since the 2026-10-15 beta. eth: 1 if",
+           "# the base has durability (it can drop ethereal), maxac and block: an armor's or shield's top base defense",
+           "# and its base block (tools/label_cuts.py).",
+           "code\tname\ttier\ttypes\tsockets\twidth\theight\tspawnable\tqlvl\tmlvl\teth\tmaxac\tblock"]
     # a quest item's name can hold a line break ("Right Click to learn skill...\nBook of Skill"): its last line
     for code in sorted(game.base_rows):
         r = game.base_rows[code]
+        eth = int(r.get("nodurability", "").strip() in ("", "0") and to_int(r.get("durability")) > 0)
         out.append(f"{code}\t{game.base_name(code).splitlines()[-1]}\t{game.tier(code)}\t{','.join(game.ancestors(code))}"
                    f"\t{to_int(r.get('gemsockets'))}\t{to_int(r.get('invwidth'))}\t{to_int(r.get('invheight'))}"
-                   f"\t{to_int(r.get('spawnable'))}\t{to_int(r.get('level'))}\t{to_int(r.get('magic lvl'))}")
+                   f"\t{to_int(r.get('spawnable'))}\t{to_int(r.get('level'))}\t{to_int(r.get('magic lvl'))}"
+                   f"\t{eth}\t{to_int(r.get('maxac'))}\t{to_int(r.get('block'))}")
     BASES_FILE.write_text("\n".join(out) + "\n", encoding="utf-8", newline="\n")
-    print(f"wrote {BASES_FILE.relative_to(ROOT)} ({len(out) - 6} bases)")
+    print(f"wrote {BASES_FILE.relative_to(ROOT)} ({len(out) - 8} bases)")
     out = [f"# PD2 skills (Skills.txt, names from the string tables) from pd2data.mpq, extracted {stamp} by",
            "# tools/pd2_data.py: the skill ID the filter's SK<n> / OS<n> read, its name and class (Skills.txt charclass).",
            "id\tname\tclass"]
@@ -651,18 +657,20 @@ def extract_tier_data(game_dir, game=None):
 # ---------------------------------------------------------------- for the generator
 
 def load_items():
-    """[{kind, name, index, code, slot, caster, lvlreq, props, perlevel}] from docs/pd2-unique-set-items.tsv."""
+    """[{kind, name, index, code, slot, caster, lvlreq, props, perlevel, eth}] from docs/pd2-unique-set-items.tsv
+    (eth: the item always drops ethereal)."""
     out = []
     if not ITEMS_FILE.exists():
         return out
     for line in ITEMS_FILE.read_text(encoding="utf-8").splitlines():
         if not line or line.startswith("#") or line.startswith("kind\t"):
             continue
-        kind, name, index, code, slot, caster, lvlreq, props, *per_level = line.split("\t")
+        kind, name, index, code, slot, caster, lvlreq, props, *rest = line.split("\t")
+        per_level, eth = (rest + ["{}", "0"])[:2]
         out.append({"kind": kind, "name": name, "index": index, "code": code, "slot": slot,
                     "caster": caster == "1", "lvlreq": int(lvlreq) if lvlreq.isdigit() else None,
                     "props": [[tuple(s) for s in p] for p in json.loads(props)],
-                    "perlevel": {k: tuple(v) for k, v in json.loads(per_level[0] if per_level else "{}").items()}})
+                    "perlevel": {k: tuple(v) for k, v in json.loads(per_level or "{}").items()}, "eth": eth == "1"})
     return out
 
 

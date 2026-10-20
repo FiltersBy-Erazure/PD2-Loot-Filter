@@ -9,6 +9,9 @@ if errorlevel 1 (
     goto failed
 )
 
+rem Unique/set labels BH would cut: where each step of tools\unique_cut_rules.txt applies (tools\unique_cut_cases.tsv)
+python tools\label_cuts.py
+if errorlevel 1 goto failed
 rem Unique/set roll tags: picks file (e.g. saved from the roll picker page) -> generated section
 python tools\gen_unique_rolls.py
 if errorlevel 1 goto failed

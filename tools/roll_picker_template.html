@@ -123,7 +123,7 @@
         <option value="0">None</option><option>1</option><option>2</option><option>3</option>
         <option>4</option><option>5</option><option>6</option>
       </select></label>
-    <label class="check sock-opt" title="The red * on corrupted sockets, and a long set name's short name (Tal Rasha's...)"><input id="corrupt" type="checkbox"> Corrupted</label>
+    <label class="check sock-opt" title="The red * on corrupted sockets"><input id="corrupt" type="checkbox"> Corrupted</label>
     <label class="check rw-opt"><input id="ethereal" type="checkbox"> Ethereal base (Eth)</label>
     <label class="check">Name limit
       <select id="limit" aria-label="Name length limit">
@@ -220,14 +220,30 @@ function orderedTags(it, picks) {
   return out;
 }
 
-function shortMode(it, picks) {  // a long set name's short name: when corrupted, or always if the tags need its room
-  return it.short ? (used(it, picks) > it.room ? "always" : "corrupted") : null;
+function labelLength(lines) {  // what BH counts: every line's characters and the line breaks between them
+  return lines.reduce((n, l) => n + l.reduce((m, s) => m + s[1].length, 0), 0) + lines.length - 1;
 }
 
-function labelLines(it, picks) {  // top to bottom; each line a list of [color, text, requested]
+function cutLabel(it, picks) {
+  // The item's cut rules (tools/unique_cut_rules.txt): steps taken in order while the label would be cut. The
+  // preview takes drop and short; tabs and slash (the game's short skill tab labels, a/b) are only named.
+  let shown = picks, short = false;
+  const applied = [];
+  let lines = labelLines(it, shown, short);
+  for (const step of it.cuts || []) {
+    if (labelLength(lines) <= LIMITS[view.limit].total) break;
+    const [kind, key] = step.split(" ");
+    if (kind === "drop") shown = shown.filter((k) => k !== key);
+    else if (kind === "short") short = true;
+    applied.push(kind === "drop" || kind === "short" ? step : `${step} (not in this preview)`);
+    lines = labelLines(it, shown, short);
+  }
+  return [lines, applied];
+}
+
+function labelLines(it, picks, short = false) {  // top to bottom; each line a list of [color, text, requested]
   const kc = it.nameColor || KIND_COLOR[it.kind] || "WHITE";
-  const mode = shortMode(it, picks);
-  const top = [[kc, mode === "always" || (mode && view.corrupt) ? it.short : it.shown || it.name, false]];
+  const top = [[kc, short && it.short ? it.short : it.shown || it.name, false]];
   if (it.sockets && view.sockets > 0) {
     top.push([kc, " ", false], ["WHITE", String(view.sockets), false]);
     if (view.corrupt) top.push(["RED", "*", false]);
@@ -260,9 +276,9 @@ function shownPicks(it, picks) {  // a runeword shows the picked rolls its base'
   return keys ? picks.filter((k) => keys.includes(k)) : picks;
 }
 
-function roomOf(it, picks) {  // a runeword's room depends on the base its preview shows; a short name's on its mode
+function roomOf(it, picks) {  // a runeword's room depends on the base its preview shows
   if (it.baseChoices) return it.roomBase - baseLine(it).reduce((n, s) => n + s[1].length, 0);
-  return shortMode(it, picks) === "always" ? it.roomShort : it.room;
+  return it.room;
 }
 
 function bhTrim(lines, mode) {
@@ -292,7 +308,7 @@ function bhTrim(lines, mode) {
 }
 
 function preview(it, picks) {
-  const lines = labelLines(it, picks);
+  const [lines, applied] = cutLabel(it, picks);
   const kept = bhTrim(lines, view.limit);
   const box = el("div", {class: "d2label", role: "img"});
   const said = [];
@@ -312,6 +328,11 @@ function preview(it, picks) {
   if (lines.some((l) => l.some((x) => x[2]))) {
     if (cut.length) notes.append(el("br"));
     notes.append("Dotted tags have no tag line in the filter yet.");
+  }
+  if (it.cuts && it.cuts.length) {  // the filter takes these where the label would be cut (each case: label_cuts.py)
+    if (notes.childNodes.length) notes.append(el("br"));
+    notes.append(`Where the label would be cut: ${it.cuts.join("; ")}` +
+                 (applied.length ? `. In this preview: ${applied.join("; ")}.` : "."));
   }
   return [el("div", {class: "ground"}, box), notes];
 }

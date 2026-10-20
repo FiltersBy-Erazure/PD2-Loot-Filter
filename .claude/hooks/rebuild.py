@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """
 Claude Code PostToolUse hook: after Claude edits a file in sections/, version.json,
-filter_definitions.json, tools/unique_roll_picks.txt or tools/runeword_roll_picks.txt, regenerate the
-unique/set and runeword roll tags (for section and picks edits: tools/gen_unique_rolls.py and
+filter_definitions.json, tools/unique_roll_picks.txt, tools/unique_cut_rules.txt or tools/runeword_roll_picks.txt,
+regenerate the unique/set label cut cases (tools/label_cuts.py: tools/unique_cut_cases.tsv), the unique/set and
+runeword roll tags (for section and picks edits: tools/gen_unique_rolls.py and
 tools/gen_runeword_rolls.py), the map experience tags (tools/gen_map_exp.py) and the players' pages (tools/tier_map.py: Erazure-Unique-Set-Tiers.html,
 tools/base_map.py: Erazure-Non-Magic-Bases.html, tools/magic_rare_map.py: Erazure-Magic-Items.html and
 Erazure-Rare-Items.html, tools/level_map.py: Erazure-Filter-Levels.html), and rebuild the 8 filters with
@@ -18,9 +19,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 ROOT_FILES = {"version.json", "filter_definitions.json"}
-PICKS = [["tools", "unique_roll_picks.txt"], ["tools", "runeword_roll_picks.txt"]]
-GENERATORS = ["gen_unique_rolls.py", "gen_runeword_rolls.py", "gen_map_exp.py", "tier_map.py", "base_map.py",
-              "magic_rare_map.py", "level_map.py"]  # in this order: all read sections/
+PICKS = [["tools", "unique_roll_picks.txt"], ["tools", "unique_cut_rules.txt"], ["tools", "runeword_roll_picks.txt"]]
+GENERATORS = ["label_cuts.py", "gen_unique_rolls.py", "gen_runeword_rolls.py", "gen_map_exp.py", "tier_map.py",
+              "base_map.py", "magic_rare_map.py", "level_map.py"]  # in this order: all read sections/
 
 
 def watched(file_path):
