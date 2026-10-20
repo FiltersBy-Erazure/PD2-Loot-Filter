@@ -13,8 +13,7 @@ hide:
 # Filter Levels
 
 What each filter level shows, notifies and hides, for every kind of item that drops, read from the filter's own rules:
-the table first, then what changes from one level to the next. Pick a filter level in the launcher. During the Season
-14 beta it describes the Season 14 beta filter.
+the table first, then what changes from one level to the next. Pick a filter level in the launcher.
 
 Super Healing and Super Mana Potions show up to Advanced Filtering and hide from Endgame Filtering on. To hide healing
 or mana potions on any level, turn on Hide Healing Potions or Hide Mana Potions in the game's Loot Filter options:

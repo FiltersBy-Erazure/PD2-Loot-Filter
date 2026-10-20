@@ -32,4 +32,3 @@ Pick a version in the launcher, then click **Save Filter** on the right side.
 | Erazure - Revealed - PoE | Same as Erazure - Main - PoE but unidentified unique and set items show as their identified names when dropped. |
 | Erazure - BIG GG - PoE | The mystery of BIG GG drops combined with Path of Exile sound notifications. |
 | Erazure - Revealed - BIG GG - PoE | Same as Erazure - BIG GG - PoE, but unidentified unique and set items show as their identified names when dropped. |
-| Erazure - S14 Beta | Season 14 closed and open beta only. Work in progress version of Erazure - Main with the upcoming Season 14 changes. Not for Season 13. |

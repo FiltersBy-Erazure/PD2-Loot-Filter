@@ -3,9 +3,6 @@
 A highly stylized loot filter for Project Diablo 2, with multiple filter level tiers for customizable strictness and
 colorful, intuitive symbols for runes, gems, maps, charms and more.
 
-!!! info "Season 14 beta"
-    Playing the Season 14 beta? Pick **Erazure - S14 Beta** in the launcher.
-
 ## Season 13 Betrayal Update
 
 My loot filters are updated for the Season 13 Betrayal ladder reset on April 24th 2026.
