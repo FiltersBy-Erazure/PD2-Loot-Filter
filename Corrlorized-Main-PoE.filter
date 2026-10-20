@@ -5184,8 +5184,12 @@ ItemDisplay[ETH CRAFT]:%WHITE%Eth %NAME%{%NAME%}%CONTINUE%//
 // =============================================  Rare Items  =============================================
 // --------------------------------------------------------------------------------------------------------
 
-// Hide Rare Items on Filter Levels 10 and 12
-ItemDisplay[RARE !ID (FILTLVL=10 OR FILTLVL=12) (QUIVER OR (ARMOR !CIRC !BOOTS !BELT !(CHEST (ALVL>84 OR CRAFTALVL>84)) !(SHIELD !NEC !DIN (lrg OR spk OR kit OR bsh OR tow OR gts OR xrg OR xpk OR xit OR xsh OR xow OR xts OR urg OR upk OR uit OR ush OR uow OR uts))) OR WEAPON) !TOWN]://
+// Rare class items a character sees on filter levels 8-11: its own class's (Sorceresses: 3 staves and 3 orbs),
+// and for every class the ethereal Amazon javelins and spears and the Reflex, Ceremonial and Grand Matron Bows
+Alias[RARE_CLASS_ITEMS_SEEN]:((NECROMANCER (WAND OR NEC)) OR (SORCERESS (wst OR 8ws OR 6ws OR ob5 OR oba OR obf)) OR (PALADIN (SCEPTER OR DIN)) OR (ASSASSIN SIN) OR (DRUID (DRU OR clb OR spc OR 9cl OR 9sp OR 7cl OR 7sp)) OR (BARBARIAN BAR) OR (AMAZON ZON) OR (ETH (am3 OR am4 OR am5 OR am8 OR am9 OR ama OR amd OR ame OR amf)) OR am2 OR am7 OR amc)
+
+// Hide Rare Items on Filter Levels 10 and 12 (on 10 not the class items above)
+ItemDisplay[RARE !ID (FILTLVL=10 OR FILTLVL=12) ((ARMOR !CIRC !BOOTS !BELT !(CHEST (ALVL>84 OR CRAFTALVL>84)) !(SHIELD !NEC !DIN (lrg OR spk OR kit OR bsh OR tow OR gts OR xrg OR xpk OR xit OR xsh OR xow OR xts OR urg OR upk OR uit OR ush OR uow OR uts))) OR WEAPON) !(FILTLVL=10 RARE_CLASS_ITEMS_SEEN) !TOWN]://
 
 // Keep orginal coloring for items
 ItemDisplay[RARE]:%YELLOW%%NAME%%CONTINUE%//
@@ -5248,7 +5252,7 @@ ItemDisplay[RARE !ID DRUID (FILTLVL~2-7 OR (FILTLVL=1 CLVL>49)) DRU CLVL<80]:%YE
 ItemDisplay[RARE !ID DRUID FILTLVL<2 CLVL<50 DRU]:%RARE_MEDIUM_VALUE_LEFT%  %NAME%  %RARE_MEDIUM_VALUE_RIGHT%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%// 
 
 // Rare Barbarian Helms
-ItemDisplay[RARE !ID (FILTLVL=10 OR FILTLVL=12) BAR !TOWN]:// Hide Barbarian Helms on filter levels 10 and 12+
+ItemDisplay[RARE !ID !BARBARIAN FILTLVL>7 BAR !TOWN]:// Hide Barbarian Helms for non-Barbarians on filter levels 8+
 ItemDisplay[RARE !ID BARBARIAN (FILTLVL~2-7 OR (FILTLVL=1 CLVL>49)) BAR CLVL<80]:%YELLOW%•  %NAME%  •%YELLOW%// 
 ItemDisplay[RARE !ID BARBARIAN FILTLVL<2 CLVL<50 BAR]:%RARE_MEDIUM_VALUE_LEFT%  %NAME%  %RARE_MEDIUM_VALUE_RIGHT%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%// 
 
@@ -5277,6 +5281,7 @@ ItemDisplay[RARE !ID !PALADIN FILTLVL>7 SCEPTER !TOWN]:// Hide Scepters on filte
 ItemDisplay[RARE !ID PALADIN (FILTLVL~2-7 OR (FILTLVL=1 CLVL>49)) SCEPTER CLVL<80]:%YELLOW%•  %NAME%  •%YELLOW%// 
 ItemDisplay[RARE !ID PALADIN FILTLVL<2 CLVL<50 SCEPTER]:%RARE_MEDIUM_VALUE_LEFT%  %NAME%  %RARE_MEDIUM_VALUE_RIGHT%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%// 
 // Rare Paladin Shields
+ItemDisplay[RARE !ID DIN (ALVL>84 OR CRAFTALVL>84) PALADIN FILTLVL<12]:%RARE_MEDIUM_VALUE_LEFT%  %NAME%  %RARE_MEDIUM_VALUE_RIGHT%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%// Chat notification for Paladins on filter levels 0-11
 ItemDisplay[RARE !ID DIN (ALVL>84 OR CRAFTALVL>84) FILTLVL~0-7]:%RARE_MEDIUM_VALUE_LEFT%  %NAME%  %RARE_MEDIUM_VALUE_RIGHT%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%%TIER-0%//
 ItemDisplay[RARE !ID DIN NORM !PALADIN FILTLVL>7 !TOWN]:// Hide Normal quality Rare Paladin Shields on filter levels 8+
 ItemDisplay[RARE !ID DIN EXC !PALADIN FILTLVL>7 !TOWN]:// Hide Exceptional quality Rare Paladin Shields on filter levels 8+
@@ -5297,23 +5302,20 @@ ItemDisplay[RARE !ID ELT !ETH !THROWING DAGGER FILTLVL>7 !TOWN]:// Hide non-Ethe
 ItemDisplay[RARE !ID !ZON BOW NORM !(lwb OR lbb) FILTLVL>2 !TOWN]:// Hide Normal quality Rare Bows on filter levels 3+
 ItemDisplay[RARE !ID !ZON BOW EXC !(8lw OR 8l8) FILTLVL>7 !TOWN]:// Hide Exceptional quality Rare Bows on filter levels 8+
 ItemDisplay[RARE !ID !ZON BOW ELT !(6lw OR 6l7) FILTLVL>7 !TOWN]:// Hide Elite quality Rare Bows on filter levels 8+
+ItemDisplay[RARE !ID !AMAZON (am1 OR am6 OR amb) FILTLVL>7 !TOWN]:// Hide Stag, Ashwood and Matriarchal Bows for non-Amazons on filter levels 8+
 // Rare Crossbows
 ItemDisplay[RARE !ID XBOW NORM !(hxb OR mxb) FILTLVL>2 !TOWN]:// Hide Normal quality Rare Crossbows on filter levels 3+
 ItemDisplay[RARE !ID XBOW EXC !(8hx OR 8mx) FILTLVL>7 !TOWN]:// Hide Exceptional quality Rare Crossbows on filter levels 8+
 ItemDisplay[RARE !ID XBOW ELT !(6hx OR 6mx) FILTLVL>7 !TOWN]:// Hide Elite quality Rare Crossbows on filter levels 8+
 
 // Rare Amazon Spears
-ItemDisplay[RARE !ID !ETH NORM AMAZON (am4 OR am3) FILTLVL>7 !TOWN]:// Hide Normal Rare quality noneth Amazon spears
-ItemDisplay[RARE !ID !ETH EXC AMAZON (am9 OR am8) FILTLVL>7 !TOWN]:// Hide Exceptional Rare quality noneth Amazon spears
-ItemDisplay[RARE !ID !ETH ELT AMAZON (ame OR amd) FILTLVL>7 !TOWN]:// Hide Elite Rare quality noneth Amazon spears
-
 ItemDisplay[RARE !ID !ETH NORM !AMAZON (am4 OR am3) ((CLVL>29 FILTLVL>1) OR FILTLVL>2) !TOWN]:// Hide Normal Rare quality noneth Amazon spears
 ItemDisplay[RARE !ID !ETH EXC !AMAZON (am9 OR am8) ((CLVL>59 FILTLVL>2) OR FILTLVL>7) !TOWN]:// Hide Exceptional Rare quality noneth Amazon spears
 ItemDisplay[RARE !ID !ETH ELT !AMAZON (ame OR amd) ((CLVL>79 FILTLVL>2) OR FILTLVL>7) !TOWN]:// Hide Elite Rare quality noneth Amazon spears
 
 // Amazon Javelins
 //ItemDisplay[RARE !ID !ETH (am5 OR ama OR amf) AMAZON (FILTLVL=10 OR FILTLVL=12) !TOWN]://
-//ItemDisplay[RARE !ID !ETH (am5 OR ama OR amf) !AMAZON FILTLVL>8 !TOWN]://
+ItemDisplay[RARE !ID !ETH (am5 OR ama OR amf) !AMAZON FILTLVL>7 !TOWN]:// Hide non-Ethereal Amazon Javelins for non-Amazons on filter levels 8+
 
 // Rare Spears
 ItemDisplay[RARE !ID !ETH NORM (spr OR tri OR brn OR spt) !(BARBARIAN (spt OR tri)) FILTLVL>2 !TOWN]:// Hide non-Ethereal Normal quality Rare Spears on filter levels 3+
@@ -5387,14 +5389,12 @@ ItemDisplay[RARE !ID ETH FILTLVL<8 (scy OR 9s8 OR 7s8 OR wsc OR 9wc OR 7wc OR ha
 ItemDisplay[RARE !ID ETH (FILTLVL<10 OR FILTLVL=11) (pax OR 9pa OR 7pa OR vou OR 9vo OR 7vo)]:%NAME%%MAP-0B%%DOT-6A%%PX-20%%TIER-0%//
 
 // Eth Rare Assassin Claws
-ItemDisplay[ASSASSIN RARE !ID ETH (FILTLVL<10 OR FILTLVL=11) (axf OR 9xf OR 7xf OR btl OR 9tw OR 7tw)]:%NAME%%MAP-0B%%DOT-6A%%PX-20%//
-ItemDisplay[ASSASSIN RARE !ID ETH (FILTLVL~8-9 OR FILTLVL=11) (ktr OR 9ar OR 7ar OR skr OR 9qr OR 7qr)]:%NAME%%MAP-0B%%DOT-6A%%PX-20%%TIER-0%//
+ItemDisplay[ASSASSIN RARE !ID ETH FILTLVL<12 (axf OR 9xf OR 7xf OR btl OR 9tw OR 7tw)]:%NAME%%MAP-0B%%DOT-6A%%PX-20%//
+ItemDisplay[ASSASSIN RARE !ID ETH FILTLVL~8-11 (ktr OR 9ar OR 7ar OR skr OR 9qr OR 7qr)]:%NAME%%MAP-0B%%DOT-6A%%PX-20%%TIER-0%//
 ItemDisplay[ASSASSIN RARE !ID ETH FILTLVL<8 (ktr OR 9ar OR 7ar OR skr OR 9qr OR 7qr)]:%NAME%%MAP-0B%%DOT-6A%%PX-20%//
 
 ItemDisplay[!ASSASSIN RARE !ID ETH (FILTLVL<10 OR FILTLVL=11) (axf OR 9xf OR 7xf OR btl OR 9tw OR 7tw)]:%NAME%%MAP-0B%%DOT-6A%%PX-20%%TIER-0%//
 ItemDisplay[!ASSASSIN RARE !ID ETH FILTLVL<8 (ktr OR 9ar OR 7ar OR skr OR 9qr OR 7qr)]:%NAME%%MAP-0B%%DOT-6A%%PX-20%%TIER-0%//
-
-ItemDisplay[RARE !ID ETH (FILTLVL~8-9 OR FILTLVL=11) (wrb OR 9wb OR 7wb OR ces OR 9cs OR 7cs OR clw OR 9lw OR 7lw) !TOWN]://
 
 // -------------------------------------------------------------------------------------------------------
 // ============================================  Magic Items  ============================================
