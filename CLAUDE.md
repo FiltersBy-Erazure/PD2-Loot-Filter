@@ -354,16 +354,15 @@ removed level on the next run; a new level group's intro is `INTROS` in `tools/l
 2. `python tools/build.py --check` and `python tools/lint_filter.py` must pass. Findings the author
    accepts go in `tools/lint_allow.txt` with a reason; never allow-list one on your own.
 3. The author runs `build.bat` when ready to publish (stamps the date) and tests in game.
-4. Commit `sections/`, `version.json` and all 8 filters together, on a branch: `beta` for Season 14
-   work until launch (2026-10-23), `setup` for Season 13 fixes (merge `setup` into `beta` afterwards;
-   on conflicts in the 8 filters, resolve the sections and rebuild).
-5. Merge to `main` only with the author's explicit go-ahead: the launcher serves `main` to players
-   (GitHub contents API, default branch). During the S14 beta, `python tools/publish_beta.py` puts the
-   beta build on `main` as an extra "Erazure - S14 Beta" entry without touching the 8 live filters, plus
-   the website (`website/`, `.github/workflows/pages.yml` and the players' pages `Erazure-Unique-Set-Tiers.html`,
-   `Erazure-Non-Magic-Bases.html`, `Erazure-Magic-Items.html`, `Erazure-Rare-Items.html` and
-   `Erazure-Filter-Levels.html`; `--site-only`: the website alone); its `--push` also needs the author's go-ahead
-   each time.
+4. Commit `sections/`, `version.json` and all 8 filters together (with the players' pages the build changed)
+   on `main`, the branch the launcher serves to players (GitHub contents API, default branch). Since the
+   Season 14 publish (2026-10-19) the work happens on `main` directly: `beta` and `setup` are retired, and so
+   is `tools/publish_beta.py` (the S14 Beta launcher entry). A bigger experiment can go on a branch of its own
+   (e.g. `eth-affix-line`), merged into `main` when the author picks it. Other sessions may commit at the same
+   time: check `git log` and `git status` right before committing, and commit only your own changes.
+5. Push `main` only when the author says so, each time. Every push reaches every player on their next Play
+   and redeploys the website (`.github/workflows/pages.yml`); CI (`check-filters.yml`) runs only after the
+   push. A commit is not a publish; the push is.
 6. To see which rules an item hits (and where it stops, and which rule plays its drop sound):
    `python tools/explain_item.py <code> <quality> --level N [--set K=V ...]`.
 
@@ -385,7 +384,7 @@ removed level on the next run; a new level group's intro is `INTROS` in `tools/l
 
 ## Key files
 `sections/` (source) · `tools/build.py` · `build.bat` · `version.json` · `filter_definitions.json` ·
-`tools/lint_filter.py` + `tools/lint_allow.txt` · `tools/explain_item.py` · `tools/publish_beta.py` ·
+`tools/lint_filter.py` + `tools/lint_allow.txt` · `tools/explain_item.py` ·
 `tools/item_data.py` + `tools/gen_unique_rolls.py` + `tools/unique_roll_picks.txt` ·
 `tools/label_cuts.py` + `tools/unique_cut_rules.txt` + `tools/unique_cut_cases.tsv` ·
 `tools/gen_runeword_rolls.py` + `tools/runeword_roll_picks.txt` + `docs/pd2-runewords.tsv` (sections 305 / 047) ·
