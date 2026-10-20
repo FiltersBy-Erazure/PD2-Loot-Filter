@@ -12,7 +12,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Verify all 8 filters match sections/
+      - name: Verify all the filters match sections/ (and styles/)
         run: python tools/build.py --check
       - name: Lint the filter (tools/lint_allow.txt lists accepted findings)
         run: python tools/lint_filter.py
@@ -32,6 +32,8 @@ jobs:
         run: python tools/magic_rare_map.py --check
       - name: Filter levels page (Erazure-Filter-Levels.html) matches the filter
         run: python tools/level_map.py --check
+      - name: Minimal version page (Erazure-Minimal-Style.html) matches the filter and styles/minimal.filter
+        run: python tools/style_map.py --check
       - name: The website builds (website/, MkDocs Material; no broken links)
         run: |
           pip install --quiet mkdocs-material==9.7.7

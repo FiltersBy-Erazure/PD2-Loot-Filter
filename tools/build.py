@@ -1,17 +1,22 @@
 #!/usr/bin/env python3
 """
-Build the 8 Erazure filters from the section files.
+Build the Erazure filters (every entry of filter_definitions.json) from the section files.
 
   sections/*.filter    joined in filename order, <<VERSION>> filled in    ->  Erazure-Main.filter
-  Erazure-Main.filter  with one toggle block switched on per variant      ->  the 7 other filters
+  Erazure-Main.filter  with one toggle block switched on per variant      ->  the 7 other toggle variants
+  a variant's filter   with the aliases of a style file in styles/        ->  the style variants (Erazure-Minimal.filter)
 
 Usage (from the repo root; or double-click build.bat to stamp, build and check):
-    python tools/build.py           build all 8 filters
+    python tools/build.py           build all the filters
     python tools/build.py --stamp   set version.json's date to today, then build
     python tools/build.py --check   change nothing; exit 1 if any filter or section file is out of date
 
-Section files with LF line endings, a UTF-8 BOM or no final line break are fixed in place
+Section and style files with LF line endings, a UTF-8 BOM or no final line break are fixed in place
 (only those invisible characters change) and each fix is reported on a line starting "Fixed".
+
+A style variant (STYLE_VARIANTS) has no toggle block of its own. Its style file holds one Alias[NAME]:... line per
+alias that looks different there (and // comments); each replaces the line of the same alias in sections/, and
+everything else is the filter of the variant it is built from.
 """
 import argparse
 import datetime
@@ -22,10 +27,13 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 SECTIONS = ROOT / "sections"
+STYLES = ROOT / "styles"
 VERSION_FILE = ROOT / "version.json"
 DEFS = ROOT / "filter_definitions.json"
 
 MAIN = "Erazure - Main"
+# {style variant's display name: (the variant it is built from, its style file in styles/)}
+STYLE_VARIANTS = {"Erazure - Minimal": (MAIN, "minimal.filter")}
 PLACEHOLDER = b"<<VERSION>>"
 CATCH_ALL = b"ItemDisplay[]:"
 BOM = b"\xef\xbb\xbf"
@@ -35,6 +43,7 @@ MONTHS = ["January", "February", "March", "April", "May", "June", "July",
 SECTION_NAME_RE = re.compile(r"^(\d{3})-[A-Za-z0-9_-]+\.filter$")
 HEADER_RE = re.compile(rb"^//\s+(Erazure - .+?)\s*$")
 ALIAS_RE = re.compile(rb"^(//)?(Alias\[(BIG_GG|POE_SOUNDS|REVEALED)\]:(?:TRUE|FALSE))\s*$")
+ALIAS_DEF_RE = re.compile(rb"^Alias\[([A-Za-z0-9_]+)\]:")
 TOGGLES = sorted([b"BIG_GG", b"POE_SOUNDS", b"REVEALED"])
 
 
@@ -148,9 +157,10 @@ def check_toggles(lines, blocks, names, where):
     if MAIN not in blocks:
         fail(f"no complete '//  {MAIN}' toggle block (one Alias line each for BIG_GG, POE_SOUNDS, REVEALED)")
     for name in names:
-        if name not in blocks:
+        base = STYLE_VARIANTS[name][0] if name in STYLE_VARIANTS else name
+        if base not in blocks:
             fail(f"filter_definitions.json lists '{name}' but the Toggles section has no complete "
-                 f"'//  {name}' block (one Alias line each for BIG_GG, POE_SOUNDS, REVEALED)")
+                 f"'//  {base}' block (one Alias line each for BIG_GG, POE_SOUNDS, REVEALED)")
     wrong = [f"{where(i)}: {lines[i].decode('utf-8', 'replace')}"
              for name, idxs in blocks.items() for i in idxs
              if lines[i].startswith(b"//") != (name != MAIN)]
@@ -166,6 +176,52 @@ def render(lines, blocks, active):
         for i in idxs:
             body = ALIAS_RE.match(lines[i]).group(2)
             out[i] = body if name == active else b"//" + body
+    return out
+
+
+def load_style(fname, check, problems):
+    """{alias name: its line} from styles/<fname>; its format is fixed like a section file's."""
+    path = STYLES / fname
+    try:
+        data, fixes = normalize(path.read_bytes())
+    except OSError as e:
+        fail(f"cannot read styles/{fname} ({e})")
+    if fixes:
+        if check:
+            problems.append(f"styles/{fname}: {', '.join(fixes)}")
+        else:
+            path.write_bytes(data)
+            print(f"Fixed styles/{fname}: {', '.join(fixes)}")
+    style = {}
+    for n, line in enumerate(data.split(b"\r\n")[:-1], 1):
+        if not line.strip() or line.startswith(b"//"):
+            continue
+        m = ALIAS_DEF_RE.match(line)
+        if not m:
+            fail(f"styles/{fname}:{n}: a style file holds only Alias[NAME]:... lines and // comments")
+        if b"//" in line:
+            fail(f"styles/{fname}:{n}: '//' in Alias[{m.group(1).decode()}]: BH reads the rest of the line "
+                 "as a comment (put a color code between the two slashes)")
+        if m.group(1) in style:
+            fail(f"styles/{fname}:{n}: Alias[{m.group(1).decode()}] is defined twice")
+        style[m.group(1)] = line
+    return style
+
+
+def apply_style(lines, style, fname, where):
+    """The lines with each of the style's aliases defined by the style's line."""
+    out, found = list(lines), {}
+    for i, line in enumerate(lines):
+        m = ALIAS_DEF_RE.match(line)
+        if m and m.group(1) in style:
+            if m.group(1) in found:
+                fail(f"styles/{fname}: Alias[{m.group(1).decode()}] is defined twice in sections/ "
+                     f"({where(found[m.group(1)])}, {where(i)})")
+            found[m.group(1)] = i
+            out[i] = style[m.group(1)]
+    missing = [name.decode() for name in style if name not in found]
+    if missing:
+        fail(f"styles/{fname}: no such alias in sections/: {', '.join(missing)}")
     return out
 
 
@@ -218,7 +274,13 @@ def main():
 
     stale = []
     for name, fname in defs:
-        data = b"\r\n".join(render(lines, blocks, name))
+        if name in STYLE_VARIANTS:
+            base, style_file = STYLE_VARIANTS[name]
+            style = load_style(style_file, args.check, problems)
+            out = apply_style(render(lines, blocks, base), style, style_file, where)
+        else:
+            out = render(lines, blocks, name)
+        data = b"\r\n".join(out)
         target = ROOT / fname
         if target.exists() and target.read_bytes() == data:
             continue

@@ -1,4 +1,4 @@
-# **Season 13 Betrayal Update:**
+# **Season 14 Alliance Update:**
 
 My loot filters are updated for the Season 13 Betrayal ladder reset on April 24th 2026
 
@@ -20,6 +20,7 @@ After selecting the version of the filter from the launcher, be sure to click "S
     - Skeleton Key
 - The PoE version of each filter adds sound notifications from PoE to certain items
 - The Revealed version of each filter shows the identified names of unique and set items
+- The **Erazure - Minimal** version is the same as Erazure - Main but with a minimal style: fewer, simpler symbols around the names of items ([see the differences](https://filtersby-erazure.github.io/PD2-Loot-Filter/minimal/))
 
 <img width="994" height="741" alt="image" src="https://github.com/user-attachments/assets/9835b0c1-36c6-402a-8bfa-51288c6f46a9" />
 

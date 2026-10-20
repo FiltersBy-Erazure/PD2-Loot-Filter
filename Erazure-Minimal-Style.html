@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>html { color-scheme: dark; } body { margin: 0; background: #151412; } [hidden] { display: none !important; }</style>
+<title>Erazure Minimal Version</title>
+<!-- Template for Erazure-Minimal-Style.html (tools/style_map.py writes it; build.bat runs it): the data is embedded
+     at generation. Every label is read from the filter's own rules and styles/minimal.filter. The website's Minimal
+     Version page shows the same map: website/hooks.py takes the styles, the markup between the style-map markers and
+     the script out of the generated file, so keep those markers. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Source+Sans+3:wght@400;600;700&display=swap">
+<!-- style-map:css -->
+<style>
+  @font-face { font-family: "AvQest"; src: local("AvQest"); }  /* the D2-style font, if the viewer has it installed */
+  /* Layout: the title and what the version is; then one section per kind of item, each a table-like list: the
+     item, its label in Erazure - Main, its label in Erazure - Minimal, each drawn as the game does on a patch of
+     ground. Every rule is scoped to .style-map, so the website's theme and this page leave each other alone. */
+  /* Dark by default; light when the website (Material) is switched to light */
+  .style-map {
+    --bg: #151412; --panel: #1f1d1a; --fg: #ece7de; --muted: #a59e91; --line: #36322c; --accent: #d8b45e;
+    --ground-1: #3a3428; --ground-2: #26221b; --ground-3: #15130f;
+    --display: "Cinzel", "Trajan Pro", Georgia, serif;
+    --body: "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --label: "AvQest", "Palatino Linotype", Palatino, Georgia, serif;
+    color-scheme: dark;
+    color: var(--fg); font: 15px/1.45 var(--body);
+  }
+  [data-md-color-scheme="default"] .style-map {
+    --bg: #f3f1ec; --panel: #fffdf8; --fg: #23211c; --muted: #6b655a; --line: #ded7c9; --accent: #8a6d1f;
+    color-scheme: light;
+  }
+  .style-map *, .style-map *::before, .style-map *::after { box-sizing: border-box; }
+  .style-map .wrap { max-width: 1100px; margin: 0 auto; padding-inline: 16px; }
+  .md-content .style-map .wrap { padding-inline: 0; }
+  .style-map h1.sm-title { font: 700 26px/1.2 var(--display); letter-spacing: .02em; margin: 0; padding-block: 16px 10px;
+                           color: var(--fg); text-wrap: balance; }
+  .style-map .intro { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; }
+  .style-map .intro p { margin: 0 0 6px; max-width: 75ch; font-size: 14.5px; }
+  .style-map .intro p:last-child { margin-bottom: 0; }
+  .style-map h2.kind { font: 700 22px/1.2 var(--display); margin: 28px 0 8px; letter-spacing: .02em; color: var(--fg); }
+  /* the rows' columns in px, not rem: the website's theme sets a bigger root font */
+  .style-map .table { display: grid; grid-template-columns: 200px minmax(0, 1fr) minmax(0, 1fr); gap: 5px 12px;
+                      align-items: center; }
+  .style-map .head { font-size: 12.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em;
+                     color: var(--muted); }
+  .style-map .item { font-weight: 600; font-size: 14.5px; line-height: 1.3; }
+  .style-map .item.more { visibility: hidden; }
+  .style-map .ground { min-width: 0; overflow-x: auto; text-align: center; border-radius: 5px; padding: 3px 6px;
+                       background: radial-gradient(ellipse at 50% 45%, var(--ground-1) 0%, var(--ground-2) 55%, var(--ground-3) 100%); }
+  .style-map .d2label { display: inline-block; font-family: var(--label); font-size: 15px; line-height: 1.12;
+                        white-space: pre; background: rgba(0, 0, 0, .74); padding: 2px 6px 0; vertical-align: middle; }
+  /* A backslash is drawn as the slash mirrored: the web fonts space "\" wide, the game draws it like "/" */
+  .style-map .d2label .bs { display: inline-block; transform: scaleX(-1); }
+  .style-map .c-WHITE { color: #e8e8e8; } .style-map .c-RED { color: #ff4d4d; } .style-map .c-GREEN { color: #00ff00; }
+  .style-map .c-BLUE { color: #6969ff; } .style-map .c-GOLD { color: #c7b377; } .style-map .c-GRAY { color: #696969; }
+  .style-map .c-BLACK { color: #000000; } .style-map .c-TAN { color: #d0c27d; } .style-map .c-ORANGE { color: #ffa800; }
+  .style-map .c-YELLOW { color: #ffff64; } .style-map .c-PURPLE { color: #ae00ff; }
+  .style-map .c-DARK_GREEN { color: #008000; } .style-map .c-CORAL { color: #ff7f6e; } .style-map .c-SAGE { color: #a3b88f; }
+  .style-map .c-TEAL { color: #3fb5b5; } .style-map .c-LIGHT_GRAY { color: #a8a8a8; }
+  .style-map .same { font-size: 14px; color: var(--muted); margin: 8px 0 0; }
+  .style-map footer { color: var(--muted); font-size: 13px; padding-block: 24px; }
+  @media (max-width: 760px) {
+    .style-map .table { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+    .style-map .item { grid-column: 1 / -1; margin-top: 6px; }
+    .style-map .item.more, .style-map .head.item { display: none; }
+  }
+</style>
+
+<div class="style-map">
+<div class="wrap"><h1 class="sm-title">Erazure - Minimal</h1></div>
+<!-- style-map:start -->
+<div class="wrap">
+  <div class="intro">
+    <p><b>Erazure - Minimal</b> is Erazure - Main with a minimal style: fewer, simpler symbols around the names of
+      items. Everything else is the same as Main: the filter levels, which items show or hide, the notifications,
+      minimap icons and drop sounds.</p>
+    <p>These are the labels that look different, drawn as the game draws them. The Horadric Cube shows
+      <b id="cube"></b> as the version's name.</p>
+  </div>
+</div>
+<div class="wrap" id="groups"></div>
+<div class="wrap"><footer id="foot"></footer></div>
+<!-- style-map:end -->
+</div>
+
+<script>
+(() => {
+const DATA = {"groups":[{"id":"uniques","title":"Unique items","rows":[{"title":"Rainbow Facet","looks":[{"main":"%GREEN%\\\\%BLUE%\\\\%PURPLE%\\\\%RED%\\\\%ORANGE%\\\\%YELLOW%\\\\  %TAN%(x  %GOLD%Rainbow Facet  %TAN%x)  %YELLOW%/%YELLOW%/%ORANGE%/%ORANGE%/%RED%/%RED%/%PURPLE%/%PURPLE%/%BLUE%/%BLUE%/%GREEN%/%GREEN%/%GOLD%","minimal":"%GREEN%\\%BLUE%\\%PURPLE%\\%RED%\\%ORANGE%\\%YELLOW%\\  %TAN%(x  %GOLD%Rainbow Facet  %TAN%x)  %YELLOW%/%ORANGE%/%RED%/%PURPLE%/%BLUE%/%GREEN%/%GOLD%","where":"sections/160-uniques-value-tiers.filter:6"}]},{"title":"Unique High Value","looks":[{"main":"%BLUE%\\\\%PURPLE%\\\\%RED%\\\\%ORANGE%\\\\  %GOLD%>  %WHITE%O  %GOLD%Ring  %WHITE%O  %GOLD%<  %ORANGE%/%ORANGE%/%RED%/%RED%/%PURPLE%/%PURPLE%/%BLUE%/%BLUE%/%GOLD%","minimal":"%BLUE%\\%PURPLE%\\%RED%\\%ORANGE%\\  %GOLD%>  %WHITE%•  %GOLD%Ring  %WHITE%•  %GOLD%<  %ORANGE%/%RED%/%PURPLE%/%BLUE%/%GOLD%","where":"sections/160-uniques-value-tiers.filter:10"}]},{"title":"Unique Medium Value","looks":[{"main":"%RED%\\\\%ORANGE%\\\\%YELLOW%\\  %GOLD%>  %WHITE%•  %GOLD%Grand Charm  %WHITE%•  %GOLD%<  %YELLOW%/%ORANGE%/%ORANGE%/%RED%/%RED%/%GOLD%","minimal":"%RED%*%ORANGE%*%YELLOW%*%TAN%*%WHITE%*  %GOLD%Grand Charm  %WHITE%*%TAN%*%YELLOW%*%ORANGE%*%RED%*%GOLD%","where":"sections/160-uniques-value-tiers.filter:28"}]},{"title":"Unique Minimal Value","looks":[{"main":"%RED%\\%ORANGE%\\\\  %GOLD%>  %WHITE%•  %GOLD%Ceremonial Javelin  %WHITE%•  %GOLD%<  %ORANGE%/%ORANGE%/%RED%/%GOLD%","minimal":"%RED%*%ORANGE%*%GOLD%*  %GOLD%Ceremonial Javelin  %GOLD%*%ORANGE%*%RED%*%GOLD%","where":"sections/160-uniques-value-tiers.filter:51"}]},{"title":"Unique LLD","looks":[{"main":"%GRAY%*%TEAL%* %WHITE%>  %GOLD%War Hat  %WHITE%< %TEAL%*%GRAY%*","minimal":"%GRAY%*%LIGHT_GRAY%*%TEAL%*  %GOLD%War Hat  %TEAL%*%LIGHT_GRAY%*%GRAY%*%GOLD%","where":"sections/160-uniques-value-tiers.filter:507"}]},{"title":"Unique Normal","looks":[{"main":"%GOLD%*%GRAY%* %WHITE%>  %GOLD%Light Plate  %WHITE%< %GRAY%*%GOLD%*","minimal":"%GOLD%*%LIGHT_GRAY%*%GRAY%*  %GOLD%Light Plate  %GRAY%*%LIGHT_GRAY%*%GOLD%*","where":"sections/160-uniques-value-tiers.filter:515"}]}],"same":["Uniques from Diablo Clone and Rathma"]},{"id":"sets","title":"Set items","rows":[{"title":"Set High Value","looks":[{"main":"%PURPLE%\\%DARK_GREEN%\\  %GREEN%>  %WHITE%o  %GREEN%%GREEN%Corona  %WHITE%o  %GREEN%<  %DARK_GREEN%/%PURPLE%/%GREEN%","minimal":"%PURPLE%*%DARK_GREEN%*%GREEN%*%WHITE%*  %GREEN%%GREEN%Corona  %WHITE%*%GREEN%*%DARK_GREEN%*%PURPLE%*%GREEN%%GREEN%","where":"sections/170-sets.filter:146"}]},{"title":"Set Medium Value","looks":[{"main":"%PURPLE%*%DARK_GREEN%* %GREEN%>  %WHITE%•  %GREEN%%GREEN%Hunter's Guise  %WHITE%•  %GREEN%< %DARK_GREEN%*%PURPLE%*%GREEN%","minimal":"%PURPLE%*%DARK_GREEN%*%GREEN%*%WHITE%*  %GREEN%%GREEN%Hunter's Guise  %WHITE%*%GREEN%*%DARK_GREEN%*%PURPLE%*%GREEN%%GREEN%","where":"sections/170-sets.filter:165"}]},{"title":"Set LLD","looks":[{"main":"%TEAL%*%DARK_GREEN%* %GREEN%>  %GREEN%Heavy Gloves  %GREEN%< %DARK_GREEN%*%TEAL%*%GREEN%","minimal":"%TEAL%*%DARK_GREEN%*%GREEN%*  %GREEN%Heavy Gloves  %GREEN%*%DARK_GREEN%*%TEAL%*%GREEN%%GREEN%","where":"sections/170-sets.filter:169"}]},{"title":"Set","looks":[{"main":"%PURPLE%*%DARK_GREEN%* %GREEN%>  %GREEN%%GREEN%Ring  %GREEN%< %DARK_GREEN%*%PURPLE%*%GREEN%","minimal":"%PURPLE%*%DARK_GREEN%*%GREEN%*  %GREEN%%GREEN%Ring  %GREEN%*%DARK_GREEN%*%PURPLE%*%GREEN%%GREEN%","where":"sections/170-sets.filter:174"}]}],"same":[]},{"id":"rares","title":"Rare and magic items","rows":[{"title":"Rare High Value","looks":[{"main":"%PURPLE%\\%YELLOW%\\ %PURPLE%• %YELLOW%>  %YELLOW%%YELLOW%Diadem  %YELLOW%< %PURPLE%• %YELLOW%/%PURPLE%/%YELLOW%","minimal":"%PURPLE%*%YELLOW%*%TAN%*  %YELLOW%%YELLOW%Diadem  %TAN%*%YELLOW%*%PURPLE%*%YELLOW%%YELLOW%","where":"sections/190-rares.filter:20"}]},{"title":"Magic Charms","looks":[{"main":"%TEAL%\\(%PURPLE%(  %BLUE%Grand Charm %WHITE%• %BLUE%92  %PURPLE%)%TEAL%)/%BLUE%","minimal":"%TEAL%**%PURPLE%*  %BLUE%Grand Charm %WHITE%• %BLUE%92  %PURPLE%*%TEAL%**%BLUE%%BLUE%","where":"sections/200-magic.filter:28"},{"main":"%TEAL%\\(%PURPLE%(  %BLUE%Grand Charm %WHITE%• %BLUE%Item Level 92  %PURPLE%)%TEAL%)/%BLUE%","minimal":"%TEAL%**%PURPLE%*  %BLUE%Grand Charm %WHITE%• %BLUE%Item Level 92  %PURPLE%*%TEAL%**%BLUE%%BLUE%","where":"sections/200-magic.filter:29"}]},{"title":"Rare Jewels","looks":[{"main":"%PURPLE%\\%YELLOW%\\ %PURPLE%• %YELLOW%>  %TAN%(x  %YELLOW%%YELLOW%Jewel  %TAN%x)  %YELLOW%< %PURPLE%• %YELLOW%/%PURPLE%/%YELLOW%","minimal":"%PURPLE%*%YELLOW%*%TAN%*  %YELLOW%%YELLOW%Jewel  %TAN%*%YELLOW%*%PURPLE%*%YELLOW%%YELLOW%","where":"sections/190-rares.filter:13"}]},{"title":"Magic Jewels","looks":[{"main":"%TAN%(x  %BLUE%Jewel  %TAN%x)%BLUE%","minimal":"%BLUE%Jewel%BLUE%","where":"sections/200-magic.filter:70"},{"main":"%TAN%* %BLUE%>  %TAN%(x  %BLUE%Jewel  %TAN%x)  %BLUE%< %TAN%*%BLUE%","minimal":"%TAN%* %BLUE%>  %BLUE%Jewel  %BLUE%< %TAN%*%BLUE%","where":"sections/200-magic.filter:73"}]}],"same":["Rare Medium Value","Rare Eth Craft","Magic Eth Craft"]},{"id":"runes","title":"Runes","rows":[{"title":"Um Mal","looks":[{"main":"%DARK_GREEN%x%GREEN%xX%YELLOW%X%TAN%O%YELLOW%X%GREEN%Xx%DARK_GREEN%x   %WHITE%Um Rune   %DARK_GREEN%x%GREEN%xX%YELLOW%X%TAN%O%YELLOW%X%GREEN%Xx%DARK_GREEN%x%WHITE%","minimal":"%DARK_GREEN%x%GREEN%x%YELLOW%x%TAN%o%YELLOW%x%GREEN%x%DARK_GREEN%x   %WHITE%Um Rune   %DARK_GREEN%x%GREEN%x%YELLOW%x%TAN%o%YELLOW%x%GREEN%x%DARK_GREEN%x%WHITE%","where":"sections/110-runes.filter:121"},{"main":"%DARK_GREEN%xX%GREEN%\\X%YELLOW%X%TAN%O%YELLOW%X%GREEN%X/%DARK_GREEN%Xx   %WHITE%Mal Rune   %DARK_GREEN%xX%GREEN%\\X%YELLOW%X%TAN%O%YELLOW%X%GREEN%X/%DARK_GREEN%Xx%WHITE%","minimal":"%DARK_GREEN%x%GREEN%x%YELLOW%x%TAN%o%YELLOW%x%GREEN%x%DARK_GREEN%x   %WHITE%Mal Rune   %DARK_GREEN%x%GREEN%x%YELLOW%x%TAN%o%YELLOW%x%GREEN%x%DARK_GREEN%x%WHITE%","where":"sections/110-runes.filter:122"}]},{"title":"Ist Gul","looks":[{"main":"%BLUE%xX%DARK_GREEN%\\X%GREEN%\\X%YELLOW%X%TAN%O%YELLOW%X%GREEN%X/%DARK_GREEN%X/%BLUE%Xx   %WHITE%Ist Rune   %BLUE%xX%DARK_GREEN%\\X%GREEN%\\X%YELLOW%X%TAN%O%YELLOW%X%GREEN%X/%DARK_GREEN%X/%BLUE%Xx%WHITE%","minimal":"%BLUE%x%DARK_GREEN%x%GREEN%x%YELLOW%x%TAN%o%YELLOW%x%GREEN%x%DARK_GREEN%x%BLUE%x   %WHITE%Ist Rune   %BLUE%x%DARK_GREEN%x%GREEN%x%YELLOW%x%TAN%o%YELLOW%x%GREEN%x%DARK_GREEN%x%BLUE%x%WHITE%","where":"sections/110-runes.filter:133"}]},{"title":"Vex Ohm Lo","looks":[{"main":"%BLUE%xX%PURPLE%\\X%ORANGE%\\X%YELLOW%X%TAN%O%YELLOW%X%ORANGE%X/%PURPLE%X/%BLUE%Xx   %WHITE%Vex Rune   %BLUE%xX%PURPLE%\\X%ORANGE%\\X%YELLOW%X%TAN%O%YELLOW%X%ORANGE%X/%PURPLE%X/%BLUE%Xx%WHITE%","minimal":"%BLUE%x%PURPLE%x%ORANGE%x%YELLOW%x%TAN%o%YELLOW%x%ORANGE%x%PURPLE%x%BLUE%x   %WHITE%Vex Rune   %BLUE%x%PURPLE%x%ORANGE%x%YELLOW%x%TAN%o%YELLOW%x%ORANGE%x%PURPLE%x%BLUE%x%WHITE%","where":"sections/110-runes.filter:150"}]},{"title":"Sur Ber Jah Cham Zod BIG GG","looks":[{"main":"%PURPLE%xX%RED%\\X%ORANGE%\\X%YELLOW%X%TAN%O%YELLOW%X%ORANGE%X/%RED%X/%PURPLE%Xx   %WHITE%Ber Rune   %PURPLE%xX%RED%\\X%ORANGE%\\X%YELLOW%X%TAN%O%YELLOW%X%ORANGE%X/%RED%X/%PURPLE%Xx%WHITE%","minimal":"%PURPLE%x%RED%x%ORANGE%x%YELLOW%x%TAN%o%YELLOW%x%ORANGE%x%RED%x%PURPLE%x   %WHITE%Ber Rune   %PURPLE%x%RED%x%ORANGE%x%YELLOW%x%TAN%o%YELLOW%x%ORANGE%x%RED%x%PURPLE%x%WHITE%","where":"sections/110-runes.filter:171"}]}],"same":["Lowest Runes","Low Runes","Mid Runes","Lem Low Qty","Pul Low Qty","Lem Pul High Qty"]},{"id":"pd2","title":"PD2 items","rows":[{"title":"Worldstone High Qty","looks":[{"main":"%RED%xX%CORAL%X%WHITE%O%CORAL%X%RED%Xx   %WHITE%Worldstone Shards x 12   %RED%xX%CORAL%X%WHITE%O%CORAL%X%RED%Xx","minimal":"%RED%xx%CORAL%x%WHITE%o%CORAL%x%RED%xx   %WHITE%Worldstone Shards x 12   %RED%xx%CORAL%x%WHITE%o%CORAL%x%RED%xx","where":"sections/120-pd2-items.filter:6"}]},{"title":"Catalyst Shard","looks":[{"main":"%GRAY%x%LIGHT_GRAY%X%WHITE%XOX%LIGHT_GRAY%X%GRAY%x   %WHITE%Catalyst Shard   %GRAY%x%LIGHT_GRAY%X%WHITE%XOX%LIGHT_GRAY%X%GRAY%x","minimal":"%GRAY%x%LIGHT_GRAY%x%WHITE%o%LIGHT_GRAY%x%GRAY%x   %WHITE%Catalyst Shard   %GRAY%x%LIGHT_GRAY%x%WHITE%o%LIGHT_GRAY%x%GRAY%x","where":"sections/120-pd2-items.filter:12"}]},{"title":"Puzzlepiece","looks":[{"main":"%GOLD%[%ORANGE%X%GOLD%][%YELLOW%X%GOLD%][%TAN%X%GOLD%]  %WHITE%Puzzlepiece  %GOLD%[%TAN%X%GOLD%][%YELLOW%X%GOLD%][%ORANGE%X%GOLD%]","minimal":"%ORANGE%x%YELLOW%x%TAN%x  %WHITE%Puzzlepiece  %TAN%x%YELLOW%x%ORANGE%x","where":"sections/120-pd2-items.filter:17"},{"main":"%GOLD%[%ORANGE%X%GOLD%][%YELLOW%X%GOLD%][%TAN%X%GOLD%]  %WHITE%Larzuk's %WHITE%Puzzlepiece  %GOLD%[%TAN%X%GOLD%][%YELLOW%X%GOLD%][%ORANGE%X%GOLD%]","minimal":"%ORANGE%x%YELLOW%x%TAN%x  %WHITE%Larzuk's %WHITE%Puzzlepiece  %TAN%x%YELLOW%x%ORANGE%x","where":"sections/120-pd2-items.filter:18"}]},{"title":"Puzzlebox","looks":[{"main":"%GOLD%[%BLUE%X%GOLD%][%ORANGE%X%GOLD%][%YELLOW%X%GOLD%][%TAN%X%GOLD%]  %WHITE%Larzuk's Puzzlebox  %GOLD%[%TAN%X%GOLD%][%YELLOW%X%GOLD%][%ORANGE%X%GOLD%][%BLUE%X%GOLD%]","minimal":"%BLUE%x%ORANGE%x%YELLOW%x%TAN%x  %WHITE%Larzuk's Puzzlebox  %TAN%x%YELLOW%x%ORANGE%x%BLUE%x","where":"sections/120-pd2-items.filter:24"}]},{"title":"Demonic Cube","looks":[{"main":"%RED%xX%CORAL%\\X%WHITE%\\XOX/%CORAL%X/%RED%Xx  %WHITE%Demonic Cube  %RED%xX%CORAL%\\X%WHITE%\\XOX/%CORAL%X/%RED%Xx","minimal":"%RED%x%CORAL%xx%WHITE%xox%CORAL%xx%RED%x  %WHITE%Demonic Cube  %RED%x%CORAL%xx%WHITE%xox%CORAL%xx%RED%x","where":"sections/120-pd2-items.filter:32"}]},{"title":"Vial of Lightsong","looks":[{"main":"%PURPLE%xX%BLUE%xX%LIGHT_GRAY%x\\%WHITE%\\V/%LIGHT_GRAY%/x%BLUE%Xx%PURPLE%Xx  %WHITE%Vials of Lightsong %TAN%x %WHITE%12  %PURPLE%xX%BLUE%xX%LIGHT_GRAY%x\\%WHITE%\\V/%LIGHT_GRAY%/x%BLUE%Xx%PURPLE%Xx","minimal":"%PURPLE%x%BLUE%x%LIGHT_GRAY%x%WHITE%v%LIGHT_GRAY%x%BLUE%x%PURPLE%x  %WHITE%Vials of Lightsong %TAN%x %WHITE%12  %PURPLE%x%BLUE%x%LIGHT_GRAY%x%WHITE%v%LIGHT_GRAY%x%BLUE%x%PURPLE%x","where":"sections/120-pd2-items.filter:54"},{"main":"%PURPLE%xX%BLUE%xX%LIGHT_GRAY%x\\%WHITE%\\V/%LIGHT_GRAY%/x%BLUE%Xx%PURPLE%Xx  %WHITE%Vial of Lightsong  %PURPLE%xX%BLUE%xX%LIGHT_GRAY%x\\%WHITE%\\V/%LIGHT_GRAY%/x%BLUE%Xx%PURPLE%Xx","minimal":"%PURPLE%x%BLUE%x%LIGHT_GRAY%x%WHITE%v%LIGHT_GRAY%x%BLUE%x%PURPLE%x  %WHITE%Vial of Lightsong  %PURPLE%x%BLUE%x%LIGHT_GRAY%x%WHITE%v%LIGHT_GRAY%x%BLUE%x%PURPLE%x","where":"sections/120-pd2-items.filter:55"}]},{"title":"Lilith's Mirror","looks":[{"main":"%PURPLE%xX%RED%xX%ORANGE%x\\%TAN%\\%WHITE%V%TAN%/%ORANGE%/x%RED%Xx%PURPLE%Xx  %WHITE%Lilith's Mirrors %TAN%x %WHITE%12  %PURPLE%xX%RED%xX%ORANGE%x\\%TAN%\\%WHITE%V%TAN%/%ORANGE%/x%RED%Xx%PURPLE%Xx","minimal":"%PURPLE%x%RED%x%ORANGE%x%TAN%x%WHITE%v%TAN%x%ORANGE%x%RED%x%PURPLE%x  %WHITE%Lilith's Mirrors %TAN%x %WHITE%12  %PURPLE%x%RED%x%ORANGE%x%TAN%x%WHITE%v%TAN%x%ORANGE%x%RED%x%PURPLE%x","where":"sections/120-pd2-items.filter:60"},{"main":"%PURPLE%xX%RED%xX%ORANGE%x\\%TAN%\\%WHITE%V%TAN%/%ORANGE%/x%RED%Xx%PURPLE%Xx  %WHITE%Lilith's Mirror  %PURPLE%xX%RED%xX%ORANGE%x\\%TAN%\\%WHITE%V%TAN%/%ORANGE%/x%RED%Xx%PURPLE%Xx","minimal":"%PURPLE%x%RED%x%ORANGE%x%TAN%x%WHITE%v%TAN%x%ORANGE%x%RED%x%PURPLE%x  %WHITE%Lilith's Mirror  %PURPLE%x%RED%x%ORANGE%x%TAN%x%WHITE%v%TAN%x%ORANGE%x%RED%x%PURPLE%x","where":"sections/120-pd2-items.filter:61"}]}],"same":["Worldstone Low Qty","Skeleton Key","Horadric Almanac","Horadric Navigator","Key of Destruction","Key of Hate","Key of Terror"]},{"id":"descriptions","title":"Item descriptions","rows":[],"same":["Blue Teal Highlight","Blue Purple Red Orange Highlight","Amplify Damage","Lower Resist"]}],"cube":"Erazure - Minimal","foot":"Built from the filter's sections and styles/minimal.filter (Season 14 - October 19th) by tools/style_map.py: every label whose symbols differ, from the filter's own rules."};
+const root = document.querySelector(".style-map");
+const $ = (s) => root.querySelector(s);
+
+function el(tag, cls, text) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text != null) e.textContent = text;
+  return e;
+}
+
+// The label as BH draws it: each color code colors what follows; an unknown %word% is shown as is
+function drawLabel(text) {
+  const box = el("span", "d2label");
+  let color = "WHITE", pos = 0;
+  const re = /%([A-Z_]+)%/g;
+  let m;
+  const put = (t) => {
+    for (const part of t.split(/(\\+)/)) {
+      if (!part) continue;
+      const s = el("span", "c-" + color);
+      if (/^\\+$/.test(part)) for (const ch of part) s.append(el("span", "bs", "/"));
+      else s.textContent = part;
+      box.append(s);
+    }
+  };
+  while ((m = re.exec(text))) {
+    if (m.index > pos) put(text.slice(pos, m.index));
+    if (/^(WHITE|RED|GREEN|BLUE|GOLD|GRAY|BLACK|TAN|ORANGE|YELLOW|PURPLE|DARK_GREEN|CORAL|SAGE|TEAL|LIGHT_GRAY)$/.test(m[1]))
+      color = m[1];
+    else put(m[1] === "PERCENT" ? "%" : m[0]);
+    pos = re.lastIndex;
+  }
+  if (pos < text.length) put(text.slice(pos));
+  const g = el("div", "ground");
+  g.append(box);
+  return g;
+}
+
+$("#cube").textContent = DATA.cube;
+const groups = $("#groups");
+for (const g of DATA.groups) {
+  const sec = el("section");
+  sec.id = "minimal-" + g.id;
+  sec.append(el("h2", "kind", g.title));
+  if (g.rows.length) {
+    const t = el("div", "table");
+    t.append(el("div", "head item", "Item"), el("div", "head", "Erazure - Main"), el("div", "head", "Erazure - Minimal"));
+    for (const r of g.rows) {
+      r.looks.forEach((look, i) => {
+        t.append(el("div", i ? "item more" : "item", r.title), drawLabel(look.main), drawLabel(look.minimal));
+      });
+    }
+    sec.append(t);
+  }
+  if (g.same.length) sec.append(el("p", "same", (g.rows.length ? "The same as in Main: " : "All the same as in Main: ") + g.same.join(", ") + "."));
+  groups.append(sec);
+}
+$("#foot").textContent = DATA.foot;
+})();
+</script>
+
+</body>
+</html>

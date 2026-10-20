@@ -1,6 +1,6 @@
 @echo off
 rem Double-click to publish-build: stamps today's date into the Horadric Cube,
-rem builds all 8 filters from sections\, then verifies them.
+rem builds all the filters from sections\ (and styles\), then verifies them.
 cd /d "%~dp0"
 
 where python >nul 2>nul
@@ -32,6 +32,10 @@ python tools\magic_rare_map.py
 if errorlevel 1 goto failed
 rem Filter levels page for players (Erazure-Filter-Levels.html, what each filter level does, from the filter's rules)
 python tools\level_map.py
+if errorlevel 1 goto failed
+rem Minimal version page for players (Erazure-Minimal-Style.html: Main's labels beside Minimal's, from the rules and
+rem styles\minimal.filter)
+python tools\style_map.py
 if errorlevel 1 goto failed
 python tools\build.py --check
 if errorlevel 1 goto failed

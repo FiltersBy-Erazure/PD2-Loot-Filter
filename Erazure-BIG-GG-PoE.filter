@@ -39,7 +39,9 @@ ItemDisplay[box FILTLVL=0]:%NAME%{%GRAY%Levels 8-9-10-11 Hide Most Lower Value a
 ItemDisplay[box FILTLVL=0]:%NAME%{%GRAY%Level 12 Hides Crafting Bases, Flawless Gems, Low Value Items%CL%%NAME%}%CONTINUE%//
 
 ItemDisplay[box CLVL<50 !FILTLVL=0]:%NAME%{%NAME%%CL%%GRAY%For %GOLD%Increase and Decrease Filter Level%CL%%GRAY%For %GOLD%Always Show Items %GRAY%and Hotkeys%CL%Open Settings to Create a Toggle}%CONTINUE%//
-ItemDisplay[!BIG_GG !POE_SOUNDS !REVEALED box]:%NAME%{%NAME%%CL%%TEAL%Erazure - Main}%CONTINUE%//
+// Erazure - Main's name here: a style variant built from it (styles/, tools/build.py) puts in its own
+Alias[MAIN_VERSION_NAME]:Erazure - Main
+ItemDisplay[!BIG_GG !POE_SOUNDS !REVEALED box]:%NAME%{%NAME%%CL%%TEAL%%MAIN_VERSION_NAME%}%CONTINUE%//
 ItemDisplay[!BIG_GG !POE_SOUNDS REVEALED box]:%NAME%{%NAME%%CL%%TEAL%Erazure - Revealed}%CONTINUE%//
 ItemDisplay[!BIG_GG POE_SOUNDS !REVEALED box]:%NAME%{%NAME%%CL%%TEAL%Erazure - Main - PoE}%CONTINUE%//
 ItemDisplay[!BIG_GG POE_SOUNDS REVEALED box]:%NAME%{%NAME%%CL%%TEAL%Erazure - Revealed - PoE}%CONTINUE%//
@@ -259,6 +261,12 @@ Alias[MAGIC_ETH_CRAFT_RIGHT]:%BLUE%< %ORANGE%•
 // Magic Charms
 Alias[MAGIC_CHARM_LEFT]:%TEAL%\(%PURPLE%(
 Alias[MAGIC_CHARM_RIGHT]:%PURPLE%)%TEAL%)/
+
+// Rare Jewels: the name between (x and x)
+Alias[RARE_JEWEL_NAME]:%TAN%(x  %YELLOW%%NAME%  %TAN%x)
+
+// Magic Jewels: the name between (x and x)
+Alias[MAGIC_JEWEL_NAME]:%TAN%(x  %BLUE%Jewel  %TAN%x)
 
 // Blue Teal Highlight
 Alias[HIGHLIGHT_1_LEFT]:%BLUE%***%TEAL%****
@@ -5179,8 +5187,8 @@ ItemDisplay[RARE]:%YELLOW%%NAME%%CONTINUE%//
 ItemDisplay[ETH RARE]:%WHITE%Eth %NAME%{%NAME%}%CONTINUE%//
 
 // Rare Jewels
-ItemDisplay[!POE_SOUNDS RARE !ID jew]:%RARE_HIGH_VALUE_LEFT%  %TAN%(x  %YELLOW%%NAME%  %TAN%x)  %RARE_HIGH_VALUE_RIGHT%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%%SOUNDID-31%// All unidentified rare Jewels
-ItemDisplay[POE_SOUNDS RARE !ID jew]:%RARE_HIGH_VALUE_LEFT%  %TAN%(x  %YELLOW%%NAME%  %TAN%x)  %RARE_HIGH_VALUE_RIGHT%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%%SOUNDID-4715%// All unidentified rare Jewels
+ItemDisplay[!POE_SOUNDS RARE !ID jew]:%RARE_HIGH_VALUE_LEFT%  %RARE_JEWEL_NAME%  %RARE_HIGH_VALUE_RIGHT%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%%SOUNDID-31%// All unidentified rare Jewels
+ItemDisplay[POE_SOUNDS RARE !ID jew]:%RARE_HIGH_VALUE_LEFT%  %RARE_JEWEL_NAME%  %RARE_HIGH_VALUE_RIGHT%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%%SOUNDID-4715%// All unidentified rare Jewels
 
 // Filter level 12 
 ItemDisplay[RARE !ID (CIRC OR rin OR amu) FILTLVL=12]:%NAME%%DOT-5E%%PX-6D%%TIER-0%// No notifications or flair for rare circlets, rings, or amulets on filter level 12
@@ -5452,11 +5460,11 @@ ItemDisplay[MAG !ID !ETH CIRC FILTLVL<5]:%TAN%o  %NAME%  %TAN%o%BLUE%%BORDER-91%
 ItemDisplay[jewf QTY>1]:%TAN%(x %BLUE%Jewel %TAN%x) %WHITE%Fragments %TAN%x %WHITE%%QTY%{%BLUE%Jewel %WHITE%when crafting%CL%%WHITE%Use in place of a}%MAP-91%%DOT-97%%PX-A6%// Jewel fragments
 ItemDisplay[jewf QTY=1]:%TAN%(x %BLUE%Jewel %TAN%x) %WHITE%Fragment{%BLUE%Jewel %WHITE%when crafting%CL%%WHITE%Use in place of a}%MAP-91%%DOT-97%%PX-A6%// Jewel fragments
 
-ItemDisplay[MAG !ID jew MAPID~183-184]:%TAN%(x  %BLUE%Jewel  %TAN%x)%BLUE%%DOT-97%%PX-0E%%TIER-0%// All unidentified magic jewels
-ItemDisplay[MAG !ID jew CLVL>29 FILTLVL~5-11 !MAPID~183-184]:%TAN%(x  %BLUE%Jewel  %TAN%x)%BLUE%%DOT-97%%PX-0E%// All unidentified magic jewels
-ItemDisplay[MAG !ID jew CLVL>29 FILTLVL=12 !MAPID~183-184]:%TAN%(x  %BLUE%Jewel  %TAN%x)%BLUE%%DOT-97%%PX-0E%%TIER-0%// All unidentified magic jewels
-ItemDisplay[MAG !ID jew CLVL>29 FILTLVL<5 !MAPID~183-184]:%TAN%* %BLUE%>  %TAN%(x  %BLUE%Jewel  %TAN%x)  %BLUE%< %TAN%*%BLUE%%MAP-91%%DOT-97%%PX-0E%// All unidentified magic jewels
-ItemDisplay[MAG !ID jew CLVL<30 FILTLVL<12]:%TAN%* %BLUE%>  %TAN%(x  %BLUE%Jewel  %TAN%x)  %BLUE%< %TAN%*%BLUE%%MAP-91%%DOT-97%%PX-0E%// All unidentified magic jewels
+ItemDisplay[MAG !ID jew MAPID~183-184]:%MAGIC_JEWEL_NAME%%BLUE%%DOT-97%%PX-0E%%TIER-0%// All unidentified magic jewels
+ItemDisplay[MAG !ID jew CLVL>29 FILTLVL~5-11 !MAPID~183-184]:%MAGIC_JEWEL_NAME%%BLUE%%DOT-97%%PX-0E%// All unidentified magic jewels
+ItemDisplay[MAG !ID jew CLVL>29 FILTLVL=12 !MAPID~183-184]:%MAGIC_JEWEL_NAME%%BLUE%%DOT-97%%PX-0E%%TIER-0%// All unidentified magic jewels
+ItemDisplay[MAG !ID jew CLVL>29 FILTLVL<5 !MAPID~183-184]:%TAN%* %BLUE%>  %MAGIC_JEWEL_NAME%  %BLUE%< %TAN%*%BLUE%%MAP-91%%DOT-97%%PX-0E%// All unidentified magic jewels
+ItemDisplay[MAG !ID jew CLVL<30 FILTLVL<12]:%TAN%* %BLUE%>  %MAGIC_JEWEL_NAME%  %BLUE%< %TAN%*%BLUE%%MAP-91%%DOT-97%%PX-0E%// All unidentified magic jewels
 
 // Magic Amazon Spears
 

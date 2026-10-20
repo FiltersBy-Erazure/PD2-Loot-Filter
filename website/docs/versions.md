@@ -17,6 +17,8 @@ Pick a version in the launcher, then click **Save Filter** on the right side.
         - Skeleton Key
 - The **PoE** version of each filter adds sound notifications from PoE to certain items
 - The **Revealed** version of each filter shows the identified names of unique and set items
+- The **Erazure - Minimal** version is the same as Erazure - Main but with a minimal style: fewer, simpler symbols
+  around the names of items ([see the differences](minimal.md))
 
 <img width="994" height="741" alt="The Erazure filter versions in the PD2 launcher" src="https://github.com/user-attachments/assets/9835b0c1-36c6-402a-8bfa-51288c6f46a9" />
 
@@ -32,3 +34,4 @@ Pick a version in the launcher, then click **Save Filter** on the right side.
 | Erazure - Revealed - PoE | Same as Erazure - Main - PoE but unidentified unique and set items show as their identified names when dropped. |
 | Erazure - BIG GG - PoE | The mystery of BIG GG drops combined with Path of Exile sound notifications. |
 | Erazure - Revealed - BIG GG - PoE | Same as Erazure - BIG GG - PoE, but unidentified unique and set items show as their identified names when dropped. |
+| Erazure - Minimal | Same as Erazure - Main but with a minimal style: fewer, simpler symbols around the names of items, with the same filter levels, tiers and notifications. |

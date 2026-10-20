@@ -3,7 +3,7 @@
 A highly stylized loot filter for Project Diablo 2, with multiple filter level tiers for customizable strictness and
 colorful, intuitive symbols for runes, gems, maps, charms and more.
 
-## Season 13 Betrayal Update
+## Season 14 Alliance Update
 
 My loot filters are updated for the Season 13 Betrayal ladder reset on April 24th 2026.
 
@@ -12,7 +12,8 @@ afterwards.
 
 ## On this site
 
-- [Versions](versions.md): Main, Revealed, BIG GG and PoE, and what each one changes
+- [Versions](versions.md): Main, Revealed, BIG GG, PoE and Minimal, and what each one changes
+- [Minimal Version](minimal.md): the labels that look different in Erazure - Minimal, beside Erazure - Main's
 - [Filter Levels](filter-levels.md): what each filter level shows, notifies and hides, at every character level
 - [Unique & Set Tiers](tiers.md): how every unique and set item shows when it drops
 - [Non-magical Bases](bases.md): when each non-magical armor and weapon base is tagged, notified or hidden

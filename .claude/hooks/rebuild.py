@@ -6,8 +6,9 @@ regenerate the unique/set label cut cases (tools/label_cuts.py: tools/unique_cut
 runeword roll tags (for section and picks edits: tools/gen_unique_rolls.py and
 tools/gen_runeword_rolls.py), the map experience tags (tools/gen_map_exp.py) and the players' pages (tools/tier_map.py: Erazure-Unique-Set-Tiers.html,
 tools/base_map.py: Erazure-Non-Magic-Bases.html, tools/magic_rare_map.py: Erazure-Magic-Items.html and
-Erazure-Rare-Items.html, tools/level_map.py: Erazure-Filter-Levels.html), and rebuild the 8 filters with
-tools/build.py (never stamps the version).
+Erazure-Rare-Items.html, tools/level_map.py: Erazure-Filter-Levels.html, tools/style_map.py:
+Erazure-Minimal-Style.html), and rebuild the filters with tools/build.py (never stamps the version). After an edit
+in styles/ (a style variant's aliases): tools/style_map.py and the build.
 
 Silent on success. If the build fixed a section file's format (line endings, BOM, final line
 break), that note is passed back to Claude. On failure, exits 2 so the error goes back to Claude.
@@ -21,7 +22,8 @@ ROOT = Path(__file__).resolve().parents[2]
 ROOT_FILES = {"version.json", "filter_definitions.json"}
 PICKS = [["tools", "unique_roll_picks.txt"], ["tools", "unique_cut_rules.txt"], ["tools", "runeword_roll_picks.txt"]]
 GENERATORS = ["label_cuts.py", "gen_unique_rolls.py", "gen_runeword_rolls.py", "gen_map_exp.py", "tier_map.py",
-              "base_map.py", "magic_rare_map.py", "level_map.py"]  # in this order: all read sections/
+              "base_map.py", "magic_rare_map.py", "level_map.py", "style_map.py"]  # in this order: all read sections/
+STYLE_GENERATORS = ["style_map.py"]  # the ones that read styles/
 
 
 def watched(file_path):
@@ -34,6 +36,8 @@ def watched(file_path):
         return "generate"
     if parts in PICKS:
         return "generate"
+    if len(parts) == 2 and parts[0] == "styles" and parts[1].endswith(".filter"):
+        return "style"  # a style variant's aliases
     return len(parts) == 1 and parts[0] in ROOT_FILES
 
 
@@ -49,7 +53,7 @@ def main():
     if not what:
         return 0
 
-    for name in GENERATORS if what == "generate" else []:
+    for name in {"generate": GENERATORS, "style": STYLE_GENERATORS}.get(what, []):
         generator = ROOT / "tools" / name
         if not generator.exists():
             continue

@@ -6,6 +6,7 @@ Each is a repo-root HTML file that a tool writes (build.bat runs them):
 - Erazure-Magic-Items.html and Erazure-Rare-Items.html (tools/magic_rare_map.py), shown on the Magic Items and Rare
   Items pages (docs/magic.md, docs/rare.md)
 - Erazure-Filter-Levels.html (tools/level_map.py), shown on the Filter Levels page (docs/filter-levels.md)
+- Erazure-Minimal-Style.html (tools/style_map.py), shown on the Minimal Version page (docs/minimal.md)
 Each goes into the site as a file of its own, so its address keeps working. Its site page shows the same map with
 no frame, so its filter bar can stay under the site's header while scrolling: this hook takes the styles, the
 markup between the map's markers (<!-- tier-map:start --> ...) and the script out of the file, puts the markup where
@@ -24,6 +25,7 @@ MAPS = [  # (the generated page in the repo root, the tool that writes it, its s
     ("Erazure-Magic-Items.html", "tools/magic_rare_map.py", "magic.md", "magic-map"),
     ("Erazure-Rare-Items.html", "tools/magic_rare_map.py", "rare.md", "rare-map"),
     ("Erazure-Filter-Levels.html", "tools/level_map.py", "filter-levels.md", "level-map"),
+    ("Erazure-Minimal-Style.html", "tools/style_map.py", "minimal.md", "style-map"),
 ]
 FONTS = ('<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700'
          '&family=Source+Sans+3:wght@400;600;700&display=swap">')
