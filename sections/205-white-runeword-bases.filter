@@ -1,0 +1,82 @@
+// ---------------------------------------------------------------------------------
+// =====================  Runeword Bases (white class items)  =====================
+// ---------------------------------------------------------------------------------
+
+// The +skill runeword bases that 210-nonmagic-armor and 220-nonmagic-weapons tag and keep from their hide rules
+// (310-staffmods keeps the CTA and Obsession staves from its +skill hides). Edit a base here and every rule that
+// names it follows: BH reads all aliases before any rule. Each is one bracketed group, so a rule can write
+// !RWB_DOMINION_WAND or (RWB_PLAGUE_CLAW OR RWB_CHAOS_CLAW). The rules add class, character level and filter
+// level conditions of their own.
+
+// Necromancer wands
+// Dominion necromancer wands
+Alias[RWB_DOMINION_WAND]:((7wn OR 9yw OR 7yw OR bwn OR 9bw OR 7bw OR gwn OR 9gw OR 7gw) (SOCK=0 OR SOCK=2) (((SK75>2 OR SK85>2) ((SK367>0 (SK68>0 OR SK95>0 OR SK66>0 OR SK87>0)) OR (SK68>0 (SK95>0 OR SK66>0 OR SK87>0)) OR (SK95>0 (SK66>0 OR SK87>0)))) OR (SK94>2 ((SK367>0 (SK91>0 OR SK68>0 OR SK95>0)) OR (SK91>0 (SK68>0 OR SK95>0)) OR (SK68>0 SK95>0))) OR (SK367>2 (SK91>0 OR SK95>0)) OR (SK91>2 SK95>0) OR (SK68>0 SK95>0 (SK91>0 OR SK66>0 OR SK87>0)) OR (SK367>0 ((SK91>0 SK95>0) OR (SK91>0 SK68>0) OR (SK95>0 SK66>0) OR (SK95>0 SK87>0) OR (SK95>0 SK68>0) OR (SK66>0 SK68>0) OR (SK87>0 SK68>0)))))
+
+// Assassin claws
+// Plague claws (see the Plague notes in 220-nonmagic-weapons)
+Alias[RWB_PLAGUE_CLAW]:(((clw OR btl OR skr OR 9ar OR 9wb OR 9xf OR 9cs OR 9lw OR 9tw) (SOCK=0 OR SOCK=3) ((SK262>1 SK272>2) OR (SK262>2 SK272>1) OR (SK271>1 SK366>2) OR (SK271>2 SK366>1))) OR ((btl OR 9tw OR 7tw OR 9lw OR 7lw) (SOCK=0 OR SOCK=3) ((SK257>2 (SK252>1 OR SK263>1 OR SK275>0)))) OR ((btl OR 9tw OR 7tw OR 9lw OR 7lw) (SOCK=0 OR SOCK=3) ((SK271>2 (SK258>2 OR SK263>2 OR SK267>2 OR SK275>0 OR SK366>2)) OR (SK262>2 (SK258>2 OR SK263>2 OR SK267>2 OR SK275>0 OR SK272>1)) OR (SK272>2 SK262>1))) OR (!ETH (7lw OR 7tw OR 9lw OR 9tw) (SOCK=0 OR SOCK=3) (SK265>2 OR SK280>2 OR SK269>2 OR SK274>2) (SK252>0 OR SK258>0 OR SK263>0 OR SK267>0 OR SK268>0 OR SK275>0 OR SK277>0 OR SK279>0)) OR (SIN ASSASSIN !(ktr OR wrb OR axf OR ces) (SOCK=0 OR SOCK=3) SK273>2 (SK253>2 OR SK258>2 OR SK263>2 OR SK267>2 OR SK275>0 OR SK276>0)))
+// Neophyte claws: +3 Mind Blast or Psychic Hammer, with 2 sockets or 0 sockets Larzuk makes 2 (Katar, Wrist Blade,
+// Hatchet Hands, Cestus; Claws, Blade Talons, Scissors Katar below item level 26)
+Alias[RWB_NEOPHYTE_CLAW]:(SIN ((SOCK=0 ((ILVL<26 (clw OR btl OR skr)) OR ktr OR wrb OR axf OR ces)) OR SOCK=2) (SK273>2 OR SK253>2))
+// Chaos claws: ethereal, with two or more of 10%+ ED, +1 Claw and Dagger Mastery, Weapon Block, Dragon Flight, Blade Shield or Venom
+Alias[RWB_CHAOS_CLAW]:(ETH (7qr OR 7ar OR 7xf) (SOCK=0 OR SOCK=3) $f(COUNT(ED>9,SK252>0,SK263>0,SK275>0,SK277>0,SK278>0)>=2))
+// Malice claws (low requirement, for bossing): +3 Claw and Dagger Mastery
+Alias[RWB_MALICE_CLAW]:((btl OR clw) (SOCK=0 OR SOCK=3) SK252=3)
+
+// Daggers
+// Venom daggers: +3 Poison Strike
+Alias[RWB_VENOM_DAGGER]:(!ETH SK73=3 (kri OR 9kr OR 7kr) (SOCK=0 OR SOCK=3) (CLVL<90 OR SK68>0 OR SK91>0 OR SK95>0 OR SK367>0))
+
+// Sorceress orbs
+// Neophyte orbs
+Alias[RWB_NEOPHYTE_ORB]:((((SOCK=0 OR SOCK=2) (ob1 OR ob2 OR ob3 OR ob4 OR ob6 OR ob7 OR ob8 OR ob9 OR obb OR obc OR obd OR obe)) OR (SOCK=2 (ob5 OR oba OR obf))) (SK44>2 OR SK47>2 OR SK48>2 OR SK49>2 OR SK51>2 OR SK53>2 OR SK56>2 OR SK59>2 OR SK62>2 OR SK64>2 OR SK369>2 OR SK367>2))
+
+// Staves
+// Memory staves
+Alias[RWB_MEMORY_STAFF]:((((cst OR bst OR 8cs OR 8bs OR 6cs OR 6bs OR 6ls OR wst OR 8ws OR 6ws) (SOCK=0 OR SOCK=4)) ((SK58>2 (FILTLVL<5 OR SK50>0 OR SK60>0 OR SK57>0 OR SK40>0 OR SK52>0)) OR (SK40>2 SK52>0) OR (SK40>0 SK52>2) OR (SK57>2 (SK50>0 OR SK60>0)))) OR ((((((8cs OR 8bs) (SOCK=0 OR SOCK=4)) OR (8ws SOCK=4)) CLVL<90) OR ((6cs OR 6bs OR 6ls OR 6ws) (SOCK=0 OR SOCK=4))) (((SK47>2 OR SK51>2 OR SK56>2 OR SK376>2 OR SK62>2) (CLVL<90 OR SK61>0 OR SK54>0 OR SK50>0 OR SK60>0 OR SK58>0)) OR ((SK38>2 OR SK49>2 OR SK53>2 OR SK48>2) (CLVL<90 OR SK63>0 OR SK54>0 OR SK57>0 OR SK50>0 OR SK60>0 OR SK58>0)) OR ((SK59>2 OR SK369>2 OR SK64>2) (CLVL<90 OR SK65>0 OR SK54>0 OR SK50>0 OR SK60>0 OR SK58>0)))))
+// Call to Arms staves
+Alias[RWB_CTA_STAFF]:((wst OR 8ws OR 6ws) (SK58>2 OR (SK40>2 SK52>0) OR (SK40>0 SK52>2) OR (SK58>0 (SK50>0 OR SK60>0 OR SK57>0)) OR (SK57>0 (SK50>0 OR SK60>0))) (SOCK=0 OR SOCK=5))
+// Infinity staves
+Alias[RWB_INFINITY_STAFF]:((6ws OR 6cs OR 6bs OR 6ls) (SOCK=0 OR SOCK=4) ((SK38>2 (SK37>0 OR SK42>0 OR SK50>0 OR SK54>0 OR SK57>0 OR SK58>0 OR SK60>0 OR SK63>0)) OR (SK53>2 (SK37>0 OR SK42>0 OR SK49>0 OR SK50>0 OR SK54>0 OR SK57>0 OR SK58>0 OR SK60>0 OR SK63>0)) OR (SK48>2 (SK37>0 OR SK42>0 OR SK50>0 OR SK54>0 OR SK57>0 OR SK58>0 OR SK60>0 OR SK63>0))))
+// Plague orbs
+Alias[RWB_PLAGUE_ORB]:((ob5 OR oba OR obf) (SOCK=0 OR SOCK=3) (((SK48>2 OR SK53>2 OR SK38>2) (SK54>2 OR SK63>2)) OR ((SK56>2 OR ((SK47>2 SK376>1) OR (SK47>1 SK376>2))) (SK54>2 OR SK61>2))))
+// Doom staves
+Alias[RWB_DOOM_STAFF]:(6ws (SK44>2 OR SK59>2 OR SK64>2 OR SK369>2) (SOCK=0 OR SOCK=5))
+// Obsession staves
+Alias[RWB_OBSESSION_STAFF]:(6ws (SK51>2 OR SK64>2 OR SK39>2 OR SK59>2 OR SK56>2) (SOCK=0 OR SOCK=6))
+
+// Scepters
+// Plague scepters
+Alias[RWB_PLAGUE_SCEPTER]:((((gsc OR 9sc OR 9qs OR 7sc OR 7qs) (SOCK=0 OR SOCK=3)) OR ((wsp OR 9ws OR 7ws) SOCK=3)) ((SK101>2 SK121>1) OR (SK101>1 SK121>2)))
+// Neophyte scepters
+Alias[RWB_NEOPHYTE_SCEPTER]:(SCEPTER SOCK=2 (SK101>2 OR SK112>2 OR SK121>2))
+// Call to Arms scepters
+Alias[RWB_CTA_SCEPTER]:(((wsp ILVL>25) OR 9ws OR 7ws) (SOCK=0 OR SOCK=5) (SK116>2 OR SK117>2 OR SK124>2 OR SK115>2))
+// Beast scepters
+Alias[RWB_BEAST_SCEPTER]:(((wsp ILVL>25) OR 9ws OR 7ws) (SOCK=0 OR SOCK=5) (SK109>2 OR SK99>2 OR SK118>2))
+
+// Barbarian helms
+// Delirium barbarian helms (filter levels 0-4)
+Alias[RWB_DELIRIUM_BARB_HELM]:(FILTLVL<5 !ETH (SOCK=0 OR SOCK=3) BAR SK154=3 (SK132>0 OR SK141>0 OR SK142>0 OR SK145>0 OR SK146>0 OR SK148>0 OR SK149>0 OR SK153>0))
+// Ferocity barbarian helms (filter levels 0-4)
+Alias[RWB_FEROCITY_BARB_HELM]:(FILTLVL<5 ETH ELT (SOCK=0 OR SOCK=3) BAR SK128=3 (SK132=3 OR SK141=3 OR SK143=3 OR SK144=3 OR SK145=3 OR SK146=3 OR SK147=3 OR SK148=3 OR SK149=3 OR SK150=3 OR SK153=3 OR SK155=3 OR SK368=3))
+
+// Druid clubs
+// Plague druid clubs: +3 Armageddon and Hurricane
+Alias[RWB_PLAGUE_CLUB_ARMAGEDDON]:((9cl OR 9sp OR 7cl OR 7sp OR leg) (SOCK=0 OR SOCK=3) SK249=3 SK250=3 (CLVL<95 OR SK226>0 OR SK231>0 OR SK235>0 OR SK241>0 OR SK247>0 OR SK370>0))
+// Plague druid clubs: +3 Shock Wave
+Alias[RWB_PLAGUE_CLUB_SHOCK_WAVE]:((9cl OR 9sp OR 7cl OR 7sp OR leg) (SOCK=0 OR SOCK=3) SK243=3 ((SK224=3 (SK226>0 OR SK231>0 OR SK247>0)) OR (SK226=3 (SK224>0 OR SK231>0 OR SK247>0)) OR (SK231=3 (SK224>0 OR SK226>0 OR SK247>0)) OR (SK247=3 (SK224>0 OR SK226>0 OR SK231>0))))
+// Plague druid clubs: +3 Arctic Blast and Hurricane
+Alias[RWB_PLAGUE_CLUB_ARCTIC_BLAST]:((9cl OR 9sp OR 7cl OR 7sp OR leg) (SOCK=0 OR SOCK=3) SK230=3 SK250=3 (CLVL<95 OR SK226>0 OR SK231>0 OR SK235>0 OR SK241>0 OR SK247>0 OR SK370>0))
+// Plague druid clubs: +3 to two summons
+Alias[RWB_PLAGUE_CLUB_SUMMONS]:((9cl OR 9sp OR 7cl OR 7sp OR leg) (SOCK=0 OR SOCK=3) ((SK226=3 SK236=3) OR ((CLVL<95 OR (SK226>0 OR SK370>0 OR SK231>0 OR SK250>0 OR SK235>0 OR SK241>0)) ((SK221>2 (SK237>2 OR SK227>2 OR SK247>2 OR SK236>2)) OR (SK237>2 (SK221>2 OR SK227>2 OR SK247>2 OR SK236>2)) OR (SK227>2 (SK237>2 OR SK221>2 OR SK247>2 OR SK236>2)) OR (SK247>2 (SK237>2 OR SK227>2 OR SK221>2 OR SK236>2)) OR (SK236>2 (SK237>2 OR SK227>2 OR SK221>2 OR SK247>2))))))
+// Plague druid clubs: +3 Poison Creeper and Gust
+Alias[RWB_PLAGUE_CLUB_POISON_CREEPER]:((9cl OR 9sp OR 7cl OR 7sp OR leg) (SOCK=0 OR SOCK=3) SK222=3 SK370>0 (SK226>0 OR SK247>0 OR SK250>0 OR SK235>0 OR SK231>0 OR SK241>0))
+
+// Druid pelts
+// Lore druid pelts
+Alias[RWB_LORE_PELT]:(DRU SOCK=2 (SK221>2 OR SK237>2 OR SK227>2 OR SK247>2))
+
+// Necromancer heads
+// Rhyme necromancer heads
+Alias[RWB_RHYME_HEAD]:(((NORM (SOCK=0 OR SOCK=2)) OR ((EXC OR ELT) SOCK=2)) (SK67>2 OR SK69>2 OR SK70>2 OR SK75>2 OR SK80>2 OR SK84>2 OR SK89>2 OR SK381>2 OR SK74>2 OR SK381>2))

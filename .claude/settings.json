@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python tools/build.py *)",
+      "PowerShell(python tools/build.py *)"
+    ],
+    "deny": [
+      "Edit(Erazure-*.filter)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/rebuild.py\"",
+            "timeout": 60,
+            "statusMessage": "Rebuilding filters..."
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,477 @@
+<title>Erazure Unique &amp; Set Tiers</title>
+<!-- Template for Erazure-Unique-Set-Tiers.html (tools/tier_map.py writes it; build.bat runs it): the data is
+     embedded at generation. Everything shown comes from the filter's own rules. The website's Unique & Set Tiers
+     page shows the same tier map: website/hooks.py takes the styles, the markup between the tier-map markers and
+     the script out of the generated file, so keep those markers. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Source+Sans+3:wght@400;600;700&display=swap">
+<!-- tier-map:css -->
+<style>
+  @font-face { font-family: "AvQest"; src: local("AvQest"); }  /* the D2-style font, if the viewer has it installed */
+  /* Layout: the title; a "how to read it" block with each tier's real in-game look; then the filter bar, which stays
+     at the top while scrolling (under the website's header on the website); then one section per item type with its
+     tiers in order. Each item is one thin, wide row: the item on the left, then one line per condition (when, tier,
+     the label as the game draws it, minimap icon, drop sound). Every rule is scoped to .tier-map, so the website's
+     theme and this page leave each other alone. */
+  /* Dark by default; light when the website (Material) is switched to light */
+  .tier-map {
+    --bg: #151412; --panel: #1f1d1a; --fg: #ece7de; --muted: #a59e91; --line: #36322c; --chip: #2a2723;
+    --accent: #d8b45e; --tip-bg: #ece7de; --tip-fg: #151412;
+    --t-dclone: #8b9cf0; --t-high: #f08a52; --t-medium: #e0b45a; --t-minimal: #c2b38a; --t-lld: #62c2b8;
+    --t-else: #9a9385; --set: #7cc474; --bad: #ef7a72;
+    --ground-1: #3a3428; --ground-2: #26221b; --ground-3: #15130f;
+    --display: "Cinzel", "Trajan Pro", Georgia, serif;
+    --body: "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --label: "AvQest", "Palatino Linotype", Palatino, Georgia, serif;
+    --top: 0px;  /* where the filter bar stops while scrolling */
+    color-scheme: dark;
+    color: var(--fg); font: 15px/1.45 var(--body);
+  }
+  [data-md-color-scheme="default"] .tier-map {
+    --bg: #f3f1ec; --panel: #fffdf8; --fg: #23211c; --muted: #6b655a; --line: #ded7c9; --chip: #efe9dd;
+    --accent: #8a6d1f; --tip-bg: #23211c; --tip-fg: #f3f1ec;
+    --t-dclone: #4b5fc4; --t-high: #c2410c; --t-medium: #b7791f; --t-minimal: #8c7a4f; --t-lld: #2f8f86;
+    --t-else: #8b8579; --set: #3d8b3d; --bad: #b3261e;
+    color-scheme: light;
+  }
+  .md-content .tier-map { --top: 2.4rem; }  /* on the website: under its header, which stays at the top */
+  .tier-map *, .tier-map *::before, .tier-map *::after { box-sizing: border-box; }
+  .tier-map .wrap { max-width: 1320px; margin: 0 auto; padding-inline: 16px; }
+  .md-content .tier-map .wrap { padding-inline: 0; }
+  .tier-map h1.tm-title { font: 700 26px/1.2 var(--display); letter-spacing: .02em; margin: 0; padding-block: 16px 10px;
+                          color: var(--fg); text-wrap: balance; }
+  .tier-map .bar { position: sticky; top: var(--top); z-index: 3; background: var(--panel);
+                   border-block: 1px solid var(--line); padding-block: 8px; margin-block: 12px 0; }
+  .tier-map .bar .wrap { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
+  .md-content .tier-map .bar .wrap { padding-inline: 10px; }
+  .tier-map .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .tier-map input[type=search], .tier-map select {
+    font: inherit; font-size: 14.5px; padding: 5px 8px; border: 1px solid var(--line); border-radius: 6px;
+    background: var(--bg); color: var(--fg); min-width: 0; margin: 0; }
+  .tier-map input[type=search] { flex: 1 1 220px; }
+  .tier-map .row2 { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; width: 100%; }
+  .tier-map .chipbtn { font: inherit; font-size: 13px; padding: 2px 10px; border-radius: 999px; border: 1px solid var(--line);
+                       background: var(--chip); color: var(--fg); cursor: pointer; display: inline-flex; gap: 6px;
+                       align-items: center; margin: 0; }
+  .tier-map .chipbtn[aria-pressed=false] { opacity: .5; }
+  .tier-map .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--tc); flex: none; }
+  .tier-map .muted { color: var(--muted); }
+  .tier-map button:focus-visible, .tier-map select:focus-visible, .tier-map input:focus-visible,
+  .tier-map .sound:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* how to read it */
+  .tier-map .intro { display: grid; gap: 12px; }
+  .tier-map .howto { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 4px 24px; }
+  @media (max-width: 900px) { .tier-map .howto { grid-template-columns: minmax(0, 1fr); } }
+  .tier-map .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px;
+                     min-width: 0; }
+  .tier-map .panel h2 { font: 700 12.5px/1.3 var(--body); text-transform: uppercase; letter-spacing: .08em;
+                        color: var(--muted); margin: 0 0 6px; }
+  .tier-map .panel p, .tier-map .panel li { max-width: 72ch; font-size: 14.5px; line-height: 1.45; }
+  .tier-map .panel p { margin: 0 0 6px; }
+  .tier-map .panel ul { margin: 0 0 6px; padding-left: 18px; list-style: disc; }
+  .tier-map .panel li { margin: 0; }
+  .tier-map .levels { font-size: 13.5px; margin: 4px 0 0; padding-left: 24px; list-style: decimal; }
+  .tier-map .levels li { font-size: 13.5px; margin: 0; }
+  /* the tiers legend: one table-like grid, so every column lines up (name | example label | icon | meaning) */
+  .tier-map .legend { display: grid; grid-template-columns: 15rem max-content auto minmax(0, 1fr); gap: 5px 14px;
+                      align-items: center; }
+  .tier-map .legend .lrow { display: contents; }
+  .tier-map .legend .ground { justify-self: start; }
+  .tier-map .legend .lname { font-size: 14px; }
+  .tier-map .legend .lname b { color: var(--tc); }
+  .tier-map .legend .lwhat { font-size: 13.5px; color: var(--muted); }
+  @media (max-width: 900px) {
+    .tier-map .legend { grid-template-columns: minmax(0, 1fr); }
+    .tier-map .legend .lrow { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 10px; padding-block: 3px; }
+    .tier-map .legend .lname, .tier-map .legend .lwhat { flex: 1 1 100%; }
+  }
+  .tier-map .low { display: grid; gap: 6px; margin-top: 10px; }
+  .tier-map .low .rule { font-size: 14px; }
+
+  /* items */
+  .tier-map h2.kind { font: 700 24px/1.2 var(--display); margin: 30px 0 2px; letter-spacing: .02em; color: var(--fg); }
+  .tier-map section.cat { margin-top: 18px; }
+  .tier-map h3.cat { font: 600 18px/1.25 var(--display); margin: 0 0 4px; padding-bottom: 3px; letter-spacing: 0;
+                     border-bottom: 1px solid var(--line); color: var(--fg); }
+  .tier-map .tier-head { display: flex; gap: 8px; align-items: center; font-size: 12.5px; font-weight: 700;
+                         text-transform: uppercase; letter-spacing: .07em; color: var(--tc); margin: 10px 0 5px; }
+  .tier-map .rows { display: grid; gap: 5px; }
+  /* the item lines' columns in px, not rem: the website's theme sets a bigger root font, and the line must fit there
+     as on the page itself */
+  .tier-map article.row { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 3px 14px; align-items: start;
+                          background: var(--panel); border: 1px solid var(--line); border-left: 3px solid var(--tc);
+                          border-radius: 6px; padding: 5px 10px; }
+  .tier-map article.row.group { grid-template-columns: minmax(0, 1fr); }
+  @media (max-width: 760px) { .tier-map article.row { grid-template-columns: minmax(0, 1fr); } }
+  .tier-map .who { min-width: 0; }
+  .tier-map .who .nm { font-weight: 700; line-height: 1.3; }
+  .tier-map .who .sub { font-size: 13px; color: var(--muted); margin-top: 1px; }
+  .tier-map .who .setname { font-size: 13px; color: var(--set); }
+  .tier-map .who .setname.inline { font-weight: 400; }
+  .tier-map .who.names { font-size: 13.5px; }
+  .tier-map .who.names b { font-weight: 700; }
+  .tier-map .who.names .base { color: var(--muted); }
+  .tier-map .rules { display: grid; gap: 2px; min-width: 0; }
+  .tier-map .run { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 12px; min-width: 0; }
+  .tier-map .run .when { flex: 0 0 208px; font-size: 14px; }
+  .tier-map .run .what { flex: 0 0 200px; font-size: 14px; font-weight: 600; }
+  /* the label's cell: at least as wide on every line, so the icons and sounds after it line up */
+  .tier-map .run .lab { flex: 0 0 auto; min-width: 368px; display: flex; }
+  .tier-map .run .meta { flex: 1 1 60px; min-width: 0; }  /* stays beside the label: a long sound name wraps */
+  .tier-map .run .meta .sound { white-space: normal; }
+  @media (max-width: 760px) { .tier-map .run .when, .tier-map .run .what, .tier-map .run .lab { flex: 1 1 auto; }
+                              .tier-map .run .lab { min-width: 0; } }
+  .tier-map .ground { flex: 0 1 auto; max-width: 100%; min-width: 0; text-align: center; border-radius: 5px; padding: 3px 6px;
+                      background: radial-gradient(ellipse at 50% 45%, var(--ground-1) 0%, var(--ground-2) 55%, var(--ground-3) 100%); }
+  .tier-map .d2label { display: inline-block; font-family: var(--label); font-size: 15px; line-height: 1.12;
+                       text-align: center; white-space: pre; background: rgba(0, 0, 0, .74); padding: 2px 6px 0;
+                       vertical-align: middle; }
+  .tier-map .d2label .cut, .tier-map .d2label .cut .bs { text-decoration: underline dotted var(--bad);
+                                                          text-decoration-thickness: 2px; text-underline-offset: 3px; }
+  /* A backslash is drawn as the slash mirrored: the web fonts space "\" wide, the game draws it like "/" */
+  .tier-map .d2label .bs { display: inline-block; transform: scaleX(-1); }
+  .tier-map .c-WHITE { color: #e8e8e8; } .tier-map .c-RED { color: #ff4d4d; } .tier-map .c-GREEN { color: #00ff00; }
+  .tier-map .c-BLUE { color: #6969ff; } .tier-map .c-GOLD { color: #c7b377; } .tier-map .c-GRAY { color: #696969; }
+  .tier-map .c-BLACK { color: #000000; } .tier-map .c-TAN { color: #d0c27d; } .tier-map .c-ORANGE { color: #ffa800; }
+  .tier-map .c-YELLOW { color: #ffff64; } .tier-map .c-PURPLE { color: #ae00ff; }
+  .tier-map .c-DARK_GREEN { color: #008000; } .tier-map .c-CORAL { color: #ff7f6e; } .tier-map .c-SAGE { color: #a3b88f; }
+  .tier-map .c-TEAL { color: #3fb5b5; } .tier-map .c-LIGHT_GRAY { color: #a8a8a8; }
+  .tier-map .hidden-label { font-size: 12.5px; color: #a8a8a8; font-style: italic; padding-inline: 6px; }
+  .tier-map .meta { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--muted); }
+  .tier-map .icon { position: relative; width: 16px; height: 16px; background: #0c0b09; border-radius: 2px; flex: none; }
+  .tier-map .icon span { position: absolute; }
+  .tier-map .sound { position: relative; white-space: nowrap; cursor: help; border-bottom: 1px dotted var(--muted); }
+  .tier-map .sound .tip { display: none; position: absolute; right: 0; bottom: calc(100% + 6px); z-index: 4;
+                          background: var(--tip-bg); color: var(--tip-fg); padding: 6px 9px; border-radius: 6px;
+                          font-size: 12.5px; line-height: 1.45; white-space: nowrap; box-shadow: 0 3px 10px rgba(0, 0, 0, .25); }
+  @media (max-width: 760px) {
+    .tier-map .sound .tip { right: auto; left: 0; white-space: normal; width: max-content; max-width: 78vw; }
+  }
+  .tier-map .sound .tip span { display: block; }
+  .tier-map .sound:hover .tip, .tier-map .sound:focus .tip { display: block; }
+  .tier-map .note { font-size: 13px; color: var(--muted); }
+  .tier-map p.empty { color: var(--muted); text-align: center; padding: 40px 0; margin: 0; }
+  .tier-map footer { color: var(--muted); font-size: 13px; padding-block: 24px; }
+  @media (prefers-reduced-motion: reduce) { .tier-map * { transition: none !important; } }
+</style>
+
+<div class="tier-map">
+<div class="wrap"><h1 class="tm-title">Erazure Unique &amp; Set Tiers</h1></div>
+<!-- tier-map:start -->
+<div class="wrap intro">
+  <div class="panel howto">
+   <div>
+    <h2>How to read it</h2>
+    <p>How the Erazure loot filter shows unique and set items that drop <b>unidentified</b>: the tier each one is in,
+      and when the others are shown quietly or hidden. Everything here is read from the filter's own rules. Once
+      identified, an item shows its stats instead.</p>
+    <ul>
+      <li>Each line is one case: when it applies, the tier, the label as the game draws it, the minimap icon and
+        the drop sound. A tier named alone notifies as usual (see Tiers); otherwise the difference follows in
+        brackets.</li>
+      <li>Point at a sound for its number: type <b>.playsound</b> and that number in game to hear it.</li>
+      <li><b>Items on the same base share a tier.</b> Unidentified, the filter cannot tell them apart: Lightsabre
+        and Azurewrath are both a Phase Blade.</li>
+      <li><b>Hidden items still show their name</b> in town, and until you've discovered them (as part of the Holy
+        Grail Discovery Progress). An item on a base with several uniques, like Thunder Maul, counts as discovered
+        once you've found all of them.</li>
+    </ul>
+   </div>
+   <div>
+    <h2>Filter levels</h2>
+    <ol class="levels" id="levels" start="0"></ol>
+   </div>
+  </div>
+  <div class="panel">
+    <h2>Tiers</h2>
+    <div class="legend" id="legend"></div>
+    <div class="low" id="low"></div>
+  </div>
+</div>
+<div class="bar">
+  <div class="wrap">
+    <div class="controls">
+      <label class="muted" for="variant">Version</label>
+      <select id="variant"></select>
+      <select id="kind" aria-label="Show unique or set items">
+        <option value="">Uniques &amp; sets</option><option value="UNI">Uniques</option><option value="SET">Sets</option>
+      </select>
+      <select id="setgroup" aria-label="Group set items by">
+        <option value="type">Sets by item type</option><option value="set">Sets by set</option>
+      </select>
+    </div>
+    <input id="q" type="search" placeholder="Search an item, base or set" aria-label="Search">
+    <div class="row2" id="tiers" role="group" aria-label="Tiers shown"></div>
+  </div>
+</div>
+<div class="wrap" id="list"></div>
+<div class="wrap"><footer id="foot"></footer></div>
+<!-- tier-map:end -->
+</div>
+
+<script>
+(() => {
+const DATA = /*__DATA__*/null;
+const $ = (id) => document.getElementById(id);
+const TIER_COLOR = {"Diablo Clone & Rathma": "--t-dclone", "High value": "--t-high", "Medium value": "--t-medium",
+  "Minimal value": "--t-minimal", "Low Level Duel": "--t-lld", "Everything else": "--t-else"};
+const LABEL_PX = 15;
+const STORE = "erazure-tier-map-view";
+function load() { try { return JSON.parse(localStorage.getItem(STORE) || "{}") || {}; } catch { return {}; } }
+function save() { try { localStorage.setItem(STORE, JSON.stringify(view)); } catch {} }
+const view = Object.assign({variant: DATA.variants.indexOf(DATA.main), kind: "", setgroup: "type", q: "",
+  off: []}, load());
+if (!(view.variant >= 0 && view.variant < DATA.variants.length)) view.variant = DATA.variants.indexOf(DATA.main);
+if (!Array.isArray(view.off)) view.off = [];
+if (typeof view.q !== "string") view.q = "";
+if (!["", "UNI", "SET"].includes(view.kind)) view.kind = "";
+if (!["type", "set"].includes(view.setgroup)) view.setgroup = "type";
+
+function el(tag, attrs = {}, ...kids) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === "text") e.textContent = v;
+    else e.setAttribute(k, v);
+  }
+  for (const k of kids) if (k !== null && k !== undefined) e.append(k);
+  return e;
+}
+const tierStyle = (t) => `--tc: var(${TIER_COLOR[t] || "--t-else"})`;
+const cap = (s) => s ? s[0].toUpperCase() + s.slice(1) : s;
+
+// ---- the label as the game draws it, in full; the characters BH cuts (over 56, from the end of the text = the
+// right end of the top line) are underlined
+function colored(color, text, extra = "") {
+  const s = el("span", {class: `c-${color}${extra}`});
+  text.split("\\").forEach((part, i) => {
+    if (i) s.append(el("span", {class: "bs", text: "/"}));  // a backslash: the slash mirrored (.bs)
+    if (part) s.append(part);
+  });
+  return s;
+}
+function label(lines, look, cut) {
+  if (look === "HIDDEN") return el("div", {class: "ground"}, el("span", {class: "hidden-label", text: "hidden"}));
+  const box = el("div", {class: "d2label", role: "img"});
+  let rest = cut || 0;
+  const said = [];
+  for (const segs of lines) {
+    const len = segs.reduce((n, s) => n + [...s[1]].length, 0);
+    const mark = Math.min(rest, len);
+    rest = Math.max(0, rest - mark - 1);
+    const d = el("div");
+    let pos = 0;
+    for (const [c, t] of segs) {
+      const chars = [...t], start = len - mark;
+      const keep = chars.slice(0, Math.max(0, start - pos)).join(""), drop = chars.slice(Math.max(0, start - pos)).join("");
+      if (keep) d.append(colored(c, keep));
+      if (drop) d.append(colored(c, drop, " cut"));
+      pos += chars.length;
+    }
+    box.append(d);
+    said.push(segs.map((s) => s[1]).join(""));
+  }
+  box.setAttribute("aria-label", `In-game label: ${said.join(" / ")}`);
+  if (cut) box.title = `BH cuts the underlined ${cut} character${cut === 1 ? "" : "s"} in game (names show at most ${DATA.nameMax})`;
+  return el("div", {class: "ground"}, box);
+}
+// ---- the minimap icon: each matching rule's BORDER / MAP / DOT / PX boxes (8 / 6 / 4 / 2 px), shown 2x
+function icon(layers) {
+  if (!layers || !layers.length) return null;
+  const box = el("div", {class: "icon", title: "Minimap icon"});
+  for (const layer of layers) {
+    [16, 12, 8, 4].forEach((size, i) => {
+      if (!layer[i]) return;
+      const off = (16 - size) / 2;
+      box.append(el("span", {style: `left:${off}px;top:${off}px;width:${size}px;height:${size}px;background:${DATA.palette[layer[i]] || "#fff"}`}));
+    });
+  }
+  return box;
+}
+function sound(s) {
+  if (!s) return null;
+  return el("span", {class: "sound", tabindex: "0"}, `♪ ${s[1]}`,
+    el("span", {class: "tip", role: "tooltip"}, el("span", {text: `Sound ${s[0]}: ${s[2]}`}),
+      el("span", {text: `Type ".playsound ${s[0]}" to hear in game`})));
+}
+function runLine(when, o) {
+  return el("div", {class: "run"},
+    el("div", {class: "when", text: when}),
+    el("div", {class: "what", text: cap(o.phrase)}),
+    el("div", {class: "lab"}, label(o.label, o.look, o.cut)),
+    el("div", {class: "meta"}, icon(o.icons), sound(o.sound)));
+}
+function rules(v, extra = []) {
+  const box = el("div", {class: "rules"});
+  for (const c of v.clauses) {  // every line names its whole case: "Otherwise, levels 3–7"
+    for (const [levels, oi] of c.runs) {
+      box.append(runLine(cap([c.cond, levels].filter(Boolean).join(", ") || "Every level"), v.outcomes[oi]));
+    }
+  }
+  for (const n of v.notes.concat(extra)) box.append(el("div", {class: "note", text: n}));
+  return box;
+}
+
+// ---- data per variant
+const V = () => view.variant;
+const vOf = (it) => DATA.views[it.v[V()]];
+const names = (it) => it.items.map((i) => i.name).join(" / ");
+const sets = (it) => [...new Set(it.items.map((i) => i.set).filter(Boolean))].sort();
+const linesOf = (v) => v.lines.concat(v.notes);
+function variantNotes(it) {  // what the other versions show differently (sounds aside), on the Main view only
+  if (V() !== DATA.variants.indexOf(DATA.main)) return [];
+  const lines = linesOf(vOf(it)), by = new Map();
+  it.v.forEach((id, i) => {
+    if (id === it.v[V()]) return;
+    const diff = linesOf(DATA.views[id]).filter((l) => !lines.includes(l));
+    if (!diff.length) return;
+    const key = diff.join(". ");
+    by.set(key, (by.get(key) || []).concat(DATA.variants[i].replace("Erazure - ", "")));
+  });
+  return [...by].map(([text, vs]) => `${vs.join(", ")}: ${text}`);
+}
+function matches(it) {
+  const q = view.q.trim().toLowerCase();
+  if (view.kind && it.kind !== view.kind) return false;
+  if (view.off.includes(vOf(it).tier)) return false;
+  if (!q) return true;
+  return [names(it), it.base, it.code, ...sets(it)].join(" ").toLowerCase().includes(q);
+}
+function row(it) {
+  const v = vOf(it);
+  const who = el("div", {class: "who"});
+  const multi = it.items.length > 1;  // several items on one base (rings, amulets, Thunder Maul): one per line
+  for (const i of it.items) {
+    const line = el("div", {class: "nm", text: i.name});
+    if (multi && i.set) line.append(el("span", {class: "setname inline", text: ` (${i.set})`}));
+    who.append(line);
+  }
+  who.append(el("div", {class: "sub", text: [it.base, it.baseTier].filter(Boolean).join(" · ")}));
+  const s = sets(it);
+  if (!multi && s.length) who.append(el("div", {class: "setname", text: s.join(", ")}));
+  return el("article", {class: "row", style: tierStyle(v.tier)}, who, rules(v, variantNotes(it)));
+}
+function lowGroups(its) {  // items in no tier, grouped by what happens to them
+  const by = new Map();
+  for (const it of its) {
+    const key = JSON.stringify(linesOf(vOf(it)));
+    if (!by.has(key)) by.set(key, []);
+    by.get(key).push(it);
+  }
+  return [...by.values()].sort((a, b) => b.length - a.length);
+}
+function groupRow(its, kind) {
+  const who = el("div", {class: "who names"}, el("b", {text: `${its.length} item${its.length === 1 ? "" : "s"}: `}));
+  its.forEach((it, i) => {
+    const s = kind === "SET" && sets(it).length ? `, ${sets(it).join(", ")}` : "";
+    who.append(i ? " · " : "", names(it), el("span", {class: "base", text: ` (${it.base}${s})`}));
+  });
+  return el("article", {class: "row group", style: tierStyle("Everything else")}, who, rules(vOf(its[0])));
+}
+
+// ---- page
+function intro() {
+  $("levels").replaceChildren(...DATA.levels.map((n) => el("li", {text: n})));
+  const examples = new Map();  // one example of each look (the first item that has it in this version)
+  for (const it of DATA.items) {
+    for (const o of vOf(it).outcomes) if (!examples.has(o.look)) examples.set(o.look, o);
+  }
+  const looks = Object.entries(DATA.lookInfo).filter(([k]) => examples.has(k) && k !== "HIDDEN")
+    .sort((a, b) => b[1].rank - a[1].rank);
+  const shared = {};  // a name both uniques and sets use (High value...) says which one each row is
+  for (const [, x] of looks) shared[x.name] = (shared[x.name] || 0) + 1;
+  $("legend").replaceChildren(...looks.map(([k, x]) => {
+    const o = examples.get(k);
+    const what = (x.usual || "the icon and chat line depend on the filter level") + (x.sound ? ", its own drop sound" : "");
+    const name = shared[x.name] > 1 ? `${cap(x.name)} (${k.startsWith("SET") ? "sets" : "uniques"})` : cap(x.name);
+    return el("div", {class: "lrow"},
+      el("div", {class: "lname", style: tierStyle(x.tier)}, el("b", {text: name})),
+      label(o.label, o.look, 0), el("div", {class: "meta"}, icon(o.icons)), el("div", {class: "lwhat", text: what}));
+  }));
+  const low = $("low");
+  low.replaceChildren(el("h2", {text: "Items in no tier"}));
+  for (const kind of ["UNI", "SET"]) {
+    const groups = lowGroups(DATA.items.filter((it) => it.kind === kind && vOf(it).tier === "Everything else"));
+    groups.slice(0, kind === "UNI" ? 1 : 4).forEach((g) => {
+      const what = kind === "UNI" ? `Most unique items (${g.length} bases)` :
+        `${g.length} set item${g.length === 1 ? "" : "s"} (${g.slice(0, 2).map(names).join(", ")}${g.length > 2 ? ", ..." : ""})`;
+      low.append(el("div", {class: "rule"}, el("b", {text: what + ": "}), linesOf(vOf(g[0])).join(". ")));
+    });
+  }
+}
+function render() {
+  const list = $("list");
+  list.replaceChildren();
+  let any = false;
+  for (const [kind, title] of [["UNI", "Unique items"], ["SET", "Set items"]]) {
+    if (view.kind && view.kind !== kind) continue;
+    const its = DATA.items.filter((it) => it.kind === kind && matches(it));
+    if (!its.length) continue;
+    any = true;
+    list.append(el("h2", {class: "kind", text: title}));
+    const bySet = kind === "SET" && view.setgroup === "set";
+    const catOf = (it) => bySet ? (sets(it).length === 1 ? sets(it)[0] : "Several sets") : it.category;
+    const cats = bySet ? [...new Set(its.map(catOf))].sort() : DATA.categories;
+    for (const cat of cats) {
+      const inCat = its.filter((it) => catOf(it) === cat);
+      if (!inCat.length) continue;
+      const sec = el("section", {class: "cat", id: `${kind}-${cat}`.replace(/[^A-Za-z0-9_-]/g, "-")});
+      sec.append(el("h3", {class: "cat", text: cat}));
+      for (const tier of DATA.tierGroups) {
+        const inTier = inCat.filter((it) => vOf(it).tier === tier);
+        if (!inTier.length) continue;
+        sec.append(el("div", {class: "tier-head", style: tierStyle(tier)}, el("span", {class: "dot"}),
+          tier === "Everything else" ? "In no tier" : tier));
+        const rows = el("div", {class: "rows"});
+        if (tier === "Everything else") for (const g of lowGroups(inTier)) rows.append(groupRow(g, kind));
+        else for (const it of inTier.sort((a, b) => names(a).localeCompare(names(b)))) rows.append(row(it));
+        sec.append(rows);
+      }
+      list.append(sec);
+    }
+  }
+  if (!any) list.append(el("p", {class: "empty", text: "No item matches. Clear the search or switch a tier back on."}));
+  fit();
+}
+// A label wider than its whole line (phones) gets a smaller font instead of being clipped or scrolled.
+function fit() {
+  const labels = [...document.querySelectorAll(".tier-map .d2label")];
+  labels.forEach((l) => { l.style.fontSize = ""; });
+  const sizes = labels.map((l) => {
+    const avail = l.parentElement.clientWidth - 12, need = l.scrollWidth;
+    return need > avail && avail > 0 ? Math.max(7, LABEL_PX * avail / need) : 0;
+  });
+  labels.forEach((l, i) => { if (sizes[i]) l.style.fontSize = `${sizes[i].toFixed(2)}px`; });
+}
+let fitTimer = 0;
+window.addEventListener("resize", () => { clearTimeout(fitTimer); fitTimer = setTimeout(fit, 120); });
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit).catch(() => {});
+function tierButtons() {
+  $("tiers").replaceChildren(...DATA.tierGroups.map((t) => {
+    const b = el("button", {class: "chipbtn", type: "button", style: tierStyle(t), "aria-pressed": String(!view.off.includes(t))},
+      el("span", {class: "dot"}), t === "Everything else" ? "In no tier" : t);
+    b.addEventListener("click", () => {
+      view.off = view.off.includes(t) ? view.off.filter((x) => x !== t) : view.off.concat(t);
+      b.setAttribute("aria-pressed", String(!view.off.includes(t)));
+      save(); render();
+    });
+    return b;
+  }));
+}
+function init() {
+  $("variant").replaceChildren(...DATA.variants.map((n, i) => el("option", {value: String(i), text: n.replace("Erazure - ", "")})));
+  $("variant").value = String(view.variant);
+  $("kind").value = view.kind;
+  $("setgroup").value = view.setgroup;
+  $("q").value = view.q;
+  $("variant").addEventListener("change", (e) => { view.variant = +e.target.value; save(); intro(); render(); });
+  $("kind").addEventListener("change", (e) => { view.kind = e.target.value; save(); render(); });
+  $("setgroup").addEventListener("change", (e) => { view.setgroup = e.target.value; save(); render(); });
+  $("q").addEventListener("input", (e) => { view.q = e.target.value; render(); });
+  $("foot").textContent = `Built from the filter's sections (${DATA.version}) by tools/tier_map.py: every unique and set item run through the filter's own rules at every filter level.`;
+  tierButtons(); intro(); render();
+}
+init();
+})();
+</script>

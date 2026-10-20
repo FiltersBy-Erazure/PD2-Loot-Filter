@@ -1,0 +1,131 @@
+//-----------------------------------------------------------------------------------------------------
+// ================================================  Gems  ============================================
+//-----------------------------------------------------------------------------------------------------
+// S14: gems and skulls drop and stack as their plain code (QTY=1 on the ground); the old stacked codes (g..s, sk.s) are "(old)" items and no longer listed. No stack/unstack notes.
+// On filter levels 11-12, hide flawless gem where quantity = 1
+ItemDisplay[gzv QTY=1 FILTLVL~11-12 !TOWN]:// Flawless Amethyst
+ItemDisplay[glw QTY=1 FILTLVL~11-12 !TOWN]:// Flawless Diamond
+ItemDisplay[glg QTY=1 FILTLVL~11-12 !TOWN]:// Flawless Emerald
+ItemDisplay[glr QTY=1 FILTLVL~11-12 !TOWN]:// Flawless Ruby
+ItemDisplay[glb QTY=1 FILTLVL~11-12 !TOWN]:// Flawless Sapphire
+ItemDisplay[gly QTY=1 FILTLVL~11-12 !TOWN]:// Flawless Topaz
+//ItemDisplay[skl QTY=1 FILTLVL~11-12 !TOWN]:// Flawless Skull
+// Hides Chipped, Flawed, and Normal at higher character levels or on filter levels 3+
+ItemDisplay[GEMLEVEL=1 ((CLVL>29 !FILTLVL=0) OR (CLVL>19 FILTLVL>1) OR FILTLVL>2) !TOWN]:// Hides Chipped
+ItemDisplay[GEMLEVEL=2 ((CLVL>39 !FILTLVL=0) OR (CLVL>29 FILTLVL>1) OR FILTLVL>2) !TOWN]:// Hides Flawed
+ItemDisplay[GEMLEVEL=3 ((CLVL>79 !FILTLVL=0) OR (CLVL>49 FILTLVL>1) OR FILTLVL>2) !TOWN]:// Hides Normal
+// Colors for Gem Types
+ItemDisplay[GEMTYPE=1]:%PURPLE%%CONTINUE%// Purple for Amethyst
+ItemDisplay[GEMTYPE=2]:%WHITE%%CONTINUE%// White for Diamond
+ItemDisplay[GEMTYPE=3]:%DARK_GREEN%%CONTINUE%// Dark Green for Emerald
+ItemDisplay[GEMTYPE=4]:%RED%%CONTINUE%// Red for Ruby
+ItemDisplay[GEMTYPE=5]:%BLUE%%CONTINUE%// Blue for Sapphire
+ItemDisplay[GEMTYPE=6]:%YELLOW%%CONTINUE%// Yellow for Topaz
+ItemDisplay[GEMTYPE=7]:%GRAY%%CONTINUE%// Gray for Skull
+// Symbols for Quality Level
+ItemDisplay[GEMLEVEL=1]:%NAME%-%CONTINUE%// "-" Chipped
+ItemDisplay[GEMLEVEL=2]:%NAME%•%CONTINUE%// "•" Flawed
+ItemDisplay[GEMLEVEL=3]:%NAME%+%CONTINUE%// "+" Normal
+ItemDisplay[GEMLEVEL=4]:%NAME%o%CONTINUE%// "o" Flawless
+ItemDisplay[GEMLEVEL=5]:%NAME%O%CONTINUE%// "O" Perfect
+// Quality Levels
+ItemDisplay[GEMLEVEL=1 (FILTLVL>4 QTY=1)]:%NAME%  %WHITE%Chipped%CONTINUE%// Chipped quality
+ItemDisplay[GEMLEVEL=2 (FILTLVL>4 QTY=1)]:%NAME%  %WHITE%Flawed%CONTINUE%// Flawed quality
+ItemDisplay[GEMLEVEL=3 (FILTLVL>4 QTY=1)]:%NAME%  %WHITE%Normal%CONTINUE%// Normal quality
+ItemDisplay[GEMLEVEL=4 (FILTLVL>4 QTY=1)]:%NAME%  %WHITE%Flawless%CONTINUE%// Flawless quality
+ItemDisplay[GEMLEVEL=5 (FILTLVL~5-12 QTY=1) !skz]:%NAME%  %WHITE%Perfect%CONTINUE%// Perfect quality
+ItemDisplay[GEMLEVEL=1 (FILTLVL<5 OR QTY>1)]:%NAME%  %LIGHT_GRAY%Chipped%CONTINUE%// Chipped quality
+ItemDisplay[GEMLEVEL=2 (FILTLVL<5 OR QTY>1)]:%NAME%  %LIGHT_GRAY%Flawed%CONTINUE%// Flawed quality
+ItemDisplay[GEMLEVEL=3 (FILTLVL<5 OR QTY>1)]:%NAME%  %LIGHT_GRAY%Normal%CONTINUE%// Normal quality
+ItemDisplay[GEMLEVEL=4 (FILTLVL<5 OR QTY>1)]:%NAME%  %LIGHT_GRAY%Flawless%CONTINUE%// Flawless quality
+ItemDisplay[GEMLEVEL=5 (FILTLVL<5 OR QTY>1 OR skz)]:%NAME%  %LIGHT_GRAY%Perfect%CONTINUE%// Perfect quality
+// Names of Gems QTY>1
+ItemDisplay[GEMTYPE=1 QTY>1]:%NAME% %WHITE%Amethysts%CONTINUE%//
+ItemDisplay[GEMTYPE=2 QTY>1]:%NAME% %WHITE%Diamonds%CONTINUE%//
+ItemDisplay[GEMTYPE=3 QTY>1]:%NAME% %WHITE%Emeralds%CONTINUE%//
+ItemDisplay[GEMTYPE=4 QTY>1]:%NAME% %WHITE%Rubies%CONTINUE%//
+ItemDisplay[GEMTYPE=5 QTY>1]:%NAME% %WHITE%Sapphires%CONTINUE%//
+ItemDisplay[GEMTYPE=6 QTY>1]:%NAME% %WHITE%Topazes%CONTINUE%//
+ItemDisplay[GEMTYPE=7 QTY>1]:%NAME% %WHITE%Skulls%CONTINUE%//
+// Names of Gems QTY=1
+ItemDisplay[GEMTYPE=1 (QTY=1 FILTLVL<5)]:%NAME% %WHITE%Amethyst%CONTINUE%//
+ItemDisplay[GEMTYPE=2 (QTY=1 FILTLVL<5)]:%NAME% %WHITE%Diamond%CONTINUE%//
+ItemDisplay[GEMTYPE=3 (QTY=1 FILTLVL<5)]:%NAME% %WHITE%Emerald%CONTINUE%//
+ItemDisplay[GEMTYPE=4 (QTY=1 FILTLVL<5)]:%NAME% %WHITE%Ruby%CONTINUE%//
+ItemDisplay[GEMTYPE=5 (QTY=1 FILTLVL<5)]:%NAME% %WHITE%Sapphire%CONTINUE%//
+ItemDisplay[GEMTYPE=6 (QTY=1 FILTLVL<5)]:%NAME% %WHITE%Topaz%CONTINUE%//
+ItemDisplay[GEMTYPE=7 ((QTY=1 FILTLVL<5) OR (skz QTY=1))]:%NAME% %WHITE%Skull%CONTINUE%//
+// Quantity of 2x or more 
+ItemDisplay[GEMLEVEL>0 QTY>1]:%NAME% %TAN%x %WHITE%%QTY%%CONTINUE%// Quantity of any gem stack
+// Colors for Gem Types
+ItemDisplay[GEMTYPE=1]:%NAME%  %PURPLE%%CONTINUE%// Purple - Amethyst
+ItemDisplay[GEMTYPE=2]:%NAME%  %WHITE%%CONTINUE%// White - Diamond
+ItemDisplay[GEMTYPE=3]:%NAME%  %DARK_GREEN%%CONTINUE%// Dark Green - Emerald
+ItemDisplay[GEMTYPE=4]:%NAME%  %RED%%CONTINUE%// Red - Ruby
+ItemDisplay[GEMTYPE=5]:%NAME%  %BLUE%%CONTINUE%// Blue - Sapphire
+ItemDisplay[GEMTYPE=6]:%NAME%  %YELLOW%%CONTINUE%// Yellow - Topaz
+ItemDisplay[GEMTYPE=7]:%NAME%  %GRAY%%CONTINUE%// Gray - Skull
+// Symbols for Quality Level
+ItemDisplay[GEMLEVEL=1]:%NAME%-%WHITE%%CONTINUE%// "-" Chipped
+ItemDisplay[GEMLEVEL=2]:%NAME%•%WHITE%%CONTINUE%// "•" Flawed
+ItemDisplay[GEMLEVEL=3]:%NAME%+%WHITE%%CONTINUE%// "+" Normal
+ItemDisplay[GEMLEVEL=4]:%NAME%o%WHITE%%CONTINUE%// "o" Flawless
+ItemDisplay[GEMLEVEL=5]:%NAME%O%WHITE%%CONTINUE%// "O" Perfect
+// Notify for Chipped, Flawed, Normal at low levels
+ItemDisplay[((gcv CLVL<15) OR (gfv CLVL<20) OR (gsv CLVL<30)) FILTLVL<3]:%NAME%%DOT-9B%%PX-1E%%CONTINUE%// Amethyst
+ItemDisplay[((gcw CLVL<15) OR (gfw CLVL<20) OR (gsw CLVL<30)) FILTLVL<3]:%NAME%%DOT-DC%%PX-1E%%CONTINUE%// Diamond
+ItemDisplay[((gcg CLVL<15) OR (gfg CLVL<20) OR (gsg CLVL<30)) FILTLVL<3]:%NAME%%DOT-79%%PX-1E%%CONTINUE%// Emerald
+ItemDisplay[((gcr CLVL<15) OR (gfr CLVL<20) OR (gsr CLVL<30)) FILTLVL<3]:%NAME%%DOT-0A%%PX-1E%%CONTINUE%// Ruby
+ItemDisplay[((gcb CLVL<15) OR (gfb CLVL<20) OR (gsb CLVL<30)) FILTLVL<3]:%NAME%%DOT-97%%PX-1E%%CONTINUE%// Sapphire
+ItemDisplay[((gcy CLVL<15) OR (gfy CLVL<20) OR (gsy CLVL<30)) FILTLVL<3]:%NAME%%DOT-6F%%PX-1E%%CONTINUE%// Topaz
+ItemDisplay[((skc CLVL<15) OR (skf CLVL<20) OR (sku CLVL<30)) FILTLVL<3]:%NAME%%DOT-15%%PX-1E%%CONTINUE%// Skull
+// Cube 3 for next gem level
+ItemDisplay[GEMLEVEL=1]:%NAME%{%TAN%Cube %WHITE%Chipped %TAN%x %WHITE%3 %TAN%= %WHITE%Flawed}// Chipped
+ItemDisplay[GEMLEVEL=2]:%NAME%{%TAN%Cube %WHITE%Flawed %TAN%x %WHITE%3 %TAN%= %WHITE%Normal}// Flawed
+ItemDisplay[GEMLEVEL=3]:%NAME%{%TAN%Cube %WHITE%Normal %TAN%x %WHITE%3 %TAN%= %WHITE%Flawless}// Normal
+ItemDisplay[GEMLEVEL=4]:%NAME%{%TAN%Cube %WHITE%Flawless %TAN%x %WHITE%3 %TAN%= %WHITE%Perfect}%CONTINUE%// Flawless
+
+// Amethyst
+ItemDisplay[(((gzv) FILTLVL<11) OR (gpv)) !MAPID>137]:%NAME%%DOT-9B%%PX-1E%{%NAME%}%CONTINUE%// Notifications for flawless/perfect gems while not in maps
+ItemDisplay[(gpv) FILTLVL<12 MAPID>137]:%NAME%%DOT-9B%%PX-1E%{%NAME%}%CONTINUE%// Notifications for perfect gems while in maps on filter levels 1-11
+ItemDisplay[(((gzv) FILTLVL<11) OR ((gpv) FILTLVL=12)) MAPID>137]:%NAME%%DOT-9B%%PX-1E%%TIER-0%{%NAME%}%CONTINUE%// Icons but no notifications for flawless/perfect gems while in maps
+ItemDisplay[gzv]:%NAME%{%NAME%%NL%}// Flawless Amethyst
+ItemDisplay[gpv]:%NAME%{%BLUE%   Gloves %TAN%+ %WHITE%Ort  %BLUE%Ring %TAN%+ %WHITE%Amn  %BLUE%Boots %TAN%+ %WHITE%Thul  %CL%%BLUE%  Armor %TAN%+ %WHITE%Tal    %BLUE%Belt %TAN%+ %WHITE%Ith   %BLUE%Shield %TAN%+ %WHITE%Eth   %CL%%BLUE%Weapon %TAN%+ %WHITE%Tir    %BLUE%Helm %TAN%+ %WHITE%Nef  %BLUE%Amulet %TAN%+ %WHITE%Ral  %NL%%NL%%PURPLE%Caster %ORANGE%Crafting:  %WHITE%Amethyst %TAN%+ %BLUE%Jewel}%CONTINUE%// Caster Craft Recipes - Perfect Amethyst
+// Diamond
+ItemDisplay[(((glw) FILTLVL<11) OR (gpw)) !MAPID>137]:%NAME%%DOT-DC%%PX-1E%{%NAME%}%CONTINUE%// Notifications for flawless/perfect gems while not in maps
+ItemDisplay[(gpw) FILTLVL<12 MAPID>137]:%NAME%%DOT-DC%%PX-1E%{%NAME%}%CONTINUE%// Notifications for perfect gems while in maps on filter levels 1-11
+ItemDisplay[(((glw) FILTLVL<11) OR ((gpw) FILTLVL=12)) MAPID>137]:%NAME%%DOT-DC%%PX-1E%%TIER-0%{%NAME%}%CONTINUE%// Icons but no notifications for flawless/perfect gem stacks while in maps
+ItemDisplay[glw]:%NAME%{%NAME%%NL%}// Flawless Diamond
+ItemDisplay[gpw]:%NAME%{%BLUE%  Gloves %TAN%+ %WHITE%Shael  %BLUE%Ring %TAN%+ %WHITE%Hel  %BLUE%Boots %TAN%+ %WHITE%Ko %CL%%BLUE%   Armor %TAN%+ %WHITE%El      %BLUE%Belt %TAN%+ %WHITE%Io    %BLUE%Shield %TAN%+ %WHITE%Ort%CL%%BLUE%  Weapon %TAN%+ %WHITE%Sol   %BLUE%Helm %TAN%+ %WHITE%Eld  %BLUE%Amulet %TAN%+ %WHITE%Tal%NL%%NL%%WHITE%Brilliant %ORANGE%Crafting:  %WHITE%Diamond %TAN%+ %BLUE%Jewel}%CONTINUE%//  Pristmatic Craft Recipes - Perfect Diamond
+// Emerald
+ItemDisplay[(((glg) FILTLVL<11) OR (gpg)) !MAPID>137]:%NAME%%DOT-79%%PX-1E%{%NAME%}%CONTINUE%// Notifications for flawless/perfect gems while not in maps
+ItemDisplay[(gpg) FILTLVL<12 MAPID>137]:%NAME%%DOT-79%%PX-1E%{%NAME%}%CONTINUE%// Notifications for perfect gems while in maps on filter levels 1-11
+ItemDisplay[(((glg) FILTLVL<11) OR ((gpg) FILTLVL=12)) MAPID>137]:%NAME%%DOT-79%%PX-1E%%TIER-0%{%NAME%}%CONTINUE%// Icons but no notifications for flawless/perfect gem stacks while in maps
+ItemDisplay[glg]:%NAME%{%NAME%%NL%}// Flawless Emerald
+ItemDisplay[gpg]:%NAME%{%BLUE%   Gloves %TAN%+ %WHITE%Ral  %BLUE%Ring %TAN%+ %WHITE%Amn  %BLUE%Boots %TAN%+ %WHITE%Ort  %CL%%BLUE%   Armor %TAN%+ %WHITE%Eth   %BLUE%Belt %TAN%+ %WHITE%Tal   %BLUE%Shield %TAN%+ %WHITE%Nef   %CL%%BLUE% Weapon %TAN%+ %WHITE%Sol   %BLUE%Helm %TAN%+ %WHITE%Ith   %BLUE%Amulet %TAN%+ %WHITE%Thul%NL%%NL%%DARK_GREEN%Safety %ORANGE%Crafting:  %WHITE%Emerald %TAN%+ %BLUE%Jewel}%CONTINUE%//  Safety Craft Recipes - Perfect Emerald
+// Ruby
+ItemDisplay[(((glr) FILTLVL<11) OR (gpr)) !MAPID>137]:%NAME%%DOT-0A%%PX-1E%{%NAME%}%CONTINUE%// Notifications for flawless/perfect gems while not in maps
+ItemDisplay[(gpr) FILTLVL<12 MAPID>137]:%NAME%%DOT-0A%%PX-1E%{%NAME%}%CONTINUE%// Notifications for perfect gems while in maps on filter levels 1-11
+ItemDisplay[(((glr) FILTLVL<11) OR ((gpr) FILTLVL=12)) MAPID>137]:%NAME%%DOT-0A%%PX-1E%%TIER-0%{%NAME%}%CONTINUE%// Icons but no notifications for flawless/perfect gem stacks while in maps
+ItemDisplay[glr]:%NAME%{%NAME%%NL%}// Flawless Ruby
+ItemDisplay[gpr]:%NAME%{%BLUE%    Gloves %TAN%+ %WHITE%Nef  %BLUE%Ring %TAN%+ %WHITE%Sol   %BLUE%Boots %TAN%+ %WHITE%Eth   %CL%%BLUE%  Armor %TAN%+ %WHITE%Thul  %BLUE%Belt %TAN%+ %WHITE%Tal   %BLUE%Shield %TAN%+ %WHITE%Ith  %CL%%BLUE% Weapon %TAN%+ %WHITE%Ort   %BLUE%Helm %TAN%+ %WHITE%Ral  %BLUE%Amulet %TAN%+ %WHITE%Amn %NL%%NL%%RED%Blood %ORANGE%Crafting:  %WHITE%Ruby %TAN%+ %BLUE%Jewel}%CONTINUE%// Blood Craft Recipes - Perfect Ruby
+// Sapphire
+ItemDisplay[(((glb) FILTLVL<11) OR (gpb)) !MAPID>137]:%NAME%%DOT-97%%PX-1E%{%NAME%}%CONTINUE%// Notifications for flawless/perfect gems while not in maps
+ItemDisplay[(gpb) FILTLVL<12 MAPID>137]:%NAME%%DOT-97%%PX-1E%{%NAME%}%CONTINUE%// Notifications for perfect gems while in maps on filter levels 1-11
+ItemDisplay[(((glb) FILTLVL<11) OR ((gpb) FILTLVL=12)) MAPID>137]:%NAME%%DOT-97%%PX-1E%%TIER-0%{%NAME%}%CONTINUE%// Icons but no notifications for flawless/perfect gem stacks while in maps
+ItemDisplay[glb]:%NAME%{%NAME%%NL%}// Flawless Emerald
+ItemDisplay[gpb]:%NAME%{%BLUE%   Gloves %TAN%+ %WHITE%Ort  %BLUE%Ring %TAN%+ %WHITE%Amn  %BLUE%Boots %TAN%+ %WHITE%Ral   %CL%%BLUE%  Armor %TAN%+ %WHITE%Nef    %BLUE%Belt %TAN%+ %WHITE%Tal   %BLUE%Shield %TAN%+ %WHITE%Eth  %CL%%BLUE%Weapon %TAN%+ %WHITE%Tir    %BLUE%Helm %TAN%+ %WHITE%Ith   %BLUE%Amulet %TAN%+ %WHITE%Thul%NL%%NL%%BLUE%Hitpower %ORANGE%Crafting:  %WHITE%Sapphire %TAN%+ %BLUE%Jewel}%CONTINUE%// Hitpower Craft Recipes - Perfect Sapphire
+// Topaz
+ItemDisplay[(((gly) FILTLVL<11) OR (gpy)) !MAPID>137]:%NAME%%DOT-6F%%PX-1E%{%NAME%}%CONTINUE%// Notifications for flawless/perfect gems while not in maps
+ItemDisplay[(gpy) FILTLVL<12 MAPID>137]:%NAME%%DOT-6F%%PX-1E%{%NAME%}%CONTINUE%// Notifications for perfect gems while in maps on filter levels 1-11
+ItemDisplay[(((gly) FILTLVL<11) OR ((gpy) FILTLVL=12)) MAPID>137]:%NAME%%DOT-6F%%PX-1E%%TIER-0%{%NAME%}%CONTINUE%// Icons but no notifications for flawless/perfect gem stacks while in maps
+ItemDisplay[gly]:%NAME%{%NAME%%NL%}// Flawless Emerald
+ItemDisplay[gpy]:%NAME%{%BLUE%   Gloves %TAN%+ %WHITE%Hel   %BLUE%Ring %TAN%+ %WHITE%Lum   %BLUE%Boots %TAN%+ %WHITE%Io    %CL%%BLUE% Armor %TAN%+ %WHITE%Eld     %BLUE%Belt %TAN%+ %WHITE%El     %BLUE%Shield %TAN%+ %WHITE%Dol%CL%%BLUE%Weapon %TAN%+ %WHITE%Shael  %BLUE%Helm %TAN%+ %WHITE%Tir   %BLUE%Amulet %TAN%+ %WHITE%Ko  %NL%%NL%%YELLOW%Bountiful %ORANGE%Crafting:  %WHITE%Topaz %TAN%+ %BLUE%Jewel}%CONTINUE%// Bountiful Craft Recipes - Perfect Topaz
+// Skull
+ItemDisplay[(((skl) FILTLVL<11) OR (skz)) !MAPID>137]:%NAME%%DOT-15%%PX-1E%{%NAME%}%CONTINUE%// Notifications for flawless/perfect gems while not in maps
+ItemDisplay[(skz) MAPID>137]:%NAME%%DOT-15%%PX-1E%{%NAME%}%CONTINUE%// Notifications for perfect gems while in maps on all filter levels
+ItemDisplay[((skl)) (MAPID>137 OR (!MAPID>137 FILTLVL~11-12))]:%NAME%%DOT-15%%PX-1E%%TIER-0%{%NAME%}%CONTINUE%// Icons but no notifications for flawless/perfect gem stacks while in maps
+ItemDisplay[skl]:%NAME%{%NAME%%NL%}// Flawless Emerald
+ItemDisplay[skz]:%NAME%{%BLUE%  Gloves %TAN%+ %WHITE%Io   %BLUE%Ring %TAN%+ %WHITE%Hel   %BLUE%Boots %TAN%+ %WHITE%El   %CL%%BLUE%   Armor %TAN%+ %WHITE%Tir    %BLUE%Belt %TAN%+ %WHITE%Eld   %BLUE%Shield %TAN%+ %WHITE%Sol   %CL%%BLUE%Weapon %TAN%+ %WHITE%Shael  %BLUE%Helm %TAN%+ %WHITE%Lum  %BLUE%Amulet %TAN%+ %WHITE%Dol %NL%%NL%%GRAY%Vampiric %ORANGE%Crafting:  %WHITE%Skull %TAN%+ %BLUE%Jewel}%CONTINUE%// Vampiric Craft Recipes - Perfect Skulls
+ItemDisplay[(gpv OR gpw OR gpg OR gpr OR gpb OR skz OR gpy)]:%NAME%{%NAME%}//
+

@@ -1,0 +1,38 @@
+name: Check filters are built from sections
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify all 8 filters match sections/
+        run: python tools/build.py --check
+      - name: Lint the filter (tools/lint_allow.txt lists accepted findings)
+        run: python tools/lint_filter.py
+      - name: Unique/set label cut cases match the filter and tools/unique_cut_rules.txt
+        run: python tools/label_cuts.py --check
+      - name: Unique/set roll tags match docs/items and tools/unique_roll_picks.txt
+        run: python tools/gen_unique_rolls.py --check
+      - name: Runeword roll tags match docs/pd2-runewords.tsv and tools/runeword_roll_picks.txt
+        run: python tools/gen_runeword_rolls.py --check
+      - name: Map experience tags match docs/pd2-map-exp.tsv and docs/pd2-map-guests.tsv
+        run: python tools/gen_map_exp.py --check
+      - name: Unique/set tier page (Erazure-Unique-Set-Tiers.html) matches the filter
+        run: python tools/tier_map.py --check
+      - name: Non-magic bases page (Erazure-Non-Magic-Bases.html) matches the filter
+        run: python tools/base_map.py --check
+      - name: Magic and rare items pages (Erazure-Magic-Items.html, Erazure-Rare-Items.html) match the filter
+        run: python tools/magic_rare_map.py --check
+      - name: Filter levels page (Erazure-Filter-Levels.html) matches the filter
+        run: python tools/level_map.py --check
+      - name: The website builds (website/, MkDocs Material; no broken links)
+        run: |
+          pip install --quiet mkdocs-material==9.7.7
+          mkdocs build --strict -f website/mkdocs.yml
