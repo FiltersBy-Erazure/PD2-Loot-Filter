@@ -17,11 +17,11 @@ Pick a version in the launcher, then click **Save Filter** on the right side.
         - Skeleton Key
 - The **PoE** version of each filter adds sound notifications from PoE to certain items
 - The **Revealed** version of each filter shows the identified names of unique and set items
+- The **Erazure - Minimal** version is the same as Erazure - Main but with a minimal style: fewer, simpler symbols
+  around the names of items ([see the differences](minimal.md))
 - The **Corrlorized** versions (Corrlorized - Main - PoE and Corrlorized - BIG GG - PoE) are Corr's restyle of
   Erazure - Main - PoE and Erazure - BIG GG - PoE: his own colors, symbols and PoE sound picks, with the same
   filter levels
-- The **Erazure - Minimal** version is the same as Erazure - Main but with a minimal style: fewer, simpler symbols
-  around the names of items ([see the differences](minimal.md))
 
 <img width="994" height="741" alt="The Erazure filter versions in the PD2 launcher" src="https://github.com/user-attachments/assets/9835b0c1-36c6-402a-8bfa-51288c6f46a9" />
 
@@ -37,6 +37,6 @@ Pick a version in the launcher, then click **Save Filter** on the right side.
 | Erazure - Revealed - PoE | Same as Erazure - Main - PoE but unidentified unique and set items show as their identified names when dropped. |
 | Erazure - BIG GG - PoE | The mystery of BIG GG drops combined with Path of Exile sound notifications. |
 | Erazure - Revealed - BIG GG - PoE | Same as Erazure - BIG GG - PoE, but unidentified unique and set items show as their identified names when dropped. |
+| Erazure - Minimal | Minimalist version of Erazure - Main with the same filter level tiers for customizable strictness, but simpler, cleaner symbols around item names for a more understated look. |
 | Corrlorized - Main - PoE | Corr's restyle of Erazure - Main - PoE: the same filter level tiers for customizable strictness, with his own colors, symbols and Path of Exile sound picks. |
 | Corrlorized - BIG GG - PoE | Same as Corrlorized - Main - PoE but with a twist: high runes and super rare drops hide their identity on the ground when dropped, showing as BIG GG until you pick them up. |
-| Erazure - Minimal | Minimalist version of Erazure - Main with the same filter level tiers for customizable strictness, but simpler, cleaner symbols around item names for a more understated look. |

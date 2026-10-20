@@ -312,14 +312,19 @@
 | Erazure - Revealed - PoE | Erazure-Revealed-PoE.filter | F | T | T |
 | Erazure - BIG GG - PoE | Erazure-BIG-GG-PoE.filter | T | T | F |
 | Erazure - Revealed - BIG GG - PoE | Erazure-Revealed-BIG-GG-PoE.filter | T | T | T |
+| Erazure - Minimal | Erazure-Minimal.filter | Main's, with `styles/minimal.filter` (a style variant) | | |
 | Corrlorized - Main - PoE | Corrlorized-Main-PoE.filter | Main - PoE's, with `styles/corrlorized.edits` (a style variant) | | |
 | Corrlorized - BIG GG - PoE | Corrlorized-BIG-GG-PoE.filter | BIG GG - PoE's, with `styles/corrlorized.edits` | | |
-| Erazure - Minimal | Erazure-Minimal.filter | Main's, with `styles/minimal.filter` (a style variant) | | |
 - `sections/030-toggles.filter` holds all 8 alias blocks with only Main's uncommented. The build switches
   the right block on for each variant. Never uncomment another block by hand.
 - Variant behavior lives in rules through the aliases (`ItemDisplay[BIG_GG ...]`), not in separate files.
 - Each `display_name` in `filter_definitions.json` must match a `//  Erazure - ...` toggle header (a style
   variant: `STYLE_VARIANTS` names the variant it is built from).
+- The PD2 launcher lists `filter_info`'s entries in file order and remembers a player's choice by the entry's key
+  (its `FilterId`; the file name only when no entry has that key, PD2Launcher `FilterHelpers.cs`). So a key names
+  one filter for good: reorder by moving entries, never renumber or reuse a key (everyone who chose the old filter
+  would get the new one). Keys: 1-8 the toggle variants, 9 Erazure - Minimal (the S14 Beta's until 2026-10-19),
+  10 Corrlorized - BIG GG - PoE, 12 Corrlorized - Main - PoE; 11 is retired (Minimal's for a few hours, 2026-10-20).
 
 ## Filter levels
 0 = Show All Items. 1–12 are the `ItemDisplayFilterName[]` lines in `sections/010-filter-levels.filter`;
