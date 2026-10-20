@@ -252,7 +252,7 @@ At each ladder reset:
 3. Agent prompt:
    > Read @docs/patch-notes/season-NN.wiki. List every new or changed item, base, rune, map, stat or filter-syntax feature. For each, search `sections/` and say whether the filter already handles it (with section file and line), and propose where and how to add or change rules. Don't edit yet.
 4. Re-check the BH tables at the top of `tools/lint_filter.py` (conditions, keywords, formula variables, notification keywords) against the current `BH/Modules/Item/ItemDisplay.cpp`, and update the commit noted there.
-5. Work through the list. Set the new season name in `version.json` (`"season": "Season NN"`), then run `build.bat` (it stamps the date), run the linter, test in game, and push.
+5. Work through the list. Set the new season name in `version.json` (`"season": "Season NN"`) and in the "Updated for Season NN." that ends each description in `filter_definitions.json` (what players read in the launcher), then run `build.bat` (it stamps the date), run the linter, test in game, and push.
 
 **Unique/set roll tags:** `python tools/item_data.py fetch` refreshes `docs/items/` from the wiki (the git diff shows what changed on uniques and sets), then `python tools/gen_unique_rolls.py` regenerates the fingerprints and default picks; review lines marked `CHOOSE` in `tools/unique_roll_picks.txt`.
 
