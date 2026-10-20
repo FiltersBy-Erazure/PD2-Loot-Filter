@@ -41,9 +41,11 @@
   style file once). The author's choices: Corr's look (colors, symbols, sounds) everywhere but the Horadric Cube
   (which shows `Corrlorized - <toggle>`) and the tags (the author's `r`, not Corr's `res`); the author's rules for map
   resistances and descriptions, rune and gem notifications and icons, and tags; of the displays Corr switched off, only
-  the minimap icons of Small and Grand Charms under item level 90 stay off; no sounds or minimap icons on rare rings,
-  belts and boots, ethereal rare and magic axes, magic jewels and Large Charms, nor on level 12's rare circlets and
-  amulets (190's level 12 rule covers rings too). BIG GG's ground disguises (`LIL GG` / `BIG GG`) keep Erazure's look.
+  the minimap icons of Small and Grand Charms under item level 90 stay off, and since his v2 (2026-10-20) the Highest
+  Resistances of T1-T3 maps (`* t34 !STAT360>0`, one entry per map; their Monster Immunities show, and unique maps keep
+  both); no sounds or minimap icons on rare rings, belts and boots, ethereal rare and magic axes, magic jewels and
+  Large Charms, nor on level 12's rare circlets and amulets (190's level 12 rule covers rings too). BIG GG's ground
+  disguises (`LIL GG` / `BIG GG`) keep Erazure's look.
   An entry names its line by text (`@ <section>:<line>` is a hint the build keeps up to date): `-`/`+` changes what a
   rule shows, never its condition or comment (filtering stays the author's); `=`/`+` inserts lines after one; `x`
   switches one rule off; `*` every rule of the `@` section whose condition has those words (`!STAT360>0`: the rules
