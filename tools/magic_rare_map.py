@@ -24,6 +24,11 @@ socket maximum with the same rows, then one row per case: Levels, Shows (Notify 
 draws it: the quality's color, "Eth" when the row is for ethereal items, a charm's item level), Icon, Chat, then the
 conditions: Eth, Character level, Class, Item level, Crafted affix level, Other. Levels without a row show the plain
 name. The Main version (the variants differ only in the rare jewel's PoE drop sound, 190:13-14).
+
+"At a glance" on top (the pages in GLANCE: both): the Filter Levels page's rows of that quality
+(tools/level_map.py: Rings, Helms by tier, Class items by type...), one column per group of filter levels that treat
+them the same, each cell its state per character level run; a click on a cell picks its filter level in the bar and
+jumps to that item type's bases.
 """
 import argparse
 import copy
@@ -36,6 +41,7 @@ from pathlib import Path
 sys.dont_write_bytecode = True
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import base_map as B  # noqa: E402
+import level_map as L  # noqa: E402
 import tier_map as T  # noqa: E402
 
 ROOT = B.ROOT
@@ -59,6 +65,7 @@ ORDER = ["Jewels", "Rings", "Amulets", "Charms"] + B.ORDER
 # in 183 (Misc.txt len).
 AREA_NAMES = {183: "The Fallen Gardens", 184: "The Diamond Gate"}
 COLS = ["eth", "clvl", "class", "ilvl", "craft", "skills", "other"]  # the pages' columns
+GLANCE = {"MAG": "Magic items", "RARE": "Rare items"}  # "At a glance" on top: the Filter Levels page's section
 NAME_MARK = "\x00"  # the base's name in a look while bases are grouped (a group draws its first base's name)
 
 
@@ -578,6 +585,31 @@ def row_data(x, ref):
     return [x["kind"], x["lo"], x["hi"], cells, extra]
 
 
+def glance_data(q):
+    """The page's "At a glance": the Filter Levels page's rows of its quality, with columns of the filter levels where
+    they behave the same: {cols: [{levels, title, hides}], rows: [{name, n, cats, cells, subs: [{name, n, cats,
+    cells}]}]}. A cell is level_map's ({g: [[levels, runs by character level]], t: words, k: state[, gt]}); cats are
+    this page's item types of the row's bases (a click jumps to the first), tiers their tiers (a tier filter that
+    leaves none of them out is cleared)."""
+    if q not in GLANCE:
+        return None
+    page = L.Page(only={GLANCE[q]})
+    cols = []
+    for levels in page.columns:
+        title, hides = page.column_title(levels)
+        cols.append({"levels": levels, "title": title, "hides": hides})
+
+    def entry(name, row, specs):
+        return {"name": name, "n": len(specs), "cats": sorted({category(s.info) for s in specs}, key=ORDER.index),
+                "tiers": sorted({B.TIER_NAMES[s.info["tier"]] for s in specs
+                                 if s.info["tier"] in B.TIER_NAMES and set(s.info["types"]) & GEAR_TYPES}),
+                "cells": [page.cell(specs, levels, row) for levels in page.columns]}
+    rows = []
+    for _, row in page.all_rows():
+        rows.append(dict(entry(row.name, row, row.specs), subs=[entry(n, row, s) for n, s in page.sub_rows(row)]))
+    return {"cols": cols, "rows": rows}
+
+
 def build_data(an, q):
     texts, index = [], {}
 
@@ -624,8 +656,11 @@ def build_data(an, q):
     kinds = "armor, weapon, quiver, ring, amulet, jewel" + (" and charm" if q == "MAG" else "")
     foot = (f"Built from the filter's sections ({an.version}) by tools/magic_rare_map.py: every {word} {kinds} base "
             "run through the filter's own rules at every filter level, unidentified on the ground (the Main version).")
+    glance = glance_data(q)
+    if glance:
+        foot += " At a glance: the Filter Levels page's rows (tools/level_map.py), in Nightmare or Hell."
     return {"version": an.version, "levels": T.load_levels(), "palette": T.load_palette(), "cats": cats, "cols": COLS,
-            "texts": texts, "groups": out, "sounds": sounds, "foot": foot}
+            "texts": texts, "groups": out, "sounds": sounds, "foot": foot, "glance": glance}
 
 
 def findings(an):
@@ -650,6 +685,8 @@ def findings(an):
 def page_text(data, q):
     page, name, title, color, word = PAGES[q]
     text = TEMPLATE.read_text(encoding="utf-8")
+    text = re.sub(r"<!-- glance:start -->\n(.*?)<!-- glance:end -->\n",  # "At a glance": only on its pages
+                  lambda m: m.group(1) if q in GLANCE else "", text, flags=re.S)
     for token, value in (("__MAP__", name), ("__TITLE__", title), ("__QUALITY__", word),
                          ("__COLOR__", color.lower()), ("__NOTES__", NOTES[q])):
         text = text.replace(token, value)

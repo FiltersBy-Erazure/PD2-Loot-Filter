@@ -4,7 +4,8 @@
      rare-map), __TITLE__, __QUALITY__, __COLOR__ and __NOTES__ are filled in per page. Everything shown comes from the
      filter's own rules. The website's Magic Items and Rare Items pages show the same maps: website/hooks.py takes the
      styles, the markup between the page's markers and the script out of the generated file, so keep those markers.
-     The look follows tools/base_map_template.html (the Non-magical Bases page). -->
+     The look follows tools/base_map_template.html (the Non-magical Bases page). The glance:start / glance:end block
+     ("At a glance") stays only on the pages magic_rare_map.py's GLANCE names. -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Source+Sans+3:wght@400;600;700&display=swap">
@@ -20,6 +21,8 @@
     --bg: #151412; --panel: #1f1d1a; --fg: #ece7de; --muted: #a59e91; --line: #36322c; --soft: #2a2723;
     --accent: #d8b45e;
     --k-notify: #8bb4e8; --k-show: #c9b27a; --k-hide: #9a9385;
+    --s-chat: #7cc474; --s-icon: #8bb4e8; --s-mixed: #b6c48f; --s-shown: #b9b2a3; --s-some: #e0b45a;
+    --s-hidden: #ef7a72;  /* at a glance: the Filter Levels page's colors */
     --ground-1: #3a3428; --ground-2: #26221b; --ground-3: #15130f;
     --display: "Cinzel", "Trajan Pro", Georgia, serif;
     --body: "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -32,6 +35,8 @@
     --bg: #f3f1ec; --panel: #fffdf8; --fg: #23211c; --muted: #6b655a; --line: #ded7c9; --soft: #ece6da;
     --accent: #8a6d1f;
     --k-notify: #2f6db3; --k-show: #8a6d1f; --k-hide: #8b8579;
+    --s-chat: #2f8a3a; --s-icon: #2f6db3; --s-mixed: #6f7d3c; --s-shown: #7c7568; --s-some: #a8690c;
+    --s-hidden: #b3261e;
     color-scheme: light;
   }
   .md-content .__MAP__ { --top: 2.4rem; }  /* on the website: under its header, which stays at the top */
@@ -71,6 +76,55 @@
   .__MAP__ .q-blue { color: #6969ff; font-weight: 600; } .__MAP__ .q-yellow { color: #c9a400; font-weight: 600; }
   [data-md-color-scheme="default"] .__MAP__ .q-blue { color: #3b3bd1; }
   [data-md-color-scheme="default"] .__MAP__ .q-yellow { color: #8a6d00; }
+
+  /* at a glance (the pages magic_rare_map.py's GLANCE names): the Filter Levels page's table, one row per kind of
+     item, one column per group of filter levels that treat them the same, each cell a symbol and a word, with a strip
+     for character levels 1-99. The column of the level picked in the bar is marked; a click on a cell picks its
+     level and jumps to that type's bases. */
+  .__MAP__ h2.part { font: 700 22px/1.2 var(--display); margin: 22px 0 4px; letter-spacing: .02em; color: var(--fg); }
+  .__MAP__ p.gx { max-width: 90ch; font-size: 14px; color: var(--muted); margin: 0 0 4px; }
+  .__MAP__ .legend { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 2px 0 8px; font-size: 13.5px; }
+  .__MAP__ .legend > span { display: inline-flex; align-items: center; gap: 6px; }
+  .__MAP__ .st { display: inline-flex; align-items: baseline; gap: 5px; color: var(--sc); }
+  .__MAP__ .st .g { font-size: 13px; width: 1em; text-align: center; flex: none; }
+  .__MAP__ .s-chat { --sc: var(--s-chat); } .__MAP__ .s-icon { --sc: var(--s-icon); }
+  .__MAP__ .s-mixed { --sc: var(--s-mixed); } .__MAP__ .s-shown { --sc: var(--s-shown); }
+  .__MAP__ .s-some { --sc: var(--s-some); } .__MAP__ .s-hidden { --sc: var(--s-hidden); }
+  .__MAP__ table.gl { width: 100%; min-width: 1040px; table-layout: fixed; border-collapse: collapse; font-size: 14px;
+                      line-height: 1.35; margin: 0; }
+  .__MAP__ table.gl col.w-item { width: 13em; }
+  .__MAP__ table.gl th, .__MAP__ table.gl td { text-align: left; vertical-align: top; padding: 5px 8px; border: 0; }
+  .__MAP__ table.gl thead th { background: var(--bg); border-bottom: 2px solid var(--line); vertical-align: bottom; }
+  .__MAP__ table.gl thead .lv { font: 700 16px/1.1 var(--display); color: var(--fg); font-variant-numeric: tabular-nums; }
+  .__MAP__ table.gl thead .nm { display: block; font-size: 12px; font-weight: 700; text-transform: uppercase;
+                                letter-spacing: .05em; color: var(--muted); margin-top: 2px; }
+  .__MAP__ table.gl thead .hd { display: block; font-size: 12px; color: var(--accent); margin-top: 1px; font-weight: 600; }
+  .__MAP__ table.gl tr.r td, .__MAP__ table.gl tr.r th { border-bottom: 1px solid var(--soft); }
+  .__MAP__ table.gl tr.r th { font-weight: 600; }
+  .__MAP__ table.gl tr.r.sub th { font-weight: 400; padding-left: 26px; color: var(--muted); }
+  .__MAP__ table.gl tr.r.sub td { background: color-mix(in srgb, var(--soft) 45%, transparent); }
+  .__MAP__ table.gl .tog { font: inherit; color: var(--muted); background: none; border: 0; padding: 0;
+                           margin: 0 4px 0 -2px; cursor: pointer; width: 1.1em; }
+  .__MAP__ table.gl .cnt { font-size: 12px; color: var(--muted); font-weight: 400; margin-left: 4px; }
+  .__MAP__ table.gl tr.r td.on, .__MAP__ table.gl thead th.on {  /* the bar's level (sub-rows too) */
+    background: color-mix(in srgb, var(--accent) 13%, transparent); }
+  .__MAP__ table.gl thead th.on { box-shadow: inset 0 -2px 0 var(--accent); }
+  .__MAP__ table.gl td.c { cursor: pointer; }
+  .__MAP__ table.gl tr.r td.c:hover { background: var(--soft); }
+  .__MAP__ table.gl td.c .t { display: block; }
+  .__MAP__ table.gl .muted { color: var(--muted); }
+  .__MAP__ .strip { display: flex; height: 4px; margin-top: 5px; border-radius: 2px; overflow: hidden; gap: 1px; }
+  .__MAP__ .strip + .strip { margin-top: 2px; }
+  .__MAP__ .strip span { background: var(--sc); opacity: .85; }
+  /* the item column stays while the table scrolls sideways */
+  .__MAP__ table.gl thead th:first-child, .__MAP__ table.gl tr.r th { position: sticky; left: 0; z-index: 1;
+                                                                     background: var(--bg); }
+  .__MAP__ table.gl tr.r.sub th { background: color-mix(in srgb, var(--soft) 45%, var(--bg)); }
+  .__MAP__ section.cat { scroll-margin-top: calc(var(--top) + var(--bar, 0px) + 8px); }  /* a jump lands below the bar */
+  @media (max-width: 760px) {
+    .__MAP__ table.gl { min-width: 860px; }
+    .__MAP__ table.gl col.w-item { width: 9.5em; }
+  }
 
   /* the tables */
   .__MAP__ section.cat { margin-top: 22px; }
@@ -190,7 +244,18 @@
    </div>
   </div>
 </div>
-<div class="bar">
+<!-- glance:start -->
+<div class="wrap">
+  <h2 class="part" id="glance">At a glance</h2>
+  <p class="gx">What each kind of __QUALITY__ item does at each filter level. Filter levels that treat them the same
+    share a column. <b>from 80</b> means from character level 80; the strip under a cell shows character levels 1 to 99.
+    Click a cell to see its bases at that filter level below.</p>
+  <div class="legend" id="glance-legend"></div>
+  <div class="tw"><table class="gl" id="glance-table"></table></div>
+  <h2 class="part">Base by base</h2>
+</div>
+<!-- glance:end -->
+<div class="bar" id="bar">
   <div class="wrap">
     <div class="controls">
       <select id="level" aria-label="Filter level"></select>
@@ -381,11 +446,112 @@ function render() {
     n += groups.reduce((s, g) => s + g.n.length, 0);
     const used = usedColumns(DATA.groups.filter((g) => g.k === cat));
     const table = el("table", {class: "bm"}, colGroup(), headRow(), ...groups.map((g) => groupBody(g, used)));
-    list.append(el("section", {class: "cat", id: `cat-${cat}`.replace(/[^A-Za-z0-9_-]/g, "-")},
+    list.append(el("section", {class: "cat", id: secId(cat)},
       el("h3", {class: "cat", text: cat}), el("div", {class: "tw"}, table)));
   }
   if (!n) list.append(el("p", {class: "empty", text: "No base matches. Clear the search or pick another type or level."}));
   $("count").textContent = `${n} base${n === 1 ? "" : "s"}`;
+  markGlance();
+}
+const secId = (cat) => `cat-${cat}`.replace(/[^A-Za-z0-9_-]/g, "-");
+
+// at a glance (DATA.glance: the Filter Levels page's rows, tools/level_map.py): a cell's state per character level
+// run, its words and strip; a click picks its filter level in the bar and jumps to the row's first item type
+const GLYPH = {chat: "●", icon: "◆", mixed: "◐", shown: "○", some: "◑", hidden: "✕"};
+const WORDS = {chat: "Notifies: minimap icon and chat line", icon: "Icon only: minimap icon, no chat line",
+  mixed: "Some notify: some of the items, or only in some cases", shown: "Shown, no notification",
+  some: "Some hidden: some of the items, or only in some cases", hidden: "Hidden"};
+const glanceCols = [];  // each column's header and cells, marked when the bar's level is one of its levels
+function state(kind, text) {
+  return el("span", {class: `st s-${kind}`}, el("span", {class: "g", "aria-hidden": "true", text: GLYPH[kind]}),
+    el("span", {class: "w", text}));
+}
+const colLabel = (c) => c.levels.length > 1 ? `${c.levels[0]}–${c.levels[c.levels.length - 1]}` : String(c.levels[0]);
+const levelsText = (c) => (c.levels.length > 1 ? "Levels " : "Level ") + colLabel(c);
+function glanceCell(cell) {
+  const out = [];
+  if (cell.gt) {  // levels that differ: a line each
+    for (const [lv, text, kind] of cell.gt) {
+      out.push(el("span", {class: "t"}, el("span", {class: "muted", text: `${lv}: `}), state(kind, text)));
+    }
+  } else {
+    out.push(state(cell.k, cell.t));
+  }
+  for (const [, runs] of cell.g) {
+    const strip = el("span", {class: "strip", "aria-hidden": "true"});
+    for (const [lo, hi, k] of runs) strip.append(el("span", {class: `s-${k}`, style: `flex:${hi - lo + 1}`}));
+    out.push(strip);
+  }
+  return out;
+}
+function drill(x, ci) {  // a glance cell: its filter level in the bar, then its item type's bases
+  view.level = String(DATA.glance.cols[ci].levels[0]);
+  view.q = "";
+  // the type and tier filters stay unless they leave none of the row's bases
+  const shows = () => DATA.groups.some((g) => x.cats.includes(g.k) && (!g.t || x.tiers.includes(g.t)) && matches(g));
+  if (!shows()) view.cat = "";
+  if (!shows()) view.tier = "";
+  $("level").value = view.level;
+  $("cat").value = view.cat;
+  $("tier").value = view.tier;
+  $("q").value = "";
+  save();
+  render();
+  const target = x.cats.map((c) => document.getElementById(secId(c))).find(Boolean);
+  if (target) target.scrollIntoView({block: "start"});
+}
+function glance() {
+  const G = DATA.glance;
+  for (const k of Object.keys(GLYPH)) $("glance-legend").append(state(k, WORDS[k]));
+  const head = el("tr", {}, el("th", {scope: "col", text: "Item"}));
+  G.cols.forEach((c) => {
+    const th = el("th", {scope: "col", title: c.levels.map((l) => `${l}: ${DATA.levels[l]}`).join("\n")},
+      el("span", {class: "lv", text: colLabel(c)}),
+      el("span", {class: "nm", text: c.title.replace(" Filtering", "").replace("!", "")}),
+      c.hides.length ? el("span", {class: "hd", text: `Hides ${c.hides.join(", ")}`}) : null);
+    glanceCols.push([th]);
+    head.append(th);
+  });
+  const body = el("tbody");
+  const addRow = (x, sub) => {
+    const tr = el("tr", {class: sub ? "r sub" : "r"}, el("th", {scope: "row"}, x.name,
+      x.n > 1 ? el("span", {class: "cnt", text: `(${x.n})`}) : null));
+    x.cells.forEach((cell, ci) => {
+      const c = G.cols[ci], go = () => drill(x, ci);
+      const td = el("td", {class: "c", tabindex: "0", role: "button", title: `Show these bases at filter level ${c.levels[0]}`,
+        "aria-label": `${x.name}, ${levelsText(c)}: ${cell.t}. Show these bases at filter level ${c.levels[0]}`},
+        ...glanceCell(cell));
+      td.addEventListener("click", go);
+      td.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } });
+      glanceCols[ci].push(td);
+      tr.append(td);
+    });
+    body.append(tr);
+    return tr;
+  };
+  for (const row of G.rows) {
+    const tr = addRow(row, false);
+    if (!row.subs.length) continue;
+    const subs = row.subs.map((s) => addRow(s, true));
+    for (const x of subs) x.hidden = true;
+    const btn = el("button", {class: "tog", type: "button", "aria-expanded": "false",
+      "aria-label": `Show ${row.name} one by one`, text: "▸"});
+    btn.addEventListener("click", () => {
+      const open = btn.getAttribute("aria-expanded") !== "true";
+      btn.setAttribute("aria-expanded", String(open));
+      btn.textContent = open ? "▾" : "▸";
+      for (const x of subs) x.hidden = !open;
+    });
+    tr.firstChild.prepend(btn);
+  }
+  $("glance-table").append(el("colgroup", {}, el("col", {class: "w-item"}), ...G.cols.map(() => el("col"))),
+    el("thead", {}, head), body);
+}
+function markGlance() {  // the column of the bar's filter level
+  glanceCols.forEach((cells, ci) => {
+    const on = view.level !== "" && DATA.glance.cols[ci].levels.includes(+view.level);
+    for (const x of cells) x.classList.toggle("on", on);
+  });
 }
 function init() {
   $("levels").replaceChildren(...DATA.levels.map((n) => el("li", {text: n})));
@@ -401,7 +567,14 @@ function init() {
   let timer = 0;
   $("q").addEventListener("input", (e) => { view.q = e.target.value; clearTimeout(timer); timer = setTimeout(render, 120); });
   $("foot").textContent = DATA.foot;
+  if (DATA.glance) glance();
   render();
+  // the bar's height: a jump lands below it
+  const root = document.querySelector(".__MAP__");
+  const setBar = () => root.style.setProperty("--bar", $("bar").offsetHeight + "px");
+  if (window.ResizeObserver) new ResizeObserver(setBar).observe($("bar"));
+  else window.addEventListener("resize", setBar);
+  setBar();
 }
 init();
 })();

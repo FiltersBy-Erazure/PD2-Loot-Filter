@@ -1258,13 +1258,15 @@ def block_text(b, cols=None):
 # ---------------------------------------------------------------- the page data
 
 class Page:
-    def __init__(self):
+    def __init__(self, only=None):
+        """only: the sections to take, by name (tools/magic_rare_map.py's "At a glance": "Rare items"); its columns
+        are then the filter levels where those rows behave the same."""
         self._data = None
         self.cell_memo = {}
         self.rules = Rules()
         self.bases = T.load_bases()
         self.levels = T.load_levels()
-        self.sections = make_sections(self.bases)
+        self.sections = [s for s in make_sections(self.bases) if only is None or s[0] in only]
         for _, row in self.all_rows():
             for spec in row.specs:
                 self.rules.drop(spec)
