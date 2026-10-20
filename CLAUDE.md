@@ -24,6 +24,10 @@
   other filters never change). It has no toggle block of its own (Main's toggles). Its looks can only differ through
   aliases: a symbol typed into a rule becomes an alias first (`RARE_JEWEL_NAME`, `MAGIC_JEWEL_NAME` in 040; the
   Horadric Cube's `MAIN_VERSION_NAME` in 020), with Main's text, so the other filters draw exactly what they did.
+  2026-10-20, the author: also magic charms, rings and jewel arrows, normal-tier sets, the Rainbow Facet's name and
+  the PD2 items' symbols (tokens, organs, sigils, Terror / Hatred / Void items, Craft Infusions), and these aliases
+  pertain to Corrlorized too: where Corr restyled such symbols, `styles/corrlorized.edits` sets the alias's value
+  (an `Alias[...]` `-`/`+` entry: the magic charms) and his rule entries keep only his other words.
   BH trims an alias's text (both ends): spaces at an alias's edge never show. `tools/style_map.py` writes the
   players' page of the differences (below). The author tweaks the symbols on the claude.ai page
   https://claude.ai/artifact/FcQ2vqCdGs6jeL9ZqzahsD (its db, `styles/minimal`: `edits` = alias -> text that differs
