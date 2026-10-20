@@ -34,4 +34,4 @@ Pick a version in the launcher, then click **Save Filter** on the right side.
 | Erazure - Revealed - PoE | Same as Erazure - Main - PoE but unidentified unique and set items show as their identified names when dropped. |
 | Erazure - BIG GG - PoE | The mystery of BIG GG drops combined with Path of Exile sound notifications. |
 | Erazure - Revealed - BIG GG - PoE | Same as Erazure - BIG GG - PoE, but unidentified unique and set items show as their identified names when dropped. |
-| Erazure - Minimal | Same as Erazure - Main but with a minimal style: fewer, simpler symbols around the names of items, with the same filter levels, tiers and notifications. |
+| Erazure - Minimal | Minimalist version of Erazure - Main with the same filter level tiers for customizable strictness, but simpler, cleaner symbols around item names for a more understated look. |
