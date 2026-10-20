@@ -16,6 +16,10 @@ jobs:
         run: python tools/build.py --check
       - name: Lint the filter (tools/lint_allow.txt lists accepted findings)
         run: python tools/lint_filter.py
+      - name: Style edits (styles/*.edits) merge as tools/style_edits.py says, and Corrlorized's own lines lint clean
+        run: |
+          python tools/style_edits.py --selftest
+          python tools/lint_filter.py --style "Corrlorized - Main - PoE"
       - name: Unique/set label cut cases match the filter and tools/unique_cut_rules.txt
         run: python tools/label_cuts.py --check
       - name: Unique/set roll tags match docs/items and tools/unique_roll_picks.txt

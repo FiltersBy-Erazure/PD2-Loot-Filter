@@ -27,7 +27,8 @@ Options:
     --where PLACE    GROUND (default), INVENTORY, STASH, CUBE, SHOP, EQUIPPED or MERC
     --set K=V        a value: CLVL=90, MAPID=1, SOCK=4, SK123=3, QTY=1, ALLDISCOVERED=1, SUP=1 ...
                      (repeatable; boolean codes take 1 or 0)
-    --variant NAME   a display name from filter_definitions.json (default: Erazure - Main)
+    --variant NAME   a display name from filter_definitions.json, or a style variant's (tools/build.py
+                     STYLE_VARIANTS: Corrlorized - Main - PoE) (default: Erazure - Main)
     --all            also list %CONTINUE% layers that only may apply (stat tags etc.)
 """
 import argparse
@@ -200,15 +201,8 @@ def shows_name(name):
 
 
 def load(variant):
-    parts, _ = build.read_sections(check=True)
-    where = build.line_locator(parts)
-    _, season, date = build.load_version()
-    joined = b"".join(d for _, d in parts).replace(build.PLACEHOLDER, build.version_text(season, date).encode())
-    lines = joined.split(b"\r\n")
-    blocks = build.find_toggle_blocks(lines)
-    if variant not in blocks:
-        sys.exit(f"unknown variant '{variant}'; choose one of: {', '.join(blocks)}")
-    return [x.decode("utf-8") for x in build.render(lines, blocks, variant)], where
+    lines, where, _ = build.variant_text(variant)
+    return lines, where
 
 
 def main():

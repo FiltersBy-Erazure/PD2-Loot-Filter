@@ -1,0 +1,1145 @@
+// =====================================  Corrlorized style  ==================================
+
+// Corrlorized - Main - PoE and Corrlorized - BIG GG - PoE: the look of Erazure-S13-corrlorized.filter (a
+// restyle of Season 13's Erazure - Main - PoE, 1a0ae41, by Corr) on today's Erazure - Main - PoE and
+// Erazure - BIG GG - PoE (each file has all 8 toggle blocks). Imported with
+// python tools/style_edits.py --port (2026-10-19); the author's review (2026-10-20): his look everywhere but the
+// Horadric Cube, which names this filter, and the tags (the author's "r", not Corr's "res"); his look on 52 S14
+// rules he never saw. Rules are the author's: map resistances and descriptions, rune and gem notifications and
+// icons, and tags as in Erazure. Of the displays Corr switched off, only the minimap icons of Small and Grand
+// Charms under item level 90 stay off. No sounds or minimap icons on rare rings, belts and boots, ethereal rare
+// and magic axes, magic jewels and Large Charms, nor on rare circlets and amulets on level 12 (Corr's removals,
+// and the author's for boots, the jewels of The Fallen Gardens and The Diamond Gate, and level 12's jewelry).
+// Each entry: '@ <section file>:<line>  <name>' (where it last matched, kept up to date by the build), then
+// '- <the author's line>' and '+ <the style's line>' (only what the rule shows changes; its condition and
+// comment stay the author's), '= <anchor line>' and '+ <lines inserted after it>', 'x <a rule switched off>',
+// or '* <words>' (each rule of the section whose condition has those words, switched off). See
+// tools/style_edits.py.
+
+// == 020-horadric-cube.filter ==
+@ 020-horadric-cube.filter:28  Corrlorized on the Cube
+- Alias[MAIN_VERSION_NAME]:Erazure - Main
++ Alias[MAIN_VERSION_NAME]:Corrlorized - Main
+@ 020-horadric-cube.filter:30  Corrlorized on the Cube
+- ItemDisplay[!BIG_GG !POE_SOUNDS REVEALED box]:%NAME%{%NAME%%CL%%TEAL%Erazure - Revealed}%CONTINUE%//
++ ItemDisplay[!BIG_GG !POE_SOUNDS REVEALED box]:%NAME%{%NAME%%CL%%TEAL%Corrlorized - Revealed}%CONTINUE%//
+@ 020-horadric-cube.filter:31  Corrlorized on the Cube
+- ItemDisplay[!BIG_GG POE_SOUNDS !REVEALED box]:%NAME%{%NAME%%CL%%TEAL%Erazure - Main - PoE}%CONTINUE%//
++ ItemDisplay[!BIG_GG POE_SOUNDS !REVEALED box]:%NAME%{%NAME%%CL%%TEAL%Corrlorized - Main - PoE}%CONTINUE%//
+@ 020-horadric-cube.filter:32  Corrlorized on the Cube
+- ItemDisplay[!BIG_GG POE_SOUNDS REVEALED box]:%NAME%{%NAME%%CL%%TEAL%Erazure - Revealed - PoE}%CONTINUE%//
++ ItemDisplay[!BIG_GG POE_SOUNDS REVEALED box]:%NAME%{%NAME%%CL%%TEAL%Corrlorized - Revealed - PoE}%CONTINUE%//
+@ 020-horadric-cube.filter:33  Corrlorized on the Cube
+- ItemDisplay[BIG_GG !POE_SOUNDS !REVEALED box]:%NAME%{%NAME%%CL%%TEAL%Erazure - Big GG}%CONTINUE%//
++ ItemDisplay[BIG_GG !POE_SOUNDS !REVEALED box]:%NAME%{%NAME%%CL%%TEAL%Corrlorized - Big GG}%CONTINUE%//
+@ 020-horadric-cube.filter:34  Corrlorized on the Cube
+- ItemDisplay[BIG_GG !POE_SOUNDS REVEALED box]:%NAME%{%NAME%%CL%%TEAL%Erazure - Revealed - Big GG}%CONTINUE%//
++ ItemDisplay[BIG_GG !POE_SOUNDS REVEALED box]:%NAME%{%NAME%%CL%%TEAL%Corrlorized - Revealed - Big GG}%CONTINUE%//
+@ 020-horadric-cube.filter:35  Corrlorized on the Cube
+- ItemDisplay[BIG_GG POE_SOUNDS !REVEALED box]:%NAME%{%NAME%%CL%%TEAL%Erazure - Big GG - PoE}%CONTINUE%//
++ ItemDisplay[BIG_GG POE_SOUNDS !REVEALED box]:%NAME%{%NAME%%CL%%TEAL%Corrlorized - Big GG - PoE}%CONTINUE%//
+@ 020-horadric-cube.filter:36  Corrlorized on the Cube
+- ItemDisplay[BIG_GG POE_SOUNDS REVEALED box]:%NAME%{%NAME%%CL%%TEAL%Erazure - Revealed - Big GG - PoE}%CONTINUE%//
++ ItemDisplay[BIG_GG POE_SOUNDS REVEALED box]:%NAME%{%NAME%%CL%%TEAL%Corrlorized - Revealed - Big GG - PoE}%CONTINUE%//
+
+// == 040-aliases.filter ==
+@ 040-aliases.filter:83  Alias VIAL2, Alias VIALX, Alias VIALY
+= Alias[VIAL]:%PURPLE%xX%BLUE%xX%LIGHT_GRAY%x\%WHITE%\V/%LIGHT_GRAY%/x%BLUE%Xx%PURPLE%Xx
++ Alias[VIAL2]:%BLACK%•%GREEN%
++ Alias[VIALX]:%GRAY%+++%LIGHT_GRAY%+++%WHITE%+++
++ Alias[VIALY]:%WHITE%+++%LIGHT_GRAY%+++%GRAY%+++
+@ 040-aliases.filter:86  Alias MIRROR_L, Alias MIRROR_R
+= Alias[MIRROR]:%PURPLE%xX%RED%xX%ORANGE%x\%TAN%\%WHITE%V%TAN%/%ORANGE%/x%RED%Xx%PURPLE%Xx
++ Alias[MIRROR_L]:%PURPLE%+++%BLUE%+++%TEAL%+++%DARK_GREEN%+++
++ Alias[MIRROR_R]:%DARK_GREEN%+++%TEAL%+++%BLUE%+++%PURPLE%+++
+
+// == 060-gold-potions-tomes.filter ==
+@ 060-gold-potions-tomes.filter:52  hp5 CLVL>49 FILTLVL~1-7
+- ItemDisplay[hp5 CLVL>49 FILTLVL~1-7]:%CORAL%i%RED%IOI%CORAL%i%WHITE%{%WHITE% Super Healing Potion }//
++ ItemDisplay[hp5 CLVL>49 FILTLVL~1-7]:%BLACK%+%GRAY% HP %BLACK%+%WHITE%{%WHITE% Super Healing Potion }//
+@ 060-gold-potions-tomes.filter:84  mp5 CLVL>49 FILTLVL~1-7
+- ItemDisplay[mp5 CLVL>49 FILTLVL~1-7]:%TEAL%i%BLUE%IOI%TEAL%i%WHITE%{%WHITE% Super Mana Potion }//
++ ItemDisplay[mp5 CLVL>49 FILTLVL~1-7]:%BLACK%+%DARK_GREEN% MP %BLACK%+%WHITE%{%WHITE% Super Mana Potion }//
+@ 060-gold-potions-tomes.filter:92  rvs STASH
+- ItemDisplay[rvs STASH]:%GRAY%i%PURPLE%(%WHITE% 35% %PURPLE%)%GRAY%i{%WHITE% Rejuvenation Potion }//
++ ItemDisplay[rvs STASH]:%WHITE%+%PURPLE%35%%WHITE%+{%WHITE% Rejuvenation Potion }//
+@ 060-gold-potions-tomes.filter:93  rvl STASH
+- ItemDisplay[rvl STASH]:%PURPLE%i(%WHITE% Full %PURPLE%)i%WHITE%{%WHITE% Full Rejuvenation Potion }//
++ ItemDisplay[rvl STASH]:%GRAY%i%PURPLE% (O) %GRAY%i%WHITE%{%WHITE% Full Rejuvenation Potion }//
+@ 060-gold-potions-tomes.filter:99  rvs !(MAPID~161-163 OR MAPID=137 OR MAPID~188-189) FILTLVL=0
+- ItemDisplay[rvs !(MAPID~161-163 OR MAPID=137 OR MAPID~188-189) FILTLVL=0]:%GRAY%i%PURPLE%(%WHITE% 35% %PURPLE%)%GRAY%i{%WHITE% Rejuvenation Potion }//
++ ItemDisplay[rvs !(MAPID~161-163 OR MAPID=137 OR MAPID~188-189) FILTLVL=0]:%WHITE%+%PURPLE%35%%WHITE%+{%WHITE% Rejuvenation Potion }//
+@ 060-gold-potions-tomes.filter:103  rvs !(MAPID~161-163 OR MAPID=137 OR MAPID~188-189) (FILTLVL~
+- ItemDisplay[rvs !(MAPID~161-163 OR MAPID=137 OR MAPID~188-189) (FILTLVL~1-3 OR FILTLVL=5) CLVL<50]:%GRAY%i%PURPLE%(%WHITE% 35% %PURPLE%)%GRAY%i{%WHITE% Rejuvenation Potion }%DOT-9B%%PX-20%%TIER-0%//
++ ItemDisplay[rvs !(MAPID~161-163 OR MAPID=137 OR MAPID~188-189) (FILTLVL~1-3 OR FILTLVL=5) CLVL<50]:%WHITE%+%PURPLE%35%%WHITE%+{%WHITE% Rejuvenation Potion }%DOT-9B%%PX-20%%TIER-0%//
+@ 060-gold-potions-tomes.filter:104  rvs !(MAPID~161-163 OR MAPID=137 OR MAPID~188-189) (FILTLVL~
+- ItemDisplay[rvs !(MAPID~161-163 OR MAPID=137 OR MAPID~188-189) (FILTLVL~1-3 OR FILTLVL=5) CLVL>49]:%GRAY%i%PURPLE%(%WHITE% 35% %PURPLE%)%GRAY%i{%WHITE% Rejuvenation Potion }//
++ ItemDisplay[rvs !(MAPID~161-163 OR MAPID=137 OR MAPID~188-189) (FILTLVL~1-3 OR FILTLVL=5) CLVL>49]:%WHITE%+%PURPLE%35%%WHITE%+{%WHITE% Rejuvenation Potion }//
+@ 060-gold-potions-tomes.filter:108  rvl !(MAPID~161-163 OR MAPID=137 OR MAPID~188-189) (FILTLVL~
+- ItemDisplay[rvl !(MAPID~161-163 OR MAPID=137 OR MAPID~188-189) (FILTLVL~1-3 OR FILTLVL=5) CLVL<50]:%PURPLE%i(%WHITE% Full Rejuv %PURPLE%)i%WHITE%{%WHITE% Full Rejuvenation Potion }%DOT-9B%%PX-20%%TIER-0%//
++ ItemDisplay[rvl !(MAPID~161-163 OR MAPID=137 OR MAPID~188-189) (FILTLVL~1-3 OR FILTLVL=5) CLVL<50]:%GRAY%i%PURPLE% (O) %GRAY%i%WHITE%{%WHITE% Full Rejuvenation Potion }%DOT-9B%%PX-20%%TIER-0%//
+@ 060-gold-potions-tomes.filter:109  rvl !(MAPID~161-163 OR MAPID=137 OR MAPID~188-189) (FILTLVL~
+- ItemDisplay[rvl !(MAPID~161-163 OR MAPID=137 OR MAPID~188-189) (FILTLVL~1-3 OR FILTLVL=5) CLVL>49]:%PURPLE%i(%WHITE% Full %PURPLE%)i%WHITE%{%WHITE% Full Rejuvenation Potion }%DOT-9B%%PX-20%%TIER-0%//
++ ItemDisplay[rvl !(MAPID~161-163 OR MAPID=137 OR MAPID~188-189) (FILTLVL~1-3 OR FILTLVL=5) CLVL>49]:%GRAY%i%PURPLE% (O) %GRAY%i%WHITE%{%WHITE% Full Rejuvenation Potion }%DOT-9B%%PX-20%%TIER-0%//
+@ 060-gold-potions-tomes.filter:112  rvl !(MAPID~161-163 OR MAPID=137 OR MAPID~188-189) (FILTLVL=
+- ItemDisplay[rvl !(MAPID~161-163 OR MAPID=137 OR MAPID~188-189) (FILTLVL=4 OR FILTLVL>5) CLVL<80]:%PURPLE%i%GRAY%I%PURPLE%(O)%GRAY%I%PURPLE%i%WHITE%{%WHITE% Full Rejuvenation Potion }%DOT-9B%%PX-20%%TIER-0%//
++ ItemDisplay[rvl !(MAPID~161-163 OR MAPID=137 OR MAPID~188-189) (FILTLVL=4 OR FILTLVL>5) CLVL<80]:%GRAY%i%PURPLE% (O) %GRAY%i%WHITE%{%WHITE% Full Rejuvenation Potion }%DOT-9B%%PX-20%%TIER-0%//
+@ 060-gold-potions-tomes.filter:113  rvl !(MAPID~161-163 OR MAPID=137 OR MAPID~188-189) (FILTLVL=
+- ItemDisplay[rvl !(MAPID~161-163 OR MAPID=137 OR MAPID~188-189) (FILTLVL=4 OR FILTLVL>5) CLVL>79]:%PURPLE%i%GRAY%I%PURPLE%(O)%GRAY%I%PURPLE%i%WHITE%{%WHITE% Full Rejuvenation Potion }//
++ ItemDisplay[rvl !(MAPID~161-163 OR MAPID=137 OR MAPID~188-189) (FILTLVL=4 OR FILTLVL>5) CLVL>79]:%GRAY%i%PURPLE% (O) %GRAY%i%WHITE%{%WHITE% Full Rejuvenation Potion }//
+@ 060-gold-potions-tomes.filter:116  rvs !(MAPID~161-163 OR MAPID=137 OR MAPID~188-189) (FILTLVL=
+- ItemDisplay[rvs !(MAPID~161-163 OR MAPID=137 OR MAPID~188-189) (FILTLVL=4 OR FILTLVL>5) TOWN]:%GRAY%i%PURPLE%(%WHITE% 35% %PURPLE%)%GRAY%i{%WHITE% Rejuvenation Potion }//
++ ItemDisplay[rvs !(MAPID~161-163 OR MAPID=137 OR MAPID~188-189) (FILTLVL=4 OR FILTLVL>5) TOWN]:%WHITE%+%PURPLE%35%%WHITE%+{%WHITE% Rejuvenation Potion }//
+
+// == 080-quest-items.filter ==
+@ 080-quest-items.filter:7  Wirt's Leg
+- ItemDisplay[leg]:%NAME%%MAP-21%%DOT-0E%%PX-20%%CONTINUE%// Wirt's Leg
++ ItemDisplay[leg]:%NAME%%MAP-21%%DOT-0E%%PX-20%%SOUNDID-1352%%CONTINUE%// Wirt's Leg
+
+// == 090-gems.filter ==
+@ 090-gems.filter:24  Gray for Skull
+- ItemDisplay[GEMTYPE=7]:%GRAY%%CONTINUE%// Gray for Skull
++ ItemDisplay[GEMTYPE=7]:%BLACK%%CONTINUE%// Gray for Skull
+@ 090-gems.filter:32  Chipped quality
+- ItemDisplay[GEMLEVEL=1 (FILTLVL>4 QTY=1)]:%NAME%  %WHITE%Chipped%CONTINUE%// Chipped quality
++ ItemDisplay[GEMLEVEL=1 (FILTLVL>4 QTY=1)]:%NAME%  %LIGHT_GRAY%Chipped%CONTINUE%// Chipped quality
+@ 090-gems.filter:33  Flawed quality
+- ItemDisplay[GEMLEVEL=2 (FILTLVL>4 QTY=1)]:%NAME%  %WHITE%Flawed%CONTINUE%// Flawed quality
++ ItemDisplay[GEMLEVEL=2 (FILTLVL>4 QTY=1)]:%NAME%  %LIGHT_GRAY%Flawed%CONTINUE%// Flawed quality
+@ 090-gems.filter:34  Normal quality
+- ItemDisplay[GEMLEVEL=3 (FILTLVL>4 QTY=1)]:%NAME%  %WHITE%Normal%CONTINUE%// Normal quality
++ ItemDisplay[GEMLEVEL=3 (FILTLVL>4 QTY=1)]:%NAME%  %LIGHT_GRAY%Normal%CONTINUE%// Normal quality
+@ 090-gems.filter:35  Flawless quality
+- ItemDisplay[GEMLEVEL=4 (FILTLVL>4 QTY=1)]:%NAME%  %WHITE%Flawless%CONTINUE%// Flawless quality
++ ItemDisplay[GEMLEVEL=4 (FILTLVL>4 QTY=1)]:%NAME%  %LIGHT_GRAY%Flawless%CONTINUE%// Flawless quality
+@ 090-gems.filter:36  Perfect quality
+- ItemDisplay[GEMLEVEL=5 (FILTLVL~5-12 QTY=1) !skz]:%NAME%  %WHITE%Perfect%CONTINUE%// Perfect quality
++ ItemDisplay[GEMLEVEL=5 (FILTLVL~5-12 QTY=1) !skz]:%NAME%  %TEAL%Perfect%CONTINUE%// Perfect quality
+@ 090-gems.filter:41  Perfect quality
+- ItemDisplay[GEMLEVEL=5 (FILTLVL<5 OR QTY>1 OR skz)]:%NAME%  %LIGHT_GRAY%Perfect%CONTINUE%// Perfect quality
++ ItemDisplay[GEMLEVEL=5 (FILTLVL<5 OR QTY>1 OR skz)]:%NAME%  %TEAL%Perfect%CONTINUE%// Perfect quality
+@ 090-gems.filter:43  GEMTYPE=1 QTY>1
+- ItemDisplay[GEMTYPE=1 QTY>1]:%NAME% %WHITE%Amethysts%CONTINUE%//
++ ItemDisplay[GEMTYPE=1 QTY>1]:%NAME% %TEAL%Amethysts%CONTINUE%//
+@ 090-gems.filter:44  GEMTYPE=2 QTY>1
+- ItemDisplay[GEMTYPE=2 QTY>1]:%NAME% %WHITE%Diamonds%CONTINUE%//
++ ItemDisplay[GEMTYPE=2 QTY>1]:%NAME% %TEAL%Diamonds%CONTINUE%//
+@ 090-gems.filter:45  GEMTYPE=3 QTY>1
+- ItemDisplay[GEMTYPE=3 QTY>1]:%NAME% %WHITE%Emeralds%CONTINUE%//
++ ItemDisplay[GEMTYPE=3 QTY>1]:%NAME% %TEAL%Emeralds%CONTINUE%//
+@ 090-gems.filter:46  GEMTYPE=4 QTY>1
+- ItemDisplay[GEMTYPE=4 QTY>1]:%NAME% %WHITE%Rubies%CONTINUE%//
++ ItemDisplay[GEMTYPE=4 QTY>1]:%NAME% %TEAL%Rubies%CONTINUE%//
+@ 090-gems.filter:47  GEMTYPE=5 QTY>1
+- ItemDisplay[GEMTYPE=5 QTY>1]:%NAME% %WHITE%Sapphires%CONTINUE%//
++ ItemDisplay[GEMTYPE=5 QTY>1]:%NAME% %TEAL%Sapphires%CONTINUE%//
+@ 090-gems.filter:48  GEMTYPE=6 QTY>1
+- ItemDisplay[GEMTYPE=6 QTY>1]:%NAME% %WHITE%Topazes%CONTINUE%//
++ ItemDisplay[GEMTYPE=6 QTY>1]:%NAME% %TEAL%Topazes%CONTINUE%//
+@ 090-gems.filter:49  GEMTYPE=7 QTY>1
+- ItemDisplay[GEMTYPE=7 QTY>1]:%NAME% %WHITE%Skulls%CONTINUE%//
++ ItemDisplay[GEMTYPE=7 QTY>1]:%NAME% %ORANGE%Skulls%CONTINUE%//
+@ 090-gems.filter:51  GEMTYPE=1 (QTY=1 FILTLVL<5)
+- ItemDisplay[GEMTYPE=1 (QTY=1 FILTLVL<5)]:%NAME% %WHITE%Amethyst%CONTINUE%//
++ ItemDisplay[GEMTYPE=1 (QTY=1 FILTLVL<5)]:%NAME% %LIGHT_GRAY%Amethyst%CONTINUE%//
+@ 090-gems.filter:52  GEMTYPE=2 (QTY=1 FILTLVL<5)
+- ItemDisplay[GEMTYPE=2 (QTY=1 FILTLVL<5)]:%NAME% %WHITE%Diamond%CONTINUE%//
++ ItemDisplay[GEMTYPE=2 (QTY=1 FILTLVL<5)]:%NAME% %LIGHT_GRAY%Diamond%CONTINUE%//
+@ 090-gems.filter:53  GEMTYPE=3 (QTY=1 FILTLVL<5)
+- ItemDisplay[GEMTYPE=3 (QTY=1 FILTLVL<5)]:%NAME% %WHITE%Emerald%CONTINUE%//
++ ItemDisplay[GEMTYPE=3 (QTY=1 FILTLVL<5)]:%NAME% %LIGHT_GRAY%Emerald%CONTINUE%//
+@ 090-gems.filter:54  GEMTYPE=4 (QTY=1 FILTLVL<5)
+- ItemDisplay[GEMTYPE=4 (QTY=1 FILTLVL<5)]:%NAME% %WHITE%Ruby%CONTINUE%//
++ ItemDisplay[GEMTYPE=4 (QTY=1 FILTLVL<5)]:%NAME% %LIGHT_GRAY%Ruby%CONTINUE%//
+@ 090-gems.filter:55  GEMTYPE=5 (QTY=1 FILTLVL<5)
+- ItemDisplay[GEMTYPE=5 (QTY=1 FILTLVL<5)]:%NAME% %WHITE%Sapphire%CONTINUE%//
++ ItemDisplay[GEMTYPE=5 (QTY=1 FILTLVL<5)]:%NAME% %LIGHT_GRAY%Sapphire%CONTINUE%//
+@ 090-gems.filter:56  GEMTYPE=6 (QTY=1 FILTLVL<5)
+- ItemDisplay[GEMTYPE=6 (QTY=1 FILTLVL<5)]:%NAME% %WHITE%Topaz%CONTINUE%//
++ ItemDisplay[GEMTYPE=6 (QTY=1 FILTLVL<5)]:%NAME% %LIGHT_GRAY%Topaz%CONTINUE%//
+@ 090-gems.filter:57  GEMTYPE=7 ((QTY=1 FILTLVL<5) OR (skz QTY=1))
+- ItemDisplay[GEMTYPE=7 ((QTY=1 FILTLVL<5) OR (skz QTY=1))]:%NAME% %WHITE%Skull%CONTINUE%//
++ ItemDisplay[GEMTYPE=7 ((QTY=1 FILTLVL<5) OR (skz QTY=1))]:%NAME% %ORANGE%Skull%CONTINUE%//
+@ 090-gems.filter:67  Gray - Skull
+- ItemDisplay[GEMTYPE=7]:%NAME%  %GRAY%%CONTINUE%// Gray - Skull
++ ItemDisplay[GEMTYPE=7]:%NAME%  %BLACK%%CONTINUE%// Gray - Skull
+
+// == 100-sound-ids.filter ==
+@ 100-sound-ids.filter:10  !POE_SOUNDS (r20 OR r21) QTY=1 !TOWN
+- ItemDisplay[!POE_SOUNDS (r20 OR r21) QTY=1 !TOWN]:%NAME%{%NAME%}%SOUNDID-31%%CONTINUE%// 
++ ItemDisplay[!POE_SOUNDS (r20 OR r21) QTY=1 !TOWN]:%NAME%{%NAME%}%CONTINUE%// 
+@ 100-sound-ids.filter:11  POE_SOUNDS (r20 OR r21) QTY=1 !TOWN
+- ItemDisplay[POE_SOUNDS (r20 OR r21) QTY=1 !TOWN]:%NAME%{%NAME%}%SOUNDID-4715%%CONTINUE%// 
++ ItemDisplay[POE_SOUNDS (r20 OR r21) QTY=1 !TOWN]:%NAME%{%NAME%}%CONTINUE%// 
+@ 100-sound-ids.filter:30  !POE_SOUNDS (rid OR rtp OR rkey) !TOWN
+- ItemDisplay[!POE_SOUNDS (rid OR rtp OR rkey) !TOWN]:%NAME%{%NAME%}%SOUNDID-418%%CONTINUE%// 
++ ItemDisplay[!POE_SOUNDS (rid OR rtp OR rkey) !TOWN]:%NAME%{%NAME%}%SOUNDID-1349%%CONTINUE%// 
+@ 100-sound-ids.filter:31  POE_SOUNDS (rid OR rtp OR rkey) !TOWN
+- ItemDisplay[POE_SOUNDS (rid OR rtp OR rkey) !TOWN]:%NAME%{%NAME%}%SOUNDID-4719%%CONTINUE%// 
++ ItemDisplay[POE_SOUNDS (rid OR rtp OR rkey) !TOWN]:%NAME%{%NAME%}%SOUNDID-4707%%CONTINUE%// 
+@ 100-sound-ids.filter:34  POE_SOUNDS (lsvl OR llmr) !TOWN
+- ItemDisplay[POE_SOUNDS (lsvl OR llmr) !TOWN]:%NAME%{%NAME%}%SOUNDID-4719%%CONTINUE%// 
++ ItemDisplay[POE_SOUNDS (lsvl OR llmr) !TOWN]:%NAME%{%NAME%}%SOUNDID-4632%%CONTINUE%// 
+@ 100-sound-ids.filter:48  POE_SOUNDS (ubaa OR ubab OR ubac) QTY=1 !TOWN
+- ItemDisplay[POE_SOUNDS (ubaa OR ubab OR ubac) QTY=1 !TOWN]:%NAME%{%NAME%}%SOUNDID-4715%%CONTINUE%// 
++ ItemDisplay[POE_SOUNDS (ubaa OR ubab OR ubac) QTY=1 !TOWN]:%NAME%{%NAME%}%SOUNDID-4721%%CONTINUE%// 
+@ 100-sound-ids.filter:51  !POE_SOUNDS UNI !ID MAPTIER=5
+- ItemDisplay[!POE_SOUNDS UNI !ID MAPTIER=5]:%NAME%{%NAME%}%SOUNDID-35%%CONTINUE%//
++ ItemDisplay[!POE_SOUNDS UNI !ID MAPTIER=5]:%NAME%{%NAME%}%SOUNDID-4609%%CONTINUE%//
+@ 100-sound-ids.filter:52  POE_SOUNDS UNI !ID MAPTIER=5 !TOWN
+- ItemDisplay[POE_SOUNDS UNI !ID MAPTIER=5 !TOWN]:%NAME%{%NAME%}%SOUNDID-4718%%CONTINUE%//
++ ItemDisplay[POE_SOUNDS UNI !ID MAPTIER=5 !TOWN]:%NAME%{%NAME%}%SOUNDID-4671%%CONTINUE%//
+
+// == 110-runes.filter ==
+@ 110-runes.filter:7  (r01)
+- ItemDisplay[(r01)]:%WHITE%El Rune%CONTINUE%//
++ ItemDisplay[(r01)]:%LIGHT_GRAY%El Rune%CONTINUE%//
+@ 110-runes.filter:8  (r02)
+- ItemDisplay[(r02)]:%WHITE%Eld Rune%CONTINUE%//
++ ItemDisplay[(r02)]:%LIGHT_GRAY%Eld Rune%CONTINUE%//
+@ 110-runes.filter:9  (r03)
+- ItemDisplay[(r03)]:%WHITE%Tir Rune%CONTINUE%//
++ ItemDisplay[(r03)]:%TAN%Tir Rune%CONTINUE%//
+@ 110-runes.filter:10  (r04)
+- ItemDisplay[(r04)]:%WHITE%Nef Rune%CONTINUE%//
++ ItemDisplay[(r04)]:%LIGHT_GRAY%Nef Rune%CONTINUE%//
+@ 110-runes.filter:11  (r05)
+- ItemDisplay[(r05)]:%WHITE%Eth Rune%CONTINUE%//
++ ItemDisplay[(r05)]:%TAN%Eth Rune%CONTINUE%//
+@ 110-runes.filter:12  (r06)
+- ItemDisplay[(r06)]:%WHITE%Ith Rune%CONTINUE%//
++ ItemDisplay[(r06)]:%LIGHT_GRAY%Ith Rune%CONTINUE%//
+@ 110-runes.filter:13  (r07)
+- ItemDisplay[(r07)]:%WHITE%Tal Rune%CONTINUE%// 
++ ItemDisplay[(r07)]:%LIGHT_GRAY%Tal Rune%CONTINUE%// 
+@ 110-runes.filter:29  (r08)
+- ItemDisplay[(r08)]:%WHITE%Ral Rune%CONTINUE%//
++ ItemDisplay[(r08)]:%LIGHT_GRAY%Ral Rune%CONTINUE%//
+@ 110-runes.filter:30  (r09)
+- ItemDisplay[(r09)]:%WHITE%Ort Rune%CONTINUE%//
++ ItemDisplay[(r09)]:%TAN%Ort Rune%CONTINUE%//
+@ 110-runes.filter:31  (r10)
+- ItemDisplay[(r10)]:%WHITE%Thul Rune%CONTINUE%//
++ ItemDisplay[(r10)]:%LIGHT_GRAY%Thul Rune%CONTINUE%//
+@ 110-runes.filter:32  (r11)
+- ItemDisplay[(r11)]:%WHITE%Amn Rune%CONTINUE%//
++ ItemDisplay[(r11)]:%LIGHT_GRAY%Amn Rune%CONTINUE%//
+@ 110-runes.filter:33  (r12)
+- ItemDisplay[(r12)]:%WHITE%Sol Rune%CONTINUE%//
++ ItemDisplay[(r12)]:%TAN%Sol Rune%CONTINUE%//
+@ 110-runes.filter:34  (r13)
+- ItemDisplay[(r13)]:%WHITE%Shael Rune%CONTINUE%//
++ ItemDisplay[(r13)]:%LIGHT_GRAY%Shael Rune%CONTINUE%//
+@ 110-runes.filter:35  (r14)
+- ItemDisplay[(r14)]:%WHITE%Dol Rune%CONTINUE%//
++ ItemDisplay[(r14)]:%LIGHT_GRAY%Dol Rune%CONTINUE%//
+@ 110-runes.filter:36  (r15)
+- ItemDisplay[(r15)]:%WHITE%Hel Rune%CONTINUE%// 
++ ItemDisplay[(r15)]:%LIGHT_GRAY%Hel Rune%CONTINUE%// 
+@ 110-runes.filter:37  (r16)
+- ItemDisplay[(r16)]:%WHITE%Io Rune%CONTINUE%//
++ ItemDisplay[(r16)]:%LIGHT_GRAY%Io Rune%CONTINUE%//
+@ 110-runes.filter:89  (r17)
+- ItemDisplay[(r17)]:%WHITE%Lum Rune%CONTINUE%//
++ ItemDisplay[(r17)]:%TAN%Lum Rune%CONTINUE%//
+@ 110-runes.filter:90  (r18)
+- ItemDisplay[(r18)]:%WHITE%Ko Rune%CONTINUE%//
++ ItemDisplay[(r18)]:%LIGHT_GRAY%Ko Rune%CONTINUE%//
+@ 110-runes.filter:91  (r19)
+- ItemDisplay[(r19)]:%WHITE%Fal Rune%CONTINUE%//
++ ItemDisplay[(r19)]:%LIGHT_GRAY%Fal Rune%CONTINUE%//
+@ 110-runes.filter:105  (r20)
+- ItemDisplay[(r20)]:%WHITE%Lem Rune%CONTINUE%//
++ ItemDisplay[(r20)]:%TAN%Lem Rune%CONTINUE%//
+@ 110-runes.filter:106  (r21)
+- ItemDisplay[(r21)]:%WHITE%Pul Rune%CONTINUE%//
++ ItemDisplay[(r21)]:%TAN%Pul Rune%CONTINUE%//
+@ 110-runes.filter:118  (r22)
+- ItemDisplay[(r22)]:%WHITE%Um Rune%CONTINUE%//
++ ItemDisplay[(r22)]:%TAN%Um Rune%CONTINUE%//
+@ 110-runes.filter:119  (r23)
+- ItemDisplay[(r23)]:%WHITE%Mal Rune%CONTINUE%//
++ ItemDisplay[(r23)]:%TAN%Mal Rune%CONTINUE%//
+@ 110-runes.filter:130  (r24)
+- ItemDisplay[(r24)]:%WHITE%Ist Rune%CONTINUE%//
++ ItemDisplay[(r24)]:%TAN%Ist Rune%CONTINUE%//
+@ 110-runes.filter:131  (r25)
+- ItemDisplay[(r25)]:%WHITE%Gul Rune%CONTINUE%//
++ ItemDisplay[(r25)]:%TAN%Gul Rune%CONTINUE%//
+@ 110-runes.filter:142  !BIG_GG (r26)
+- ItemDisplay[!BIG_GG (r26)]:%WHITE%Vex Rune%CONTINUE%//
++ ItemDisplay[!BIG_GG (r26)]:%SAGE%Vex Rune%CONTINUE%//
+@ 110-runes.filter:143  !BIG_GG (r27)
+- ItemDisplay[!BIG_GG (r27)]:%WHITE%Ohm Rune%CONTINUE%//
++ ItemDisplay[!BIG_GG (r27)]:%SAGE%Ohm Rune%CONTINUE%//
+@ 110-runes.filter:144  !BIG_GG (r28)
+- ItemDisplay[!BIG_GG (r28)]:%WHITE%Lo Rune%CONTINUE%//
++ ItemDisplay[!BIG_GG (r28)]:%SAGE%Lo Rune%CONTINUE%//
+@ 110-runes.filter:145  BIG_GG ((r26 (INVENTORY OR QTY>1 OR (QTY=1 TOWN))))
+- ItemDisplay[BIG_GG ((r26 (INVENTORY OR QTY>1 OR (QTY=1 TOWN))))]:%WHITE%Vex Rune%CONTINUE%//
++ ItemDisplay[BIG_GG ((r26 (INVENTORY OR QTY>1 OR (QTY=1 TOWN))))]:%SAGE%Vex Rune%CONTINUE%//
+@ 110-runes.filter:146  BIG_GG ((r27 (INVENTORY OR QTY>1 OR (QTY=1 TOWN))))
+- ItemDisplay[BIG_GG ((r27 (INVENTORY OR QTY>1 OR (QTY=1 TOWN))))]:%WHITE%Ohm Rune%CONTINUE%//
++ ItemDisplay[BIG_GG ((r27 (INVENTORY OR QTY>1 OR (QTY=1 TOWN))))]:%SAGE%Ohm Rune%CONTINUE%//
+@ 110-runes.filter:147  BIG_GG ((r28 (INVENTORY OR QTY>1 OR (QTY=1 TOWN))))
+- ItemDisplay[BIG_GG ((r28 (INVENTORY OR QTY>1 OR (QTY=1 TOWN))))]:%WHITE%Lo Rune%CONTINUE%//
++ ItemDisplay[BIG_GG ((r28 (INVENTORY OR QTY>1 OR (QTY=1 TOWN))))]:%SAGE%Lo Rune%CONTINUE%//
+@ 110-runes.filter:159  !BIG_GG (r29)
+- ItemDisplay[!BIG_GG (r29)]:%WHITE%Sur Rune%CONTINUE%//
++ ItemDisplay[!BIG_GG (r29)]:%ORANGE%Sur Rune%CONTINUE%//
+@ 110-runes.filter:160  !BIG_GG (r30)
+- ItemDisplay[!BIG_GG (r30)]:%WHITE%Ber Rune%CONTINUE%//
++ ItemDisplay[!BIG_GG (r30)]:%ORANGE%Ber Rune%CONTINUE%//
+@ 110-runes.filter:161  !BIG_GG (r31)
+- ItemDisplay[!BIG_GG (r31)]:%WHITE%Jah Rune%CONTINUE%//
++ ItemDisplay[!BIG_GG (r31)]:%ORANGE%Jah Rune%CONTINUE%//
+@ 110-runes.filter:162  !BIG_GG (r32)
+- ItemDisplay[!BIG_GG (r32)]:%WHITE%Cham Rune%CONTINUE%//
++ ItemDisplay[!BIG_GG (r32)]:%ORANGE%Cham Rune%CONTINUE%//
+@ 110-runes.filter:163  !BIG_GG (r33)
+- ItemDisplay[!BIG_GG (r33)]:%WHITE%Zod Rune%CONTINUE%//
++ ItemDisplay[!BIG_GG (r33)]:%ORANGE%Zod Rune%CONTINUE%//
+@ 110-runes.filter:164  BIG_GG ((r29 (INVENTORY OR QTY>1 OR (QTY=1 TOWN))))
+- ItemDisplay[BIG_GG ((r29 (INVENTORY OR QTY>1 OR (QTY=1 TOWN))))]:%WHITE%Sur Rune%CONTINUE%//
++ ItemDisplay[BIG_GG ((r29 (INVENTORY OR QTY>1 OR (QTY=1 TOWN))))]:%ORANGE%Sur Rune%CONTINUE%//
+@ 110-runes.filter:165  BIG_GG ((r30 (INVENTORY OR QTY>1 OR (QTY=1 TOWN))))
+- ItemDisplay[BIG_GG ((r30 (INVENTORY OR QTY>1 OR (QTY=1 TOWN))))]:%WHITE%Ber Rune%CONTINUE%//
++ ItemDisplay[BIG_GG ((r30 (INVENTORY OR QTY>1 OR (QTY=1 TOWN))))]:%ORANGE%Ber Rune%CONTINUE%//
+@ 110-runes.filter:166  BIG_GG ((r31 (INVENTORY OR QTY>1 OR (QTY=1 TOWN))))
+- ItemDisplay[BIG_GG ((r31 (INVENTORY OR QTY>1 OR (QTY=1 TOWN))))]:%WHITE%Jah Rune%CONTINUE%//
++ ItemDisplay[BIG_GG ((r31 (INVENTORY OR QTY>1 OR (QTY=1 TOWN))))]:%ORANGE%Jah Rune%CONTINUE%//
+@ 110-runes.filter:167  BIG_GG ((r32 (INVENTORY OR QTY>1 OR (QTY=1 TOWN))))
+- ItemDisplay[BIG_GG ((r32 (INVENTORY OR QTY>1 OR (QTY=1 TOWN))))]:%WHITE%Cham Rune%CONTINUE%//
++ ItemDisplay[BIG_GG ((r32 (INVENTORY OR QTY>1 OR (QTY=1 TOWN))))]:%ORANGE%Cham Rune%CONTINUE%//
+@ 110-runes.filter:168  BIG_GG ((r33 (INVENTORY OR QTY>1 OR (QTY=1 TOWN))))
+- ItemDisplay[BIG_GG ((r33 (INVENTORY OR QTY>1 OR (QTY=1 TOWN))))]:%WHITE%Zod Rune%CONTINUE%//
++ ItemDisplay[BIG_GG ((r33 (INVENTORY OR QTY>1 OR (QTY=1 TOWN))))]:%ORANGE%Zod Rune%CONTINUE%//
+
+// == 120-pd2-items.filter ==
+@ 120-pd2-items.filter:2  wss FILTLVL>4 QTY=1
+- ItemDisplay[wss FILTLVL>4 QTY=1]:%WHITE%Worldstone%CONTINUE%//
++ ItemDisplay[wss FILTLVL>4 QTY=1]:%PURPLE%Worldstone%CONTINUE%//
+@ 120-pd2-items.filter:3  wss (FILTLVL<5 OR QTY>1)
+- ItemDisplay[wss (FILTLVL<5 OR QTY>1)]:%WHITE%Worldstone Shard%CONTINUE%//
++ ItemDisplay[wss (FILTLVL<5 OR QTY>1)]:%PURPLE%Worldstone Shard%CONTINUE%//
+@ 120-pd2-items.filter:22  !BIG_GG lbox
+- ItemDisplay[!BIG_GG lbox]:%WHITE%Larzuk's Puzzlebox%CONTINUE%//
++ ItemDisplay[!BIG_GG lbox]:%SAGE%Larzuk's Puzzlebox%CONTINUE%//
+@ 120-pd2-items.filter:23  !BIG_GG lbox QTY>1
+- ItemDisplay[!BIG_GG lbox QTY>1]:%WHITE%%NAME%es %TAN%x %WHITE%%QTY%%CONTINUE%//
++ ItemDisplay[!BIG_GG lbox QTY>1]:%SAGE%%NAME%es %TAN%x %WHITE%%QTY%%CONTINUE%//
+@ 120-pd2-items.filter:25  BIG_GG lbox QTY>1
+- ItemDisplay[BIG_GG lbox QTY>1]:%PUZZLEBOX_LEFT%  %WHITE%Larzuk's Puzzleboxes %TAN%x %WHITE%%QTY%  %PUZZLEBOX_RIGHT%%BORDER-97%%MAP-9B%%DOT-68%%PX-20%{%TAN%Two-Handed Weapons: %TAN%[%WHITE%2-4%TAN%]%CL%%TAN%One-Handed Weapons: %TAN%[%WHITE%1-2%TAN%]%CL%%TAN%Helmet, Chest, Shield: %TAN%[%WHITE%1-2%TAN%]%NL%%NL%%WHITE%Cube with a %GOLD%Unique %WHITE%or %GREEN%Set %WHITE%item to roll sockets%CL%}//
++ ItemDisplay[BIG_GG lbox QTY>1]:%PUZZLEBOX_LEFT%  %SAGE%Larzuk's Puzzleboxes %TAN%x %WHITE%%QTY%  %PUZZLEBOX_RIGHT%%BORDER-97%%MAP-9B%%DOT-68%%PX-20%{%TAN%Two-Handed Weapons: %TAN%[%WHITE%2-4%TAN%]%CL%%TAN%One-Handed Weapons: %TAN%[%WHITE%1-2%TAN%]%CL%%TAN%Helmet, Chest, Shield: %TAN%[%WHITE%1-2%TAN%]%NL%%NL%%WHITE%Cube with a %GOLD%Unique %WHITE%or %GREEN%Set %WHITE%item to roll sockets%CL%}//
+@ 120-pd2-items.filter:27  BIG_GG lbox QTY=1 (INVENTORY OR TOWN OR MAPID=194)
+- ItemDisplay[BIG_GG lbox QTY=1 (INVENTORY OR TOWN OR MAPID=194)]:%PUZZLEBOX_LEFT%  %WHITE%Larzuk's Puzzlebox  %PUZZLEBOX_RIGHT%%BORDER-97%%MAP-9B%%DOT-68%%PX-20%{%TAN%Two-Handed Weapons: %TAN%[%WHITE%2-4%TAN%]%CL%%TAN%One-Handed Weapons: %TAN%[%WHITE%1-2%TAN%]%CL%%TAN%Helmet, Chest, Shield: %TAN%[%WHITE%1-2%TAN%]%NL%%NL%%WHITE%Cube with a %GOLD%Unique %WHITE%or %GREEN%Set %WHITE%item to roll sockets%CL%}//
++ ItemDisplay[BIG_GG lbox QTY=1 (INVENTORY OR TOWN OR MAPID=194)]:%PUZZLEBOX_LEFT%  %SAGE%Larzuk's Puzzlebox  %PUZZLEBOX_RIGHT%%BORDER-97%%MAP-9B%%DOT-68%%PX-20%{%TAN%Two-Handed Weapons: %TAN%[%WHITE%2-4%TAN%]%CL%%TAN%One-Handed Weapons: %TAN%[%WHITE%1-2%TAN%]%CL%%TAN%Helmet, Chest, Shield: %TAN%[%WHITE%1-2%TAN%]%NL%%NL%%WHITE%Cube with a %GOLD%Unique %WHITE%or %GREEN%Set %WHITE%item to roll sockets%CL%}//
+@ 120-pd2-items.filter:30  !BIG_GG imrn
+- ItemDisplay[!BIG_GG imrn]:%WHITE%Demonic Cube%CONTINUE%//
++ ItemDisplay[!BIG_GG imrn]:%SAGE%Demonic Cube%CONTINUE%//
+@ 120-pd2-items.filter:31  !BIG_GG imrn QTY>1
+- ItemDisplay[!BIG_GG imrn QTY>1]:%WHITE%%NAME%s %TAN%x %WHITE%%QTY%%CONTINUE%//
++ ItemDisplay[!BIG_GG imrn QTY>1]:%SAGE%%NAME%s %TAN%x %WHITE%%QTY%%CONTINUE%//
+@ 120-pd2-items.filter:33  BIG_GG imrn QTY>1
+- ItemDisplay[BIG_GG imrn QTY>1]:%DEMONIC_CUBE%  %WHITE%Demonic Cubes %TAN%x %WHITE%%QTY%  %DEMONIC_CUBE%%BORDER-0A%%MAP-66%%DOT-70%%PX-20%{%WHITE%The number of sockets and their contents are retained%NL%This cannot be used on %RED%Corrupted %WHITE%or %PURPLE%Mirrored %WHITE%items}//
++ ItemDisplay[BIG_GG imrn QTY>1]:%DEMONIC_CUBE%  %SAGE%Demonic Cubes %TAN%x %WHITE%%QTY%  %DEMONIC_CUBE%%BORDER-0A%%MAP-66%%DOT-70%%PX-20%{%WHITE%The number of sockets and their contents are retained%NL%This cannot be used on %RED%Corrupted %WHITE%or %PURPLE%Mirrored %WHITE%items}//
+@ 120-pd2-items.filter:35  BIG_GG imrn QTY=1 (INVENTORY OR TOWN OR MAPID=188)
+- ItemDisplay[BIG_GG imrn QTY=1 (INVENTORY OR TOWN OR MAPID=188)]:%DEMONIC_CUBE%  %WHITE%Demonic Cube  %DEMONIC_CUBE%%BORDER-0A%%MAP-66%%DOT-70%%PX-20%{%WHITE%The number of sockets and their contents are retained%NL%This cannot be used on %RED%Corrupted %WHITE%or %PURPLE%Mirrored %WHITE%items}//
++ ItemDisplay[BIG_GG imrn QTY=1 (INVENTORY OR TOWN OR MAPID=188)]:%DEMONIC_CUBE%  %SAGE%Demonic Cube  %DEMONIC_CUBE%%BORDER-0A%%MAP-66%%DOT-70%%PX-20%{%WHITE%The number of sockets and their contents are retained%NL%This cannot be used on %RED%Corrupted %WHITE%or %PURPLE%Mirrored %WHITE%items}//
+@ 120-pd2-items.filter:54  S14: stack of Vials of Lightsong
+- ItemDisplay[lsvl QTY>1]:%VIAL%  %WHITE%Vials of Lightsong %TAN%x %WHITE%%QTY%  %VIAL%%BORDER-21%%MAP-11%%DOT-13%%PX-1E%{%WHITE%1 in %TAN%7.5 million %WHITE%chance to drop%NL%%NL%%WHITE%This cannot be used on Indestructible items}// S14: stack of Vials of Lightsong
++ ItemDisplay[lsvl QTY>1]:%VIALX%   %GREEN%Vials of Lightsong %TAN%x %WHITE%%QTY%   %VIALY% %BORDER-21%%MAP-11%%DOT-13%%PX-1E%{%WHITE%1 in %TAN%7.5 million %WHITE%chance to drop%NL%%NL%%WHITE%This cannot be used on Indestructible items}// S14: stack of Vials of Lightsong
+@ 120-pd2-items.filter:55  !BIG_GG lsvl
+- ItemDisplay[!BIG_GG lsvl]:%VIAL%  %WHITE%Vial of Lightsong  %VIAL%%BORDER-21%%MAP-11%%DOT-13%%PX-1E%{%WHITE%1 in %TAN%7.5 million %WHITE%chance to drop%NL%%NL%%WHITE%This cannot be used on Indestructible items}//
++ ItemDisplay[!BIG_GG lsvl]:%VIALX%   %GREEN%Vial of Lightsong   %VIALY% %BORDER-21%%MAP-11%%DOT-13%%PX-1E%{%WHITE%1 in %TAN%7.5 million %WHITE%chance to drop%NL%%NL%%WHITE%This cannot be used on Indestructible items}//
+@ 120-pd2-items.filter:57  BIG_GG lsvl (INVENTORY OR TOWN)
+- ItemDisplay[BIG_GG lsvl (INVENTORY OR TOWN)]:%VIAL%  %WHITE%Vial of Lightsong  %VIAL%%BORDER-21%%MAP-11%%DOT-13%%PX-1E%{%WHITE%1 in %TAN%7.5 million %WHITE%chance to drop%NL%%NL%%WHITE%This cannot be used on Indestructible items}//
++ ItemDisplay[BIG_GG lsvl (INVENTORY OR TOWN)]:%VIALX%   %GREEN%Vial of Lightsong   %VIALY% %BORDER-21%%MAP-11%%DOT-13%%PX-1E%{%WHITE%1 in %TAN%7.5 million %WHITE%chance to drop%NL%%NL%%WHITE%This cannot be used on Indestructible items}//
+@ 120-pd2-items.filter:60  S14: stack of Lilith's Mirrors
+- ItemDisplay[llmr QTY>1]:%MIRROR%  %WHITE%Lilith's Mirrors %TAN%x %WHITE%%QTY%  %MIRROR%%BORDER-9B%%MAP-62%%DOT-68%%PX-DA%{%WHITE%1 in %TAN%25 million %WHITE%chance to drop%NL%%NL%%WHITE%Items that have been %PURPLE%Mirrored %WHITE%cannot be used in cube recipes%NL%%NL%Jewelry of %BLUE%Magic, %YELLOW%Rare, %WHITE%or %ORANGE%Crafted %WHITE%rarity%CL%This can be used on Weapons, Armor, and}// S14: stack of Lilith's Mirrors
++ ItemDisplay[llmr QTY>1]:%MIRROR_L%  %GREEN%Lilith's Mirrors %TAN%x %WHITE%%QTY%  %MIRROR_R%%BORDER-9B%%MAP-62%%DOT-68%%PX-DA%{%WHITE%1 in %TAN%25 million %WHITE%chance to drop%NL%%NL%%WHITE%Items that have been %PURPLE%Mirrored %WHITE%cannot be used in cube recipes%NL%%NL%Jewelry of %BLUE%Magic, %YELLOW%Rare, %WHITE%or %ORANGE%Crafted %WHITE%rarity%CL%This can be used on Weapons, Armor, and}// S14: stack of Lilith's Mirrors
+@ 120-pd2-items.filter:61  !BIG_GG llmr
+- ItemDisplay[!BIG_GG llmr]:%MIRROR%  %WHITE%Lilith's Mirror  %MIRROR%%BORDER-9B%%MAP-62%%DOT-68%%PX-DA%{%WHITE%1 in %TAN%25 million %WHITE%chance to drop%NL%%NL%%WHITE%Items that have been %PURPLE%Mirrored %WHITE%cannot be used in cube recipes%NL%%NL%Jewelry of %BLUE%Magic, %YELLOW%Rare, %WHITE%or %ORANGE%Crafted %WHITE%rarity%CL%This can be used on Weapons, Armor, and}//
++ ItemDisplay[!BIG_GG llmr]:%MIRROR_L%  %GREEN%Lilith's Mirror  %MIRROR_R%%BORDER-9B%%MAP-62%%DOT-68%%PX-DA%{%WHITE%1 in %TAN%25 million %WHITE%chance to drop%NL%%NL%%WHITE%Items that have been %PURPLE%Mirrored %WHITE%cannot be used in cube recipes%NL%%NL%Jewelry of %BLUE%Magic, %YELLOW%Rare, %WHITE%or %ORANGE%Crafted %WHITE%rarity%CL%This can be used on Weapons, Armor, and}//
+@ 120-pd2-items.filter:63  BIG_GG llmr (INVENTORY OR TOWN)
+- ItemDisplay[BIG_GG llmr (INVENTORY OR TOWN)]:%MIRROR%  %WHITE%Lilith's Mirror  %MIRROR%%BORDER-9B%%MAP-62%%DOT-68%%PX-DA%{%WHITE%1 in %TAN%25 million %WHITE%chance to drop%NL%%NL%%WHITE%Items that have been %PURPLE%Mirrored %WHITE%cannot be used in cube recipes%NL%%NL%Jewelry of %BLUE%Magic, %YELLOW%Rare, %WHITE%or %ORANGE%Crafted %WHITE%rarity%CL%This can be used on Weapons, Armor, and}//
++ ItemDisplay[BIG_GG llmr (INVENTORY OR TOWN)]:%MIRROR_L%  %GREEN%Lilith's Mirror  %MIRROR_R%%BORDER-9B%%MAP-62%%DOT-68%%PX-DA%{%WHITE%1 in %TAN%25 million %WHITE%chance to drop%NL%%NL%%WHITE%Items that have been %PURPLE%Mirrored %WHITE%cannot be used in cube recipes%NL%%NL%Jewelry of %BLUE%Magic, %YELLOW%Rare, %WHITE%or %ORANGE%Crafted %WHITE%rarity%CL%This can be used on Weapons, Armor, and}//
+@ 120-pd2-items.filter:110  Sigils of Madawc
+- ItemDisplay[ubaa QTY>1]:%DARK_GREEN%••%TAN%••   %WHITE%Sigils of Madawc %GRAY%x %WHITE%%QTY%   %TAN%••%DARK_GREEN%••%WHITE%%BORDER-71%%MAP-76%%DOT-DA%%PX-20%{%WHITE%This Sigil is found in %DARK_GREEN%T1 %WHITE%Maps%CL%to create Relic of the Ancients%CL%Cube this with other Sigils}// Sigils of Madawc
++ ItemDisplay[ubaa QTY>1]:%DARK_GREEN%••%TAN%••   %CORAL%Sigils of Madawc %GRAY%x %WHITE%%QTY%   %TAN%••%DARK_GREEN%••%WHITE%%BORDER-71%%MAP-76%%DOT-DA%%PX-20%{%WHITE%This Sigil is found in %DARK_GREEN%T1 %WHITE%Maps%CL%to create Relic of the Ancients%CL%Cube this with other Sigils}// Sigils of Madawc
+@ 120-pd2-items.filter:111  Sigil of Madawc
+- ItemDisplay[ubaa QTY=1]:%DARK_GREEN%••%TAN%••   %WHITE%Sigil of Madawc   %TAN%••%DARK_GREEN%••%WHITE%%BORDER-71%%MAP-76%%DOT-DA%%PX-20%{%WHITE%This Sigil is found in %DARK_GREEN%T1 %WHITE%Maps%CL%to create Relic of the Ancients%CL%Cube this with other Sigils}// Sigil of Madawc
++ ItemDisplay[ubaa QTY=1]:%DARK_GREEN%••%TAN%••   %CORAL%Sigil of Madawc   %TAN%••%DARK_GREEN%••%WHITE%%BORDER-71%%MAP-76%%DOT-DA%%PX-20%{%WHITE%This Sigil is found in %DARK_GREEN%T1 %WHITE%Maps%CL%to create Relic of the Ancients%CL%Cube this with other Sigils}// Sigil of Madawc
+@ 120-pd2-items.filter:112  Sigils of Talic
+- ItemDisplay[ubab QTY>1]:%RED%••%TAN%••   %WHITE%Sigils of Talic %GRAY%x %WHITE%%QTY%   %TAN%••%RED%••%WHITE%%BORDER-08%%MAP-62%%DOT-DA%%PX-20%{%WHITE%This Sigil is found in %RED%T2 %WHITE%Maps%CL%to create Relic of the Ancients%CL%Cube this with other Sigils}// Sigils of Talic
++ ItemDisplay[ubab QTY>1]:%RED%••%TAN%••   %CORAL%Sigils of Talic %GRAY%x %WHITE%%QTY%   %TAN%••%RED%••%WHITE%%BORDER-08%%MAP-62%%DOT-DA%%PX-20%{%WHITE%This Sigil is found in %RED%T2 %WHITE%Maps%CL%to create Relic of the Ancients%CL%Cube this with other Sigils}// Sigils of Talic
+@ 120-pd2-items.filter:113  Sigil of Talic
+- ItemDisplay[ubab QTY=1]:%RED%••%TAN%••   %WHITE%Sigil of Talic   %TAN%••%RED%••%WHITE%%BORDER-08%%MAP-62%%DOT-DA%%PX-20%{%WHITE%This Sigil is found in %RED%T2 %WHITE%Maps%CL%to create Relic of the Ancients%CL%Cube this with other Sigils}// Sigil of Talic
++ ItemDisplay[ubab QTY=1]:%RED%••%TAN%••   %CORAL%Sigil of Talic   %TAN%••%RED%••%WHITE%%BORDER-08%%MAP-62%%DOT-DA%%PX-20%{%WHITE%This Sigil is found in %RED%T2 %WHITE%Maps%CL%to create Relic of the Ancients%CL%Cube this with other Sigils}// Sigil of Talic
+@ 120-pd2-items.filter:114  Sigils of Korlic
+- ItemDisplay[ubac QTY>1]:%PURPLE%••%TAN%••   %WHITE%Sigils of Korlic %GRAY%x %WHITE%%QTY%   %TAN%••%PURPLE%••%WHITE%%BORDER-8B%%MAP-9B%%DOT-DA%%PX-20%{%WHITE%This Sigil is found in %PURPLE%T3 %WHITE%Maps%CL%to create Relic of the Ancients%CL%Cube this with other Sigils}// Sigils of Korlic
++ ItemDisplay[ubac QTY>1]:%PURPLE%••%TAN%••   %CORAL%Sigils of Korlic %GRAY%x %WHITE%%QTY%   %TAN%••%PURPLE%••%WHITE%%BORDER-8B%%MAP-9B%%DOT-DA%%PX-20%{%WHITE%This Sigil is found in %PURPLE%T3 %WHITE%Maps%CL%to create Relic of the Ancients%CL%Cube this with other Sigils}// Sigils of Korlic
+@ 120-pd2-items.filter:115  Sigils of Korlic
+- ItemDisplay[ubac QTY=1]:%PURPLE%••%TAN%••   %WHITE%Sigil of Korlic   %TAN%••%PURPLE%••%WHITE%%BORDER-8B%%MAP-9B%%DOT-DA%%PX-20%{%WHITE%This Sigil is found in %PURPLE%T3 %WHITE%Maps%CL%to create Relic of the Ancients%CL%Cube this with other Sigils}// Sigils of Korlic
++ ItemDisplay[ubac QTY=1]:%PURPLE%••%TAN%••   %CORAL%Sigil of Korlic   %TAN%••%PURPLE%••%WHITE%%BORDER-8B%%MAP-9B%%DOT-DA%%PX-20%{%WHITE%This Sigil is found in %PURPLE%T3 %WHITE%Maps%CL%to create Relic of the Ancients%CL%Cube this with other Sigils}// Sigils of Korlic
+@ 120-pd2-items.filter:147  rtmo QTY>1
+- ItemDisplay[rtmo QTY>1]:%BLUE%••%TEAL%••   %TEAL%Trang-Oul's Jawbones %GRAY%x %WHITE%%QTY%   %TEAL%••%BLUE%••%WHITE%%BORDER-21%%MAP-8F%%DOT-9B%%PX-20%{%TAN%Trang-Oul's Jawbone to create %BLUE%Rathma %TAN%Voidstone%CL%%TAN%Cube Splinter of the Void, Hellfire Torch, and}// 
++ ItemDisplay[rtmo QTY>1]:%BLUE%••%TEAL%••   %ORANGE%Trang-Oul's Jawbones %GRAY%x %WHITE%%QTY%   %TEAL%••%BLUE%••%WHITE%%BORDER-21%%MAP-8F%%DOT-9B%%PX-20%{%TAN%Trang-Oul's Jawbone to create %BLUE%Rathma %TAN%Voidstone%CL%%TAN%Cube Splinter of the Void, Hellfire Torch, and}// 
+@ 120-pd2-items.filter:148  rtmo QTY=1
+- ItemDisplay[rtmo QTY=1]:%BLUE%••%TEAL%••   %TEAL%Trang-Oul's Jawbone   %TEAL%••%BLUE%••%WHITE%%BORDER-21%%MAP-8F%%DOT-9B%%PX-20%{%TAN%Trang-Oul's Jawbone to create %BLUE%Rathma %TAN%Voidstone%CL%%TAN%Cube Splinter of the Void, Hellfire Torch, and}//
++ ItemDisplay[rtmo QTY=1]:%BLUE%••%TEAL%••   %ORANGE%Trang-Oul's Jawbone   %TEAL%••%BLUE%••%WHITE%%BORDER-21%%MAP-8F%%DOT-9B%%PX-20%{%TAN%Trang-Oul's Jawbone to create %BLUE%Rathma %TAN%Voidstone%CL%%TAN%Cube Splinter of the Void, Hellfire Torch, and}//
+@ 120-pd2-items.filter:150  rtmv QTY>1
+- ItemDisplay[rtmv QTY>1]:%PURPLE%••%BLUE%••%TEAL%••   %TEAL%Splinters of the Void %GRAY%x %WHITE%%QTY%   %TEAL%••%BLUE%••%PURPLE%••%WHITE%%BORDER-21%%MAP-8F%%DOT-9B%%PX-20%{%TAN%Trang-Oul's Jawbone to create %BLUE%Rathma %TAN%Voidstone%CL%%TAN%Cube Splinter of the Void, Hellfire Torch, and}// 
++ ItemDisplay[rtmv QTY>1]:%PURPLE%••%BLUE%••%TEAL%••   %ORANGE%Splinters of the Void %GRAY%x %WHITE%%QTY%   %TEAL%••%BLUE%••%PURPLE%••%WHITE%%BORDER-21%%MAP-8F%%DOT-9B%%PX-20%{%TAN%Trang-Oul's Jawbone to create %BLUE%Rathma %TAN%Voidstone%CL%%TAN%Cube Splinter of the Void, Hellfire Torch, and}// 
+@ 120-pd2-items.filter:151  rtmv QTY=1
+- ItemDisplay[rtmv QTY=1]:%PURPLE%••%BLUE%••%TEAL%••   %TEAL%Splinter of the Void   %TEAL%••%BLUE%••%PURPLE%••%WHITE%%BORDER-21%%MAP-8F%%DOT-9B%%PX-20%{%TAN%Trang-Oul's Jawbone to create %BLUE%Rathma %TAN%Voidstone%CL%%TAN%Cube Splinter of the Void, Hellfire Torch, and}// 
++ ItemDisplay[rtmv QTY=1]:%PURPLE%••%BLUE%••%TEAL%••   %ORANGE%Splinter of the Void   %TEAL%••%BLUE%••%PURPLE%••%WHITE%%BORDER-21%%MAP-8F%%DOT-9B%%PX-20%{%TAN%Trang-Oul's Jawbone to create %BLUE%Rathma %TAN%Voidstone%CL%%TAN%Cube Splinter of the Void, Hellfire Torch, and}// 
+@ 120-pd2-items.filter:204  rrra QTY>1
+- ItemDisplay[rrra QTY>1]:%TAN%|%BLUE%|%TAN%O%BLUE%|%TAN%|   %WHITE%Infused Horadrim Orbs %TAN%x %WHITE%%QTY%   %TAN%|%BLUE%|%TAN%O%BLUE%|%TAN%|%WHITE%//
++ ItemDisplay[rrra QTY>1]:%TAN%|%BLUE%|%TAN%O%BLUE%|%TAN%|   %WHITE%Hora Orbs %TAN%x %WHITE%%QTY%   %TAN%|%BLUE%|%TAN%O%BLUE%|%TAN%|%WHITE%//
+@ 120-pd2-items.filter:205  rrra QTY=1 GROUND !TOWN
+- ItemDisplay[rrra QTY=1 GROUND !TOWN]:%TAN%O   %WHITE%Infused Horadrim Orb   %TAN%O%WHITE%//
++ ItemDisplay[rrra QTY=1 GROUND !TOWN]:%TAN%O   %WHITE%Hora Orb   %TAN%O%WHITE%//
+@ 120-pd2-items.filter:208  irra QTY>1
+- ItemDisplay[irra QTY>1]:%LIGHT_GRAY%|%BLUE%|%LIGHT_GRAY%O%BLUE%|%LIGHT_GRAY%|   %WHITE%Infused Zakarum Orbs %TAN%x %WHITE%%QTY%   %LIGHT_GRAY%|%BLUE%|%LIGHT_GRAY%O%BLUE%|%LIGHT_GRAY%|%WHITE%//
++ ItemDisplay[irra QTY>1]:%LIGHT_GRAY%|%BLUE%|%LIGHT_GRAY%O%BLUE%|%LIGHT_GRAY%|   %WHITE%Zaka Orbs %TAN%x %WHITE%%QTY%   %LIGHT_GRAY%|%BLUE%|%LIGHT_GRAY%O%BLUE%|%LIGHT_GRAY%|%WHITE%//
+@ 120-pd2-items.filter:209  irra QTY=1 GROUND !TOWN
+- ItemDisplay[irra QTY=1 GROUND !TOWN]:%LIGHT_GRAY%O   %WHITE%Infused Zakarum Orb   %LIGHT_GRAY%O%WHITE%//
++ ItemDisplay[irra QTY=1 GROUND !TOWN]:%LIGHT_GRAY%O   %WHITE%Zaka Orb   %LIGHT_GRAY%O%WHITE%//
+@ 120-pd2-items.filter:212  irma QTY>1
+- ItemDisplay[irma QTY>1]:%WHITE%|%BLUE%|%WHITE%O%BLUE%|%WHITE%|   %WHITE%Infused Arcane Orbs %TAN%x %WHITE%%QTY%   %WHITE%|%BLUE%|%WHITE%O%BLUE%|%WHITE%|//
++ ItemDisplay[irma QTY>1]:%WHITE%|%BLUE%|%WHITE%O%BLUE%|%WHITE%|   %WHITE%Arcane Orbs %TAN%x %WHITE%%QTY%   %WHITE%|%BLUE%|%WHITE%O%BLUE%|%WHITE%|//
+@ 120-pd2-items.filter:213  irma QTY=1 GROUND !TOWN
+- ItemDisplay[irma QTY=1 GROUND !TOWN]:%WHITE%O   %WHITE%Infused Arcane Orb   %WHITE%O//
++ ItemDisplay[irma QTY=1 GROUND !TOWN]:%WHITE%O   %WHITE%Arcane Orb   %WHITE%O//
+@ 120-pd2-items.filter:216  urma QTY>1
+- ItemDisplay[urma QTY>1]:%BLUE%|%TAN%|%BLUE%O%TAN%|%BLUE%|   %WHITE%Infused Angelic Orbs %TAN%x %WHITE%%QTY%   %BLUE%|%TAN%|%BLUE%O%TAN%|%BLUE%|%WHITE%//
++ ItemDisplay[urma QTY>1]:%BLUE%|%TAN%|%BLUE%O%TAN%|%BLUE%|   %WHITE%Angelic Orbs %TAN%x %WHITE%%QTY%   %BLUE%|%TAN%|%BLUE%O%TAN%|%BLUE%|%WHITE%//
+@ 120-pd2-items.filter:218  urma QTY=1 GROUND !TOWN FILTLVL<3
+- ItemDisplay[urma QTY=1 GROUND !TOWN FILTLVL<3]:%BLUE%O   %WHITE%Infused Angelic Orb   %BLUE%O%WHITE%//
++ ItemDisplay[urma QTY=1 GROUND !TOWN FILTLVL<3]:%BLUE%O   %WHITE%Angelic Orb   %BLUE%O%WHITE%//
+@ 120-pd2-items.filter:225  crfb QTY>1
+- ItemDisplay[crfb QTY>1]:%TAN%|(%RED%O%TAN%)|   %RED%Blood %ORANGE%Craft %TAN%Infusions %TAN%x %WHITE%%QTY%   %TAN%|(%RED%O%TAN%)|%WHITE%%MAP-0A%%DOT-0E%%PX-68%//
++ ItemDisplay[crfb QTY>1]:%TAN%|(%RED%O%TAN%)|   %RED%Blood %ORANGE%Craft %TAN%Infu %TAN%x %WHITE%%QTY%   %TAN%|(%RED%O%TAN%)|%WHITE%%MAP-0A%%DOT-0E%%PX-68%//
+@ 120-pd2-items.filter:226  crfb QTY=1 GROUND !TOWN
+- ItemDisplay[crfb QTY=1 GROUND !TOWN]:%RED%O   %ORANGE%Craft %TAN%Infusion   %RED%O%WHITE%%MAP-0A%%DOT-0E%%PX-68%%TIER-0%//
++ ItemDisplay[crfb QTY=1 GROUND !TOWN]:%RED%O   %ORANGE%Craft %TAN%Infu   %RED%O%WHITE%%MAP-0A%%DOT-0E%%PX-68%%TIER-0%//
+@ 120-pd2-items.filter:229  crfc QTY>1
+- ItemDisplay[crfc QTY>1]:%TAN%|(%PURPLE%O%TAN%)|   %PURPLE%Caster %ORANGE%Craft %TAN%Infusions %TAN%x %WHITE%%QTY%   %TAN%|(%PURPLE%O%TAN%)|%WHITE%%MAP-9B%%DOT-0E%%PX-68%//
++ ItemDisplay[crfc QTY>1]:%TAN%|(%PURPLE%O%TAN%)|   %PURPLE%Caster %ORANGE%Craft %TAN%Infu %TAN%x %WHITE%%QTY%   %TAN%|(%PURPLE%O%TAN%)|%WHITE%%MAP-9B%%DOT-0E%%PX-68%//
+@ 120-pd2-items.filter:230  crfc QTY=1 GROUND !TOWN
+- ItemDisplay[crfc QTY=1 GROUND !TOWN]:%PURPLE%O   %ORANGE%Craft %TAN%Infusion   %PURPLE%O%WHITE%%MAP-9B%%DOT-0E%%PX-68%%TIER-0%//
++ ItemDisplay[crfc QTY=1 GROUND !TOWN]:%PURPLE%O   %ORANGE%Craft %TAN%Infu   %PURPLE%O%WHITE%%MAP-9B%%DOT-0E%%PX-68%%TIER-0%//
+@ 120-pd2-items.filter:233  crfs QTY>1
+- ItemDisplay[crfs QTY>1]:%TAN%|(%DARK_GREEN%O%TAN%)|   %DARK_GREEN%Safety %ORANGE%Craft %TAN%Infusions %TAN%x %WHITE%%QTY%   %TAN%|(%DARK_GREEN%O%TAN%)|%WHITE%%MAP-79%%DOT-0E%%PX-68%//
++ ItemDisplay[crfs QTY>1]:%TAN%|(%DARK_GREEN%O%TAN%)|   %DARK_GREEN%Safety %ORANGE%Craft %TAN%Infu %TAN%x %WHITE%%QTY%   %TAN%|(%DARK_GREEN%O%TAN%)|%WHITE%%MAP-79%%DOT-0E%%PX-68%//
+@ 120-pd2-items.filter:234  crfs QTY=1 GROUND !TOWN
+- ItemDisplay[crfs QTY=1 GROUND !TOWN]:%DARK_GREEN%O   %ORANGE%Craft %TAN%Infusion   %DARK_GREEN%O%WHITE%%MAP-79%%DOT-0E%%PX-68%%TIER-0%//
++ ItemDisplay[crfs QTY=1 GROUND !TOWN]:%DARK_GREEN%O   %ORANGE%Craft %TAN%Infu   %DARK_GREEN%O%WHITE%%MAP-79%%DOT-0E%%PX-68%%TIER-0%//
+@ 120-pd2-items.filter:237  crfh QTY>1
+- ItemDisplay[crfh QTY>1]:%TAN%|(%BLUE%O%TAN%)|   %BLUE%Hitpower %ORANGE%Craft %TAN%Infusions %TAN%x %WHITE%%QTY%   %TAN%|(%BLUE%O%TAN%)|%WHITE%%MAP-97%%DOT-0E%%PX-68%//
++ ItemDisplay[crfh QTY>1]:%TAN%|(%BLUE%O%TAN%)|   %BLUE%Hitpower %ORANGE%Craft %TAN%Infu %TAN%x %WHITE%%QTY%   %TAN%|(%BLUE%O%TAN%)|%WHITE%%MAP-97%%DOT-0E%%PX-68%//
+@ 120-pd2-items.filter:238  crfh QTY=1 GROUND !TOWN
+- ItemDisplay[crfh QTY=1 GROUND !TOWN]:%BLUE%O   %ORANGE%Craft %TAN%Infusion   %BLUE%O%WHITE%%MAP-97%%DOT-0E%%PX-68%%TIER-0%//
++ ItemDisplay[crfh QTY=1 GROUND !TOWN]:%BLUE%O   %ORANGE%Craft %TAN%Infu   %BLUE%O%WHITE%%MAP-97%%DOT-0E%%PX-68%%TIER-0%//
+@ 120-pd2-items.filter:241  crfv QTY>1
+- ItemDisplay[crfv QTY>1]:%TAN%|(%GRAY%O%TAN%)|   %GRAY%Vampiric %ORANGE%Craft %TAN%Infusions %TAN%x %WHITE%%QTY%   %TAN%|(%GRAY%O%TAN%)|%WHITE%%MAP-15%%DOT-0E%%PX-68%//
++ ItemDisplay[crfv QTY>1]:%TAN%|(%GRAY%O%TAN%)|   %GRAY%Vampiric %ORANGE%Craft %TAN%Infu %TAN%x %WHITE%%QTY%   %TAN%|(%GRAY%O%TAN%)|%WHITE%%MAP-15%%DOT-0E%%PX-68%//
+@ 120-pd2-items.filter:242  crfv QTY=1 GROUND !TOWN
+- ItemDisplay[crfv QTY=1 GROUND !TOWN]:%GRAY%O   %ORANGE%Craft %TAN%Infusion   %GRAY%O%WHITE%%MAP-15%%DOT-0E%%PX-68%%TIER-0%//
++ ItemDisplay[crfv QTY=1 GROUND !TOWN]:%GRAY%O   %ORANGE%Craft %TAN%Infu   %GRAY%O%WHITE%%MAP-15%%DOT-0E%%PX-68%%TIER-0%//
+@ 120-pd2-items.filter:245  crfu QTY>1
+- ItemDisplay[crfu QTY>1]:%TAN%|(%YELLOW%O%TAN%)|   %YELLOW%Bountiful %ORANGE%Craft %TAN%Infusions %TAN%x %WHITE%%QTY%   %TAN%|(%YELLOW%O%TAN%)|%WHITE%%MAP-6F%%DOT-0E%%PX-68%//
++ ItemDisplay[crfu QTY>1]:%TAN%|(%YELLOW%O%TAN%)|   %YELLOW%Bountiful %ORANGE%Craft %TAN%Infu %TAN%x %WHITE%%QTY%   %TAN%|(%YELLOW%O%TAN%)|%WHITE%%MAP-6F%%DOT-0E%%PX-68%//
+@ 120-pd2-items.filter:246  crfu QTY=1 GROUND !TOWN
+- ItemDisplay[crfu QTY=1 GROUND !TOWN]:%YELLOW%O   %ORANGE%Craft %TAN%Infusion   %YELLOW%O%WHITE%%MAP-6F%%DOT-0E%%PX-68%%TIER-0%//
++ ItemDisplay[crfu QTY=1 GROUND !TOWN]:%YELLOW%O   %ORANGE%Craft %TAN%Infu   %YELLOW%O%WHITE%%MAP-6F%%DOT-0E%%PX-68%%TIER-0%//
+@ 120-pd2-items.filter:249  crfp QTY>1
+- ItemDisplay[crfp QTY>1]:%TAN%|(%WHITE%O%TAN%)|   %WHITE%Brilliant %ORANGE%Craft %TAN%Infusions %TAN%x %WHITE%%QTY%   %TAN%|(%WHITE%O%TAN%)|%WHITE%%MAP-20%%DOT-0E%%PX-68%//
++ ItemDisplay[crfp QTY>1]:%TAN%|(%WHITE%O%TAN%)|   %WHITE%Brilliant %ORANGE%Craft %TAN%Infu %TAN%x %WHITE%%QTY%   %TAN%|(%WHITE%O%TAN%)|%WHITE%%MAP-20%%DOT-0E%%PX-68%//
+@ 120-pd2-items.filter:250  crfp QTY=1 GROUND !TOWN
+- ItemDisplay[crfp QTY=1 GROUND !TOWN]:%WHITE%O   %ORANGE%Craft %TAN%Infusion   %WHITE%O%WHITE%%MAP-20%%DOT-0E%%PX-68%%TIER-0%//
++ ItemDisplay[crfp QTY=1 GROUND !TOWN]:%WHITE%O   %ORANGE%Craft %TAN%Infu   %WHITE%O%WHITE%%MAP-20%%DOT-0E%%PX-68%%TIER-0%//
+
+// == 145-map-rolls-and-notifications.filter ==
+@ 145-map-rolls-and-notifications.filter:11  STAT496>0 !STAT360>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS
+- ItemDisplay[STAT496>0 !STAT360>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQUE_MAPS)]:%NAME%{%GRAY%+%STAT496%% Armors%CL%%NAME%}%CONTINUE%//
++ ItemDisplay[STAT496>0 !STAT360>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQUE_MAPS)]:%NAME%{%SAGE%+%STAT496%% Armors%CL%%NAME%}%CONTINUE%//
+@ 145-map-rolls-and-notifications.filter:13  STAT495>0 !STAT360>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS
+- ItemDisplay[STAT495>0 !STAT360>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQUE_MAPS)]:%NAME%{%GRAY%+%STAT495%% Weapons%CL%%NAME%}%CONTINUE%//
++ ItemDisplay[STAT495>0 !STAT360>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQUE_MAPS)]:%NAME%{%SAGE%+%STAT495%% Weapons%CL%%NAME%}%CONTINUE%//
+@ 145-map-rolls-and-notifications.filter:25  STAT437>0 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQ
+- ItemDisplay[STAT437>0 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQUE_MAPS)]:%NAME%{%PURPLE%Stygian Dolls%CL%%NAME%}%CONTINUE%//
++ ItemDisplay[STAT437>0 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQUE_MAPS)]:%NAME%{%PURPLE%STYGIAN DOLLS%CL%%NAME%}%CONTINUE%//
+@ 145-map-rolls-and-notifications.filter:43  STAT438>0 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQ
+- ItemDisplay[STAT438>0 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQUE_MAPS) !(t13 OR t26 OR t27 OR t51 OR t54 OR t2a)]:%NAME%{%PURPLE%Succubus Witches%CL%%NAME%}%CONTINUE%//
++ ItemDisplay[STAT438>0 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQUE_MAPS) !(t13 OR t26 OR t27 OR t51 OR t54 OR t2a)]:%NAME%{%PURPLE%-50% PDR Curse Witches%CL%%NAME%}%CONTINUE%//
+@ 145-map-rolls-and-notifications.filter:45  S14: Descent (t2a) spawns Stygian Harlots
+- ItemDisplay[(t13 OR t26 OR t27 OR t51 OR t54 OR t2a)]:%NAME%{%RED%Succubus Witches%CL%%NAME%}%CONTINUE%// S14: Descent (t2a) spawns Stygian Harlots
++ ItemDisplay[(t13 OR t26 OR t27 OR t51 OR t54 OR t2a)]:%NAME%{%RED%Curse Witches%CL%%NAME%}%CONTINUE%// S14: Descent (t2a) spawns Stygian Harlots
+@ 145-map-rolls-and-notifications.filter:56  Player Hit Recovery
+- ItemDisplay[STAT411<-19 !STAT360>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQUE_MAPS)]:%NAME%{%RED%%STAT411%% Hit Recovery%CL%%NAME%}%CONTINUE%//
++ ItemDisplay[STAT411<-19 !STAT360>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQUE_MAPS)]:%NAME%{%CORAL%%STAT411%% Player Hit Recovery%CL%%NAME%}%CONTINUE%//
+@ 145-map-rolls-and-notifications.filter:59  STAT497>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_M
+- ItemDisplay[STAT497>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQUE_MAPS)]:%NAME%{%TEAL%+%STAT497%% Crafting Mats%CL%%NAME%}%CONTINUE%//
++ ItemDisplay[STAT497>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQUE_MAPS)]:%NAME%{%GREEN%+%STAT497%% Crafting Mats%CL%%NAME%}%CONTINUE%//
+@ 145-map-rolls-and-notifications.filter:82  STAT408>9 STAT408<20 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS
+- ItemDisplay[STAT408>9 STAT408<20 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQUE_MAPS)]:%NAME%{%RED%+%STAT408%% Crushing Blow%CL%%NAME%}%CONTINUE%//
++ ItemDisplay[STAT408>9 STAT408<20 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQUE_MAPS)]:%NAME%{%RED%+%STAT408%% CRUSHING BLOW!%CL%%NAME%}%CONTINUE%//
+@ 145-map-rolls-and-notifications.filter:83  STAT408>19 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNI
+- ItemDisplay[STAT408>19 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQUE_MAPS)]:%NAME%{%RED%+%STAT408%% Crushing Blow%CL%%NAME%}%CONTINUE%//
++ ItemDisplay[STAT408>19 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQUE_MAPS)]:%NAME%{%RED%+%STAT408%% CRUSHING BLOW!%CL%%NAME%}%CONTINUE%//
+@ 145-map-rolls-and-notifications.filter:129  STAT451<0 STAT452<0 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MA
+- ItemDisplay[STAT451<0 STAT452<0 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQUE_MAPS)]:%NAME%{%RED%%STAT452%% Attack/Cast Speed%CL%%NAME%}%CONTINUE%//
++ ItemDisplay[STAT451<0 STAT452<0 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQUE_MAPS)]:%NAME%{%CORAL%%STAT452%% Player Attack/Cast Speed%CL%%NAME%}%CONTINUE%//
+
+// == 150-uniques.filter ==
+@ 150-uniques.filter:450  POE_SOUNDS UNI !ID (rar OR ram OR rbe OR (uh9 MAPID=137) OR
+- ItemDisplay[POE_SOUNDS UNI !ID (rar OR ram OR rbe OR (uh9 MAPID=137) OR utb OR 7bs OR 7qr OR uth)]:%NAME%%SOUNDID-4719%%CONTINUE%//
++ ItemDisplay[POE_SOUNDS UNI !ID (rar OR ram OR rbe OR (uh9 MAPID=137) OR utb OR 7bs OR 7qr OR uth)]:%NAME%%SOUNDID-4633%%CONTINUE%//
+
+// == 160-uniques-value-tiers.filter ==
+@ 160-uniques-value-tiers.filter:19  Annihilus
+- ItemDisplay[!BIG_GG POE_SOUNDS UNI !ID cm1 !TOWN]:%NAME%%SOUNDID-4719%%CONTINUE%// Annihilus
++ ItemDisplay[!BIG_GG POE_SOUNDS UNI !ID cm1 !TOWN]:%NAME%%SOUNDID-4639%%CONTINUE%// Annihilus
+@ 160-uniques-value-tiers.filter:24  Gheed's Fortune Grand Charm
+- ItemDisplay[UNI !ID cm3 FILTLVL<8]:%NAME%%SOUNDID-3915%%CONTINUE%// Gheed's Fortune Grand Charm
++ ItemDisplay[UNI !ID cm3 FILTLVL<8]:%NAME%%SOUNDID-3925%%CONTINUE%// Gheed's Fortune Grand Charm
+@ 160-uniques-value-tiers.filter:31  Kira's Guardian Tiara
+- ItemDisplay[UNI !ID ci2 !ETH]:%NAME%%SOUNDID-2585%%CONTINUE%// Kira's Guardian Tiara
++ ItemDisplay[UNI !ID ci2 !ETH]:%NAME%%CONTINUE%// Kira's Guardian Tiara
+@ 160-uniques-value-tiers.filter:32  Griffon's Eye Diadem
+- ItemDisplay[UNI !ID ci3]:%NAME%%SOUNDID-619%%CONTINUE%// Griffon's Eye Diadem
++ ItemDisplay[UNI !ID ci3]:%NAME%%SOUNDID-4717%%CONTINUE%// Griffon's Eye Diadem
+@ 160-uniques-value-tiers.filter:35  Eth Kira's Guardian Tiara
+- ItemDisplay[UNI !ID ci2 ETH]:%NAME%%SOUNDID-2585%%CONTINUE%// Eth Kira's Guardian Tiara
++ ItemDisplay[UNI !ID ci2 ETH]:%NAME%%CONTINUE%// Eth Kira's Guardian Tiara
+@ 160-uniques-value-tiers.filter:39  Thunderstroke Matriarchal Javelin
+- ItemDisplay[UNI !ID amf FILTLVL<8]:%NAME%%SOUNDID-1257%%CONTINUE%// Thunderstroke Matriarchal Javelin
++ ItemDisplay[UNI !ID amf FILTLVL<8]:%NAME%%CONTINUE%// Thunderstroke Matriarchal Javelin
+@ 160-uniques-value-tiers.filter:40  UNI !ID amf FILTLVL<8
+- ItemDisplay[UNI !ID amf FILTLVL<8]:%UNI_HIGH_VALUE_LEFT%  %NAME%  %UNI_HIGH_VALUE_RIGHT%%BORDER-91%%MAP-9B%%DOT-62%%PX-68%%SOUNDID-2585%//
++ ItemDisplay[UNI !ID amf FILTLVL<8]:%UNI_HIGH_VALUE_LEFT%  %NAME%  %UNI_HIGH_VALUE_RIGHT%%BORDER-91%%MAP-9B%%DOT-62%%PX-68%//
+@ 160-uniques-value-tiers.filter:42  Thunderstroke Matriarchal Javelin
+- ItemDisplay[UNI !ID amf FILTLVL>7]:%NAME%%SOUNDID-1257%%CONTINUE%// Thunderstroke Matriarchal Javelin
++ ItemDisplay[UNI !ID amf FILTLVL>7]:%NAME%%CONTINUE%// Thunderstroke Matriarchal Javelin
+@ 160-uniques-value-tiers.filter:43  Ebonbane Grand Matron Bow
+- ItemDisplay[UNI !ID amc]:%NAME%%SOUNDID-2585%%CONTINUE%// Ebonbane Grand Matron Bow
++ ItemDisplay[UNI !ID amc]:%NAME%%CONTINUE%// Ebonbane Grand Matron Bow
+@ 160-uniques-value-tiers.filter:54  Whispering Mirage War Fist
+- ItemDisplay[UNI !ID 7xf]:%NAME%%SOUNDID-2324%%CONTINUE%// Whispering Mirage War Fist
++ ItemDisplay[UNI !ID 7xf]:%NAME%%CONTINUE%// Whispering Mirage War Fist
+@ 160-uniques-value-tiers.filter:55  UNI !ID 7xf
+- ItemDisplay[UNI !ID 7xf]:%UNI_HIGH_VALUE_LEFT%  %NAME%  %UNI_HIGH_VALUE_RIGHT%%BORDER-91%%MAP-9B%%DOT-62%%PX-68%%SOUNDID-2585%//
++ ItemDisplay[UNI !ID 7xf]:%UNI_HIGH_VALUE_LEFT%  %NAME%  %UNI_HIGH_VALUE_RIGHT%%BORDER-91%%MAP-9B%%DOT-62%%PX-68%//
+@ 160-uniques-value-tiers.filter:57  Firelizard's Talons Feral Claws
+- ItemDisplay[UNI !ID 7lw]:%NAME%%SOUNDID-2302%%CONTINUE%// Firelizard's Talons Feral Claws
++ ItemDisplay[UNI !ID 7lw]:%NAME%%CONTINUE%// Firelizard's Talons Feral Claws
+@ 160-uniques-value-tiers.filter:58  Stalker's Cull Runic Talons
+- ItemDisplay[UNI !ID 7tw ETH]:%NAME%%SOUNDID-2302%%CONTINUE%// Stalker's Cull Runic Talons
++ ItemDisplay[UNI !ID 7tw ETH]:%NAME%%CONTINUE%// Stalker's Cull Runic Talons
+@ 160-uniques-value-tiers.filter:59  Jade Talon Wrist Sword
+- ItemDisplay[UNI !ID 7wb FILTLVL<8]:%NAME%%SOUNDID-2302%%CONTINUE%// Jade Talon Wrist Sword
++ ItemDisplay[UNI !ID 7wb FILTLVL<8]:%NAME%%CONTINUE%// Jade Talon Wrist Sword
+@ 160-uniques-value-tiers.filter:69  Arreat's Face Slayer Guard
+- ItemDisplay[UNI !ID baa FILTLVL<8]:%NAME%%SOUNDID-2585%%CONTINUE%// Arreat's Face Slayer Guard
++ ItemDisplay[UNI !ID baa FILTLVL<8]:%NAME%%CONTINUE%// Arreat's Face Slayer Guard
+@ 160-uniques-value-tiers.filter:70  Halaberd's Reign Conqueror Crown
+- ItemDisplay[UNI !ID bae]:%NAME%%SOUNDID-2585%%CONTINUE%// Halaberd's Reign Conqueror Crown
++ ItemDisplay[UNI !ID bae]:%NAME%%SOUNDID-4717%%CONTINUE%// Halaberd's Reign Conqueror Crown
+@ 160-uniques-value-tiers.filter:71  UNI !ID ((baa FILTLVL<8) OR bae)
+- ItemDisplay[UNI !ID ((baa FILTLVL<8) OR bae)]:%UNI_HIGH_VALUE_LEFT%  %NAME%  %UNI_HIGH_VALUE_RIGHT%%BORDER-91%%MAP-9B%%DOT-62%%PX-68%%SOUNDID-2585%//
++ ItemDisplay[UNI !ID ((baa FILTLVL<8) OR bae)]:%UNI_HIGH_VALUE_LEFT%  %NAME%  %UNI_HIGH_VALUE_RIGHT%%BORDER-91%%MAP-9B%%DOT-62%%PX-68%//
+@ 160-uniques-value-tiers.filter:73  Arreat's Face Slayer Guard
+- ItemDisplay[UNI !ID baa FILTLVL>7]:%NAME%%SOUNDID-2585%%CONTINUE%// Arreat's Face Slayer Guard
++ ItemDisplay[UNI !ID baa FILTLVL>7]:%NAME%%CONTINUE%// Arreat's Face Slayer Guard
+@ 160-uniques-value-tiers.filter:74  Wolfhowl Fury Visor
+- ItemDisplay[UNI !ID bac FILTLVL<8]:%NAME%%SOUNDID-2346%%CONTINUE%// Wolfhowl Fury Visor
++ ItemDisplay[UNI !ID bac FILTLVL<8]:%NAME%%CONTINUE%// Wolfhowl Fury Visor
+@ 160-uniques-value-tiers.filter:75  Raekor's Virtue Guardian Crown
+- ItemDisplay[UNI !ID baf]:%NAME%%SOUNDID-2585%%CONTINUE%// Raekor's Virtue Guardian Crown
++ ItemDisplay[UNI !ID baf]:%NAME%%CONTINUE%// Raekor's Virtue Guardian Crown
+@ 160-uniques-value-tiers.filter:85  Eschuta's Temper Eldritch Orb
+- ItemDisplay[UNI !ID obc]:%NAME%%SOUNDID-1257%%CONTINUE%// Eschuta's Temper Eldritch Orb
++ ItemDisplay[UNI !ID obc]:%NAME%%CONTINUE%// Eschuta's Temper Eldritch Orb
+@ 160-uniques-value-tiers.filter:86  Death's Fathom Dimensional Shard
+- ItemDisplay[UNI !ID obf]:%NAME%%SOUNDID-2440%%CONTINUE%// Death's Fathom Dimensional Shard
++ ItemDisplay[UNI !ID obf]:%NAME%%SOUNDID-4717%%CONTINUE%// Death's Fathom Dimensional Shard
+@ 160-uniques-value-tiers.filter:87  Skyfall Vortex Orb
+- ItemDisplay[UNI !ID obe FILTLVL<8]:%NAME%%SOUNDID-1257%%CONTINUE%// Skyfall Vortex Orb
++ ItemDisplay[UNI !ID obe FILTLVL<8]:%NAME%%SOUNDID-4717%%CONTINUE%// Skyfall Vortex Orb
+@ 160-uniques-value-tiers.filter:90  Skyfall Vortex Orb
+- ItemDisplay[UNI !ID obe FILTLVL>7]:%NAME%%SOUNDID-1257%%CONTINUE%// Skyfall Vortex Orb
++ ItemDisplay[UNI !ID obe FILTLVL>7]:%NAME%%CONTINUE%// Skyfall Vortex Orb
+@ 160-uniques-value-tiers.filter:91  The Oculus Swirling Crystal
+- ItemDisplay[UNI !ID oba]:%NAME%%SOUNDID-1257%%CONTINUE%// The Oculus Swirling Crystal
++ ItemDisplay[UNI !ID oba]:%NAME%%CONTINUE%// The Oculus Swirling Crystal
+@ 160-uniques-value-tiers.filter:92  Embersworn Demon Heart
+- ItemDisplay[UNI !ID obd]:%NAME%%SOUNDID-2399%%CONTINUE%// Embersworn Demon Heart
++ ItemDisplay[UNI !ID obd]:%NAME%%CONTINUE%// Embersworn Demon Heart
+@ 160-uniques-value-tiers.filter:99  Ravenlore Sky Spirit
+- ItemDisplay[UNI !ID dre !ETH]:%NAME%%SOUNDID-2333%%CONTINUE%// Ravenlore Sky Spirit
++ ItemDisplay[UNI !ID dre !ETH]:%NAME%%CONTINUE%// Ravenlore Sky Spirit
+@ 160-uniques-value-tiers.filter:100  Spirit Keeper Earth Spirit
+- ItemDisplay[UNI !ID drd]:%NAME%%SOUNDID-2348%%CONTINUE%// Spirit Keeper Earth Spirit
++ ItemDisplay[UNI !ID drd]:%NAME%%CONTINUE%// Spirit Keeper Earth Spirit
+@ 160-uniques-value-tiers.filter:101  Denmother Sun Spirit
+- ItemDisplay[UNI !ID drc]:%NAME%%SOUNDID-770%%CONTINUE%// Denmother Sun Spirit
++ ItemDisplay[UNI !ID drc]:%NAME%%CONTINUE%// Denmother Sun Spirit
+@ 160-uniques-value-tiers.filter:104  Fenris Alpha Helm
+- ItemDisplay[UNI !ID dr6 FILTLVL<8]:%NAME%%SOUNDID-827%%CONTINUE%// Fenris Alpha Helm
++ ItemDisplay[UNI !ID dr6 FILTLVL<8]:%NAME%%CONTINUE%// Fenris Alpha Helm
+@ 160-uniques-value-tiers.filter:105  Jalal's Mane Totemic Mask
+- ItemDisplay[UNI !ID dra]:%NAME%%SOUNDID-869%%CONTINUE%// Jalal's Mane Totemic Mask
++ ItemDisplay[UNI !ID dra]:%NAME%%CONTINUE%// Jalal's Mane Totemic Mask
+@ 160-uniques-value-tiers.filter:106  Ursa's Nightmare Dream Spirit
+- ItemDisplay[UNI !ID drf]:%NAME%%SOUNDID-2346%%CONTINUE%// Ursa's Nightmare Dream Spirit
++ ItemDisplay[UNI !ID drf]:%NAME%%SOUNDID-4717%%CONTINUE%// Ursa's Nightmare Dream Spirit
+@ 160-uniques-value-tiers.filter:107  Eth Ravenlore Sky Spirit
+- ItemDisplay[UNI !ID dre ETH]:%NAME%%SOUNDID-2333%%CONTINUE%// Eth Ravenlore Sky Spirit
++ ItemDisplay[UNI !ID dre ETH]:%NAME%%CONTINUE%// Eth Ravenlore Sky Spirit
+@ 160-uniques-value-tiers.filter:116  Boneflame Succubus Skull
+- ItemDisplay[UNI !ID nee]:%NAME%%SOUNDID-2446%%CONTINUE%// Boneflame Succubus Skull
++ ItemDisplay[UNI !ID nee]:%NAME%%SOUNDID-4717%%CONTINUE%// Boneflame Succubus Skull
+@ 160-uniques-value-tiers.filter:119  Sacred Totem Hellspawn Skull
+- ItemDisplay[UNI !ID neg]:%NAME%%SOUNDID-2475%%CONTINUE%// Sacred Totem Hellspawn Skull
++ ItemDisplay[UNI !ID neg]:%NAME%%CONTINUE%// Sacred Totem Hellspawn Skull
+@ 160-uniques-value-tiers.filter:129  Herald of Zakarum Gilded Shield
+- ItemDisplay[UNI !ID pa9]:%NAME%%SOUNDID-2387%%CONTINUE%// Herald of Zakarum Gilded Shield
++ ItemDisplay[UNI !ID pa9]:%NAME%%CONTINUE%// Herald of Zakarum Gilded Shield
+@ 160-uniques-value-tiers.filter:130  Dragonscale Zakarum Shield
+- ItemDisplay[UNI !ID pae]:%NAME%%SOUNDID-1166%%CONTINUE%// Dragonscale Zakarum Shield
++ ItemDisplay[UNI !ID pae]:%NAME%%SOUNDID-4717%%CONTINUE%// Dragonscale Zakarum Shield
+@ 160-uniques-value-tiers.filter:131  Skywarden Vortex Shield
+- ItemDisplay[UNI !ID paf]:%NAME%%SOUNDID-2332%%CONTINUE%// Skywarden Vortex Shield
++ ItemDisplay[UNI !ID paf]:%NAME%%SOUNDID-4717%%CONTINUE%// Skywarden Vortex Shield
+@ 160-uniques-value-tiers.filter:135  Alma Negra Sacred Rondache
+- ItemDisplay[UNI !ID pac]:%NAME%%SOUNDID-2387%%CONTINUE%// Alma Negra Sacred Rondache
++ ItemDisplay[UNI !ID pac]:%NAME%%CONTINUE%// Alma Negra Sacred Rondache
+@ 160-uniques-value-tiers.filter:140  Eth Purgatory Archon Plate
+- ItemDisplay[UNI !ID utp ETH]:%NAME%%SOUNDID-2585%%CONTINUE%// Eth Purgatory Archon Plate
++ ItemDisplay[UNI !ID utp ETH]:%NAME%%SOUNDID-4717%%CONTINUE%// Eth Purgatory Archon Plate
+@ 160-uniques-value-tiers.filter:141  Eth Skullder's Ire Russet Armor
+- ItemDisplay[UNI !ID xpl ETH]:%NAME%%SOUNDID-2585%%CONTINUE%// Eth Skullder's Ire Russet Armor
++ ItemDisplay[UNI !ID xpl ETH]:%NAME%%CONTINUE%// Eth Skullder's Ire Russet Armor
+@ 160-uniques-value-tiers.filter:142  Steel Carapace Shadow Plate
+- ItemDisplay[UNI !ID uul]:%NAME%%SOUNDID-2585%%CONTINUE%// Steel Carapace Shadow Plate
++ ItemDisplay[UNI !ID uul]:%NAME%%SOUNDID-4717%%CONTINUE%// Steel Carapace Shadow Plate
+@ 160-uniques-value-tiers.filter:143  Shaftstop Mesh Armor
+- ItemDisplay[UNI !ID xhn]:%NAME%%SOUNDID-2585%%CONTINUE%// Shaftstop Mesh Armor
++ ItemDisplay[UNI !ID xhn]:%NAME%%CONTINUE%// Shaftstop Mesh Armor
+@ 160-uniques-value-tiers.filter:144  Templar's Might or Tyrael's Might Sacred Armor
+- ItemDisplay[UNI !ID uar]:%NAME%%SOUNDID-4304%%CONTINUE%// Templar's Might or Tyrael's Might Sacred Armor
++ ItemDisplay[UNI !ID uar]:%NAME%%SOUNDID-4721%%CONTINUE%// Templar's Might or Tyrael's Might Sacred Armor
+@ 160-uniques-value-tiers.filter:145  Leviathan Kraken Shell
+- ItemDisplay[UNI !ID uld]:%NAME%%SOUNDID-2585%%CONTINUE%// Leviathan Kraken Shell
++ ItemDisplay[UNI !ID uld]:%NAME%%CONTINUE%// Leviathan Kraken Shell
+@ 160-uniques-value-tiers.filter:146  Arkaine's Valor Balrog Skin
+- ItemDisplay[UNI !ID upl !ETH]:%NAME%%SOUNDID-2585%%CONTINUE%// Arkaine's Valor Balrog Skin
++ ItemDisplay[UNI !ID upl !ETH]:%NAME%%CONTINUE%// Arkaine's Valor Balrog Skin
+@ 160-uniques-value-tiers.filter:147  Ormus' Robes Dusk Shroud
+- ItemDisplay[UNI !ID uui !ETH]:%NAME%%SOUNDID-4249%%CONTINUE%// Ormus' Robes Dusk Shroud
++ ItemDisplay[UNI !ID uui !ETH]:%NAME%%CONTINUE%// Ormus' Robes Dusk Shroud
+@ 160-uniques-value-tiers.filter:148  Guardian Angel Templar Coat
+- ItemDisplay[UNI !ID xlt]:%NAME%%SOUNDID-2585%%CONTINUE%// Guardian Angel Templar Coat
++ ItemDisplay[UNI !ID xlt]:%NAME%%CONTINUE%// Guardian Angel Templar Coat
+@ 160-uniques-value-tiers.filter:149  Wraithskin Diamond Mail
+- ItemDisplay[UNI !ID ung]:%NAME%%SOUNDID-2585%%CONTINUE%// Wraithskin Diamond Mail
++ ItemDisplay[UNI !ID ung]:%NAME%%CONTINUE%// Wraithskin Diamond Mail
+@ 160-uniques-value-tiers.filter:153  The Gladiator's Bane Wire Fleece
+- ItemDisplay[UNI !ID utu]:%NAME%%SOUNDID-2585%%CONTINUE%// The Gladiator's Bane Wire Fleece
++ ItemDisplay[UNI !ID utu]:%NAME%%CONTINUE%// The Gladiator's Bane Wire Fleece
+@ 160-uniques-value-tiers.filter:154  Skin of the Vipermagi Serpentskin Armor
+- ItemDisplay[UNI !ID xea]:%NAME%%SOUNDID-2585%%CONTINUE%// Skin of the Vipermagi Serpentskin Armor
++ ItemDisplay[UNI !ID xea]:%NAME%%CONTINUE%// Skin of the Vipermagi Serpentskin Armor
+@ 160-uniques-value-tiers.filter:155  Skullder's Ire Russet Armor
+- ItemDisplay[UNI !ID xpl !ETH]:%NAME%%SOUNDID-2585%%CONTINUE%// Skullder's Ire Russet Armor
++ ItemDisplay[UNI !ID xpl !ETH]:%NAME%%CONTINUE%// Skullder's Ire Russet Armor
+@ 160-uniques-value-tiers.filter:156  Atma's Wail Embossed Plate
+- ItemDisplay[UNI !ID xth FILTLVL<8]:%NAME%%SOUNDID-2585%%CONTINUE%// Atma's Wail Embossed Plate
++ ItemDisplay[UNI !ID xth FILTLVL<8]:%NAME%%CONTINUE%// Atma's Wail Embossed Plate
+@ 160-uniques-value-tiers.filter:157  Que-Hegan's Wisdom Mage Plate
+- ItemDisplay[UNI !ID xtp FILTLVL<8]:%NAME%%SOUNDID-2585%%CONTINUE%// Que-Hegan's Wisdom Mage Plate
++ ItemDisplay[UNI !ID xtp FILTLVL<8]:%NAME%%CONTINUE%// Que-Hegan's Wisdom Mage Plate
+@ 160-uniques-value-tiers.filter:158  Eth Arkaine's Valor Balrog Skin
+- ItemDisplay[UNI !ID upl ETH]:%NAME%%SOUNDID-2585%%CONTINUE%// Eth Arkaine's Valor Balrog Skin
++ ItemDisplay[UNI !ID upl ETH]:%NAME%%CONTINUE%// Eth Arkaine's Valor Balrog Skin
+@ 160-uniques-value-tiers.filter:159  Eth Ormus' Robes Dusk Shroud
+- ItemDisplay[UNI !ID uui ETH]:%NAME%%SOUNDID-4249%%CONTINUE%// Eth Ormus' Robes Dusk Shroud
++ ItemDisplay[UNI !ID uui ETH]:%NAME%%CONTINUE%// Eth Ormus' Robes Dusk Shroud
+@ 160-uniques-value-tiers.filter:178  String of Ears Demonhide Sash
+- ItemDisplay[UNI !ID zlb]:%NAME%%SOUNDID-2585%%CONTINUE%// String of Ears Demonhide Sash
++ ItemDisplay[UNI !ID zlb]:%NAME%%CONTINUE%// String of Ears Demonhide Sash
+@ 160-uniques-value-tiers.filter:179  Thundergod's Vigor War Belt
+- ItemDisplay[UNI !ID zhb !ETH]:%NAME%%SOUNDID-2443%%CONTINUE%// Thundergod's Vigor War Belt
++ ItemDisplay[UNI !ID zhb !ETH]:%NAME%%CONTINUE%// Thundergod's Vigor War Belt
+@ 160-uniques-value-tiers.filter:180  Arachnid Mesh Spiderweb Sash
+- ItemDisplay[UNI !ID ulc]:%NAME%%SOUNDID-2585%%CONTINUE%// Arachnid Mesh Spiderweb Sash
++ ItemDisplay[UNI !ID ulc]:%NAME%%SOUNDID-4717%%CONTINUE%// Arachnid Mesh Spiderweb Sash
+@ 160-uniques-value-tiers.filter:181  Verdungo's Hearty Cord Mithril Coil
+- ItemDisplay[UNI !ID umc]:%NAME%%SOUNDID-2585%%CONTINUE%// Verdungo's Hearty Cord Mithril Coil
++ ItemDisplay[UNI !ID umc]:%NAME%%SOUNDID-4717%%CONTINUE%// Verdungo's Hearty Cord Mithril Coil
+@ 160-uniques-value-tiers.filter:182  Snowclash Battle Belt
+- ItemDisplay[UNI !ID ztb !ETH]:%NAME%%SOUNDID-2440%%CONTINUE%// Snowclash Battle Belt
++ ItemDisplay[UNI !ID ztb !ETH]:%NAME%%CONTINUE%// Snowclash Battle Belt
+@ 160-uniques-value-tiers.filter:183  Siggard's Staunch Colossus Girdle
+- ItemDisplay[UNI !ID uhc]:%NAME%%SOUNDID-2585%%CONTINUE%// Siggard's Staunch Colossus Girdle
++ ItemDisplay[UNI !ID uhc]:%NAME%%SOUNDID-4717%%CONTINUE%// Siggard's Staunch Colossus Girdle
+@ 160-uniques-value-tiers.filter:186  Razortail Sharkskin Belt
+- ItemDisplay[UNI !ID zvb]:%NAME%%SOUNDID-2585%%CONTINUE%// Razortail Sharkskin Belt
++ ItemDisplay[UNI !ID zvb]:%NAME%%CONTINUE%// Razortail Sharkskin Belt
+@ 160-uniques-value-tiers.filter:187  Nosferatu's Coil Vampirefang Belt
+- ItemDisplay[UNI !ID uvc]:%NAME%%SOUNDID-2585%%CONTINUE%// Nosferatu's Coil Vampirefang Belt
++ ItemDisplay[UNI !ID uvc]:%NAME%%CONTINUE%// Nosferatu's Coil Vampirefang Belt
+@ 160-uniques-value-tiers.filter:188  Eth Thundergod's Vigor War Belt
+- ItemDisplay[UNI !ID zhb ETH]:%NAME%%SOUNDID-2443%%CONTINUE%// Eth Thundergod's Vigor War Belt
++ ItemDisplay[UNI !ID zhb ETH]:%NAME%%CONTINUE%// Eth Thundergod's Vigor War Belt
+@ 160-uniques-value-tiers.filter:189  Eth Snowclash Battle Belt
+- ItemDisplay[UNI !ID ztb ETH]:%NAME%%SOUNDID-2440%%CONTINUE%// Eth Snowclash Battle Belt
++ ItemDisplay[UNI !ID ztb ETH]:%NAME%%SOUNDID-4717%%CONTINUE%// Eth Snowclash Battle Belt
+@ 160-uniques-value-tiers.filter:197  War Traveler Battle Boots
+- ItemDisplay[UNI !ID xtb]:%NAME%%SOUNDID-2585%%CONTINUE%// War Traveler Battle Boots
++ ItemDisplay[UNI !ID xtb]:%NAME%%CONTINUE%// War Traveler Battle Boots
+@ 160-uniques-value-tiers.filter:198  Gore Rider War Boots
+- ItemDisplay[UNI !ID xhb]:%NAME%%SOUNDID-2585%%CONTINUE%// Gore Rider War Boots
++ ItemDisplay[UNI !ID xhb]:%NAME%%SOUNDID-4717%%CONTINUE%// Gore Rider War Boots
+@ 160-uniques-value-tiers.filter:199  Waterwalk Sharkskin Boots
+- ItemDisplay[UNI !ID xvb]:%NAME%%SOUNDID-2585%%CONTINUE%// Waterwalk Sharkskin Boots
++ ItemDisplay[UNI !ID xvb]:%NAME%%CONTINUE%// Waterwalk Sharkskin Boots
+@ 160-uniques-value-tiers.filter:200  Shadow Dancer Myrmidon Greaves
+- ItemDisplay[UNI !ID uhb]:%NAME%%SOUNDID-2302%%CONTINUE%// Shadow Dancer Myrmidon Greaves
++ ItemDisplay[UNI !ID uhb]:%NAME%%SOUNDID-4717%%CONTINUE%// Shadow Dancer Myrmidon Greaves
+@ 160-uniques-value-tiers.filter:203  Marrowwalk Boneweave Boots
+- ItemDisplay[UNI !ID umb]:%NAME%%SOUNDID-2585%%CONTINUE%// Marrowwalk Boneweave Boots
++ ItemDisplay[UNI !ID umb]:%NAME%%CONTINUE%// Marrowwalk Boneweave Boots
+@ 160-uniques-value-tiers.filter:204  Sandstorm Trek Scarabshell Boots
+- ItemDisplay[UNI !ID uvb]:%NAME%%SOUNDID-2585%%CONTINUE%// Sandstorm Trek Scarabshell Boots
++ ItemDisplay[UNI !ID uvb]:%NAME%%CONTINUE%// Sandstorm Trek Scarabshell Boots
+@ 160-uniques-value-tiers.filter:205  Infernostride Demonhide Boots
+- ItemDisplay[UNI !ID xlb FILTLVL<8]:%NAME%%SOUNDID-2585%%CONTINUE%// Infernostride Demonhide Boots
++ ItemDisplay[UNI !ID xlb FILTLVL<8]:%NAME%%CONTINUE%// Infernostride Demonhide Boots
+@ 160-uniques-value-tiers.filter:214  Lava Gout Battle Gauntlets
+- ItemDisplay[UNI !ID xtg]:%NAME%%SOUNDID-2403%%CONTINUE%// Lava Gout Battle Gauntlets
++ ItemDisplay[UNI !ID xtg]:%NAME%%CONTINUE%// Lava Gout Battle Gauntlets
+@ 160-uniques-value-tiers.filter:215  Dracul's Grasp Vampirebone Gloves
+- ItemDisplay[UNI !ID uvg]:%NAME%%SOUNDID-2585%%CONTINUE%// Dracul's Grasp Vampirebone Gloves
++ ItemDisplay[UNI !ID uvg]:%NAME%%CONTINUE%// Dracul's Grasp Vampirebone Gloves
+@ 160-uniques-value-tiers.filter:216  Soul Drainer Vambraces
+- ItemDisplay[UNI !ID umg]:%NAME%%SOUNDID-2585%%CONTINUE%// Soul Drainer Vambraces
++ ItemDisplay[UNI !ID umg]:%NAME%%CONTINUE%// Soul Drainer Vambraces
+@ 160-uniques-value-tiers.filter:217  Steelrend Ogre Gauntlets
+- ItemDisplay[UNI !ID uhg]:%NAME%%SOUNDID-2585%%CONTINUE%// Steelrend Ogre Gauntlets
++ ItemDisplay[UNI !ID uhg]:%NAME%%SOUNDID-4717%%CONTINUE%// Steelrend Ogre Gauntlets
+@ 160-uniques-value-tiers.filter:218  Occultist Crusader Gauntlets
+- ItemDisplay[UNI !ID utg]:%NAME%%SOUNDID-2585%%CONTINUE%// Occultist Crusader Gauntlets
++ ItemDisplay[UNI !ID utg]:%NAME%%SOUNDID-4717%%CONTINUE%// Occultist Crusader Gauntlets
+@ 160-uniques-value-tiers.filter:221  Magefist Light Gauntlets
+- ItemDisplay[UNI !ID tgl]:%NAME%%SOUNDID-422%%CONTINUE%// Magefist Light Gauntlets
++ ItemDisplay[UNI !ID tgl]:%NAME%%CONTINUE%// Magefist Light Gauntlets
+@ 160-uniques-value-tiers.filter:222  Frostburn Gauntlets
+- ItemDisplay[UNI !ID hgl FILTLVL<8]:%NAME%%SOUNDID-2585%%CONTINUE%// Frostburn Gauntlets
++ ItemDisplay[UNI !ID hgl FILTLVL<8]:%NAME%%CONTINUE%// Frostburn Gauntlets
+@ 160-uniques-value-tiers.filter:236  Vampire Gaze Grim Helm
+- ItemDisplay[UNI !ID xh9]:%NAME%%SOUNDID-2585%%CONTINUE%// Vampire Gaze Grim Helm
++ ItemDisplay[UNI !ID xh9]:%NAME%%CONTINUE%// Vampire Gaze Grim Helm
+@ 160-uniques-value-tiers.filter:237  Harlequin Crest Shako
+- ItemDisplay[UNI !ID uap !ETH]:%NAME%%SOUNDID-2585%%CONTINUE%// Harlequin Crest Shako
++ ItemDisplay[UNI !ID uap !ETH]:%NAME%%CONTINUE%// Harlequin Crest Shako
+@ 160-uniques-value-tiers.filter:238  Veil of Steel or Nightwing's Veil Spired Helm
+- ItemDisplay[UNI !ID uhm]:%NAME%%SOUNDID-2585%%CONTINUE%// Veil of Steel or Nightwing's Veil Spired Helm
++ ItemDisplay[UNI !ID uhm]:%NAME%%SOUNDID-4717%%CONTINUE%// Veil of Steel or Nightwing's Veil Spired Helm
+@ 160-uniques-value-tiers.filter:239  Andariel's Visage Demonhead
+- ItemDisplay[UNI !ID usk]:%NAME%%SOUNDID-4629%%CONTINUE%// Andariel's Visage Demonhead
++ ItemDisplay[UNI !ID usk]:%NAME%%CONTINUE%// Andariel's Visage Demonhead
+@ 160-uniques-value-tiers.filter:240  Crown of Ages Corona
+- ItemDisplay[UNI !ID urn]:%NAME%%SOUNDID-2585%%CONTINUE%// Crown of Ages Corona
++ ItemDisplay[UNI !ID urn]:%NAME%%SOUNDID-4717%%CONTINUE%// Crown of Ages Corona
+@ 160-uniques-value-tiers.filter:241  Giant Skull Bone Visage
+- ItemDisplay[UNI !ID uh9]:%NAME%%SOUNDID-2585%%CONTINUE%// Giant Skull Bone Visage
++ ItemDisplay[UNI !ID uh9]:%NAME%%CONTINUE%// Giant Skull Bone Visage
+@ 160-uniques-value-tiers.filter:242  Steel Shade Armet
+- ItemDisplay[UNI !ID ulm FILTLVL<8]:%NAME%%SOUNDID-2585%%CONTINUE%// Steel Shade Armet
++ ItemDisplay[UNI !ID ulm FILTLVL<8]:%NAME%%CONTINUE%// Steel Shade Armet
+@ 160-uniques-value-tiers.filter:243  Sage's Defiance Giant Conch
+- ItemDisplay[UNI !ID uhl FILTLVL<8]:%NAME%%SOUNDID-2585%%CONTINUE%// Sage's Defiance Giant Conch
++ ItemDisplay[UNI !ID uhl FILTLVL<8]:%NAME%%CONTINUE%// Sage's Defiance Giant Conch
+@ 160-uniques-value-tiers.filter:248  Rockstopper Sallet
+- ItemDisplay[UNI !ID xkp FILTLVL<8]:%NAME%%SOUNDID-2585%%CONTINUE%// Rockstopper Sallet
++ ItemDisplay[UNI !ID xkp FILTLVL<8]:%NAME%%CONTINUE%// Rockstopper Sallet
+@ 160-uniques-value-tiers.filter:249  Eth Harlequin Crest Shako
+- ItemDisplay[UNI !ID uap ETH]:%NAME%%SOUNDID-2585%%CONTINUE%// Eth Harlequin Crest Shako
++ ItemDisplay[UNI !ID uap ETH]:%NAME%%CONTINUE%// Eth Harlequin Crest Shako
+@ 160-uniques-value-tiers.filter:250  Valkyrie Wing Winged Helm
+- ItemDisplay[UNI !ID xhm FILTLVL<8]:%NAME%%SOUNDID-2585%%CONTINUE%// Valkyrie Wing Winged Helm
++ ItemDisplay[UNI !ID xhm FILTLVL<8]:%NAME%%CONTINUE%// Valkyrie Wing Winged Helm
+@ 160-uniques-value-tiers.filter:265  Gerke's Sanctuary Pavise
+- ItemDisplay[UNI !ID xow]:%NAME%%SOUNDID-2585%%CONTINUE%// Gerke's Sanctuary Pavise
++ ItemDisplay[UNI !ID xow]:%NAME%%CONTINUE%// Gerke's Sanctuary Pavise
+@ 160-uniques-value-tiers.filter:266  Stormshield Monarch
+- ItemDisplay[UNI !ID uit]:%NAME%%SOUNDID-2585%%CONTINUE%// Stormshield Monarch
++ ItemDisplay[UNI !ID uit]:%NAME%%SOUNDID-4717%%CONTINUE%// Stormshield Monarch
+@ 160-uniques-value-tiers.filter:267  Spirit Ward Ward
+- ItemDisplay[UNI !ID uts]:%NAME%%SOUNDID-2301%%CONTINUE%// Spirit Ward Ward
++ ItemDisplay[UNI !ID uts]:%NAME%%CONTINUE%// Spirit Ward Ward
+@ 160-uniques-value-tiers.filter:270  Medusa's Gaze Aegis
+- ItemDisplay[UNI !ID uow FILTLVL<8]:%NAME%%SOUNDID-2585%%CONTINUE%// Medusa's Gaze Aegis
++ ItemDisplay[UNI !ID uow FILTLVL<8]:%NAME%%CONTINUE%// Medusa's Gaze Aegis
+@ 160-uniques-value-tiers.filter:271  Lidless Wall Grim Shield
+- ItemDisplay[UNI !ID xsh]:%NAME%%SOUNDID-2585%%CONTINUE%// Lidless Wall Grim Shield
++ ItemDisplay[UNI !ID xsh]:%NAME%%CONTINUE%// Lidless Wall Grim Shield
+@ 160-uniques-value-tiers.filter:272  Head Hunter's Glory Troll Nest
+- ItemDisplay[UNI !ID ush]:%NAME%%SOUNDID-2585%%CONTINUE%// Head Hunter's Glory Troll Nest
++ ItemDisplay[UNI !ID ush]:%NAME%%CONTINUE%// Head Hunter's Glory Troll Nest
+@ 160-uniques-value-tiers.filter:273  Spike Thorn Blade Barrier
+- ItemDisplay[UNI !ID upk]:%NAME%%SOUNDID-2585%%CONTINUE%// Spike Thorn Blade Barrier
++ ItemDisplay[UNI !ID upk]:%NAME%%CONTINUE%// Spike Thorn Blade Barrier
+@ 160-uniques-value-tiers.filter:274  Twilight's Reflection Hyperion
+- ItemDisplay[UNI !ID urg FILTLVL<8]:%NAME%%SOUNDID-2585%%CONTINUE%// Twilight's Reflection Hyperion
++ ItemDisplay[UNI !ID urg FILTLVL<8]:%NAME%%CONTINUE%// Twilight's Reflection Hyperion
+@ 160-uniques-value-tiers.filter:286  Pus Spitter Siege Crossbow
+- ItemDisplay[UNI !ID 8mx FILTLVL<8]:%NAME%%SOUNDID-2585%%CONTINUE%// Pus Spitter Siege Crossbow
++ ItemDisplay[UNI !ID 8mx FILTLVL<8]:%NAME%%CONTINUE%// Pus Spitter Siege Crossbow
+@ 160-uniques-value-tiers.filter:287  Windforce Hydra Bow
+- ItemDisplay[UNI !ID 6lw]:%NAME%%SOUNDID-2261%%CONTINUE%// Windforce Hydra Bow
++ ItemDisplay[UNI !ID 6lw]:%NAME%%SOUNDID-4717%%CONTINUE%// Windforce Hydra Bow
+@ 160-uniques-value-tiers.filter:290  Pus Spitter Siege Crossbow
+- ItemDisplay[UNI !ID 8mx FILTLVL>7]:%NAME%%SOUNDID-2585%%CONTINUE%// Pus Spitter Siege Crossbow
++ ItemDisplay[UNI !ID 8mx FILTLVL>7]:%NAME%%CONTINUE%// Pus Spitter Siege Crossbow
+@ 160-uniques-value-tiers.filter:291  Witchwild String Short Siege Bow
+- ItemDisplay[UNI !ID 8s8 FILTLVL<8]:%NAME%%SOUNDID-2585%%CONTINUE%// Witchwild String Short Siege Bow
++ ItemDisplay[UNI !ID 8s8 FILTLVL<8]:%NAME%%CONTINUE%// Witchwild String Short Siege Bow
+@ 160-uniques-value-tiers.filter:292  Demon Machine Chu-Ko-Nu
+- ItemDisplay[UNI !ID 8rx FILTLVL<8]:%NAME%%SOUNDID-2585%%CONTINUE%// Demon Machine Chu-Ko-Nu
++ ItemDisplay[UNI !ID 8rx FILTLVL<8]:%NAME%%CONTINUE%// Demon Machine Chu-Ko-Nu
+@ 160-uniques-value-tiers.filter:305  Ghostflame Legend Spike
+- ItemDisplay[UNI !ID 7bl]:%NAME%%SOUNDID-2594%%CONTINUE%// Ghostflame Legend Spike
++ ItemDisplay[UNI !ID 7bl]:%NAME%%SOUNDID-4717%%CONTINUE%// Ghostflame Legend Spike
+@ 160-uniques-value-tiers.filter:314  Executioner's Justice Glorious Axe
+- ItemDisplay[UNI !ID 7gi]:%NAME%%SOUNDID-2594%%CONTINUE%// Executioner's Justice Glorious Axe
++ ItemDisplay[UNI !ID 7gi]:%NAME%%SOUNDID-4717%%CONTINUE%// Executioner's Justice Glorious Axe
+@ 160-uniques-value-tiers.filter:317  Warlord's Trust Military Axe
+- ItemDisplay[UNI !ID 9la ETH]:%NAME%%SOUNDID-2594%%CONTINUE%// Warlord's Trust Military Axe
++ ItemDisplay[UNI !ID 9la ETH]:%NAME%%CONTINUE%// Warlord's Trust Military Axe
+@ 160-uniques-value-tiers.filter:318  Death Cleaver Berserker Axe
+- ItemDisplay[UNI !ID 7wa]:%NAME%%SOUNDID-2594%%CONTINUE%// Death Cleaver Berserker Axe
++ ItemDisplay[UNI !ID 7wa]:%NAME%%CONTINUE%// Death Cleaver Berserker Axe
+@ 160-uniques-value-tiers.filter:319  Messerschmidt's Reaver Champion Axe
+- ItemDisplay[UNI !ID 7ga]:%NAME%%SOUNDID-2594%%CONTINUE%// Messerschmidt's Reaver Champion Axe
++ ItemDisplay[UNI !ID 7ga]:%NAME%%CONTINUE%// Messerschmidt's Reaver Champion Axe
+@ 160-uniques-value-tiers.filter:320  Hellslayer Decapitator
+- ItemDisplay[UNI !ID 7bt FILTLVL<8]:%NAME%%SOUNDID-2594%%CONTINUE%// Hellslayer Decapitator
++ ItemDisplay[UNI !ID 7bt FILTLVL<8]:%NAME%%CONTINUE%// Hellslayer Decapitator
+@ 160-uniques-value-tiers.filter:336  Eth Warshrike Winged Knife
+- ItemDisplay[UNI !ID 7bk ETH FILTLVL<8]:%NAME%%SOUNDID-2594%%CONTINUE%// Eth Warshrike Winged Knife
++ ItemDisplay[UNI !ID 7bk ETH FILTLVL<8]:%NAME%%CONTINUE%// Eth Warshrike Winged Knife
+@ 160-uniques-value-tiers.filter:337  Lacerator Winged Axe
+- ItemDisplay[UNI !ID 7b8 ETH]:%NAME%%SOUNDID-2594%%CONTINUE%// Lacerator Winged Axe
++ ItemDisplay[UNI !ID 7b8 ETH]:%NAME%%CONTINUE%// Lacerator Winged Axe
+@ 160-uniques-value-tiers.filter:349  Gargoyle's Bite Winged Harpoon
+- ItemDisplay[UNI !ID 7ts FILTLVL<8]:%NAME%%SOUNDID-2232%%CONTINUE%// Gargoyle's Bite Winged Harpoon
++ ItemDisplay[UNI !ID 7ts FILTLVL<8]:%NAME%%CONTINUE%// Gargoyle's Bite Winged Harpoon
+@ 160-uniques-value-tiers.filter:357  Earth Shifter or The Cranium Basher Thunder Maul
+- ItemDisplay[UNI !ID 7gm]:%NAME%%SOUNDID-2594%%CONTINUE%// Earth Shifter or The Cranium Basher Thunder Maul
++ ItemDisplay[UNI !ID 7gm]:%NAME%%SOUNDID-4717%%CONTINUE%// Earth Shifter or The Cranium Basher Thunder Maul
+@ 160-uniques-value-tiers.filter:358  Stone Crusher or Schaefer's Hammer Legendary Mallet
+- ItemDisplay[UNI !ID 7wh]:%NAME%%SOUNDID-2594%%CONTINUE%// Stone Crusher or Schaefer's Hammer Legendary Mallet
++ ItemDisplay[UNI !ID 7wh]:%NAME%%SOUNDID-4717%%CONTINUE%// Stone Crusher or Schaefer's Hammer Legendary Mallet
+@ 160-uniques-value-tiers.filter:361  Stormlash or Horizons Tornado
+- ItemDisplay[UNI !ID 7fl]:%NAME%%SOUNDID-2594%%CONTINUE%// Stormlash or Horizons Tornado
++ ItemDisplay[UNI !ID 7fl]:%NAME%%CONTINUE%// Stormlash or Horizons Tornado
+@ 160-uniques-value-tiers.filter:362  Earthshaker Battle Hammer
+- ItemDisplay[UNI !ID 9wh FILTLVL<8]:%NAME%%SOUNDID-2333%%CONTINUE%// Earthshaker Battle Hammer
++ ItemDisplay[UNI !ID 9wh FILTLVL<8]:%NAME%%CONTINUE%// Earthshaker Battle Hammer
+@ 160-uniques-value-tiers.filter:363  The Gavel Of Pain Martel de Fer
+- ItemDisplay[UNI !ID 9gm ETH]:%NAME%%SOUNDID-2333%%CONTINUE%// The Gavel Of Pain Martel de Fer
++ ItemDisplay[UNI !ID 9gm ETH]:%NAME%%CONTINUE%// The Gavel Of Pain Martel de Fer
+@ 160-uniques-value-tiers.filter:377  The Reaper's Toll Thresher
+- ItemDisplay[UNI !ID 7s8]:%NAME%%SOUNDID-2594%%CONTINUE%// The Reaper's Toll Thresher
++ ItemDisplay[UNI !ID 7s8]:%NAME%%CONTINUE%// The Reaper's Toll Thresher
+@ 160-uniques-value-tiers.filter:378  Stormspire Giant Thresher
+- ItemDisplay[UNI !ID 7wc]:%NAME%%SOUNDID-2594%%CONTINUE%// Stormspire Giant Thresher
++ ItemDisplay[UNI !ID 7wc]:%NAME%%SOUNDID-4717%%CONTINUE%// Stormspire Giant Thresher
+@ 160-uniques-value-tiers.filter:379  Tomb Reaver Cryptic Axe
+- ItemDisplay[UNI !ID 7pa]:%NAME%%SOUNDID-2594%%CONTINUE%// Tomb Reaver Cryptic Axe
++ ItemDisplay[UNI !ID 7pa]:%NAME%%CONTINUE%// Tomb Reaver Cryptic Axe
+@ 160-uniques-value-tiers.filter:382  Grim's Burning Dead Grim Scythe
+- ItemDisplay[UNI !ID 9wc FILTLVL<8]:%NAME%%SOUNDID-2594%%CONTINUE%// Grim's Burning Dead Grim Scythe
++ ItemDisplay[UNI !ID 9wc FILTLVL<8]:%NAME%%CONTINUE%// Grim's Burning Dead Grim Scythe
+@ 160-uniques-value-tiers.filter:383  Giant Maimer Colossus Voulge
+- ItemDisplay[UNI !ID 7vo ETH]:%NAME%%SOUNDID-2594%%CONTINUE%// Giant Maimer Colossus Voulge
++ ItemDisplay[UNI !ID 7vo ETH]:%NAME%%CONTINUE%// Giant Maimer Colossus Voulge
+@ 160-uniques-value-tiers.filter:393  Eth Steel Pillar War Pike
+- ItemDisplay[UNI !ID 7p7 ETH]:%NAME%%SOUNDID-2594%%CONTINUE%// Eth Steel Pillar War Pike
++ ItemDisplay[UNI !ID 7p7 ETH]:%NAME%%SOUNDID-4717%%CONTINUE%// Eth Steel Pillar War Pike
+@ 160-uniques-value-tiers.filter:396  Arioc's Needle
+- ItemDisplay[UNI !ID 7sr ETH]:%NAME%%SOUNDID-2594%%CONTINUE%// Arioc's Needle
++ ItemDisplay[UNI !ID 7sr ETH]:%NAME%%CONTINUE%// Arioc's Needle
+@ 160-uniques-value-tiers.filter:397  Stoneraven Matriarchal Spear
+- ItemDisplay[UNI !ID amd ETH]:%NAME%%SOUNDID-2594%%CONTINUE%// Stoneraven Matriarchal Spear
++ ItemDisplay[UNI !ID amd ETH]:%NAME%%CONTINUE%// Stoneraven Matriarchal Spear
+@ 160-uniques-value-tiers.filter:398  Steel Pillar War Pike
+- ItemDisplay[UNI !ID 7p7 !ETH FILTLVL<8]:%NAME%%SOUNDID-2594%%CONTINUE%// Steel Pillar War Pike
++ ItemDisplay[UNI !ID 7p7 !ETH FILTLVL<8]:%NAME%%SOUNDID-4717%%CONTINUE%// Steel Pillar War Pike
+@ 160-uniques-value-tiers.filter:411  Astreon's Iron Ward Caduceus
+- ItemDisplay[UNI !ID 7ws]:%NAME%%SOUNDID-2594%%CONTINUE%// Astreon's Iron Ward Caduceus
++ ItemDisplay[UNI !ID 7ws]:%NAME%%SOUNDID-4717%%CONTINUE%// Astreon's Iron Ward Caduceus
+@ 160-uniques-value-tiers.filter:412  Hand of Blessed Light Divine Scepter
+- ItemDisplay[UNI !ID 9ws]:%NAME%%SOUNDID-2594%%CONTINUE%// Hand of Blessed Light Divine Scepter
++ ItemDisplay[UNI !ID 9ws]:%NAME%%CONTINUE%// Hand of Blessed Light Divine Scepter
+@ 160-uniques-value-tiers.filter:413  Akarat's Devotion, Seraph Rod
+- ItemDisplay[UNI !ID 7qs]:%NAME%%SOUNDID-2594%%CONTINUE%// Akarat's Devotion, Seraph Rod
++ ItemDisplay[UNI !ID 7qs]:%NAME%%CONTINUE%// Akarat's Devotion, Seraph Rod
+@ 160-uniques-value-tiers.filter:416  Heaven's Light or The Redeemer Mighty Scepter
+- ItemDisplay[UNI !ID 7sc]:%NAME%%SOUNDID-2594%%CONTINUE%// Heaven's Light or The Redeemer Mighty Scepter
++ ItemDisplay[UNI !ID 7sc]:%NAME%%CONTINUE%// Heaven's Light or The Redeemer Mighty Scepter
+@ 160-uniques-value-tiers.filter:421  Skull Collector Rune Staff
+- ItemDisplay[UNI !ID 8ws]:%NAME%%SOUNDID-2448%%CONTINUE%// Skull Collector Rune Staff
++ ItemDisplay[UNI !ID 8ws]:%NAME%%CONTINUE%// Skull Collector Rune Staff
+@ 160-uniques-value-tiers.filter:422  Mang Song's Lesson Archon Staff
+- ItemDisplay[UNI !ID 6ws]:%NAME%%SOUNDID-619%%CONTINUE%// Mang Song's Lesson Archon Staff
++ ItemDisplay[UNI !ID 6ws]:%NAME%%SOUNDID-4717%%CONTINUE%// Mang Song's Lesson Archon Staff
+@ 160-uniques-value-tiers.filter:423  Brimstone Rain Shillelagh
+- ItemDisplay[UNI !ID 6bs]:%NAME%%SOUNDID-2437%%CONTINUE%// Brimstone Rain Shillelagh
++ ItemDisplay[UNI !ID 6bs]:%NAME%%CONTINUE%// Brimstone Rain Shillelagh
+@ 160-uniques-value-tiers.filter:426  Chromatic Ire Cedar Staff
+- ItemDisplay[UNI !ID 8cs FILTLVL<8]:%NAME%%SOUNDID-2246%%CONTINUE%// Chromatic Ire Cedar Staff
++ ItemDisplay[UNI !ID 8cs FILTLVL<8]:%NAME%%CONTINUE%// Chromatic Ire Cedar Staff
+@ 160-uniques-value-tiers.filter:427  Ribcracker Quarterstaff
+- ItemDisplay[UNI !ID 8ls ETH]:%NAME%%SOUNDID-329%%CONTINUE%// Ribcracker Quarterstaff
++ ItemDisplay[UNI !ID 8ls ETH]:%NAME%%CONTINUE%// Ribcracker Quarterstaff
+@ 160-uniques-value-tiers.filter:440  Doombringer Champion Sword
+- ItemDisplay[UNI !ID 7b7]:%NAME%%SOUNDID-2594%%CONTINUE%// Doombringer Champion Sword
++ ItemDisplay[UNI !ID 7b7]:%NAME%%CONTINUE%// Doombringer Champion Sword
+@ 160-uniques-value-tiers.filter:441  The Grandfather Colossus Blade
+- ItemDisplay[UNI !ID 7gd]:%NAME%%SOUNDID-2594%%CONTINUE%// The Grandfather Colossus Blade
++ ItemDisplay[UNI !ID 7gd]:%NAME%%SOUNDID-4717%%CONTINUE%// The Grandfather Colossus Blade
+@ 160-uniques-value-tiers.filter:442  Lightsabre or Azurewrath Phase Blade
+- ItemDisplay[UNI !ID 7cr]:%NAME%%SOUNDID-2594%%CONTINUE%// Lightsabre or Azurewrath Phase Blade
++ ItemDisplay[UNI !ID 7cr]:%NAME%%CONTINUE%// Lightsabre or Azurewrath Phase Blade
+@ 160-uniques-value-tiers.filter:445  Plague Bearer Rune Sword
+- ItemDisplay[UNI !ID 9ls]:%NAME%%SOUNDID-2594%%CONTINUE%// Plague Bearer Rune Sword
++ ItemDisplay[UNI !ID 9ls]:%NAME%%CONTINUE%// Plague Bearer Rune Sword
+@ 160-uniques-value-tiers.filter:446  Vile Husk Tusk Sword
+- ItemDisplay[UNI !ID 9gs ETH]:%NAME%%SOUNDID-2594%%CONTINUE%// Vile Husk Tusk Sword
++ ItemDisplay[UNI !ID 9gs ETH]:%NAME%%CONTINUE%// Vile Husk Tusk Sword
+@ 160-uniques-value-tiers.filter:466  Death's Web Unearthed Wand
+- ItemDisplay[UNI !ID 7gw]:%NAME%%SOUNDID-2473%%CONTINUE%// Death's Web Unearthed Wand
++ ItemDisplay[UNI !ID 7gw]:%NAME%%SOUNDID-4717%%CONTINUE%// Death's Web Unearthed Wand
+@ 160-uniques-value-tiers.filter:469  Boneshade Lich Wand
+- ItemDisplay[UNI !ID 7bw]:%NAME%%SOUNDID-2447%%CONTINUE%// Boneshade Lich Wand
++ ItemDisplay[UNI !ID 7bw]:%NAME%%SOUNDID-4717%%CONTINUE%// Boneshade Lich Wand
+@ 160-uniques-value-tiers.filter:470  Arm of King Leoric Tomb Wand
+- ItemDisplay[UNI !ID 9bw]:%NAME%%SOUNDID-1802%%CONTINUE%// Arm of King Leoric Tomb Wand
++ ItemDisplay[UNI !ID 9bw]:%NAME%%CONTINUE%// Arm of King Leoric Tomb Wand
+@ 160-uniques-value-tiers.filter:471  Nethercrux Ghost Wand
+- ItemDisplay[UNI !ID 7yw FILTLVL<8]:%NAME%%SOUNDID-1802%%CONTINUE%// Nethercrux Ghost Wand
++ ItemDisplay[UNI !ID 7yw FILTLVL<8]:%NAME%%CONTINUE%// Nethercrux Ghost Wand
+@ 160-uniques-value-tiers.filter:472  Blackhand Key Grave Wand
+- ItemDisplay[UNI !ID 9gw FILTLVL<8]:%NAME%%SOUNDID-2465%%CONTINUE%// Blackhand Key Grave Wand
++ ItemDisplay[UNI !ID 9gw FILTLVL<8]:%NAME%%CONTINUE%// Blackhand Key Grave Wand
+
+// == 170-sets.filter ==
+@ 170-sets.filter:138  Griswold's Valor Corona
+- ItemDisplay[SET !ID urn]:%NAME%%SOUNDID-2585%%CONTINUE%// Griswold's Valor Corona
++ ItemDisplay[SET !ID urn]:%NAME%%CONTINUE%// Griswold's Valor Corona
+@ 170-sets.filter:139  Griswold's Honor Vortex Shield
+- ItemDisplay[SET !ID paf]:%NAME%%SOUNDID-2585%%CONTINUE%// Griswold's Honor Vortex Shield
++ ItemDisplay[SET !ID paf]:%NAME%%CONTINUE%// Griswold's Honor Vortex Shield
+@ 170-sets.filter:140  Griswold's Redemption Caduceus
+- ItemDisplay[SET !ID 7ws]:%NAME%%SOUNDID-2594%%CONTINUE%// Griswold's Redemption Caduceus
++ ItemDisplay[SET !ID 7ws]:%NAME%%CONTINUE%// Griswold's Redemption Caduceus
+@ 170-sets.filter:141  Immortal King's Soul Cage Sacred Armor
+- ItemDisplay[SET !ID uar]:%NAME%%SOUNDID-2585%%CONTINUE%// Immortal King's Soul Cage Sacred Armor
++ ItemDisplay[SET !ID uar]:%NAME%%CONTINUE%// Immortal King's Soul Cage Sacred Armor
+@ 170-sets.filter:142  Tal Rasha's Guardianship Lacquered Plate
+- ItemDisplay[SET !ID uth]:%NAME%%SOUNDID-2585%%CONTINUE%// Tal Rasha's Guardianship Lacquered Plate
++ ItemDisplay[SET !ID uth]:%NAME%%CONTINUE%// Tal Rasha's Guardianship Lacquered Plate
+@ 170-sets.filter:143  Trang-Oul's Girth Troll Belt
+- ItemDisplay[SET !ID utc]:%NAME%%SOUNDID-2585%%CONTINUE%// Trang-Oul's Girth Troll Belt
++ ItemDisplay[SET !ID utc]:%NAME%%CONTINUE%// Trang-Oul's Girth Troll Belt
+@ 170-sets.filter:144  Taebaek's Glory Ward
+- ItemDisplay[SET !ID uts]:%NAME%%SOUNDID-2585%%CONTINUE%// Taebaek's Glory Ward
++ ItemDisplay[SET !ID uts]:%NAME%%CONTINUE%// Taebaek's Glory Ward
+@ 170-sets.filter:149  Aldur's Stony Gaze Hunter's Guise
+- ItemDisplay[SET !ID dr8 FILTLVL<12]:%NAME%%SOUNDID-2585%%CONTINUE%// Aldur's Stony Gaze Hunter's Guise
++ ItemDisplay[SET !ID dr8 FILTLVL<12]:%NAME%%CONTINUE%// Aldur's Stony Gaze Hunter's Guise
+@ 170-sets.filter:150  Aldur's Deception Shadow Plate
+- ItemDisplay[SET !ID uul FILTLVL<12]:%NAME%%SOUNDID-2585%%CONTINUE%// Aldur's Deception Shadow Plate
++ ItemDisplay[SET !ID uul FILTLVL<12]:%NAME%%CONTINUE%// Aldur's Deception Shadow Plate
+@ 170-sets.filter:151  Aldur's Advance Battle Boots
+- ItemDisplay[SET !ID xtb FILTLVL<12]:%NAME%%SOUNDID-2585%%CONTINUE%// Aldur's Advance Battle Boots
++ ItemDisplay[SET !ID xtb FILTLVL<12]:%NAME%%CONTINUE%// Aldur's Advance Battle Boots
+@ 170-sets.filter:152  M'avina's True Sight Diadem
+- ItemDisplay[SET !ID ci3 FILTLVL<12]:%NAME%%SOUNDID-2585%%CONTINUE%// M'avina's True Sight Diadem
++ ItemDisplay[SET !ID ci3 FILTLVL<12]:%NAME%%CONTINUE%// M'avina's True Sight Diadem
+@ 170-sets.filter:153  Trang-Oul's Guise Bone Visage
+- ItemDisplay[SET !ID uh9 FILTLVL<12]:%NAME%%SOUNDID-2585%%CONTINUE%// Trang-Oul's Guise Bone Visage
++ ItemDisplay[SET !ID uh9 FILTLVL<12]:%NAME%%CONTINUE%// Trang-Oul's Guise Bone Visage
+@ 170-sets.filter:154  Trang-Oul's Claws Heavy Bracers
+- ItemDisplay[SET !ID xmg FILTLVL<12]:%NAME%%SOUNDID-2585%%CONTINUE%// Trang-Oul's Claws Heavy Bracers
++ ItemDisplay[SET !ID xmg FILTLVL<12]:%NAME%%CONTINUE%// Trang-Oul's Claws Heavy Bracers
+@ 170-sets.filter:155  Trang-Oul's Wing Cantor Trophy
+- ItemDisplay[SET !ID ne9 FILTLVL<12]:%NAME%%SOUNDID-2585%%CONTINUE%// Trang-Oul's Wing Cantor Trophy
++ ItemDisplay[SET !ID ne9 FILTLVL<12]:%NAME%%CONTINUE%// Trang-Oul's Wing Cantor Trophy
+@ 170-sets.filter:156  Guillaume's Face Winged Helm
+- ItemDisplay[SET !ID xhm FILTLVL<12]:%NAME%%SOUNDID-2585%%CONTINUE%// Guillaume's Face Winged Helm
++ ItemDisplay[SET !ID xhm FILTLVL<12]:%NAME%%CONTINUE%// Guillaume's Face Winged Helm
+@ 170-sets.filter:157  Laying of Hands Bramble Mitts
+- ItemDisplay[SET !ID ulg FILTLVL<12]:%NAME%%SOUNDID-2585%%CONTINUE%// Laying of Hands Bramble Mitts
++ ItemDisplay[SET !ID ulg FILTLVL<12]:%NAME%%CONTINUE%// Laying of Hands Bramble Mitts
+@ 170-sets.filter:158  Natalya's Mark Scissors Suwayyah
+- ItemDisplay[SET !ID 7qr FILTLVL<12]:%NAME%%SOUNDID-2594%%CONTINUE%// Natalya's Mark Scissors Suwayyah
++ ItemDisplay[SET !ID 7qr FILTLVL<12]:%NAME%%CONTINUE%// Natalya's Mark Scissors Suwayyah
+@ 170-sets.filter:159  Natalya's Shadow Loricated Mail
+- ItemDisplay[SET !ID ucl FILTLVL<12]:%NAME%%SOUNDID-2585%%CONTINUE%// Natalya's Shadow Loricated Mail
++ ItemDisplay[SET !ID ucl FILTLVL<12]:%NAME%%CONTINUE%// Natalya's Shadow Loricated Mail
+@ 170-sets.filter:160  Eth Bul-Kathos' Tribal Guardian Colossus Sword
+- ItemDisplay[SET !ID ETH 7fb FILTLVL<12]:%NAME%%SOUNDID-2594%%CONTINUE%// Eth Bul-Kathos' Tribal Guardian Colossus Sword
++ ItemDisplay[SET !ID ETH 7fb FILTLVL<12]:%NAME%%CONTINUE%// Eth Bul-Kathos' Tribal Guardian Colossus Sword
+@ 170-sets.filter:161  Eth Bul-Kathos' Sacred Charge Colossus Blade
+- ItemDisplay[SET !ID ETH 7gd FILTLVL<12]:%NAME%%SOUNDID-2594%%CONTINUE%// Eth Bul-Kathos' Sacred Charge Colossus Blade
++ ItemDisplay[SET !ID ETH 7gd FILTLVL<12]:%NAME%%CONTINUE%// Eth Bul-Kathos' Sacred Charge Colossus Blade
+@ 170-sets.filter:162  Eth Sazabi's Cobalt Redeemer Cryptic Sword
+- ItemDisplay[SET !ID ETH 7ls FILTLVL<12]:%NAME%%SOUNDID-2594%%CONTINUE%// Eth Sazabi's Cobalt Redeemer Cryptic Sword
++ ItemDisplay[SET !ID ETH 7ls FILTLVL<12]:%NAME%%CONTINUE%// Eth Sazabi's Cobalt Redeemer Cryptic Sword
+
+// == 190-rares.filter ==
+@ 190-rares.filter:17  Rare circlets, rings and amulets on level 12: no minimap icon
+- ItemDisplay[RARE !ID (CIRC OR rin OR amu) FILTLVL=12]:%NAME%%DOT-5E%%PX-6D%%TIER-0%// No notifications or flair for rare circlets, rings, or amulets on filter level 12
++ ItemDisplay[RARE !ID (CIRC OR rin OR amu) FILTLVL=12]:%NAME%// No notifications or flair for rare circlets, rings, or amulets on filter level 12
+@ 190-rares.filter:22  All unidentified rare Rings
+- ItemDisplay[RARE !ID rin FILTLVL<12]:%RARE_HIGH_VALUE_LEFT%  %YELLOW%%NAME%  %RARE_HIGH_VALUE_RIGHT%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%%SOUNDID-31%// All unidentified rare Rings
++ ItemDisplay[RARE !ID rin FILTLVL<12]:%RARE_HIGH_VALUE_LEFT%  %YELLOW%%NAME%  %RARE_HIGH_VALUE_RIGHT%%YELLOW%// All unidentified rare Rings
+@ 190-rares.filter:32  RARE !ID BELT FILTLVL<12
+- ItemDisplay[RARE !ID BELT FILTLVL<12]:%RARE_MEDIUM_VALUE_LEFT%  %NAME%  %RARE_MEDIUM_VALUE_RIGHT%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%//
++ ItemDisplay[RARE !ID BELT FILTLVL<12]:%RARE_MEDIUM_VALUE_LEFT%  %NAME%  %RARE_MEDIUM_VALUE_RIGHT%%YELLOW%//
+@ 190-rares.filter:33  RARE !ID BELT FILTLVL=12
+- ItemDisplay[RARE !ID BELT FILTLVL=12]:%NAME%%DOT-5E%%PX-6D%%TIER-0%//
++ ItemDisplay[RARE !ID BELT FILTLVL=12]:%NAME%//
+@ 190-rares.filter:35  Rare Boots: no minimap icon
+- ItemDisplay[RARE !ID BOOTS FILTLVL<8]:%RARE_MEDIUM_VALUE_LEFT%  %NAME%  %RARE_MEDIUM_VALUE_RIGHT%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%//
++ ItemDisplay[RARE !ID BOOTS FILTLVL<8]:%RARE_MEDIUM_VALUE_LEFT%  %NAME%  %RARE_MEDIUM_VALUE_RIGHT%%YELLOW%//
+@ 190-rares.filter:36  RARE !ID BOOTS FILTLVL~8-11
+- ItemDisplay[RARE !ID BOOTS FILTLVL~8-11]:%NAME%%DOT-5E%%PX-6D%%TIER-0%// 
++ ItemDisplay[RARE !ID BOOTS FILTLVL~8-11]:%RARE_MEDIUM_VALUE_LEFT%  %NAME%  %RARE_MEDIUM_VALUE_RIGHT%%YELLOW%// 
+@ 190-rares.filter:184  RARE !ID ETH (FILTLVL<10 OR FILTLVL=11) (gax OR 9ga OR 7ga)
+- ItemDisplay[RARE !ID ETH (FILTLVL<10 OR FILTLVL=11) (gax OR 9ga OR 7ga)]:%RARE_ETH_CRAFT_LEFT%  %NAME%  %RARE_ETH_CRAFT_RIGHT%%MAP-0B%%DOT-6A%%PX-20%//
++ ItemDisplay[RARE !ID ETH (FILTLVL<10 OR FILTLVL=11) (gax OR 9ga OR 7ga)]:%RARE_ETH_CRAFT_LEFT%  %NAME%  %RARE_ETH_CRAFT_RIGHT%//
+
+// == 200-magic.filter ==
+@ 200-magic.filter:8  Excluding Small and Grand Charms, Excluding Large Charms
+= // Keep orginal coloring for items
++ ItemDisplay[MAG !ID (cm1 OR cm3)]:%RED%%NAME%%CONTINUE%// Excluding Small and Grand Charms
++ ItemDisplay[MAG !ID cm2]:%CORAL%%NAME%%CONTINUE%// Excluding Large Charms
+@ 200-magic.filter:28  iLvl 91 or higher grand charms for cube rerolling
+- ItemDisplay[MAG !ID ILVL>90 cm3 FILTLVL<12 GROUND]:%MAGIC_CHARM_LEFT%  %BLUE%Grand Charm %WHITE%• %BLUE%%ILVL%  %MAGIC_CHARM_RIGHT%%BLUE%%BORDER-8F%%MAP-91%%DOT-C5%%PX-9F%// iLvl 91 or higher grand charms for cube rerolling
++ ItemDisplay[MAG !ID ILVL>90 cm3 FILTLVL<12 GROUND]:%MAGIC_CHARM_LEFT%  %RED%GRAND CHARM %WHITE%• %BLUE%%ILVL%  %MAGIC_CHARM_RIGHT%%BLUE%%BORDER-8F%%MAP-91%%DOT-C5%%PX-9F%// iLvl 91 or higher grand charms for cube rerolling
+@ 200-magic.filter:29  iLvl 91 or higher grand charms for cube rerolling
+- ItemDisplay[MAG !ID ILVL>90 cm3 FILTLVL<12 !GROUND]:%MAGIC_CHARM_LEFT%  %BLUE%Grand Charm %WHITE%• %BLUE%Item Level %ILVL%  %MAGIC_CHARM_RIGHT%%BLUE%%BORDER-8F%%MAP-91%%DOT-C5%%PX-9F%// iLvl 91 or higher grand charms for cube rerolling
++ ItemDisplay[MAG !ID ILVL>90 cm3 FILTLVL<12 !GROUND]:%MAGIC_CHARM_LEFT%  %RED%GRAND CHARM %WHITE%• %BLUE%Item Level %ILVL%  %MAGIC_CHARM_RIGHT%%BLUE%%BORDER-8F%%MAP-91%%DOT-C5%%PX-9F%// iLvl 91 or higher grand charms for cube rerolling
+@ 200-magic.filter:37  MAG !ID (cm1 OR cm3) FILTLVL=12 ILVL>89
+- ItemDisplay[MAG !ID (cm1 OR cm3) FILTLVL=12 ILVL>89]:%NAME%%BORDER-8F%%MAP-91%%DOT-C5%%PX-9F%%CONTINUE%//
++ ItemDisplay[MAG !ID (cm1 OR cm3) FILTLVL=12 ILVL>89]:%RED%%NAME%%BORDER-8F%%MAP-91%%DOT-C5%%PX-9F%%CONTINUE%//
+@ 200-magic.filter:38  MAG !ID (cm1 OR cm3) FILTLVL=12 ILVL<90
+x ItemDisplay[MAG !ID (cm1 OR cm3) FILTLVL=12 ILVL<90]:%NAME%%MAP-91%%DOT-C5%%PX-9F%%TIER-0%%CONTINUE%//
+@ 200-magic.filter:39  MAG !ID (cm1 OR cm3) FILTLVL~5-11 ILVL>89
+- ItemDisplay[MAG !ID (cm1 OR cm3) FILTLVL~5-11 ILVL>89]:%NAME%%BORDER-8F%%MAP-91%%DOT-C5%%PX-9F%%CONTINUE%//
++ ItemDisplay[MAG !ID (cm1 OR cm3) FILTLVL~5-11 ILVL>89]:%RED%%NAME%%BORDER-8F%%MAP-91%%DOT-C5%%PX-9F%%CONTINUE%//
+@ 200-magic.filter:40  MAG !ID (cm1 OR cm3) FILTLVL~5-11 ILVL<90
+x ItemDisplay[MAG !ID (cm1 OR cm3) FILTLVL~5-11 ILVL<90]:%NAME%%MAP-91%%DOT-C5%%PX-9F%%CONTINUE%//
+@ 200-magic.filter:41  MAG !ID (cm1 OR cm3) FILTLVL<5
+- ItemDisplay[MAG !ID (cm1 OR cm3) FILTLVL<5]:%NAME%%BORDER-8F%%MAP-91%%DOT-C5%%PX-9F%%CONTINUE%//
++ ItemDisplay[MAG !ID (cm1 OR cm3) FILTLVL<5]:%RED%%NAME%%BORDER-8F%%MAP-91%%DOT-C5%%PX-9F%%CONTINUE%//
+@ 200-magic.filter:44  MAG !ID cm2 FILTLVL<7
+- ItemDisplay[MAG !ID cm2 FILTLVL<7]:%NAME%%BORDER-8F%%MAP-91%%DOT-C5%%PX-9F%%CONTINUE%//
++ ItemDisplay[MAG !ID cm2 FILTLVL<7]:%NAME%%CONTINUE%//
+@ 200-magic.filter:48  MAG !ID (cm1 OR cm3) ILVL>89
+- ItemDisplay[MAG !ID (cm1 OR cm3) ILVL>89]:%TEAL%\%BLUE%(%PURPLE%(  %NAME%  %PURPLE%)%BLUE%)%TEAL%/%BLUE%{%NAME%}//
++ ItemDisplay[MAG !ID (cm1 OR cm3) ILVL>89]:%YELLOW%\%ORANGE%(%RED%(  %RED%%NAME%  %RED%)%ORANGE%)%YELLOW%/%BLUE%{%NAME%}//
+@ 200-magic.filter:49  MAG !ID (cm1 OR cm3) FILTLVL<5 ILVL<90
+- ItemDisplay[MAG !ID (cm1 OR cm3) FILTLVL<5 ILVL<90]:%TEAL%\%BLUE%(%PURPLE%(  %NAME%  %PURPLE%)%BLUE%)%TEAL%/%BLUE%{%NAME%}//
++ ItemDisplay[MAG !ID (cm1 OR cm3) FILTLVL<5 ILVL<90]:%YELLOW%\%ORANGE%(%RED%(  %RED%%NAME%  %RED%)%ORANGE%)%YELLOW%/%BLUE%{%NAME%}//
+@ 200-magic.filter:50  MAG !ID (cm1 OR cm3) FILTLVL>4 ILVL<90
+- ItemDisplay[MAG !ID (cm1 OR cm3) FILTLVL>4 ILVL<90]:%TEAL%\%BLUE%((  %NAME%  %BLUE%))%TEAL%/%BLUE%{%NAME%}//
++ ItemDisplay[MAG !ID (cm1 OR cm3) FILTLVL>4 ILVL<90]:%YELLOW%\%ORANGE%((  %RED%%NAME%  %ORANGE%))%YELLOW%/%BLUE%{%NAME%}//
+@ 200-magic.filter:52  MAG !ID cm2 (FILTLVL=8 OR FILTLVL=10) ILVL>89
+- ItemDisplay[MAG !ID cm2 (FILTLVL=8 OR FILTLVL=10) ILVL>89]:%PURPLE%-  %NAME%  %PURPLE%-%BLUE%{%NAME%}//
++ ItemDisplay[MAG !ID cm2 (FILTLVL=8 OR FILTLVL=10) ILVL>89]:%RED%-  %NAME%  %RED%-%ORANGE%{%NAME%}//
+@ 200-magic.filter:53  MAG !ID cm2 (FILTLVL=8 OR FILTLVL=10) ILVL<90
+- ItemDisplay[MAG !ID cm2 (FILTLVL=8 OR FILTLVL=10) ILVL<90]:%TEAL%-  %NAME%  %TEAL%-%BLUE%{%NAME%}//
++ ItemDisplay[MAG !ID cm2 (FILTLVL=8 OR FILTLVL=10) ILVL<90]:%YELLOW%-  %NAME%  %YELLOW%-%ORANGE%{%NAME%}//
+@ 200-magic.filter:54  MAG !ID cm2 FILTLVL<7
+- ItemDisplay[MAG !ID cm2 FILTLVL<7]:%TEAL%\%BLUE%(%PURPLE%(  %NAME%  %PURPLE%)%BLUE%)%TEAL%/%BLUE%{%NAME%}//
++ ItemDisplay[MAG !ID cm2 FILTLVL<7]:%YELLOW%\%ORANGE%(%RED%(  %NAME%  %RED%)%ORANGE%)%YELLOW%/%BLUE%{%NAME%}//
+@ 200-magic.filter:70  All unidentified magic jewels
+- ItemDisplay[MAG !ID jew MAPID~183-184]:%MAGIC_JEWEL_NAME%%BLUE%%DOT-97%%PX-0E%%TIER-0%// All unidentified magic jewels
++ ItemDisplay[MAG !ID jew MAPID~183-184]:%MAGIC_JEWEL_NAME%// All unidentified magic jewels
+@ 200-magic.filter:71  All unidentified magic jewels
+- ItemDisplay[MAG !ID jew CLVL>29 FILTLVL~5-11 !MAPID~183-184]:%MAGIC_JEWEL_NAME%%BLUE%%DOT-97%%PX-0E%// All unidentified magic jewels
++ ItemDisplay[MAG !ID jew CLVL>29 FILTLVL~5-11 !MAPID~183-184]:%MAGIC_JEWEL_NAME%// All unidentified magic jewels
+@ 200-magic.filter:72  All unidentified magic jewels
+- ItemDisplay[MAG !ID jew CLVL>29 FILTLVL=12 !MAPID~183-184]:%MAGIC_JEWEL_NAME%%BLUE%%DOT-97%%PX-0E%%TIER-0%// All unidentified magic jewels
++ ItemDisplay[MAG !ID jew CLVL>29 FILTLVL=12 !MAPID~183-184]:%MAGIC_JEWEL_NAME%// All unidentified magic jewels
+@ 200-magic.filter:73  All unidentified magic jewels
+- ItemDisplay[MAG !ID jew CLVL>29 FILTLVL<5 !MAPID~183-184]:%TAN%* %BLUE%>  %MAGIC_JEWEL_NAME%  %BLUE%< %TAN%*%BLUE%%MAP-91%%DOT-97%%PX-0E%// All unidentified magic jewels
++ ItemDisplay[MAG !ID jew CLVL>29 FILTLVL<5 !MAPID~183-184]:%TAN%* %BLUE%>  %MAGIC_JEWEL_NAME%  %BLUE%< %TAN%*// All unidentified magic jewels
+@ 200-magic.filter:74  All unidentified magic jewels
+- ItemDisplay[MAG !ID jew CLVL<30 FILTLVL<12]:%TAN%* %BLUE%>  %MAGIC_JEWEL_NAME%  %BLUE%< %TAN%*%BLUE%%MAP-91%%DOT-97%%PX-0E%// All unidentified magic jewels
++ ItemDisplay[MAG !ID jew CLVL<30 FILTLVL<12]:%TAN%* %BLUE%>  %MAGIC_JEWEL_NAME%  %BLUE%< %TAN%*// All unidentified magic jewels
+@ 200-magic.filter:273  MAG !ID ETH (FILTLVL<10 OR FILTLVL=11) (gax OR 9ga OR 7ga)
+- ItemDisplay[MAG !ID ETH (FILTLVL<10 OR FILTLVL=11) (gax OR 9ga OR 7ga)]:%MAGIC_ETH_CRAFT_LEFT%  %NAME%  %MAGIC_ETH_CRAFT_RIGHT%%MAP-91%%DOT-97%%PX-1F%//
++ ItemDisplay[MAG !ID ETH (FILTLVL<10 OR FILTLVL=11) (gax OR 9ga OR 7ga)]:%MAGIC_ETH_CRAFT_LEFT%  %NAME%  %MAGIC_ETH_CRAFT_RIGHT%//
+
+// == 210-nonmagic-armor.filter ==
+@ 210-nonmagic-armor.filter:470  NMAG !RW BAR (FILTLVL~3-4 CLVL>79) GROUND !TOWN SELLPRICE>24
+- ItemDisplay[NMAG !RW BAR (FILTLVL~3-4 CLVL>79) GROUND !TOWN SELLPRICE>24999 AREA<3 !(RWB_DELIRIUM_BARB_HELM OR RWB_FEROCITY_BARB_HELM)]:%GRAY%(%TAN%$%GRAY%)//
++ ItemDisplay[NMAG !RW BAR (FILTLVL~3-4 CLVL>79) GROUND !TOWN SELLPRICE>24999 AREA<3 !(RWB_DELIRIUM_BARB_HELM OR RWB_FEROCITY_BARB_HELM)]:%TAN%$$$  //
+@ 210-nonmagic-armor.filter:494  NMAG !RW (clb OR spc OR 9cl OR 9sp OR 7cl OR 7sp) (FILTLVL~3
+- ItemDisplay[NMAG !RW (clb OR spc OR 9cl OR 9sp OR 7cl OR 7sp) (FILTLVL~3-4 CLVL>79) !(RWB_PLAGUE_CLUB_ARMAGEDDON OR RWB_PLAGUE_CLUB_SHOCK_WAVE OR RWB_PLAGUE_CLUB_ARCTIC_BLAST OR RWB_PLAGUE_CLUB_SUMMONS OR RWB_PLAGUE_CLUB_POISON_CREEPER) GROUND !TOWN SELLPRICE>24999 AREA<3]:%GRAY%(%TAN%$%GRAY%)//
++ ItemDisplay[NMAG !RW (clb OR spc OR 9cl OR 9sp OR 7cl OR 7sp) (FILTLVL~3-4 CLVL>79) !(RWB_PLAGUE_CLUB_ARMAGEDDON OR RWB_PLAGUE_CLUB_SHOCK_WAVE OR RWB_PLAGUE_CLUB_ARCTIC_BLAST OR RWB_PLAGUE_CLUB_SUMMONS OR RWB_PLAGUE_CLUB_POISON_CREEPER) GROUND !TOWN SELLPRICE>24999 AREA<3]:%TAN%$$$  //
+@ 210-nonmagic-armor.filter:499  NMAG !RW DRU (FILTLVL~3-4 CLVL>79) GROUND !TOWN SELLPRICE>24
+- ItemDisplay[NMAG !RW DRU (FILTLVL~3-4 CLVL>79) GROUND !TOWN SELLPRICE>24999 AREA<3]:%GRAY%(%TAN%$%GRAY%)//
++ ItemDisplay[NMAG !RW DRU (FILTLVL~3-4 CLVL>79) GROUND !TOWN SELLPRICE>24999 AREA<3]:%TAN%$$$  //
+@ 210-nonmagic-armor.filter:536  NMAG !RW NEC (FILTLVL~3-4 CLVL>79) GROUND !TOWN SELLPRICE>24
+- ItemDisplay[NMAG !RW NEC (FILTLVL~3-4 CLVL>79) GROUND !TOWN SELLPRICE>24999 AREA<3]:%GRAY%(%TAN%$%GRAY%)//
++ ItemDisplay[NMAG !RW NEC (FILTLVL~3-4 CLVL>79) GROUND !TOWN SELLPRICE>24999 AREA<3]:%TAN%$$$  //
+
+// == 220-nonmagic-weapons.filter ==
+@ 220-nonmagic-weapons.filter:6  NMAG !RW WAND (FILTLVL~3-4 CLVL>79) !RWB_DOMINION_WAND GROUN
+- ItemDisplay[NMAG !RW WAND (FILTLVL~3-4 CLVL>79) !RWB_DOMINION_WAND GROUND !TOWN SELLPRICE>24999 AREA<3]:%GRAY%(%TAN%$%GRAY%)//
++ ItemDisplay[NMAG !RW WAND (FILTLVL~3-4 CLVL>79) !RWB_DOMINION_WAND GROUND !TOWN SELLPRICE>24999 AREA<3]:%TAN%$$$  //
+@ 220-nonmagic-weapons.filter:107  NMAG !RW SIN (FILTLVL~3-4 CLVL>79) !(RWB_PLAGUE_CLAW OR RWB_
+- ItemDisplay[NMAG !RW SIN (FILTLVL~3-4 CLVL>79) !(RWB_PLAGUE_CLAW OR RWB_CHAOS_CLAW OR RWB_MALICE_CLAW) GROUND !TOWN SELLPRICE>24999 AREA<3]:%GRAY%(%TAN%$%GRAY%)//
++ ItemDisplay[NMAG !RW SIN (FILTLVL~3-4 CLVL>79) !(RWB_PLAGUE_CLAW OR RWB_CHAOS_CLAW OR RWB_MALICE_CLAW) GROUND !TOWN SELLPRICE>24999 AREA<3]:%TAN%$$$  //
+@ 220-nonmagic-weapons.filter:136  NMAG !RW DAGGER !THROWING (FILTLVL~3-4 CLVL>79) !RWB_VENOM_D
+- ItemDisplay[NMAG !RW DAGGER !THROWING (FILTLVL~3-4 CLVL>79) !RWB_VENOM_DAGGER GROUND !TOWN SELLPRICE>24999 AREA<3]:%GRAY%(%TAN%$%GRAY%)//
++ ItemDisplay[NMAG !RW DAGGER !THROWING (FILTLVL~3-4 CLVL>79) !RWB_VENOM_DAGGER GROUND !TOWN SELLPRICE>24999 AREA<3]:%TAN%$$$  //
+@ 220-nonmagic-weapons.filter:152  NMAG !RW SOR (FILTLVL~3-4 CLVL>79) !RWB_PLAGUE_ORB GROUND !T
+- ItemDisplay[NMAG !RW SOR (FILTLVL~3-4 CLVL>79) !RWB_PLAGUE_ORB GROUND !TOWN SELLPRICE>24999 AREA<3]:%GRAY%(%TAN%$%GRAY%)//
++ ItemDisplay[NMAG !RW SOR (FILTLVL~3-4 CLVL>79) !RWB_PLAGUE_ORB GROUND !TOWN SELLPRICE>24999 AREA<3]:%TAN%$$$  //
+@ 220-nonmagic-weapons.filter:169  NMAG !RW STAFF (FILTLVL~3-4 CLVL>79) !(RWB_MEMORY_STAFF OR R
+- ItemDisplay[NMAG !RW STAFF (FILTLVL~3-4 CLVL>79) !(RWB_MEMORY_STAFF OR RWB_CTA_STAFF OR RWB_INFINITY_STAFF OR RWB_DOOM_STAFF OR RWB_OBSESSION_STAFF OR (6ws FILTLVL<5 (SOCK=5 OR SOCK=6))) GROUND !TOWN SELLPRICE>24999 AREA<3]:%GRAY%(%TAN%$%GRAY%)//
++ ItemDisplay[NMAG !RW STAFF (FILTLVL~3-4 CLVL>79) !(RWB_MEMORY_STAFF OR RWB_CTA_STAFF OR RWB_INFINITY_STAFF OR RWB_DOOM_STAFF OR RWB_OBSESSION_STAFF OR (6ws FILTLVL<5 (SOCK=5 OR SOCK=6))) GROUND !TOWN SELLPRICE>24999 AREA<3]:%TAN%$$$  //
+@ 220-nonmagic-weapons.filter:202  NMAG !RW SCEPTER (FILTLVL~3-4 CLVL>79) !((7ws (SOCK=0 OR SOC
+- ItemDisplay[NMAG !RW SCEPTER (FILTLVL~3-4 CLVL>79) !((7ws (SOCK=0 OR SOCK=4) (SK102>2 OR SK123>2)) OR (7ws (SOCK=0 OR SOCK=5) (SK98>2 OR SK113>2 OR SK119>2 OR SK123>2)) OR RWB_PLAGUE_SCEPTER OR RWB_CTA_SCEPTER OR RWB_BEAST_SCEPTER OR (7ws SUP ED>9 (SOCK=0 OR SOCK=4 OR SOCK=5))) GROUND !TOWN SELLPRICE>24999 AREA<3]:%GRAY%(%TAN%$%GRAY%)//
++ ItemDisplay[NMAG !RW SCEPTER (FILTLVL~3-4 CLVL>79) !((7ws (SOCK=0 OR SOCK=4) (SK102>2 OR SK123>2)) OR (7ws (SOCK=0 OR SOCK=5) (SK98>2 OR SK113>2 OR SK119>2 OR SK123>2)) OR RWB_PLAGUE_SCEPTER OR RWB_CTA_SCEPTER OR RWB_BEAST_SCEPTER OR (7ws SUP ED>9 (SOCK=0 OR SOCK=4 OR SOCK=5))) GROUND !TOWN SELLPRICE>24999 AREA<3]:%TAN%$$$  //
+@ 220-nonmagic-weapons.filter:538  (CHEST OR HELM OR SHIELD) SUP NMAG !RW ED>9
+- ItemDisplay[(CHEST OR HELM OR SHIELD) SUP NMAG !RW ED>9]:%TEAL%Sup %NAME%{%NAME%}%CONTINUE%
++ ItemDisplay[(CHEST OR HELM OR SHIELD) SUP NMAG !RW ED>9]:%LIGHT_GRAY%Sup %NAME%{%NAME%}%CONTINUE%
+
+// == 315-sell-value-tags.filter ==
+@ 315-sell-value-tags.filter:45  (NMAG OR MAG OR RARE) !leg STAT360=0 !SHOP ID !EQUIPPED !RW
+- ItemDisplay[(NMAG OR MAG OR RARE) !leg STAT360=0 !SHOP ID !EQUIPPED !RW DIFF=0 FILTLVL<5 !STASH SELLPRICE~10000-19999 !(NMAG (CHEST OR (HELM !DRU) OR (SHIELD !NEC) OR GLOVES OR BELT OR BOOTS)) CLVL~30-59]:%GRAY%(%LIGHT_GRAY%$%GRAY%) %NAME%{%NAME%}%CONTINUE%// 
++ ItemDisplay[(NMAG OR MAG OR RARE) !leg STAT360=0 !SHOP ID !EQUIPPED !RW DIFF=0 FILTLVL<5 !STASH SELLPRICE~10000-19999 !(NMAG (CHEST OR (HELM !DRU) OR (SHIELD !NEC) OR GLOVES OR BELT OR BOOTS)) CLVL~30-59]:%LIGHT_GRAY%$$$   %NAME%{%NAME%}%CONTINUE%// 
+@ 315-sell-value-tags.filter:46  (NMAG OR MAG OR RARE) !leg STAT360=0 !SHOP ID !EQUIPPED !RW
+- ItemDisplay[(NMAG OR MAG OR RARE) !leg STAT360=0 !SHOP ID !EQUIPPED !RW DIFF=0 FILTLVL<5 !STASH SELLPRICE>19999 !(NMAG (CHEST OR (HELM !DRU) OR (SHIELD !NEC) OR GLOVES OR BELT OR BOOTS)) CLVL>29]:%GRAY%(%TAN%$%GRAY%) %NAME%{%NAME%}%CONTINUE%// 
++ ItemDisplay[(NMAG OR MAG OR RARE) !leg STAT360=0 !SHOP ID !EQUIPPED !RW DIFF=0 FILTLVL<5 !STASH SELLPRICE>19999 !(NMAG (CHEST OR (HELM !DRU) OR (SHIELD !NEC) OR GLOVES OR BELT OR BOOTS)) CLVL>29]:%TAN%$$$   %NAME%{%NAME%}%CONTINUE%// 
+@ 315-sell-value-tags.filter:48  (NMAG OR MAG OR RARE) !leg STAT360=0 !SHOP ID !EQUIPPED !RW
+- ItemDisplay[(NMAG OR MAG OR RARE) !leg STAT360=0 !SHOP ID !EQUIPPED !RW DIFF=1 FILTLVL<5 !STASH SELLPRICE~10000-19999 !(NMAG (CHEST OR (HELM !DRU) OR (SHIELD !NEC) OR GLOVES OR BELT OR BOOTS)) CLVL<60]:%GRAY%(%LIGHT_GRAY%$%GRAY%) %NAME%{%NAME%}%CONTINUE%// 
++ ItemDisplay[(NMAG OR MAG OR RARE) !leg STAT360=0 !SHOP ID !EQUIPPED !RW DIFF=1 FILTLVL<5 !STASH SELLPRICE~10000-19999 !(NMAG (CHEST OR (HELM !DRU) OR (SHIELD !NEC) OR GLOVES OR BELT OR BOOTS)) CLVL<60]:%LIGHT_GRAY%$$$   %NAME%{%NAME%}%CONTINUE%// 
+@ 315-sell-value-tags.filter:49  (NMAG OR MAG OR RARE) !leg STAT360=0 !SHOP ID !EQUIPPED !RW
+- ItemDisplay[(NMAG OR MAG OR RARE) !leg STAT360=0 !SHOP ID !EQUIPPED !RW DIFF=1 FILTLVL<5 !STASH SELLPRICE>19999 !(NMAG (CHEST OR (HELM !DRU) OR (SHIELD !NEC) OR GLOVES OR BELT OR BOOTS))]:%GRAY%(%TAN%$%GRAY%) %NAME%{%NAME%}%CONTINUE%// 
++ ItemDisplay[(NMAG OR MAG OR RARE) !leg STAT360=0 !SHOP ID !EQUIPPED !RW DIFF=1 FILTLVL<5 !STASH SELLPRICE>19999 !(NMAG (CHEST OR (HELM !DRU) OR (SHIELD !NEC) OR GLOVES OR BELT OR BOOTS))]:%TAN%$$$   %NAME%{%NAME%}%CONTINUE%// 
+@ 315-sell-value-tags.filter:51  (NMAG OR MAG OR RARE) !leg STAT360=0 !SHOP ID !EQUIPPED !RW
+- ItemDisplay[(NMAG OR MAG OR RARE) !leg STAT360=0 !SHOP ID !EQUIPPED !RW DIFF=2 FILTLVL<5 !STASH SELLPRICE>24999 !(NMAG (CHEST OR (HELM !DRU) OR (SHIELD !NEC) OR GLOVES OR BELT OR BOOTS))]:%GRAY%(%TAN%$%GRAY%) %NAME%{%NAME%}%CONTINUE%// 
++ ItemDisplay[(NMAG OR MAG OR RARE) !leg STAT360=0 !SHOP ID !EQUIPPED !RW DIFF=2 FILTLVL<5 !STASH SELLPRICE>24999 !(NMAG (CHEST OR (HELM !DRU) OR (SHIELD !NEC) OR GLOVES OR BELT OR BOOTS))]:%TAN%$$$   %NAME%{%NAME%}%CONTINUE%// 

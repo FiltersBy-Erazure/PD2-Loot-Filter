@@ -594,14 +594,24 @@ def main():
     ap.add_argument("--all", action="store_true", help="also show allow-listed findings and info notes")
     ap.add_argument("--customization", action="store_true",
                     help=f"also lint the commented-out rules in sections/{CUSTOMIZATION}")
+    ap.add_argument("--style", metavar="NAME",
+                    help="lint a style variant as built (tools/build.py STYLE_VARIANTS, e.g. 'Corrlorized - Main - PoE'): "
+                         "the findings on the lines its style wrote")
     args = ap.parse_args()
 
-    parts, _ = build.read_sections(check=True)
-    where = build.line_locator(parts)
-    joined = b"".join(data for _, data in parts).replace(build.PLACEHOLDER, b"VERSION")
-    lines = joined.decode("utf-8").split("\r\n")
+    if args.style:
+        if args.style not in build.STYLE_VARIANTS:
+            ap.error(f"--style takes one of: {', '.join(build.STYLE_VARIANTS)}")
+        lines, where, own = build.variant_text(args.style)
+    else:
+        parts, _ = build.read_sections(check=True)
+        where = build.line_locator(parts)
+        joined = b"".join(data for _, data in parts).replace(build.PLACEHOLDER, b"VERSION")
+        lines = joined.decode("utf-8").split("\r\n")
 
     findings = Linter(lines, where, args.customization).run()
+    if args.style:
+        findings = [f for f in findings if f[0] in own]
     allow = load_allow()
     used_allow, counts, shown = set(), defaultdict(int), []
     for idx, severity, check, message, key in sorted(findings, key=lambda f: f[0]):
@@ -617,11 +627,12 @@ def main():
     if shown:
         print(*shown, sep="\n")
 
-    stale = sorted(allow - used_allow)
+    stale = [] if args.style else sorted(allow - used_allow)  # a style's lines meet only some allow-list entries
     for check, key in stale:
         print(f"tools/lint_allow.txt: unused entry '{check} {key}' (remove it)")
     infos = sum(1 for f in findings if f[1] == "info")
-    print(f"Lint: {counts['error']} error(s), {counts['warning']} warning(s), "
+    print(f"Lint{f' ({args.style}: the lines its style wrote)' if args.style else ''}: "
+          f"{counts['error']} error(s), {counts['warning']} warning(s), "
           f"{len(used_allow)} allow-listed, {infos} info note(s)"
           + ("" if args.all else " (--all shows allow-listed and info)") + ".")
     sys.exit(1 if counts["error"] or counts["warning"] or stale else 0)

@@ -16,7 +16,13 @@ Section and style files with LF line endings, a UTF-8 BOM or no final line break
 
 A style variant (STYLE_VARIANTS) has no toggle block of its own. Its style file holds one Alias[NAME]:... line per
 alias that looks different there (and // comments); each replaces the line of the same alias in sections/, and
-everything else is the filter of the variant it is built from.
+everything else is the filter of the variant it is built from. A style file ending in .edits holds style edits
+instead (tools/style_edits.py: rule by rule, what a rule shows, rules switched off, lines added); the build applies
+them, writes the entries back as they match today's lines, and reports the ones that need a look on a line starting
+"Style". Several style variants may share a style file (Corrlorized - Main - PoE and Corrlorized - BIG GG - PoE:
+styles/corrlorized.edits on two toggle variants); it is fixed, written back and reported once. A style variant not
+in filter_definitions.json yet (no launcher entry) is built all the same, to its display name's file name
+(Corrlorized - Main - PoE: Corrlorized-Main-PoE.filter).
 """
 import argparse
 import datetime
@@ -33,7 +39,9 @@ DEFS = ROOT / "filter_definitions.json"
 
 MAIN = "Erazure - Main"
 # {style variant's display name: (the variant it is built from, its style file in styles/)}
-STYLE_VARIANTS = {"Erazure - Minimal": (MAIN, "minimal.filter")}
+STYLE_VARIANTS = {"Erazure - Minimal": (MAIN, "minimal.filter"),
+                  "Corrlorized - Main - PoE": ("Erazure - Main - PoE", "corrlorized.edits"),
+                  "Corrlorized - BIG GG - PoE": ("Erazure - BIG GG - PoE", "corrlorized.edits")}
 PLACEHOLDER = b"<<VERSION>>"
 CATCH_ALL = b"ItemDisplay[]:"
 BOM = b"\xef\xbb\xbf"
@@ -225,6 +233,52 @@ def apply_style(lines, style, fname, where):
     return out
 
 
+def file_name(name):
+    """A display name's filter file: 'Corrlorized - BIG GG - PoE' -> 'Corrlorized-BIG-GG-PoE.filter'."""
+    return name.replace(" - ", "-").replace(" ", "-") + ".filter"
+
+
+def styled(name, lines, blocks, parts, where, check, problems):
+    """A style variant as built: (its lines, where(i) for them, the indices of the lines its style wrote, a status
+    line for a style edits file or None)."""
+    base, style_file = STYLE_VARIANTS[name]
+    rendered = render(lines, blocks, base)
+    if not style_file.endswith(".edits"):
+        out = apply_style(rendered, load_style(style_file, check, problems), style_file, where)
+        return out, where, {i for i, line in enumerate(out) if line != rendered[i]}, None
+    import style_edits  # it imports this module: only here
+    origin = []
+    out, entries = style_edits.build_lines(Path(style_file).stem, [x.decode("utf-8") for x in rendered],
+                                           style_edits.section_starts(parts), check, problems, origin)
+    out = [x.encode("utf-8") for x in out]
+    own = {j for j, o in enumerate(origin) if not isinstance(o, int) or out[j] != rendered[o]}
+
+    def where_styled(j):
+        o = origin[j]
+        return where(o) if isinstance(o, int) else f"{where(o[1])}+ (styles/{style_file})"
+    names = [n for n, (_, f) in STYLE_VARIANTS.items() if f == style_file]
+    status = f"Style styles/{style_file} ({', '.join(names)}): {style_edits.summary(entries)}"
+    if any(e.status in style_edits.LOOK for e in entries):
+        status += f" (python tools/style_edits.py {Path(style_file).stem} --report)"
+    return out, where_styled, own, status
+
+
+def variant_text(name):
+    """A variant or style variant as built, written nowhere (tools/explain_item.py, tools/lint_filter.py --style):
+    (its lines, where(i) -> 'sections/<file>:<line>', the indices of the lines a style variant's style wrote)."""
+    _, season, date = load_version()
+    parts, _ = read_sections(check=True)
+    where = line_locator(parts)
+    lines = b"".join(d for _, d in parts).replace(PLACEHOLDER, version_text(season, date).encode()).split(b"\r\n")
+    blocks = find_toggle_blocks(lines)
+    if (STYLE_VARIANTS[name][0] if name in STYLE_VARIANTS else name) not in blocks:
+        fail(f"unknown variant '{name}'; choose one of: {', '.join(list(blocks) + list(STYLE_VARIANTS))}")
+    if name not in STYLE_VARIANTS:
+        return [x.decode("utf-8") for x in render(lines, blocks, name)], where, set()
+    out, where_out, own, _ = styled(name, lines, blocks, parts, where, True, [])
+    return [x.decode("utf-8") for x in out], where_out, own
+
+
 def load_defs():
     try:
         entries = list(json.loads(DEFS.read_text(encoding="utf-8-sig"))["filter_info"].values())
@@ -270,14 +324,19 @@ def main():
 
     defs = load_defs()
     blocks = find_toggle_blocks(lines)
-    check_toggles(lines, blocks, [name for name, _ in defs], where)
+    # a style variant with no launcher entry yet is built all the same (to test it in game)
+    extra = [(name, file_name(name)) for name in STYLE_VARIANTS if name not in dict(defs)]
+    check_toggles(lines, blocks, [name for name, _ in defs + extra], where)
 
-    stale = []
-    for name, fname in defs:
+    stale, notes, done = [], [], set()
+    for name, fname in defs + extra:
         if name in STYLE_VARIANTS:
-            base, style_file = STYLE_VARIANTS[name]
-            style = load_style(style_file, args.check, problems)
-            out = apply_style(render(lines, blocks, base), style, style_file, where)
+            first = STYLE_VARIANTS[name][1] not in done  # a style file several variants share: fixed, written and
+            done.add(STYLE_VARIANTS[name][1])            # reported once
+            out, _, _, note = styled(name, lines, blocks, parts, where, args.check if first else True,
+                                     problems if first else [])
+            if note and first:
+                notes.append(note)
         else:
             out = render(lines, blocks, name)
         data = b"\r\n".join(out)
@@ -288,17 +347,20 @@ def main():
         if not args.check:
             target.write_bytes(data)
 
+    also = f", and {', '.join(f for _, f in extra)} (no launcher entry yet)" if extra else ""
     if args.check:
         if problems or stale:
             if problems:
-                print("Section files need fixing (run: python tools/build.py):", *problems, sep="\n  ")
+                print("Section and style files need fixing (run: python tools/build.py):", *problems, sep="\n  ")
             if stale:
                 print("Out of date with sections/ (run: python tools/build.py):", *stale, sep="\n  ")
             sys.exit(1)
-        print(f"All {len(defs)} filters in sync ({version}).")
+        print(f"All {len(defs)} filters in sync ({version}){also}.")
     else:
-        print(f"Built {len(defs)} filters ({version}). "
+        print(f"Built {len(defs)} filters ({version}){also}. "
               f"Updated: {', '.join(stale) if stale else 'none, already up to date'}")
+    for note in notes:
+        print(note)
 
 
 if __name__ == "__main__":

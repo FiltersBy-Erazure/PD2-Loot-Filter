@@ -8,10 +8,12 @@ tools/gen_runeword_rolls.py), the map experience tags (tools/gen_map_exp.py) and
 tools/base_map.py: Erazure-Non-Magic-Bases.html, tools/magic_rare_map.py: Erazure-Magic-Items.html and
 Erazure-Rare-Items.html, tools/level_map.py: Erazure-Filter-Levels.html, tools/style_map.py:
 Erazure-Minimal-Style.html), and rebuild the filters with tools/build.py (never stamps the version). After an edit
-in styles/ (a style variant's aliases): tools/style_map.py and the build.
+in styles/ (a style variant's aliases): tools/style_map.py and the build; after an edit of a style edits file
+(styles/*.edits, tools/style_edits.py): the build.
 
 Silent on success. If the build fixed a section file's format (line endings, BOM, final line
-break), that note is passed back to Claude. On failure, exits 2 so the error goes back to Claude.
+break), or a style variant's edits need a look (its "Style ..." line names a status), that note is passed back to
+Claude. On failure, exits 2 so the error goes back to Claude.
 """
 import json
 import subprocess
@@ -38,6 +40,8 @@ def watched(file_path):
         return "generate"
     if len(parts) == 2 and parts[0] == "styles" and parts[1].endswith(".filter"):
         return "style"  # a style variant's aliases
+    if len(parts) == 2 and parts[0] == "styles" and parts[1].endswith(".edits"):
+        return "build"  # a style variant's edits: the build applies them
     return len(parts) == 1 and parts[0] in ROOT_FILES
 
 
@@ -72,10 +76,13 @@ def main():
         print(f"Filter build FAILED after editing {Path(file_path).name}:\n{msg}", file=sys.stderr)
         return 2
     fixes = [line for line in result.stdout.splitlines() if line.startswith("Fixed ")]
-    if fixes:
+    looks = [line for line in result.stdout.splitlines() if line.startswith("Style ") and "--report" in line]
+    if fixes or looks:
         print(json.dumps({"hookSpecificOutput": {
             "hookEventName": "PostToolUse",
-            "additionalContext": "tools/build.py fixed section file format:\n" + "\n".join(fixes),
+            "additionalContext": "\n".join((["tools/build.py fixed section file format:"] + fixes if fixes else []) +
+                                           (["A style variant's edits need a look (tell the author):"] + looks
+                                            if looks else [])),
         }}))
     return 0
 
