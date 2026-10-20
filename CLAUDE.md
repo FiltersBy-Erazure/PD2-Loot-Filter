@@ -302,6 +302,12 @@
   (double-click) previews it at http://127.0.0.1:8000/PD2-Loot-Filter/ with MkDocs Material 9.7.7 in
   `tools/.cache/mkdocs-venv`. CI builds it with `--strict`. On `main`, `.github/workflows/pages.yml` builds and
   deploys it on every push (Pages source: GitHub Actions).
+- The Examples page's pictures (`website/docs/img/examples/*.png`, committed; README's examples show them too) are
+  drawn by `python tools/example_shots.py "<Diablo II folder>" [--only NAME]` (2026-10-20; not run by build.bat, the
+  hook or CI: it needs the game files): per scene of `SCENES` a floor of the area's own DT1 tiles, each item's
+  ground picture and the label the filter's rules give it (Main, the scene's values; a rule a value is missing for
+  stops it), drawn as PD2's HD text draws a dropped item's name (D2GL: ExocetBlizzard's MSDF atlas from `d2gl.mpq`,
+  its shadow, the fading 60% box, D2GL's colors). Rerun it after a look of those items changes.
 
 ## Variants (all 11 built from the same sections)
 | display_name | File | BIG_GG | POE_SOUNDS | REVEALED |
@@ -470,6 +476,7 @@ removed level on the next run; a new level group's intro is `INTROS` in `tools/l
 `Erazure-Skill-Shop-Highlights.html` · `styles/minimal.filter` + `tools/style_map.py` + `tools/style_map_template.html` +
 `Erazure-Minimal-Style.html` · `styles/corrlorized.edits` + `tools/style_edits.py` + `Corrlorized-*.filter` ·
 `website/` + `site_preview.bat` + `.github/workflows/pages.yml` ·
+`tools/example_shots.py` + `website/docs/img/examples/` ·
 `tools/tag_order.py` + `tools/pd2_stat_priority.tsv` · `tools/pd2_data.py` + `docs/pd2-unique-set-items.tsv` +
 `tools/pd2_mpq.py` ·
 `.claude/settings.json` + `.claude/hooks/rebuild.py` · `.github/workflows/check-filters.yml` · `docs/` ·
