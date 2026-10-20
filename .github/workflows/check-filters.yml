@@ -38,6 +38,10 @@ jobs:
         run: python tools/level_map.py --check
       - name: Minimal version page (Erazure-Minimal-Style.html) matches the filter and styles/minimal.filter
         run: python tools/style_map.py --check
+      - name: Skill & shop highlights page (Erazure-Skill-Shop-Highlights.html) matches the filter
+        run: |
+          python tools/shop_map.py --selftest
+          python tools/shop_map.py --check
       - name: The website builds (website/, MkDocs Material; no broken links)
         run: |
           pip install --quiet mkdocs-material==9.7.7

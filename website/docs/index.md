@@ -19,6 +19,7 @@ afterwards.
 - [Non-magical Bases](bases.md): when each non-magical armor and weapon base is tagged, notified or hidden
 - [Magic Items](magic.md): how every magic item shows when it drops, and when it is hidden
 - [Rare Items](rare.md): how every rare item shows when it drops, and when it is hidden
+- [Skill & Shop Highlights](shop.md): the highlights for +skills and shop items, and what an item needs for each
 - [Customization](customization.md): edit your own copy of the filter
 - [Examples](examples.md): the filter's style in game
 

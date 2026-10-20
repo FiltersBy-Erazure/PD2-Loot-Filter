@@ -1,0 +1,251 @@
+<title>Erazure Skill &amp; Shop Highlights</title>
+<!-- Template for Erazure-Skill-Shop-Highlights.html (tools/shop_map.py writes it; build.bat runs it): the data is
+     embedded at generation. Every highlight and its criteria are read from the filter's own rules, every sample
+     item from the game's tables. The website's Skill & Shop Highlights page shows the same map: website/hooks.py
+     takes the styles, the markup between the shop-map markers and the script out of the generated file, so keep
+     those markers. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Source+Sans+3:wght@400;600;700&display=swap">
+<!-- shop-map:css -->
+<style>
+  /* the game's HD font, if the viewer has it installed; Cinzel (small capitals too) otherwise */
+  @font-face { font-family: "D2Exocet"; src: local("Exocet Blizzard"), local("ExocetBlizzardOT-Medium"), local("Exocet"); }
+  /* Layout: the title and how to read the page; the sections (jewelry, gloves...), each a list of cards. A card is
+     one kind of highlight: its sample item drawn as the game draws its hover box (over a piece of the shop's or
+     the inventory's grid), then a row per highlight: the line as drawn, the item, what it needs. Every rule is
+     scoped to .shop-map, so the website's theme and this page leave each other alone. */
+  /* Dark by default; light when the website (Material) is switched to light. The game's pictures stay dark. */
+  .shop-map {
+    --bg: #151412; --panel: #1f1d1a; --fg: #ece7de; --muted: #a59e91; --line: #36322c; --chip: #2a2723;
+    --accent: #d8b45e;
+    --display: "Cinzel", "Trajan Pro", Georgia, serif;
+    --body: "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --game: "D2Exocet", "Cinzel", "Trajan Pro", Georgia, serif;
+    color-scheme: dark;
+    color: var(--fg); font: 15px/1.45 var(--body);
+  }
+  [data-md-color-scheme="default"] .shop-map {
+    --bg: #f3f1ec; --panel: #fffdf8; --fg: #23211c; --muted: #6b655a; --line: #ded7c9; --chip: #ece7dc;
+    --accent: #8a6d1f;
+    color-scheme: light;
+  }
+  .shop-map *, .shop-map *::before, .shop-map *::after { box-sizing: border-box; }
+  .shop-map .wrap { max-width: 1180px; margin: 0 auto; padding-inline: 16px; }
+  .md-content .shop-map .wrap { padding-inline: 0; }
+  .shop-map h1.sh-title { font: 700 26px/1.2 var(--display); letter-spacing: .02em; margin: 0; padding-block: 16px 10px;
+                          color: var(--fg); text-wrap: balance; }
+  .shop-map .intro { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; }
+  .shop-map .intro p { margin: 0 0 6px; max-width: 78ch; font-size: 14.5px; }
+  .shop-map .intro p:last-child { margin-bottom: 0; }
+  .shop-map .intro .d2line { font-size: 13px; padding: 0 6px; }
+  .shop-map nav.toc { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 0; }
+  .shop-map nav.toc a { font-size: 13.5px; padding: 3px 10px; border-radius: 99px; background: var(--chip);
+                        border: 1px solid var(--line); color: var(--fg); text-decoration: none; }
+  .shop-map nav.toc a:hover { border-color: var(--accent); }
+  .shop-map h2.sec { font: 700 22px/1.2 var(--display); margin: 30px 0 4px; letter-spacing: .02em; color: var(--fg); }
+  .shop-map p.sec-intro { margin: 0 0 8px; color: var(--muted); font-size: 14px; max-width: 80ch; }
+  .shop-map .card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; margin: 12px 0;
+                    padding: 12px 14px; }
+  .shop-map .card h3 { font: 700 17px/1.25 var(--display); margin: 0 0 10px; letter-spacing: .02em; color: var(--fg); }
+  .shop-map .card-body { display: flex; gap: 18px; align-items: flex-start; }
+  .shop-map .scene-wrap { flex: 0 0 auto; max-width: 100%; }
+  .shop-map .rows { flex: 1 1 340px; min-width: 0; }
+  @media (max-width: 900px) { .shop-map .card-body { flex-direction: column; } .shop-map .rows { flex: 1 1 auto; width: 100%; } }
+
+  /* the game's picture: a piece of the shop's (or the inventory's) grid, the item in its cells, its hover box */
+  .shop-map .scene-box { overflow: hidden; border-radius: 6px; }
+  .shop-map .scene { position: relative; width: max-content; padding: 10px 10px 14px;
+                     background-color: #07070b;
+                     background-image: linear-gradient(#2e2e38 1px, transparent 1px), linear-gradient(90deg, #2e2e38 1px, transparent 1px);
+                     background-size: 29px 29px; background-position: 10px 10px; transform-origin: 0 0; }
+  .shop-map .scene.inventory { background-color: #0b0a08;
+                               background-image: linear-gradient(#34302a 1px, transparent 1px), linear-gradient(90deg, #34302a 1px, transparent 1px); }
+  .shop-map .scene .slot { position: relative; background: rgba(46, 150, 46, .42); outline: 1px solid rgba(96, 200, 96, .55);
+                           display: flex; align-items: center; justify-content: center; }
+  .shop-map .scene .slot img { display: block; image-rendering: pixelated; }
+  .shop-map .scene .slot .none { width: 70%; height: 70%; border: 1px dashed rgba(255, 255, 255, .35); }
+  .shop-map .scene .cursor { position: absolute; right: -6px; bottom: -8px; width: 16px; height: 18px;
+                             background: linear-gradient(135deg, #d8d2c0 0 45%, transparent 46%); opacity: .8; }
+  .shop-map .tip { margin: 4px auto 0; width: max-content; max-width: none; background: rgba(8, 8, 8, .84);
+                   padding: 5px 12px 6px; text-align: center; font: 600 15.5px/1.24 var(--game); letter-spacing: .02em;
+                   white-space: pre; position: relative; z-index: 1; }
+  .shop-map .tip .ln { display: block; min-height: 1.24em; }
+  .shop-map .scene-cap { font-size: 12.5px; color: var(--muted); margin: 5px 2px 0; }
+
+  /* a highlight as the game draws it, on its own */
+  .shop-map .d2line { display: inline-block; background: rgba(8, 8, 8, .9); font: 600 14px/1.5 var(--game);
+                      letter-spacing: .02em; white-space: pre; padding: 1px 8px; border-radius: 3px; margin: 2px 4px 2px 0; }
+  .shop-map .row { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2px; padding: 8px 0;
+                   border-top: 1px solid var(--line); }
+  .shop-map .row:first-child { border-top: 0; padding-top: 0; }
+  .shop-map .row .what { font-size: 14px; }
+  .shop-map .row .what b { font-weight: 600; }
+  .shop-map .row ul { margin: 2px 0 0; padding-left: 18px; font-size: 14px; }
+  .shop-map .row li { margin: 1px 0; }
+  .shop-map .pill { display: inline-block; font-size: 11.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+                    padding: 1px 7px; border-radius: 99px; margin-left: 6px; vertical-align: 1px;
+                    background: var(--chip); border: 1px solid var(--line); color: var(--muted); }
+  .shop-map .pill.cost { color: #071; border-color: #3a7a3a; background: #d9f2d9; }
+  .shop-map .pill.cost.TEAL { color: #0b4f4d; border-color: #3f8f8c; background: #d7efee; }
+  [data-md-color-scheme="default"] .shop-map .pill.cost { color: #064; }
+  .shop-map .note { color: var(--muted); font-size: 13.5px; margin: 2px 0 8px; }
+  .shop-map footer { color: var(--muted); font-size: 13px; padding-block: 24px; }
+</style>
+
+<div class="shop-map">
+<div class="wrap"><h1 class="sh-title">Skill &amp; Shop Highlights</h1></div>
+<!-- shop-map:start -->
+<div class="wrap">
+  <div class="intro" id="intro"></div>
+  <nav class="toc" id="toc"></nav>
+</div>
+<div class="wrap" id="sections"></div>
+<div class="wrap"><footer id="foot"></footer></div>
+<!-- shop-map:end -->
+</div>
+
+<script>
+(() => {
+const DATA = /*__DATA__*/null;
+const root = document.querySelector(".shop-map");
+const $ = (s) => root.querySelector(s);
+const CELL = 29;  // a grid cell, as the game draws it (game pixels)
+
+function el(tag, cls, text) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text != null) e.textContent = text;
+  return e;
+}
+
+// One line as the game draws it: [[color, text], ...]
+function line(segs, cls) {
+  const s = el("span", cls || "ln");
+  for (const [color, text] of segs) {
+    const t = el("span", null, text);
+    t.style.color = DATA.colors[color] || DATA.colors.WHITE;
+    s.append(t);
+  }
+  if (!segs.length) s.append(" ");
+  return s;
+}
+
+function scene(fam) {
+  const sc = fam.scene;
+  const wrap = el("div", "scene-wrap");
+  const box = el("div", "scene-box");
+  const s = el("div", "scene" + (sc.place === "SHOP" ? "" : " inventory"));
+  const slot = el("div", "slot");
+  slot.style.width = sc.w * CELL + "px";
+  slot.style.height = sc.h * CELL + "px";
+  if (sc.img) {
+    const img = el("img");
+    img.src = sc.img;
+    img.alt = "";
+    slot.append(img);
+  } else slot.append(el("span", "none"));
+  slot.append(el("span", "cursor"));
+  const tip = el("div", "tip");
+  for (const segs of sc.box) tip.append(line(segs));
+  s.append(slot, tip);
+  box.append(s);
+  wrap.append(box, el("p", "scene-cap", (sc.place === "SHOP" ? "In a shop" : "In the inventory: no store sells it") +
+                                       " · " + sc.who));
+  return { wrap, box, s, slot, tip, sc };
+}
+
+// The grid lines up with the item's cells; the hover box is centered under the item; a picture wider than its
+// column is scaled down (phones)
+function layout(v) {
+  v.s.style.height = "";
+  v.s.style.transform = "";
+  const tipW = v.tip.offsetWidth;
+  const cols = Math.max(8, Math.ceil((tipW + 2 * CELL) / CELL));
+  const col = Math.max(0, Math.round((cols - v.sc.w) / 2));
+  v.s.style.width = cols * CELL + 20 + "px";
+  v.slot.style.marginLeft = col * CELL + "px";
+  const center = 10 + col * CELL + v.sc.w * CELL / 2;
+  v.tip.style.marginLeft = Math.max(0, center - 10 - tipW / 2) + "px";
+  v.tip.style.marginRight = "0";
+  const rows = Math.ceil((v.s.offsetHeight - 20) / CELL);
+  v.s.style.height = rows * CELL + 24 + "px";
+  fit(v);
+}
+
+function fit(v) {
+  v.s.style.transform = "";
+  v.box.style.width = v.box.style.height = "";
+  const room = v.wrap.parentElement.clientWidth;
+  const w = v.s.offsetWidth, h = v.s.offsetHeight;
+  const k = room && w > room ? room / w : 1;
+  if (k < 1) {
+    v.s.style.transform = `scale(${k})`;
+    v.box.style.width = w * k + "px";
+    v.box.style.height = h * k + "px";
+  }
+}
+
+function rows(fam) {
+  const out = el("div", "rows");
+  for (const r of fam.rows) {
+    const row = el("div", "row");
+    const labs = el("div");
+    for (const lab of r.labels) labs.append(line(lab, "d2line"));
+    if (!r.labels.length) labs.append(el("span", "note", "No highlight line: the Cost line only."));
+    const what = el("div", "what");
+    const item = el("b", null, r.item[0].toUpperCase() + r.item.slice(1));
+    what.append(item);
+    if (r.shop) what.append(el("span", "pill", "In a shop"));
+    if (r.cost) {
+      const p = el("span", "pill cost " + r.cost, (r.cost === "TEAL" ? "Teal" : "Green") + " Cost line");
+      what.append(p);
+    }
+    row.append(labs, what);
+    if (r.when.length) {
+      const ul = el("ul");
+      for (const w of r.when) ul.append(el("li", null, w));
+      row.append(ul);
+    }
+    out.append(row);
+  }
+  return out;
+}
+
+const intro = $("#intro");
+for (const p of DATA.intro) {
+  const e = el("p");
+  e.innerHTML = p;
+  intro.append(e);
+}
+intro.append(el("p", null, DATA.price));
+const toc = $("#toc"), secs = $("#sections"), views = [];
+for (const sec of DATA.sections) {
+  const a = el("a", null, sec.title);
+  a.href = "#shop-" + sec.id;
+  toc.append(a);
+  const s = el("section");
+  s.id = "shop-" + sec.id;
+  s.append(el("h2", "sec", sec.title));
+  if (sec.intro) s.append(el("p", "sec-intro", sec.intro));
+  for (const fam of sec.cards) {
+    const card = el("div", "card");
+    card.id = "shop-" + fam.id;
+    card.append(el("h3", null, fam.title));
+    const body = el("div", "card-body");
+    const v = scene(fam);
+    body.append(v.wrap, rows(fam));
+    card.append(body);
+    s.append(card);
+    views.push(v);
+  }
+  secs.append(s);
+}
+$("#foot").textContent = DATA.foot;
+const all = () => views.forEach(layout);
+(document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(all);
+all();
+let t = 0;
+window.addEventListener("resize", () => { clearTimeout(t); t = setTimeout(() => views.forEach(fit), 100); });
+})();
+</script>

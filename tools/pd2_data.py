@@ -58,6 +58,11 @@ BASES_FILE = ROOT / "docs" / "pd2-bases.tsv"
 SOUNDS_FILE = ROOT / "docs" / "pd2-sounds.tsv"
 PALETTE_FILE = ROOT / "docs" / "pd2-palette.tsv"
 SKILLS_FILE = ROOT / "docs" / "pd2-skills.tsv"
+MAGIC_AFFIXES_FILE = ROOT / "docs" / "pd2-magic-affixes.tsv"
+STAT_TEXT_FILE = ROOT / "docs" / "pd2-stat-text.tsv"
+BASE_STATS_FILE = ROOT / "docs" / "pd2-base-stats.tsv"
+VENDORS_FILE = ROOT / "docs" / "pd2-vendors.tsv"
+TOOLTIP_STRINGS_FILE = ROOT / "docs" / "pd2-tooltip-strings.tsv"
 BS = chr(92)
 
 # Stats the filter has a name for (the generator's vocabulary); others are STAT<id>
@@ -136,6 +141,28 @@ def read_tbl(data):
     return out
 
 
+def read_tbl_list(data):
+    """A D2 .tbl string table in its own order: [(key, text)], the n-th the game's string n of that table."""
+    _, n, _ = struct.unpack_from("<HHI", data, 0)
+    slots = struct.unpack_from(f"<{n}H", data, 21)
+    out = []
+    for slot in slots:
+        _, _, _, koff, soff, slen = struct.unpack_from("<BHIIIH", data, 21 + 2 * n + slot * 17)
+        out.append((data[koff:data.index(b"\0", koff)].decode("latin-1"),
+                    data[soff:soff + slen].split(b"\0")[0].decode("latin-1")))
+    return out
+
+
+def read_rows(text):
+    """A table's rows, every one kept (read_table drops those with an empty first column: the affix tables'
+    separator rows count in the game's numbering)."""
+    rows = [r.split("\t") for r in text.replace("\r\n", "\n").split("\n")]
+    head = rows[0]
+    while rows and not any(c.strip() for c in rows[-1]):
+        rows.pop()
+    return [{h: (r[i] if i < len(r) else "") for i, h in enumerate(head)} for r in rows[1:]]
+
+
 def read_table(text):
     rows = [r.split("\t") for r in text.replace("\r\n", "\n").split("\n")]
     head = rows[0]
@@ -174,19 +201,30 @@ class Game:
         self.gems = {r["code"]: r for r in excel("Gems.txt") if r.get("code")}
         self.charstats = {r["class"]: r for r in excel("CharStats.txt") if r.get("class")}
         skill_desc = {r["skilldesc"]: r.get("str name", "") for r in excel("SkillDesc.txt") if r.get("skilldesc")}
-        strings = {}
+        strings, self.string_ids, self.keyed_strings = {}, {}, {}
         for mpq, tbl in ((game_dir / "d2data.mpq", "string.tbl"), (game_dir / "d2exp.mpq", "expansionstring.tbl"),
                          (game_dir / "ProjectD2" / "patch_d2.mpq", "patchstring.tbl"),
                          (game_dir / "ProjectD2" / "pd2data.mpq", "patchstring.tbl")):
             try:
-                strings.update(read_tbl(pd2_mpq.MPQ(mpq).read(BS.join(["data", "local", "LNG", "ENG", tbl]))))
+                data = pd2_mpq.MPQ(mpq).read(BS.join(["data", "local", "LNG", "ENG", tbl]))
             except (OSError, KeyError, ValueError):
-                pass  # an archive without that table
+                continue  # an archive without that table
+            strings.update(read_tbl(data))
+            # the game's string numbers (the ones BH asks for by number): string.tbl from 0, patchstring.tbl from 10000,
+            # expansionstring.tbl from 20000
+            first = {"string.tbl": 0, "patchstring.tbl": 10000, "expansionstring.tbl": 20000}[tbl]
+            listed, own = read_tbl_list(data), {}
+            self.string_ids.update({first + i: text for i, (_, text) in enumerate(listed)})
+            for key, text in listed:  # a key twice in a table (StrSklTabItem6: Combat Skills, Summoning Skills):
+                own.setdefault(key, text)  # the game finds the first
+            self.keyed_strings.update(own)
         self.strings = strings
-        self.skill_names, self.skill_class = {}, {}
+        self.pd2 = pd2
+        self.skill_names, self.skill_class, self.skill_rows = {}, {}, {}
         for r in skills:
             if r["Id"].strip().isdigit():
                 sid = int(r["Id"])
+                self.skill_rows.setdefault(sid, r)
                 self.skill_names.setdefault(sid, strings.get(skill_desc.get(r.get("skilldesc", ""), ""), r["skill"]))
                 self.skill_class.setdefault(sid, r.get("charclass", "").strip())
 
@@ -634,9 +672,12 @@ def extract_tier_data(game_dir, game=None):
     BASES_FILE.write_text("\n".join(out) + "\n", encoding="utf-8", newline="\n")
     print(f"wrote {BASES_FILE.relative_to(ROOT)} ({len(out) - 8} bases)")
     out = [f"# PD2 skills (Skills.txt, names from the string tables) from pd2data.mpq, extracted {stamp} by",
-           "# tools/pd2_data.py: the skill ID the filter's SK<n> / OS<n> read, its name and class (Skills.txt charclass).",
-           "id\tname\tclass"]
-    out += [f"{sid}\t{name}\t{game.skill_class.get(sid, '')}" for sid, name in sorted(game.skill_names.items())]
+           "# tools/pd2_data.py: the skill ID the filter's SK<n> / OS<n> read, its name, class (charclass), price columns.",
+           "id\tname\tclass\treqlevel\tcostmult\tcostadd\tmaxlvl"]
+    out += [f"{sid}\t{name}\t{game.skill_class.get(sid, '')}\t" +
+            "\t".join(game.skill_rows.get(sid, {}).get(c, "").strip()
+                      for c in ("reqlevel", "cost mult", "cost add", "maxlvl"))
+            for sid, name in sorted(game.skill_names.items())]
     SKILLS_FILE.write_text("\n".join(out) + "\n", encoding="utf-8", newline="\n")
     print(f"wrote {SKILLS_FILE.relative_to(ROOT)} ({len(out) - 3} skills)")
     pd2 = pd2_mpq.MPQ(game_dir / "ProjectD2" / "pd2data.mpq")
@@ -652,6 +693,183 @@ def extract_tier_data(game_dir, game=None):
     out += [f"{i:02X}\t#{pal[3 * i + 2]:02x}{pal[3 * i + 1]:02x}{pal[3 * i]:02x}" for i in range(256)]
     PALETTE_FILE.write_text("\n".join(out) + "\n", encoding="utf-8", newline="\n")
     print(f"wrote {PALETTE_FILE.relative_to(ROOT)} (256 colors)")
+    extract_shop_data(game_dir, game)
+
+
+# ---------------------------------------------------------------- the shop page's tables
+
+# The game's own strings a hover box uses (by number, as BH's BHOnProperties reads them): Cost,
+# Socketed, Durability ... of, requirements, defense, damage, Smite, Kick, weapon classes and speeds, class only,
+# Chance to Block, rune quote, Claw Class, Ethereal
+SHOP_STRING_IDS = ([3329, 3453] + list(range(3457, 3470)) + [3996] + list(range(4077, 4095)) + list(range(10917, 10924))
+                   + [11018, 20506, 21258, 21782, 22745])
+VENDORS = ["Charsi", "Akara", "Fara", "Lysander", "Drognan", "Elzix", "Hralti", "Alkor", "Ormus", "Asheara",
+           "Halbu", "Jamella", "Larzuk", "Drehya", "Malah"]  # Weapons/Armor/Misc store columns (Hralti: the
+#                                                              table's spelling), in act order; Gheed only gambles
+VENDOR_NPC = {"Hralti": "hratli", "Drehya": "drehya"}
+
+
+def mod_stats(game, prop, par, lo, hi):
+    """[[stat id, param, low, high]] a property sets (the stat's param as the game stores it): a skill tab is 8 per
+    class (BH's TABSK), charges and chance to cast are skill * 64 + level (their value: charges, chance), min / max
+    damage are 21 / 22 (the game also sets the 2-handed and throw ones on a weapon), +% damage 17 and 18."""
+    row = game.properties.get(prop.strip().lower())
+    if not row:
+        return []
+    lo_i, hi_i, out = to_int(lo), to_int(hi), []
+    for i in range(1, 8):
+        func, stat = row.get(f"func{i}", "").strip(), row.get(f"stat{i}", "").strip()
+        if not func:
+            continue
+        f, sid = int(func), game.stat_id.get(stat)
+        if f in (1, 2, 3, 8) and sid is not None:
+            out.append([sid, 0, lo_i, hi_i])
+        elif f == 5:
+            out.append([21, 0, lo_i, hi_i])
+        elif f == 6:
+            out.append([22, 0, lo_i, hi_i])
+        elif f == 7:
+            out += [[17, 0, lo_i, hi_i], [18, 0, lo_i, hi_i]]
+        elif f == 10 and par.strip().isdigit():
+            tab = int(par)
+            out.append([188, tab // 3 * 8 + tab % 3, lo_i, hi_i])
+        elif f == 11 and sid is not None:  # chance to cast: param skill * 64 + level, value the chance
+            skill = game.skill(par)
+            if skill is not None:
+                out.append([sid, skill * 64 + hi_i, lo_i, lo_i])
+        elif f == 19 and sid is not None:  # charges: the skill, min and max as the table has them (the level and
+            skill = game.skill(par)       # charges follow from the item level: tools/shop_map.py)
+            if skill is not None:
+                out.append([sid, skill, lo_i, hi_i])
+        elif f == 14:  # sockets: min-max, or else the param (Jeweler's: 4)
+            out.append([194, 0, lo_i, hi_i] if (lo.strip() or hi.strip()) else [194, 0, to_int(par), to_int(par)])
+        elif f == 15 and sid is not None:
+            out.append([sid, 0, lo_i, lo_i])
+        elif f == 16 and sid is not None:
+            out.append([sid, 0, hi_i, hi_i])
+        elif f == 17 and sid is not None:
+            a, b = (lo_i, hi_i) if (lo.strip() or hi.strip()) else (to_int(par), to_int(par))
+            out.append([sid, 0, a, b])
+        elif f == 20:
+            out.append([152, 0, 1, 1])
+        elif f == 21 and sid is not None:
+            out.append([sid, to_int(row.get(f"val{i}")), lo_i, hi_i])
+        elif f == 22 and sid is not None:
+            skill = game.skill(par)
+            if skill is not None:
+                out.append([sid, skill, lo_i, hi_i])
+    return out
+
+
+def extract_shop_data(game_dir, game=None):
+    """For tools/shop_map.py (the Skill & Shop Highlights page's hover boxes and prices): docs/pd2-magic-affixes.tsv,
+    docs/pd2-stat-text.tsv, docs/pd2-base-stats.tsv, docs/pd2-vendors.tsv, docs/pd2-tooltip-strings.tsv, and the
+    skills' price columns in docs/pd2-skills.tsv."""
+    game = game or Game(game_dir)
+    stamp = datetime.date.today().isoformat()
+    head = f"extracted {stamp} by tools/pd2_data.py --tier-data"
+    excel = lambda name: read_rows(game.pd2.read(BS.join(["data", "global", "excel", name])).decode("latin-1"))
+    prop_index = {r["code"].strip().lower(): i for i, r in enumerate(excel("Properties.txt")) if r["code"].strip()}
+
+    out = [f"# PD2 magic affixes (MagicSuffix, MagicPrefix, AutoMagic) from pd2data.mpq, {head}. row: the table's",
+           "# row from 0 (BH's SUFFIX / PREFIX numbers); name from the string tables; itypes / etypes: the item types it",
+           "# rolls on / never on; multiply, add: its price columns; color: the color it gives the item's picture",
+           "# (transformcolor, when transform is 1); mods: [property, its Properties.txt row, param, min, max,",
+           "# [[stat id, stat param, low, high], ...]] (tools/pd2_data.py mod_stats).",
+           "kind\trow\tname\tversion\tspawnable\trare\tlevel\tmaxlevel\tlevelreq\tclassspecific\tclass\tclasslevelreq"
+           "\tfrequency\tgroup\titypes\tetypes\tmultiply\tadd\tcolor\tmods"]
+    for kind, name in (("suffix", "MagicSuffix.txt"), ("prefix", "MagicPrefix.txt"), ("automagic", "AutoMagic.txt")):
+        for n, r in enumerate(excel(name)):
+            mods = []
+            for k in (1, 2, 3):
+                code = r.get(f"mod{k}code", "").strip()
+                if code:
+                    par, lo, hi = r.get(f"mod{k}param", ""), r.get(f"mod{k}min", ""), r.get(f"mod{k}max", "")
+                    mods.append([code, prop_index.get(code.lower(), -1), par.strip(), to_int(lo), to_int(hi),
+                                 mod_stats(game, code, par, lo, hi)])
+            itypes = [r[f"itype{i}"].strip() for i in range(1, 8) if r.get(f"itype{i}", "").strip()]
+            etypes = [r[f"etype{i}"].strip() for i in range(1, 6) if r.get(f"etype{i}", "").strip()]
+            out.append("\t".join([kind, str(n), game.keyed_strings.get(r["Name"], r["Name"]).strip()] +
+                                 [r.get(c, "").strip() for c in ("version", "spawnable", "rare", "level", "maxlevel",
+                                                                 "levelreq", "classspecific", "class", "classlevelreq",
+                                                                 "frequency", "group")] +
+                                 [",".join(itypes), ",".join(etypes), r.get("multiply", "").strip(),
+                                  r.get("add", "").strip(),
+                                  r.get("transformcolor", "").strip() if r.get("transform", "").strip() == "1" else "",
+                                  compact(mods)]))
+    for kind, name in (("rareprefix", "RarePrefix.txt"), ("raresuffix", "RareSuffix.txt")):  # a rare's two names
+        for n, r in enumerate(excel(name)):
+            itypes = [r[f"itype{i}"].strip() for i in range(1, 8) if r.get(f"itype{i}", "").strip()]
+            etypes = [r[f"etype{i}"].strip() for i in range(1, 5) if r.get(f"etype{i}", "").strip()]
+            text = game.keyed_strings.get(r["name"], r["name"]).strip()
+            out.append("\t".join([kind, str(n), text, r.get("version", "").strip()] + [""] * 10 +
+                                 [",".join(itypes), ",".join(etypes), "", "", "", "[]"]))
+    MAGIC_AFFIXES_FILE.write_text("\n".join(out) + "\n", encoding="utf-8", newline="\n")
+    print(f"wrote {MAGIC_AFFIXES_FILE.relative_to(ROOT)} ({len(out) - 5} affixes)")
+
+    cols = ["descpriority", "descfunc", "descval", "descstrpos", "descstrneg", "descstr2", "dgrp", "dgrpfunc",
+            "dgrpval", "dgrpstrpos", "dgrpstrneg", "dgrpstr2", "Encode", "Add", "Multiply", "Divide", "ValShift",
+            "op", "op param", "op base", "op stat1"]
+    out = [f"# PD2 ItemStatCost.txt from pd2data.mpq, {head}: how the game words each stat on an item (the",
+           "# desc* / dgrp* strings as text) and prices it (Encode, Add, Multiply, Divide), ValShift, its op columns.",
+           "\t".join(["id", "stat"] + cols)]
+    for r in game.statcost:
+        sid = (r.get("*ID") or r.get("ID") or "").strip()
+        if sid.isdigit():
+            vals = [game.keyed_strings.get(r.get(c, "").strip(), "") if "str" in c else r.get(c, "").strip() for c in cols]
+            out.append("\t".join([sid, r["Stat"]] + [v.replace("\t", " ").replace("\n", "\\n") for v in vals]))
+    STAT_TEXT_FILE.write_text("\n".join(out) + "\n", encoding="utf-8", newline="\n")
+    print(f"wrote {STAT_TEXT_FILE.relative_to(ROOT)} ({len(out) - 3} stats)")
+
+    cols = ["type", "type2", "cost", "minac", "maxac", "block", "durability", "nodurability", "reqstr", "reqdex",
+            "levelreq", "mindam", "maxdam", "1or2handed", "2handed", "2handmindam", "2handmaxdam", "minmisdam",
+            "maxmisdam", "speed", "rangeadder", "stackable", "minstack", "maxstack", "invfile", "invwidth", "invheight",
+            "level", "magic lvl", "auto prefix", "gemsockets", "normcode", "ubercode", "ultracode", "InvTrans"]
+    out = [f"# PD2 item bases (Weapons, Armor, Misc) from pd2data.mpq, {head}: the columns a hover box and a price",
+           "# read; class, staffmods, throwable: the base's item type's ItemTypes columns (class: 0-6 = Amazon..Assassin);",
+           "# vendors: the stores that stock it (their columns in the table, act order).",
+           "\t".join(["code", "name"] + cols + ["class", "staffmods", "throwable", "vendors"])]
+    class_codes = {c: i for i, c in enumerate(CLASS_CODES)}
+    firsts = {}  # Armor.txt has mindam / maxdam twice: the first pair is the base's (a shield's Smite, boots' Kick)
+    for name in ("Weapons.txt", "Armor.txt", "Misc.txt"):
+        rows = [x.split("\t") for x in game.pd2.read(BS.join(["data", "global", "excel", name])).decode(
+            "latin-1").replace("\r\n", "\n").split("\n")]
+        for x in rows[1:]:
+            row = {}
+            for h, cell in zip(rows[0], x):
+                row.setdefault(h, cell)
+            if row.get("code"):
+                firsts.setdefault(row["code"], row)
+    for code in sorted(game.base_rows):
+        r = dict(game.base_rows[code], **{c: firsts.get(code, {}).get(c, "") for c in ("mindam", "maxdam")})
+        trow = game.type_rows.get(r.get("type", "").strip(), {})
+        vendors = [v for v in VENDORS if any(to_int(r.get(f"{v}{c}")) for c in ("Min", "Max", "MagicMin", "MagicMax"))]
+        out.append("\t".join([code, game.base_name(code).splitlines()[-1]] + [r.get(c, "").strip() for c in cols] +
+                             [str(class_codes.get(trow.get("Class", "").strip(), "")),
+                              trow.get("StaffMods", "").strip(), trow.get("Throwable", "").strip(), ",".join(vendors)]))
+    BASE_STATS_FILE.write_text("\n".join(out) + "\n", encoding="utf-8", newline="\n")
+    print(f"wrote {BASE_STATS_FILE.relative_to(ROOT)} ({len(out) - 4} bases)")
+
+    rows = excel("Npc.txt")
+    cols = [c for c in rows[0] if c != "npc"] if rows else []
+    out = [f"# PD2 Npc.txt from pd2data.mpq, {head}: each vendor's price multipliers (1024 = 1x), the quests that",
+           "# lower them and the most it pays.", "\t".join(["npc"] + cols)]
+    out += ["\t".join([r["npc"].strip()] + [r.get(c, "").strip() for c in cols]) for r in rows if r.get("npc", "").strip()]
+    VENDORS_FILE.write_text("\n".join(out) + "\n", encoding="utf-8", newline="\n")
+    print(f"wrote {VENDORS_FILE.relative_to(ROOT)} ({len(out) - 3} vendors)")
+
+    out = [f"# The game's strings a hover box uses, {head}: id (the game's string number: string.tbl from 0,",
+           "# patchstring.tbl from 10000, expansionstring.tbl from 20000) or class:<n>:<CharStats column>, and the text.",
+           "id\ttext"]
+    texts = [(str(i), game.string_ids.get(i, "")) for i in SHOP_STRING_IDS]
+    for n, cls in enumerate(CLASS_NAMES):
+        row = game.charstats.get(cls, {})
+        texts += [(f"class:{n}:{c}", game.keyed_strings.get(row.get(c, "").strip(), ""))
+                  for c in ("StrAllSkills", "StrSkillTab1", "StrSkillTab2", "StrSkillTab3", "StrClassOnly")]
+        texts.append((f"class:{n}:BlockFactor", row.get("BlockFactor", "").strip()))  # (a number: its block)
+    out += [f"{key}\t{text}".replace("\n", "\\n") for key, text in texts]
+    TOOLTIP_STRINGS_FILE.write_text("\n".join(out) + "\n", encoding="utf-8", newline="\n")
+    print(f"wrote {TOOLTIP_STRINGS_FILE.relative_to(ROOT)} ({len(out) - 3} strings)")
 
 
 # ---------------------------------------------------------------- for the generator
@@ -723,12 +941,15 @@ def main():
     ap = argparse.ArgumentParser(description="PD2's unique and set item data.")
     ap.add_argument("--extract", metavar="DIABLO_II_FOLDER")
     ap.add_argument("--tier-data", metavar="DIABLO_II_FOLDER")
+    ap.add_argument("--shop-data", metavar="DIABLO_II_FOLDER")
     ap.add_argument("--report", metavar="NAME")
     args = ap.parse_args()
     if args.extract:
         extract(args.extract)
     elif args.tier_data:
         extract_tier_data(args.tier_data)
+    elif args.shop_data:
+        extract_shop_data(args.shop_data)
     if args.report is not None:
         for it in load_items():
             if args.report.lower() in it["name"].lower():
@@ -744,7 +965,7 @@ def main():
                 for text, p in zip(rw["runetexts"], rw["runestats"]):
                     print(f"    {text:48} " + "  ".join(f"{c} {lo}" + (f"-{hi}" if hi != lo else "") for c, lo, hi in p))
                 print(f"    a white base can bring: {', '.join(rw['addable']) or 'nothing'}")
-    if not args.extract and not args.tier_data and args.report is None:
+    if not args.extract and not args.tier_data and not args.shop_data and args.report is None:
         ap.print_help()
 
 

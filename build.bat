@@ -37,6 +37,10 @@ rem Minimal version page for players (Erazure-Minimal-Style.html: Main's labels 
 rem styles\minimal.filter)
 python tools\style_map.py
 if errorlevel 1 goto failed
+rem Skill & shop highlights page for players (Erazure-Skill-Shop-Highlights.html: section 280's highlights, their
+rem criteria and sample items drawn as in a shop)
+python tools\shop_map.py
+if errorlevel 1 goto failed
 python tools\build.py --check
 if errorlevel 1 goto failed
 
