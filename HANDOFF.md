@@ -118,7 +118,7 @@ About 825 KB is roughly 200k+ tokens per file. **No conversation will "see the w
 | `240-charms` | 7117–7297 | Magic charm display |
 | `250-jewels` | 7298–7417 | |
 | `260-arrow-bolt-affixes` | 7418–7505 | |
-| `270-rathma-gear-tags` | 7506–7534 | |
+| `270-boss-gear-tags` | 7506–7636 | Boss tags on identified rare/crafted gear and magic amulets: one line naming every boss an item suits (Rathma / D.Clone / Lucion; helms: D.Clone and Lucion only; rings: Rathma only). Conditions are aliases `BOSSTAG_<RA/DC/LU>_<slot>`, one rule per combination; was `270-rathma-gear-tags` until 2026-10-18 |
 | `280-skills-shop-highlights` | 7535–8289 | +Skills items and shop highlights (~27k tokens) |
 | `300-affix-tags` | 8290–9553 | 113 stat blocks, one per stat in the game's stat order: MF, GF, resists, FCR, IAS, skills… (largest file, ~28k tokens) |
 | `305-runeword-rolls` | 9554–10067 | GENERATED (`tools/gen_runeword_rolls.py`): runeword roll tags, aliases and tag lines in 300's stat order (added S14) |
