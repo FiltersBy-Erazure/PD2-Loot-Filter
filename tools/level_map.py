@@ -87,13 +87,15 @@ SECTION_NOTES = {"Non-magical items": "Plain: no sockets, not superior, no skill
 SECTION_COLORS = {"Gold, potions, scrolls and keys": "white", "Gems and runes": "rune",
                   "PD2 items, maps and quest items": "tan", "Unique items": "gold", "Set items": "set",
                   "Rare items": "rare", "Magic items": "magic", "Non-magical items": "white"}
-# The author's line about each level group, by its launcher name (no thresholds or items: the rows say those)
+# The author's line about each level group, by its launcher name (no thresholds or items: the rows say those); a
+# level's full name (as tier_map.load_levels gives it) wins over its group's: level 7 hides what 5-6 show
 INTROS = {
     "Show All Items": "Hides nothing and plays every notification.",
     "Lowest Strictness": "For the ladder start and characters up to level ~80.",
     "Relaxed Filtering": "Hides more low-value magic, rare and non-magical items as your character levels.",
     "Stricter Filtering": "Hides many non-magical bases and low-value magic and rare items.",
     "Advanced Filtering": "Similar to Endgame, but shows more rares, magic amulets and Large Charms.",
+    "Advanced Filtering - Hides 35%, Magic Amulets, Large Charms": "Similar to Endgame, but shows more rares.",
     "Endgame Filtering": "Hides most low-value items for endgame characters.",
     "Extreme Filtering!": "Hides everything but the most valuable items.",
 }
@@ -1514,7 +1516,8 @@ class Page:
         cols = []
         for levels in self.columns:
             title, hides = self.column_title(levels)
-            cols.append({"levels": levels, "title": title, "hides": hides, "intro": INTROS.get(title, "")})
+            intro = INTROS.get(self.levels[levels[0]], INTROS.get(title, ""))
+            cols.append({"levels": levels, "title": title, "hides": hides, "intro": intro})
         sections = []
         for title, rows in self.sections:
             links = {r.link for r in rows}
@@ -1628,7 +1631,7 @@ def findings(page):
         for lv in levels:
             groups[page.levels[lv].split(" - ")[0].strip()].append(c)
     for name, cs in groups.items():
-        if len(set(cs)) > 1 and name not in ("Endgame Filtering",):
+        if len(set(cs)) > 1 and name not in ("Advanced Filtering", "Endgame Filtering"):
             out.append(f"{name}: its levels fall in {len(set(cs))} columns (they differ in more than potions)")
     for levels in page.columns:  # a new or renamed launcher group: its column shows no intro
         title, _ = page.column_title(levels)
