@@ -4,7 +4,7 @@ Build the Erazure filters (every entry of filter_definitions.json) from the sect
 
   sections/*.filter    joined in filename order, <<VERSION>> filled in    ->  Erazure-Main.filter
   Erazure-Main.filter  with one toggle block switched on per variant      ->  the 7 other toggle variants
-  a variant's filter   with the aliases of a style file in styles/        ->  the style variants (Erazure-Minimal.filter)
+  a variant's filter   with the aliases of a style file in styles/        ->  the style variants (Erazure-Minimal*.filter)
 
 Usage (from the repo root; or double-click build.bat to stamp, build and check):
     python tools/build.py           build all the filters
@@ -20,9 +20,9 @@ everything else is the filter of the variant it is built from. A style file endi
 instead (tools/style_edits.py: rule by rule, what a rule shows, rules switched off, lines added); the build applies
 them, writes the entries back as they match today's lines, and reports the ones that need a look on a line starting
 "Style". Several style variants may share a style file (Corrlorized - Main - PoE and Corrlorized - BIG GG - PoE:
-styles/corrlorized.edits on two toggle variants); it is fixed, written back and reported once. A style variant not
-in filter_definitions.json yet (no launcher entry) is built all the same, to its display name's file name
-(Corrlorized - Main - PoE: Corrlorized-Main-PoE.filter).
+styles/corrlorized.edits on two toggle variants; the 4 Minimal versions: styles/minimal.filter on 4); it is
+fixed, written back and reported once. A style variant not in filter_definitions.json yet (no launcher entry) is
+built all the same, to its display name's file name (Corrlorized - Main - PoE: Corrlorized-Main-PoE.filter).
 """
 import argparse
 import datetime
@@ -40,6 +40,9 @@ DEFS = ROOT / "filter_definitions.json"
 MAIN = "Erazure - Main"
 # {style variant's display name: (the variant it is built from, its style file in styles/)}
 STYLE_VARIANTS = {"Erazure - Minimal": (MAIN, "minimal.filter"),
+                  "Erazure - Minimal - Revealed": ("Erazure - Revealed", "minimal.filter"),
+                  "Erazure - Minimal - BIG GG": ("Erazure - BIG GG", "minimal.filter"),
+                  "Erazure - Minimal - PoE": ("Erazure - Main - PoE", "minimal.filter"),
                   "Corrlorized - Main - PoE": ("Erazure - Main - PoE", "corrlorized.edits"),
                   "Corrlorized - BIG GG - PoE": ("Erazure - BIG GG - PoE", "corrlorized.edits")}
 PLACEHOLDER = b"<<VERSION>>"
