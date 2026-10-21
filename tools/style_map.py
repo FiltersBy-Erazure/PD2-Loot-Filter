@@ -175,11 +175,12 @@ def sections_symbols(parts):
 
 
 def symbol_titles(parts):
-    """(alias name, the comment line above it: 'Unique High Value'), cut at a colon."""
-    title = ""
+    """(alias name, the first line of the comment above it: 'Unique High Value'), cut at a colon."""
+    title, in_comment = "", False
     for line in dict(parts)[SYMBOL_SECTION].decode("utf-8").split("\r\n"):
-        if line.startswith("// "):
+        if line.startswith("// ") and not in_comment:
             title = line[3:].split(":")[0].strip()
+        in_comment = line.startswith("//")
         m = ALIAS_RE.match(line)
         if m:
             yield m[1], title

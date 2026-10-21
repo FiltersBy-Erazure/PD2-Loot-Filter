@@ -272,7 +272,7 @@ Alias[INFUSION_BRILLIANT]:%TAN%|(%WHITE%O%TAN%)|
 Alias[FACET_LEFT]:%GREEN%\\%BLUE%\\%PURPLE%\\%RED%\\%ORANGE%\\%YELLOW%\\
 Alias[FACET_RIGHT]:%YELLOW%/%YELLOW%/%ORANGE%/%ORANGE%/%RED%/%RED%/%PURPLE%/%PURPLE%/%BLUE%/%BLUE%/%GREEN%/%GREEN%/
 
-// Rainbow Facet: the name between (x and x)
+// Rainbow Facet's name: between (x and x)
 Alias[FACET_NAME]:%TAN%(x  %GOLD%Rainbow Facet  %TAN%x)
 
 // Uniques from Diablo Clone and Rathma
@@ -352,9 +352,11 @@ Alias[RARE_JEWEL_NAME]:%TAN%(x  %YELLOW%%NAME%  %TAN%x)
 // Magic Jewels: the name between (x and x)
 Alias[MAGIC_JEWEL_NAME]:%TAN%(x  %BLUE%Jewel  %TAN%x)
 
-// Magic Jewel arrows: the * > and < * around the name (levels 0-4, or below character level 30)
-Alias[MAGIC_JEWEL_LEFT]:%TAN%* %BLUE%>
-Alias[MAGIC_JEWEL_RIGHT]:%BLUE%< %TAN%*
+// Magic Jewel arrows: the * > and < * around the name (levels 0-4, or below character level 30). The spaces
+// next to the name are part of them, so an empty one leaves no gap; BH drops spaces at an alias's ends, so a
+// color code closes them in.
+Alias[MAGIC_JEWEL_LEFT]:%TAN%* %BLUE%>  %BLUE%
+Alias[MAGIC_JEWEL_RIGHT]:%BLUE%  < %TAN%*
 
 // Magic Rings
 Alias[MAGIC_RING_LEFT]:%TAN%•
@@ -5572,8 +5574,8 @@ ItemDisplay[jewf QTY=1]:%TAN%(x %BLUE%Jewel %TAN%x) %WHITE%Fragment{%BLUE%Jewel 
 ItemDisplay[MAG !ID jew MAPID~183-184]:%MAGIC_JEWEL_NAME%// All unidentified magic jewels
 ItemDisplay[MAG !ID jew CLVL>29 FILTLVL~5-11 !MAPID~183-184]:%MAGIC_JEWEL_NAME%// All unidentified magic jewels
 ItemDisplay[MAG !ID jew CLVL>29 FILTLVL=12 !MAPID~183-184]:%MAGIC_JEWEL_NAME%// All unidentified magic jewels
-ItemDisplay[MAG !ID jew CLVL>29 FILTLVL<5 !MAPID~183-184]:%MAGIC_JEWEL_LEFT%  %MAGIC_JEWEL_NAME%  %MAGIC_JEWEL_RIGHT%// All unidentified magic jewels
-ItemDisplay[MAG !ID jew CLVL<30 FILTLVL<12]:%MAGIC_JEWEL_LEFT%  %MAGIC_JEWEL_NAME%  %MAGIC_JEWEL_RIGHT%// All unidentified magic jewels
+ItemDisplay[MAG !ID jew CLVL>29 FILTLVL<5 !MAPID~183-184]:%MAGIC_JEWEL_LEFT%%MAGIC_JEWEL_NAME%%MAGIC_JEWEL_RIGHT%// All unidentified magic jewels
+ItemDisplay[MAG !ID jew CLVL<30 FILTLVL<12]:%MAGIC_JEWEL_LEFT%%MAGIC_JEWEL_NAME%%MAGIC_JEWEL_RIGHT%// All unidentified magic jewels
 
 // Magic Amazon Spears
 
