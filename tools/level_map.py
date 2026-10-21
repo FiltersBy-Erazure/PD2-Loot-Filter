@@ -95,7 +95,7 @@ INTROS = {
     "Relaxed Filtering": "Hides more low-value magic, rare and non-magical items as your character levels.",
     "Stricter Filtering": "Hides many non-magical bases and low-value magic and rare items.",
     "Advanced Filtering": "Similar to Endgame, but shows more rares, magic amulets and Large Charms.",
-    "Advanced Filtering - Hides 35%, Magic Amulets, Large Charms": "Similar to Endgame, but shows more rares.",
+    "Advanced Filtering - Hides 35%, Amulets, Large Charms": "Similar to Endgame, but shows more rares.",
     "Endgame Filtering": "Hides most low-value items for endgame characters.",
     "Extreme Filtering!": "Hides everything but the most valuable items.",
 }
