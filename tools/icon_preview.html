@@ -1,0 +1,753 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Minimap Icons</title>
+<!-- The minimap icon preview: tools/icon_preview.py serves this page and its data (python tools/icon_preview.py, or
+     double-click icon_preview.bat). It asks for the rules again whenever a file in sections/ or styles/ changes. -->
+<style>
+  :root {
+    --bg: #f4f2ee; --panel: #ffffff; --text: #23211d; --muted: #6b665d; --line: #dcd7cc;
+    --accent: #8a6d1f; --chip: #f1ede4; --chip-on-text: #ffffff; --ok: #3f7d3a; --bad: #b3261e;
+    --draft: #b8860b; --flash: #e9c46a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #161513; --panel: #201e1b; --text: #ece8e1; --muted: #a39d92; --line: #36332e;
+      --accent: #d6b25e; --chip: #2b2925; --chip-on-text: #1b1a17; --ok: #7cc474; --bad: #ef7a72;
+      --draft: #e0b04a; --flash: #8a6d1f;
+    }
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font: 14.5px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  code, .mono { font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; font-size: 12.5px; }
+  button, select, input { font: inherit; color: var(--text); }
+  select, input[type=search], input[type=text] { padding: 4px 8px; border: 1px solid var(--line); border-radius: 6px;
+                                                 background: var(--bg); }
+  button { padding: 4px 11px; border-radius: 6px; border: 1px solid var(--line); background: var(--chip); cursor: pointer; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: var(--chip-on-text); font-weight: 600; }
+  button:disabled { opacity: .5; cursor: default; }
+  label.check { display: inline-flex; gap: 6px; align-items: center; cursor: pointer; }
+
+  header.top { position: sticky; top: 0; z-index: 10; background: var(--panel); border-bottom: 1px solid var(--line);
+               padding: 8px 16px; }
+  .bar { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; }
+  .bar + .bar { margin-top: 6px; }
+  h1 { font-size: 17px; margin: 0; }
+  .live { font-size: 13px; color: var(--muted); }
+  .live::before { content: "\25CF"; margin-right: 5px; color: var(--ok); }
+  .live.off::before { color: var(--bad); }
+  .rebuild { font-size: 13px; color: var(--muted); }
+  .rebuild.running { color: var(--accent); }
+  .rebuild.failed { color: var(--bad); cursor: pointer; text-decoration: underline dotted; }
+  .grow { flex: 1 1 auto; }
+  input[type=search] { flex: 1 1 200px; min-width: 140px; }
+  .draftbar { padding: 6px 10px; border-radius: 8px; background: color-mix(in srgb, var(--draft) 16%, var(--panel));
+              border: 1px solid var(--draft); }
+
+  .banner { margin: 10px 16px 0; padding: 9px 12px; border-radius: 8px; border: 1px solid var(--bad);
+            background: color-mix(in srgb, var(--bad) 10%, var(--panel)); white-space: pre-wrap; }
+  .banner.good { border-color: var(--ok); background: color-mix(in srgb, var(--ok) 10%, var(--panel)); }
+
+  .layout { display: grid; grid-template-columns: minmax(0, 1fr) 400px; gap: 16px; padding: 12px 16px 60px;
+            max-width: 1500px; margin: 0 auto; align-items: start; }
+  .side { position: sticky; top: var(--head, 96px); max-height: calc(100vh - var(--head, 96px) - 12px); overflow: auto;
+          display: flex; flex-direction: column; gap: 12px; }
+  @media (max-width: 980px) {
+    .layout { grid-template-columns: minmax(0, 1fr); }
+    .side { position: static; max-height: none; order: -1; }
+  }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
+  .panel h2 { font-size: 14px; margin: 0 0 8px; }
+  .hint { color: var(--muted); font-size: 13px; margin: 0; }
+  .help { color: var(--muted); font-size: 13px; margin: 0 0 10px; }
+
+  /* an icon: the floor, the boxes in game pixels times the zoom */
+  .tile { position: relative; flex: none; border-radius: 3px; image-rendering: pixelated; overflow: hidden; }
+  .tile i { position: absolute; display: block; }
+  .tile.big { border-radius: 6px; }
+
+  details.sec { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; margin-bottom: 10px; }
+  details.sec > summary { cursor: pointer; padding: 8px 12px; font-weight: 600; list-style: none; display: flex; gap: 10px;
+                          align-items: baseline; }
+  details.sec > summary::before { content: "\25B8"; color: var(--muted); }
+  details.sec[open] > summary::before { content: "\25BE"; }
+  details.sec > summary .n { color: var(--muted); font-weight: 400; font-size: 13px; }
+  .rule { display: grid; grid-template-columns: auto auto minmax(0, 1fr) auto; gap: 4px 12px; align-items: center;
+          padding: 5px 12px; border-top: 1px solid var(--line); cursor: pointer; }
+  .rule:hover { background: color-mix(in srgb, var(--accent) 6%, var(--panel)); }
+  .rule.sel { background: color-mix(in srgb, var(--accent) 14%, var(--panel)); }
+  .rule.changed { box-shadow: inset 4px 0 0 var(--accent); }
+  .rule.draft { box-shadow: inset 4px 0 0 var(--draft); }
+  .rule.flash { animation: flash 2.4s ease-out; }
+  @keyframes flash { from { background: var(--flash); } to { background: transparent; } }
+  .codes { display: flex; gap: 4px; }
+  .chip { display: inline-flex; align-items: center; gap: 4px; padding: 1px 6px 1px 3px; border-radius: 5px;
+          font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; font-size: 12px; min-width: 52px; }
+  .chip b { font-weight: 600; color: var(--muted); font-size: 11px; }
+  .chip .sw { width: 12px; height: 12px; border-radius: 2px; border: 1px solid rgba(127, 127, 127, .5); flex: none; }
+  .chip.none { color: var(--muted); border-style: dashed; background: transparent; opacity: .6; }
+  .chip.drafted { border-color: var(--draft); background: color-mix(in srgb, var(--draft) 18%, var(--chip)); }
+  .what { min-width: 0; }
+  .lbl { display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: pre;
+         background: rgba(0, 0, 0, .78); color: #d8d8d8; padding: 0 6px; border-radius: 3px; font-size: 12.5px;
+         vertical-align: middle; }
+  .lbl .kw { opacity: .7; font-style: italic; }
+  .sub { color: var(--muted); font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .sub b { color: var(--text); font-weight: 600; }
+  .loc { text-align: right; font-size: 12px; color: var(--muted); white-space: nowrap; }
+  .badge { display: inline-block; padding: 0 6px; border-radius: 999px; border: 1px solid var(--line); font-size: 11.5px;
+           margin-left: 4px; color: var(--muted); }
+  .badge.own { border-color: var(--accent); color: var(--accent); }
+  @media (max-width: 640px) {
+    .rule { grid-template-columns: auto minmax(0, 1fr); }
+    .codes { grid-column: 2; }
+    .what, .loc { grid-column: 1 / -1; text-align: left; }
+  }
+
+  .changes .chg { display: flex; gap: 10px; align-items: center; padding: 4px 0; border-top: 1px solid var(--line);
+                  cursor: pointer; }
+  .changes .chg:first-of-type { border-top: 0; }
+  .arrow { color: var(--muted); }
+  .chg .sub { flex: 1 1 auto; }
+  .pins { display: flex; flex-wrap: wrap; gap: 8px; }
+  .pin { display: flex; gap: 8px; align-items: center; padding: 6px 8px; border: 1px solid var(--line); border-radius: 8px;
+         background: var(--bg); cursor: pointer; }
+  .pin .x { border: 0; background: none; padding: 0 2px; color: var(--muted); }
+  .pin small { display: block; color: var(--muted); }
+
+  .ititle { font-weight: 700; font-size: 15px; }
+  .iloc { color: var(--muted); font-size: 12.5px; margin-bottom: 10px; }
+  .bigrow { display: flex; gap: 14px; align-items: flex-start; }
+  .legend { display: grid; grid-template-columns: auto auto auto auto; gap: 6px 8px; align-items: center; font-size: 13px;
+            align-content: start; }
+  .legend .sw { width: 16px; height: 16px; border-radius: 3px; border: 1px solid rgba(127, 127, 127, .5); }
+  .legend .k { font-weight: 600; }
+  .legend button { padding: 0 6px; font-size: 12px; }
+  .floors { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .floors figure { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 64px; }
+  .floors figcaption { font-size: 11.5px; line-height: 1.2; color: var(--muted); max-width: 84px; text-align: center; }
+  .note { font-size: 12.5px; color: var(--muted); margin: 10px 0 0; }
+  .note.warn { color: var(--draft); }
+  .raw { display: block; margin-top: 10px; padding: 6px 8px; background: var(--bg); border-radius: 6px; word-break: break-all;
+         white-space: pre-wrap; }
+  .raw mark { background: color-mix(in srgb, var(--accent) 30%, transparent); color: inherit; border-radius: 2px; }
+  .actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+
+  form.item { display: grid; grid-template-columns: auto 1fr; gap: 6px 10px; align-items: center; font-size: 13.5px; }
+  form.item .wide { grid-column: 1 / -1; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  form.item input[type=text], form.item select { width: 100%; }
+  .irules { margin-top: 10px; display: flex; flex-direction: column; gap: 2px; }
+  .irule { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 8px; align-items: center; font-size: 12.5px;
+           padding: 3px 4px; border-radius: 6px; cursor: pointer; }
+  .irule:hover { background: color-mix(in srgb, var(--accent) 8%, var(--panel)); }
+  .irule.off { opacity: .45; }
+  .irule .st { white-space: nowrap; color: var(--muted); }
+  .noicon { width: 24px; text-align: center; color: var(--muted); font-size: 11px; }
+
+  .picker { position: fixed; z-index: 30; background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+            padding: 10px; box-shadow: 0 8px 28px rgba(0, 0, 0, .35); width: 330px; }
+  .picker .ph { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 8px; font-size: 13px; }
+  .picker .ph button { padding: 0 8px; }
+  .grid16 { display: grid; grid-template-columns: repeat(16, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+  .grid16 button { aspect-ratio: 1; padding: 0; border: 0; border-radius: 0; position: relative; }
+  .grid16 button.cur { outline: 2px solid var(--text); outline-offset: -1px; z-index: 1; }
+  .grid16 button.act::after { content: ""; position: absolute; right: 1px; bottom: 1px; width: 3px; height: 3px;
+                               background: #fff; border: 1px solid #000; }
+  .picker .info { font-size: 12.5px; min-height: 19px; margin: 6px 0; color: var(--muted); }
+  .picker .pf { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font-size: 13px; }
+  .picker .pf input[type=text] { width: 54px; }
+</style>
+</head>
+<body>
+<header class="top" id="top">
+  <div class="bar">
+    <h1>Minimap Icons</h1>
+    <span class="live" id="live">Connecting...</span>
+    <span class="rebuild" id="rebuild"></span>
+    <span class="grow"></span>
+    <select id="variant" title="Filter version"></select>
+  </div>
+  <div class="bar">
+    <label>Floor <select id="floor"></select></label>
+    <label>Zoom <select id="zoom"></select></label>
+    <label class="check" title="With PD2's HD text, a black box (00) is drawn over the game's picture, so it covers every box of the icon under it"><input type="checkbox" id="hd"> HD text: 00 on top</label>
+    <input type="search" id="q" placeholder="Search: comment, condition, item code, color code, section...">
+    <label class="check"><input type="checkbox" id="onlyChanged"> Changed only</label>
+  </div>
+  <div class="bar draftbar" id="draftbar" hidden>
+    <span id="draftcount"></span>
+    <button class="primary" id="saveAll">Save to sections/</button>
+    <button id="discardAll">Discard</button>
+  </div>
+</header>
+<div class="banner" id="banner" hidden></div>
+<main class="layout">
+  <section>
+    <p class="help">Save a color code in <code>sections/</code> and its icon here changes within a second; or click a code to
+      try colors, then Save. Each rule draws its boxes in order: B 8&times;8, M 6&times;6, D 4&times;4, P 2&times;2 game
+      pixels, and a later matching rule draws over it. Item check (right) shows an item's whole icon.</p>
+    <div class="panel" id="pinsPanel" hidden><h2>Pinned items</h2><div class="pins" id="pins"></div></div>
+    <div class="panel changes" id="changes" hidden></div>
+    <div id="sections" style="margin-top:10px"></div>
+  </section>
+  <aside class="side">
+    <div class="panel" id="inspect"></div>
+    <div class="panel">
+      <h2>Item check</h2>
+      <form class="item" id="itemForm" autocomplete="off">
+        <label for="iCode">Item code</label><input type="text" id="iCode" placeholder="r30, rin, 7wa, lsvl...">
+        <label for="iQual">Quality</label>
+        <select id="iQual">
+          <option value="NMAG">Non-magical</option><option value="MAG">Magic</option><option value="RARE">Rare</option>
+          <option value="UNI">Unique</option><option value="SET">Set</option><option value="CRAFT">Crafted</option>
+        </select>
+        <label for="iLevel">Filter level</label><select id="iLevel"></select>
+        <label for="iVals">Values</label><input type="text" id="iVals" placeholder="CLVL=90 SOCK=4 MAPID=1">
+        <div class="wide">
+          <label class="check"><input type="checkbox" id="iId"> Identified</label>
+          <label class="check"><input type="checkbox" id="iEth"> Ethereal</label>
+          <span class="grow"></span>
+          <button type="submit" class="primary">Check</button>
+          <button type="button" id="iPin">Pin</button>
+        </div>
+      </form>
+      <div id="itemOut"></div>
+    </div>
+  </aside>
+</main>
+<div class="picker" id="picker" hidden></div>
+
+<script>
+"use strict";
+const KEYS = ["BORDER", "MAP", "DOT", "PX"], SHORT = ["B", "M", "D", "P"], SIZES = [8, 6, 4, 2];
+const CELL = 14;  // game pixels: an icon and the floor around it
+const FLOOR_TOP = 4;  // image pixels: the floor pictures' labels start lower; the light of a dungeon is at the middle
+const $ = (s) => document.querySelector(s);
+function el(tag, attrs, ...kids) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (v == null || v === false) continue;
+    if (k === "class") e.className = v;
+    else if (k === "text") e.textContent = v;
+    else if (k === "style") e.style.cssText = v;
+    else if (k.startsWith("on")) e.addEventListener(k.slice(2), v);
+    else e.setAttribute(k, v === true ? "" : v);
+  }
+  for (const k of kids.flat()) if (k != null && k !== false) e.append(k instanceof Node ? k : document.createTextNode(String(k)));
+  return e;
+}
+const keep = {  // per-viewer conveniences: the page works without them
+  get(area, k, d) { try { const v = window[area].getItem("iconPreview." + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(area, k, v) { try { window[area].setItem("iconPreview." + k, JSON.stringify(v)); } catch (e) {} },
+};
+
+const S = {
+  meta: null, token: null, rules: [], byKey: new Map(), rowEls: new Map(), loaded: false,
+  variant: keep.get("localStorage", "variant", null), floor: keep.get("localStorage", "floor", "gems"),
+  zoom: keep.get("localStorage", "zoom", 3), hd: keep.get("localStorage", "hd", true), q: "", onlyChanged: false,
+  baseline: null, baseIds: new Map(), flash: new Set(), selected: null, preview: null, pick: null,
+  drafts: new Map(Object.entries(keep.get("sessionStorage", "drafts", {}))),
+  closed: new Set(keep.get("localStorage", "closed", [])),
+  item: null, pins: keep.get("localStorage", "pins", []), pinRes: [],
+};
+
+// ---- icons
+const code = (layers) => layers ? layers.map((c) => c || "--").join(" ") : "";
+const uncode = (s) => s ? s.split(" ").map((c) => c === "--" ? null : c) : null;
+const color = (c) => S.meta.palette[c] || "#ff00ff";
+const iconRules = () => S.rules.filter((r) => r.layers);
+function shown(r, withPreview = true) {
+  let layers = S.drafts.get(r.key) || r.layers;
+  const p = S.preview;
+  if (withPreview && p && p.keys.includes(r.key)) { layers = layers.slice(); layers[p.layer] = p.code; }
+  return layers;
+}
+function boxes(stack) {
+  const out = [];
+  for (const layers of stack) if (layers) layers.forEach((c, i) => { if (c) out.push({size: SIZES[i], code: c}); });
+  return S.hd ? out.filter((b) => b.code !== "00").concat(out.filter((b) => b.code === "00")) : out;
+}
+function floorStyle(zoom, floor = S.floor) {
+  const f = S.meta.floors.find((x) => x.name === floor);
+  if (!f) return "background:#000;";
+  const k = zoom / S.meta.scale, x = Math.round(f.w / 2);
+  return `background:#000 url(/floors/${f.name}.png) ${-x * k}px ${-FLOOR_TOP * k}px / ${f.w * k}px ${f.h * k}px no-repeat;`;
+}
+function tile(stack, zoom, opts = {}) {
+  const cell = opts.cell || CELL;
+  const t = el("div", {class: "tile" + (opts.big ? " big" : ""), title: opts.title,
+                       style: `width:${cell * zoom}px;height:${cell * zoom}px;${floorStyle(zoom, opts.floor)}`});
+  for (const b of boxes(stack)) {
+    const off = (cell - b.size) / 2 * zoom, s = b.size * zoom;
+    t.append(el("i", {style: `left:${off}px;top:${off}px;width:${s}px;height:${s}px;background:${color(b.code)}`}));
+  }
+  return t;
+}
+function floorRow(stack) {
+  const all = [{name: "black", title: "Black"}].concat(S.meta.floors);
+  return el("div", {class: "floors"}, all.map((f) => el("figure", {},
+    tile(stack, S.zoom, {floor: f.name}), el("figcaption", {text: f.title}))));
+}
+
+// ---- rule rows
+const fileTitle = (f) => f.replace(/\.filter$/, "").replace(/^(\d{3})-/, "$1 · ").replace(/-/g, " ");
+const where = (r) => r.own ? r.id.replace(/^sections\//, "") : `${r.file.slice(0, 3)}:${r.line}`;
+function labelEl(r) {
+  const out = el("span", {class: "lbl"});
+  for (const [c, text, kw] of r.label || []) {
+    out.append(el("span", {class: kw ? "kw" : null, style: c ? `color:${S.meta.colors[c]}` : null, text: kw ? text.toLowerCase() : text}));
+  }
+  return out;
+}
+const plain = (r) => r.comment || (r.label || []).filter((s) => !s[2]).map((s) => s[1]).join("").trim() || r.cond;
+const editable = (r, i) => !r.own && r.edit && (r.layers[i] ? r.edit[i] : r.edit.some(Boolean));
+function chips(r, layers) {
+  const d = S.drafts.get(r.key);
+  return el("div", {class: "codes"}, layers.map((c, i) => el("button", {
+    type: "button", class: "chip" + (c ? "" : " none") + (d && d[i] !== r.layers[i] ? " drafted" : ""),
+    disabled: !editable(r, i), title: `${KEYS[i]} (${SIZES[i]}x${SIZES[i]})` + (c ? ` ${c} ${color(c)}` : ": none") +
+      (editable(r, i) ? "\nClick to try another color" : r.own ? "\nWritten by a style variant's edits" : ""),
+    onclick: (e) => { e.stopPropagation(); openPicker(r.key, i, e.currentTarget); },
+  }, c ? el("span", {class: "sw", style: `background:${color(c)}`}) : null, el("b", {text: SHORT[i]}), c || "–")));
+}
+function ruleRow(r) {
+  const layers = shown(r);
+  const b = baseOf(r);
+  const cls = ["rule"];
+  if (S.selected === r.key) cls.push("sel");
+  if (S.drafts.has(r.key)) cls.push("draft");
+  else if (b === undefined || b.c !== code(r.layers)) cls.push("changed");
+  if (S.flash.has(r.key)) cls.push("flash");
+  const row = el("div", {class: cls.join(" "), "data-key": r.key, onclick: () => select(r.key)},
+    tile([layers], S.zoom),
+    chips(r, layers),
+    el("div", {class: "what"}, labelEl(r),
+      el("div", {class: "sub", title: r.raw}, r.comment ? el("b", {text: r.comment}) : null, r.comment ? "  " : "", r.cond)),
+    el("div", {class: "loc"}, where(r),
+      r.cont ? el("span", {class: "badge", title: "%CONTINUE%: a later matching rule can draw over it", text: "continues"}) : null,
+      r.tier != null ? el("span", {class: "badge", title: "Chat line and sound only on filter levels 0-" + r.tier, text: "TIER-" + r.tier}) : null,
+      r.own ? el("span", {class: "badge own", text: "style"}) : null));
+  return row;
+}
+function matches(r) {
+  if (S.onlyChanged) {
+    const b = baseOf(r);
+    if (!S.drafts.has(r.key) && b !== undefined && b.c === code(r.layers)) return false;
+  }
+  if (!S.q) return true;
+  const hay = [r.comment, r.cond, r.raw, r.file, code(r.layers), code(S.drafts.get(r.key))].join(" ").toLowerCase();
+  return S.q.split(/\s+/).every((w) => hay.includes(w));
+}
+function renderList() {
+  const box = $("#sections");
+  box.replaceChildren();
+  S.rowEls.clear();
+  const byFile = new Map();
+  for (const r of iconRules()) {
+    if (!byFile.has(r.file)) byFile.set(r.file, []);
+    byFile.get(r.file).push(r);
+  }
+  let shownCount = 0;
+  for (const [file, rules] of byFile) {
+    const vis = rules.filter(matches);
+    if (!vis.length) continue;
+    shownCount += vis.length;
+    const d = el("details", {class: "sec", open: S.q || S.onlyChanged || !S.closed.has(file)},
+      el("summary", {}, fileTitle(file), el("span", {class: "n", text: vis.length === rules.length ? `${rules.length} icons` : `${vis.length} of ${rules.length}`})));
+    d.addEventListener("toggle", () => {
+      if (S.q || S.onlyChanged) return;
+      d.open ? S.closed.delete(file) : S.closed.add(file);
+      keep.set("localStorage", "closed", [...S.closed]);
+    });
+    for (const r of vis) {
+      const row = ruleRow(r);
+      S.rowEls.set(r.key, row);
+      d.append(row);
+    }
+    box.append(d);
+  }
+  if (!shownCount) box.append(el("p", {class: "hint", text: S.rules.length ? "No icon rule matches." : "Loading..."}));
+}
+function refreshRows(keys) {
+  for (const k of keys) {
+    const old = S.rowEls.get(k), r = S.byKey.get(k);
+    if (!old || !r) continue;
+    const row = ruleRow(r);
+    old.replaceWith(row);
+    S.rowEls.set(k, row);
+  }
+}
+
+// ---- what changed since the page opened (or Reset)
+function baselineFrom(rules) {
+  const map = {};
+  for (const r of rules) map[r.key] = {c: code(r.layers), id: r.id};
+  return {at: new Date().toLocaleTimeString(), map};
+}
+function baseOf(r) {  // the rule as it was at the baseline: by its text, else by its place (its condition or comment changed)
+  const b = S.baseline.map[r.key];
+  if (b !== undefined) return b;
+  const k = S.baseIds.get(r.id);
+  return k && !S.byKey.has(k) ? S.baseline.map[k] : undefined;
+}
+function setBaseline(b) {
+  S.baseline = b;
+  S.baseIds = new Map(Object.entries(b.map).map(([k, x]) => [x.id, k]));
+  keep.set("sessionStorage", "base." + S.variant, b);
+}
+function changes() {
+  const out = [], used = new Set();
+  for (const r of iconRules()) {
+    const b = baseOf(r);
+    if (b !== undefined) used.add(S.baseline.map[r.key] !== undefined ? r.key : S.baseIds.get(r.id));
+    if (b === undefined) out.push({r, was: null});
+    else if (b.c !== code(r.layers)) out.push({r, was: uncode(b.c)});
+  }
+  for (const [k, b] of Object.entries(S.baseline.map)) {
+    if (!used.has(k)) out.push({r: null, was: uncode(b.c), id: b.id, gone: k.split("|")[2] || k.split("|")[1]});
+  }
+  return out;
+}
+function renderChanges() {
+  const box = $("#changes"), list = changes();
+  box.hidden = !list.length;
+  if (!list.length) return;
+  box.replaceChildren(el("h2", {}, `${list.length} icon${list.length > 1 ? "s" : ""} changed since ${S.baseline.at} `,
+    el("button", {type: "button", style: "margin-left:8px;font-size:12px;padding:0 8px", text: "Reset",
+                  onclick: () => { setBaseline(baselineFrom(iconRules())); renderAll(); }})));
+  for (const x of list) {
+    box.append(el("div", {class: "chg", onclick: () => x.r && select(x.r.key, true)},
+      x.was ? tile([x.was], S.zoom, {title: "Before: " + code(x.was)}) : el("span", {class: "noicon", text: "new"}),
+      el("span", {class: "arrow", text: "→"}),
+      x.r ? tile([x.r.layers], S.zoom, {title: "Now: " + code(x.r.layers)}) : el("span", {class: "noicon", text: "gone"}),
+      el("div", {class: "sub"}, el("b", {text: x.r ? plain(x.r) : x.gone}), "  ",
+        x.r ? `${where(x.r)}  ${code(x.was) || ""} → ${code(x.r.layers)}` : `${x.id}: no icon rule there now`)));
+  }
+}
+
+// ---- the selected rule
+function select(key, scroll) {
+  const before = S.selected;
+  S.selected = key;
+  refreshRows([before, key]);
+  renderInspect();
+  if (scroll) {
+    const r = S.byKey.get(key);
+    if (r && !S.rowEls.has(key)) { S.q = ""; $("#q").value = ""; S.onlyChanged = false; $("#onlyChanged").checked = false; S.closed.delete(r.file); renderList(); }
+    const row = S.rowEls.get(key);
+    if (row) { row.closest("details").open = true; row.scrollIntoView({block: "center", behavior: "smooth"}); }
+  }
+}
+function rawEl(raw) {
+  const out = el("code", {class: "raw"});
+  const rx = /%(BORDER|MAP|DOT|PX)-[0-9a-f]{1,4}%/gi;
+  let pos = 0, m;
+  while ((m = rx.exec(raw))) { out.append(raw.slice(pos, m.index), el("mark", {text: m[0]})); pos = m.index + m[0].length; }
+  out.append(raw.slice(pos));
+  return out;
+}
+function renderInspect() {
+  const box = $("#inspect");
+  box.replaceChildren();
+  const r = S.byKey.get(S.selected);
+  if (!r || !r.layers) {
+    box.append(el("h2", {text: "Icon"}), el("p", {class: "hint", text: "Click a rule to see its icon up close and on each floor, a code to try other colors."}));
+    return;
+  }
+  const layers = shown(r), d = S.drafts.get(r.key);
+  box.append(el("div", {class: "ititle", text: plain(r)}),
+    el("div", {class: "iloc"}, r.id, r.cont ? el("span", {class: "badge", text: "continues"}) : null,
+      r.tier != null ? el("span", {class: "badge", text: "TIER-" + r.tier}) : null));
+  const legend = el("div", {class: "legend"});
+  layers.forEach((c, i) => legend.append(
+    c ? el("span", {class: "sw", title: color(c), style: `background:${color(c)}`}) : el("span", {text: ""}),
+    el("span", {class: "k", title: `${SIZES[i]}x${SIZES[i]} game pixels`, text: KEYS[i]}),
+    el("span", {class: "mono", title: c ? color(c) : null, text: c || "–"}),
+    editable(r, i) ? el("button", {type: "button", text: c ? "Change" : "Add", onclick: (e) => openPicker(r.key, i, e.currentTarget)}) : el("span")));
+  box.append(el("div", {class: "bigrow"}, tile([layers], 14, {cell: 12, big: true}), legend));
+  box.append(floorRow([layers]));
+  const notes = [];
+  if (S.hd && layers.some((c, i) => c === "00" && layers.slice(i + 1).some(Boolean)))
+    notes.push(["warn", "00 is drawn over the game's picture with HD text: this black box covers the boxes inside it (the Vial of Lightsong's BORDER-00 showed all black)."]);
+  if (layers.some((c) => c && !S.meta.palette[c])) notes.push(["warn", "A code above FF: shown magenta."]);
+  if (layers.some((c) => c && c >= "E1" && c <= "FE")) notes.push(["", "E1-FE: each act has its own colors there (act 1 shown)."]);
+  if (r.cont) notes.push(["", "This rule continues: a later matching rule's boxes are drawn over it. Item check shows an item's whole icon."]);
+  for (const [cls, text] of notes) box.append(el("p", {class: "note " + cls, text}));
+  box.append(rawEl(r.raw));
+  if (d) {
+    box.append(el("div", {class: "actions"},
+      el("div", {class: "hint", style: "flex-basis:100%"}, "Not saved yet: ", el("span", {class: "mono", text: code(r.layers)}),
+        " → ", el("span", {class: "mono", text: code(d)})),
+      el("button", {type: "button", class: "primary", text: "Save", onclick: () => saveDrafts([r.key])}),
+      el("button", {type: "button", text: "Revert", onclick: () => setDrafts([r.key], null)})));
+  }
+}
+
+// ---- drafts, the palette
+function saveDraftStore() { keep.set("sessionStorage", "drafts", Object.fromEntries(S.drafts)); }
+function setDrafts(keys, change) {  // change: {layer, code} or null to revert
+  for (const k of keys) {
+    const r = S.byKey.get(k);
+    if (!change) { S.drafts.delete(k); continue; }
+    if (!r) continue;
+    const layers = (S.drafts.get(k) || r.layers).slice();
+    layers[change.layer] = change.code;
+    if (code(layers) === code(r.layers)) S.drafts.delete(k); else S.drafts.set(k, layers);
+  }
+  saveDraftStore();
+  refreshRows(keys);
+  renderInspect(); renderDraftBar(); renderItem(); renderPins();
+}
+function renderDraftBar() {
+  const n = S.drafts.size, missing = [...S.drafts.keys()].filter((k) => !S.byKey.has(k)).length;
+  $("#draftbar").hidden = !n;
+  $("#draftcount").textContent = `${n} rule${n > 1 ? "s" : ""} with colors not saved yet` + (missing ? ` (${missing} no longer found: discard them)` : "");
+}
+function sameIcon(r) {
+  return iconRules().filter((x) => x.key !== r.key && x.file === r.file && !x.own && code(x.layers) === code(r.layers));
+}
+function setPreview(c) {
+  const p = S.pick;
+  const keys = [p.key].concat(p.also ? p.same : []);
+  const old = S.preview;
+  S.preview = c === undefined ? null : {keys, layer: p.layer, code: c};
+  refreshRows([...new Set(keys.concat(old ? old.keys : []))]);
+  renderInspect(); renderItem(); renderPins();
+  const info = $("#picker .info");
+  if (info) info.textContent = c === undefined ? "Hover a color to see it on the icon; click to keep it." :
+    c === null ? `No ${KEYS[p.layer]} box` : `${c}  ${color(c)}` + (c >= "E1" && c <= "FE" ? "  (differs per act; act 1 shown)" : "");
+}
+function openPicker(key, layer, anchor) {
+  const r = S.byKey.get(key);
+  if (!r || !editable(r, layer)) return;
+  if (S.preview) setPreview(undefined);  // another rule's or box's try
+  const same = sameIcon(r).map((x) => x.key);
+  S.pick = {key, layer, same, also: false};
+  const cur = shown(r, false)[layer];
+  const pk = $("#picker");
+  const commit = (c) => {
+    const keys = [key].concat(S.pick.also ? same : []), tried = S.preview ? S.preview.keys : [];
+    S.preview = null;
+    closePicker();
+    setDrafts(keys, {layer, code: c});
+    refreshRows(tried.filter((k) => !keys.includes(k)));
+  };
+  const grid = el("div", {class: "grid16", onmouseleave: () => setPreview(undefined)});
+  for (let i = 0; i < 256; i++) {
+    const c = i.toString(16).toUpperCase().padStart(2, "0");
+    grid.append(el("button", {type: "button", class: (c === cur ? "cur" : "") + (i >= 0xE1 && i <= 0xFE ? " act" : ""),
+      title: `${c} ${color(c)}`, style: `background:${color(c)}`,
+      onmouseenter: () => setPreview(c), onfocus: () => setPreview(c), onclick: () => commit(c)}));
+  }
+  const hex = el("input", {type: "text", maxlength: 2, placeholder: "hex", value: cur || "",
+    oninput: (e) => { const v = e.target.value.toUpperCase(); if (/^[0-9A-F]{2}$/.test(v)) setPreview(v); },
+    onkeydown: (e) => { const v = e.target.value.toUpperCase(); if (e.key === "Enter" && /^[0-9A-F]{2}$/.test(v)) commit(v); }});
+  pk.replaceChildren(
+    el("div", {class: "ph"}, el("span", {}, el("b", {text: KEYS[layer]}), ` ${SIZES[layer]}x${SIZES[layer]} · ${where(r)}`),
+      el("button", {type: "button", text: "×", title: "Close (Esc)", onclick: closePicker})),
+    grid,
+    el("div", {class: "info", text: "Hover a color to see it on the icon; click to keep it."}),
+    el("div", {class: "pf"}, hex,
+      el("button", {type: "button", text: "No box", disabled: !cur, onmouseenter: () => setPreview(null), onmouseleave: () => setPreview(undefined), onclick: () => commit(null)}),
+      same.length ? el("label", {class: "check", title: same.map((k) => plain(S.byKey.get(k))).join("\n")},
+        el("input", {type: "checkbox", onchange: (e) => { S.pick.also = e.target.checked; }}),
+        `also the ${same.length} other rule${same.length > 1 ? "s" : ""} of this section with this icon`) : null));
+  pk.hidden = false;
+  const a = anchor.getBoundingClientRect(), w = pk.offsetWidth, h = pk.offsetHeight;
+  pk.style.left = Math.max(8, Math.min(a.left, innerWidth - w - 8)) + "px";
+  pk.style.top = (a.bottom + 6 + h > innerHeight ? Math.max(8, a.top - h - 6) : a.bottom + 6) + "px";
+}
+function closePicker() {
+  if (S.preview) setPreview(undefined);
+  S.pick = null;
+  $("#picker").hidden = true;
+}
+document.addEventListener("keydown", (e) => { if (e.key === "Escape" && S.pick) closePicker(); });
+document.addEventListener("mousedown", (e) => { if (S.pick && !$("#picker").contains(e.target) && !e.target.closest(".chip, .legend button")) closePicker(); });
+window.addEventListener("scroll", () => { if (S.pick) closePicker(); }, {passive: true});
+
+async function saveDrafts(keys) {
+  const edits = [];
+  for (const k of keys) {
+    const r = S.byKey.get(k), d = S.drafts.get(k);
+    if (r && d && !r.own) edits.push({id: r.id, raw: r.raw, layers: d});
+  }
+  if (!edits.length) return;
+  try {
+    const res = await (await fetch("/api/save", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({edits})})).json();
+    if (res.errors && res.errors.length) banner("Not saved:\n" + res.errors.join("\n"));
+    else banner(`Saved ${edits.length} rule${edits.length > 1 ? "s" : ""} to ${res.saved.join(", ")}. The filters and players' pages rebuild now (about a minute).`, true);
+  } catch (e) { banner("The preview server isn't answering: start icon_preview.bat again."); }
+}
+function banner(text, good) {
+  const b = $("#banner");
+  b.hidden = !text;
+  b.className = "banner" + (good ? " good" : "");
+  b.textContent = text || "";
+  if (good) setTimeout(() => { if (b.textContent === text) b.hidden = true; }, 8000);
+}
+
+// ---- the item check
+function itemQuery() {
+  return {code: $("#iCode").value.trim(), quality: $("#iQual").value, level: $("#iLevel").value,
+          values: $("#iVals").value.trim(), id: $("#iId").checked ? "1" : "", eth: $("#iEth").checked ? "1" : ""};
+}
+function setForm(q) {
+  $("#iCode").value = q.code; $("#iQual").value = q.quality; $("#iLevel").value = q.level;
+  $("#iVals").value = q.values || ""; $("#iId").checked = q.id === "1"; $("#iEth").checked = q.eth === "1";
+}
+async function fetchItem(q) {
+  const p = new URLSearchParams(Object.assign({variant: S.variant}, q));
+  return (await fetch("/api/item?" + p)).json();
+}
+function compose(res, on) {
+  const stack = [], lines = [];
+  let stopped = false;
+  for (const x of res.rules || []) {
+    const r = S.byKey.get(x.key);
+    if (!r) continue;
+    const applies = !stopped && (x.v === 1 || on.has(x.key));
+    lines.push({x, r, applies, reached: !stopped});
+    if (!applies) continue;
+    if (r.layers) stack.push(shown(r));
+    if (!r.cont) stopped = true;
+  }
+  return {stack, lines};
+}
+const itemName = (q, res) => `${res && res.base ? res.base : q.code} · ${q.quality}` + (q.level !== "" ? ` · level ${q.level}` : "");
+async function checkItem() {
+  const q = itemQuery();
+  if (!q.code) return;
+  keep.set("localStorage", "item", q);
+  S.item = {q, res: await fetchItem(q), on: new Set()};
+  renderItem();
+}
+function renderItem() {
+  const box = $("#itemOut");
+  box.replaceChildren();
+  if (!S.item) return;
+  const {q, res, on} = S.item;
+  if (res.error) { box.append(el("p", {class: "note warn", text: res.error})); return; }
+  const {stack, lines} = compose(res, on);
+  box.append(el("p", {class: "note", text: itemName(q, res)}));
+  if (stack.length) box.append(el("div", {class: "bigrow", style: "margin-top:6px"}, tile(stack, 10, {cell: CELL, big: true})), floorRow(stack));
+  else box.append(el("p", {class: "note", text: "No icon" + (lines.some((l) => l.x.v !== 1) ? " unless a switched-off rule applies." : ".")}));
+  const list = el("div", {class: "irules"});
+  for (const {x, r, applies, reached} of lines) {
+    const maybe = x.v !== 1;
+    list.append(el("div", {class: "irule" + (applies ? "" : " off"), onclick: () => select(r.key, true),
+      title: r.cond},
+      r.layers ? tile([shown(r)], 2) : el("span", {class: "noicon", text: r.sound ? "♪" : "chat"}),
+      el("div", {class: "sub"}, el("b", {text: plain(r)}), "  ", where(r)),
+      el("span", {class: "st"},
+        !reached ? "not reached" : maybe ? el("label", {class: "check", title: "The check can't tell (character level, stats, place...): switch it on to see the icon if it applies", onclick: (e) => e.stopPropagation()},
+          el("input", {type: "checkbox", checked: on.has(x.key), onchange: (e) => { e.target.checked ? on.add(x.key) : on.delete(x.key); renderItem(); }}), "if") : "applies",
+        applies && !r.cont ? " · stops" : "")));
+  }
+  if (lines.length) box.append(list);
+  else box.append(el("p", {class: "note", text: "No notification rule matches it."}));
+}
+function renderPins() {
+  $("#pinsPanel").hidden = !S.pins.length;
+  const box = $("#pins");
+  box.replaceChildren();
+  S.pins.forEach((p, i) => {
+    const res = S.pinRes[i];
+    const st = res && !res.error ? compose(res, new Set(p.on)).stack : [];
+    box.append(el("div", {class: "pin", title: "Click to check it again", onclick: () => { setForm(p.q); S.item = {q: p.q, res, on: new Set(p.on)}; renderItem(); }},
+      st.length ? tile(st, S.zoom) : el("span", {class: "noicon", text: res ? "none" : "..."}),
+      el("div", {}, el("div", {text: res && res.base ? res.base : p.q.code}), el("small", {text: `${p.q.quality}` + (p.q.level !== "" ? ` · level ${p.q.level}` : "") + (p.q.values ? " · " + p.q.values : "")})),
+      el("button", {type: "button", class: "x", title: "Unpin", text: "×", onclick: (e) => { e.stopPropagation(); S.pins.splice(i, 1); S.pinRes.splice(i, 1); keep.set("localStorage", "pins", S.pins); renderPins(); }})));
+  });
+}
+async function refreshItems() {
+  if (S.item) { S.item.res = await fetchItem(S.item.q); renderItem(); }
+  S.pinRes = await Promise.all(S.pins.map((p) => fetchItem(p.q).catch(() => null)));
+  renderPins();
+}
+
+// ---- loading and watching
+async function loadRules() {
+  const d = await (await fetch(`/api/rules?variant=${encodeURIComponent(S.variant)}`)).json();
+  if (d.error) banner("The rules can't be read: " + d.error);
+  else if ($("#banner").textContent.startsWith("The rules can't")) banner("");
+  if (d.error && !d.rules.length) { S.token = d.token; return; }
+  const prev = new Map(iconRules().map((r) => [r.key, code(r.layers)]));
+  S.rules = d.rules;
+  S.byKey = new Map(d.rules.map((r) => [r.key, r]));
+  S.token = d.token;
+  S.flash = new Set(S.loaded ? iconRules().filter((r) => prev.get(r.key) !== code(r.layers)).map((r) => r.key) : []);
+  if (S.flash.size) setTimeout(() => S.flash.clear(), 2500);  // or every redraw of the row would flash it again
+  if (!S.baseline) setBaseline(keep.get("sessionStorage", "base." + S.variant, null) || baselineFrom(iconRules()));
+  for (const [k, layers] of S.drafts) { const r = S.byKey.get(k); if (r && code(r.layers) === code(layers)) S.drafts.delete(k); }
+  saveDraftStore();
+  S.loaded = true;
+  $("#live").textContent = "Watching sections/ · read " + new Date().toLocaleTimeString();
+  renderAll();
+}
+function renderAll() { renderList(); renderChanges(); renderInspect(); renderDraftBar(); renderItem(); renderPins(); }
+async function poll() {
+  try {
+    const st = await (await fetch("/api/state")).json();
+    $("#live").classList.remove("off");
+    const rb = $("#rebuild"), s = st.rebuild;
+    rb.className = "rebuild " + s.state;
+    rb.textContent = s.state === "running" ? "⟳ " + s.message : s.state === "ok" ? `✓ ${s.message.split("\n")[0]} ${s.at}` :
+      s.state === "failed" ? `✗ Rebuild failed ${s.at} (details)` : "";
+    rb.title = s.message;
+    rb.onclick = s.state === "failed" ? () => banner(s.message) : null;
+    if (st.token !== S.token) { await loadRules(); await refreshItems(); }
+  } catch (e) {
+    $("#live").classList.add("off");
+    $("#live").textContent = "The preview server stopped: start icon_preview.bat again";
+  }
+  setTimeout(poll, 1000);
+}
+
+async function start() {
+  S.meta = await (await fetch("/api/meta")).json();
+  if (!S.meta.variants.includes(S.variant)) S.variant = S.meta.variants[0];
+  const opt = (v, t, sel) => el("option", {value: v, selected: sel}, t);
+  $("#variant").append(...S.meta.variants.map((v) => opt(v, v, v === S.variant)));
+  $("#floor").append(opt("black", "Black", S.floor === "black"), ...S.meta.floors.map((f) => opt(f.name, f.title, f.name === S.floor)));
+  $("#zoom").append(...[1, 2, 3, 4, 6].map((z) => opt(z, z + "x", z === S.zoom)));
+  $("#iLevel").append(opt("", "Any (unknown)"), ...S.meta.levels.map((n, i) => opt(i, `${i} - ${n}`, i === 9)));
+  $("#hd").checked = S.hd;
+  const pref = (k, v) => { S[k] = v; keep.set("localStorage", k, v); renderAll(); };
+  $("#variant").onchange = async (e) => { S.variant = e.target.value; keep.set("localStorage", "variant", S.variant); S.baseline = null; S.loaded = false; S.selected = null; S.token = null; await loadRules(); await refreshItems(); };
+  $("#floor").onchange = (e) => pref("floor", e.target.value);
+  $("#zoom").onchange = (e) => pref("zoom", +e.target.value);
+  $("#hd").onchange = (e) => pref("hd", e.target.checked);
+  let t;
+  $("#q").oninput = (e) => { clearTimeout(t); t = setTimeout(() => { S.q = e.target.value.trim().toLowerCase(); renderList(); }, 150); };
+  $("#onlyChanged").onchange = (e) => { S.onlyChanged = e.target.checked; renderList(); };
+  $("#saveAll").onclick = () => saveDrafts([...S.drafts.keys()]);
+  $("#discardAll").onclick = () => setDrafts([...S.drafts.keys()], null);
+  $("#iQual").onchange = (e) => { $("#iId").checked = e.target.value === "NMAG"; };
+  $("#itemForm").onsubmit = (e) => { e.preventDefault(); checkItem(); };
+  $("#iPin").onclick = async () => {
+    const q = itemQuery();
+    if (!q.code) return;
+    S.pins.push({q, on: S.item && JSON.stringify(S.item.q) === JSON.stringify(q) ? [...S.item.on] : []});
+    keep.set("localStorage", "pins", S.pins);
+    S.pinRes.push(await fetchItem(q));
+    renderPins();
+  };
+  const last = keep.get("localStorage", "item", null);
+  if (last) setForm(last); else { $("#iId").checked = true; }
+  const top = $("#top");
+  const setHead = () => document.documentElement.style.setProperty("--head", top.offsetHeight + 12 + "px");
+  new ResizeObserver(setHead).observe(top);
+  await loadRules();
+  if (last) checkItem();
+  await refreshItems();
+  poll();
+}
+start().catch((e) => { $("#live").classList.add("off"); $("#live").textContent = "The preview server isn't answering: start icon_preview.bat"; console.error(e); });
+</script>
+</body>
+</html>

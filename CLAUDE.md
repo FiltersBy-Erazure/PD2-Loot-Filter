@@ -312,6 +312,16 @@
   ground picture and the label the filter's rules give it (Main, the scene's values; a rule a value is missing for
   stops it), drawn as PD2's HD text draws a dropped item's name (D2GL: ExocetBlizzard's MSDF atlas from `d2gl.mpq`,
   its shadow, the fading 60% box, D2GL's colors). Rerun it after a look of those items changes.
+- Minimap icon preview (2026-10-20, the author: see icon color changes while editing them): `icon_preview.bat`
+  (double-click) = `python tools/icon_preview.py`, a local server at http://127.0.0.1:8765/ for
+  `tools/icon_preview.html` (nothing generated or committed besides those). It reads the rules straight from
+  `sections/` / `styles/` (any variant) and the page asks again within a second of a save, so an edited color code
+  shows at once; what changed since the page opened is listed. Every icon rule by section, drawn in game pixels on the
+  Examples pictures' floors (their label-free top strip), and up close; Item check composes an item's whole icon
+  (explain_item's model, the base's groups from `docs/pd2-bases.tsv`; undecided rules are switches). Its palette
+  tries colors on a rule (and optionally its section's rules with the same icon); Save rewrites only the icon codes
+  of that line, refuses a line changed since it was read, then runs `.claude/hooks/rebuild.py` in the background
+  (about a minute). Drawn as the game does (see Minimap icons below): opaque boxes in rule order, `00` on top.
 
 ## Variants (all 11 built from the same sections)
 | display_name | File | BIG_GG | POE_SOUNDS | REVEALED |
@@ -365,9 +375,12 @@ removed level on the next run; a new level group's intro is `INTROS` in `tools/l
   (`BH/Modules/Item/ItemDisplay.cpp`, `BH/Modules/MapNotify/MapNotify.cpp`). The wiki lags behind it.
   A local clone is in `tools/.cache/BH` (gitignored; `git -C tools/.cache/BH pull` updates it): search it there.
   Minimap icons: BH draws BORDER, MAP, DOT, PX as nested 8/6/4/2-pixel boxes in that order, each in D2's draw
-  mode 7 (`MapNotify.cpp`). With an outer `BORDER-00` the Vial of Lightsong's whole icon showed black (S14 beta);
-  it now uses `21`, its Season 12 value. Keep `00` for the last layer (the `PX-00` centre dots) until `21` is
-  confirmed in game.
+  mode 7 (`MapNotify.cpp`), rule after rule (a later rule's BORDER covers an earlier one's DOT). Under Glide that is
+  an opaque box in the palette color (only E1-FE differ per act), except black: with HD text D2GL draws a color-0
+  box itself, over the game's picture (D2GL `hd_text.cpp`, `drawSolidRect`), so a `00` box covers everything of the
+  icon under it, the boxes drawn after it too. That is why the Vial of Lightsong's outer `BORDER-00` showed the whole
+  icon black (S14 beta); it now uses `21`, its Season 12 value (not yet confirmed in game). `00` is safe as the
+  last layer (the `PX-00` centre dots).
 
 ## Adding or splitting a section
 - Name it `NNN-topic.filter` with a number between its neighbours (e.g. `115-...`). The build rejects other
@@ -480,7 +493,8 @@ removed level on the next run; a new level group's intro is `INTROS` in `tools/l
 `Erazure-Skill-Shop-Highlights.html` · `styles/minimal.filter` + `tools/style_map.py` + `tools/style_map_template.html` +
 `Erazure-Minimal-Style.html` · `styles/corrlorized.edits` + `tools/style_edits.py` + `Corrlorized-*.filter` ·
 `website/` + `site_preview.bat` + `.github/workflows/pages.yml` ·
-`tools/example_shots.py` + `website/docs/img/examples/` ·
+`tools/example_shots.py` + `website/docs/img/examples/` · `tools/icon_preview.py` + `tools/icon_preview.html` +
+`icon_preview.bat` ·
 `tools/tag_order.py` + `tools/pd2_stat_priority.tsv` · `tools/pd2_data.py` + `docs/pd2-unique-set-items.tsv` +
 `tools/pd2_mpq.py` ·
 `.claude/settings.json` + `.claude/hooks/rebuild.py` · `.github/workflows/check-filters.yml` · `docs/` ·
