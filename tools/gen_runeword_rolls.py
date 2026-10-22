@@ -456,17 +456,31 @@ def weight(code):
 
 def build_fingerprints(variants):
     """Each variant's fewest stats that rule out every other runeword with as many sockets in a shared slot.
-    Versions of one runeword need not be told apart: they share their picks."""
+    Versions of one runeword need not be told apart: they share their picks. A chance to cast or charges is read at
+    every level it can have in game (gen_unique_rolls' LEVELED: the table's, and the table's plus its proc's offset),
+    with either skill of a proc twin (PROC_TWINS)."""
+    if not U.PROC_OFFSETS:
+        U.load()  # (the uniques and the wiki give the procs' offsets)
+    for v in variants:
+        v.alts = {}
+        for code in v.stats:
+            m = U.LEVELED.match(code)
+            if m:
+                v.alts[code] = U.leveled_codes(int(m.group(1)), int(m.group(2)) >> 6, int(m.group(2)) & 63)
+    possible = {id(v): set(v.stats) | {a for alts in v.alts.values() for a in alts} for v in variants}
     for v in variants:
         rivals = [r for r in variants if r.name != v.name and r.sockets == v.sockets and set(r.slots) & set(v.slots)]
         options = [(code, lo) for code, (lo, hi) in v.stats.items() if lo >= 1]
         options += [(code, hi) for code, (lo, hi) in v.stats.items() if hi <= -1]
         options = [(code, lim) for code, lim in options  # (per-level stats: how BH stores the shifted ones is unproven)
-                   if code not in UNRELIABLE and code not in PER_LEVEL and not v.can_add(code)]
+                   if code not in UNRELIABLE and code not in PER_LEVEL and not v.can_add(code)
+                   and not (U.LEVELED.match(code) and int(U.LEVELED.match(code).group(1)) in U.FACET_EVENTS)]
 
         def rules_out(code, lim, r):
             if r.can_add(code):
                 return False
+            if code in v.alts:  # a chance to cast / charges: at none of the levels it can have
+                return not set(v.alts[code]) & possible[id(r)]
             lo, hi = r.stats.get(code, (0, 0))
             return hi < lim if lim > 0 else lo > lim
 
@@ -490,7 +504,7 @@ def build_fingerprints(variants):
 
 
 def fingerprint_text(v):
-    conds = " ".join(f"{c}<{lim + 1}" if lim < 0 else f"{c}>{lim - 1}" for c, lim in v.fingerprint)
+    conds = " ".join(U.cond_text(c, lim, v.alts.get(c)) for c, lim in v.fingerprint)
     return f"(SOCK={v.sockets} {v.slot_text()}{' ' + conds if conds else ''})"
 
 

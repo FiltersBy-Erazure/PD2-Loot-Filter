@@ -318,8 +318,9 @@ class Game:
                 code = {107: f"SK{skill}", 97: f"OS{skill}", 151: f"MULTI151,{skill}"}.get(sid)
                 if code:
                     out.append((code, lo, hi))
-            elif f == 14:
-                out.append(("SOCK", lo, hi))
+            elif f == 14:  # sockets: a unique's fixed count is the param, min/max empty (Hone Sundan: sock 3)
+                n = to_int(par) if not lo and not hi else None
+                out.append(("SOCK", n, n) if n else ("SOCK", lo, hi))
         if prop.lower() == "res-all" and len(out) == 4:
             out.insert(0, ("RES", lo, hi))
         if prop.lower() == "all-stats" and len(out) == 4:

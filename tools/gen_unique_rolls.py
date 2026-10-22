@@ -493,6 +493,19 @@ CTC_EVENTS = {"on attack": 195, "when you kill an enemy": 196, "on kill": 196, "
 WEIGHT1 = re.compile(r"^(SK|OS|CLSK|TABSK|MULTI)|^STAT(113|117|81)$")
 WEIGHT3 = re.compile(r"^(ED|EDAM|STAT89|STAT20)$")
 UNRELIABLE = {"DEF", "SOCK"}  # total defense also depends on the base tier and ethereal; sockets can be added
+# Chance to cast and charges (MULTI195-204,<skill * 64 + level>): the best traits of a fingerprint (nothing in a socket
+# brings them), but BH matches the skill level exactly, and an item's level in game is not always the table's: PD2's
+# procs carry more (Amplify Damage and Decrepify +4, Lower Resist +9: Witchwild String and Mang Song's Lesson showed no
+# tags with the table's level, 2026-10-20), and the wiki has other levels for some. So a fingerprint reads such a stat
+# with every level it can have (ctc_alternates: the table's, the wiki's line for it, the table's plus its proc's
+# offset). On death / on level-up (197, 199) a Rainbow Facet in a socket can bring: never in a fingerprint.
+LEVELED = re.compile(r"^MULTI(19[5-9]|20[0-4]),(\d+)$")
+FACET_EVENTS = {197, 199}
+PROC_OFFSETS = {}  # skill ID -> the levels its chance to cast has in game above the table's (ctc_alternates)
+# A proc PD2 split in two skills: the 2026-10-22 live patch gave Stormspire, Stormlash and Aetherwing Static Field Proc
+# (610, the item version with its own range) instead of Static Field (42). An item keeps the skill it dropped with, so
+# a chance to cast of either skill is read as both (leveled_codes), on every unique, set and runeword.
+PROC_TWINS = {42: 610, 610: 42}
 NO_ABSENCE = {"RES", "ALLATTRIB", "MAXRES", "MINDMG", "MAXDMG", "ED", "EDAM", "EDEF"}  # never as "the item lacks it"
 COMPANIONS = {"stat48", "stat50", "stat52", "stat54"}  # the minimum of "Adds X-Y damage": shown with its maximum
 
@@ -702,6 +715,8 @@ class Item:
                 self.rolls["masteries"] = (lo, hi)
         self.unmapped = [r["line"] for r in self.all_rolls if not r["tagged"]]
         self.fingerprint, self.unresolved, self.weak, self.excluded = [], [], [], []
+        self.alts = {}  # chance to cast / charges code -> its codes at every level it can have (ctc_alternates)
+        self.lack_alts = {}  # a rival's such code the fingerprint says the item lacks -> its codes (build_fingerprints)
 
     def add_roll(self, key, code, lo, hi, line):
         if any(r["key"] == key for r in self.all_rolls):
@@ -905,14 +920,85 @@ def one_per_key(items):
     return [it for it in items if not (it.key in seen or seen.add(it.key))]
 
 
+SKILL_NAMES = {int(r[0]): r[1].lower() for r in (l.split("\t") for l in (ROOT / "docs" / "pd2-skills.tsv").read_text(
+    encoding="utf-8").splitlines() if l and l[0].isdigit())}
+WIKI_CTC = re.compile(r"(\d+)% Chance to cast level (\d+) (.+?) (" + "|".join(CTC_EVENTS) + r")\b", re.I)
+WIKI_CHARGES = re.compile(r"Level (\d+) (.+?) \(\d+/\d+ Charges\)", re.I)
+
+
+def ctc_alternates(items):
+    """it.alts = {its chance to cast / charges code: every code it can have in game}: the table's level, the wiki's for
+    that line (same event and skill name) and, for a proc whose every known difference is one offset, the table's plus
+    that offset (PROC_OFFSETS: runewords use it too)."""
+    wiki = {}
+    for it in items:
+        seen = []
+        for line in it.raw_stats:
+            line = re.sub(r"\[\[(?:[^]|]*\|)?([^]]*)\]\]", r"\1", re.sub(r"<[^>]+>", "", line))
+            seen += [(CTC_EVENTS[m.group(4).lower()], int(m.group(2)), m.group(3).lower()) for m in WIKI_CTC.finditer(line)]
+            seen += [(204, int(m.group(1)), m.group(2).lower()) for m in WIKI_CHARGES.finditer(line)]
+        wiki[id(it)] = seen
+    found, diffs = {}, {}
+    for it in items:
+        for code in it.stats:
+            m = LEVELED.match(code)
+            if not m:
+                continue
+            event, param = int(m.group(1)), int(m.group(2))
+            skill, level = param >> 6, param & 63
+            levels = {lvl for ev, lvl, name in wiki[id(it)] if ev == event and name == SKILL_NAMES.get(skill)}
+            for lvl in levels - {level}:
+                diffs.setdefault(skill, set()).add(lvl - level)
+            found[(id(it), code)] = (event, skill, level, levels)
+    PROC_OFFSETS.clear()
+    PROC_OFFSETS.update({s: next(iter(d)) for s, d in diffs.items() if len(d) == 1 and SKILL_NAMES.get(s, "")
+                         and sum(1 for f in found.values() if f[1] == s and f[3] - {f[2]}) > 1})
+    for it in items:
+        it.alts = {}
+        for code in it.stats:
+            if (id(it), code) in found:
+                event, skill, level, levels = found[(id(it), code)]
+                it.alts[code] = leveled_codes(event, skill, level, levels)
+
+
+def leveled_codes(event, skill, level, more=()):
+    """The codes of a chance to cast / charges at every level it can have in game, with either skill of a proc twin."""
+    levels = {level, *more} | ({level + PROC_OFFSETS[skill]} if skill in PROC_OFFSETS else set())
+    skills = {skill, PROC_TWINS[skill]} if skill in PROC_TWINS else {skill}
+    return sorted(f"MULTI{event},{s * 64 + lvl}" for s in skills for lvl in levels if 0 < lvl < 64)
+
+
+def cond_text(code, lim, alts=None):
+    """One fingerprint condition: at least lim, at most lim (lim < 0), or never (0); a chance to cast with each level it
+    can have."""
+    if lim > 0 and alts and len(alts) > 1:
+        return "(" + " OR ".join(f"{a}>0" for a in alts) + ")"
+    if lim == 0 and alts and len(alts) > 1:
+        return " ".join(f"{a}<1" for a in alts)
+    return f"{code}<{lim + 1}" if lim <= 0 else f"{code}>{lim - 1}"
+
+
+def trait_groups(it):
+    """{code: its trait}: the codes one property gives are one trait (All Resistances: RES, FRES, LRES, CRES, PRES), so a
+    fingerprint never counts two of them as two traits; a code more than one property gives is a trait of its own."""
+    seen = {}
+    for n, prop in enumerate((it.game or {}).get("props", [])):
+        for code, *_ in prop:
+            seen.setdefault(it.filter_code(code), set()).add(n)
+    return {c: min(ns) if len(ns) == 1 else c for c, ns in seen.items()}
+
+
 def build_fingerprints(items):
     by_code = {}
     for it in items:
         for c in it.codes:
             by_code.setdefault((it.kind, c), []).append(it)
     bonuses = {id(it): corruption_bonuses(it) for it in items}
+    ctc_alternates(items)
+    possible = {id(it): set(it.stats) | {a for alts in it.alts.values() for a in alts} for it in items}
     for it in items:
         rivals = {id(j): j for c in it.codes for j in by_code.get((it.kind, c), []) if j.key != it.key}
+        groups = trait_groups(it)
         cases, outcomes = {}, {}  # each rival as it drops and as each corruption leaves it: none may pass
         for k, j in rivals.items():
             cases[(k, 0)] = j.stats
@@ -928,7 +1014,9 @@ def build_fingerprints(items):
         need = {k: 2 if k[1] == 0 else 1 for k in cases}
         options = [(code, lo) for code, (lo, hi) in it.stats.items() if lo >= 1]
         options += [(code, hi) for code, (lo, hi) in it.stats.items() if hi <= -1]
-        options = [(c, lim) for c, lim in options if c not in UNRELIABLE and c not in PER_LEVEL]  # (per-level: unused)
+        options = [(c, lim) for c, lim in options  # (per-level: unused)
+                   if c not in UNRELIABLE and c not in PER_LEVEL
+                   and not (LEVELED.match(c) and int(LEVELED.match(c).group(1)) in FACET_EVENTS)]
         # a corruption of its own may not take the item out of its fingerprint
         lowers = {c for _, b in bonuses[id(it)] for c, (lo, hi) in b.items() if lo < 0}
         raises = {c for _, b in bonuses[id(it)] for c, (lo, hi) in b.items() if hi > 0}
@@ -939,7 +1027,14 @@ def build_fingerprints(items):
         random_skill = any(c.startswith("RAND") for p in (it.game or {}).get("props", []) for c, *_ in p)
         level_based = {PER_LEVEL[c][0] for c in it.stats if c in PER_LEVEL}
         lacks = {c for st in cases.values() for c, (lo, hi) in st.items() if lo >= 1} - mine
+        it.lack_alts = {}  # a rival's chance to cast the item lacks: at every level the rivals can have it
+        for c in lacks:
+            m = LEVELED.match(c)
+            alts = {a for j in rivals.values() if c in j.stats for a in j.alts.get(c, [c])}
+            if m and int(m.group(1)) not in FACET_EVENTS and not alts & possible[id(it)]:
+                it.lack_alts[c] = sorted(alts)
         options += [(c, 0) for c in sorted(lacks) if c not in UNRELIABLE | NO_ABSENCE and c not in PER_LEVEL
+                    and (not LEVELED.match(c) or c in it.lack_alts)
                     and c not in raises and c not in level_based and not (random_skill and re.match(r"(SK|CLSK)\d", c))]
 
         def excluded(code, lim):
@@ -947,12 +1042,15 @@ def build_fingerprints(items):
                 return [k for k in need if need[k] > 0 and cases[k].get(code, (0, 0))[0] > 0]
             if lim < 0:  # "at most lim": rivals whose lowest value is above it are out
                 return [k for k in need if need[k] > 0 and cases[k].get(code, (0, 0))[0] > lim]
+            if code in it.alts:  # a chance to cast: rivals that can't have it at any level it can have
+                return [k for k in need if need[k] > 0 and not set(it.alts[code]) & possible[k[0]]]
             return [k for k in need if need[k] > 0 and cases[k].get(code, (0, 0))[1] < lim]
 
+        used = set()  # the traits already in the fingerprint: another part of one of them tells nothing new
         while any(n > 0 for n in need.values()):
             best = None
             for code, lim in options:
-                if (code, lim) in conds:
+                if (code, lim) in conds or (lim > 0 and groups.get(code, code) in used):
                     continue
                 gone = excluded(code, lim)
                 if gone:
@@ -964,6 +1062,8 @@ def build_fingerprints(items):
             if best is None:
                 break
             conds.append((best[1], best[2]))
+            if best[2] > 0:
+                used.add(groups.get(best[1], best[1]))
             for k in best[3]:
                 need[k] -= 2 if weight(best[1]) == 1 else 1
         # a corruption no stat tells apart (Arkaine's Valor with magic damage reduction looks like Skullder's Ire):
@@ -979,7 +1079,8 @@ def fingerprint_text(it, extra=None, when=None, unless=None):
     """(its base codes, the stats that tell it apart[, extra: a version's own stat][, when: a condition it also
     needs][, unless: a condition that leaves it out])."""
     codes = it.codes[0] if len(it.codes) == 1 else "(" + " OR ".join(it.codes) + ")"
-    conds = [f"{c}<{lo + 1}" if lo <= 0 else f"{c}>{lo - 1}" for c, lo in it.fingerprint] + it.excluded
+    conds = [cond_text(c, lo, it.alts.get(c) if lo > 0 else it.lack_alts.get(c)) for c, lo in it.fingerprint]
+    conds += it.excluded
     conds += [extra] if extra and extra not in conds else []
     conds += ([term(when)] if when else []) + ([negate(unless)] if unless else [])
     return f"({codes}{' ' + ' '.join(conds) if conds else ''})"
@@ -1257,7 +1358,8 @@ def render_section(items, picks, cuts=None):
             if key.startswith("ver_"):  # picked as "ver": each version in its own tag, told apart by its own stat
                 off = cut_off(it, "ver", cuts)
                 if "ver" in chosen and it.version == key and "ver" in it.rolls and not it.unresolved and off != "TRUE":
-                    parts[it.kind].append(fingerprint_text(it, f"{it.roll('ver')['code']}>0", unless=off))
+                    code = it.roll('ver')['code']
+                    parts[it.kind].append(fingerprint_text(it, cond_text(code, 1, it.alts.get(code)), unless=off))
             elif key in chosen and key in it.rolls and not it.unresolved:
                 off = cut_off(it, key, cuts)
                 if off != "TRUE":
@@ -1463,7 +1565,12 @@ def picker_font():
 
 
 def write_picker(items, old, rules=None):
-    """tools/roll_picker.html: the picks as a clickable page (data embedded in the template)."""
+    """tools/roll_picker.html: the picks as a clickable page (data embedded in the template), each item's labels
+    as the filter draws them in every case (tools/picker_cases.py)."""
+    import picker_cases  # (it imports this module through label_cuts)
+    cases, tables, odd = picker_cases.build()
+    for msg in odd:
+        print(f"note: {msg}")
     rules = rules or {}
     lines = tag_lines()
     data = []
@@ -1492,8 +1599,12 @@ def write_picker(items, old, rules=None):
             "cands": cands, "auto": auto, "picks": mine[0] if reviewed else auto, "reviewed": reviewed,
             "untaggable": [r["line"] for r in it.all_rolls if not r["key"]], "stats": it.raw_stats,
         })
+        if it.key in cases:  # gname, cb (bases: code, name, most sockets), wk (corruption words), cases
+            c = cases[it.key]
+            data[-1].update({"gname": c["gname"], "cb": c["bases"], "wk": c["wk"], "cases": c["cases"],
+                             "steps": [list(s) for s in rules.get(it.key, [])]})
     header = render_picks([], {}).rstrip("\n").split("\n")
-    payload = {"generated": datetime.date.today().isoformat(), "header": header, "items": data}
+    payload = {"generated": datetime.date.today().isoformat(), "header": header, "items": data, "tables": tables}
     blob = json.dumps(payload, ensure_ascii=False).replace("</", "<\\/")
     html = PICKER_TEMPLATE.read_text(encoding="utf-8").replace("/*__DATA__*/null", blob)
     font = picker_font()

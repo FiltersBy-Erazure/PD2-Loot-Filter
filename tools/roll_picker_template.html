@@ -6,7 +6,9 @@
 <title>Roll Picker</title>
 <!-- Template for tools/roll_picker.html (tools/gen_unique_rolls.py --picker) and tools/runeword_picker.html
      (tools/gen_runeword_rolls.py --picker): each embeds its data and the font. The data's title, kinds, picksFile,
-     generator, store and roomHelp set the page up; without them it is the unique/set picker. -->
+     generator, store and roomHelp set the page up; without them it is the unique/set picker. An item with "cases"
+     (tools/picker_cases.py: every label the filter's rules give it, per base, ethereal, sockets and corruption, its
+     tags with the picks they need) is drawn from those; the others from the tag looks in "cands". -->
 
 <style>
   @font-face { font-family: "AvQest"; src: /*__FONT__*/local("AvQest"); }
@@ -40,6 +42,7 @@
   button { font: inherit; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--line);
            background: var(--chip); color: var(--text); cursor: pointer; }
   button.primary { background: var(--accent); border-color: var(--accent); color: var(--chip-on-text); font-weight: 600; }
+  button.small { padding: 1px 8px; font-size: 13px; }
   .preview-opts { font-size: 14px; color: var(--muted); }
   main { max-width: 1040px; margin: 0 auto; padding: 12px 16px 80px; }
   .help { color: var(--muted); font-size: 13.5px; margin: 4px 0 12px; }
@@ -65,6 +68,7 @@
   ul.stats li.fixed { color: var(--muted); }
   ul.stats li.fixed::before { content: ""; flex: none; width: 34px; }
   ul.stats small { color: var(--muted); font-size: 12.5px; white-space: nowrap; }
+  ul.stats small.cuts { color: var(--bad); }
   .sw { flex: none; position: relative; width: 34px; height: 20px; padding: 0; border-radius: 999px;
         background: var(--chip); border: 1px solid var(--line); }
   .sw::after { content: ""; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%;
@@ -88,6 +92,7 @@
   .notes { font-size: 13px; color: var(--muted); margin-top: 6px; }
   .notes .cut { color: var(--bad); }
   .meter { font-size: 13.5px; color: var(--muted); margin-top: 8px; }
+  .meter .case { color: var(--text); }
   .bar { height: 6px; border-radius: 3px; background: var(--chip); margin-top: 4px; overflow: hidden; }
   .bar span { display: block; height: 100%; background: var(--ok); }
   .over .bar span { background: var(--bad); }
@@ -96,6 +101,10 @@
   .foot .muted { color: var(--muted); font-size: 13px; }
   .base-pick { margin-top: 8px; font-size: 13.5px; color: var(--muted); }
   .base-pick select { max-width: 100%; }
+  .case-pick { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 8px; align-items: center;
+               margin-top: 8px; font-size: 13.5px; color: var(--muted); }
+  .case-pick select { width: 100%; padding: 3px 6px; font-size: 13.5px; }
+  .case-pick .checks { display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: center; }
   .empty { color: var(--muted); text-align: center; padding: 40px 0; }
 </style>
 </head>
@@ -114,11 +123,12 @@
     <select id="slot" aria-label="Slot"></select>
     <select id="page" aria-label="Item type"></select>
     <label class="check"><input id="needs" type="checkbox"> Needs a choice</label>
+    <label class="check case-opt" title="Items whose longest label (after their cut steps) BH still cuts"><input id="cutOnly" type="checkbox"> Cut somewhere</label>
     <label class="check"><input id="unrev" type="checkbox"> Unreviewed only</label>
   </div>
   <div class="row preview-opts">
     <span>Preview:</span>
-    <label class="check sock-opt">Sockets
+    <label class="check sock-opt"><span id="sockLabel">Sockets</span>
       <select id="sockets" aria-label="Sockets shown in the preview">
         <option value="0">None</option><option>1</option><option>2</option><option>3</option>
         <option>4</option><option>5</option><option>6</option>
@@ -134,7 +144,19 @@
 </header>
 <main>
   <div class="banner" id="banner"></div>
-  <p class="help">Switch a variable roll on to show it as a tag (changing an item marks it reviewed). The black
+  <p class="help" id="helpCases" hidden>Switch a variable roll on to show it as a tag (changing an item marks it
+    reviewed). The black box is the label as the filter's own rules draw it (every filter level of the Main version,
+    the item's highest rolls), cut where BH cuts long names (from the right end of the top line), for the base,
+    ethereal state, sockets and corruption picked under it; it starts on the case with the longest label. The meter
+    gives the <b>longest label your picks make</b> over all of them: every base the cube upgrades the item to,
+    ethereal or not, no sockets or its most, and every corruption outcome its slot can get (amulets also
+    desecrated), after the item's cut steps (<code>tools/unique_cut_rules.txt</code>). Beside each roll: its width at
+    its highest roll and the longest label with it switched on (red: BH cuts it somewhere). A <b>dashed</b> switch is
+    a roll with no tag line in the filter yet: picking it asks for one, and its tag shows
+    <span style="text-decoration: underline dotted">dotted</span> at the left end, in the look of a similar tag. Your
+    clicks are kept in this browser until you press <b>Save picks file</b>; save it over
+    <code class="picks-file">tools/unique_roll_picks.txt</code>, then double-click <code>build.bat</code>.</p>
+  <p class="help" id="helpPlain">Switch a variable roll on to show it as a tag (changing an item marks it reviewed). The black
     box shows the label as the game draws it: tags in their in-game order and colors, and cut where BH cuts long
     names (from the right end of the top line). Sockets only show on items that can have them. A <b>dashed</b>
     switch is a roll with no tag line in the filter yet: picking it asks for one, and its tag shows
@@ -188,16 +210,19 @@ function setState(key, next, focusK) {
   const same = next.reviewed === it.reviewed && next.picks.join() === it.picks.join();
   if (same) delete edits[key]; else edits[key] = next;
   saveJSON(STORE, edits);
-  const old = document.querySelector(`article[data-key="${CSS.escape(key)}"]`);
-  if (old) {
-    const neu = card(it);
-    old.replaceWith(neu);
-    if (focusK) neu.querySelector(`[data-k="${CSS.escape(focusK)}"]`)?.focus();
-  }
+  redraw(it, focusK && `[data-k="${CSS.escape(focusK)}"]`);
   counts();
 }
 
-// ---- the label as the game draws it
+function redraw(it, focus) {  // the item's card again, the focus kept on `focus` (a selector) inside it
+  const old = document.querySelector(`article[data-key="${CSS.escape(it.key)}"]`);
+  if (!old) return;
+  const neu = card(it);
+  old.replaceWith(neu);
+  if (focus) neu.querySelector(focus)?.focus();
+}
+
+// ---- the label as the game draws it, from the tag looks (items without cases: runewords)
 function variantFor(c) {  // the filter line that applies at this value (lines can color by value range)
   const ok = ([op, n]) => (op === ">" ? c.v > n : op === "<" ? c.v < n : c.v === n);
   return c.fmt.find((f) => f.cmps.every(ok)) || c.fmt[0];
@@ -307,8 +332,7 @@ function bhTrim(lines, mode) {
   return kept.reverse();
 }
 
-function preview(it, picks) {
-  const [lines, applied] = cutLabel(it, picks);
+function drawLabel(lines, notes) {  // the black box, BH's cut applied, and what it cut into notes
   const kept = bhTrim(lines, view.limit);
   const box = el("div", {class: "d2label", role: "img"});
   const said = [];
@@ -323,18 +347,263 @@ function preview(it, picks) {
   const text = (segs) => (segs || []).map((x) => x[1]).join("");
   const cut = lines.map((l, i) => text(l).slice(text(kept[i]).length)).filter((s) => s.trim());
   const nCut = lines.reduce((s, l, i) => s + text(l).length - text(kept[i]).length, 0);
-  const notes = el("div", {class: "notes"});
   if (cut.length) notes.append(el("span", {class: "cut", text: `BH cuts ${nCut} character${nCut === 1 ? "" : "s"}: “${cut.join("” “")}”`}));
   if (lines.some((l) => l.some((x) => x[2]))) {
-    if (cut.length) notes.append(el("br"));
+    if (notes.childNodes.length) notes.append(el("br"));
     notes.append("Dotted tags have no tag line in the filter yet.");
   }
+  return el("div", {class: "ground"}, box);
+}
+
+function preview(it, picks) {
+  const [lines, applied] = cutLabel(it, picks);
+  const notes = el("div", {class: "notes"});
+  const ground = drawLabel(lines, notes);
   if (it.cuts && it.cuts.length) {  // the filter takes these where the label would be cut (each case: label_cuts.py)
     if (notes.childNodes.length) notes.append(el("br"));
     notes.append(`Where the label would be cut: ${it.cuts.join("; ")}` +
                  (applied.length ? `. In this preview: ${applied.join("; ")}.` : "."));
   }
-  return [el("div", {class: "ground"}, box), notes];
+  return [ground, notes];
+}
+
+// ---- every label an item can show (tools/picker_cases.py): the filter's rules per case, its tags by the picks
+const TB = DATA.tables || null;
+const COLOR_AT = {"0": "WHITE", "1": "RED", "2": "GREEN", "3": "BLUE", "4": "GOLD", "5": "GRAY", "6": "BLACK",
+  "7": "TAN", "8": "ORANGE", "9": "YELLOW", ";": "PURPLE", ":": "DARK_GREEN"};  // the game's own codes
+const CODE_FOR = {};
+if (TB) TB.colors.forEach((c, i) => { COLOR_AT[String.fromCharCode(65 + i)] = c; CODE_FOR[c] = String.fromCharCode(65 + i); });
+const caseSel = new Map();  // item key -> the case its preview shows {b, e, s, c, d}; none: the longest
+const worstMemo = new Map();  // item key -> Map(picks and limit -> its longest case)
+const hasCases = (it) => !!(TB && it.cases && it.cases.length);
+
+function condVal(c, on) {  // a tag's condition on the picks: 1 shows it (0.5: a rule that only may match)
+  if (typeof c === "number") return c;
+  if (typeof c === "string") return on.has(c) ? 1 : 0;
+  if (c[0] === "!") return 1 - condVal(c[1], on);
+  const and = c[0] === "&";
+  let r = and ? 1 : 0;
+  for (let i = 1; i < c.length; i++) {
+    const x = condVal(c[i], on);
+    if (and) { if (x === 0) return 0; r = Math.min(r, x); } else { if (x === 1) return 1; r = Math.max(r, x); }
+  }
+  return r;
+}
+
+function trimText(s) {  // BH's TrimItemText: %CL% (\r) a line break, %CS% (\b) a space, each only between text
+  const ws = (ch) => ch === undefined || /\s/.test(ch);
+  let o = "";
+  for (let i = 0; i < s.length; i++) {
+    const ch = s[i], nxt = s[i + 1], last = o[o.length - 1];
+    if (ch === "\r") { if (o && last !== "\n" && nxt !== undefined && nxt !== "\n" && nxt !== "\r") o += "\n"; }
+    else if (ch === "\b") { if (o && !ws(last) && nxt !== undefined && !ws(nxt) && nxt !== "\b") o += " "; }
+    else o += ch;
+  }
+  return o;
+}
+
+const visLen = (text) => text.replace(/§./g, "").length;
+
+function isCut(text) {
+  const lim = LIMITS[view.limit];
+  return visLen(text) > lim.total || (lim.line < Infinity && text.split("\n").some((l) => visLen(l) > lim.line));
+}
+
+function requestedText(it, keys) {  // picked rolls with no tag line yet: in the look of a similar tag, at the left
+  return orderedTags(it, keys).filter((t) => t.req).map((t) =>
+    "§[" + t.parts.map(([col, x]) => (CODE_FOR[col] ? "§" + CODE_FOR[col] : "") + x).join("") + "§]\b").join("");
+}
+
+function shorten(text, name, short) {  // the short name on the top line (the end of the text)
+  const i = text.lastIndexOf("\n"), top = text.slice(i + 1);
+  return top.includes(name) ? text.slice(0, i + 1) + top.replace(name, () => short) : text;
+}
+
+function measureCase(it, c, on, extra, short) {  // c = [corruption, desecration, rest, tags, rest, tags...]
+  let best = null;
+  for (let i = 2; i < c.length; i += 2) {
+    let s = "";
+    for (const [si, ci] of TB.T[c[i + 1]]) if (condVal(TB.C[ci], on) === 1) s = TB.S[si] + s;
+    let text = trimText(extra + s + TB.S[c[i]]);
+    if (short) text = shorten(text, it.gname, short);
+    const n = visLen(text);
+    if (!best || n > best.n) best = {n, text};
+  }
+  return best;
+}
+
+function caseResult(it, c, picks) {  // the case's longest label for these picks, after the item's cut steps
+  const on = new Set(picks);
+  let req = picks.filter((k) => it.cands.some((x) => x.k === k && !x.tagged)), short = null;
+  let r = measureCase(it, c, on, requestedText(it, req), short);
+  const first = r, applied = [];
+  for (const step of it.steps || []) {
+    if (!isCut(r.text)) break;
+    const [kind, a, b] = step;
+    applied.push(step.join(" "));
+    if (kind === "drop") { on.delete(a); req = req.filter((k) => k !== a); }
+    else if (kind === "tabs") { on.delete("tabsk"); on.add("~tabs"); }
+    else if (kind === "slash") { on.delete(a); on.delete(b); on.add("~slash"); }
+    else if (kind === "short") short = a;
+    r = measureCase(it, c, on, requestedText(it, req), short);
+  }
+  return {n: r.n, text: r.text, applied, first};
+}
+
+function worstOf(it, picks) {
+  // {g, c, r}: the case whose label is longest with these picks (after the cut steps, as the game shows it);
+  // raw: {g, c, r} the case whose label is longest before them
+  const key = [...picks].sort().join() + "|" + view.limit;
+  let memo = worstMemo.get(it.key);
+  if (!memo) worstMemo.set(it.key, memo = new Map());
+  if (memo.has(key)) return memo.get(key);
+  let best = null, raw = null;
+  for (const g of it.cases) {
+    for (const c of g[3]) {
+      const r = caseResult(it, c, picks);
+      if (!best || r.n > best.r.n || (r.n === best.r.n && r.first.n > best.r.first.n)) best = {g, c, r};
+      if (!raw || r.first.n > raw.r.first.n) raw = {g, c, r};
+    }
+  }
+  best.raw = raw;
+  memo.set(key, best);
+  return best;
+}
+
+function currentCase(it, picks) {  // [group, case] the preview shows
+  const sel = caseSel.get(it.key);
+  if (sel) {
+    const g = it.cases.find((g) => g[0] === sel.b && g[1] === sel.e && g[2] === sel.s);
+    const c = g && g[3].find((c) => c[0] === sel.c && c[1] === sel.d);
+    if (c) return [g, c];
+  }
+  const w = worstOf(it, picks);
+  return [w.g, w.c];
+}
+
+function selectCase(it, want) {  // the case nearest to `want` that the item has
+  const groups = it.cases.filter((g) => g[0] === want.b);
+  const g = groups.find((g) => g[1] === want.e && g[2] === want.s) || groups.find((g) => g[1] === want.e) ||
+            groups.find((g) => g[2] === want.s) || groups[0];
+  const c = g[3].find((c) => c[0] === want.c && c[1] === want.d) || g[3].find((c) => c[0] === want.c && !c[1]) ||
+            g[3].find((c) => c[0] === want.c) || g[3].find((c) => !c[0]) || g[3][0];
+  caseSel.set(it.key, {b: g[0], e: g[1], s: g[2], c: c[0], d: c[1]});
+}
+
+const outcomeWords = (it, n) => (TB.W[it.wk] || {})[n] || `outcome ${n}`;
+
+function caseWords(it, g, c) {
+  const [b, e, s] = g, most = it.cb[b][2];
+  return [it.cb[b][1], e ? "ethereal" : null, s ? `${most} socket${most === 1 ? "" : "s"}` : null,
+          c[0] ? `corrupted: ${outcomeWords(it, c[0])}` : null, c[1] ? `desecrated: ${outcomeWords(it, c[1])}` : null]
+    .filter(Boolean).join(", ");
+}
+
+function textLines(text, color) {  // the label's lines top to bottom, each [[color, text, requested]]
+  const lines = [];
+  let cur = [], req = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (ch === "§" && i + 1 < text.length) {
+      const k = text[++i];
+      if (k === "[") req = true; else if (k === "]") req = false; else color = COLOR_AT[k] || color;
+      continue;
+    }
+    if (ch === "\n") { lines.push(cur); cur = []; continue; }
+    const last = cur[cur.length - 1];
+    if (last && last[0] === color && last[2] === req) last[1] += ch; else cur.push([color, ch, req]);
+  }
+  lines.push(cur);
+  return lines.reverse();
+}
+
+function casePreview(it, picks) {  // [the label, its notes, the case's controls, the meter]
+  const [g, c] = currentCase(it, picks);
+  const r = caseResult(it, c, picks);
+  const notes = el("div", {class: "notes"});
+  const ground = drawLabel(textLines(r.text, KIND_COLOR[it.kind] || "WHITE"), notes);
+  if (it.steps && it.steps.length) {
+    if (notes.childNodes.length) notes.append(el("br"));
+    notes.append(`Where the label would be cut: ${it.steps.map((s) => s.join(" ")).join("; ")}` +
+                 (r.applied.length ? `. Here: ${r.applied.join("; ")} (${r.first.n} before).` : "."));
+  }
+  const w = worstOf(it, picks), raw = w.raw, lim = LIMITS[view.limit].total, over = isCut(w.r.text);
+  const stepsHelp = raw.r.first.n > w.r.n;  // the cut steps make the longest label shorter
+  const show = (x, ctl) => {
+    if (x.g === g && x.c === c) return null;
+    const b = el("button", {type: "button", class: "small", "data-ctl": ctl, text: "Show it"});
+    b.addEventListener("click", () => {
+      if (x === w) caseSel.delete(it.key); else selectCase(it, {b: x.g[0], e: x.g[1], s: x.g[2], c: x.c[0], d: x.c[1]});
+      redraw(it, `[data-ctl="${ctl}"]`);
+    });
+    return b;
+  };
+  const meter = el("div", {class: "meter" + (over ? " over" : "")},
+    el("div", {}, "Longest label with these picks: ", el("b", {text: String(w.r.n)}), ` of ${lim}` +
+       (over ? " (cut)" : ` (${lim - w.r.n} to spare)`) + (stepsHelp ? " after its cut steps" : "") + " — ",
+       el("span", {class: "case", text: caseWords(it, w.g, w.c)}), " ", show(w, "longest")),
+    stepsHelp ? el("div", {}, "Before them: ", el("b", {text: String(raw.r.first.n)}), " — ",
+                   el("span", {class: "case", text: caseWords(it, raw.g, raw.c)}), " ", show(raw, "raw")) : null,
+    el("div", {class: "bar"}, el("span", {style: `width:${Math.min(100, 100 * w.r.n / lim)}%`})),
+    (w.g === g && w.c === c) || (stepsHelp && raw.g === g && raw.c === c) ? null :
+      el("div", {}, `This preview: ${r.n} of ${lim}` + (r.applied.length ? ` (${r.first.n} before its cut steps)` : "")));
+  return [ground, notes, caseControls(it, picks, g, c), meter];
+}
+
+function caseControls(it, picks, g, c) {  // base, ethereal, sockets, corruption (and desecration) of the preview
+  const cur = {b: g[0], e: g[1], s: g[2], c: c[0], d: c[1]};
+  const pick = (patch, ctl) => { selectCase(it, Object.assign({}, cur, patch)); redraw(it, `[data-ctl="${ctl}"]`); };
+  const box = el("div", {class: "case-pick"});
+  const select = (ctl, label, options, value, onPick) => {
+    const s = el("select", {"data-ctl": ctl, "aria-label": `${label} of ${it.name} in the preview`});
+    for (const [v, text] of options) s.append(el("option", {value: String(v), text}));
+    s.value = String(value);
+    s.addEventListener("input", () => onPick(Number(s.value)));
+    box.append(el("span", {text: label}), s);
+    return s;
+  };
+  if (it.cb.length > 1) {
+    select("base", "Base", it.cb.map((b, i) => [i, b[1] + (i ? "" : " (its own)")]), cur.b, (v) => pick({b: v}, "base"));
+  }
+  const checks = el("div", {class: "checks"});
+  const mine = it.cases.filter((x) => x[0] === cur.b);
+  if (it.cases.some((x) => x[1])) {
+    const eths = new Set(mine.map((x) => x[1]));
+    const cb = el("input", {type: "checkbox", "data-ctl": "eth"});
+    cb.checked = !!cur.e;
+    cb.disabled = eths.size < 2;
+    cb.addEventListener("change", () => pick({e: cb.checked ? 1 : 0}, "eth"));
+    checks.append(el("label", {class: "check", title: eths.size < 2 ? (cur.e ? "Always ethereal" : "Never ethereal on this base") : ""}, cb, "Ethereal"));
+  }
+  if (it.cases.some((x) => x[2])) {
+    const socks = new Set(mine.filter((x) => x[1] === cur.e).map((x) => x[2]));
+    const most = it.cb[cur.b][2];
+    const sc = el("input", {type: "checkbox", "data-ctl": "sock"});
+    sc.checked = !!cur.s;
+    sc.disabled = socks.size < 2;
+    sc.addEventListener("change", () => pick({s: sc.checked ? 1 : 0}, "sock"));
+    checks.append(el("label", {class: "check"}, sc, `Socketed (${most})`));
+  }
+  if (checks.childNodes.length) box.append(el("span", {text: "State"}), checks);
+  const len = (x) => caseResult(it, x, picks).n;
+  const outs = [...new Set(g[3].map((x) => x[0]))].map((o) => {
+    const x = g[3].find((y) => y[0] === o && (o ? y[1] === cur.d : !y[1])) || g[3].find((y) => y[0] === o && !y[1]) ||
+              g[3].find((y) => y[0] === o);
+    return [o, len(x)];
+  });
+  outs.sort((a, b) => (!b[0]) - (!a[0]) || b[1] - a[1]);  // not corrupted first, then the longest
+  if (outs.length > 1) {
+    select("corr", "Corruption", outs.map(([o, n]) => [o, `${n} · ${o ? outcomeWords(it, o) : "Not corrupted"}`]),
+           cur.c, (v) => pick({c: v}, "corr"));
+  }
+  if (g[3].some((x) => x[1])) {
+    const des = g[3].filter((x) => x[0] === cur.c).map((x) => [x[1], len(x)]);
+    des.sort((a, b) => (!b[0]) - (!a[0]) || b[1] - a[1]);
+    const s = select("des", "Desecration", des.map(([o, n]) => [o, `${n} · ${o ? outcomeWords(it, o) : "Not desecrated"}`]),
+                     cur.d, (v) => pick({d: v}, "des"));
+    s.disabled = des.length < 2;
+  }
+  return box;
 }
 
 // ---- one item
@@ -354,8 +623,24 @@ function statRow(it, st, s) {
     setState(it.key, {picks, reviewed: true}, c.k);
   });
   const meta = c.tagged ? `· ${c.w}` : `· ~${c.w} · no tag line yet`;
-  return el("li", {class: "roll" + (on ? " on" : "")}, sw, el("span", {text: s}), el("small", {text: meta}));
+  const li = el("li", {class: "roll" + (on ? " on" : "")}, sw, el("span", {text: s}), el("small", {text: meta}));
+  if (hasCases(it) && !on) li.append(el("small", {class: "with", "data-with": c.k}));  // filled when on screen
+  return li;
 }
+
+function fillWith(art) {  // beside each roll switched off: the longest label with it switched on
+  const it = byKey.get(art.dataset.key), st = state.get(it.key);
+  for (const sm of art.querySelectorAll("small[data-with]")) {
+    const w = worstOf(it, [...st.picks, sm.dataset.with]), raw = w.raw;
+    sm.textContent = `· longest with it ${raw.r.first.n}` + (raw.r.first.n > w.r.n ? ` (${w.r.n} after its cut steps)` : "");
+    sm.classList.toggle("cuts", isCut(raw.r.first.text));
+    sm.title = `${raw.r.first.n}: ${caseWords(it, raw.g, raw.c)}` +
+               (raw.r.first.n > w.r.n ? `\nafter its cut steps ${w.r.n}: ${caseWords(it, w.g, w.c)}` : "");
+  }
+}
+const onScreen = "IntersectionObserver" in window ? new IntersectionObserver((seen) => {
+  for (const e of seen) if (e.isIntersecting) { onScreen.unobserve(e.target); fillWith(e.target); }
+}, {rootMargin: "400px"}) : null;
 
 function card(it) {
   const st = state.get(it.key);
@@ -366,27 +651,32 @@ function card(it) {
   const ul = el("ul", {class: "stats"});
   for (const s of it.stats) ul.append(statRow(it, st, s));
   const det = el("details", {open: ""}, el("summary", {text: "All stats"}), ul);
-  const shownNow = shownPicks(it, st.picks), u = used(it, shownNow), room = roomOf(it, shownNow);
-  const req = it.cands.filter((c) => !c.tagged && shownNow.includes(c.k));
-  const meter = el("div", {class: "meter" + (u > room ? " over" : "")},
-    el("span", {}, "uses ", el("b", {text: String(u)}), ` of room ${room}` +
-       (req.length ? ` (~${req.reduce((s, c) => s + c.w, 0)} of it requested, no tag line yet)` : "") +
-       (u > room ? " — over the usual-case room" : "")),
-    el("div", {class: "bar"}, el("span", {style: `width:${Math.min(100, room > 0 ? 100 * u / room : 100)}%`})));
-  let pickBase = null;
-  if (it.baseChoices) {  // which base the preview shows (the room is for the first: the longest elite one)
-    pickBase = el("select", {"aria-label": `Base of ${it.name} in the preview`});
-    for (const [name, tier] of it.baseChoices) pickBase.append(el("option", {value: name, text: `${name} (${tier})`}));
-    pickBase.value = baseSel.get(it.key) || it.baseChoices[0][0];
-    pickBase.addEventListener("input", () => {
-      baseSel.set(it.key, pickBase.value);
-      const neu = card(it);
-      art.replaceWith(neu);
-      neu.querySelector("select")?.focus();
-    });
+  if (hasCases(it)) {
+    art.append(el("div", {class: "grid"}, det, el("div", {}, ...casePreview(it, st.picks))));
+    if (onScreen) onScreen.observe(art); else fillWith(art);
+  } else {
+    const shownNow = shownPicks(it, st.picks), u = used(it, shownNow), room = roomOf(it, shownNow);
+    const req = it.cands.filter((c) => !c.tagged && shownNow.includes(c.k));
+    const meter = el("div", {class: "meter" + (u > room ? " over" : "")},
+      el("span", {}, "uses ", el("b", {text: String(u)}), ` of room ${room}` +
+         (req.length ? ` (~${req.reduce((s, c) => s + c.w, 0)} of it requested, no tag line yet)` : "") +
+         (u > room ? " — over the usual-case room" : "")),
+      el("div", {class: "bar"}, el("span", {style: `width:${Math.min(100, room > 0 ? 100 * u / room : 100)}%`})));
+    let pickBase = null;
+    if (it.baseChoices) {  // which base the preview shows (the room is for the first: the longest elite one)
+      pickBase = el("select", {"aria-label": `Base of ${it.name} in the preview`});
+      for (const [name, tier] of it.baseChoices) pickBase.append(el("option", {value: name, text: `${name} (${tier})`}));
+      pickBase.value = baseSel.get(it.key) || it.baseChoices[0][0];
+      pickBase.addEventListener("input", () => {
+        baseSel.set(it.key, pickBase.value);
+        const neu = card(it);
+        art.replaceWith(neu);
+        neu.querySelector("select")?.focus();
+      });
+    }
+    art.append(el("div", {class: "grid"}, det, el("div", {}, ...preview(it, shownNow), meter,
+      pickBase && el("label", {class: "check base-pick"}, "Base in the preview ", pickBase))));
   }
-  art.append(el("div", {class: "grid"}, det, el("div", {}, ...preview(it, shownNow), meter,
-    pickBase && el("label", {class: "check base-pick"}, "Base in the preview ", pickBase))));
   const rev = el("input", {type: "checkbox"});
   rev.checked = st.reviewed;
   rev.addEventListener("change", () => setState(it.key, {picks: st.picks, reviewed: rev.checked}));
@@ -407,6 +697,7 @@ function visible() {
     if (page && it.page !== page) return false;
     if ($("needs").checked && !(it.cands.filter((c) => c.tagged).length > it.auto.length)) return false;
     if ($("unrev").checked && st.reviewed) return false;
+    if ($("cutOnly").checked && !(hasCases(it) && isCut(worstOf(it, st.picks).r.text))) return false;
     if (q && !`${it.name} ${it.bases.join(" ")} ${it.codes.join(" ")}`.toLowerCase().includes(q)) return false;
     return true;
   });
@@ -464,7 +755,7 @@ async function save() {
   counts();
   const b = $("banner");
   b.textContent = `Saved. If you saved it over tools/${PAGE.picksFile}, double-click build.bat: it regenerates the tags ` +
-                  `and builds the 8 filters (python tools/${PAGE.generator} --picker reopens this page with the new data).`;
+                  `and builds the filters (python tools/${PAGE.generator} --picker reopens this page with the new data).`;
   b.classList.add("show");
 }
 
@@ -478,11 +769,16 @@ $("title").textContent = PAGE.title;
 for (const [value, text] of PAGE.kinds) $("kind").append(el("option", {value, text}));
 if (PAGE.roomHelp) $("roomHelp").textContent = PAGE.roomHelp;
 for (const c of document.querySelectorAll(".picks-file")) c.textContent = `tools/${PAGE.picksFile}`;
-if (!DATA.items.some((it) => it.sockets)) for (const s of document.querySelectorAll(".sock-opt")) s.hidden = true;
+const anyCases = DATA.items.some(hasCases);
+$("helpCases").hidden = !anyCases;
+$("helpPlain").hidden = anyCases;
+if (!anyCases) for (const s of document.querySelectorAll(".case-opt")) s.hidden = true;
+else $("sockLabel").textContent = "Sockets (items with no case data)";
+if (!DATA.items.some((it) => it.sockets && !hasCases(it))) for (const s of document.querySelectorAll(".sock-opt")) s.hidden = true;
 if (!DATA.items.some((it) => it.baseChoices)) for (const s of document.querySelectorAll(".rw-opt")) s.hidden = true;
 fillSelect($("slot"), [...new Set(DATA.items.map((it) => it.slot))], "All slots", SLOT_NAMES);
 fillSelect($("page"), [...new Set(DATA.items.map((it) => it.page))].sort(), "All item types");
-for (const id of ["q", "kind", "slot", "page", "needs", "unrev"]) $(id).addEventListener("input", render);
+for (const id of ["q", "kind", "slot", "page", "needs", "cutOnly", "unrev"]) $(id).addEventListener("input", render);
 $("sockets").value = String(view.sockets);
 $("corrupt").checked = view.corrupt;
 $("limit").value = view.limit;
