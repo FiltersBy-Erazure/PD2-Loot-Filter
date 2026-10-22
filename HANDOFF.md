@@ -108,8 +108,8 @@ About 825 KB is roughly 200k+ tokens per file. **No conversation will "see the w
 | `146-map-experience` | 3527–3880 | GENERATED (`tools/gen_map_exp.py`): two description lines per map, `2.0x Experience` (the roll multiplier) and `2.6x at Level 98` (vs an average white map at your level), and their aliases |
 | `147-map-display-end` | 3881–3901 | Every map's last rule (closing minimap icons for T1–T3, T4 and unique maps), arenas |
 | `150-uniques` | 3902–4360 | Revealed names, DClone/Rathma uniques, BIG GG display |
-| `160-uniques-value-tiers` | 4361–4882 | High / medium / minimal value, low-level duel, all other uniques |
-| `170-sets` | 4883–5095 | Revealed names, high / medium value, low-level duel, rings and amulets, normal / exceptional / elite sets |
+| `160-uniques-value-tiers` | 4361–4882 | High / medium / minimal value, undiscovered (Grail), low-level duel, all other uniques |
+| `170-sets` | 4883–5095 | Revealed names, high / medium value, undiscovered (Grail), low-level duel, rings and amulets, normal / exceptional / elite sets |
 | `180-crafted` | 5096–5102 | |
 | `190-rares` | 5103–5318 | Heavy on hide rules; eth rare weapon notifications |
 | `200-magic` | 5319–5623 | Heavy on hide rules; magic charms; eth magic weapon notifications |

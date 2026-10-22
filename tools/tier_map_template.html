@@ -174,9 +174,10 @@
       <li>Point at a sound for its number: type <b>.playsound</b> and that number in game to hear it.</li>
       <li><b>Items on the same base share a tier.</b> Unidentified, the filter cannot tell them apart: Lightsabre
         and Azurewrath are both a Phase Blade.</li>
-      <li><b>Hidden items still show their name</b> in town, and until you've discovered them (as part of the Holy
-        Grail Discovery Progress). An item on a base with several uniques, like Thunder Maul, counts as discovered
-        once you've found all of them.</li>
+      <li><b>Hidden items still show their name</b> in town. <b>Until you've discovered an item</b> (the Holy Grail
+        Discovery Progress) it is never hidden, and outside the value tiers (set rings and amulets aside) it shows the
+        Grail look: an orange star on each side. An item on a base with several uniques, like Thunder Maul, counts as
+        discovered once you've found all of them.</li>
     </ul>
    </div>
    <div>
@@ -373,9 +374,12 @@ function groupRow(its, kind) {
 // ---- page
 function intro() {
   $("levels").replaceChildren(...DATA.levels.map((n) => el("li", {text: n})));
-  const examples = new Map();  // one example of each look (the first item that has it in this version)
-  for (const it of DATA.items) {
-    for (const o of vOf(it).outcomes) if (!examples.has(o.look)) examples.set(o.look, o);
+  const examples = new Map();  // one example of each look (the first item that has it in this version; when its
+  for (const it of DATA.items) {  // icon depends on the filter level, the first one with an icon)
+    for (const o of vOf(it).outcomes) {
+      const had = examples.get(o.look);
+      if (!had || (!had.icons.length && o.icons.length && !(DATA.lookInfo[o.look] || {}).usual)) examples.set(o.look, o);
+    }
   }
   const looks = Object.entries(DATA.lookInfo).filter(([k]) => examples.has(k) && k !== "HIDDEN")
     .sort((a, b) => b[1].rank - a[1].rank);

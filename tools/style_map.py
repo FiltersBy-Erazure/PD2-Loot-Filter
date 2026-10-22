@@ -55,7 +55,8 @@ SAMPLE = {  # %NAME% of the sample rule: an unidentified unique, set or rare ite
     "VEX_OHM_LO_RUNE": "Vex Rune", "SUR_BER_JAH_CHAM_ZOD_BIG_GG": "Ber Rune",
     "WORLDSTONE_LOW_QTY": "Worldstone Shard", "WORLDSTONE_HIGH_QTY": "Worldstone Shards x 12",
     "CATALYST_SHARD": "Catalyst Shard", "PUZZLEPIECE": "Puzzlepiece", "PUZZLEBOX": "Larzuk's Puzzlebox",
-    "DEMONIC_CUBE": "Demonic Cube", "SET_NORMAL": "Sash", "MAGIC_RING": "Ring", "MAGIC_CHARMS": "Grand Charm",
+    "DEMONIC_CUBE": "Demonic Cube", "SET_NORMAL": "Sash", "UNI_GRAIL": "Light Plate", "SET_GRAIL": "Sash",
+    "MAGIC_RING": "Ring", "MAGIC_CHARMS": "Grand Charm",
     "MAGIC_CHARMS_DIM": "Small Charm", "MAGIC_LARGE_CHARM_90": "Large Charm", "MAGIC_LARGE_CHARM": "Large Charm",
 }
 OFF_TOGGLES = ("BIG_GG", "POE_SOUNDS", "REVEALED")  # off in Erazure - Main, which the Minimal version is built from

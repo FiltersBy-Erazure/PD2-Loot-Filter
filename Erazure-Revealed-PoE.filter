@@ -293,6 +293,10 @@ Alias[UNI_MEDIUM_VALUE_RIGHT]:%WHITE%•  %GOLD%<  %ORANGE%/%ORANGE%/%RED%/%RED%
 Alias[UNI_MINIMAL_VALUE_LEFT]:%RED%\%ORANGE%\\  %GOLD%>  %WHITE%•
 Alias[UNI_MINIMAL_VALUE_RIGHT]:%WHITE%•  %GOLD%<  %ORANGE%/%ORANGE%/%RED%/%GOLD%
 
+// Unique Grail: unique items in no value tier that you haven't discovered yet (GRAIL_NEW, 160)
+Alias[UNI_GRAIL_LEFT]:%ORANGE%*%GOLD%*%LIGHT_GRAY%* %WHITE%>
+Alias[UNI_GRAIL_RIGHT]:%WHITE%< %LIGHT_GRAY%*%GOLD%*%ORANGE%*%GOLD%
+
 // Unique LLD
 Alias[UNI_LLD_LEFT]:%TEAL%*%LIGHT_GRAY%* %WHITE%>
 Alias[UNI_LLD_RIGHT]:%WHITE%< %LIGHT_GRAY%*%TEAL%*
@@ -316,6 +320,10 @@ Alias[SET_HIGH_VALUE_RIGHT]:%WHITE%o  %GREEN%<  %DARK_GREEN%/%PURPLE%/
 // Set Medium Value
 Alias[SET_MEDIUM_VALUE_LEFT]:%PURPLE%*%DARK_GREEN%* %GREEN%>  %WHITE%•
 Alias[SET_MEDIUM_VALUE_RIGHT]:%WHITE%•  %GREEN%< %DARK_GREEN%*%PURPLE%*
+
+// Set Grail: set items in no value tier, but rings and amulets, that you haven't discovered yet (GRAIL_NEW, 170)
+Alias[SET_GRAIL_LEFT]:%ORANGE%*%GREEN%* >
+Alias[SET_GRAIL_RIGHT]:%GREEN%< *%ORANGE%*%GREEN%
 
 // Set LLD
 Alias[SET_LLD_LEFT]:%TEAL%*%DARK_GREEN%* %GREEN%>
@@ -5035,6 +5043,15 @@ ItemDisplay[UNI !ID aqv2 CLVL<60]:%NAME%%CONTINUE%// Tombsong / Swiftwind Needle
 ItemDisplay[UNI !ID (cqv2 OR (aqv2 CLVL<60))]:%UNI_MINIMAL_VALUE_LEFT%  %NAME%  %UNI_MINIMAL_VALUE_RIGHT%%MAP-50%%DOT-59%%PX-6A%//
 
 // --------------------------------------------------------------------------------------------------------
+// =================================  Undiscovered Unique Items (Grail)  ==================================
+// --------------------------------------------------------------------------------------------------------
+
+// Every unique item the tiers above leave, until you've discovered it (Discovery Progress): the Grail look on
+// every filter level, ahead of the Low Level Duel and standard looks. No icon or sound here: BH's notification
+// pass reads only rules with one, so the rules below still give the icon, chat line and sound
+ItemDisplay[UNI !ID GRAIL_NEW]:%UNI_GRAIL_LEFT%  %NAME%  %UNI_GRAIL_RIGHT%//
+
+// --------------------------------------------------------------------------------------------------------
 // =======================================  Low Level Duel Uniques  =======================================
 // --------------------------------------------------------------------------------------------------------
 
@@ -5232,6 +5249,11 @@ ItemDisplay[SET !ID ETH 7ls FILTLVL<12]:%NAME%%SOUNDID-2594%%CONTINUE%// Eth Saz
 ItemDisplay[SET !ID FILTLVL<5 (dr8 OR uul OR xtb OR ci3 OR uh9 OR xmg OR ne9 OR xhm OR ulg OR 7qr OR ucl OR (ETH (7fb OR 7gd OR 7ls)))]:%SET_HIGH_VALUE_LEFT%  %GREEN%%NAME%  %SET_HIGH_VALUE_RIGHT%%GREEN%%BORDER-71%%MAP-76%%DOT-84%%PX-20%// The high value look on levels 0-4
 ItemDisplay[SET !ID FILTLVL~5-11 (dr8 OR uul OR xtb OR ci3 OR uh9 OR xmg OR ne9 OR xhm OR ulg OR 7qr OR ucl OR (ETH (7fb OR 7gd OR 7ls)))]:%SET_MEDIUM_VALUE_LEFT%  %GREEN%%NAME%  %SET_MEDIUM_VALUE_RIGHT%%GREEN%%BORDER-71%%MAP-76%%DOT-84%%PX-20%//
 ItemDisplay[SET !ID FILTLVL=12 (dr8 OR uul OR xtb OR ci3 OR uh9 OR xmg OR ne9 OR xhm OR ulg OR 7qr OR ucl OR (ETH (7fb OR 7gd OR 7ls)))]:%NAME%// The plain name on level 12: no look, icon or sound
+
+// Undiscovered Set Items (Grail): every set item the tiers above leave, but rings and amulets, until you've
+// discovered it (Discovery Progress): the Grail look on every filter level, ahead of the Low Level Duel look. No
+// icon or sound here: the rules below still give them
+ItemDisplay[SET !ID GRAIL_NEW !(rin OR amu)]:%SET_GRAIL_LEFT%  %NAME%  %SET_GRAIL_RIGHT%//
 
 // Low Level Duel Set Items
 ItemDisplay[SET !ID !ETH FILTLVL<5 (vbt OR vgl OR xlb)]:%SET_LLD_LEFT%  %NAME%  %SET_LLD_RIGHT%%GREEN%%BORDER-71%%MAP-C5%%DOT-9F%%PX-A2%//

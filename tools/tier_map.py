@@ -118,9 +118,13 @@ LOOKS = {
     "UNI_NORMAL": ("standard unique look", 30, "Everything else"),
     "SET": ("standard set look", 30, "Everything else"),
     "DECORATED": ("dimmer set look", 30, "Everything else"),  # 170: normal sets at levels 0-2, character level 60+
+    # 160 / 170: an item in no value tier you haven't discovered yet (GRAIL_NEW); below the standard looks, so it
+    # never decides a tier
+    "UNI_GRAIL": ("Grail look", 25, "Everything else"), "SET_GRAIL": ("Grail look", 25, "Everything else"),
     "NAME": ("name only", 20, "Everything else"),
     "HIDDEN": ("hidden", 0, "Everything else"),
 }
+GRAIL_LOOKS = {"UNI_GRAIL", "SET_GRAIL"}  # the looks only an item you haven't discovered yet gets
 TIER_GROUPS = ["Diablo Clone & Rathma", "High value", "Medium value", "Minimal value", "Low Level Duel",
                "Everything else"]
 LOOK_ALIAS_RE = re.compile(r"%((?:UNI|SET)_[A-Z_]+?)_LEFT%")
@@ -768,7 +772,10 @@ def usual_notifications(groups, variants):
     for g in groups:
         keys = set()
         for toggles in variants.values():
-            keys |= set(restrict(variant_table(g, toggles), g.dims, {"LOC": "field", "GRAIL": "found"}).values())
+            table = variant_table(g, toggles)
+            keys |= set(restrict(table, g.dims, {"LOC": "field", "GRAIL": "found"}).values())
+            keys |= {k for k in restrict(table, g.dims, {"LOC": "field", "GRAIL": "new"}).values()
+                     if k[0] in GRAIL_LOOKS}  # the Grail looks, for the legend
         for key in keys:
             seen[key[0]][notify_class(key)] += 1
             sound[key[0]][bool(key[2])] += 1
@@ -933,9 +940,12 @@ def variant_table(g, toggles):
 
 
 def delta_phrase(main, alt, sounds):
-    """What a place or grail state changes: just the sound, or the whole outcome."""
+    """What a place or grail state changes: just the sound, just the Grail look (its rules have no notification, so
+    the item keeps its own), or the whole outcome."""
     if main[:2] == alt[:2] and main[3] == alt[3] and main[2] != alt[2]:
         return sound_text(alt[2], sounds) if alt[2] else "no sound"
+    if alt[0] in GRAIL_LOOKS and alt[1:] == main[1:]:
+        return LOOKS[alt[0]][0]
     return look_phrase(alt)
 
 
@@ -962,10 +972,15 @@ def item_view(g, toggles, sounds):
     ei, fi = dims.index["ETH"], dims.index["FILTLVL"]
     for sc in sorted(main, key=lambda s: (s[ei], s[fi])):
         first.setdefault(main[sc], sc)  # the label of a run: not ethereal where it can be, its lowest level
+    new = restrict(table, dims, {"LOC": "field", "GRAIL": "new"})
+    grail = {}  # each Grail look's first case: the legend's sample (no clause points at it)
+    for sc in sorted(new, key=lambda s: (s[ei], s[fi])):
+        if new[sc][0] in GRAIL_LOOKS:
+            grail.setdefault(new[sc][0], (new[sc], sc))
     outcomes = []
-    for k in keys:
+    for k, sc in [(k, first[k]) for k in keys] + list(grail.values()):
         look, _, sound, icons = k
-        lines = label(g, first[k], toggles)
+        lines = label(g, sc, toggles)
         outcomes.append({"look": look, "phrase": look_phrase(k), "label": lines, "cut": bh_cut(lines),
                          "icons": [list(layer) for layer in icons],
                          "sound": [sound, sounds.get(sound, {}).get("name", ""), sounds.get(sound, {}).get("file", "")]
@@ -977,16 +992,24 @@ def item_view(g, toggles, sounds):
         contexts.append(({"LOC": "field", "GRAIL": "new"}, "before you've discovered it"))
     li, gi = dims.index["LOC"], dims.index["GRAIL"]
     by_text = {}
+    grail = LOOKS["UNI_GRAIL"][0]
     for fixed, where in contexts:
-        diff, hidden = {}, True
+        diff, hidden, kept = {}, True, set()
         for sc, k in restrict(table, dims, fixed).items():
             m = main[sc[:li] + ("field",) + sc[li + 1:gi] + ("found",) + sc[gi + 1:]]
             if m != k:
                 diff[sc] = delta_phrase(m, k, sounds)
                 hidden &= m[0] == "HIDDEN" and not m[3]
+            else:
+                kept.add(m[0])
         if not diff:
             continue
-        if hidden and len(set(diff.values())) == 1:  # it only changes where the item would be hidden
+        if fixed["GRAIL"] == "new" and set(diff.values()) == {grail}:
+            # the Grail look wherever no value tier takes the item, in the author's words (2026-10-22): the tiers
+            # it leaves out are named in full, the lines above say where this item is in one
+            tiers = "High value, Medium value, or Minimal value" if g.kind == "UNI" else "High value or Medium value"
+            key = ("grail", f"{grail}, except where it is {tiers}" if kept else grail)
+        elif hidden and len(set(diff.values())) == 1:  # it only changes where the item would be hidden
             key = ("hidden", next(iter(diff.values())))
         else:
             key = ("cases", json.dumps(describe(diff, dims)))
@@ -996,6 +1019,8 @@ def item_view(g, toggles, sounds):
         if kind == "hidden":  # "Not hidden in town, or before you've discovered it: shows its name instead"
             shows = "shows its name instead" if text == "name only" else f"shows as {text} instead"
             notes.append(f"Not hidden {', or '.join(wheres)}: {shows}")
+        elif kind == "grail":  # "Before you've discovered it: Grail look, except where it's Minimal value"
+            notes.append(clause_text(([], [(None, text)]), lead=" or ".join(wheres)))
         else:
             notes += [clause_text(c, lead=" or ".join(wheres)) for c in json.loads(text)]
     return {"clauses": [{"cond": ", ".join(conds), "runs": [[lv, keys.index(k)] for lv, k in runs]}
