@@ -1246,15 +1246,19 @@ FAMILIES = [
      "sample": {"base": "amu", "quality": "RARE", "name": ["Beast", "Talisman"], "class": "ASSASSIN", "ilvl": 99,
                 "affixes": ["Witch-hunter's", "Garnet", "of the Magus", "of the Tiger"]}},
     {"id": "gloves-3", "section": "gloves", "title": "Gloves: +3 to a skill tab",
-     "match": lambda r: has(r, "GLOVES") and (label(r).startswith("3/") or (has(r, "SHOP") and not label(r))),
+     "match": lambda r: has(r, "GLOVES") and (label(r).lstrip("+").startswith("3/") or (has(r, "SHOP") and not label(r))),
      "sample": {"base": "hgl", "affixes": ["Lancer's", "of Alacrity"], "clvl": 96, "def": 13}},
     {"id": "gloves-2", "section": "gloves", "title": "Gloves: +2 to a skill tab",
-     "match": lambda r: has(r, "GLOVES") and label(r).startswith("2/"),
+     "match": lambda r: has(r, "GLOVES") and label(r).lstrip("+").startswith("2/"),
      "sample": {"base": "vgl", "affixes": ["Spearmaiden's", "of Alacrity"], "clvl": 90}},
     {"id": "combat-shield", "section": "armor", "title": "Shields with Combat Skills and cast rate",
      "match": lambda r: has(r, "SHIELD") and "TABSK24" in r.cond and not has(r, "SHOP"),
      # (a store sells these on any shield but a Paladin's own: the author, 2026-10-20)
      "sample": {"base": "tow", "affixes": ["Rose Branded", "of the Magus"], "class": "PALADIN", "clvl": 90}},
+    {"id": "caster-armor", "section": "armor", "title": "Rare body armor with +2 class skills and cast rate",
+     "match": lambda r: has(r, "CHEST", "RARE") and "CLSK1=2" in r.cond,
+     "sample": {"base": "utp", "quality": "RARE", "name": ["Doom", "Shroud"], "class": "SORCERESS", "ilvl": 99,
+                "affixes": ["Arch-Angel's", "Ruby", "of the Archmage", "of the Whale"]}},
     {"id": "warcries-weapon", "section": "armor", "title": "Weapons with +3 or +4 to Warcries",
      "match": lambda r: "Warcries Weapon" in label(r),
      "sample": {"base": "hax", "affixes": ["Echoing"], "class": "BARBARIAN", "clvl": 85}},
@@ -1380,18 +1384,19 @@ def families(rules):
 
 INTRO = [
     "A highlight is a line of stars the filter adds to an item's hover box, in a shop, your inventory or your "
-    "stash: <b>3/20 Gloves</b>, <b>+7 Chain Lightning</b>. In a shop some items also get a green or teal Cost line, "
+    "stash: <b>+3/20ias</b>, <b>+7 Chain Lightning</b>. In a shop some items also get a green or teal Cost line, "
     "so they stand out before you hover them.",
     "Each kind of highlight below has a sample item drawn as its hover box looks in game, then every highlight of "
     "that kind and what an item needs to get it. An item a store never sells (a rare, a circlet, most class items) "
     "is drawn in your inventory.",
 ]
 SELFTEST = [  # two shop screenshots of the author's (2026-10-20): the hover box line by line, and the Cost seen
+    # (the gloves' highlight line follows the rule's text: "3/20 Gloves" on the screenshot, "+3/20ias" since 2026-10-21)
     ({"id": "gloves", "base": "hgl", "affixes": ["Lancer's", "of Alacrity"], "clvl": 96, "def": 13},
      (960, 922, 15), 20272,
      ["Cost: 20272", "Lancer's Gauntlets of Alacrity", "3jav 20ias", "Defense: 13", "Durability: 24 of 24",
       "Required Strength: 60", "Required Level: 45", "Item Level: 99", "Crafted Affix Level: 95",
-      "*******   3/20 Gloves   *******", "+3 to Javelin and Spear Skills (Amazon Only) [1 - 3]",
+      "*******   +3/20ias   *******", "+3 to Javelin and Spear Skills (Amazon Only) [1 - 3]",
       "+20% Increased Attack Speed [10 - 20]"]),
     ({"id": "plate", "base": "ltp", "affixes": ["Witch-hunter's", ("of Protecting", 20)], "clvl": 80, "def": 97,
       "class": "ASSASSIN"},
