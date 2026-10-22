@@ -12,6 +12,13 @@
 // rare rings, belts and boots, ethereal rare and magic axes, magic jewels and Large Charms, nor on rare circlets
 // and amulets on level 12 (Corr's removals, and the author's for boots, the jewels of The Fallen Gardens and The
 // Diamond Gate, and level 12's jewelry).
+// Corr's v3 (2026-10-21; "mostly disabling a bunch of rules for maps and charm stat displays"), all taken by the
+// author: 17 map description lines off (guest monsters, Blood Lords, Melee Splash, +% elemental and physical
+// damage, low +% Maximum Life, Dual Extra Damage, -% Max and All Resistances), 19 magic charm tags and 20 affix
+// tags off (Light Radius, Gold Find, DTM, ATD on weapons, MDR, Mana Regeneration, Mana, Replenish Life, Energy,
+// Dexterity, % AR, rare max damage), no icons or notifications for Flawless and Perfect gems in maps (Skulls keep
+// theirs, as in his file) nor for runes El to Fal (El to Io keep stopping the display, only their icon codes go),
+// and LIL GG in sage, BIG GG in orange.
 // Each entry: '@ <section file>:<line>  <name>' (where it last matched, kept up to date by the build), then
 // '- <the author's line>' and '+ <the style's line>' (only what the rule shows changes; its condition and
 // comment stay the author's), '= <anchor line>' and '+ <lines inserted after it>', 'x <a rule switched off>',
@@ -189,6 +196,30 @@
 @ 090-gems.filter:67  Gray - Skull
 - ItemDisplay[GEMTYPE=7]:%NAME%  %GRAY%%CONTINUE%// Gray - Skull
 + ItemDisplay[GEMTYPE=7]:%NAME%  %BLACK%%CONTINUE%// Gray - Skull
+@ 090-gems.filter:90  Corr v3: Perfect Amethyst in maps, no notification
+x ItemDisplay[(gpv) FILTLVL<12 MAPID>137]:%NAME%%DOT-9B%%PX-1E%{%NAME%}%CONTINUE%// Notifications for perfect gems while in maps on filter levels 1-11
+@ 090-gems.filter:91  Corr v3: Flawless/Perfect Amethyst in maps, no icon
+x ItemDisplay[(((gzv) FILTLVL<11) OR ((gpv) FILTLVL=12)) MAPID>137]:%NAME%%DOT-9B%%PX-1E%%TIER-0%{%NAME%}%CONTINUE%// Icons but no notifications for flawless/perfect gems while in maps
+@ 090-gems.filter:96  Corr v3: Perfect Diamond in maps, no notification
+x ItemDisplay[(gpw) FILTLVL<12 MAPID>137]:%NAME%%DOT-DC%%PX-1E%{%NAME%}%CONTINUE%// Notifications for perfect gems while in maps on filter levels 1-11
+@ 090-gems.filter:97  Corr v3: Flawless/Perfect Diamond in maps, no icon
+x ItemDisplay[(((glw) FILTLVL<11) OR ((gpw) FILTLVL=12)) MAPID>137]:%NAME%%DOT-DC%%PX-1E%%TIER-0%{%NAME%}%CONTINUE%// Icons but no notifications for flawless/perfect gem stacks while in maps
+@ 090-gems.filter:102  Corr v3: Perfect Emerald in maps, no notification
+x ItemDisplay[(gpg) FILTLVL<12 MAPID>137]:%NAME%%DOT-79%%PX-1E%{%NAME%}%CONTINUE%// Notifications for perfect gems while in maps on filter levels 1-11
+@ 090-gems.filter:103  Corr v3: Flawless/Perfect Emerald in maps, no icon
+x ItemDisplay[(((glg) FILTLVL<11) OR ((gpg) FILTLVL=12)) MAPID>137]:%NAME%%DOT-79%%PX-1E%%TIER-0%{%NAME%}%CONTINUE%// Icons but no notifications for flawless/perfect gem stacks while in maps
+@ 090-gems.filter:108  Corr v3: Perfect Ruby in maps, no notification
+x ItemDisplay[(gpr) FILTLVL<12 MAPID>137]:%NAME%%DOT-0A%%PX-1E%{%NAME%}%CONTINUE%// Notifications for perfect gems while in maps on filter levels 1-11
+@ 090-gems.filter:109  Corr v3: Flawless/Perfect Ruby in maps, no icon
+x ItemDisplay[(((glr) FILTLVL<11) OR ((gpr) FILTLVL=12)) MAPID>137]:%NAME%%DOT-0A%%PX-1E%%TIER-0%{%NAME%}%CONTINUE%// Icons but no notifications for flawless/perfect gem stacks while in maps
+@ 090-gems.filter:114  Corr v3: Perfect Sapphire in maps, no notification
+x ItemDisplay[(gpb) FILTLVL<12 MAPID>137]:%NAME%%DOT-97%%PX-1E%{%NAME%}%CONTINUE%// Notifications for perfect gems while in maps on filter levels 1-11
+@ 090-gems.filter:115  Corr v3: Flawless/Perfect Sapphire in maps, no icon
+x ItemDisplay[(((glb) FILTLVL<11) OR ((gpb) FILTLVL=12)) MAPID>137]:%NAME%%DOT-97%%PX-1E%%TIER-0%{%NAME%}%CONTINUE%// Icons but no notifications for flawless/perfect gem stacks while in maps
+@ 090-gems.filter:120  Corr v3: Perfect Topaz in maps, no notification
+x ItemDisplay[(gpy) FILTLVL<12 MAPID>137]:%NAME%%DOT-6F%%PX-1E%{%NAME%}%CONTINUE%// Notifications for perfect gems while in maps on filter levels 1-11
+@ 090-gems.filter:121  Corr v3: Flawless/Perfect Topaz in maps, no icon
+x ItemDisplay[(((gly) FILTLVL<11) OR ((gpy) FILTLVL=12)) MAPID>137]:%NAME%%DOT-6F%%PX-1E%%TIER-0%{%NAME%}%CONTINUE%// Icons but no notifications for flawless/perfect gem stacks while in maps
 
 // == 100-sound-ids.filter ==
 @ 100-sound-ids.filter:10  !POE_SOUNDS (r20 OR r21) QTY=1 !TOWN
@@ -265,6 +296,20 @@
 @ 110-runes.filter:37  (r16)
 - ItemDisplay[(r16)]:%WHITE%Io Rune%CONTINUE%//
 + ItemDisplay[(r16)]:%LIGHT_GRAY%Io Rune%CONTINUE%//
+@ 110-runes.filter:58  Corr v3: Notify for runes El-Tal, no icon or notification
+- ItemDisplay[RUNE<8 FILTLVL<12]:%NAME%{%NAME%}%BORDER-71%%MAP-75%%DOT-1B%%PX-20%// Notify for runes El-Tal
++ ItemDisplay[RUNE<8 FILTLVL<12]:%NAME%{%NAME%}// Notify for runes El-Tal
+@ 110-runes.filter:60  Corr v3: Map Icons for runes El-Tal on filter level 12, no icon or notification
+- ItemDisplay[RUNE<8 FILTLVL>11]:%NAME%{%NAME%}%BORDER-71%%MAP-75%%DOT-1B%%PX-20%%TIER-0%// Map Icons for runes El-Tal on filter level 12
++ ItemDisplay[RUNE<8 FILTLVL>11]:%NAME%{%NAME%}// Map Icons for runes El-Tal on filter level 12
+@ 110-runes.filter:63  Corr v3: Notify for runes Ral-Io, no icon or notification
+- ItemDisplay[RUNE>7 RUNE<17 FILTLVL<12]:%NAME%{%NAME%}%BORDER-89%%MAP-91%%DOT-1B%%PX-20%// Notify for runes Ral-Io
++ ItemDisplay[RUNE>7 RUNE<17 FILTLVL<12]:%NAME%{%NAME%}// Notify for runes Ral-Io
+@ 110-runes.filter:65  Corr v3: Map Icons for runes Ral-Io on filter level 12, no icon or notification
+- ItemDisplay[RUNE>7 RUNE<17 FILTLVL>11]:%NAME%{%NAME%}%BORDER-89%%MAP-91%%DOT-1B%%PX-20%%TIER-0%// Map Icons for runes Ral-Io on filter level 12
++ ItemDisplay[RUNE>7 RUNE<17 FILTLVL>11]:%NAME%{%NAME%}// Map Icons for runes Ral-Io on filter level 12
+@ 110-runes.filter:68  Corr v3: Lum, Ko and Fal, no icon
+x ItemDisplay[RUNE>16 RUNE<20]:%MAP-60%%DOT-69%%PX-20%%CONTINUE%// Notify for runes Lum, Ko, and Fal
 @ 110-runes.filter:89  (r17)
 - ItemDisplay[(r17)]:%WHITE%Lum Rune%CONTINUE%//
 + ItemDisplay[(r17)]:%TAN%Lum Rune%CONTINUE%//
@@ -310,6 +355,9 @@
 @ 110-runes.filter:147  BIG_GG ((r28 (INVENTORY OR QTY>1 OR (QTY=1 TOWN))))
 - ItemDisplay[BIG_GG ((r28 (INVENTORY OR QTY>1 OR (QTY=1 TOWN))))]:%WHITE%Lo Rune%CONTINUE%//
 + ItemDisplay[BIG_GG ((r28 (INVENTORY OR QTY>1 OR (QTY=1 TOWN))))]:%SAGE%Lo Rune%CONTINUE%//
+@ 110-runes.filter:148  Corr v3: LIL GG in sage
+- ItemDisplay[BIG_GG (r26 OR r27 OR r28) QTY=1 GROUND !INVENTORY !TOWN]:%WHITE%LIL GG%CONTINUE%//
++ ItemDisplay[BIG_GG (r26 OR r27 OR r28) QTY=1 GROUND !INVENTORY !TOWN]:%SAGE%LIL GG%CONTINUE%//
 @ 110-runes.filter:159  !BIG_GG (r29)
 - ItemDisplay[!BIG_GG (r29)]:%WHITE%Sur Rune%CONTINUE%//
 + ItemDisplay[!BIG_GG (r29)]:%ORANGE%Sur Rune%CONTINUE%//
@@ -340,6 +388,9 @@
 @ 110-runes.filter:168  BIG_GG ((r33 (INVENTORY OR QTY>1 OR (QTY=1 TOWN))))
 - ItemDisplay[BIG_GG ((r33 (INVENTORY OR QTY>1 OR (QTY=1 TOWN))))]:%WHITE%Zod Rune%CONTINUE%//
 + ItemDisplay[BIG_GG ((r33 (INVENTORY OR QTY>1 OR (QTY=1 TOWN))))]:%ORANGE%Zod Rune%CONTINUE%//
+@ 110-runes.filter:169  Corr v3: BIG GG in orange
+- ItemDisplay[BIG_GG (r29 OR r30 OR r31 OR r32 OR r33) QTY=1 GROUND !INVENTORY !TOWN]:%WHITE%BIG GG%CONTINUE%//
++ ItemDisplay[BIG_GG (r29 OR r30 OR r31 OR r32 OR r33) QTY=1 GROUND !INVENTORY !TOWN]:%ORANGE%BIG GG%CONTINUE%//
 
 // == 120-pd2-items.filter ==
 @ 120-pd2-items.filter:2  wss FILTLVL>4 QTY=1
@@ -357,6 +408,9 @@
 @ 120-pd2-items.filter:25  BIG_GG lbox QTY>1
 - ItemDisplay[BIG_GG lbox QTY>1]:%PUZZLEBOX_LEFT%  %WHITE%Larzuk's Puzzleboxes %TAN%x %WHITE%%QTY%  %PUZZLEBOX_RIGHT%%BORDER-97%%MAP-9B%%DOT-68%%PX-6F%{%TAN%Two-Handed Weapons: %TAN%[%WHITE%2-4%TAN%]%CL%%TAN%One-Handed Weapons: %TAN%[%WHITE%1-2%TAN%]%CL%%TAN%Helmet, Chest, Shield: %TAN%[%WHITE%1-2%TAN%]%NL%%NL%%WHITE%Cube with a %GOLD%Unique %WHITE%or %GREEN%Set %WHITE%item to roll sockets%CL%}//
 + ItemDisplay[BIG_GG lbox QTY>1]:%PUZZLEBOX_LEFT%  %SAGE%Larzuk's Puzzleboxes %TAN%x %WHITE%%QTY%  %PUZZLEBOX_RIGHT%%BORDER-97%%MAP-9B%%DOT-68%%PX-6F%{%TAN%Two-Handed Weapons: %TAN%[%WHITE%2-4%TAN%]%CL%%TAN%One-Handed Weapons: %TAN%[%WHITE%1-2%TAN%]%CL%%TAN%Helmet, Chest, Shield: %TAN%[%WHITE%1-2%TAN%]%NL%%NL%%WHITE%Cube with a %GOLD%Unique %WHITE%or %GREEN%Set %WHITE%item to roll sockets%CL%}//
+@ 120-pd2-items.filter:26  Corr v3: LIL GG in sage
+- ItemDisplay[BIG_GG lbox QTY=1 GROUND !INVENTORY !TOWN !MAPID=194]:%VEX_OHM_LO_RUNE%  %WHITE%LIL GG  %VEX_OHM_LO_RUNE%%BORDER-97%%MAP-9B%%DOT-68%%PX-6F%{%TAN%Two-Handed Weapons: %TAN%[%WHITE%2-4%TAN%]%CL%%TAN%One-Handed Weapons: %TAN%[%WHITE%1-2%TAN%]%CL%%TAN%Helmet, Chest, Shield: %TAN%[%WHITE%1-2%TAN%]%NL%%NL%%WHITE%Cube with a %GOLD%Unique %WHITE%or %GREEN%Set %WHITE%item to roll sockets%CL%}//
++ ItemDisplay[BIG_GG lbox QTY=1 GROUND !INVENTORY !TOWN !MAPID=194]:%VEX_OHM_LO_RUNE%  %SAGE%LIL GG  %VEX_OHM_LO_RUNE%%BORDER-97%%MAP-9B%%DOT-68%%PX-6F%{%TAN%Two-Handed Weapons: %TAN%[%WHITE%2-4%TAN%]%CL%%TAN%One-Handed Weapons: %TAN%[%WHITE%1-2%TAN%]%CL%%TAN%Helmet, Chest, Shield: %TAN%[%WHITE%1-2%TAN%]%NL%%NL%%WHITE%Cube with a %GOLD%Unique %WHITE%or %GREEN%Set %WHITE%item to roll sockets%CL%}//
 @ 120-pd2-items.filter:27  BIG_GG lbox QTY=1 (INVENTORY OR TOWN OR MAPID=194)
 - ItemDisplay[BIG_GG lbox QTY=1 (INVENTORY OR TOWN OR MAPID=194)]:%PUZZLEBOX_LEFT%  %WHITE%Larzuk's Puzzlebox  %PUZZLEBOX_RIGHT%%BORDER-97%%MAP-9B%%DOT-68%%PX-6F%{%TAN%Two-Handed Weapons: %TAN%[%WHITE%2-4%TAN%]%CL%%TAN%One-Handed Weapons: %TAN%[%WHITE%1-2%TAN%]%CL%%TAN%Helmet, Chest, Shield: %TAN%[%WHITE%1-2%TAN%]%NL%%NL%%WHITE%Cube with a %GOLD%Unique %WHITE%or %GREEN%Set %WHITE%item to roll sockets%CL%}//
 + ItemDisplay[BIG_GG lbox QTY=1 (INVENTORY OR TOWN OR MAPID=194)]:%PUZZLEBOX_LEFT%  %SAGE%Larzuk's Puzzlebox  %PUZZLEBOX_RIGHT%%BORDER-97%%MAP-9B%%DOT-68%%PX-6F%{%TAN%Two-Handed Weapons: %TAN%[%WHITE%2-4%TAN%]%CL%%TAN%One-Handed Weapons: %TAN%[%WHITE%1-2%TAN%]%CL%%TAN%Helmet, Chest, Shield: %TAN%[%WHITE%1-2%TAN%]%NL%%NL%%WHITE%Cube with a %GOLD%Unique %WHITE%or %GREEN%Set %WHITE%item to roll sockets%CL%}//
@@ -369,15 +423,33 @@
 @ 120-pd2-items.filter:33  BIG_GG imrn QTY>1
 - ItemDisplay[BIG_GG imrn QTY>1]:%DEMONIC_CUBE%  %WHITE%Demonic Cubes %TAN%x %WHITE%%QTY%  %DEMONIC_CUBE%%BORDER-0A%%MAP-66%%DOT-70%%PX-20%{%WHITE%The number of sockets and their contents are retained%NL%This cannot be used on %RED%Corrupted %WHITE%or %PURPLE%Mirrored %WHITE%items}//
 + ItemDisplay[BIG_GG imrn QTY>1]:%DEMONIC_CUBE%  %SAGE%Demonic Cubes %TAN%x %WHITE%%QTY%  %DEMONIC_CUBE%%BORDER-0A%%MAP-66%%DOT-70%%PX-20%{%WHITE%The number of sockets and their contents are retained%NL%This cannot be used on %RED%Corrupted %WHITE%or %PURPLE%Mirrored %WHITE%items}//
+@ 120-pd2-items.filter:34  Corr v3: LIL GG in sage
+- ItemDisplay[BIG_GG imrn QTY=1 GROUND !INVENTORY !TOWN !MAPID=188]:%VEX_OHM_LO_RUNE%  %WHITE%LIL GG  %VEX_OHM_LO_RUNE%%BORDER-97%%MAP-9B%%DOT-68%%PX-6F%{%WHITE%The number of sockets and their contents are retained%NL%This cannot be used on %RED%Corrupted %WHITE%or %PURPLE%Mirrored %WHITE%items}//
++ ItemDisplay[BIG_GG imrn QTY=1 GROUND !INVENTORY !TOWN !MAPID=188]:%VEX_OHM_LO_RUNE%  %SAGE%LIL GG  %VEX_OHM_LO_RUNE%%BORDER-97%%MAP-9B%%DOT-68%%PX-6F%{%WHITE%The number of sockets and their contents are retained%NL%This cannot be used on %RED%Corrupted %WHITE%or %PURPLE%Mirrored %WHITE%items}//
 @ 120-pd2-items.filter:35  BIG_GG imrn QTY=1 (INVENTORY OR TOWN OR MAPID=188)
 - ItemDisplay[BIG_GG imrn QTY=1 (INVENTORY OR TOWN OR MAPID=188)]:%DEMONIC_CUBE%  %WHITE%Demonic Cube  %DEMONIC_CUBE%%BORDER-0A%%MAP-66%%DOT-70%%PX-20%{%WHITE%The number of sockets and their contents are retained%NL%This cannot be used on %RED%Corrupted %WHITE%or %PURPLE%Mirrored %WHITE%items}//
 + ItemDisplay[BIG_GG imrn QTY=1 (INVENTORY OR TOWN OR MAPID=188)]:%DEMONIC_CUBE%  %SAGE%Demonic Cube  %DEMONIC_CUBE%%BORDER-0A%%MAP-66%%DOT-70%%PX-20%{%WHITE%The number of sockets and their contents are retained%NL%This cannot be used on %RED%Corrupted %WHITE%or %PURPLE%Mirrored %WHITE%items}//
+@ 120-pd2-items.filter:39  Corr v3: LIL GG in sage
+- ItemDisplay[BIG_GG rid GROUND !INVENTORY MAPID~161-163 !TOWN]:%VEX_OHM_LO_RUNE%  %WHITE%LIL GG  %VEX_OHM_LO_RUNE%%BORDER-97%%MAP-9B%%DOT-68%%PX-6F%// Unlimited Tome of Identify
++ ItemDisplay[BIG_GG rid GROUND !INVENTORY MAPID~161-163 !TOWN]:%VEX_OHM_LO_RUNE%  %SAGE%LIL GG  %VEX_OHM_LO_RUNE%%BORDER-97%%MAP-9B%%DOT-68%%PX-6F%// Unlimited Tome of Identify
+@ 120-pd2-items.filter:40  Corr v3: BIG GG in orange
+- ItemDisplay[BIG_GG rid GROUND !INVENTORY !MAPID~161-163 !TOWN]:%SUR_BER_JAH_CHAM_ZOD_BIG_GG%  %WHITE%BIG GG  %SUR_BER_JAH_CHAM_ZOD_BIG_GG%%BORDER-9B%%MAP-62%%DOT-68%%PX-6F%// Unlimited Tome of Identify
++ ItemDisplay[BIG_GG rid GROUND !INVENTORY !MAPID~161-163 !TOWN]:%SUR_BER_JAH_CHAM_ZOD_BIG_GG%  %ORANGE%BIG GG  %SUR_BER_JAH_CHAM_ZOD_BIG_GG%%BORDER-9B%%MAP-62%%DOT-68%%PX-6F%// Unlimited Tome of Identify
+@ 120-pd2-items.filter:45  Corr v3: LIL GG in sage
+- ItemDisplay[BIG_GG rtp GROUND !INVENTORY !TOWN]:%VEX_OHM_LO_RUNE%  %WHITE%LIL GG  %VEX_OHM_LO_RUNE%%BORDER-97%%MAP-9B%%DOT-68%%PX-6F%// Unlimited Tome of Town Portal
++ ItemDisplay[BIG_GG rtp GROUND !INVENTORY !TOWN]:%VEX_OHM_LO_RUNE%  %SAGE%LIL GG  %VEX_OHM_LO_RUNE%%BORDER-97%%MAP-9B%%DOT-68%%PX-6F%// Unlimited Tome of Town Portal
+@ 120-pd2-items.filter:50  Corr v3: LIL GG in sage
+- ItemDisplay[BIG_GG rkey GROUND !INVENTORY !TOWN]:%VEX_OHM_LO_RUNE%  %WHITE%LIL GG  %VEX_OHM_LO_RUNE%%BORDER-97%%MAP-9B%%DOT-68%%PX-6F%{%NAME%}// Skeleton Key
++ ItemDisplay[BIG_GG rkey GROUND !INVENTORY !TOWN]:%VEX_OHM_LO_RUNE%  %SAGE%LIL GG  %VEX_OHM_LO_RUNE%%BORDER-97%%MAP-9B%%DOT-68%%PX-6F%{%NAME%}// Skeleton Key
 @ 120-pd2-items.filter:54  S14: stack of Vials of Lightsong
 - ItemDisplay[lsvl QTY>1]:%VIAL%  %WHITE%Vials of Lightsong %TAN%x %WHITE%%QTY%  %VIAL%%BORDER-21%%MAP-11%%DOT-13%%PX-1E%{%WHITE%1 in %TAN%7.5 million %WHITE%chance to drop%NL%%NL%%WHITE%This cannot be used on Indestructible items}// S14: stack of Vials of Lightsong
 + ItemDisplay[lsvl QTY>1]:%VIALX%   %GREEN%Vials of Lightsong %TAN%x %WHITE%%QTY%   %VIALY% %BORDER-21%%MAP-11%%DOT-13%%PX-1E%{%WHITE%1 in %TAN%7.5 million %WHITE%chance to drop%NL%%NL%%WHITE%This cannot be used on Indestructible items}// S14: stack of Vials of Lightsong
 @ 120-pd2-items.filter:55  !BIG_GG lsvl
 - ItemDisplay[!BIG_GG lsvl]:%VIAL%  %WHITE%Vial of Lightsong  %VIAL%%BORDER-21%%MAP-11%%DOT-13%%PX-1E%{%WHITE%1 in %TAN%7.5 million %WHITE%chance to drop%NL%%NL%%WHITE%This cannot be used on Indestructible items}//
 + ItemDisplay[!BIG_GG lsvl]:%VIALX%   %GREEN%Vial of Lightsong   %VIALY% %BORDER-21%%MAP-11%%DOT-13%%PX-1E%{%WHITE%1 in %TAN%7.5 million %WHITE%chance to drop%NL%%NL%%WHITE%This cannot be used on Indestructible items}//
+@ 120-pd2-items.filter:56  Corr v3: BIG GG in orange
+- ItemDisplay[BIG_GG lsvl GROUND !INVENTORY !TOWN]:%SUR_BER_JAH_CHAM_ZOD_BIG_GG%  %WHITE%BIG GG  %SUR_BER_JAH_CHAM_ZOD_BIG_GG%%BORDER-9B%%MAP-62%%DOT-68%%PX-6F%{%WHITE%1 in %TAN%7.5 million %WHITE%chance to drop%NL%%NL%%WHITE%This cannot be used on Indestructible items}//
++ ItemDisplay[BIG_GG lsvl GROUND !INVENTORY !TOWN]:%SUR_BER_JAH_CHAM_ZOD_BIG_GG%  %ORANGE%BIG GG  %SUR_BER_JAH_CHAM_ZOD_BIG_GG%%BORDER-9B%%MAP-62%%DOT-68%%PX-6F%{%WHITE%1 in %TAN%7.5 million %WHITE%chance to drop%NL%%NL%%WHITE%This cannot be used on Indestructible items}//
 @ 120-pd2-items.filter:57  BIG_GG lsvl (INVENTORY OR TOWN)
 - ItemDisplay[BIG_GG lsvl (INVENTORY OR TOWN)]:%VIAL%  %WHITE%Vial of Lightsong  %VIAL%%BORDER-21%%MAP-11%%DOT-13%%PX-1E%{%WHITE%1 in %TAN%7.5 million %WHITE%chance to drop%NL%%NL%%WHITE%This cannot be used on Indestructible items}//
 + ItemDisplay[BIG_GG lsvl (INVENTORY OR TOWN)]:%VIALX%   %GREEN%Vial of Lightsong   %VIALY% %BORDER-21%%MAP-11%%DOT-13%%PX-1E%{%WHITE%1 in %TAN%7.5 million %WHITE%chance to drop%NL%%NL%%WHITE%This cannot be used on Indestructible items}//
@@ -387,6 +459,9 @@
 @ 120-pd2-items.filter:61  !BIG_GG llmr
 - ItemDisplay[!BIG_GG llmr]:%MIRROR%  %WHITE%Lilith's Mirror  %MIRROR%%BORDER-9B%%MAP-62%%DOT-68%%PX-6F%{%WHITE%1 in %TAN%25 million %WHITE%chance to drop%NL%%NL%%WHITE%Items that have been %PURPLE%Mirrored %WHITE%cannot be used in cube recipes%NL%%NL%Jewelry of %BLUE%Magic, %YELLOW%Rare, %WHITE%or %ORANGE%Crafted %WHITE%rarity%CL%This can be used on Weapons, Armor, and}//
 + ItemDisplay[!BIG_GG llmr]:%MIRROR_L%  %GREEN%Lilith's Mirror  %MIRROR_R%%BORDER-9B%%MAP-62%%DOT-68%%PX-6F%{%WHITE%1 in %TAN%25 million %WHITE%chance to drop%NL%%NL%%WHITE%Items that have been %PURPLE%Mirrored %WHITE%cannot be used in cube recipes%NL%%NL%Jewelry of %BLUE%Magic, %YELLOW%Rare, %WHITE%or %ORANGE%Crafted %WHITE%rarity%CL%This can be used on Weapons, Armor, and}//
+@ 120-pd2-items.filter:62  Corr v3: BIG GG in orange
+- ItemDisplay[BIG_GG llmr GROUND !INVENTORY !TOWN]:%SUR_BER_JAH_CHAM_ZOD_BIG_GG%  %WHITE%BIG GG  %SUR_BER_JAH_CHAM_ZOD_BIG_GG%%BORDER-9B%%MAP-62%%DOT-68%%PX-6F%{%WHITE%1 in %TAN%25 million %WHITE%chance to drop%CL%%WHITE%Items that have been %PURPLE%Mirrored %WHITE%cannot be used in cube recipes%NL%%NL%Jewelry of %BLUE%Magic, %YELLOW%Rare, %WHITE%or %ORANGE%Crafted %WHITE%rarity%CL%This can be used on Weapons, Armor, and}//
++ ItemDisplay[BIG_GG llmr GROUND !INVENTORY !TOWN]:%SUR_BER_JAH_CHAM_ZOD_BIG_GG%  %ORANGE%BIG GG  %SUR_BER_JAH_CHAM_ZOD_BIG_GG%%BORDER-9B%%MAP-62%%DOT-68%%PX-6F%{%WHITE%1 in %TAN%25 million %WHITE%chance to drop%CL%%WHITE%Items that have been %PURPLE%Mirrored %WHITE%cannot be used in cube recipes%NL%%NL%Jewelry of %BLUE%Magic, %YELLOW%Rare, %WHITE%or %ORANGE%Crafted %WHITE%rarity%CL%This can be used on Weapons, Armor, and}//
 @ 120-pd2-items.filter:63  BIG_GG llmr (INVENTORY OR TOWN)
 - ItemDisplay[BIG_GG llmr (INVENTORY OR TOWN)]:%MIRROR%  %WHITE%Lilith's Mirror  %MIRROR%%BORDER-9B%%MAP-62%%DOT-68%%PX-6F%{%WHITE%1 in %TAN%25 million %WHITE%chance to drop%NL%%NL%%WHITE%Items that have been %PURPLE%Mirrored %WHITE%cannot be used in cube recipes%NL%%NL%Jewelry of %BLUE%Magic, %YELLOW%Rare, %WHITE%or %ORANGE%Crafted %WHITE%rarity%CL%This can be used on Weapons, Armor, and}//
 + ItemDisplay[BIG_GG llmr (INVENTORY OR TOWN)]:%MIRROR_L%  %GREEN%Lilith's Mirror  %MIRROR_R%%BORDER-9B%%MAP-62%%DOT-68%%PX-6F%{%WHITE%1 in %TAN%25 million %WHITE%chance to drop%NL%%NL%%WHITE%Items that have been %PURPLE%Mirrored %WHITE%cannot be used in cube recipes%NL%%NL%Jewelry of %BLUE%Magic, %YELLOW%Rare, %WHITE%or %ORANGE%Crafted %WHITE%rarity%CL%This can be used on Weapons, Armor, and}//
@@ -548,33 +623,67 @@
 * t39 !STAT360>0
 
 // == 145-map-rolls-and-notifications.filter ==
+@ 145-map-rolls-and-notifications.filter:2  Corr v3: map line off, Ghosts
+x ItemDisplay[STAT442>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQUE_MAPS)]:%NAME%{%TEAL%Ghosts%CL%%NAME%}%CONTINUE%//
+@ 145-map-rolls-and-notifications.filter:5  Corr v3: map line off, Fetishes
+x ItemDisplay[STAT471>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQUE_MAPS)]:%NAME%{%TEAL%Fetishes%CL%%NAME%}%CONTINUE%//
+@ 145-map-rolls-and-notifications.filter:8  Corr v3: map line off, Hell Bovines
+x ItemDisplay[STAT440>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQUE_MAPS)]:%NAME%{%TEAL%Hell Bovines%CL%%NAME%}%CONTINUE%//
 @ 145-map-rolls-and-notifications.filter:11  STAT496>0 !STAT360>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS
 - ItemDisplay[STAT496>0 !STAT360>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQUE_MAPS)]:%NAME%{%GRAY%+%STAT496%% Armors%CL%%NAME%}%CONTINUE%//
 + ItemDisplay[STAT496>0 !STAT360>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQUE_MAPS)]:%NAME%{%SAGE%+%STAT496%% Armors%CL%%NAME%}%CONTINUE%//
 @ 145-map-rolls-and-notifications.filter:13  STAT495>0 !STAT360>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS
 - ItemDisplay[STAT495>0 !STAT360>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQUE_MAPS)]:%NAME%{%GRAY%+%STAT495%% Weapons%CL%%NAME%}%CONTINUE%//
 + ItemDisplay[STAT495>0 !STAT360>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQUE_MAPS)]:%NAME%{%SAGE%+%STAT495%% Weapons%CL%%NAME%}%CONTINUE%//
+@ 145-map-rolls-and-notifications.filter:19  Corr v3: map line off, Sanatorium's Blood Lords
+x ItemDisplay[t14]:%NAME%{%RED%Blood Lords%CL%%NAME%}%CONTINUE%//
+@ 145-map-rolls-and-notifications.filter:22  Corr v3: map line off, Melee Splash
+x ItemDisplay[MULTI427,22913=100 !STAT360>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQUE_MAPS)]:%NAME%{%GRAY%Melee Splash%CL%%NAME%}%CONTINUE%//
 @ 145-map-rolls-and-notifications.filter:25  STAT437>0 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQ
 - ItemDisplay[STAT437>0 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQUE_MAPS)]:%NAME%{%PURPLE%Stygian Dolls%CL%%NAME%}%CONTINUE%//
 + ItemDisplay[STAT437>0 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQUE_MAPS)]:%NAME%{%PURPLE%STYGIAN DOLLS%CL%%NAME%}%CONTINUE%//
+@ 145-map-rolls-and-notifications.filter:33  Corr v3: map line off, Vampire Lords
+x ItemDisplay[STAT439>0 !STAT360>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQUE_MAPS)]:%NAME%{%GRAY%Vampire Lords%CL%%NAME%}%CONTINUE%//
 @ 145-map-rolls-and-notifications.filter:43  STAT438>0 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQ
 - ItemDisplay[STAT438>0 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQUE_MAPS) !(t13 OR t26 OR t27 OR t51 OR t54 OR t2a)]:%NAME%{%PURPLE%Succubus Witches%CL%%NAME%}%CONTINUE%//
 + ItemDisplay[STAT438>0 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQUE_MAPS) !(t13 OR t26 OR t27 OR t51 OR t54 OR t2a)]:%NAME%{%PURPLE%-50% PDR Curse Witches%CL%%NAME%}%CONTINUE%//
 @ 145-map-rolls-and-notifications.filter:45  S14: Descent (t2a) spawns Stygian Harlots
 - ItemDisplay[(t13 OR t26 OR t27 OR t51 OR t54 OR t2a)]:%NAME%{%RED%Succubus Witches%CL%%NAME%}%CONTINUE%// S14: Descent (t2a) spawns Stygian Harlots
 + ItemDisplay[(t13 OR t26 OR t27 OR t51 OR t54 OR t2a)]:%NAME%{%RED%Curse Witches%CL%%NAME%}%CONTINUE%// S14: Descent (t2a) spawns Stygian Harlots
+@ 145-map-rolls-and-notifications.filter:48  Corr v3: map line off, +% Fire Damage
+x ItemDisplay[MAPTIER~1-3 STAT388>9 !STAT360>0 !STAT276>0 (t26 OR t28 OR t37 OR t21 OR t31 OR t3a OR t32 OR STAT434>0)]:%NAME%{%RED%+%STAT388%% Fire Damage%CL%%NAME%}%CONTINUE%//
+@ 145-map-rolls-and-notifications.filter:50  Corr v3: map line off, +% Cold Damage
+x ItemDisplay[MAPTIER~1-3 STAT390>9 !STAT360>0 !STAT276>0 (t34 OR t13 OR t38 OR STAT433>0)]:%NAME%{%RED%+%STAT390%% Cold Damage%CL%%NAME%}%CONTINUE%//
+@ 145-map-rolls-and-notifications.filter:52  Corr v3: map line off, +% Light Damage
+x ItemDisplay[MAPTIER~1-3 STAT389>9 !STAT360>0 !STAT276>0 (t25 OR t35 OR t3a OR t14 OR t29 OR STAT470>0 OR STAT432>0)]:%NAME%{%RED%+%STAT389%% Light Damage%CL%%NAME%}%CONTINUE%// S14: Dark Temple (t29): its boss, The Dark Knight, casts a lightning nova
 @ 145-map-rolls-and-notifications.filter:56  Player Hit Recovery
 - ItemDisplay[STAT411<-19 !STAT360>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQUE_MAPS)]:%NAME%{%RED%%STAT411%% Hit Recovery%CL%%NAME%}%CONTINUE%//
 + ItemDisplay[STAT411<-19 !STAT360>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQUE_MAPS)]:%NAME%{%CORAL%%STAT411%% Player Hit Recovery%CL%%NAME%}%CONTINUE%//
 @ 145-map-rolls-and-notifications.filter:59  STAT497>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_M
 - ItemDisplay[STAT497>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQUE_MAPS)]:%NAME%{%TEAL%+%STAT497%% Crafting Mats%CL%%NAME%}%CONTINUE%//
 + ItemDisplay[STAT497>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQUE_MAPS)]:%NAME%{%GREEN%+%STAT497%% Crafting Mats%CL%%NAME%}%CONTINUE%//
+@ 145-map-rolls-and-notifications.filter:70  Corr v3: map line off, +% Maximum Life under 15
+x ItemDisplay[STAT405>0 STAT405<15 !STAT360>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQUE_MAPS)]:%NAME%{%GRAY%+%STAT405%% Maximum Life%CL%%NAME%}%CONTINUE%//
 @ 145-map-rolls-and-notifications.filter:82  STAT408>9 STAT408<20 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS
 - ItemDisplay[STAT408>9 STAT408<20 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQUE_MAPS)]:%NAME%{%RED%+%STAT408%% Crushing Blow%CL%%NAME%}%CONTINUE%//
 + ItemDisplay[STAT408>9 STAT408<20 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQUE_MAPS)]:%NAME%{%RED%+%STAT408%% CRUSHING BLOW!%CL%%NAME%}%CONTINUE%//
 @ 145-map-rolls-and-notifications.filter:83  STAT408>19 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNI
 - ItemDisplay[STAT408>19 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQUE_MAPS)]:%NAME%{%RED%+%STAT408%% Crushing Blow%CL%%NAME%}%CONTINUE%//
 + ItemDisplay[STAT408>19 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQUE_MAPS)]:%NAME%{%RED%+%STAT408%% CRUSHING BLOW!%CL%%NAME%}%CONTINUE%//
+@ 145-map-rolls-and-notifications.filter:86  Corr v3: map line off, Dual Extra Damage
+x ItemDisplay[((STAT432>0 STAT433>0 !(STAT434>0 OR STAT435>0 OR STAT436>0)) OR (STAT432>0 STAT434>0 !(STAT433>0 OR STAT435>0 OR STAT436>0)) OR (STAT432>0 STAT435>0 !(STAT433>0 OR STAT434>0 OR STAT436>0)) OR (STAT432>0 STAT436>0 !(STAT433>0 OR STAT434>0 OR STAT435>0)) OR (STAT433>0 STAT434>0 !(STAT432>0 OR STAT435>0 OR STAT436>0)) OR (STAT433>0 STAT435>0 !(STAT432>0 OR STAT434>0 OR STAT436>0)) OR (STAT433>0 STAT436>0 !(STAT432>0 OR STAT434>0 OR STAT435>0)) OR (STAT434>0 STAT435>0 !(STAT432>0 OR STAT433>0 OR STAT436>0)) OR (STAT434>0 STAT436>0 !(STAT432>0 OR STAT433>0 OR STAT435>0)) OR (STAT435>0 STAT436>0 !(STAT432>0 OR STAT433>0 OR STAT434>0))) (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQUE_MAPS)]:%NAME%{%RED%Dual Extra Damage%CL%%NAME%}%CONTINUE%//
+@ 145-map-rolls-and-notifications.filter:89  Corr v3: map line off, -% Max Resistances
+x ItemDisplay[STAT418<0 STAT419<0 STAT420<0 STAT421<0 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQUE_MAPS)]:%NAME%{%PURPLE%%STAT418%% Max Resistances%CL%%NAME%}%CONTINUE%//
+@ 145-map-rolls-and-notifications.filter:92  Corr v3: map line off, -% All Resistances (under 10)
+x ItemDisplay[STAT431<0 STAT431>-10 !STAT360>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQUE_MAPS)]:%NAME%{%GRAY%%STAT431%% All Resistances%CL%%NAME%}%CONTINUE%//
+@ 145-map-rolls-and-notifications.filter:93  Corr v3: map line off, -% All Resistances (10-14)
+x ItemDisplay[STAT431<-9 STAT431>-15 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQUE_MAPS)]:%NAME%{%PURPLE%%STAT431%% All Resistances%CL%%NAME%}%CONTINUE%//
+@ 145-map-rolls-and-notifications.filter:94  Corr v3: map line off, -% All Resistances (15+)
+x ItemDisplay[STAT431<-14 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQUE_MAPS)]:%NAME%{%PURPLE%%STAT431%% All Resistances%CL%%NAME%}%CONTINUE%//
+@ 145-map-rolls-and-notifications.filter:114  Corr v3: map line off, +% Physical Damage (under 20)
+x ItemDisplay[STAT426>0 STAT426<20 !STAT360>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQUE_MAPS)]:%NAME%{%GRAY%+%STAT426%% Physical Damage%CL%%NAME%}%CONTINUE%//
+@ 145-map-rolls-and-notifications.filter:115  Corr v3: map line off, +% Physical Damage (20+)
+x ItemDisplay[STAT426>19 !STAT360>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQUE_MAPS)]:%NAME%{%RED%+%STAT426%% Physical Damage%CL%%NAME%}%CONTINUE%//
 @ 145-map-rolls-and-notifications.filter:129  STAT451<0 STAT452<0 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MA
 - ItemDisplay[STAT451<0 STAT452<0 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQUE_MAPS)]:%NAME%{%RED%%STAT452%% Attack/Cast Speed%CL%%NAME%}%CONTINUE%//
 + ItemDisplay[STAT451<0 STAT452<0 (TIER_1_MAPS OR TIER_2_MAPS OR TIER_3_MAPS OR UNIQUE_MAPS)]:%NAME%{%CORAL%%STAT452%% Player Attack/Cast Speed%CL%%NAME%}%CONTINUE%//
@@ -583,6 +692,9 @@
 @ 150-uniques.filter:450  POE_SOUNDS UNI !ID (rar OR ram OR rbe OR (uh9 MAPID=137) OR
 - ItemDisplay[POE_SOUNDS UNI !ID (rar OR ram OR rbe OR (uh9 MAPID=137) OR utb OR 7bs OR 7qr OR uth)]:%NAME%%SOUNDID-4719%%CONTINUE%//
 + ItemDisplay[POE_SOUNDS UNI !ID (rar OR ram OR rbe OR (uh9 MAPID=137) OR utb OR 7bs OR 7qr OR uth)]:%NAME%%SOUNDID-4633%%CONTINUE%//
+@ 150-uniques.filter:453  Corr v3: BIG GG in orange
+- ItemDisplay[BIG_GG UNI !ID (rar OR ram OR rbe OR (uh9 MAPID=137) OR utb OR 7bs OR 7qr OR uth) GROUND !(INVENTORY OR TOWN)]:%SUR_BER_JAH_CHAM_ZOD_BIG_GG%  %WHITE%BIG GG  %SUR_BER_JAH_CHAM_ZOD_BIG_GG%%GOLD%%BORDER-9B%%MAP-62%%DOT-68%%PX-20%// 
++ ItemDisplay[BIG_GG UNI !ID (rar OR ram OR rbe OR (uh9 MAPID=137) OR utb OR 7bs OR 7qr OR uth) GROUND !(INVENTORY OR TOWN)]:%SUR_BER_JAH_CHAM_ZOD_BIG_GG%  %ORANGE%BIG GG  %SUR_BER_JAH_CHAM_ZOD_BIG_GG%%GOLD%%BORDER-9B%%MAP-62%%DOT-68%%PX-20%// 
 
 // == 160-uniques-value-tiers.filter ==
 @ 160-uniques-value-tiers.filter:19  Annihilus
@@ -1209,6 +1321,88 @@ x ItemDisplay[MAG !ID (cm1 OR cm3) FILTLVL~5-11 ILVL<90]:%NAME%%MAP-91%%DOT-C5%%
 @ 220-nonmagic-weapons.filter:538  (CHEST OR HELM OR SHIELD) SUP NMAG !RW ED>9
 - ItemDisplay[(CHEST OR HELM OR SHIELD) SUP NMAG !RW ED>9]:%TEAL%Sup %NAME%{%NAME%}%CONTINUE%
 + ItemDisplay[(CHEST OR HELM OR SHIELD) SUP NMAG !RW ED>9]:%LIGHT_GRAY%Sup %NAME%{%NAME%}%CONTINUE%
+
+// == 240-charms.filter ==
+@ 240-charms.filter:17  Corr v3: magic charm tag off, gf
+x ItemDisplay[MAG GFIND>0 (cm1 OR cm2 OR cm3 OR cm1p OR cm2p OR cm3p)]:%WHITE%%GFIND%%GOLD%gf%CS%%NAME%{%NAME%}%CONTINUE%
+@ 240-charms.filter:21  Corr v3: magic charm tag off, mana
+x ItemDisplay[MAG MANA>0 (cm1 OR cm2 OR cm3 OR cm1p OR cm2p OR cm3p)]:%WHITE%%MANA%%BLUE%mana%CS%%NAME%{%NAME%}%CONTINUE%
+@ 240-charms.filter:25  Corr v3: magic charm tag off, fire res
+x ItemDisplay[MAG FRES>0 (cm1 OR cm2 OR cm3 OR cm1p OR cm2p OR cm3p) !RES>0]:%WHITE%%FRES%%RED%res%CS%%NAME%{%NAME%}%CONTINUE%
+@ 240-charms.filter:27  Corr v3: magic charm tag off, light res
+x ItemDisplay[MAG LRES>0 (cm1 OR cm2 OR cm3 OR cm1p OR cm2p OR cm3p) !RES>0]:%WHITE%%LRES%%YELLOW%res%CS%%NAME%{%NAME%}%CONTINUE%
+@ 240-charms.filter:29  Corr v3: magic charm tag off, poison res
+x ItemDisplay[MAG PRES>0 (cm1 OR cm2 OR cm3 OR cm1p OR cm2p OR cm3p) !RES>0]:%WHITE%%PRES%%DARK_GREEN%res%CS%%NAME%{%NAME%}%CONTINUE%
+@ 240-charms.filter:31  Corr v3: magic charm tag off, cold res
+x ItemDisplay[MAG CRES>0 (cm1 OR cm2 OR cm3 OR cm1p OR cm2p OR cm3p) !RES>0]:%WHITE%%CRES%%BLUE%res%CS%%NAME%{%NAME%}%CONTINUE%
+@ 240-charms.filter:33  Corr v3: magic charm tag off, dex
+x ItemDisplay[MAG DEX>0 (cm1 OR cm2 OR cm3 OR cm1p OR cm2p OR cm3p)]:%WHITE%%DEX%%GRAY%dex%CS%%NAME%{%NAME%}%CONTINUE%
+@ 240-charms.filter:35  Corr v3: magic charm tag off, str
+x ItemDisplay[MAG STR>0 (cm1 OR cm2 OR cm3 OR cm1p OR cm2p OR cm3p)]:%WHITE%%STR%%GRAY%str%CS%%NAME%{%NAME%}%CONTINUE%
+@ 240-charms.filter:39  Corr v3: magic charm tag off, def
+x ItemDisplay[MAG DEF>0 (cm1 OR cm2 OR cm3 OR cm1p OR cm2p OR cm3p)]:%WHITE%%DEF%%GRAY%def%CS%%NAME%{%NAME%}%CONTINUE%
+@ 240-charms.filter:53  Corr v3: magic charm tag off, poison damage
+x ItemDisplay[MAG (cm1 OR cm2 OR cm3 OR cm1p OR cm2p OR cm3p) !STAT57+STAT58=0]:%WHITE%$f(FLOOR((STAT57*FLOOR(STAT59/STAT326)+128)/256))%DARK_GREEN%psn%CS%%NAME%{%NAME%}%CONTINUE%
+@ 240-charms.filter:55  Corr v3: magic charm tag off, cold damage
+x ItemDisplay[MAG (((cm1 OR cm1p) STAT55~1-19) OR ((cm2 OR cm2p) STAT55~1-39) OR ((cm3 OR cm3p) STAT55~1-53))]:%WHITE%%STAT54%-%STAT55%%BLUE%cold%CS%%NAME%{%NAME%}%CONTINUE%
+@ 240-charms.filter:56  Corr v3: magic charm tag off, cold damage
+x ItemDisplay[MAG (((cm1 OR cm1p) STAT55>19) OR ((cm2 OR cm2p) STAT55>39) OR ((cm3 OR cm3p) STAT55>53))]:%WHITE%%STAT54%%BLUE%-%WHITE%%STAT55%%BLUE%cold%CS%%NAME%{%NAME%}%CONTINUE%
+@ 240-charms.filter:58  Corr v3: magic charm tag off, light damage
+x ItemDisplay[MAG (((cm1 OR cm1p) STAT51~1-30) OR ((cm2 OR cm2p) STAT51~1-61) OR ((cm3 OR cm3p) STAT51~1-83))]:%WHITE%%STAT50%-%STAT51%%YELLOW%light%CS%%NAME%{%NAME%}%CONTINUE%
+@ 240-charms.filter:59  Corr v3: magic charm tag off, light damage
+x ItemDisplay[MAG (((cm1 OR cm1p) STAT51>30) OR ((cm2 OR cm2p) STAT51>61) OR ((cm3 OR cm3p) STAT51>83))]:%WHITE%%STAT50%%YELLOW%-%WHITE%%STAT51%%YELLOW%light%CS%%NAME%{%NAME%}%CONTINUE%
+@ 240-charms.filter:61  Corr v3: magic charm tag off, fire damage
+x ItemDisplay[MAG (((cm1 OR cm1p) STAT49~1-19) OR ((cm2 OR cm2p) STAT49~1-39) OR ((cm3 OR cm3p) STAT49~1-53))]:%WHITE%%STAT48%-%STAT49%%RED%fire%CS%%NAME%{%NAME%}%CONTINUE%
+@ 240-charms.filter:62  Corr v3: magic charm tag off, fire damage
+x ItemDisplay[MAG (((cm1 OR cm1p) STAT49>19) OR ((cm2 OR cm2p) STAT49>39) OR ((cm3 OR cm3p) STAT49>53))]:%WHITE%%STAT48%%RED%-%WHITE%%STAT49%%RED%fire%CS%%NAME%{%NAME%}%CONTINUE%
+@ 240-charms.filter:64  Corr v3: magic charm tag off, ar
+x ItemDisplay[MAG AR>0 AR<120 (cm1 OR cm2 OR cm3 OR cm1p OR cm2p OR cm3p)]:%WHITE%%AR%%DARK_GREEN%ar%CS%%NAME%{%NAME%}%CONTINUE%
+@ 240-charms.filter:65  Corr v3: magic charm tag off, ar
+x ItemDisplay[MAG AR>119 (cm1 OR cm2 OR cm3 OR cm1p OR cm2p OR cm3p)]:%WHITE%%AR%%PURPLE%ar%CS%%NAME%{%NAME%}%CONTINUE%
+@ 240-charms.filter:76  Corr v3: magic charm tag off, min
+x ItemDisplay[MAG MINDMG>0 (cm1 OR cm2 OR cm3 OR cm1p OR cm2p OR cm3p)]:%WHITE%%MINDMG%%TAN%min%CS%%NAME%{%NAME%}%CONTINUE%
+
+// == 300-affix-tags.filter ==
+@ 300-affix-tags.filter:30  Corr v3: affix tag off, Light Radius (magic)
+x ItemDisplay[(GLOVES OR BELT OR CHEST OR BOOTS OR SHIELD OR CIRC OR HELM OR rin OR amu) MAG STAT89>0]:%WHITE%%STAT89%%YELLOW%lr%CS%%NAME%{%NAME%}%CONTINUE%
+@ 300-affix-tags.filter:63  Corr v3: affix tag off, Gold Find (rare, crafted)
+x ItemDisplay[(rin OR (amu !STAT206>0) OR CIRC OR HELM OR BELT OR BOOTS OR GLOVES) (RARE OR CRAFT) GFIND>39]:%WHITE%%GFIND%%GOLD%gf%CS%%NAME%{%NAME%}%CONTINUE%
+@ 300-affix-tags.filter:64  Corr v3: affix tag off, Gold Find (magic)
+x ItemDisplay[(rin OR amu OR CIRC OR HELM OR BELT OR BOOTS OR GLOVES) MAG GFIND>0]:%WHITE%%GFIND%%GOLD%gf%CS%%NAME%{%NAME%}%CONTINUE%
+@ 300-affix-tags.filter:70  Corr v3: affix tag off, Damage Taken Goes to Mana
+x ItemDisplay[(rin OR amu OR CIRC OR HELM OR CHEST OR SHIELD OR BELT OR BOOTS OR GLOVES) (MAG OR ROLL_DTM_TAG) DTM>0]:%WHITE%%DTM%%BLUE%dtm%CS%%NAME%{%NAME%}%CONTINUE%
+@ 300-affix-tags.filter:74  Corr v3: affix tag off, Attacker Takes Damage (weapons)
+x ItemDisplay[WEAPON ROLL_ATD_TAG STAT78>0]:%WHITE%%STAT78%%GRAY%atd%CS%%NAME%{%NAME%}%CONTINUE%
+@ 300-affix-tags.filter:169  Corr v3: affix tag off, MDR (rare, crafted jewelry)
+x ItemDisplay[(rin OR (amu !STAT206>0)) (RARE OR CRAFT) STAT35>0]:%WHITE%%STAT35%%GRAY%mdr%CS%%NAME%{%NAME%}%CONTINUE%
+@ 300-affix-tags.filter:172  Corr v3: affix tag off, MDR (magic)
+x ItemDisplay[(rin OR amu OR CIRC OR CHEST OR SHIELD) MAG STAT35>0]:%WHITE%%STAT35%%GRAY%mdr%CS%%NAME%{%NAME%}%CONTINUE%
+@ 300-affix-tags.filter:393  Corr v3: affix tag off, Mana Regeneration (unique, set)
+x ItemDisplay[(UNI OR SET) (STAT360=40 OR ROLL_REGEN_TAG) STAT27>0]:%WHITE%%STAT27%%BLUE%rgn%CS%%NAME%{%NAME%}%CONTINUE%
+@ 300-affix-tags.filter:408  Corr v3: affix tag off, Mana (rare, crafted jewelry)
+x ItemDisplay[(rin OR amu OR CIRC) (RARE OR CRAFT) MANA>49 !STAT217>0]:%WHITE%%MANA%%BLUE%m%CS%%NAME%{%NAME%}%CONTINUE%
+@ 300-affix-tags.filter:409  Corr v3: affix tag off, Mana (rare, crafted belts, boots, gloves)
+x ItemDisplay[(BELT OR BOOTS OR GLOVES) (RARE OR CRAFT) MANA>29]:%WHITE%%MANA%%BLUE%m%CS%%NAME%{%NAME%}%CONTINUE%
+@ 300-affix-tags.filter:410  Corr v3: affix tag off, Mana (magic)
+x ItemDisplay[(rin OR amu OR CIRC OR HELM OR CHEST OR SHIELD OR BELT OR BOOTS OR GLOVES) MAG MANA>0 !STAT217>0]:%WHITE%%MANA%%BLUE%m%CS%%NAME%{%NAME%}%CONTINUE%
+@ 300-affix-tags.filter:423  Corr v3: affix tag off, Replenish Life (magic)
+x ItemDisplay[(HELM OR CIRC OR CHEST OR SHIELD OR BELT OR BOOTS OR GLOVES OR amu OR rin) MAG STAT74>0]:%WHITE%%STAT74%%RED%rep%CS%%NAME%{%NAME%}%CONTINUE%
+@ 300-affix-tags.filter:424  Corr v3: affix tag off, Replenish Life (rare, crafted helms, corruption 34)
+x ItemDisplay[(HELM OR CIRC) (RARE OR CRAFT) STAT360=34 STAT74>0]:%WHITE%%STAT74%%RED%rep%CS%%NAME%{%NAME%}%CONTINUE%
+@ 300-affix-tags.filter:456  Corr v3: affix tag off, Energy (rare, crafted)
+x ItemDisplay[(rin OR (amu !STAT206>0) OR ram OR CIRC OR CHEST OR SHIELD OR HELM OR BELT OR BOOTS OR GLOVES) ((RARE OR CRAFT) !GEMMED (STAT1>9 OR STAT360=71) !ALLATTRIB>9)]:%WHITE%%STAT1%%BLUE%e%CS%%NAME%{%NAME%}%CONTINUE%
+@ 300-affix-tags.filter:457  Corr v3: affix tag off, Energy (magic)
+x ItemDisplay[(rin OR amu OR ram OR CIRC OR CHEST OR SHIELD OR HELM OR BELT OR BOOTS OR GLOVES) (MAG !GEMMED (STAT1>0 OR STAT360=71) !ALLATTRIB>0)]:%WHITE%%STAT1%%BLUE%nrg%CS%%NAME%{%NAME%}%CONTINUE%
+@ 300-affix-tags.filter:472  Corr v3: affix tag off, Dexterity (rare, crafted)
+x ItemDisplay[(rin OR (amu !STAT206>0) OR ram OR CIRC OR CHEST OR SHIELD OR HELM OR BELT OR BOOTS OR GLOVES) ((RARE OR CRAFT) !GEMMED (STAT2>9 OR STAT360=69) !ALLATTRIB>9)]:%WHITE%%STAT2%%GRAY%d%CS%%NAME%{%NAME%}%CONTINUE%
+@ 300-affix-tags.filter:473  Corr v3: affix tag off, Dexterity (magic)
+x ItemDisplay[(rin OR amu OR ram OR CIRC OR CHEST OR SHIELD OR HELM OR BELT OR BOOTS OR GLOVES) (MAG !GEMMED (STAT2>0 OR STAT360=69) !ALLATTRIB>0)]:%WHITE%%STAT2%%GRAY%dex%CS%%NAME%{%NAME%}%CONTINUE%
+@ 300-affix-tags.filter:883  Corr v3: affix tag off, % Attack Rating (rare, crafted gloves, rings)
+x ItemDisplay[((GLOVES IAS>0) OR (rin (MINDMG>0 OR MAXDMG>0))) (RARE OR CRAFT) STAT119>0]:%WHITE%%STAT119%%LIGHT_GRAY%%PERCENT%ar%CS%%NAME%{%NAME%}%CONTINUE%
+@ 300-affix-tags.filter:910  Corr v3: affix tag off, Maximum Damage (rare, crafted rings, helms)
+x ItemDisplay[(rin OR HELM) (RARE OR CRAFT) !GEMMED ((MAXDMG>0 CLVL<80) OR MAXDMG>6) MAXDMG<14]:%WHITE%%MAXDMG%%TAN%max%CS%%NAME%{%NAME%}%CONTINUE%
+@ 300-affix-tags.filter:911  Corr v3: affix tag off, Maximum Damage (rare, crafted rings, helms)
+x ItemDisplay[(rin OR HELM) (RARE OR CRAFT) !GEMMED MAXDMG>13]:%WHITE%%MAXDMG%%TAN%max%CS%%NAME%{%NAME%}%CONTINUE%
 
 // == 315-sell-value-tags.filter ==
 @ 315-sell-value-tags.filter:45  (NMAG OR MAG OR RARE) !leg STAT360=0 !SHOP ID !EQUIPPED !RW

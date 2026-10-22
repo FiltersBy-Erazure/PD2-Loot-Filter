@@ -56,8 +56,12 @@
   the minimap icons of Small and Grand Charms under item level 90 stay off, and since his v2 (2026-10-20) the Highest
   Resistances of T1-T3 maps (`* t34 !STAT360>0`, one entry per map; their Monster Immunities show, and unique maps keep
   both); no sounds or minimap icons on rare rings, belts and boots, ethereal rare and magic axes, magic jewels and
-  Large Charms, nor on level 12's rare circlets and amulets (190's level 12 rule covers rings too). BIG GG's ground
-  disguises (`LIL GG` / `BIG GG`) keep Erazure's look.
+  Large Charms, nor on level 12's rare circlets and amulets (190's level 12 rule covers rings too). His v3 (2026-10-21,
+  "mostly disabling a bunch of rules for maps and charm stat displays"), all taken: 17 map description lines of 145,
+  19 magic charm tags of 240 and 20 affix tags of 300 switched off (`x`), no icons or notifications for Flawless and
+  Perfect gems in maps (Skulls keep theirs) nor for runes El to Fal (El to Io: only the icon codes go, so the rules
+  still stop the display; switched off, the runes would fall through to later rules), and the ground disguises in
+  his colors: `LIL GG` sage, `BIG GG` orange.
   An entry names its line by text (`@ <section>:<line>` is a hint the build keeps up to date): `-`/`+` changes what a
   rule shows, never its condition or comment (filtering stays the author's); `=`/`+` inserts lines after one; `x`
   switches one rule off; `*` every rule of the `@` section whose condition has those words (`!STAT360>0`: the rules
