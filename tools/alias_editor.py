@@ -297,6 +297,13 @@ def apply(path, dry_run):
     if hook.returncode:
         print((hook.stderr or hook.stdout).strip(), file=sys.stderr)
         return 1
+    note = hook.stdout.strip()  # the hook's notes: a section file's format fixed, a style variant's edits to look at
+    if note:
+        try:
+            note = json.loads(note)["hookSpecificOutput"]["additionalContext"]
+        except (ValueError, KeyError, TypeError):
+            pass
+        print(note)
     print("the hook's generators and the build ran (as after an edit of 040): rebuild the page and republish it")
     return 0
 
