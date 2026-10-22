@@ -1,0 +1,555 @@
+<title>Erazure Alias Editor</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+@font-face { font-family: "AvQest"; src: /*__FONT__*/local("AvQest"); font-display: block; }
+/* Layout: every label as Main and Minimal draw it, then one column of alias cards (a Main and a Minimal field per
+   alias) under a sticky color/symbol bar; every game label sits on a dark ground, as in game. One dark look on
+   purpose: the game's world. Written by tools/alias_editor.py, which fills in the data. */
+:root {
+  --bg: #131210; --panel: #1b1916; --raise: #24211c; --line: #36312a; --fg: #ebe5d8; --muted: #a39a8b;
+  --accent: #c7b377; --err: #ff8a7a; --ok: #92cc80; --info: #9dbbdc; --ground: #070605; --ground-edge: #2b2720;
+  --font-ui: "Barlow", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", Consolas, ui-monospace, monospace;
+  --font-game: "AvQest", "Palatino Linotype", "Book Antiqua", serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { background: var(--bg); color: var(--fg); font: 15px/1.5 var(--font-ui); }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+.wrap { max-width: 1080px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+h1, h2, h3 { text-wrap: balance; margin: 0; font-weight: 600; }
+code, input.alias { font-family: var(--font-mono); }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* header */
+.top { padding-block: 28px 18px; }
+.eyebrow { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.top h1 { font-family: var(--font-game); font-weight: 400; font-size: 34px; letter-spacing: .02em; color: var(--accent); margin-top: 4px; }
+.lede { max-width: 72ch; color: var(--fg); margin: 10px 0 0; }
+.lede code { font-size: 13px; color: var(--accent); }
+.toc { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 14px; font-size: 14px; }
+.toc a { color: var(--muted); text-decoration: none; border-bottom: 1px solid var(--line); }
+.toc a:hover { color: var(--fg); }
+.toc b { color: var(--fg); font-weight: 500; font-variant-numeric: tabular-nums; }
+
+/* side by side */
+.compare { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 18px; }
+.pile { min-width: 0; border: 1px solid var(--ground-edge); border-radius: 6px; background: radial-gradient(120% 90% at 50% 0%, #1d1a14 0%, var(--ground) 70%); padding: 10px 8px 14px; }
+.pile h2 { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); font-weight: 500; text-align: center; margin-bottom: 8px; }
+.pile ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px; justify-items: center; overflow-x: auto; }
+.pile li.pile-head { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-top: 10px; }
+.pile li.pile-head:first-child { margin-top: 0; }
+.pile a { text-decoration: none; display: inline-block; }
+.pile a:hover .label, .pile a:focus-visible .label { outline: 1px solid var(--accent); outline-offset: 1px; }
+.pile li.changed .label { box-shadow: 0 0 0 1px var(--info); }
+
+/* game label */
+.label { font-family: var(--font-game); font-size: 17px; line-height: 1.25; white-space: pre; background: rgba(0,0,0,.72); padding: 1px 6px; color: #e8e8e8; }
+
+/* sticky bar */
+.bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: rgba(19,18,16,.96); border-block: 1px solid var(--line); backdrop-filter: blur(4px); }
+.bar .wrap { display: grid; gap: 8px; padding-block: 8px; }
+.chips { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+.chips .k { font-size: 12px; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; margin-right: 4px; min-width: 52px; }
+.chip { border: 1px solid var(--line); background: var(--panel); border-radius: 4px; padding: 1px 6px; font-size: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; }
+.chip:hover { border-color: var(--muted); }
+.chip .sw { width: 10px; height: 10px; border-radius: 2px; border: 1px solid rgba(255,255,255,.25); }
+.chip.sym { font-family: var(--font-game); font-size: 16px; min-width: 26px; justify-content: center; padding: 0 6px; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--line); border-radius: 5px; overflow: hidden; }
+.seg button { background: transparent; border: 0; padding: 3px 10px; font-size: 13px; cursor: pointer; color: var(--muted); }
+.seg button + button { border-left: 1px solid var(--line); }
+.seg button[aria-pressed="true"] { background: var(--raise); color: var(--fg); }
+.status { font-size: 13px; color: var(--muted); }
+.status.ok { color: var(--ok); } .status.bad { color: var(--err); }
+.btn { border: 1px solid var(--accent); background: transparent; color: var(--accent); border-radius: 5px; padding: 3px 12px; font-size: 13px; cursor: pointer; }
+.btn:hover { background: rgba(199,179,119,.12); }
+.spacer { flex: 1; }
+.hint { font-size: 12px; color: var(--muted); }
+
+/* sections and cards */
+main { padding-block: 8px 48px; }
+section.group { margin-top: 28px; }
+section.group > h2 { font-size: 20px; }
+section.group > p { margin: 2px 0 10px; color: var(--muted); font-size: 14px; }
+.cards { display: grid; gap: 10px; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; min-width: 0; scroll-margin-top: 140px; }
+.card-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
+.card-head h3 { font-size: 16px; }
+.pill { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; border-radius: 99px; padding: 1px 8px; border: 1px solid var(--line); color: var(--muted); }
+.pill.edited { border-color: rgba(157,187,220,.5); color: var(--info); }
+.meta { font-size: 12px; color: var(--muted); margin-left: auto; }
+.meta code { font-size: 11.5px; }
+.previews { display: grid; gap: 4px; margin-top: 10px; }
+.pv { display: grid; grid-template-columns: 64px minmax(0, 1fr) 54px; align-items: center; gap: 8px; }
+.pv .k { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+.pv .ground { background: var(--ground); border: 1px solid var(--ground-edge); border-radius: 4px; padding: 6px 4px; text-align: center; overflow-x: auto; min-width: 0; }
+.pv .len { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; text-align: right; }
+.pv .len.over { color: var(--err); }
+.was { display: flex; justify-content: center; align-items: baseline; gap: 6px; margin-top: 5px; opacity: .55; }
+.was-k { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.pv-rule { font-size: 11.5px; color: var(--muted); margin-top: 4px; }
+.pv-rule:first-child { margin-top: 0; }
+.fields { display: grid; gap: 14px; margin-top: 12px; }
+.field { display: grid; gap: 4px; min-width: 0; }
+.f-name { font-size: 12.5px; color: var(--muted); display: flex; gap: 4px 12px; flex-wrap: wrap; align-items: baseline; }
+.f-name code { color: var(--fg); font-size: 12.5px; }
+.f-name b { font-weight: 500; color: var(--fg); }
+.f-name .own b { color: var(--accent); }
+.f-row { display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; gap: 8px; align-items: center; }
+.f-row .k { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+.f-was { font-size: 12px; color: var(--muted); padding-left: 72px; min-width: 0; }
+.f-was code { font-size: 12px; white-space: pre-wrap; word-break: break-all; }
+input.alias { width: 100%; min-width: 0; font-size: 13px; background: var(--bg); color: var(--fg); border: 1px solid var(--line); border-radius: 5px; padding: 6px 8px; }
+input.alias:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 2px rgba(199,179,119,.25); }
+input.alias:disabled { color: var(--muted); background: var(--panel); border-style: dashed; }
+input.alias.err { border-color: var(--err); }
+input.alias.changed { border-color: rgba(157,187,220,.6); }
+.resets { display: inline-flex; flex-wrap: wrap; gap: 4px 8px; align-items: center; }
+.resets button { border: 1px solid var(--line); background: transparent; border-radius: 4px; padding: 3px 8px; font-size: 12px; cursor: pointer; color: var(--muted); }
+.resets button:hover { color: var(--fg); border-color: var(--muted); }
+.same { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; color: var(--muted); cursor: pointer; white-space: nowrap; }
+.same input { accent-color: var(--accent); margin: 0; }
+.notes { display: grid; gap: 2px; padding-left: 72px; font-size: 13px; }
+.notes .err { color: var(--err); } .notes .info { color: var(--info); }
+.foot { margin-top: 36px; color: var(--muted); font-size: 13px; max-width: 72ch; }
+.copybox { width: 100%; height: 160px; margin-top: 8px; font: 12px/1.4 var(--font-mono); background: var(--bg); color: var(--fg); border: 1px solid var(--line); border-radius: 5px; padding: 8px; }
+
+@media (max-width: 720px) {
+  .compare { grid-template-columns: 1fr; }
+  .pv, .f-row { grid-template-columns: 1fr; gap: 2px; }
+  .pv .len { text-align: left; }
+  .notes, .f-was { padding-left: 0; }
+  .meta { margin-left: 0; width: 100%; }
+  .chips .k { min-width: 0; width: 100%; }
+  .card { scroll-margin-top: 220px; }
+}
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <div class="eyebrow">Erazure loot filter · aliases</div>
+    <h1>Erazure Alias Editor</h1>
+    <p class="lede">Every alias that draws something, as Erazure - Main and Erazure - Minimal draw it. Edit either text
+      and the labels redraw as you type; your edits are saved here so Claude can write them into
+      <code>sections/040-aliases.filter</code> (Main) and <code>styles/minimal.filter</code> (Minimal). A Main change
+      reaches Main and its seven other versions, Minimal wherever it draws Main's look, and Corrlorized wherever it
+      keeps Main's look: each card says.</p>
+    <nav class="toc" id="toc" aria-label="Sections"></nav>
+    <div class="compare" aria-label="Every label, Main beside Minimal">
+      <div class="pile"><h2>Main</h2><ul id="pile-main"></ul></div>
+      <div class="pile"><h2>Minimal</h2><ul id="pile-min"></ul></div>
+    </div>
+  </div>
+</header>
+
+<div class="bar">
+  <div class="wrap">
+    <div class="chips" id="colors"><span class="k">Colors</span></div>
+    <div class="chips" id="symbols"><span class="k">Symbols</span></div>
+    <div class="actions">
+      <div class="seg" role="group" aria-label="Show">
+        <button type="button" data-show="all" aria-pressed="true">All</button>
+        <button type="button" data-show="edited" aria-pressed="false">Edited here</button>
+        <button type="button" data-show="own" aria-pressed="false">Minimal's own look</button>
+        <button type="button" data-show="same" aria-pressed="false">Minimal same as Main</button>
+      </div>
+      <span class="hint">A chip goes in at the cursor of the field you last clicked.</span>
+      <span class="spacer"></span>
+      <span class="status" id="status" role="status">Connecting…</span>
+      <button type="button" class="btn" id="copy">Copy changed lines</button>
+    </div>
+  </div>
+</div>
+
+<main class="wrap" id="main"></main>
+
+<div class="wrap foot">
+  <p>Minimal is Main with its own text swapped in where it differs, one line per alias in
+    <code>styles/minimal.filter</code>. Tick <b>Same as Main</b> where Minimal should draw Main's look: it then follows
+    your Main edits too. A line can't hold <code>//</code>, since BH reads the rest of it as a comment. BH drops spaces
+    at the start and end of an alias: a color code on the outside keeps them. The item name keeps its own color
+    whatever the symbols end in: an earlier rule puts the quality's color in front of it (gold uniques, green sets,
+    yellow rares, blue magic items, white runes and PD2 items).</p>
+  <p id="gen"></p>
+  <textarea class="copybox" id="copybox" readonly hidden aria-label="Changed alias lines"></textarea>
+</div>
+
+<script>
+const DATA = /*__DATA__*/null;
+const COLORS = { WHITE: "#e8e8e8", RED: "#ff4d4d", GREEN: "#00ff00", BLUE: "#6969ff", GOLD: "#c7b377",
+  GRAY: "#696969", BLACK: "#000000", TAN: "#d0c27d", ORANGE: "#ffa800", YELLOW: "#ffff64", PURPLE: "#ae00ff",
+  DARK_GREEN: "#008000", CORAL: "#ff7f6e", SAGE: "#a3b88f", TEAL: "#3fb5b5", LIGHT_GRAY: "#a8a8a8" };
+const SYMBOLS = ["*", "•", "\\", "/", ">", "<", "x", "X", "o", "O", "(", ")", "[", "]", "|", "I", "V"];
+// BH's output keywords (ItemDisplay.cpp) besides the colors: valid in an alias's text
+const KEYWORDS = new Set(["NAME", "BASENAME", "SOCKETS", "RUNENUM", "RUNENAME", "GEMLEVEL", "GEMTYPE", "ILVL",
+  "ALVL", "CRAFTALVL", "REROLLALVL", "LVLREQ", "WPNSPD", "RANGE", "CODE", "QTY", "PRICE", "SELLPRICE", "BUYPRICE",
+  "PERCENT", "NL", "CL", "ED", "EDEF", "EDAM", "DEF", "RES"]);
+const SAMPLE_VALUES = { QTY: "12", ILVL: "92", SOCKETS: "4" };  // keywords an alias may hold, drawn with a sample value
+const BH_MAX = 56;
+// The db documents Claude reads, each {edits, updatedAt}: Main's new text per alias; Minimal's own text per alias,
+// or null where Minimal should draw Main's look (no line in styles/minimal.filter)
+const DOCS = { main: "aliases/main", min: "styles/minimal" };
+const KINDS = ["main", "min"];
+const KIND_NAME = { main: "Main", min: "Minimal" };
+
+const byName = {};                       // alias name -> {a, c}
+const val = { main: {}, min: {} };       // the edited texts; val.min[name] === null: Minimal draws Main's look
+for (const c of DATA.cards) for (const a of c.aliases) {
+  byName[a.name] = { a, c }; val.main[a.name] = a.main; val.min[a.name] = a.min;
+}
+const nowOf = { main: a => a.main, min: a => a.min === null ? a.main : a.min };              // what each draws now
+const drawnOf = { main: a => val.main[a.name], min: a => val.min[a.name] === null ? val.main[a.name] : val.min[a.name] };
+const isEdited = (kind, a) => val[kind][a.name] !== (kind === "main" ? a.main : a.min);
+const inputs = { main: {}, min: {} }, sameBoxes = {}, wasEls = { main: {}, min: {} }, notesEls = {};
+
+const $ = (s, el = document) => el.querySelector(s);
+const h = (tag, attrs = {}, ...kids) => {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === "class") el.className = v; else if (k === "text") el.textContent = v; else el.setAttribute(k, v);
+  }
+  for (const kid of kids) if (kid != null) el.append(kid);
+  return el;
+};
+
+// ------------------------------------------------------------ drawing a label as BH does
+function segments(text, start = "WHITE") {
+  const out = []; let color = start, pos = 0; const re = /%([A-Z_]+)%/g; let m;
+  while ((m = re.exec(text))) {
+    if (m.index > pos) out.push([color, text.slice(pos, m.index)]);
+    if (COLORS[m[1]]) color = m[1];
+    else out.push([color, m[1] === "PERCENT" ? "%" : m[0]]);  // BH shows an unknown %word% as text
+    pos = re.lastIndex;
+  }
+  if (pos < text.length) out.push([color, text.slice(pos)]);
+  return out;
+}
+function visibleLength(text) { return segments(text).reduce((n, [, t]) => n + [...t].length, 0); }
+// Every alias filled in, BH's way (file order, each trimmed), then the item's name
+function fill(card, pick, look = card.tpls[0]) {
+  let t = look.tpl;
+  for (const name of DATA.order) t = t.split("%" + name + "%").join(pick(byName[name].a).trim());
+  for (const [k, v] of Object.entries(SAMPLE_VALUES)) t = t.split("%" + k + "%").join(v);
+  return t.split("%NAME%").join(card.sample);
+}
+function drawLabel(el, text) {
+  el.textContent = "";
+  for (const [c, t] of segments(text)) {
+    const s = document.createElement("span"); s.style.color = COLORS[c]; s.textContent = t; el.append(s);
+  }
+}
+function setLen(el, text) {
+  const n = visibleLength(text);
+  el.textContent = `${n} chars`;
+  el.classList.toggle("over", n > BH_MAX);
+  el.title = n > BH_MAX ? `BH shows ${BH_MAX} characters at most: this label is cut` : "Characters BH counts (color codes left out)";
+}
+
+// ------------------------------------------------------------ checks
+function problems(v) {
+  const out = [];
+  if (v.includes("//")) out.push(["err", "Holds //: BH reads the rest of the line as a comment. Put a color code between the two slashes."]);
+  for (const m of v.matchAll(/%([A-Z_]+)%/g))
+    if (!COLORS[m[1]] && !KEYWORDS.has(m[1]) && !byName[m[1]])
+      out.push(["err", `%${m[1]}% isn't a color code, BH keyword or alias: the game shows it as text.`]);
+  if (/%[A-Z_]*$/.test(v.replace(/%[A-Z_]+%/g, ""))) out.push(["err", "A color code isn't closed: it needs a % at both ends."]);
+  if (!v.trim()) out.push(["info", "Empty: nothing shows here."]);
+  else if (v !== v.trim()) out.push(["info", "BH drops spaces at the start and end of an alias. To keep them, put a color code on the outside (as the magic jewel arrows do)."]);
+  return out;
+}
+function corrText(a) {
+  return { own: ["own", "Corrlorized: ", "its own look (Corr's)", ", so a Main change won't show there"],
+           follows: ["", "Corrlorized: ", "follows Main", ""], unused: ["own", "Corrlorized: ", "doesn't use it", ""]
+         }[a.corr] || ["", "Corrlorized: follows Main in ", a.corr, " rules"];
+}
+
+// ------------------------------------------------------------ page
+const pileMain = $("#pile-main"), pileMin = $("#pile-min");
+const piles = [];  // [card, Main label, Minimal label, Main li, Minimal li]
+const pileRules = new Set();  // one label per rule: two cards can share one (Rainbow Facet: its symbols and its name)
+for (const g of DATA.groups) {  // every kind of item, each under its heading; a label links to its card
+  const cards = DATA.cards.filter(c => c.group === g.id && c.aliases.some(a => a.uses));
+  if (!cards.length) continue;
+  for (const pile of [pileMain, pileMin]) pile.append(h("li", { class: "pile-head", text: g.title }));
+  for (const c of cards) {
+    const rule = c.tpls[0].rule;
+    if (rule && pileRules.has(rule)) continue;
+    if (rule) pileRules.add(rule);
+    const lm = h("span", { class: "label" }), ln = h("span", { class: "label" });
+    const lim = h("li", {}, h("a", { href: "#c-" + c.key, title: "Edit " + c.title }, lm));
+    const lin = h("li", {}, h("a", { href: "#c-" + c.key, title: "Edit " + c.title }, ln));
+    pileMain.append(lim); pileMin.append(lin);
+    piles.push([c, lm, ln, lim, lin]);
+  }
+}
+
+const toc = $("#toc"), main = $("#main");
+const cardEls = {};
+for (const g of DATA.groups) {
+  const cards = DATA.cards.filter(c => c.group === g.id);
+  if (!cards.length) continue;
+  toc.append(h("a", { href: "#" + g.id }, g.title + " ", h("b", { text: String(cards.length) })));
+  const sec = h("section", { class: "group", id: g.id, "aria-labelledby": "h-" + g.id },
+    h("h2", { id: "h-" + g.id, text: g.title }), h("p", { text: g.note }));
+  const list = h("div", { class: "cards" });
+  for (const c of cards) list.append(buildCard(c));
+  sec.append(list); main.append(sec);
+}
+
+function previewRow(previews, kind) {
+  const label = h("span", { class: "label" }), was = h("span", { class: "label" }), len = h("span", { class: "len" });
+  const wasRow = h("div", { class: "was" }, h("span", { class: "was-k", text: "now" }), was);
+  wasRow.hidden = true;
+  previews.append(h("div", { class: "pv" }, h("span", { class: "k", text: KIND_NAME[kind] }),
+    h("div", { class: "ground" }, label, wasRow), len));
+  return { label, was, wasRow, len };
+}
+
+function buildCard(c) {
+  const edPill = h("span", { class: "pill edited", text: "Edited here" });
+  edPill.hidden = true;
+  const minPill = h("span", { class: "pill" });
+  const uses = Math.max(...c.aliases.map(a => a.uses));
+  const meta = h("span", { class: "meta" }, uses ? `${uses} rule${uses === 1 ? "" : "s"}` : "No rule uses it");
+  const previews = h("div", { class: "previews" });
+  const looks = [];
+  for (const look of c.tpls) {  // each different label its rules draw, as Main and as Minimal
+    if (c.tpls.length > 1 && look.rule) previews.append(h("div", { class: "pv-rule" }, h("code", { text: look.rule })));
+    looks.push({ look, main: previewRow(previews, "main"), min: previewRow(previews, "min") });
+  }
+  if (c.tpls.length === 1 && c.tpls[0].rule) meta.append(" · sample ", h("code", { text: c.tpls[0].rule }));
+  const el = h("article", { class: "card", id: "c-" + c.key },
+    h("div", { class: "card-head" }, h("h3", { text: c.title }), edPill, minPill, meta), previews);
+  const fields = h("div", { class: "fields" });
+  for (const a of c.aliases) fields.append(buildField(a));
+  el.append(fields);
+  cardEls[c.key] = { el, edPill, minPill, looks };
+  return el;
+}
+
+function buildField(a) {
+  const n = a.name;
+  const [cls, lead, word, tail] = corrText(a);
+  const row = (kind) => {
+    const id = `in-${kind}-${n}`;
+    const input = h("input", { class: "alias", id, type: "text", spellcheck: "false", autocomplete: "off",
+      autocapitalize: "off", "aria-describedby": "n-" + n });
+    inputs[kind][n] = input;
+    input.addEventListener("input", () => { val[kind][n] = input.value; refreshAll(); queueSave(kind); });
+    input.addEventListener("focus", () => { lastInput = input; });
+    const toNow = h("button", { type: "button", title: "Back to the text it has now", text: "Now" });
+    toNow.onclick = () => { val[kind][n] = kind === "main" ? a.main : a.min; refreshAll(true); queueSave(kind); };
+    const resets = h("span", { class: "resets" });
+    if (kind === "min") {
+      const box = h("input", { type: "checkbox", id: `same-${n}` });
+      sameBoxes[n] = box;
+      box.addEventListener("change", () => {
+        val.min[n] = box.checked ? null : val.main[n];  // unticked: Minimal's own text starts from Main's
+        refreshAll(true); queueSave("min");
+        if (!box.checked) input.focus();
+      });
+      resets.append(h("label", { class: "same", for: `same-${n}`, title: "Minimal draws Main's look: no line of its own" },
+        box, "Same as Main"));
+    }
+    resets.append(toNow);
+    const was = h("div", { class: "f-was" });
+    was.hidden = true;
+    wasEls[kind][n] = was;
+    return [h("div", { class: "f-row" }, h("label", { class: "k", for: id, text: KIND_NAME[kind] }), input, resets), was];
+  };
+  const notesEl = h("div", { class: "notes", id: "n-" + n, "aria-live": "polite" });
+  notesEls[n] = notesEl;
+  return h("div", { class: "field" },
+    h("div", { class: "f-name" }, h("code", { text: n }),
+      h("span", { text: `${a.uses} rule${a.uses === 1 ? "" : "s"} · ${a.file}` }),
+      h("span", { class: cls }, lead, h("b", { text: word }), tail)),
+    ...row("main"), ...row("min"), notesEl);
+}
+
+// ------------------------------------------------------------ redrawing
+function refresh(c, syncAll = false) {
+  const e = cardEls[c.key];
+  for (const l of e.looks) {
+    for (const kind of KINDS) {
+      const r = l[kind], t = fill(c, drawnOf[kind], l.look), was = fill(c, nowOf[kind], l.look);
+      drawLabel(r.label, t); setLen(r.len, t);
+      r.wasRow.hidden = t === was;
+      if (t !== was) drawLabel(r.was, was);
+    }
+  }
+  e.edPill.hidden = !c.aliases.some(a => isEdited("main", a) || isEdited("min", a));
+  const own = c.aliases.some(a => val.min[a.name] !== null);
+  e.minPill.textContent = own ? "Minimal: its own look" : "Minimal: same as Main";
+  for (const a of c.aliases) {
+    const n = a.name, main = inputs.main[n], min = inputs.min[n];
+    if (syncAll || document.activeElement !== main) { if (main.value !== val.main[n]) main.value = val.main[n]; }
+    min.disabled = val.min[n] === null;
+    if (syncAll || document.activeElement !== min) { const v = drawnOf.min(a); if (min.value !== v) min.value = v; }
+    sameBoxes[n].checked = val.min[n] === null;
+    main.classList.toggle("changed", isEdited("main", a));
+    min.classList.toggle("changed", isEdited("min", a));
+    const wm = wasEls.main[n], wn = wasEls.min[n];
+    wm.hidden = !isEdited("main", a);
+    if (!wm.hidden) wm.replaceChildren("now ", h("code", { text: a.main }));
+    wn.hidden = !isEdited("min", a);
+    if (!wn.hidden) wn.replaceChildren(...(a.min === null ? ["now Main's look: no Minimal line"] : ["now ", h("code", { text: a.min })]));
+    const list = problems(val.main[n]).map(([k, m]) => [k, "Main: " + m]);
+    if (val.min[n] !== null) {
+      list.push(...problems(val.min[n]).map(([k, m]) => [k, "Minimal: " + m]));
+      if (val.min[n] === val.main[n]) list.push(["info", "Minimal: the same text as Main's, so it needs no line of its own (tick Same as Main)."]);
+    }
+    notesEls[n].replaceChildren(...list.map(([k, m]) => h("div", { class: k, text: m })));
+    main.classList.toggle("err", problems(val.main[n]).some(([k]) => k === "err"));
+    min.classList.toggle("err", val.min[n] !== null && problems(val.min[n]).some(([k]) => k === "err"));
+  }
+  const p = piles.find(p => p[0] === c);
+  if (p) {
+    const tm = fill(c, drawnOf.main), tn = fill(c, drawnOf.min);
+    drawLabel(p[1], tm); drawLabel(p[2], tn);
+    p[3].classList.toggle("changed", tm !== fill(c, nowOf.main));
+    p[4].classList.toggle("changed", tn !== fill(c, nowOf.min));
+  }
+}
+function refreshAll(syncAll = false) {  // a card's label can hold another card's alias
+  for (const c of DATA.cards) refresh(c, syncAll);
+  applyShow();
+}
+
+// ------------------------------------------------------------ show filter
+let show = "all";
+for (const b of document.querySelectorAll(".seg button")) b.onclick = () => {
+  show = b.dataset.show;
+  for (const x of document.querySelectorAll(".seg button")) x.setAttribute("aria-pressed", String(x === b));
+  applyShow();
+};
+function applyShow() {
+  for (const c of DATA.cards) {
+    const edited = c.aliases.some(a => isEdited("main", a) || isEdited("min", a));
+    const own = c.aliases.some(a => val.min[a.name] !== null);
+    cardEls[c.key].el.hidden = !(show === "all" || (show === "edited" && edited) || (show === "own" && own) ||
+      (show === "same" && !own));
+  }
+  for (const sec of document.querySelectorAll("section.group"))
+    sec.hidden = ![...sec.querySelectorAll(".card")].some(el => !el.hidden);
+}
+
+// ------------------------------------------------------------ chips
+let lastInput = null;
+function insert(text) {
+  const input = lastInput;
+  if (!input || input.disabled) { setStatus("Click a Main field, or a Minimal field without Same as Main, then a chip.", "bad"); return; }
+  const s = input.selectionStart ?? input.value.length, e = input.selectionEnd ?? s;
+  input.setRangeText(text, s, e, "end");
+  input.dispatchEvent(new Event("input"));
+  input.focus();
+}
+const colorBar = $("#colors"), symBar = $("#symbols");
+for (const [name, hex] of Object.entries(COLORS)) {
+  const b = h("button", { type: "button", class: "chip", title: `Insert %${name}%` }, h("span", { class: "sw" }), name);
+  b.querySelector(".sw").style.background = hex;
+  b.addEventListener("mousedown", ev => ev.preventDefault());
+  b.onclick = () => insert(`%${name}%`);
+  colorBar.append(b);
+}
+for (const sym of SYMBOLS) {
+  const b = h("button", { type: "button", class: "chip sym", title: `Insert ${sym}`, text: sym });
+  b.addEventListener("mousedown", ev => ev.preventDefault());
+  b.onclick = () => insert(sym);
+  symBar.append(b);
+}
+
+// ------------------------------------------------------------ the changed lines, as they go into the files
+function changedLines() {
+  const main = [], min = [];
+  for (const c of DATA.cards) {
+    const dm = c.aliases.filter(a => isEdited("main", a));
+    if (dm.length) main.push(`// ${c.title} (sections/${dm[0].file})`, ...dm.map(a => `Alias[${a.name}]:${val.main[a.name]}`), "");
+    const dn = c.aliases.filter(a => isEdited("min", a));
+    if (dn.length) min.push(`// ${c.title}`, ...dn.map(a => val.min[a.name] === null
+      ? `// (no line for ${a.name}: Minimal draws Main's look)` : `Alias[${a.name}]:${val.min[a.name]}`), "");
+  }
+  const out = [];
+  if (main.length) out.push("// ===== Main: sections/040-aliases.filter and 020-horadric-cube.filter", "", ...main);
+  if (min.length) out.push("// ===== Minimal: styles/minimal.filter", "", ...min);
+  return out.length ? out.join("\n") : "// No alias is edited.\n";
+}
+$("#copy").onclick = async () => {
+  const text = changedLines(), box = $("#copybox");
+  try { await navigator.clipboard.writeText(text); setStatus("Changed lines copied.", "ok"); box.hidden = true; }
+  catch { box.value = text; box.hidden = false; box.focus(); box.select(); setStatus("Copy them from the box under the cards.", "bad"); }
+};
+$("#gen").textContent = `Built ${DATA.generated} by tools/alias_editor.py from the filter's sections and styles/minimal.filter.`;
+
+// ------------------------------------------------------------ saving (the page's db: Claude reads it)
+const statusEl = $("#status");
+function setStatus(text, cls = "") { statusEl.textContent = text; statusEl.className = "status " + cls; }
+let db = null;
+const S = {};  // per document: its save timer and state, and the edits it holds as last written or read
+for (const kind of KINDS) S[kind] = { timer: null, saving: false, again: false, dirty: false, saved: "[]" };
+const canon = e => JSON.stringify(Object.keys(e).sort().map(k => [k, e[k]]));
+function editsOf(kind) {
+  const e = {};
+  for (const name in byName) if (isEdited(kind, byName[name].a)) e[name] = val[kind][name];
+  return e;
+}
+function queueSave(kind) {
+  S[kind].dirty = true;
+  if (!db) { setStatus("Edits stay in this tab: saving isn't available here. Use Copy changed lines.", "bad"); return; }
+  setStatus("Edited…");
+  clearTimeout(S[kind].timer); S[kind].timer = setTimeout(() => save(kind), 900);
+}
+async function save(kind) {
+  const s = S[kind];
+  if (s.saving) { s.again = true; return; }
+  const edits = editsOf(kind), c = canon(edits);
+  if (c === s.saved) { s.dirty = false; setStatus("Saved", "ok"); return; }  // nothing new to write
+  s.saving = true; setStatus("Saving…");
+  try {
+    await db.doc(DOCS[kind]).set({ edits, updatedAt: new Date().toISOString() });
+    s.saved = c; s.dirty = false;
+    setStatus("Saved " + new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }), "ok");
+  } catch (err) {
+    setStatus("Not saved: " + (err && err.message ? err.message : "the store refused it") + ". Use Copy changed lines.", "bad");
+  }
+  s.saving = false;
+  if (s.again) { s.again = false; save(kind); }
+}
+function applyRemote(kind, e) {
+  let changed = false;
+  for (const name in byName) {
+    const a = byName[name].a;
+    const v = Object.prototype.hasOwnProperty.call(e, name) ? e[name] : (kind === "main" ? a.main : a.min);
+    if (kind === "main" ? typeof v !== "string" : (v !== null && typeof v !== "string")) continue;
+    if (document.activeElement === inputs[kind][name] || val[kind][name] === v) continue;
+    val[kind][name] = v; changed = true;
+  }
+  if (changed) refreshAll();
+}
+refreshAll(true);
+const use = window.claude && window.claude.use ? window.claude.use("db") : Promise.resolve(null);
+use.then(d => {
+  db = d;
+  if (!d) { setStatus("Saving isn't available in this view: use Copy changed lines.", "bad"); return; }
+  setStatus("Ready: edits save as you type.", "ok");
+  const loaded = {};
+  for (const kind of KINDS) {
+    d.doc(DOCS[kind]).onSnapshot(snap => {
+      if (snap.metadata.hasPendingWrites || S[kind].dirty) return;
+      const data = snap.exists ? (snap.data() || {}) : {};
+      const e = data.edits && typeof data.edits === "object" ? data.edits : {};
+      S[kind].saved = canon(e);
+      applyRemote(kind, e);
+      loaded[kind] = Object.keys(e).length && data.updatedAt ? data.updatedAt : null;
+      const latest = Object.values(loaded).filter(Boolean).sort().pop();
+      if (latest) setStatus("Saved edits loaded (" + new Date(latest).toLocaleString([], { dateStyle: "medium", timeStyle: "short" }) + ")", "ok");
+    }, () => setStatus("Saved edits couldn't be loaded. Use Copy changed lines.", "bad"));
+  }
+}, () => setStatus("Saving isn't available in this view: use Copy changed lines.", "bad"));
+</script>
