@@ -21,8 +21,9 @@ care whether the item is hidden). Low quality items (Cracked, Crude, Damaged) ge
 The page (the author's layout): one table per item type, one row per case. What is left of a rule's condition is
 put in columns (Eth, Quality, ED, Sockets, Character level, then Class, Item level, All res, Skills, Other); an OR
 that mixes columns becomes one row per case, and a tag's named base is put inline, its skill combinations in a
-drop-down. Rows go Tag, Notify, Shows as, Hidden, each by levels, then eth, quality, ED, sockets and character level;
-bases of one type, tier, socket maximum and size whose rows are the same share one group.
+drop-down. Rows go Tag, Notify, Shows as, Shown, Hidden, each by levels, then eth, quality, ED, sockets and character
+level; bases of one type, tier, socket maximum and size whose rows are the same share one group. A Shown row is a case
+a Hidden row's "unless" lets through that nothing else decides (shown with the name as usual).
 """
 import argparse
 import json
@@ -602,7 +603,7 @@ def is_complex(text):
 
 COLS = ["eth", "quality", "ed", "sockets", "clvl", "class", "ilvl", "res", "skills", "other"]  # the page's columns
 SET_COLS = {"ED": "ed", "SOCK": "sockets", "CLVL": "clvl", "ILVL": "ilvl", "RES": "res"}
-KIND_ORDER = {"tag": 0, "notify": 1, "show": 2, "hide": 3}
+KIND_ORDER = {"tag": 0, "notify": 1, "show": 2, "shown": 3, "hide": 4}
 
 
 def has_skill(x):
@@ -811,7 +812,10 @@ class Words:
                     out.append(text)
                     skill_parts.append(text)
                 continue
-            out.append(self.phrase(x, base, where, depth + 1))
+            text = self.phrase(x, base, where, depth + 1)
+            if depth and x[0] == "or" and not has_skill(x) and " or " in text:  # "unless ... and (5%+ ED or ...)"
+                text = f"({text})"
+            out.append(text)
         if named_out:
             out.append("unless " + self.named_words(named_out))
         return [c for c in out if c] + refs
@@ -1019,6 +1023,12 @@ def nots(x):
     return 0
 
 
+def plain(x):
+    """Only the columns' own values: literals, or ORs of them (an "unless" a Shown row can say)."""
+    lit = (lambda y: y[0] in ("set", "bool") and not y[1].startswith("@"))
+    return all(lit(y) or (y[0] == "or" and all(lit(z) for z in y[1])) for y in conj(x))
+
+
 def span_key(iv):
     return (-1, -1) if iv is None else (iv[0][0], iv[-1][1])
 
@@ -1191,10 +1201,57 @@ class Analysis:
                     if simp.implies(a, b) and (j < i or not simp.implies(b, a)):
                         del e[2][lv]
                         break
+        cases += self.exceptions(folded, cases, named, simp)
         out = []
         for kind, r, per in cases:
             out += self.segments(kind, r, per)
         return self.merge(out, simp)
+
+    def exceptions(self, folded, cases, named, simp):
+        """Shown rows: the cases a Hidden row's "unless" lets through that no other stopping rule, tag or
+        notification decides, so the item shows with its name as usual (the author, 2026-10-23: a base with only
+        Hidden rows read as always hidden). Only an "unless" of the columns' own values; each case is said with the
+        fewest conditions that still hold."""
+        others = defaultdict(list)  # level -> the own condition of every rule that decides something
+        for r, per in folded:
+            stops = r.kind in ("hide", "show")
+            if stops or r.kind == "tag" or r.notify:
+                for lv, c in per.items():
+                    others[lv].append(c if stops else self.inline(c, lv, named, simp))
+        found = {}  # case -> [the hide rule, {level: case}]
+        for kind, r, per in cases:
+            if kind != "hide":
+                continue
+            for lv, cond in per.items():
+                parts = conj(cond)
+                for i, x in enumerate(parts):
+                    if x[0] != "not" or has_skill(x[1]) or not plain(x[1]):
+                        continue
+                    carved = simp.simplify(Simplifier.make("and", parts[:i] + parts[i + 1:] + conj(x[1])))
+                    for t in self.split(carved, simp):
+                        t = self.plain_case(t, others[lv], simp)
+                        if t is not None:
+                            found.setdefault(canon(t), [r, {}])[1][lv] = t
+        return [["shown", r, per] for r, per in found.values()]
+
+    @staticmethod
+    def plain_case(t, others, simp):
+        """t less what the others decide, then without each part it can do without (character and item level
+        first) while none of the others meets it; None when nothing is left or it would need an "unless"."""
+        apart = (lambda a, b: simp.simplify(Simplifier.make("and", conj(a) + conj(b))) == ("c", 0))
+        for c in others:
+            if not apart(t, c):
+                less = simp.subtract(t, c)
+                if less == ("c", 0) or nots(less) > nots(t):
+                    return None
+                t = less
+        keep = sorted(conj(t), key=lambda y: 0 if y[0] == "set" and y[1] in ("CLVL", "ILVL") else 1)
+        for y in list(keep):
+            trial = [z for z in keep if z is not y]
+            if all(apart(simp.simplify(Simplifier.make("and", trial)), c) for c in others):
+                keep = trial
+        t = simp.simplify(Simplifier.make("and", keep))
+        return None if nots(t) or t[0] == "c" else t
 
     @staticmethod
     def icon_findings(inf):
@@ -1240,7 +1297,7 @@ class Analysis:
         """One line per run of filter levels with the same case (and, for a notification, chat or not)."""
         out = []
         for lv in sorted(per):
-            chat = bool(r.notify) and (r.tier is None or lv == 0 or r.tier >= lv)
+            chat = kind != "shown" and bool(r.notify) and (r.tier is None or lv == 0 or r.tier >= lv)
             key = (canon(per[lv]), chat)
             if out and out[-1]["hi"] == lv - 1 and out[-1]["key"] == key:
                 out[-1]["hi"] = lv
@@ -1362,11 +1419,12 @@ def row_data(x, ref):
         extra["b"] = x["image"]
     if x["title"]:
         extra["bt"] = ref(x["title"])
-    if r.icons and r.notify:
+    own = x["kind"] != "shown"  # (a Shown row's rule is the hide rule it is an exception of)
+    if r.icons and r.notify and own:
         extra["i"] = [list(r.icons)]
     if x["chat"]:
         extra["h"] = 1
-    if r.sound:
+    if r.sound and own:
         extra["o"] = r.sound
     if x["cases"]:
         extra["d"] = [ref(c) for c in x["cases"]]
@@ -1457,7 +1515,7 @@ def print_rows(an, codes):
             for x in an.rows(base, inf):
                 r = x["rules"][0]
                 shows = "".join(t for line in (x["image"] or []) for _, t in line) or x["kind"]
-                icon = "icon" if r.icons and r.notify else ""
+                icon = "icon" if r.icons and r.notify and x["kind"] != "shown" else ""
                 chat = "chat" if x["chat"] else ""
                 cells = " | ".join(f"{heads[c]}: {x['cells'][c]}" for c in COLS if x["cells"].get(c))
                 print(f"  {level_text(x['lo'], x['hi']):13} {shows[:16]:16} {icon:4} {chat:4}  {cells or 'always'}"

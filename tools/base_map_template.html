@@ -17,7 +17,7 @@
   .base-map {
     --bg: #151412; --panel: #1f1d1a; --fg: #ece7de; --muted: #a59e91; --line: #36322c; --soft: #2a2723;
     --accent: #d8b45e;
-    --k-tag: #f0a04b; --k-notify: #8bb4e8; --k-show: #c9b27a; --k-hide: #9a9385;
+    --k-tag: #f0a04b; --k-notify: #8bb4e8; --k-show: #c9b27a; --k-shown: #8fcf8a; --k-hide: #9a9385;
     --ground-1: #3a3428; --ground-2: #26221b; --ground-3: #15130f;
     --display: "Cinzel", "Trajan Pro", Georgia, serif;
     --body: "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -29,7 +29,7 @@
   [data-md-color-scheme="default"] .base-map {
     --bg: #f3f1ec; --panel: #fffdf8; --fg: #23211c; --muted: #6b655a; --line: #ded7c9; --soft: #ece6da;
     --accent: #8a6d1f;
-    --k-tag: #b8610f; --k-notify: #2f6db3; --k-show: #8a6d1f; --k-hide: #8b8579;
+    --k-tag: #b8610f; --k-notify: #2f6db3; --k-show: #8a6d1f; --k-shown: #2f7d32; --k-hide: #8b8579;
     color-scheme: light;
   }
   .md-content .base-map { --top: 2.4rem; }  /* on the website: under its header, which stays at the top */
@@ -108,7 +108,8 @@
                     text-transform: uppercase; padding: 1px 7px; border-radius: 999px; border: 1px solid var(--kc);
                     color: var(--kc); white-space: nowrap; line-height: 1.45; }
   .base-map .k-tag { --kc: var(--k-tag); } .base-map .k-notify { --kc: var(--k-notify); }
-  .base-map .k-show { --kc: var(--k-show); } .base-map .k-hide { --kc: var(--k-hide); }
+  .base-map .k-show { --kc: var(--k-show); } .base-map .k-shown { --kc: var(--k-shown); }
+  .base-map .k-hide { --kc: var(--k-hide); }
   .base-map .text.clamp { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   .base-map .more { font: inherit; font-size: 12.5px; color: var(--accent); background: none; border: 0; padding: 0;
                     margin: 0; cursor: pointer; }
@@ -188,6 +189,7 @@
       <span><span class="pill k-tag">Tag</span> a word before the name (shown as the game draws it)</span>
       <span><span class="pill k-notify">Notify</span> minimap icon and chat line</span>
       <span><span class="pill k-show">Shows as</span> a display of its own</span>
+      <span><span class="pill k-shown">Shown</span> shown as usual: a case a Hidden row lets through</span>
       <span><span class="pill k-hide">Hidden</span> the item is not shown</span>
     </div>
     <ul>
@@ -237,7 +239,7 @@ if (view.cat && !DATA.cats.includes(view.cat)) view.cat = "";
 if (!["", "Normal", "Exceptional", "Elite"].includes(view.tier)) view.tier = "";
 view.q = "";
 const T = (i) => DATA.texts[i];
-const KIND = {tag: "Tag", notify: "Notify", show: "Shows as", hide: "Hidden"};
+const KIND = {tag: "Tag", notify: "Notify", show: "Shows as", shown: "Shown", hide: "Hidden"};
 // the condition columns: [key, header, "any" when the row has no condition there]
 const COLUMNS = [["eth", "Eth", true], ["quality", "Quality", true], ["ed", "ED", true], ["sockets", "Sockets", true],
   ["clvl", "Character level", true], ["class", "Class", false], ["ilvl", "Item level", false],

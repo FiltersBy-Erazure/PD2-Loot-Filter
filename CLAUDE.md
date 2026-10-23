@@ -278,9 +278,12 @@
   level ("Above level 89", the rule's CLVL>89), then Class, Item level, All res, Skills, Other. Every table of a page
   has the page's columns at fixed widths (`table-layout: fixed`, a `<colgroup>`), so they line up from one item type
   to the next; a column a type never uses is blank there (the magic/rare pages do the same).
-  Rows go Tag, Notify, Shows as, Hidden, each by first and last level, then non-eth before eth, nonsuperior before
-  superior, then ED, sockets, character level. Bases of one type, tier, socket maximum and size with identical rows
-  share a group (its header's sockets and size hold for each); low quality rows are a toggle. Every alias is
+  Rows go Tag, Notify, Shows as, Shown, Hidden, each by first and last level, then non-eth before eth, nonsuperior
+  before superior, then ED, sockets, character level. A Shown row (the author, 2026-10-23: a base with only Hidden
+  rows read as always hidden) is a case a Hidden row's "unless" lets through that no other stopping rule, tag or
+  notification decides, with the fewest conditions that still hold (`Analysis.exceptions`); an "unless" that needs
+  skills, named bases or another "unless" to say gets none. Bases of one type, tier, socket maximum and size with
+  identical rows share a group (its header's sockets and size hold for each); low quality rows are a toggle. Every alias is
   expanded but the `RWB_` ones ("unless a Plague base"); a tag's named base
   is put inline, its shared parts in the columns and its skill combinations in a drop-down. An OR that mixes columns
   becomes one row per case (`(ED<19 OR SOCK=2)`: two rows). Each rule is folded per base (code, item groups, tier,
