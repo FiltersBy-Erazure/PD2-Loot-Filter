@@ -224,6 +224,9 @@ class Item:
         kind = "suffix" if name.startswith("of ") else "prefix"
         rows = [a for a in self.data.affixes if a["kind"] == kind and a["name"] == name and a["version"]
                 and fits(a, self.types)]
+        old = self.spec.get("old_affixes", {}).get(name)  # a screenshot of an earlier build: the row's values then
+        if old:
+            rows = [dict(a, **old) for a in rows]
         ok = [a for a in rows if a["spawnable"] and a["level"] <= self.alvl
               and (not a["maxlevel"] or a["maxlevel"] >= self.alvl) and a["rare"] in self.RARE_OK[self.quality]]
         if not ok:
@@ -1398,8 +1401,10 @@ SELFTEST = [  # two shop screenshots of the author's (2026-10-20): the hover box
       "Required Strength: 60", "Required Level: 45", "Item Level: 99", "Crafted Affix Level: 95",
       "*******   +3/20ias   *******", "+3 to Javelin and Spear Skills (Amazon Only) [1 - 3]",
       "+20% Increased Attack Speed [10 - 20]"]),
+    # (the plate's Witch-hunter's was level 50, required level 42 then; the 2026-10-23 build has 75 / 68, past the
+    # plate's affix level 71: the author kept the screenshot, with that row as it was)
     ({"id": "plate", "base": "ltp", "affixes": ["Witch-hunter's", ("of Protecting", 20)], "clvl": 80, "def": 97,
-      "class": "ASSASSIN"},
+      "class": "ASSASSIN", "old_affixes": {"Witch-hunter's": {"level": 50, "levelreq": 42}}},
      (960, None, 0), 199680,
      ["Cost: 199680", "Witch-hunter's Light Plate of Protecting", "2sin 20%pdr", "Defense: 97",
       "Durability: 60 of 60", "Required Strength: 41", "Required Level: 42", "Item Level: 85", "Affix Level: 71",
