@@ -111,7 +111,7 @@ class Data:
         for code, b in T.load_bases().items():
             if code in self.bases:
                 self.bases[code].update({"types": b["types"], "tier": b["tier"], "qlvl": b["qlvl"],
-                                         "mlvl": b["mlvl"], "maxsock": b["sockets"], "width": b["width"],
+                                         "mlvl": b["mlvl"], "maxsock": b["maxsock"], "width": b["width"],
                                          "height": b["height"]})
         self.vendors = {r["npc"]: r for r in tsv(P.VENDORS_FILE)}
         self.strings = {r["id"]: r["text"].replace("\\n", "\n") for r in tsv(P.TOOLTIP_STRINGS_FILE)}
@@ -378,7 +378,7 @@ def filter_values(item):
     v["STAT31"] = v["DEF"]
     v["MINDMG"], v["MAXDMG"] = item.value(21), item.value(22)
     v["SOCK"] = v["SOCKETS"] = item.value(194)
-    v["MAXSOCKETS"] = item.base.get("maxsock", 0)
+    v["MAXSOCKETS"] = T.max_sockets(item.base, item.ilvl) if "maxsock" in item.base else 0
     attrs = [item.value(s) for s in (0, 1, 2, 3)]
     v["ALLATTRIB"] = min(attrs) if all(attrs) else 0
     maxres = [item.value(s) for s in (40, 42, 44, 46)]

@@ -94,12 +94,18 @@ GROUP_TYPES = {"HELM": {"helm"}, "CIRC": {"circ"}, "CHEST": {"tors"}, "SHIELD": 
                "BOOTS": {"boot"}, "BELT": {"belt"}, "ARMOR": {"armo"}, "WEAPON": {"weap"}, "THROWING": {"thro"},
                "CLASS": {"clas"}, "DRU": {"drui"}, "BAR": {"barb"}, "DIN": {"pala"}, "NEC": {"necr"}, "SIN": {"assn"},
                "SOR": {"sorc"}, "ZON": {"amaz"}, "JEWELRY": {"ring", "amul"}, "CHARM": {"char"},
-               "QUIVER": {"bowq", "xboq"}, "1H": {"1han"}, "2H": {"2han"}, "MISC": {"misc"}}
+               "QUIVER": {"bowq", "xboq"}, "MISC": {"misc"}}
 WEAPON_GROUPS = [("club", {"CLUB", "MACE"}), ("mace", {"TMACE", "MACE"}), ("hamm", {"HAMMER", "MACE"}),
                  ("wand", {"WAND"}), ("staf", {"STAFF"}), ("bow", {"BOW"}), ("axe", {"AXE"}), ("scep", {"SCEPTER"}),
                  ("swor", {"SWORD"}), ("knif", {"DAGGER"}), ("jave", {"JAV"}), ("spea", {"SPEAR"}),
                  ("pole", {"POLEARM"}), ("xbow", {"XBOW"})]
-GROUP_WORDS = set(GROUP_TYPES).union(*(words for _, words in WEAPON_GROUPS))
+# BH's 1H / 2H read its own table of weapon kinds by Weapons.txt row (StatsDisplay.cpp GetCurrentWeaponType, rows
+# 0-305): two-handed swords, axes and hammers, spears, polearms, staves, bows and crossbows (Amazon ones too) are 2H,
+# every other weapon 1H. In item types that is 2han, bow or xbow (checked against the table, 2026-10-22). PD2's own
+# rows past it are in neither; of those only the 2-handed Phase Blade (7cr2, type 2hcs) takes sockets or a quality,
+# and the filter names it (the throwing potions count as 1H here, as the game's own six do).
+TWO_HANDED_TYPES = {"2han", "bow", "xbow"}
+GROUP_WORDS = set(GROUP_TYPES).union(*(words for _, words in WEAPON_GROUPS)) | {"1H", "2H"}
 TIER_GROUP = {"normal": "NORM", "exceptional": "EXC", "elite": "ELT"}
 TIER_NAMES = {"normal": "Normal", "exceptional": "Exceptional", "elite": "Elite"}
 
@@ -144,16 +150,26 @@ def read_tsv(path):
 
 
 def load_bases():
-    """{code: {name, tier, types, sockets, width, height, spawnable, qlvl, mlvl, eth, maxac, block}} from
-    docs/pd2-bases.tsv (eth: the base has durability, so it can drop ethereal)."""
+    """{code: {name, tier, types, sockets, width, height, spawnable, qlvl, mlvl, eth, maxac, block, maxsock}} from
+    docs/pd2-bases.tsv (eth: the base has durability, so it can drop ethereal; maxsock: BH's MAXSOCKETS at item
+    level 1-25, 26-40 and 41+, see max_sockets)."""
     out = {}
     for row in read_tsv(BASES):
         code, name, tier, types, sockets, width, height, spawnable, qlvl, mlvl = row[:10]
         eth, maxac, block = (row[10:13] + ["0", "0", "0"])[:3]
+        maxsock = tuple(int(x) for x in row[13:16]) if len(row) >= 16 else (int(sockets),) * 3
         out[code] = {"name": name, "tier": tier, "types": types.split(",") if types else [], "sockets": int(sockets),
                      "width": int(width), "height": int(height), "spawnable": spawnable == "1", "qlvl": int(qlvl),
-                     "mlvl": int(mlvl), "eth": eth == "1", "maxac": int(maxac), "block": int(block)}
+                     "mlvl": int(mlvl), "eth": eth == "1", "maxac": int(maxac), "block": int(block), "maxsock": maxsock}
     return out
+
+
+def max_sockets(base, ilvl):
+    """BH's MAXSOCKETS for an item of this base and item level: the game's own cap (the item type's MaxSock1 /
+    MaxSock25 / MaxSock40 at item level 1-25 / 26-40 / 41+, at most the base's gemsockets), at most width x height
+    (docs/pd2-bases.tsv's maxsock columns)."""
+    low, mid, high = base["maxsock"]
+    return low if ilvl <= 25 else mid if ilvl <= 40 else high
 
 
 def affix_level(ilvl, qlvl, mlvl):
@@ -220,6 +236,8 @@ def item_groups(types):
     groups.update(next((words for t, words in WEAPON_GROUPS if t in types), ()))
     if "circ" in types:
         groups.discard("HELM")
+    if "weap" in types and "2hcs" not in types:
+        groups.add("2H" if TWO_HANDED_TYPES & set(types) else "1H")
     return groups
 
 

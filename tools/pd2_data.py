@@ -21,6 +21,8 @@ roll picker shows.
         tier, item types, sockets and size), docs/pd2-skills.tsv (skill names), docs/pd2-sounds.tsv (Sounds.txt:
         the sound each %SOUNDID-n% plays) and docs/pd2-palette.tsv (the colors of %BORDER-xx% %MAP-xx% %DOT-xx%
         %PX-xx%)
+    python tools/pd2_data.py --bases "C:\\Users\\<you>\\Diablo II"
+        only docs/pd2-bases.tsv (--tier-data's first file, without the shop tables --tier-data rewrites too)
     python tools/pd2_data.py --report NAME
         the stats of the items and runewords whose name contains NAME (as the generators read them)
 
@@ -698,6 +700,41 @@ def write_crafts(game):
     print(f"wrote {CRAFTS_FILE.relative_to(ROOT)} ({len(rows)} crafts)")
 
 
+def socket_caps(game, code):
+    """The most sockets the game allows on the base at item level 1-25, 26-40 and 41+: its item type's MaxSock1 /
+    MaxSock25 / MaxSock40, at most its gemsockets and width x height. That is BH's MAXSOCKETS, and the cap the game
+    holds a socket roll to (Larzuk, Puzzlebox, corruption)."""
+    r = game.base_rows[code]
+    t = game.type_rows.get(r.get("type", ""), {})
+    most = min(to_int(r.get("gemsockets")), to_int(r.get("invwidth")) * to_int(r.get("invheight")))
+    return [min(most, to_int(t.get(c))) for c in ("MaxSock1", "MaxSock25", "MaxSock40")]
+
+
+def write_bases(game, stamp):
+    """docs/pd2-bases.tsv: one line per base (tools/tier_map.py load_bases)."""
+    out = [f"# PD2 item bases (Weapons, Armor, Misc) from pd2data.mpq, extracted {stamp} by tools/pd2_data.py: code,",
+           "# name, tier (BH's NORM/EXC/ELT: the code against its ubercode/ultracode), item type and its ancestors,",
+           "# most sockets (gemsockets), inventory width and height (BH's AREA is width x height), spawnable (0: no",
+           "# white drop of this base: a base only some unique uses), quality level (level: BH's QLVL) and magic level",
+           "# (magic lvl): the affix level is BH's ALVL, the game's formula again since the 2026-10-15 beta. eth: 1 if",
+           "# the base has durability (it can drop ethereal), maxac and block: an armor's or shield's top base defense",
+           "# and its base block (tools/label_cuts.py). maxsock1 / maxsock26 / maxsock41: BH's MAXSOCKETS at item level",
+           "# 1-25 / 26-40 / 41+ (its item type's MaxSock1 / MaxSock25 / MaxSock40, at most gemsockets and width x height).",
+           "code\tname\ttier\ttypes\tsockets\twidth\theight\tspawnable\tqlvl\tmlvl\teth\tmaxac\tblock"
+           "\tmaxsock1\tmaxsock26\tmaxsock41"]
+    # a quest item's name can hold a line break ("Right Click to learn skill...\nBook of Skill"): its last line
+    for code in sorted(game.base_rows):
+        r = game.base_rows[code]
+        eth = int(r.get("nodurability", "").strip() in ("", "0") and to_int(r.get("durability")) > 0)
+        out.append(f"{code}\t{game.base_name(code).splitlines()[-1]}\t{game.tier(code)}\t{','.join(game.ancestors(code))}"
+                   f"\t{to_int(r.get('gemsockets'))}\t{to_int(r.get('invwidth'))}\t{to_int(r.get('invheight'))}"
+                   f"\t{to_int(r.get('spawnable'))}\t{to_int(r.get('level'))}\t{to_int(r.get('magic lvl'))}"
+                   f"\t{eth}\t{to_int(r.get('maxac'))}\t{to_int(r.get('block'))}\t"
+                   + "\t".join(str(n) for n in socket_caps(game, code)))
+    BASES_FILE.write_text("\n".join(out) + "\n", encoding="utf-8", newline="\n")
+    print(f"wrote {BASES_FILE.relative_to(ROOT)} ({len(game.base_rows)} bases)")
+
+
 def extract_tier_data(game_dir, game=None):
     """For tools/tier_map.py and tools/base_map.py: docs/pd2-bases.tsv (code, name, tier as BH reads it, the base's
     item type and its ancestors, sockets, size), docs/pd2-skills.tsv (ID, name, class), docs/pd2-sounds.tsv (PD2's Sounds.txt: index, name, file) and docs/pd2-palette.tsv (the act 1
@@ -706,24 +743,7 @@ def extract_tier_data(game_dir, game=None):
     game_dir = Path(game_dir)
     game = game or Game(game_dir)
     stamp = datetime.date.today().isoformat()
-    out = [f"# PD2 item bases (Weapons, Armor, Misc) from pd2data.mpq, extracted {stamp} by tools/pd2_data.py: code,",
-           "# name, tier (BH's NORM/EXC/ELT: the code against its ubercode/ultracode), item type and its ancestors,",
-           "# most sockets (gemsockets), inventory width and height (BH's AREA is width x height), spawnable (0: no",
-           "# white drop of this base: a base only some unique uses), quality level (level: BH's QLVL) and magic level",
-           "# (magic lvl): the affix level is BH's ALVL, the game's formula again since the 2026-10-15 beta. eth: 1 if",
-           "# the base has durability (it can drop ethereal), maxac and block: an armor's or shield's top base defense",
-           "# and its base block (tools/label_cuts.py).",
-           "code\tname\ttier\ttypes\tsockets\twidth\theight\tspawnable\tqlvl\tmlvl\teth\tmaxac\tblock"]
-    # a quest item's name can hold a line break ("Right Click to learn skill...\nBook of Skill"): its last line
-    for code in sorted(game.base_rows):
-        r = game.base_rows[code]
-        eth = int(r.get("nodurability", "").strip() in ("", "0") and to_int(r.get("durability")) > 0)
-        out.append(f"{code}\t{game.base_name(code).splitlines()[-1]}\t{game.tier(code)}\t{','.join(game.ancestors(code))}"
-                   f"\t{to_int(r.get('gemsockets'))}\t{to_int(r.get('invwidth'))}\t{to_int(r.get('invheight'))}"
-                   f"\t{to_int(r.get('spawnable'))}\t{to_int(r.get('level'))}\t{to_int(r.get('magic lvl'))}"
-                   f"\t{eth}\t{to_int(r.get('maxac'))}\t{to_int(r.get('block'))}")
-    BASES_FILE.write_text("\n".join(out) + "\n", encoding="utf-8", newline="\n")
-    print(f"wrote {BASES_FILE.relative_to(ROOT)} ({len(out) - 8} bases)")
+    write_bases(game, stamp)
     out = [f"# PD2 skills (Skills.txt, names from the string tables) from pd2data.mpq, extracted {stamp} by",
            "# tools/pd2_data.py: the skill ID the filter's SK<n> / OS<n> read, its name, class (charclass), price columns.",
            "id\tname\tclass\treqlevel\tcostmult\tcostadd\tmaxlvl"]
@@ -995,6 +1015,7 @@ def main():
     ap.add_argument("--extract", metavar="DIABLO_II_FOLDER")
     ap.add_argument("--tier-data", metavar="DIABLO_II_FOLDER")
     ap.add_argument("--shop-data", metavar="DIABLO_II_FOLDER")
+    ap.add_argument("--bases", metavar="DIABLO_II_FOLDER")
     ap.add_argument("--report", metavar="NAME")
     args = ap.parse_args()
     if args.extract:
@@ -1003,6 +1024,8 @@ def main():
         extract_tier_data(args.tier_data)
     elif args.shop_data:
         extract_shop_data(args.shop_data)
+    elif args.bases:
+        write_bases(Game(Path(args.bases)), datetime.date.today().isoformat())
     if args.report is not None:
         for it in load_items():
             if args.report.lower() in it["name"].lower():
@@ -1018,7 +1041,7 @@ def main():
                 for text, p in zip(rw["runetexts"], rw["runestats"]):
                     print(f"    {text:48} " + "  ".join(f"{c} {lo}" + (f"-{hi}" if hi != lo else "") for c, lo, hi in p))
                 print(f"    a white base can bring: {', '.join(rw['addable']) or 'nothing'}")
-    if not args.extract and not args.tier_data and not args.shop_data and args.report is None:
+    if not args.extract and not args.tier_data and not args.shop_data and not args.bases and args.report is None:
         ap.print_help()
 
 

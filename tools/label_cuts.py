@@ -399,7 +399,7 @@ def values_for(it, code, eth, nsock, c360, c206, outcomes):
     v.update({"SOCK": nsock, "STAT360": c360, "STAT206": c206, "ID": 1, "ETH": eth, "ILVL": 99, "QLVL": b["qlvl"],
               "CRAFTALVL": 0, "QTY": 0, "MAPID": T.FIELD_ID, "CLVL": 90, "DIFF": 2, "ALLDISCOVERED": 1,
               "ANYDISCOVERED": 1, "ALLOWNED": 1, "ANYOWNED": 1, "WIDTH": b["width"], "HEIGHT": b["height"],
-              "AREA": b["width"] * b["height"], "MAXSOCKETS": b["sockets"], "BASEBLOCK": b["block"],
+              "AREA": b["width"] * b["height"], "MAXSOCKETS": T.max_sockets(b, 99), "BASEBLOCK": b["block"],
               "ALVL": T.affix_level(99, b["qlvl"], b["mlvl"])})
     return v
 
