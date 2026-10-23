@@ -6169,8 +6169,8 @@ ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (qui OR lea OR hla OR stu OR scl OR
 // Higher-Value Normal tier Armors (Ring Mail, Breast Plate, Gothic Plate, Full Plate Mail, Ancient Armor, Light Plate)
 ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (gth OR ful) ED<19 SOCK=0 CLVL>49 FILTLVL>0 !TOWN]:// Hide 0 socket Gothic Plate and Full Plate Mail with less than 19% ED at character levels 50+
 ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (rng OR brs OR aar OR ltp) ED<19 SOCK=0 CLVL>19 FILTLVL>0 !TOWN]:// Hide 0 socket Ring Mail, Breast Plate, Ancient Armor and Light Plate with less than 19% ED at character levels 20+
-ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (rng OR brs OR gth OR ful OR aar OR ltp) (ED<19 OR SOCK=2) CLVL>29 FILTLVL>0 !(SOCK=4 (gth OR ful) CLVL<70) !TOWN]:// Hide higher-value Normal tier Armors with less than 19% ED or 2 sockets after level 29 (not 4os Gothic Plate or Full Plate Mail below level 70)
-ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (rng OR brs OR gth OR ful OR aar OR ltp) (ED<20 OR SOCK=2) CLVL>29 FILTLVL>2 !TOWN]:// Hide higher-value Normal tier Armors with less than 20% ED or 2 sockets after level 29 on filter levels 3+
+ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (rng OR brs OR gth OR ful OR aar OR ltp) (ED<19 OR SOCK=2) CLVL>29 FILTLVL>0 !(SOCK=4 (gth OR ful) CLVL<70) !(SOCK=0 (gth OR ful) CLVL<50) !TOWN]:// Hide higher-value Normal tier Armors with less than 19% ED or 2 sockets after level 29 (not 4os Gothic Plate or Full Plate Mail below level 70, nor 0os ones below 50: Larzuk bases)
+ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (rng OR brs OR gth OR ful OR aar OR ltp) (ED<20 OR SOCK=2) CLVL>29 FILTLVL>2 !(SOCK=4 (gth OR ful) CLVL<70) !(SOCK=0 (gth OR ful) CLVL<50) !TOWN]:// Hide higher-value Normal tier Armors with less than 20% ED or 2 sockets after level 29 on filter levels 3+ (not 4os Gothic Plate or Full Plate Mail below level 70, nor 0os ones below 50: Larzuk bases)
 //  3os Vendor Tag
 ItemDisplay[NMAG !INF !RW (brs OR rng OR ltp) !GEMMED !ETH SOCK=3 CLVL<30 SHOP]:%TAN%**%LIGHT_GRAY%*%GRAY%*  %GRAY%%NAME%  %GRAY%*%LIGHT_GRAY%*%TAN%**%GRAY%%CONTINUE%// 3os Vendor Tag
 
@@ -6179,12 +6179,14 @@ ItemDisplay[NMAG !INF !RW !GEMMED (xui OR xea OR xla OR xtu OR xlt OR xth OR xul
 ItemDisplay[NMAG !INF !RW !ETH SOCK=2 CLVL<50 (xui OR xea OR xla OR xtu)]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Notify for 2os noneth under level 50
 ItemDisplay[NMAG !INF !RW !ETH (((SOCK=2 OR SOCK=3) (xrs OR xtp)) OR (SOCK=3 (xui OR xea OR xla OR xtu))) CLVL<80]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 2 or 3 socket Cuirass and Mage Plate under level 80
 ItemDisplay[NMAG !INF !RW !GEMMED (xui OR xea OR xla OR xtu) !SOCK=3 FILTLVL>2 CLVL>69 !TOWN]:// Hide Ghost Armor, Serpentskin Armor, Demonhide Armor at filter levels 3+ (S14: 3os ones follow the Cuirass/Mesh rules below)
+ItemDisplay[NMAG !INF !RW !GEMMED (xlt OR xth OR xul OR xar) (ED<13 OR SOCK=2) CLVL>79 FILTLVL>0 !TOWN]:// Hides Templar Coat, Embossed Plate, Chaos Armor and Ornate Plate with less than 13% ED or 2 sockets after level 79
+ItemDisplay[NMAG !INF !RW !GEMMED (xlt OR xth OR xul OR xar) (ED<19 OR SOCK=2) CLVL>79 FILTLVL>4 !TOWN]:// Hides Templar Coat, Embossed Plate, Chaos Armor and Ornate Plate with less than 19% ED or 2 sockets after level 79 on filter levels 5+
 
 // Higher-Value Exceptional tier Armors (Linked Mail, Tigulated Mail, Mesh Armor, Cuirass, Russet Armor, Sharktooth Armor, Mage Plate)
 ItemDisplay[NMAG !INF !RW !GEMMED ((xng OR xcl OR xhn OR xrs OR xpl OR xld OR xtp) OR ((xui OR xea OR xla OR xtu) SOCK=3)) (ED<13 OR SOCK=2) CLVL>79 FILTLVL>0 !TOWN]:// Hides higher-value Exceptional tier Armors with less than 13% ED or 2 sockets after level 79
-ItemDisplay[NMAG !INF !RW SUP !ETH (SOCK=0 OR SOCK=3) ((xng OR xcl OR xhn OR xrs OR xpl OR xld OR xtp) OR ((xui OR xea OR xla OR xtu) SOCK=3)) ED>12 FILTLVL<5]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Superior, 3os
+ItemDisplay[NMAG !INF !RW SUP !ETH (SOCK=0 OR SOCK=3) ((xng OR xcl OR xhn OR xrs OR xpl OR xld OR xtp) OR ((xui OR xea OR xla OR xtu) SOCK=3)) ED>12 FILTLVL<5]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Superior, 0os or 3os
 ItemDisplay[NMAG !INF !RW !GEMMED ((xng OR xcl OR xhn OR xrs OR xpl OR xld OR xtp) OR ((xui OR xea OR xla OR xtu) SOCK=3)) (ED<19 OR SOCK=2) CLVL>79 FILTLVL>4 !TOWN]:// Hides higher-value Exceptional tier Armors with less than 19% ED or 2 sockets after level 79 on filter levels 5+
-ItemDisplay[NMAG !INF !RW SUP !ETH (SOCK=0 OR SOCK=3) ((xng OR xcl OR xhn OR xrs OR xpl OR xld OR xtp) OR ((xui OR xea OR xla OR xtu) SOCK=3)) ED>18 FILTLVL>4]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Superior, 3os
+ItemDisplay[NMAG !INF !RW SUP !ETH (SOCK=0 OR SOCK=3) ((xng OR xcl OR xhn OR xrs OR xpl OR xld OR xtp) OR ((xui OR xea OR xla OR xtu) SOCK=3)) ED>18 FILTLVL>4]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Superior, 0os or 3os
 
 // Elite tier: 
 ItemDisplay[NMAG !INF !RW !SUP !ETH (SOCK=2 OR SOCK=3 OR SOCK=4) ELT CHEST FILTLVL<3 CLVL<80]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 
@@ -6193,10 +6195,10 @@ ItemDisplay[NMAG !INF !RW SUP ED>9 !ETH (SOCK=0 OR SOCK=2 OR SOCK=3 OR SOCK=4) F
 ItemDisplay[NMAG !INF !RW SUP ED>14 !ETH (SOCK=0 OR SOCK=2 OR SOCK=3 OR SOCK=4) FILTLVL~3-4 CLVL>89 ELT CHEST]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Superior
 ItemDisplay[NMAG !INF !RW SUP ED>17 !ETH (SOCK=0 OR SOCK=2 OR SOCK=3 OR SOCK=4) FILTLVL~5-12 CLVL>89 ELT CHEST]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Superior
 
-ItemDisplay[NMAG !INF !RW !SUP ETH (SOCK=0 OR SOCK=2 OR SOCK=3 OR SOCK=4) ELT CHEST FILTLVL<3 CLVL<80]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Elite tier 0os, Eth
-ItemDisplay[NMAG !INF !RW SUP ETH ED>4 (SOCK=0 OR SOCK=3 OR SOCK=4) FILTLVL<3 ELT CHEST]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Elite tier 0os, Superior, Eth
-ItemDisplay[NMAG !INF !RW SUP ETH ED>9 (SOCK=0 OR SOCK=3 OR SOCK=4) FILTLVL>2 CLVL<90 ELT CHEST]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Elite tier 0os, Superior, Eth
-ItemDisplay[NMAG !INF !RW SUP ETH ED>14 (SOCK=0 OR SOCK=3 OR SOCK=4) FILTLVL>2 CLVL>89 ELT CHEST]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Elite tier 0os, Superior, Eth
+ItemDisplay[NMAG !INF !RW !SUP ETH (SOCK=0 OR SOCK=2 OR SOCK=3 OR SOCK=4) ELT CHEST FILTLVL<3 CLVL<80]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Elite tier nonsuperior, Eth
+ItemDisplay[NMAG !INF !RW SUP ETH ED>4 (SOCK=0 OR SOCK=3 OR SOCK=4) FILTLVL<3 ELT CHEST]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Elite tier 0, 3 or 4os, Superior, Eth
+ItemDisplay[NMAG !INF !RW SUP ETH ED>9 (SOCK=0 OR SOCK=3 OR SOCK=4) FILTLVL>2 CLVL<90 ELT CHEST]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Elite tier 0, 3 or 4os, Superior, Eth
+ItemDisplay[NMAG !INF !RW SUP ETH ED>14 (SOCK=0 OR SOCK=3 OR SOCK=4) FILTLVL>2 CLVL>89 ELT CHEST]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Elite tier 0, 3 or 4os, Superior, Eth
 ItemDisplay[NMAG !INF !RW SUP ETH ED>4 SOCK=2 ELT CHEST FILTLVL<5 CLVL<90]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Elite tier 2os, Superior, Eth
 
 // ------------------------------------------------------------------------------
@@ -6251,8 +6253,8 @@ ItemDisplay[NMAG !INF !RW uit (SOCK=2 OR SOCK=3) FILTLVL>0 !TOWN]:// Hide 2os an
 ItemDisplay[NMAG !INF !RW uit SOCK=0 ED<5 CLVL>79 FILTLVL>0 !TOWN]:// Hide nonsuperior 0os Monarch after level 79
 ItemDisplay[NMAG !INF !RW uit ED<5 CLVL>79 FILTLVL>2 !TOWN]:// Hide all nonsuperior Monarchs after level 79 on filter levels 3+
 ItemDisplay[NMAG !INF !RW uit ED<15 FILTLVL>4 !TOWN]:// Hide Monarchs with less than 15% ED on filter levels 5+
-ItemDisplay[NMAG !INF !RW uit SOCK=0 !ETH CLVL<80 !PALADIN !NECROMANCER !ASSASSIN]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Show and notify for 0os Monarchs before level 80
-ItemDisplay[NMAG !INF !RW uit SOCK=4 !ETH CLVL<80 !PALADIN !NECROMANCER !ASSASSIN]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Show and notify for 4os Monarchs before level 80
+ItemDisplay[NMAG !INF !RW uit SOCK=0 !ETH CLVL<80 !PALADIN !NECROMANCER !ASSASSIN !(FILTLVL>4 ED<15)]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Show and notify for 0os Monarchs before level 80 (on filter levels 5+ only those 335 shows)
+ItemDisplay[NMAG !INF !RW uit SOCK=4 !ETH CLVL<80 !PALADIN !NECROMANCER !ASSASSIN !(FILTLVL>4 ED<15)]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Show and notify for 4os Monarchs before level 80 (on filter levels 5+ only those 335 shows)
 
 //      Aegis
 ItemDisplay[NMAG !INF !RW uow !ETH ED<5 FILTLVL>0 !TOWN]:// Hide noneth non-sup Aegis
@@ -6273,6 +6275,7 @@ ItemDisplay[NMAG !INF !RW ush ETH FILTLVL>0 !TOWN]:// Hide eth Troll Nests
 ItemDisplay[NMAG !INF !RW ush ED<5 !ETH SOCK=0 FILTLVL>0 !TOWN]:// Hide noneth 0os Troll Nests
 ItemDisplay[NMAG !INF !RW ush SOCK=2 FILTLVL>2 !TOWN]:// Hide 2os Troll Nests on filter levels 3+
 ItemDisplay[NMAG !INF !RW ush ED<5 CLVL>79 FILTLVL>2 !TOWN]:// Hide Troll Nests without 5 or more ED after level 79 on filter levels 3+
+ItemDisplay[NMAG !INF !RW ush ED<15 FILTLVL>4 !TOWN]:// Hide Troll Nests with less than 15% ED on filter levels 5+
 
 // ------------------------------------------------------------------------------
 //    ==============================  Circlets  ==============================   
@@ -6305,10 +6308,6 @@ ItemDisplay[NMAG !INF !RW ci3 FILTLVL=12 !ETH SOCK=0 !TOWN]://
 //    ===============================  Helms  ===============================   
 // ------------------------------------------------------------------------------
 // These are generic lines for showing all helms of a certain tier and certain conditions (sockets, superior, and/or ethereal)
-// All tiers
-
-// Hide normal and exceptional helms without ED on filter levels 3+ character level 80+
-ItemDisplay[NMAG !INF !RW HELM (NORM OR EXC) !GEMMED !CIRC !BAR !DRU ED<5 FILTLVL>2 CLVL>79 !TOWN]://
 
 // Hides 0os Normal helms
 ItemDisplay[NMAG !INF !RW HELM !CIRC !BAR !DRU NORM SOCK=0 CLVL>5 FILTLVL>0 !TOWN]://
@@ -6333,7 +6332,7 @@ ItemDisplay[NMAG !INF !RW HELM !GEMMED !CIRC !BAR !DRU EXC SOCK=2 CLVL>49 FILTLV
 // Hides Exceptional 3os Helms Past 79
 ItemDisplay[NMAG !INF !RW HELM !GEMMED !CIRC !BAR !DRU EXC SOCK=3 CLVL>79 FILTLVL>0 !TOWN]://
 
-// Hide elite helms without ED on filter levels 5+ character level 80+
+// Hide elite helms with less than 15% ED on filter levels 5+ character level 80+
 ItemDisplay[NMAG !INF !RW HELM ELT !GEMMED !CIRC !BAR !DRU ED<15 FILTLVL>4 CLVL>79 !TOWN]://
 
 // Hides 0os non-eth Elite Helms without ED
