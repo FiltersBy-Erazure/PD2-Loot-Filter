@@ -24,7 +24,7 @@ Pick a version in the launcher, then click **Save Filter** on the right side.
   Erazure - Main - PoE and Erazure - BIG GG - PoE: his own colors, symbols and PoE sound picks, with the same
   filter levels
 
-<img width="994" height="741" alt="The Erazure filter versions in the PD2 launcher" src="https://github.com/user-attachments/assets/9835b0c1-36c6-402a-8bfa-51288c6f46a9" />
+![The Erazure filter versions in the PD2 launcher](img/launcher-versions.png){ width="994" }
 
 ## In the launcher
 
