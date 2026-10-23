@@ -18,6 +18,9 @@ if errorlevel 1 goto failed
 rem Runeword roll tags: picks file (e.g. saved from the runeword picker page) -> generated section
 python tools\gen_runeword_rolls.py
 if errorlevel 1 goto failed
+rem Boss gear tags (Rathma / D.Clone / Lucion): tools\boss_tag_rules.json (the rules page's edits) -> generated section
+python tools\gen_boss_tags.py
+if errorlevel 1 goto failed
 python tools\build.py --stamp
 if errorlevel 1 goto failed
 rem Unique/set tier page for players (Erazure-Unique-Set-Tiers.html, read from the filter's rules): after the

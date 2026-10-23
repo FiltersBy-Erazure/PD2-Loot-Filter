@@ -1,0 +1,1039 @@
+<title>Boss Tag Rules</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a sticky bar of item types; under it the chosen type's three boss columns, each a stack of rule cards. */
+:root {
+  --bg: #f2f0eb; --panel: #ffffff; --sunk: #f7f5f0; --line: #dcd5c7; --fg: #24211b; --muted: #6c6455;
+  --gold: #86621a; --tag-bg: #17140f; --tag-red: #ff4d4d; --red: #b3261e; --warn: #9a5b00; --warn-bg: #fbefd9;
+  --ok: #2f6b45; --ok-bg: #e2f0e6; --chip: #ece7dc; --chip-on: #e7d6ae; --focus: #86621a;
+  --display: "Cinzel", "Trajan Pro", Georgia, serif;
+  --body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", "Cascadia Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15130f; --panel: #1f1c16; --sunk: #191612; --line: #39322a; --fg: #e9e1cf; --muted: #a59a84;
+    --gold: #d6b468; --tag-bg: #0c0a07; --red: #f07a6f; --warn: #e8b05a; --warn-bg: #3a2c14;
+    --ok: #86c39b; --ok-bg: #1d3226; --chip: #2a251e; --chip-on: #5a4721; --focus: #d6b468; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15130f; --panel: #1f1c16; --sunk: #191612; --line: #39322a; --fg: #e9e1cf; --muted: #a59a84;
+  --gold: #d6b468; --tag-bg: #0c0a07; --red: #f07a6f; --warn: #e8b05a; --warn-bg: #3a2c14;
+  --ok: #86c39b; --ok-bg: #1d3226; --chip: #2a251e; --chip-on: #5a4721; --focus: #d6b468; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 15px; line-height: 1.45; margin: 0; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--panel); }
+button, select, input, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--panel); border-bottom: 1px solid var(--line);
+  padding-block: 10px 0; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.bar-top { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+h1 { font-family: var(--display); font-size: 22px; letter-spacing: .03em; margin: 0; text-wrap: balance; }
+.status { font-size: 13px; padding: 2px 10px; border-radius: 999px; background: var(--chip); color: var(--muted); }
+.status.ok { background: var(--ok-bg); color: var(--ok); }
+.status.warn { background: var(--warn-bg); color: var(--warn); }
+.bar-note { color: var(--muted); font-size: 13px; margin-left: auto; display: flex; gap: 12px; align-items: center; }
+.bar-note label { display: inline-flex; gap: 6px; align-items: center; cursor: pointer; }
+.slots { display: flex; gap: 2px; overflow-x: auto; margin-top: 8px; scrollbar-width: thin; }
+.slot-btn { border: 0; background: none; padding: 8px 12px 10px; border-bottom: 3px solid transparent; cursor: pointer; white-space: nowrap; color: var(--muted); display: grid; gap: 3px; justify-items: start; }
+.slot-btn[aria-selected="true"] { color: var(--fg); border-bottom-color: var(--gold); font-weight: 600; }
+.slot-btn .dots { display: flex; gap: 3px; }
+.dot { width: 7px; height: 7px; border-radius: 50%; background: var(--line); }
+.dot.on { background: var(--tag-red); }
+.slot-btn .chg { font-size: 11px; color: var(--gold); font-weight: 600; }
+main { padding-block: 16px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 14px; }
+.slot-head { display: grid; gap: 4px; max-width: 110ch; }
+.slot-head h2 { font-family: var(--display); font-size: 20px; margin: 0; letter-spacing: .02em; }
+.slot-head p { margin: 0; color: var(--muted); font-size: 14px; }
+.bosses { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr)); gap: 14px; align-items: start; }
+.boss { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; display: grid; gap: 0; min-width: 0; }
+.boss.off > .boss-body { opacity: .55; }
+.boss-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 12px 14px; border-bottom: 1px solid var(--line); }
+.tag { background: var(--tag-bg); color: var(--tag-red); font-weight: 700; padding: 2px 10px; border-radius: 3px; letter-spacing: .02em; }
+.switch { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font-size: 14px; }
+.badge { font-size: 12px; font-weight: 600; padding: 1px 8px; border-radius: 999px; background: var(--chip-on); color: var(--fg); }
+.head-actions { margin-left: auto; display: flex; gap: 6px; flex-wrap: wrap; }
+.btn { border: 1px solid var(--line); background: var(--sunk); border-radius: 5px; padding: 3px 10px; cursor: pointer; font-size: 13px; }
+.btn:hover { border-color: var(--gold); }
+.btn.link { border: 0; background: none; color: var(--gold); padding: 2px 4px; font-weight: 600; }
+.btn.small { padding: 1px 7px; font-size: 12px; }
+.boss-body { padding: 12px 14px 14px; display: grid; gap: 14px; min-width: 0; }
+.sec { display: grid; gap: 8px; min-width: 0; }
+.sec-title { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 700; display: flex; align-items: center; gap: 8px; }
+.sec-title .btn { text-transform: none; letter-spacing: 0; font-weight: 600; }
+.version { border: 1px solid var(--line); border-radius: 6px; background: var(--sunk); padding: 10px; display: grid; gap: 12px; min-width: 0; }
+.version h3 { margin: 0; font-size: 15px; display: flex; gap: 8px; align-items: center; }
+.group { border-left: 3px solid var(--line); padding-left: 8px; display: grid; gap: 6px; min-width: 0; }
+.group.multi { border-left-color: var(--gold); }
+.group-head { font-size: 13px; color: var(--muted); display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.term { display: grid; gap: 3px; min-width: 0; }
+.term-line { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.term select, .term input[type=number], .need input, .version input[type=number] { background: var(--panel); border: 1px solid var(--line); border-radius: 4px; padding: 3px 6px; }
+.term select.stat { flex: 1 1 150px; max-width: 240px; min-width: 0; }
+.term select.out { flex: 1 1 170px; min-width: 0; max-width: 100%; }
+.term input[type=number] { width: 58px; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.term .plus { color: var(--muted); font-size: 13px; }
+.x { border: 0; background: none; color: var(--muted); cursor: pointer; font-size: 16px; line-height: 1; padding: 2px 6px; margin-left: auto; flex: none; }
+.x:hover { color: var(--red); }
+.rolls { font-size: 12px; color: var(--muted); font-family: var(--mono); line-height: 1.5; overflow-wrap: anywhere; }
+.rolls b { color: var(--fg); font-weight: 600; }
+.rolls .dim { opacity: .55; }
+.rolls .r3 { color: var(--gold); }
+.warn { font-size: 12px; color: var(--warn); background: var(--warn-bg); padding: 2px 6px; border-radius: 4px; width: fit-content; }
+.chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.chip { border: 1px dashed var(--line); background: none; color: var(--muted); border-radius: 999px; padding: 1px 9px; font-size: 12px; cursor: pointer; }
+.chip[aria-pressed="true"] { background: var(--gold); border: 1px solid var(--gold); color: var(--panel); font-weight: 600; }
+.chip[aria-pressed="true"]::before { content: "✓ "; }
+.chip.cant { text-decoration: line-through; opacity: .6; }
+.tabgrid { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 4px 10px; align-items: center; margin-top: 2px; }
+.tabgrid > span { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+@media (max-width: 520px) { .tabgrid { grid-template-columns: minmax(0, 1fr); } }
+.need { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font-weight: 600; }
+.need input { width: 56px; font-family: var(--mono); }
+.need small { font-weight: 400; color: var(--muted); }
+textarea.note { width: 100%; min-height: 54px; resize: vertical; background: var(--panel); border: 1px solid var(--line); border-radius: 5px; padding: 6px 8px; }
+.passes { display: grid; gap: 8px; border-top: 1px dashed var(--line); padding-top: 10px; min-width: 0; }
+.passes-head { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 13px; color: var(--muted); }
+.pass { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 7px 9px; display: grid; gap: 5px; font-size: 13px; min-width: 0; }
+.pass .stats { display: flex; flex-wrap: wrap; gap: 4px; }
+.pass .st { background: var(--ok-bg); color: var(--ok); border-radius: 4px; padding: 1px 7px; }
+.pass .rq { background: var(--chip); color: var(--muted); border-radius: 4px; padding: 1px 7px; }
+.pass .src { font-size: 12px; color: var(--muted); overflow-wrap: anywhere; }
+.pass .meta { font-size: 12px; color: var(--muted); font-family: var(--mono); }
+.empty { color: var(--muted); font-size: 14px; }
+.banner { background: var(--warn-bg); color: var(--warn); font-weight: 600; padding-block: 8px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); border-bottom: 1px solid var(--line); }
+.help { color: var(--muted); font-size: 13px; max-width: 110ch; margin: 0; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="bar">
+  <div class="bar-top">
+    <h1>Boss Tag Rules</h1>
+    <span class="status" id="status">Loading saved rules…</span>
+    <div class="bar-note">
+      <span id="changed"></span>
+      <label for="showRolls"><input type="checkbox" id="showRolls" checked> Show rolls</label>
+    </div>
+  </div>
+  <div class="slots" id="slots" role="tablist" aria-label="Item types"></div>
+</div>
+<div class="banner" id="banner" role="status" hidden></div>
+<main id="main"></main>
+
+<script>
+const DATA = /*__DATA__*/null;
+const BOSSES = DATA.bosses.map(([k, n]) => ({ key: k, name: n }));
+const CAT = Object.fromEntries(DATA.catalog.map(c => [c.code, c]));
+const TABS = DATA.tabs; // [num, name, class]
+const BASE = DATA.rules;
+const clone = o => JSON.parse(JSON.stringify(o));
+const canon = o => JSON.stringify(o, (k, v) => (v && typeof v === "object" && !Array.isArray(v)) ?
+  Object.fromEntries(Object.keys(v).sort().map(x => [x, v[x]])) : v);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+
+const state = clone(BASE);
+const PASSES = {};
+let db = null, editable = true;
+const SLOTS = DATA.slots.map(s => prepSlot(s));
+const SLOT = Object.fromEntries(SLOTS.map(s => [s.key, s]));
+let current = SLOTS[0].key;
+try { const k = localStorage.getItem("bossTagSlot"); if (k && SLOT[k]) current = k; } catch (e) {}
+let showRolls = true;
+try { showRolls = localStorage.getItem("bossTagRolls") !== "0"; } catch (e) {}
+document.getElementById("showRolls").checked = showRolls;
+
+// ---------- slot data: affix groups, corruptions
+function prepSlot(s) {
+  const groups = new Map();
+  for (const src of s.sources) {
+    if (!groups.has(src.g)) groups.set(src.g, []);
+    groups.get(src.g).push(src);
+  }
+  for (const tiers of groups.values()) tiers.sort((a, b) => a.a - b.a);
+  const corr = Object.fromEntries(s.corruptions.map(c => [c.id, c]));
+  const magic = s.quality === "magic";
+  return { ...s, groups, corr, limit: magic ? { P: 1, S: 1 } : { P: 3, S: 3 } };
+}
+
+// ---------- terms
+// what a desirable stat can add to the count: its weight; cannot be frozen counts 2 (half freeze 1)
+const termWeight = t => (t.w || 1) * (t.s === "FREEZE" ? 2 : 1);
+function termText(slot, t) {
+  const c = CAT[t.s];
+  if (t.s === "CORR") return t.is === 0 ? "Not corrupted" : "Corrupted to " + (slot.corr[t.is] ? slot.corr[t.is].label : "outcome " + t.is);
+  if (t.s === "TABS") return `+${t.min} to a skill tab (${t.tabs.length === TABS.length ? "any" : t.tabs.length})`;
+  if (t.s === "CLSK") return `+${t.min} class skills (${t.classes.length === 7 ? "any class" : t.classes.map(x => DATA.classes[x]).join(", ")})`;
+  if (t.s === "MAXEXTRA") return `${t.min}+ max ${DATA.maxres[t.res]} res prefix`;
+  if (c.kind === "flag") return c.label;
+  if (t.s === "ALLSK") return `+${t.min} all skills`;
+  if (t.s === "STAT216" && t.min <= 1) return "Life per level";
+  return `${t.min}+ ${c.short}`;
+}
+function defaultTerm(slot, s, old) {
+  const c = CAT[s];
+  if (s === "CORR") return { s, is: 0 };
+  if (s === "TABS") return { s, min: 2, tabs: TABS.map(t => t[0]).filter(x => sourcesFor(slot, "TABSK" + x).length) };
+  if (s === "CLSK") return { s, min: 2, classes: [0, 1, 2, 3, 4, 5, 6] };
+  if (s === "MAXEXTRA") return { s, res: "STAT40", min: 2 };
+  if (c.kind === "flag") return { s };
+  const best = maxRoll(slot, s);
+  const keep = old && typeof old.min === "number" ? old.min : null;
+  return { s, min: keep ?? (best ? Math.max(1, Math.ceil(best / 2)) : 1) };
+}
+// the author's skill tabs per version (2026-10-22): a caster / physical split starts its Skill tab stats with these
+const VERSION_TABS = {
+  Caster: [1, 8, 9, 10, 17, 18, 24, 34, 40, 42, 48, 49],
+  Physical: [0, 2, 17, 24, 25, 32, 33, 34, 41, 48, 49, 50],
+};
+function versionTabs(v) {
+  const tabs = VERSION_TABS[v.name];
+  if (!tabs) return;
+  for (const t of v.pool.concat(...v.require.map(g => g.any))) if (t.s === "TABS") t.tabs = tabs.slice();
+}
+// a split's caster version leaves out the physical stats and its physical version the caster ones (the catalog's role)
+const VERSION_DROPS = { Caster: "physical", Physical: "caster" };
+function versionStats(v) {
+  const drop = VERSION_DROPS[v.name];
+  if (!drop) return;
+  const keep = t => !CAT[t.s] || CAT[t.s].role !== drop;
+  v.pool = v.pool.filter(keep);
+  v.require = v.require.map(g => ({ ...g, any: g.any.filter(keep) })).filter(g => g.any.length);
+  for (const g of v.require) { if ((g.need || 1) > g.any.length) g.need = g.any.length; if (g.need === 1) delete g.need; }
+  const total = v.pool.reduce((s, t) => s + termWeight(t), 0);
+  if (v.need > total) v.need = Math.max(1, total);
+}
+// ... and gets every other stat that rolls on this item type and suits it (the author, 2026-10-22: "prepopulate all
+// affixes that are relevant"), at the usual starting threshold; a stat the rule already requires is not added
+const NOT_ADDED = new Set(["CORR", "MAXEXTRA", "STAT118", "STAT153"]);
+// nor the elements a boss doesn't deal (as the author's amulet pools: Rathma fire / cold / poison and poison length,
+// D.Clone fire / lightning, Lucion lightning)
+const BOSS_SKIP = {
+  RA: ["LRES", "STAT42"],
+  DC: ["CRES", "PRES", "STAT44", "STAT46", "STAT110"],
+  LU: ["FRES", "CRES", "PRES", "STAT40", "STAT44", "STAT46", "STAT110"],
+};
+function versionFill(slot, b, rule, v) {
+  const drop = VERSION_DROPS[v.name];
+  if (!drop) return;
+  const used = new Set(BOSS_SKIP[b] || []);
+  for (const t of v.pool.concat(...v.require.map(g => g.any), ...rule.require.map(g => g.any))) {
+    used.add(t.s);
+    if (t.s === "MAXEXTRA") used.add(t.res);  // a belt's max res prefix counts there already
+    if (["FREEZE", "STAT118", "STAT153"].includes(t.s)) ["FREEZE", "STAT118", "STAT153"].forEach(x => used.add(x));
+  }
+  for (const c of DATA.catalog) {
+    if (NOT_ADDED.has(c.code) || c.role === drop || used.has(c.code)) continue;
+    const t = defaultTerm(slot, c.code);
+    if (c.code === "TABS" || c.code === "CLSK") {
+      if (c.code === "TABS" && VERSION_TABS[v.name]) t.tabs = VERSION_TABS[v.name].slice();
+      const top = Math.max(0, ...(c.code === "TABS" ? t.tabs.map(n => maxRoll(slot, "TABSK" + n)) : t.classes.map(n => maxRoll(slot, "CLSK" + n))));
+      if (!top) continue;
+      t.min = Math.min(t.min, top);
+    } else if (!maxRoll(slot, c.code)) continue;
+    v.pool.push(t);
+  }
+}
+function sourcesFor(slot, code) {
+  return slot.sources.filter(x => x.st[code]);
+}
+function maxRoll(slot, code) {
+  let m = 0;
+  for (const x of slot.sources) if (x.st[code]) m = Math.max(m, x.st[code][1]);
+  for (const c of slot.corruptions) if (c.st[code]) m = Math.max(m, c.st[code][1]);
+  for (const c of slot.crafts) if (c.st[code]) m = Math.max(m, c.st[code][1]);
+  return m;
+}
+// a crafted item: its craft's fixed stats and up to 4 random affixes (the author, 2026-10-22), of those that roll on
+// any quality (rare 1: not magic-only, not "not crafted" 2, not rare-only 3)
+const CRAFT_AFFIXES = 4;
+const craftable = x => x.r === 1;
+
+// roll ranges shown under a term: what this item type can roll of that stat
+function rollsHtml(slot, t) {
+  if (t.s === "CORR") return "";
+  const code = t.s === "MAXEXTRA" ? t.res : t.s;
+  if (t.s === "TABS" || t.s === "CLSK") {
+    const list = t.s === "TABS" ? t.tabs.map(x => ["TABSK" + x, TABS.find(y => y[0] === x)[1]]) :
+      t.classes.map(x => ["CLSK" + x, DATA.classes[x]]);
+    const can = list.filter(([k]) => maxRoll(slot, k) >= t.min).map(([, n]) => n);
+    const top = Math.max(0, ...list.map(([k]) => maxRoll(slot, k)));
+    if (!can.length) return `<div class="warn">${top ? `At most +${top} here` : "None of these roll on " + esc(slot.name.toLowerCase())}</div>`;
+    if (!showRolls) return "";
+    if (t.s === "TABS") {  // the chips name the tabs: say only which chosen ones fall short
+      const not = list.filter(([k]) => maxRoll(slot, k) < t.min).map(([, n]) => n);
+      return `<div class="rolls">Rolls +${t.min} here: ${not.length ? `${can.length} of ${list.length} chosen tabs (not ${esc(not.join(", "))})` : "every chosen tab"}</div>`;
+    }
+    return `<div class="rolls">Rolls +${t.min} here: ${esc(can.join(", "))}</div>`;
+  }
+  const tiers = [];
+  const seen = new Set();
+  for (const x of slot.sources) {
+    if (!x.st[code]) continue;
+    const [lo, hi] = x.st[code];
+    const key = `${lo}-${hi}-${x.a}-${x.r}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    tiers.push({ lo, hi, a: x.a, r: x.r, n: x.n, k: x.k, v: x.v });
+  }
+  tiers.sort((a, b) => a.hi - b.hi || a.a - b.a);
+  const corr = t.s === "MAXEXTRA" ? [] : slot.corruptions.filter(c => c.st[code] && !(t.skip && c.id === t.skip));
+  const min = CAT[t.s] && CAT[t.s].kind === "flag" ? 1 : t.min;
+  const flag = CAT[t.s] && CAT[t.s].kind === "flag";
+  const crafts = t.s === "MAXEXTRA" ? [] : slot.crafts.filter(c => c.st[code]);
+  const best = Math.max(0, ...tiers.map(x => x.hi), ...corr.map(c => c.st[code][1]), ...crafts.map(c => c.st[code][1]));
+  // two affix groups and a corruption can add up (a corruption never with the max res prefix part), on a crafted
+  // item with the craft's own
+  const tops = keep => {
+    const out = [];
+    for (const [, ts] of slot.groups) { const hs = ts.filter(x => x.st[code] && keep(x)).map(x => x.st[code][1]); if (hs.length) out.push(Math.max(...hs)); }
+    return out.sort((a, b) => b - a);
+  };
+  const groupTops = tops(() => true), craftTops = tops(craftable);
+  const outcomes = slot.desecrate ? 2 : 1;  // amulets: corrupted, then desecrated (the same outcome twice too)
+  const corrTop = outcomes * Math.max(0, ...corr.map(c => c.st[code][1]));
+  let together = Math.max((groupTops[0] || 0) + (groupTops[1] || 0) + corrTop,
+    crafts.length ? Math.max(...crafts.map(c => c.st[code][1])) + (craftTops[0] || 0) + (craftTops[1] || 0) + corrTop : 0);
+  if (code === "SOCK") together = Math.min(together, slot.sockets);
+  if (flag) together = best;
+  let warn = "";
+  if (!tiers.length && !corr.length && !crafts.length) warn = `<div class="warn">${t.skip ? "Only the max life corruption gives it here: never counts" : "Never rolls on " + esc(slot.name.toLowerCase())}</div>`;
+  else if (together < min) warn = `<div class="warn">Nothing here reaches ${min} (best ${together}${together > best ? (", two affixes" + (crafts.length ? ", a craft" : "") + (slot.desecrate ? ", a corruption and a desecration together" : " and a corruption together")) : ""})</div>`;
+  if (!showRolls) return warn;
+  const parts = tiers.map(x => {
+    const range = flag ? x.n : (x.lo === x.hi ? `${x.hi}` : `${x.lo}-${x.hi}`);
+    const tag = x.r === 3 ? ` <span class="r3" title="dropped rares only">R</span>` : "";
+    const only = x.v ? ` (${x.v.map(i => slot.variants[i]).join(", ")})` : "";
+    const txt = `<span title="${esc(x.n)} (${x.k === "P" ? "prefix" : "suffix"}), affix level ${x.a}${esc(only)}">${range}${flag ? "" : ` a${x.a}`}${tag}</span>`;
+    return x.hi >= min ? `<b>${txt}</b>` : `<span class="dim">${txt}</span>`;
+  });
+  for (const c of corr) {
+    const [lo, hi] = c.st[code];
+    const txt = `corr ${flag ? "" : (lo === hi ? hi : lo + "-" + hi)}${slot.desecrate && !flag ? " (×2 desecrated)" : ""}`.trim();
+    parts.push(hi >= min ? `<b title="${esc(c.label)}">${txt}</b>` : `<span class="dim" title="${esc(c.label)}">${txt}</span>`);
+  }
+  for (const c of crafts) {
+    const [lo, hi] = c.st[code];
+    const txt = `${c.n} craft${flag ? "" : " " + (lo === hi ? hi : lo + "-" + hi)}`;
+    const tip = `${c.n} craft: ${c.label}`;
+    parts.push(hi >= min ? `<b title="${esc(tip)}">${esc(txt)}</b>` : `<span class="dim" title="${esc(tip)}">${esc(txt)}</span>`);
+  }
+  if (!flag && together > best && together >= min && best < min) parts.push(`<b>${min}+ only with two sources (up to ${together})</b>`);
+  return warn + (parts.length ? `<div class="rolls">${parts.join(" · ")}</div>` : "");
+}
+
+function statOptions(slot, sel) {
+  const groups = {};
+  for (const c of DATA.catalog) (groups[c.group] = groups[c.group] || []).push(c);
+  let html = "";
+  for (const [g, list] of Object.entries(groups)) {
+    html += `<optgroup label="${esc(g)}">` + list.map(c => {
+      const never = !["CORR", "TABS", "CLSK", "MAXEXTRA"].includes(c.code) && !maxRoll(slot, c.code);
+      return `<option value="${c.code}"${c.code === sel ? " selected" : ""}>${esc(c.label)}${c.role ? ` · ${c.role}` : ""}${never ? " (never here)" : ""}</option>`;
+    }).join("") + "</optgroup>";
+  }
+  return html;
+}
+
+function termHtml(slot, b, path, t, inPool) {
+  const c = CAT[t.s];
+  const id = `${current}.${b}.${path}`;
+  let ctl = "", below = "";
+  if (t.s === "CORR") {
+    ctl = `<select class="out" data-act="term-is" data-b="${b}" data-p="${path}" id="${id}.is" aria-label="Corruption outcome">` +
+      `<option value="0"${t.is === 0 ? " selected" : ""}>Not corrupted</option>` +
+      slot.corruptions.map(o => `<option value="${o.id}"${t.is === o.id ? " selected" : ""}>${o.id}: ${esc(o.label)}</option>`).join("") +
+      (t.is && !slot.corr[t.is] ? `<option value="${t.is}" selected>${t.is}: not on this item type</option>` : "") + `</select>`;
+  } else if (t.s === "TABS") {
+    const byCls = {};
+    for (const [num, name, cls] of TABS) (byCls[cls] = byCls[cls] || []).push([num, name]);
+    // every tab a chip, always in view: click one to take it in or out (2026-10-22: the author never found them folded away)
+    ctl = numInput(b, path, t, id) + `<span class="plus">${t.tabs.length} of ${TABS.length} tabs</span>`;
+    below = `<div class="tabgrid">` + Object.entries(byCls).map(([cls, list]) => `<span>${esc(cls)}</span><div class="chips">` +
+      list.map(([num, name]) => {
+        const top = maxRoll(slot, "TABSK" + num);
+        const tip = t.tabs.length === 1 && t.tabs.includes(num) ? "The last tab: remove the stat with × instead" :
+          top < t.min ? (top ? `At most +${top} here` : "Never rolls here") : (t.tabs.includes(num) ? "Click to take it out" : "Click to add it");
+        return `<button class="chip${top >= t.min ? "" : " cant"}" data-act="term-tab" data-b="${b}" data-p="${path}" data-x="${num}" aria-pressed="${t.tabs.includes(num)}" title="${tip}">${esc(name)}</button>`;
+      }).join("") + `</div>`).join("") + `</div>`;
+  } else if (t.s === "CLSK") {
+    ctl = numInput(b, path, t, id) + `<div class="chips">` + DATA.classes.map((n, i) =>
+      `<button class="chip${maxRoll(slot, "CLSK" + i) ? "" : " cant"}" data-act="term-cls" data-b="${b}" data-p="${path}" data-x="${i}" aria-pressed="${t.classes.includes(i)}">${esc(n)}</button>`).join("") + `</div>`;
+  } else if (t.s === "MAXEXTRA") {
+    ctl = `<select data-act="term-res" data-b="${b}" data-p="${path}" id="${id}.res" aria-label="Which maximum resistance">` +
+      Object.entries(DATA.maxres).map(([k, n]) => `<option value="${k}"${t.res === k ? " selected" : ""}>${esc(n)}</option>`).join("") +
+      `</select>` + numInput(b, path, t, id);
+  } else if (c.kind !== "flag") {
+    ctl = numInput(b, path, t, id);
+    if (t.s === "STAT76") ctl += `<label class="plus"><input type="checkbox" data-act="term-skip" data-b="${b}" data-p="${path}" id="${id}.skip"${t.skip ? " checked" : ""}> not from the max life corruption</label>`;
+  }
+  const w = inPool ? `<select data-act="term-w" data-b="${b}" data-p="${path}" id="${id}.w" aria-label="Counts as" title="Counts as">` +
+    [1, 2, 3].map(n => `<option value="${n}"${(t.w || 1) === n ? " selected" : ""}>×${n}</option>`).join("") + `</select>` : "";
+  return `<div class="term"><div class="term-line"><select class="stat" data-act="term-stat" data-b="${b}" data-p="${path}" id="${id}.s" aria-label="Stat">${statOptions(slot, t.s)}</select>${ctl}${w}` +
+    `<button class="x" data-act="del-term" data-b="${b}" data-p="${path}" aria-label="Remove ${esc(termText(slot, t))}" title="Remove">×</button></div>${below}${rollsHtml(slot, t)}</div>`;
+}
+function numInput(b, path, t, id) {
+  return `<input type="number" min="0" step="1" value="${t.min}" data-act="term-min" data-b="${b}" data-p="${path}" id="${id}.min" aria-label="At least"><span class="plus">+</span>`;
+}
+
+function groupHtml(slot, b, path, g) {
+  const multi = g.any.length > 1;
+  const need = g.need || 1;
+  const head = multi ? `<div class="group-head"><span>Any</span><input type="number" min="1" max="${g.any.length}" value="${need}" style="width:48px" data-act="grp-need" data-b="${b}" data-p="${path}" id="${current}.${b}.${path}.need" aria-label="How many of these"><span>of these:</span></div>` : "";
+  return `<div class="group${multi ? " multi" : ""}">${head}` +
+    g.any.map((t, i) => termHtml(slot, b, `${path}.any.${i}`, t, false)).join("") +
+    `<button class="btn link small" data-act="add-alt" data-b="${b}" data-p="${path}">+ or…</button></div>`;
+}
+
+function reqHtml(slot, b, path, groups, title) {
+  return `<div class="sec"><div class="sec-title">${title}<button class="btn small" data-act="add-req" data-b="${b}" data-p="${path}">+ requirement</button></div>` +
+    (groups.length ? groups.map((g, i) => groupHtml(slot, b, `${path}.${i}`, g)).join("") : `<div class="empty">Nothing required.</div>`) + `</div>`;
+}
+
+function versionHtml(slot, b, rule, vi) {
+  const v = rule.versions[vi];
+  const path = `versions.${vi}`;
+  const total = v.pool.reduce((s, t) => s + termWeight(t), 0);
+  const many = rule.versions.length > 1;
+  return `<div class="version">${many ? `<h3>${esc(v.name || "Version " + (vi + 1))}</h3>` : ""}` +
+    (many || v.require.length ? reqHtml(slot, b, `${path}.require`, v.require, many ? "Also required" : "Also required") : "") +
+    `<div class="sec"><div class="sec-title">Desirable stats<button class="btn small" data-act="add-pool" data-b="${b}" data-p="${path}.pool">+ stat</button></div>` +
+    (v.pool.length ? v.pool.map((t, i) => termHtml(slot, b, `${path}.pool.${i}`, t, true)).join("") : `<div class="empty">No desirable stats: the requirements alone decide.</div>`) + `</div>` +
+    (v.pool.length ? `<div class="need">Needs <input type="number" min="1" max="${total}" value="${v.need}" data-act="ver-need" data-b="${b}" data-p="${path}" id="${current}.${b}.${path}.need" aria-label="Desirable stats needed"> of these <small>(${total} in the list)</small></div>` : "") +
+    `<div class="passes" id="passes-${b}-${vi}">${passesIntro(b, vi)}</div></div>`;
+}
+
+function passesIntro(b, vi) {
+  const done = PASSES[`${current}.${b}.${vi}`];
+  return `<div class="passes-head"><button class="btn small" data-act="passes" data-b="${b}" data-v="${vi}">${done ? "Find again" : "Weakest passes"}</button><span>${done ? esc(done.summary) : "The cheapest stat combinations that still get this tag."}</span></div>` + (done ? done.html : "");
+}
+
+function bossHtml(slot, boss) {
+  const b = boss.key;
+  const rule = state[slot.key][b];
+  const changed = canon(rule) !== canon(BASE[slot.key][b]);
+  const other = b === "LU" ? "DC" : b === "DC" ? "LU" : null;
+  const copy = other ? `<button class="btn small" data-act="copy" data-b="${b}" data-from="${other}" title="Copy ${BOSSES.find(x => x.key === other).name}'s rule here, fire and lightning swapped">Copy ${BOSSES.find(x => x.key === other).name}</button>` : "";
+  const split = rule.versions.length === 1 ? `<button class="btn small" data-act="split" data-b="${b}">Caster / physical</button>` :
+    rule.versions.length === 2 ? `<button class="btn small" data-act="merge" data-b="${b}" title="Keep the caster version only">One version</button>` : "";
+  return `<section class="boss${rule.on ? "" : " off"}" aria-label="${esc(boss.name)}">` +
+    `<div class="boss-head"><span class="tag">${esc(boss.name)}</span>` +
+    `<label class="switch" for="${slot.key}.${b}.on"><input type="checkbox" id="${slot.key}.${b}.on" data-act="on" data-b="${b}"${rule.on ? " checked" : ""}> Tag on</label>` +
+    (changed ? `<span class="badge">Changed</span>` : "") +
+    `<div class="head-actions">${copy}${split}${changed ? `<button class="btn small" data-act="reset" data-b="${b}">Undo changes</button>` : ""}</div></div>` +
+    `<div class="boss-body">` + reqHtml(slot, b, "require", rule.require, "Required") +
+    (rule.on && !rule.require.length && !rule.versions.some(v => v.pool.length || v.require.length) ?
+      `<div class="warn">This tag is on but nothing is required: the filter leaves it out until something is.</div>` : "") +
+    (rule.versions.length ? rule.versions.map((v, vi) => versionHtml(slot, b, rule, vi)).join("") :
+      `<div class="sec"><div class="sec-title">Desirable stats<button class="btn small" data-act="add-version" data-b="${b}">+ desirable stats</button></div><div class="empty">None: the requirements alone decide.</div></div>` +
+      (rule.require.length ? `<div class="passes" id="passes-${b}-0">${passesIntro(b, 0)}</div>` : "")) +
+    `<div class="sec"><div class="sec-title">Notes for Claude</div><textarea class="note" id="${slot.key}.${b}.note" data-act="note" data-b="${b}" placeholder="Why, or what to look at">${esc(rule.note || "")}</textarea></div>` +
+    `</div></section>`;
+}
+
+function render() {
+  const slot = SLOT[current];
+  document.getElementById("slots").innerHTML = SLOTS.map(s => {
+    const changed = BOSSES.some(bo => canon(state[s.key][bo.key]) !== canon(BASE[s.key][bo.key]));
+    return `<button class="slot-btn" role="tab" aria-selected="${s.key === current}" data-act="slot" data-slot="${s.key}">` +
+      `<span>${esc(s.name.replace("Rare/Crafted ", "").replace("Rare ", ""))}</span><span class="dots">` +
+      BOSSES.map(bo => `<span class="dot${state[s.key][bo.key].on ? " on" : ""}" title="${esc(bo.name)}${state[s.key][bo.key].on ? " on" : " off"}"></span>`).join("") +
+      `</span>${changed ? `<span class="chg">changed</span>` : ""}</button>`;
+  }).join("");
+  const nChanged = SLOTS.filter(s => BOSSES.some(bo => canon(state[s.key][bo.key]) !== canon(BASE[s.key][bo.key]))).length;
+  document.getElementById("changed").textContent = nChanged ? `${nChanged} item type${nChanged > 1 ? "s" : ""} changed since the filter's rules` : "Same as the filter's rules";
+  const quality = slot.quality === "magic" ? "magic (one prefix, one suffix)" : "dropped rares (three prefixes, three suffixes)" +
+    (slot.crafts.length ? ` and crafted items (a craft's fixed stats and up to ${CRAFT_AFFIXES} random affixes)` : "");
+  document.getElementById("main").innerHTML =
+    `<div class="slot-head"><h2>${esc(slot.name)}</h2><p>${esc(slot.variants.join(", "))}. Rolls and weakest passes are for ${quality}, ${slot.desecrate ? "a corruption and a desecration (the same outcome twice too)" : "one corruption"}; up to two sources add up for one stat. The tag dots above are red where a boss's tag is on.</p></div>` +
+    `<div class="bosses">${BOSSES.map(bo => bossHtml(slot, bo)).join("")}</div>` +
+    `<p class="help">Required: every row must hold; a row with “or” holds when enough of its choices do. Desirable stats: the item needs at least the number set below the list (a stat set to ×2 counts twice). Caster / physical splits a version in two: the caster one with every stat that rolls here but those marked “physical” in the stat menu, the physical one with every stat but those marked “caster”, each with its own skill tabs (stats the rule already requires and the resistances of elements the boss doesn't deal stay out; new ones start at half their best roll). Changes save as you make them; Claude writes them into the filter when you say so.</p>`;
+}
+
+// ---------- editing
+function at(obj, path) {
+  return path.split(".").reduce((o, k) => o[/^\d+$/.test(k) ? +k : k], obj);
+}
+function parent(obj, path) {
+  const keys = path.split(".");
+  const last = keys.pop();
+  return [keys.length ? at(obj, keys.join(".")) : obj, /^\d+$/.test(last) ? +last : last];
+}
+const SWAP = { FRES: "LRES", LRES: "FRES", STAT40: "STAT42", STAT42: "STAT40" };
+const SWAP_CORR = { 36: 38, 38: 36, 53: 55, 55: 53 };
+function swapped(rule) {
+  const r = clone(rule);
+  const fix = t => {
+    if (SWAP[t.s]) t.s = SWAP[t.s];
+    if (t.res && SWAP[t.res]) t.res = SWAP[t.res];
+    if (t.s === "CORR" && SWAP_CORR[t.is]) t.is = SWAP_CORR[t.is];
+  };
+  const dedupe = list => list.filter((t, i) => list.findIndex(u => canon(u) === canon(t)) === i);
+  for (const g of r.require) { g.any.forEach(fix); g.any = dedupe(g.any); }
+  for (const v of r.versions) {
+    for (const g of v.require) { g.any.forEach(fix); g.any = dedupe(g.any); }
+    v.pool.forEach(fix);
+    v.pool = dedupe(v.pool);
+  }
+  return r;
+}
+
+function changed(b, rerender = true) {
+  queueSave(current);
+  for (const k of Object.keys(PASSES)) if (k.startsWith(`${current}.${b}.`)) delete PASSES[k];
+  if (rerender) render();
+}
+
+document.addEventListener("click", e => {
+  const el = e.target.closest("[data-act]");
+  if (!el || el.tagName === "SELECT" || el.tagName === "INPUT" || el.tagName === "TEXTAREA") return;
+  const act = el.dataset.act, b = el.dataset.b, p = el.dataset.p;
+  if (act === "slot") {
+    current = el.dataset.slot;
+    try { localStorage.setItem("bossTagSlot", current); } catch (err) {}
+    render();
+    return;
+  }
+  if (act === "passes") { findPasses(b, +el.dataset.v); return; }
+  if (!editable) return;
+  const rule = b ? state[current][b] : null;
+  const slot = SLOT[current];
+  if (act === "term-tab" || act === "term-cls") {
+    const t = at(rule, p);
+    const list = act === "term-tab" ? t.tabs : t.classes;
+    const x = +el.dataset.x;
+    const i = list.indexOf(x);
+    if (i >= 0 && list.length === 1) { setStatus("Keep at least one: remove the stat with × instead", "warn"); return; }
+    if (i >= 0) list.splice(i, 1); else { list.push(x); list.sort((a, c) => a - c); }
+    if (act === "term-tab") { const order = TABS.map(y => y[0]); t.tabs.sort((a, c) => order.indexOf(a) - order.indexOf(c)); }
+    changed(b);
+  } else if (act === "del-term") {
+    const [list, i] = parent(rule, p);
+    list.splice(i, 1);
+    // an empty requirement group goes with its last choice
+    const m = p.match(/^(.*)\.any\.\d+$/);
+    if (m && !list.length) { const [gl, gi] = parent(rule, m[1]); gl.splice(gi, 1); }
+    else if (m) { const g = at(rule, m[1]); if ((g.need || 1) > g.any.length) g.need = g.any.length; if (g.need === 1) delete g.need; }
+    for (const v of rule.versions) { const total = v.pool.reduce((s, t) => s + termWeight(t), 0); if (v.need > total) v.need = Math.max(1, total); }
+    changed(b);
+  } else if (act === "add-req") {
+    at(rule, p).push({ any: [defaultTerm(slot, "LIFE")] });
+    changed(b);
+  } else if (act === "add-alt") {
+    at(rule, p).any.push(defaultTerm(slot, "LIFE"));
+    changed(b);
+  } else if (act === "add-pool") {
+    at(rule, p).push(defaultTerm(slot, "LIFE"));
+    changed(b);
+  } else if (act === "add-version") {
+    rule.versions.push({ name: "", require: [], pool: [defaultTerm(slot, "LIFE")], need: 1 });
+    changed(b);
+  } else if (act === "split") {
+    const v = rule.versions[0];
+    v.name = "Caster";
+    const phys = clone(v);
+    phys.name = "Physical";
+    rule.versions.push(phys);
+    for (const x of [v, phys]) { versionTabs(x); versionStats(x); versionFill(slot, b, rule, x); }
+    changed(b);
+  } else if (act === "merge") {
+    rule.versions.splice(1);
+    rule.versions[0].name = "";
+    changed(b);
+  } else if (act === "reset") {
+    state[current][b] = clone(BASE[current][b]);
+    changed(b);
+  } else if (act === "copy") {
+    const from = el.dataset.from;
+    const note = rule.note;
+    state[current][b] = swapped(state[current][from]);
+    state[current][b].note = note;
+    changed(b);
+  }
+});
+
+document.addEventListener("change", e => {
+  const el = e.target;
+  if (el.id === "showRolls") {
+    showRolls = el.checked;
+    try { localStorage.setItem("bossTagRolls", showRolls ? "1" : "0"); } catch (err) {}
+    render();
+    return;
+  }
+  const act = el.dataset.act, b = el.dataset.b, p = el.dataset.p;
+  if (!act || !editable) { if (act) render(); return; }
+  const rule = state[current][b];
+  const slot = SLOT[current];
+  if (act === "on") rule.on = el.checked;
+  else if (act === "term-stat") {
+    const [list, i] = parent(rule, p);
+    const w = list[i].w;
+    list[i] = defaultTerm(slot, el.value, list[i]);
+    if (w && p.includes(".pool.")) list[i].w = w;
+    const vm = p.match(/^versions\.(\d+)\./);
+    if (el.value === "TABS" && vm && VERSION_TABS[rule.versions[+vm[1]].name]) list[i].tabs = VERSION_TABS[rule.versions[+vm[1]].name].slice();
+  } else if (act === "term-min") {
+    const t = at(rule, p);
+    t.min = Math.max(CAT[t.s] && t.s === "CORR" ? 0 : 1, Math.round(+el.value || 0));
+  } else if (act === "term-is") at(rule, p).is = +el.value;
+  else if (act === "term-res") at(rule, p).res = el.value;
+  else if (act === "term-skip") { const t = at(rule, p); if (el.checked) t.skip = 43; else delete t.skip; }
+  else if (act === "term-w") { const t = at(rule, p); const n = +el.value; if (n > 1) t.w = n; else delete t.w; }
+  else if (act === "grp-need") { const g = at(rule, p); const n = Math.min(g.any.length, Math.max(1, Math.round(+el.value || 1))); if (n > 1) g.need = n; else delete g.need; }
+  else if (act === "ver-need") { const v = at(rule, p); const total = v.pool.reduce((s, t) => s + termWeight(t), 0); v.need = Math.min(total, Math.max(1, Math.round(+el.value || 1))); }
+  else if (act === "note") { rule.note = el.value; changed(b, false); return; }
+  changed(b);
+});
+
+// ---------- saving (db: rules/<item type> = {RA, DC, LU, savedAt})
+// Every edit is also kept in this browser until the store has it, so an edit made while the page can't save (no
+// store in this view, a failed save, a page closed too soon) comes back on the next visit and is saved then.
+const pending = new Set(), saveTimers = {}, edits = {}, lastEdit = {}, retries = {};
+let saving = 0, loaded = false;
+const BACKUP = "bossTagUnsaved";
+function backups() { try { return JSON.parse(localStorage.getItem(BACKUP) || "{}") || {}; } catch (e) { return {}; } }
+function keepBackup(slotKey) {
+  try {
+    const all = backups();
+    all[slotKey] = { at: lastEdit[slotKey] || Date.now(), rules: Object.fromEntries(BOSSES.map(bo => [bo.key, state[slotKey][bo.key]])) };
+    localStorage.setItem(BACKUP, JSON.stringify(all));
+  } catch (e) {}
+}
+function dropBackup(slotKey, at) {
+  try {
+    const all = backups();
+    if (all[slotKey] && all[slotKey].at <= at) { delete all[slotKey]; localStorage.setItem(BACKUP, JSON.stringify(all)); }
+  } catch (e) {}
+}
+function setStatus(text, kind) {
+  const el = document.getElementById("status");
+  el.textContent = text;
+  el.className = "status" + (kind ? " " + kind : "");
+}
+let bannerIsError = false;
+function banner(text, isError = true) {
+  const el = document.getElementById("banner");
+  el.hidden = !text;
+  el.textContent = text || "";
+  bannerIsError = !!text && isError;
+}
+function queueSave(slotKey) {
+  edits[slotKey] = (edits[slotKey] || 0) + 1;
+  lastEdit[slotKey] = Date.now();
+  pending.add(slotKey);
+  keepBackup(slotKey);
+  if (!db) {
+    setStatus("Kept in this browser only", "warn");
+    banner("This view can't reach the saved rules, so edits are kept in this browser only. Reload the page: they are saved as soon as it can reach the store.");
+    return;
+  }
+  setStatus("Saving…");
+  clearTimeout(saveTimers[slotKey]);
+  saveTimers[slotKey] = setTimeout(() => save(slotKey), 700);
+}
+async function save(slotKey) {
+  const body = { savedAt: new Date().toISOString() };
+  for (const bo of BOSSES) body[bo.key] = state[slotKey][bo.key];
+  const n = edits[slotKey], at = lastEdit[slotKey];
+  saving++;
+  try {
+    await db.doc("rules/" + slotKey).set(body);
+    retries[slotKey] = 0;
+    if (edits[slotKey] === n) { pending.delete(slotKey); dropBackup(slotKey, at); }  // else a newer edit is still to be saved
+    if (!pending.size) { setStatus("Saved", "ok"); if (bannerIsError) banner(""); }
+  } catch (err) {
+    const why = (err && (err.message || err.code)) || "unknown error";
+    setStatus("Not saved", "warn");
+    banner(`Not saved (${why}). Your edits are kept in this browser; the page tries again, and a reload saves them too.`);
+    retries[slotKey] = (retries[slotKey] || 0) + 1;
+    if (retries[slotKey] <= 3) { clearTimeout(saveTimers[slotKey]); saveTimers[slotKey] = setTimeout(() => save(slotKey), 5000 * retries[slotKey]); }
+  } finally { saving--; }
+}
+// edits this browser kept that the store doesn't have yet (newer than the saved document): put them back and save them
+function restoreBackups(savedAt) {
+  const all = backups();
+  const restored = [];
+  for (const [slotKey, b] of Object.entries(all)) {
+    if (!SLOT[slotKey] || !b || !b.rules) continue;
+    if (savedAt[slotKey] && savedAt[slotKey] >= b.at) { dropBackup(slotKey, b.at); continue; }
+    if (BOSSES.every(bo => canon(b.rules[bo.key]) === canon(state[slotKey][bo.key]))) { dropBackup(slotKey, b.at); continue; }
+    for (const bo of BOSSES) if (b.rules[bo.key]) state[slotKey][bo.key] = clone(b.rules[bo.key]);
+    restored.push(SLOT[slotKey].name);
+    queueSave(slotKey);
+  }
+  if (restored.length) {
+    banner(db ? `Put back edits this browser kept that weren't saved yet (${restored.join(", ")}); saving them now.` :
+      `This view can't reach the saved rules. It shows the filter's rules with edits this browser kept (${restored.join(", ")}); nothing is saved until you reload the page and it can reach the store.`, !db);
+    render();
+  }
+}
+
+(async () => {
+  render();
+  try {
+    const [dbNs, user] = await Promise.all([window.claude?.use?.("db") ?? null, window.claude?.use?.("user") ?? null]);
+    db = dbNs;
+    if (!db) {
+      setStatus("Kept in this browser only", "warn");
+      banner("This view can't reach the saved rules: you see the filter's rules, and edits are kept in this browser only. Reload the page to load and save your rules.");
+      restoreBackups({});
+      return;
+    }
+    const can = user ? await user.can("data.write") : null;
+    if (can === false) { editable = false; }
+    db.collection("rules").onSnapshot(snap => {
+      let touched = false;
+      const savedAt = {};
+      for (const d of snap.docs) {
+        if (!SLOT[d.id]) continue;
+        const body = d.data();
+        savedAt[d.id] = Date.parse(body.savedAt || 0) || 0;
+        if (pending.has(d.id) || (d.metadata && d.metadata.hasPendingWrites)) continue;
+        // older than this view's last edit of the item type (a refresh that left before the save): keep the edit
+        if (lastEdit[d.id] && !(savedAt[d.id] >= lastEdit[d.id])) continue;
+        for (const bo of BOSSES) {
+          if (body[bo.key] && canon(body[bo.key]) !== canon(state[d.id][bo.key])) { state[d.id][bo.key] = clone(body[bo.key]); touched = true; }
+        }
+      }
+      if (!loaded) {
+        loaded = true;
+        const n = snap.docs.filter(d => SLOT[d.id]).length;
+        setStatus(editable ? (n ? `Loaded your edits of ${n} item type${n > 1 ? "s" : ""}` : "Saved") : "Read-only", editable ? "ok" : "warn");
+        if (touched) render();
+        if (editable) restoreBackups(savedAt);
+        return;
+      }
+      if (touched) render();
+    }, err => {
+      setStatus("Saved rules unavailable", "warn");
+      banner(`The saved rules can't be read (${(err && (err.message || err.code)) || "unknown error"}). Edits are kept in this browser; reload the page.`);
+    });
+  } catch (err) {
+    setStatus("Kept in this browser only", "warn");
+    banner("This view can't reach the saved rules: edits are kept in this browser only. Reload the page.");
+  }
+})();
+
+// ---------- weakest passes
+// An option is one way to meet a term: parts (affix groups with what their tier must reach), `outs` (corruption
+// outcomes the item must have, as its corruption or, on amulets, its desecration) or `corrIs` (the corruption itself
+// must be this outcome; 0: not corrupted). One affix, one outcome, an affix with an outcome, two affixes of the same
+// stat, or on amulets two outcomes (corrupted and desecrated, the same one twice too), their highest rolls added up.
+function optionsFor(slot, t) {
+  const opts = [];
+  const c = CAT[t.s];
+  const affixOnly = (codes) => {
+    for (const [g, tiers] of slot.groups) if (tiers.some(x => meets(x, codes))) opts.push({ parts: [{ g, req: codes }] });
+  };
+  if (t.s === "CORR") {
+    if (t.is === 0 || slot.corr[t.is]) opts.push({ parts: [], corrIs: t.is });
+    return opts;
+  }
+  if (t.s === "TABS") { for (const x of t.tabs) affixOnly({ ["TABSK" + x]: t.min }); return opts; }
+  if (t.s === "CLSK") { for (const x of t.classes) affixOnly({ ["CLSK" + x]: t.min }); return opts; }
+  if (t.s === "MAXEXTRA") { affixOnly({ [t.res]: t.min }); return opts; }
+  const code = t.s;
+  const min = c.kind === "flag" ? 1 : t.min;
+  affixOnly({ [code]: min });
+  const corrs = slot.corruptions.filter(x => x.st[code] && x.id !== t.skip);
+  for (const x of corrs) if (x.st[code][1] >= min) opts.push({ parts: [], outs: [x.id] });
+  const crafts = slot.crafts.map((x, i) => [x, i]).filter(([x]) => x.st[code]);
+  for (const [x, i] of crafts) if (x.st[code][1] >= min) opts.push({ parts: [], craft: i });
+  if (c.kind === "flag") return opts;
+  const byGroup = [...slot.groups].map(([g, tiers]) => [g, tiers.filter(x => x.st[code])]).filter(([, ts]) => ts.length);
+  const top = ts => Math.max(...ts.map(x => x.st[code][1]));
+  for (const x of corrs) {  // an affix and an outcome
+    const ch = x.st[code][1];
+    if (ch >= min) continue;
+    for (const [g, ts] of byGroup) {
+      if (top(ts) >= min) continue;
+      const tier = ts.filter(y => y.st[code][1] + ch >= min).sort((a, b) => a.a - b.a)[0];
+      if (tier) opts.push({ parts: [{ g, req: { [code]: tier.st[code][1] } }], outs: [x.id] });
+    }
+  }
+  if (slot.desecrate) {  // corrupted and desecrated
+    for (let i = 0; i < corrs.length; i++) for (let j = i; j < corrs.length; j++) {
+      const a = corrs[i].st[code][1], b = corrs[j].st[code][1];
+      if (a < min && b < min && a + b >= min) opts.push({ parts: [], outs: [corrs[i].id, corrs[j].id] });
+    }
+  }
+  for (const [x, i] of crafts) {  // a craft's fixed stat with an affix, an outcome or (amulets) two outcomes
+    const ch = x.st[code][1];
+    if (ch >= min) continue;
+    for (const [g, ts] of byGroup) {
+      if (top(ts) >= min) continue;
+      const tier = ts.filter(y => craftable(y) && y.st[code][1] + ch >= min).sort((a, b) => a.a - b.a)[0];
+      if (tier) opts.push({ parts: [{ g, req: { [code]: tier.st[code][1] } }], craft: i });
+    }
+    for (const y of corrs) { const oc = y.st[code][1]; if (oc < min && ch + oc >= min) opts.push({ parts: [], craft: i, outs: [y.id] }); }
+    if (slot.desecrate) for (let a = 0; a < corrs.length; a++) for (let b = a; b < corrs.length; b++) {
+      const va = corrs[a].st[code][1], vb = corrs[b].st[code][1];
+      if (ch + va < min && ch + vb < min && ch + va + vb >= min) opts.push({ parts: [], craft: i, outs: [corrs[a].id, corrs[b].id] });
+    }
+  }
+  for (let i = 0; i < byGroup.length; i++) {  // two affixes
+    for (let j = i + 1; j < byGroup.length; j++) {
+      const [g1, t1] = byGroup[i], [g2, t2] = byGroup[j];
+      if (top(t1) >= min || top(t2) >= min) continue;
+      let best = null;
+      for (const a of t1) for (const b of t2) {
+        if (a.st[code][1] + b.st[code][1] < min) continue;
+        const cost = Math.max(a.a, b.a);
+        if (!best || cost < best.cost) best = { cost, a, b };
+      }
+      if (best) opts.push({ parts: [{ g: g1, req: { [code]: best.a.st[code][1] } }, { g: g2, req: { [code]: best.b.st[code][1] } }] });
+    }
+  }
+  return opts;
+}
+// The item's corruption (c360) and desecration (c206): undefined = free, null = none, ANY = some outcome, else its id.
+const ANY = -1;
+function outcomeStates(slot, o, c360, c206) {
+  let states = [[c360, c206]];
+  if (o.corrIs !== undefined) {
+    states = states.flatMap(([a, d]) => o.corrIs === 0 ?
+      ((a === undefined || a === null) && (d === undefined || d === null) ? [[null, null]] : []) :
+      ((a === undefined || a === ANY || a === o.corrIs) ? [[o.corrIs, d]] : []));
+  }
+  const outs = o.outs || [];
+  if (outs.length === 1) {
+    const id = outs[0];
+    states = states.flatMap(([a, d]) => {
+      if (a === id || d === id) return [[a, d]];
+      const r = [];
+      if (a === undefined || a === ANY) r.push([id, d]);
+      if (slot.desecrate && a !== null && d === undefined) r.push([a === undefined ? ANY : a, id]);
+      return r;
+    });
+  } else if (outs.length === 2) {
+    states = states.flatMap(([a, d]) => {
+      const r = [];
+      for (const [x, y] of [[outs[0], outs[1]], [outs[1], outs[0]]]) {
+        if ((a === undefined || a === ANY || a === x) && (d === undefined || d === y)) r.push([x, y]);
+      }
+      return r;
+    });
+  }
+  return states;
+}
+function meets(src, codes) {
+  for (const k in codes) if (!src.st[k] || src.st[k][1] < codes[k]) return false;
+  return true;
+}
+function mergeReq(a, b) {
+  const r = { ...a };
+  for (const k in b) r[k] = Math.max(r[k] || 0, b[k]);
+  return r;
+}
+function cheapest(slot, g, req, variant, crafted) {
+  let best = null;
+  for (const x of slot.groups.get(g)) {
+    if (x.v && variant !== null && !x.v.includes(variant)) continue;
+    if (crafted && !craftable(x)) continue;
+    if (meets(x, req) && (!best || x.a < best.a)) best = x;
+  }
+  return best;
+}
+function betterItem(r, best) {
+  return !best || r.cost < best.cost || (r.cost === best.cost && r.picks.length < best.picks.length);
+}
+
+// the cheapest item (affixes + at most one corruption) that meets every term through one of its options: a dropped
+// rare, or a crafted item when an option takes a craft's fixed stat (one craft, up to 4 random affixes)
+function bestItem(slot, termOpts) {
+  const chosen = new Map();
+  let c360, c206, craft, best = null;
+  const assign = [];
+  const nVariants = slot.variants.length;
+  function leaf() {
+    let out = null;
+    const crafted = craft !== undefined;
+    for (let v = 0; v < nVariants; v++) {
+      const picks = [];
+      let ok = true, P = 0, S = 0, cost = 0;
+      for (const [g, req] of chosen) {
+        const x = cheapest(slot, g, req, nVariants > 1 ? v : null, crafted);
+        if (!x) { ok = false; break; }
+        if (x.k === "P") P++; else S++;
+        cost = Math.max(cost, x.a);
+        picks.push([g, x]);
+      }
+      if (!ok || P > slot.limit.P || S > slot.limit.S || (crafted && picks.length > CRAFT_AFFIXES)) continue;
+      const r = { cost, picks, c360, c206, craft, variant: v, assign: assign.slice() };
+      if (betterItem(r, out)) out = r;
+    }
+    return out;
+  }
+  function rec(i) {
+    if (i === termOpts.length) {
+      const r = leaf();
+      if (r && betterItem(r, best)) best = r;
+      return;
+    }
+    for (const o of termOpts[i]) {
+      if (o.craft !== undefined && craft !== undefined && craft !== o.craft) continue;  // one craft per item
+      const states = outcomeStates(slot, o, c360, c206);
+      if (!states.length) continue;
+      const prevCraft = craft;
+      if (o.craft !== undefined) craft = o.craft;
+      const undo = [];
+      let ok = true;
+      for (const part of o.parts) {
+        const prev = chosen.get(part.g);
+        const req = prev ? mergeReq(prev, part.req) : part.req;
+        if (!slot.groups.get(part.g).some(x => meets(x, req)) || (!prev && chosen.size >= slot.limit.P + slot.limit.S)) { ok = false; break; }
+        undo.push([part.g, prev]);
+        chosen.set(part.g, req);
+      }
+      if (ok) {
+        const [pa, pd] = [c360, c206];
+        for (const [a, d] of states) { c360 = a; c206 = d; assign[i] = o; rec(i + 1); }
+        c360 = pa; c206 = pd;
+      }
+      for (let k = undo.length - 1; k >= 0; k--) { const [g, prev] = undo[k]; if (prev) chosen.set(g, prev); else chosen.delete(g); }
+      craft = prevCraft;
+    }
+  }
+  rec(0);
+  return best;
+}
+function* subsetsAtLeast(items, need, start = 0, acc = [], w = 0, excl = new Set()) {
+  if (w >= need) { yield acc.slice(); return; }
+  for (let i = start; i < items.length; i++) {
+    const x = items[i].excl;
+    if (x && excl.has(x)) continue;
+    acc.push(i);
+    if (x) excl.add(x);
+    yield* subsetsAtLeast(items, need, i + 1, acc, w + (items[i].w || 1), excl);
+    acc.pop();
+    if (x) excl.delete(x);
+  }
+}
+function* choose(list, k, start = 0, acc = []) {
+  if (acc.length === k) { yield acc.slice(); return; }
+  for (let i = start; i < list.length; i++) { acc.push(list[i]); yield* choose(list, k, i + 1, acc); acc.pop(); }
+}
+function product(lists) {
+  return lists.reduce((acc, l) => acc.flatMap(a => l.map(x => a.concat([x]))), [[]]);
+}
+
+function findPasses(b, vi) {
+  const slot = SLOT[current];
+  const rule = state[current][b];
+  const v = rule.versions[vi];
+  const key = `${current}.${b}.${vi}`;
+  const box = document.getElementById(`passes-${b}-${vi}`);
+  const reqGroups = rule.require.concat(v ? v.require : []);
+  const reqChoices = product(reqGroups.map(g => [...choose(g.any, Math.min(g.need || 1, g.any.length))]));
+  const pool = [];
+  for (const t of (v ? v.pool : [])) {
+    const w = t.w || 1;
+    if (t.s === "FREEZE") {  // cannot be frozen counts 2, half freeze 1 and nothing beside it: two entries, never both
+      pool.push({ t: { s: "STAT153" }, w: 2 * w, excl: "freeze", opts: optionsFor(slot, { s: "STAT153" }) });
+      pool.push({ t: { s: "STAT118" }, w, excl: "freeze", opts: optionsFor(slot, { s: "STAT118" }) });
+    } else pool.push({ t, w, opts: optionsFor(slot, t) });
+  }
+  const usable = pool.filter(p => p.opts.length);
+  const need = v ? v.need : 0;
+  const cantRoll = pool.filter(p => !p.opts.length).map(p => termText(slot, p.t));
+  const reqOpts = reqChoices.map(rc => rc.flat().map(t => ({ t, opts: optionsFor(slot, t) })));
+  const results = [];
+  const gen = v && v.pool.length ? subsetsAtLeast(usable, need) : [[]][Symbol.iterator]();
+  let checked = 0, total = 0;
+  const LIMIT = 250000;
+  box.innerHTML = `<div class="passes-head"><span>Checking…</span></div>`;
+  const step = () => {
+    const t0 = performance.now();
+    while (performance.now() - t0 < 30) {
+      const n = gen.next();
+      if (n.done || checked >= LIMIT) return finish(n.done);
+      checked++;
+      const sub = n.value.map(i => usable[i]);
+      let best = null, bestReq = null;
+      for (const ro of reqOpts) {
+        if (ro.some(r => !r.opts.length)) continue;
+        const terms = ro.concat(sub);
+        const r = bestItem(slot, terms.map(x => x.opts));
+        if (r && betterItem(r, best)) { best = r; bestReq = ro; }
+      }
+      if (!best) continue;
+      // a desirable stat the item has anyway counts too: a required one (the author, 2026-10-22: a belt's required 25
+      // PLR wasn't among its green stats), or one its craft or corruption gives; a pass that still has enough without
+      // one of its stats is left out, since the same pass without that stat is found too
+      const groups = new Set(sub.map(p => p.excl).filter(Boolean));
+      const credit = [];
+      for (const p of usable) {
+        if (sub.includes(p) || !(bestReq.some(r => implies(r.t, p.t)) || p.opts.some(o => freeBy(best, o)))) continue;
+        if (p.excl) { if (groups.has(p.excl)) continue; groups.add(p.excl); }
+        credit.push(p);
+      }
+      const counted = sub.concat(credit).reduce((s, p) => s + p.w, 0);
+      if (sub.some(p => counted - p.w >= need)) continue;
+      total++;
+      results.push({ sub, req: bestReq, item: best, credit });
+    }
+    setTimeout(step, 0);
+  };
+  const finish = done => {
+    results.sort((a, c) => a.item.cost - c.item.cost || a.item.picks.length - c.item.picks.length || a.sub.length - c.sub.length);
+    const shown = results.slice(0, 30);
+    const html = shown.map(r => passHtml(slot, r)).join("");
+    const summary = (total ? `${total.toLocaleString()} stat combination${total > 1 ? "s" : ""} pass` : "Nothing can pass") +
+      (done ? "" : ` (stopped after ${checked.toLocaleString()} checked)`) + (shown.length < total ? `; the ${shown.length} cheapest:` : (total ? ":" : ".")) +
+      (cantRoll.length ? ` Never rolls here: ${cantRoll.join(", ")}.` : "");
+    PASSES[key] = { summary, html: html || "" };
+    box.innerHTML = passesIntro(b, vi);
+  };
+  setTimeout(step, 0);
+}
+// does the item meet option o through its craft and corruption alone (no affix)?
+function freeBy(item, o) {
+  if (o.parts.length || (o.craft === undefined && o.corrIs === undefined && !(o.outs || []).length)) return false;
+  if (o.craft !== undefined && o.craft !== item.craft) return false;
+  if (o.corrIs === 0 && !(item.c360 === null && (item.c206 === null || item.c206 === undefined))) return false;
+  if (o.corrIs && item.c360 !== o.corrIs) return false;
+  const outs = o.outs || [];
+  if (outs.length === 1 && item.c360 !== outs[0] && item.c206 !== outs[0]) return false;
+  if (outs.length === 2 && !((item.c360 === outs[0] && item.c206 === outs[1]) || (item.c360 === outs[1] && item.c206 === outs[0]))) return false;
+  return true;
+}
+// does an item that meets requirement term r also meet desirable stat p?
+function implies(r, p) {
+  if (r.s !== p.s) return false;
+  if (r.s === "CORR") return r.is === p.is;
+  if (r.s === "TABS") return r.min >= p.min && r.tabs.every(x => p.tabs.includes(x));
+  if (r.s === "CLSK") return r.min >= p.min && r.classes.every(x => p.classes.includes(x));
+  if (r.s === "MAXEXTRA") return r.res === p.res && r.min >= p.min;
+  if (CAT[r.s] && CAT[r.s].kind === "flag") return true;
+  if (p.skip && p.skip !== r.skip) return false;  // p doesn't count the max life corruption, r may come from it
+  return (r.min || 1) >= (p.min || 1);
+}
+function sourceText(slot, o, item) {
+  if (!o) return "";
+  const names = o.parts.map(p => { const pick = item.picks.find(([g]) => g === p.g); return pick ? `${pick[1].n} (a${pick[1].a})` : ""; }).filter(Boolean);
+  if (o.craft !== undefined) names.push(slot.crafts[o.craft].n + " craft");
+  if (o.corrIs === 0) names.push("not corrupted");
+  else if (o.corrIs) names.push("corrupted to " + o.corrIs);
+  for (const id of o.outs || []) names.push("outcome " + id);
+  return names.join(" + ");
+}
+function passHtml(slot, r) {
+  const item = r.item;
+  const n = r.req.length;
+  const stats = r.sub.map((p, i) => `<span class="st" title="${esc(sourceText(slot, item.assign[n + i], item))}">${esc(termText(slot, p.t))}${p.w > 1 ? " ×" + p.w : ""}</span>`).join("");
+  const reqs = r.req.map((p, i) => `<span class="rq" title="${esc(sourceText(slot, item.assign[i], item))}">${esc(termText(slot, p.t))}</span>`).join("") +
+    (r.credit || []).map(p => `<span class="st" title="Counts too: the item has it anyway (required, or from its craft or corruption)">${esc(termText(slot, p.t))}${p.w > 1 ? " ×" + p.w : ""}</span>`).join("");
+  const affixes = item.picks.map(([, x]) => `${x.n} ${x.k === "P" ? "(prefix" : "(suffix"}, a${x.a})`).join(", ");
+  const outName = id => (slot.corr[id] ? slot.corr[id].label : "outcome " + id);
+  const corr = (item.c360 === null ? "not corrupted" : item.c360 === undefined ? "corruption: any" :
+    item.c360 === ANY ? "corrupted: any" : "corrupted: " + outName(item.c360)) +
+    (typeof item.c206 === "number" ? "; desecrated: " + outName(item.c206) : "");
+  const P = item.picks.filter(([, x]) => x.k === "P").length, S = item.picks.length - P;
+  const craft = item.craft !== undefined ? slot.crafts[item.craft] : null;
+  return `<div class="pass"><div class="stats">${reqs}${stats}</div>` +
+    `<div class="src">${craft ? `<b title="${esc(craft.label)}">${esc(craft.n)} craft</b> (${esc(craft.label)}) + ` : ""}${esc(affixes || "no affixes needed")}; ${esc(corr)}${slot.variants.length > 1 ? "; " + esc(slot.variants[item.variant]) : ""}</div>` +
+    `<div class="meta">${craft ? "crafted · " : ""}affix level ${item.cost}+ · ${P} prefix${P === 1 ? "" : "es"} · ${S} suffix${S === 1 ? "" : "es"}</div></div>`;
+}
+</script>

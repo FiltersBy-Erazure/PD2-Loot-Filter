@@ -13,7 +13,7 @@ roll picker shows.
         reads ProjectD2\\pd2data.mpq (UniqueItems, SetItems, Runes, Gems, Properties, ItemStatCost, Skills,
         item types and bases, AutoMagic, QualityItems, CubeMain, string tables) and the base game's string tables,
         and writes docs/pd2-unique-set-items.tsv, docs/pd2-runewords.tsv, docs/pd2-corruptions.tsv (what each
-        corruption outcome adds) and tools/pd2_stat_priority.tsv. Run it
+        corruption outcome adds), docs/pd2-crafts.tsv (each craft's fixed stats) and tools/pd2_stat_priority.tsv. Run it
         each season and after a PD2 patch that changes items, then python tools/gen_unique_rolls.py,
         python tools/gen_runeword_rolls.py and python tools/tag_order.py --fix. Also does --tier-data.
     python tools/pd2_data.py --tier-data "C:\\Users\\<you>\\Diablo II"
@@ -53,6 +53,7 @@ ROOT = TOOLS.parent
 ITEMS_FILE = ROOT / "docs" / "pd2-unique-set-items.tsv"
 RUNEWORDS_FILE = ROOT / "docs" / "pd2-runewords.tsv"
 CORRUPTIONS_FILE = ROOT / "docs" / "pd2-corruptions.tsv"
+CRAFTS_FILE = ROOT / "docs" / "pd2-crafts.tsv"
 PRIORITY_FILE = TOOLS / "pd2_stat_priority.tsv"
 BASES_FILE = ROOT / "docs" / "pd2-bases.tsv"
 SOUNDS_FILE = ROOT / "docs" / "pd2-sounds.tsv"
@@ -401,6 +402,41 @@ class Game:
                             json.dumps(props, separators=(",", ":"))])
         return out
 
+    def craft_rows(self):
+        """The cube's crafting recipes (CubeMain.txt rows that turn a magic or rare item into a crafted one of the same
+        base, 'usetype,crf'): [item type, name, ingredients, props], one per item type and set of fixed stats (a craft
+        has two recipes, its infusion or a jewel + rune + gem), named by its infusion; props as an item's."""
+        out, seen = [], {}
+        for r in self.cube:
+            if r.get("enabled", "").strip() != "1" or not r.get("output", "").strip().strip('"').startswith("usetype,crf"):
+                continue
+            first = r.get("input 1", "").strip().strip('"').split(",")
+            if not ({"mag", "rar"} & set(first[1:])):
+                continue
+            ingredients = sorted(r.get(f"input {k}", "").strip().strip('"').split(",")[0] for k in range(2, 8)
+                                 if r.get(f"input {k}", "").strip())
+            props = []
+            for k in range(1, 6):
+                mod = r.get(f"mod {k}", "").strip()
+                if mod:
+                    stats = self.prop_stats(mod, r.get(f"mod {k} param", ""), r.get(f"mod {k} min", ""),
+                                            r.get(f"mod {k} max", ""))
+                    if stats:
+                        props.append([list(s) for s in stats])
+            if not props:
+                continue
+            key = (first[0], json.dumps(props, separators=(",", ":")))
+            row = seen.get(key)
+            if row is None:
+                row = seen[key] = [first[0], "", [], key[1]]
+                out.append(row)
+            if ingredients not in row[2]:
+                row[2].append(ingredients)
+            infusion = next((c for c in ingredients if c.startswith("crf")), None)
+            if infusion:  # "ÿc4Blood Craft Infusion" (the string table's UTF-8 read as Latin-1: "Ã¿c4") -> Blood
+                row[1] = re.sub(r"^(?:Ã¿|ÿ)c.", "", self.base_name(infusion)).replace(" Craft Infusion", "").strip()
+        return [[t, name, json.dumps(ing, separators=(",", ":")), props] for t, name, ing, props in out]
+
     # ---------------------------------------------------------------- runewords
 
     def first_func(self, prop):
@@ -644,6 +680,22 @@ def write_corruptions(game):
     lines += ["\t".join(r) for r in rows]
     CORRUPTIONS_FILE.write_text("\n".join(lines) + "\n", encoding="utf-8", newline="\n")
     print(f"wrote {CORRUPTIONS_FILE.relative_to(ROOT)} ({len(rows)} outcome rows)")
+    write_crafts(game)
+
+
+def write_crafts(game):
+    """docs/pd2-crafts.tsv: the fixed stats of each craft (tools/gen_boss_tags.py's rules page counts them on crafted
+    items)."""
+    rows = game.craft_rows()
+    lines = [f"# PD2 crafting recipes (CubeMain.txt rows that make a magic or rare item crafted, 'usetype,crf') from "
+             f"pd2data.mpq, extracted {datetime.date.today().isoformat()}",
+             "# by tools/pd2_data.py --extract: the cube input's item type, the craft (its infusion's name), the other",
+             "# inputs of its recipes and the fixed properties it adds as [[code, low, high], ...] per property (as in",
+             "# pd2-unique-set-items.tsv). The crafted item also rolls random affixes (up to 4, by item level).",
+             "\t".join(["type", "craft", "ingredients", "props"])]
+    lines += ["\t".join(r) for r in rows]
+    CRAFTS_FILE.write_text("\n".join(lines) + "\n", encoding="utf-8", newline="\n")
+    print(f"wrote {CRAFTS_FILE.relative_to(ROOT)} ({len(rows)} crafts)")
 
 
 def extract_tier_data(game_dir, game=None):
