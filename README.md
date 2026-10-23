@@ -1,6 +1,6 @@
 # **Season 14 Alliance Update:**
 
-My loot filters are updated for the Season 13 Betrayal ladder reset on April 24th 2026
+My loot filters are updated for the Season 14 Alliance ladder reset on October 23rd, 2026
 
 After selecting the version of the filter from the launcher, be sure to click "Save Filter" on the right side afterwards
 
