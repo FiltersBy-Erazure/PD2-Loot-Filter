@@ -355,7 +355,9 @@
   is one string drawn bottom up, so the Cost line takes the color the name ends with. The Cost is the game's buy
   price at full price (`price()`: base cost, affix and stat add / multiply, the vendor's multiplier divided first
   above 65535); `--selftest` checks the author's two shop screenshots line by line and their prices (20272: Charsi,
-  a quest, Reduces all Vendor Prices 15%; 199680: Charsi). SELLPRICE is Malah's as BH reads it, store items' item
+  a quest, Reduces all Vendor Prices 15%; 199680: Charsi; a screenshot of an earlier build names its affix rows'
+  values then, `old_affixes`: the plate's Witch-hunter's at level 50 / required 42, 75 / 68 since the 2026-10-23
+  build). SELLPRICE is Malah's as BH reads it, store items' item
   level the character's + 5 (both screenshots). Not drawn yet: a weapon's "<class> - <speed>" line (it needs a
   client table). Tables: `pd2_data.py --tier-data` (or `--shop-data` alone) writes `docs/pd2-magic-affixes.tsv`,
   `pd2-stat-text.tsv`, `pd2-base-stats.tsv`, `pd2-vendors.tsv`, `pd2-tooltip-strings.tsv` and the skills' price
