@@ -241,20 +241,20 @@ ItemDisplay[NMAG !INF !RW ED<5 ETH CHEST CLVL>89 FILTLVL>2 (SOCK=0 OR (!GEMMED S
 
 // Notifications for 2os and 3os armors while leveling
 ItemDisplay[NMAG !INF !RW NORM CHEST !ETH SOCK=2 CLVL<20 !GEMMED]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 2os
-ItemDisplay[NMAG !INF !RW NORM CHEST !ETH SOCK=3 CLVL<30 !GEMMED]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 3os
+ItemDisplay[NMAG !INF !RW NORM CHEST !ETH SOCK=3 CLVL<50 !GEMMED]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 3os
 
 // Low-Value Normal tier Armors (Quilted Armor, Leather Armor, Hard Leather Armor, Studded Leather, Scale Mail, Chain Mail, Splint Mail, Plate Mail, Field Plate)
 ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (qui OR lea OR hla OR stu) SOCK=0 FILTLVL>0 !TOWN]:// Hide low-value 0 socket Armors
 ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (scl OR chn OR spl OR plt OR fld) SOCK=0 CLVL>19 FILTLVL>0 !TOWN]:// Hide medium-value 0 socket normal armors at character levels 20+
-ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (qui OR lea OR hla OR stu OR scl OR chn OR spl OR plt OR fld) CLVL>29 FILTLVL>0 !TOWN]:// Hide All Normal tier Armors after level 29
+ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (qui OR lea OR hla OR stu OR scl OR chn OR spl OR plt OR fld) CLVL>29 FILTLVL>0 !(SOCK=3 CLVL<50) !TOWN]:// Hide All Normal tier Armors after level 29 (3os ones after level 49)
 
 // Higher-Value Normal tier Armors (Ring Mail, Breast Plate, Gothic Plate, Full Plate Mail, Ancient Armor, Light Plate)
 ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (gth OR ful) ED<19 SOCK=0 CLVL>49 FILTLVL>0 !TOWN]:// Hide 0 socket Gothic Plate and Full Plate Mail with less than 19% ED at character levels 50+
 ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (rng OR brs OR aar OR ltp) ED<19 SOCK=0 CLVL>19 FILTLVL>0 !TOWN]:// Hide 0 socket Ring Mail, Breast Plate, Ancient Armor and Light Plate with less than 19% ED at character levels 20+
-ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (rng OR brs OR gth OR ful OR aar OR ltp) (ED<19 OR SOCK=2) CLVL>29 FILTLVL>0 !(SOCK=4 (gth OR ful) CLVL<70) !(SOCK=0 (gth OR ful) CLVL<50) !TOWN]:// Hide higher-value Normal tier Armors with less than 19% ED or 2 sockets after level 29 (not 4os Gothic Plate or Full Plate Mail below level 70, nor 0os ones below 50: Larzuk bases)
-ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (rng OR brs OR gth OR ful OR aar OR ltp) (ED<20 OR SOCK=2) CLVL>29 FILTLVL>2 !(SOCK=4 (gth OR ful) CLVL<70) !(SOCK=0 (gth OR ful) CLVL<50) !TOWN]:// Hide higher-value Normal tier Armors with less than 20% ED or 2 sockets after level 29 on filter levels 3+ (not 4os Gothic Plate or Full Plate Mail below level 70, nor 0os ones below 50: Larzuk bases)
+ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (rng OR brs OR gth OR ful OR aar OR ltp) (ED<19 OR SOCK=2) CLVL>29 FILTLVL>0 !(SOCK=4 (gth OR ful) CLVL<70) !(SOCK=0 (gth OR ful) CLVL<50) !(SOCK=3 CLVL<50) !TOWN]:// Hide higher-value Normal tier Armors with less than 19% ED or 2 sockets after level 29 (not 4os Gothic Plate or Full Plate Mail below level 70, nor 0os ones below 50: Larzuk bases; not 3os ones below 50)
+ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (rng OR brs OR gth OR ful OR aar OR ltp) (ED<20 OR SOCK=2) CLVL>29 FILTLVL>2 !(SOCK=4 (gth OR ful) CLVL<70) !(SOCK=0 (gth OR ful) CLVL<50) !(SOCK=3 CLVL<50) !TOWN]:// Hide higher-value Normal tier Armors with less than 20% ED or 2 sockets after level 29 on filter levels 3+ (not 4os Gothic Plate or Full Plate Mail below level 70, nor 0os ones below 50: Larzuk bases; not 3os ones below 50)
 //  3os Vendor Tag
-ItemDisplay[NMAG !INF !RW (brs OR rng OR ltp) !GEMMED !ETH SOCK=3 CLVL<30 SHOP]:%TAN%**%LIGHT_GRAY%*%GRAY%*  %GRAY%%NAME%  %GRAY%*%LIGHT_GRAY%*%TAN%**%GRAY%%CONTINUE%// 3os Vendor Tag
+ItemDisplay[NMAG !INF !RW (brs OR rng OR ltp) !GEMMED !ETH SOCK=3 CLVL<50 SHOP]:%TAN%**%LIGHT_GRAY%*%GRAY%*  %GRAY%%NAME%  %GRAY%*%LIGHT_GRAY%*%TAN%**%GRAY%%CONTINUE%// 3os Vendor Tag
 
 // Low-Value Exceptional tier Armors (Ghost Armor, Serpentskin Armor, Demonhide Armor, Trellised Armor, Templar Coat, Embossed Plate, Chaos Armor, Ornate Armor)
 ItemDisplay[NMAG !INF !RW !GEMMED (xui OR xea OR xla OR xtu OR xlt OR xth OR xul OR xar) SOCK=0 CLVL>49 FILTLVL>0 !TOWN]:// Hide 0os at character level 50+
