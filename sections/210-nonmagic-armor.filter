@@ -199,75 +199,75 @@ ItemDisplay[NMAG !RW STAT360=32 SOCK>0]:%NAME% %WHITE%%SOCKETS%%RED%*%GRAY%{%NAM
 
 // Filtering for items with only 1 Socket
 ItemDisplay[NMAG !RW (ARMOR OR WEAPON OR QUIVER) !leg SOCK=1 CLVL<5]:%GRAY%%NAME%{%NAME%}%GRAY%%CONTINUE%// Before character level 5, show all 1 socket armors and weapons
-ItemDisplay[NMAG !RW (ARMOR OR WEAPON OR QUIVER) !leg SOCK=1 CLVL>4 FILTLVL>0 !(clb OR 9cl OR 7cl OR spc OR 9sp OR 7sp OR STAFF OR SIN OR SCEPTER OR WAND OR SOR OR BAR OR DRU OR NEC) !TOWN]:// Hides all 1 socket nonmagical items except for items that sell for gold
+ItemDisplay[NMAG !RW (ARMOR OR WEAPON OR QUIVER) !leg SOCK=1 CLVL>4 FILTLVL>0 !(clb OR 9cl OR 7cl OR spc OR 9sp OR 7sp OR STAFF OR SIN OR SCEPTER OR WAND OR SOR OR BAR OR DRU OR NEC) GROUND !TOWN]:// Hides all 1 socket nonmagical items except for items that sell for gold
 
 // On filter levels 3+ (1+ from character level 90), hide 1 socket class items
-ItemDisplay[NMAG !RW (FILTLVL>2 OR (CLVL>89 FILTLVL>0)) SOCK=1 (clb OR 9cl OR 7cl OR spc OR 9sp OR 7sp OR STAFF OR SIN OR SCEPTER OR WAND OR SOR OR BAR OR DRU OR NEC) !TOWN]:// On filter levels 3+ (1+ from character level 90), hide 1 socket class items
+ItemDisplay[NMAG !RW (FILTLVL>2 OR (CLVL>89 FILTLVL>0)) SOCK=1 (clb OR 9cl OR 7cl OR spc OR 9sp OR 7sp OR STAFF OR SIN OR SCEPTER OR WAND OR SOR OR BAR OR DRU OR NEC) GROUND !TOWN]:// On filter levels 3+ (1+ from character level 90), hide 1 socket class items
 
 // Filters out inferior items unless your character is playing that class
-ItemDisplay[INF (NEC OR WAND) !NECROMANCER CLVL>9 FILTLVL>0 !TOWN]://
-ItemDisplay[INF (SOR OR STAFF) !SORCERESS CLVL>9 FILTLVL>0 !TOWN]://
-ItemDisplay[INF SCEPTER !PALADIN CLVL>9 FILTLVL>0 !TOWN]://
-ItemDisplay[INF (DRU OR clb OR 9cl OR 7cl OR spc OR 9sp OR 7sp) !DRUID CLVL>9 FILTLVL>0 !TOWN]://
-ItemDisplay[INF BAR !BARBARIAN CLVL>9 FILTLVL>0 !TOWN]://
-ItemDisplay[INF SIN !ASSASSIN CLVL>9 FILTLVL>0 !TOWN]://
+ItemDisplay[INF (NEC OR WAND) !NECROMANCER CLVL>9 FILTLVL>0 GROUND !TOWN]://
+ItemDisplay[INF (SOR OR STAFF) !SORCERESS CLVL>9 FILTLVL>0 GROUND !TOWN]://
+ItemDisplay[INF SCEPTER !PALADIN CLVL>9 FILTLVL>0 GROUND !TOWN]://
+ItemDisplay[INF (DRU OR clb OR 9cl OR 7cl OR spc OR 9sp OR 7sp) !DRUID CLVL>9 FILTLVL>0 GROUND !TOWN]://
+ItemDisplay[INF BAR !BARBARIAN CLVL>9 FILTLVL>0 GROUND !TOWN]://
+ItemDisplay[INF SIN !ASSASSIN CLVL>9 FILTLVL>0 GROUND !TOWN]://
 
-ItemDisplay[INF !(NEC OR WAND OR SOR OR STAFF OR SCEPTER OR DRU OR clb OR 9cl OR 7cl OR spc OR 9sp OR 7sp OR BAR OR SIN) CLVL>5 FILTLVL>0 !TOWN]:// Hide all Low Quality, Cracked, Crude, & Damaged items after level 5
+ItemDisplay[INF !(NEC OR WAND OR SOR OR STAFF OR SCEPTER OR DRU OR clb OR 9cl OR 7cl OR spc OR 9sp OR 7sp OR BAR OR SIN) CLVL>5 FILTLVL>0 GROUND !TOWN]:// Hide all Low Quality, Cracked, Crude, & Damaged items after level 5
 
 
 // ========================  Non-Magic Arrows and Bolts  =========================
 
-ItemDisplay[NMAG QUIVER SOCK~0-1 !TOWN]:// Hides nonmagical Arrow quivers without sockets or with 1 socket
+ItemDisplay[NMAG QUIVER SOCK~0-1 GROUND !TOWN]:// Hides nonmagical Arrow quivers without sockets or with 1 socket
 
-ItemDisplay[NMAG (aqv OR cqv) CLVL>24 !TOWN]:// Hides normal tier quivers at levels 25+
-ItemDisplay[NMAG (aqv2 OR cqv2) CLVL>49 !TOWN]:// Hides exceptional tier quivers at levels 50+
-ItemDisplay[NMAG (aqv3 OR cqv3) CLVL>69 !TOWN]:// Hides elite tier quivers at levels 70+
+ItemDisplay[NMAG (aqv OR cqv) CLVL>24 GROUND !TOWN]:// Hides normal tier quivers at levels 25+
+ItemDisplay[NMAG (aqv2 OR cqv2) CLVL>49 GROUND !TOWN]:// Hides exceptional tier quivers at levels 50+
+ItemDisplay[NMAG (aqv3 OR cqv3) CLVL>69 GROUND !TOWN]:// Hides elite tier quivers at levels 70+
 
 // ------------------------------------------------------------------------------
 //      =========================  Armors/Chests ===========================
 // ------------------------------------------------------------------------------
 
 // Hide nonsuperior noneth 0 socket armors after character level 70
-ItemDisplay[NMAG !INF !RW ED<5 !ETH CHEST CLVL>69 FILTLVL>0 SOCK=0 !TOWN]://
+ItemDisplay[NMAG !INF !RW ED<5 !ETH CHEST CLVL>69 FILTLVL>0 SOCK=0 GROUND !TOWN]://
 
 // Hide nonsuperior noneth armors after character level 80 and on filter levels 3+
-ItemDisplay[NMAG !INF !RW ED<5 !ETH CHEST CLVL>79 FILTLVL>2 !GEMMED SOCK>0 !EQUIPPED !TOWN]://
+ItemDisplay[NMAG !INF !RW ED<5 !ETH CHEST CLVL>79 FILTLVL>2 !GEMMED SOCK>0 !EQUIPPED GROUND !TOWN]://
 
 // Hide noneth armors with less than 18% ED from character level 90 on filter levels 5+
-ItemDisplay[NMAG !INF !RW ED<18 !ETH CHEST CLVL>89 FILTLVL>4 (SOCK=0 OR (!GEMMED SOCK>0)) !EQUIPPED !TOWN]://
+ItemDisplay[NMAG !INF !RW ED<18 !ETH CHEST CLVL>89 FILTLVL>4 (SOCK=0 OR (!GEMMED SOCK>0)) !EQUIPPED GROUND !TOWN]://
 
 // Hide nonsuperior eth armors after character level 90 and on filter levels 3+
-ItemDisplay[NMAG !INF !RW ED<5 ETH CHEST CLVL>89 FILTLVL>2 (SOCK=0 OR (!GEMMED SOCK>0)) !EQUIPPED !TOWN]://
+ItemDisplay[NMAG !INF !RW ED<5 ETH CHEST CLVL>89 FILTLVL>2 (SOCK=0 OR (!GEMMED SOCK>0)) !EQUIPPED GROUND !TOWN]://
 
 // Notifications for 2os and 3os armors while leveling
 ItemDisplay[NMAG !INF !RW NORM CHEST !ETH SOCK=2 CLVL<20 !GEMMED]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 2os
 ItemDisplay[NMAG !INF !RW NORM CHEST !ETH SOCK=3 CLVL<50 !GEMMED]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 3os
 
 // Low-Value Normal tier Armors (Quilted Armor, Leather Armor, Hard Leather Armor, Studded Leather, Scale Mail, Chain Mail, Splint Mail, Plate Mail, Field Plate)
-ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (qui OR lea OR hla OR stu) SOCK=0 FILTLVL>0 !TOWN]:// Hide low-value 0 socket Armors
-ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (scl OR chn OR spl OR plt OR fld) SOCK=0 CLVL>19 FILTLVL>0 !TOWN]:// Hide medium-value 0 socket normal armors at character levels 20+
-ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (qui OR lea OR hla OR stu OR scl OR chn OR spl OR plt OR fld) CLVL>29 FILTLVL>0 !(SOCK=3 CLVL<50) !TOWN]:// Hide All Normal tier Armors after level 29 (3os ones after level 49)
+ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (qui OR lea OR hla OR stu) SOCK=0 FILTLVL>0 GROUND !TOWN]:// Hide low-value 0 socket Armors
+ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (scl OR chn OR spl OR plt OR fld) SOCK=0 CLVL>19 FILTLVL>0 GROUND !TOWN]:// Hide medium-value 0 socket normal armors at character levels 20+
+ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (qui OR lea OR hla OR stu OR scl OR chn OR spl OR plt OR fld) CLVL>29 FILTLVL>0 !(SOCK=3 CLVL<50) GROUND !TOWN]:// Hide All Normal tier Armors after level 29 (3os ones after level 49)
 
 // Higher-Value Normal tier Armors (Ring Mail, Breast Plate, Gothic Plate, Full Plate Mail, Ancient Armor, Light Plate)
-ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (gth OR ful) ED<19 SOCK=0 CLVL>49 FILTLVL>0 !TOWN]:// Hide 0 socket Gothic Plate and Full Plate Mail with less than 19% ED at character levels 50+
-ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (rng OR brs OR aar OR ltp) ED<19 SOCK=0 CLVL>19 FILTLVL>0 !TOWN]:// Hide 0 socket Ring Mail, Breast Plate, Ancient Armor and Light Plate with less than 19% ED at character levels 20+
-ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (rng OR brs OR gth OR ful OR aar OR ltp) (ED<19 OR SOCK=2) CLVL>29 FILTLVL>0 !(SOCK=4 (gth OR ful) CLVL<70) !(SOCK=0 (gth OR ful) CLVL<50) !(SOCK=3 CLVL<50) !TOWN]:// Hide higher-value Normal tier Armors with less than 19% ED or 2 sockets after level 29 (not 4os Gothic Plate or Full Plate Mail below level 70, nor 0os ones below 50: Larzuk bases; not 3os ones below 50)
-ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (rng OR brs OR gth OR ful OR aar OR ltp) (ED<20 OR SOCK=2) CLVL>29 FILTLVL>2 !(SOCK=4 (gth OR ful) CLVL<70) !(SOCK=0 (gth OR ful) CLVL<50) !(SOCK=3 CLVL<50) !TOWN]:// Hide higher-value Normal tier Armors with less than 20% ED or 2 sockets after level 29 on filter levels 3+ (not 4os Gothic Plate or Full Plate Mail below level 70, nor 0os ones below 50: Larzuk bases; not 3os ones below 50)
+ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (gth OR ful) ED<19 SOCK=0 CLVL>49 FILTLVL>0 GROUND !TOWN]:// Hide 0 socket Gothic Plate and Full Plate Mail with less than 19% ED at character levels 50+
+ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (rng OR brs OR aar OR ltp) ED<19 SOCK=0 CLVL>19 FILTLVL>0 GROUND !TOWN]:// Hide 0 socket Ring Mail, Breast Plate, Ancient Armor and Light Plate with less than 19% ED at character levels 20+
+ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (rng OR brs OR gth OR ful OR aar OR ltp) (ED<19 OR SOCK=2) CLVL>29 FILTLVL>0 !(SOCK=4 (gth OR ful) CLVL<70) !(SOCK=0 (gth OR ful) CLVL<50) !(SOCK=3 CLVL<50) GROUND !TOWN]:// Hide higher-value Normal tier Armors with less than 19% ED or 2 sockets after level 29 (not 4os Gothic Plate or Full Plate Mail below level 70, nor 0os ones below 50: Larzuk bases; not 3os ones below 50)
+ItemDisplay[NMAG !INF !RW NORM CHEST !GEMMED (rng OR brs OR gth OR ful OR aar OR ltp) (ED<20 OR SOCK=2) CLVL>29 FILTLVL>2 !(SOCK=4 (gth OR ful) CLVL<70) !(SOCK=0 (gth OR ful) CLVL<50) !(SOCK=3 CLVL<50) GROUND !TOWN]:// Hide higher-value Normal tier Armors with less than 20% ED or 2 sockets after level 29 on filter levels 3+ (not 4os Gothic Plate or Full Plate Mail below level 70, nor 0os ones below 50: Larzuk bases; not 3os ones below 50)
 //  3os Vendor Tag
 ItemDisplay[NMAG !INF !RW (brs OR rng OR ltp) !GEMMED !ETH SOCK=3 CLVL<50 SHOP]:%TAN%**%LIGHT_GRAY%*%GRAY%*  %GRAY%%NAME%  %GRAY%*%LIGHT_GRAY%*%TAN%**%GRAY%%CONTINUE%// 3os Vendor Tag
 
 // Low-Value Exceptional tier Armors (Ghost Armor, Serpentskin Armor, Demonhide Armor, Trellised Armor, Templar Coat, Embossed Plate, Chaos Armor, Ornate Armor)
-ItemDisplay[NMAG !INF !RW !GEMMED (xui OR xea OR xla OR xtu OR xlt OR xth OR xul OR xar) SOCK=0 CLVL>49 FILTLVL>0 !TOWN]:// Hide 0os at character level 50+
+ItemDisplay[NMAG !INF !RW !GEMMED (xui OR xea OR xla OR xtu OR xlt OR xth OR xul OR xar) SOCK=0 CLVL>49 FILTLVL>0 GROUND !TOWN]:// Hide 0os at character level 50+
 ItemDisplay[NMAG !INF !RW !ETH SOCK=2 CLVL<50 (xui OR xea OR xla OR xtu)]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Notify for 2os noneth under level 50
 ItemDisplay[NMAG !INF !RW !ETH (((SOCK=2 OR SOCK=3) (xrs OR xtp)) OR (SOCK=3 (xui OR xea OR xla OR xtu))) CLVL<80]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 2 or 3 socket Cuirass and Mage Plate under level 80
-ItemDisplay[NMAG !INF !RW !GEMMED (xui OR xea OR xla OR xtu) !SOCK=3 FILTLVL>2 CLVL>69 !TOWN]:// Hide Ghost Armor, Serpentskin Armor, Demonhide Armor at filter levels 3+ (S14: 3os ones follow the Cuirass/Mesh rules below)
-ItemDisplay[NMAG !INF !RW !GEMMED (xlt OR xth OR xul OR xar) (ED<13 OR SOCK=2) CLVL>79 FILTLVL>0 !TOWN]:// Hides Templar Coat, Embossed Plate, Chaos Armor and Ornate Plate with less than 13% ED or 2 sockets after level 79
-ItemDisplay[NMAG !INF !RW !GEMMED (xlt OR xth OR xul OR xar) (ED<19 OR SOCK=2) CLVL>79 FILTLVL>4 !TOWN]:// Hides Templar Coat, Embossed Plate, Chaos Armor and Ornate Plate with less than 19% ED or 2 sockets after level 79 on filter levels 5+
+ItemDisplay[NMAG !INF !RW !GEMMED (xui OR xea OR xla OR xtu) !SOCK=3 FILTLVL>2 CLVL>69 GROUND !TOWN]:// Hide Ghost Armor, Serpentskin Armor, Demonhide Armor at filter levels 3+ (S14: 3os ones follow the Cuirass/Mesh rules below)
+ItemDisplay[NMAG !INF !RW !GEMMED (xlt OR xth OR xul OR xar) (ED<13 OR SOCK=2) CLVL>79 FILTLVL>0 GROUND !TOWN]:// Hides Templar Coat, Embossed Plate, Chaos Armor and Ornate Plate with less than 13% ED or 2 sockets after level 79
+ItemDisplay[NMAG !INF !RW !GEMMED (xlt OR xth OR xul OR xar) (ED<19 OR SOCK=2) CLVL>79 FILTLVL>4 GROUND !TOWN]:// Hides Templar Coat, Embossed Plate, Chaos Armor and Ornate Plate with less than 19% ED or 2 sockets after level 79 on filter levels 5+
 
 // Higher-Value Exceptional tier Armors (Linked Mail, Tigulated Mail, Mesh Armor, Cuirass, Russet Armor, Sharktooth Armor, Mage Plate)
-ItemDisplay[NMAG !INF !RW !GEMMED ((xng OR xcl OR xhn OR xrs OR xpl OR xld OR xtp) OR ((xui OR xea OR xla OR xtu) SOCK=3)) (ED<13 OR SOCK=2) CLVL>79 FILTLVL>0 !TOWN]:// Hides higher-value Exceptional tier Armors with less than 13% ED or 2 sockets after level 79
+ItemDisplay[NMAG !INF !RW !GEMMED ((xng OR xcl OR xhn OR xrs OR xpl OR xld OR xtp) OR ((xui OR xea OR xla OR xtu) SOCK=3)) (ED<13 OR SOCK=2) CLVL>79 FILTLVL>0 GROUND !TOWN]:// Hides higher-value Exceptional tier Armors with less than 13% ED or 2 sockets after level 79
 ItemDisplay[NMAG !INF !RW SUP !ETH (SOCK=0 OR SOCK=3) ((xng OR xcl OR xhn OR xrs OR xpl OR xld OR xtp) OR ((xui OR xea OR xla OR xtu) SOCK=3)) ED>12 FILTLVL<5]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Superior, 0os or 3os
-ItemDisplay[NMAG !INF !RW !GEMMED ((xng OR xcl OR xhn OR xrs OR xpl OR xld OR xtp) OR ((xui OR xea OR xla OR xtu) SOCK=3)) (ED<19 OR SOCK=2) CLVL>79 FILTLVL>4 !TOWN]:// Hides higher-value Exceptional tier Armors with less than 19% ED or 2 sockets after level 79 on filter levels 5+
+ItemDisplay[NMAG !INF !RW !GEMMED ((xng OR xcl OR xhn OR xrs OR xpl OR xld OR xtp) OR ((xui OR xea OR xla OR xtu) SOCK=3)) (ED<19 OR SOCK=2) CLVL>79 FILTLVL>4 GROUND !TOWN]:// Hides higher-value Exceptional tier Armors with less than 19% ED or 2 sockets after level 79 on filter levels 5+
 ItemDisplay[NMAG !INF !RW SUP !ETH (SOCK=0 OR SOCK=3) ((xng OR xcl OR xhn OR xrs OR xpl OR xld OR xtp) OR ((xui OR xea OR xla OR xtu) SOCK=3)) ED>18 FILTLVL>4]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Superior, 0os or 3os
 
 // Elite tier: 
@@ -288,22 +288,22 @@ ItemDisplay[NMAG !INF !RW SUP ETH ED>4 SOCK=2 ELT CHEST FILTLVL<5 CLVL<90]:%NAME
 // ------------------------------------------------------------------------------
 
 // 	Normal tier
-ItemDisplay[NMAG !INF !RW CLVL>29 NORM SHIELD !bsh !lrg !tow !spk !DIN !NEC FILTLVL>0 !TOWN]://
+ItemDisplay[NMAG !INF !RW CLVL>29 NORM SHIELD !bsh !lrg !tow !spk !DIN !NEC FILTLVL>0 GROUND !TOWN]://
 
-ItemDisplay[NMAG !INF !RW SOCK=0 NORM SHIELD !DIN !NEC FILTLVL>0 !TOWN]:// All Normal tiers 0os
-ItemDisplay[NMAG !INF !RW SOCK=2 NORM SHIELD !sml !bsh !tow !DIN !NEC FILTLVL>0 !TOWN]:// All Normal tiers 2os
-ItemDisplay[NMAG !INF !RW SOCK=3 NORM SHIELD !lrg !tow !spk !DIN !NEC FILTLVL>0 !TOWN]:// All Normal tiers 3os
+ItemDisplay[NMAG !INF !RW SOCK=0 NORM SHIELD !DIN !NEC FILTLVL>0 GROUND !TOWN]:// All Normal tiers 0os
+ItemDisplay[NMAG !INF !RW SOCK=2 NORM SHIELD !sml !bsh !tow !DIN !NEC FILTLVL>0 GROUND !TOWN]:// All Normal tiers 2os
+ItemDisplay[NMAG !INF !RW SOCK=3 NORM SHIELD !lrg !tow !spk !DIN !NEC FILTLVL>0 GROUND !TOWN]:// All Normal tiers 3os
 
 //      Buckler
-ItemDisplay[NMAG buc CLVL>2 FILTLVL>0 !TOWN]:// Hide all white Bucklers past character level 2
+ItemDisplay[NMAG buc CLVL>2 FILTLVL>0 GROUND !TOWN]:// Hide all white Bucklers past character level 2
 
 //      Small Shield
 ItemDisplay[NMAG !INF !RW sml !ETH SOCK=2 CLVL<10 !GEMMED]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 2os
-ItemDisplay[NMAG !INF !RW sml CLVL>19 FILTLVL>0 !TOWN]:// Hide all white small shields past character level 19
+ItemDisplay[NMAG !INF !RW sml CLVL>19 FILTLVL>0 GROUND !TOWN]:// Hide all white small shields past character level 19
 
 //      Large Shield, Tower Shield, Spiked Shield, Bone Shield
 //  Hidden after level 60
-ItemDisplay[NMAG !INF !RW (lrg OR tow OR spk OR bsh) !GEMMED CLVL>60 FILTLVL>0 !TOWN]:// Hide large shields after level 60
+ItemDisplay[NMAG !INF !RW (lrg OR tow OR spk OR bsh) !GEMMED CLVL>60 FILTLVL>0 GROUND !TOWN]:// Hide large shields after level 60
 //  Orange Ancient's Pledge Tag
 ItemDisplay[NMAG !INF !RW (lrg OR tow OR spk) !GEMMED !ETH SOCK=3 CLVL<30 GROUND]:%ORANGE%AP %GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 3os
 //  3os Vendor Tag
@@ -317,74 +317,74 @@ ItemDisplay[NMAG !INF !RW bsh !GEMMED !ETH SOCK=2 CLVL<50]:%ORANGE%Rhyme %GRAY%%
 
 
 // 	Exceptional tier
-ItemDisplay[NMAG !INF !RW EXC SHIELD !xsh !DIN !NEC FILTLVL>0 !TOWN]:// All Exceptional tier shields but Grim Shields
+ItemDisplay[NMAG !INF !RW EXC SHIELD !xsh !DIN !NEC FILTLVL>0 GROUND !TOWN]:// All Exceptional tier shields but Grim Shields
 
 //      Grim Shield
-ItemDisplay[NMAG !INF !RW xsh SOCK=0 FILTLVL>0 !TOWN]:// Hide 0os
-ItemDisplay[NMAG !INF !RW xsh CLVL>79 FILTLVL>0 !TOWN]:// Hide Nonmagical grim shields after character level 79
+ItemDisplay[NMAG !INF !RW xsh SOCK=0 FILTLVL>0 GROUND !TOWN]:// Hide 0os
+ItemDisplay[NMAG !INF !RW xsh CLVL>79 FILTLVL>0 GROUND !TOWN]:// Hide Nonmagical grim shields after character level 79
 ItemDisplay[NMAG !INF !RW xsh CLVL<80 !ETH (SOCK=2 OR SOCK=3)]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Notify 2os Grim Shields before level 80
 
 
 //  Elite tier Shield
-ItemDisplay[NMAG !INF !RW ELT SHIELD !uit !ush !uow !uts !DIN !NEC FILTLVL>0 !TOWN]:// Hide elite tiers that aren't Monarch Aegis Ward or Troll Nest
+ItemDisplay[NMAG !INF !RW ELT SHIELD !uit !ush !uow !uts !DIN !NEC FILTLVL>0 GROUND !TOWN]:// Hide elite tiers that aren't Monarch Aegis Ward or Troll Nest
 
 //      Monarch
-ItemDisplay[NMAG !INF !RW uit ETH FILTLVL>0 !TOWN]:// Hide eth monarchs
-ItemDisplay[NMAG !INF !RW uit (SOCK=2 OR SOCK=3) FILTLVL>0 !TOWN]:// Hide 2os and 3os Monarchs
+ItemDisplay[NMAG !INF !RW uit ETH FILTLVL>0 GROUND !TOWN]:// Hide eth monarchs
+ItemDisplay[NMAG !INF !RW uit (SOCK=2 OR SOCK=3) FILTLVL>0 GROUND !TOWN]:// Hide 2os and 3os Monarchs
 
-ItemDisplay[NMAG !INF !RW uit SOCK=0 ED<5 CLVL>79 FILTLVL>0 !TOWN]:// Hide nonsuperior 0os Monarch after level 79
-ItemDisplay[NMAG !INF !RW uit ED<5 CLVL>79 FILTLVL>2 !TOWN]:// Hide all nonsuperior Monarchs after level 79 on filter levels 3+
-ItemDisplay[NMAG !INF !RW uit ED<15 FILTLVL>4 !TOWN]:// Hide Monarchs with less than 15% ED on filter levels 5+
+ItemDisplay[NMAG !INF !RW uit SOCK=0 ED<5 CLVL>79 FILTLVL>0 GROUND !TOWN]:// Hide nonsuperior 0os Monarch after level 79
+ItemDisplay[NMAG !INF !RW uit ED<5 CLVL>79 FILTLVL>2 GROUND !TOWN]:// Hide all nonsuperior Monarchs after level 79 on filter levels 3+
+ItemDisplay[NMAG !INF !RW uit ED<15 FILTLVL>4 GROUND !TOWN]:// Hide Monarchs with less than 15% ED on filter levels 5+
 ItemDisplay[NMAG !INF !RW uit SOCK=0 !ETH CLVL<80 !PALADIN !NECROMANCER !ASSASSIN !(FILTLVL>4 ED<15)]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Show and notify for 0os Monarchs before level 80 (on filter levels 5+ only those 335 shows)
 ItemDisplay[NMAG !INF !RW uit SOCK=4 !ETH CLVL<80 !PALADIN !NECROMANCER !ASSASSIN !(FILTLVL>4 ED<15)]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Show and notify for 4os Monarchs before level 80 (on filter levels 5+ only those 335 shows)
 
 //      Aegis
-ItemDisplay[NMAG !INF !RW uow !ETH ED<5 FILTLVL>0 !TOWN]:// Hide noneth non-sup Aegis
-ItemDisplay[NMAG !INF !RW uow !ETH ED<15 FILTLVL>4 !TOWN]:// Hide noneth Aegis with less than 15% ED on filter levels 5+
-ItemDisplay[NMAG !INF !RW uow (SOCK=2 OR SOCK=3) FILTLVL>0 !TOWN]:// Hide 2 and 3 socket Aegis
-ItemDisplay[NMAG !INF !RW uow ETH ED<5 CLVL>79 FILTLVL>2 !TOWN]:// Hide eth Aegis with less than 5% ED after level 79 on filter levels 3+
+ItemDisplay[NMAG !INF !RW uow !ETH ED<5 FILTLVL>0 GROUND !TOWN]:// Hide noneth non-sup Aegis
+ItemDisplay[NMAG !INF !RW uow !ETH ED<15 FILTLVL>4 GROUND !TOWN]:// Hide noneth Aegis with less than 15% ED on filter levels 5+
+ItemDisplay[NMAG !INF !RW uow (SOCK=2 OR SOCK=3) FILTLVL>0 GROUND !TOWN]:// Hide 2 and 3 socket Aegis
+ItemDisplay[NMAG !INF !RW uow ETH ED<5 CLVL>79 FILTLVL>2 GROUND !TOWN]:// Hide eth Aegis with less than 5% ED after level 79 on filter levels 3+
 ItemDisplay[NMAG !INF !RW uow ETH SUP ED>4 (SOCK=0 OR SOCK=4)]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Superior, 0os or 4os
 
 //      Ward
-ItemDisplay[NMAG !INF !RW uts !ETH ED<5 FILTLVL>0 !TOWN]:// Hide noneth non-sup Wards
-ItemDisplay[NMAG !INF !RW uts !ETH ED<15 FILTLVL>4 !TOWN]:// Hide noneth Wards with less than 15% ED on filter levels 5+
-ItemDisplay[NMAG !INF !RW uts (SOCK=2 OR SOCK=3) FILTLVL>0 !TOWN]:// Hide 2 and 3 socket Wards
-ItemDisplay[NMAG !INF !RW uts ETH ED<5 CLVL>79 FILTLVL>2 !TOWN]:// Hide eth Wards with less than 5% ED after level 79 on filter levels 3+
+ItemDisplay[NMAG !INF !RW uts !ETH ED<5 FILTLVL>0 GROUND !TOWN]:// Hide noneth non-sup Wards
+ItemDisplay[NMAG !INF !RW uts !ETH ED<15 FILTLVL>4 GROUND !TOWN]:// Hide noneth Wards with less than 15% ED on filter levels 5+
+ItemDisplay[NMAG !INF !RW uts (SOCK=2 OR SOCK=3) FILTLVL>0 GROUND !TOWN]:// Hide 2 and 3 socket Wards
+ItemDisplay[NMAG !INF !RW uts ETH ED<5 CLVL>79 FILTLVL>2 GROUND !TOWN]:// Hide eth Wards with less than 5% ED after level 79 on filter levels 3+
 ItemDisplay[NMAG !INF !RW uts ED>4 SUP ETH (SOCK=0 OR SOCK=4)]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Superior, 0os or 4os
 
 //      Troll Nest
-ItemDisplay[NMAG !INF !RW ush ETH FILTLVL>0 !TOWN]:// Hide eth Troll Nests
-ItemDisplay[NMAG !INF !RW ush ED<5 !ETH SOCK=0 FILTLVL>0 !TOWN]:// Hide noneth 0os Troll Nests
-ItemDisplay[NMAG !INF !RW ush SOCK=2 FILTLVL>2 !TOWN]:// Hide 2os Troll Nests on filter levels 3+
-ItemDisplay[NMAG !INF !RW ush ED<5 CLVL>79 FILTLVL>2 !TOWN]:// Hide Troll Nests without 5 or more ED after level 79 on filter levels 3+
-ItemDisplay[NMAG !INF !RW ush ED<15 FILTLVL>4 !TOWN]:// Hide Troll Nests with less than 15% ED on filter levels 5+
+ItemDisplay[NMAG !INF !RW ush ETH FILTLVL>0 GROUND !TOWN]:// Hide eth Troll Nests
+ItemDisplay[NMAG !INF !RW ush ED<5 !ETH SOCK=0 FILTLVL>0 GROUND !TOWN]:// Hide noneth 0os Troll Nests
+ItemDisplay[NMAG !INF !RW ush SOCK=2 FILTLVL>2 GROUND !TOWN]:// Hide 2os Troll Nests on filter levels 3+
+ItemDisplay[NMAG !INF !RW ush ED<5 CLVL>79 FILTLVL>2 GROUND !TOWN]:// Hide Troll Nests without 5 or more ED after level 79 on filter levels 3+
+ItemDisplay[NMAG !INF !RW ush ED<15 FILTLVL>4 GROUND !TOWN]:// Hide Troll Nests with less than 15% ED on filter levels 5+
 
 // ------------------------------------------------------------------------------
 //    ==============================  Circlets  ==============================   
 // ------------------------------------------------------------------------------
 
 // Hide nonmagical nonruneword ethereal circlets
-ItemDisplay[NMAG !RW ETH CIRC FILTLVL>0 !TOWN]://
+ItemDisplay[NMAG !RW ETH CIRC FILTLVL>0 GROUND !TOWN]://
 
 // Circlet
-ItemDisplay[NMAG !INF !RW ci0 CLVL>59 FILTLVL>0 !TOWN]:// Hides nonmagical circlets when over level 60
+ItemDisplay[NMAG !INF !RW ci0 CLVL>59 FILTLVL>0 GROUND !TOWN]:// Hides nonmagical circlets when over level 60
 ItemDisplay[NMAG !INF !RW ci0 CLVL<60 !ETH SOCK=0]:%NAME% %TAN%[%YELLOW%Imbue%TAN%]%WHITE%{%WHITE%This can be %YELLOW%Imbued %WHITE%into a %YELLOW%Rare}//
 
 // Coronet
-ItemDisplay[NMAG !INF !RW ci1 CLVL>59 FILTLVL>0 !TOWN]:// Hides nonmagical coronets when over level 60
+ItemDisplay[NMAG !INF !RW ci1 CLVL>59 FILTLVL>0 GROUND !TOWN]:// Hides nonmagical coronets when over level 60
 ItemDisplay[NMAG !INF !RW ci1 CLVL<60 !ETH SOCK=0]:%NAME% %TAN%[%YELLOW%Imbue%TAN%]%WHITE%{%WHITE%This can be %YELLOW%Imbued %WHITE%into a %YELLOW%Rare}//
 
 // Tiara
-ItemDisplay[NMAG !INF !RW ci2 CLVL>79 FILTLVL>0 !TOWN]:// Hides nonmagical tiaras when over level 80
+ItemDisplay[NMAG !INF !RW ci2 CLVL>79 FILTLVL>0 GROUND !TOWN]:// Hides nonmagical tiaras when over level 80
 ItemDisplay[NMAG !INF !RW ci2 CLVL<80 !ETH SOCK=0]:%NAME% %TAN%[%YELLOW%Imbue%TAN%]%WHITE%{%WHITE%This can be %YELLOW%Imbued %WHITE%into a %YELLOW%Rare}//
 
 // Diadem
-ItemDisplay[NMAG !INF !RW ci3 (CLVL>79 OR FILTLVL>2) SOCK~1-2 !TOWN]:// Hides 1 and 2 socket nonmagical diadems from character level 80 or on filter levels 3+
-ItemDisplay[NMAG !INF !RW ci3 FILTLVL>4 SOCK=3 ED<5 !TOWN]:// Hides 3 socket nonmagical diadems with less than 5% ED on filter levels 5+
+ItemDisplay[NMAG !INF !RW ci3 (CLVL>79 OR FILTLVL>2) SOCK~1-2 GROUND !TOWN]:// Hides 1 and 2 socket nonmagical diadems from character level 80 or on filter levels 3+
+ItemDisplay[NMAG !INF !RW ci3 FILTLVL>4 SOCK=3 ED<5 GROUND !TOWN]:// Hides 3 socket nonmagical diadems with less than 5% ED on filter levels 5+
 ItemDisplay[NMAG !INF !RW ci3 (CLVL<90 OR FILTLVL<3) !ETH SOCK=0]:%NAME% %TAN%[%YELLOW%Imbue%TAN%]%WHITE%{%WHITE%This can be %YELLOW%Imbued %WHITE%into a %YELLOW%Rare}%PX-20%//
 ItemDisplay[NMAG !INF !RW ci3 FILTLVL~3-4 !ETH SOCK=0]:%NAME% %TAN%[%YELLOW%Imbue%TAN%]%WHITE%{%WHITE%This can be %YELLOW%Imbued %WHITE%into a %YELLOW%Rare}//
 ItemDisplay[NMAG !INF !RW ci3 FILTLVL~5-11 !ETH SOCK=0]:%NAME%{%WHITE%a 25% Chance to Brick into a Rare%CL%You can %RED%Corrupt %WHITE%this for}//
-ItemDisplay[NMAG !INF !RW ci3 FILTLVL=12 !ETH SOCK=0 !TOWN]://
+ItemDisplay[NMAG !INF !RW ci3 FILTLVL=12 !ETH SOCK=0 GROUND !TOWN]://
 
 // ------------------------------------------------------------------------------
 //    ===============================  Helms  ===============================   
@@ -392,74 +392,74 @@ ItemDisplay[NMAG !INF !RW ci3 FILTLVL=12 !ETH SOCK=0 !TOWN]://
 // These are generic lines for showing all helms of a certain tier and certain conditions (sockets, superior, and/or ethereal)
 
 // Hides 0os Normal helms
-ItemDisplay[NMAG !INF !RW HELM !CIRC !BAR !DRU NORM SOCK=0 CLVL>5 FILTLVL>0 !TOWN]://
+ItemDisplay[NMAG !INF !RW HELM !CIRC !BAR !DRU NORM SOCK=0 CLVL>5 FILTLVL>0 GROUND !TOWN]://
 // Hides ethereal Normal and Exceptional helms
-ItemDisplay[NMAG !INF !RW HELM !CIRC !BAR !DRU NORM ETH FILTLVL>0 !TOWN]://
+ItemDisplay[NMAG !INF !RW HELM !CIRC !BAR !DRU NORM ETH FILTLVL>0 GROUND !TOWN]://
 
 // Notifications for 2os and 3os helms while leveling
 ItemDisplay[NMAG !INF !RW NORM HELM !CIRC !BAR !DRU !ETH SOCK=2 CLVL<20 !GEMMED]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 2os
 ItemDisplay[NMAG !INF !RW NORM HELM !CIRC !BAR !DRU !ETH SOCK=3 CLVL<50 !GEMMED]:%GRAY%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// 3os
 
 // Hide 2os and 3os helms at higher character levels
-ItemDisplay[NMAG !INF !RW HELM !GEMMED !CIRC !BAR !DRU NORM SOCK=2 CLVL>39 FILTLVL>0 !TOWN]://   Hides Normal 2os Helms past level 39
-ItemDisplay[NMAG !INF !RW HELM !GEMMED !CIRC !BAR !DRU NORM SOCK=3 CLVL>79 FILTLVL>0 !TOWN]://   Hides Normal 3os Helms past level 79
+ItemDisplay[NMAG !INF !RW HELM !GEMMED !CIRC !BAR !DRU NORM SOCK=2 CLVL>39 FILTLVL>0 GROUND !TOWN]://   Hides Normal 2os Helms past level 39
+ItemDisplay[NMAG !INF !RW HELM !GEMMED !CIRC !BAR !DRU NORM SOCK=3 CLVL>79 FILTLVL>0 GROUND !TOWN]://   Hides Normal 3os Helms past level 79
 
 // Hides 0os Exceptional helms
-ItemDisplay[NMAG !INF !RW HELM !CIRC !BAR !DRU EXC SOCK=0 FILTLVL>0 !TOWN]://
+ItemDisplay[NMAG !INF !RW HELM !CIRC !BAR !DRU EXC SOCK=0 FILTLVL>0 GROUND !TOWN]://
 // Hides ethereal Normal and Exceptional helms
-ItemDisplay[NMAG !INF !RW HELM !CIRC !BAR !DRU EXC ETH FILTLVL>0 !TOWN]://
+ItemDisplay[NMAG !INF !RW HELM !CIRC !BAR !DRU EXC ETH FILTLVL>0 GROUND !TOWN]://
 
 // Hides Exceptional 2os Helms Past 49
-ItemDisplay[NMAG !INF !RW HELM !GEMMED !CIRC !BAR !DRU EXC SOCK=2 CLVL>49 FILTLVL>0 !TOWN]://
+ItemDisplay[NMAG !INF !RW HELM !GEMMED !CIRC !BAR !DRU EXC SOCK=2 CLVL>49 FILTLVL>0 GROUND !TOWN]://
 // Hides Exceptional 3os Helms Past 79
-ItemDisplay[NMAG !INF !RW HELM !GEMMED !CIRC !BAR !DRU EXC SOCK=3 CLVL>79 FILTLVL>0 !TOWN]://
+ItemDisplay[NMAG !INF !RW HELM !GEMMED !CIRC !BAR !DRU EXC SOCK=3 CLVL>79 FILTLVL>0 GROUND !TOWN]://
 
 // Hide elite helms with less than 15% ED on filter levels 5+ character level 80+
-ItemDisplay[NMAG !INF !RW HELM ELT !GEMMED !CIRC !BAR !DRU ED<15 FILTLVL>4 CLVL>79 !TOWN]://
+ItemDisplay[NMAG !INF !RW HELM ELT !GEMMED !CIRC !BAR !DRU ED<15 FILTLVL>4 CLVL>79 GROUND !TOWN]://
 
 // Hides 0os non-eth Elite Helms without ED
-ItemDisplay[NMAG !INF !RW HELM !CIRC !BAR !DRU ELT !ETH SOCK=0 ED<5 FILTLVL>0 !TOWN]://
+ItemDisplay[NMAG !INF !RW HELM !CIRC !BAR !DRU ELT !ETH SOCK=0 ED<5 FILTLVL>0 GROUND !TOWN]://
 // Hides 0os eth Elite Helms without ED on filter levels 3+ character level 85+
-ItemDisplay[NMAG !INF !RW HELM !CIRC !BAR !DRU ELT ETH SOCK=0 ED<5 FILTLVL>2 CLVL>84 !TOWN]://
+ItemDisplay[NMAG !INF !RW HELM !CIRC !BAR !DRU ELT ETH SOCK=0 ED<5 FILTLVL>2 CLVL>84 GROUND !TOWN]://
 // Hides 2os Elite Helms past level 79
-ItemDisplay[NMAG !INF !RW HELM !CIRC !BAR !DRU ELT SOCK=2 CLVL>79 FILTLVL>0 !TOWN]://
+ItemDisplay[NMAG !INF !RW HELM !CIRC !BAR !DRU ELT SOCK=2 CLVL>79 FILTLVL>0 GROUND !TOWN]://
 // Hide non-eth 0os and 3os coronas and spired helms
-ItemDisplay[NMAG !INF !RW HELM !CIRC !BAR !DRU ELT !ETH ((SOCK=0 (uhm OR urn)) OR (SOCK=3 (uhm OR urn OR ulm OR uhl))) FILTLVL>1 !TOWN]:// S14: 3os Armet / Giant Conch (Deception bases) like Spired Helm / Corona  
+ItemDisplay[NMAG !INF !RW HELM !CIRC !BAR !DRU ELT !ETH ((SOCK=0 (uhm OR urn)) OR (SOCK=3 (uhm OR urn OR ulm OR uhl))) FILTLVL>1 GROUND !TOWN]:// S14: 3os Armet / Giant Conch (Deception bases) like Spired Helm / Corona  
 // Hide non-useful elite nonmagical Helms on filter levels 3+
-ItemDisplay[NMAG !INF !RW (uap OR ukp OR ulm OR uhl) !((ulm OR uhl) SOCK=3) FILTLVL>2 !TOWN]:// (Shako, Hydraskull, Armet, Giant Conch; S14: not 3os Armet / Giant Conch)
+ItemDisplay[NMAG !INF !RW (uap OR ukp OR ulm OR uhl) !((ulm OR uhl) SOCK=3) FILTLVL>2 GROUND !TOWN]:// (Shako, Hydraskull, Armet, Giant Conch; S14: not 3os Armet / Giant Conch)
 
 // ------------------------------------------------------------------------------
 //    ===============================  Belts  ===============================   
 // ------------------------------------------------------------------------------
 
-ItemDisplay[NMAG BELT ETH CLVL>3 FILTLVL>0 !TOWN]:// Hide all eth nonmagical belts
+ItemDisplay[NMAG BELT ETH CLVL>3 FILTLVL>0 GROUND !TOWN]:// Hide all eth nonmagical belts
 
-ItemDisplay[NMAG (lbl OR vbl) CLVL>9 FILTLVL>0 !TOWN]:// Hide light belts and sashes after level 9
-ItemDisplay[NMAG mbl CLVL>15 FILTLVL>0 !TOWN]:// Hide nonmagical belts after level 15
-ItemDisplay[NMAG tbl FILTLVL>0 !TOWN]:// Hide nonmagical heavy belts (too high strength requirement)
+ItemDisplay[NMAG (lbl OR vbl) CLVL>9 FILTLVL>0 GROUND !TOWN]:// Hide light belts and sashes after level 9
+ItemDisplay[NMAG mbl CLVL>15 FILTLVL>0 GROUND !TOWN]:// Hide nonmagical belts after level 15
+ItemDisplay[NMAG tbl FILTLVL>0 GROUND !TOWN]:// Hide nonmagical heavy belts (too high strength requirement)
 
-ItemDisplay[NMAG (zlb OR zvb OR zmb OR hbl) CLVL>29 FILTLVL>0 !TOWN]:// After level 29 (for early 4slot belt imbue) hide Demonhide Sash, Sharkskin Belt, Mesh Belt, Plated Belt
-ItemDisplay[NMAG (ztb OR zhb) FILTLVL>0 !TOWN]:// Hide nonmagical Battle Belt and War Belt (too high strength requirement)
+ItemDisplay[NMAG (zlb OR zvb OR zmb OR hbl) CLVL>29 FILTLVL>0 GROUND !TOWN]:// After level 29 (for early 4slot belt imbue) hide Demonhide Sash, Sharkskin Belt, Mesh Belt, Plated Belt
+ItemDisplay[NMAG (ztb OR zhb) FILTLVL>0 GROUND !TOWN]:// Hide nonmagical Battle Belt and War Belt (too high strength requirement)
 
-ItemDisplay[NMAG BELT ELT FILTLVL>0 !TOWN]:// Hide all elite quality white belts
+ItemDisplay[NMAG BELT ELT FILTLVL>0 GROUND !TOWN]:// Hide all elite quality white belts
 
 // ------------------------------------------------------------------------------
 //    ===============================  Boots  ===============================   
 // ------------------------------------------------------------------------------
 
-ItemDisplay[NMAG BOOTS ETH FILTLVL>0 !TOWN]:// Hide all eth nonmagical boots
-ItemDisplay[NMAG BOOTS NORM FILTLVL>0 !TOWN]:// Hide all normal quality white boots
-ItemDisplay[NMAG BOOTS EXC FILTLVL>0 !TOWN]:// Hide all exceptional quality white boots
-ItemDisplay[NMAG BOOTS ELT FILTLVL>0 !TOWN]:// Hide all elite quality white boots
+ItemDisplay[NMAG BOOTS ETH FILTLVL>0 GROUND !TOWN]:// Hide all eth nonmagical boots
+ItemDisplay[NMAG BOOTS NORM FILTLVL>0 GROUND !TOWN]:// Hide all normal quality white boots
+ItemDisplay[NMAG BOOTS EXC FILTLVL>0 GROUND !TOWN]:// Hide all exceptional quality white boots
+ItemDisplay[NMAG BOOTS ELT FILTLVL>0 GROUND !TOWN]:// Hide all elite quality white boots
 
 // ------------------------------------------------------------------------------
 //    ===============================  Gloves  ===============================   
 // ------------------------------------------------------------------------------
 
-ItemDisplay[NMAG GLOVES ETH FILTLVL>0 !TOWN]:// Hide all eth nonmagical gloves
-ItemDisplay[NMAG GLOVES NORM FILTLVL>0 !TOWN]:// Hide all normal quality white gloves
-ItemDisplay[NMAG GLOVES EXC FILTLVL>0 !TOWN]:// Hide all exceptional quality white gloves
-ItemDisplay[NMAG GLOVES ELT FILTLVL>0 !TOWN]:// Hide all elite quality white gloves
+ItemDisplay[NMAG GLOVES ETH FILTLVL>0 GROUND !TOWN]:// Hide all eth nonmagical gloves
+ItemDisplay[NMAG GLOVES NORM FILTLVL>0 GROUND !TOWN]:// Hide all normal quality white gloves
+ItemDisplay[NMAG GLOVES EXC FILTLVL>0 GROUND !TOWN]:// Hide all exceptional quality white gloves
+ItemDisplay[NMAG GLOVES ELT FILTLVL>0 GROUND !TOWN]:// Hide all elite quality white gloves
 
 // ------------------------------------------------------------------------------
 //     ===========================  Barbarian Helms  =========================
@@ -468,7 +468,7 @@ ItemDisplay[NMAG GLOVES ELT FILTLVL>0 !TOWN]:// Hide all elite quality white glo
 // Hide nonmagical barbarian helms that are not Delirium or Ferocity bases on filter levels 3-4 from character level 80 (only a ($) shows when one sells for 25,000+ gold and takes 2 inventory squares or less), and all of them on filter levels 5+
 ItemDisplay[NMAG !RW BAR (FILTLVL~3-4 CLVL>79) GROUND !TOWN SELLPRICE>24999 AREA<3 !(RWB_DELIRIUM_BARB_HELM OR RWB_FEROCITY_BARB_HELM)]:%GRAY%(%TAN%$%GRAY%)//
 ItemDisplay[NMAG !RW BAR (FILTLVL~3-4 CLVL>79) GROUND !TOWN (SELLPRICE<25000 OR AREA>2) !(RWB_DELIRIUM_BARB_HELM OR RWB_FEROCITY_BARB_HELM)]://
-ItemDisplay[NMAG !RW BAR FILTLVL>4 !TOWN]:// On filter levels 5+, hide nonmagical barbarian helms
+ItemDisplay[NMAG !RW BAR FILTLVL>4 GROUND !TOWN]:// On filter levels 5+, hide nonmagical barbarian helms
 
 // Delirium bases
 ItemDisplay[NMAG !INF !RW RWB_DELIRIUM_BARB_HELM]:%ORANGE%Delirium %NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// All tiers, 0os or 3os
@@ -483,7 +483,7 @@ ItemDisplay[NMAG !INF !RW !ETH SOCK=2 FILTLVL<3 CLVL<60 (SK149>2 OR SK154>2) BAR
 ItemDisplay[NMAG !INF !RW !ETH SOCK=3 FILTLVL<3 CLVL<80 (SK149>2 OR SK154>2) BAR]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// All tiers, 3os
 
 // Hides barbarian helms don't have any + to skills
-ItemDisplay[NMAG !RW BAR CLVL>9 FILTLVL>0 !(SK368>0 OR SK126>0 OR SK127>0 OR SK128>0 OR SK129>0 OR SK130>0 OR SK131>0 OR SK132>0 OR SK133>0 OR SK134>0 OR SK135>0 OR SK136>0 OR SK137>0 OR SK138>0 OR SK139>0 OR SK140>0 OR SK141>0 OR SK142>0 OR SK143>0 OR SK144>0 OR SK145>0 OR SK146>0 OR SK147>0 OR SK148>0 OR SK149>0 OR SK150>0 OR SK151>0 OR SK152>0 OR SK153>0 OR SK154>0 OR SK155>0) !TOWN]:// All tiers
+ItemDisplay[NMAG !RW BAR CLVL>9 FILTLVL>0 !(SK368>0 OR SK126>0 OR SK127>0 OR SK128>0 OR SK129>0 OR SK130>0 OR SK131>0 OR SK132>0 OR SK133>0 OR SK134>0 OR SK135>0 OR SK136>0 OR SK137>0 OR SK138>0 OR SK139>0 OR SK140>0 OR SK141>0 OR SK142>0 OR SK143>0 OR SK144>0 OR SK145>0 OR SK146>0 OR SK147>0 OR SK148>0 OR SK149>0 OR SK150>0 OR SK151>0 OR SK152>0 OR SK153>0 OR SK154>0 OR SK155>0) GROUND !TOWN]:// All tiers
 
 // ------------------------------------------------------------------------------
 //    ===========================  Druid Pelts and Clubs =====================
@@ -492,12 +492,12 @@ ItemDisplay[NMAG !RW BAR CLVL>9 FILTLVL>0 !(SK368>0 OR SK126>0 OR SK127>0 OR SK1
 // Hide nonmagical druid clubs that are not Plague bases: on filter levels 3-4 from character level 80 (only a ($) shows when one sells for 25,000+ gold and takes 2 inventory squares or less), and on filter levels 5+
 ItemDisplay[NMAG !RW (clb OR spc OR 9cl OR 9sp OR 7cl OR 7sp) (FILTLVL~3-4 CLVL>79) !(RWB_PLAGUE_CLUB_ARMAGEDDON OR RWB_PLAGUE_CLUB_SHOCK_WAVE OR RWB_PLAGUE_CLUB_ARCTIC_BLAST OR RWB_PLAGUE_CLUB_SUMMONS OR RWB_PLAGUE_CLUB_POISON_CREEPER) GROUND !TOWN SELLPRICE>24999 AREA<3]:%GRAY%(%TAN%$%GRAY%)//
 ItemDisplay[NMAG !RW (clb OR spc OR 9cl OR 9sp OR 7cl OR 7sp) (FILTLVL~3-4 CLVL>79) !(RWB_PLAGUE_CLUB_ARMAGEDDON OR RWB_PLAGUE_CLUB_SHOCK_WAVE OR RWB_PLAGUE_CLUB_ARCTIC_BLAST OR RWB_PLAGUE_CLUB_SUMMONS OR RWB_PLAGUE_CLUB_POISON_CREEPER) GROUND !TOWN (SELLPRICE<25000 OR AREA>2)]://
-ItemDisplay[NMAG !RW (clb OR spc OR 9cl OR 9sp OR 7cl OR 7sp) FILTLVL>4 !(RWB_PLAGUE_CLUB_ARMAGEDDON OR RWB_PLAGUE_CLUB_SHOCK_WAVE OR RWB_PLAGUE_CLUB_ARCTIC_BLAST OR RWB_PLAGUE_CLUB_SUMMONS OR RWB_PLAGUE_CLUB_POISON_CREEPER) !TOWN]:// On filter levels 5+, hide nonmagical druid clubs that are not Plague bases
+ItemDisplay[NMAG !RW (clb OR spc OR 9cl OR 9sp OR 7cl OR 7sp) FILTLVL>4 !(RWB_PLAGUE_CLUB_ARMAGEDDON OR RWB_PLAGUE_CLUB_SHOCK_WAVE OR RWB_PLAGUE_CLUB_ARCTIC_BLAST OR RWB_PLAGUE_CLUB_SUMMONS OR RWB_PLAGUE_CLUB_POISON_CREEPER) GROUND !TOWN]:// On filter levels 5+, hide nonmagical druid clubs that are not Plague bases
 
 // Hide all nonmagical druid helms: on filter levels 3-4 from character level 80 (only a ($) shows when one sells for 25,000+ gold and takes 2 inventory squares or less), and on filter levels 5+
 ItemDisplay[NMAG !RW DRU (FILTLVL~3-4 CLVL>79) GROUND !TOWN SELLPRICE>24999 AREA<3]:%GRAY%(%TAN%$%GRAY%)//
 ItemDisplay[NMAG !RW DRU (FILTLVL~3-4 CLVL>79) GROUND !TOWN (SELLPRICE<25000 OR AREA>2)]://
-ItemDisplay[NMAG !RW DRU FILTLVL>4 !TOWN]://
+ItemDisplay[NMAG !RW DRU FILTLVL>4 GROUND !TOWN]://
 
 //      Plague runeword club bases
 //      +3 Hurricane, +3 Armageddon, and +1-3 to Oak/CarrionVine/CycloneArmor/Solar/Grizzly/Gust
@@ -516,8 +516,8 @@ ItemDisplay[NMAG !RW RWB_PLAGUE_CLUB_SUMMONS]:%ORANGE%Plague %WHITE%%NAME%{%NAME
 ItemDisplay[NMAG !RW RWB_PLAGUE_CLUB_POISON_CREEPER]:%ORANGE%Plague %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
 
 // Hides nonmagical Ethereal Druid Helms after character level 30
-ItemDisplay[NMAG !RW ETH DRU DRUID CLVL>29 !TOWN]:// If your character is a druid, hide all Eth nonmagical Ethereal Druid Helms after character level 29
-ItemDisplay[NMAG !RW ETH DRU !DRUID FILTLVL>0 !TOWN]:// Hides all Eth nonmagical Ethereal Druid Helms for non-druid characters
+ItemDisplay[NMAG !RW ETH DRU DRUID CLVL>29 GROUND !TOWN]:// If your character is a druid, hide all Eth nonmagical Ethereal Druid Helms after character level 29
+ItemDisplay[NMAG !RW ETH DRU !DRUID FILTLVL>0 GROUND !TOWN]:// Hides all Eth nonmagical Ethereal Druid Helms for non-druid characters
 
 //      Lore runeword Druid pelt bases
 //      +3 to one of the following: Raven, Spirit Wolf, Dire Wolf, Grizzly
@@ -525,7 +525,7 @@ ItemDisplay[NMAG !RW !ETH DRUID ((CLVL<90 FILTLVL<5) OR FILTLVL<3) ((!DRUID CLVL
 ItemDisplay[NMAG !RW !ETH !DRUID ((CLVL<90 FILTLVL<5) OR FILTLVL<3) ((!DRUID CLVL<60) OR (DRUID CLVL<80)) RWB_LORE_PELT]:%TEAL%Lore %WHITE%%NAME%{%NAME%}%CONTINUE%//
 
 // Hides all other Druid Helms and clubs that don't have any + to skills past level 10
-ItemDisplay[NMAG !RW (DRU OR clb OR 9cl OR 7cl OR spc OR 9sp OR 7sp) CLVL>9 FILTLVL>0 !(SK221>0 OR SK222>0 OR SK223>0 OR SK224>0 OR SK225>0 OR SK226>0 OR SK227>0 OR SK228>0 OR SK229>0 OR SK230>0 OR SK231>0 OR SK232>0 OR SK233>0 OR SK234>0 OR SK235>0 OR SK236>0 OR SK237>0 OR SK238>0 OR SK239>0 OR SK240>0 OR SK241>0 OR SK242>0 OR SK243>0 OR SK244>0 OR SK245>0 OR SK246>0 OR SK247>0 OR SK248>0 OR SK249>0 OR SK250>0 OR SK370>0) !TOWN]:// All tiers
+ItemDisplay[NMAG !RW (DRU OR clb OR 9cl OR 7cl OR spc OR 9sp OR 7sp) CLVL>9 FILTLVL>0 !(SK221>0 OR SK222>0 OR SK223>0 OR SK224>0 OR SK225>0 OR SK226>0 OR SK227>0 OR SK228>0 OR SK229>0 OR SK230>0 OR SK231>0 OR SK232>0 OR SK233>0 OR SK234>0 OR SK235>0 OR SK236>0 OR SK237>0 OR SK238>0 OR SK239>0 OR SK240>0 OR SK241>0 OR SK242>0 OR SK243>0 OR SK244>0 OR SK245>0 OR SK246>0 OR SK247>0 OR SK248>0 OR SK249>0 OR SK250>0 OR SK370>0) GROUND !TOWN]:// All tiers
 
 // ------------------------------------------------------------------------------
 //    ========================  Necromancer Heads  ===========================
@@ -534,11 +534,11 @@ ItemDisplay[NMAG !RW (DRU OR clb OR 9cl OR 7cl OR spc OR 9sp OR 7sp) CLVL>9 FILT
 // Hide nonmagical necromancer heads: on filter levels 3-4 from character level 80 (only a ($) shows when one sells for 25,000+ gold and takes 2 inventory squares or less), and on filter levels 5+
 ItemDisplay[NMAG !RW NEC (FILTLVL~3-4 CLVL>79) GROUND !TOWN SELLPRICE>24999 AREA<3]:%GRAY%(%TAN%$%GRAY%)//
 ItemDisplay[NMAG !RW NEC (FILTLVL~3-4 CLVL>79) GROUND !TOWN (SELLPRICE<25000 OR AREA>2)]://
-ItemDisplay[NMAG !RW NEC FILTLVL>4 !TOWN]:// On filter levels 5+, hide nonmagical necromancer heads
+ItemDisplay[NMAG !RW NEC FILTLVL>4 GROUND !TOWN]:// On filter levels 5+, hide nonmagical necromancer heads
 
 // Hides Ethereal Necromancer Heads
-ItemDisplay[NMAG !RW ETH NEC NECROMANCER CLVL>29 !TOWN]:// If your character is a necromancer, hide all Eth nonmagical necromancer heads after character level 29
-ItemDisplay[NMAG !RW ETH NEC !NECROMANCER FILTLVL>0 !TOWN]:// Hides all Eth nonmagical necromancer heads for non-necromancer characters
+ItemDisplay[NMAG !RW ETH NEC NECROMANCER CLVL>29 GROUND !TOWN]:// If your character is a necromancer, hide all Eth nonmagical necromancer heads after character level 29
+ItemDisplay[NMAG !RW ETH NEC !NECROMANCER FILTLVL>0 GROUND !TOWN]:// Hides all Eth nonmagical necromancer heads for non-necromancer characters
 
 //      Rhyme/Splendor runeword necromancer head bases
 //     At levels 1-79, (+3 to one of the following: Teeth, Skele Mastery, Skele Warrior, Clay Golem, Skeletal Mage, Bone Spear, Skele Archer, Corpse Explosion, Dark Pact)
@@ -550,5 +550,5 @@ ItemDisplay[NMAG !RW NEC !NECROMANCER ((CLVL<90 FILTLVL<5) OR FILTLVL<3) ((!NECR
 ItemDisplay[NMAG !RW NEC ((CLVL<90 FILTLVL<5) OR FILTLVL<3) ((!NECROMANCER CLVL<60) OR (NECROMANCER CLVL<80)) (EXC OR ELT) (SOCK=0 OR SOCK=3) (SK67>2 OR SK69>2 OR SK70>2 OR SK75>2 OR SK80>2 OR SK84>2 OR SK89>2 OR SK381>2 OR SK74>2 OR SK381>2)]:%ORANGE%AP %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
 
 // Hides heads that don't have at least +1 to any necro skills
-ItemDisplay[NMAG !RW NEC CLVL>9 FILTLVL>0 !(SK66>0 OR SK67>0 OR SK68>0 OR SK69>0 OR SK70>0 OR SK71>0 OR SK72>0 OR SK73>0 OR SK74>0 OR SK75>0 OR SK76>0 OR SK77>0 OR SK78>0 OR SK79>0 OR SK80>0 OR SK81>0 OR SK82>0 OR SK83>0 OR SK84>0 OR SK85>0 OR SK86>0 OR SK87>0 OR SK88>0 OR SK89>0 OR SK90>0 OR SK91>0 OR SK92>0 OR SK93>0 OR SK94>0 OR SK95>0 OR SK367>0 OR SK374>0 OR SK381>0) !TOWN]://
+ItemDisplay[NMAG !RW NEC CLVL>9 FILTLVL>0 !(SK66>0 OR SK67>0 OR SK68>0 OR SK69>0 OR SK70>0 OR SK71>0 OR SK72>0 OR SK73>0 OR SK74>0 OR SK75>0 OR SK76>0 OR SK77>0 OR SK78>0 OR SK79>0 OR SK80>0 OR SK81>0 OR SK82>0 OR SK83>0 OR SK84>0 OR SK85>0 OR SK86>0 OR SK87>0 OR SK88>0 OR SK89>0 OR SK90>0 OR SK91>0 OR SK92>0 OR SK93>0 OR SK94>0 OR SK95>0 OR SK367>0 OR SK374>0 OR SK381>0) GROUND !TOWN]://
 

@@ -484,6 +484,10 @@ removed level on the next run; a new level group's intro is `INTROS` in `tools/l
 - `%CONTINUE%` stores the rule's output into `%NAME%` and keeps evaluating. ~77% of rules are
   `%CONTINUE%` layers; later rules see the modified `%NAME%`.
 - An empty output (`ItemDisplay[...]:` or output only inside `{}`) HIDES the item's name.
+- A hide empties the name wherever BH names the item, not only on the ground: inventory, stash, cube, shop,
+  equipped (BH `Item.cpp` checks no location; with Show Item Level on only BH's `(L88)` is left). So every hide
+  rule has `GROUND` (BH: on the ground or being dropped) before its `!TOWN` (2026-10-24, the author: an eth Sander's
+  Taboo in the inventory had no name); an item you carry then looks as it does in town. A new hide rule needs both.
 - Notification keywords (`%BORDER-xx%`, `%MAP-xx%`, `%DOT-xx%`, `%PX-xx%`, `%SOUNDID-n%`) are applied
   in a separate pass over only the rules that have one, so they fire even if an earlier rule stopped
   (or hid) the display. In that pass the FIRST matching rule alone decides the drop sound and the
