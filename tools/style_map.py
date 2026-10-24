@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 The Minimal version's page: Erazure-Minimal-Style.html (repo root, committed), from tools/style_map_template.html.
-Every label whose symbols differ between Erazure - Main and Erazure - Minimal (a style variant: tools/build.py
+Every label whose symbols differ between Erazure - Main and Minimal (a style variant: tools/build.py
 STYLE_VARIANTS, styles/minimal.filter), drawn as the game draws it, Main beside Minimal. The website's Minimal
 Version page shows it (website/hooks.py). build.bat, the hook and CI run it as the other players' pages.
 
@@ -23,7 +23,7 @@ import build  # noqa: E402
 import tier_map as T  # noqa: E402  (DOC_HEAD)
 
 ROOT = build.ROOT
-VARIANT = "Erazure - Minimal"
+VARIANT = "Minimal"
 PAGE = ROOT / "Erazure-Minimal-Style.html"
 TEMPLATE = ROOT / "tools" / "style_map_template.html"
 SYMBOL_SECTION = "040-aliases.filter"

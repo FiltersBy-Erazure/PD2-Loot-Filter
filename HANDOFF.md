@@ -49,7 +49,7 @@ This document is for two readers:
   2. Join them, and replace `<<VERSION>>` in the Cube section with the text from `version.json`. That is `Erazure-Main.filter`.
   3. For each other variant, switch on its toggle block and switch off Main's. Write the file.
   4. Stop with a clear error if: `<<VERSION>>` isn't there exactly once; a rule comes after the catch-all; a toggle block other than Main's is active; a variant in `filter_definitions.json` has no toggle block; a section name isn't `NNN-topic.filter` or two share a number.
-  5. Build the style variants (`STYLE_VARIANTS`): Erazure - Minimal (Main with the aliases of `styles/minimal.filter`) and Corrlorized - Main - PoE / Corrlorized - BIG GG - PoE (Main - PoE and BIG GG - PoE with `styles/corrlorized.edits`, a friend's restyle carried rule by rule by `tools/style_edits.py` onto every build; `Corrlorized-Main-PoE.filter`, `Corrlorized-BIG-GG-PoE.filter`). An edit that no longer finds its line is reported, never fatal.
+  5. Build the style variants (`STYLE_VARIANTS`): Minimal (Main with the aliases of `styles/minimal.filter`) and Corrlorized - Main - PoE / Corrlorized - BIG GG - PoE (Main - PoE and BIG GG - PoE with `styles/corrlorized.edits`, a friend's restyle carried rule by rule by `tools/style_edits.py` onto every build; `Corrlorized-Main-PoE.filter`, `Corrlorized-BIG-GG-PoE.filter`). An edit that no longer finds its line is reported, never fatal.
 - **Workflow before 2026-09:** edits were made in the GitHub web editor and committed once per file, 8 commits per change (1,588 commits by then, almost all "Update Erazure-X.filter"). History from before the split lives in `git log -- Erazure-Main.filter`.
 
 ### 2.2 Size and what that means for an LLM

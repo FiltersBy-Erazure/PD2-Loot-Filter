@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """The alias editor: the author's claude.ai page for every alias that draws something (040's symbol aliases and each
 version's name on the Horadric Cube in 020). One card per alias (a _LEFT/_RIGHT pair is one card) with Erazure - Main's
-text and Erazure - Minimal's (styles/minimal.filter, or Main's where Minimal has no line of its own), both editable,
+text and Minimal's (styles/minimal.filter, or Main's where Minimal has no line of its own), both editable,
 their labels drawn as the game draws them, and whether Corrlorized follows Main there.
 
     python tools/alias_editor.py                write tools/alias_editor.html (gitignored) from

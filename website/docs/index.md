@@ -13,7 +13,7 @@ afterwards.
 ## On this site
 
 - [Versions](versions.md): Main, Revealed, BIG GG, PoE and Minimal, and what each one changes
-- [Minimal Version](minimal.md): the labels that look different in Erazure - Minimal, beside Erazure - Main's
+- [Minimal Version](minimal.md): the labels that look different in Minimal, beside Erazure - Main's
 - [Filter Levels](filter-levels.md): what each filter level shows, notifies and hides, at every character level
 - [Unique & Set Tiers](tiers.md): how every unique and set item shows when it drops
 - [Non-magical Bases](bases.md): when each non-magical armor and weapon base is tagged, notified or hidden
