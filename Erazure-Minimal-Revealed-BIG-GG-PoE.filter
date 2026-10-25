@@ -5042,9 +5042,14 @@ ItemDisplay[UNI !ID (cqv2 OR (aqv2 CLVL<60))]:%UNI_MINIMAL_VALUE_LEFT%  %NAME%  
 // =================================  Undiscovered Unique Items (Grail)  ==================================
 // --------------------------------------------------------------------------------------------------------
 
-// Every unique item the tiers above leave, until you've discovered it (Discovery Progress): the Grail look on
-// every filter level, ahead of the Low Level Duel and standard looks. No icon or sound here: BH's notification
-// pass reads only rules with one, so the rules below still give the icon, chat line and sound
+// Every unique item you haven't discovered yet (Discovery Progress) that no rule above notifies, identified or not,
+// gets a chat line and the unique icon on every filter level (the author, 2026-10-25). A %CONTINUE% layer that
+// changes no look, ahead of the rules below: the first notification rule an item matches gives its chat line, and
+// their icons cover this one
+ItemDisplay[UNI GRAIL_NEW]:%NAME%{%NAME%}%MAP-13%%DOT-18%%PX-20%%CONTINUE%//
+
+// The Grail look: every unique item the tiers above leave, until you've discovered it, on every filter level, ahead
+// of the Low Level Duel and standard looks
 ItemDisplay[UNI !ID GRAIL_NEW]:%UNI_GRAIL_LEFT%  %NAME%  %UNI_GRAIL_RIGHT%//
 
 // --------------------------------------------------------------------------------------------------------
@@ -5246,9 +5251,14 @@ ItemDisplay[SET !ID FILTLVL<5 (dr8 OR uul OR xtb OR ci3 OR uh9 OR xmg OR ne9 OR 
 ItemDisplay[SET !ID FILTLVL~5-11 (dr8 OR uul OR xtb OR ci3 OR uh9 OR xmg OR ne9 OR xhm OR ulg OR 7qr OR ucl OR (ETH (7fb OR 7gd OR 7ls)))]:%SET_MEDIUM_VALUE_LEFT%  %GREEN%%NAME%  %SET_MEDIUM_VALUE_RIGHT%%GREEN%%BORDER-71%%MAP-76%%DOT-84%%PX-20%//
 ItemDisplay[SET !ID FILTLVL=12 (dr8 OR uul OR xtb OR ci3 OR uh9 OR xmg OR ne9 OR xhm OR ulg OR 7qr OR ucl OR (ETH (7fb OR 7gd OR 7ls)))]:%NAME%// The plain name on level 12: no look, icon or sound
 
-// Undiscovered Set Items (Grail): every set item the tiers above leave, but rings and amulets, until you've
-// discovered it (Discovery Progress): the Grail look on every filter level, ahead of the Low Level Duel look. No
-// icon or sound here: the rules below still give them
+// Undiscovered Set Items (Grail): every set item you haven't discovered yet (Discovery Progress) that no rule above
+// notifies, identified or not, rings and amulets too, gets a chat line and the set icon on every filter level (the
+// author, 2026-10-25). A %CONTINUE% layer that changes no look, ahead of the rules below: the first notification
+// rule an item matches gives its chat line (their %TIER-0% icons give none), and their icons cover this one
+ItemDisplay[SET GRAIL_NEW]:%NAME%{%NAME%}%MAP-71%%DOT-76%%PX-81%%CONTINUE%//
+
+// The Grail look: every set item the tiers above leave, but rings and amulets, until you've discovered it, on every
+// filter level, ahead of the Low Level Duel look
 ItemDisplay[SET !ID GRAIL_NEW !(rin OR amu)]:%SET_GRAIL_LEFT%  %NAME%  %SET_GRAIL_RIGHT%//
 
 // Low Level Duel Set Items
