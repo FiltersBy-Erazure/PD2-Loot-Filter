@@ -100,7 +100,7 @@ About 825 KB is roughly 200k+ tokens per file. **No conversation will "see the w
 | `080-quest-items` | 1914–1942 | |
 | `090-gems` | 1943–2073 | |
 | `100-sound-ids` | 2074–2127 | |
-| `110-runes` | 2128–2308 | El-Tal → Sur-Zod, rune notifications and map icons |
+| `110-runes` | 2128–2308 | El-Zod in one block (names, stacks, looks, descriptions; since 2026-10-25), then rune notifications and map icons |
 | `120-pd2-items` | 2309–2594 | Shards, Puzzlepiece/box, Demonic Cube, Almanac, Navigator, Skeleton Key, Vial, Mirror, Essences, Uber keys/organs/ancients, DClone/Rathma/Lucion items, orbs, infusions, ears, Scarab (BIG GG items) |
 | `130-maps` | 2595–2753 | Map names (T1–T3, unique, T4 dungeons), area level |
 | `140-map-resistances` | 2754–3306 | S13 per-map resistance display: explanation, then one block per map |
