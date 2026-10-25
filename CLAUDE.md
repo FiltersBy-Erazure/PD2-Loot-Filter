@@ -438,7 +438,8 @@ Charms, the unique looks of `160` but Athena's Wrath (Minimal on 0–4 only) and
 Flawless Gems and Large Charms), 12 Extreme. 7 = 6 but it hides unidentified magic amulets and every unidentified
 Large Charm, 9 = 8 but it hides every unidentified Large Charm (the author, 2026-10-19; 8 and 10 show those of item
 level 90+). The 35% Rejuvenation Potion is hidden on 4, 6–12 (the names say so; Full
-Rejuvenation's bigger look goes with it); H5 / M5 are shown on 1–7 and hidden from 8 (CLVL 50+). The exact labels are in that file. A rule without `FILTLVL` applies at every level. The players' pages take the
+Rejuvenation's bigger look goes with it); H5 / M5 show on every level (since 2026-10-25, the author: the game's Hide
+Healing / Mana Potions options decide; until then hidden from 8 at CLVL 50+). The exact labels are in that file. A rule without `FILTLVL` applies at every level. The players' pages take the
 levels, their names and their number from that file (`tier_map.FILTER_LEVELS`), so they follow a renamed, merged or
 removed level on the next run; a new level group's intro is `INTROS` in `tools/level_map.py`.
 

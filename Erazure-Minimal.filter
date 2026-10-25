@@ -25,11 +25,11 @@ ItemDisplay[box FILTLVL=4]:%NAME%{%WHITE%Filter Level: 4%CL%%GRAY%Hides 35%%CL%S
 ItemDisplay[box FILTLVL=5]:%NAME%{%WHITE%Filter Level: 5%CL%%GRAY%Advanced Filtering}%CONTINUE%//
 ItemDisplay[box FILTLVL=6]:%NAME%{%WHITE%Filter Level: 6%CL%%GRAY%Hides 35%%CL%Advanced Filtering}%CONTINUE%//
 ItemDisplay[box FILTLVL=7]:%NAME%{%WHITE%Filter Level: 7%CL%%GRAY%Hides 35%%CL%Advanced Filtering}%CONTINUE%//
-ItemDisplay[box FILTLVL=8]:%NAME%{%WHITE%Filter Level: 8%CL%%GRAY%Hides H5, M5, 35%%CL%Endgame Filtering}%CONTINUE%//
-ItemDisplay[box FILTLVL=9]:%NAME%{%WHITE%Filter Level: 9%CL%%GRAY%Hides H5, M5, 35%%CL%Endgame Filtering}%CONTINUE%//
-ItemDisplay[box FILTLVL=10]:%NAME%{%WHITE%Filter Level: 10%CL%%GRAY%Hides H5, M5, 35%%CL%Endgame Filtering}%CONTINUE%//
-ItemDisplay[box FILTLVL=11]:%NAME%{%WHITE%Filter Level: 11%CL%%GRAY%Hides H5, M5, 35%%CL%Endgame Filtering}%CONTINUE%//
-ItemDisplay[box FILTLVL=12]:%NAME%{%WHITE%Filter Level: 12%CL%%GRAY%Hides H5, M5, 35%%CL%Extreme Filtering}%CONTINUE%//
+ItemDisplay[box FILTLVL=8]:%NAME%{%WHITE%Filter Level: 8%CL%%GRAY%Hides 35%%CL%Endgame Filtering}%CONTINUE%//
+ItemDisplay[box FILTLVL=9]:%NAME%{%WHITE%Filter Level: 9%CL%%GRAY%Hides 35%%CL%Endgame Filtering}%CONTINUE%//
+ItemDisplay[box FILTLVL=10]:%NAME%{%WHITE%Filter Level: 10%CL%%GRAY%Hides 35%%CL%Endgame Filtering}%CONTINUE%//
+ItemDisplay[box FILTLVL=11]:%NAME%{%WHITE%Filter Level: 11%CL%%GRAY%Hides 35%%CL%Endgame Filtering}%CONTINUE%//
+ItemDisplay[box FILTLVL=12]:%NAME%{%WHITE%Filter Level: 12%CL%%GRAY%Hides 35%%CL%Extreme Filtering}%CONTINUE%//
 
 ItemDisplay[box FILTLVL=0]:%NAME%{%GRAY%Level 1 Shows Most Non-Magic/Magic Items%CL%%NAME%}%CONTINUE%//
 ItemDisplay[box FILTLVL=0]:%NAME%{%GRAY%Level 2 Hides Additional Non-Magic/Magic Items%CL%%NAME%}%CONTINUE%//
@@ -1349,16 +1349,14 @@ ItemDisplay[hp1 !SHOP CLVL>14 GROUND !TOWN]:{%WHITE% Minor Healing Potion }//
 ItemDisplay[hp2 !SHOP CLVL>19 GROUND !TOWN]:{%WHITE% Light Healing Potion }//
 ItemDisplay[hp3 !SHOP CLVL>23 GROUND !TOWN]:{%WHITE% Healing Potion }//
 ItemDisplay[hp4 !SHOP (CLVL>49 OR FILTLVL>2) GROUND !TOWN]:{%WHITE% Greater Healing Potion }//
-ItemDisplay[hp5 !SHOP CLVL>49 FILTLVL>7 GROUND !TOWN]:{%WHITE% Super Healing Potion }//
 
 ItemDisplay[hp1 !SHOP CLVL>14 TOWN]:%RED%- %WHITE%H1 %RED%-%WHITE%{%WHITE% Minor Healing Potion }//
 ItemDisplay[hp2 !SHOP CLVL>19 TOWN]:%RED%• %WHITE%H2 %RED%•%WHITE%{%WHITE% Light Healing Potion }//
 ItemDisplay[hp3 !SHOP CLVL>23 TOWN]:%RED%+ %WHITE%H3 %RED%+%WHITE%{%WHITE% Healing Potion }//
 ItemDisplay[hp4 !SHOP (CLVL>49 OR FILTLVL>2) TOWN]:%GRAY%i%RED%( %WHITE%H4 %RED%)%GRAY%i%WHITE%{%WHITE% Greater Healing Potion }//
-ItemDisplay[hp5 !SHOP CLVL>49 FILTLVL>7 TOWN]:%CORAL%i%RED%( %WHITE%H5 %RED%)%CORAL%i%WHITE%{%WHITE% Super Healing Potion }//
 
-// Super Healing Potion
-ItemDisplay[hp5 CLVL>49 FILTLVL~1-7]:%CORAL%i%RED%IOI%CORAL%i%WHITE%{%WHITE% Super Healing Potion }//
+// Super Healing Potion: never hidden (the game's Hide Healing Potions option decides)
+ItemDisplay[hp5 CLVL>49]:%CORAL%i%RED%IOI%CORAL%i%WHITE%{%WHITE% Super Healing Potion }//
 
 // ==================================  Mana Potions  ====================================
 
@@ -1381,16 +1379,14 @@ ItemDisplay[mp1 !SHOP CLVL>14 GROUND !TOWN]:{%WHITE% Minor Mana Potion }//
 ItemDisplay[mp2 !SHOP CLVL>22 GROUND !TOWN]:{%WHITE% Light Mana Potion }//
 ItemDisplay[mp3 !SHOP CLVL>28 GROUND !TOWN]:{%WHITE% Mana Potion }//
 ItemDisplay[mp4 !SHOP (CLVL>49 OR FILTLVL>2) GROUND !TOWN]:{%WHITE% Greater Mana Potion }//
-ItemDisplay[mp5 !SHOP CLVL>49 FILTLVL>7 GROUND !TOWN]:{%WHITE% Super Mana Potion }//
 
 ItemDisplay[mp1 !SHOP CLVL>14 TOWN]:%BLUE%- %WHITE%M %BLUE%-%WHITE%{%WHITE% Minor Mana Potion }//
 ItemDisplay[mp2 !SHOP CLVL>22 TOWN]:%BLUE%• %WHITE%M2 %BLUE%•%WHITE%{%WHITE% Light Mana Potion }//
 ItemDisplay[mp3 !SHOP CLVL>28 TOWN]:%BLUE%+ %WHITE%M3 %BLUE%+%WHITE%{%WHITE% Mana Potion }//
 ItemDisplay[mp4 !SHOP (CLVL>49 OR FILTLVL>2) TOWN]:%GRAY%i%BLUE%( %WHITE%M4 %BLUE%)%GRAY%i%WHITE%{%WHITE% Greater Mana Potion }//
-ItemDisplay[mp5 !SHOP CLVL>49 FILTLVL>7 TOWN]:%TEAL%i%BLUE%( %WHITE%M5 %BLUE%)%TEAL%i%WHITE%{%WHITE% Super Mana Potion }//
 
-// Super Mana Potion
-ItemDisplay[mp5 CLVL>49 FILTLVL~1-7]:%TEAL%i%BLUE%IOI%TEAL%i%WHITE%{%WHITE% Super Mana Potion }//
+// Super Mana Potion: never hidden (the game's Hide Mana Potions option decides)
+ItemDisplay[mp5 CLVL>49]:%TEAL%i%BLUE%IOI%TEAL%i%WHITE%{%WHITE% Super Mana Potion }//
 
 // Dueling Mana Potion
 ItemDisplay[pvpp]:%BLUE% %WHITE%M%BLUE%+ %WHITE%{%WHITE% Dueling Mana Potion }//
