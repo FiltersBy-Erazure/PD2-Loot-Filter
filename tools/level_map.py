@@ -88,8 +88,8 @@ SECTION_COLORS = {"Gold, potions, scrolls and keys": "white", "Gems and runes": 
                   "PD2 items, maps and quest items": "tan", "Unique items": "gold", "Set items": "set",
                   "Rare items": "rare", "Magic items": "magic", "Non-magical items": "white"}
 # The author's line about each level group, by its launcher name (no thresholds or items: the rows say those); a
-# level's full name (as tier_map.load_levels gives it) wins over its group's: level 7 hides what 5-6 show, level 8
-# shows what 9 hides
+# level's full name (as tier_map.load_levels gives it) wins over its group's: level 7 hides what 5-6 show, levels 8
+# and 9 each show what the other Endgame levels hide
 INTROS = {
     "Show All Items": "Hides nothing and plays every notification.",
     "Lowest Strictness": "For the ladder start and characters up to level ~80.",
@@ -99,6 +99,7 @@ INTROS = {
     "Advanced Filtering - Hides 35%, Amulets, Large Charms": "Similar to Endgame, but shows more rares.",
     "Endgame Filtering": "Hides most low-value items for endgame characters.",
     "Endgame Filtering - Hides 35%, Shows Select Weapons": "Endgame, but it also shows rare weapons of select bases.",
+    "Endgame Filtering - Hides 35%, Shows Flawless Gems": "Endgame, but it also shows Flawless Gems.",
     "Extreme Filtering!": "Hides everything but the most valuable items.",
 }
 
@@ -1432,8 +1433,8 @@ class Page:
 
     def parents(self, cols):
         """Each column's parent: the column before it, or the last one before that whose launcher name hides
-        nothing this one does not (11, Flawless Gems and Large Charms, against 9: not 10, Crafting Bases). What a name
-        shows on top ("Shows Select Weapons") doesn't matter: 9 compares with 8, which shows more."""
+        nothing this one does not (11, Large Charms, against 9: not 10, Crafting Bases). What a name shows on top
+        ("Shows Select Weapons", "Shows Flawless Gems") doesn't matter: 9 compares with 8."""
         out = {}
         for c in range(1, len(cols)):
             p = c - 1
