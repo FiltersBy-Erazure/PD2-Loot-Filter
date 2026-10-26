@@ -5873,6 +5873,8 @@ Alias[RWB_PLAGUE_CLUB_POISON_CREEPER]:((9cl OR 9sp OR 7cl OR 7sp OR leg) (SOCK=0
 // Druid pelts
 // Lore druid pelts
 Alias[RWB_LORE_PELT]:(DRU SOCK=2 (SK221>2 OR SK237>2 OR SK227>2 OR SK247>2))
+// Delirium druid pelts: +3 Twister and +1 or more to two of Tornado, Hurricane, Cyclone Armor, Gust, Summon Grizzly, Carrion Vine, Solar Creeper, Oak Sage, Spirit of Barbs
+Alias[RWB_DELIRIUM_PELT]:(!ETH (SOCK=0 OR SOCK=3) DRU SK240=3 ((SK245>0 (SK250>0 OR SK235>0 OR SK370>0 OR SK247>0 OR SK231>0 OR SK241>0 OR SK226>0 OR SK246>0)) OR (SK250>0 (SK235>0 OR SK370>0 OR SK247>0 OR SK231>0 OR SK241>0 OR SK226>0 OR SK246>0)) OR (SK235>0 (SK370>0 OR SK247>0 OR SK231>0 OR SK241>0 OR SK226>0 OR SK246>0)) OR (SK370>0 (SK247>0 OR SK231>0 OR SK241>0 OR SK226>0 OR SK246>0)) OR (SK247>0 (SK231>0 OR SK241>0 OR SK226>0 OR SK246>0)) OR (SK231>0 (SK241>0 OR SK226>0 OR SK246>0)) OR (SK241>0 (SK226>0 OR SK246>0)) OR (SK226>0 SK246>0)))
 
 // Necromancer heads
 // Rhyme necromancer heads
@@ -6373,10 +6375,10 @@ ItemDisplay[NMAG !RW (clb OR spc OR 9cl OR 9sp OR 7cl OR 7sp) (FILTLVL~3-4 CLVL>
 ItemDisplay[NMAG !RW (clb OR spc OR 9cl OR 9sp OR 7cl OR 7sp) (FILTLVL~3-4 CLVL>79) !(RWB_PLAGUE_CLUB_ARMAGEDDON OR RWB_PLAGUE_CLUB_SHOCK_WAVE OR RWB_PLAGUE_CLUB_ARCTIC_BLAST OR RWB_PLAGUE_CLUB_SUMMONS OR RWB_PLAGUE_CLUB_POISON_CREEPER) GROUND !TOWN (SELLPRICE<25000 OR AREA>2)]://
 ItemDisplay[NMAG !RW (clb OR spc OR 9cl OR 9sp OR 7cl OR 7sp) FILTLVL>4 !(RWB_PLAGUE_CLUB_ARMAGEDDON OR RWB_PLAGUE_CLUB_SHOCK_WAVE OR RWB_PLAGUE_CLUB_ARCTIC_BLAST OR RWB_PLAGUE_CLUB_SUMMONS OR RWB_PLAGUE_CLUB_POISON_CREEPER) GROUND !TOWN]:// On filter levels 5+, hide nonmagical druid clubs that are not Plague bases
 
-// Hide all nonmagical druid helms: on filter levels 3-4 from character level 80 (only a ($) shows when one sells for 25,000+ gold and takes 2 inventory squares or less), and on filter levels 5+
-ItemDisplay[NMAG !RW DRU (FILTLVL~3-4 CLVL>79) GROUND !TOWN SELLPRICE>24999 AREA<3]:%GRAY%(%TAN%$%GRAY%)//
-ItemDisplay[NMAG !RW DRU (FILTLVL~3-4 CLVL>79) GROUND !TOWN (SELLPRICE<25000 OR AREA>2)]://
-ItemDisplay[NMAG !RW DRU FILTLVL>4 GROUND !TOWN]://
+// Hide nonmagical druid helms that are not Delirium bases: on filter levels 3-4 from character level 80 (only a ($) shows when one sells for 25,000+ gold and takes 2 inventory squares or less), and on filter levels 5+
+ItemDisplay[NMAG !RW DRU (FILTLVL~3-4 CLVL>79) GROUND !TOWN SELLPRICE>24999 AREA<3 !RWB_DELIRIUM_PELT]:%GRAY%(%TAN%$%GRAY%)//
+ItemDisplay[NMAG !RW DRU (FILTLVL~3-4 CLVL>79) GROUND !TOWN (SELLPRICE<25000 OR AREA>2) !RWB_DELIRIUM_PELT]://
+ItemDisplay[NMAG !RW DRU FILTLVL>4 GROUND !TOWN !RWB_DELIRIUM_PELT]://
 
 //      Plague runeword club bases
 //      +3 Hurricane, +3 Armageddon, and +1-3 to Oak/CarrionVine/CycloneArmor/Solar/Grizzly/Gust
@@ -6402,6 +6404,10 @@ ItemDisplay[NMAG !RW ETH DRU !DRUID FILTLVL>0 GROUND !TOWN]:// Hides all Eth non
 //      +3 to one of the following: Raven, Spirit Wolf, Dire Wolf, Grizzly
 ItemDisplay[NMAG !RW !ETH DRUID ((CLVL<90 FILTLVL<5) OR FILTLVL<3) ((!DRUID CLVL<60) OR (DRUID CLVL<80)) RWB_LORE_PELT]:%ORANGE%Lore %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
 ItemDisplay[NMAG !RW !ETH !DRUID ((CLVL<90 FILTLVL<5) OR FILTLVL<3) ((!DRUID CLVL<60) OR (DRUID CLVL<80)) RWB_LORE_PELT]:%TEAL%Lore %WHITE%%NAME%{%NAME%}%CONTINUE%//
+
+//      Delirium runeword Druid pelt bases (every filter level)
+//      +3 Twister and +1-3 to two of the following: Tornado, Hurricane, Cyclone Armor, Gust, Summon Grizzly, Carrion Vine, Solar Creeper, Oak Sage, Spirit of Barbs
+ItemDisplay[NMAG !RW RWB_DELIRIUM_PELT]:%ORANGE%Delirium %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
 
 // Hides all other Druid Helms and clubs that don't have any + to skills past level 10
 ItemDisplay[NMAG !RW (DRU OR clb OR 9cl OR 7cl OR spc OR 9sp OR 7sp) CLVL>9 FILTLVL>0 !(SK221>0 OR SK222>0 OR SK223>0 OR SK224>0 OR SK225>0 OR SK226>0 OR SK227>0 OR SK228>0 OR SK229>0 OR SK230>0 OR SK231>0 OR SK232>0 OR SK233>0 OR SK234>0 OR SK235>0 OR SK236>0 OR SK237>0 OR SK238>0 OR SK239>0 OR SK240>0 OR SK241>0 OR SK242>0 OR SK243>0 OR SK244>0 OR SK245>0 OR SK246>0 OR SK247>0 OR SK248>0 OR SK249>0 OR SK250>0 OR SK370>0) GROUND !TOWN]:// All tiers
