@@ -508,7 +508,8 @@ function glance() {
     const th = el("th", {scope: "col", title: c.levels.map((l) => `${l}: ${DATA.levels[l]}`).join("\n")},
       el("span", {class: "lv", text: colLabel(c)}),
       el("span", {class: "nm", text: c.title.replace(" Filtering", "").replace("!", "")}),
-      c.hides.length ? el("span", {class: "hd", text: `Hides ${c.hides.join(", ")}`}) : null);
+      c.hides.length ? el("span", {class: "hd", text: `Hides ${c.hides.join(", ")}`}) : null,
+      c.shows && c.shows.length ? el("span", {class: "hd", text: `Shows ${c.shows.join(", ")}`}) : null);
     glanceCols.push([th]);
     head.append(th);
   });

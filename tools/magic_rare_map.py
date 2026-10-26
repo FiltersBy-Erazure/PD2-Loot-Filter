@@ -587,7 +587,7 @@ def row_data(x, ref):
 
 def glance_data(q):
     """The page's "At a glance": the Filter Levels page's rows of its quality, with columns of the filter levels where
-    they behave the same: {cols: [{levels, title, hides}], rows: [{name, n, cats, cells, subs: [{name, n, cats,
+    they behave the same: {cols: [{levels, title, hides, shows}], rows: [{name, n, cats, cells, subs: [{name, n, cats,
     cells}]}]}. A cell is level_map's ({g: [[levels, runs by character level]], t: words, k: state[, gt]}); cats are
     this page's item types of the row's bases (a click jumps to the first), tiers their tiers (a tier filter that
     leaves none of them out is cleared)."""
@@ -597,7 +597,7 @@ def glance_data(q):
     cols = []
     for levels in page.columns:
         title, hides = page.column_title(levels)
-        cols.append({"levels": levels, "title": title, "hides": hides})
+        cols.append({"levels": levels, "title": title, "hides": hides, "shows": page.column_shows(levels)})
 
     def entry(name, row, specs):
         return {"name": name, "n": len(specs), "cats": sorted({category(s.info) for s in specs}, key=ORDER.index),

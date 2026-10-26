@@ -336,6 +336,7 @@ function newTable() {
     th.append(el("span", "lv", colLabel(c)));
     th.append(el("span", "nm", c.title.replace(" Filtering", "").replace("!", "")));
     if (c.hides.length) th.append(el("span", "hd", "Hides " + c.hides.join(", ")));
+    if (c.shows.length) th.append(el("span", "hd", "Shows " + c.shows.join(", ")));
     hr.append(th);
   });
   thead.append(hr);
@@ -411,7 +412,8 @@ function showDetails(panel, td, cell, ci, name, row) {
   td.classList.add("on");
   const col = DATA.cols[ci];
   const head = el("div", "dh", name + (row.tag ? " (" + row.tag + ")" : "") + " · " + levelsText(col.levels) + " ");
-  head.append(el("span", "muted", col.title + (col.hides.length ? ", hides " + col.hides.join(", ") : "")));
+  head.append(el("span", "muted", col.title + (col.hides.length ? ", hides " + col.hides.join(", ") : "") +
+    (col.shows.length ? ", shows " + col.shows.join(", ") : "")));
   const close = el("button", "x", "✕");
   close.setAttribute("aria-label", "Close");
   close.addEventListener("click", () => showDetails(panel, td, cell, ci, name, row));
@@ -554,6 +556,7 @@ DATA.cards.forEach((card) => {
   const s = el("summary");
   s.append(el("span", "ct", levelsText(col.levels) + " · " + col.title));
   if (col.hides.length) s.append(el("span", "chd", "Hides " + col.hides.join(", ")));
+  if (col.shows.length) s.append(el("span", "chd", "Shows " + col.shows.join(", ")));
   const sub = card.parent === 0 ? "What it hides; level 0 hides nothing"
     : "On top of " + levelsText(parent.levels).toLowerCase();
   s.append(el("span", "cs", (col.intro ? col.intro + " " : "") + sub + "."));

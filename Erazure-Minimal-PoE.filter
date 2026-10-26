@@ -7,8 +7,8 @@ ItemDisplayFilterName[]:ÿc3Stricter Filtering ÿc0- ÿc4Hides ÿc;35%//
 ItemDisplayFilterName[]:ÿc"Advanced Filtering//
 ItemDisplayFilterName[]:ÿc"Advanced Filtering ÿc0- ÿc4Hides ÿc;35%//
 ItemDisplayFilterName[]:ÿc"Advanced Filtering ÿc0- ÿc4Hides ÿc;35%ÿc0, ÿc3Amuletsÿc0, ÿc3Large Charms//
+ItemDisplayFilterName[]:ÿc;Endgame Filtering ÿc0- ÿc4Hides ÿc;35%ÿc0, ÿc4Shows ÿc9Select Weapons//
 ItemDisplayFilterName[]:ÿc;Endgame Filtering ÿc0- ÿc4Hides ÿc;35%//
-ItemDisplayFilterName[]:ÿc;Endgame Filtering ÿc0- ÿc4Hides ÿc;35%ÿc0, ÿc3Large Charms//
 ItemDisplayFilterName[]:ÿc;Endgame Filtering ÿc0- ÿc4Hides ÿc;35%ÿc0, ÿc3Crafting Bases//
 ItemDisplayFilterName[]:ÿc;Endgame Filtering ÿc0- ÿc4Hides ÿc;35%ÿc0, ÿc'Flawless ÿc0Gemsÿc0, ÿc3Large Charms//
 ItemDisplayFilterName[]:ÿc1Extreme Filtering! ÿc0- ÿc4Hides ÿc;35%ÿc0, ÿc3Crafting Basesÿc0, ÿc'Flawless ÿc0Gemsÿc0, ÿc3Large Charms//
@@ -5282,6 +5282,11 @@ ItemDisplay[ETH CRAFT]:%WHITE%Eth %NAME%{%NAME%}%CONTINUE%//
 // and for every class the ethereal Amazon javelins and spears and the Reflex, Ceremonial and Grand Matron Bows
 Alias[RARE_CLASS_ITEMS_SEEN]:((NECROMANCER (WAND OR NEC)) OR (SORCERESS (wst OR 8ws OR 6ws OR ob5 OR oba OR obf)) OR (PALADIN (SCEPTER OR DIN)) OR (ASSASSIN SIN) OR (DRUID (DRU OR clb OR spc OR 9cl OR 9sp OR 7cl OR 7sp)) OR (BARBARIAN BAR) OR (AMAZON ZON) OR (ETH (am3 OR am4 OR am5 OR am8 OR am9 OR ama OR amd OR ame OR amf)) OR am2 OR am7 OR amc)
 
+// Select Weapons (filter level 8): the rare weapons it shows that the other Endgame levels hide, non-ethereal, every
+// tier: the Diamond Bow, Flying Axe, Balrog Spear, Champion Sword, Balrog Blade, Colossus Blade, Colossus Sword, Highland
+// Blade, Legendary Mallet, Scourge, Devil Star, Reinforced Mace and Ettin Axe families (the author, 2026-10-26)
+Alias[RARE_SELECT_WEAPONS]:(sbb OR 8s8 OR 6s7 OR tax OR 9ta OR 7ta OR ssp OR 9s9 OR 7s7 OR bsw OR 9b9 OR 7b7 OR gis OR 9gs OR 7gs OR gsd OR 9gd OR 7gd OR flb OR 9fb OR 7fb OR clm OR 9cm OR 7cm OR whm OR 9wh OR 7wh OR fla OR 9fl OR 7fl OR mst OR 9mt OR 7mt OR mac OR 9ma OR 7ma OR 2ax OR 92a OR 72a)
+
 // Hide Rare Items on Filter Levels 10 and 12 (on 10 not the class items above)
 ItemDisplay[RARE !ID (FILTLVL=10 OR FILTLVL=12) ((ARMOR !CIRC !BOOTS !BELT !(CHEST (ALVL>74 OR CRAFTALVL>74)) !(SHIELD !NEC !DIN (lrg OR spk OR kit OR bsh OR tow OR gts OR xrg OR xpk OR xit OR xsh OR xow OR xts OR urg OR upk OR uit OR ush OR uow OR uts))) OR WEAPON) !(FILTLVL=10 RARE_CLASS_ITEMS_SEEN) GROUND !TOWN]://
 
@@ -5393,9 +5398,9 @@ ItemDisplay[RARE !ID EXC !ETH !THROWING DAGGER FILTLVL>7 GROUND !TOWN]:// Hide n
 ItemDisplay[RARE !ID ELT !ETH !THROWING DAGGER FILTLVL>7 GROUND !TOWN]:// Hide non-Ethereal Elite quality Rare Daggers on filter levels 8+
 
 // Rare Bows
-ItemDisplay[RARE !ID !ZON BOW NORM !(lwb OR lbb) FILTLVL>2 GROUND !TOWN]:// Hide Normal quality Rare Bows on filter levels 3+
-ItemDisplay[RARE !ID !ZON BOW EXC !(8lw OR 8l8) FILTLVL>7 GROUND !TOWN]:// Hide Exceptional quality Rare Bows on filter levels 8+
-ItemDisplay[RARE !ID !ZON BOW ELT !(6lw OR 6l7) FILTLVL>7 GROUND !TOWN]:// Hide Elite quality Rare Bows on filter levels 8+
+ItemDisplay[RARE !ID !ZON BOW NORM !(lwb OR lbb) FILTLVL>2 !(FILTLVL<8 sbb) !(FILTLVL=8 RARE_SELECT_WEAPONS) GROUND !TOWN]:// Hide Normal quality Rare Bows on filter levels 3+ (Short Battle Bows 8+)
+ItemDisplay[RARE !ID !ZON BOW EXC !(8lw OR 8l8) FILTLVL>7 !(FILTLVL=8 RARE_SELECT_WEAPONS) GROUND !TOWN]:// Hide Exceptional quality Rare Bows on filter levels 8+
+ItemDisplay[RARE !ID !ZON BOW ELT !(6lw OR 6l7) FILTLVL>7 !(FILTLVL=8 RARE_SELECT_WEAPONS) GROUND !TOWN]:// Hide Elite quality Rare Bows on filter levels 8+
 ItemDisplay[RARE !ID !AMAZON (am1 OR am6 OR amb) FILTLVL>7 GROUND !TOWN]:// Hide Stag, Ashwood and Matriarchal Bows for non-Amazons on filter levels 8+
 // Rare Crossbows
 ItemDisplay[RARE !ID XBOW NORM !(hxb OR mxb) FILTLVL>2 GROUND !TOWN]:// Hide Normal quality Rare Crossbows on filter levels 3+
@@ -5421,26 +5426,26 @@ ItemDisplay[RARE !ID !ETH EXC POLEARM !(BARBARIAN (9vo OR 9pa)) FILTLVL>7 GROUND
 ItemDisplay[RARE !ID !ETH ELT POLEARM !(BARBARIAN (7vo OR 7pa)) FILTLVL>7 GROUND !TOWN]:// Hide non-Ethereal Elite quality Rare Polearms on filter levels 8+
 
 // Rare Throwing Weapons
-ItemDisplay[RARE !ID !ETH (tkf OR tax OR bkf OR bal) FILTLVL>2 GROUND !TOWN]:// Hide non-Ethereal Normal quality Rare Throwing Weapons that aren't Zon class specific on filter levels 3+
-ItemDisplay[RARE !ID !ETH (9tk OR 9ta OR 9bk OR 9b8) FILTLVL>7 GROUND !TOWN]:// Hide non-Ethereal Exceptional quality Rare Throwing Weapons that aren't Zon class on filter levels 8+
-ItemDisplay[RARE !ID !ETH (7tk OR 7ta OR 7bk OR 7b8) FILTLVL>7 GROUND !TOWN]:// Hide non-Ethereal Elite quality Rare Throwing Weapons that aren't Zon class on filter levels 8+
+ItemDisplay[RARE !ID !ETH (tkf OR tax OR bkf OR bal) FILTLVL>2 !(FILTLVL<8 tax) !(FILTLVL=8 RARE_SELECT_WEAPONS) GROUND !TOWN]:// Hide non-Ethereal Normal quality Rare Throwing Weapons that aren't Zon class specific on filter levels 3+ (Throwing Axes 8+)
+ItemDisplay[RARE !ID !ETH (9tk OR 9ta OR 9bk OR 9b8) FILTLVL>7 !(FILTLVL=8 RARE_SELECT_WEAPONS) GROUND !TOWN]:// Hide non-Ethereal Exceptional quality Rare Throwing Weapons that aren't Zon class on filter levels 8+
+ItemDisplay[RARE !ID !ETH (7tk OR 7ta OR 7bk OR 7b8) FILTLVL>7 !(FILTLVL=8 RARE_SELECT_WEAPONS) GROUND !TOWN]:// Hide non-Ethereal Elite quality Rare Throwing Weapons that aren't Zon class on filter levels 8+
 // Rare Javelins
-ItemDisplay[RARE !ID !ETH (jav OR pil OR ssp OR tsp) FILTLVL>2 GROUND !TOWN]:// Hide non-Ethereal Normal quality Javs on filter levels 3+
-ItemDisplay[RARE !ID !ETH (9ja OR 9pi OR 9s9 OR 9ts) FILTLVL>7 GROUND !TOWN]:// Hide non-Ethereal Exceptional quality on filter levels 8+
-ItemDisplay[RARE !ID !ETH (7ja OR 7pi OR 7s7 OR 7ts) FILTLVL>7 GROUND !TOWN]:// Hide non-Ethereal Elite quality Javs on filter levels 8+
+ItemDisplay[RARE !ID !ETH (jav OR pil OR ssp OR tsp) FILTLVL>2 !(FILTLVL<8 ssp) !(FILTLVL=8 RARE_SELECT_WEAPONS) GROUND !TOWN]:// Hide non-Ethereal Normal quality Javs on filter levels 3+ (Short Spears 8+)
+ItemDisplay[RARE !ID !ETH (9ja OR 9pi OR 9s9 OR 9ts) FILTLVL>7 !(FILTLVL=8 RARE_SELECT_WEAPONS) GROUND !TOWN]:// Hide non-Ethereal Exceptional quality on filter levels 8+
+ItemDisplay[RARE !ID !ETH (7ja OR 7pi OR 7s7 OR 7ts) FILTLVL>7 !(FILTLVL=8 RARE_SELECT_WEAPONS) GROUND !TOWN]:// Hide non-Ethereal Elite quality Javs on filter levels 8+
 
 // Rare Swords
-ItemDisplay[RARE !ID !ETH NORM SWORD FILTLVL>2 GROUND !TOWN]:// Hide non-Ethereal Normal quality Rare Swords on filter levels 3+
-ItemDisplay[RARE !ID !ETH EXC SWORD FILTLVL>7 GROUND !TOWN]:// Hide non-Ethereal Exceptional quality Rare Swords on filter levels 8+
-ItemDisplay[RARE !ID !ETH ELT SWORD FILTLVL>7 GROUND !TOWN]:// Hide non-Ethereal Elite quality Rare Swords on filter levels 8+
+ItemDisplay[RARE !ID !ETH NORM SWORD FILTLVL>2 !(FILTLVL<8 (bsw OR gis OR gsd OR flb OR clm)) !(FILTLVL=8 RARE_SELECT_WEAPONS) GROUND !TOWN]:// Hide non-Ethereal Normal quality Rare Swords on filter levels 3+ (Bastard, Giant and Great Swords, Flamberges and Claymores 8+)
+ItemDisplay[RARE !ID !ETH EXC SWORD FILTLVL>7 !(FILTLVL=8 RARE_SELECT_WEAPONS) GROUND !TOWN]:// Hide non-Ethereal Exceptional quality Rare Swords on filter levels 8+
+ItemDisplay[RARE !ID !ETH ELT SWORD FILTLVL>7 !(FILTLVL=8 RARE_SELECT_WEAPONS) GROUND !TOWN]:// Hide non-Ethereal Elite quality Rare Swords on filter levels 8+
 // Rare Maces
-ItemDisplay[RARE !ID !ETH NORM MACE !(clb OR spc OR mau OR gma) FILTLVL>2 GROUND !TOWN]:// Hide non-Ethereal Normal quality Rare Maces on filter levels 3+
-ItemDisplay[RARE !ID !ETH EXC MACE !(9cl OR 9sp OR 9m9 OR 9gm) FILTLVL>7 GROUND !TOWN]:// Hide non-Ethereal Exceptional quality Rare Rare Maces on filter levels 8+
-ItemDisplay[RARE !ID !ETH ELT MACE !(7cl OR 7sp OR 7m7 OR 7gm) FILTLVL>7 GROUND !TOWN]:// Hide non-Ethereal Elite quality Rare Rare Maces on filter levels 8+
+ItemDisplay[RARE !ID !ETH NORM MACE !(clb OR spc OR mau OR gma) FILTLVL>2 !(FILTLVL<8 (whm OR fla OR mst OR mac)) !(FILTLVL=8 RARE_SELECT_WEAPONS) GROUND !TOWN]:// Hide non-Ethereal Normal quality Rare Maces on filter levels 3+ (War Hammers, Flails, Morning Stars and Maces 8+)
+ItemDisplay[RARE !ID !ETH EXC MACE !(9cl OR 9sp OR 9m9 OR 9gm) FILTLVL>7 !(FILTLVL=8 RARE_SELECT_WEAPONS) GROUND !TOWN]:// Hide non-Ethereal Exceptional quality Rare Rare Maces on filter levels 8+
+ItemDisplay[RARE !ID !ETH ELT MACE !(7cl OR 7sp OR 7m7 OR 7gm) FILTLVL>7 !(FILTLVL=8 RARE_SELECT_WEAPONS) GROUND !TOWN]:// Hide non-Ethereal Elite quality Rare Rare Maces on filter levels 8+
 // Rare Axes
-ItemDisplay[RARE !ID !ETH NORM AXE !(THROWING OR gax) FILTLVL>2 GROUND !TOWN]:// Hide non-Ethereal Normal quality Rare Axes on filter levels 3+
-ItemDisplay[RARE !ID !ETH EXC AXE !(THROWING OR 9ga) FILTLVL>7 GROUND !TOWN]:// Hide non-Ethereal Exceptional quality Rare Axes on filter levels 8+
-ItemDisplay[RARE !ID !ETH ELT AXE !(THROWING OR 7ga) FILTLVL>7 GROUND !TOWN]:// Hide non-Ethereal Elite quality Rare Axes on filter levels 8+
+ItemDisplay[RARE !ID !ETH NORM AXE !(THROWING OR gax) FILTLVL>2 !(FILTLVL<8 2ax) !(FILTLVL=8 RARE_SELECT_WEAPONS) GROUND !TOWN]:// Hide non-Ethereal Normal quality Rare Axes on filter levels 3+ (Double Axes 8+)
+ItemDisplay[RARE !ID !ETH EXC AXE !(THROWING OR 9ga) FILTLVL>7 !(FILTLVL=8 RARE_SELECT_WEAPONS) GROUND !TOWN]:// Hide non-Ethereal Exceptional quality Rare Axes on filter levels 8+
+ItemDisplay[RARE !ID !ETH ELT AXE !(THROWING OR 7ga) FILTLVL>7 !(FILTLVL=8 RARE_SELECT_WEAPONS) GROUND !TOWN]:// Hide non-Ethereal Elite quality Rare Axes on filter levels 8+
 
 // ------------------------------------------------------------------------
 // =================  Notifications for Eth Rare Weapons  =================
@@ -5509,10 +5514,10 @@ ItemDisplay[MAG !ID amu CLVL<80 FILTLVL<7]:%TAN%o  %NAME%  %TAN%o%BLUE%%BORDER-9
 
 // Magic Charms
 
-// Hide all Large Charms on Filter Levels 7, 9 and 11-12
-ItemDisplay[MAG !ID (FILTLVL=7 OR FILTLVL=9 OR FILTLVL~11-12) cm2 GROUND !TOWN]://
-// Hide Large Charms that aren't item level 90+ on Filter Levels 8 and 10
-ItemDisplay[MAG !ID ILVL<90 (FILTLVL=8 OR FILTLVL=10) cm2 GROUND !TOWN]://
+// Hide all Large Charms on Filter Levels 7 and 11-12
+ItemDisplay[MAG !ID (FILTLVL=7 OR FILTLVL~11-12) cm2 GROUND !TOWN]://
+// Hide Large Charms that aren't item level 90+ on Filter Levels 8-10
+ItemDisplay[MAG !ID ILVL<90 FILTLVL~8-10 cm2 GROUND !TOWN]://
 // Hide Small and Grand Charms that aren't item level 90+ on Filter Level 12
 ItemDisplay[MAG !ID ILVL<90 FILTLVL=12 (cm1 OR cm3) GROUND !TOWN]://
 
@@ -5541,8 +5546,8 @@ ItemDisplay[MAG !ID (cm1 OR cm3) ILVL>89]:%MAGIC_CHARMS_LEFT%  %NAME%  %MAGIC_CH
 ItemDisplay[MAG !ID (cm1 OR cm3) FILTLVL<5 ILVL<90]:%MAGIC_CHARMS_LEFT%  %NAME%  %MAGIC_CHARMS_RIGHT%%BLUE%{%NAME%}//
 ItemDisplay[MAG !ID (cm1 OR cm3) FILTLVL>4 ILVL<90]:%MAGIC_CHARMS_DIM_LEFT%  %NAME%  %MAGIC_CHARMS_DIM_RIGHT%%BLUE%{%NAME%}//
 // Large Charms
-ItemDisplay[MAG !ID cm2 (FILTLVL=8 OR FILTLVL=10) ILVL>89]:%MAGIC_LARGE_CHARM_90_LEFT%  %NAME%  %MAGIC_LARGE_CHARM_90_RIGHT%%BLUE%{%NAME%}//
-ItemDisplay[MAG !ID cm2 (FILTLVL=8 OR FILTLVL=10) ILVL<90]:%MAGIC_LARGE_CHARM_LEFT%  %NAME%  %MAGIC_LARGE_CHARM_RIGHT%%BLUE%{%NAME%}//
+ItemDisplay[MAG !ID cm2 FILTLVL~8-10 ILVL>89]:%MAGIC_LARGE_CHARM_90_LEFT%  %NAME%  %MAGIC_LARGE_CHARM_90_RIGHT%%BLUE%{%NAME%}//
+ItemDisplay[MAG !ID cm2 FILTLVL~8-10 ILVL<90]:%MAGIC_LARGE_CHARM_LEFT%  %NAME%  %MAGIC_LARGE_CHARM_RIGHT%%BLUE%{%NAME%}//
 ItemDisplay[MAG !ID cm2 FILTLVL<7]:%MAGIC_CHARMS_LEFT%  %NAME%  %MAGIC_CHARMS_RIGHT%%BLUE%{%NAME%}//
 
 // Magic Rings

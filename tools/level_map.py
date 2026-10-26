@@ -88,7 +88,8 @@ SECTION_COLORS = {"Gold, potions, scrolls and keys": "white", "Gems and runes": 
                   "PD2 items, maps and quest items": "tan", "Unique items": "gold", "Set items": "set",
                   "Rare items": "rare", "Magic items": "magic", "Non-magical items": "white"}
 # The author's line about each level group, by its launcher name (no thresholds or items: the rows say those); a
-# level's full name (as tier_map.load_levels gives it) wins over its group's: level 7 hides what 5-6 show
+# level's full name (as tier_map.load_levels gives it) wins over its group's: level 7 hides what 5-6 show, level 8
+# shows what 9 hides
 INTROS = {
     "Show All Items": "Hides nothing and plays every notification.",
     "Lowest Strictness": "For the ladder start and characters up to level ~80.",
@@ -97,8 +98,23 @@ INTROS = {
     "Advanced Filtering": "Similar to Endgame, but shows more rares, magic amulets and Large Charms.",
     "Advanced Filtering - Hides 35%, Amulets, Large Charms": "Similar to Endgame, but shows more rares.",
     "Endgame Filtering": "Hides most low-value items for endgame characters.",
+    "Endgame Filtering - Hides 35%, Shows Select Weapons": "Endgame, but it also shows rare weapons of select bases.",
     "Extreme Filtering!": "Hides everything but the most valuable items.",
 }
+
+
+def name_claims(name):
+    """(what a launcher name says its level hides, what it says it shows): "Endgame Filtering - Hides 35%, Shows
+    Select Weapons" is (["35%"], ["Select Weapons"])."""
+    hides, shows, into = [], [], None
+    for part in (name.split(" - ", 1)[1].split(",") if " - " in name else []):
+        part = part.strip()
+        for word, words in (("Hides ", hides), ("Shows ", shows)):
+            if part.startswith(word):
+                into, part = words, part[len(word):]
+        if into is not None and part:
+            into.append(part)
+    return hides, shows
 
 
 def clean(name):
@@ -1304,9 +1320,14 @@ class Page:
     def column_title(self, levels):
         """(the launcher name of these levels, what they hide besides potions: 'Crafting Bases'...)."""
         names = [self.levels[lv] for lv in levels]
-        hides = [[h.strip() for h in n.split(" - Hides ")[1].split(",")] if " - Hides " in n else [] for n in names]
+        hides = [name_claims(n)[0] for n in names]
         return names[0].split(" - ")[0].strip(), [h for h in hides[0] if h not in POTION_WORDS and
                                                     all(h in other for other in hides)]
+
+    def column_shows(self, levels):
+        """What the launcher names of these levels say they show on top: 'Select Weapons'."""
+        shows = [name_claims(self.levels[lv])[1] for lv in levels]
+        return [s for s in shows[0] if all(s in other for other in shows)]
 
     def cell(self, specs, levels, row):
         """{g: [[levels, runs]], t: text}: the cell of these drops at these filter levels; runs [lo, hi, kind, text] by
@@ -1411,7 +1432,8 @@ class Page:
 
     def parents(self, cols):
         """Each column's parent: the column before it, or the last one before that whose launcher name hides
-        nothing this one does not (11, Flawless Gems and Large Charms, against 9: not 10, Crafting Bases)."""
+        nothing this one does not (11, Flawless Gems and Large Charms, against 9: not 10, Crafting Bases). What a name
+        shows on top ("Shows Select Weapons") doesn't matter: 9 compares with 8, which shows more."""
         out = {}
         for c in range(1, len(cols)):
             p = c - 1
@@ -1519,7 +1541,8 @@ class Page:
         for levels in self.columns:
             title, hides = self.column_title(levels)
             intro = INTROS.get(self.levels[levels[0]], INTROS.get(title, ""))
-            cols.append({"levels": levels, "title": title, "hides": hides, "intro": intro})
+            cols.append({"levels": levels, "title": title, "hides": hides, "shows": self.column_shows(levels),
+                         "intro": intro})
         sections = []
         for title, rows in self.sections:
             links = {r.link for r in rows}
@@ -1600,6 +1623,7 @@ def print_changes(page):
         col = cols[card["col"]]
         print(f"== {lv(card['col']).capitalize()} · {col['title']}" + (f" (hides {', '.join(col['hides'])})"
                                                                          if col["hides"] else "")
+              + (f" (shows {', '.join(col['shows'])})" if col["shows"] else "")
               + f" — on top of {lv(card['parent'])}")
         for ln in card["lines"]:
             extra = f" (as on {lv(ln['as'])})" if ln.get("as") is not None else ""
@@ -1618,8 +1642,7 @@ def findings(page):
     for c, levels in enumerate(page.columns):  # a launcher name's "Hides H5" without its potion hidden there
         for lv in levels:
             name = page.levels[lv]
-            claims = [h.strip() for h in name.split(" - Hides ")[1].split(",")] if " - Hides " in name else []
-            for claim in claims:
+            for claim in name_claims(name)[0]:
                 code = LEVEL_CLAIMS.get(claim)
                 if not code:
                     continue
