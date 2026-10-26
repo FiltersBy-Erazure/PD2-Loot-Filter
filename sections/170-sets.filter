@@ -165,11 +165,13 @@ ItemDisplay[SET !ID FILTLVL<5 (dr8 OR uul OR xtb OR ci3 OR uh9 OR xmg OR ne9 OR 
 ItemDisplay[SET !ID FILTLVL~5-11 (dr8 OR uul OR xtb OR ci3 OR uh9 OR xmg OR ne9 OR xhm OR ulg OR 7qr OR ucl OR (ETH (7fb OR 7gd OR 7ls)))]:%SET_MEDIUM_VALUE_LEFT%  %GREEN%%NAME%  %SET_MEDIUM_VALUE_RIGHT%%GREEN%%BORDER-71%%MAP-76%%DOT-84%%PX-20%//
 ItemDisplay[SET !ID FILTLVL=12 (dr8 OR uul OR xtb OR ci3 OR uh9 OR xmg OR ne9 OR xhm OR ulg OR 7qr OR ucl OR (ETH (7fb OR 7gd OR 7ls)))]:%NAME%// The plain name on level 12: no look, icon or sound
 
-// Undiscovered Set Items (Grail): every set item you haven't discovered yet (Discovery Progress) that no rule above
-// notifies, identified or not, rings and amulets too, gets a chat line and the set icon on every filter level (the
-// author, 2026-10-25). A %CONTINUE% layer that changes no look, ahead of the rules below: the first notification
-// rule an item matches gives its chat line (their %TIER-0% icons give none), and their icons cover this one
-ItemDisplay[SET GRAIL_NEW]:%NAME%{%NAME%}%MAP-71%%DOT-76%%PX-81%%CONTINUE%//
+// Undiscovered Set Items (Grail): every unidentified set item you haven't discovered yet (Discovery Progress) that no
+// rule above notifies, rings and amulets too, gets a chat line and the set icon on every filter level (the author,
+// 2026-10-25). Identified ones get none: an item is discovered when it is identified, so an identified one on the
+// ground is one a player dropped, in town too. A %CONTINUE% layer that changes no look, ahead of the rules below: the
+// first notification rule an item matches gives its chat line (their %TIER-0% icons give none), and their icons cover
+// this one
+ItemDisplay[SET !ID GRAIL_NEW]:%NAME%{%NAME%}%MAP-71%%DOT-76%%PX-81%%CONTINUE%//
 
 // The Grail look: every set item the tiers above leave, but rings and amulets, until you've discovered it, on every
 // filter level, ahead of the Low Level Duel look

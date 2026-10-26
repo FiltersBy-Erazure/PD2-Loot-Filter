@@ -16,7 +16,7 @@ How the filter shows every unique and set item that drops unidentified, read fro
 version of the filter in the bar above the list.
 
 The filter never hides a unique or set item you haven't discovered yet and always gives it a minimap icon and a chat
-line, on every filter level. One in no value tier (set rings and amulets aside) shows the Grail look: an orange star
+line when it drops, on every filter level. One in no value tier (set rings and amulets aside) shows the Grail look: an orange star
 on each side. The game's Force Show Unowned option (in its
 Loot Filter options, off by default) also shows the ones you have discovered but don't own yet where the filter would
 hide them, with the game's plain name instead of these looks.
