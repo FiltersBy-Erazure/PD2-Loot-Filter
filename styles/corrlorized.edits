@@ -10,8 +10,7 @@
 // Charms under item level 90 stay off, and since his v2 (2026-10-20) the Highest Resistances of T1-T3 maps (one
 // '*' entry per map; their Monster Immunities show, and unique maps keep both). No sounds or minimap icons on
 // rare rings, belts and boots, ethereal rare and magic axes, magic jewels and Large Charms, nor on rare circlets
-// and amulets on level 12 (Corr's removals, and the author's for boots, the jewels of The Fallen Gardens and The
-// Diamond Gate, and level 12's jewelry).
+// and amulets on level 12 (Corr's removals, and the author's for boots and level 12's jewelry).
 // Corr's v3 (2026-10-21; "mostly disabling a bunch of rules for maps and charm stat displays"), all taken by the
 // author: 17 map description lines off (guest monsters, Blood Lords, Melee Splash, +% elemental and physical
 // damage, low +% Maximum Life, Dual Extra Damage, -% Max and All Resistances), 19 magic charm tags and 20 affix
@@ -61,28 +60,28 @@
 = Alias[MIRROR]:%PURPLE%xX%RED%xX%ORANGE%x\%TAN%\%WHITE%V%TAN%/%ORANGE%/x%RED%Xx%PURPLE%Xx
 + Alias[MIRROR_L]:%PURPLE%+++%BLUE%+++%TEAL%+++%DARK_GREEN%+++
 + Alias[MIRROR_R]:%DARK_GREEN%+++%TEAL%+++%BLUE%+++%PURPLE%+++
-@ 040-aliases.filter:274  Corr's magic charms
+@ 040-aliases.filter:268  Corr's magic charms
 - Alias[MAGIC_CHARMS_LEFT]:%TEAL%\%BLUE%(%PURPLE%(
 + Alias[MAGIC_CHARMS_LEFT]:%YELLOW%\%ORANGE%(%RED%(
-@ 040-aliases.filter:275  Corr's magic charms
+@ 040-aliases.filter:269  Corr's magic charms
 - Alias[MAGIC_CHARMS_RIGHT]:%PURPLE%)%BLUE%)%TEAL%/%BLUE%
 + Alias[MAGIC_CHARMS_RIGHT]:%RED%)%ORANGE%)%YELLOW%/%BLUE%
-@ 040-aliases.filter:278  Corr's magic charms
+@ 040-aliases.filter:272  Corr's magic charms
 - Alias[MAGIC_CHARMS_DIM_LEFT]:%TEAL%\%BLUE%((
 + Alias[MAGIC_CHARMS_DIM_LEFT]:%YELLOW%\%ORANGE%((
-@ 040-aliases.filter:279  Corr's magic charms
+@ 040-aliases.filter:273  Corr's magic charms
 - Alias[MAGIC_CHARMS_DIM_RIGHT]:%BLUE%))%TEAL%/%BLUE%
 + Alias[MAGIC_CHARMS_DIM_RIGHT]:%ORANGE%))%YELLOW%/%BLUE%
-@ 040-aliases.filter:282  Corr's magic charms
+@ 040-aliases.filter:276  Corr's magic charms
 - Alias[MAGIC_LARGE_CHARM_90_LEFT]:%PURPLE%-
 + Alias[MAGIC_LARGE_CHARM_90_LEFT]:%RED%-
-@ 040-aliases.filter:283  Corr's magic charms
+@ 040-aliases.filter:277  Corr's magic charms
 - Alias[MAGIC_LARGE_CHARM_90_RIGHT]:%PURPLE%-%BLUE%
 + Alias[MAGIC_LARGE_CHARM_90_RIGHT]:%RED%-%BLUE%
-@ 040-aliases.filter:286  Corr's magic charms
+@ 040-aliases.filter:280  Corr's magic charms
 - Alias[MAGIC_LARGE_CHARM_LEFT]:%TEAL%-
 + Alias[MAGIC_LARGE_CHARM_LEFT]:%YELLOW%-
-@ 040-aliases.filter:287  Corr's magic charms
+@ 040-aliases.filter:281  Corr's magic charms
 - Alias[MAGIC_LARGE_CHARM_RIGHT]:%TEAL%-%BLUE%
 + Alias[MAGIC_LARGE_CHARM_RIGHT]:%YELLOW%-%BLUE%
 
@@ -1235,21 +1234,18 @@ x ItemDisplay[MAG !ID (cm1 OR cm3) FILTLVL~5-11 ILVL<90]:%NAME%%MAP-91%%DOT-C5%%
 - ItemDisplay[MAG !ID cm2 FILTLVL~8-10 ILVL<90]:%MAGIC_LARGE_CHARM_LEFT%  %NAME%  %MAGIC_LARGE_CHARM_RIGHT%%BLUE%{%NAME%}//
 + ItemDisplay[MAG !ID cm2 FILTLVL~8-10 ILVL<90]:%MAGIC_LARGE_CHARM_LEFT%  %NAME%  %MAGIC_LARGE_CHARM_RIGHT%%ORANGE%{%NAME%}//
 @ 200-magic.filter:70  All unidentified magic jewels
-- ItemDisplay[MAG !ID jew MAPID~183-184]:%MAGIC_JEWEL_NAME%%BLUE%%DOT-97%%PX-0E%%TIER-0%// All unidentified magic jewels
-+ ItemDisplay[MAG !ID jew MAPID~183-184]:%MAGIC_JEWEL_NAME%// All unidentified magic jewels
+- ItemDisplay[MAG !ID jew CLVL>29 FILTLVL~5-11]:%MAGIC_JEWEL_NAME%%BLUE%%DOT-97%%PX-0E%// All unidentified magic jewels
++ ItemDisplay[MAG !ID jew CLVL>29 FILTLVL~5-11]:%MAGIC_JEWEL_NAME%// All unidentified magic jewels
 @ 200-magic.filter:71  All unidentified magic jewels
-- ItemDisplay[MAG !ID jew CLVL>29 FILTLVL~5-11 !MAPID~183-184]:%MAGIC_JEWEL_NAME%%BLUE%%DOT-97%%PX-0E%// All unidentified magic jewels
-+ ItemDisplay[MAG !ID jew CLVL>29 FILTLVL~5-11 !MAPID~183-184]:%MAGIC_JEWEL_NAME%// All unidentified magic jewels
+- ItemDisplay[MAG !ID jew CLVL>29 FILTLVL=12]:%MAGIC_JEWEL_NAME%%BLUE%%DOT-97%%PX-0E%%TIER-0%// All unidentified magic jewels
++ ItemDisplay[MAG !ID jew CLVL>29 FILTLVL=12]:%MAGIC_JEWEL_NAME%// All unidentified magic jewels
 @ 200-magic.filter:72  All unidentified magic jewels
-- ItemDisplay[MAG !ID jew CLVL>29 FILTLVL=12 !MAPID~183-184]:%MAGIC_JEWEL_NAME%%BLUE%%DOT-97%%PX-0E%%TIER-0%// All unidentified magic jewels
-+ ItemDisplay[MAG !ID jew CLVL>29 FILTLVL=12 !MAPID~183-184]:%MAGIC_JEWEL_NAME%// All unidentified magic jewels
+- ItemDisplay[MAG !ID jew CLVL>29 FILTLVL<5]:%MAGIC_JEWEL_NAME%%BLUE%%MAP-91%%DOT-97%%PX-0E%// All unidentified magic jewels
++ ItemDisplay[MAG !ID jew CLVL>29 FILTLVL<5]:%MAGIC_JEWEL_NAME%// All unidentified magic jewels
 @ 200-magic.filter:73  All unidentified magic jewels
-- ItemDisplay[MAG !ID jew CLVL>29 FILTLVL<5 !MAPID~183-184]:%MAGIC_JEWEL_LEFT%%MAGIC_JEWEL_NAME%%MAGIC_JEWEL_RIGHT%%BLUE%%MAP-91%%DOT-97%%PX-0E%// All unidentified magic jewels
-+ ItemDisplay[MAG !ID jew CLVL>29 FILTLVL<5 !MAPID~183-184]:%MAGIC_JEWEL_LEFT%%MAGIC_JEWEL_NAME%%MAGIC_JEWEL_RIGHT%// All unidentified magic jewels
-@ 200-magic.filter:74  All unidentified magic jewels
-- ItemDisplay[MAG !ID jew CLVL<30 FILTLVL<12]:%MAGIC_JEWEL_LEFT%%MAGIC_JEWEL_NAME%%MAGIC_JEWEL_RIGHT%%BLUE%%MAP-91%%DOT-97%%PX-0E%// All unidentified magic jewels
-+ ItemDisplay[MAG !ID jew CLVL<30 FILTLVL<12]:%MAGIC_JEWEL_LEFT%%MAGIC_JEWEL_NAME%%MAGIC_JEWEL_RIGHT%// All unidentified magic jewels
-@ 200-magic.filter:271  MAG !ID ETH (FILTLVL<10 OR FILTLVL=11) (gax OR 9ga OR 7ga)
+- ItemDisplay[MAG !ID jew CLVL<30 FILTLVL<12]:%MAGIC_JEWEL_NAME%%BLUE%%MAP-91%%DOT-97%%PX-0E%// All unidentified magic jewels
++ ItemDisplay[MAG !ID jew CLVL<30 FILTLVL<12]:%MAGIC_JEWEL_NAME%// All unidentified magic jewels
+@ 200-magic.filter:270  MAG !ID ETH (FILTLVL<10 OR FILTLVL=11) (gax OR 9ga OR 7ga)
 - ItemDisplay[MAG !ID ETH (FILTLVL<10 OR FILTLVL=11) (gax OR 9ga OR 7ga)]:%MAGIC_ETH_CRAFT_LEFT%  %NAME%  %MAGIC_ETH_CRAFT_RIGHT%%MAP-91%%DOT-97%%PX-1F%//
 + ItemDisplay[MAG !ID ETH (FILTLVL<10 OR FILTLVL=11) (gax OR 9ga OR 7ga)]:%MAGIC_ETH_CRAFT_LEFT%  %NAME%  %MAGIC_ETH_CRAFT_RIGHT%//
 
