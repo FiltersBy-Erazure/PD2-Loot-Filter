@@ -289,7 +289,11 @@
   rings and helms too: compact and consistent, though the game joins them into "Adds 1-3 damage" only with the
   minimum below the maximum, BH's Item.cpp STRMODMINDAMAGERANGE): the max lines skip "min shown", the min lines "max
   shown" (written out in each, no nested aliases), two joined lines in the min block (with max damage per level, the
-  total); Corr's versions show the minimum alone there (his rare max damage is off). 300 asks them once per stat
+  total); Corr's versions show the minimum alone there (his rare max damage is off). Rare and crafted weapons but
+  staves, wands and orbs tag minimum and maximum damage (and the per-level total) at every affix level and roll (the
+  author, 2026-10-28; the biggest rolls come above 60: of Evisceration +41-63 max, of Transcendence +15-20 min, Grinding
+  and Fool's per level): 300's damage lines take those weapons directly, not through the aliases, so the page shows
+  those rows as tagged at every roll. 300 asks them once per stat
   (`--check` fails on an alias 300 doesn't ask or asks without the section): a threshold line gets `OR (LOWLVL_X_TAG
   <stat>>0)` in its value test; item types no rare line of the stat covers get `OR ((<types>) LOWLVL_X_TAG)` in a
   type group, or a new line in the stat's block (excluding a corruption line of the same stat, e.g. `!STAT360=57`);
@@ -300,8 +304,9 @@
   224 halves; BH's formula STAT22 reads the affix list, not a weapon's base damage). New looks (2026-10-28, for the
   author's OK in game): knockback `Knb` (gray; the arrows' `Knbk` is `Knb` too, the author), open wounds chance `10%ow` (coral; 501's damage is `ow`).
   `--verify` runs every affix of every item type through 300 three ways (as built, aliases FALSE, the last commit's
-  300) and measures the longest tag lines. Corrlorized: Corr's `x` entries on the rewired lines stay off (the low-level
-  parts with them), and the max damage per level total has an `x` of its own; careful: when a rewired line's text
+  300; a deliberate change outside the aliases differs from it until committed) and measures the longest tag lines.
+  Corrlorized: Corr's `x` entries on the rewired lines stay off (the low-level parts with them), and the max damage
+  per level total has an `x` of its own; careful: when a rewired line's text
   changes a lot, the build's look-alike matching can move an entry onto a neighbour (it moved 5 here: check
   `git diff styles/corrlorized.edits` after big 300 edits).
 - `Erazure-Unique-Set-Tiers.html` (repo root, committed; the players' page, which GitHub Pages serves from `main`) is
