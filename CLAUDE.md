@@ -204,8 +204,15 @@
   colour, then the experience line, gold `2.6x at Level 98` (the viewer's level, `$f(CHARSTAT12)`). The experience
   line: a full clear of this map with its rolls
   for the viewer (level penalty per monster kind: normals, champions +2, uniques +3; their own +XP %,
-  `CHARSTAT12`/`CHARSTAT85`) over the average white T1-T3 map for the same viewer (dungeons: the average white T3
-  map; the author, 2026-10-17: at level 97 nobody weighs a dungeon against T1 maps), characters of level 80-98
+  `CHARSTAT12`/`CHARSTAT85`) per tile of its clear path, over the average white T1-T3 map's for the same viewer
+  (dungeons: the average white T3 map's; the author, 2026-10-17: at level 97 nobody weighs a dungeon against T1
+  maps). Per path since 2026-10-28 (the author: a big map also takes longer to clear; until then per clear):
+  `docs/pd2-map-paths.tsv`, written by `map_size.py "<Diablo II folder>" --paths` (kept out of the repo; rerun when a
+  PD2 patch changes layouts), holds per map area the tiles of a greedy walk that brings 95% of its reachable spawn
+  spots within 15 subtiles (most players clear 90-95% of a map, the author), averaged over layouts and five starts;
+  the generator folds the map's path over its baseline tiers' average path into `MXX_`'s coefficients. Horazon's
+  Memory's 42 lightning spires are left out of its numbers (players walk past them; `SKIPPED_PRESETS` in the
+  model, the author, 2026-10-28). Characters of level 80-98
   (`CLVL>79 CLVL<99`; maps need level 80); exact formulas, no shortcut (a tag x base x penalty shortcut is off by
   up to 100% at level 96-98). Alias `MXX_<code>`; the penalties (`MXPEN<level>_<k>`) and the averages (`MXAVG`,
   dungeons `MXT3AVG`: `BASELINES` in the generator) are aliases at the end of 146, used as `%NAME%` inside `MXX_`
@@ -595,7 +602,7 @@ removed level on the next run; a new level group's intro is `INTROS` in `tools/l
 `tools/label_cuts.py` + `tools/unique_cut_rules.txt` + `tools/unique_cut_cases.tsv` ·
 `tools/picker_cases.py` + `tools/roll_picker_template.html` (the roll pickers' page) ·
 `tools/gen_runeword_rolls.py` + `tools/runeword_roll_picks.txt` + `docs/pd2-runewords.tsv` (sections 305 / 047) ·
-`docs/pd2-map-exp.tsv` + `docs/pd2-map-guests.tsv` + `tools/gen_map_exp.py` (sections 146 / 147) ·
+`docs/pd2-map-exp.tsv` + `docs/pd2-map-guests.tsv` + `docs/pd2-map-paths.tsv` + `tools/gen_map_exp.py` (sections 146 / 147) ·
 `tools/gen_boss_tags.py` + `tools/boss_tag_rules.json` + `tools/boss_tag_editor_template.html` (section 270) ·
 `tools/alias_editor.py` + `tools/alias_editor_template.html` (the alias editor page) ·
 `tools/tier_map.py` + `tools/tier_map_template.html` + `Erazure-Unique-Set-Tiers.html` ·

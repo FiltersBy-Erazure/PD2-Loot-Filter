@@ -105,7 +105,7 @@ About 825 KB is roughly 200k+ tokens per file. **No conversation will "see the w
 | `130-maps` | 2595–2753 | Map names (T1–T3, unique, T4 dungeons), area level |
 | `140-map-resistances` | 2754–3306 | S13 per-map resistance display: explanation, then one block per map |
 | `145-map-rolls-and-notifications` | 3307–3526 | Map contents and modifier highlights, catalyzed, tier tags, map looks and tier icons, the tag line (mf/den/rar/exp prefixes) |
-| `146-map-experience` | 3527–3880 | GENERATED (`tools/gen_map_exp.py`): two description lines per map, `2.0x Experience` (the roll multiplier) and `2.6x at Level 98` (vs an average white map at your level), and their aliases |
+| `146-map-experience` | 3527–3880 | GENERATED (`tools/gen_map_exp.py`): two description lines per map, `2.0x Experience` (the roll multiplier) and `2.6x at Level 98` (per tile of clear path, vs an average white map at your level), and their aliases |
 | `147-map-display-end` | 3881–3901 | Every map's last rule (closing minimap icons for T1–T3, T4 and unique maps), arenas |
 | `150-uniques` | 3902–4360 | Revealed names, DClone/Rathma uniques, BIG GG display |
 | `160-uniques-value-tiers` | 4361–4882 | High / medium / minimal value, undiscovered (Grail), low-level duel, all other uniques |

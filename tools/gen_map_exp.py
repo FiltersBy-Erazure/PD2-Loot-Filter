@@ -27,8 +27,10 @@ the area's). A character's own +XP % (stat 85) is added after the penalty, and t
 The filter shows the roll multiplier as a description line, "2.0x Experience" (sections/146-map-experience.filter,
 written here), truncated to one decimal (the colour always matches the digits), in bands per tier (BANDS): T1 from
 1.4x gold, 1.7x red, 2.0x purple; T2 1.5x / 1.8x / 2.2x; T3 1.6x / 2.0x / 2.5x; T4 2.3x / 2.6x / 3.0x; no line
-below. Under it the experience line, gold "2.6x at Level 98" (the viewer's level). Identified maps only (an
-unidentified map has no stats yet).
+below. Under it the experience line, gold "2.6x at Level 98" (the viewer's level): a full clear of this map with
+its rolls for the viewer, per tile of its clear path (docs/pd2-map-paths.tsv: a walk that sees 95% of its spawn
+spots), over the same for the average white map (the author, 2026-10-28: per path, not per clear, since a big map
+also takes longer). Identified maps only (an unidentified map has no stats yet).
 
     python tools/gen_map_exp.py              write sections/146-map-experience.filter
     python tools/gen_map_exp.py --check      change nothing; exit 1 if the section is out of date
@@ -47,6 +49,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 TSV = ROOT / "docs" / "pd2-map-exp.tsv"
 GUEST_TSV = ROOT / "docs" / "pd2-map-guests.tsv"
+PATH_TSV = ROOT / "docs" / "pd2-map-paths.tsv"
 OUT = ROOT / "sections" / "146-map-experience.filter"
 TIER_NAMES = {1: "T1", 2: "T2", 3: "T3", 4: "T4 dungeon", 5: "unique map"}
 # Bands per tier on the tenths t (1.4x = 14): (tag from, red from, purple from); gold below red. The same
@@ -93,6 +96,7 @@ class Map:
         self.areas = []
         self.guests = []     # guest monster stats the map can carry, one at a time (docs/pd2-map-guests.tsv)
         self.guest_exp = {}  # {stat: (exp per normal roll, exp per pack roll, champions' share)} at self.level
+        self.path = 0.0      # tiles walked to clear it, its areas added (docs/pd2-map-paths.tsv)
 
     def area_exp(self, a, guest=None):
         """(exp per normal roll, exp per elite pack roll, the champions' part of the pack roll) of an area; a guest
@@ -165,7 +169,7 @@ def guest_table(rows):
             for r in rows}
 
 
-def load(path=TSV, guest_path=GUEST_TSV):
+def load(path=TSV, guest_path=GUEST_TSV, path_path=PATH_TSV):
     gexp = guest_table(read_tsv(guest_path)) if guest_path.exists() else {}
     maps = {}
     for r in read_tsv(path):
@@ -174,6 +178,10 @@ def load(path=TSV, guest_path=GUEST_TSV):
             m.guests = [int(s) for s in (r.get("guests") or "").split()]
             m.guest_exp = {s: v for (s, lv), v in gexp.items() if lv == m.level}
         maps[r["code"]].areas.append(Area(r))
+    for r in read_tsv(path_path):
+        maps[r["code"]].path += float(r["path"])
+    missing = [c for c, m in maps.items() if m.path <= 0]
+    assert not missing, f"no clear path in {path_path.name}: {missing}"
     return maps
 
 
@@ -328,6 +336,12 @@ def baseline(mp):
     return "MXT3AVG" if mp.tier == 4 else "MXAVG"
 
 
+def path_ratio(mp, maps):
+    """The average clear path of the map's baseline tiers over its own: the experience line is per tile walked."""
+    base = [m.path for m in maps.values() if m.tier in BASELINES[baseline(mp)]]
+    return sum(base) / len(base) / mp.path
+
+
 def avg_txt(maps, avg0, tiers):
     """BH text of the average plain map of these tiers' exp at the viewer's level, / avg0."""
     coef = collections.Counter()
@@ -338,12 +352,14 @@ def avg_txt(maps, avg0, tiers):
     return "+".join(f"{num_txt(coef[lv] / (len(base) * avg0))}*{pen_txt(str(lv))}" for lv in sorted(coef))
 
 
-def exp_txt(mp, avg0):
+def exp_txt(mp, avg0, maps):
     """BH text of the experience line (alias MXX_<code>): a full clear of this map with its rolls for the viewer
-    (level penalty, their own +XP %), divided by the average plain map for the same viewer (baseline). Output only:
-    the penalties (%MXPEN<level>_<k>%) and the averages (%MXAVG%, %MXT3AVG%) are aliases defined after it."""
+    (level penalty, their own +XP %) per tile of its clear path, divided by the average plain map's for the same
+    viewer (baseline; the path ratio is folded into the coefficients). Output only: the penalties
+    (%MXPEN<level>_<k>%) and the averages (%MXAVG%, %MXT3AVG%) are aliases defined after it."""
     pens = tuple(f"%{pen_alias(mp.level, k)}%" for k in PEN_OFFSETS)
-    return (f"(100+CHARSTAT85+STAT373)/(100+CHARSTAT85)*IF(STAT493,2,1)*({personal_num_txt(mp, avg0, pens)})"
+    scale = avg0 / path_ratio(mp, maps)
+    return (f"(100+CHARSTAT85+STAT373)/(100+CHARSTAT85)*IF(STAT493,2,1)*({personal_num_txt(mp, scale, pens)})"
             f"*{level_txt(mp)}/(%{baseline(mp)}%)")
 
 
@@ -362,14 +378,15 @@ def expand_output(text, shared):
 
 
 def vs_average(mp, maps, clvl, own_xp=0, d=0, r=0, x=0, alvl=0, fort=False, guest=None):
-    """The experience line: this map with its rolls for a character of level clvl, over the average plain map of
-    its baseline tiers (dungeons: T3; the rest: T1-T3) for the same character."""
+    """The experience line: this map with its rolls for a character of level clvl per tile of its clear path, over
+    the average plain map's of its baseline tiers (dungeons: T3; the rest: T1-T3) for the same character (their
+    average experience over their average path)."""
     def pexp(m, parts, lvl):
         return sum(v * penalty(clvl, lvl + k) for k, v in zip(PEN_OFFSETS, parts))
     base = [m for m in maps.values() if m.tier in BASELINES[baseline(mp)]]
     avg = sum(pexp(m, m.parts3(), m.level) for m in base) / len(base)
     return ((100 + own_xp + x) / (100 + own_xp) * (2 if fort else 1) * pexp(mp, mp.parts3(d, r, fort, guest),
-            mp.level + alvl) * xp_level(mp.level + alvl) / xp_level(mp.level) / avg)
+            mp.level + alvl) * xp_level(mp.level + alvl) / xp_level(mp.level) / avg * path_ratio(mp, maps))
 
 
 def personal_txt(mp):
@@ -398,7 +415,7 @@ def check(maps, n=400):
     shared = shared_aliases(maps, avg0)
     for mp in maps.values():
         rt, pt = roll_txt(mp), personal_txt(mp)
-        xt = expand_output(exp_txt(mp, avg0), shared)
+        xt = expand_output(exp_txt(mp, avg0, maps), shared)
         for _ in range(n):
             d, r, x, a = rng.choice([0, rng.randint(0, 400)]), rng.choice([0, rng.randint(0, 150)]), \
                 rng.randint(0, 60), rng.choice([0, 0, 1, 2])
@@ -434,8 +451,9 @@ def render_section(maps):
         "// density / rarity highlights (BH draws description lines bottom up, so a later rule's line sits lower):",
         "// the tag (`1.7x Experience`, its band's colour), then the experience line (`2.6x at Level 98`, gold).",
         "// 147 ends every map's display. MXR_<code>: the multiplier. The experience line: a full clear of this map",
-        "// with its rolls for the viewer (level penalty, their own +XP %) over the average white T1-T3 map for the",
-        "// same viewer (dungeons: the average white T3 map), characters of level 80-98, their level from CHARSTAT12.",
+        "// with its rolls for the viewer (level penalty, their own +XP %) per tile of its clear path (a walk that sees",
+        "// 95% of its spawn spots, docs/pd2-map-paths.tsv), over the average white T1-T3 map's for the same viewer",
+        "// (dungeons: the average white T3 map's), characters of level 80-98, their level from CHARSTAT12.",
         "// MXX_<code>: that ratio, with the penalties and the averages as aliases at the end (output only, so an",
         "// alias may use a later one).",
     ]
@@ -448,7 +466,7 @@ def render_section(maps):
         for color, test in band_tests(mp, f"FLOOR(10*(MXR_{c})+0.0001)"):
             lines.append(f"ItemDisplay[{mp.code} ID $f({test})]:%NAME%{{{color}{shown} Experience%CL%%NAME%}}%CONTINUE%//")
         x_tenths = f"FLOOR(10*(%MXX_{c}%)+0.0001)"
-        lines += [f"Alias[MXX_{c}]:{exp_txt(mp, avg0)}",
+        lines += [f"Alias[MXX_{c}]:{exp_txt(mp, avg0, maps)}",
                   f"ItemDisplay[{mp.code} ID CLVL>79 CLVL<99]:%NAME%{{%GOLD%$f(FLOOR({x_tenths}/10)).$f(MOD({x_tenths},10))"
                   f"x at Level $f(CHARSTAT12)%CL%%NAME%}}%CONTINUE%//"]
     lines += ["", "// Shared by the experience lines: the level penalty of normal monsters, champions (+2) and uniques",
