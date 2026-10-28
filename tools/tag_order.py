@@ -55,7 +55,7 @@ NAMED = {"ALLSK": [127], "FCR": [105], "FHR": [99], "FBR": [102], "FRW": [96], "
 ELEM_SKILLS = {1: 363, 2: 364, 3: 366, 4: 362, 5: 365}  # MULTI126,<element>: the +N to <element> Skills line
 # Tags without a value keyword: their label -> the stat they show
 LABELS = {"Rep": [252], "Hfd": [118], "ATD": [78], "Cbf": [153], "Res": [39, 41, 43, 45], "drain": [74],
-          "itd": [115], "ITD": [115], "blk": [20], "all": [127], "Ind": [152],
+          "itd": [115], "ITD": [115], "blk": [20], "all": [127], "Ind": [152], "Kb": [81],
           "Strk": [198], "Cast": [200]}  # a version's tag: its chance to cast on striking / on casting
 CHANCE_TO_CAST = {"amp", "lr"}  # weapon suffixes: on striking (198), on casting for staves (200)
 GROUPS = {frozenset([39, 41, 43, 45]): "All Resistances", frozenset([40, 42, 44, 46]): "All Maximum Resistances",
@@ -68,14 +68,14 @@ TITLES = {
     41: "Lightning Resist", 42: "Max Lightning Resist", 43: "Cold Resist", 44: "Max Cold Resist",
     45: "Poison Resist", 46: "Max Poison Resist", 48: "Fire Damage", 54: "Cold Damage", 60: "Life Steal",
     62: "Mana Steal", 74: "Replenish Life", 76: "% Maximum Life", 77: "% Maximum Mana", 78: "Attacker Takes Damage",
-    79: "Gold Find", 80: "Magic Find", 83: "+ Class Skills", 86: "Life per Kill", 87: "Reduced Vendor Prices",
+    79: "Gold Find", 80: "Magic Find", 81: "Knockback", 83: "+ Class Skills", 86: "Life per Kill", 87: "Reduced Vendor Prices",
     89: "Light Radius", 91: "-% Requirements", 93: "Increased Attack Speed", 96: "Faster Run/Walk",
     99: "Faster Hit Recovery", 102: "Faster Block Rate", 105: "Faster Cast Rate", 107: "+ Single Skill",
     109: "Reduced Curse Duration", 110: "Poison Length Reduction", 111: "+ Damage", 114: "Damage Taken Goes to Mana",
     115: "Ignore Target's Defense", 116: "-% Target Defense", 118: "Half Freeze Duration",
     119: "% Bonus to Attack Rating", 120: "-Target Defense per Hit", 121: "% Damage to Demons",
     122: "% Damage to Undead", 123: "Attack Rating against Demons", 124: "Attack Rating against Undead",
-    127: "+ All Skills", 128: "Attacker Takes Lightning Damage", 136: "Crushing Blow", 138: "Mana per Kill",
+    127: "+ All Skills", 128: "Attacker Takes Lightning Damage", 135: "Open Wounds", 136: "Crushing Blow", 138: "Mana per Kill",
     139: "Life per Demon Kill", 141: "Deadly Strike", 142: "% Fire Absorb", 143: "Fire Absorb",
     144: "% Lightning Absorb", 145: "Lightning Absorb", 148: "% Cold Absorb", 150: "Slows Target",
     147: "Magic Absorb", 151: "Aura When Equipped", 152: "Indestructible", 153: "Cannot Be Frozen",

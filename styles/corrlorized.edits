@@ -1330,43 +1330,45 @@ x ItemDisplay[MAG MINDMG>0 (cm1 OR cm2 OR cm3 OR cm1p OR cm2p OR cm3p)]:%WHITE%%
 @ 300-affix-tags.filter:30  Corr v3: affix tag off, Light Radius (magic)
 x ItemDisplay[(GLOVES OR BELT OR CHEST OR BOOTS OR SHIELD OR CIRC OR HELM OR rin OR amu) MAG STAT89>0]:%WHITE%%STAT89%%YELLOW%lr%CS%%NAME%{%NAME%}%CONTINUE%
 @ 300-affix-tags.filter:63  Corr v3: affix tag off, Gold Find (rare, crafted)
-x ItemDisplay[(rin OR (amu !STAT206>0) OR CIRC OR HELM OR BELT OR BOOTS OR GLOVES) (RARE OR CRAFT) GFIND>39]:%WHITE%%GFIND%%GOLD%gf%CS%%NAME%{%NAME%}%CONTINUE%
+x ItemDisplay[(rin OR (amu !STAT206>0) OR CIRC OR HELM OR BELT OR BOOTS OR GLOVES) (RARE OR CRAFT) (GFIND>39 OR (LOWLVL_GF_TAG GFIND>0))]:%WHITE%%GFIND%%GOLD%gf%CS%%NAME%{%NAME%}%CONTINUE%
 @ 300-affix-tags.filter:64  Corr v3: affix tag off, Gold Find (magic)
 x ItemDisplay[(rin OR amu OR CIRC OR HELM OR BELT OR BOOTS OR GLOVES) MAG GFIND>0]:%WHITE%%GFIND%%GOLD%gf%CS%%NAME%{%NAME%}%CONTINUE%
 @ 300-affix-tags.filter:70  Corr v3: affix tag off, Damage Taken Goes to Mana
 x ItemDisplay[(rin OR amu OR CIRC OR HELM OR CHEST OR SHIELD OR BELT OR BOOTS OR GLOVES) (MAG OR ROLL_DTM_TAG) DTM>0]:%WHITE%%DTM%%BLUE%dtm%CS%%NAME%{%NAME%}%CONTINUE%
 @ 300-affix-tags.filter:74  Corr v3: affix tag off, Attacker Takes Damage (weapons)
 x ItemDisplay[WEAPON ROLL_ATD_TAG STAT78>0]:%WHITE%%STAT78%%GRAY%atd%CS%%NAME%{%NAME%}%CONTINUE%
-@ 300-affix-tags.filter:169  Corr v3: affix tag off, MDR (rare, crafted jewelry)
-x ItemDisplay[(rin OR (amu !STAT206>0)) (RARE OR CRAFT) STAT35>0]:%WHITE%%STAT35%%GRAY%mdr%CS%%NAME%{%NAME%}%CONTINUE%
-@ 300-affix-tags.filter:172  Corr v3: affix tag off, MDR (magic)
+@ 300-affix-tags.filter:171  Corr v3: affix tag off, MDR (rare, crafted jewelry)
+x ItemDisplay[(rin OR (amu !STAT206>0) OR ((CIRC OR CHEST OR SHIELD OR WEAPON) LOWLVL_MDR_TAG)) (RARE OR CRAFT) STAT35>0]:%WHITE%%STAT35%%GRAY%mdr%CS%%NAME%{%NAME%}%CONTINUE%
+@ 300-affix-tags.filter:174  Corr v3: affix tag off, MDR (magic)
 x ItemDisplay[(rin OR amu OR CIRC OR CHEST OR SHIELD) MAG STAT35>0]:%WHITE%%STAT35%%GRAY%mdr%CS%%NAME%{%NAME%}%CONTINUE%
-@ 300-affix-tags.filter:393  Corr v3: affix tag off, Mana Regeneration (unique, set)
+@ 300-affix-tags.filter:395  Corr v3: affix tag off, Mana Regeneration (unique, set)
 x ItemDisplay[(UNI OR SET) (STAT360=40 OR ROLL_REGEN_TAG) STAT27>0]:%WHITE%%STAT27%%BLUE%rgn%CS%%NAME%{%NAME%}%CONTINUE%
-@ 300-affix-tags.filter:408  Corr v3: affix tag off, Mana (rare, crafted jewelry)
-x ItemDisplay[(rin OR amu OR CIRC) (RARE OR CRAFT) MANA>49 !STAT217>0]:%WHITE%%MANA%%BLUE%m%CS%%NAME%{%NAME%}%CONTINUE%
-@ 300-affix-tags.filter:409  Corr v3: affix tag off, Mana (rare, crafted belts, boots, gloves)
-x ItemDisplay[(BELT OR BOOTS OR GLOVES) (RARE OR CRAFT) MANA>29]:%WHITE%%MANA%%BLUE%m%CS%%NAME%{%NAME%}%CONTINUE%
-@ 300-affix-tags.filter:410  Corr v3: affix tag off, Mana (magic)
+@ 300-affix-tags.filter:410  Corr v3: affix tag off, Mana (rare, crafted jewelry; since 2026-10-28 also low-level rare helms, body armor, shields, weapons)
+x ItemDisplay[(rin OR amu OR CIRC OR ((HELM OR CHEST OR SHIELD OR WEAPON) LOWLVL_MANA_TAG)) (RARE OR CRAFT) (MANA>49 OR (LOWLVL_MANA_TAG MANA>0)) !STAT217>0]:%WHITE%%MANA%%BLUE%m%CS%%NAME%{%NAME%}%CONTINUE%
+@ 300-affix-tags.filter:411  Corr v3: affix tag off, Mana (rare, crafted belts, boots, gloves)
+x ItemDisplay[(BELT OR BOOTS OR GLOVES) (RARE OR CRAFT) (MANA>29 OR (LOWLVL_MANA_TAG MANA>0))]:%WHITE%%MANA%%BLUE%m%CS%%NAME%{%NAME%}%CONTINUE%
+@ 300-affix-tags.filter:412  Corr v3: affix tag off, Mana (magic)
 x ItemDisplay[(rin OR amu OR CIRC OR HELM OR CHEST OR SHIELD OR BELT OR BOOTS OR GLOVES) MAG MANA>0 !STAT217>0]:%WHITE%%MANA%%BLUE%m%CS%%NAME%{%NAME%}%CONTINUE%
-@ 300-affix-tags.filter:423  Corr v3: affix tag off, Replenish Life (magic)
+@ 300-affix-tags.filter:425  Corr v3: affix tag off, Replenish Life (magic)
 x ItemDisplay[(HELM OR CIRC OR CHEST OR SHIELD OR BELT OR BOOTS OR GLOVES OR amu OR rin) MAG STAT74>0]:%WHITE%%STAT74%%RED%rep%CS%%NAME%{%NAME%}%CONTINUE%
-@ 300-affix-tags.filter:424  Corr v3: affix tag off, Replenish Life (rare, crafted helms, corruption 34)
+@ 300-affix-tags.filter:426  Corr v3: affix tag off, Replenish Life (rare, crafted helms, corruption 34)
 x ItemDisplay[(HELM OR CIRC) (RARE OR CRAFT) STAT360=34 STAT74>0]:%WHITE%%STAT74%%RED%rep%CS%%NAME%{%NAME%}%CONTINUE%
-@ 300-affix-tags.filter:456  Corr v3: affix tag off, Energy (rare, crafted)
-x ItemDisplay[(rin OR (amu !STAT206>0) OR ram OR CIRC OR CHEST OR SHIELD OR HELM OR BELT OR BOOTS OR GLOVES) ((RARE OR CRAFT) !GEMMED (STAT1>9 OR STAT360=71) !ALLATTRIB>9)]:%WHITE%%STAT1%%BLUE%e%CS%%NAME%{%NAME%}%CONTINUE%
-@ 300-affix-tags.filter:457  Corr v3: affix tag off, Energy (magic)
+@ 300-affix-tags.filter:458  Corr v3: affix tag off, Energy (rare, crafted)
+x ItemDisplay[(rin OR (amu !STAT206>0) OR ram OR CIRC OR CHEST OR SHIELD OR HELM OR BELT OR BOOTS OR GLOVES OR (WEAPON LOWLVL_NRG_TAG)) ((RARE OR CRAFT) !GEMMED (STAT1>9 OR STAT360=71 OR (LOWLVL_NRG_TAG STAT1>0 !ALLATTRIB>0)) !ALLATTRIB>9)]:%WHITE%%STAT1%%BLUE%e%CS%%NAME%{%NAME%}%CONTINUE%
+@ 300-affix-tags.filter:459  Corr v3: affix tag off, Energy (magic)
 x ItemDisplay[(rin OR amu OR ram OR CIRC OR CHEST OR SHIELD OR HELM OR BELT OR BOOTS OR GLOVES) (MAG !GEMMED (STAT1>0 OR STAT360=71) !ALLATTRIB>0)]:%WHITE%%STAT1%%BLUE%nrg%CS%%NAME%{%NAME%}%CONTINUE%
-@ 300-affix-tags.filter:472  Corr v3: affix tag off, Dexterity (rare, crafted)
-x ItemDisplay[(rin OR (amu !STAT206>0) OR ram OR CIRC OR CHEST OR SHIELD OR HELM OR BELT OR BOOTS OR GLOVES) ((RARE OR CRAFT) !GEMMED (STAT2>9 OR STAT360=69) !ALLATTRIB>9)]:%WHITE%%STAT2%%GRAY%d%CS%%NAME%{%NAME%}%CONTINUE%
-@ 300-affix-tags.filter:473  Corr v3: affix tag off, Dexterity (magic)
+@ 300-affix-tags.filter:474  Corr v3: affix tag off, Dexterity (rare, crafted)
+x ItemDisplay[(rin OR (amu !STAT206>0) OR ram OR CIRC OR CHEST OR SHIELD OR HELM OR BELT OR BOOTS OR GLOVES OR (WEAPON LOWLVL_DEX_TAG)) ((RARE OR CRAFT) !GEMMED (STAT2>9 OR STAT360=69 OR (LOWLVL_DEX_TAG STAT2>0 !ALLATTRIB>0)) !ALLATTRIB>9)]:%WHITE%%STAT2%%GRAY%d%CS%%NAME%{%NAME%}%CONTINUE%
+@ 300-affix-tags.filter:475  Corr v3: affix tag off, Dexterity (magic)
 x ItemDisplay[(rin OR amu OR ram OR CIRC OR CHEST OR SHIELD OR HELM OR BELT OR BOOTS OR GLOVES) (MAG !GEMMED (STAT2>0 OR STAT360=69) !ALLATTRIB>0)]:%WHITE%%STAT2%%GRAY%dex%CS%%NAME%{%NAME%}%CONTINUE%
-@ 300-affix-tags.filter:883  Corr v3: affix tag off, % Attack Rating (rare, crafted gloves, rings)
-x ItemDisplay[((GLOVES IAS>0) OR (rin (MINDMG>0 OR MAXDMG>0))) (RARE OR CRAFT) STAT119>0]:%WHITE%%STAT119%%LIGHT_GRAY%%PERCENT%ar%CS%%NAME%{%NAME%}%CONTINUE%
-@ 300-affix-tags.filter:910  Corr v3: affix tag off, Maximum Damage (rare, crafted rings, helms)
-x ItemDisplay[(rin OR HELM) (RARE OR CRAFT) !GEMMED ((MAXDMG>0 CLVL<80) OR MAXDMG>6) MAXDMG<14]:%WHITE%%MAXDMG%%TAN%max%CS%%NAME%{%NAME%}%CONTINUE%
-@ 300-affix-tags.filter:911  Corr v3: affix tag off, Maximum Damage (rare, crafted rings, helms)
-x ItemDisplay[(rin OR HELM) (RARE OR CRAFT) !GEMMED MAXDMG>13]:%WHITE%%MAXDMG%%TAN%max%CS%%NAME%{%NAME%}%CONTINUE%
+@ 300-affix-tags.filter:904  Corr v3: affix tag off, % Attack Rating (rare, crafted gloves, rings)
+x ItemDisplay[((GLOVES IAS>0) OR (rin (MINDMG>0 OR MAXDMG>0)) OR LOWLVL_ARPER_TAG) (RARE OR CRAFT) STAT119>0]:%WHITE%%STAT119%%LIGHT_GRAY%%PERCENT%ar%CS%%NAME%{%NAME%}%CONTINUE%
+@ 300-affix-tags.filter:932  Corr v3: affix tag off, Maximum Damage (rare, crafted rings, helms)
+x ItemDisplay[(rin OR HELM OR ((CIRC OR SHIELD OR amu OR (WEAPON !STAT218>0)) LOWLVL_MAXDMG_TAG)) (RARE OR CRAFT) !GEMMED ((MAXDMG>0 CLVL<80) OR MAXDMG>6 OR (LOWLVL_MAXDMG_TAG MAXDMG>0)) MAXDMG<14]:%WHITE%%MAXDMG%%TAN%max%CS%%NAME%{%NAME%}%CONTINUE%
+@ 300-affix-tags.filter:933  Corr v3: affix tag off, Maximum Damage (rare, crafted rings, helms)
+x ItemDisplay[(rin OR HELM OR ((CIRC OR SHIELD OR amu OR (WEAPON !STAT218>0)) LOWLVL_MAXDMG_TAG)) (RARE OR CRAFT) !GEMMED MAXDMG>13]:%WHITE%%MAXDMG%%TAN%max%CS%%NAME%{%NAME%}%CONTINUE%
+@ 300-affix-tags.filter:939  Corr's convention (rare max damage off): the max damage per level total of low-level rare weapons (2026-10-28)
+x ItemDisplay[WEAPON LOWLVL_MAXDMG_TAG STAT218>0]:%WHITE%$f(STAT22+FLOOR(STAT218*CLVL/8))%TAN%max%CS%%NAME%{%NAME%}%CONTINUE%
 
 // == 315-sell-value-tags.filter ==
 @ 315-sell-value-tags.filter:45  (NMAG OR MAG OR RARE) !leg STAT360=0 !SHOP ID !EQUIPPED !RW

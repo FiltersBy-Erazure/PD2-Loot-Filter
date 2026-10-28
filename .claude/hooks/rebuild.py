@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
 Claude Code PostToolUse hook: after Claude edits a file in sections/, version.json,
-filter_definitions.json, tools/unique_roll_picks.txt, tools/unique_cut_rules.txt, tools/runeword_roll_picks.txt or
-tools/boss_tag_rules.json,
+filter_definitions.json, tools/unique_roll_picks.txt, tools/unique_cut_rules.txt, tools/runeword_roll_picks.txt,
+tools/boss_tag_rules.json or tools/low_level_tag_picks.json,
 regenerate the unique/set label cut cases (tools/label_cuts.py: tools/unique_cut_cases.tsv), the unique/set and
 runeword roll tags (for section and picks edits: tools/gen_unique_rolls.py and
-tools/gen_runeword_rolls.py), the map experience tags (tools/gen_map_exp.py), the boss gear tags (tools/gen_boss_tags.py) and the players' pages (tools/tier_map.py: Erazure-Unique-Set-Tiers.html,
+tools/gen_runeword_rolls.py), the map experience tags (tools/gen_map_exp.py), the boss gear tags (tools/gen_boss_tags.py), the low-level rare tag aliases (tools/low_level_tags.py) and the players' pages (tools/tier_map.py: Erazure-Unique-Set-Tiers.html,
 tools/base_map.py: Erazure-Non-Magic-Bases.html, tools/magic_rare_map.py: Erazure-Magic-Items.html and
 Erazure-Rare-Items.html, tools/level_map.py: Erazure-Filter-Levels.html, tools/style_map.py:
 Erazure-Minimal-Style.html, tools/shop_map.py: Erazure-Skill-Shop-Highlights.html), and rebuild the filters with
@@ -25,8 +25,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 ROOT_FILES = {"version.json", "filter_definitions.json"}
 PICKS = [["tools", "unique_roll_picks.txt"], ["tools", "unique_cut_rules.txt"], ["tools", "runeword_roll_picks.txt"],
-         ["tools", "boss_tag_rules.json"]]
-GENERATORS = ["label_cuts.py", "gen_unique_rolls.py", "gen_runeword_rolls.py", "gen_map_exp.py", "gen_boss_tags.py", "tier_map.py",
+         ["tools", "boss_tag_rules.json"], ["tools", "low_level_tag_picks.json"]]
+GENERATORS = ["label_cuts.py", "gen_unique_rolls.py", "gen_runeword_rolls.py", "gen_map_exp.py", "gen_boss_tags.py",
+              "low_level_tags.py", "tier_map.py",
               "base_map.py", "magic_rare_map.py", "level_map.py", "style_map.py", "shop_map.py"]  # in this order:
 #                                                                                         all read sections/
 STYLE_GENERATORS = ["style_map.py"]  # the ones that read styles/

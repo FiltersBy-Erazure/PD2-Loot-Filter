@@ -122,6 +122,7 @@ About 825 KB is roughly 200k+ tokens per file. **No conversation will "see the w
 | `260-arrow-bolt-affixes` | 7418–7505 | |
 | `270-boss-gear-tags` | 7508–7638 | GENERATED (`tools/gen_boss_tags.py` from `tools/boss_tag_rules.json`, since 2026-10-21). Boss tags on identified rare/crafted gear and magic amulets: one line naming every boss an item suits (Rathma / D.Clone / Lucion; helms: D.Clone and Lucion only; rings: Rathma only). Conditions are aliases `BOSSTAG_<RA/DC/LU>_<slot>`, one rule per combination; was `270-rathma-gear-tags` until 2026-10-18 |
 | `280-skills-shop-highlights` | 7535–8289 | +Skills items and shop highlights (~27k tokens) |
+| `290-low-level-rare-tags` | 8502–8593 (2026-10-28) | GENERATED (`tools/low_level_tags.py` from `tools/low_level_tag_picks.json`, the author's page). Aliases only, `LOWLVL_<X>_TAG`: rares and crafted items below affix level 60 of the picked item types; 300's tag lines ask them, so those items tag every roll of the stat |
 | `300-affix-tags` | 8290–9553 | 113 stat blocks, one per stat in the game's stat order: MF, GF, resists, FCR, IAS, skills… (largest file, ~28k tokens) |
 | `305-runeword-rolls` | 9554–10067 | GENERATED (`tools/gen_runeword_rolls.py`): runeword roll tags, aliases and tag lines in 300's stat order (added S14) |
 | `310-staffmods` | 10068–10364 | |

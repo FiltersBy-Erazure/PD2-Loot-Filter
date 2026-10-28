@@ -21,6 +21,10 @@ if errorlevel 1 goto failed
 rem Boss gear tags (Rathma / D.Clone / Lucion): tools\boss_tag_rules.json (the rules page's edits) -> generated section
 python tools\gen_boss_tags.py
 if errorlevel 1 goto failed
+rem Low-level rare tags (below affix level 60): tools\low_level_tag_picks.json (the low-level rare tags page's
+rem choices) -> generated aliases that 300's tag lines ask
+python tools\low_level_tags.py
+if errorlevel 1 goto failed
 python tools\build.py --stamp
 if errorlevel 1 goto failed
 rem Unique/set tier page for players (Erazure-Unique-Set-Tiers.html, read from the filter's rules): after the

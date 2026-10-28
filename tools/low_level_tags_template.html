@@ -1,0 +1,490 @@
+<title>Low-Level Rare Tags</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a sticky bar of item types; under it the chosen type's label estimate, then its stats grouped as in the
+   game, one row per stat with its switch, today's tags and its rolls by affix level. */
+:root {
+  --bg: #f2f0eb; --panel: #ffffff; --sunk: #f7f5f0; --line: #dcd5c7; --fg: #24211b; --muted: #6c6455;
+  --gold: #86621a; --red: #b3261e; --warn: #9a5b00; --warn-bg: #fbefd9; --ok: #2f6b45; --ok-bg: #e2f0e6;
+  --chip: #ece7dc; --chip-on: #e7d6ae; --focus: #86621a; --new: #2f5f8a; --new-bg: #e1ecf6;
+  --ground-a: #3a3428; --ground-b: #26221b; --ground-c: #15130f;
+  --display: "Cinzel", "Trajan Pro", Georgia, serif;
+  --body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", "Cascadia Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15130f; --panel: #1f1c16; --sunk: #191612; --line: #39322a; --fg: #e9e1cf; --muted: #a59a84;
+    --gold: #d6b468; --red: #f07a6f; --warn: #e8b05a; --warn-bg: #3a2c14; --ok: #86c39b; --ok-bg: #1d3226;
+    --chip: #2a251e; --chip-on: #5a4721; --focus: #d6b468; --new: #8db8e0; --new-bg: #1c2a38; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15130f; --panel: #1f1c16; --sunk: #191612; --line: #39322a; --fg: #e9e1cf; --muted: #a59a84;
+  --gold: #d6b468; --red: #f07a6f; --warn: #e8b05a; --warn-bg: #3a2c14; --ok: #86c39b; --ok-bg: #1d3226;
+  --chip: #2a251e; --chip-on: #5a4721; --focus: #d6b468; --new: #8db8e0; --new-bg: #1c2a38; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 15px; line-height: 1.45; margin: 0; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--panel); }
+button, select, input, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--panel); border-bottom: 1px solid var(--line);
+  padding-block: 10px 0; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.bar-top { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+h1 { font-family: var(--display); font-size: 22px; letter-spacing: .03em; margin: 0; text-wrap: balance; }
+.status { font-size: 13px; padding: 2px 10px; border-radius: 999px; background: var(--chip); color: var(--muted); }
+.status.ok { background: var(--ok-bg); color: var(--ok); }
+.status.warn { background: var(--warn-bg); color: var(--warn); }
+.bar-note { color: var(--muted); font-size: 13px; margin-left: auto; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.bar-note label { display: inline-flex; gap: 6px; align-items: center; cursor: pointer; }
+.tabs { display: flex; gap: 2px; overflow-x: auto; margin-top: 8px; scrollbar-width: thin; }
+.tab { border: 0; background: none; padding: 8px 12px 10px; border-bottom: 3px solid transparent; cursor: pointer; white-space: nowrap; color: var(--muted); display: grid; gap: 2px; justify-items: start; }
+.tab[aria-selected="true"] { color: var(--fg); border-bottom-color: var(--gold); font-weight: 600; }
+.tab .sub { font-size: 11px; font-weight: 600; color: var(--new); }
+.tab .sub.chg { color: var(--gold); }
+main { padding-block: 16px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 16px; }
+.help { color: var(--muted); font-size: 14px; max-width: 110ch; margin: 0; }
+.help b { color: var(--fg); }
+.head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 470px); gap: 16px; align-items: start; }
+@media (max-width: 900px) { .head { grid-template-columns: minmax(0, 1fr); } }
+.head-text { display: grid; gap: 6px; min-width: 0; }
+.head-text h2 { font-family: var(--display); font-size: 21px; margin: 0; letter-spacing: .02em; }
+.head-text p { margin: 0; color: var(--muted); font-size: 14px; }
+.head-text .kinds { font-size: 13px; }
+.head-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+.btn { border: 1px solid var(--line); background: var(--sunk); border-radius: 5px; padding: 3px 10px; cursor: pointer; font-size: 13px; }
+.btn:hover { border-color: var(--gold); }
+.btn[disabled] { opacity: .5; cursor: default; }
+.measure { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; display: grid; gap: 10px; min-width: 0; }
+.measure h3 { margin: 0; font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+.mrow { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 4px 10px; align-items: center; font-size: 13px; }
+.mrow > span:first-child { color: var(--muted); }
+.mnum { font-family: var(--mono); font-variant-numeric: tabular-nums; font-weight: 600; }
+.mnum.over { color: var(--red); }
+.ground { border-radius: 6px; padding: 14px 8px; display: flex; justify-content: center; overflow-x: auto;
+  background: radial-gradient(ellipse at 50% 45%, var(--ground-a) 0%, var(--ground-b) 50%, var(--ground-c) 100%); }
+.d2label { font-family: "Palatino Linotype", "Book Antiqua", Georgia, serif; font-size: 16px; line-height: 1.2;
+  text-align: center; white-space: pre; background: rgba(0, 0, 0, .74); padding: 3px 7px 1px; }
+.d2label .cut { opacity: .35; text-decoration: line-through; }
+.c-WHITE { color: #e8e8e8; } .c-RED { color: #ff4d4d; } .c-GREEN { color: #00ff00; } .c-BLUE { color: #6969ff; }
+.c-GOLD { color: #c7b377; } .c-GRAY { color: #8a8a8a; } .c-BLACK { color: #000000; } .c-TAN { color: #d0c27d; }
+.c-ORANGE { color: #ffa800; } .c-YELLOW { color: #ffff64; } .c-PURPLE { color: #ae00ff; }
+.c-DARK_GREEN { color: #00a000; } .c-CORAL { color: #ff7f6e; } .c-SAGE { color: #a3b88f; }
+.c-TEAL { color: #3fb5b5; } .c-LIGHT_GRAY { color: #a8a8a8; }
+.tagbox { display: inline-flex; flex-wrap: wrap; gap: 4px; }
+.tagbox .t { background: #12100c; border-radius: 3px; padding: 0 6px; font-family: "Palatino Linotype", "Book Antiqua", Georgia, serif; font-size: 14px; white-space: pre; }
+.cat { display: grid; gap: 0; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; min-width: 0; }
+.cat > h3 { margin: 0; padding: 9px 14px; font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); border-bottom: 1px solid var(--line); display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.cat > h3 .cols { margin-left: auto; text-transform: none; letter-spacing: 0; font-weight: 400; font-size: 12px; }
+.row { display: grid; grid-template-columns: 150px minmax(0, 1fr) 170px; gap: 6px 14px; padding: 10px 14px; border-bottom: 1px solid var(--line); align-items: start; }
+.row:last-child { border-bottom: 0; }
+.row.on { background: var(--sunk); }
+@media (max-width: 720px) { .row { grid-template-columns: minmax(0, 1fr); } }
+.sw { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; font-weight: 600; }
+.sw input { width: 34px; height: 18px; appearance: none; background: var(--chip); border: 1px solid var(--line); border-radius: 999px; position: relative; cursor: pointer; flex: none; margin: 0; }
+.sw input::after { content: ""; position: absolute; top: 2px; left: 2px; width: 12px; height: 12px; border-radius: 50%; background: var(--muted); transition: left .12s; }
+.sw input:checked { background: var(--new); border-color: var(--new); }
+.sw input:checked::after { left: 18px; background: var(--panel); }
+.sw input[disabled] { opacity: .5; cursor: default; }
+.fixed { font-size: 12px; color: var(--ok); font-weight: 600; }
+.rmain { display: grid; gap: 5px; min-width: 0; }
+.rtitle { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.rtitle b { font-size: 15px; }
+.chip { font-size: 12px; padding: 1px 8px; border-radius: 999px; background: var(--chip); color: var(--muted); }
+.chip.any { background: var(--ok-bg); color: var(--ok); }
+.chip.from, .chip.some { background: var(--warn-bg); color: var(--warn); }
+.chip.nolook { background: none; border: 1px dashed var(--red); color: var(--red); }
+.chip.def { background: none; border: 1px solid var(--line); }
+.samples { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 4px 8px; align-items: center; font-size: 12px; color: var(--muted); }
+.samples .newl { color: var(--new); font-weight: 600; }
+.none { color: var(--muted); font-style: italic; }
+.bands { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; font-family: var(--mono); font-size: 12px; font-variant-numeric: tabular-nums; text-align: center; }
+.bands span { background: var(--sunk); border-radius: 3px; padding: 2px 0; }
+.bands span.na { color: var(--muted); opacity: .6; }
+.bands-head { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; font-size: 11px; color: var(--muted); text-align: center; }
+details.aff { grid-column: 1 / -1; font-size: 13px; }
+details.aff summary { cursor: pointer; color: var(--gold); font-weight: 600; width: fit-content; }
+.tbl { overflow-x: auto; margin-top: 6px; }
+.tbl table { border-collapse: collapse; width: 100%; min-width: 560px; font-size: 13px; }
+.tbl th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 700; padding: 4px 8px; border-bottom: 1px solid var(--line); }
+.tbl td { padding: 4px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.tbl td.num { font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tbl .side { display: inline-block; width: 16px; color: var(--muted); font-family: var(--mono); font-size: 11px; }
+.tbl .somebases { color: var(--warn); font-size: 11px; }
+textarea.note { width: 100%; min-height: 60px; resize: vertical; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; }
+.notebox { display: grid; gap: 6px; max-width: 110ch; }
+.notebox label { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 700; }
+.banner { background: var(--warn-bg); color: var(--warn); font-weight: 600; padding-block: 8px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); border-bottom: 1px solid var(--line); }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 14px; font-size: 13px; color: var(--muted); align-items: center; max-width: 110ch; }
+.hide-fixed .row.fixedrow { display: none; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="bar">
+  <div class="bar-top">
+    <h1>Low-Level Rare Tags</h1>
+    <span class="status" id="status">Loading saved choices…</span>
+    <div class="bar-note">
+      <span id="changed"></span>
+      <label for="showFixed"><input type="checkbox" id="showFixed" checked> Show stats tagged at any roll</label>
+    </div>
+  </div>
+  <div class="tabs" id="tabs" role="tablist" aria-label="Item types"></div>
+</div>
+<div class="banner" id="banner" role="status" hidden></div>
+<main id="main"></main>
+
+<script>
+const DATA = /*__DATA__*/null;
+const ROW = Object.fromEntries(DATA.rows.map(r => [r.key, r]));
+const CARD = Object.fromEntries(DATA.cards.map(c => [c.key, c]));
+const CUT = DATA.cut, NAME_MAX = DATA.nameMax;
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+const clone = o => JSON.parse(JSON.stringify(o));
+
+// a row needs a choice on a card when one of the card's kinds doesn't tag it at every roll today
+const canPick = row => row.kinds.some(k => k.st !== "any");
+const DEFAULTS = {};
+for (const c of DATA.cards) {
+  DEFAULTS[c.key] = {};
+  const built = (DATA.picks || {})[c.key] || {};
+  for (const r of c.rows) if (canPick(r)) DEFAULTS[c.key][r.key] = r.key in built ? !!built[r.key] : !!ROW[r.key].def;
+}
+const state = { picks: clone(DEFAULTS), notes: Object.fromEntries(DATA.cards.map(c => [c.key, ""])) };
+let current = DATA.cards[0].key;
+try { const t = localStorage.getItem("lowLevelTagsTab"); if (t && CARD[t]) current = t; } catch (e) {}
+let db = null, editable = true;
+
+const visLen = i => i < 0 ? 0 : DATA.segs[i].reduce((s, [, t]) => s + t.length, 0);
+const segHTML = i => DATA.segs[i].map(([c, t]) => `<span class="c-${c}">${esc(t)}</span>`).join("");
+const picked = (card, row) => !!state.picks[card][row];
+function changedRows(card) {
+  return Object.keys(DEFAULTS[card]).filter(r => picked(card, r) !== DEFAULTS[card][r]);
+}
+
+// ---------- the longest tag line a rare of the card can get (an estimate): per kind, per side the 3 affix groups
+// whose tags are widest (PD2: 3 prefixes and 3 suffixes at most, one per group), each affix at its best roll below
+// the cut. Tags stand in 300's order: a later line further left.
+function measure(card, withPicks) {
+  let best = null;
+  card.kinds.forEach((kind, ki) => {
+    const affs = new Map();
+    for (const row of card.rows) {
+      const kr = row.kinds.find(x => x.k === ki);
+      if (!kr) continue;
+      const on = withPicks && picked(card.key, row.key) && kr.st !== "any";
+      for (const [ai, , tSeg, tPos, nSeg] of kr.aff) {
+        const useNew = on && nSeg >= 0;
+        const seg = useNew ? nSeg : tSeg;
+        if (seg < 0) continue;
+        if (!affs.has(ai)) affs.set(ai, []);
+        affs.get(ai).push({ seg, pos: useNew ? kr.pos : tPos });
+      }
+    }
+    const sides = { P: new Map(), S: new Map() };
+    for (const [ai, parts] of affs) {
+      const [side, , , , group] = DATA.affixes[ai];
+      const g = group || "a" + ai;
+      const w = parts.reduce((s, p) => s + visLen(p.seg) + 1, 0);
+      const cur = sides[side].get(g);
+      if (!cur || w > cur.w) sides[side].set(g, { w, parts });
+    }
+    const top = side => [...sides[side].values()].sort((a, b) => b.w - a.w).slice(0, 3);
+    const parts = [...top("P"), ...top("S")].flatMap(c => c.parts).sort((a, b) => b.pos - a.pos);
+    const len = parts.reduce((s, p) => s + visLen(p.seg), 0) + Math.max(0, parts.length - 1);
+    if (!best || len > best.len) best = { len, parts, kind: kind.name };
+  });
+  return best || { len: 0, parts: [], kind: "" };
+}
+
+function labelHTML(card, m) {
+  const tagLine = m.parts.map(p => segHTML(p.seg)).join('<span class="c-WHITE"> </span>');
+  const base = card.longestBase, name = "Rare Name";
+  const total = m.len + (m.len ? 1 : 0) + base.length + 1 + name.length;
+  const over = Math.max(0, total - NAME_MAX);
+  const keep = Math.max(0, name.length - over);
+  const top = `<span class="c-YELLOW">${esc(name.slice(0, keep))}</span>` +
+    (over ? `<span class="c-YELLOW cut">${esc(name.slice(keep))}</span>` : "");
+  return `<div class="d2label">${top}\n<span class="c-YELLOW">${esc(base)}</span>${m.len ? "\n" + tagLine : ""}</div>`;
+}
+
+// ---------- rendering
+function renderTabs() {
+  const el = document.getElementById("tabs");
+  el.innerHTML = DATA.cards.map(c => {
+    const on = Object.keys(DEFAULTS[c.key]).filter(r => picked(c.key, r)).length;
+    const chg = changedRows(c.key).length;
+    return `<button class="tab" role="tab" id="tab-${c.key}" aria-selected="${c.key === current}" data-card="${c.key}">
+      <span>${esc(c.name)}</span><span class="sub${chg ? " chg" : ""}">${on} switched on${chg ? ` · ${chg} changed` : ""}</span></button>`;
+  }).join("");
+  const total = DATA.cards.reduce((s, c) => s + changedRows(c.key).length, 0);
+  document.getElementById("changed").textContent = total ? `${total} change${total > 1 ? "s" : ""} from the built filter` : "Matches the built filter";
+}
+
+function stateChips(card, row) {
+  const groups = new Map();
+  for (const kr of row.kinds) {
+    const key = kr.st + "|" + (kr.from ?? "");
+    if (!groups.has(key)) groups.set(key, { kr, names: [] });
+    groups.get(key).names.push(card.kinds[kr.k].name);
+  }
+  const many = card.kinds.length > 1 && (groups.size > 1 || row.kinds.length < card.kinds.length);
+  const text = kr => kr.st === "any" ? "Tagged at any roll" : kr.st === "from" ? `Tagged from ${kr.from}` :
+    kr.st === "some" ? "Some affixes tagged" : "Not tagged";
+  return [...groups.values()].map(({ kr, names }) =>
+    `<span class="chip ${kr.st}">${many ? esc(names.join(", ")) + ": " : ""}${text(kr)}</span>`).join("");
+}
+
+const segNum = i => { const m = DATA.segs[i].map(s => s[1]).join("").match(/-?\d+(\.\d+)?/); return m ? parseFloat(m[0]) : 0; };
+function uniqSegs(list) {
+  const seen = new Set(), out = [];
+  for (const s of list) if (s >= 0 && !seen.has(s)) { seen.add(s); out.push(s); }
+  return out.sort((a, b) => segNum(a) - segNum(b));
+}
+function tagsHTML(segs) {
+  if (!segs.length) return '<span class="none">none</span>';
+  const shown = segs.slice(0, 8).map(s => `<span class="t">${segHTML(s)}</span>`).join("");
+  return `<span class="tagbox">${shown}${segs.length > 8 ? `<span class="none">+${segs.length - 8}</span>` : ""}</span>`;
+}
+
+function rowHTML(card, row) {
+  const info = ROW[row.key];
+  const pick = canPick(row);
+  const on = pick && picked(card.key, row.key);
+  const noLook = pick && row.kinds.some(k => k.st !== "any" && !k.look);
+  const today = uniqSegs(row.kinds.flatMap(k => k.aff.map(a => a[2])));
+  const after = uniqSegs(row.kinds.flatMap(k => k.aff.map(a => (k.st !== "any" && a[4] >= 0) ? a[4] : a[2])));
+  const bands = DATA.bands.map((_, i) => {
+    const vals = row.kinds.map(k => k.bands[i]).filter(v => v !== null && v !== undefined);
+    return vals.length ? Math.max(...vals) : null;
+  });
+  const sw = pick ?
+    `<label class="sw" for="sw-${card.key}-${row.key}"><input type="checkbox" role="switch" id="sw-${card.key}-${row.key}"
+      data-row="${row.key}" ${on ? "checked" : ""} ${editable ? "" : "disabled"}> ${on ? "Every roll" : "As today"}</label>` :
+    `<span class="fixed">Already tagged</span>`;
+  const isDef = pick && on === !!info.def;
+  const many = card.kinds.length > 1;
+  const affRows = row.kinds.flatMap(kr => kr.aff.map(([ai, roll, tSeg, , nSeg, some]) => {
+    const [side, name, lvl, mx] = DATA.affixes[ai];
+    const newCell = kr.st === "any" ? '<span class="none">same</span>' :
+      nSeg >= 0 ? `<span class="tagbox"><span class="t">${segHTML(nSeg)}</span></span>` : '<span class="none">no look in 300</span>';
+    return `<tr><td><span class="side">${side}</span>${esc(name)}${some ? ' <span class="somebases">(some bases)</span>' : ""}</td>
+      ${many ? `<td>${esc(card.kinds[kr.k].name)}</td>` : ""}
+      <td class="num">${lvl}${mx ? "–" + mx : ""}</td><td class="num">${esc(roll)}</td>
+      <td>${tSeg >= 0 ? `<span class="tagbox"><span class="t">${segHTML(tSeg)}</span></span>` : '<span class="none">none</span>'}</td>
+      <td>${newCell}</td></tr>`;
+  })).join("");
+  const nAff = row.kinds.reduce((s, k) => s + k.aff.length, 0);
+  return `<div class="row${on ? " on" : ""}${pick ? "" : " fixedrow"}" data-row="${row.key}">
+    <div>${sw}</div>
+    <div class="rmain">
+      <div class="rtitle"><b>${esc(info.label)}</b>${pick ? stateChips(card, row) : ""}${noLook ? '<span class="chip nolook">No tag look in 300 yet</span>' : ""}${pick && !isDef ? '<span class="chip def">changed</span>' : ""}</div>
+      <div class="samples"><span>Today</span>${tagsHTML(today)}${pick ? `<span class="newl">Every roll</span>${tagsHTML(after)}` : ""}</div>
+    </div>
+    <div><div class="bands">${bands.map(v => v === null ? '<span class="na">–</span>' : `<span>${v}</span>`).join("")}</div></div>
+    <details class="aff"><summary>${nAff} affix${nAff > 1 ? "es" : ""}</summary><div class="tbl"><table>
+      <thead><tr><th>Affix</th>${many ? "<th>Kind</th>" : ""}<th>Affix level</th><th>Roll</th><th>Tag today, best roll</th><th>Every roll</th></tr></thead>
+      <tbody>${affRows}</tbody></table></div></details>
+  </div>`;
+}
+
+function render() {
+  renderTabs();
+  const card = CARD[current];
+  const today = measure(card, false), now = measure(card, true);
+  const room = m => NAME_MAX - (m.len ? m.len + 1 : 0) - card.longestBase.length - 1;
+  const roomText = m => { const r = room(m); return r >= 0 ? `${r}` : `${r} (the base name is cut too)`; };
+  const cats = DATA.cats.map(cat => {
+    const rows = card.rows.filter(r => ROW[r.key].cat === cat);
+    if (!rows.length) return "";
+    return `<section class="cat"><h3>${esc(cat)}<span class="cols">Best roll up to affix level ${DATA.bands.join(" · ")}</span></h3>
+      ${rows.map(r => rowHTML(card, r)).join("")}</section>`;
+  }).join("");
+  const nChanged = changedRows(card.key).length;
+  document.getElementById("main").innerHTML = `
+    <p class="help">Below affix level ${CUT}, a rare or crafted item shows a tag for <b>every roll</b> of each stat switched on, in the look 300 gives it. From ${CUT} up nothing changes. The switches start from what the built filter has. <b>Today</b> is what the filter tags without these switches on an identified rare at affix level ${CUT - 1}, seen by a level ${DATA.viewer} character. Tell Claude when to apply your changes.</p>
+    <div class="head">
+      <div class="head-text">
+        <h2>${esc(card.name)}</h2>
+        <p class="kinds">${card.kinds.map(k => `<b>${esc(k.name)}</b> (${k.n} base${k.n > 1 ? "s" : ""}, from ${esc(k.base)})`).join(" · ")}</p>
+        <p>Affix level below ${CUT}: item level up to ${CUT - 1} on its lowest bases${card.reach > CUT - 1 ? `, up to ${card.reach} on ${esc(card.reachBase)}` : ""}.</p>
+        <div class="head-actions"><button class="btn" id="reset" ${nChanged && editable ? "" : "disabled"}>Back to the built filter</button></div>
+      </div>
+      <div class="measure">
+        <h3>Longest tag line (estimate)</h3>
+        <div class="mrow"><span>Today</span><span><span class="mnum">${today.len}</span> characters${today.kind && card.kinds.length > 1 ? " · " + esc(today.kind) : ""}</span></div>
+        <div class="mrow"><span>Your switches</span><span><span class="mnum">${now.len}</span> characters${now.kind && card.kinds.length > 1 ? " · " + esc(now.kind) : ""}</span></div>
+        <div class="mrow"><span>Name room</span><span><span class="mnum${room(now) < 9 ? " over" : ""}">${roomText(now)}</span> characters of BH's ${NAME_MAX} left for the rare's own name, beside its longest base name (${esc(card.longestBase)})</span></div>
+        <div class="ground">${labelHTML(card, now)}</div>
+      </div>
+    </div>
+    ${cats}
+    <div class="notebox"><label for="note">Notes on ${esc(card.name.toLowerCase())}</label>
+      <textarea class="note" id="note" ${editable ? "" : "disabled"} placeholder="Anything Claude should know when applying these">${esc(state.notes[card.key] || "")}</textarea></div>
+    <div class="legend"><span class="chip any">Tagged at any roll</span> already tagged, no choice needed
+      <span class="chip from">Tagged from N</span> today only from that roll
+      <span class="chip">Not tagged</span> no tag today
+      <span class="chip nolook">No tag look in 300 yet</span> switching on asks for a new tag line</div>`;
+  document.getElementById("main").classList.toggle("hide-fixed", !document.getElementById("showFixed").checked);
+}
+
+document.getElementById("tabs").addEventListener("click", e => {
+  const b = e.target.closest(".tab");
+  if (!b) return;
+  current = b.dataset.card;
+  try { localStorage.setItem("lowLevelTagsTab", current); } catch (err) {}
+  render();
+  window.scrollTo({ top: 0 });
+});
+document.getElementById("showFixed").addEventListener("change", () => render());
+document.getElementById("main").addEventListener("change", e => {
+  const el = e.target;
+  if (el.matches('input[role="switch"]')) {
+    state.picks[current][el.dataset.row] = el.checked;
+    queueSave(current);
+    render();
+  }
+});
+document.getElementById("main").addEventListener("input", e => {
+  if (e.target.id === "note") { state.notes[current] = e.target.value; queueSave(current); }
+});
+document.getElementById("main").addEventListener("click", e => {
+  if (e.target.id === "reset") {
+    state.picks[current] = clone(DEFAULTS[current]);
+    queueSave(current);
+    render();
+  }
+});
+
+// ---------- saving (db: picks/<item type> = {stats: {row: on}, note, savedAt})
+// Every edit is also kept in this browser until the store has it, so an edit made while the page can't save comes
+// back on the next visit and is saved then.
+const pending = new Set(), saveTimers = {}, edits = {}, lastEdit = {}, retries = {};
+let loaded = false, bannerIsError = false;
+const BACKUP = "lowLevelTagsUnsaved";
+function backups() { try { return JSON.parse(localStorage.getItem(BACKUP) || "{}") || {}; } catch (e) { return {}; } }
+function keepBackup(card) {
+  try {
+    const all = backups();
+    all[card] = { at: lastEdit[card] || Date.now(), stats: state.picks[card], note: state.notes[card] };
+    localStorage.setItem(BACKUP, JSON.stringify(all));
+  } catch (e) {}
+}
+function dropBackup(card, at) {
+  try {
+    const all = backups();
+    if (all[card] && all[card].at <= at) { delete all[card]; localStorage.setItem(BACKUP, JSON.stringify(all)); }
+  } catch (e) {}
+}
+function setStatus(text, kind) {
+  const el = document.getElementById("status");
+  el.textContent = text;
+  el.className = "status" + (kind ? " " + kind : "");
+}
+function banner(text, isError = true) {
+  const el = document.getElementById("banner");
+  el.hidden = !text;
+  el.textContent = text || "";
+  bannerIsError = !!text && isError;
+}
+function queueSave(card) {
+  edits[card] = (edits[card] || 0) + 1;
+  lastEdit[card] = Date.now();
+  pending.add(card);
+  keepBackup(card);
+  if (!db) {
+    setStatus("Kept in this browser only", "warn");
+    banner("This view can't reach the saved choices, so edits are kept in this browser only. Reload the page: they are saved as soon as it can reach the store.");
+    return;
+  }
+  setStatus("Saving…");
+  clearTimeout(saveTimers[card]);
+  saveTimers[card] = setTimeout(() => save(card), 700);
+}
+async function save(card) {
+  const body = { stats: state.picks[card], note: state.notes[card] || "", savedAt: new Date().toISOString() };
+  const n = edits[card], at = lastEdit[card];
+  try {
+    await db.doc("picks/" + card).set(body);
+    retries[card] = 0;
+    if (edits[card] === n) { pending.delete(card); dropBackup(card, at); }
+    if (!pending.size) { setStatus("Saved", "ok"); if (bannerIsError) banner(""); }
+  } catch (err) {
+    const why = (err && (err.message || err.code)) || "unknown error";
+    setStatus("Not saved", "warn");
+    banner(`Not saved (${why}). Your edits are kept in this browser; the page tries again, and a reload saves them too.`);
+    retries[card] = (retries[card] || 0) + 1;
+    if (retries[card] <= 3) { clearTimeout(saveTimers[card]); saveTimers[card] = setTimeout(() => save(card), 5000 * retries[card]); }
+  }
+}
+function takeDoc(card, body) {
+  let touched = false;
+  if (body.stats && typeof body.stats === "object") {
+    for (const [r, v] of Object.entries(body.stats)) {
+      if (r in DEFAULTS[card] && picked(card, r) !== !!v) { state.picks[card][r] = !!v; touched = true; }
+    }
+  }
+  if (typeof body.note === "string" && body.note !== state.notes[card]) { state.notes[card] = body.note; touched = true; }
+  return touched;
+}
+function restoreBackups(savedAt) {
+  const all = backups(), restored = [];
+  for (const [card, b] of Object.entries(all)) {
+    if (!CARD[card] || !b || !b.stats) continue;
+    if (savedAt[card] && savedAt[card] >= b.at) { dropBackup(card, b.at); continue; }
+    takeDoc(card, b);
+    restored.push(CARD[card].name);
+    queueSave(card);
+  }
+  if (restored.length) {
+    banner(db ? `Put back edits this browser kept that weren't saved yet (${restored.join(", ")}); saving them now.` :
+      `This view can't reach the saved choices. It shows edits this browser kept (${restored.join(", ")}); nothing is saved until you reload the page and it can reach the store.`, !db);
+    render();
+  }
+}
+
+(async () => {
+  render();
+  try {
+    const [dbNs, user] = await Promise.all([window.claude?.use?.("db") ?? null, window.claude?.use?.("user") ?? null]);
+    db = dbNs;
+    if (!db) {
+      setStatus("Kept in this browser only", "warn");
+      banner("This view can't reach the saved choices: you see the defaults, and edits are kept in this browser only. Reload the page to load and save your choices.");
+      restoreBackups({});
+      return;
+    }
+    const can = user ? await user.can("data.write") : null;
+    if (can === false) { editable = false; render(); }
+    db.collection("picks").onSnapshot(snap => {
+      let touched = false;
+      const savedAt = {};
+      for (const d of snap.docs) {
+        if (!CARD[d.id]) continue;
+        const body = d.data();
+        savedAt[d.id] = Date.parse(body.savedAt || 0) || 0;
+        if (pending.has(d.id) || (d.metadata && d.metadata.hasPendingWrites)) continue;
+        if (lastEdit[d.id] && !(savedAt[d.id] >= lastEdit[d.id])) continue;
+        touched = takeDoc(d.id, body) || touched;
+      }
+      if (!loaded) {
+        loaded = true;
+        const n = snap.docs.filter(d => CARD[d.id]).length;
+        setStatus(editable ? (n ? `Loaded your choices for ${n} item type${n > 1 ? "s" : ""}` : "Matches the built filter") : "Read-only", editable ? "ok" : "warn");
+        if (touched) render();
+        if (editable) restoreBackups(savedAt);
+        return;
+      }
+      if (touched) render();
+    }, err => {
+      setStatus("Saved choices unavailable", "warn");
+      banner(`The saved choices can't be read (${(err && (err.message || err.code)) || "unknown error"}). Edits are kept in this browser; reload the page.`);
+    });
+  } catch (err) {
+    setStatus("Kept in this browser only", "warn");
+    banner("This view can't reach the saved choices: edits are kept in this browser only. Reload the page.");
+  }
+})();
+</script>
