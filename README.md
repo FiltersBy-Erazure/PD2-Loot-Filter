@@ -1,3 +1,7 @@
+> [!TIP]
+> ## **[Visit the Erazure Loot Filter website](https://filtersby-erazure.github.io/PD2-Loot-Filter/)**
+> What each filter level shows and hides, the tiers of every unique and set item, non-magical bases, magic and rare items, skill and shop highlights, and more
+
 # **Season 14 Alliance Update:**
 
 My loot filters are updated for the Season 14 Alliance ladder reset on October 23rd, 2026
