@@ -228,7 +228,9 @@ class Game:
             if r["Id"].strip().isdigit():
                 sid = int(r["Id"])
                 self.skill_rows.setdefault(sid, r)
-                self.skill_names.setdefault(sid, strings.get(skill_desc.get(r.get("skilldesc", ""), ""), r["skill"]))
+                # keyed: expansionstring.tbl has Skillname223 twice, Poison Creeper (the game's) before Werewolf
+                self.skill_names.setdefault(sid, self.keyed_strings.get(skill_desc.get(r.get("skilldesc", ""), ""),
+                                                                        r["skill"]))
                 self.skill_class.setdefault(sid, r.get("charclass", "").strip())
 
     def ancestors(self, code):
