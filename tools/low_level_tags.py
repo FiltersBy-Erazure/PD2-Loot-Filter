@@ -575,7 +575,7 @@ def page_data():
                     high_any = high_any or bool(LC.visible(tags[1][0]).strip())
                     look = look_of(a, row)
                     new_text = LC.apply(look, "", affix_values(a, row, True, weapon, base_vals), first["name"]) \
-                        if look else ""
+                        if look and roll_value(a, row, True) >= MIN_ROLL.get(row, 1) else ""
                     some = not all(fits(a, bases[c]) for c in codes)
                     entries.append([aid(a), roll_text(a, row), seg(tags[1][0]) if tags[1][0] else -1, tags[1][1],
                                     seg(new_text) if new_text else -1, int(some)])
@@ -611,7 +611,7 @@ def page_data():
                       "reach": reach_max, "reachBase": reach_base, "longestBase": longest[0]})
     return {"cut": CUT, "nameMax": LC.NAME_MAX, "bands": list(BANDS), "viewer": VIEWER, "cats": CATS,
             "picks": load_picks(card_rows(bases, affixes)),
-            "rows": [{"key": k, "label": lab, "cat": cat, "def": d, "sock": int(k in SOCKETED)}
+            "rows": [{"key": k, "label": lab, "cat": cat, "def": d, "sock": int(k in SOCKETED), "min": MIN_ROLL.get(k, 0)}
                      for k, lab, cat, d in ROWS],
             "affixes": aff_table, "segs": seg_table, "cards": cards}
 
@@ -660,6 +660,15 @@ MERGED = {"max_lvl": "max", "ar_lvl": "ar"}  # page rows of 2026-10-28 now one t
 # its attribute, FHR and min / max damage lines have !GEMMED of their own
 SOCKETED = {"mana", "res", "leech_life", "leech_mana", "ar", "mf", "gf", "lpk", "mpk", "pdr_flat", "mdr", "knock", "ow",
             "dmg_dem", "dmg_und"}
+# the smallest roll a rare's tag of the stat shows, low-level or not: 300's rare line asks it of every item type (the
+# author, 2026-10-28: a flat 1 damage reduction is noise)
+MIN_ROLL = {"pdr_flat": 2, "mdr": 2}
+
+
+def roll_value(a, row, high):
+    """The largest value the affix gives the row's stats at its lowest / highest roll."""
+    return max((hi if high else lo for m in a["mods"] if PROPS[m[0].lower()][0] == row for sid, par, lo, hi in m[5]),
+               default=0)
 # corruptions that give a wired stat to a rare too (their own 300 lines): --verify checks there is one tag with them
 CORRUPTIONS = {"leech_life": [57], "leech_mana": [58], "lpk": [8], "mpk": [9], "ar": [3, 18, 26, 59], "itd": [24],
                "ds": [19, 25], "cb": [21, 23], "frw": [44], "mf": [7], "str": [68], "dex": [69], "enr": [71]}
@@ -789,7 +798,7 @@ def verify():
     head = subprocess.run(["git", "show", f"HEAD:sections/{TAGS_300.name}"], cwd=ROOT, capture_output=True,
                           check=True).stdout
     sets = {"head": Rules({TAGS_300.name: head, SECTION.name: b""}), "off": Rules(), "now": Rules({})}
-    keys = sample_keys(affixes) | {"GEMMED"}
+    keys = sample_keys(affixes) | {"GEMMED", "CLVL"}
     for r in sets.values():
         r.sample_keys = keys
     vis = lambda t: LC.visible(t).strip()
@@ -833,7 +842,8 @@ def verify():
                                     problems.append(f"{where}: not picked, but {got['off']!r} -> {got['now']!r}")
                                 continue
                             look = look_of(a, row)
-                            want = Counter(vis(LC.apply(look, "", v, first["name"])).split()) if look else Counter()
+                            shown = look and roll_value(a, row, high) >= MIN_ROLL.get(row, 1)
+                            want = Counter(vis(LC.apply(look, "", v, first["name"])).split()) if shown else Counter()
                             before, after = Counter(got["off"].split()), Counter(got["now"].split())
                             had = all(before[t] >= c for t, c in want.items())
                             if after != (before if had else before + want):
@@ -850,6 +860,25 @@ def verify():
                                     if line("now", g) != line("off", g):
                                         problems.append(f"{where}, socketed: {line('off', g)!r} -> "
                                                         f"{line('now', g)!r}")
+                # min and max damage together: one N-Mdmg whenever both show (5-3dmg too, the author), never the two
+                # tags apart; at character level 50 and 85 (rings and helms change at 80)
+                pick = lambda r: [a for a in mine if any(PROPS[m[0].lower()][0] == r for m in a["mods"])]
+                for a1 in pick("min"):
+                    for a2 in pick("max"):
+                        for h1, h2, clvl in ((True, True, VIEWER), (False, True, VIEWER), (True, False, VIEWER),
+                                             (True, True, 85), (False, True, 85)):
+                            v = dict(affix_values(a1, "min", h1, weapon, base_vals), CLVL=clvl)
+                            for w, x in affix_values(a2, "max", h2, weapon, {}).items():
+                                if w not in ("SUFFIX", "PREFIX"):
+                                    v[w] = v.get(w, 0) + x
+                            toks = line("now", with_derived(v)).split()
+                            mn = [int(t[:-3]) for t in toks if re.fullmatch(r"\d+min", t)]
+                            mx = [int(t[:-3]) for t in toks if re.fullmatch(r"\d+max", t)]
+                            jn = [tuple(map(int, t[:-3].split("-"))) for t in toks if re.fullmatch(r"\d+-\d+dmg", t)]
+                            if len(mn) > 1 or len(mx) > 1 or len(jn) > 1 or (jn and (mn or mx)) or (mn and mx):
+                                problems.append(f"{name} / {kname}, affix level {alvl}, character level {clvl}, "
+                                                f"{a1['name']} with {a2['name']}: {' '.join(toks)!r}")
+                            n += 1
             base_vals = base_values(codes[0], first, groups, CUT - 1)
             lengths = {}
             for s in ("off", "now"):

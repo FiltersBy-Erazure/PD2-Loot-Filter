@@ -283,7 +283,13 @@
   and magic damage reduction, knockback, open wounds chance, damage to demons / undead) have `!GEMMED` in their alias
   (the author, 2026-10-28): a socketed item shows them as without the low-level tags; 300's attribute, FHR and min / max
   damage lines (and the max damage per level total) have `!GEMMED` of their own, and the older lines without it keep
-  counting the fillers (the author's choice). 300 asks them once per stat
+  counting the fillers (the author's choice). Flat physical and magic damage reduction tag from 2 on every rare and
+  crafted item, rings and amulets too (`MIN_ROLL` in the tool; the author, 2026-10-28). Minimum and maximum damage
+  on a rare or crafted item are one tag whenever both show, `1-3dmg` and `5-3dmg` alike (the author, 2026-10-28,
+  rings and helms too: compact and consistent, though the game joins them into "Adds 1-3 damage" only with the
+  minimum below the maximum, BH's Item.cpp STRMODMINDAMAGERANGE): the max lines skip "min shown", the min lines "max
+  shown" (written out in each, no nested aliases), two joined lines in the min block (with max damage per level, the
+  total); Corr's versions show the minimum alone there (his rare max damage is off). 300 asks them once per stat
   (`--check` fails on an alias 300 doesn't ask or asks without the section): a threshold line gets `OR (LOWLVL_X_TAG
   <stat>>0)` in its value test; item types no rare line of the stat covers get `OR ((<types>) LOWLVL_X_TAG)` in a
   type group, or a new line in the stat's block (excluding a corruption line of the same stat, e.g. `!STAT360=57`);
