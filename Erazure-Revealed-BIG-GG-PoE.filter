@@ -7794,13 +7794,6 @@ ItemDisplay[GLOVES (MAG OR RARE OR CRAFT) (TABSK0=2 OR TABSK2=2 OR TABSK50=2 OR 
 //  +2 Shapeshift, +20 FCR Gloves (NO IAS)
 ItemDisplay[GLOVES (MAG OR RARE OR CRAFT) TABSK41=2 FCR>19 !IAS>14]:%NAME%{%HIGHLIGHT_1_LEFT%   %GREEN%+2/%FCR%fcr   %HIGHLIGHT_1_RIGHT%%CL%%NAME%}%CONTINUE%//
 
-//  +4 Combat 20 FCR Shield Highlight (Paladin shields: the Paladin shield highlight below)
-ItemDisplay[SHIELD !DIN FCR=20 ALLSK=1 TABSK24=3 (MAG OR RARE OR CRAFT)]:%NAME%{%HIGHLIGHT_1_LEFT%   %GREEN%+4/20fcr   %HIGHLIGHT_1_RIGHT%%CL%%NAME%}%CONTINUE%//
-//  +3 Combat 30 FCR Shield Highlight (Paladin shields: the Paladin shield highlight below)
-ItemDisplay[SHIELD !DIN FCR=30 ALLSK=0 TABSK24=3 (MAG OR RARE OR CRAFT)]:%NAME%{%HIGHLIGHT_1_LEFT%   %GREEN%+3/30fcr   %HIGHLIGHT_1_RIGHT%%CL%%NAME%}%CONTINUE%//
-//  +3 Combat 20 FCR Shield Highlight (Paladin shields: the Paladin shield highlight below)
-ItemDisplay[SHIELD !DIN FCR=20 ((ALLSK=0 TABSK24=3) OR (ALLSK=1 TABSK24=2)) (MAG OR RARE OR CRAFT)]:%NAME%{%HIGHLIGHT_1_LEFT%   %GREEN%+3/20fcr   %HIGHLIGHT_1_RIGHT%%CL%%NAME%}%CONTINUE%//
-
 //  The skills of the +2 class skills armor / shield highlights below, a +1 All Skills corruption counted: +2 class
 //  skills (or +1 and +1 All Skills), +3 to a Paladin Combat / Necromancer skill tab (or +2 and +1 All Skills), and
 //  the total the label shows (one class's or tab's skills: an item has one prefix of that group)
@@ -7809,27 +7802,25 @@ Alias[HL_TAB_SKILLS]:((TABSK24=3 OR TABSK16=3 OR TABSK17=3 OR TABSK18=3) OR (ALL
 Alias[HL_CLASS_TOTAL]:$f(CLSK0+CLSK1+CLSK2+CLSK3+CLSK4+CLSK5+CLSK6+ALLSK)
 Alias[HL_TAB_TOTAL]:$f(TABSK24+TABSK16+TABSK17+TABSK18+ALLSK)
 
-//  +2 Class Skills Rare Armor Highlight: 10+ FCR, 10+ PDR and 15+ All Res, numbers only (+2/30/20/20); +3 with +1 All Skills (corrupted); the pieces in the order the item lists the stats
+//  +2 Class Skills Rare Armor Highlight: +2 class skills (+3 with +1 All Skills, corrupted) and two of 10+ FCR, 15+ All Res and 10+ PDR, the pieces in the order the item lists the stats
+//  all three, numbers only (+2/30/20/20)
 ItemDisplay[CHEST RARE FCR>9 STAT36>9 RES>14 HL_CLASS_SKILLS]:%NAME%{%HIGHLIGHT_1_LEFT%   %GREEN%+%HL_CLASS_TOTAL%/%FCR%/%RES%/%STAT36%   %HIGHLIGHT_1_RIGHT%%CL%%NAME%}%CONTINUE%//
 //  two of them (+2/30fcr/20res)
 ItemDisplay[CHEST RARE FCR>9 STAT36>9 !RES>14 HL_CLASS_SKILLS]:%NAME%{%HIGHLIGHT_1_LEFT%   %GREEN%+%HL_CLASS_TOTAL%/%FCR%fcr/%STAT36%pdr   %HIGHLIGHT_1_RIGHT%%CL%%NAME%}%CONTINUE%//
 ItemDisplay[CHEST RARE FCR>9 !STAT36>9 RES>14 HL_CLASS_SKILLS]:%NAME%{%HIGHLIGHT_1_LEFT%   %GREEN%+%HL_CLASS_TOTAL%/%FCR%fcr/%RES%res   %HIGHLIGHT_1_RIGHT%%CL%%NAME%}%CONTINUE%//
 ItemDisplay[CHEST RARE !FCR>9 STAT36>9 RES>14 HL_CLASS_SKILLS]:%NAME%{%HIGHLIGHT_1_LEFT%   %GREEN%+%HL_CLASS_TOTAL%/%RES%res/%STAT36%pdr   %HIGHLIGHT_1_RIGHT%%CL%%NAME%}%CONTINUE%//
-//  one of them (+2/30fcr)
-ItemDisplay[CHEST RARE FCR>9 !STAT36>9 !RES>14 HL_CLASS_SKILLS]:%NAME%{%HIGHLIGHT_1_LEFT%   %GREEN%+%HL_CLASS_TOTAL%/%FCR%fcr   %HIGHLIGHT_1_RIGHT%%CL%%NAME%}%CONTINUE%//
-ItemDisplay[CHEST RARE !FCR>9 STAT36>9 !RES>14 HL_CLASS_SKILLS]:%NAME%{%HIGHLIGHT_1_LEFT%   %GREEN%+%HL_CLASS_TOTAL%/%STAT36%pdr   %HIGHLIGHT_1_RIGHT%%CL%%NAME%}%CONTINUE%//
-ItemDisplay[CHEST RARE !FCR>9 !STAT36>9 RES>14 HL_CLASS_SKILLS]:%NAME%{%HIGHLIGHT_1_LEFT%   %GREEN%+%HL_CLASS_TOTAL%/%RES%res   %HIGHLIGHT_1_RIGHT%%CL%%NAME%}%CONTINUE%//
 
-//  +2 Class Skills Shield Highlight: as the armor above, magic, rare and crafted (Paladin shields and Necromancer heads below)
+//  +2 Class Skills Shield Highlight: as the armor above, also with +3 Combat Skills, magic, rare and crafted (Paladin shields and Necromancer heads below)
+//  all three, numbers only (+2/30/20/20)
 ItemDisplay[SHIELD !DIN !NEC (MAG OR RARE OR CRAFT) FCR>9 STAT36>9 RES>14 HL_CLASS_SKILLS]:%NAME%{%HIGHLIGHT_1_LEFT%   %GREEN%+%HL_CLASS_TOTAL%/%FCR%/%RES%/%STAT36%   %HIGHLIGHT_1_RIGHT%%CL%%NAME%}%CONTINUE%//
+ItemDisplay[SHIELD !DIN !NEC (MAG OR RARE OR CRAFT) FCR>9 STAT36>9 RES>14 HL_TAB_SKILLS]:%NAME%{%HIGHLIGHT_1_LEFT%   %GREEN%+%HL_TAB_TOTAL%/%FCR%/%RES%/%STAT36%   %HIGHLIGHT_1_RIGHT%%CL%%NAME%}%CONTINUE%//
 //  two of them (+2/30fcr/20res)
 ItemDisplay[SHIELD !DIN !NEC (MAG OR RARE OR CRAFT) FCR>9 STAT36>9 !RES>14 HL_CLASS_SKILLS]:%NAME%{%HIGHLIGHT_1_LEFT%   %GREEN%+%HL_CLASS_TOTAL%/%FCR%fcr/%STAT36%pdr   %HIGHLIGHT_1_RIGHT%%CL%%NAME%}%CONTINUE%//
+ItemDisplay[SHIELD !DIN !NEC (MAG OR RARE OR CRAFT) FCR>9 STAT36>9 !RES>14 HL_TAB_SKILLS]:%NAME%{%HIGHLIGHT_1_LEFT%   %GREEN%+%HL_TAB_TOTAL%/%FCR%fcr/%STAT36%pdr   %HIGHLIGHT_1_RIGHT%%CL%%NAME%}%CONTINUE%//
 ItemDisplay[SHIELD !DIN !NEC (MAG OR RARE OR CRAFT) FCR>9 !STAT36>9 RES>14 HL_CLASS_SKILLS]:%NAME%{%HIGHLIGHT_1_LEFT%   %GREEN%+%HL_CLASS_TOTAL%/%FCR%fcr/%RES%res   %HIGHLIGHT_1_RIGHT%%CL%%NAME%}%CONTINUE%//
+ItemDisplay[SHIELD !DIN !NEC (MAG OR RARE OR CRAFT) FCR>9 !STAT36>9 RES>14 HL_TAB_SKILLS]:%NAME%{%HIGHLIGHT_1_LEFT%   %GREEN%+%HL_TAB_TOTAL%/%FCR%fcr/%RES%res   %HIGHLIGHT_1_RIGHT%%CL%%NAME%}%CONTINUE%//
 ItemDisplay[SHIELD !DIN !NEC (MAG OR RARE OR CRAFT) !FCR>9 STAT36>9 RES>14 HL_CLASS_SKILLS]:%NAME%{%HIGHLIGHT_1_LEFT%   %GREEN%+%HL_CLASS_TOTAL%/%RES%res/%STAT36%pdr   %HIGHLIGHT_1_RIGHT%%CL%%NAME%}%CONTINUE%//
-//  one of them (+2/30fcr)
-ItemDisplay[SHIELD !DIN !NEC (MAG OR RARE OR CRAFT) FCR>9 !STAT36>9 !RES>14 HL_CLASS_SKILLS]:%NAME%{%HIGHLIGHT_1_LEFT%   %GREEN%+%HL_CLASS_TOTAL%/%FCR%fcr   %HIGHLIGHT_1_RIGHT%%CL%%NAME%}%CONTINUE%//
-ItemDisplay[SHIELD !DIN !NEC (MAG OR RARE OR CRAFT) !FCR>9 STAT36>9 !RES>14 HL_CLASS_SKILLS]:%NAME%{%HIGHLIGHT_1_LEFT%   %GREEN%+%HL_CLASS_TOTAL%/%STAT36%pdr   %HIGHLIGHT_1_RIGHT%%CL%%NAME%}%CONTINUE%//
-ItemDisplay[SHIELD !DIN !NEC (MAG OR RARE OR CRAFT) !FCR>9 !STAT36>9 RES>14 HL_CLASS_SKILLS]:%NAME%{%HIGHLIGHT_1_LEFT%   %GREEN%+%HL_CLASS_TOTAL%/%RES%res   %HIGHLIGHT_1_RIGHT%%CL%%NAME%}%CONTINUE%//
+ItemDisplay[SHIELD !DIN !NEC (MAG OR RARE OR CRAFT) !FCR>9 STAT36>9 RES>14 HL_TAB_SKILLS]:%NAME%{%HIGHLIGHT_1_LEFT%   %GREEN%+%HL_TAB_TOTAL%/%RES%res/%STAT36%pdr   %HIGHLIGHT_1_RIGHT%%CL%%NAME%}%CONTINUE%//
 
 //  Paladin Shield and Necromancer Head Highlight: +2 class skills, or +3 Combat Skills / Summoning / Poison and Bone / Curses, with two of 20+ FCR, 10+ PDR and All Res (Paladin shields 25+: their automagic gives up to 30; heads 15+)
 //  all three, numbers only (+3/20/25/20)
