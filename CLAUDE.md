@@ -292,7 +292,7 @@
   damage have lines of their own). Max damage and attack rating per level are one tag with the flat roll, the total
   at your level (the author): `$f(STAT22+FLOOR(STAT218*CLVL/8))`, `$f(STAT19+FLOOR(STAT224*CLVL/2))` (218 holds eighths,
   224 halves; BH's formula STAT22 reads the affix list, not a weapon's base damage). New looks (2026-10-28, for the
-  author's OK in game): knockback `Kb` (gray), open wounds chance `10%ow` (coral; 501's damage is `ow`).
+  author's OK in game): knockback `Knb` (gray; the arrows' `Knbk` is `Knb` too, the author), open wounds chance `10%ow` (coral; 501's damage is `ow`).
   `--verify` runs every affix of every item type through 300 three ways (as built, aliases FALSE, the last commit's
   300) and measures the longest tag lines. Corrlorized: Corr's `x` entries on the rewired lines stay off (the low-level
   parts with them), and the max damage per level total has an `x` of its own; careful: when a rewired line's text

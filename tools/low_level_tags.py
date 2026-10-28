@@ -186,7 +186,7 @@ PROPS = {
     "att-demon": ("ar_dem", "", "%WHITE%%STAT123%%DARK_GREEN%ar"),
     "att-undead": ("ar_und", "", "%WHITE%%STAT124%%DARK_GREEN%ar"),
     "noheal": ("noheal", "", None),
-    "knock": ("knock", "", "%GRAY%Kb"),  # new (2026-10-28)
+    "knock": ("knock", "", "%GRAY%Knb"),  # new (2026-10-28)
     "dmg-fire": ("fire_dmg", "", "%WHITE%%STAT48%-%STAT49%%RED%fire"),
     "fire-min": ("fire_dmg", "min", "%WHITE%%STAT48%-%STAT49%%RED%fire"),
     "fire-max": ("fire_dmg", "max", "%WHITE%%STAT48%-%STAT49%%RED%fire"),
