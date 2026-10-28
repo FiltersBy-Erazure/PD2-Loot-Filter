@@ -21,7 +21,7 @@ After selecting the version of the filter from the launcher, be sure to click "S
 - The PoE version of each filter adds sound notifications from PoE to certain items
 - The Revealed version of each filter shows the identified names of unique and set items
 - The **Minimal** version is the same as Erazure - Main but with a minimal style: fewer, simpler symbols around the names of items ([see the differences](https://filtersby-erazure.github.io/PD2-Loot-Filter/minimal/)). It also comes in Revealed, BIG GG and PoE versions, and every combination of them
-- The **Corrlorized** versions (Corrlorized - Main - PoE and Corrlorized - BIG GG - PoE) are Corr's restyle of Erazure - Main - PoE and Erazure - BIG GG - PoE: his own colors, symbols and PoE sound picks, with the same filter levels
+- The **Corrlorized** versions (Corrlorized - Main - PoE, - Revealed - PoE, - BIG GG - PoE and - Revealed - BIG GG - PoE) are Corr's restyle of the four Erazure PoE versions: his own colors, symbols and PoE sound picks, with the same filter levels
 
 <img width="994" height="741" alt="image" src="https://github.com/user-attachments/assets/9835b0c1-36c6-402a-8bfa-51288c6f46a9" />
 
