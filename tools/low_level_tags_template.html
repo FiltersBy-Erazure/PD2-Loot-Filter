@@ -280,7 +280,7 @@ function rowHTML(card, row) {
   return `<div class="row${on ? " on" : ""}${pick ? "" : " fixedrow"}" data-row="${row.key}">
     <div>${sw}</div>
     <div class="rmain">
-      <div class="rtitle"><b>${esc(info.label)}</b>${pick ? stateChips(card, row) : ""}${noLook ? '<span class="chip nolook">No tag look in 300 yet</span>' : ""}${pick && !isDef ? '<span class="chip def">changed</span>' : ""}</div>
+      <div class="rtitle"><b>${esc(info.label)}</b>${pick ? stateChips(card, row) : ""}${pick && info.sock ? '<span class="chip" title="Gems and runes add this stat, so an item with anything socketed shows it as without the low-level tags">Not when socketed</span>' : ""}${noLook ? '<span class="chip nolook">No tag look in 300 yet</span>' : ""}${pick && !isDef ? '<span class="chip def">changed</span>' : ""}</div>
       <div class="samples"><span>Today</span>${tagsHTML(today)}${pick ? `<span class="newl">Every roll</span>${tagsHTML(after)}` : ""}</div>
     </div>
     <div><div class="bands">${bands.map(v => v === null ? '<span class="na">–</span>' : `<span>${v}</span>`).join("")}</div></div>

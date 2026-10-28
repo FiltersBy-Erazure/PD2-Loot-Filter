@@ -277,7 +277,13 @@
   `{"<item type>": {"stats": {...}}}` and run `--apply FILE` (writes `tools/low_level_tag_picks.json` and the section,
   and names picked stats 300 has no line for). `sections/290-low-level-rare-tags.filter` is GENERATED from the picks
   file (the hook, build.bat, CI `--check`): one alias per wired stat, `LOWLVL_<X>_TAG` = `((RARE OR CRAFT) ALVL<60
-  (picked item types))`, `FALSE` if none; `ALIASES` in the tool lists the wired stats. 300 asks them once per stat
+  (picked item types))`, `FALSE` if none; `ALIASES` in the tool lists the wired stats. BH's stat words read an item
+  with its socket fillers (`GEMMED`: anything socketed, gem, rune or jewel), so the stats gems and low runes commonly
+  add (`SOCKETED` in the tool: mana, single resists, leech, attack rating, MF, GF, life / mana per kill, flat physical
+  and magic damage reduction, knockback, open wounds chance, damage to demons / undead) have `!GEMMED` in their alias
+  (the author, 2026-10-28): a socketed item shows them as without the low-level tags; 300's attribute, FHR and min / max
+  damage lines (and the max damage per level total) have `!GEMMED` of their own, and the older lines without it keep
+  counting the fillers (the author's choice). 300 asks them once per stat
   (`--check` fails on an alias 300 doesn't ask or asks without the section): a threshold line gets `OR (LOWLVL_X_TAG
   <stat>>0)` in its value test; item types no rare line of the stat covers get `OR ((<types>) LOWLVL_X_TAG)` in a
   type group, or a new line in the stat's block (excluding a corruption line of the same stat, e.g. `!STAT360=57`);

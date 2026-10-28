@@ -611,7 +611,8 @@ def page_data():
                       "reach": reach_max, "reachBase": reach_base, "longestBase": longest[0]})
     return {"cut": CUT, "nameMax": LC.NAME_MAX, "bands": list(BANDS), "viewer": VIEWER, "cats": CATS,
             "picks": load_picks(card_rows(bases, affixes)),
-            "rows": [{"key": k, "label": lab, "cat": cat, "def": d} for k, lab, cat, d in ROWS],
+            "rows": [{"key": k, "label": lab, "cat": cat, "def": d, "sock": int(k in SOCKETED)}
+                     for k, lab, cat, d in ROWS],
             "affixes": aff_table, "segs": seg_table, "cards": cards}
 
 
@@ -654,6 +655,11 @@ ALIASES = {"life": "LOWLVL_LIFE_TAG", "mana": "LOWLVL_MANA_TAG", "leech_life": "
            "knock": "LOWLVL_KB_TAG", "dmg_dem": "LOWLVL_DEM_TAG", "dmg_und": "LOWLVL_UND_TAG", "mf": "LOWLVL_MF_TAG",
            "gf": "LOWLVL_GF_TAG"}
 MERGED = {"max_lvl": "max", "ar_lvl": "ar"}  # page rows of 2026-10-28 now one tag (the author: one total)
+# stats gems and low runes commonly add: their low-level tags skip an item with anything socketed (!GEMMED in the
+# alias; the author, 2026-10-28). BH's stat words count the socket fillers; 300's older lines keep counting them, and
+# its attribute, FHR and min / max damage lines have !GEMMED of their own
+SOCKETED = {"mana", "res", "leech_life", "leech_mana", "ar", "mf", "gf", "lpk", "mpk", "pdr_flat", "mdr", "knock", "ow",
+            "dmg_dem", "dmg_und"}
 # corruptions that give a wired stat to a rare too (their own 300 lines): --verify checks there is one tag with them
 CORRUPTIONS = {"leech_life": [57], "leech_mana": [58], "lpk": [8], "mpk": [9], "ar": [3, 18, 26, 59], "itd": [24],
                "ds": [19, 25], "cb": [21, 23], "frw": [44], "mf": [7], "str": [68], "dex": [69], "enr": [71]}
@@ -699,8 +705,10 @@ def render_section(picks, eligible, off=False):
         if row not in ALIASES:
             continue
         cards = [] if off else [c for c, *_ in CARDS if row in eligible.get(c, []) and picks.get(c, {}).get(row)]
-        out += ["", f"// {label}: " + (", ".join(CARD_NAME[c].lower() for c in cards) or "none"),
-                f"Alias[{ALIASES[row]}]:" + (f"((RARE OR CRAFT) ALVL<{CUT} {card_condition(cards)})" if cards
+        gem = " !GEMMED" if row in SOCKETED else ""
+        out += ["", f"// {label}: " + (", ".join(CARD_NAME[c].lower() for c in cards) or "none") +
+                (" (not with anything socketed: gems and runes add it)" if gem and cards else ""),
+                f"Alias[{ALIASES[row]}]:" + (f"((RARE OR CRAFT) ALVL<{CUT}{gem} {card_condition(cards)})" if cards
                                               else "FALSE")]
     return ("\r\n".join(out) + "\r\n").encode("utf-8")
 
@@ -781,7 +789,7 @@ def verify():
     head = subprocess.run(["git", "show", f"HEAD:sections/{TAGS_300.name}"], cwd=ROOT, capture_output=True,
                           check=True).stdout
     sets = {"head": Rules({TAGS_300.name: head, SECTION.name: b""}), "off": Rules(), "now": Rules({})}
-    keys = sample_keys(affixes)
+    keys = sample_keys(affixes) | {"GEMMED"}
     for r in sets.values():
         r.sample_keys = keys
     vis = lambda t: LC.visible(t).strip()
@@ -837,6 +845,11 @@ def verify():
                                     twice = [t for t in want if now[t] > 1]
                                     if twice:
                                         problems.append(f"{where}, corruption {c}: {' '.join(twice)} twice")
+                                if row in SOCKETED:  # socketed: as without the low-level tags
+                                    g = dict(v, GEMMED=1)
+                                    if line("now", g) != line("off", g):
+                                        problems.append(f"{where}, socketed: {line('off', g)!r} -> "
+                                                        f"{line('now', g)!r}")
             base_vals = base_values(codes[0], first, groups, CUT - 1)
             lengths = {}
             for s in ("off", "now"):
