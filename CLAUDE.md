@@ -293,10 +293,10 @@
   staves, wands and orbs tag minimum and maximum damage (and the per-level total) at every affix level and roll (the
   author, 2026-10-28; the biggest rolls come above 60: of Evisceration +41-63 max, of Transcendence +15-20 min, Grinding
   and Fool's per level): 300's damage lines take those weapons directly, not through the aliases, so the page shows
-  those rows as tagged at every roll. Those weapons also tag life / mana leech, strength, dexterity, FRW, attack
-  rating (with its per-level total), attack rating %, open wounds damage, ignore target's defense and damage to
-  demons / undead (not knockback or single resistances: the author; below 60 the weapon cards' picks) at every affix
-  level and roll while nothing is socketed and they
+  those rows as tagged at every roll. Those weapons also tag life / mana leech, FRW, attack rating (with its
+  per-level total), attack rating %, open wounds damage, ignore target's defense and damage to demons / undead (not
+  knockback, attributes or single resistances: the author; below 60 the weapon cards' picks) at every affix level
+  and roll while nothing is socketed and they
   aren't corrupted (`!GEMMED !STAT360>0`), demons / undead above 100 at any time, socketed or corrupted too (the author,
   2026-10-28; corruptions 5 / 77 add +100-150%, so such a corrupted weapon shows its total): `FRESH_WEAPON_ROWS` /
   `WEAPON_ANY_TIME` in the tool. Clubs, orbs, wands and staves (clubs take both sets) tag life / mana after each kill,
