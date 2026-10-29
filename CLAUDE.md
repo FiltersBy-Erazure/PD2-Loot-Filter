@@ -293,14 +293,18 @@
   staves, wands and orbs tag minimum and maximum damage (and the per-level total) at every affix level and roll (the
   author, 2026-10-28; the biggest rolls come above 60: of Evisceration +41-63 max, of Transcendence +15-20 min, Grinding
   and Fool's per level): 300's damage lines take those weapons directly, not through the aliases, so the page shows
-  those rows as tagged at every roll. Those weapons also tag life / mana leech, life / mana after each kill,
-  strength, dexterity, single resistances, FRW, attack rating (with its per-level total), attack rating %, open wounds
-  chance and damage, ignore target's defense, knockback and damage to demons / undead at every affix level and roll
-  while nothing is socketed and they aren't corrupted (`!GEMMED !STAT360>0`), demons / undead above 100 at any time,
-  socketed or corrupted too (the author, 2026-10-28; corruptions 5 / 77 add +100-150%, so such a corrupted weapon
-  shows its total): `FRESH_WEAPON_ROWS` / `WEAPON_ANY_TIME` in the tool, a weapon part in the stat's 290 alias beside
-  its low-level part (300 unchanged), a chip on the page's weapon cards. Flat mana and energy are off on those weapons,
-  below 60 too (the author: removed entirely); life stays below 60 only. 300 asks them once per stat
+  those rows as tagged at every roll. Those weapons also tag life / mana leech, strength, dexterity, single
+  resistances, FRW, attack rating (with its per-level total), attack rating %, open wounds damage, ignore target's
+  defense, knockback and damage to demons / undead at every affix level and roll while nothing is socketed and they
+  aren't corrupted (`!GEMMED !STAT360>0`), demons / undead above 100 at any time, socketed or corrupted too (the author,
+  2026-10-28; corruptions 5 / 77 add +100-150%, so such a corrupted weapon shows its total): `FRESH_WEAPON_ROWS` /
+  `WEAPON_ANY_TIME` in the tool. Clubs, orbs, wands and staves (clubs take both sets) tag life / mana after each kill,
+  mana, life, single resistances, energy, strength, dexterity and flat physical / magic damage reduction the same way
+  (`FRESH_CASTER_ROWS`; flat PDR on weapons only comes from the Safety craft, so 300's PDR line takes `WEAPON`);
+  replenish life, regenerate mana and damage taken goes to mana never show on them. Each is a weapon part in the
+  stat's 290 alias beside its low-level part, and a chip on the page's weapon cards. Flat mana and energy are off on
+  the physical weapons, below 60 too (the author: removed entirely), and open wounds chance on every rare weapon (the
+  author: the damage alone). 300 asks them once per stat
   (`--check` fails on an alias 300 doesn't ask or asks without the section): a threshold line gets `OR (LOWLVL_X_TAG
   <stat>>0)` in its value test; item types no rare line of the stat covers get `OR ((<types>) LOWLVL_X_TAG)` in a
   type group, or a new line in the stat's block (excluding a corruption line of the same stat, e.g. `!STAT360=57`);
