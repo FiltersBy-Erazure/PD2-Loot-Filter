@@ -672,8 +672,9 @@ MIN_ROLL = {"pdr_flat": 2, "mdr": 2}
 # 100 at any time, socketed or corrupted too. The stat's alias carries this weapon part beside its low-level one
 WEAPONS = "(WEAPON !STAFF !WAND !SOR)"
 NONCASTER_CARDS = ["melee", "ranged", "throwing"]
-FRESH_WEAPON_ROWS = {"leech_life", "leech_mana", "str", "dex", "res", "frw", "ar", "ar_pct", "owd", "itd", "knock",
-                     "dmg_dem", "dmg_und"}  # not life / mana after each kill, nor open wounds chance (the author)
+FRESH_WEAPON_ROWS = {"leech_life", "leech_mana", "str", "dex", "frw", "ar", "ar_pct", "owd", "itd", "dmg_dem",
+                     "dmg_und"}  # not life / mana after each kill, single resistances, open wounds chance nor knockback
+#                                  (the author)
 WEAPON_ANY_TIME = {"dmg_dem": "STAT121>100", "dmg_und": "STAT122>100"}
 # on weapons these show only while nothing is socketed and the item isn't corrupted, below affix level 60 too (the
 # author, 2026-10-28): the weapon cards leave their low-level part, the weapon part above covers them
