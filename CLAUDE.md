@@ -293,10 +293,10 @@
   staves, wands and orbs tag minimum and maximum damage (and the per-level total) at every affix level and roll (the
   author, 2026-10-28; the biggest rolls come above 60: of Evisceration +41-63 max, of Transcendence +15-20 min, Grinding
   and Fool's per level): 300's damage lines take those weapons directly, not through the aliases, so the page shows
-  those rows as tagged at every roll. Those weapons also tag FRW, attack rating %, ignore target's defense and damage
-  to demons / undead (not knockback, attributes, single resistances or attack rating: the author; below 60 the weapon
-  cards' picks) at every affix level and roll, and life / mana leech and open wounds damage below affix level 60 only
-  (`WEAPON_LOW_ONLY`, the author, 2026-10-29), while nothing is socketed and they
+  those rows as tagged at every roll. Those weapons also tag FRW, ignore target's defense and damage to demons /
+  undead (not knockback, attributes, single resistances or attack rating: the author; below 60 the weapon cards'
+  picks) at every affix level and roll, and life / mana leech, open wounds damage and attack rating % below affix
+  level 60 only (`WEAPON_LOW_ONLY`, the author, 2026-10-29), while nothing is socketed and they
   aren't corrupted (`!GEMMED !STAT360>0`), demons / undead above 100 at any time, socketed or corrupted too (the author,
   2026-10-28; corruptions 5 / 77 add +100-150%, so such a corrupted weapon shows its total): `FRESH_WEAPON_ROWS` /
   `WEAPON_ANY_TIME` in the tool. Clubs, orbs, wands and staves (clubs take both sets) tag life / mana after each kill,
@@ -305,7 +305,8 @@
   replenish life, regenerate mana and damage taken goes to mana never show on them. Each is a weapon part in the
   stat's 290 alias beside its low-level part, and a chip on the page's weapon cards. Flat mana and energy are off on
   the physical weapons, below 60 too (the author: removed entirely), and open wounds chance on every rare weapon (the
-  author: the damage alone). Life / mana leech and open wounds damage show on weapons only below affix level 60 and
+  author: the damage alone). Life / mana leech, open wounds damage and attack rating % show on weapons only below
+  affix level 60 and
   only while nothing is socketed and they aren't corrupted (`FRESH_ONLY_ON_WEAPONS`: the weapon cards leave their
   low-level part, so the page shows those rows locked, "Fresh weapons only"). Enhanced damage's lowest band is red
   like the next, not tan (the author, 2026-10-29: weapons, gloves, jewels, quivers, unique jewelry; runewords

@@ -675,11 +675,12 @@ NONCASTER_CARDS = ["melee", "ranged", "throwing"]
 FRESH_WEAPON_ROWS = {"leech_life", "leech_mana", "frw", "ar_pct", "owd", "itd", "dmg_dem", "dmg_und"}
 # not life / mana after each kill, attributes, single resistances, attack rating, open wounds chance nor knockback
 # (the author; attack rating only below affix level 60, from the cards' picks)
-WEAPON_LOW_ONLY = {"leech_life", "leech_mana", "owd"}  # on weapons only below affix level 60 (the author, 2026-10-29)
+# on weapons only below affix level 60 (the author, 2026-10-29; attack rating % the same day)
+WEAPON_LOW_ONLY = {"leech_life", "leech_mana", "owd", "ar_pct"}
 WEAPON_ANY_TIME = {"dmg_dem": "STAT121>100", "dmg_und": "STAT122>100"}
 # on weapons these show only while nothing is socketed and the item isn't corrupted, below affix level 60 too (the
 # author, 2026-10-28): the weapon cards leave their low-level part, the weapon part above covers them
-FRESH_ONLY_ON_WEAPONS = {"leech_life", "leech_mana", "owd"}
+FRESH_ONLY_ON_WEAPONS = {"leech_life", "leech_mana", "owd", "ar_pct"}
 # clubs, orbs, wands and staves tag these the same way, until socketed or corrupted (the author, 2026-10-28; clubs take
 # both sets; flat physical damage reduction only comes from the Safety craft). Replenish life, regenerate mana and
 # damage taken goes to mana never show on them
