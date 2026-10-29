@@ -56,7 +56,7 @@ ItemDisplay[BIG_GG !POE_SOUNDS !REVEALED box]:%NAME%{%NAME%%CL%%TEAL%%BIG_GG_VER
 ItemDisplay[BIG_GG !POE_SOUNDS REVEALED box]:%NAME%{%NAME%%CL%%TEAL%%REVEALED_BIG_GG_VERSION_NAME%}%CONTINUE%//
 ItemDisplay[BIG_GG POE_SOUNDS !REVEALED box]:%NAME%{%NAME%%CL%%TEAL%%BIG_GG_POE_VERSION_NAME%}%CONTINUE%//
 ItemDisplay[BIG_GG POE_SOUNDS REVEALED box]:%NAME%{%NAME%%CL%%TEAL%%REVEALED_BIG_GG_POE_VERSION_NAME%}%CONTINUE%//
-ItemDisplay[box]:%NAME%{%NAME%%CL%%WHITE%Season 14 - October 28th}//
+ItemDisplay[box]:%NAME%{%NAME%%CL%%WHITE%Season 14 - October 29th}//
 
 // =====================================  Toggles  ==================================
 
@@ -9108,8 +9108,9 @@ ItemDisplay[(((CHEST OR SHIELD) EDEF>199) OR STAT360=33) (RARE OR CRAFT)]:%WHITE
 ItemDisplay[(CHEST OR GLOVES OR HELM OR CIRC OR BOOTS OR SHIELD OR BELT) MAG EDEF>0 !STAT360=48]:%WHITE%%ED%%LIGHT_GRAY%ed%CS%%NAME%{%NAME%}%CONTINUE%
 ItemDisplay[BELT ROLL_ED_TAG ED>0]:%WHITE%%ED%%LIGHT_GRAY%ed%CS%%NAME%{%NAME%}%CONTINUE%
 
-// Corruption 48 (was Indestructible): its ED on magic, rare and crafted items
-ItemDisplay[(MAG OR RARE OR CRAFT) (HELM OR CIRC OR CHEST OR SHIELD OR BOOTS OR BELT OR GLOVES) STAT360=48]:%WHITE%%ED%%LIGHT_GRAY%ed%CS%%NAME%{%NAME%}%CONTINUE%
+// Corruption 48 (was Indestructible): its ED on magic, rare and crafted items (not on a rare or crafted body armor or
+// shield with 200+ ED: the rare line above tags that one, one tag)
+ItemDisplay[(MAG OR RARE OR CRAFT) (HELM OR CIRC OR CHEST OR SHIELD OR BOOTS OR BELT OR GLOVES) STAT360=48 !((RARE OR CRAFT) (CHEST OR SHIELD) EDEF>199)]:%WHITE%%ED%%LIGHT_GRAY%ed%CS%%NAME%{%NAME%}%CONTINUE%
 
 // ---- -Target Defense per Hit (stat 120, priority 75) ----
 
@@ -9671,7 +9672,7 @@ ItemDisplay[ROLL_ARW_TAG STAT269>0]:%WHITE%%STAT269%%BLUE%arw%CS%%NAME%{%NAME%}%
 // ---- Faster Run/Walk (stat 96, priority 148) ----
 
 // Boots
-ItemDisplay[BOOTS MAG FRW>0]:%WHITE%%FRW%%TAN%frw%CS%%NAME%{%NAME%}%CONTINUE%
+ItemDisplay[BOOTS MAG FRW>0 !STAT360=44]:%WHITE%%FRW%%TAN%frw%CS%%NAME%{%NAME%}%CONTINUE%
 ItemDisplay[BOOTS (RARE OR CRAFT OR STAT360=44 OR ROLL_FRW_TAG) FRW>0 FRW<31]:%WHITE%%FRW%%TAN%frw%CS%%NAME%{%NAME%}%CONTINUE%
 ItemDisplay[BOOTS (RARE OR CRAFT OR STAT360=44 OR ROLL_FRW_TAG) FRW>30]:%WHITE%%FRW%%PURPLE%frw%CS%%NAME%{%NAME%}%CONTINUE%
 
