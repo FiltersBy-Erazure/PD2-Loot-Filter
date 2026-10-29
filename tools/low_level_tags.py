@@ -672,8 +672,10 @@ MIN_ROLL = {"pdr_flat": 2, "mdr": 2}
 # 100 at any time, socketed or corrupted too. The stat's alias carries this weapon part beside its low-level one
 WEAPONS = "(WEAPON !STAFF !WAND !SOR)"
 NONCASTER_CARDS = ["melee", "ranged", "throwing"]
-FRESH_WEAPON_ROWS = {"leech_life", "leech_mana", "frw", "ar", "ar_pct", "owd", "itd", "dmg_dem", "dmg_und"}
-# not life / mana after each kill, attributes, single resistances, open wounds chance nor knockback (the author)
+FRESH_WEAPON_ROWS = {"leech_life", "leech_mana", "frw", "ar_pct", "owd", "itd", "dmg_dem", "dmg_und"}
+# not life / mana after each kill, attributes, single resistances, attack rating, open wounds chance nor knockback
+# (the author; attack rating only below affix level 60, from the cards' picks)
+WEAPON_LOW_ONLY = {"leech_life", "leech_mana", "owd"}  # on weapons only below affix level 60 (the author, 2026-10-29)
 WEAPON_ANY_TIME = {"dmg_dem": "STAT121>100", "dmg_und": "STAT122>100"}
 # on weapons these show only while nothing is socketed and the item isn't corrupted, below affix level 60 too (the
 # author, 2026-10-28): the weapon cards leave their low-level part, the weapon part above covers them
@@ -744,13 +746,14 @@ def render_section(picks, eligible, off=False):
         wpn, groups = "", [(g, who) for g, rows, who in WEAPON_GROUPS if row in rows]
         if not off and groups:
             types, who = ("WEAPON", "all weapons") if len(groups) == 2 else groups[0]
-            fresh = "!GEMMED !STAT360>0"
+            fresh = (f"ALVL<{CUT} " if row in WEAPON_LOW_ONLY else "") + "!GEMMED !STAT360>0"
             wpn = f"{types} ({WEAPON_ANY_TIME[row]} OR ({fresh}))" if row in WEAPON_ANY_TIME else f"{types} {fresh}"
         body = "FALSE" if not (low or wpn) else f"((RARE OR CRAFT) {low or wpn})" if not (low and wpn) else \
             f"((RARE OR CRAFT) (({low}) OR ({wpn})))"
         out += ["", f"// {label}: " + (", ".join(CARD_NAME[c].lower() for c in cards) or "none") +
                 (" (not with anything socketed: gems and runes add it)" if gem and cards else "") +
-                (f"; {who} at every affix level until socketed or corrupted" if wpn else "")
+                (f"; {who} {'below affix level ' + str(CUT) if row in WEAPON_LOW_ONLY else 'at every affix level'} "
+                 "until socketed or corrupted" if wpn else "")
                 + (" (above 100 at any time)" if row in WEAPON_ANY_TIME and wpn else ""),
                 f"Alias[{ALIASES[row]}]:" + body]
     return ("\r\n".join(out) + "\r\n").encode("utf-8")
@@ -873,7 +876,8 @@ def verify():
                                 problems.append(f"{where}, as a magic item: changed with the aliases off")
                             low = alvl < CUT and row in ALIASES and picks[key].get(row) and \
                                 not (key in WEAPON_CARDS and row in FRESH_ONLY_ON_WEAPONS)
-                            wrule = (key in NONCASTER_CARDS and row in FRESH_WEAPON_ROWS) or \
+                            wrule = (key in NONCASTER_CARDS and row in FRESH_WEAPON_ROWS
+                                     and not (row in WEAPON_LOW_ONLY and alvl >= CUT)) or \
                                 (row in FRESH_CASTER_ROWS and bool(groups & {"CLUB", "STAFF", "WAND", "SOR"}))
                             if not (low or wrule):
                                 if got["now"] != got["off"]:
