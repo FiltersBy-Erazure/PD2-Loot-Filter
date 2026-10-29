@@ -677,10 +677,14 @@ FRESH_WEAPON_ROWS = {"leech_life", "leech_mana", "frw", "ar_pct", "owd", "itd", 
 # (the author; attack rating only below affix level 60, from the cards' picks)
 # on weapons only below affix level 60 (the author, 2026-10-29; attack rating % the same day)
 WEAPON_LOW_ONLY = {"leech_life", "leech_mana", "owd", "ar_pct"}
-WEAPON_ANY_TIME = {"dmg_dem": "STAT121>100", "dmg_und": "STAT122>100"}
+# damage to demons / undead (the author, 2026-10-29): below affix level 60 every roll, from 60 only on a weapon with
+# 100%+ enhanced damage; 100 and up (300 shows it red) socketed or corrupted too, below 100 (tan) until then
+WEAPON_ANY_TIME = {"dmg_dem": "STAT121>99", "dmg_und": "STAT122>99"}
+WEAPON_GATE = {"dmg_dem": f"(ALVL<{CUT} OR ED>99)", "dmg_und": f"(ALVL<{CUT} OR ED>99)"}
 # on weapons these show only while nothing is socketed and the item isn't corrupted, below affix level 60 too (the
-# author, 2026-10-28): the weapon cards leave their low-level part, the weapon part above covers them
-FRESH_ONLY_ON_WEAPONS = {"leech_life", "leech_mana", "owd", "ar_pct"}
+# author, 2026-10-28; demons / undead below 100): the weapon cards leave their low-level part, the weapon part
+# above covers them
+FRESH_ONLY_ON_WEAPONS = {"leech_life", "leech_mana", "owd", "ar_pct", "dmg_dem", "dmg_und"}
 # clubs, orbs, wands and staves tag these the same way, until socketed or corrupted (the author, 2026-10-28; clubs take
 # both sets; flat physical damage reduction only comes from the Safety craft). Replenish life, regenerate mana and
 # damage taken goes to mana never show on them
@@ -748,14 +752,16 @@ def render_section(picks, eligible, off=False):
         if not off and groups:
             types, who = ("WEAPON", "all weapons") if len(groups) == 2 else groups[0]
             fresh = (f"ALVL<{CUT} " if row in WEAPON_LOW_ONLY else "") + "!GEMMED !STAT360>0"
-            wpn = f"{types} ({WEAPON_ANY_TIME[row]} OR ({fresh}))" if row in WEAPON_ANY_TIME else f"{types} {fresh}"
+            wpn = f"{types} {WEAPON_GATE[row]} ({WEAPON_ANY_TIME[row]} OR ({fresh}))" if row in WEAPON_ANY_TIME \
+                else f"{types} {fresh}"
         body = "FALSE" if not (low or wpn) else f"((RARE OR CRAFT) {low or wpn})" if not (low and wpn) else \
             f"((RARE OR CRAFT) (({low}) OR ({wpn})))"
         out += ["", f"// {label}: " + (", ".join(CARD_NAME[c].lower() for c in cards) or "none") +
                 (" (not with anything socketed: gems and runes add it)" if gem and cards else "") +
                 (f"; {who} {'below affix level ' + str(CUT) if row in WEAPON_LOW_ONLY else 'at every affix level'} "
                  "until socketed or corrupted" if wpn else "")
-                + (" (above 100 at any time)" if row in WEAPON_ANY_TIME and wpn else ""),
+                + (f" (from affix level {CUT} only with 100%+ enhanced damage; 100 and up at any time)"
+                   if row in WEAPON_ANY_TIME and wpn else ""),
                 f"Alias[{ALIASES[row]}]:" + body]
     return ("\r\n".join(out) + "\r\n").encode("utf-8")
 
@@ -878,7 +884,8 @@ def verify():
                             low = alvl < CUT and row in ALIASES and picks[key].get(row) and \
                                 not (key in WEAPON_CARDS and row in FRESH_ONLY_ON_WEAPONS)
                             wrule = (key in NONCASTER_CARDS and row in FRESH_WEAPON_ROWS
-                                     and not (row in WEAPON_LOW_ONLY and alvl >= CUT)) or \
+                                     and not (row in WEAPON_LOW_ONLY and alvl >= CUT)
+                                     and (row not in WEAPON_GATE or alvl < CUT or v.get("ED", 0) > 99)) or \
                                 (row in FRESH_CASTER_ROWS and bool(groups & {"CLUB", "STAFF", "WAND", "SOR"}))
                             if not (low or wrule):
                                 if got["now"] != got["off"]:
@@ -899,8 +906,8 @@ def verify():
                                     if twice:
                                         problems.append(f"{where}, corruption {c}: {' '.join(twice)} twice")
                                 # socketed, and a weapon's fresh tags corrupted too (an outcome these lines don't
-                                # count): as without the low-level tags, but a weapon's demons / undead above 100
-                                any_time = wrule and row in WEAPON_ANY_TIME and roll_value(a, row, high) > 100
+                                # count): as without the low-level tags, but a weapon's demons / undead from 100
+                                any_time = wrule and row in WEAPON_ANY_TIME and roll_value(a, row, high) > 99
                                 cases = [("socketed", dict(v, GEMMED=1))] if row in SOCKETED or (wrule and not low) \
                                     else []
                                 cases += [("corrupted", dict(v, STAT360=6))] if wrule and not low else []

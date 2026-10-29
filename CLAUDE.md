@@ -297,9 +297,10 @@
   undead (not knockback, attributes, single resistances or attack rating: the author; below 60 the weapon cards'
   picks) at every affix level and roll, and life / mana leech, open wounds damage and attack rating % below affix
   level 60 only (`WEAPON_LOW_ONLY`, the author, 2026-10-29), while nothing is socketed and they
-  aren't corrupted (`!GEMMED !STAT360>0`), demons / undead above 100 at any time, socketed or corrupted too (the author,
-  2026-10-28; corruptions 5 / 77 add +100-150%, so such a corrupted weapon shows its total): `FRESH_WEAPON_ROWS` /
-  `WEAPON_ANY_TIME` in the tool. Clubs, orbs, wands and staves (clubs take both sets) tag life / mana after each kill,
+  aren't corrupted (`!GEMMED !STAT360>0`). Damage to demons / undead (the author, 2026-10-29): below affix level 60
+  every roll, from 60 only on a weapon with 100%+ enhanced damage (`ED>99`); 100 and up red, socketed or corrupted
+  too (corruptions 5 / 77 add +100-150%, so such a corrupted weapon shows its total), below 100 tan, until socketed
+  or corrupted (helms and circlets keep red): `FRESH_WEAPON_ROWS` / `WEAPON_ANY_TIME` / `WEAPON_GATE` in the tool. Clubs, orbs, wands and staves (clubs take both sets) tag life / mana after each kill,
   mana, life, single resistances, energy, strength, dexterity and flat physical / magic damage reduction the same way
   (`FRESH_CASTER_ROWS`; flat PDR on weapons only comes from the Safety craft, so 300's PDR line takes `WEAPON`);
   replenish life, regenerate mana and damage taken goes to mana never show on them. Each is a weapon part in the

@@ -253,18 +253,18 @@ function tagsHTML(segs) {
 // rare and crafted weapons tag some stats at every affix level until socketed or corrupted: the physical ones one set,
 // clubs, orbs, wands and staves another (clubs, on the melee card, both)
 function wpnChip(card, info, row) {
-  if (row.lock) {
+  if (row.lock && info.wpn !== 2) {
     return `<span class="chip" title="On weapons this stat shows only below affix level ${DATA.cut}, and only while nothing is socketed and the item isn't corrupted">Below affix level ${DATA.cut}, only until socketed or corrupted</span>`;
   }
   let text = "";
   if (info.wpn && DATA.wpnCards.includes(card.key)) {
-    text = info.wpn === 2 ? "Every affix level: above 100 always, else until socketed or corrupted" : "Every affix level until socketed or corrupted";
+    text = info.wpn === 2 ? `Below affix level ${DATA.cut}; from ${DATA.cut} with 100%+ enhanced damage. 100+ always, tan under 100 until socketed or corrupted` : "Every affix level until socketed or corrupted";
   } else if (info.wpnc && card.key === "caster") {
     text = "Every affix level until socketed or corrupted";
   } else if (info.wpnc && card.key === "melee") {
     text = "Clubs: every affix level until socketed or corrupted";
   }
-  return text ? `<span class="chip" title="Tagged at every affix level while nothing is socketed and the item isn't corrupted (damage to demons / undead above 100: always). The switch adds the low-level tag below affix level ${DATA.cut}, corrupted too">${text}</span>` : "";
+  return text ? `<span class="chip" title="Tagged at every affix level while nothing is socketed and the item isn't corrupted (damage to demons / undead: from affix level ${DATA.cut} only with 100%+ enhanced damage; 100 and up also socketed or corrupted). The switch adds the low-level tag below affix level ${DATA.cut}, corrupted too">${text}</span>` : "";
 }
 
 function rowHTML(card, row) {
