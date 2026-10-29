@@ -188,6 +188,7 @@ class RuleSet:
         if clash:
             sys.exit(f"alias names inside roll alias names: {', '.join(clash)}")
         self.formulas = []
+        self.named = {"FORMULA" + k.upper(): text for k, (_, text) in lt.formulas.items()}  # Formula[KEY]
         self.roll_tree = {n: tree(rpn(E.expand_condition(lt.aliases[n], others))) for n in rolls}
         word = re.compile(r"(?<![A-Z0-9_@])(" + "|".join(sorted(rolls, key=len, reverse=True)) + r")(?![A-Z0-9_@])")
         self.rules = []
@@ -207,7 +208,8 @@ class Zero(dict):
 
 
 FUNCS = {"MAX": max, "MIN": min, "ABS": abs, "COUNT": lambda *a: sum(1 for x in a if x), "FLOOR": math.floor,
-         "CEIL": math.ceil, "ROUND": lambda x: math.floor(x + 0.5)}  # (docs/pd2-formula-info.wiki)
+         "CEIL": math.ceil, "ROUND": lambda x: math.floor(x + 0.5), "AND": lambda *a: int(all(a)),
+         "OR": lambda *a: int(any(a)), "IF": lambda c, a, b: a if c else b}  # (docs/pd2-formula-info.wiki)
 
 
 def eval_formula(text, v):
@@ -218,6 +220,7 @@ def eval_formula(text, v):
     env = Zero({k.replace(",", "_"): x for k, x in v.items()})
     env.update(FUNCS)
     expr = re.sub(r"(?<![=<>!])=(?!=)", "==", body)
+    expr = re.sub(r"!(?!=)", " not ", expr)
     expr = re.sub(r"\b([A-Z][A-Z_]*\d+),(\d+)", r"\1_\2", expr)  # MULTI198,123 -> one name
     try:
         return eval(expr, {"__builtins__": {}}, env)
@@ -235,6 +238,13 @@ class Model:
         self.off, self.on = set(off), set(on)
         self.trees, self.static = ({} if trees is None else trees), static
         self.cache, self.rolls = {}, {}
+
+    def named_formula(self, ref):
+        """A Formula[KEY]'s value for this item: its values, item groups, quality, on the ground."""
+        v = dict(self.v, **{g: 1 for g in self.groups}, **{self.kind: 1})
+        v.setdefault("GROUND", 1)
+        v.setdefault("MAPTIER", -1)
+        return eval_formula(self.rs.named[ref], v)
 
     def atom(self, word):
         x = self.cache.get(word)
@@ -291,6 +301,8 @@ class Model:
                 total += v[part]
             elif part == "MAPTIER":
                 total -= 1
+            elif part in self.rs.named:
+                total += self.named_formula(part)
         hi = int(b) if b is not None else a
         return int({"=": total == a, "<": total < a, ">": total > a, "~": a <= total <= hi}[op])
 

@@ -145,7 +145,8 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;",
 const clone = o => JSON.parse(JSON.stringify(o));
 
 // a row needs a choice on a card when one of the card's kinds doesn't tag it at every roll today
-const canPick = row => row.kinds.some(k => k.st !== "any");
+// (a locked row has none: on weapons the stat shows only while nothing is socketed and the item isn't corrupted)
+const canPick = row => !row.lock && row.kinds.some(k => k.st !== "any");
 const DEFAULTS = {};
 for (const c of DATA.cards) {
   DEFAULTS[c.key] = {};
@@ -251,7 +252,10 @@ function tagsHTML(segs) {
 
 // rare and crafted weapons tag some stats at every affix level until socketed or corrupted: the physical ones one set,
 // clubs, orbs, wands and staves another (clubs, on the melee card, both)
-function wpnChip(card, info) {
+function wpnChip(card, info, row) {
+  if (row.lock) {
+    return `<span class="chip" title="On weapons this stat shows at every affix level, below ${DATA.cut} too, but only while nothing is socketed and the item isn't corrupted">Every affix level, only until socketed or corrupted</span>`;
+  }
   let text = "";
   if (info.wpn && DATA.wpnCards.includes(card.key)) {
     text = info.wpn === 2 ? "Every affix level: above 100 always, else until socketed or corrupted" : "Every affix level until socketed or corrupted";
@@ -277,7 +281,7 @@ function rowHTML(card, row) {
   const sw = pick ?
     `<label class="sw" for="sw-${card.key}-${row.key}"><input type="checkbox" role="switch" id="sw-${card.key}-${row.key}"
       data-row="${row.key}" ${on ? "checked" : ""} ${editable ? "" : "disabled"}> ${on ? "Every roll" : "As today"}</label>` :
-    `<span class="fixed">Already tagged</span>`;
+    `<span class="fixed">${row.lock ? "Fresh weapons only" : "Already tagged"}</span>`;
   const isDef = pick && on === !!info.def;
   const many = card.kinds.length > 1;
   const affRows = row.kinds.flatMap(kr => kr.aff.map(([ai, roll, tSeg, , nSeg, some]) => {
@@ -294,7 +298,7 @@ function rowHTML(card, row) {
   return `<div class="row${on ? " on" : ""}${pick ? "" : " fixedrow"}" data-row="${row.key}">
     <div>${sw}</div>
     <div class="rmain">
-      <div class="rtitle"><b>${esc(info.label)}</b>${pick ? stateChips(card, row) : ""}${pick && info.sock ? '<span class="chip" title="Gems and runes add this stat, so an item with anything socketed shows it as without the low-level tags">Not when socketed</span>' : ""}${pick && info.min ? `<span class="chip" title="Rare and crafted items tag this stat from ${info.min} up, at every level">From ${info.min}</span>` : ""}${wpnChip(card, info)}${noLook ? '<span class="chip nolook">No tag look in 300 yet</span>' : ""}${pick && !isDef ? '<span class="chip def">changed</span>' : ""}</div>
+      <div class="rtitle"><b>${esc(info.label)}</b>${pick ? stateChips(card, row) : ""}${pick && info.sock ? '<span class="chip" title="Gems and runes add this stat, so an item with anything socketed shows it as without the low-level tags">Not when socketed</span>' : ""}${pick && info.min ? `<span class="chip" title="Rare and crafted items tag this stat from ${info.min} up, at every level">From ${info.min}</span>` : ""}${wpnChip(card, info, row)}${noLook ? '<span class="chip nolook">No tag look in 300 yet</span>' : ""}${pick && !isDef ? '<span class="chip def">changed</span>' : ""}</div>
       <div class="samples"><span>Today</span>${tagsHTML(today)}${pick ? `<span class="newl">Every roll</span>${tagsHTML(after)}` : ""}</div>
     </div>
     <div><div class="bands">${bands.map(v => v === null ? '<span class="na">–</span>' : `<span>${v}</span>`).join("")}</div></div>

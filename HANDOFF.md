@@ -126,6 +126,7 @@ About 825 KB is roughly 200k+ tokens per file. **No conversation will "see the w
 | `300-affix-tags` | 8290–9553 | 113 stat blocks, one per stat in the game's stat order: MF, GF, resists, FCR, IAS, skills… (largest file, ~28k tokens) |
 | `305-runeword-rolls` | 9554–10067 | GENERATED (`tools/gen_runeword_rolls.py`): runeword roll tags, aliases and tag lines in 300's stat order (added S14) |
 | `310-staffmods` | 10068–10364 | |
+| `312-tag-count` | (2026-10-28) | GENERATED (`tools/gen_tag_count.py` from the rules before 315). `Formula[RARE_TAGS...]`: how many tags an identified, uncorrupted rare's label shows; `Alias[SELL_TAG_CROWDED]`: 6 or more, so 315's sell value tags skip it |
 | `315-sell-value-tags` | 10365–10424 | Sell value ($6k below character level 30, then ($)) and low cost vendor ($): left-most tag of the lower line, so after every tag section (was `290` until S14) |
 | `320-highlights-ed-amp-lr` | 10425–10471 | |
 | `330-tooltip-tags` | 10472–10493 | Cannot Be Frozen, weapon speed & range, item tier type (commented out) |

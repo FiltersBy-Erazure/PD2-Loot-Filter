@@ -25,6 +25,10 @@ rem Low-level rare tags (below affix level 60): tools\low_level_tag_picks.json (
 rem choices) -> generated aliases that 300's tag lines ask
 python tools\low_level_tags.py
 if errorlevel 1 goto failed
+rem Tag count of rares (315's sell value tag skips a rare with 6 or more tags): the rules before 315 -> generated
+rem formulas (after every other generated section: it counts their tags)
+python tools\gen_tag_count.py
+if errorlevel 1 goto failed
 python tools\build.py --stamp
 if errorlevel 1 goto failed
 rem Unique/set tier page for players (Erazure-Unique-Set-Tiers.html, read from the filter's rules): after the

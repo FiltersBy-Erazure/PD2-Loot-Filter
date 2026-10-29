@@ -411,12 +411,18 @@ class Rule:
     __slots__ = ("idx", "where", "cond", "tree", "name", "desc", "cont", "section", "line")
 
 
+class Formulas(list):
+    """The rules' $f(...) islands (FORMULA__n), and .named: Formula[KEY] as its condition word FORMULAKEY."""
+    named = {}
+
+
 def load_rules():
     """Every rule of Erazure - Main: its condition (aliases expanded; formulas as words of their own), name and
     description templates (BH's ParseDescription: the first {...}; none = an empty description) and %CONTINUE%."""
     lines, where = E.load(build.MAIN)
     lt = L.Linter(lines, where, False)
-    rules, formulas = [], []
+    rules, formulas = [], Formulas()
+    formulas.named = {"FORMULA" + k.upper(): text for k, (_, text) in lt.formulas.items()}
     for r in lt.rules:
         cond = E.expand_condition(r.cond, lt.aliases)
         words = cond
@@ -482,6 +488,9 @@ class Model:
         for part in key.split("+"):
             if part in v:
                 total += v[part]
+            elif part in self.formulas.named:  # a Formula[KEY]: the item's values, groups, quality and place
+                total += LC.eval_formula(self.formulas.named[part], dict(
+                    v, **{g: 1 for g in self.groups}, **{item.quality: 1, item.place: 1}))
             elif STAT_WORD_RE.fullmatch(part) or part in STAT_WORDS:
                 pass  # a stat the item does not have
             else:

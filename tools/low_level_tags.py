@@ -606,7 +606,8 @@ def page_data():
                 has_look = all(look_of(a, row) for a in row_affixes)
                 kind_rows.setdefault(row, []).append({"k": ki, "st": state, "from": start, "bands": bands,
                                                       "pos": pos, "look": int(has_look), "aff": entries})
-        rows = [{"key": r[0], "kinds": kind_rows[r[0]]} for r in ROWS if r[0] in kind_rows]
+        rows = [{"key": r[0], "kinds": kind_rows[r[0]],
+                 "lock": int(key in WEAPON_CARDS and r[0] in FRESH_ONLY_ON_WEAPONS)} for r in ROWS if r[0] in kind_rows]
         cards.append({"key": key, "name": name, "cond": cond, "kinds": kind_list, "rows": rows,
                       "reach": reach_max, "reachBase": reach_base, "longestBase": longest[0]})
     return {"cut": CUT, "nameMax": LC.NAME_MAX, "bands": list(BANDS), "viewer": VIEWER, "cats": CATS,
@@ -674,6 +675,9 @@ NONCASTER_CARDS = ["melee", "ranged", "throwing"]
 FRESH_WEAPON_ROWS = {"leech_life", "leech_mana", "str", "dex", "res", "frw", "ar", "ar_pct", "owd", "itd", "knock",
                      "dmg_dem", "dmg_und"}  # not life / mana after each kill, nor open wounds chance (the author)
 WEAPON_ANY_TIME = {"dmg_dem": "STAT121>100", "dmg_und": "STAT122>100"}
+# on weapons these show only while nothing is socketed and the item isn't corrupted, below affix level 60 too (the
+# author, 2026-10-28): the weapon cards leave their low-level part, the weapon part above covers them
+FRESH_ONLY_ON_WEAPONS = {"leech_life", "leech_mana", "owd"}
 # clubs, orbs, wands and staves tag these the same way, until socketed or corrupted (the author, 2026-10-28; clubs take
 # both sets; flat physical damage reduction only comes from the Safety craft). Replenish life, regenerate mana and
 # damage taken goes to mana never show on them
@@ -733,7 +737,8 @@ def render_section(picks, eligible, off=False):
     for row, label, _, _ in ROWS:
         if row not in ALIASES:
             continue
-        cards = [] if off else [c for c, *_ in CARDS if row in eligible.get(c, []) and picks.get(c, {}).get(row)]
+        cards = [] if off else [c for c, *_ in CARDS if row in eligible.get(c, []) and picks.get(c, {}).get(row)
+                                and not (row in FRESH_ONLY_ON_WEAPONS and c in WEAPON_CARDS)]
         gem = " !GEMMED" if row in SOCKETED else ""
         low = f"ALVL<{CUT}{gem} {card_condition(cards)}" if cards else ""
         wpn, groups = "", [(g, who) for g, rows, who in WEAPON_GROUPS if row in rows]
@@ -866,7 +871,8 @@ def verify():
                                 problems.append(f"{where}: aliases off {got['off']!r}, last commit {got['head']!r}")
                             if line("head", v, "MAG") != line("off", v, "MAG"):
                                 problems.append(f"{where}, as a magic item: changed with the aliases off")
-                            low = alvl < CUT and row in ALIASES and picks[key].get(row)
+                            low = alvl < CUT and row in ALIASES and picks[key].get(row) and \
+                                not (key in WEAPON_CARDS and row in FRESH_ONLY_ON_WEAPONS)
                             wrule = (key in NONCASTER_CARDS and row in FRESH_WEAPON_ROWS) or \
                                 (row in FRESH_CASTER_ROWS and bool(groups & {"CLUB", "STAFF", "WAND", "SOR"}))
                             if not (low or wrule):

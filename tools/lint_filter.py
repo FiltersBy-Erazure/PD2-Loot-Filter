@@ -140,6 +140,7 @@ SHOP_RE = re.compile(r"(?<![!\w])SHOP\b")
 
 STATEMENT_RE = re.compile(r"^(ItemDisplay|ItemDisplayFilterName|Alias|Formula)\[")
 ALIAS_DEF_RE = re.compile(r"^Alias\[([^\]]+)\]:(.*)$")
+FORMULA_DEF_RE = re.compile(r"^Formula\[([^\]]+)\]:(.*)$")
 WORD_RE = re.compile(r"MULTI\d+,\d+|[A-Za-z0-9_$&|]+")
 FORMULA_RE = re.compile(r"\$f\(")
 
@@ -244,6 +245,7 @@ class Linter:
         self.items = load_item_codes()
         self.findings = []
         self.rules, self.aliases, self.alias_lines = [], {}, defaultdict(list)
+        self.formulas = {}  # Formula[KEY]: KEY -> (line index, text); a condition asks it as FORMULAKEY
         self.parse()
 
     def report(self, idx, severity, check, message, key):
@@ -270,6 +272,10 @@ class Linter:
                 self.alias_lines[name].append(idx)
                 self.aliases[name] = a.group(2).strip()
                 continue
+            f = FORMULA_DEF_RE.match(text)
+            if f:
+                self.formulas[f.group(1).strip()] = (idx, f.group(2).strip())
+                continue
             if not text.startswith("ItemDisplay["):
                 continue
             close = text.find("]:")
@@ -290,6 +296,7 @@ class Linter:
         self.check_tiers()
         self.check_tag_order()
         self.check_runeword_tags()
+        self.check_formulas()
         self.check_town_hide()
         return self.findings
 
@@ -349,9 +356,27 @@ class Linter:
                 continue
             self.check_condition_word(r, word)
 
+    def check_formulas(self):
+        """Formula[KEY]: BH compiles the text as it stands (no aliases) and drops a formula that doesn't compile, so
+        every condition asking it then matches nothing."""
+        for key, (idx, text) in self.formulas.items():
+            if not re.fullmatch(r"[A-Za-z_]+", key):
+                self.report(idx, "error", "formula", f"Formula[{key}]: only A-Z and _ may be used in a key", key)
+            if not balanced(text, "(", ")"):
+                self.report(idx, "error", "formula", f"Formula[{key}]: unbalanced ( )", key)
+            for word in sorted(set(WORD_RE.findall(text))):
+                if word.isdigit() or word.lower() in FORMULA_VARS or word.lower() in FUNCTIONS \
+                        or FORMULA_PREFIX_RE.match(word):
+                    continue
+                what = "an alias (BH puts no aliases into a formula's definition)" if word in self.aliases \
+                    else "no formula variable"
+                self.report(idx, "error", "formula", f"Formula[{key}]: '{word}' is {what}", word)
+
     def check_condition_word(self, r, word):
         if word in BH_CONDITIONS or COND_PREFIX_RE.match(word):
             return
+        if word.startswith("FORMULA") and word[7:] in {k.upper() for k in self.formulas}:
+            return  # a named formula (Formula[KEY])
         if len(word) >= 3 and not any(c.isupper() for c in word[:3]):
             if word not in self.items:
                 self.report(r.idx, "warning", "item-code",
