@@ -3,8 +3,8 @@
 Claude Code PostToolUse hook: after Claude edits a file in sections/, version.json,
 filter_definitions.json, tools/unique_roll_picks.txt, tools/unique_cut_rules.txt, tools/runeword_roll_picks.txt,
 tools/boss_tag_rules.json or tools/low_level_tag_picks.json,
-write the plain twins of the star highlights for corrupted items (tools/plain_highlights.py: sections 280 and
-320), regenerate the unique/set label cut cases (tools/label_cuts.py: tools/unique_cut_cases.tsv), the unique/set and
+write the plain twins of the +N to one skill highlights for corrupted items (tools/plain_highlights.py: section
+280), regenerate the unique/set label cut cases (tools/label_cuts.py: tools/unique_cut_cases.tsv), the unique/set and
 runeword roll tags (for section and picks edits: tools/gen_unique_rolls.py and
 tools/gen_runeword_rolls.py), the map experience tags (tools/gen_map_exp.py), the boss gear tags (tools/gen_boss_tags.py), the low-level rare tag aliases (tools/low_level_tags.py), the tag count of rares (tools/gen_tag_count.py) and the players' pages (tools/tier_map.py: Erazure-Unique-Set-Tiers.html,
 tools/base_map.py: Erazure-Non-Magic-Bases.html, tools/magic_rare_map.py: Erazure-Magic-Items.html and

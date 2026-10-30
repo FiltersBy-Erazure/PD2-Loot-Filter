@@ -9,7 +9,7 @@ if errorlevel 1 (
     goto failed
 )
 
-rem Highlights with stars (sections 280, 320): each one's plain twin for corrupted items, under it
+rem +N to one skill highlights (section 280): each one's plain twin without stars for corrupted items, under it
 python tools\plain_highlights.py
 if errorlevel 1 goto failed
 rem Unique/set labels BH would cut: where each step of tools\unique_cut_rules.txt applies (tools\unique_cut_cases.tsv)

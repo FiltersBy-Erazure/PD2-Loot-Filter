@@ -1418,8 +1418,8 @@ INTRO = [
     "Each kind of highlight below has a sample item drawn as its hover box looks in game, then every highlight of "
     "that kind and what an item needs to get it. An item a store never sells (a rare, a circlet, most class items) "
     "is drawn in your inventory.",
-    "A corrupted item shows the highlight without its stars: its own lines are longer, and the hover box has less "
-    "room left for the filter's lines.",
+    "On a corrupted item a +N to one skill highlight comes without its stars: the item's own lines are longer, and "
+    "the hover box has less room left for the filter's lines.",
 ]
 SELFTEST = [  # two shop screenshots of the author's (2026-10-20): the hover box line by line, and the Cost seen
     # (the gloves' highlight line follows the rule's text: "3/20 Gloves" on the screenshot, "+3/20ias" since 2026-10-21)

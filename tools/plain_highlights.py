@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Corrupted items show their highlights without the stars (the author, 2026-10-30).
+Corrupted items show their +N to one skill highlights without the stars (the author, 2026-10-30).
 
 BH gives an item's description what is left of 1,023 characters after the item's own text (BH Item.cpp,
 BHOnProperties: the label, the affix lines with BH's stat ranges and red corruption stars, the requirement lines,
@@ -8,8 +8,13 @@ Item / Affix Level). A corrupted item's text is longer, and on a corrupted, sock
 shown 69 were left: its two skill highlights, 36 characters each besides their text, did not fit
 ("*******   +5 Lightning Sentry   *******" and a "****..." line above it). Without the stars they need 42.
 
-BH can't change a rule's text by a condition, so every highlight rule with stars on either side (%HIGHLIGHT_1_LEFT%
-... %HIGHLIGHT_1_RIGHT%, HIGHLIGHT_2, AMPLIFY, LOWER_RES) in SECTIONS is a pair:
+Only the highlights of one skill: "+N <skill>" (+4 Chain Lightning, +9 Combustion, +%SK123% Conviction), the skill a
+name of docs/pd2-skills.tsv or of SHORT_NAMES; a skill tab, All Skills (GROUP_NAMES) or any other highlight
+(+2/39res/22pdr, Physical, Teleport Charges) keeps its stars on corrupted items (the author: "+3-9 individual
+skills"). A "+N <name>" the tool doesn't know stops the run: add the name to SHORT_NAMES or GROUP_NAMES.
+
+BH can't change a rule's text by a condition, so every such rule (stars on either side: %HIGHLIGHT_1_LEFT% ...
+%HIGHLIGHT_1_RIGHT%, HIGHLIGHT_2) in SECTIONS is a pair:
     ItemDisplay[<condition> !STAT360>0]:%NAME%{%HIGHLIGHT_1_LEFT%   %GREEN%+6 Wake of Fire   %HIGHLIGHT_1_RIGHT%...
     ItemDisplay[<condition> STAT360>0]:%NAME%{%GREEN%+6 Wake of Fire...
 the rule with the stars (its condition ends with !STAT360>0) and right under it its plain twin: the same condition
@@ -22,7 +27,8 @@ Edit only the star rule: this tool writes its twin (the hook and build.bat run i
 SECTIONS whose condition ends with " STAT360>0" is a twin: one that no longer follows its star rule is removed.
 A star rule for items that are never corrupted has no twin and no test: a shop item (SHOP), an uncorrupted one
 (STAT360=0), each a term of the condition's top level (not inside brackets). A commented-out star rule
-(//ItemDisplay[...) gets a commented-out twin.
+(//ItemDisplay[...) gets a commented-out twin. A pair whose star rule no longer takes a twin (a tab's, a shop
+rule's) is undone: the twin goes, and so does the star rule's corruption test.
 
 Usage (from the repo root):
     python tools/plain_highlights.py            add the corruption tests and write the twins (only files that change)
@@ -36,8 +42,16 @@ from pathlib import Path
 sys.dont_write_bytecode = True
 TOOLS = Path(__file__).resolve().parent
 ROOT = TOOLS.parent
-SECTIONS = ["280-skills-shop-highlights.filter", "320-highlights-ed-amp-lr.filter"]
+SECTIONS = ["280-skills-shop-highlights.filter"]
 ALIASES = ROOT / "sections" / "040-aliases.filter"
+SKILLS = ROOT / "docs" / "pd2-skills.tsv"
+ONE_SKILL_RE = re.compile(r"\+(\d+|%SK\d+%) (.+)")
+SHORT_NAMES = {  # the highlights' names for skills the table names otherwise
+    "Skeleton Warrior", "Skeletal Mage", "Skele Warrior", "Skele Mage", "Skele Archer", "Skele Mastery",
+    "Fist of Heavens", "Raven", "Grizzly", "Wolverine", "Dire Wolf", "Spirit Wolf"}
+GROUP_NAMES = {  # skill tabs and All Skills: their highlights keep the stars
+    "Skills", "Combat Skills", "Curses", "Poison and Bone", "Summoning", "Javelin Skills", "Bow & Crossbow", "Traps",
+    "Shadow Disciplines", "Warcries Weapon"}
 BLOCK_RE = re.compile(r"%(HIGHLIGHT_\d|AMPLIFY|LOWER_RES)_LEFT%( *)(.*?)( *)%\1_RIGHT%")
 STAR_TEST, PLAIN_TEST = " !STAT360>0", " STAT360>0"
 NEVER_CORRUPTED = {"SHOP", "STAT360=0"}
@@ -59,6 +73,26 @@ def last_colors():
             if colors:
                 out[m.group(1)] = colors[-1]
     return out
+
+
+def skill_names():
+    out = set()
+    for line in SKILLS.read_text(encoding="utf-8").splitlines():
+        cols = line.split("\t")
+        if not line.startswith("#") and len(cols) > 1 and cols[0].isdigit():
+            out.add(cols[1])
+    return out | SHORT_NAMES
+
+
+def one_skill(text, skills):
+    """Whether a highlight's text (its colors left out) names one skill: '+6 Wake of Fire'."""
+    m = ONE_SKILL_RE.fullmatch(COLOR_RE.sub("", text))
+    if not m or m.group(2) in GROUP_NAMES:
+        return False
+    if m.group(2) not in skills:
+        raise ValueError(f"'+N {m.group(2)}': add it to SHORT_NAMES (one skill) or GROUP_NAMES "
+                         f"(tools/plain_highlights.py)")
+    return True
 
 
 def split(line):
@@ -99,14 +133,14 @@ def is_twin(cond):
     return cond.endswith(PLAIN_TEST) and not cond.endswith(STAR_TEST)
 
 
-def pair(line, colors):
+def pair(line, colors, skills):
     """(star line, twin line) a star rule should be, None for a line that is not a star rule or needs no twin."""
     parts = split(line)
     if not parts:
         return None
     prefix, cond, output = parts
     m = star_block(output)
-    if not m:
+    if not m or not one_skill(m.group(3), skills):
         return None
     base = cond[:-len(STAR_TEST)] if cond.endswith(STAR_TEST) else cond
     terms = top_terms(base)
@@ -125,7 +159,7 @@ def pair(line, colors):
             f"{prefix}ItemDisplay[{base}{PLAIN_TEST}]:{plain}")
 
 
-def fixed(lines, colors, name):
+def fixed(lines, colors, skills, name):
     """The section's lines with every star rule followed by its twin, and what changed (messages)."""
     out, notes, i = [], [], 0
     while i < len(lines):
@@ -137,10 +171,16 @@ def fixed(lines, colors, name):
             i += 1
             continue
         try:
-            want = pair(line, colors)
+            want = pair(line, colors, skills)
         except ValueError as e:
             raise SystemExit(f"{name}:{i + 1}: {e}")
+        nxt = split(lines[i + 1]) if i + 1 < len(lines) else None
         if not want:
+            if parts and parts[1].endswith(STAR_TEST) and nxt and is_twin(nxt[1]) and star_block(parts[2]):
+                notes.append(f"{name}:{i + 1}: star rule that takes no twin, pair undone")
+                out.append(f"{parts[0]}ItemDisplay[{parts[1][:-len(STAR_TEST)]}]:{parts[2]}")
+                i += 2
+                continue
             out.append(line)
             i += 1
             continue
@@ -148,7 +188,6 @@ def fixed(lines, colors, name):
         if star != line:
             notes.append(f"{name}:{i + 1}: star rule without its corruption test")
         out += [star, twin]
-        nxt = split(lines[i + 1]) if i + 1 < len(lines) else None
         if nxt and is_twin(nxt[1]):
             if lines[i + 1] != twin:
                 notes.append(f"{name}:{i + 2}: twin out of date")
@@ -160,13 +199,13 @@ def fixed(lines, colors, name):
 
 
 def run(check):
-    colors = last_colors()
+    colors, skills = last_colors(), skill_names()
     found = []
     for name in SECTIONS:
         path = ROOT / "sections" / name
         raw = path.read_bytes().decode("utf-8")
         lines = raw.split("\r\n")
-        new, notes = fixed(lines, colors, f"sections/{name}")
+        new, notes = fixed(lines, colors, skills, f"sections/{name}")
         found += notes
         if notes and not check:
             path.write_bytes("\r\n".join(new).encode("utf-8"))
@@ -176,7 +215,7 @@ def run(check):
 
 def main():
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
-    ap = argparse.ArgumentParser(description="Write the plain twins of the star highlights (corrupted items).")
+    ap = argparse.ArgumentParser(description="Write the plain twins of the one-skill highlights (corrupted items).")
     ap.add_argument("--check", action="store_true", help="change nothing; exit 1 if a twin is missing or stale")
     args = ap.parse_args()
     found = run(args.check)
@@ -184,7 +223,7 @@ def main():
         for note in found:
             print(note)
         print(f"{len(found)} finding(s): run python tools/plain_highlights.py" if found
-              else "every star highlight has its plain twin")
+              else "every one-skill highlight has its plain twin")
         sys.exit(1 if found else 0)
 
 
