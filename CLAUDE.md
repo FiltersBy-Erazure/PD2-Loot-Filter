@@ -525,6 +525,20 @@
   Its db: collection `order`, document `main`, `{order: [kind ids], note, savedAt}`; when the author says to apply
   it, save it as JSON and `--check FILE` lists the samples whose lines are not in that order yet. `--dump [ID]`
   prints the samples.
+- Tier price review (2026-10-30, the author: are unique / set tiers under- or overvalued?): `python tools/market_tiers.py
+  --fetch` reads the PD2 trade site's active ladder listings of uniques and sets, softcore and hardcore apart
+  (`api.projectdiablo2.com/market/listing`, anonymous, undocumented; one request of 250 a second, ~6 minutes) into
+  `tools/.cache/market/`; without `--fetch` it writes `tools/market_tiers.html` (gitignored, from
+  `tools/market_tiers_template.html`) from the cache, published to https://claude.ai/artifact/QBbCVX9Z4GaKzSsPEj17sY
+  (republish there after a rerun). One card per base (an ethereal card where the filter tiers ethereal drops
+  differently): tier_map's tier and its conditions, each market's median asking price (identified, uncorrupted, the
+  base's best item with 5+ listings) on bands cut from the tiers' own medians, and a suggestion (raise / lower only
+  when both markets agree; one market when the other has too few listings). `--report` prints it, `--item NAME` one
+  item. Its db: collection `decisions`, one document per card id (`UNI_7cr`, `UNI_amd_eth`), `{choice: take / keep /
+  other, tier, note, was, suggested, item, data, savedAt}`; apply only when the author says, in 160 / 170's tier rules
+  (a Medium or High unique has its own drop sound line, Minimal none; sets: High, or Medium on 0-11 with the plain
+  name on 12; Corr's versions keep Medium and set sounds off), then delete the applied documents (keep decisions
+  stay) and republish. First applied 2026-10-29: 26 tier changes and Goldskin's character level limit.
 
 ## Variants (all 20 built from the same sections)
 | display_name | File | BIG_GG | POE_SOUNDS | REVEALED |
@@ -719,6 +733,7 @@ before), and so are throwing and stamina potions (hidden Fulminating / Chilling 
 `tools/gen_boss_tags.py` + `tools/boss_tag_rules.json` + `tools/boss_tag_editor_template.html` (section 270) ·
 `tools/low_level_tags.py` + `tools/low_level_tags_template.html` (the low-level rare tags page) ·
 `tools/gen_tag_count.py` (section 312, the rare tag count for 315's sell value tags) ·
+`tools/market_tiers.py` + `tools/market_tiers_template.html` (the tier price review page) ·
 `tools/alias_editor.py` + `tools/alias_editor_template.html` (the alias editor page) ·
 `tools/tier_map.py` + `tools/tier_map_template.html` + `Erazure-Unique-Set-Tiers.html` ·
 `sections/205-white-runeword-bases.filter` + `tools/base_map.py` + `tools/base_map_template.html` +

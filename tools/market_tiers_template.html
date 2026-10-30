@@ -1,0 +1,482 @@
+<title>Tier Price Review</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a sticky bar with the filters; under it what the page compares and each market's price bands drawn on one
+   log scale (1-1000 wss); then the bases by suggestion, one card each: the filter's tier and when it applies, both
+   markets' prices on the same scale over their bands, the suggestion and the author's decision. */
+:root {
+  --bg: #f2f0eb; --panel: #ffffff; --sunk: #f7f5f0; --line: #dcd5c7; --fg: #24211b; --muted: #6c6455;
+  --gold: #86621a; --focus: #86621a; --warn: #9a5b00; --warn-bg: #fbefd9; --ok: #2f6b45; --ok-bg: #e2f0e6;
+  --chip: #ece7dc; --mark: #24211b;
+  --t-high: #8a5a00; --b-high: #f0dba8; --t-med: #2f5f8a; --b-med: #d6e4f2; --t-min: #2f6b45; --b-min: #d8eadb;
+  --t-none: #6c6455; --b-none: #e9e4da; --t-lld: #6b3fa0; --b-lld: #e7ddf3; --t-dc: #b3261e; --b-dc: #f5dad6;
+  --display: "Cinzel", "Trajan Pro", Georgia, serif;
+  --body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", "Cascadia Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15130f; --panel: #1f1c16; --sunk: #191612; --line: #39322a; --fg: #e9e1cf; --muted: #a59a84;
+    --gold: #d6b468; --focus: #d6b468; --warn: #e8b05a; --warn-bg: #3a2c14; --ok: #86c39b; --ok-bg: #1d3226;
+    --chip: #2a251e; --mark: #f4ecd9;
+    --t-high: #e3bd62; --b-high: #4a3a14; --t-med: #8db8e0; --b-med: #1d2f42; --t-min: #86c39b; --b-min: #1d3626;
+    --t-none: #a59a84; --b-none: #2c2720; --t-lld: #c3a2ec; --b-lld: #33264a; --t-dc: #f07a6f; --b-dc: #45201c;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15130f; --panel: #1f1c16; --sunk: #191612; --line: #39322a; --fg: #e9e1cf; --muted: #a59a84;
+  --gold: #d6b468; --focus: #d6b468; --warn: #e8b05a; --warn-bg: #3a2c14; --ok: #86c39b; --ok-bg: #1d3226;
+  --chip: #2a251e; --mark: #f4ecd9;
+  --t-high: #e3bd62; --b-high: #4a3a14; --t-med: #8db8e0; --b-med: #1d2f42; --t-min: #86c39b; --b-min: #1d3626;
+  --t-none: #a59a84; --b-none: #2c2720; --t-lld: #c3a2ec; --b-lld: #33264a; --t-dc: #f07a6f; --b-dc: #45201c;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 15px; line-height: 1.45; margin: 0; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--panel); }
+button, select, input, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.muted { color: var(--muted); }
+.num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+.bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--panel); border-bottom: 1px solid var(--line);
+  padding-block: 10px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 8px; }
+.bar-top { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
+h1 { font-family: var(--display); font-size: 22px; letter-spacing: .03em; margin: 0; text-wrap: balance; }
+.status { font-size: 13px; padding: 2px 10px; border-radius: 999px; background: var(--chip); color: var(--muted); }
+.status.ok { background: var(--ok-bg); color: var(--ok); }
+.status.warn { background: var(--warn-bg); color: var(--warn); }
+.count { margin-left: auto; font-size: 13px; color: var(--muted); }
+.filters { display: flex; flex-wrap: wrap; gap: 8px 10px; align-items: center; font-size: 14px; }
+.filters input[type="search"], .filters select { background: var(--sunk); border: 1px solid var(--line); border-radius: 6px; padding: 4px 8px; min-width: 0; }
+.filters input[type="search"] { width: 16rem; max-width: 100%; }
+.filters label.check { display: inline-flex; gap: 6px; align-items: center; cursor: pointer; color: var(--muted); }
+
+.banner { background: var(--warn-bg); color: var(--warn); font-weight: 600; padding-block: 8px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); border-bottom: 1px solid var(--line); }
+main { padding-block: 16px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 18px; }
+.intro { display: grid; gap: 8px; max-width: 110ch; }
+.intro p { margin: 0; font-size: 14px; color: var(--muted); }
+.intro p b { color: var(--fg); }
+.jump { display: flex; flex-wrap: wrap; gap: 6px; }
+.jump a { text-decoration: none; color: var(--fg); background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: 2px 10px; font-size: 13px; }
+.jump a:hover { border-color: var(--gold); }
+.jump a .num { color: var(--muted); margin-left: 4px; }
+
+.markets { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+@media (max-width: 820px) { .markets { grid-template-columns: minmax(0, 1fr); } }
+.market { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; display: grid; gap: 8px; min-width: 0; }
+.market h2 { margin: 0; font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); display: flex; gap: 8px; flex-wrap: wrap; align-items: baseline; }
+.market h2 span { text-transform: none; letter-spacing: 0; font-weight: 400; }
+.scale { position: relative; height: 18px; font-family: var(--mono); font-size: 11px; color: var(--muted); }
+.scale span { position: absolute; transform: translateX(-50%); white-space: nowrap; }
+.scale span:first-child { transform: none; }
+.scale span:last-child { transform: translateX(-100%); }
+.cutlabels { position: relative; height: 16px; font-family: var(--mono); font-size: 11px; color: var(--fg); }
+.cutlabels span { position: absolute; transform: translateX(-50%); white-space: nowrap; }
+.tiermeds { display: flex; flex-wrap: wrap; gap: 6px; font-size: 13px; }
+
+.strip { position: relative; height: 12px; border-radius: 3px; overflow: hidden; }
+.strip.sc { background: var(--grad-sc, var(--b-none)); }
+.strip.hc { background: var(--grad-hc, var(--b-none)); }
+.strip.big { height: 18px; }
+.strip.empty { background: var(--sunk); border: 1px dashed var(--line); }
+.strip .whisk { position: absolute; top: 50%; height: 4px; margin-top: -2px; background: var(--mark); opacity: .45; border-radius: 2px; min-width: 2px; }
+.strip .dot { position: absolute; top: 50%; width: 10px; height: 10px; margin: -5px 0 0 -5px; border-radius: 50%; background: var(--mark); box-shadow: 0 0 0 2px var(--panel); }
+
+.pill { display: inline-block; font-size: 12px; font-weight: 700; padding: 1px 9px; border-radius: 999px; white-space: nowrap; }
+.pill.sm { font-size: 11px; padding: 0 7px; }
+.t-high { color: var(--t-high); background: var(--b-high); }
+.t-med { color: var(--t-med); background: var(--b-med); }
+.t-min { color: var(--t-min); background: var(--b-min); }
+.t-none { color: var(--t-none); background: var(--b-none); }
+.t-lld { color: var(--t-lld); background: var(--b-lld); }
+.t-dc { color: var(--t-dc); background: var(--b-dc); }
+
+.section { display: grid; gap: 10px; scroll-margin-top: 130px; }
+.section > h2 { font-family: var(--display); font-size: 20px; margin: 6px 0 0; letter-spacing: .02em; display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.section > h2 .num { font-family: var(--mono); font-size: 14px; color: var(--muted); }
+.section > p { margin: 0; color: var(--muted); font-size: 14px; max-width: 110ch; }
+
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; display: grid; min-width: 0; }
+.card.decided { border-color: var(--ok); }
+.card-head { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: baseline; padding: 10px 14px 8px; border-bottom: 1px solid var(--line); }
+.card-head h3 { margin: 0; font-size: 17px; font-weight: 700; }
+.chip { font-size: 12px; padding: 1px 8px; border-radius: 999px; background: var(--chip); color: var(--muted); }
+.chip.eth { color: var(--t-med); background: var(--b-med); }
+.chip.code { font-family: var(--mono); }
+.card-head .decision-badge { margin-left: auto; font-size: 12px; font-weight: 700; color: var(--ok); }
+.card-body { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.35fr) minmax(0, 1fr); }
+@media (max-width: 980px) { .card-body { grid-template-columns: minmax(0, 1fr); } }
+.col { padding: 10px 14px; display: grid; gap: 6px; align-content: start; min-width: 0; }
+.col + .col { border-left: 1px solid var(--line); }
+@media (max-width: 980px) { .col + .col { border-left: 0; border-top: 1px solid var(--line); } }
+.lbl { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 700; }
+.lines { margin: 0; padding-left: 16px; font-size: 13px; color: var(--muted); display: grid; gap: 2px; }
+.mk { display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: baseline; font-size: 13px; }
+.mk-name { font-weight: 700; width: 5.6em; }
+.mk-val { font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 14px; }
+.items { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 4px; }
+.items th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 700; padding: 3px 6px; border-bottom: 1px solid var(--line); }
+.items td { padding: 3px 6px; border-bottom: 1px solid var(--line); }
+.items tr:last-child td { border-bottom: 0; }
+.items td.num { white-space: nowrap; }
+.items .best { font-weight: 700; }
+.items .few { color: var(--muted); opacity: .75; }
+.itemswrap { overflow-x: auto; }
+
+.sugg { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-weight: 700; }
+.sugg .arrow { font-size: 13px; }
+.strength { font-size: 12px; color: var(--muted); font-weight: 600; }
+.strength.one { color: var(--warn); }
+.why { margin: 0; font-size: 13px; color: var(--muted); }
+.decide { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.decide button, .decide select { border: 1px solid var(--line); background: var(--sunk); border-radius: 6px; padding: 3px 10px; cursor: pointer; font-size: 13px; }
+.decide button:hover, .decide select:hover { border-color: var(--gold); }
+.decide button[aria-pressed="true"], .decide select.on { background: var(--ok-bg); border-color: var(--ok); color: var(--ok); font-weight: 700; }
+.decide [disabled] { opacity: .5; cursor: default; }
+.decide .clear { border: 0; background: none; color: var(--muted); text-decoration: underline; padding: 3px 4px; }
+textarea.note { width: 100%; min-height: 34px; resize: vertical; background: var(--sunk); border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px; font-size: 13px; }
+.saved { font-size: 12px; color: var(--muted); min-height: 1em; }
+.saved.err { color: var(--warn); font-weight: 600; }
+.foot { font-size: 13px; color: var(--muted); max-width: 110ch; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
+</style>
+
+<div class="bar">
+  <div class="bar-top">
+    <h1>Tier Price Review</h1>
+    <span class="status" id="status">Loading saved decisions…</span>
+    <span class="count" id="count"></span>
+  </div>
+  <div class="filters">
+    <input type="search" id="q" placeholder="Find an item or base" aria-label="Find an item or base">
+    <select id="fKind" aria-label="Suggestion"></select>
+    <select id="fTier" aria-label="Tier in the filter"></select>
+    <select id="fQuality" aria-label="Uniques or sets">
+      <option value="">Uniques and sets</option><option value="UNI">Uniques</option><option value="SET">Sets</option>
+    </select>
+    <label class="check" for="fOpen"><input type="checkbox" id="fOpen"> Undecided only</label>
+  </div>
+</div>
+<div class="banner" id="banner" role="status" hidden></div>
+<main>
+  <section class="intro" id="intro"></section>
+  <section class="markets" id="markets" aria-label="Price bands per market"></section>
+  <div id="list"></div>
+  <p class="foot" id="foot"></p>
+</main>
+
+<script>
+const DATA = /*__DATA__*/null;
+const MODES = Object.keys(DATA.markets);
+const SHORT = { sc: "Softcore", hc: "Hardcore" };
+const TIER = { "High": "high", "Medium": "med", "Minimal": "min", "No tier": "none", "Low Level Duel": "lld", "Diablo Clone & Rathma": "dc" };
+const SCALE = [1, 1000];  // wss, log scale
+const ROW = Object.fromEntries(DATA.rows.map(r => [r.id, r]));
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const fmt = v => v == null ? "–" : String(Math.round(v * 100) / 100);
+const norm = s => String(s).toLowerCase().replace(/[^a-z0-9]/g, "");
+const pos = v => {
+  const lo = Math.log10(SCALE[0]), hi = Math.log10(SCALE[1]);
+  return Math.max(0, Math.min(100, (Math.log10(Math.max(v, SCALE[0])) - lo) / (hi - lo) * 100));
+};
+const pill = (t, sm) => `<span class="pill${sm ? " sm" : ""} t-${TIER[t] || "none"}">${esc(t)}</span>`;
+const nameOf = r => r.items.map(i => i.name).join(" / ");
+const ethWord = r => r.eth === true ? "Ethereal" : r.eth === false ? "Not ethereal" : "";
+const ladderOf = r => r.kind === "SET" ? DATA.setLadder : DATA.ladder;
+const dateText = iso => { if (!iso) return "not fetched"; const d = new Date(iso); return isNaN(d) ? iso : d.toISOString().slice(0, 16).replace("T", " ") + " UTC"; };
+
+let db = null, editable = true, loaded = false;
+const dec = {};             // row id -> the saved decision
+const pending = new Set();  // row ids being written
+const noteTimers = {};
+
+// ------------------------------------------------------------ the price bands
+
+for (const m of MODES) {
+  const cuts = DATA.markets[m].cuts, stops = [["No tier", 0]];
+  for (const t of ["Minimal", "Medium", "High"]) if (cuts[t] != null) stops.push([t, pos(cuts[t])]);
+  const parts = stops.map(([t, p], i) => `var(--b-${TIER[t]}) ${p}% ${i + 1 < stops.length ? stops[i + 1][1] : 100}%`);
+  document.documentElement.style.setProperty(`--grad-${m}`, `linear-gradient(to right, ${parts.join(", ")})`);
+}
+
+function renderIntro() {
+  const counts = {};
+  for (const r of DATA.rows) counts[r.suggestion.kind] = (counts[r.suggestion.kind] || 0) + 1;
+  const fetched = MODES.map(m => { const k = DATA.markets[m];
+    return `<b>${esc(k.name)}</b>: ${k.listings.toLocaleString("en-US")} listings (${k.priced.toLocaleString("en-US")} with a price), fetched ${esc(dateText(k.fetched))}`; }).join(" · ");
+  $("intro").innerHTML = `
+    <p>Each unique and set base's value tier in <b>Erazure - Main</b>, beside what its items are listed for on the PD2 trade site.
+      Prices are asking prices of unsold listings, identified and uncorrupted, in WSS (1 HR = 100 WSS). A base's price is its best
+      item's median, from items with ${DATA.minListings}+ listings; a base the filter tiers differently when ethereal has a card per state.</p>
+    <p>The bands come from your own tiers: each tier's median base price, with the cut between two tiers halfway between them on this
+      scale. A raise or lower needs both markets to agree; <b>one market</b> means the other has too few listings. Sellers list their good
+      rolls, so a median overstates a random unidentified drop, and early in a ladder prices run high. Leveling, LLD and self-found value
+      don't show here.</p>
+    <p>${fetched}. Page built ${esc(DATA.generated)}.</p>
+    <nav class="jump" aria-label="Sections">${DATA.sections.map(s => `<a href="#sec-${s.kind}">${esc(s.title)}<span class="num">${counts[s.kind] || 0}</span></a>`).join("")}</nav>`;
+  $("markets").innerHTML = MODES.map(m => {
+    const k = DATA.markets[m];
+    const cuts = Object.entries(k.cuts).map(([t, v]) => `<span style="left:${pos(v)}%">${fmt(v)}</span>`).join("");
+    const meds = DATA.ladder.slice().reverse().map(t => k.medians[t] != null
+      ? `<span>${pill(t, true)} <span class="num">${fmt(k.medians[t])}</span> <span class="muted">(${k.bases[t]})</span></span>` : "").join("");
+    const ticks = [1, 10, 100, 1000].map(v => `<span style="left:${pos(v)}%">${v}</span>`).join("");
+    return `<div class="market"><h2>${esc(k.name)} <span>median per base by tier, and the cuts</span></h2>
+      <div class="cutlabels" aria-hidden="true">${cuts}</div>
+      <div class="strip big ${m}" role="img" aria-label="${esc(k.name)} price bands: ${Object.entries(k.cuts).map(([t, v]) => `${t} from ${fmt(v)} wss`).join(", ")}"></div>
+      <div class="scale" aria-hidden="true">${ticks}</div>
+      <div class="tiermeds">${meds}</div></div>`;
+  }).join("");
+  const un = DATA.unlisted.map(([n, c]) => `${esc(n)} (${c})`).join(", ");
+  $("foot").textContent = "";
+  if (un) $("foot").innerHTML = `Listed on the trade site but on no tier card (unique maps and items the tier page leaves out): ${un}.`;
+}
+
+// ------------------------------------------------------------ cards
+
+function marketBlock(r, m) {
+  const p = r.price[m], imp = r.implied[m];
+  if (!p) {
+    const n = Math.max(0, ...r.items.map(it => it[m].n));
+    return `<div class="mk"><span class="mk-name">${SHORT[m]}</span><span class="muted">${n ? `too few listings (${n})` : "no listings"}</span></div>
+      <div class="strip ${m} empty"></div>`;
+  }
+  const who = r.items.length > 1 ? `<span class="muted">${esc(p.item)}</span>` : "";
+  return `<div class="mk"><span class="mk-name">${SHORT[m]}</span><span class="mk-val">${fmt(p.med)} wss</span>${imp ? pill(imp, true) : ""}
+      <span class="muted"><span class="num">${fmt(p.p25)}–${fmt(p.p75)}</span> · ${p.n} listing${p.n > 1 ? "s" : ""}</span>${who}</div>
+    <div class="strip ${m}" role="img" aria-label="${SHORT[m]}: median ${fmt(p.med)} wss, middle half ${fmt(p.p25)} to ${fmt(p.p75)}">
+      <span class="whisk" style="left:${pos(p.p25)}%;width:${Math.max(0, pos(p.p75) - pos(p.p25))}%"></span><span class="dot" style="left:${pos(p.med)}%"></span></div>`;
+}
+
+function itemsTable(r) {
+  if (r.items.length < 2) return "";
+  const cell = (it, m) => {
+    const s = it[m];
+    if (!s.n) return `<td class="num few">–</td>`;
+    const best = r.price[m] && r.price[m].item === it.name;
+    return `<td class="num${s.n < DATA.minListings ? " few" : best ? " best" : ""}">${fmt(s.med)} <span class="muted">(${s.n})</span></td>`;
+  };
+  return `<div class="itemswrap"><table class="items"><thead><tr><th>Item</th>${MODES.map(m => `<th>${SHORT[m]}</th>`).join("")}</tr></thead>
+    <tbody>${r.items.map(it => `<tr><td>${esc(it.name)}</td>${MODES.map(m => cell(it, m)).join("")}</tr>`).join("")}</tbody></table></div>`;
+}
+
+function suggestionBlock(r) {
+  const s = r.suggestion;
+  let head;
+  if (s.kind === "raise") head = `<span class="arrow" aria-hidden="true">▲</span> Raise to ${pill(s.to)}`;
+  else if (s.kind === "lower") head = `<span class="arrow" aria-hidden="true">▼</span> Lower to ${pill(s.to)}`;
+  else if (s.kind === "split") head = "Markets disagree";
+  else if (s.kind === "keep") head = "Keep";
+  else if (s.kind === "few") head = "Too few listings";
+  else head = "Not judged by price";
+  const strength = s.strength === "both" && (s.kind === "raise" || s.kind === "lower") ? `<span class="strength">both markets</span>`
+    : s.strength === "one" ? `<span class="strength one">one market</span>` : "";
+  return `<div class="sugg">${head}${strength}</div><p class="why">${esc(s.text)}</p>`;
+}
+
+function decideBlock(r) {
+  const s = r.suggestion;
+  const others = ladderOf(r).filter(t => t !== r.tier && t !== s.to).slice().reverse();
+  return `<div class="decide" role="group" aria-label="Your decision for ${esc(nameOf(r))}">
+      ${s.to ? `<button type="button" data-act="take">${s.kind === "raise" ? "Raise" : "Lower"} to ${esc(s.to)}</button>` : ""}
+      <button type="button" data-act="keep">Keep ${esc(r.tier)}</button>
+      <select data-act="other" id="other-${r.id}" aria-label="Another tier"><option value="">Other tier…</option>${others.map(t => `<option value="${esc(t)}">${esc(t)}</option>`).join("")}</select>
+      <button type="button" class="clear" data-act="clear" hidden>Clear</button>
+    </div>
+    <textarea class="note" id="note-${r.id}" rows="1" placeholder="Note (optional)" aria-label="Note for ${esc(nameOf(r))}"></textarea>
+    <div class="saved" aria-live="polite"></div>`;
+}
+
+function card(r) {
+  const el = document.createElement("article");
+  el.className = "card";
+  el.id = "row-" + r.id;
+  el.innerHTML = `
+    <header class="card-head"><h3>${esc(nameOf(r))}</h3>
+      <span class="chip">${esc(r.base)}</span><span class="chip code">${esc(r.code)}</span>
+      ${r.eth != null ? `<span class="chip eth">${ethWord(r)}</span>` : ""}${r.kind === "SET" ? `<span class="chip">Set</span>` : ""}
+      <span class="muted">${esc(r.category)}</span><span class="decision-badge"></span></header>
+    <div class="card-body">
+      <div class="col"><div class="lbl">Filter</div><div>${pill(r.tier)}</div>
+        <ul class="lines">${r.lines.map(l => `<li>${esc(l)}</li>`).join("")}</ul></div>
+      <div class="col"><div class="lbl">Market</div>${MODES.map(m => marketBlock(r, m)).join("")}${itemsTable(r)}</div>
+      <div class="col"><div class="lbl">Suggestion</div>${suggestionBlock(r)}${decideBlock(r)}</div>
+    </div>`;
+  el.addEventListener("click", e => {
+    const b = e.target.closest("button[data-act]");
+    if (!b || !editable) return;
+    const d = dec[r.id] || {};
+    if (b.dataset.act === "take") save(r.id, d.choice === "take" ? { choice: null, tier: null } : { choice: "take", tier: r.suggestion.to });
+    else if (b.dataset.act === "keep") save(r.id, d.choice === "keep" ? { choice: null, tier: null } : { choice: "keep", tier: r.tier });
+    else if (b.dataset.act === "clear") save(r.id, { choice: null, tier: null, note: "" });
+  });
+  el.querySelector("select[data-act]").addEventListener("change", e => {
+    if (!editable) return;
+    save(r.id, e.target.value ? { choice: "other", tier: e.target.value } : { choice: null, tier: null });
+  });
+  const note = el.querySelector("textarea");
+  note.addEventListener("input", () => {
+    clearTimeout(noteTimers[r.id]);
+    noteTimers[r.id] = setTimeout(() => save(r.id, { note: note.value.trim() }), 700);
+  });
+  return el;
+}
+
+function decisionText(d, r) {
+  if (!d || !d.choice) return d && d.note ? "Note" : "";
+  if (d.choice === "keep") return `Decided: keep ${d.tier}`;
+  return `Decided: ${d.tier}${d.tier === r.tier ? "" : ` (from ${r.tier})`}`;
+}
+
+function updateDecision(id) {
+  const r = ROW[id], el = $("row-" + id);
+  if (!el) return;
+  const d = dec[id] || {};
+  el.classList.toggle("decided", !!d.choice);
+  el.querySelector(".decision-badge").textContent = decisionText(d, r);
+  for (const b of el.querySelectorAll("button[data-act]")) {
+    if (b.dataset.act === "clear") { b.hidden = !d.choice && !d.note; b.disabled = !editable; continue; }
+    b.setAttribute("aria-pressed", String(d.choice === b.dataset.act));
+    b.disabled = !editable;
+  }
+  const sel = el.querySelector("select[data-act]");
+  sel.value = d.choice === "other" ? d.tier : "";
+  sel.classList.toggle("on", d.choice === "other");
+  sel.disabled = !editable;
+  const note = el.querySelector("textarea");
+  if (document.activeElement !== note) note.value = d.note || "";
+  note.disabled = !editable;
+}
+
+function setSaved(id, text, err) {
+  const el = $("row-" + id);
+  if (!el) return;
+  const s = el.querySelector(".saved");
+  s.textContent = text;
+  s.classList.toggle("err", !!err);
+}
+
+async function save(id, patch) {
+  const r = ROW[id];
+  const doc = Object.assign({ choice: null, tier: null, note: "" }, dec[id] || {}, patch, {
+    savedAt: new Date().toISOString(), data: DATA.generated, item: nameOf(r) + (r.eth != null ? ` (${ethWord(r).toLowerCase()})` : ""),
+    was: r.tier, suggested: r.suggestion.to || null });
+  const empty = !doc.choice && !doc.note;
+  if (empty) delete dec[id]; else dec[id] = doc;
+  updateDecision(id);
+  applyFilters();
+  if (!db) { setSaved(id, "Not saved: this view can't reach the saved decisions", true); return; }
+  pending.add(id);
+  setSaved(id, "Saving…");
+  try {
+    const ref = db.collection("decisions").doc(id);
+    if (empty) await ref.delete(); else await ref.set(doc);
+    setSaved(id, empty ? "Cleared" : "Saved");
+  } catch (e) {
+    setSaved(id, `Not saved (${(e && (e.message || e.code)) || "error"}). Change it again to retry.`, true);
+  } finally {
+    pending.delete(id);
+  }
+}
+
+// ------------------------------------------------------------ list and filters
+
+const SECTIONS = [];
+function renderList() {
+  const list = $("list");
+  for (const s of DATA.sections) {
+    const rows = DATA.rows.filter(r => r.suggestion.kind === s.kind);
+    const sec = document.createElement("section");
+    sec.className = "section";
+    sec.id = "sec-" + s.kind;
+    sec.innerHTML = `<h2>${esc(s.title)} <span class="num"></span></h2><p>${esc(s.note)}</p>`;
+    const entry = { kind: s.kind, el: sec, countEl: sec.querySelector("h2 .num"), rows: [] };
+    for (const r of rows) {
+      const el = card(r);
+      sec.appendChild(el);
+      entry.rows.push({ r, el, text: norm(nameOf(r) + " " + r.base + " " + r.code) });
+    }
+    SECTIONS.push(entry);
+    list.appendChild(sec);
+  }
+  for (const r of DATA.rows) updateDecision(r.id);
+}
+
+function fillFilters() {
+  $("fKind").innerHTML = `<option value="">Every suggestion</option>` + DATA.sections.map(s => `<option value="${s.kind}">${esc(s.title)}</option>`).join("");
+  const tiers = [...new Set(DATA.rows.map(r => r.tier))];
+  const order = ["High", "Medium", "Minimal", "No tier", "Low Level Duel", "Diablo Clone & Rathma"];
+  tiers.sort((a, b) => order.indexOf(a) - order.indexOf(b));
+  $("fTier").innerHTML = `<option value="">Every tier</option>` + tiers.map(t => `<option value="${esc(t)}">${esc(t)}</option>`).join("");
+  for (const id of ["q", "fKind", "fTier", "fQuality", "fOpen"]) $(id).addEventListener(id === "q" ? "input" : "change", applyFilters);
+}
+
+function applyFilters() {
+  const q = norm($("q").value), kind = $("fKind").value, tier = $("fTier").value, quality = $("fQuality").value, open = $("fOpen").checked;
+  let shown = 0;
+  for (const s of SECTIONS) {
+    let n = 0;
+    for (const { r, el, text } of s.rows) {
+      const ok = (!kind || kind === s.kind) && (!tier || r.tier === tier) && (!quality || r.kind === quality)
+        && (!q || text.includes(q)) && (!open || !(dec[r.id] && dec[r.id].choice));
+      el.hidden = !ok;
+      if (ok) n++;
+    }
+    s.countEl.textContent = n;
+    s.el.hidden = n === 0;
+    shown += n;
+  }
+  const decided = Object.values(dec).filter(d => d.choice).length;
+  $("count").textContent = `${shown} of ${DATA.rows.length} cards · ${decided} decided`;
+}
+
+function setStatus(text, cls) { const s = $("status"); s.textContent = text; s.className = "status" + (cls ? " " + cls : ""); }
+function banner(text) { const b = $("banner"); b.textContent = text; b.hidden = !text; }
+
+renderIntro();
+fillFilters();
+renderList();
+applyFilters();
+
+(async () => {
+  try {
+    const [dbNs, user] = await Promise.all([window.claude?.use?.("db") ?? null, window.claude?.use?.("user") ?? null]);
+    db = dbNs;
+    if (!db) {
+      setStatus("Decisions can't be saved here", "warn");
+      banner("This view can't reach the saved decisions. You can read the page, but choices made here aren't saved; reload the page to try again.");
+      return;
+    }
+    const can = user ? await user.can("data.write") : null;
+    if (can === false) { editable = false; setStatus("Read-only", "warn"); }
+    db.collection("decisions").onSnapshot(snap => {
+      const seen = new Set();
+      for (const d of snap.docs) {
+        seen.add(d.id);
+        if (!ROW[d.id] || pending.has(d.id) || (d.metadata && d.metadata.hasPendingWrites)) continue;
+        dec[d.id] = d.data();
+        updateDecision(d.id);
+      }
+      for (const id of Object.keys(dec)) {
+        if (!seen.has(id) && !pending.has(id)) { delete dec[id]; updateDecision(id); }
+      }
+      if (!loaded) {
+        loaded = true;
+        const n = snap.docs.filter(d => ROW[d.id]).length;
+        if (editable) setStatus(n ? `Loaded ${n} saved decision${n > 1 ? "s" : ""}` : "No decisions yet", "ok");
+      }
+      applyFilters();
+    }, err => {
+      setStatus("Saved decisions unavailable", "warn");
+      banner(`The saved decisions can't be read (${(err && (err.message || err.code)) || "unknown error"}). Reload the page.`);
+    });
+  } catch (err) {
+    setStatus("Decisions can't be saved here", "warn");
+    banner("This view can't reach the saved decisions. Reload the page to try again.");
+  }
+})();
+</script>
