@@ -170,8 +170,9 @@ PROPS = {
     "dmg-min": ("min", "", "%WHITE%%MINDMG%%TAN%min"),
     "dmg-max": ("max", "", "%WHITE%%MAXDMG%%TAN%max"),
     # per character level beside the flat roll: one tag, the total at your level (the author, 2026-10-28; as 300's
-    # life and mana per level). 218 holds eighths (ItemStatCost op 4, param 3), 224 halves (op 2, param 1)
-    "dmg/lvl": ("max", "per level", "%WHITE%$f(STAT22+FLOOR(STAT218*CLVL/8))%TAN%max"),
+    # life and mana per level). 218 holds eighths (ItemStatCost op 4, param 3), 224 halves (op 2, param 1). MAXDMG, not
+    # STAT22: a two-handed weapon's flat maximum damage is stat 24 (BH's MAXDMG takes the largest of 22, 24 and 160)
+    "dmg/lvl": ("max", "per level", "%WHITE%$f(MAXDMG+FLOOR(STAT218*CLVL/8))%TAN%max"),
     "att": ("ar", "", "%WHITE%%AR%%DARK_GREEN%ar"),
     "att%": ("ar_pct", "", "%WHITE%%STAT119%%LIGHT_GRAY%%PERCENT%ar"),
     "att/lvl": ("ar", "per level", "%WHITE%$f(STAT19+FLOOR(STAT224*CLVL/2))%DARK_GREEN%ar"),

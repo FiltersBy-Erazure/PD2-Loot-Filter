@@ -159,9 +159,12 @@ FORMULA = re.compile(r"\$f\(((?:[^()]|\([^()]*\))*)\)")
 
 
 def formula_stat(m):
-    """A $f(...) value shows the first stat it reads: $f(ABS(STAT74)), $f(STAT220/8) (Strength per level)."""
-    stat = re.search(r"\bSTAT\d+\b", m.group(1), re.I)
-    return f"%{stat.group(0).upper()}%" if stat else m.group(0)
+    """A $f(...) value shows the first stat it reads: $f(ABS(STAT74)), $f(STAT220/8) (Strength per level),
+    $f(MAXDMG+FLOOR(STAT218*CLVL/8)) (maximum damage, the per level part added)."""
+    for word in re.findall(r"\b[A-Z][A-Z0-9]*\b", m.group(1).upper()):
+        if re.fullmatch(r"STAT\d+", word) or word in NAMED:
+            return f"%{word}%"
+    return m.group(0)
 
 
 def tag_stats(pre, cond):
