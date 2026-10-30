@@ -1,0 +1,766 @@
+<title>Quiver Tags</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Two tabs: Tags (one row per stat a quiver can roll: its switch, today's tags and its rolls by affix level) and
+   Hiding (260's hide rules as editable numbers, and the share of dropped quivers each version hides). */
+:root {
+  --bg: #f2f0eb; --panel: #ffffff; --sunk: #f7f5f0; --line: #dcd5c7; --fg: #24211b; --muted: #6c6455;
+  --gold: #86621a; --red: #b3261e; --warn: #9a5b00; --warn-bg: #fbefd9; --ok: #2f6b45; --ok-bg: #e2f0e6;
+  --chip: #ece7dc; --chip-on: #e7d6ae; --focus: #86621a; --new: #2f5f8a; --new-bg: #e1ecf6;
+  --ground-a: #3a3428; --ground-b: #26221b; --ground-c: #15130f;
+  --display: "Cinzel", "Trajan Pro", Georgia, serif;
+  --body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", "Cascadia Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15130f; --panel: #1f1c16; --sunk: #191612; --line: #39322a; --fg: #e9e1cf; --muted: #a59a84;
+    --gold: #d6b468; --red: #f07a6f; --warn: #e8b05a; --warn-bg: #3a2c14; --ok: #86c39b; --ok-bg: #1d3226;
+    --chip: #2a251e; --chip-on: #5a4721; --focus: #d6b468; --new: #8db8e0; --new-bg: #1c2a38; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15130f; --panel: #1f1c16; --sunk: #191612; --line: #39322a; --fg: #e9e1cf; --muted: #a59a84;
+  --gold: #d6b468; --red: #f07a6f; --warn: #e8b05a; --warn-bg: #3a2c14; --ok: #86c39b; --ok-bg: #1d3226;
+  --chip: #2a251e; --chip-on: #5a4721; --focus: #d6b468; --new: #8db8e0; --new-bg: #1c2a38; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 15px; line-height: 1.45; margin: 0; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--panel); }
+button, select, input, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--panel); border-bottom: 1px solid var(--line);
+  padding-block: 10px 0; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.bar-top { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+h1 { font-family: var(--display); font-size: 22px; letter-spacing: .03em; margin: 0; text-wrap: balance; }
+.status { font-size: 13px; padding: 2px 10px; border-radius: 999px; background: var(--chip); color: var(--muted); }
+.status.ok { background: var(--ok-bg); color: var(--ok); }
+.status.warn { background: var(--warn-bg); color: var(--warn); }
+.bar-note { color: var(--muted); font-size: 13px; margin-left: auto; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.bar-note label { display: inline-flex; gap: 6px; align-items: center; cursor: pointer; }
+.tabs { display: flex; gap: 2px; overflow-x: auto; margin-top: 8px; scrollbar-width: thin; }
+.tab { border: 0; background: none; padding: 8px 12px 10px; border-bottom: 3px solid transparent; cursor: pointer; white-space: nowrap; color: var(--muted); display: grid; gap: 2px; justify-items: start; }
+.tab[aria-selected="true"] { color: var(--fg); border-bottom-color: var(--gold); font-weight: 600; }
+.tab .sub { font-size: 11px; font-weight: 600; color: var(--new); }
+.tab .sub.chg { color: var(--gold); }
+main { padding-block: 16px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 16px; }
+.help { color: var(--muted); font-size: 14px; max-width: 110ch; margin: 0; }
+.help b { color: var(--fg); }
+.settings { display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: center; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; font-size: 14px; }
+.settings label { display: inline-flex; gap: 6px; align-items: center; cursor: pointer; }
+.settings select, .num-in { background: var(--sunk); border: 1px solid var(--line); border-radius: 5px; padding: 2px 6px; }
+.num-in { width: 4.2em; font-family: var(--mono); font-variant-numeric: tabular-nums; text-align: right; }
+.num-in.chg { border-color: var(--gold); background: var(--chip-on); }
+.head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 470px); gap: 16px; align-items: start; }
+@media (max-width: 900px) { .head { grid-template-columns: minmax(0, 1fr); } }
+.head-text { display: grid; gap: 6px; min-width: 0; }
+.head-text h2 { font-family: var(--display); font-size: 21px; margin: 0; letter-spacing: .02em; }
+.head-text p { margin: 0; color: var(--muted); font-size: 14px; }
+.head-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+.btn { border: 1px solid var(--line); background: var(--sunk); border-radius: 5px; padding: 3px 10px; cursor: pointer; font-size: 13px; }
+.btn:hover { border-color: var(--gold); }
+.btn[disabled] { opacity: .5; cursor: default; }
+.measure { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; display: grid; gap: 10px; min-width: 0; }
+.measure h3 { margin: 0; font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+.mrow { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 4px 10px; align-items: center; font-size: 13px; }
+.mrow > span:first-child { color: var(--muted); }
+.mnum { font-family: var(--mono); font-variant-numeric: tabular-nums; font-weight: 600; }
+.mnum.over { color: var(--red); }
+.ground { border-radius: 6px; padding: 14px 8px; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; overflow-x: auto;
+  background: radial-gradient(ellipse at 50% 45%, var(--ground-a) 0%, var(--ground-b) 50%, var(--ground-c) 100%); }
+.d2label { font-family: "Palatino Linotype", "Book Antiqua", Georgia, serif; font-size: 16px; line-height: 1.2;
+  text-align: center; white-space: pre; background: rgba(0, 0, 0, .74); padding: 3px 7px 1px; }
+.d2label .cut { opacity: .35; text-decoration: line-through; }
+.c-WHITE { color: #e8e8e8; } .c-RED { color: #ff4d4d; } .c-GREEN { color: #00ff00; } .c-BLUE { color: #6969ff; }
+.c-GOLD { color: #c7b377; } .c-GRAY { color: #8a8a8a; } .c-BLACK { color: #000000; } .c-TAN { color: #d0c27d; }
+.c-ORANGE { color: #ffa800; } .c-YELLOW { color: #ffff64; } .c-PURPLE { color: #ae00ff; }
+.c-DARK_GREEN { color: #00a000; } .c-CORAL { color: #ff7f6e; } .c-SAGE { color: #a3b88f; }
+.c-TEAL { color: #3fb5b5; } .c-LIGHT_GRAY { color: #a8a8a8; }
+.tagbox { display: inline-flex; flex-wrap: wrap; gap: 4px; }
+.tagbox .t { background: #12100c; border-radius: 3px; padding: 0 6px; font-family: "Palatino Linotype", "Book Antiqua", Georgia, serif; font-size: 14px; white-space: pre; }
+.cat { display: grid; gap: 0; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; min-width: 0; }
+.cat > h3 { margin: 0; padding: 9px 14px; font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); border-bottom: 1px solid var(--line); display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.cat > h3 .cols { margin-left: auto; text-transform: none; letter-spacing: 0; font-weight: 400; font-size: 12px; }
+.row { display: grid; grid-template-columns: 150px minmax(0, 1fr) 230px; gap: 6px 14px; padding: 10px 14px; border-bottom: 1px solid var(--line); align-items: start; }
+.row:last-child { border-bottom: 0; }
+.row.on { background: var(--sunk); }
+@media (max-width: 760px) { .row { grid-template-columns: minmax(0, 1fr); } }
+.sw { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; font-weight: 600; }
+.sw input { width: 34px; height: 18px; appearance: none; background: var(--chip); border: 1px solid var(--line); border-radius: 999px; position: relative; cursor: pointer; flex: none; margin: 0; }
+.sw input::after { content: ""; position: absolute; top: 2px; left: 2px; width: 12px; height: 12px; border-radius: 50%; background: var(--muted); transition: left .12s; }
+.sw input:checked { background: var(--new); border-color: var(--new); }
+.sw input:checked::after { left: 18px; background: var(--panel); }
+.sw input[disabled] { opacity: .5; cursor: default; }
+.fixed { font-size: 12px; color: var(--ok); font-weight: 600; }
+.rmain { display: grid; gap: 5px; min-width: 0; }
+.rtitle { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.rtitle b { font-size: 15px; }
+.chip { font-size: 12px; padding: 1px 8px; border-radius: 999px; background: var(--chip); color: var(--muted); }
+.chip.any { background: var(--ok-bg); color: var(--ok); }
+.chip.from, .chip.some { background: var(--warn-bg); color: var(--warn); }
+.chip.nolook { background: none; border: 1px dashed var(--red); color: var(--red); }
+.chip.def { background: none; border: 1px solid var(--line); }
+.samples { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 4px 8px; align-items: center; font-size: 12px; color: var(--muted); }
+.samples .newl { color: var(--new); font-weight: 600; }
+.none { color: var(--muted); font-style: italic; }
+.bands { display: grid; grid-template-columns: repeat(5, 1fr); gap: 2px; font-family: var(--mono); font-size: 12px; font-variant-numeric: tabular-nums; text-align: center; }
+.bands span { background: var(--sunk); border-radius: 3px; padding: 2px 0; }
+.bands span.na { color: var(--muted); opacity: .6; }
+.bands span.above { opacity: .45; }
+details.aff { grid-column: 1 / -1; font-size: 13px; }
+details.aff summary { cursor: pointer; color: var(--gold); font-weight: 600; width: fit-content; }
+.tbl { overflow-x: auto; margin-top: 6px; }
+.tbl table { border-collapse: collapse; width: 100%; min-width: 560px; font-size: 13px; }
+.tbl th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 700; padding: 4px 8px; border-bottom: 1px solid var(--line); vertical-align: bottom; }
+.tbl td { padding: 4px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.tbl td.num, .tbl th.num { font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; text-align: right; }
+.tbl tr.above td { opacity: .5; }
+.tbl .side { display: inline-block; width: 16px; color: var(--muted); font-family: var(--mono); font-size: 11px; }
+.tbl .only { color: var(--warn); font-size: 11px; }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; display: grid; gap: 10px; min-width: 0; }
+.panel > h3 { margin: 0; font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); display: flex; gap: 10px; flex-wrap: wrap; align-items: baseline; }
+.panel > h3 .tools { margin-left: auto; text-transform: none; letter-spacing: 0; font-weight: 400; font-size: 13px; display: flex; gap: 10px; flex-wrap: wrap; }
+.thr td.k { white-space: nowrap; }
+.thr td.cand { color: var(--muted); }
+.thr .was { display: block; font-size: 11px; color: var(--gold); font-family: var(--mono); }
+.rate { font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; text-align: right; }
+.rate .up { color: var(--red); font-weight: 600; }
+.rate .down { color: var(--ok); font-weight: 600; }
+.rate .one { display: block; font-size: 11px; color: var(--muted); }
+.grp th { text-align: center !important; border-bottom: 0 !important; }
+.ex { display: grid; gap: 4px; font-size: 13px; }
+.ex .it { display: flex; flex-wrap: wrap; gap: 4px 10px; padding: 4px 0; border-bottom: 1px dashed var(--line); }
+.ex .it:last-child { border-bottom: 0; }
+.ex .vals { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.cols2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 760px) { .cols2 { grid-template-columns: minmax(0, 1fr); } }
+textarea.note { width: 100%; min-height: 60px; resize: vertical; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; }
+.notebox { display: grid; gap: 6px; max-width: 110ch; }
+.notebox label { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 700; }
+.banner { background: var(--warn-bg); color: var(--warn); font-weight: 600; padding-block: 8px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); border-bottom: 1px solid var(--line); }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 14px; font-size: 13px; color: var(--muted); align-items: center; max-width: 110ch; }
+.hide-fixed .row.fixedrow { display: none; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="bar">
+  <div class="bar-top">
+    <h1>Quiver Tags</h1>
+    <span class="status" id="status">Loading saved choices…</span>
+    <div class="bar-note"><span id="changed"></span></div>
+  </div>
+  <div class="tabs" id="tabs" role="tablist" aria-label="Parts"></div>
+</div>
+<div class="banner" id="banner" role="status" hidden></div>
+<main id="main"></main>
+
+<script>
+const DATA = /*__DATA__*/null;
+const ROW = Object.fromEntries(DATA.rows.map(r => [r.key, r]));
+const CARD = DATA.card;
+const NAME_MAX = DATA.nameMax;
+const AFF = DATA.affixes;  // [side, name, level, maxlevel, group, frequency, rare flag, [[count key, low, high]]]
+const CK = DATA.count.map(c => c[0]);
+const CKI = Object.fromEntries(CK.map((k, i) => [k, i]));
+const CKLABEL = Object.fromEntries(DATA.count.map(c => [c[0], c[1]]));
+const SHORT = { res_all: "res", knock: "knb", ow: "ow%", ds: "ds", cb: "cb", tdef: "-def", min: "min", max: "max", itd: "itd",
+  ed_dmg: "ed", prc: "prc", ias: "ias", frw: "frw", tab0: "bow", tab1: "pas", life: "life", mana: "mana", leech_life: "ls",
+  leech_mana: "ms", lpk: "lpk", mpk: "mpk", str: "str", dex: "dex", enr: "enr", plr: "plr", pdr_flat: "pdr", mdr: "mdr",
+  ar: "ar", owd: "owd", dmg_dem: "dem", dmg_und: "und", mf: "mf", gf: "gf" };
+const QNAMES = { MAG: "magic", RARE: "rare", CRAFT: "crafted" };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+const clone = o => JSON.parse(JSON.stringify(o));
+
+// a row needs a choice when one kind doesn't tag it at every roll today
+const canPick = row => row.kinds.some(k => k.st !== "any");
+const START = {};
+for (const r of CARD.rows) if (canPick(r)) START[r.key] = !!ROW[r.key].def;
+const TAGS0 = { stats: clone(START), cut: DATA.cut, quals: { MAG: true, RARE: true, CRAFT: true }, note: "" };
+const HIDE0 = { start: clone(DATA.hide.start), need: clone(DATA.hide.need), thr: clone(DATA.hide.thr), note: "" };
+const state = { tags: clone(TAGS0), hiding: clone(HIDE0) };
+const DOCS = { tags: "Tags", hiding: "Hiding" };
+let current = "tags";
+try { const t = localStorage.getItem("quiverTagsTab"); if (t && DOCS[t]) current = t; } catch (e) {}
+let db = null, editable = true;
+
+const visLen = i => i < 0 ? 0 : DATA.segs[i].reduce((s, [, t]) => s + t.length, 0);
+const segHTML = i => DATA.segs[i].map(([c, t]) => `<span class="c-${c}">${esc(t)}</span>`).join("");
+const picked = row => !!state.tags.stats[row];
+const qOK = (flag, q) => q === "MAG" ? flag !== 3 : q === "CRAFT" ? (flag === 1 || flag === 4) : flag !== 0;
+
+// ---------- the affix level formula (BH's ALVL, the game's own) and what it covers
+function alvl(ilvl, qlvl, mlvl) {
+  ilvl = Math.max(Math.min(ilvl, 99), qlvl);
+  if (mlvl) return Math.min(ilvl + mlvl, 99);
+  const h = Math.floor(qlvl / 2);
+  return ilvl < 99 - h ? ilvl - h : ilvl * 2 - 99;
+}
+function reachText(cut) {
+  const seen = new Map();
+  for (const kind of DATA.kinds) for (const b of kind.bases) {
+    let top = 0;
+    for (let i = Math.max(b.qlvl, 1); i <= 99; i++) if (alvl(i, b.qlvl, b.mlvl) < cut) top = i;
+    const key = b.tier;
+    if (!seen.has(key)) seen.set(key, { names: [], top, qlvl: b.qlvl });
+    seen.get(key).names.push(b.name);
+  }
+  return [...seen.values()].map(s => `${s.names.join(" / ")}: ${s.top ? `item level ${Math.max(s.qlvl, 1)}–${s.top}` : "never"}`).join(" · ");
+}
+
+// ---------- the longest labels (an estimate): every affix at its best roll below the cut
+function affParts(ki, withPicks, q) {
+  const cut = state.tags.cut, on = withPicks && state.tags.quals[q];
+  const affs = new Map();
+  for (const row of CARD.rows) {
+    const kr = row.kinds.find(x => x.k === ki);
+    if (!kr) continue;
+    const pick = on && picked(row.key) && kr.st !== "any";
+    for (const [ai, , tSeg, tPos, nSeg] of kr.aff) {
+      if (AFF[ai][2] >= cut || !qOK(AFF[ai][6], q)) continue;
+      const useNew = pick && nSeg >= 0;
+      const seg = useNew ? nSeg : tSeg;
+      if (seg < 0) continue;
+      if (!affs.has(ai)) affs.set(ai, []);
+      affs.get(ai).push({ seg, pos: useNew ? kr.pos : tPos });
+    }
+  }
+  return affs;
+}
+const partsLen = parts => parts.reduce((s, p) => s + visLen(p.seg), 0) + Math.max(0, parts.length - 1);
+function measureRare(withPicks) {
+  let best = null;
+  DATA.kinds.forEach((kind, ki) => {
+    const affs = affParts(ki, withPicks, "RARE");
+    const sides = { P: new Map(), S: new Map() };
+    for (const [ai, parts] of affs) {
+      const [side, , , , group] = AFF[ai];
+      const g = group || "a" + ai;
+      const w = parts.reduce((s, p) => s + visLen(p.seg) + 1, 0);
+      const cur = sides[side].get(g);
+      if (!cur || w > cur.w) sides[side].set(g, { w, parts });
+    }
+    const top = side => [...sides[side].values()].sort((a, b) => b.w - a.w).slice(0, 3);
+    const parts = [...top("P"), ...top("S")].flatMap(c => c.parts).sort((a, b) => b.pos - a.pos);
+    const len = partsLen(parts);
+    if (!best || len > best.len) best = { len, parts, base: kind.longest };
+  });
+  return best;
+}
+function measureMagic(withPicks) {
+  let best = null;
+  DATA.kinds.forEach((kind, ki) => {
+    const affs = affParts(ki, withPicks, "MAG");
+    const cut = state.tags.cut;
+    const list = side => AFF.map((a, i) => i).filter(i => AFF[i][0] === side && AFF[i][2] < cut && qOK(AFF[i][6], "MAG"));
+    const P = [-1, ...list("P")], S = [-1, ...list("S")];
+    for (const p of P) for (const s of S) {
+      if (p < 0 && s < 0) continue;
+      if (p >= 0 && s >= 0 && AFF[p][4] && AFF[p][4] === AFF[s][4]) continue;
+      const parts = [...(affs.get(p) || []), ...(affs.get(s) || [])].sort((a, b) => b.pos - a.pos);
+      const name = [p >= 0 ? AFF[p][1] : "", kind.longest, s >= 0 ? AFF[s][1] : ""].filter(Boolean).join(" ");
+      const len = partsLen(parts);
+      const total = len + (len ? 1 : 0) + name.length;
+      if (!best || total > best.total) best = { total, len, parts, name };
+    }
+  });
+  return best;
+}
+function rareLabel(m) {
+  const tagLine = m.parts.map(p => segHTML(p.seg)).join('<span class="c-WHITE"> </span>');
+  const name = "Rare Name";
+  const total = m.len + (m.len ? 1 : 0) + m.base.length + 1 + name.length;
+  const over = Math.max(0, total - NAME_MAX), keep = Math.max(0, name.length - over);
+  const top = `<span class="c-YELLOW">${esc(name.slice(0, keep))}</span>` + (over ? `<span class="c-YELLOW cut">${esc(name.slice(keep))}</span>` : "");
+  return `<div class="d2label">${top}\n<span class="c-YELLOW">${esc(m.base)}</span>${m.len ? "\n" + tagLine : ""}</div>`;
+}
+function magicLabel(m) {
+  const tagLine = m.parts.map(p => segHTML(p.seg)).join('<span class="c-WHITE"> </span>');
+  const over = Math.max(0, m.total - NAME_MAX), keep = Math.max(0, m.name.length - over);
+  const top = `<span class="c-BLUE">${esc(m.name.slice(0, keep))}</span>` + (over ? `<span class="c-BLUE cut">${esc(m.name.slice(keep))}</span>` : "");
+  return `<div class="d2label">${top}${m.len ? "\n" + tagLine : ""}</div>`;
+}
+
+// ---------- tabs
+function tagChanges() {
+  const t = state.tags, n = Object.keys(START).filter(r => picked(r) !== START[r]).length;
+  return n + (t.cut !== TAGS0.cut ? 1 : 0) + Object.keys(t.quals).filter(q => t.quals[q] !== TAGS0.quals[q]).length;
+}
+function hideChanges() {
+  const h = state.hiding;
+  let n = 0;
+  for (let b = 0; b < 2; b++) {
+    if (h.start[b] !== HIDE0.start[b]) n++;
+    for (const q of ["MAG", "RARE"]) if (h.need[q][b] !== HIDE0.need[q][b]) n++;
+    for (const kind of DATA.kinds) for (const k of CK) if (thrOf(h, kind.key, k, b) !== thrOf(HIDE0, kind.key, k, b)) n++;
+  }
+  return n;
+}
+function renderTabs() {
+  const on = Object.keys(START).filter(picked).length, tc = tagChanges(), hc = hideChanges();
+  document.getElementById("tabs").innerHTML = [
+    ["tags", "Tags", `${on} switched on${tc ? ` · ${tc} changed` : ""}`, tc],
+    ["hiding", "Hiding", hc ? `${hc} changed from 260` : "As 260 is", hc]].map(([k, name, sub, chg]) =>
+    `<button class="tab" role="tab" aria-selected="${k === current}" data-tab="${k}"><span>${name}</span><span class="sub${chg ? " chg" : ""}">${sub}</span></button>`).join("");
+  document.getElementById("changed").textContent = tc || hc ? `${tc + hc} change${tc + hc > 1 ? "s" : ""} on this page` : "Matches the page's first state";
+}
+
+// ---------- Tags tab
+function stateChips(row) {
+  const groups = new Map();
+  for (const kr of row.kinds) {
+    const key = kr.st + "|" + (kr.from ?? "");
+    if (!groups.has(key)) groups.set(key, { kr, names: [] });
+    groups.get(key).names.push(CARD.kinds[kr.k].name);
+  }
+  const many = groups.size > 1;
+  const text = kr => kr.st === "any" ? "Tagged at any roll" : kr.st === "from" ? `Tagged from ${kr.from}` :
+    kr.st === "some" ? "Some affixes tagged" : "Not tagged";
+  return [...groups.values()].map(({ kr, names }) => `<span class="chip ${kr.st}">${many ? esc(names.join(", ")) + ": " : ""}${text(kr)}</span>`).join("");
+}
+const segNum = i => { const m = DATA.segs[i].map(s => s[1]).join("").match(/-?\d+(\.\d+)?/); return m ? parseFloat(m[0]) : 0; };
+function uniqSegs(list) {
+  const seen = new Set(), out = [];
+  for (const s of list) if (s >= 0 && !seen.has(s)) { seen.add(s); out.push(s); }
+  return out.sort((a, b) => segNum(a) - segNum(b));
+}
+function tagsHTML(segs) {
+  if (!segs.length) return '<span class="none">none</span>';
+  const shown = segs.slice(0, 8).map(s => `<span class="t">${segHTML(s)}</span>`).join("");
+  return `<span class="tagbox">${shown}${segs.length > 8 ? `<span class="none">+${segs.length - 8}</span>` : ""}</span>`;
+}
+const flagText = f => f === 0 ? ' <span class="only">(magic only)</span>' : f === 3 ? ' <span class="only">(rare only)</span>' : f === 2 ? ' <span class="only">(not crafted)</span>' : "";
+function rowHTML(row) {
+  const info = ROW[row.key], cut = state.tags.cut;
+  const pick = canPick(row), on = pick && picked(row.key);
+  const noLook = pick && row.kinds.some(k => k.st !== "any" && !k.look);
+  const below = a => AFF[a[0]][2] < cut;
+  const today = uniqSegs(row.kinds.flatMap(k => k.aff.filter(below).map(a => a[2])));
+  const after = uniqSegs(row.kinds.flatMap(k => k.aff.filter(below).map(a => (k.st !== "any" && a[4] >= 0) ? a[4] : a[2])));
+  const nBelow = row.kinds[0].aff.filter(below).length;
+  const bands = DATA.bands.map((_, i) => {
+    const vals = row.kinds.map(k => k.bands[i]).filter(v => v !== null && v !== undefined);
+    return vals.length ? (vals.includes("yes") ? "yes" : Math.max(...vals)) : null;
+  });
+  const lows = [1, ...DATA.bands.slice(0, -1).map(b => b + 1)];
+  const sw = pick ? `<label class="sw" for="sw-${row.key}"><input type="checkbox" role="switch" id="sw-${row.key}" data-row="${row.key}" ${on ? "checked" : ""} ${editable ? "" : "disabled"}> ${on ? "Every roll" : "As today"}</label>` :
+    '<span class="fixed">Already tagged</span>';
+  const isDef = pick && on === !!info.def;
+  // both kinds roll the same affixes (in the same order): one line each, a kind named where its tag differs
+  const tagCell = (list, fallback) => {
+    const segs = [...new Set(list.map(x => x.seg))];
+    if (segs.length === 1) return segs[0] >= 0 ? `<span class="tagbox"><span class="t">${segHTML(segs[0])}</span></span>` : `<span class="none">${fallback}</span>`;
+    return list.map(x => `${esc(CARD.kinds[x.k].name)}: ${x.seg >= 0 ? `<span class="tagbox"><span class="t">${segHTML(x.seg)}</span></span>` : `<span class="none">${fallback}</span>`}`).join("<br>");
+  };
+  const affRows = row.kinds[0].aff.map(([ai, roll], j) => {
+    const [side, name, lvl, mx, , , flag] = AFF[ai];
+    const above = lvl >= cut;
+    const today = row.kinds.map(kr => ({ k: kr.k, seg: kr.aff[j][2] }));
+    const after = row.kinds.map(kr => ({ k: kr.k, seg: kr.st === "any" ? kr.aff[j][2] : kr.aff[j][4] }));
+    const newCell = above ? '<span class="none">from the cut up: as today</span>' : row.kinds.every(kr => kr.st === "any") ?
+      '<span class="none">same</span>' : tagCell(after, "no look yet");
+    return `<tr${above ? ' class="above"' : ""}><td><span class="side">${side}</span>${esc(name)}${flagText(flag)}</td>
+      <td class="num">${lvl}${mx ? "–" + mx : ""}</td><td class="num">${esc(roll)}</td>
+      <td>${tagCell(today, "none")}</td><td>${newCell}</td></tr>`;
+  }).join("");
+  const nAff = row.kinds[0].aff.length;
+  return `<div class="row${on ? " on" : ""}${pick ? "" : " fixedrow"}" data-row="${row.key}">
+    <div>${sw}</div>
+    <div class="rmain">
+      <div class="rtitle"><b>${esc(info.label)}</b>${pick ? stateChips(row) : ""}${noLook ? '<span class="chip nolook">No tag look yet</span>' : ""}${pick && !isDef ? '<span class="chip def">changed from the proposal</span>' : ""}${!nBelow ? `<span class="chip">No affix below ${cut}</span>` : ""}</div>
+      <div class="samples"><span>Today</span>${tagsHTML(today)}${pick ? `<span class="newl">Every roll</span>${tagsHTML(after)}` : ""}</div>
+    </div>
+    <div><div class="bands">${bands.map((v, i) => v === null ? '<span class="na">–</span>' : `<span class="${lows[i] >= cut ? "above" : ""}">${v}</span>`).join("")}</div></div>
+    <details class="aff"><summary>${nAff} affix${nAff > 1 ? "es" : ""}</summary><div class="tbl"><table>
+      <thead><tr><th>Affix</th><th class="num">Affix level</th><th class="num">Roll</th><th>Tag today, best roll</th><th>Every roll</th></tr></thead>
+      <tbody>${affRows}</tbody></table></div></details>
+  </div>`;
+}
+function renderTags() {
+  const t = state.tags, cut = t.cut;
+  const rToday = measureRare(false), rNow = measureRare(true), mToday = measureMagic(false), mNow = measureMagic(true);
+  const roomR = m => NAME_MAX - (m.len ? m.len + 1 : 0) - m.base.length - 1;
+  const cats = DATA.cats.map(cat => {
+    const rows = CARD.rows.filter(r => ROW[r.key].cat === cat);
+    if (!rows.length) return "";
+    return `<section class="cat"><h3>${esc(cat)}<span class="cols">Best roll up to affix level ${DATA.bands.join(" · ")}</span></h3>${rows.map(rowHTML).join("")}</section>`;
+  }).join("");
+  const extras = DATA.extras.map(e => `<tr><td>${e.src === "craft" ? "Craft" : "Corruption"}</td><td>${esc(e.name)}</td><td>${esc(e.what)}</td>
+    <td>${e.tag >= 0 ? `<span class="tagbox"><span class="t">${segHTML(e.tag)}</span></span>` : '<span class="none">none</span>'}</td></tr>`).join("");
+  const quals = Object.keys(t.quals).map(q => `<label><input type="checkbox" data-qual="${q}" ${t.quals[q] ? "checked" : ""} ${editable ? "" : "disabled"}> ${QNAMES[q]}</label>`).join("");
+  return `
+    <p class="help">Below the affix level you pick, an identified quiver of the qualities you tick shows a tag for <b>every roll</b> of each stat switched on, in the look 260 gives it (300's for a stat 260 has no line for). From that affix level up nothing changes. <b>Today</b> is what 260 tags now, on an identified quiver, at each affix's best roll. The switches start as a proposal from your rare picks for bows and crossbows (else amulets), not from the filter: the filter has none of these tags yet. Tell Claude when to apply.</p>
+    <div class="settings">
+      <label for="cut">Tag every roll below affix level <select id="cut" ${editable ? "" : "disabled"}>${DATA.cuts.map(c => `<option value="${c}" ${c === cut ? "selected" : ""}>${c}</option>`).join("")}</select></label>
+      <span>on ${quals} quivers</span>
+    </div>
+    <div class="head">
+      <div class="head-text">
+        <h2>Arrows and bolts</h2>
+        <p>Both roll the same affixes (every quiver affix is a "missile" affix); 260 tells them apart for maximum damage only.</p>
+        <p>Affix level below ${cut}: ${esc(reachText(cut))}.</p>
+        <div class="head-actions"><button class="btn" id="resetTags" ${tagChanges() && editable ? "" : "disabled"}>Back to the proposal</button><button class="btn" id="allOff" ${editable ? "" : "disabled"}>All off</button></div>
+      </div>
+      <div class="measure">
+        <h3>Longest labels below affix level ${cut} (estimate)</h3>
+        <div class="mrow"><span>Rare tags</span><span><span class="mnum">${rToday.len}</span> today → <span class="mnum">${rNow.len}</span> with your switches; <span class="mnum${roomR(rNow) < 9 ? " over" : ""}">${roomR(rNow)}</span> characters of BH's ${NAME_MAX} left for the rare's name beside ${esc(rNow.base)}</span></div>
+        <div class="mrow"><span>Magic label</span><span><span class="mnum">${mToday.total}</span> today → <span class="mnum${mNow.total > NAME_MAX ? " over" : ""}">${mNow.total}</span> characters (name and tag line; BH cuts past ${NAME_MAX})</span></div>
+        <div class="ground">${rareLabel(rNow)}${magicLabel(mNow)}</div>
+      </div>
+    </div>
+    ${cats}
+    <section class="panel"><h3>What crafts and corruptions add, and 260's tag for it</h3>
+      <p class="help">A dropped quiver is never crafted or corrupted; these are the quivers players make. Tags shown at each property's best roll on a crafted (craft) or corrupted rare (corruption) quiver.</p>
+      <div class="tbl"><table><thead><tr><th>Source</th><th>Name</th><th>Adds</th><th>Tag today</th></tr></thead><tbody>${extras}</tbody></table></div>
+    </section>
+    <div class="notebox"><label for="noteTags">Notes on the tags</label>
+      <textarea class="note" id="noteTags" data-doc="tags" ${editable ? "" : "disabled"} placeholder="Anything Claude should know when applying these">${esc(t.note || "")}</textarea></div>
+    <div class="legend"><span class="chip any">Tagged at any roll</span> already tagged, no choice needed
+      <span class="chip from">Tagged from N</span> today only from that roll
+      <span class="chip">Not tagged</span> no tag today
+      <span class="chip nolook">No tag look yet</span> switching on asks for a new look</div>`;
+}
+
+// ---------- Hiding tab: rolled quivers (PD2's roller: affix level, frequency weights, one affix per group, a rare's
+// affix count by item level; magic items roll each side apart, so the page shows both affixes and one)
+const N = 1500;
+function rng32(seed) { return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function poolOf(al, q, side) {
+  return AFF.map((a, i) => i).filter(i => AFF[i][0] === side && AFF[i][2] <= al && (!AFF[i][3] || al <= AFF[i][3]) && qOK(AFF[i][6], q));
+}
+function pickOne(pool, taken, groups, r) {
+  let total = 0;
+  for (const i of pool) if (!taken.has(i) && !(AFF[i][4] && groups.has(AFF[i][4]))) total += AFF[i][5];
+  if (!total) return -1;
+  let x = r() * total;
+  for (const i of pool) {
+    if (taken.has(i) || (AFF[i][4] && groups.has(AFF[i][4]))) continue;
+    x -= AFF[i][5];
+    if (x < 0) return i;
+  }
+  return -1;
+}
+function rollItem(list, r) {
+  const v = new Int16Array(CK.length);
+  for (const ai of list) for (const [k, lo, hi] of AFF[ai][7]) v[CKI[k]] += lo + Math.floor(r() * (hi - lo + 1));
+  return { a: list, v };
+}
+const cache = new Map();
+function samples(base) {
+  if (cache.has(base.code)) return cache.get(base.code);
+  const out = {};
+  DATA.ilvls.forEach((ilvl, li) => {
+    if (ilvl < base.qlvl) return;
+    const al = alvl(ilvl, base.qlvl, base.mlvl);
+    const r = rng32(ilvl * 7919 + base.qlvl * 131 + 17);
+    const RP = poolOf(al, "RARE", "P"), RS = poolOf(al, "RARE", "S"), MP = poolOf(al, "MAG", "P"), MS = poolOf(al, "MAG", "S");
+    const set = { al, RARE: [], MAG2: [], MAGP: [], MAGS: [] };
+    for (let n = 0; n < N; n++) {
+      const count = ilvl >= 85 ? 6 : ilvl >= 65 ? 5 + Math.floor(r() * 2) : ilvl >= 45 ? 4 + Math.floor(r() * 3) : 3 + Math.floor(r() * 4);
+      const taken = new Set(), groups = new Set(), list = [];
+      let p = 0, s = 0;
+      for (let i = 0; i < count; i++) {
+        const first = r() < 0.5 ? "P" : "S";
+        let got = -1;
+        for (const side of [first, first === "P" ? "S" : "P"]) {
+          if ((side === "P" ? p : s) >= 3) continue;
+          got = pickOne(side === "P" ? RP : RS, taken, groups, r);
+          if (got >= 0) { side === "P" ? p++ : s++; break; }
+        }
+        if (got < 0) break;
+        taken.add(got); if (AFF[got][4]) groups.add(AFF[got][4]); list.push(got);
+      }
+      set.RARE.push(rollItem(list, r));
+      const mp = pickOne(MP, new Set(), new Set(), r);
+      const ms = pickOne(MS, new Set([mp]), new Set(mp >= 0 && AFF[mp][4] ? [AFF[mp][4]] : []), r);
+      set.MAG2.push(rollItem([mp, ms].filter(x => x >= 0), r));
+      set.MAGP.push(rollItem([pickOne(MP, new Set(), new Set(), r)].filter(x => x >= 0), r));
+      set.MAGS.push(rollItem([pickOne(MS, new Set(), new Set(), r)].filter(x => x >= 0), r));
+    }
+    out[ilvl] = set;
+  });
+  cache.set(base.code, out);
+  return out;
+}
+const thrOf = (h, kind, k, b) => { const t = (h.thr[kind] || {})[k]; return t && t[b] != null ? t[b] : null; };
+function counter(h, kind, b) {
+  const list = CK.map((k, i) => [i, thrOf(h, kind, k, b)]).filter(([, t]) => t != null);
+  return v => { let n = 0; for (const [i, t] of list) if (v[i] >= t) n++; return n; };
+}
+function rate(items, count, need) { let n = 0; for (const it of items) if (count(it.v) < need) n++; return items.length ? n / items.length : 0; }
+const pct = x => (x * 100).toFixed(x > 0 && x < 0.01 ? 1 : 0) + "%";
+function rateCell(a, b, oneA, oneB) {
+  const d = Math.round(b * 100) - Math.round(a * 100);
+  const main = d ? `${pct(a)} → <span class="${d > 0 ? "up" : "down"}">${pct(b)}</span>` : pct(a);
+  const one = oneA ? `<span class="one">one affix: ${pct(oneA[0])}–${pct(oneA[1])}${Math.round(oneB[0] * 100) !== Math.round(oneA[0] * 100) || Math.round(oneB[1] * 100) !== Math.round(oneA[1] * 100) ? ` → ${pct(oneB[0])}–${pct(oneB[1])}` : ""}</span>` : "";
+  return `<td class="rate">${main}${one}</td>`;
+}
+let hideKind = DATA.kinds[0].key, hideBase = DATA.kinds[0].bases[DATA.kinds[0].bases.length - 1].code, exIlvl = 85, exQual = "RARE", exBand = 1;
+function bandName(h, b) { return b === 0 ? `Character level ${h.start[0]}–${h.start[1] - 1}` : `Character level ${h.start[1]}+`; }
+function rollRange(k) {
+  let lo = null, hi = null;
+  for (const a of AFF) for (const [kk, l, h] of a[7]) if (kk === k) { lo = lo === null ? l : Math.min(lo, l); hi = hi === null ? h : Math.max(hi, h); }
+  return lo === null ? "crafts, corruptions" : lo === hi ? `${hi}` : `${lo}–${hi}`;
+}
+function itemText(it) {
+  const names = it.a.map(ai => `<span class="side">${AFF[ai][0]}</span>${esc(AFF[ai][1])}`).join(" · ");
+  const vals = CK.map((k, i) => it.v[i] ? `${it.v[i]} ${SHORT[k]}` : "").filter(Boolean).join(", ");
+  return `<div class="it"><span>${names || '<span class="none">no affix</span>'}</span><span class="vals">${esc(vals)}</span></div>`;
+}
+function renderHiding() {
+  const h = state.hiding, kind = DATA.kinds.find(k => k.key === hideKind);
+  const base = kind.bases.find(b => b.code === hideBase) || kind.bases[kind.bases.length - 1];
+  hideBase = base.code;
+  const dis = editable ? "" : "disabled";
+  const numIn = (id, val, was, attrs) => `<input class="num-in${val !== was ? " chg" : ""}" type="number" min="1" max="999" id="${id}" value="${val ?? ""}" placeholder="–" ${attrs} ${dis}>`;
+  const counted = new Set(DATA.kinds.flatMap(k => Object.keys(HIDE0.thr[k.key] || {})));
+  const keys = [...CK.filter(k => counted.has(k)), ...CK.filter(k => !counted.has(k))];
+  const thrRows = keys.map(k => {
+    const cells = DATA.kinds.flatMap(kd => [0, 1].map(b => {
+      const val = thrOf(h, kd.key, k, b), was = thrOf(HIDE0, kd.key, k, b);
+      return `<td>${numIn(`t-${kd.key}-${k}-${b}`, val, was, `data-thr="${kd.key}|${k}|${b}"`)}${val !== was ? `<span class="was">260: ${was ?? "–"}</span>` : ""}</td>`;
+    })).join("");
+    return `<tr><td class="k${counted.has(k) ? "" : " cand"}">${esc(CKLABEL[k])}</td><td class="num">${esc(rollRange(k))}</td>${cells}</tr>`;
+  }).join("");
+  const sets = samples(base);
+  const today = [0, 1].map(b => counter(HIDE0, kind.key, b)), yours = [0, 1].map(b => counter(h, kind.key, b));
+  const rateRows = DATA.ilvls.filter(il => sets[il]).map(il => {
+    const s = sets[il];
+    const cells = [0, 1].flatMap(b => [
+      rateCell(rate(s.MAG2, today[b], HIDE0.need.MAG[b]), rate(s.MAG2, yours[b], h.need.MAG[b]),
+        [rate(s.MAGP, today[b], HIDE0.need.MAG[b]), rate(s.MAGS, today[b], HIDE0.need.MAG[b])].sort((x, y) => x - y),
+        [rate(s.MAGP, yours[b], h.need.MAG[b]), rate(s.MAGS, yours[b], h.need.MAG[b])].sort((x, y) => x - y)),
+      rateCell(rate(s.RARE, today[b], HIDE0.need.RARE[b]), rate(s.RARE, yours[b], h.need.RARE[b]))]).join("");
+    return `<tr><td class="num">${il}</td><td class="num">${s.al}</td>${cells}</tr>`;
+  }).join("");
+  if (!sets[exIlvl]) exIlvl = DATA.ilvls.find(il => sets[il]);
+  const exSet = sets[exIlvl][exQual === "RARE" ? "RARE" : "MAG2"], needT = HIDE0.need[exQual][exBand], needY = h.need[exQual][exBand];
+  const newlyHidden = [], newlyShown = [];
+  for (const it of exSet) {
+    const a = today[exBand](it.v) < needT, b = yours[exBand](it.v) < needY;
+    if (!a && b && newlyHidden.length < 10) newlyHidden.push(it);
+    if (a && !b && newlyShown.length < 10) newlyShown.push(it);
+  }
+  const opt = (list, val) => list.map(([v, t]) => `<option value="${v}" ${String(v) === String(val) ? "selected" : ""}>${esc(t)}</option>`).join("");
+  return `
+    <p class="help">260 hides an identified magic, rare or crafted quiver on the ground (outside town, filter levels 1–12) when it has fewer <b>useful stats</b> than it needs. A stat is useful from the roll in its column; an empty cell means it never counts. Two character level bands, each with its own numbers. Below the first band nothing is hidden. Every number starts as 260 has it today.</p>
+    <section class="panel"><h3>Bands and how many useful stats a quiver needs</h3>
+      <div class="tbl"><table style="min-width:420px"><thead><tr><th></th><th>${esc(bandName(h, 0))}</th><th>${esc(bandName(h, 1))}</th></tr></thead><tbody>
+        <tr><td>Band starts at character level</td><td>${numIn("start0", h.start[0], HIDE0.start[0], 'data-start="0"')}</td><td>${numIn("start1", h.start[1], HIDE0.start[1], 'data-start="1"')}</td></tr>
+        <tr><td>Magic quivers need</td><td>${numIn("needM0", h.need.MAG[0], HIDE0.need.MAG[0], 'data-need="MAG|0"')}</td><td>${numIn("needM1", h.need.MAG[1], HIDE0.need.MAG[1], 'data-need="MAG|1"')}</td></tr>
+        <tr><td>Rare and crafted quivers need</td><td>${numIn("needR0", h.need.RARE[0], HIDE0.need.RARE[0], 'data-need="RARE|0"')}</td><td>${numIn("needR1", h.need.RARE[1], HIDE0.need.RARE[1], 'data-need="RARE|1"')}</td></tr>
+      </tbody></table></div>
+      <div class="head-actions"><button class="btn" id="resetHide" ${hideChanges() && editable ? "" : "disabled"}>Back to 260</button></div>
+    </section>
+    <section class="panel"><h3>Useful from this roll</h3>
+      <p class="help">The stats 260 counts today come first; the rest are candidates (gray) a quiver can roll. Rolls: the affixes' lowest and highest.</p>
+      <div class="tbl thr"><table><thead>
+        <tr class="grp"><th colspan="2"></th>${DATA.kinds.map(k => `<th colspan="2">${esc(k.name)}</th>`).join("")}</tr>
+        <tr><th>Stat</th><th class="num">Rolls</th>${DATA.kinds.map(() => `<th>${h.start[0]}–${h.start[1] - 1}</th><th>${h.start[1]}+</th>`).join("")}</tr></thead>
+        <tbody>${thrRows}</tbody></table></div>
+    </section>
+    <section class="panel"><h3>Share of dropped quivers hidden <span class="tools">
+        <label>Kind <select id="hideKind">${opt(DATA.kinds.map(k => [k.key, k.name]), hideKind)}</select></label>
+        <label>Base <select id="hideBase">${opt(kind.bases.map(b => [b.code, `${b.name} (from item level ${Math.max(b.qlvl, 1)})`]), hideBase)}</select></label></span></h3>
+      <p class="help">${N} rolled quivers per item level and quality, by PD2's affix roller (affix level, frequency weights, one affix per group; a rare's 3–6 affixes by item level). Magic: with a prefix and a suffix; below it with one affix only (prefix only and suffix only). Today → yours where they differ (red: more hidden).</p>
+      <div class="tbl"><table><thead>
+        <tr class="grp"><th colspan="2"></th><th colspan="2">${esc(bandName(h, 0))}</th><th colspan="2">${esc(bandName(h, 1))}</th></tr>
+        <tr><th class="num">Item level</th><th class="num">Affix level</th><th class="num">Magic</th><th class="num">Rare</th><th class="num">Magic</th><th class="num">Rare</th></tr></thead>
+        <tbody>${rateRows}</tbody></table></div>
+    </section>
+    <section class="panel"><h3>Examples that change <span class="tools">
+        <label>Item level <select id="exIlvl">${opt(DATA.ilvls.filter(il => sets[il]).map(il => [il, il]), exIlvl)}</select></label>
+        <label>Quality <select id="exQual">${opt([["RARE", "Rare"], ["MAG", "Magic (both affixes)"]], exQual)}</select></label>
+        <label>Band <select id="exBand">${opt([[0, bandName(h, 0)], [1, bandName(h, 1)]], exBand)}</select></label></span></h3>
+      <div class="cols2">
+        <div class="ex"><b>Hidden with yours, shown today</b>${newlyHidden.map(itemText).join("") || '<span class="none">none</span>'}</div>
+        <div class="ex"><b>Shown with yours, hidden today</b>${newlyShown.map(itemText).join("") || '<span class="none">none</span>'}</div>
+      </div>
+    </section>
+    <div class="notebox"><label for="noteHide">Notes on hiding</label>
+      <textarea class="note" id="noteHide" data-doc="hiding" ${editable ? "" : "disabled"} placeholder="Anything Claude should know when applying these">${esc(h.note || "")}</textarea></div>`;
+}
+
+function render() {
+  renderTabs();
+  const y = window.scrollY;
+  document.getElementById("main").innerHTML = current === "tags" ? renderTags() : renderHiding();
+  window.scrollTo({ top: y });
+}
+
+document.getElementById("tabs").addEventListener("click", e => {
+  const b = e.target.closest(".tab");
+  if (!b) return;
+  current = b.dataset.tab;
+  try { localStorage.setItem("quiverTagsTab", current); } catch (err) {}
+  render();
+  window.scrollTo({ top: 0 });
+});
+const intOrNull = s => { const n = parseInt(s, 10); return Number.isFinite(n) && n > 0 ? n : null; };
+document.getElementById("main").addEventListener("change", e => {
+  const el = e.target;
+  if (el.matches('input[role="switch"]')) { state.tags.stats[el.dataset.row] = el.checked; queueSave("tags"); }
+  else if (el.id === "cut") { state.tags.cut = parseInt(el.value, 10); queueSave("tags"); }
+  else if (el.dataset.qual) { state.tags.quals[el.dataset.qual] = el.checked; queueSave("tags"); }
+  else if (el.dataset.thr) {
+    const [kind, k, b] = el.dataset.thr.split("|");
+    const t = state.hiding.thr[kind] = state.hiding.thr[kind] || {};
+    const cur = t[k] || [null, null];
+    cur[+b] = intOrNull(el.value);
+    if (cur[0] == null && cur[1] == null) delete t[k]; else t[k] = cur;
+    queueSave("hiding");
+  } else if (el.dataset.start) {
+    const v = intOrNull(el.value);
+    if (v) state.hiding.start[+el.dataset.start] = v;
+    queueSave("hiding");
+  } else if (el.dataset.need) {
+    const [q, b] = el.dataset.need.split("|");
+    const v = parseInt(el.value, 10);
+    if (Number.isFinite(v) && v >= 0) state.hiding.need[q][+b] = v;
+    queueSave("hiding");
+  } else if (el.id === "hideKind") { hideKind = el.value; hideBase = ""; }
+  else if (el.id === "hideBase") hideBase = el.value;
+  else if (el.id === "exIlvl") exIlvl = parseInt(el.value, 10);
+  else if (el.id === "exQual") exQual = el.value;
+  else if (el.id === "exBand") exBand = parseInt(el.value, 10);
+  else return;
+  render();
+});
+document.getElementById("main").addEventListener("input", e => {
+  const d = e.target.dataset.doc;
+  if (d) { state[d].note = e.target.value; queueSave(d); }
+});
+document.getElementById("main").addEventListener("click", e => {
+  const id = e.target.id;
+  if (id === "resetTags") { state.tags = { ...clone(TAGS0), note: state.tags.note }; queueSave("tags"); render(); }
+  if (id === "allOff") { for (const r of Object.keys(state.tags.stats)) state.tags.stats[r] = false; queueSave("tags"); render(); }
+  if (id === "resetHide") { state.hiding = { ...clone(HIDE0), note: state.hiding.note }; queueSave("hiding"); render(); }
+});
+
+// ---------- saving (db: quivers/tags = {stats, cut, quals, note, savedAt}, quivers/hiding = {start, need, thr, note,
+// savedAt}). Every edit is also kept in this browser until the store has it.
+const pending = new Set(), saveTimers = {}, edits = {}, lastEdit = {}, retries = {};
+let loaded = false, bannerIsError = false;
+const BACKUP = "quiverTagsUnsaved";
+function backups() { try { return JSON.parse(localStorage.getItem(BACKUP) || "{}") || {}; } catch (e) { return {}; } }
+function keepBackup(doc) {
+  try { const all = backups(); all[doc] = { at: lastEdit[doc] || Date.now(), body: state[doc] }; localStorage.setItem(BACKUP, JSON.stringify(all)); } catch (e) {}
+}
+function dropBackup(doc, at) {
+  try { const all = backups(); if (all[doc] && all[doc].at <= at) { delete all[doc]; localStorage.setItem(BACKUP, JSON.stringify(all)); } } catch (e) {}
+}
+function setStatus(text, kind) { const el = document.getElementById("status"); el.textContent = text; el.className = "status" + (kind ? " " + kind : ""); }
+function banner(text, isError = true) { const el = document.getElementById("banner"); el.hidden = !text; el.textContent = text || ""; bannerIsError = !!text && isError; }
+function queueSave(doc) {
+  edits[doc] = (edits[doc] || 0) + 1;
+  lastEdit[doc] = Date.now();
+  pending.add(doc);
+  keepBackup(doc);
+  if (!db) {
+    setStatus("Kept in this browser only", "warn");
+    banner("This view can't reach the saved choices, so edits are kept in this browser only. Reload the page: they are saved as soon as it can reach the store.");
+    return;
+  }
+  setStatus("Saving…");
+  clearTimeout(saveTimers[doc]);
+  saveTimers[doc] = setTimeout(() => save(doc), 700);
+}
+async function save(doc) {
+  const body = { ...clone(state[doc]), savedAt: new Date().toISOString() };
+  const n = edits[doc], at = lastEdit[doc];
+  try {
+    await db.doc("quivers/" + doc).set(body);
+    retries[doc] = 0;
+    if (edits[doc] === n) { pending.delete(doc); dropBackup(doc, at); }
+    if (!pending.size) { setStatus("Saved", "ok"); if (bannerIsError) banner(""); }
+  } catch (err) {
+    const why = (err && (err.message || err.code)) || "unknown error";
+    setStatus("Not saved", "warn");
+    banner(`Not saved (${why}). Your edits are kept in this browser; the page tries again, and a reload saves them too.`);
+    retries[doc] = (retries[doc] || 0) + 1;
+    if (retries[doc] <= 3) { clearTimeout(saveTimers[doc]); saveTimers[doc] = setTimeout(() => save(doc), 5000 * retries[doc]); }
+  }
+}
+function takeDoc(doc, body) {
+  if (!body || typeof body !== "object") return false;
+  const before = JSON.stringify(state[doc]);
+  if (doc === "tags") {
+    const t = state.tags;
+    if (body.stats && typeof body.stats === "object") for (const [r, v] of Object.entries(body.stats)) if (r in START) t.stats[r] = !!v;
+    if (DATA.cuts.includes(body.cut)) t.cut = body.cut;
+    if (body.quals && typeof body.quals === "object") for (const q of Object.keys(t.quals)) if (q in body.quals) t.quals[q] = !!body.quals[q];
+    if (typeof body.note === "string") t.note = body.note;
+  } else {
+    const h = state.hiding;
+    if (Array.isArray(body.start) && body.start.length === 2 && body.start.every(Number.isFinite)) h.start = body.start.slice();
+    if (body.need && typeof body.need === "object") for (const q of ["MAG", "RARE"]) if (Array.isArray(body.need[q])) h.need[q] = body.need[q].slice(0, 2);
+    if (body.thr && typeof body.thr === "object") {
+      h.thr = {};
+      for (const kd of DATA.kinds) {
+        h.thr[kd.key] = {};
+        for (const [k, v] of Object.entries(body.thr[kd.key] || {})) if (k in CKI && Array.isArray(v)) h.thr[kd.key][k] = [v[0] ?? null, v[1] ?? null];
+      }
+    }
+    if (typeof body.note === "string") h.note = body.note;
+  }
+  return JSON.stringify(state[doc]) !== before;
+}
+function restoreBackups(savedAt) {
+  const all = backups(), restored = [];
+  for (const [doc, b] of Object.entries(all)) {
+    if (!DOCS[doc] || !b || !b.body) continue;
+    if (savedAt[doc] && savedAt[doc] >= b.at) { dropBackup(doc, b.at); continue; }
+    takeDoc(doc, b.body);
+    restored.push(DOCS[doc]);
+    queueSave(doc);
+  }
+  if (restored.length) {
+    banner(db ? `Put back edits this browser kept that weren't saved yet (${restored.join(", ")}); saving them now.` :
+      `This view can't reach the saved choices. It shows edits this browser kept (${restored.join(", ")}); nothing is saved until you reload the page and it can reach the store.`, !db);
+    render();
+  }
+}
+
+(async () => {
+  render();
+  try {
+    const [dbNs, user] = await Promise.all([window.claude?.use?.("db") ?? null, window.claude?.use?.("user") ?? null]);
+    db = dbNs;
+    if (!db) {
+      setStatus("Kept in this browser only", "warn");
+      banner("This view can't reach the saved choices: you see the first state, and edits are kept in this browser only. Reload the page to load and save your choices.");
+      restoreBackups({});
+      return;
+    }
+    const can = user ? await user.can("data.write") : null;
+    if (can === false) { editable = false; render(); }
+    db.collection("quivers").onSnapshot(snap => {
+      let touched = false;
+      const savedAt = {};
+      for (const d of snap.docs) {
+        if (!DOCS[d.id]) continue;
+        const body = d.data();
+        savedAt[d.id] = Date.parse(body.savedAt || 0) || 0;
+        if (pending.has(d.id) || (d.metadata && d.metadata.hasPendingWrites)) continue;
+        if (lastEdit[d.id] && !(savedAt[d.id] >= lastEdit[d.id])) continue;
+        touched = takeDoc(d.id, body) || touched;
+      }
+      if (!loaded) {
+        loaded = true;
+        const n = snap.docs.filter(d => DOCS[d.id]).length;
+        setStatus(editable ? (n ? "Loaded your choices" : "First state: nothing saved yet") : "Read-only", editable ? "ok" : "warn");
+        if (touched) render();
+        if (editable) restoreBackups(savedAt);
+        return;
+      }
+      if (touched && !document.activeElement?.matches?.("input.num-in, textarea")) render();
+    }, err => {
+      setStatus("Saved choices unavailable", "warn");
+      banner(`The saved choices can't be read (${(err && (err.message || err.code)) || "unknown error"}). Edits are kept in this browser; reload the page.`);
+    });
+  } catch (err) {
+    setStatus("Kept in this browser only", "warn");
+    banner("This view can't reach the saved choices: edits are kept in this browser only. Reload the page.");
+  }
+})();
+</script>
