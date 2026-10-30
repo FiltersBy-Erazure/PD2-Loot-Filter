@@ -578,6 +578,15 @@ Rejuvenation's bigger look goes with it); H5 / M5 show on every level (since 202
 Healing / Mana Potions options decide; until then hidden from 8 at CLVL 50+). The exact labels are in that file. A rule without `FILTLVL` applies at every level. The players' pages take the
 levels, their names and their number from that file (`tier_map.FILTER_LEVELS`), so they follow a renamed, merged or
 removed level on the next run; a new level group's intro is `INTROS` in `tools/level_map.py`.
+Level 1 shows every non-magical chest, helm, circlet, shield, weapon (javelins and throwing weapons too; not class
+items, which follow their +skill rules) and quiver with 2 or more sockets, ethereal too, at every character level (the author,
+2026-10-29, after a player asked for 4-socket Long Bows, hidden from character level 30 on every level until then):
+every hide rule of 210/220 that could hide one has `!LOWEST_SOCKETED_BASE` (040, `(FILTLVL=1 SOCK>1)`), and a new one
+needs it, as hide rules need `GROUND`. Level 2 keeps its cut-offs. The same day, on every level 1+: non-superior (ED<5),
+non-ethereal 0-socket ones are hidden from character level 1 but the Larzuk bases (Gothic / Full Plate below 50, the
+`[L]` Crystal / Broad / Long Swords, 0-socket Monarchs below 80; circlets' `[Imbue]`, ethereal bases and belts as
+before), and so are throwing and stamina potions (hidden Fulminating / Chilling potions draw no icon); level 1 hides ID
+/ TP scrolls from character level 50 as level 2 does.
 
 ## Searching (the filter is ~8,500 lines / ~200k tokens; never read it whole)
 - Search `sections/` only. Never search the root `.filter` files (every hit 8 times), and never @-mention
