@@ -292,7 +292,8 @@
   total); Corr's versions show the minimum alone there (his rare max damage is off). Rare and crafted weapons but
   staves, wands and orbs tag minimum and maximum damage (and the per-level total) at every affix level and roll (the
   author, 2026-10-28; the biggest rolls come above 60: of Evisceration +41-63 max, of Transcendence +15-20 min, Grinding
-  and Fool's per level): 300's damage lines take those weapons directly, not through the aliases, so the page shows
+  and Fool's per level), but none once socketed or corrupted (`!GEMMED !(WEAPON STAT360>0)`, the author, 2026-10-30:
+  a corrupted claw showed `14-44dmg`): 300's damage lines take those weapons directly, not through the aliases, so the page shows
   those rows as tagged at every roll. Those weapons also tag FRW, ignore target's defense and damage to demons /
   undead (not knockback, attributes, single resistances or attack rating: the author; below 60 the weapon cards'
   picks) at every affix level and roll, and life / mana leech, open wounds damage and attack rating % below affix
