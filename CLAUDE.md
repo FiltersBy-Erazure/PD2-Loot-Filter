@@ -356,7 +356,9 @@
   length reduced, mana stolen, half freeze duration.
 - The +% fire, lightning, cold, poison and magic skill damage tags of magic, rare and crafted weapons (300, `5%f`)
   skip socketed items, `!GEMMED` (2026-10-30, the author: jewel prefixes such as Inferno add 2-5% each, and a
-  corrupted rare claw with two jewels showed `10%f`).
+  corrupted rare claw with two jewels showed `10%f`). Their -% enemy fire, lightning, cold and poison resistance tags
+  (300, `-8%f`; druid pelts too) skip socketed and corrupted items, `!GEMMED !STAT360>0`, the weapon -res
+  corruption's own tag too (2026-10-30, the author: room on a corrupted rare scepter's label).
 - Quivers (2026-10-30, the author, on the page https://claude.ai/artifact/MNJ48VqDN4fKksSgSGfPHy: `python
   tools/quiver_tags.py --page` writes `tools/quiver_tags.html`, gitignored, from `tools/quiver_tags_template.html`;
   it reads 260 as it is, so republish after a 260 change; db collection `quivers`, documents `tags` `{cut, quals,
