@@ -23,6 +23,8 @@ them, writes the entries back as they match today's lines, and reports the ones 
 4 PoE toggle variants; the 8 Minimal versions: styles/minimal.filter on all 8); it is
 fixed, written back and reported once. A style variant not in filter_definitions.json yet (no launcher entry) is
 built all the same, to its display name's file name (Corrlorized - Main - PoE: Corrlorized-Main-PoE.filter).
+A launcher entry names its variant by its display_name, or by LAUNCHER_NAMES where the launcher shows another name
+(Erazure - BIG GG - Mystery is the Erazure - BIG GG variant).
 """
 import argparse
 import datetime
@@ -51,6 +53,10 @@ STYLE_VARIANTS = {"Minimal": (MAIN, "minimal.filter"),
                   "Corrlorized - Revealed - PoE": ("Erazure - Revealed - PoE", "corrlorized.edits"),
                   "Corrlorized - BIG GG - PoE": ("Erazure - BIG GG - PoE", "corrlorized.edits"),
                   "Corrlorized - Revealed - BIG GG - PoE": ("Erazure - Revealed - BIG GG - PoE", "corrlorized.edits")}
+# {launcher name: the variant it is (a toggle header or STYLE_VARIANTS name)} for filter_definitions.json's entries
+# whose display_name is not their variant's name (the author, 2026-10-30)
+LAUNCHER_NAMES = {"Erazure - BIG GG - Mystery": "Erazure - BIG GG",
+                  "Minimal - BIG GG - Mystery": "Minimal - BIG GG"}
 PLACEHOLDER = b"<<VERSION>>"
 CATCH_ALL = b"ItemDisplay[]:"
 BOM = b"\xef\xbb\xbf"
@@ -275,6 +281,7 @@ def styled(name, lines, blocks, parts, where, check, problems):
 def variant_text(name):
     """A variant or style variant as built, written nowhere (tools/explain_item.py, tools/lint_filter.py --style):
     (its lines, where(i) -> 'sections/<file>:<line>', the indices of the lines a style variant's style wrote)."""
+    name = LAUNCHER_NAMES.get(name, name)
     _, season, date = load_version()
     parts, _ = read_sections(check=True)
     where = line_locator(parts)
@@ -291,7 +298,7 @@ def variant_text(name):
 def load_defs():
     try:
         entries = list(json.loads(DEFS.read_text(encoding="utf-8-sig"))["filter_info"].values())
-        pairs = [(e["display_name"], e["file_name"]) for e in entries]
+        pairs = [(LAUNCHER_NAMES.get(e["display_name"], e["display_name"]), e["file_name"]) for e in entries]
     except (OSError, ValueError, KeyError, TypeError, AttributeError) as e:
         fail(f"cannot read filter_definitions.json ({e})")
     for _, fname in pairs:

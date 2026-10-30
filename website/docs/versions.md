@@ -32,7 +32,7 @@ Pick a version in the launcher, then click **Save Filter** on the right side.
 |---|---|
 | Erazure - Main | Highly stylized loot filter with multiple filter level tiers for customizable strictness, colorful and intuitive symbols for runes, gems, maps, charms, etc. |
 | Erazure - Revealed | Same as Erazure - Main but unidentified unique and set items show as their identified names when dropped. |
-| Erazure - BIG GG | Same as Erazure - Main but with a twist: high runes and super rare drops hide their identity on the ground when dropped, showing as BIG GG until you pick them up. |
+| Erazure - BIG GG - Mystery | Same as Erazure - Main but with a twist: high runes and super rare drops hide their identity on the ground when dropped, showing as BIG GG until you pick them up. |
 | Erazure - Revealed - BIG GG | Same as Erazure - BIG GG but unidentified unique and set items show as their identified names when dropped. |
 | Erazure - Main - PoE | Same as Erazure - Main but with Path of Exile sound effects on valuable drops. Polished visuals and tiered, customizable filter levels enhanced with PoE-style sound notifications. |
 | Erazure - Revealed - PoE | Same as Erazure - Main - PoE but unidentified unique and set items show as their identified names when dropped. |
@@ -40,7 +40,7 @@ Pick a version in the launcher, then click **Save Filter** on the right side.
 | Erazure - Revealed - BIG GG - PoE | Same as Erazure - BIG GG - PoE, but unidentified unique and set items show as their identified names when dropped. |
 | Minimal | Minimalist version of Erazure - Main with the same filter level tiers for customizable strictness, but simpler, cleaner symbols around item names for a more understated look. |
 | Minimal - Revealed | Same as Minimal but unidentified unique and set items show as their identified names when dropped. |
-| Minimal - BIG GG | Same as Minimal but with a twist: high runes and super rare drops hide their identity on the ground when dropped, showing as BIG GG until you pick them up. |
+| Minimal - BIG GG - Mystery | Same as Minimal but with a twist: high runes and super rare drops hide their identity on the ground when dropped, showing as BIG GG until you pick them up. |
 | Minimal - Revealed - BIG GG | Same as Minimal - BIG GG but unidentified unique and set items show as their identified names when dropped. |
 | Minimal - PoE | Same as Minimal but with Path of Exile sound effects on valuable drops. |
 | Minimal - Revealed - PoE | Same as Minimal - PoE but unidentified unique and set items show as their identified names when dropped. |

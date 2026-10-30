@@ -579,7 +579,7 @@
 |---|---|---|---|---|
 | Erazure - Main | Erazure-Main.filter | F | F | F |
 | Erazure - Revealed | Erazure-Revealed.filter | F | F | T |
-| Erazure - BIG GG | Erazure-BIG-GG.filter | T | F | F |
+| Erazure - BIG GG - Mystery (variant Erazure - BIG GG) | Erazure-BIG-GG.filter | T | F | F |
 | Erazure - Revealed - BIG GG | Erazure-Revealed-BIG-GG.filter | T | F | T |
 | Erazure - Main - PoE | Erazure-Main-PoE.filter | F | T | F |
 | Erazure - Revealed - PoE | Erazure-Revealed-PoE.filter | F | T | T |
@@ -595,7 +595,10 @@
   the right block on for each variant. Never uncomment another block by hand.
 - Variant behavior lives in rules through the aliases (`ItemDisplay[BIG_GG ...]`), not in separate files.
 - Each `display_name` in `filter_definitions.json` must match a `//  Erazure - ...` toggle header (a style
-  variant: `STYLE_VARIANTS` names the variant it is built from).
+  variant: `STYLE_VARIANTS` names the variant it is built from), or be a launcher name of `LAUNCHER_NAMES` in
+  `tools/build.py`: since 2026-10-30 (the author) the launcher lists **Erazure - BIG GG - Mystery** and **Minimal -
+  BIG GG - Mystery** (keys 3 and 14), the variants Erazure - BIG GG and Minimal - BIG GG everywhere else (toggle
+  headers, `STYLE_VARIANTS`, file names, the Cube's names, the pages, `explain_item.py --variant`, which takes either).
 - The PD2 launcher lists `filter_info`'s entries in file order and remembers a player's choice by the entry's key
   (its `FilterId`; the file name only when no entry has that key, PD2Launcher `FilterHelpers.cs`). So a key names
   one filter for good: reorder by moving entries, never renumber or reuse a key (everyone who chose the old filter
