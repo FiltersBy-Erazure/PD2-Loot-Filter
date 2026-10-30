@@ -1,0 +1,507 @@
+<title>Erazure Grail Planner</title>
+<!-- Template for Erazure-Grail-Planner.html (tools/grail_map.py writes it from the game's tables; it needs the game
+     files, so build.bat, the hook and CI don't run it). The website's Grail Planner page shows the same planner:
+     website/hooks.py takes the styles, the markup between the grail-map markers and the script out of the generated
+     file, so keep those markers. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Source+Sans+3:wght@400;600;700&display=swap">
+<!-- grail-map:css -->
+<style>
+  /* Layout: the settings bar stays at the top while scrolling (under the website's header on the website) and every
+     number below follows it: the short answer, the grail curve, what an ear does, each ear, the planner, every item,
+     what ears can't do, the settings table, how it was modelled. Every rule is scoped to .grail-map, so the website's
+     theme and this page leave each other alone. Dark by default; light when the website (Material) is light. */
+  .grail-map {
+    --bg: #151412; --panel: #1f1d1a; --fg: #ece7de; --muted: #a59e91; --line: #36322c; --axis: #4a453d; --chip: #2a2723;
+    --accent: #d8b45e; --accent-wash: #2d2719; --found: #1f2a1c; --good: #7cc474;
+    --s0: #8a847a; --s1: #4f8fe0; --band: rgba(79,143,224,.22); --s2: #e0703a;
+    --q-unique: #c7b377; --q-set: #2fbf2f;
+    --display: "Cinzel", "Trajan Pro", Georgia, serif;
+    --body: "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --top: 0px;  /* where the settings bar stops while scrolling */
+    color-scheme: dark;
+    color: var(--fg); font: 15px/1.5 var(--body);
+  }
+  [data-md-color-scheme="default"] .grail-map {
+    --bg: #f3f1ec; --panel: #fffdf8; --fg: #23211c; --muted: #6b655a; --line: #ded7c9; --axis: #c9c1b1; --chip: #efe9dd;
+    --accent: #8a6d1f; --accent-wash: #f1e8d3; --found: #e9f1e2; --good: #2f6e2f;
+    --s0: #8b8579; --s1: #2a78d6; --band: rgba(42,120,214,.15); --s2: #d65a22;
+    --q-unique: #9c7f32; --q-set: #1f8a1f;
+    color-scheme: light;
+  }
+  .md-content .grail-map { --top: 2.4rem; }  /* on the website: under its header, which stays at the top */
+  .grail-map *, .grail-map *::before, .grail-map *::after { box-sizing: border-box; }
+  .grail-map .wrap { max-width: 1100px; margin: 0 auto; padding-inline: max(16px, env(safe-area-inset-left, 0px)) max(16px, env(safe-area-inset-right, 0px)); }
+  .md-content .grail-map .wrap { padding-inline: 0; max-width: none; }
+  .grail-map h1.gm-title { font: 700 30px/1.15 var(--display); letter-spacing: .01em; margin: 0; padding-block: 20px 6px; color: var(--fg); text-wrap: balance; }
+  .md-content .grail-map h1.gm-title, .md-content .grail-map .gm-lede { display: none; }  /* the site page has its own */
+  .grail-map h2 { font: 600 21px/1.25 var(--display); margin: 0; letter-spacing: .01em; color: var(--fg); text-wrap: balance; }
+  .grail-map h3 { font: 600 15px/1.3 var(--body); margin: 0; color: var(--fg); }
+  .grail-map p { margin: 0; max-width: 72ch; }
+  .grail-map .gm-lede { color: var(--muted); font-size: 16px; padding-bottom: 14px; }
+  .grail-map section { display: grid; gap: 14px; padding-block: 28px; border-top: 1px solid var(--line); }
+  .grail-map section > * { min-width: 0; }
+  .grail-map .note { color: var(--muted); font-size: 14.5px; }
+  .grail-map .small { font-size: 13px; color: var(--muted); }
+  .grail-map ul.find { margin: 0; padding-left: 20px; display: grid; gap: 7px; max-width: 76ch; }
+  .grail-map ul.find li { margin: 0; }
+  .grail-map .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 14px; display: grid; gap: 12px; min-width: 0; }
+  .grail-map .tbl { overflow-x: auto; }
+  .grail-map table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; font-size: 14px; margin: 0; display: table; }
+  .grail-map th, .grail-map td { padding: 6px 9px; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; color: var(--fg); background: none; }
+  .grail-map th:first-child, .grail-map td:first-child { text-align: left; }
+  .grail-map thead th { font-weight: 600; color: var(--muted); font-size: 12.5px; border-bottom: 1px solid var(--axis); vertical-align: bottom; }
+  .grail-map tbody tr:last-child td { border-bottom: 0; }
+  .grail-map td.l, .grail-map th.l { text-align: left; }
+  .grail-map td.wrapc { white-space: normal; }
+  .grail-map .best { font-weight: 700; }
+  .grail-map .ratio { color: var(--muted); font-size: 12.5px; }
+  .grail-map .sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 7px; vertical-align: -1px; }
+  .grail-map .q { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; }
+  .grail-map .bar { position: sticky; top: var(--top); z-index: 3; background: var(--panel); border-block: 1px solid var(--line); padding-block: 8px; }
+  .grail-map .bar .wrap { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; }
+  .md-content .grail-map .bar .wrap { padding-inline: 10px; }
+  .grail-map .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; background: var(--bg); }
+  .grail-map .seg button { font: 600 13.5px var(--body); color: var(--muted); background: transparent; border: 0; padding: 5px 11px; cursor: pointer; margin: 0; }
+  .grail-map .seg button + button { border-left: 1px solid var(--line); }
+  .grail-map .seg button[aria-pressed="true"] { background: var(--accent-wash); color: var(--fg); }
+  .grail-map button:focus-visible, .grail-map input:focus-visible, .grail-map select:focus-visible,
+  .grail-map textarea:focus-visible, .grail-map summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .grail-map .ctl-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-right: 6px; }
+  .grail-map .cards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+  @media (max-width: 820px) { .grail-map .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .grail-map .card { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 13px; display: grid; gap: 5px; align-content: start; }
+  .grail-map .card .who { font-size: 13px; font-weight: 600; color: var(--muted); }
+  .grail-map .card .big { font: 700 28px/1.05 var(--body); color: var(--fg); overflow-wrap: anywhere; }
+  .grail-map .card .big small { font-size: 13px; font-weight: 400; color: var(--muted); margin-left: 4px; }
+  .grail-map .card .sub { font-size: 13px; color: var(--muted); }
+  .grail-map .card.hl { border-color: var(--accent); }
+  .grail-map .ears { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 12px; }
+  .grail-map .ear { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 13px; display: grid; gap: 8px; align-content: start; }
+  .grail-map .ear h3 { font-family: var(--display); font-size: 17px; }
+  .grail-map .ear .meta { font-size: 13px; color: var(--muted); }
+  .grail-map .ear ol { margin: 0; padding-left: 18px; font-size: 14px; display: grid; gap: 2px; }
+  .grail-map .ear ol li { margin: 0; }
+  .grail-map .ear ol span { color: var(--muted); }
+  .grail-map svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .grail-map svg text { font-family: var(--body); fill: var(--muted); }
+  .grail-map .legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; color: var(--muted); }
+  .grail-map .tools { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
+  .grail-map input[type=search], .grail-map select { font: inherit; font-size: 14.5px; color: var(--fg); background: var(--bg);
+    border: 1px solid var(--line); border-radius: 6px; padding: 5px 9px; margin: 0; min-width: 0; }
+  .grail-map input[type=search] { flex: 1 1 220px; max-width: 340px; }
+  .grail-map textarea { width: 100%; min-height: 120px; font: 13px/1.4 ui-monospace, "Cascadia Mono", Consolas, monospace;
+    color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 8px; }
+  .grail-map .btn { font: 600 13.5px var(--body); color: var(--fg); background: var(--chip); border: 1px solid var(--line); border-radius: 6px; padding: 5px 12px; cursor: pointer; margin: 0; }
+  .grail-map .btn:hover { background: var(--accent-wash); }
+  .grail-map details > summary { cursor: pointer; color: var(--fg); }
+  .grail-map #gm-items td input { width: 16px; height: 16px; accent-color: var(--accent); margin: 0; vertical-align: middle; }
+  .grail-map #gm-items tr.found td { background: var(--found); }
+  .grail-map #gm-items td.name { text-align: left; white-space: normal; min-width: 180px; }
+  .grail-map #gm-items td.base { text-align: left; white-space: normal; min-width: 120px; color: var(--muted); }
+  .grail-map .ver { color: var(--muted); font-size: 12.5px; }
+  .grail-map .count { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 13px; }
+  @media (max-width: 700px) { .grail-map .opt { display: none; } }  /* phones: the item table's optional columns */
+  .grail-map .gm-tip { position: fixed; pointer-events: none; background: var(--panel); color: var(--fg); border: 1px solid var(--line);
+    border-radius: 6px; padding: 8px 10px; font-size: 12.5px; box-shadow: 0 4px 16px rgba(0,0,0,.3); z-index: 20; max-width: 280px; }
+  .grail-map code { font-size: 13px; background: var(--chip); padding: 1px 4px; border-radius: 3px; color: var(--fg); }
+  .grail-map footer { padding-block: 22px 40px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+</style>
+<div class="grail-map">
+<!-- grail-map:start -->
+<div class="wrap">
+  <h1 class="gm-title">Grail Planner</h1>
+  <p class="gm-lede">How the Corrupted Ears change the time it takes to find every unique and set item in T1-T3 maps, and which
+  ear to use for the items you're missing.</p>
+</div>
+
+<div class="bar" role="group" aria-label="Settings">
+ <div class="wrap">
+  <div><span class="ctl-label">Tier</span><span class="seg" data-ctl="tier"><button type="button" data-v="all" aria-pressed="true">All</button><button type="button" data-v="1" aria-pressed="false">T1</button><button type="button" data-v="2" aria-pressed="false">T2</button><button type="button" data-v="3" aria-pressed="false">T3</button></span></div>
+  <div><span class="ctl-label">Maps</span><span class="seg" data-ctl="mt"><button type="button" data-v="normal" aria-pressed="true">Non-magical</button><button type="button" data-v="rare" aria-pressed="false">Rare</button></span></div>
+  <div><span class="ctl-label">Magic find</span><span class="seg" data-ctl="mf"><button type="button" data-v="0" aria-pressed="false">0%</button><button type="button" data-v="150" aria-pressed="false">150%</button><button type="button" data-v="300" aria-pressed="true">300%</button><button type="button" data-v="500" aria-pressed="false">500%</button></span></div>
+ </div>
+</div>
+
+<div class="wrap">
+<section id="gm-answer">
+  <h2>The short answer</h2>
+  <p class="note" id="gm-answer-note"></p>
+  <div class="cards" id="gm-cards"></div>
+  <ul class="find" id="gm-findings"></ul>
+</section>
+
+<section id="gm-speed">
+  <h2>How fast the grail fills</h2>
+  <p class="note">Grail items found after a number of full map clears, counting only the items T1-T3 map monsters can drop. The
+  band covers the seven ears, from the best to the worst. Switching means putting on, before each map, the ear expected to find
+  the most items you don't have yet.</p>
+  <div class="panel">
+    <div class="legend" id="gm-leg"></div>
+    <div id="gm-curve"></div>
+  </div>
+  <div class="tbl panel"><table class="gm-table" id="gm-t-speed"></table></div>
+</section>
+
+<section id="gm-how">
+  <h2>What an ear does for the grail</h2>
+  <ul class="find" id="gm-how-list"></ul>
+</section>
+
+<section id="gm-ears">
+  <h2>Each ear</h2>
+  <p class="note">What each ear's class pool adds. "Grail items" counts the uniques and sets its pool can make; the list shows the
+  items it raises most over a map without an ear, and how often each drops with that ear.</p>
+  <div class="ears" id="gm-earcards"></div>
+</section>
+
+<section id="gm-planner">
+  <h2>Your grail</h2>
+  <p class="note">Tick the items you have in the list below, or paste them. The planner ranks the ears by how often they drop your
+  missing items. Your ticks are kept in this browser only.</p>
+  <div class="cards" id="gm-plan-cards"></div>
+  <div class="tbl panel"><table class="gm-table" id="gm-t-plan"></table></div>
+  <details class="panel">
+    <summary><b>Copy or paste your list</b></summary>
+    <p class="note">One item per line, as the list names it (a version in brackets: <code>Rainbow Facet (Cold, on death)</code>).
+    Pasting replaces your ticks.</p>
+    <textarea id="gm-io" spellcheck="false" aria-label="Your items, one per line"></textarea>
+    <div class="tools"><button type="button" class="btn" id="gm-export">Show my list</button><button type="button" class="btn" id="gm-copy">Copy</button>
+    <button type="button" class="btn" id="gm-import">Use pasted list</button><button type="button" class="btn" id="gm-clear">Clear all ticks</button><span class="small" id="gm-io-msg"></span></div>
+  </details>
+</section>
+
+<section id="gm-list">
+  <h2>Every grail item</h2>
+  <p class="note">How often each item drops in one full map clear, as one in so many maps. "Every ear" is the part all ears give
+  (the extra drop and rarity); the best ear adds its class pool. "90% within" is the number of maps for a 90% chance to see it with
+  the best ear.</p>
+  <div class="tools">
+    <input type="search" id="gm-q" placeholder="Search item, base or set" aria-label="Search items">
+    <select id="gm-kind" aria-label="Kind"><option value="">Uniques and sets</option><option value="UNI">Uniques</option><option value="SET">Sets</option></select>
+    <select id="gm-show" aria-label="Show"><option value="">All items</option><option value="missing">Missing only</option><option value="boost">An ear's pool helps</option><option value="nodrop">Not from map monsters</option></select>
+    <select id="gm-ear" aria-label="Ear"><option value="">Best ear</option></select>
+    <select id="gm-sort" aria-label="Sort"><option value="rare">Rarest first</option><option value="name">Name</option><option value="gain">Biggest ear gain</option><option value="lvl">Item level</option></select>
+    <span class="count" id="gm-count"></span>
+  </div>
+  <div class="tbl panel"><table class="gm-table" id="gm-items"></table></div>
+</section>
+
+<section id="gm-cant">
+  <h2>What ears can't do</h2>
+  <p class="note" id="gm-cant-note"></p>
+  <div class="tbl panel"><table class="gm-table" id="gm-t-nodrop"></table></div>
+  <p class="note">The slowest items even with the best ear. For most of them no ear's pool has the base, so only the extra drop
+  helps; maps are a poor place to look for them.</p>
+  <div class="tbl panel"><table class="gm-table" id="gm-t-slow"></table></div>
+</section>
+
+<section id="gm-settings">
+  <h2>Tier, magic find and map rolls</h2>
+  <p class="note">Maps for 90% of the map grail, without an ear and with the best single ear, at every setting. Magic find matters
+  far more than the tier; rare maps have more monsters per clear (and take longer to clear).</p>
+  <div class="tbl panel"><table class="gm-table" id="gm-t-grid"></table></div>
+  <ul class="find small" id="gm-notes"></ul>
+</section>
+
+<section id="gm-method">
+  <h2>How this was worked out</h2>
+  <ul class="find small">
+    <li><b>The grail:</b> every enabled unique and every set item in the game's tables, unique maps and quest items left out. Items
+      the table lists in several versions (Rainbow Facet eight times; Akarat's Devotion, Cyclopean Roar and Arm of King Leoric
+      twice) count once per version.</li>
+    <li><b>Drops:</b> the game's own treasure classes and quality rules: each base's chance to be unique or set at the monster's
+      level (class items have their own, better chances), magic find with its diminishing returns, and a unique picked among the
+      base's uniques by their weight. A unique roll on a base with no unique becomes a rare, a set roll with no set item magic.</li>
+    <li><b>Maps:</b> full clears, averaged over the maps of a tier, from the map model behind the filter's experience tags
+      (monsters per area, elite packs, monster levels). "Rare" is the average rare map with a corruption. Solo; one map boss
+      per map.</li>
+    <li><b>Grail progress:</b> each item drops at random at its own rate, so the items found after n maps add up item by item.
+      "Switching" works from the expected progress; with your real ticks the planner does better.</li>
+    <li><b>Left out:</b> T4 dungeons, unique maps, bosses and events, and PD2's special drops (sigils, Corrupted Zone shards),
+      which the extra drop does not repeat.</li>
+  </ul>
+</section>
+</div>
+<footer><div class="wrap" id="gm-foot"></div></footer>
+<div class="gm-tip" id="gm-tip" hidden></div>
+<!-- grail-map:end -->
+</div>
+
+<script>
+(() => {
+const DATA = /*__DATA__*/null;
+const EARS = DATA.ears.map(e => e.name), ITEMS = DATA.items, N = ITEMS.length, E0 = DATA.ears[0];
+const state = {tier: "all", mt: "normal", mf: "300"};
+const $ = id => document.getElementById(id);
+const fmtN = v => !isFinite(v) ? "never" : v >= 1e5 ? Math.round(v / 1000).toLocaleString("en-US") + "k" : Math.round(v).toLocaleString("en-US");
+const oneIn = r => r > 0 ? "1 in " + fmtN(1 / r) : "never";
+const pct = v => (v * 100).toFixed(0) + "%";
+ITEMS.forEach((it, i) => {
+  it.i = i;
+  it.key = it.kind + "|" + it.index + "|" + (it.ver || "");
+  it.label = it.name + (it.ver ? " (" + it.ver + ")" : "");
+  it.search = (it.label + " " + it.base + " " + (it.set || "")).toLowerCase();
+});
+
+// ---------------------------------------------------------------- rates per map
+const cache = {};
+function rates(tier, mt, mf) {
+  const k = tier + "|" + mt + "|" + mf;
+  if (cache[k]) return cache[k];
+  const keys = tier === "all" ? [["1", 10], ["2", 10], ["3", 9]] : [[tier, 1]];  // T1-T3: 10, 10 and 9 maps
+  const W = keys.reduce((a, [, w]) => a + w, 0);
+  const none = new Float64Array(N), common = {}, cls = {};
+  EARS.forEach(e => { common[e] = new Float64Array(N); cls[e] = new Float64Array(N); });
+  for (const [t, w] of keys) {
+    const d = DATA.rates[t + "|" + mt + "|" + mf], f = w / W / 1000;
+    for (let i = 0; i < N; i++) none[i] += d.none[i] * f;
+    DATA.ears.forEach(e => {
+      const c = d.common[e.config];
+      for (let i = 0; i < N; i++) common[e.name][i] += c[i] * f;
+      for (const i in d.cls[e.name]) cls[e.name][i] += d.cls[e.name][i] * f;
+    });
+  }
+  const ear = {};
+  EARS.forEach(e => { ear[e] = common[e].map((c, i) => c + cls[e][i]); });
+  return cache[k] = {none, common, cls, ear, any: common[EARS[0]]};
+}
+const cur = () => rates(state.tier, state.mt, state.mf);
+const droppable = R => ITEMS.filter(it => R.none[it.i] > 0).map(it => it.i);
+function bestEar(R, i) {
+  let b = null, v = -1;
+  for (const e of EARS) if (R.ear[e][i] > v + 1e-12) { v = R.ear[e][i]; b = e; }
+  return R.cls[b][i] > 0 ? [b, v] : [null, R.any[i]];
+}
+function found(r, idx, n) { let s = 0; for (const i of idx) s += 1 - Math.exp(-r[i] * n); return s; }
+function mapsTo(r, idx, frac) {
+  const goal = frac * idx.length; let lo = 0, hi = 1e7;
+  for (let k = 0; k < 80; k++) { const m = (lo + hi) / 2; if (found(r, idx, m) >= goal) hi = m; else lo = m; }
+  return hi;
+}
+function finish(r, idx) {  // expected maps until the last item drops: the integral of 1 - prod(1 - e^-rt)
+  if (!idx.length) return 0;
+  let t = 0, acc = 0, dt = 1;
+  for (let k = 0; k < 20000; k++) {
+    let p = 1;
+    for (const i of idx) { p *= 1 - Math.exp(-r[i] * t); if (p === 0) break; }
+    acc += (1 - p) * dt;
+    if (1 - p < 1e-7 && t > 10) break;
+    t += dt; dt = Math.max(1, t / 300);
+  }
+  return acc;
+}
+function rotation(R, idx, maxMaps) {  // before each map, the ear expected to find the most missing items
+  const q = new Float64Array(N).fill(1), curve = [0];
+  for (let m = 1; m <= maxMaps; m++) {
+    let be = EARS[0], bv = -1;
+    for (const e of EARS) { const r = R.ear[e]; let s = 0; for (const i of idx) s += q[i] * r[i]; if (s > bv) { bv = s; be = e; } }
+    const r = R.ear[be]; let f = 0;
+    for (const i of idx) { q[i] *= Math.exp(-r[i]); f += 1 - q[i]; }
+    curve.push(f);
+    if (f > idx.length - 0.5) break;
+  }
+  return curve;
+}
+const rotTo = (curve, total, frac) => { const k = curve.findIndex(v => v >= frac * total); return k < 0 ? Infinity : k; };
+
+// ---------------------------------------------------------------- tooltip and svg
+const tip = $("gm-tip");
+function showTip(e, html) { tip.innerHTML = html; tip.hidden = false; moveTip(e); }
+function moveTip(e) { const w = tip.offsetWidth, h = tip.offsetHeight; let x = e.clientX + 14, y = e.clientY + 14;
+  if (x + w > innerWidth - 8) x = e.clientX - w - 14; if (y + h > innerHeight - 8) y = e.clientY - h - 14;
+  tip.style.left = x + "px"; tip.style.top = y + "px"; }
+const hideTip = () => { tip.hidden = true; };
+const NS = "http://www.w3.org/2000/svg";
+function el(tag, attrs, parent) { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); if (parent) parent.appendChild(n); return n; }
+
+// ---------------------------------------------------------------- the short answer and the curve
+let SUM = null;
+function summary() {
+  const R = cur(), idx = droppable(R);
+  const rows = [["No ear", R.none]].concat(EARS.map(e => [e, R.ear[e]])).map(([n, r]) => ({n, r,
+    perMap: idx.reduce((a, i) => a + r[i], 0), f100: found(r, idx, 100), f500: found(r, idx, 500),
+    m50: mapsTo(r, idx, .5), m90: mapsTo(r, idx, .9), m95: mapsTo(r, idx, .95), m99: mapsTo(r, idx, .99), all: finish(r, idx)}));
+  const rot = rotation(R, idx, 12000), at = m => rot[Math.min(m, rot.length - 1)];
+  const rr = {n: "Switching ears", perMap: NaN, f100: at(100), f500: at(500), m50: rotTo(rot, idx.length, .5),
+    m90: rotTo(rot, idx.length, .9), m95: rotTo(rot, idx.length, .95), m99: rotTo(rot, idx.length, .99), all: NaN};
+  return SUM = {R, idx, rows, rot, rr};
+}
+const setting = () => `${state.tier === "all" ? "T1-T3" : "T" + state.tier} ${state.mt === "normal" ? "non-magical" : "rare"} maps, ${state.mf}% magic find, solo`;
+function renderAnswer() {
+  const {idx, rows, rr} = SUM, none = rows[0], ears = rows.slice(1);
+  const by = k => ears.reduce((a, b) => b[k] < a[k] ? b : a), worst = k => ears.reduce((a, b) => b[k] > a[k] ? b : a);
+  const b90 = by("m90"), bAll = by("all"), w90 = worst("m90");
+  $("gm-answer-note").textContent = `${setting()[0].toUpperCase() + setting().slice(1)}. ${idx.length} of ${N} grail items drop from these maps.`;
+  $("gm-cards").innerHTML = [
+    ["Without an ear", fmtN(none.m90), "maps for 90% of the map grail", `${fmtN(none.all)} maps to find everything`, false],
+    ["Best ear to 90%: " + b90.n, fmtN(b90.m90), "maps for 90%", `${(none.m90 / b90.m90).toFixed(2)}× faster than no ear; slowest ear ${w90.n}, ${fmtN(w90.m90)}`, true],
+    ["Best ear to finish: " + bAll.n, fmtN(bAll.all), "maps to find everything", `${(none.all / bAll.all).toFixed(2)}× faster than no ear`, false],
+    ["Switching ears", fmtN(rr.m90), "maps for 90%", `${fmtN(rr.m99)} for 99% (best single ear ${fmtN(by("m99").m99)})`, false],
+  ].map(([who, big, small, sub, hl]) => `<div class="card${hl ? " hl" : ""}"><div class="who">${who}</div><div class="big">${big}<small>${small}</small></div><div class="sub">${sub}</div></div>`).join("");
+  const avgPer = ears.reduce((a, b) => a + b.perMap, 0) / ears.length, avg90 = ears.reduce((a, b) => a + b.m90, 0) / ears.length;
+  $("gm-findings").innerHTML = [
+    `<b>Any ear speeds the grail up about ${(none.m90 / avg90).toFixed(1)}×.</b> Most of that is the ${E0.extra}% extra drop every ear has: grail-item drops per map go from ${none.perMap.toFixed(1)} to ${avgPer.toFixed(1)} on average.`,
+    `<b>Wearing an ear matters more than which one.</b> To 90% of the map grail the ears are ${fmtN(b90.m90)} to ${fmtN(w90.m90)} maps apart. ${b90.n} is quickest there; ${bAll.n} finishes first.`,
+    `<b>Switch ears as your list shrinks</b> and 90% comes about ${Math.max(0, 100 - rr.m90 / b90.m90 * 100).toFixed(0)}% sooner than with the best single ear. The planner below does this from your own ticks.`,
+    `<b>The last items are slow in maps whatever you wear:</b> the low-level uniques of the very first bases (Knell Striker, Torch of Iro, Bane Ash) take thousands of maps, because those bases rarely drop there. Ears only add their extra drop to them.`
+  ].map(x => `<li>${x}</li>`).join("");
+}
+function renderSpeed() {
+  const {idx, rows, rot, rr} = SUM, tot = idx.length, ears = rows.slice(1);
+  $("gm-leg").innerHTML = `<span><span class="sw" style="background:var(--s0)"></span>No ear</span><span><span class="sw" style="background:var(--band);border:1px solid var(--s1)"></span>One ear (best to worst)</span><span><span class="sw" style="background:var(--s2)"></span>Switching ears</span>`;
+  const host = $("gm-curve"); host.innerHTML = "";
+  const W = 680, H = 280, L = 48, R = 16, T = 12, B = 36, x0 = Math.log10(5), x1 = Math.log10(10000);
+  const sx = m => L + (Math.log10(m) - x0) / (x1 - x0) * (W - L - R), sy = f => T + (1 - f / tot) * (H - T - B);
+  const svg = el("svg", {viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": "Grail items found after a number of maps"}, host);
+  for (const f of [0, .25, .5, .75, 1]) { const y = sy(f * tot); el("line", {x1: L, x2: W - R, y1: y, y2: y, stroke: f ? "var(--line)" : "var(--axis)"}, svg);
+    el("text", {x: L - 6, y: y + 4, "text-anchor": "end", "font-size": 11}, svg).textContent = pct(f); }
+  for (const m of [10, 30, 100, 300, 1000, 3000, 10000]) el("text", {x: sx(m), y: H - 18, "text-anchor": "middle", "font-size": 11}, svg).textContent = m.toLocaleString("en-US");
+  el("text", {x: (L + W - R) / 2, y: H - 2, "text-anchor": "middle", "font-size": 11.5}, svg).textContent = "Map clears (log scale)";
+  const ms = []; for (let k = 0; k <= 120; k++) ms.push(Math.pow(10, x0 + (x1 - x0) * k / 120));
+  const hiF = ms.map(m => Math.max(...ears.map(e => found(e.r, idx, m)))), loF = ms.map(m => Math.min(...ears.map(e => found(e.r, idx, m))));
+  el("path", {d: "M" + ms.map((m, k) => sx(m) + "," + sy(hiF[k])).join("L") + "L" + ms.map((m, k) => [m, k]).reverse().map(([m, k]) => sx(m) + "," + sy(loF[k])).join("L") + "Z", fill: "var(--band)", stroke: "none"}, svg);
+  const line = (vals, color) => el("polyline", {points: ms.map((m, k) => sx(m) + "," + sy(vals[k])).join(" "), fill: "none", stroke: color, "stroke-width": 2, "stroke-linejoin": "round"}, svg);
+  line(ms.map(m => found(rows[0].r, idx, m)), "var(--s0)");
+  const rotAt = m => { const k = Math.floor(m), f = m - k, n = rot.length - 1; return k >= n ? rot[n] : rot[k] + (rot[k + 1] - rot[k]) * f; };
+  line(ms.map(rotAt), "var(--s2)");
+  const cross = el("line", {x1: 0, x2: 0, y1: T, y2: H - B, stroke: "var(--muted)", visibility: "hidden"}, svg);
+  const hit = el("rect", {x: L, y: T, width: W - L - R, height: H - T - B, fill: "transparent"}, svg);
+  hit.addEventListener("pointermove", e => {
+    const r = svg.getBoundingClientRect(), px = (e.clientX - r.left) / r.width * W;
+    const m = Math.max(5, Math.round(Math.pow(10, x0 + (px - L) / (W - L - R) * (x1 - x0))));
+    cross.setAttribute("x1", sx(m)); cross.setAttribute("x2", sx(m)); cross.setAttribute("visibility", "visible");
+    const fe = ears.map(o => [o.n, found(o.r, idx, m)]).sort((a, b) => b[1] - a[1]);
+    showTip(e, `<b>After ${m.toLocaleString("en-US")} maps</b><br>No ear: ${found(rows[0].r, idx, m).toFixed(0)} items<br>Best ear (${fe[0][0]}): ${fe[0][1].toFixed(0)}<br>Slowest ear (${fe[6][0]}): ${fe[6][1].toFixed(0)}<br>Switching: ${rotAt(m).toFixed(0)} of ${tot}`);
+  });
+  hit.addEventListener("pointerleave", () => { cross.setAttribute("visibility", "hidden"); hideTip(); });
+  const best = k => Math.min(...ears.map(r => r[k]));
+  $("gm-t-speed").innerHTML = `<thead><tr><th>Ear</th><th>Grail drops per map</th><th>Found after 100 maps</th><th>After 500</th><th>Maps for 50%</th><th>90%</th><th>95%</th><th>99%</th><th>Everything</th></tr></thead><tbody>` +
+    rows.concat([rr]).map(o => `<tr><td>${o.n}</td><td>${isNaN(o.perMap) ? "–" : o.perMap.toFixed(1)}</td><td>${o.f100.toFixed(0)}</td><td>${o.f500.toFixed(0)}</td>` +
+      ["m50", "m90", "m95", "m99", "all"].map(k => `<td${o.n !== "Switching ears" && o[k] === best(k) ? ' class="best"' : ""}>${isNaN(o[k]) ? "–" : fmtN(o[k])}</td>`).join("") + `</tr>`).join("") +
+    `</tbody><caption class="small" style="caption-side:bottom;text-align:left;padding-top:8px">Out of ${tot} items. Bold: the best single ear. "Everything" is the expected number of maps until the last item drops; the few slowest items decide it.</caption>`;
+}
+function renderHow() {
+  $("gm-how-list").innerHTML = [
+    `<b>Every ear, the same:</b> each kill has a ${E0.extra}% chance to drop its whole loot a second time, and the map gets +${E0.rarity}% monster rarity (a few more elite packs). That alone makes every grail item that map monsters drop about ${(1 + E0.extra / 100).toFixed(1)} times as common, whichever ear you use.`,
+    `<b>Each ear, its own pool:</b> each kill also has a ${E0.cls}% chance to drop one exceptional or elite item from the ear's class pool, rolled for quality like any other drop at the monster's level. The uniques and sets among them are where the ears differ: up to almost 20 times the usual chance for some items.`,
+    `<b>Class items roll better:</b> orbs, Paladin shields, Barbarian helms, claws, pelts, heads and Amazon weapons have better chances to be unique, set or rare than other bases.`,
+    `<b>Some rolls are wasted:</b> a unique roll on a base that has no unique becomes a rare, and a set roll on a base with no set item becomes magic. Pools with many such bases (Amazon javelins and bows, Paladin and Necromancer starter shields and heads) lose part of their chances.`,
+    `<b>Item level:</b> a unique or set item only drops at an item level of at least its own. Map monsters are level 87 to 92 (champions +2, unique monsters and their minions +3), so everything but the items under "What ears can't do" can drop in any T1-T3 map: the tier barely matters for the grail.`,
+    `<b>Minions don't count:</b> the monsters around a unique monster get neither the extra drop nor the class item. Monsters have +${E0.hp}% health with an ear: maps take longer, the drops don't change.`
+  ].map(x => `<li>${x}</li>`).join("");
+  $("gm-notes").innerHTML = [
+    `<b>Fortified maps</b> halve the monsters and give every monster but the map boss a guaranteed second drop; they also double the ear's class-item chance. Per clear that is slightly fewer grail drops than the same map unfortified with the same ear, from half the monsters.`,
+    `<b>Parties</b> of three or more remove the small no-drop chance of the usual drops: every grail item gets about 5% more common. The class items never had a no-drop chance.`
+  ].map(x => `<li>${x}</li>`).join("");
+}
+
+// ---------------------------------------------------------------- each ear
+function renderEars() {
+  const R = cur(), idx = droppable(R);
+  $("gm-earcards").innerHTML = EARS.map(e => {
+    const pool = idx.filter(i => R.cls[e][i] > 0), u = pool.filter(i => ITEMS[i].kind === "UNI").length;
+    const top = pool.map(i => [i, R.ear[e][i] / R.none[i]]).sort((a, b) => b[1] - a[1]).slice(0, 8);
+    const add = pool.reduce((a, i) => a + R.cls[e][i], 0);
+    return `<div class="ear"><h3>${e} ear</h3><div class="meta">${pool.length} grail items in its pool (${u} uniques, ${pool.length - u} sets); its class items add ${(add * 100).toFixed(0)} grail drops per 100 maps.</div>
+      <ol>${top.map(([i, g]) => `<li>${ITEMS[i].label} <span>×${g.toFixed(1)}, ${oneIn(R.ear[e][i])} maps</span></li>`).join("")}</ol></div>`;
+  }).join("");
+}
+
+// ---------------------------------------------------------------- the planner
+const STORE = "erazure-grail-planner";
+let FOUND = new Set();
+try { const s = localStorage.getItem(STORE); if (s) FOUND = new Set(JSON.parse(s)); } catch (e) {}
+const save = () => { try { localStorage.setItem(STORE, JSON.stringify([...FOUND])); } catch (e) {} };
+function renderPlanner() {
+  const R = cur(), idx = droppable(R), miss = idx.filter(i => !FOUND.has(ITEMS[i].key)), have = ITEMS.filter(it => FOUND.has(it.key)).length;
+  const ranks = EARS.map(e => ({e, per: miss.reduce((a, i) => a + R.ear[e][i], 0), m: finish(R.ear[e], miss)})).sort((a, b) => b.per - a.per);
+  const noneM = finish(R.none, miss), nonePer = miss.reduce((a, i) => a + R.none[i], 0), b = ranks[0];
+  let rarest = null, rv = Infinity;
+  for (const i of miss) { const v = bestEar(R, i)[1]; if (v < rv) { rv = v; rarest = i; } }
+  $("gm-plan-cards").innerHTML = [
+    ["Ticked", `${have}`, `of ${N} grail items`, `${miss.length} items map monsters drop still missing`],
+    ["Best ear for you", miss.length ? b.e : "–", "", miss.length ? `${(b.per * 100).toFixed(1)} drops of your missing items per 100 maps` : "nothing left to find in maps"],
+    ["Maps to finish with it", miss.length ? fmtN(b.m) : "–", miss.length ? "expected" : "", miss.length ? `without an ear ${fmtN(noneM)}` : ""],
+    ["Rarest missing item", rarest === null ? "–" : ITEMS[rarest].label, "", rarest === null ? "" : `${oneIn(rv)} maps with ${bestEar(R, rarest)[0] || "any"} ear`],
+  ].map(([who, big, small, sub]) => `<div class="card"><div class="who">${who}</div><div class="big" style="font-size:${String(big).length > 12 ? 19 : 28}px">${big}${small ? `<small>${small}</small>` : ""}</div><div class="sub">${sub}</div></div>`).join("");
+  $("gm-t-plan").innerHTML = `<thead><tr><th>Ear</th><th>Drops of missing items per 100 maps</th><th>vs no ear</th><th>Maps to finish</th><th class="l">Missing items it helps most</th></tr></thead><tbody>` +
+    ranks.map(o => { const top = miss.filter(i => R.cls[o.e][i] > 0).map(i => [i, R.ear[o.e][i] / R.none[i]]).sort((a, c) => c[1] - a[1]).slice(0, 4);
+      return `<tr><td${o === b ? ' class="best"' : ""}>${o.e}</td><td>${(o.per * 100).toFixed(1)}</td><td class="ratio">${nonePer ? (o.per / nonePer).toFixed(2) + "×" : "–"}</td><td>${fmtN(o.m)}</td><td class="l wrapc small">${top.map(([i, g]) => `${ITEMS[i].label} ×${g.toFixed(1)}`).join(", ") || "none"}</td></tr>`; }).join("") +
+    `<tr><td>No ear</td><td>${(nonePer * 100).toFixed(1)}</td><td class="ratio">1.00×</td><td>${fmtN(noneM)}</td><td></td></tr></tbody>`;
+}
+
+// ---------------------------------------------------------------- every item
+EARS.forEach(e => { const o = document.createElement("option"); o.value = e; o.textContent = e + " ear"; $("gm-ear").appendChild(o); });
+function renderItems() {
+  const R = cur(), q = $("gm-q").value.trim().toLowerCase(), kind = $("gm-kind").value, show = $("gm-show").value, ear = $("gm-ear").value, sort = $("gm-sort").value;
+  let list = ITEMS.filter(it => (!kind || it.kind === kind) && (!q || it.search.includes(q)));
+  const inf = new Map(list.map(it => { const i = it.i;
+    const [be, bv] = ear ? [R.cls[ear][i] > 0 ? ear : null, R.ear[ear][i]] : bestEar(R, i);
+    return [it, {be, bv, gain: R.none[i] ? bv / R.none[i] : 0}]; }));
+  if (show === "missing") list = list.filter(it => !FOUND.has(it.key) && R.none[it.i] > 0);
+  if (show === "boost") list = list.filter(it => inf.get(it).be);
+  if (show === "nodrop") list = list.filter(it => !(R.none[it.i] > 0));
+  const key = {rare: it => inf.get(it).bv || 0, name: it => it.label, gain: it => -inf.get(it).gain, lvl: it => -it.lvl}[sort];
+  list.sort((a, b) => { const x = key(a), y = key(b); if (sort === "rare") { if (!x && y) return 1; if (!y && x) return -1; }
+    return x < y ? -1 : x > y ? 1 : a.label.localeCompare(b.label); });
+  $("gm-count").textContent = `${list.length} of ${N}`;
+  $("gm-items").innerHTML = `<thead><tr><th>Have</th><th class="l">Item</th><th class="l opt">Base</th><th class="opt">Item level</th><th>No ear</th><th class="opt">Every ear</th><th class="l">${ear ? ear + " ear" : "Best ear"}</th><th class="opt">Gain</th><th>90% within</th></tr></thead><tbody>` +
+    list.map(it => { const i = it.i, o = inf.get(it), f = FOUND.has(it.key);
+      return `<tr class="${f ? "found" : ""}"><td><input type="checkbox" data-k="${it.key.replace(/"/g, "&quot;")}" ${f ? "checked" : ""} aria-label="Have ${it.label.replace(/"/g, "")}"></td>` +
+        `<td class="name"><span class="q" style="background:var(${it.kind === "SET" ? "--q-set" : "--q-unique"})"></span>${it.name}${it.ver ? ` <span class="ver">(${it.ver})</span>` : ""}${it.set ? ` <span class="ver">· ${it.set}</span>` : ""}</td>` +
+        `<td class="base opt">${it.base}${it.tier ? ` <span class="ver">${it.tier}</span>` : ""}</td><td class="opt">${it.lvl}</td>` +
+        `<td>${oneIn(R.none[i])}</td><td class="opt">${oneIn(R.any[i])}</td><td class="l">${o.be ? `${o.be}: ${oneIn(o.bv)}` : `<span class="ratio">no pool</span>`}</td>` +
+        `<td class="opt">${R.none[i] ? "×" + o.gain.toFixed(1) : "–"}</td><td>${o.bv ? fmtN(Math.log(10) / o.bv) + " maps" : "–"}</td></tr>`; }).join("") + `</tbody>`;
+}
+$("gm-items").addEventListener("change", e => {
+  const k = e.target.dataset && e.target.dataset.k; if (!k) return;
+  if (e.target.checked) FOUND.add(k); else FOUND.delete(k);
+  e.target.closest("tr").classList.toggle("found", e.target.checked);
+  save(); renderPlanner();
+});
+["gm-q", "gm-kind", "gm-show", "gm-ear", "gm-sort"].forEach(id => $(id).addEventListener("input", renderItems));
+const byLabel = new Map(ITEMS.map(it => [it.label.toLowerCase(), it]));
+$("gm-export").onclick = () => { $("gm-io").value = ITEMS.filter(it => FOUND.has(it.key)).map(it => it.label).join("\n"); $("gm-io-msg").textContent = `${FOUND.size} items listed.`; };
+$("gm-copy").onclick = () => { const t = $("gm-io").value;
+  navigator.clipboard.writeText(t).then(() => { $("gm-io-msg").textContent = "Copied."; }, () => { $("gm-io").select(); $("gm-io-msg").textContent = "Select the text and copy it."; }); };
+$("gm-import").onclick = () => {
+  const lines = $("gm-io").value.split(/\r?\n/).map(s => s.trim()).filter(Boolean), miss = [], next = new Set();
+  for (const l of lines) { const it = byLabel.get(l.toLowerCase()); if (it) next.add(it.key); else miss.push(l); }
+  FOUND = next; save(); renderPlanner(); renderItems();
+  $("gm-io-msg").textContent = `${next.size} items ticked.` + (miss.length ? ` Not recognised: ${miss.slice(0, 5).join(", ")}${miss.length > 5 ? "…" : ""}` : "");
+};
+$("gm-clear").onclick = () => { FOUND = new Set(); save(); renderPlanner(); renderItems(); $("gm-io-msg").textContent = "All ticks cleared."; };
+
+// ---------------------------------------------------------------- what ears can't do, settings
+function renderCant() {
+  const R = cur(), no = ITEMS.filter(it => !(R.none[it.i] > 0)), idx = droppable(R);
+  $("gm-cant-note").textContent = `${no.length} grail items never drop from T1-T3 map monsters, with or without an ear: the game gives them a drop weight of 0 (most also an item level far above anything in a map). They come from elsewhere in the game; no ear changes that.`;
+  $("gm-t-nodrop").innerHTML = `<thead><tr><th class="l">Item</th><th class="l">Base</th><th>Item level</th></tr></thead><tbody>` +
+    no.map(it => `<tr><td>${it.label}</td><td class="l">${it.base}</td><td>${it.lvl}</td></tr>`).join("") + `</tbody>`;
+  const slow = idx.map(i => [i, ...bestEar(R, i)]).sort((a, b) => a[2] - b[2]).slice(0, 15);
+  $("gm-t-slow").innerHTML = `<thead><tr><th class="l">Item</th><th class="l">Base</th><th>No ear</th><th class="l">Best ear</th><th>90% within</th></tr></thead><tbody>` +
+    slow.map(([i, be, bv]) => `<tr><td>${ITEMS[i].label}</td><td class="l">${ITEMS[i].base}</td><td>${oneIn(R.none[i])}</td><td class="l">${be ? be + ": " + oneIn(bv) : "every ear: " + oneIn(bv)}</td><td>${fmtN(Math.log(10) / bv)} maps</td></tr>`).join("") + `</tbody>`;
+}
+function renderGrid() {
+  const rows = [];
+  for (const mt of ["normal", "rare"]) for (const mf of DATA.mfs.map(String)) {
+    const cells = ["1", "2", "3", "all"].map(t => { const R = rates(t, mt, mf), idx = droppable(R);
+      return `<td>${fmtN(mapsTo(R.none, idx, .9))} → <b>${fmtN(Math.min(...EARS.map(e => mapsTo(R.ear[e], idx, .9))))}</b></td>`; });
+    rows.push(`<tr><td>${mt === "normal" ? "Non-magical" : "Rare"}, ${mf}% magic find</td>${cells.join("")}</tr>`);
+  }
+  $("gm-t-grid").innerHTML = `<thead><tr><th>Maps for 90%: no ear → best ear</th><th>T1</th><th>T2</th><th>T3</th><th>T1-T3</th></tr></thead><tbody>${rows.join("")}</tbody>`;
+}
+
+// ---------------------------------------------------------------- settings bar
+function renderAll() { summary(); renderAnswer(); renderSpeed(); renderEars(); renderPlanner(); renderItems(); renderCant(); }
+document.querySelectorAll(".grail-map .seg").forEach(seg => seg.addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  seg.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+  state[seg.dataset.ctl] = b.dataset.v; renderAll();
+}));
+$("gm-foot").textContent = `Worked out from Project Diablo 2's game data of ${DATA.date}: a model of full map clears, not counts from the game.`;
+renderHow(); renderAll(); renderGrid();
+})();
+</script>
