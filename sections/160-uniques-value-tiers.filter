@@ -486,15 +486,13 @@ ItemDisplay[UNI !ID (cqv2 OR (aqv2 CLVL<60))]:%UNI_MINIMAL_VALUE_LEFT%  %NAME%  
 // --------------------------------------------------------------------------------------------------------
 
 // Every unidentified unique item you haven't discovered yet (Discovery Progress) that no rule above notifies gets a
-// chat line and the unique icon on every filter level (the author, 2026-10-25). Identified ones get none: an item is
-// discovered when it is identified, so an identified one on the ground is one a player dropped, in town too. A
-// %CONTINUE% layer that changes no look, ahead of the rules below: the first notification rule an item matches gives
-// its chat line, and their icons cover this one
-ItemDisplay[UNI !ID GRAIL_NEW]:%NAME%{%NAME%}%MAP-13%%DOT-18%%PX-20%%CONTINUE%//
+// chat line and the Grail icon on every filter level (the author, 2026-10-25). Identified ones get none: an item is
+// discovered when it is identified, so an identified one on the ground is one a player dropped, in town too. The Grail
+// look's rule carries the icon and stops, so no later rule's icon covers it (the author, 2026-10-29)
 
 // The Grail look: every unique item the tiers above leave, until you've discovered it, on every filter level, ahead
 // of the Low Level Duel and standard looks
-ItemDisplay[UNI !ID GRAIL_NEW]:%UNI_GRAIL_LEFT%  %NAME%  %UNI_GRAIL_RIGHT%//
+ItemDisplay[UNI !ID GRAIL_NEW]:%UNI_GRAIL_LEFT%  %NAME%  %UNI_GRAIL_RIGHT%%BORDER-0B%%MAP-69%%DOT-6A%%PX-20%//
 
 // --------------------------------------------------------------------------------------------------------
 // =======================================  Low Level Duel Uniques  =======================================
