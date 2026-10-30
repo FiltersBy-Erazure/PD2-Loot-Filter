@@ -8,10 +8,11 @@ Guardian Angel, Ormus' Robes, Titan's Grip, Nature's Peace and Kira's Guardian).
 stat shown lowest on the item to the one shown highest: one block per stat, the lowest first. A block keeps
 its lines in the order they had.
 
-Stats with the same priority come in an order that differs between items (Ormus' Robes and Nature's Peace list
-the higher stat ID first, Kira's Guardian lists -cold, -fire, -lightning). Here the higher stat ID goes further
-left; where that matters, a grouped tag can follow each item's own order (the -res group, ERES_ORDER in
-gen_unique_rolls.py). One stat with several skills (classes, tabs, auras) lists the higher skill first (Arm of
+Stats with the same priority come in an order that differs between items (Ormus' Robes, Nature's Peace, Eschuta's
+Temper and Venom Grip list the higher stat ID first; Kira's Guardian lists -cold, -fire, -lightning, Frostburn
+-fire above -cold). Here the higher stat ID goes further left; where that matters, a grouped tag can follow each
+item's own order (the -res group, ERES_ORDER in gen_unique_rolls.py; one line for both tags in 300: Griffon's Eye,
+Nightwing's Veil, Frostburn). One stat with several skills (classes, tabs, auras) lists the higher skill first (Arm of
 King Leoric: Raise Skeleton Archer 89, Raise Skeleton Warrior 70, Skeleton Mastery 69; Chromatic Ire: Cold,
 Lightning, Fire Mastery), so within a block those lines go from the lowest skill number to the highest.
 
