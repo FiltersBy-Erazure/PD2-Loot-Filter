@@ -1,0 +1,476 @@
+<title>Highlight Order</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<!-- Template for the author's description line order page (tools/highlight_order.py writes
+     tools/.cache/highlight_order.html with the data embedded; published as a private claude.ai page whose db,
+     collection order, document main, keeps the author's list). -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+  /* the game's HD font, if the viewer has it installed; Cinzel otherwise */
+  @font-face { font-family: "D2Exocet"; src: local("Exocet Blizzard"), local("ExocetBlizzardOT-Medium"), local("Exocet"); }
+  /* Layout: the intro, then two columns: the list of line kinds (your order, top first; sticky on wide screens) and
+     the sample items' hover boxes (today and in your order). Under them every look of every kind. Dark first, like
+     the players' pages; the game's boxes stay dark in both themes. */
+  :root {
+    --bg: #151412; --panel: #1f1d1a; --raised: #26231f; --fg: #ece7de; --muted: #a59e91; --line: #36322c;
+    --soft: #2a2723; --accent: #d8b45e; --accent-ink: #151412; --ok: #7cc474; --bad: #ef7a72;
+    --note: #8bb4e8; --hl: #d8b45e; --drop: #d8b45e;
+    --box-bg: #0a0908; --box-edge: #2e2a24; --box-mark: rgba(216, 180, 94, .16); --box-bar: #d8b45e;
+    --display: "Cinzel", "Trajan Pro", Georgia, serif;
+    --body: "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --game: "D2Exocet", "Cinzel", "Trajan Pro", Georgia, serif;
+    color-scheme: dark;
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --bg: #f3f1ec; --panel: #fffdf8; --raised: #f7f3ea; --fg: #23211c; --muted: #6b655a; --line: #ded7c9;
+      --soft: #ece6da; --accent: #8a6d1f; --accent-ink: #fffdf8; --ok: #2f8a3a; --bad: #b3261e;
+      --note: #2f6db3; --hl: #8a6d1f; --drop: #8a6d1f; color-scheme: light;
+    }
+  }
+  :root[data-theme="light"] {
+    --bg: #f3f1ec; --panel: #fffdf8; --raised: #f7f3ea; --fg: #23211c; --muted: #6b655a; --line: #ded7c9;
+    --soft: #ece6da; --accent: #8a6d1f; --accent-ink: #fffdf8; --ok: #2f8a3a; --bad: #b3261e;
+    --note: #2f6db3; --hl: #8a6d1f; --drop: #8a6d1f; color-scheme: light;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--fg); font: 15px/1.45 var(--body); }
+  .gut { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  .wrap { max-width: 1400px; margin: 0 auto; }
+  button, textarea { font: inherit; color: inherit; }
+  button:focus-visible, textarea:focus-visible, li.row:focus-visible {
+    outline: 2px solid var(--accent); outline-offset: 2px; }
+  h1, h2, h3 { text-wrap: balance; }
+
+  /* the intro */
+  header.top { padding-block: 22px 6px; }
+  h1 { font: 700 30px/1.15 var(--display); letter-spacing: .03em; margin: 0 0 10px; }
+  .intro { display: grid; gap: 8px; max-width: 80ch; }
+  .intro p { margin: 0; }
+  .callout { border-left: 3px solid var(--accent); background: var(--panel); padding: 8px 12px; border-radius: 0 6px 6px 0;
+             font-size: 14.5px; }
+  .callout b { font-weight: 600; }
+
+  /* the two columns */
+  .layout { display: grid; grid-template-columns: minmax(320px, 420px) minmax(0, 1fr); gap: 20px; align-items: start;
+            padding-block: 16px 8px; }
+  @media (max-width: 1000px) { .layout { grid-template-columns: minmax(0, 1fr); } }
+  h2 { font: 700 19px/1.2 var(--display); letter-spacing: .03em; margin: 0; }
+
+  /* the list */
+  .listpanel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px; min-width: 0; }
+  @media (min-width: 1001px) {
+    .listpanel { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 12px);
+                 max-height: calc(100vh - 24px); overflow: auto; }
+  }
+  .panelhead { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 10px; }
+  .panelhead p { margin: 4px 0 0; font-size: 13.5px; color: var(--muted); flex: 1 1 100%; }
+  .presets { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 8px; }
+  .btn { padding: 4px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--raised); cursor: pointer;
+         font-size: 13.5px; }
+  .btn:hover { border-color: var(--accent); }
+  .btn[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  ol.order { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+  li.row { display: grid; grid-template-columns: 18px minmax(0, 1fr) auto; gap: 8px; align-items: center;
+           background: var(--raised); border: 1px solid var(--line); border-radius: 6px; padding: 5px 6px 5px 4px;
+           position: relative; }
+  li.row.group-start { margin-top: 8px; }
+  li.row .grip { cursor: grab; color: var(--muted); font-size: 14px; line-height: 1; text-align: center; user-select: none; }
+  li.row.dragging { opacity: .45; }
+  li.row.drop-before::before, li.row.drop-after::after { content: ""; position: absolute; left: 0; right: 0; height: 3px;
+           background: var(--drop); border-radius: 2px; }
+  li.row.drop-before::before { top: -4px; }
+  li.row.drop-after::after { bottom: -4px; }
+  .rowmain { min-width: 0; display: grid; gap: 2px; }
+  .rowtop { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; }
+  .rowtop b { font-weight: 600; font-size: 14px; }
+  .pill { font-size: 10.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 0 6px;
+          border-radius: 99px; border: 1px solid currentColor; line-height: 16px; }
+  .pill.note { color: var(--note); } .pill.highlight { color: var(--hl); }
+  .tag { font-size: 11.5px; color: var(--muted); }
+  .tag.moved { color: var(--accent); font-weight: 600; }
+  .look { overflow: hidden; }
+  .rowbtns { display: flex; flex-direction: column; gap: 2px; }
+  .mv { width: 26px; height: 20px; padding: 0; border: 1px solid var(--line); border-radius: 4px; background: var(--panel);
+        cursor: pointer; font-size: 10px; line-height: 1; color: var(--muted); }
+  .mv:hover:not(:disabled) { border-color: var(--accent); color: var(--fg); }
+  .mv:disabled { opacity: .35; cursor: default; }
+  .notebox { margin-top: 12px; display: grid; gap: 4px; }
+  .notebox label { font-size: 13px; color: var(--muted); }
+  .notebox textarea { width: 100%; min-height: 64px; resize: vertical; padding: 6px 8px; border: 1px solid var(--line);
+                      border-radius: 6px; background: var(--bg); }
+  .saverow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; margin-top: 8px; }
+  .status { font-size: 13px; color: var(--muted); }
+  .status.ok { color: var(--ok); } .status.bad { color: var(--bad); }
+  .copybox { width: 100%; min-height: 90px; margin-top: 8px; font: 12px/1.4 ui-monospace, Consolas, monospace;
+             background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 6px; }
+
+  /* the samples */
+  .samples { min-width: 0; }
+  .sampleshead { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 14px;
+                 margin-bottom: 10px; }
+  .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 7px; overflow: hidden; }
+  .seg button { border: 0; background: var(--raised); padding: 5px 11px; cursor: pointer; font-size: 13.5px; }
+  .seg button + button { border-left: 1px solid var(--line); }
+  .seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+  .changed { font-size: 13.5px; color: var(--muted); margin: 0 0 10px; }
+  .cards { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); }
+  .cards.both { grid-template-columns: repeat(auto-fill, minmax(min(100%, 640px), 1fr)); }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px 12px; min-width: 0; }
+  .card h3 { font: 700 15.5px/1.25 var(--display); letter-spacing: .02em; margin: 0; display: flex; flex-wrap: wrap;
+             gap: 4px 8px; align-items: baseline; }
+  .card .setting { margin: 2px 0 8px; font-size: 12.5px; color: var(--muted); }
+  .card .diff { font: 600 11.5px/1 var(--body); letter-spacing: .04em; text-transform: uppercase; color: var(--accent); }
+  .boxes { display: flex; flex-wrap: wrap; gap: 10px 14px; justify-content: center; }
+  figure.boxfig { margin: 0; min-width: 0; max-width: 100%; display: grid; gap: 4px; justify-items: center; }
+  figure.boxfig figcaption { font-size: 12px; color: var(--muted); letter-spacing: .04em; text-transform: uppercase; }
+  .scroll { max-width: 100%; overflow-x: auto; }
+
+  /* a hover box as the game draws it */
+  .tip { width: max-content; margin: 0 auto; background: var(--box-bg); border: 1px solid var(--box-edge);
+         padding: 6px 14px 7px; text-align: center; font: 600 14.5px/1.26 var(--game); letter-spacing: .02em;
+         white-space: pre; }
+  .tip .ln { display: block; min-height: 1.26em; position: relative; }
+  .tip .ln.moved { background: var(--box-mark); box-shadow: inset 2px 0 0 var(--box-bar); }
+  .d2line { display: inline-block; background: var(--box-bg); font: 600 13px/1.5 var(--game); letter-spacing: .02em;
+            white-space: pre; padding: 0 8px; border-radius: 3px; max-width: 100%; overflow: hidden; text-overflow: ellipsis;
+            vertical-align: middle; }
+  @media (max-width: 560px) { .tip { font-size: 12.5px; padding: 5px 10px 6px; } }
+
+  /* every look */
+  section.ref { padding-block: 26px 10px; }
+  section.ref > p { margin: 6px 0 12px; max-width: 80ch; color: var(--muted); font-size: 14px; }
+  .refgroup { font: 700 15px/1.2 var(--display); letter-spacing: .03em; margin: 18px 0 6px; color: var(--muted); }
+  .refrow { display: grid; grid-template-columns: minmax(200px, 300px) minmax(0, 1fr); gap: 6px 16px; padding: 10px 0;
+            border-top: 1px solid var(--line); }
+  @media (max-width: 760px) { .refrow { grid-template-columns: minmax(0, 1fr); } }
+  .refrow h3 { font: 600 15px/1.3 var(--body); margin: 0; }
+  .refrow .on, .refrow .rules { font-size: 13px; color: var(--muted); margin: 2px 0 0; }
+  .refrow .rules { font-variant-numeric: tabular-nums; }
+  .refrow .looks { display: flex; flex-wrap: wrap; gap: 4px 6px; align-content: flex-start; min-width: 0; }
+  .refrow .more { font-size: 12.5px; color: var(--muted); align-self: center; }
+  footer.foot { padding-block: 14px 28px; font-size: 12.5px; color: var(--muted); border-top: 1px solid var(--line); margin-top: 18px; }
+  @media (prefers-reduced-motion: no-preference) { li.row { transition: background-color .15s; } }
+</style>
+
+<header class="top gut">
+  <div class="wrap">
+    <h1>Highlight Order</h1>
+    <div class="intro">
+      <p>The lines the filter writes into an item's hover box stack by rule order. The notes (Upgrade, Max Sockets,
+        Speed and the like) sit on top, and the highlights (boss tags, Damage Reduction, resistances and the like)
+        sit under them.</p>
+      <p>Drag the list into the order you want, top first. It is one order for every item. Each sample below shows
+        how it looks today next to how it looks in your order, and your list saves on this page.</p>
+      <p class="callout"><b>Today is your order:</b> the list you saved on 2026-10-29 is what the filter does now.
+        Drag again to try another order; the samples show it next to today's.</p>
+    </div>
+  </div>
+</header>
+
+<main class="gut">
+  <div class="wrap layout">
+    <aside class="listpanel" aria-labelledby="list-title">
+      <div class="panelhead">
+        <h2 id="list-title">Your order</h2>
+        <p>Top first. Drag a row, or use its arrows.</p>
+      </div>
+      <div class="presets" role="group" aria-label="Start from">
+        <button type="button" class="btn" id="preset-today" aria-pressed="false">Today's order</button>
+      </div>
+      <ol class="order" id="order" aria-label="Line kinds, top first"></ol>
+      <div class="notebox">
+        <label for="note">Notes for Claude</label>
+        <textarea id="note" placeholder="Anything to know when this order is applied"></textarea>
+      </div>
+      <div class="saverow">
+        <span class="status" id="status" role="status">Starting from today's order.</span>
+        <button type="button" class="btn" id="copy">Copy my order</button>
+      </div>
+    </aside>
+
+    <section class="samples" aria-labelledby="samples-title">
+      <div class="sampleshead">
+        <h2 id="samples-title">Sample items</h2>
+        <div class="seg" role="group" aria-label="Show">
+          <button type="button" data-view="both" aria-pressed="true">Side by side</button>
+          <button type="button" data-view="mine" aria-pressed="false">Your order</button>
+          <button type="button" data-view="today" aria-pressed="false">Today</button>
+        </div>
+      </div>
+      <p class="changed" id="changed"></p>
+      <div class="cards both" id="cards"></div>
+    </section>
+  </div>
+
+  <section class="wrap ref" aria-labelledby="ref-title">
+    <h2 id="ref-title">Every line the filter writes</h2>
+    <p>Each kind in the list, where it shows, the rules that write it and its looks (the samples' lines, then each
+      rule's own line with example values). Lines of the kinds marked <i>no sample</i> never meet another kind on
+      the samples.</p>
+    <div id="ref"></div>
+  </section>
+  <footer class="wrap foot" id="foot"></footer>
+</main>
+
+<script>
+const DATA = /*__DATA__*/null;
+const KIND = Object.fromEntries(DATA.kinds.map((k) => [k.id, k]));
+const TODAY = DATA.presets.today.slice();
+const state = {order: TODAY.slice(), note: "", view: "both"};
+
+// ---------------------------------------------------------------- drawing
+const esc = (s) => s.replace(/[&<>"]/g, (c) => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
+const hex = (c) => DATA.colors[c] || DATA.colors.WHITE;
+function segsHTML(segs) {
+  return segs.map(([c, t]) => `<span style="color:${hex(c)}">${esc(t)}</span>`).join("");
+}
+function sorted(sample, order) {
+  // the description's lines (top first) in the order's kinds; lines of one kind keep their own order
+  const rank = new Map(order.map((k, i) => [k, i]));
+  return sample.desc.map((l, i) => ({l, i}))
+    .sort((a, b) => ((rank.get(a.l.kind) ?? 99) - (rank.get(b.l.kind) ?? 99)) || a.i - b.i).map((x) => x.l);
+}
+function carried(lines, start) {
+  // the game draws the text bottom up: a line without a color of its own takes the color the line under it ends in
+  const out = [];
+  let c = start;
+  for (let i = lines.length - 1; i >= 0; i--) {
+    out.unshift(lines[i].segs.map(([col, t]) => { col = col || c; c = col; return [col, t]; }));
+  }
+  return out;
+}
+function boxHTML(sample, order) {
+  const lines = order ? sorted(sample, order) : sample.desc;
+  const desc = carried(lines, sample.carry);
+  const html = [];
+  for (const s of sample.head) html.push(`<span class="ln">${segsHTML(s)}</span>`);
+  lines.forEach((l, i) => {
+    const moved = order && sample.desc[i] !== l;
+    html.push(`<span class="ln${moved ? " moved" : ""}" title="${esc(KIND[l.kind].name + " (" + l.rule + ")")}">${segsHTML(desc[i])}</span>`);
+  });
+  for (const s of sample.tail) html.push(`<span class="ln">${segsHTML(s)}</span>`);
+  return `<div class="scroll"><div class="tip">${html.join("")}</div></div>`;
+}
+function changes(sample, order) {
+  const mine = sorted(sample, order);
+  return mine.some((l, i) => l !== sample.desc[i]);
+}
+function lookHTML(segs) { return `<span class="d2line">${segsHTML(segs)}</span>`; }
+
+// ---------------------------------------------------------------- the list
+const list = document.getElementById("order");
+function renderList() {
+  const todayRank = new Map(TODAY.map((k, i) => [k, i]));
+  list.innerHTML = state.order.map((id, i) => {
+    const k = KIND[id];
+    const moved = todayRank.get(id) !== i;
+    const first = i > 0 && KIND[state.order[i - 1]].group !== k.group;
+    return `<li class="row${first ? " group-start" : ""}" draggable="true" data-id="${id}" aria-label="${esc(k.name)}, ${i + 1} of ${state.order.length}">
+      <span class="grip" aria-hidden="true">&#8942;&#8942;</span>
+      <div class="rowmain">
+        <div class="rowtop"><span class="pill ${k.group}">${k.group === "note" ? "Note" : "Highlight"}</span><b>${esc(k.name)}</b>${moved ? '<span class="tag moved">moved</span>' : ""}${k.sampled ? "" : '<span class="tag">no sample</span>'}</div>
+        ${k.looks.length ? `<div class="look">${lookHTML(k.looks[0])}</div>` : ""}
+      </div>
+      <div class="rowbtns">
+        <button type="button" class="mv" data-dir="-1" aria-label="Move ${esc(k.name)} up"${i === 0 ? " disabled" : ""}>&#9650;</button>
+        <button type="button" class="mv" data-dir="1" aria-label="Move ${esc(k.name)} down"${i === state.order.length - 1 ? " disabled" : ""}>&#9660;</button>
+      </div>
+    </li>`;
+  }).join("");
+  const same = (a, b) => a.length === b.length && a.every((x, i) => x === b[i]);
+  document.getElementById("preset-today").setAttribute("aria-pressed", String(same(state.order, TODAY)));
+}
+function move(id, to) {
+  const from = state.order.indexOf(id);
+  if (from < 0 || to === from) return;
+  state.order.splice(from, 1);
+  state.order.splice(to, 0, id);
+  renderAll();
+  changed();
+}
+list.addEventListener("click", (e) => {
+  const b = e.target.closest("button.mv");
+  if (!b) return;
+  const id = b.closest("li.row").dataset.id;
+  const dir = Number(b.dataset.dir);
+  const to = state.order.indexOf(id) + dir;
+  if (to < 0 || to >= state.order.length) return;
+  move(id, to);
+  requestAnimationFrame(() => {
+    const again = list.querySelector(`li.row[data-id="${id}"] button.mv[data-dir="${dir}"]`);
+    if (again && !again.disabled) again.focus();
+    else { const other = list.querySelector(`li.row[data-id="${id}"] button.mv:not(:disabled)`); if (other) other.focus(); }
+  });
+});
+let dragId = null;
+function clearDrop() { list.querySelectorAll(".drop-before, .drop-after").forEach((el) => el.classList.remove("drop-before", "drop-after")); }
+list.addEventListener("dragstart", (e) => {
+  const li = e.target.closest("li.row");
+  if (!li) return;
+  dragId = li.dataset.id;
+  li.classList.add("dragging");
+  e.dataTransfer.effectAllowed = "move";
+  try { e.dataTransfer.setData("text/plain", dragId); } catch (err) { /* some browsers refuse; the id is kept here */ }
+});
+list.addEventListener("dragend", () => {
+  list.querySelectorAll(".dragging").forEach((el) => el.classList.remove("dragging"));
+  clearDrop();
+  dragId = null;
+});
+function dropTarget(e) {
+  const li = e.target.closest("li.row");
+  if (!li) return null;
+  const r = li.getBoundingClientRect();
+  return {li, after: e.clientY > r.top + r.height / 2};
+}
+list.addEventListener("dragover", (e) => {
+  if (!dragId) return;
+  const t = dropTarget(e);
+  if (!t) return;
+  e.preventDefault();
+  e.dataTransfer.dropEffect = "move";
+  clearDrop();
+  if (t.li.dataset.id !== dragId) t.li.classList.add(t.after ? "drop-after" : "drop-before");
+});
+list.addEventListener("drop", (e) => {
+  if (!dragId) return;
+  e.preventDefault();
+  const t = dropTarget(e);
+  clearDrop();
+  if (!t || t.li.dataset.id === dragId) return;
+  const id = dragId;
+  const without = state.order.filter((x) => x !== id);
+  let to = without.indexOf(t.li.dataset.id) + (t.after ? 1 : 0);
+  state.order = without;
+  state.order.splice(to, 0, id);
+  renderAll();
+  changed();
+});
+document.getElementById("preset-today").addEventListener("click", () => { state.order = TODAY.slice(); renderAll(); changed(); });
+
+// ---------------------------------------------------------------- the samples
+const cards = document.getElementById("cards");
+function renderCards() {
+  let n = 0;
+  cards.className = "cards" + (state.view === "both" ? " both" : "");
+  cards.innerHTML = DATA.samples.map((s) => {
+    const diff = changes(s, state.order);
+    if (diff) n++;
+    const today = `<figure class="boxfig"><figcaption>Today</figcaption>${boxHTML(s, null)}</figure>`;
+    const mine = `<figure class="boxfig"><figcaption>Your order</figcaption>${boxHTML(s, state.order)}</figure>`;
+    const boxes = state.view === "both" ? today + mine : state.view === "mine" ? mine : today;
+    return `<article class="card" id="s-${s.id}">
+      <h3>${esc(s.title)}${diff ? '<span class="diff">changes</span>' : ""}</h3>
+      <p class="setting">${esc(s.setting)}</p>
+      <div class="boxes">${boxes}</div>
+    </article>`;
+  }).join("");
+  document.getElementById("changed").textContent = n
+    ? `${n} of ${DATA.samples.length} samples change in your order; their moved lines are marked.`
+    : `None of the ${DATA.samples.length} samples changes in your order.`;
+}
+document.querySelector(".seg").addEventListener("click", (e) => {
+  const b = e.target.closest("button[data-view]");
+  if (!b) return;
+  state.view = b.dataset.view;
+  document.querySelectorAll(".seg button").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+  renderCards();
+});
+
+// ---------------------------------------------------------------- every look
+function renderRef() {
+  const out = [];
+  let group = null;
+  for (const k of DATA.kinds) {
+    if (k.group !== group) {
+      group = k.group;
+      out.push(`<h3 class="refgroup">${group === "note" ? "Notes (on top today)" : "Highlights (under the notes today)"}</h3>`);
+    }
+    out.push(`<div class="refrow">
+      <div><h3>${esc(k.name)}${k.sampled ? "" : ' <span class="tag">no sample</span>'}</h3>
+        <p class="on">${esc(k.on)}</p><p class="rules">${esc(k.rules.join(", "))}</p></div>
+      <div class="looks">${k.looks.map(lookHTML).join("")}${k.more ? `<span class="more">and ${k.more} more</span>` : ""}</div>
+    </div>`);
+  }
+  document.getElementById("ref").innerHTML = out.join("");
+  document.getElementById("foot").textContent = DATA.foot;
+}
+
+function renderAll() { renderList(); renderCards(); }
+
+// ---------------------------------------------------------------- saving (db collection order, document main)
+let db = null, dirty = false, inflight = false, timer = null;
+function setStatus(text, kind) { const s = document.getElementById("status"); s.textContent = text; s.className = "status" + (kind ? " " + kind : ""); }
+function changed() {
+  if (!db) return;
+  dirty = true;
+  clearTimeout(timer);
+  timer = setTimeout(save, 500);
+  setStatus("Saving…");
+}
+async function save() {
+  if (inflight) { timer = setTimeout(save, 400); return; }
+  dirty = false;
+  inflight = true;
+  try {
+    await db.doc("order/main").set({order: state.order.slice(), note: state.note, savedAt: new Date().toISOString()});
+    if (!dirty) setStatus("Saved " + new Date().toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"}), "ok");
+  } catch (e) {
+    dirty = true;
+    setStatus("Couldn't save (" + ((e && e.code) || "error") + "). Use Copy my order so nothing is lost.", "bad");
+  } finally {
+    inflight = false;
+  }
+}
+function applySaved(data) {
+  if (dirty || inflight || !data) return;
+  const saved = Array.isArray(data.order) ? data.order.filter((id) => KIND[id]) : [];
+  if (saved.length) {
+    // kinds added since the save go where today's order has them, after the kind above them
+    const order = saved.filter((id, i) => saved.indexOf(id) === i);
+    for (const id of TODAY) {
+      if (order.includes(id)) continue;
+      const above = TODAY.slice(0, TODAY.indexOf(id)).reverse().find((x) => order.includes(x));
+      order.splice(above ? order.indexOf(above) + 1 : 0, 0, id);
+    }
+    state.order = order;
+  }
+  state.note = typeof data.note === "string" ? data.note : "";
+  const ta = document.getElementById("note");
+  if (document.activeElement !== ta) ta.value = state.note;
+  renderAll();
+}
+document.getElementById("note").addEventListener("input", (e) => { state.note = e.target.value; changed(); });
+function copyOrder() {
+  const text = JSON.stringify({order: state.order, note: state.note}, null, 1);
+  const fallback = () => {
+    let box = document.getElementById("copybox");
+    if (!box) {
+      box = document.createElement("textarea");
+      box.id = "copybox"; box.className = "copybox"; box.setAttribute("aria-label", "Your order as text");
+      document.querySelector(".saverow").after(box);
+    }
+    box.value = text; box.focus(); box.select();
+    setStatus("Select all and copy the text under the button", "");
+  };
+  try { navigator.clipboard.writeText(text).then(() => setStatus("Copied your order", "ok"), fallback); } catch (e) { fallback(); }
+}
+document.getElementById("copy").addEventListener("click", copyOrder);
+
+renderRef();
+renderAll();
+const use = window.claude && window.claude.use ? window.claude.use("db") : Promise.resolve(null);
+use.then((d) => {
+  db = d;
+  if (!d) { setStatus("Saving isn't available in this view. Use Copy my order.", "bad"); return; }
+  setStatus("Ready: your order saves as you change it", "ok");
+  d.doc("order/main").onSnapshot((snap) => {
+    if (snap.metadata.hasPendingWrites || !snap.exists) return;
+    const data = snap.data() || {};
+    applySaved(data);
+    if (data.savedAt && !dirty) setStatus("Saved order loaded (last change " + new Date(data.savedAt).toLocaleString([], {dateStyle: "medium", timeStyle: "short"}) + ")", "ok");
+  }, (e) => setStatus("Your saved order couldn't be loaded (" + ((e && e.code) || "error") + "). Use Copy my order.", "bad"));
+}, () => setStatus("Saving isn't available in this view. Use Copy my order.", "bad"));
+</script>

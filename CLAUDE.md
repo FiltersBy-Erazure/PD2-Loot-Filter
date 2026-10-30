@@ -506,6 +506,25 @@
   tries colors on a rule (and optionally its section's rules with the same icon); Save rewrites only the icon codes
   of that line, refuses a line changed since it was read, then runs `.claude/hooks/rebuild.py` in the background
   (about a minute). Drawn as the game does (see Minimap icons below): opaque boxes in rule order, `00` on top.
+- Description line order (2026-10-29, the author: one top-to-bottom priority list for the lines under an item's
+  name). BH builds the description rule by rule: `{X%CL%%NAME%}` puts X under the lines so far (every highlight: a
+  later rule's line sits lower), `{%NAME%%CL%X}` over them (the notes: Upgrade, recipe, Max Sockets, Speed, Crafted
+  Affix Level; a later rule's note sits higher), `{%NAME% X}` extends the top line, and a stopping rule ends it.
+  The author's order (applied 2026-10-29), top first: the notes as before; jewel notes, then Low Level Dueling, then
+  charm highlights (250's notes sit over its LLD rules); boss tags (270), skill and shop highlights (280), resistance
+  tags (`285-resist-tags`), Amplify Damage / Lower Resist then Enhanced Damage (320; body armor and shields 350),
+  Damage Reduction (300's description notes, 350), Max Resistances and last Cannot Be Frozen
+  (`360-max-res-cannot-be-frozen`). The resistance tags continue: each rule skips the rules before it in its band
+  (levels 0-4 below character level 80; boots / belts / gloves on 5-7 or from character level 80; 8-12) through the
+  `RESTAG` aliases, one per rule's resistances (checked 2026-10-29 against the old stopping rules: the same tag on a
+  million random items). A new highlight goes where its kind sits in this order. The author orders the kinds on
+  https://claude.ai/artifact/51rHQ3naMYfnr7cksJq6Rz (`python tools/highlight_order.py` writes
+  `tools/.cache/highlight_order.html` from `tools/highlight_order_template.html`; republish it to that URL): 14 real
+  sample items on shop_map's engine (the screenshot's belt among them), drawn today and in the list's order. Every
+  rule of 230-360 that writes a description belongs to one kind of `KINDS` (in the filter's order), or the run stops.
+  Its db: collection `order`, document `main`, `{order: [kind ids], note, savedAt}`; when the author says to apply
+  it, save it as JSON and `--check FILE` lists the samples whose lines are not in that order yet. `--dump [ID]`
+  prints the samples.
 
 ## Variants (all 20 built from the same sections)
 | display_name | File | BIG_GG | POE_SOUNDS | REVEALED |

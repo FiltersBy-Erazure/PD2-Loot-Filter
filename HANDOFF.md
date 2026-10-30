@@ -118,26 +118,27 @@ About 825 KB is roughly 200k+ tokens per file. **No conversation will "see the w
 | `220-nonmagic-weapons` | 6261–6854 | Necro wands through swords, ethereal non-magic, %ED tag on superior items, paladin shields |
 | `230-item-description-notes` | 6855–7116 | CONTINUE-only notes; maximum block dexterity |
 | `240-charms` | 7117–7297 | Magic charm display |
-| `250-jewels` | 7298–7417 | |
+| `250-jewels` | 7298–7417 | The jewel notes (fragments, reroll recipe) over Low Level Dueling since 2026-10-29 |
 | `260-arrow-bolt-affixes` | 7418–7505 | |
 | `270-boss-gear-tags` | 7508–7638 | GENERATED (`tools/gen_boss_tags.py` from `tools/boss_tag_rules.json`, since 2026-10-21). Boss tags on identified rare/crafted gear and magic amulets: one line naming every boss an item suits (Rathma / D.Clone / Lucion; helms: D.Clone and Lucion only; rings: Rathma only). Conditions are aliases `BOSSTAG_<RA/DC/LU>_<slot>`, one rule per combination; was `270-rathma-gear-tags` until 2026-10-18 |
 | `280-skills-shop-highlights` | 7535–8289 | +Skills items and shop highlights (~27k tokens) |
+| `285-resist-tags` | (2026-10-29) | Resistance tags (All / Triple / Dual Resist, else a line per resistance), moved out of 360 so they sit right under the skill and shop highlights (the author's order): continuing rules, each skipping the ones before it through its band's `RESTAG` aliases (one per rule's resistances) |
 | `290-low-level-rare-tags` | 8502–8593 (2026-10-28) | GENERATED (`tools/low_level_tags.py` from `tools/low_level_tag_picks.json`, the author's page). Aliases only, `LOWLVL_<X>_TAG`: rares and crafted items below affix level 60 of the picked item types; 300's tag lines ask them, so those items tag every roll of the stat |
 | `300-affix-tags` | 8290–9553 | 113 stat blocks, one per stat in the game's stat order: MF, GF, resists, FCR, IAS, skills… (largest file, ~28k tokens) |
 | `305-runeword-rolls` | 9554–10067 | GENERATED (`tools/gen_runeword_rolls.py`): runeword roll tags, aliases and tag lines in 300's stat order (added S14) |
 | `310-staffmods` | 10068–10364 | |
 | `312-tag-count` | (2026-10-28) | GENERATED (`tools/gen_tag_count.py` from the rules before 315). `Formula[RARE_TAGS...]`: how many tags an identified, uncorrupted rare's label shows; `Alias[SELL_TAG_CROWDED]`: 6 or more, so 315's sell value tags skip it |
 | `315-sell-value-tags` | 10365–10424 | Sell value ($6k below character level 30, then ($)) and low cost vendor ($): left-most tag of the lower line, so after every tag section (was `290` until S14) |
-| `320-highlights-ed-amp-lr` | 10425–10471 | |
-| `330-tooltip-tags` | 10472–10493 | Cannot Be Frozen, weapon speed & range, item tier type (commented out) |
+| `320-highlights-ed-amp-lr` | 10425–10471 | Weapons: Amplify Damage and Lower Resist, then Enhanced Damage (that order since 2026-10-29) |
+| `330-tooltip-tags` | 10472–10493 | Weapon speed & range, item tier type (commented out); Cannot Be Frozen moved to 360 on 2026-10-29 |
 | `340-high-alvl-crafting-bases` | 10494–10540 | |
 | `350-ed-dr-highlights` | 10541–10577 | Chest/shield ED and damage-reduction highlights |
-| `360-max-res-resist-tags` | 10578–10619 | Maximum resistances, resistance tags |
+| `360-max-res-cannot-be-frozen` | 10578–10619 | Maximum resistances, then Cannot Be Frozen, the last highlight (was `360-max-res-resist-tags` until 2026-10-29: the resistance tags moved to 285) |
 | `370-catch-all` | 10620–10621 | `ItemDisplay[]:%NAME%{%NAME%}//` (must stay last) |
 
 To add a section, give it a number between its neighbours (`115-new-topic.filter`). To split one, move lines into a new file; `python tools/build.py --check` then proves the 8 filters didn't change.
 
-Worth having the agent explain once: "Maximum Resistances" appears in `300-affix-tags` (Main 8213) and `360-max-res-resist-tags` (10156). That's probably deliberate, one for tagging and one for highlighting, but it's worth confirming. (S13 also had "Indestructible" twice in `300-affix-tags`; in S14 the first one heads corruption 48's ED tag, Main 8376.)
+Worth having the agent explain once: "Maximum Resistances" appears in `300-affix-tags` (Main 8213) and `360-max-res-cannot-be-frozen` (10156). That's probably deliberate, one for tagging and one for highlighting, but it's worth confirming. (S13 also had "Indestructible" twice in `300-affix-tags`; in S14 the first one heads corruption 48's ED tag, Main 8376.)
 
 ---
 
