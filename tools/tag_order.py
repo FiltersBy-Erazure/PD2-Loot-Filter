@@ -10,7 +10,8 @@ its lines in the order they had.
 
 Stats with the same priority come in an order that differs between items (Ormus' Robes, Nature's Peace, Eschuta's
 Temper and Venom Grip list the higher stat ID first; Kira's Guardian lists -cold, -fire, -lightning, Frostburn
--fire above -cold). Here the higher stat ID goes further left; where that matters, a grouped tag can follow each
+-fire above -cold). Here the higher stat ID goes further left (TIE_RANK: pairs the game has always listed the other
+way, life per kill above mana per kill); where that matters, a grouped tag can follow each
 item's own order (the -res group, ERES_ORDER in gen_unique_rolls.py; one line for both tags in 300: Griffon's Eye,
 Nightwing's Veil, Frostburn). One stat with several skills (classes, tabs, auras) lists the higher skill first (Arm of
 King Leoric: Raise Skeleton Archer 89, Raise Skeleton Warrior 70, Skeleton Mastery 69; Chromatic Ire: Cold,
@@ -108,11 +109,14 @@ def load_table():
 
 
 PRIO, STAT_NAMES = load_table() if TABLE.exists() else ({}, {})
+# Stats of the same priority that the game has always listed in the other order (the stat ID they rank by among
+# their equals): Life after each Kill above Mana after each Kill (the author's rings and Dracul's Grasp, 2026-10-29)
+TIE_RANK = {86: 138.5}
 
 
 def rank(stat):
     """Higher = shown higher on the item."""
-    return PRIO.get(stat, -1), stat
+    return PRIO.get(stat, -1), TIE_RANK.get(stat, stat)
 
 
 def keyword_stats(kw, cond):
@@ -206,9 +210,10 @@ def block_key(chunks):
 
 def block_title(key, chunks):
     first = chunks[0]
+    stat = max(first, key=rank)  # (key[1] is its rank among its equals, not always its ID: TIE_RANK)
     group = GROUPS.get(frozenset(first)) if key[2] else None
-    name = group or TITLES.get(key[1]) or STAT_NAMES.get(key[1], f"stat {key[1]}")
-    return f"// ---- {name} (stat {key[1]}{'+' if group else ''}, priority {key[0]}) ----"
+    name = group or TITLES.get(stat) or STAT_NAMES.get(stat, f"stat {stat}")
+    return f"// ---- {name} (stat {stat}{'+' if group else ''}, priority {key[0]}) ----"
 
 
 # ---------------------------------------------------------------- the section as units
@@ -293,7 +298,7 @@ def check(lines=None, hint=FIX_HINTS[SECTION_NAME]):
         if i not in keep:
             skill = " (same-stat lines: from the lowest skill number to the highest)" if key[3] else ""
             found.append((u["n"], "error",
-                          f"this {STAT_NAMES.get(key[1], key[1])} tag is out of the game's stat order (it belongs "
+                          f"this {STAT_NAMES.get(max(chunks[0], key=rank), key[1])} tag is out of the game's stat order (it belongs "
                           f"under '{block_title(key, chunks)[8:-5]}'{skill}): {hint}", u["line"]))
     return sorted(found, key=lambda f: f[0])
 
