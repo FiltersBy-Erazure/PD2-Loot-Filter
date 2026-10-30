@@ -44,6 +44,7 @@ import explain_item as E  # noqa: E402
 import label_cuts as LC  # noqa: E402
 import lint_filter as L  # noqa: E402
 import pd2_data as P  # noqa: E402
+import plain_highlights as PH  # noqa: E402
 import tier_map as T  # noqa: E402
 
 ROOT = build.ROOT
@@ -408,7 +409,8 @@ def vendor_of(item):
 # ---------------------------------------------------------------- the rules
 
 class Rule:
-    __slots__ = ("idx", "where", "cond", "tree", "name", "desc", "cont", "section", "line")
+    __slots__ = ("idx", "where", "cond", "tree", "name", "desc", "cont", "section", "line", "star", "twin",
+                 "pagecond")
 
 
 class Formulas(list):
@@ -438,6 +440,11 @@ def load_rules():
         x.desc = L.split_output(L.expand_output_aliases(r.output, lt.aliases))[1]
         x.section = x.where.startswith(f"sections/{SECTION}:")
         x.line = r.output
+        # a highlight with stars and its plain twin for corrupted items (tools/plain_highlights.py): the page shows
+        # the pair as one rule, the star rule without its corruption test
+        x.star = bool(PH.star_block(r.output)) and r.cond.endswith(PH.STAR_TEST)
+        x.twin = rules[-1] if rules and rules[-1].star and PH.is_twin(r.cond) else None
+        x.pagecond = re.sub(r"\s*!STAT360>0\s*$", "", cond) if x.star else cond
         rules.append(x)
     return rules, formulas
 
@@ -1001,7 +1008,7 @@ class Words:
 
     # ---- a whole condition
     def tree(self, rule):
-        cond = rule.cond
+        cond = rule.pagecond
         for a, b in reversed(L.formula_ranges(cond)):
             key = f"FX{len(self.fx)}"
             self.fx[key] = cond[a:b]
@@ -1387,7 +1394,7 @@ def families(rules):
     """{family id: [its 280 rules]}; every 280 rule in exactly one family (or the run stops)."""
     out, stray, twice = {f["id"]: [] for f in FAMILIES}, [], []
     for r in rules:
-        if not r.section:
+        if not r.section or r.twin:
             continue
         hits = [f["id"] for f in FAMILIES if f["match"](r)]
         if len(hits) == 1:
@@ -1411,6 +1418,8 @@ INTRO = [
     "Each kind of highlight below has a sample item drawn as its hover box looks in game, then every highlight of "
     "that kind and what an item needs to get it. An item a store never sells (a rare, a circlet, most class items) "
     "is drawn in your inventory.",
+    "A corrupted item shows the highlight without its stars: its own lines are longer, and the hover box has less "
+    "room left for the filter's lines.",
 ]
 SELFTEST = [  # two shop screenshots of the author's (2026-10-20): the hover box line by line, and the Cost seen
     # (the gloves' highlight line follows the rule's text: "3/20 Gloves" on the screenshot, "+3/20ias" since 2026-10-21)
@@ -1490,7 +1499,7 @@ def family_data(fam, rules, all_rules, formulas, data, words):
     item = Item(data, dict(fam["sample"], id=fam["id"]))
     model = Model(item, formulas)
     name, desc, hits, _ = run_rules(all_rules, model)
-    mine = [r for r in hits if r in rules]
+    mine = [r for r in (h.twin or h for h in hits) if r in rules]
     if not mine:
         raise SystemExit(f"family {fam['id']}: its sample gets none of the family's highlights "
                          f"(it gets {', '.join(h.where for h in hits) or 'none of 280'})")
@@ -1581,7 +1590,7 @@ def findings():
     rules, formulas = load_rules()
     words = Words(data)
     for r in rules:
-        if r.section and words.rule_words(r) is None:
+        if r.section and not r.twin and words.rule_words(r) is None:
             print(f"{r.where}: never matches (its condition contradicts itself): {r.cond[:120]}")
     for f in FAMILIES:
         item = Item(data, dict(f["sample"], id=f["id"]))
