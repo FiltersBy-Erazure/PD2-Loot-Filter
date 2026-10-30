@@ -5293,8 +5293,9 @@ Alias[RARE_CLASS_ITEMS_SEEN]:((NECROMANCER (WAND OR NEC)) OR (SORCERESS (wst OR 
 
 // Select Weapons (filter level 8): the rare weapons it shows that the other Endgame levels hide, non-ethereal, every
 // tier: the Diamond Bow, Flying Axe, Balrog Spear, Champion Sword, Balrog Blade, Colossus Blade, Colossus Sword, Highland
-// Blade, Legendary Mallet, Scourge, Devil Star, Reinforced Mace and Ettin Axe families (the author, 2026-10-26)
-Alias[RARE_SELECT_WEAPONS]:(sbb OR 8s8 OR 6s7 OR tax OR 9ta OR 7ta OR ssp OR 9s9 OR 7s7 OR bsw OR 9b9 OR 7b7 OR gis OR 9gs OR 7gs OR gsd OR 9gd OR 7gd OR flb OR 9fb OR 7fb OR clm OR 9cm OR 7cm OR whm OR 9wh OR 7wh OR fla OR 9fl OR 7fl OR mst OR 9mt OR 7mt OR mac OR 9ma OR 7ma OR 2ax OR 92a OR 72a)
+// Blade, Legendary Mallet, Scourge, Devil Star, Reinforced Mace and Ettin Axe families (the author, 2026-10-26), and the
+// Shadow Bow family (the author, 2026-10-30)
+Alias[RARE_SELECT_WEAPONS]:(sbb OR 8s8 OR 6s7 OR lbw OR 8lb OR 6lb OR tax OR 9ta OR 7ta OR ssp OR 9s9 OR 7s7 OR bsw OR 9b9 OR 7b7 OR gis OR 9gs OR 7gs OR gsd OR 9gd OR 7gd OR flb OR 9fb OR 7fb OR clm OR 9cm OR 7cm OR whm OR 9wh OR 7wh OR fla OR 9fl OR 7fl OR mst OR 9mt OR 7mt OR mac OR 9ma OR 7ma OR 2ax OR 92a OR 72a)
 
 // Hide Rare Items on Filter Levels 10 and 12 (on 10 not the class items above)
 ItemDisplay[RARE !ID (FILTLVL=10 OR FILTLVL=12) ((ARMOR !CIRC !BOOTS !BELT !(CHEST (ALVL>74 OR CRAFTALVL>74)) !(SHIELD !NEC !DIN (lrg OR spk OR kit OR bsh OR tow OR gts OR xrg OR xpk OR xit OR xsh OR xow OR xts OR urg OR upk OR uit OR ush OR uow OR uts))) OR WEAPON) !(FILTLVL=10 RARE_CLASS_ITEMS_SEEN) GROUND !TOWN]://
@@ -5407,7 +5408,7 @@ ItemDisplay[RARE !ID EXC !ETH !THROWING DAGGER FILTLVL>7 GROUND !TOWN]:// Hide n
 ItemDisplay[RARE !ID ELT !ETH !THROWING DAGGER FILTLVL>7 GROUND !TOWN]:// Hide non-Ethereal Elite quality Rare Daggers on filter levels 8+
 
 // Rare Bows
-ItemDisplay[RARE !ID !ZON BOW NORM !(lwb OR lbb) FILTLVL>2 !(FILTLVL<8 sbb) !(FILTLVL=8 RARE_SELECT_WEAPONS) GROUND !TOWN]:// Hide Normal quality Rare Bows on filter levels 3+ (Short Battle Bows 8+)
+ItemDisplay[RARE !ID !ZON BOW NORM !(lwb OR lbb) FILTLVL>2 !(FILTLVL<8 (sbb OR lbw)) !(FILTLVL=8 RARE_SELECT_WEAPONS) GROUND !TOWN]:// Hide Normal quality Rare Bows on filter levels 3+ (Short Battle Bows and Long Bows 8+)
 ItemDisplay[RARE !ID !ZON BOW EXC !(8lw OR 8l8) FILTLVL>7 !(FILTLVL=8 RARE_SELECT_WEAPONS) GROUND !TOWN]:// Hide Exceptional quality Rare Bows on filter levels 8+
 ItemDisplay[RARE !ID !ZON BOW ELT !(6lw OR 6l7) FILTLVL>7 !(FILTLVL=8 RARE_SELECT_WEAPONS) GROUND !TOWN]:// Hide Elite quality Rare Bows on filter levels 8+
 ItemDisplay[RARE !ID !AMAZON (am1 OR am6 OR amb) FILTLVL>7 GROUND !TOWN]:// Hide Stag, Ashwood and Matriarchal Bows for non-Amazons on filter levels 8+
@@ -6723,9 +6724,16 @@ ItemDisplay[NMAG !RW !INF EXC BOW !ZON SOCK=0 FILTLVL>0 GROUND !TOWN]:// Hide Ex
 ItemDisplay[NMAG !RW !INF EXC BOW !ZON CLVL>49 FILTLVL>0 !LOWEST_SOCKETED_BASE GROUND !TOWN]:// Hide Exceptional non-Amazon Bows at clvl 50+ on filter levels 1+
 //  Blade Bow and Great Bows
 ItemDisplay[NMAG !RW !INF ELT BOW !ZON (6hb OR 6cb) !SOCK=4 FILTLVL>0 !LOWEST_SOCKETED_BASE GROUND !TOWN]:// Hide Elite Blade Bow, Great Bow without 4os on filter levels 1+
-ItemDisplay[NMAG !RW !INF ELT BOW !ZON !(6hb OR 6cb) CLVL<80 FILTLVL>0 !LOWEST_SOCKETED_BASE GROUND !TOWN]:// Hide Elite non-Amazon Bows (except Blade Bow, Great Bow) below clvl 80 on filter levels 1+
+//  Shadow Bow
+ItemDisplay[NMAG !RW !INF 6lb !(SOCK=0 OR SOCK=6) FILTLVL>0 !LOWEST_SOCKETED_BASE GROUND !TOWN]:// Hide Shadow Bow without 0 or 6os on filter levels 1+
+ItemDisplay[NMAG !RW !INF 6lb ED<5 FILTLVL>2 GROUND !TOWN]:// Hide Shadow Bow with ED<5 on filter levels 3+
+ItemDisplay[NMAG !RW !INF 6lb ED<15 FILTLVL>4 GROUND !TOWN]:// Hide Shadow Bow with ED<15 on filter levels 5+
+ItemDisplay[NMAG !RW !INF 6lb (SOCK=0 OR SOCK=6) FILTLVL<3]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Show Shadow Bow with 0 or 6os on filter levels 0-2
+ItemDisplay[NMAG !RW !INF 6lb ED>4 (SOCK=0 OR SOCK=6) FILTLVL~3-4]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Show Shadow Bow with ED>4 and 0 or 6os on filter levels 3-4
+ItemDisplay[NMAG !RW !INF 6lb ED>14 (SOCK=0 OR SOCK=6) FILTLVL>4]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// Show Shadow Bow with ED>14 and 0 or 6os on filter levels 5+
+ItemDisplay[NMAG !RW !INF ELT BOW !ZON !(6hb OR 6cb OR 6lb) CLVL<80 FILTLVL>0 !LOWEST_SOCKETED_BASE GROUND !TOWN]:// Hide Elite non-Amazon Bows (except Blade Bow, Great Bow, Shadow Bow) below clvl 80 on filter levels 1+
 //  Hide other Elite tiers
-ItemDisplay[NMAG !RW !INF ELT BOW !ZON CLVL>79 FILTLVL>0 !LOWEST_SOCKETED_BASE GROUND !TOWN]:// Hide Elite non-Amazon Bows at clvl 80+ on filter levels 1+
+ItemDisplay[NMAG !RW !INF ELT BOW !ZON !6lb CLVL>79 FILTLVL>0 !LOWEST_SOCKETED_BASE GROUND !TOWN]:// Hide Elite non-Amazon Bows (except Shadow Bow) at clvl 80+ on filter levels 1+
 
 // ------------------------------------------------------------------------------
 //     ================================ Crossbows ==========================

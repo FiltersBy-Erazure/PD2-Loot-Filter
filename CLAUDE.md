@@ -626,9 +626,9 @@ hidden on 8 and 10–12 (the author, 2026-10-26; until then 11–12), though onl
 there the Flawless Skull shows with its icon but no chat line. 7 = 6 but it hides unidentified magic amulets and every
 unidentified Large Charm (the author, 2026-10-19; 8–10 show those of item level 90+). 8 = 9 but it hides Flawless
 Gems and shows the
-non-ethereal unidentified rares of 13 more weapon families, every tier (190's `RARE_SELECT_WEAPONS`: the author's
+non-ethereal unidentified rares of 14 more weapon families, every tier (190's `RARE_SELECT_WEAPONS`: the author's
 picks of 2026-10-26 on the review page https://claude.ai/artifact/ShUsgd3E2kTr2sMBb3yJnK, db collection `level9`,
-written by `tools/rare_weapon_review.py`). The author swapped the two the same day, so the less strict one comes first:
+written by `tools/rare_weapon_review.py`; the Shadow Bow family added 2026-10-30, the author, not on the page). The author swapped the two the same day, so the less strict one comes first:
 until then Select Weapons was level 9, and before that level 9 hid every unidentified Large Charm. The 35% Rejuvenation Potion is hidden on 4, 6–12 (the names say so; Full
 Rejuvenation's bigger look goes with it); H5 / M5 show on every level (since 2026-10-25, the author: the game's Hide
 Healing / Mana Potions options decide; until then hidden from 8 at CLVL 50+). The exact labels are in that file. A rule without `FILTLVL` applies at every level. The players' pages take the
