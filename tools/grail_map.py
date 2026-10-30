@@ -416,11 +416,12 @@ def compute(t, items, ear_list):
         return out
 
     configs = sorted({(e["rarity"], e["extra"]) for e in ear_list})
-    rates = {}
+    rates, kills = {}, {}
     for tier in (1, 2, 3):
         for mt in ("normal", "rare"):
             dd, rr = (0, 0) if mt == "normal" else RARE_ROLLS[tier]
             k0 = m.tier_kills(tier, dd, rr)
+            kills[f"{tier}|{mt}"] = round(sum(k0.values()))
             kc = {c: m.tier_kills(tier, dd, rr + c[0]) for c in configs}
             for mf in MFS:
                 entry = {"none": drop_rates(k0, 0, mf),
@@ -435,16 +436,48 @@ def compute(t, items, ear_list):
                         add_drops(d.expand(e["pool"]), lvl, mf, n, out)
                     entry["cls"][e["name"]] = out
                 rates[f"{tier}|{mt}|{mf}"] = entry
-    return rates, configs
+    return rates, configs, kills
 
 
-def page_data(t, items, ear_list, rates, configs):
+# The filter and the grail: how Erazure - Main draws an unidentified item you haven't discovered yet and one you have,
+# on two filter levels, for one item of each kind (tier_map's engine runs the filter's own rules)
+LOOK_EXAMPLES = [("UNI", "ssd", "A unique item in no value tier"), ("SET", "xhl", "A set item"),
+                 ("SET", "rin", "A set ring (amulets alike)"), ("UNI", "uar", "A unique item in a value tier")]
+LOOK_LEVELS = [1, 12]
+
+
+def filter_looks():
+    import build
+    import tier_map as T
+    groups, _, variants, _ = T.analyse()
+    by = {(g.kind, g.code): g for g in groups}
+    names, palette = T.load_levels(), T.load_palette()
+    out = []
+    for kind, code, what in LOOK_EXAMPLES:
+        g = by[(kind, code)]
+        tier, _ = T.tier_of(g, variants[build.MAIN])
+        cells = {}
+        for grail in ("new", "found"):
+            for lv in LOOK_LEVELS:
+                a = dict(variants[build.MAIN], ETH=0, CLASS=g.dims.values["CLASS"][0], CLVL=99, LOC="field", GRAIL=grail,
+                         FILTLVL=lv)
+                (look, chat, sound, icons), _ = g.run(a)
+                cells[f"{grail}|{lv}"] = dict(hidden=look == "HIDDEN", lines=[] if look == "HIDDEN" else
+                                              T.label(g, tuple(a[d] for d in T.DIMS), {}), chat=bool(chat),
+                                              sound=bool(sound), icons=[[palette.get(c) if c else None for c in layer]
+                                                                        for layer in icons])
+        out.append(dict(what=what, kind=kind, items=list(dict.fromkeys(it["name"] for it in g.items)),
+                        base=(g.base or {}).get("name", code), tier=tier, cells=cells))
+    return {"levels": {str(lv): names[lv].split(" - ")[0] for lv in LOOK_LEVELS}, "examples": out}
+
+
+def page_data(t, items, ear_list, rates, configs, kills):
     per1000 = lambda x: float("%.3g" % (x * 1000))
     data = {"date": t.date.strftime("%d %B %Y").lstrip("0"), "mfs": MFS,
             "ears": [dict(name=e["name"], rarity=e["rarity"], extra=e["extra"], cls=e["cls"], hp=e["hp"],
                           config=configs.index((e["rarity"], e["extra"]))) for e in ear_list],
             "items": [{k: it[k] for k in ("kind", "index", "name", "base", "tier", "lvl", "w", "set", "ver") if it.get(k)}
-                      for it in items], "rates": {}}
+                      for it in items], "rates": {}, "kills": kills, "looks": filter_looks()}
     for key, v in rates.items():
         data["rates"][key] = {"none": [per1000(x) for x in v["none"]],
                               "common": [[per1000(x) for x in c] for c in v["common"]],
@@ -494,8 +527,8 @@ def main():
     items, ear_list = grail_items(t), ears(t)
     assert len({(e["rarity"], e["extra"], e["cls"], e["hp"]) for e in ear_list}) == 1, \
         "the ears no longer share their values: the page's text assumes they do"
-    rates, configs = compute(t, items, ear_list)
-    data = page_data(t, items, ear_list, rates, configs)
+    rates, configs, kills = compute(t, items, ear_list)
+    data = page_data(t, items, ear_list, rates, configs, kills)
     page = DOC_HEAD + TEMPLATE.read_text(encoding="utf-8") + "\n</body>\n</html>\n"
     page = page.replace("/*__DATA__*/null", json.dumps(data, ensure_ascii=False, separators=(",", ":")))
     PAGE.write_text(page, encoding="utf-8", newline="\n")

@@ -12,15 +12,12 @@ hide:
 
 # Grail Planner
 
-How the Corrupted Ears change the time it takes to find every unique and set item in T1-T3 maps, and which ear to
-use for the items you're missing. Pick your tier, map type and magic find in the bar: every number below follows it.
+The holy grail is finding every unique and set item at least once. This page covers how the filter shows the items you
+haven't found yet, how long the grail takes in T1-T3 maps, what makes it faster, and which items will take the
+longest. Pick your tier, map type and magic find in the bar: every number below follows it.
 
-An ear's extra drop makes every grail item more common, whichever ear you use; its class item pool is where the ears
-differ. Tick the items you have in the list near the bottom and the planner ranks the ears for the rest. Your
-ticks stay in your own browser.
-
-The filter never hides a unique or set item you haven't discovered yet: see
-[Unique & Set Tiers](tiers.md) for how each one shows when it drops.
+Tick the items you already have under Every grail item, and Your grail shows what's left, about how many maps it
+should take, and which Corrupted Ear finds your missing items fastest. Your ticks stay in your own browser.
 
 <!-- the grail planner (website/hooks.py puts it here, from Erazure-Grail-Planner.html) -->
 <div id="grail-map-here"></div>

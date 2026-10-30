@@ -100,20 +100,48 @@
   .grail-map #gm-items tr.found td { background: var(--found); }
   .grail-map #gm-items td.name { text-align: left; white-space: normal; min-width: 180px; }
   .grail-map #gm-items td.base { text-align: left; white-space: normal; min-width: 120px; color: var(--muted); }
+  @font-face { font-family: "AvQest"; src: local("AvQest"); }  /* the D2-style font, if the viewer has it installed */
   .grail-map .ver { color: var(--muted); font-size: 12.5px; }
+  .grail-map a { color: var(--accent); }
   .grail-map .count { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 13px; }
   @media (max-width: 700px) { .grail-map .opt { display: none; } }  /* phones: the item table's optional columns */
   .grail-map .gm-tip { position: fixed; pointer-events: none; background: var(--panel); color: var(--fg); border: 1px solid var(--line);
     border-radius: 6px; padding: 8px 10px; font-size: 12.5px; box-shadow: 0 4px 16px rgba(0,0,0,.3); z-index: 20; max-width: 280px; }
   .grail-map code { font-size: 13px; background: var(--chip); padding: 1px 4px; border-radius: 3px; color: var(--fg); }
   .grail-map footer { padding-block: 22px 40px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+  /* The filter's looks: the label as the game draws it (as on the Unique & Set Tiers page) and the minimap icon */
+  .grail-map .looks { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .grail-map .look { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 13px; display: grid; gap: 10px; align-content: start; }
+  .grail-map .look .what { font-size: 13px; color: var(--muted); font-weight: 600; }
+  .grail-map .look .names { font-size: 14px; color: var(--fg); }
+  .grail-map .lgrid { display: grid; grid-template-columns: 110px minmax(0, 1fr) minmax(0, 1fr); gap: 8px 14px; align-items: center; }
+  @media (max-width: 640px) { .grail-map .lgrid { grid-template-columns: 80px minmax(0, 1fr) minmax(0, 1fr); gap: 6px 8px; }
+                              .grail-map .d2label { font-size: 13px; } }
+  .grail-map .lgrid .hd { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+  .grail-map .lgrid .rowhd { font-size: 13px; color: var(--fg); font-weight: 600; }
+  .grail-map .lcell { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; min-width: 0; }
+  .grail-map .lmeta { display: flex; gap: 8px; align-items: center; font-size: 12px; color: var(--muted); }
+  .grail-map .ground { max-width: 100%; text-align: center; border-radius: 5px; padding: 3px 6px; overflow-x: auto;
+    background: radial-gradient(ellipse at 50% 45%, #3a3428 0%, #26221b 55%, #15130f 100%); }
+  .grail-map .d2label { display: inline-block; font-family: "AvQest", "Palatino Linotype", Palatino, Georgia, serif; font-size: 15px;
+    line-height: 1.12; text-align: center; white-space: pre; background: rgba(0, 0, 0, .74); padding: 2px 6px 0; }
+  .grail-map .d2label .bs { display: inline-block; transform: scaleX(-1); }
+  .grail-map .hidden-label { font-size: 12.5px; color: #a8a8a8; font-style: italic; padding-inline: 6px; }
+  .grail-map .c-WHITE { color: #e8e8e8; } .grail-map .c-RED { color: #ff4d4d; } .grail-map .c-GREEN { color: #00ff00; }
+  .grail-map .c-BLUE { color: #6969ff; } .grail-map .c-GOLD { color: #c7b377; } .grail-map .c-GRAY { color: #696969; }
+  .grail-map .c-BLACK { color: #000000; } .grail-map .c-TAN { color: #d0c27d; } .grail-map .c-ORANGE { color: #ffa800; }
+  .grail-map .c-YELLOW { color: #ffff64; } .grail-map .c-PURPLE { color: #ae00ff; } .grail-map .c-DARK_GREEN { color: #008000; }
+  .grail-map .c-CORAL { color: #ff7f6e; } .grail-map .c-SAGE { color: #a3b88f; } .grail-map .c-TEAL { color: #3fb5b5; }
+  .grail-map .c-LIGHT_GRAY { color: #a8a8a8; }
+  .grail-map .icon { position: relative; width: 16px; height: 16px; background: #0c0b09; border-radius: 2px; flex: none; }
+  .grail-map .icon span { position: absolute; }
 </style>
 <div class="grail-map">
 <!-- grail-map:start -->
 <div class="wrap">
   <h1 class="gm-title">Grail Planner</h1>
-  <p class="gm-lede">How the Corrupted Ears change the time it takes to find every unique and set item in T1-T3 maps, and which
-  ear to use for the items you're missing.</p>
+  <p class="gm-lede">The holy grail is finding every unique and set item at least once. How the filter shows the items you haven't
+  found yet, how long the grail takes in T1-T3 maps, what makes it faster, and which items will take the longest.</p>
 </div>
 
 <div class="bar" role="group" aria-label="Settings">
@@ -126,17 +154,24 @@
 
 <div class="wrap">
 <section id="gm-answer">
-  <h2>The short answer</h2>
+  <h2>Your grail in maps</h2>
   <p class="note" id="gm-answer-note"></p>
   <div class="cards" id="gm-cards"></div>
   <ul class="find" id="gm-findings"></ul>
 </section>
 
+<section id="gm-filter">
+  <h2>How the filter shows your grail</h2>
+  <ul class="find" id="gm-filter-list"></ul>
+  <div class="looks" id="gm-looks"></div>
+  <p class="small" id="gm-looks-note"></p>
+</section>
+
 <section id="gm-speed">
   <h2>How fast the grail fills</h2>
-  <p class="note">Grail items found after a number of full map clears, counting only the items T1-T3 map monsters can drop. The
-  band covers the seven ears, from the best to the worst. Switching means putting on, before each map, the ear expected to find
-  the most items you don't have yet.</p>
+  <p class="note">Grail items found after a number of full map clears, counting only the items T1-T3 map monsters can drop:
+  without a Corrupted Ear, with one of the seven ears (the band, from the best to the worst), and switching ears, which means
+  putting on, before each map, the ear expected to find the most items you don't have yet.</p>
   <div class="panel">
     <div class="legend" id="gm-leg"></div>
     <div id="gm-curve"></div>
@@ -144,22 +179,10 @@
   <div class="tbl panel"><table class="gm-table" id="gm-t-speed"></table></div>
 </section>
 
-<section id="gm-how">
-  <h2>What an ear does for the grail</h2>
-  <ul class="find" id="gm-how-list"></ul>
-</section>
-
-<section id="gm-ears">
-  <h2>Each ear</h2>
-  <p class="note">What each ear's class pool adds. "Grail items" counts the uniques and sets its pool can make; the list shows the
-  items it raises most over a map without an ear, and how often each drops with that ear.</p>
-  <div class="ears" id="gm-earcards"></div>
-</section>
-
 <section id="gm-planner">
   <h2>Your grail</h2>
-  <p class="note">Tick the items you have in the list below, or paste them. The planner ranks the ears by how often they drop your
-  missing items. Your ticks are kept in this browser only.</p>
+  <p class="note">Tick the items you have under Every grail item, or paste them. This shows what's left, about how many maps it
+  should take, and which ear finds your missing items fastest. Your ticks are kept in this browser only.</p>
   <div class="cards" id="gm-plan-cards"></div>
   <div class="tbl panel"><table class="gm-table" id="gm-t-plan"></table></div>
   <details class="panel">
@@ -188,21 +211,33 @@
   <div class="tbl panel"><table class="gm-table" id="gm-items"></table></div>
 </section>
 
-<section id="gm-cant">
-  <h2>What ears can't do</h2>
-  <p class="note" id="gm-cant-note"></p>
-  <div class="tbl panel"><table class="gm-table" id="gm-t-nodrop"></table></div>
-  <p class="note">The slowest items even with the best ear. For most of them no ear's pool has the base, so only the extra drop
-  helps; maps are a poor place to look for them.</p>
-  <div class="tbl panel"><table class="gm-table" id="gm-t-slow"></table></div>
-</section>
-
-<section id="gm-settings">
-  <h2>Tier, magic find and map rolls</h2>
-  <p class="note">Maps for 90% of the map grail, without an ear and with the best single ear, at every setting. Magic find matters
-  far more than the tier; rare maps have more monsters per clear (and take longer to clear).</p>
+<section id="gm-levers">
+  <h2>What makes it faster</h2>
+  <ul class="find" id="gm-lever-list"></ul>
+  <p class="note">Maps for 90% of the map grail, without an ear and with the best single ear, at every setting.</p>
   <div class="tbl panel"><table class="gm-table" id="gm-t-grid"></table></div>
   <ul class="find small" id="gm-notes"></ul>
+</section>
+
+<section id="gm-how">
+  <h2>What a Corrupted Ear does</h2>
+  <ul class="find" id="gm-how-list"></ul>
+</section>
+
+<section id="gm-ears">
+  <h2>Each ear</h2>
+  <p class="note">What each ear's class pool adds. "Grail items" counts the uniques and sets its pool can make; the list shows the
+  items it raises most over a map without an ear, and how often each drops with that ear.</p>
+  <div class="ears" id="gm-earcards"></div>
+</section>
+
+<section id="gm-cant">
+  <h2>What maps can't give you</h2>
+  <p class="note" id="gm-cant-note"></p>
+  <div class="tbl panel"><table class="gm-table" id="gm-t-nodrop"></table></div>
+  <p class="note">The slowest items in maps, even with the best ear. For most of them no ear's pool has the base, so only the extra
+  drop helps; maps are a poor place to look for them.</p>
+  <div class="tbl panel"><table class="gm-table" id="gm-t-slow"></table></div>
 </section>
 
 <section id="gm-method">
@@ -330,22 +365,38 @@ function summary() {
 }
 const setting = () => `${state.tier === "all" ? "T1-T3" : "T" + state.tier} ${state.mt === "normal" ? "non-magical" : "rare"} maps, ${state.mf}% magic find, solo`;
 function renderAnswer() {
-  const {idx, rows, rr} = SUM, none = rows[0], ears = rows.slice(1);
+  const {R, idx, rows, rr} = SUM, none = rows[0], ears = rows.slice(1);
   const by = k => ears.reduce((a, b) => b[k] < a[k] ? b : a), worst = k => ears.reduce((a, b) => b[k] > a[k] ? b : a);
-  const b90 = by("m90"), bAll = by("all"), w90 = worst("m90");
-  $("gm-answer-note").textContent = `${setting()[0].toUpperCase() + setting().slice(1)}. ${idx.length} of ${N} grail items drop from these maps.`;
+  const b50 = by("m50"), b90 = by("m90"), bAll = by("all"), w90 = worst("m90");
+  $("gm-answer-note").textContent = `${setting()[0].toUpperCase() + setting().slice(1)}.`;
   $("gm-cards").innerHTML = [
-    ["Without an ear", fmtN(none.m90), "maps for 90% of the map grail", `${fmtN(none.all)} maps to find everything`, false],
-    ["Best ear to 90%: " + b90.n, fmtN(b90.m90), "maps for 90%", `${(none.m90 / b90.m90).toFixed(2)}× faster than no ear; slowest ear ${w90.n}, ${fmtN(w90.m90)}`, true],
-    ["Best ear to finish: " + bAll.n, fmtN(bAll.all), "maps to find everything", `${(none.all / bAll.all).toFixed(2)}× faster than no ear`, false],
-    ["Switching ears", fmtN(rr.m90), "maps for 90%", `${fmtN(rr.m99)} for 99% (best single ear ${fmtN(by("m99").m99)})`, false],
+    ["Grail items in these maps", `${idx.length}`, `of ${N}`, `the other ${N - idx.length} drop elsewhere`, false],
+    ["Half your grail", fmtN(none.m50), "maps", `${fmtN(b50.m50)} with a Corrupted Ear on every map`, false],
+    ["90% of it", fmtN(none.m90), "maps", `${fmtN(b90.m90)} with the best ear (${b90.n}), ${fmtN(rr.m90)} switching ears`, true],
+    ["All of it", fmtN(none.all), "maps", `${fmtN(bAll.all)} with the best ear (${bAll.n})`, false],
   ].map(([who, big, small, sub, hl]) => `<div class="card${hl ? " hl" : ""}"><div class="who">${who}</div><div class="big">${big}<small>${small}</small></div><div class="sub">${sub}</div></div>`).join("");
-  const avgPer = ears.reduce((a, b) => a + b.perMap, 0) / ears.length, avg90 = ears.reduce((a, b) => a + b.m90, 0) / ears.length;
+  const slow = idx.map(i => [i, bestEar(R, i)[1]]).sort((a, b) => a[1] - b[1]).slice(0, 4).map(([i]) => ITEMS[i].label);
+  const avg90 = ears.reduce((a, b) => a + b.m90, 0) / ears.length;
+  const mf0 = state.mf === "0" ? "300" : "0", R0 = rates(state.tier, state.mt, mf0), m0 = mapsTo(R0.none, droppable(R0), .9);
   $("gm-findings").innerHTML = [
-    `<b>Any ear speeds the grail up about ${(none.m90 / avg90).toFixed(1)}×.</b> Most of that is the ${E0.extra}% extra drop every ear has: grail-item drops per map go from ${none.perMap.toFixed(1)} to ${avgPer.toFixed(1)} on average.`,
-    `<b>Wearing an ear matters more than which one.</b> To 90% of the map grail the ears are ${fmtN(b90.m90)} to ${fmtN(w90.m90)} maps apart. ${b90.n} is quickest there; ${bAll.n} finishes first.`,
-    `<b>Switch ears as your list shrinks</b> and 90% comes about ${Math.max(0, 100 - rr.m90 / b90.m90 * 100).toFixed(0)}% sooner than with the best single ear. The planner below does this from your own ticks.`,
-    `<b>The last items are slow in maps whatever you wear:</b> the low-level uniques of the very first bases (Knell Striker, Torch of Iro, Bane Ash) take thousands of maps, because those bases rarely drop there. Ears only add their extra drop to them.`
+    `<b>The first items come quickly, the last ones slowly.</b> After 100 maps you have about ${none.f100.toFixed(0)} of the ${idx.length}; 95% takes ${fmtN(none.m95)} maps, all of them ${fmtN(none.all)}.`,
+    `<b>A few items decide the end:</b> ${slow.slice(0, -1).join(", ")} and ${slow[slow.length - 1]} drop once in thousands of maps here. "What maps can't give you" lists them, with the ${N - idx.length} items maps never drop.`,
+    `<b>Magic find matters most:</b> at ${mf0}% magic find 90% of the grail takes ${fmtN(m0)} maps instead of ${fmtN(none.m90)}.`,
+    `<b>A Corrupted Ear on every map makes it about ${(none.m90 / avg90).toFixed(1)}× faster,</b> whichever ear you use; the best and the worst ear are only ${fmtN(b90.m90)} to ${fmtN(w90.m90)} maps apart to 90%. Your grail, below, picks the ear for the items you're missing.`
+  ].map(x => `<li>${x}</li>`).join("");
+}
+function renderLevers() {
+  const t = state.tier, mt = state.mt, mf = state.mf;
+  const m90 = (tier, mapt, magic, ear) => { const R = rates(tier, mapt, magic), idx = droppable(R);
+    return ear ? Math.min(...EARS.map(e => mapsTo(R.ear[e], idx, .9))) : mapsTo(R.none, idx, .9); };
+  const mfs = DATA.mfs.map(String), kills = (tier, mapt) => { const k = tier === "all" ? ["1", "2", "3"] : [tier];
+    return k.reduce((a, x) => a + DATA.kills[x + "|" + mapt], 0) / k.length; };
+  const other = mt === "normal" ? "rare" : "normal", mtName = x => x === "normal" ? "non-magical" : "rare";
+  $("gm-lever-list").innerHTML = [
+    `<b>Magic find:</b> 90% of the map grail takes ${mfs.map(x => `${fmtN(m90(t, mt, x, false))} maps at ${x}%`).join(", ")} (no ear). Unique and set chances grow ever slower with more magic find.`,
+    `<b>A Corrupted Ear on every map:</b> about ${(m90(t, mt, mf, false) / m90(t, mt, mf, true)).toFixed(1)}× faster with the best ear. How, and which ear, below.`,
+    `<b>Rare maps:</b> an average rare map (with a corruption) has about ${(kills(t, "rare") / kills(t, "normal")).toFixed(1)}× the monsters of a non-magical one, so ${fmtN(m90(t, "rare", mf, false))} maps for 90% instead of ${fmtN(m90(t, "normal", mf, false))}; each clear takes longer, though.`,
+    `<b>The tier barely matters:</b> ${["1", "2", "3"].map(x => `T${x} ${fmtN(m90(x, mt, mf, false))}`).join(", ")} maps for 90% on ${mtName(mt)} maps. Every grail item maps can drop drops in all three.`
   ].map(x => `<li>${x}</li>`).join("");
 }
 function renderSpeed() {
@@ -388,13 +439,37 @@ function renderHow() {
     `<b>Each ear, its own pool:</b> each kill also has a ${E0.cls}% chance to drop one exceptional or elite item from the ear's class pool, rolled for quality like any other drop at the monster's level. The uniques and sets among them are where the ears differ: up to almost 20 times the usual chance for some items.`,
     `<b>Class items roll better:</b> orbs, Paladin shields, Barbarian helms, claws, pelts, heads and Amazon weapons have better chances to be unique, set or rare than other bases.`,
     `<b>Some rolls are wasted:</b> a unique roll on a base that has no unique becomes a rare, and a set roll on a base with no set item becomes magic. Pools with many such bases (Amazon javelins and bows, Paladin and Necromancer starter shields and heads) lose part of their chances.`,
-    `<b>Item level:</b> a unique or set item only drops at an item level of at least its own. Map monsters are level 87 to 92 (champions +2, unique monsters and their minions +3), so everything but the items under "What ears can't do" can drop in any T1-T3 map: the tier barely matters for the grail.`,
+    `<b>Item level:</b> a unique or set item only drops at an item level of at least its own. Map monsters are level 87 to 92 (champions +2, unique monsters and their minions +3), so everything but the items under "What maps can't give you" can drop in any T1-T3 map: the tier barely matters for the grail.`,
     `<b>Minions don't count:</b> the monsters around a unique monster get neither the extra drop nor the class item. Monsters have +${E0.hp}% health with an ear: maps take longer, the drops don't change.`
   ].map(x => `<li>${x}</li>`).join("");
   $("gm-notes").innerHTML = [
     `<b>Fortified maps</b> halve the monsters and give every monster but the map boss a guaranteed second drop; they also double the ear's class-item chance. Per clear that is slightly fewer grail drops than the same map unfortified with the same ear, from half the monsters.`,
     `<b>Parties</b> of three or more remove the small no-drop chance of the usual drops: every grail item gets about 5% more common. The class items never had a no-drop chance.`
   ].map(x => `<li>${x}</li>`).join("");
+}
+
+// ---------------------------------------------------------------- the filter and the grail
+function renderLooks() {
+  const L = DATA.looks, lv = Object.keys(L.levels);
+  $("gm-filter-list").innerHTML = [
+    `<b>Never hidden until you've found it:</b> a unique or set item you haven't discovered yet (the game's Discovery Progress) is never hidden, on any filter level, and always gets a minimap icon and a chat line when it drops.`,
+    `<b>The Grail look:</b> one in no value tier shows orange stars around its name and a Grail minimap icon of its own. Set rings and amulets keep the set look and get the Grail icon.`,
+    `<b>Value tiers look the same either way:</b> a High, Medium or Minimal value item, or one with its own look, shows its tier's look and notifies whether you've found it or not.`,
+    `<b>Unidentified items:</b> the filter sees the base, not the item, so an unidentified one counts as found only when you've discovered every unique (or set item) of that base. An identified one is discovered already.`,
+    `<b>The game's own options:</b> Force Show Undiscovered (on by default) shows an undiscovered unique or set item the filter would hide, with the game's plain name; this filter never hides one, so its looks stay. Force Show Unowned (off by default) does the same for items you've discovered but don't own.`
+  ].map(x => `<li>${x}</li>`).join("");
+  const label = c => {
+    if (c.hidden) return `<div class="ground"><span class="hidden-label">hidden</span></div>`;
+    const html = c.lines.map(line => `<div>${line.map(([col, t]) => `<span class="c-${col}">${t.replace(/&/g, "&amp;").replace(/</g, "&lt;").split("\\").join('<span class="bs">/</span>')}</span>`).join("")}</div>`).join("");
+    return `<div class="ground"><div class="d2label" role="img" aria-label="In-game label: ${c.lines.map(l => l.map(s => s[1]).join("")).join(" / ").replace(/"/g, "")}">${html}</div></div>`;
+  };
+  const icon = layers => !layers.length ? "" : `<span class="icon" title="Minimap icon">${layers.map(l => [16, 12, 8, 4].map((sz, i) => l[i] ? `<span style="left:${(16 - sz) / 2}px;top:${(16 - sz) / 2}px;width:${sz}px;height:${sz}px;background:${l[i]}"></span>` : "").join("")).join("")}</span>`;
+  const cell = c => `<div class="lcell">${label(c)}<div class="lmeta">${icon(c.icons)}<span>${c.hidden ? "no icon, no chat line" : [c.icons.length ? "" : "no icon", c.chat ? "chat line" : "no chat line", c.sound ? "drop sound" : ""].filter(Boolean).join(", ")}</span></div></div>`;
+  $("gm-looks").innerHTML = L.examples.map(x => `<div class="look"><div><div class="what">${x.what}${x.tier === "Everything else" ? "" : `: ${x.tier}`}</div><div class="names">${x.items.join(", ")} <span class="ver">(${x.base})</span></div></div>
+    <div class="lgrid"><span></span>${lv.map(l => `<span class="hd">Level ${l}: ${L.levels[l]}</span>`).join("")}
+    <span class="rowhd">Not found yet</span>${lv.map(l => cell(x.cells["new|" + l])).join("")}
+    <span class="rowhd">Found</span>${lv.map(l => cell(x.cells["found|" + l])).join("")}</div></div>`).join("");
+  $("gm-looks-note").innerHTML = `As Erazure - Main draws them, unidentified on the ground outside town. The <a href="https://filtersby-erazure.github.io/PD2-Loot-Filter/tiers/">Unique &amp; Set Tiers</a> page shows every unique and set item's look on every filter level and version.`;
 }
 
 // ---------------------------------------------------------------- each ear
@@ -495,13 +570,13 @@ function renderGrid() {
 }
 
 // ---------------------------------------------------------------- settings bar
-function renderAll() { summary(); renderAnswer(); renderSpeed(); renderEars(); renderPlanner(); renderItems(); renderCant(); }
+function renderAll() { summary(); renderAnswer(); renderSpeed(); renderLevers(); renderEars(); renderPlanner(); renderItems(); renderCant(); }
 document.querySelectorAll(".grail-map .seg").forEach(seg => seg.addEventListener("click", e => {
   const b = e.target.closest("button"); if (!b) return;
   seg.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
   state[seg.dataset.ctl] = b.dataset.v; renderAll();
 }));
 $("gm-foot").textContent = `Worked out from Project Diablo 2's game data of ${DATA.date}: a model of full map clears, not counts from the game.`;
-renderHow(); renderAll(); renderGrid();
+renderLooks(); renderHow(); renderAll(); renderGrid();
 })();
 </script>
