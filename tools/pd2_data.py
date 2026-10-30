@@ -320,7 +320,8 @@ class Game:
                 skill = self.skill(par)
                 if skill is None:
                     continue
-                code = {107: f"SK{skill}", 97: f"OS{skill}", 151: f"MULTI151,{skill}"}.get(sid)
+                code = {107: f"SK{skill}", 97: f"OS{skill}", 151: f"MULTI151,{skill}",
+                        191: f"MULTI191,{skill}"}.get(sid)  # 191: PD2's "Level N <skill> When Equipped"
                 if code:
                     out.append((code, lo, hi))
             elif f == 14:  # sockets: a unique's fixed count is the param, min/max empty (Hone Sundan: sock 3)
@@ -513,6 +514,8 @@ class Game:
             return f"{plus}{v} to {CLASS_NAMES[int(val)]} Skill Levels"
         if f == 22 and sid == 151:
             return f"Level {v} {name} Aura When Equipped"
+        if f == 22 and sid == 191:
+            return f"Level {v} {name} When Equipped"
         if f == 22 and sid == 97:
             return f"{plus}{v} to {name}"
         if f == 22 and sid == 107:

@@ -66,7 +66,7 @@ GUARD_CODE = {"DEF": "PLUSDEF"}
 GROUP_PARTS = {"RES": ("FRES", "LRES", "CRES", "PRES"), "ALLATTRIB": ("STR", "DEX", "STAT1", "STAT3")}
 COMPANIONS = {"MINDMG", "STAT48", "STAT50", "STAT52", "STAT54"}  # the minimum of "Adds X-Y": goes with its maximum
 # Default picks: every roll with a look that fits the room, the most important first when it does not
-PRIORITY = [r"allsk", r"clsk\d", r"tabsk", r"multi151_\d+", r"os\d+", r"sk\d+", r"edam", r"edef", r"fcr", r"ias",
+PRIORITY = [r"allsk", r"clsk\d", r"tabsk", r"multi1[59]1_\d+", r"os\d+", r"sk\d+", r"edam", r"edef", r"fcr", r"ias",
             r"fhr", r"frw", r"fbr", r"max", r"stat111", r"res", r"eres_\w+", r"-[flcp]res", r"[flcp]res", r"ar%", r"ar", r"dem",
             r"und", r"cb", r"ds", r"life", r"mana", r"stat76", r"stat77", r"allattrib", r"str", r"dex", r"vit",
             r"nrg", r"ls", r"ms", r"lpk", r"mpk", r"mf", r"gf", r"mdr", r"pdr%?", r"def"]
@@ -217,8 +217,12 @@ def look(key, code, slot):
     found = [v for v in (variant(l, src, code, whole, cmp_src) for l in chosen) if v]
     if found:
         return exclusive(dedupe(found)), f"300-affix-tags line {found[0]['n'] + 1}"
-    m = re.fullmatch(r"(SK|OS)(\d+)|MULTI151,(\d+)", code)
+    # A skill when equipped (191, Innocence's Blade Shield) is an aura to the player: the aura look, labeled as
+    # the class skill of the same name (its own skill, "Blade Shield SelfAura", has no label)
+    m = re.fullmatch(r"(SK|OS)(\d+)|MULTI1[59]1,(\d+)", code)
     skill = int(m.group(2) or m.group(3)) if m else None
+    if skill is not None and skill not in SKILL_LABELS:
+        skill = next((s for s in sorted(SKILL_LABELS) if U.SKILL_NAMES.get(s) == U.SKILL_NAMES.get(skill)), skill)
     if skill in SKILL_LABELS and (AURA_LOOK if m.group(3) else SKILL_LOOK):
         template = AURA_LOOK if m.group(3) else SKILL_LOOK
         return [relabel(template, code, SKILL_LABELS[skill])], f"310-staffmods label '{SKILL_LABELS[skill]}'"

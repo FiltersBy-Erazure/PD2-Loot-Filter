@@ -81,7 +81,7 @@ TITLES = {
     139: "Life per Demon Kill", 141: "Deadly Strike", 142: "% Fire Absorb", 143: "Fire Absorb",
     144: "% Lightning Absorb", 145: "Lightning Absorb", 148: "% Cold Absorb", 150: "Slows Target",
     147: "Magic Absorb", 151: "Aura When Equipped", 152: "Indestructible", 153: "Cannot Be Frozen",
-    156: "Piercing Attack", 32: "Defense vs. Missile", 258: "Chance of Critical Strike", 216: "Life per Level", 220: "Strength per Level", 238: "Attacker Takes Damage per Level",
+    156: "Piercing Attack", 191: "Skill When Equipped", 32: "Defense vs. Missile", 258: "Chance of Critical Strike", 216: "Life per Level", 220: "Strength per Level", 238: "Attacker Takes Damage per Level",
     240: "Magic Find per Level",
     188: "+ Skill Tab", 198: "Chance to Cast on Striking", 200: "Chance to Cast when Casting",
     252: "Repair Durability", 329: "+% Fire Skill Damage", 330: "+% Lightning Skill Damage",
