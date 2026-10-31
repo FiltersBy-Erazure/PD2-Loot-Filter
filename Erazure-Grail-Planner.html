@@ -152,16 +152,18 @@
   .grail-map .look .names { font-size: 15px; color: var(--fg); font-weight: 600; margin-top: 2px; }
   .grail-map .look .names .ver { font-weight: 400; }
   /* the two levels side by side at a set width (not spread over the card), lined up from one card to the next */
-  .grail-map .lgrid { display: grid; grid-template-columns: 110px repeat(2, minmax(0, 320px)); justify-content: start; gap: 10px 28px; align-items: center; }
-  @media (max-width: 640px) { .grail-map .lgrid { grid-template-columns: 80px minmax(0, 1fr) minmax(0, 1fr); gap: 8px 10px; }
-                              .grail-map .d2label { font-size: 13px; } }
-  .grail-map .lgrid .hd { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+  /* each filter level its own three columns (Display, Minimap Icon, Notification); a phone scrolls the grid sideways */
+  .grail-map .lwrap { overflow-x: auto; }
+  .grail-map .lgrid { display: grid; grid-template-columns: 96px repeat(2, 270px 84px 112px); justify-content: start;
+    gap: 10px 14px; align-items: center; }
+  .grail-map .lgrid .hd { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; grid-column: span 3;
+    padding-bottom: 4px; border-bottom: 1px solid var(--line); }
+  .grail-map .lgrid .ch { font-size: 12px; color: var(--muted); }
+  .grail-map .lgrid .l2 { padding-left: 14px; border-left: 1px solid var(--line); }
+  .grail-map .lgrid .lcell { min-width: 0; font-size: 13.5px; color: var(--fg); display: flex; align-items: center; }
+  .grail-map .lgrid .none { color: var(--muted); font-style: italic; }
   .grail-map .lgrid .rowhd { font-size: 13px; color: var(--fg); font-weight: 600; }
   .grail-map .lgrid .lsep { grid-column: 1 / -1; border-top: 1px solid var(--line); }
-  .grail-map .lfacts { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 7px 12px; align-items: center; margin: 0; }
-  .grail-map .lfacts dt { font-size: 12px; color: var(--muted); margin: 0; font-weight: 400; }
-  .grail-map .lfacts dd { margin: 0; min-width: 0; font-size: 13.5px; color: var(--fg); display: flex; align-items: center; }
-  .grail-map .lfacts .none { color: var(--muted); font-style: italic; }
   .grail-map .ground { max-width: 100%; text-align: center; border-radius: 5px; padding: 3px 6px; overflow-x: auto;
     background: radial-gradient(ellipse at 50% 45%, #3a3428 0%, #26221b 55%, #15130f 100%); }
   .grail-map .d2label { display: inline-block; font-family: "AvQest", "Palatino Linotype", Palatino, Georgia, serif; font-size: 15px;
@@ -804,14 +806,16 @@ function renderLooks() {
     return `<div class="ground"><div class="d2label" role="img" aria-label="In-game label: ${c.lines.map(l => l.map(s => s[1]).join("")).join(" / ").replace(/"/g, "")}">${html}</div></div>`;
   };
   const icon = layers => !layers.length ? "" : `<span class="icon" title="Minimap icon">${layers.map(l => [16, 12, 8, 4].map((sz, i) => l[i] ? `<span style="left:${(16 - sz) / 2}px;top:${(16 - sz) / 2}px;width:${sz}px;height:${sz}px;background:${l[i]}"></span>` : "").join("")).join("")}</span>`;
-  // each case as three facts: what the ground shows, the minimap icon, the notification (chat line, drop sound)
-  const cell = c => `<dl class="lfacts"><dt>Display</dt><dd>${c.hidden ? `<span class="none">Hidden</span>` : label(c)}</dd>` +
-    `<dt>Minimap icon</dt><dd>${c.icons.length ? icon(c.icons) : `<span class="none">None</span>`}</dd>` +
-    `<dt>Notification</dt><dd>${c.chat ? (c.sound ? "Chat notification and drop sound" : "Chat notification") : `<span class="none">None</span>`}</dd></dl>`;
+  // each filter level three columns: what the ground shows, the minimap icon, the notification (chat line, drop sound)
+  const cells = (c, k) => [c.hidden ? `<span class="none">Hidden</span>` : label(c), c.icons.length ? icon(c.icons) : `<span class="none">None</span>`,
+    c.chat ? (c.sound ? "Chat notification and drop sound" : "Chat notification") : `<span class="none">None</span>`]
+    .map((h, j) => `<div class="lcell${k && !j ? " l2" : ""}">${h}</div>`).join("");
+  const row = (x, kind) => lv.map((l, k) => cells(x.cells[kind + "|" + l], k)).join("");
   $("gm-looks").innerHTML = L.examples.map(x => `<div class="look"><div><div class="what">${x.what}${x.tier === "Everything else" ? "" : `: ${x.tier}`}</div><div class="names">${x.items.join(", ")} <span class="ver">(${x.base})</span></div></div>
-    <div class="lgrid"><span></span>${lv.map(l => `<span class="hd">Level ${l}: ${L.levels[l]}</span>`).join("")}
-    <span class="rowhd">Not found yet</span>${lv.map(l => cell(x.cells["new|" + l])).join("")}
-    <span class="lsep"></span><span class="rowhd">Found</span>${lv.map(l => cell(x.cells["found|" + l])).join("")}</div></div>`).join("");
+    <div class="lwrap"><div class="lgrid"><span></span>${lv.map((l, k) => `<span class="hd${k ? " l2" : ""}">Filter Level ${l}: ${L.levels[l]}</span>`).join("")}
+    <span></span>${lv.map((l, k) => ["Display", "Minimap Icon", "Notification"].map((h, j) => `<span class="ch${k && !j ? " l2" : ""}">${h}</span>`).join("")).join("")}
+    <span class="rowhd">Not found yet</span>${row(x, "new")}
+    <span class="lsep"></span><span class="rowhd">Found</span>${row(x, "found")}</div></div></div>`).join("");
   $("gm-looks-note").innerHTML = `What to look for: orange outer stars mean you haven't found the item yet; a found one keeps its stars in other colors on the lowest level and loses the Grail look on the strictest. A value tier's look doesn't change. As Erazure - Main draws them, unidentified on the ground outside town. The <a href="https://filtersby-erazure.github.io/PD2-Loot-Filter/tiers/">Unique &amp; Set Tiers</a> page shows every unique and set item's look on every filter level and version.`;
 }
 
