@@ -133,7 +133,10 @@
   .grail-map .btn { font: 600 13.5px var(--body); color: var(--fg); background: var(--chip); border: 1px solid var(--line); border-radius: 6px; padding: 5px 12px; cursor: pointer; margin: 0; }
   .grail-map .btn:hover { background: var(--accent-wash); }
   .grail-map details > summary { cursor: pointer; color: var(--fg); }
-  .grail-map #gm-items td input { width: 16px; height: 16px; accent-color: var(--accent); margin: 0; vertical-align: middle; }
+  /* the Have box: big, and its whole cell ticks it (a miss used to open the item's tall details) */
+  .grail-map #gm-items td input { width: 22px; height: 22px; accent-color: var(--accent); margin: 0; vertical-align: middle; cursor: pointer; }
+  .grail-map #gm-items tbody tr.it td { vertical-align: middle; }
+  .grail-map #gm-items tbody tr.it td.have { cursor: default; text-align: center; padding: 6px 14px; }
   .grail-map #gm-items tr.found td { background: var(--found); }
   .grail-map #gm-items td.name { text-align: left; white-space: normal; min-width: 180px; }
   .grail-map #gm-items td.base { text-align: left; white-space: normal; min-width: 120px; color: var(--muted); }
@@ -1010,7 +1013,7 @@ function renderItems() {
   $("gm-count").textContent = `${list.length} of ${N}`;
   $("gm-items").innerHTML = `<thead><tr><th>Have</th><th class="l">Item</th><th class="l opt">Base</th><th class="opt">Drop level</th><th>No ear</th><th class="opt">Any ear</th><th class="l">${ear ? ear + " ear" : "Best ear"}</th><th class="opt">Best ear ×</th><th>Maps for 90%</th><th class="l">Best farm spot</th></tr></thead><tbody>` +
     list.map(it => { const i = it.i, o = inf.get(it), f = FOUND.has(it.key), b = bf.get(it);
-      return `<tr class="it${f ? " found" : ""}" data-i="${i}" aria-expanded="${OPEN.has(i)}"><td><input type="checkbox" data-k="${it.key.replace(/"/g, "&quot;")}" ${f ? "checked" : ""} aria-label="Have ${it.label.replace(/"/g, "")}"></td>` +
+      return `<tr class="it${f ? " found" : ""}" data-i="${i}" aria-expanded="${OPEN.has(i)}"><td class="have"><input type="checkbox" data-k="${it.key.replace(/"/g, "&quot;")}" ${f ? "checked" : ""} aria-label="Have ${it.label.replace(/"/g, "")}"></td>` +
         `<td class="name"><span class="q" style="background:var(${it.kind === "SET" ? "--q-set" : "--q-unique"})"></span>${it.name}${it.set ? ` <span class="ver">· ${it.set}</span>` : ""}</td>` +
         `<td class="base opt">${it.base}${it.tier ? ` <span class="ver">${it.tier} base</span>` : ""}</td><td class="opt">${it.lvl}</td>` +
         `<td>${oneIn(R.none[i])}</td><td class="opt">${oneIn(R.any[i])}</td><td class="l">${o.be ? `${o.be}: ${oneIn(o.bv)}` : `<span class="ratio">same for every ear</span>`}` +
@@ -1056,6 +1059,7 @@ $("gm-items").addEventListener("change", e => {
 });
 $("gm-items").addEventListener("click", e => {
   if (e.target.closest("input") || e.target.closest("tr.gm-detail")) return;
+  const have = e.target.closest("td.have"); if (have) { have.querySelector("input").click(); return; }  // a click beside the box ticks it
   const tr = e.target.closest("tr.it"); if (!tr) return;
   const i = +tr.dataset.i; if (OPEN.has(i)) OPEN.delete(i); else OPEN.add(i);
   renderItems();
