@@ -16,7 +16,8 @@ afterwards.
 - [Minimal Version](minimal.md): the labels that look different in Minimal, beside Erazure - Main's
 - [Filter Levels](filter-levels.md): what each filter level shows, notifies and hides, at every character level
 - [Unique & Set Tiers](tiers.md): how every unique and set item shows when it drops
-- [Grail Planner](grail.md): how the Corrupted Ears speed up your grail, and which ear to use for the items you're missing
+- [Grail Planner](grail.md): how long your grail takes in maps, which ear to use for the items you're missing, and
+  where to target farm every unique and set item
 - [Non-magical Bases](bases.md): when each non-magical armor and weapon base is tagged, notified or hidden
 - [Magic Items](magic.md): how every magic item shows when it drops, and when it is hidden
 - [Rare Items](rare.md): how every rare item shows when it drops, and when it is hidden

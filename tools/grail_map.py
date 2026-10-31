@@ -31,6 +31,8 @@ A model, nothing measured in game:
   the monster's level. Monster health from the ears' own text.
 - Grail progress: each item drops as a Poisson process, so the items found after n maps are the sum of
   1 - e^(-rate x n) (the page does that part, and the switching-ears schedule).
+- Farm spots: tools/grail_farm.py (every act boss, superunique and special encounter per difficulty, per kill, with
+  the six-item limit; its docstring has those rules).
 """
 import argparse
 import datetime
@@ -52,20 +54,20 @@ BASES = ROOT / "docs" / "pd2-bases.tsv"
 ITEMS_TSV = ROOT / "docs" / "pd2-unique-set-items.tsv"
 BS = "\\"
 
-MFS = [0, 150, 300, 500]
+MFS = [0, 100, 200, 300, 400, 500]
 # The average rare map with one corruption, per tier (density, rarity %): map_exp.py --ranges, 2026-10-16
 RARE_ROLLS = {1: (91, 14), 2: (104, 18), 3: (126, 23)}
 CHAMP_SIZE = 3.0     # a champion pack: the leader + 1-3 more
 MINIONS = 4.5        # a unique monster's minions: 3-6
 BOSS_LEVEL = 90      # a map boss's own level (MonStats Level(H) 89-91)
 QUEST = {"vip", "msf", "hst", "hfh", "qf1", "qf2"}
+# Uniques that are no grail items (the author, 2026-10-30), by UniqueItems index
+NOT_GRAIL = {"Aidans Scar", "Band of Skulls", "Cage of the Unsullied", "Dark Abyss", "Embersworn", "Hadriels Hand",
+             "Itheraels Path", "Overlords Helm", "The Third Eye"}
 CLASS_POOL = {  # the ears' class stats -> the treasure class PD2 drops from for each
     "zon_ear_drops": "Amazon Ear Drop", "sin_ear_drops": "Assassin Ear Drop", "barb_ear_drops": "Barb Ear Drop",
     "map_mon_dropclassitems": "Druid Ear Drop", "necro_ear_drops": "Necro Ear Drop",
     "paladin_ear_drops": "Paladin Ear Drop", "sorc_ear_drops": "Sorc Ear Drop"}
-VERSION_WORDS = {"hit-skill": "on striking", "cast-skill": "when casting", "extra-skele-war": "Skeleton Warrior",
-                 "extra-skele-archer": "Skeleton Archer"}
-ELEMENTS = {"dmg-ltng": "Lightning", "dmg-cold": "Cold", "dmg-fire": "Fire", "dmg-pois": "Poison"}
 
 
 def num(s):
@@ -73,6 +75,30 @@ def num(s):
         return int(float(s))
     except (TypeError, ValueError):
         return 0
+
+
+def cdiv(a, b):
+    """The game's integer division: toward zero."""
+    q = abs(a) // b
+    return q if a >= 0 else -q
+
+
+def game_strings(game_dir):
+    """The game's strings by key, in its order: string.tbl, expansionstring.tbl, then PD2's patchstring.tbl."""
+    import pd2_mpq
+    game_dir, out = Path(game_dir), {}
+    for mpq, tbl in ((game_dir / "d2data.mpq", "string.tbl"), (game_dir / "d2exp.mpq", "expansionstring.tbl"),
+                     (game_dir / "ProjectD2" / "patch_d2.mpq", "patchstring.tbl"),
+                     (game_dir / "ProjectD2" / "pd2data.mpq", "patchstring.tbl")):
+        try:
+            data = pd2_mpq.MPQ(mpq).read(BS.join(["data", "local", "LNG", "ENG", tbl]))
+        except (OSError, KeyError, ValueError):
+            continue
+        own = {}
+        for key, text in pd2_data.read_tbl_list(data):
+            own.setdefault(key, text)  # a key twice in one table: the game finds the first
+        out.update(own)
+    return out
 
 
 # ---------------------------------------------------------------- the game's tables
@@ -94,12 +120,14 @@ class Tables:
         self.tc_order = [r["Treasure Class"] for r in tcs]
         self.ratio = [r for r in excel("ItemRatio.txt") if r.get("Version") == "1"]
         self.uniques, self.sets = excel("UniqueItems.txt"), excel("SetItems.txt")
+        self.set_names = {r["index"]: r["name"] for r in excel("Sets.txt") if r.get("index")}
         self.props = {r["code"]: r for r in excel("Properties.txt") if r.get("code")}
         self.cube = excel("CubeMain.txt")
         self.monstats = {r["Id"]: r for r in excel("MonStats.txt") if r.get("Id")}
         self.levels = {r["Id"]: r for r in excel("Levels.txt") if r.get("Id", "").isdigit()}
         self.champ_chance = num(excel("MonUMod.txt")[0].get("constants")) / 100
         self.strings = pd2_data.read_tbl(mpq.read(BS.join(["data", "local", "LNG", "ENG", "patchstring.tbl"])))
+        self.names = game_strings(game_dir)  # every table's strings: what the game shows for a key
         self.date = datetime.date.fromtimestamp(self.mpq_path.stat().st_mtime)
 
 
@@ -211,10 +239,10 @@ class Drops:
         diff = ilvl - num(it.get("level"))
 
         def chance(ratio, div, mn, mod, dim):
-            b = (ratio - diff // div) << 7
+            b = (ratio - cdiv(diff, div)) << 7
             if mf:
                 d = mf + 100 if mf + 100 <= 110 else dim(mf + 100)
-                b = 12800 * (ratio - diff // div) // d
+                b = cdiv(12800 * (ratio - cdiv(diff, div)), d)
             b = max(b, mn)
             c = b - b * mod // 1024
             return 1.0 if c <= 0 else min(1.0, 128 / c)
@@ -321,41 +349,41 @@ class Maps:
 # ---------------------------------------------------------------- the grail and the ears
 
 def grail_items(t):
+    """The grail: one item per unique or set name. The table rows of one name (Rainbow Facet's eight versions,
+    Akarat's Devotion's two...) are one grail item: any of them finds it (the author, 2026-10-30). Each item keeps
+    its rows (base code, level, weight; a unique's UniqueItems row number) for the drop rolls."""
     names = {(r["kind"], r["index"]): r["name"] for r in pd2_data.read_table(
         "".join(l for l in ITEMS_TSV.read_text(encoding="utf-8").splitlines(True) if not l.startswith("#")))}
     bases = {r["code"]: r for r in pd2_data.read_table(
         "".join(l for l in BASES.read_text(encoding="utf-8").splitlines(True) if not l.startswith("#")))}
-    items = []
-    for r in t.uniques:
+    items, by_name = [], {}
+
+    def add(kind, index, code, lvl, w, uid=None, set_name=""):
+        name = names.get((kind, index), index)
+        it = by_name.get((kind, name))
+        if it is None:
+            b = bases.get(code, {})
+            it = dict(kind=kind, index=index, name=name, code=code, lvl=lvl, w=0, rows=[], uids=[],
+                      base=b.get("name") or t.items[code].get("name", code),
+                      tier=b.get("tier", "") if code not in ("rin", "amu", "jew") and not code.startswith("cm") else "")
+            if set_name:
+                it["set"] = set_name
+            by_name[(kind, name)] = it
+            items.append(it)
+        it["rows"].append((code, lvl, w))
+        it["lvl"], it["w"] = min(it["lvl"], lvl), it["w"] + w
+        if uid is not None:
+            it["uids"].append(uid)
+    for n, r in enumerate(t.uniques):
         code = r.get("code")
-        if not code or r.get("enabled") != "1" or code in QUEST or code.startswith("t5"):
-            continue  # unique maps and quest items are no grail items here
-        items.append(dict(kind="UNI", index=r["index"], name=names.get(("UNI", r["index"]), r["index"]), code=code,
-                          lvl=num(r["lvl"]), w=num(r["rarity"]), row=r))
+        if not code or r.get("enabled") != "1" or code in QUEST or code.startswith("t5") or r["index"] in NOT_GRAIL:
+            continue  # unique maps, quest items and the author's list are no grail items
+        add("UNI", r["index"], code, num(r["lvl"]), num(r["rarity"]), uid=n)
     for r in t.sets:
         if r.get("item"):
-            items.append(dict(kind="SET", index=r["index"], name=names.get(("SET", r["index"]), r["index"]),
-                              code=r["item"], lvl=num(r["lvl"]), w=num(r["rarity"]), set=r.get("set", ""), row=r))
-    by_name = {}
-    for it in items:
-        b = bases.get(it["code"], {})
-        it["base"] = b.get("name") or t.items[it["code"]].get("name", it["code"])
-        it["tier"] = b.get("tier", "") if it["code"] not in ("rin", "amu", "jew") and not it["code"].startswith("cm") else ""
-        by_name.setdefault((it["kind"], it["name"]), []).append(it)
-    props = [f"prop{i}" for i in range(1, 13)]
-    for (kind, name), its in by_name.items():  # one name, two rows: versions, told apart by their properties
-        if len(its) < 2:
-            continue
-        for it in its:
-            mine = [it["row"].get(p) for p in props if it["row"].get(p)]
-            others = {x for o in its if o is not it for x in (o["row"].get(p) for p in props) if x}
-            if any(x in ELEMENTS for x in mine):
-                el = next(ELEMENTS[x] for x in mine if x in ELEMENTS)
-                it["ver"] = el + (", on death" if "death-skill" in mine else ", on level-up")
-            else:
-                it["ver"] = " ".join(VERSION_WORDS.get(x, x) for x in mine if x not in others)
-    for it in items:
-        del it["row"]
+            key = t.set_names.get(r.get("set", ""), r.get("set", ""))
+            add("SET", r["index"], r["item"], num(r["lvl"]), num(r["rarity"]),
+                set_name=t.names.get(key, key))  # the game's name: McAuley's Folly is Sander's Folly
     return items
 
 
@@ -379,40 +407,57 @@ def ears(t):
         assert len(pool) == 1 and pool[0] in t.tcs, (m.group(1), stats)
         desc = t.strings.get(code + "Desc", "")
         hp = re.search(r"\+(\d+)% increased health", desc)
+        # the ear's own words in game: what its pool drops, and what else it does to the map
+        lines = [l.strip() for l in desc.split("\n") if l.strip()]
+        what = next((re.search(r"drop additional (.+)$", l).group(1) for l in lines
+                     if re.search(r"drop additional (?!items)", l)), "")
+        harder = [l for l in lines if not re.search(r"increased health|drop additional|monster rarity|^Cube with", l)]
         out.append(dict(name=m.group(1).capitalize(), code=code, rarity=stats.get("map_glob_monsterrarity", 0),
                         extra=stats.get("map_glob_dropbonus", 0), cls=sum(v for s, v in stats.items() if s in CLASS_POOL),
-                        pool=pool[0], hp=int(hp.group(1)) if hp else 0))
+                        pool=pool[0], hp=int(hp.group(1)) if hp else 0, what=what, harder=harder))
     out.sort(key=lambda e: e["name"])
     assert len(out) == 7, [e["name"] for e in out]
     return out
 
 
-def compute(t, items, ear_list):
-    d, m = Drops(t), Maps(t)
-    idx = {}
+def candidates(items):
+    """{"UNI" / "SET": {base code: [(level, weight, item number)]}}: what a unique or set of the base can come out as
+    (a grail item's every row: its versions add up)."""
     cand = {"UNI": {}, "SET": {}}
     for i, it in enumerate(items):
-        if it["w"] > 0:
-            cand[it["kind"]].setdefault(it["code"], []).append((it["lvl"], it["w"], i))
+        for code, lvl, w in it["rows"]:
+            if w > 0:
+                cand[it["kind"]].setdefault(code, []).append((lvl, w, i))
+    return cand
+
+
+def add_drops(d, cand, dist, lvl, mf, k, out):
+    """Add k drops of `dist` ({(base code, quality modifiers): expected count}) at item level lvl to out (per item)."""
+    for (code, mods), p in dist.items():
+        if not d.grail_kind(code):
+            continue
+        cu = [(w, i) for l, w, i in cand["UNI"].get(code, []) if l <= lvl]
+        cs = [(w, i) for l, w, i in cand["SET"].get(code, []) if l <= lvl]
+        u, s = d.unique_set(code, mods, lvl, mf, bool(cu), bool(cs))
+        for q, cl in ((u, cu), (s, cs)):
+            if q:
+                tot = sum(w for w, _ in cl)
+                for w, i in cl:
+                    out[i] += k * p * q * w / tot
+
+
+def compute(t, items, ear_list):
+    d, m = Drops(t), Maps(t)
+    cand = candidates(items)
     N = len(items)
 
-    def add_drops(dist, lvl, mf, k, out):
-        for (code, mods), p in dist.items():
-            if not d.grail_kind(code):
-                continue
-            cu = [(w, i) for l, w, i in cand["UNI"].get(code, []) if l <= lvl]
-            cs = [(w, i) for l, w, i in cand["SET"].get(code, []) if l <= lvl]
-            u, s = d.unique_set(code, mods, lvl, mf, bool(cu), bool(cs))
-            for q, cl in ((u, cu), (s, cs)):
-                if q:
-                    tot = sum(w for w, _ in cl)
-                    for w, i in cl:
-                        out[i] += k * p * q * w / tot
+    def add(dist, lvl, mf, k, out):
+        add_drops(d, cand, dist, lvl, mf, k, out)
 
     def drop_rates(kills, extra, mf):
         out = [0.0] * N
         for (kind, tc, lvl), n in kills.items():
-            add_drops(d.expand(d.upgrade(tc, lvl)), lvl, mf, n * (1 if kind == "minion" else 1 + extra / 100), out)
+            add(d.expand(d.upgrade(tc, lvl)), lvl, mf, n * (1 if kind == "minion" else 1 + extra / 100), out)
         return out
 
     configs = sorted({(e["rarity"], e["extra"]) for e in ear_list})
@@ -433,7 +478,7 @@ def compute(t, items, ear_list):
                             calls[lvl] = calls.get(lvl, 0) + n * e["cls"] / 100
                     out = [0.0] * N
                     for lvl, n in calls.items():
-                        add_drops(d.expand(e["pool"]), lvl, mf, n, out)
+                        add(d.expand(e["pool"]), lvl, mf, n, out)
                     entry["cls"][e["name"]] = out
                 rates[f"{tier}|{mt}|{mf}"] = entry
     return rates, configs, kills
@@ -471,13 +516,14 @@ def filter_looks():
     return {"levels": {str(lv): names[lv].split(" - ")[0] for lv in LOOK_LEVELS}, "examples": out}
 
 
-def page_data(t, items, ear_list, rates, configs, kills):
+def page_data(t, items, ear_list, rates, configs, kills, farm):
     per1000 = lambda x: float("%.3g" % (x * 1000))
     data = {"date": t.date.strftime("%d %B %Y").lstrip("0"), "mfs": MFS,
             "ears": [dict(name=e["name"], rarity=e["rarity"], extra=e["extra"], cls=e["cls"], hp=e["hp"],
-                          config=configs.index((e["rarity"], e["extra"]))) for e in ear_list],
-            "items": [{k: it[k] for k in ("kind", "index", "name", "base", "tier", "lvl", "w", "set", "ver") if it.get(k)}
-                      for it in items], "rates": {}, "kills": kills, "looks": filter_looks()}
+                          config=configs.index((e["rarity"], e["extra"])), what=e["what"], harder=e["harder"],
+                          nounique=e.get("nounique", 0)) for e in ear_list],
+            "items": [{k: it[k] for k in ("kind", "index", "name", "base", "tier", "lvl", "w", "set") if it.get(k)}
+                      for it in items], "rates": {}, "kills": kills, "looks": filter_looks(), "farm": farm}
     for key, v in rates.items():
         data["rates"][key] = {"none": [per1000(x) for x in v["none"]],
                               "common": [[per1000(x) for x in c] for c in v["common"]],
@@ -528,7 +574,21 @@ def main():
     assert len({(e["rarity"], e["extra"], e["cls"], e["hp"]) for e in ear_list}) == 1, \
         "the ears no longer share their values: the page's text assumes they do"
     rates, configs, kills = compute(t, items, ear_list)
-    data = page_data(t, items, ear_list, rates, configs, kills)
+    import grail_farm as GF
+    strings = GF.prepare(t, args.game_dir)
+    d = Drops(t)
+    cand = candidates(items)
+    for e in ear_list:  # the share of an ear's class items on bases no grail unique can roll on (wasted unique rolls)
+        dist = d.expand(e["pool"])
+        e["nounique"] = round(sum(v for (c, _), v in dist.items() if c not in cand["UNI"]) / sum(dist.values()), 2)
+    spots = GF.catalogue(t, d, strings)
+    farm_rates = GF.spot_rates(t, d, items, spots, MFS)
+    missing = [it["name"] for i, it in enumerate(items)
+               if not any(r["named"][MFS[-1]][i] > 0 for r in farm_rates.values())]
+    assert not missing, f"grail items no farm spot drops: {missing}"
+    farm = GF.pack(items, spots, farm_rates, MFS, GF.gheed_offers(t))
+    farm["gamble"] = GF.pack_gamble(t, items, GF.gamble_rates(t, d, items))
+    data = page_data(t, items, ear_list, rates, configs, kills, farm)
     page = DOC_HEAD + TEMPLATE.read_text(encoding="utf-8") + "\n</body>\n</html>\n"
     page = page.replace("/*__DATA__*/null", json.dumps(data, ensure_ascii=False, separators=(",", ":")))
     PAGE.write_text(page, encoding="utf-8", newline="\n")

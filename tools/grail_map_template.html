@@ -8,10 +8,10 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Source+Sans+3:wght@400;600;700&display=swap">
 <!-- grail-map:css -->
 <style>
-  /* Layout: the settings bar stays at the top while scrolling (under the website's header on the website) and every
-     number below follows it: the short answer, the grail curve, what an ear does, each ear, the planner, every item,
-     what ears can't do, the settings table, how it was modelled. Every rule is scoped to .grail-map, so the website's
-     theme and this page leave each other alone. Dark by default; light when the website (Material) is light. */
+  /* Layout: the bar stays at the top while scrolling (under the website's header on the website): the tabs, one per
+     feature (Overview, Filter Display, Your Grail, Every Item, Target Farming, Corrupted Ears, How It's Worked Out), and the settings every number follows. A link to a section (#gm-farm) opens its tab. Every rule is
+     scoped to .grail-map, so the website's theme and this page leave each other alone. Dark by default; light when the
+     website (Material) is light. */
   .grail-map {
     --bg: #151412; --panel: #1f1d1a; --fg: #ece7de; --muted: #a59e91; --line: #36322c; --axis: #4a453d; --chip: #2a2723;
     --accent: #d8b45e; --accent-wash: #2d2719; --found: #1f2a1c; --good: #7cc474;
@@ -62,6 +62,36 @@
   .grail-map .bar { position: sticky; top: var(--top); z-index: 3; background: var(--panel); border-block: 1px solid var(--line); padding-block: 8px; }
   .grail-map .bar .wrap { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; }
   .md-content .grail-map .bar .wrap { padding-inline: 10px; }
+  /* Tabs, one per feature, in the bar so they stay at hand while scrolling; a phone scrolls them sideways, and a fade
+     at an edge shows there are more tabs that way */
+  .grail-map .bar .tabs { position: relative; flex-wrap: nowrap; gap: 2px; overflow-x: auto; scrollbar-width: none; margin-bottom: 8px; border-bottom: 1px solid var(--line); }
+  .grail-map .bar .tabs::-webkit-scrollbar { display: none; }
+  .grail-map .bar .tabs[data-r] { -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 44px), transparent); mask-image: linear-gradient(90deg, #000 calc(100% - 44px), transparent); }
+  .grail-map .bar .tabs[data-l] { -webkit-mask-image: linear-gradient(90deg, transparent, #000 44px); mask-image: linear-gradient(90deg, transparent, #000 44px); }
+  .grail-map .bar .tabs[data-l][data-r] { -webkit-mask-image: linear-gradient(90deg, transparent, #000 44px, #000 calc(100% - 44px), transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 44px, #000 calc(100% - 44px), transparent); }
+  /* Phones: the settings fold into one line (tap it to change them), so the bar keeps to two short rows */
+  .grail-map .setsum { display: none; }
+  @media (max-width: 700px) {
+    .grail-map .bar { padding-block: 2px 4px; }
+    .grail-map .bar .tabs { margin-bottom: 2px; }
+    .grail-map .tabs button { padding: 6px 10px 8px; font-size: 13.5px; }
+    .grail-map .setsum { display: flex; align-items: baseline; gap: 8px; width: 100%; font: 600 13.5px var(--body); color: var(--fg); background: transparent;
+      border: 0; padding: 5px 16px 3px; margin: 0; cursor: pointer; text-align: left; }
+    .md-content .grail-map .setsum { padding-inline: 10px; }
+    .grail-map .setsum .k { font-size: 11.5px; font-weight: 400; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+    .grail-map .setsum .c { margin-left: auto; font-weight: 400; color: var(--accent); white-space: nowrap; }
+    .grail-map .setsum .v { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .grail-map .bar:not(.open) .sets { display: none; }
+    .grail-map .bar .sets { padding-block: 6px 4px; }
+  }
+  @media (max-width: 400px) { .grail-map .setsum .k { display: none; } }
+  .grail-map .tabs button { font: 600 14px var(--body); color: var(--muted); background: transparent; border: 0; border-bottom: 2px solid transparent;
+    padding: 4px 12px 8px; margin: 0 0 -1px; cursor: pointer; white-space: nowrap; }
+  .grail-map .tabs button:hover { color: var(--fg); }
+  .grail-map .tabs button[aria-selected="true"] { color: var(--fg); border-bottom-color: var(--accent); }
+  .grail-map section[data-tab] { scroll-margin-top: calc(var(--top) + var(--bar, 0px) + 8px); }  /* a jump lands below the bar */
+  .grail-map section[hidden] { display: none; }  /* the other tabs' sections (the website's theme has no [hidden] rule of this weight) */
   .grail-map .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; background: var(--bg); }
   .grail-map .seg button { font: 600 13.5px var(--body); color: var(--muted); background: transparent; border: 0; padding: 5px 11px; cursor: pointer; margin: 0; }
   .grail-map .seg button + button { border-left: 1px solid var(--line); }
@@ -84,6 +114,7 @@
   .grail-map .ear ol { margin: 0; padding-left: 18px; font-size: 14px; display: grid; gap: 2px; }
   .grail-map .ear ol li { margin: 0; }
   .grail-map .ear ol span { color: var(--muted); }
+  .grail-map .ear .btn { justify-self: start; }
   .grail-map svg { display: block; width: 100%; height: auto; overflow: visible; }
   .grail-map svg text { font-family: var(--body); fill: var(--muted); }
   .grail-map .legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; color: var(--muted); }
@@ -110,17 +141,22 @@
   .grail-map code { font-size: 13px; background: var(--chip); padding: 1px 4px; border-radius: 3px; color: var(--fg); }
   .grail-map footer { padding-block: 22px 40px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
   /* The filter's looks: the label as the game draws it (as on the Unique & Set Tiers page) and the minimap icon */
-  .grail-map .looks { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
-  .grail-map .look { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 13px; display: grid; gap: 10px; align-content: start; }
-  .grail-map .look .what { font-size: 13px; color: var(--muted); font-weight: 600; }
-  .grail-map .look .names { font-size: 14px; color: var(--fg); }
-  .grail-map .lgrid { display: grid; grid-template-columns: 110px minmax(0, 1fr) minmax(0, 1fr); gap: 8px 14px; align-items: center; }
-  @media (max-width: 640px) { .grail-map .lgrid { grid-template-columns: 80px minmax(0, 1fr) minmax(0, 1fr); gap: 6px 8px; }
+  .grail-map .looks { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 760px), 1fr)); gap: 12px; }
+  .grail-map .look { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 14px 16px; display: grid; gap: 12px; align-content: start; }
+  .grail-map .look .what { font-size: 12px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
+  .grail-map .look .names { font-size: 15px; color: var(--fg); font-weight: 600; margin-top: 2px; }
+  .grail-map .look .names .ver { font-weight: 400; }
+  /* the two levels side by side at a set width (not spread over the card), lined up from one card to the next */
+  .grail-map .lgrid { display: grid; grid-template-columns: 110px repeat(2, minmax(0, 320px)); justify-content: start; gap: 10px 28px; align-items: center; }
+  @media (max-width: 640px) { .grail-map .lgrid { grid-template-columns: 80px minmax(0, 1fr) minmax(0, 1fr); gap: 8px 10px; }
                               .grail-map .d2label { font-size: 13px; } }
   .grail-map .lgrid .hd { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
   .grail-map .lgrid .rowhd { font-size: 13px; color: var(--fg); font-weight: 600; }
-  .grail-map .lcell { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; min-width: 0; }
-  .grail-map .lmeta { display: flex; gap: 8px; align-items: center; font-size: 12px; color: var(--muted); }
+  .grail-map .lgrid .lsep { grid-column: 1 / -1; border-top: 1px solid var(--line); }
+  .grail-map .lfacts { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 7px 12px; align-items: center; margin: 0; }
+  .grail-map .lfacts dt { font-size: 12px; color: var(--muted); margin: 0; font-weight: 400; }
+  .grail-map .lfacts dd { margin: 0; min-width: 0; font-size: 13.5px; color: var(--fg); display: flex; align-items: center; }
+  .grail-map .lfacts .none { color: var(--muted); font-style: italic; }
   .grail-map .ground { max-width: 100%; text-align: center; border-radius: 5px; padding: 3px 6px; overflow-x: auto;
     background: radial-gradient(ellipse at 50% 45%, #3a3428 0%, #26221b 55%, #15130f 100%); }
   .grail-map .d2label { display: inline-block; font-family: "AvQest", "Palatino Linotype", Palatino, Georgia, serif; font-size: 15px;
@@ -135,43 +171,104 @@
   .grail-map .c-LIGHT_GRAY { color: #a8a8a8; }
   .grail-map .icon { position: relative; width: 16px; height: 16px; background: #0c0b09; border-radius: 2px; flex: none; }
   .grail-map .icon span { position: absolute; }
+  /* Farm spots: an item row opens to its best spots per group */
+  .grail-map #gm-items tbody tr.it { cursor: pointer; }
+  .grail-map #gm-items tbody tr.it:hover td { background: var(--accent-wash); }
+  .grail-map #gm-items tbody tr.it.found:hover td { background: var(--found); }
+  .grail-map #gm-items td.farm { text-align: left; white-space: normal; min-width: 170px; }
+  .grail-map #gm-items td.farm .where { color: var(--muted); font-size: 12.5px; }
+  .grail-map #gm-items td.farm .tw { color: var(--muted); font-size: 12px; margin-left: 4px; }
+  .grail-map #gm-items tr.gm-detail td { background: var(--bg); white-space: normal; text-align: left; padding: 0; }
+  /* an item's farm spots: a strip (its best bet, maps and ears, Gheed, where it can't drop), then one column per group of
+     spots, each spot a row: rank and name, its rate on the right; place, level and where it stands under them. It keeps
+     to the part of the table in view (--vis), so on a phone it doesn't run off the screen with the wide table */
+  .grail-map .fdetail { display: grid; gap: 14px; position: sticky; left: 0; width: min(100%, var(--vis, 100%)); padding: 12px 14px 16px; }
+  .grail-map .fstrip { display: grid; gap: 4px; font-size: 13.5px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+  .grail-map .fstrip b { font-weight: 600; }
+  .grail-map .fstrip .meta { color: var(--muted); }
+  .grail-map .fgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr)); gap: 16px 26px; }
+  .grail-map .fgrid h4 { font: 600 12px var(--body); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 2px; }
+  .grail-map .fs { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 12px; padding: 6px 0; }
+  .grail-map .fs + .fs { border-top: 1px solid var(--line); }
+  .grail-map .fs-n { font-size: 13.5px; color: var(--fg); font-weight: 600; }
+  .grail-map .fs-r { display: inline-block; min-width: 20px; color: var(--muted); font-weight: 400; }
+  .grail-map .fs-v { text-align: right; font-size: 13.5px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .grail-map .fs-m { color: var(--muted); font-size: 12.5px; }
+  .grail-map .fs-m.l { grid-column: 1 / -1; padding-left: 20px; }
+  .grail-map .fs-h { font-size: 11.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin-top: 8px; }
+  .grail-map td.top { text-align: left; white-space: normal; min-width: 220px; font-size: 13px; }
+  .grail-map .faq { display: grid; gap: 6px; max-width: 80ch; }
+  .grail-map .faq h3 { font-size: 15.5px; margin-top: 12px; }
+  .grail-map .faq p { color: var(--fg); font-size: 14.5px; max-width: none; }
+  /* Your Grail: the plan, a numbered step per kind of best bet; the farm step a card per spot */
+  .grail-map ol.plan { list-style: none; margin: 0; padding: 0; display: grid; gap: 24px; counter-reset: step; }
+  .grail-map ol.plan > li { counter-increment: step; display: grid; gap: 9px; margin: 0; min-width: 0; }
+  .grail-map ol.plan > li > h3 { font-size: 16.5px; display: flex; align-items: center; gap: 10px; }
+  .grail-map ol.plan > li > h3::before { content: counter(step); flex: none; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center;
+    background: var(--accent-wash); border: 1px solid var(--accent); color: var(--fg); font: 700 13.5px var(--body); }
+  .grail-map .spots { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr)); gap: 12px; }
+  .grail-map .spot { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 12px 14px; display: grid; gap: 7px; align-content: start; }
+  .grail-map .spot h4 { font: 600 15px/1.3 var(--body); margin: 0; color: var(--fg); letter-spacing: 0; }
+  .grail-map .spot .meta { font-size: 12.5px; color: var(--muted); }
+  .grail-map .spot .btn { justify-self: start; }
+  .grail-map .spot ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; font-size: 13.5px; }
+  .grail-map .spot ul li { margin: 0; display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+  .grail-map .spot ul li span { color: var(--muted); font-size: 12.5px; white-space: nowrap; text-align: right; font-variant-numeric: tabular-nums; }
+  .grail-map .slowlist { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 430px), 1fr)); gap: 0 28px; }
+  .grail-map .slowlist .fs { border-bottom: 1px solid var(--line); }
+  .grail-map .slowlist .fs + .fs { border-top: 0; }
+  .grail-map .slowlist .fs-m.l { padding-left: 0; }
+  .grail-map .bet { display: inline-block; font-size: 11px; font-weight: 600; line-height: 1.35; color: var(--good); border: 1px solid currentColor;
+    border-radius: 3px; padding: 0 4px; margin-left: 5px; vertical-align: 1px; white-space: nowrap; }
 </style>
 <div class="grail-map">
 <!-- grail-map:start -->
 <div class="wrap">
   <h1 class="gm-title">Grail Planner</h1>
   <p class="gm-lede">The holy grail is finding every unique and set item at least once. How the filter shows the items you haven't
-  found yet, how long the grail takes in T1-T3 maps, what makes it faster, and which items will take the longest.</p>
+  found yet, how long the grail takes in T1-T3 maps, what makes it faster, which items will take the longest, and where to
+  target farm each item.</p>
 </div>
 
-<div class="bar" role="group" aria-label="Settings">
- <div class="wrap">
+<div class="bar" id="gm-bar" role="group" aria-label="Settings">
+ <div class="wrap tabs" role="tablist" aria-label="Grail Planner">
+  <button type="button" role="tab" data-tab="overview" aria-selected="true">Overview</button>
+  <button type="button" role="tab" data-tab="filter" aria-selected="false">Filter Display</button>
+  <button type="button" role="tab" data-tab="planner" aria-selected="false">Your Grail</button>
+  <button type="button" role="tab" data-tab="faq" aria-selected="false">FAQ</button>
+  <button type="button" role="tab" data-tab="items" aria-selected="false">Every Item</button>
+  <button type="button" role="tab" data-tab="farm" aria-selected="false">Target Farming</button>
+  <button type="button" role="tab" data-tab="ears" aria-selected="false">Corrupted Ears</button>
+  <button type="button" role="tab" data-tab="method" aria-selected="false">How It's Worked Out</button>
+ </div>
+ <button type="button" class="setsum" id="gm-setsum" aria-expanded="false" aria-controls="gm-sets"><span class="k">Settings</span><span class="v"></span><span class="c">Change</span></button>
+ <div class="wrap sets" id="gm-sets">
   <div><span class="ctl-label">Tier</span><span class="seg" data-ctl="tier"><button type="button" data-v="all" aria-pressed="true">All</button><button type="button" data-v="1" aria-pressed="false">T1</button><button type="button" data-v="2" aria-pressed="false">T2</button><button type="button" data-v="3" aria-pressed="false">T3</button></span></div>
   <div><span class="ctl-label">Maps</span><span class="seg" data-ctl="mt"><button type="button" data-v="normal" aria-pressed="true">Non-magical</button><button type="button" data-v="rare" aria-pressed="false">Rare</button></span></div>
-  <div><span class="ctl-label">Magic find</span><span class="seg" data-ctl="mf"><button type="button" data-v="0" aria-pressed="false">0%</button><button type="button" data-v="150" aria-pressed="false">150%</button><button type="button" data-v="300" aria-pressed="true">300%</button><button type="button" data-v="500" aria-pressed="false">500%</button></span></div>
+  <div><span class="ctl-label">Magic find</span><span class="seg" data-ctl="mf" id="gm-mf"></span></div>
  </div>
 </div>
 
 <div class="wrap">
-<section id="gm-answer">
+<section id="gm-answer" data-tab="overview">
   <h2>Your grail in maps</h2>
   <p class="note" id="gm-answer-note"></p>
   <div class="cards" id="gm-cards"></div>
   <ul class="find" id="gm-findings"></ul>
 </section>
 
-<section id="gm-filter">
+<section id="gm-filter" data-tab="filter" hidden>
   <h2>How the filter shows your grail</h2>
   <ul class="find" id="gm-filter-list"></ul>
   <div class="looks" id="gm-looks"></div>
   <p class="small" id="gm-looks-note"></p>
 </section>
 
-<section id="gm-speed">
+<section id="gm-speed" data-tab="overview">
   <h2>How fast the grail fills</h2>
   <p class="note">Grail items found after a number of full map clears, counting only the items T1-T3 map monsters can drop:
   without a Corrupted Ear, with one of the seven ears (the band, from the best to the worst), and switching ears, which means
-  putting on, before each map, the ear expected to find the most items you don't have yet.</p>
+  using, on each map, the ear expected to find the most items you don't have yet.</p>
   <div class="panel">
     <div class="legend" id="gm-leg"></div>
     <div id="gm-curve"></div>
@@ -179,39 +276,93 @@
   <div class="tbl panel"><table class="gm-table" id="gm-t-speed"></table></div>
 </section>
 
-<section id="gm-planner">
-  <h2>Your grail</h2>
-  <p class="note">Tick the items you have under Every grail item, or paste them. This shows what's left, about how many maps it
-  should take, and which ear finds your missing items fastest. Your ticks are kept in this browser only.</p>
+<section id="gm-planner" data-tab="planner" hidden>
+  <h2>Your Grail</h2>
+  <p class="note">Tick the items you have under <a href="#gm-list">Every Item</a>, or paste a list (Copy or paste your list, at the
+  end of this tab). From your ticks and the bar's settings this is your plan: the Corrupted Ear to run, the items a kill finds
+  faster than a map and where to farm them, and the slowest ones. Each missing item gets its best bet. Your ticks are kept in this
+  browser only.</p>
   <div class="cards" id="gm-plan-cards"></div>
+  <div class="tools"><select class="gm-fixed" aria-label="Farm spots"><option value="">Any farm spot</option><option value="fixed">Fixed spots only</option></select></div>
+  <ol class="plan" id="gm-plan"></ol>
+  <h3>Every ear for your missing items</h3>
+  <p class="note">The best ear depends on the goal: the most of your missing items in your next 100 maps, 90% of them, or all of them.</p>
   <div class="tbl panel"><table class="gm-table" id="gm-t-plan"></table></div>
   <details class="panel">
     <summary><b>Copy or paste your list</b></summary>
-    <p class="note">One item per line, as the list names it (a version in brackets: <code>Rainbow Facet (Cold, on death)</code>).
-    Pasting replaces your ticks.</p>
+    <ul class="find small">
+      <li><b>Keep or move your ticks:</b> "Show my list" writes the items you've ticked here, one per line, and "Copy" copies them.
+        Paste that list into this box on another browser or device and press "Use pasted list" to get the same ticks there.</li>
+      <li><b>Bring a list from elsewhere:</b> a list from a spreadsheet, another grail tracker or typed by hand works too: one item
+        per line (<code>Harlequin Crest</code>, <code>Rainbow Facet</code>). Capitals, apostrophes, bullets and ticks such as
+        <code>[x]</code> don't matter, and a version in brackets counts as the item (<code>Rainbow Facet (Cold, on death)</code>).</li>
+      <li>"Use pasted list" replaces your ticks and names the lines it didn't recognise.</li>
+    </ul>
     <textarea id="gm-io" spellcheck="false" aria-label="Your items, one per line"></textarea>
     <div class="tools"><button type="button" class="btn" id="gm-export">Show my list</button><button type="button" class="btn" id="gm-copy">Copy</button>
     <button type="button" class="btn" id="gm-import">Use pasted list</button><button type="button" class="btn" id="gm-clear">Clear all ticks</button><span class="small" id="gm-io-msg"></span></div>
   </details>
 </section>
 
-<section id="gm-list">
+<section id="gm-faq" data-tab="faq" hidden>
+  <h2>Questions and answers</h2>
+  <p class="note">What players ask first about the grail, the Corrupted Ears and this page. The numbers in the answers follow the bar.</p>
+  <div class="faq" id="gm-faq-list"></div>
+</section>
+
+<section id="gm-list" data-tab="items" hidden>
   <h2>Every grail item</h2>
-  <p class="note">How often each item drops in one full map clear, as one in so many maps. "Every ear" is the part all ears give
-  (the extra drop and rarity); the best ear adds its class pool. "90% within" is the number of maps for a 90% chance to see it with
-  the best ear.</p>
+  <p class="note">How often each item drops in one full map clear, as one in so many maps: without an ear ("No ear"), with any
+  Corrupted Ear ("Any ear": the extra drop chance and the extra elite packs every ear gives) and with the ear whose pool has the
+  item's base ("Best ear", the next ears under it). "Best ear ×" is how many times more often the best ear finds it; "Maps for 90%"
+  the maps for a 90% chance to see it with the best ear. "Drop level" is the lowest monster level that can drop it (not the level
+  to wear it). "Best farm spot" is the boss or superunique that drops it most often per kill, in any difficulty; "beats maps"
+  means one kill there finds it at least as often as a whole map with its best ear, so target farming is its best bet. Click a
+  row for its best bet, its best spots in each difficulty, in the Corrupted Zones and among the ubers and events, and Gheed's
+  map event.</p>
   <div class="tools">
     <input type="search" id="gm-q" placeholder="Search item, base or set" aria-label="Search items">
     <select id="gm-kind" aria-label="Kind"><option value="">Uniques and sets</option><option value="UNI">Uniques</option><option value="SET">Sets</option></select>
-    <select id="gm-show" aria-label="Show"><option value="">All items</option><option value="missing">Missing only</option><option value="boost">An ear's pool helps</option><option value="nodrop">Not from map monsters</option></select>
+    <select id="gm-show" aria-label="Show"><option value="">All items</option><option value="missing">Missing only</option><option value="boost">An ear's pool has it</option><option value="nodrop">Not from map monsters</option><option value="bet">Best bet: target farm</option></select>
     <select id="gm-ear" aria-label="Ear"><option value="">Best ear</option></select>
-    <select id="gm-sort" aria-label="Sort"><option value="rare">Rarest first</option><option value="name">Name</option><option value="gain">Biggest ear gain</option><option value="lvl">Item level</option></select>
+    <select id="gm-sort" aria-label="Sort"><option value="rare">Rarest first</option><option value="farm">Rarest at its best farm spot</option><option value="name">Name</option><option value="gain">Most raised by an ear</option><option value="lvl">Drop level</option></select>
+    <select class="gm-fixed" aria-label="Farm spots"><option value="">Any farm spot</option><option value="fixed">Fixed spots only</option></select>
     <span class="count" id="gm-count"></span>
   </div>
   <div class="tbl panel"><table class="gm-table" id="gm-items"></table></div>
 </section>
 
-<section id="gm-levers">
+<section id="gm-farm" data-tab="farm" hidden>
+  <h2>Target Farming</h2>
+  <p class="note">Maps find the most grail items over time. For an item maps rarely drop, killing one boss or superunique again and
+  again can be the better bet. Here is every act boss, superunique and special encounter in each difficulty, with the grail items
+  it drops per kill (per run, vault or shop where it says so).</p>
+  <ul class="find" id="gm-farm-list"></ul>
+  <div class="tools">
+    <select id="gm-fgroup" aria-label="Where"></select>
+    <select id="gm-fsort" aria-label="Sort"><option value="best">Best spot for the most items</option><option value="drops">Most grail drops</option></select>
+    <select class="gm-fixed" aria-label="Farm spots"><option value="">Any farm spot</option><option value="fixed">Fixed spots only</option></select>
+    <span class="count" id="gm-fcount"></span>
+  </div>
+  <div class="tbl panel"><table class="gm-table" id="gm-t-farm"></table></div>
+  <div class="tools"><button type="button" class="btn" id="gm-fmore">Show every spot</button></div>
+</section>
+
+<section id="gm-gamble" data-tab="farm" hidden>
+  <h2>Gambling</h2>
+  <p class="note">Gambling buys an unidentified item of a base you pick, for gold. Each one has a 1 in 2,000 chance to be unique
+  and 1 in 1,000 to be a set item, whatever your magic find, and it counts for your grail like a drop. The table ranks the gamble
+  bases by the gold they take per new grail item: for your missing items once you tick some, else for a fresh grail.</p>
+  <ul class="find" id="gm-gamble-list"></ul>
+  <div class="tools">
+    <label class="small" for="gm-clvl">Character level</label><select id="gm-clvl"></select>
+    <span class="count" id="gm-gcount"></span>
+  </div>
+  <div class="tbl panel"><table class="gm-table" id="gm-t-gamble"></table></div>
+  <div class="tools"><button type="button" class="btn" id="gm-gmore">Show every base</button></div>
+</section>
+
+<section id="gm-levers" data-tab="overview">
   <h2>What makes it faster</h2>
   <ul class="find" id="gm-lever-list"></ul>
   <p class="note">Maps for 90% of the map grail, without an ear and with the best single ear, at every setting.</p>
@@ -219,34 +370,45 @@
   <ul class="find small" id="gm-notes"></ul>
 </section>
 
-<section id="gm-how">
+<section id="gm-how" data-tab="ears" hidden>
   <h2>What a Corrupted Ear does</h2>
   <ul class="find" id="gm-how-list"></ul>
 </section>
 
-<section id="gm-ears">
+<section id="gm-ears" data-tab="ears" hidden>
   <h2>Each ear</h2>
-  <p class="note">What each ear's class pool adds. "Grail items" counts the uniques and sets its pool can make; the list shows the
-  items it raises most over a map without an ear, and how often each drops with that ear.</p>
+  <p class="note">What each ear's pool adds. The count is the uniques and sets its pool can make; the list shows the
+  items it raises most over a map without an ear, and how often each drops with that ear. "Show all" lists every grail item
+  in the ear's pool.</p>
   <div class="ears" id="gm-earcards"></div>
 </section>
 
-<section id="gm-cant">
-  <h2>What maps can't give you</h2>
+<section id="gm-cant" data-tab="overview">
+  <h2>Hard to find in maps</h2>
+  <h3>Never from map monsters</h3>
   <p class="note" id="gm-cant-note"></p>
   <div class="tbl panel"><table class="gm-table" id="gm-t-nodrop"></table></div>
-  <p class="note">The slowest items in maps, even with the best ear. For most of them no ear's pool has the base, so only the extra
-  drop helps; maps are a poor place to look for them.</p>
+  <h3>The slowest in maps</h3>
+  <p class="note">The items that take the most maps, even with the best ear, and their best farm spot. For most of them no ear's pool
+  has the base, so only the extra drop helps. A farm spot counts kills, not maps: whether it beats maps depends on how fast you
+  kill it and how fast you clear a map.</p>
   <div class="tbl panel"><table class="gm-table" id="gm-t-slow"></table></div>
 </section>
 
-<section id="gm-method">
+<section id="gm-method" data-tab="method" hidden>
   <h2>How this was worked out</h2>
   <ul class="find small">
-    <li><b>The grail:</b> every enabled unique and every set item in the game's tables, unique maps and quest items left out. Items
-      the table lists in several versions (Rainbow Facet eight times; Akarat's Devotion, Cyclopean Roar and Arm of King Leoric
-      twice) count once per version.</li>
-    <li><b>Drops:</b> the game's own treasure classes and quality rules: each base's chance to be unique or set at the monster's
+    <li><b>The grail:</b> every unique and set item in the game, unique maps, quest items and nine uniques
+      that don't count for the grail left out (Itherael's Path, Overlord's Helm, Dark Abyss, Aidan's Scar, Hadriel's Hand, Band of
+      Skulls, Cage of the Unsullied, The Third Eye and Embersworn). An item that comes in several versions (Rainbow Facet eight
+      times; Akarat's Devotion, Cyclopean Roar and Arm of King Leoric twice) is one grail item: any of its versions finds it, so
+      its chances are those of all its versions together.</li>
+    <li><b>Spots:</b> "fixed" means the monster stands in the same place every game: its area is one of the game's preset maps
+      (the Cathedral, Tower Cellar Level 5, Nihlathak's Temple...), or laid out the same way every game (Travincal, the Chaos
+      Sanctuary, the Bloody Foothills), or it waits in a piece the game always puts at the same edge of its area (Eldritch by the Bloody Foothills, Stormtree in the Flayer Jungle at its border with Lower Kurast). The others stand in a piece of the area the
+      game places anywhere in it. "Areas from a waypoint" counts the areas to walk through from the nearest waypoint (towns
+      have one; portals count as one step).</li>
+    <li><b>Drops:</b> each monster's drops and their quality as the game rolls them: each base's chance to be unique or set at the monster's
       level (class items have their own, better chances), magic find with its diminishing returns, and a unique picked among the
       base's uniques by their weight. A unique roll on a base with no unique becomes a rare, a set roll with no set item magic.</li>
     <li><b>Maps:</b> full clears, averaged over the maps of a tier, from the map model behind the filter's experience tags
@@ -254,8 +416,37 @@
       per map.</li>
     <li><b>Grail progress:</b> each item drops at random at its own rate, so the items found after n maps add up item by item.
       "Switching" works from the expected progress; with your real ticks the planner does better.</li>
-    <li><b>Left out:</b> T4 dungeons, unique maps, bosses and events, and PD2's special drops (sigils, Corrupted Zone shards),
-      which the extra drop does not repeat.</li>
+    <li><b>Best bet:</b> an item's best bet compares one kill with one map: target farming its best boss or superunique (any
+      difficulty; Corrupted Zones, ubers and events left out) when one kill there finds it at least as often as a whole map with the
+      item's best ear, maps otherwise. That's as if a kill took as long as a map; a quicker kill makes farming better still. Your
+      Grail's plan sorts your missing items by it, and splits the maps' ones by their chance in your next 100 maps with the ear it
+      names: an even chance or better, or the slowest.</li>
+    <li><b>Farm spots:</b> one kill of each act boss and superunique in each difficulty, solo: the monster's own drop at its own
+      level. The drops of the minions around a superunique are counted apart, as "with its minions". In Normal difficulty a monster
+      has a fixed level of its own; in Nightmare and Hell it takes the area's level, but bosses keep theirs; superuniques and their
+      minions are 3 levels higher. A kill makes at most six items, gold and potions included, so Duriel's many picks always end
+      at six. A boss drops its quest loot only while the quest is open; farming kills drop the usual loot.</li>
+    <li><b>Corrupted Zones:</b> in Hell games made with Baal's quest done, one group of areas at a time has area level 85, so its
+      superuniques are level 88 (bosses keep their own level).</li>
+    <li><b>Ubers and events:</b> Lilith, Uber Duriel and Uber Izual drop their own loot at level 110. Diablo Clone drops
+      Annihilus every kill; Uber Tristram drops the Hellfire Torch once a run, when its last boss dies (the three bosses drop
+      nothing else). The Uber Ancients: before touching the altar you switch on the ancients you want to fight at their
+      statues, one, two or all three; the altar then drops 20 to 29 items for one ancient, 32 to 47 for two and 44 to 65 for
+      three, at item level 90. Lucion's vault has 10 chests at every tier (0, 1 and 2, easiest first); each drops up to 3
+      items, then 2, 3 or 4 more from better loot on tier 0, 1 or 2, so a harder tier gives more items, not better ones. The
+      items' level is the level of the character who opens the chest (95 here), and the numbers are for the whole vault.</li>
+    <li><b>Gheed's map event:</b> each of his 5 offers is a random unique: any unique but jewels and the few that never drop. One
+      that needs character level 60 or more is turned down (level − 59)% of the time and another picked; in one shop in 200, one
+      offer is a special ring instead.</li>
+    <li><b>Gambling:</b> each gambled item's item level is your character level −5 to +4. The base becomes exceptional with a
+      chance that grows 0.9% per item level above the exceptional version's level, else elite with 0.33% per level above the
+      elite version's (only once the exceptional chance is above zero). Then it is unique 1 time in 2,000 and a set item 1 time
+      in 1,000, picked among the uniques or sets of that base whose level is at most the item level, like a drop; with none, the
+      roll is lost. Magic find plays no part. The gold: rings 50,000, amulets 63,000; any other base costs more the higher your
+      character level, and the more so the higher its exceptional and elite versions' prices (no reduced vendor prices here).</li>
+    <li><b>Left out:</b> T4 dungeons, unique maps and whole area clears: a full Cow Level, Chaos Sanctuary or Baal run
+      also drops from every monster on the way, so those runs find more than the boss alone shows here. PD2's special drops
+      (sigils, Corrupted Zone shards) aren't grail items.</li>
   </ul>
 </section>
 </div>
@@ -268,17 +459,66 @@
 (() => {
 const DATA = /*__DATA__*/null;
 const EARS = DATA.ears.map(e => e.name), ITEMS = DATA.items, N = ITEMS.length, E0 = DATA.ears[0];
-const state = {tier: "all", mt: "normal", mf: "300"};
+const state = {tier: "all", mt: "normal", mf: "300", fixed: "", clvl: "90"};
 const $ = id => document.getElementById(id);
 const fmtN = v => !isFinite(v) ? "never" : v >= 1e5 ? Math.round(v / 1000).toLocaleString("en-US") + "k" : Math.round(v).toLocaleString("en-US");
 const oneIn = r => r > 0 ? "1 in " + fmtN(1 / r) : "never";
 const pct = v => (v * 100).toFixed(0) + "%";
 ITEMS.forEach((it, i) => {
   it.i = i;
-  it.key = it.kind + "|" + it.index + "|" + (it.ver || "");
-  it.label = it.name + (it.ver ? " (" + it.ver + ")" : "");
+  it.key = it.kind + "|" + it.index + "|";
+  it.label = it.name;
   it.search = (it.label + " " + it.base + " " + (it.set || "")).toLowerCase();
 });
+
+// ---------------------------------------------------------------- farm spots (per kill, run, vault or shop)
+// DATA.farm: spots [name, difficulty, area, level, unit, group, minions, totals, top items]; per item one string of
+// entries, each a spot (2 base-36 characters), its rate at every magic find and its encounter / alone ratio x 10 (2 each);
+// a rate k stands for 10^(2 - k/100), "zz" for never.
+const F = DATA.farm, MFS = DATA.mfs.map(String), NM = MFS.length, DIFF = ["Normal", "Nightmare", "Hell"];
+const b36 = s => parseInt(s, 36), kRate = k => k === 1295 ? 0 : Math.pow(10, 2 - k / 100);
+const SPOTS = F.spots.map(([name, diff, area, lvl, unit, group, minions, tot, fixed, wp], j) => ({j, name, diff, area, lvl, unit, group, minions, fixed, wp,
+  tot: MFS.map((_, m) => kRate(b36(tot.substr(2 * m, 2))))}));
+const EW = 4 + 2 * NM;
+const FARM = F.items.map(s => { const out = [];
+  for (let p = 0; p < s.length; p += EW) out.push({s: SPOTS[b36(s.substr(p, 2))], r: MFS.map((_, m) => kRate(b36(s.substr(p + 2 + 2 * m, 2)))),
+    enc: b36(s.substr(p + 2 + 2 * NM, 2)) / 10});
+  return out; });
+const GHEED = {}; for (const i in F.gheed) GHEED[i] = kRate(b36(F.gheed[i]));
+// gambling: each base's gold a gamble per character level; per item its bases, each with its chance a gamble per level
+const GB = F.gamble, GCL = GB.clvls.map(String), GW = 2 + 2 * GCL.length;
+const GAMBLE = GB.items.map(s => { const out = [];
+  for (let p = 0; p < s.length; p += GW) out.push({b: b36(s.substr(p, 2)), r: GCL.map((_, l) => kRate(b36(s.substr(p + 2 + 2 * l, 2))))});
+  return out; });
+const gli = () => GCL.indexOf(state.clvl);
+const goldTxt = v => v >= 1e9 ? `${(v / 1e9).toFixed(v >= 1e10 ? 0 : 1)} billion` : v >= 1e6 ? `${(v / 1e6).toFixed(v >= 1e7 ? 0 : 1)}M`
+  : (Math.round(v / 1000) * 1000).toLocaleString("en-US");
+const perFind = (e, l) => GB.price[e.b][l] / e.r[l];  // gold per find of the item
+function bestGamble(i, l) {  // the base that finds the item for the least gold at this character level
+  let b = null;
+  for (const e of GAMBLE[i]) if (e.r[l] > 0 && (!b || perFind(e, l) < perFind(b, l))) b = e;
+  return b;
+}
+function gambleLine(i) {  // an item's gambling, at the chosen character level and at its cheapest one
+  const l = gli(), b = bestGamble(i, l);
+  let best = null, bl = -1;
+  GCL.forEach((_, k) => { const e = bestGamble(i, k); if (e && (!best || perFind(e, k) < perFind(best, bl))) { best = e; bl = k; } });
+  if (!best) return "";
+  const one = (e, k) => `a ${GB.bases[e.b][1]}, ${oneIn(e.r[k])} gambles at ${GB.price[e.b][k].toLocaleString("en-US")} gold: about ${goldTxt(perFind(e, k))} gold a find`;
+  return `<b>Gambling:</b> ` + (b ? `at character level ${GCL[l]}, ${one(b, l)}` : `not at character level ${GCL[l]}`) +
+    (bl !== l ? `; cheapest at character level ${GCL[bl]}: ${one(best, bl)}` : "");
+}
+function gambleBases(l, list) {  // per base: its gold a gamble, the listed items a gamble finds, gold per find
+  const acc = GB.bases.map((b, j) => ({j, price: GB.price[j][l], n: 0, items: []}));
+  for (const i of list) for (const e of GAMBLE[i]) if (e.r[l] > 0) { const o = acc[e.b]; o.n += e.r[l]; o.items.push([i, e.r[l]]); }
+  return acc.filter(o => o.n > 0).map(o => Object.assign(o, {per: o.price / o.n})).sort((a, b) => a.per - b.per);
+}
+function gambleBest(list) {  // the cheapest base and character level for the listed items
+  let best = null;
+  GCL.forEach((_, k) => { const r = gambleBases(k, list)[0]; if (r && (!best || r.per < best.r.per)) best = {r, k}; });
+  return best;
+}
+const UNITS = {kill: "kills", run: "runs", vault: "vaults", shop: "shops"};
 
 // ---------------------------------------------------------------- rates per map
 const cache = {};
@@ -304,6 +544,28 @@ function rates(tier, mt, mf) {
 }
 const cur = () => rates(state.tier, state.mt, state.mf);
 const droppable = R => ITEMS.filter(it => R.none[it.i] > 0).map(it => it.i);
+const mfi = () => MFS.indexOf(state.mf);
+const perUnit = (r, unit) => !(r > 0) ? "never" : r >= 0.995 ? `${r >= 9.95 ? r.toFixed(0) : r.toFixed(1).replace(/\.0$/, "")} a ${unit}` :
+  `1 in ${1 / r < 9.95 ? (1 / r).toFixed(1) : fmtN(1 / r)} ${UNITS[unit]}`;
+const perUnitTot = (r, unit) => r >= 0.0995 ? `${r.toFixed(r >= 9.95 ? 0 : r >= 0.995 ? 1 : 2)} a ${unit}` : perUnit(r, unit);
+const spotWhere = s => DIFF[s.diff] + (s.group === 3 ? ", Corrupted Zone" : "");
+// fixed: the spot never moves (a preset map, or an area laid out the same every game); wp: areas from a waypoint
+const spotTag = s => s.fixed < 0 ? "" : (s.fixed ? "fixed spot" : "random spot") +
+  (s.wp < 0 ? "" : s.wp === 0 ? ", waypoint in the area" : `, ${s.wp} area${s.wp > 1 ? "s" : ""} from a waypoint`);
+// "Fixed spots only" keeps to monsters that stand in the same place every game; the ubers and events (group 4) stay
+const spotOk = s => state.fixed !== "fixed" || s.fixed === 1 || s.group === 4;
+// spots that drop an item equally often: a fixed one first, then the one nearer a waypoint
+const spotRank = s => (s.fixed === 1 ? 0 : 1000) + (s.wp < 0 ? 999 : s.wp);
+const byRate = m => (a, b) => b.r[m] - a.r[m] || spotRank(a.s) - spotRank(b.s);
+function bestFarm(i, groups = [0, 1, 2]) {  // the best spot of these groups at the bar's magic find
+  const m = mfi(), cmp = byRate(m); let b = null;
+  for (const e of FARM[i]) if (groups.includes(e.s.group) && spotOk(e.s) && (!b || cmp(e, b) < 0)) b = e;
+  return b;
+}
+function earRank(R, i) {  // the ears whose class pool has the item's base, best first
+  return EARS.filter(e => R.cls[e][i] > 0).map(e => [e, R.ear[e][i]]).sort((a, b) => b[1] - a[1]);
+}
+const withMinions = (e, m) => e.enc > 1.05 ? ` <span class="meta">(with its ${e.s.minions} minions ${perUnit(e.r[m] * e.enc, e.s.unit)})</span>` : "";
 function bestEar(R, i) {
   let b = null, v = -1;
   for (const e of EARS) if (R.ear[e][i] > v + 1e-12) { v = R.ear[e][i]; b = e; }
@@ -368,21 +630,24 @@ function renderAnswer() {
   const {R, idx, rows, rr} = SUM, none = rows[0], ears = rows.slice(1);
   const by = k => ears.reduce((a, b) => b[k] < a[k] ? b : a), worst = k => ears.reduce((a, b) => b[k] > a[k] ? b : a);
   const b50 = by("m50"), b90 = by("m90"), bAll = by("all"), w90 = worst("m90");
-  $("gm-answer-note").textContent = `${setting()[0].toUpperCase() + setting().slice(1)}.`;
+  $("gm-answer-note").textContent = `${setting()[0].toUpperCase() + setting().slice(1)}, for a fresh grail (nothing found yet: Your Grail counts from your ticks). Each goal names the Corrupted Ear that gets there in the fewest maps; it changes with the goal, since each ear's pool holds different items.`;
   $("gm-cards").innerHTML = [
     ["Grail items in these maps", `${idx.length}`, `of ${N}`, `the other ${N - idx.length} drop elsewhere`, false],
-    ["Half your grail", fmtN(none.m50), "maps", `${fmtN(b50.m50)} with a Corrupted Ear on every map`, false],
-    ["90% of it", fmtN(none.m90), "maps", `${fmtN(b90.m90)} with the best ear (${b90.n}), ${fmtN(rr.m90)} switching ears`, true],
-    ["All of it", fmtN(none.all), "maps", `${fmtN(bAll.all)} with the best ear (${bAll.n})`, false],
+    ["Half your grail", fmtN(none.m50), "maps", `${fmtN(b50.m50)} with the ${b50.n} ear on every map`, false],
+    ["90% of it", fmtN(none.m90), "maps", `${fmtN(b90.m90)} with the ${b90.n} ear, ${fmtN(rr.m90)} switching ears`, true],
+    ["All of it", fmtN(none.all), "maps", `${fmtN(bAll.all)} with the ${bAll.n} ear`, false],
   ].map(([who, big, small, sub, hl]) => `<div class="card${hl ? " hl" : ""}"><div class="who">${who}</div><div class="big">${big}<small>${small}</small></div><div class="sub">${sub}</div></div>`).join("");
   const slow = idx.map(i => [i, bestEar(R, i)[1]]).sort((a, b) => a[1] - b[1]).slice(0, 4).map(([i]) => ITEMS[i].label);
-  const avg90 = ears.reduce((a, b) => a + b.m90, 0) / ears.length;
   const mf0 = state.mf === "0" ? "300" : "0", R0 = rates(state.tier, state.mt, mf0), m0 = mapsTo(R0.none, droppable(R0), .9);
+  const lowFarm = ITEMS.filter(it => { const b = bestFarm(it.i); return b && b.s.diff === 0; }).length, fb = farmBets(R, idx);
   $("gm-findings").innerHTML = [
     `<b>The first items come quickly, the last ones slowly.</b> After 100 maps you have about ${none.f100.toFixed(0)} of the ${idx.length}; 95% takes ${fmtN(none.m95)} maps, all of them ${fmtN(none.all)}.`,
-    `<b>A few items decide the end:</b> ${slow.slice(0, -1).join(", ")} and ${slow[slow.length - 1]} drop once in thousands of maps here. "What maps can't give you" lists them, with the ${N - idx.length} items maps never drop.`,
+    `<b>A few items decide the end:</b> ${slow.slice(0, -1).join(", ")} and ${slow[slow.length - 1]} drop once in thousands of maps here. <a href="#gm-cant">Hard to find in maps</a> lists them, with the ${N - idx.length} items maps never drop.`,
+    `<b>Target farm the slow ones:</b> ${lowFarm} items, most of them low-level uniques, drop more often per kill from a Normal boss or superunique than from any in Nightmare or Hell.` +
+      (fb.n ? ` For ${fb.n} items one kill finds them at least as often as a whole map with their best ear, so target farming is their best bet: ${fb.text}.` : "") +
+      ` <a href="#gm-farm">Target Farming</a> names the best spot for every item, <a href="#gm-planner">Your Grail</a> the ones to farm for your list.`,
     `<b>Magic find matters most:</b> at ${mf0}% magic find 90% of the grail takes ${fmtN(m0)} maps instead of ${fmtN(none.m90)}.`,
-    `<b>A Corrupted Ear on every map makes it about ${(none.m90 / avg90).toFixed(1)}× faster,</b> whichever ear you use; the best and the worst ear are only ${fmtN(b90.m90)} to ${fmtN(w90.m90)} maps apart to 90%. Your grail, below, picks the ear for the items you're missing.`
+    `<b>A Corrupted Ear on every map cuts the maps:</b> 90% of the grail takes ${fmtN(b90.m90)} maps with the best ear and ${fmtN(w90.m90)} with the worst, instead of ${fmtN(none.m90)}. That's fewer maps, not less time: ear monsters have +${E0.hp}% health. <a href="#gm-planner">Your Grail</a> picks the ear for the items you're missing.`
   ].map(x => `<li>${x}</li>`).join("");
 }
 function renderLevers() {
@@ -394,7 +659,7 @@ function renderLevers() {
   const other = mt === "normal" ? "rare" : "normal", mtName = x => x === "normal" ? "non-magical" : "rare";
   $("gm-lever-list").innerHTML = [
     `<b>Magic find:</b> 90% of the map grail takes ${mfs.map(x => `${fmtN(m90(t, mt, x, false))} maps at ${x}%`).join(", ")} (no ear). Unique and set chances grow ever slower with more magic find.`,
-    `<b>A Corrupted Ear on every map:</b> about ${(m90(t, mt, mf, false) / m90(t, mt, mf, true)).toFixed(1)}× faster with the best ear. How, and which ear, below.`,
+    `<b>A Corrupted Ear on every map:</b> 90% of the map grail in ${fmtN(m90(t, mt, mf, true))} maps with the best ear instead of ${fmtN(m90(t, mt, mf, false))}; each map takes longer, since ear monsters have +${E0.hp}% health. What ears do, and which to use: <a href="#gm-how">Corrupted Ears</a>.`,
     `<b>Rare maps:</b> an average rare map (with a corruption) has about ${(kills(t, "rare") / kills(t, "normal")).toFixed(1)}× the monsters of a non-magical one, so ${fmtN(m90(t, "rare", mf, false))} maps for 90% instead of ${fmtN(m90(t, "normal", mf, false))}; each clear takes longer, though.`,
     `<b>The tier barely matters:</b> ${["1", "2", "3"].map(x => `T${x} ${fmtN(m90(x, mt, mf, false))}`).join(", ")} maps for 90% on ${mtName(mt)} maps. Every grail item maps can drop drops in all three.`
   ].map(x => `<li>${x}</li>`).join("");
@@ -435,17 +700,71 @@ function renderSpeed() {
 }
 function renderHow() {
   $("gm-how-list").innerHTML = [
+    `<b>Where ears come from:</b> the Corrupted Heroes map event ("You feel a corrupted presence watching you, as if you're being hunted..."): powerful copies of player characters invade the map through black portals, up to 3 portals and 5 invaders a map. Each invader drops a full set of rare items, one per equipment slot, and the Corrupted Ear of its own class.`,
+    `<b>What it is:</b> a Corrupted Ear is cubed with a map in the Horadric Cube. The ear is used up, and the map gets its bonuses and its dangers: monsters have +${E0.hp}% health and each ear makes the map harder in its own way (the cards below list them). So an ear map takes longer; the numbers on this page count maps, not time.`,
     `<b>Every ear, the same:</b> each kill has a ${E0.extra}% chance to drop its whole loot a second time, and the map gets +${E0.rarity}% monster rarity (a few more elite packs). That alone makes every grail item that map monsters drop about ${(1 + E0.extra / 100).toFixed(1)} times as common, whichever ear you use.`,
-    `<b>Each ear, its own pool:</b> each kill also has a ${E0.cls}% chance to drop one exceptional or elite item from the ear's class pool, rolled for quality like any other drop at the monster's level. The uniques and sets among them are where the ears differ: up to almost 20 times the usual chance for some items.`,
+    `<b>Each ear, its own pool:</b> each kill also has a ${E0.cls}% chance to drop one item from the ear's pool, rolled for quality like any other drop at the monster's level: ${DATA.ears.map(e => `${e.what} (${e.name})`).join(", ")}. The uniques and sets among them are where the ears differ: up to almost 20 times the usual chance for some items.`,
     `<b>Class items roll better:</b> orbs, Paladin shields, Barbarian helms, claws, pelts, heads and Amazon weapons have better chances to be unique, set or rare than other bases.`,
-    `<b>Some rolls are wasted:</b> a unique roll on a base that has no unique becomes a rare, and a set roll on a base with no set item becomes magic. Pools with many such bases (Amazon javelins and bows, Paladin and Necromancer starter shields and heads) lose part of their chances.`,
-    `<b>Item level:</b> a unique or set item only drops at an item level of at least its own. Map monsters are level 87 to 92 (champions +2, unique monsters and their minions +3), so everything but the items under "What maps can't give you" can drop in any T1-T3 map: the tier barely matters for the grail.`,
-    `<b>Minions don't count:</b> the monsters around a unique monster get neither the extra drop nor the class item. Monsters have +${E0.hp}% health with an ear: maps take longer, the drops don't change.`
+    `<b>Some rolls are wasted:</b> a unique roll on a base that has no unique becomes a rare, and a set roll on a base with no set item becomes magic. Of each pool's items, this share is on bases with no unique: ${DATA.ears.slice().sort((a, b) => b.nounique - a.nounique).map(e => `${e.name} ${Math.round(e.nounique * 100)}%`).join(", ")}.`,
+    `<b>Drop level:</b> a unique or set item only drops from a monster of at least its drop level (not the level to wear it). Map monsters are level 87 to 92 (champions +2, unique monsters and their minions +3), so everything but the items under <a href="#gm-cant">Hard to find in maps</a> can drop in any T1-T3 map: the tier barely matters for the grail.`,
+    `<b>Minions don't count:</b> the monsters around a unique monster get neither the extra drop nor the class item.`
   ].map(x => `<li>${x}</li>`).join("");
   $("gm-notes").innerHTML = [
     `<b>Fortified maps</b> halve the monsters and give every monster but the map boss a guaranteed second drop; they also double the ear's class-item chance. Per clear that is slightly fewer grail drops than the same map unfortified with the same ear, from half the monsters.`,
     `<b>Parties</b> of three or more remove the small no-drop chance of the usual drops: every grail item gets about 5% more common. The class items never had a no-drop chance.`
   ].map(x => `<li>${x}</li>`).join("");
+}
+
+// ---------------------------------------------------------------- questions and answers (numbers from the bar)
+function renderFaq() {
+  const {R, idx, rows} = SUM, none = rows[0], ears = rows.slice(1), m = mfi();
+  const best90 = ears.reduce((a, b) => b.m90 < a.m90 ? b : a), worst90 = ears.reduce((a, b) => b.m90 > a.m90 ? b : a);
+  const find = name => ITEMS.find(it => it.name === name);
+  const t = state.tier, mt = state.mt, mf = state.mf, m90 = (tier, mapt, magic) => { const Rx = rates(tier, mapt, magic); return mapsTo(Rx.none, droppable(Rx), .9); };
+  const kills = mapt => { const k = t === "all" ? ["1", "2", "3"] : [t]; return k.reduce((a, x) => a + DATA.kills[x + "|" + mapt], 0) / k.length; };
+  // a worked example: the slowest map item, per map with any ear against its best kill spot, at 3 minutes a map and 1 a kill
+  const slow = idx.map(i => [i, bestEar(R, i)[1]]).sort((a, b) => a[1] - b[1])[0], ex = slow && ITEMS[slow[0]], exFarm = ex && bestFarm(ex.i);
+  const hours = n => (n / 60).toFixed(n < 600 ? 1 : 0);
+  const ty = find("Tyrael's Might"), tyEar = ty && bestEar(R, ty.i), tyFarm = ty && bestFarm(ty.i), fb = farmBets(R, idx);
+  const qa = [
+    ["Can the planner read my Discovery Progress?",
+     `No. The game keeps it, and this page can't see your game. Tick the items you've found under <a href="#gm-list">Every Item</a>, or paste a list under <a href="#gm-planner">Your Grail</a> ("Copy or paste your list"): one item per line, from a spreadsheet, another grail tracker or typed by hand. Your ticks stay in your browser.`],
+    [`Why ${N} items?`,
+     `Every unique and set item counts once, whichever of its versions you find (the eight Rainbow Facets are one item). Unique maps, quest items and nine uniques that don't count for the grail are left out (<a href="#gm-method">How It's Worked Out</a> names them). ${idx.length} of the ${N} drop from T1-T3 map monsters; Annihilus and the Hellfire Torch come from one encounter each.`],
+    ["Where do Corrupted Ears come from, and how do I use one?",
+     `From the Corrupted Heroes map event: the red text "You feel a corrupted presence watching you, as if you're being hunted..." announces it, and powerful copies of player characters invade the map through black portals (up to 3 portals and 5 invaders a map). Each invader drops a full set of rare items and the Corrupted Ear of its own class. Cube an ear with a map in the Horadric Cube: the ear is used up and the map gets its bonuses and dangers (<a href="#gm-how">Corrupted Ears</a>).`],
+    ["Which ear should I use?",
+     `The one whose pool holds the most of what you're missing, and that changes as your grail fills. Early on, the ear that finds the most new items soon; near the end, the ear whose pool holds your last items. <a href="#gm-planner">Your Grail</a> ranks the ears for your ticks three ways (your next 100 maps, 90% of your missing items, all of them), and switching ears as your list shrinks does better than any one ear.`],
+    ["Does an ear make the grail faster?",
+     `In maps, yes: 90% of the map grail takes ${fmtN(best90.m90)} maps with the best ear (${best90.n}) and ${fmtN(worst90.m90)} with the worst (${worst90.n}), instead of ${fmtN(none.m90)}. In time, not always: ear monsters have +${E0.hp}% health and each ear adds dangers of its own, so each map takes longer. An ear saves time when your ear maps take less than ${(none.m90 / best90.m90).toFixed(1)} times as long as your maps without one.`],
+    ["How do I compare a chance per map with a chance per kill?",
+     ex && exFarm ? `Turn both into time at your own pace. For example ${ex.label}: ${oneIn(slow[1])} maps with ${earName(bestEar(R, ex.i)[0])}, or ${perUnit(exFarm.r[m], exFarm.s.unit)} from ${exFarm.s.name} in ${DIFF[exFarm.s.diff]}. At 3 minutes a map that is about ${hours(3 / slow[1])} hours of maps; at 1 minute a kill, about ${hours(1 / exFarm.r[m])} hours of kills. Put in your own minutes: the faster way for you is the one with fewer hours. The best bet compares one kill with one map: "a kill = 3 maps" means one kill finds the item as often as 3 maps with its best ear, so farming wins as long as a kill takes you less time than 3 maps.` :
+     `Turn both into time at your own pace: maps times your minutes per map, kills times your minutes per kill. The faster way for you is the one with fewer hours.`],
+    ["Is the \"Best farm spot\" better than running maps?",
+     `Only for some items. It's the boss or superunique that drops the item most often per kill, whatever a kill costs. Each item's details under <a href="#gm-list">Every Item</a> name its best bet: target farming when one kill finds it at least as often as a whole map with its best ear ("beats maps"), maps otherwise. ` +
+     (fb.n ? `At these settings that's ${fb.n} items, low-level uniques and sets: ${fb.text}. ` : `At these settings no kill beats a map for any item. `) +
+     `For high-level items maps with the right ear win by far${ty && tyEar && tyFarm ? `: ${ty.name} is ${oneIn(tyEar[1])} maps${tyEar[0] ? ` with the ${tyEar[0]} ear` : ""} but ${perUnit(tyFarm.r[m], tyFarm.s.unit)} from ${tyFarm.s.name} in ${DIFF[tyFarm.s.diff]}` : ""}. <a href="#gm-planner">Your Grail</a> sorts your missing items by their best bet.`],
+    ["What does \"drop level\" mean?",
+     `The lowest monster level that can drop the item: an item only drops from a monster at least that high. It isn't the level you need to wear it. The farm spots reach level 68 in Normal and 75 in Nightmare, so items with a higher drop level come only from Hell.`],
+    ["Non-magical or rare maps? Fortified? Which tier?",
+     `An average rare map (with a corruption) has about ${(kills("rare") / kills("normal")).toFixed(1)} times the monsters of a non-magical one, so 90% of the grail takes ${fmtN(m90(t, "rare", mf))} rare maps instead of ${fmtN(m90(t, "normal", mf))}, though each takes longer. Fortified maps halve the monsters and give each one a second drop: about the same grail drops a clear. The tier barely matters: every item maps drop, drops in T1, T2 and T3.`],
+    ["How much magic find is enough?",
+     `More always helps, but less each time: 90% of the map grail takes ${MFS.map(x => `${fmtN(m90(t, mt, x))} maps at ${x}%`).join(", ")}. Set the bar to your own magic find.`],
+    ["What are Corrupted Zones?",
+     `In Hell games made with Baal's quest done, one group of areas at a time is corrupted: its area level is 85, so its superuniques drop at level 88. The zone is picked when the game is made and changes every 15 minutes for the whole server; a new game gets the current one. The farm spots there are listed apart, under Corrupted Zones.`],
+    ["Why does an item I've found still get stars or a chat line?",
+     `An unidentified item counts as found only when you've found every unique (or every set item) of its base, since the filter sees the base, not the item. A High, Medium or Minimal value item shows its value look whether you've found it or not. On the lowest filter level a found item still shows its stars, but the outer ones aren't orange: orange outer stars mean you haven't found it yet. <a href="#gm-filter">Filter Display</a> shows each case.`],
+    ["Do the game's Force Show options matter with this filter?",
+     `Force Show Undiscovered (on by default) shows an undiscovered unique or set item the filter would hide; this filter never hides one, so it changes nothing. Force Show Unowned (off by default) does the same for items you've found but don't own.`],
+    ["Is gambling worth it for the grail?",
+     (() => { const l = gli(), all = ITEMS.map(it => it.i), r = gambleBases(l, all)[0];
+       return `As a place for spare gold, for some items. A gambled item is unique 1 time in 2,000 and a set item 1 time in 1,000, whatever your magic find, and counts for your grail. ` +
+         (r ? `At character level ${GCL[l]} the cheapest base for a fresh grail, ${GB.bases[r.j][1]}, takes about ${goldTxt(r.per)} gold per new grail item, and an item you want in particular much more. ` : "") +
+         `A low-level character pays less for a base's low-level items, and since Discovery Progress is kept per account, its finds count for your grail. Each item's details give its gambling odds, and <a href="#gm-gamble">Gambling</a> ranks the bases for your missing items.`; })()],
+    ["What isn't counted?",
+     `T4 dungeons, unique maps and whole area clears: a full Cow Level, Chaos Sanctuary or Baal run also drops from every monster on the way, so those runs find more than the boss alone shows. The numbers are estimates for one player, not drop counts.`],
+  ];
+  $("gm-faq-list").innerHTML = qa.map(([q, a]) => `<h3>${q}</h3><p>${a}</p>`).join("");
 }
 
 // ---------------------------------------------------------------- the filter and the grail
@@ -464,48 +783,181 @@ function renderLooks() {
     return `<div class="ground"><div class="d2label" role="img" aria-label="In-game label: ${c.lines.map(l => l.map(s => s[1]).join("")).join(" / ").replace(/"/g, "")}">${html}</div></div>`;
   };
   const icon = layers => !layers.length ? "" : `<span class="icon" title="Minimap icon">${layers.map(l => [16, 12, 8, 4].map((sz, i) => l[i] ? `<span style="left:${(16 - sz) / 2}px;top:${(16 - sz) / 2}px;width:${sz}px;height:${sz}px;background:${l[i]}"></span>` : "").join("")).join("")}</span>`;
-  const cell = c => `<div class="lcell">${label(c)}<div class="lmeta">${icon(c.icons)}<span>${c.hidden ? "no icon, no chat line" : [c.icons.length ? "" : "no icon", c.chat ? "chat line" : "no chat line", c.sound ? "drop sound" : ""].filter(Boolean).join(", ")}</span></div></div>`;
+  // each case as three facts: what the ground shows, the minimap icon, the notification (chat line, drop sound)
+  const cell = c => `<dl class="lfacts"><dt>Display</dt><dd>${c.hidden ? `<span class="none">Hidden</span>` : label(c)}</dd>` +
+    `<dt>Minimap icon</dt><dd>${c.icons.length ? icon(c.icons) : `<span class="none">None</span>`}</dd>` +
+    `<dt>Notification</dt><dd>${c.chat ? (c.sound ? "Chat notification and drop sound" : "Chat notification") : `<span class="none">None</span>`}</dd></dl>`;
   $("gm-looks").innerHTML = L.examples.map(x => `<div class="look"><div><div class="what">${x.what}${x.tier === "Everything else" ? "" : `: ${x.tier}`}</div><div class="names">${x.items.join(", ")} <span class="ver">(${x.base})</span></div></div>
     <div class="lgrid"><span></span>${lv.map(l => `<span class="hd">Level ${l}: ${L.levels[l]}</span>`).join("")}
     <span class="rowhd">Not found yet</span>${lv.map(l => cell(x.cells["new|" + l])).join("")}
-    <span class="rowhd">Found</span>${lv.map(l => cell(x.cells["found|" + l])).join("")}</div></div>`).join("");
-  $("gm-looks-note").innerHTML = `As Erazure - Main draws them, unidentified on the ground outside town. The <a href="https://filtersby-erazure.github.io/PD2-Loot-Filter/tiers/">Unique &amp; Set Tiers</a> page shows every unique and set item's look on every filter level and version.`;
+    <span class="lsep"></span><span class="rowhd">Found</span>${lv.map(l => cell(x.cells["found|" + l])).join("")}</div></div>`).join("");
+  $("gm-looks-note").innerHTML = `What to look for: orange outer stars mean you haven't found the item yet; a found one keeps its stars in other colors on the lowest level and loses the Grail look on the strictest. A value tier's look doesn't change. As Erazure - Main draws them, unidentified on the ground outside town. The <a href="https://filtersby-erazure.github.io/PD2-Loot-Filter/tiers/">Unique &amp; Set Tiers</a> page shows every unique and set item's look on every filter level and version.`;
 }
 
 // ---------------------------------------------------------------- each ear
+const EAR_OPEN = new Set();  // the ears whose whole pool list is open
 function renderEars() {
   const R = cur(), idx = droppable(R);
   $("gm-earcards").innerHTML = EARS.map(e => {
     const pool = idx.filter(i => R.cls[e][i] > 0), u = pool.filter(i => ITEMS[i].kind === "UNI").length;
-    const top = pool.map(i => [i, R.ear[e][i] / R.none[i]]).sort((a, b) => b[1] - a[1]).slice(0, 8);
+    const all = pool.map(i => [i, R.ear[e][i] / R.none[i]]).sort((a, b) => b[1] - a[1]), open = EAR_OPEN.has(e);
     const add = pool.reduce((a, i) => a + R.cls[e][i], 0);
-    return `<div class="ear"><h3>${e} ear</h3><div class="meta">${pool.length} grail items in its pool (${u} uniques, ${pool.length - u} sets); its class items add ${(add * 100).toFixed(0)} grail drops per 100 maps.</div>
-      <ol>${top.map(([i, g]) => `<li>${ITEMS[i].label} <span>×${g.toFixed(1)}, ${oneIn(R.ear[e][i])} maps</span></li>`).join("")}</ol></div>`;
+    const li = ([i, g]) => `<li>${ITEMS[i].label} <span>×${g.toFixed(1)}, ${oneIn(R.ear[e][i])} maps</span></li>`;
+    const ed = DATA.ears.find(x => x.name === e);
+    return `<div class="ear"><h3>${e} ear</h3><div class="meta"><b>Pool:</b> ${ed.what}. <b>Also on the map:</b> ${ed.harder.map(h => h.replace(/^Monsters have /, "monsters ").replace(/^Players have /, "players ")).join("; ")}.</div>
+      <div class="meta">${pool.length} grail items in its pool (${u} unique${u === 1 ? "" : "s"}, ${pool.length - u} set item${pool.length - u === 1 ? "" : "s"}); its pool adds ${(add * 100).toFixed(0)} grail drops per 100 maps.</div>
+      <ol>${all.slice(0, open ? all.length : 8).map(li).join("")}</ol>` +
+      (all.length > 8 ? `<button type="button" class="btn" data-ear="${e}">${open ? "Show the top 8" : `Show all ${all.length} items`}</button>` : "") + `</div>`;
   }).join("");
 }
+$("gm-earcards").addEventListener("click", e => {
+  const b = e.target.closest("button[data-ear]"); if (!b) return;
+  if (EAR_OPEN.has(b.dataset.ear)) EAR_OPEN.delete(b.dataset.ear); else EAR_OPEN.add(b.dataset.ear);
+  renderEars();
+});
 
 // ---------------------------------------------------------------- the planner
 const STORE = "erazure-grail-planner";
 let FOUND = new Set();
 try { const s = localStorage.getItem(STORE); if (s) FOUND = new Set(JSON.parse(s)); } catch (e) {}
 const save = () => { try { localStorage.setItem(STORE, JSON.stringify([...FOUND])); } catch (e) {} };
-function renderPlanner() {
-  const R = cur(), idx = droppable(R), miss = idx.filter(i => !FOUND.has(ITEMS[i].key)), have = ITEMS.filter(it => FOUND.has(it.key)).length;
-  const ranks = EARS.map(e => ({e, per: miss.reduce((a, i) => a + R.ear[e][i], 0), m: finish(R.ear[e], miss)})).sort((a, b) => b.per - a.per);
-  const noneM = finish(R.none, miss), nonePer = miss.reduce((a, i) => a + R.none[i], 0), b = ranks[0];
-  let rarest = null, rv = Infinity;
-  for (const i of miss) { const v = bestEar(R, i)[1]; if (v < rv) { rv = v; rarest = i; } }
-  $("gm-plan-cards").innerHTML = [
-    ["Ticked", `${have}`, `of ${N} grail items`, `${miss.length} items map monsters drop still missing`],
-    ["Best ear for you", miss.length ? b.e : "–", "", miss.length ? `${(b.per * 100).toFixed(1)} drops of your missing items per 100 maps` : "nothing left to find in maps"],
-    ["Maps to finish with it", miss.length ? fmtN(b.m) : "–", miss.length ? "expected" : "", miss.length ? `without an ear ${fmtN(noneM)}` : ""],
-    ["Rarest missing item", rarest === null ? "–" : ITEMS[rarest].label, "", rarest === null ? "" : `${oneIn(rv)} maps with ${bestEar(R, rarest)[0] || "any"} ear`],
-  ].map(([who, big, small, sub]) => `<div class="card"><div class="who">${who}</div><div class="big" style="font-size:${String(big).length > 12 ? 19 : 28}px">${big}${small ? `<small>${small}</small>` : ""}</div><div class="sub">${sub}</div></div>`).join("");
-  $("gm-t-plan").innerHTML = `<thead><tr><th>Ear</th><th>Drops of missing items per 100 maps</th><th>vs no ear</th><th>Maps to finish</th><th class="l">Missing items it helps most</th></tr></thead><tbody>` +
-    ranks.map(o => { const top = miss.filter(i => R.cls[o.e][i] > 0).map(i => [i, R.ear[o.e][i] / R.none[i]]).sort((a, c) => c[1] - a[1]).slice(0, 4);
-      return `<tr><td${o === b ? ' class="best"' : ""}>${o.e}</td><td>${(o.per * 100).toFixed(1)}</td><td class="ratio">${nonePer ? (o.per / nonePer).toFixed(2) + "×" : "–"}</td><td>${fmtN(o.m)}</td><td class="l wrapc small">${top.map(([i, g]) => `${ITEMS[i].label} ×${g.toFixed(1)}`).join(", ") || "none"}</td></tr>`; }).join("") +
-    `<tr><td>No ear</td><td>${(nonePer * 100).toFixed(1)}</td><td class="ratio">1.00×</td><td>${fmtN(noneM)}</td><td></td></tr></tbody>`;
+const cnt = v => v >= 9.95 ? v.toFixed(0) : v.toFixed(1);
+// ---------------------------------------------------------------- the best bet: one kill against one map
+// An item's best bet: target farming its best boss or superunique (any difficulty; "Fixed spots only" if set) when one
+// kill there finds it at least as often as a whole map with the item's best ear, maps otherwise; for the items map
+// monsters never drop, their uber or event. v: the maps one kill is worth.
+function bet(R, i) {
+  if (!(R.none[i] > 0)) return {kind: "enc", f: bestFarm(i, [4])};
+  const [ear, map] = bestEar(R, i), f = bestFarm(i), v = f ? f.r[mfi()] / map : 0;
+  return {kind: v >= 1 ? "farm" : "maps", ear, map, f, v};
 }
+const times = v => v >= 9.95 ? fmtN(v) : v.toFixed(1).replace(/\.0$/, "");
+const earName = e => e ? `the ${e} ear` : "any Corrupted Ear";
+const BET_TAG = `<span class="bet">beats maps</span>`;
+function betLine(R, i) {  // an item's best bet in words: the first line of its details
+  const b = bet(R, i), m = mfi();
+  if (b.kind === "enc") return b.f ? `<b>Best bet: ${b.f.s.name}</b>, ${perUnit(b.f.r[m], b.f.s.unit)}, its only source: map monsters never drop it` : "";
+  if (b.kind === "farm") return `<b>Best bet: target farm ${b.f.s.name} in ${spotWhere(b.f.s)}</b>, ${perUnit(b.f.r[m], b.f.s.unit)}: one kill finds it as often as ${times(b.v)} maps with ${earName(b.ear)} (${oneIn(b.map)} maps)`;
+  return `<b>Best bet: maps with ${earName(b.ear)}</b>, ${oneIn(b.map)} maps: ` + (b.f ? `one map finds it as often as ${times(1 / b.v)} kills of ${b.f.s.name} in ${spotWhere(b.f.s)}, its best farm spot`
+    : `no ${state.fixed === "fixed" ? "fixed " : ""}boss or superunique drops it`);
+}
+
+const rateAt = (i, j, m) => { const e = FARM[i].find(x => x.s.j === j); return e ? e.r[m] : 0; };  // an item's stored rate at a spot
+// Items whose best bet is target farming, on as few spots as it takes: each time the spot that is about as good as the
+// item's best (90%, and still beating a map) for the most items left. Each item with its rate there and the maps a kill is worth.
+function farmGroups(R, items) {
+  const m = mfi(), bt = new Map(items.map(i => [i, bet(R, i)]));
+  const near = new Map(items.map(i => { const t = bt.get(i);
+    return [i, FARM[i].filter(e => e.s.group <= 2 && spotOk(e.s) && e.r[m] >= .9 * t.f.r[m] && e.r[m] >= t.map)]; }));
+  const todo = new Set(items), G = [];
+  while (todo.size) {
+    const cover = new Map();
+    for (const i of todo) for (const e of near.get(i)) { const c = cover.get(e.s.j) || {s: e.s, items: [], sum: 0}; c.items.push(i); c.sum += e.r[m]; cover.set(e.s.j, c); }
+    const g = [...cover.values()].sort((x, y) => y.items.length - x.items.length || y.sum - x.sum || spotRank(x.s) - spotRank(y.s))[0];
+    g.items.forEach(i => todo.delete(i)); G.push(g);
+  }
+  for (const g of G) g.items = g.items.map(i => ({i, r: rateAt(i, g.s.j, m), v: rateAt(i, g.s.j, m) / bt.get(i).map})).sort((x, y) => y.v - x.v);
+  return G;
+}
+function farmBets(R, idx) {  // the items whose best bet is target farming, and the spots that cover them
+  const G = farmGroups(R, idx.filter(i => bet(R, i).kind === "farm")), n = G.reduce((a, g) => a + g.items.length, 0);
+  const parts = G.slice(0, 3).map(g => `${g.s.name} in ${DIFF[g.s.diff]} for ${g.items.length}`);
+  return {n, text: G.length > 3 ? parts.join(", ") + " and other spots" : joinAnd(parts)};
+}
+
+let SLOW_ALL = false;
+const SPOT_OPEN = new Set();  // the farm step's spots whose whole item list is open
+function renderPlanner() {  // your plan: the ear to run, the items to target farm and where, the slowest, the encounters
+  const R = cur(), m = mfi(), idx = droppable(R), left = ITEMS.filter(it => !FOUND.has(it.key)).map(it => it.i);
+  const miss = idx.filter(i => !FOUND.has(ITEMS[i].key)), have = N - left.length;
+  const next = r => miss.reduce((a, i) => a + 1 - Math.exp(-r[i] * 100), 0);  // missing items found in 100 maps (a repeat counts once)
+  const row = (e, r) => ({e, n: next(r), m90: miss.length ? mapsTo(r, miss, .9) : 0, m: finish(r, miss)});
+  const ranks = EARS.map(e => row(e, R.ear[e])).sort((a, b) => b.n - a.n), none = row("No ear", R.none), b = ranks[0];
+  const fast = ranks.reduce((a, o) => o.m < a.m ? o : a), fast90 = ranks.reduce((a, o) => o.m90 < a.m90 ? o : a);
+  // each missing item's best bet; the maps' ones split by their chance in your next 100 maps with the plan's ear
+  const bets = new Map(left.map(i => [i, bet(R, i)])), farm = [], likely = [], slow = [], enc = [];
+  for (const i of left) { const t = bets.get(i);
+    (t.kind === "enc" ? enc : t.kind === "farm" ? farm : 1 - Math.exp(-R.ear[b.e][i] * 100) >= .5 ? likely : slow).push(i); }
+  // the farm items on their spots; for each spot, the spots about as good for all its items, and what a kill finds of
+  // your whole list (each item counted at its stored best spots)
+  const perMap = miss.reduce((a, i) => a + R.ear[b.e][i], 0), G = farmGroups(R, farm);  // perMap: your missing items one map with the plan's ear finds
+  for (const g of G) {
+    g.kill = left.reduce((a, i) => a + rateAt(i, g.s.j, m), 0);
+    g.alt = SPOTS.filter(s => s.j !== g.s.j && s.group <= 2 && spotOk(s) && g.items.every(o => rateAt(o.i, s.j, m) >= .9 * o.r)).sort((x, y) => spotRank(x) - spotRank(y));
+  }
+  const rest = miss.filter(i => bets.get(i).kind !== "farm"), bestFin = list => EARS.map(e => ({e, m: finish(R.ear[e], list)})).reduce((a, o) => o.m < a.m ? o : a);
+  const restFin = bestFin(rest), slowFin = slow.length ? bestFin(slow) : null;
+  let anyFarm = farm.length;  // with "Fixed spots only": the items any spot would be the best bet for
+  if (!farm.length && state.fixed === "fixed") { state.fixed = ""; anyFarm = left.filter(i => bet(R, i).kind === "farm").length; state.fixed = "fixed"; }
+
+  const card = (who, big, small, sub, hl) => `<div class="card${hl ? " hl" : ""}"><div class="who">${who}</div><div class="big" style="font-size:${String(big).length > 12 ? 19 : 28}px">${big}${small ? `<small>${small}</small>` : ""}</div><div class="sub">${sub}</div></div>`;
+  $("gm-plan-cards").innerHTML = [
+    card("Ticked", `${have}`, `of ${N}`, left.length ? `${left.length} grail items to go` : "your grail is complete"),
+    card("Run your maps with the", miss.length ? `${b.e} ear` : "–", "", miss.length ? `about ${cnt(b.n)} of your missing items in your next 100 maps (${cnt(none.n)} without an ear)` : "nothing left that map monsters drop", true),
+    card("Target farm", `${farm.length}`, farm.length === 1 ? "item" : "items", farm.length ? G.slice(0, 2).map(g => `${g.s.name} in ${DIFF[g.s.diff]} for ${g.items.length}`).join(", ") +
+      (G.length > 2 ? `, ${G.length - 2} more spot${G.length > 3 ? "s" : ""}` : "") : "no kill beats a map for any of them"),
+    card("Maps to finish", rest.length ? fmtN(restFin.m) : "–", rest.length ? "expected" : "", !rest.length ? "" : farm.length ? `the rest, with the ${restFin.e} ear on every map; ${fmtN(fast.m)} with no target farming`
+      : `with the ${restFin.e} ear on every map; ${fmtN(none.m)} without an ear`),
+  ].join("");
+
+  const where = s => `${s.name} in ${DIFF[s.diff]}`;
+  const mapsSet = `${state.tier === "all" ? "T1-T3" : "T" + state.tier} ${state.mt === "normal" ? "non-magical" : "rare"} maps at ${state.mf}% magic find`;
+  const steps = [];
+  if (!left.length) steps.push(`<li><h3>Your grail is complete</h3><p class="note">You've ticked every grail item.</p></li>`);
+  else if (!miss.length) steps.push(`<li><h3>Maps: nothing left</h3><p class="note">You've ticked every item map monsters drop.</p></li>`);
+  else steps.push(`<li><h3>Run your maps with the ${b.e} ear</h3><p class="note">${have ? "" : "Nothing is ticked yet, so this is the plan for a fresh grail. "}On ${mapsSet}, ` +
+    `your next 100 maps should find about ${cnt(b.n)} of the ${miss.length} items you're missing that map monsters drop (${cnt(none.n)} without an ear)` +
+    `${likely.length ? `, and ${likely.length} of them have an even chance or better in those maps: maps are their best bet` : ""}. Tick what you find and look again: ` +
+    `the best ear changes as your list shrinks (<a href="#gm-t-plan">every ear</a>).</p></li>`);
+  if (farm.length) {
+    const top = G.reduce((x, g) => g.kill > x.kill ? g : x), K = perMap / top.kill;  // the spot that finds the most of your list
+    const spotCard = g => { const open = SPOT_OPEN.has(g.s.j), its = open ? g.items : g.items.slice(0, 8);
+      return `<div class="spot"><h4>${g.s.name}</h4><div class="meta">${DIFF[g.s.diff]} · ${g.s.area} · best bet for ${g.items.length} of your items</div><ul>` +
+      its.map(o => `<li>${ITEMS[o.i].label}<span>${perUnit(o.r, g.s.unit)} · a kill = ${times(o.v)} maps</span></li>`).join("") + `</ul>` +
+      (g.items.length > 8 ? `<button type="button" class="btn" data-spot="${g.s.j}">${open ? "Show the first 8" : `Show all ${g.items.length}`}</button>` : "") +
+      (g.alt.length ? `<div class="meta">About as good for ${g.items.length > 1 ? "all of them" : "it"}: ${g.alt.slice(0, 3).map(where).join(", ")}${g.alt.length > 3 ? "…" : ""}</div>` : "") +
+      `<div class="meta">For your whole list: one kill finds about ${g.kill.toFixed(g.kill < .095 ? 3 : 2)} of your missing items, one map with the ${b.e} ear about ${perMap.toFixed(perMap < 9.95 ? 2 : 1)}.</div></div>`; };
+    steps.push(`<li><h3>Target farm ${farm.length} item${farm.length > 1 ? "s" : ""}</h3><p class="note">For each of these, one kill finds it at least as often as a whole map ` +
+      `with its best ear: "a kill = 3 maps" means one kill finds it as often as 3 maps. That's as if a kill took as long as a map; a quicker kill makes farming better still. ` +
+      (K <= 1 ? `For your whole list too, a kill of ${top.s.name} finds more than a map: farm them now.`
+        : `For your whole list, though, one map finds as much as ${times(K)} kills of ${top.s.name}: until your list is shorter, your maps find more per try.`) +
+      `</p><div class="spots">${G.map(spotCard).join("")}</div></li>`);
+  } else if (left.length) steps.push(`<li><h3>Target farming: no kill beats a map</h3><p class="note">For each of your missing items, one map with its best ear finds it more often ` +
+    `than one kill of any ${state.fixed === "fixed" ? "fixed " : ""}boss or superunique.${state.fixed === "fixed" && anyFarm ? ` With any farm spot, ${anyFarm} would be best farmed: choose "Any farm spot" above.` : ""}</p></li>`);
+  if (slow.length) {
+    const SLOWN = 10, list = slow.slice().sort((x, y) => bets.get(x).map - bets.get(y).map), shown = SLOW_ALL ? list : list.slice(0, SLOWN);
+    steps.push(`<li><h3>Keep mapping for the slowest ${slow.length}</h3><p class="note">Less than an even chance in your next 100 maps with the ${b.e} ear, and no kill ` +
+      `beats a map for them: maps are still their best bet, and they decide when your grail ends. The ear that finds all of them soonest: the ${slowFin.e} ear (${fmtN(slowFin.m)} maps).</p>` +
+      `<div class="panel slowlist">` + shown.map(i => { const t = bets.get(i), it = ITEMS[i];
+        return `<div class="fs"><div class="fs-n">${it.label} <span class="ver">${it.base}</span></div><div class="fs-v">${t.ear ? t.ear + " ear" : "Any ear"}: ${oneIn(t.map)} maps</div>` +
+          `<div class="fs-m l">90% chance in ${fmtN(Math.log(10) / t.map)} maps` + (t.f ? ` · best farm spot ${where(t.f.s)}, ${perUnit(t.f.r[m], t.f.s.unit)}: a map = ${times(1 / t.v)} kills` : "") + `</div></div>`; }).join("") +
+      `</div>` + (slow.length > SLOWN ? `<div class="tools"><button type="button" class="btn" data-act="slow">${SLOW_ALL ? `Show the slowest ${SLOWN}` : `Show all ${slow.length}`}</button></div>` : "") + `</li>`);
+  }
+  const gl = gli(), gb = left.length ? gambleBases(gl, left)[0] : null, ga = left.length ? gambleBest(left) : null;
+  if (gb) steps.push(`<li><h3>Gold to spare: gamble ${/^[AEIOU]/i.test(GB.bases[gb.j][1]) ? "an" : "a"} ${GB.bases[gb.j][1]}</h3><p class="note">At character level ${GCL[gl]}, ` +
+    `a ${GB.bases[gb.j][1]} costs ${gb.price.toLocaleString("en-US")} gold a gamble and finds about ${cnt(gb.n * 1000)} of your missing items in 1,000 gambles: ` +
+    `about ${goldTxt(gb.per)} gold per new grail item, the least of any base (most likely: ${gb.items.sort((x, y) => y[1] - x[1]).slice(0, 3).map(([i]) => ITEMS[i].label).join(", ")}).` +
+    (ga && ga.k !== gl ? ` A character of level ${GCL[ga.k]} pays less: ${GB.bases[ga.r.j][1]}, about ${goldTxt(ga.r.per)} gold per new item.` : "") +
+    ` Gambling costs gold, not kills: weigh it against the farm spots for the same items (<a href="#gm-gamble">Gambling</a> ranks every base).</p></li>`);
+  if (enc.length) steps.push(`<li><h3>From one encounter</h3><p class="note">${enc.map(i => { const f = bets.get(i).f; return `${ITEMS[i].label}: ${f ? `${f.s.name}, ${perUnit(f.r[m], f.s.unit)}` : "–"}`; }).join(". ")}. ` +
+    `Map monsters never drop ${enc.length > 1 ? "these" : "it"}.</p></li>`);
+  $("gm-plan").innerHTML = steps.join("");
+
+  const td = (v, best, txt) => `<td${best ? ' class="best"' : ""}>${txt}</td>`;
+  $("gm-t-plan").innerHTML = `<thead><tr><th>Ear</th><th>Your missing items found in the next 100 maps</th><th>Maps for 90% of them</th><th>Maps to find them all</th><th class="l">Missing items it raises most</th></tr></thead><tbody>` +
+    ranks.map(o => { const top = miss.filter(i => R.cls[o.e][i] > 0).map(i => [i, R.ear[o.e][i] / R.none[i]]).sort((a, c) => c[1] - a[1]).slice(0, 4);
+      return `<tr><td>${o.e}</td>${td(o.n, o === b, cnt(o.n))}${td(o.m90, o === fast90, fmtN(o.m90))}${td(o.m, o === fast, fmtN(o.m))}<td class="l wrapc small">${top.map(([i, g]) => `${ITEMS[i].label} ×${g.toFixed(1)}`).join(", ") || "none"}</td></tr>`; }).join("") +
+    `<tr><td>No ear</td><td>${cnt(none.n)}</td><td>${fmtN(none.m90)}</td><td>${fmtN(none.m)}</td><td></td></tr></tbody>` +
+    `<caption class="small" style="caption-side:bottom;text-align:left;padding-top:8px">Bold: the best ear for each goal, with maps alone (no target farming). A Corrupted Ear on every map; switching ears as your list shrinks does better still.</caption>`;
+}
+// the plan takes a moment to work out, so a tick or a setting changed on another tab works it out when Your Grail opens
+let PLAN_STALE = false;
+function planSoon() { if ($("gm-planner").hidden) PLAN_STALE = true; else renderPlanner(); }
+$("gm-plan").addEventListener("click", e => {
+  const b = e.target.closest("button[data-act=slow], button[data-spot]"); if (!b) return;
+  if (b.dataset.spot) { const j = +b.dataset.spot; if (SPOT_OPEN.has(j)) SPOT_OPEN.delete(j); else SPOT_OPEN.add(j); } else SLOW_ALL = !SLOW_ALL;
+  renderPlanner();
+});
 
 // ---------------------------------------------------------------- every item
 EARS.forEach(e => { const o = document.createElement("option"); o.value = e; o.textContent = e + " ear"; $("gm-ear").appendChild(o); });
@@ -518,47 +970,150 @@ function renderItems() {
   if (show === "missing") list = list.filter(it => !FOUND.has(it.key) && R.none[it.i] > 0);
   if (show === "boost") list = list.filter(it => inf.get(it).be);
   if (show === "nodrop") list = list.filter(it => !(R.none[it.i] > 0));
-  const key = {rare: it => inf.get(it).bv || 0, name: it => it.label, gain: it => -inf.get(it).gain, lvl: it => -it.lvl}[sort];
-  list.sort((a, b) => { const x = key(a), y = key(b); if (sort === "rare") { if (!x && y) return 1; if (!y && x) return -1; }
+  if (show === "bet") list = list.filter(it => bet(R, it.i).kind === "farm");
+  const m = mfi(), bf = new Map(list.map(it => [it, bestFarm(it.i)]));
+  const key = {rare: it => inf.get(it).bv || 0, farm: it => (bf.get(it) || {r: []}).r[m] || 0, name: it => it.label,
+    gain: it => -inf.get(it).gain, lvl: it => -it.lvl}[sort];
+  list.sort((a, b) => { const x = key(a), y = key(b); if (sort === "rare" || sort === "farm") { if (!x && y) return 1; if (!y && x) return -1; }
     return x < y ? -1 : x > y ? 1 : a.label.localeCompare(b.label); });
   $("gm-count").textContent = `${list.length} of ${N}`;
-  $("gm-items").innerHTML = `<thead><tr><th>Have</th><th class="l">Item</th><th class="l opt">Base</th><th class="opt">Item level</th><th>No ear</th><th class="opt">Every ear</th><th class="l">${ear ? ear + " ear" : "Best ear"}</th><th class="opt">Gain</th><th>90% within</th></tr></thead><tbody>` +
-    list.map(it => { const i = it.i, o = inf.get(it), f = FOUND.has(it.key);
-      return `<tr class="${f ? "found" : ""}"><td><input type="checkbox" data-k="${it.key.replace(/"/g, "&quot;")}" ${f ? "checked" : ""} aria-label="Have ${it.label.replace(/"/g, "")}"></td>` +
-        `<td class="name"><span class="q" style="background:var(${it.kind === "SET" ? "--q-set" : "--q-unique"})"></span>${it.name}${it.ver ? ` <span class="ver">(${it.ver})</span>` : ""}${it.set ? ` <span class="ver">· ${it.set}</span>` : ""}</td>` +
-        `<td class="base opt">${it.base}${it.tier ? ` <span class="ver">${it.tier}</span>` : ""}</td><td class="opt">${it.lvl}</td>` +
-        `<td>${oneIn(R.none[i])}</td><td class="opt">${oneIn(R.any[i])}</td><td class="l">${o.be ? `${o.be}: ${oneIn(o.bv)}` : `<span class="ratio">no pool</span>`}</td>` +
-        `<td class="opt">${R.none[i] ? "×" + o.gain.toFixed(1) : "–"}</td><td>${o.bv ? fmtN(Math.log(10) / o.bv) + " maps" : "–"}</td></tr>`; }).join("") + `</tbody>`;
+  $("gm-items").innerHTML = `<thead><tr><th>Have</th><th class="l">Item</th><th class="l opt">Base</th><th class="opt">Drop level</th><th>No ear</th><th class="opt">Any ear</th><th class="l">${ear ? ear + " ear" : "Best ear"}</th><th class="opt">Best ear ×</th><th>Maps for 90%</th><th class="l">Best farm spot</th></tr></thead><tbody>` +
+    list.map(it => { const i = it.i, o = inf.get(it), f = FOUND.has(it.key), b = bf.get(it);
+      return `<tr class="it${f ? " found" : ""}" data-i="${i}" aria-expanded="${OPEN.has(i)}"><td><input type="checkbox" data-k="${it.key.replace(/"/g, "&quot;")}" ${f ? "checked" : ""} aria-label="Have ${it.label.replace(/"/g, "")}"></td>` +
+        `<td class="name"><span class="q" style="background:var(${it.kind === "SET" ? "--q-set" : "--q-unique"})"></span>${it.name}${it.set ? ` <span class="ver">· ${it.set}</span>` : ""}</td>` +
+        `<td class="base opt">${it.base}${it.tier ? ` <span class="ver">${it.tier} base</span>` : ""}</td><td class="opt">${it.lvl}</td>` +
+        `<td>${oneIn(R.none[i])}</td><td class="opt">${oneIn(R.any[i])}</td><td class="l">${o.be ? `${o.be}: ${oneIn(o.bv)}` : `<span class="ratio">same for every ear</span>`}` +
+        (ear ? "" : earRank(R, i).slice(1, 3).map(([e, v]) => `<br><span class="ratio">${e}: ${oneIn(v)}</span>`).join("")) + `</td>` +
+        `<td class="opt">${R.none[i] ? "×" + o.gain.toFixed(1) : "–"}</td><td>${o.bv ? fmtN(Math.log(10) / o.bv) + " maps" : "–"}</td>` +
+        `<td class="farm">${b ? `${b.s.name} <span class="where">in ${DIFF[b.s.diff]}</span><br><span class="where">${perUnit(b.r[m], b.s.unit)}</span>${bet(R, i).kind === "farm" ? BET_TAG : ""}` : farmElse(i)}<span class="tw">${OPEN.has(i) ? "▴" : "▾"}</span></td></tr>` +
+        (OPEN.has(i) ? `<tr class="gm-detail"><td colspan="10">${farmDetail(i)}</td></tr>` : ""); }).join("") + `</tbody>`;
+}
+function farmElse(i) {  // an item no boss or superunique drops: its uber or event
+  const b = bestFarm(i, [4]); return b ? `${b.s.name}<br><span class="where">${perUnit(b.r[mfi()], b.s.unit)}</span>` : "–";
+}
+const OPEN = new Set();
+const TOPLVL = [0, 1, 2, 3, 4].map(g => Math.max(...SPOTS.filter(s => s.group === g).map(s => s.lvl)));
+const joinAnd = a => a.length < 2 ? a.join("") : a.slice(0, -1).join(", ") + " and " + a[a.length - 1];
+function farmDetail(i) {  // an item's best spots per group (and the best fixed one), the maps and ears, Gheed's event
+  const m = mfi(), R = cur(), it = ITEMS[i];
+  const row = (e, rank) => `<div class="fs"><div class="fs-n"><span class="fs-r">${rank}</span>${e.s.name}</div><div class="fs-v">${perUnit(e.r[m], e.s.unit)}</div>` +
+    `<div class="fs-m l">${[e.s.area, "level " + e.s.lvl, spotTag(e.s), e.s.group === 3 ? "only while its zone is corrupted" : ""].filter(Boolean).join(" · ")}` +
+    (e.enc > 1.05 ? `<br>with its ${e.s.minions} minions: ${perUnit(e.r[m] * e.enc, e.s.unit)}` : "") + `</div></div>`;
+  const cols = [], high = [], none = [];
+  F.groups.forEach((g, gi) => {
+    const all = FARM[i].filter(e => e.s.group === gi && spotOk(e.s)).sort(byRate(m));
+    if (!all.length) { (it.lvl > TOPLVL[gi] ? high : none).push(g); return; }
+    const list = all.slice(0, 5), fixed = gi < 4 && !list.some(e => e.s.fixed === 1) ? all.find(e => e.s.fixed === 1) : null;
+    cols.push(`<div><h4>${g}</h4>${list.map((e, k) => row(e, k + 1)).join("")}` +
+      (fixed ? `<div class="fs-h">Best fixed spot</div>${row(fixed, all.indexOf(fixed) + 1)}` : "") + `</div>`);
+  });
+  const ears = earRank(R, i), lines = [betLine(R, i)].filter(Boolean);
+  lines.push(R.none[i] > 0 ? `<b>T1-T3 maps:</b> ${oneIn(R.none[i])} maps without an ear` +
+    (ears.length ? ", " + ears.map(([e, v]) => `${oneIn(v)} with the ${e} ear`).join(", ") + (ears.length < EARS.length ? `, ${oneIn(R.any[i])} with any other ear` : "")
+      : `, ${oneIn(R.any[i])} with any ear`) + ` <span class="meta">(${setting()})</span>` : `<b>T1-T3 maps:</b> map monsters never drop it`);
+  if (GHEED[i]) lines.push(`<b>Gheed's map event:</b> ${perUnit(GHEED[i], "shop")}`);
+  const gl = gambleLine(i); if (gl) lines.push(gl);
+  if (high.length) lines.push(`<b>No spot in ${joinAnd(high)}:</b> it drops only from monster level ${it.lvl} up, and no monster there is that high`);
+  if (none.length) lines.push(`<b>No ${state.fixed === "fixed" ? "fixed " : ""}spot in ${joinAnd(none)}</b> drops it`);
+  return `<div class="fdetail"><div class="fstrip">${lines.map(l => `<div>${l}</div>`).join("")}</div><div class="fgrid">${cols.join("")}</div></div>`;
 }
 $("gm-items").addEventListener("change", e => {
   const k = e.target.dataset && e.target.dataset.k; if (!k) return;
   if (e.target.checked) FOUND.add(k); else FOUND.delete(k);
   e.target.closest("tr").classList.toggle("found", e.target.checked);
-  save(); renderPlanner();
+  save(); planSoon(); renderGamble();
+});
+$("gm-items").addEventListener("click", e => {
+  if (e.target.closest("input") || e.target.closest("tr.gm-detail")) return;
+  const tr = e.target.closest("tr.it"); if (!tr) return;
+  const i = +tr.dataset.i; if (OPEN.has(i)) OPEN.delete(i); else OPEN.add(i);
+  renderItems();
 });
 ["gm-q", "gm-kind", "gm-show", "gm-ear", "gm-sort"].forEach(id => $(id).addEventListener("input", renderItems));
-const byLabel = new Map(ITEMS.map(it => [it.label.toLowerCase(), it]));
+// a pasted line to an item: case, apostrophes, bullets, numbering, [x] ticks and a version in brackets don't matter
+const norm = s => s.toLowerCase().replace(/^\s*(?:(?:[-*•+]|\d+[.)]|\[[ x✓✔]?\])\s*)+/i, "").replace(/\s*[(\[].*$/, "").replace(/[^a-z0-9]/g, "");
+const byLabel = new Map(ITEMS.map(it => [norm(it.label), it]));
 $("gm-export").onclick = () => { $("gm-io").value = ITEMS.filter(it => FOUND.has(it.key)).map(it => it.label).join("\n"); $("gm-io-msg").textContent = `${FOUND.size} items listed.`; };
 $("gm-copy").onclick = () => { const t = $("gm-io").value;
   navigator.clipboard.writeText(t).then(() => { $("gm-io-msg").textContent = "Copied."; }, () => { $("gm-io").select(); $("gm-io-msg").textContent = "Select the text and copy it."; }); };
 $("gm-import").onclick = () => {
   const lines = $("gm-io").value.split(/\r?\n/).map(s => s.trim()).filter(Boolean), miss = [], next = new Set();
-  for (const l of lines) { const it = byLabel.get(l.toLowerCase()); if (it) next.add(it.key); else miss.push(l); }
-  FOUND = next; save(); renderPlanner(); renderItems();
+  for (const l of lines) { const k = norm(l); if (!k) continue; const it = byLabel.get(k); if (it) next.add(it.key); else miss.push(l); }
+  FOUND = next; save(); renderPlanner(); renderItems(); renderGamble();
   $("gm-io-msg").textContent = `${next.size} items ticked.` + (miss.length ? ` Not recognised: ${miss.slice(0, 5).join(", ")}${miss.length > 5 ? "…" : ""}` : "");
 };
-$("gm-clear").onclick = () => { FOUND = new Set(); save(); renderPlanner(); renderItems(); $("gm-io-msg").textContent = "All ticks cleared."; };
+$("gm-clear").onclick = () => { FOUND = new Set(); save(); renderPlanner(); renderItems(); renderGamble(); $("gm-io-msg").textContent = "All ticks cleared."; };
 
 // ---------------------------------------------------------------- what ears can't do, settings
 function renderCant() {
   const R = cur(), no = ITEMS.filter(it => !(R.none[it.i] > 0)), idx = droppable(R);
-  $("gm-cant-note").textContent = `${no.length} grail items never drop from T1-T3 map monsters, with or without an ear: the game gives them a drop weight of 0 (most also an item level far above anything in a map). They come from elsewhere in the game; no ear changes that.`;
-  $("gm-t-nodrop").innerHTML = `<thead><tr><th class="l">Item</th><th class="l">Base</th><th>Item level</th></tr></thead><tbody>` +
-    no.map(it => `<tr><td>${it.label}</td><td class="l">${it.base}</td><td>${it.lvl}</td></tr>`).join("") + `</tbody>`;
+  const m = mfi(), where = (i, groups) => { const b = bestFarm(i, groups); return b ? `${b.s.name} <span class="ratio">${b.s.group === 4 ? "" : "in " + spotWhere(b.s) + ", "}${perUnit(b.r[m], b.s.unit)}</span>` : "–"; };
+  $("gm-cant-note").textContent = `${no.length} grail items never drop from T1-T3 map monsters, with or without an ear: each comes from one encounter only.`;
+  $("gm-t-nodrop").innerHTML = `<thead><tr><th class="l">Item</th><th class="l">Base</th><th class="l">Where</th></tr></thead><tbody>` +
+    no.map(it => `<tr><td>${it.label}</td><td class="l">${it.base}</td><td class="l">${where(it.i, [0, 1, 2, 3, 4])}</td></tr>`).join("") + `</tbody>`;
   const slow = idx.map(i => [i, ...bestEar(R, i)]).sort((a, b) => a[2] - b[2]).slice(0, 15);
-  $("gm-t-slow").innerHTML = `<thead><tr><th class="l">Item</th><th class="l">Base</th><th>No ear</th><th class="l">Best ear</th><th>90% within</th></tr></thead><tbody>` +
-    slow.map(([i, be, bv]) => `<tr><td>${ITEMS[i].label}</td><td class="l">${ITEMS[i].base}</td><td>${oneIn(R.none[i])}</td><td class="l">${be ? be + ": " + oneIn(bv) : "every ear: " + oneIn(bv)}</td><td>${fmtN(Math.log(10) / bv)} maps</td></tr>`).join("") + `</tbody>`;
+  $("gm-t-slow").innerHTML = `<thead><tr><th class="l">Item</th><th class="l">Base</th><th>No ear</th><th class="l">Best ear</th><th>Maps for 90%</th><th class="l">Best farm spot</th></tr></thead><tbody>` +
+    slow.map(([i, be, bv]) => `<tr><td>${ITEMS[i].label}</td><td class="l">${ITEMS[i].base}</td><td>${oneIn(R.none[i])}</td><td class="l">${be ? be + ": " + oneIn(bv) : "any ear: " + oneIn(bv)}</td><td>${fmtN(Math.log(10) / bv)} maps</td><td class="l">${where(i)}${bet(R, i).kind === "farm" ? BET_TAG : ""}</td></tr>`).join("") + `</tbody>`;
 }
+
+// ---------------------------------------------------------------- where to farm
+$("gm-fgroup").innerHTML = `<option value="kills">Bosses and superuniques</option>` + F.groups.map((g, gi) => `<option value="${gi}">${g}</option>`).join("");
+let FMORE = false;
+function renderFarm() {
+  const m = mfi(), grp = $("gm-fgroup").value, sort = $("gm-fsort").value, best = new Map();
+  ITEMS.forEach(it => { const b = bestFarm(it.i, grp === "kills" ? [0, 1, 2] : [+grp]);
+    if (b) best.set(b.s.j, (best.get(b.s.j) || []).concat([[it.i, b.r[m]]])); });
+  const list = SPOTS.filter(s => (grp === "kills" ? s.group <= 2 : s.group === +grp) && spotOk(s)), n = s => (best.get(s.j) || []).length;
+  list.sort((a, b) => (sort === "best" ? n(b) - n(a) : 0) || b.tot[m] - a.tot[m]);
+  $("gm-fcount").textContent = `${list.length} spots`;
+  const shown = FMORE ? list : list.slice(0, 15);
+  $("gm-t-farm").innerHTML = `<thead><tr><th class="l">Monster</th><th class="l">Difficulty</th><th class="l">Area</th><th>Level</th><th>Grail drops</th><th class="l">Best spot for</th></tr></thead><tbody>` +
+    shown.map(s => { const b = (best.get(s.j) || []).sort((x, y) => x[1] - y[1]);
+      return `<tr><td>${s.name}${s.minions ? ` <span class="ratio">+ ${s.minions} minions</span>` : ""}</td><td class="l small">${spotWhere(s)}</td><td class="l small">${s.area || "–"}</td><td>${s.lvl}</td><td>${perUnitTot(s.tot[m], s.unit)}</td>` +
+        `<td class="top">${b.length ? `${b.length} item${b.length > 1 ? "s" : ""}: ` + b.slice(0, 5).map(([i, r]) => `${ITEMS[i].label} <span class="ratio">${perUnit(r, s.unit)}</span>`).join(", ") + (b.length > 5 ? ", …" : "") : `<span class="ratio">none</span>`}</td></tr>`; }).join("") + `</tbody>`;
+  $("gm-fmore").hidden = list.length <= 15;
+  $("gm-fmore").textContent = FMORE ? "Show fewer" : `Show all ${list.length} spots`;
+  const counts = [0, 0, 0], top = [[], [], []], byKill = new Map();
+  ITEMS.forEach(it => { const b = bestFarm(it.i); if (b) { counts[b.s.diff]++; byKill.set(b.s.j, (byKill.get(b.s.j) || 0) + 1); } });
+  [...byKill.entries()].sort((a, b) => b[1] - a[1]).forEach(([j, c]) => { const s = SPOTS[j]; if (top[s.diff].length < 3) top[s.diff].push(`${s.name} (${c}${top[s.diff].length ? "" : " items"})`); });
+  const ua = SPOTS.filter(s => s.group === 4 && s.unit === "run" && s.tot[m] > 1).sort((a, b) => b.tot[m] - a.tot[m])[0];
+  const lil = SPOTS.find(s => s.group === 4 && s.unit === "kill" && s.lvl === 110);
+  const baal = SPOTS.filter(s => s.group === 2).sort((a, b) => b.tot[m] - a.tot[m])[0];
+  const nmTop = Math.max(...SPOTS.filter(s => s.group === 1).map(s => s.lvl));
+  const gh = Object.values(GHEED).sort((a, b) => a - b), ghMid = gh.length ? gh[Math.floor(gh.length / 2)] : 0;
+  $("gm-farm-list").innerHTML = [
+    `<b>Per kill, ${counts[0]} items are best farmed in Normal, ${counts[1]} in Nightmare and ${counts[2]} in Hell${counts[2] === counts[0] ? " as well" : ""}.</b> A low-level base makes up a bigger part of a low-level monster's drops, so low-level uniques come most often from Normal; the spots there that are best for the most items: ${top[0].join(", ")}.`,
+    `<b>The act bosses drop the most grail items per kill:</b> up to six items a kill, and Hell ${baal.name} about ${baal.tot[m].toFixed(1)} grail items. Best for the most items in Hell: ${top[2].join(", ")}${top[1].length ? `; in Nightmare: ${top[1].join(", ")}` : ""}. An item needs an item level of at least its own: items of level ${nmTop + 1} and up only drop in Hell.`,
+    ua ? `<b>The Uber Ancients drop the most per fight:</b> about ${ua.tot[m].toFixed(1)} grail items a run with three ancients. ${lil ? `${lil.name}, Uber Duriel and Uber Izual drop two items each besides potions, one grail item about every ${fmtN(1 / lil.tot[m])} kills. ` : ""}Annihilus comes only from Diablo Clone, one every kill, and the Hellfire Torch only from Uber Tristram, one a run.` : "",
+    `<b>Corrupted Zones</b> put a Hell area group's superuniques at level 88 while the zone lasts: the same treasure classes, more of the highest-level items.`,
+    ghMid ? `<b>Gheed's map event</b> offers every unique but jewels: each about ${perUnit(ghMid, "shop")}, a little less for items needing level 60 or more.` : ""
+  ].filter(Boolean).map(x => `<li>${x}</li>`).join("");
+}
+["gm-fgroup", "gm-fsort"].forEach(id => $(id).addEventListener("input", () => { FMORE = false; renderFarm(); }));
+$("gm-clvl").innerHTML = GCL.map(v => `<option value="${v}"${v === state.clvl ? " selected" : ""}>${v}</option>`).join("");
+let GMORE = false;
+function renderGamble() {
+  const l = gli(), list = ITEMS.filter(it => !FOUND.has(it.key)).map(it => it.i), fresh = list.length === N;
+  const rows = gambleBases(l, list), shown = GMORE ? rows : rows.slice(0, 12), what = fresh ? "grail items" : "of your missing items";
+  $("gm-gcount").textContent = `${rows.length} bases`;
+  $("gm-t-gamble").innerHTML = !rows.length ? `<tbody><tr><td>Nothing left that gambling finds.</td></tr></tbody>` :
+    `<thead><tr><th class="l">Base</th><th>Gold a gamble</th><th>${fresh ? "Grail items" : "Your missing items"} in 1,000 gambles</th><th>Gold per new item</th><th class="l">Most likely</th></tr></thead><tbody>` +
+    shown.map(o => `<tr><td>${GB.bases[o.j][1]}</td><td>${o.price.toLocaleString("en-US")}</td><td>${cnt(o.n * 1000)}</td><td>${goldTxt(o.per)}</td>` +
+      `<td class="top">${o.items.sort((x, y) => y[1] - x[1]).slice(0, 4).map(([i, r]) => `${ITEMS[i].label} <span class="ratio">${oneIn(r)}</span>`).join(", ")}` +
+      `${o.items.length > 4 ? `, <span class="ratio">${o.items.length - 4} more</span>` : ""}</td></tr>`).join("") + `</tbody>`;
+  $("gm-gmore").hidden = rows.length <= 12;
+  $("gm-gmore").textContent = GMORE ? "Show fewer" : `Show all ${rows.length} bases`;
+  const ga = gambleBest(list), soj = ITEMS.find(it => it.name === "The Stone of Jordan");
+  const sojBest = soj && GCL.map((_, k) => bestGamble(soj.i, k)).map((e, k) => e && [perFind(e, k), k]).filter(Boolean).sort((a, b) => a[0] - b[0])[0];
+  $("gm-gamble-list").innerHTML = [
+    rows.length ? `<b>Best at character level ${GCL[l]}:</b> ${GB.bases[rows[0].j][1]}, about ${goldTxt(rows[0].per)} gold per new item (${cnt(rows[0].n * 1000)} ${what} in 1,000 gambles).` : "",
+    ga && ga.k !== l ? `<b>Another character level can pay less:</b> at level ${GCL[ga.k]}, ${GB.bases[ga.r.j][1]} takes about ${goldTxt(ga.r.per)} gold per new item. A gambled item's level follows the character's, so a low level gambles only a base's low-level uniques and sets, at a better chance each; rings and amulets cost the same at every level, other bases more the higher the level. Discovery Progress is kept per account, so what a low-level character of yours gambles counts for your grail.` : "",
+    `<b>Low-level items are cheap, high-level ones aren't:</b> a base's low-level uniques and sets cost a low-level character a few million gold or less each, the same items the Normal farm spots are best for; the items only a high item level can make cost far more${sojBest ? ` (The Stone of Jordan about ${goldTxt(sojBest[0])} gold, at character level ${GCL[sojBest[1]]})` : ""}. Gheed's map event sells a unique for 1,000,000 gold an offer, when it shows up.`,
+  ].filter(Boolean).map(x => `<li>${x}</li>`).join("");
+}
+$("gm-clvl").addEventListener("input", e => { state.clvl = e.target.value; GMORE = false; renderGamble(); planSoon(); renderItems(); });
+$("gm-gmore").onclick = () => { GMORE = !GMORE; renderGamble(); };
+$("gm-fmore").onclick = () => { FMORE = !FMORE; renderFarm(); };
 function renderGrid() {
   const rows = [];
   for (const mt of ["normal", "rare"]) for (const mf of DATA.mfs.map(String)) {
@@ -570,13 +1125,68 @@ function renderGrid() {
 }
 
 // ---------------------------------------------------------------- settings bar
-function renderAll() { summary(); renderAnswer(); renderSpeed(); renderLevers(); renderEars(); renderPlanner(); renderItems(); renderCant(); }
+$("gm-mf").innerHTML = MFS.map(v => `<button type="button" data-v="${v}" aria-pressed="${v === state.mf}">${v}%</button>`).join("");
+function renderAll() { summary(); renderAnswer(); renderSpeed(); renderLevers(); renderEars(); planSoon(); renderItems(); renderFarm(); renderGamble(); renderCant(); renderFaq(); }
 document.querySelectorAll(".grail-map .seg").forEach(seg => seg.addEventListener("click", e => {
   const b = e.target.closest("button"); if (!b) return;
   seg.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
-  state[seg.dataset.ctl] = b.dataset.v; renderAll();
+  state[seg.dataset.ctl] = b.dataset.v; renderAll(); setSum();
 }));
-$("gm-foot").textContent = `Worked out from Project Diablo 2's game data of ${DATA.date}: a model of full map clears, not counts from the game.`;
-renderLooks(); renderHow(); renderAll(); renderGrid();
+document.querySelectorAll(".grail-map .gm-fixed").forEach(sel => sel.addEventListener("input", () => {  // "Fixed spots only", in three places
+  state.fixed = sel.value; document.querySelectorAll(".grail-map .gm-fixed").forEach(x => { x.value = sel.value; });
+  FMORE = false; renderAnswer(); planSoon(); renderItems(); renderFarm(); renderCant(); renderFaq();
+}));
+
+// ---------------------------------------------------------------- tabs: one per feature; a link to a section opens its tab
+const ROOT = document.querySelector(".grail-map"), BAR = $("gm-bar");
+const setBar = () => ROOT.style.setProperty("--bar", BAR.offsetHeight + "px");
+setBar(); addEventListener("resize", setBar);
+// phones: the settings fold into one line, and a tap on it opens them
+const SETSUM = $("gm-setsum");
+function setSum() { SETSUM.querySelector(".v").textContent = `${state.tier === "all" ? "T1-T3" : "T" + state.tier} · ${state.mt === "normal" ? "Non-magical" : "Rare"} · ${state.mf}% MF`; }
+SETSUM.addEventListener("click", () => {
+  const open = BAR.classList.toggle("open");
+  SETSUM.setAttribute("aria-expanded", String(open)); SETSUM.querySelector(".c").textContent = open ? "Done" : "Change"; setBar();
+});
+setSum();
+// the tab row: a fade at the edge where more tabs are, and the open tab scrolled into view
+const TABS = document.querySelector(".grail-map .tabs");
+const tabCue = () => { TABS.toggleAttribute("data-l", TABS.scrollLeft > 2); TABS.toggleAttribute("data-r", TABS.scrollLeft + TABS.clientWidth < TABS.scrollWidth - 2); };
+TABS.addEventListener("scroll", tabCue, {passive: true}); addEventListener("resize", tabCue); tabCue();
+// an item's details keep to the part of the item table in view (--vis), so they don't run off a phone's screen
+const ITBL = $("gm-items").parentElement;
+const setVis = () => { const cs = getComputedStyle(ITBL), w = ITBL.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight); if (w > 0) ITBL.style.setProperty("--vis", w + "px"); };
+if (window.ResizeObserver) new ResizeObserver(setVis).observe(ITBL); else addEventListener("resize", setVis);
+function showTab(tab, target) {
+  document.querySelectorAll(".grail-map .tabs [role=tab]").forEach(b => b.setAttribute("aria-selected", String(b.dataset.tab === tab)));
+  const sel = TABS.querySelector(`[data-tab="${tab}"]`);
+  if (sel && TABS.scrollWidth > TABS.clientWidth) TABS.scrollTo({left: Math.max(0, sel.offsetLeft - (TABS.clientWidth - sel.offsetWidth) / 2), behavior: "smooth"});
+  document.querySelectorAll(".grail-map section[data-tab]").forEach(s => { s.hidden = s.dataset.tab !== tab; });
+  if (tab === "planner" && PLAN_STALE) { PLAN_STALE = false; renderPlanner(); }
+  const to = target || document.querySelector(`.grail-map section[data-tab="${tab}"]`);
+  // the tab's start (or the section asked for) just under the bar, if the page is scrolled past it
+  if (target || to.getBoundingClientRect().top < BAR.getBoundingClientRect().bottom) to.scrollIntoView();
+}
+function fromHash() {
+  const h = decodeURIComponent(location.hash.slice(1));
+  if (h.startsWith("tab-")) {  // a link to a tab (the intro's cards, a shared link) lands on it
+    const first = document.querySelector(`.grail-map section[data-tab="${h.slice(4)}"]`); if (first) showTab(h.slice(4), first); return; }
+  const el = h && document.getElementById(h), sec = el && el.closest(".grail-map section[data-tab]");
+  if (sec) showTab(sec.dataset.tab, el);
+}
+document.querySelector(".grail-map .tabs").addEventListener("click", e => {
+  const b = e.target.closest("[role=tab]"); if (!b) return;
+  showTab(b.dataset.tab);
+  try { history.replaceState(null, "", "#tab-" + b.dataset.tab); } catch (err) {}
+});
+document.addEventListener("click", e => {  // links to a section, on this page or in the website's text above it
+  const a = e.target.closest('a[href^="#gm-"], a[href^="#tab-"]'); if (!a) return;
+  e.preventDefault();
+  try { history.pushState(null, "", a.getAttribute("href")); } catch (err) {}
+  fromHash();
+});
+addEventListener("hashchange", fromHash);
+$("gm-foot").textContent = "Estimates from a model of full map clears and kills, not drop counts from play.";
+renderLooks(); renderHow(); renderAll(); renderGrid(); fromHash();
 })();
 </script>

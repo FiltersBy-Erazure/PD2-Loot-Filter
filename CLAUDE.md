@@ -503,15 +503,61 @@
   `tools/grail_map_template.html`, grail first (the author, 2026-10-30: "just as much about the grail as about ears"):
   how the filter shows an unidentified unique / set item you haven't discovered and one you have (`LOOK_EXAMPLES`:
   tier_map's engine on the filter's own rules, Main, levels 1 and 12; rerun after a change to 040 / 160 / 170's Grail
-  looks), how long the grail takes and what makes it faster, and how the Corrupted Ears change the time to find every unique and set item (574:
-  enabled uniques, unique maps and quest items left out, and set items; versions of one name count apart) in T1-T3
-  maps, per T1 / T2 / T3, non-magical or average rare map, magic find 0 / 150 / 300 / 500: each item's drops per map
+  looks), how long the grail takes and what makes it faster, and how the Corrupted Ears change the time to find every unique and set item (555:
+  enabled uniques, unique maps, quest items and `NOT_GRAIL` left out, and set items; the rows of one name are one item,
+  any version finds it, the author 2026-10-30: Rainbow Facet's eight, Akarat's Devotion's two...; set names are the
+  game's strings, McAuley's Folly is Sander's Folly) in T1-T3 maps, per T1 / T2 / T3, non-magical or average rare map,
+  magic find 0-500 in steps of 100 (`MFS`; the bar is built from it): each item's drops per map
   with no ear, the part every ear gives (extra drop, rarity) and each ear's class pool, best ear, maps for 90%; grail
   curves (no ear, the band of the seven ears, switching ears before each map), each ear's top items, and a planner
   (ticks in the player's browser, a pasted list) that ranks the ears for the missing items. It reads the game's
   tables (pd2data.mpq) and `docs/pd2-map-exp.tsv`, so build.bat, the hook and CI don't run it: run it after a PD2
   patch that changes drop tables, the ears (their cube recipes), unique / set items or the maps. A model, not in-game
   counts; its docstring has the rules (treasure classes, quality, item level gates, the ears).
+  `NOT_GRAIL` (the author, 2026-10-30): Itherael's Path, Overlord's Helm, Dark Abyss, Aidan's Scar, Hadriel's Hand,
+  Band of Skulls, Cage of the Unsullied, The Third Eye and Embersworn are no grail items; Annihilus and the Hellfire
+  Torch are. Farm spots (the author, 2026-10-30: per item, where to target farm it and in what difficulty; per kill,
+  solo): `tools/grail_farm.py` (imported by grail_map.py; `--item NAME`, `--spot NAME`, `--sources`, `--selftest`)
+  has every act boss, superunique (`PLACES`: SuperUniques key -> Levels Id, from the areas' map pieces; `UNPLACED`
+  rows spawn nowhere) and special encounter per difficulty, Hell Corrupted Zone versions (`ZONES`, level 85, so
+  superuniques 88) and Gheed's map event (per shop). One kill = one drop with the six-item limit, computed exactly
+  (`Flow`: per class, the chance of going from c to c' items and what it adds from c; the self-test checks it
+  against a pick-by-pick simulation); levels and class upgrades as the game does (Normal never upgrades, boss-flagged
+  monsters neither). Each spot is fixed (a preset area, DrlgType 2, or `FIXED_AREAS` / `FIXED_KEYS`) or anywhere in
+  its area, with its areas from the nearest waypoint (Levels Waypoint and Vis links, plus `OUTDOOR`'s outdoor links
+  and portals); the author, 2026-10-30: players weigh fixed spots near a waypoint (Bone Ash). The page has tabs, one
+  per feature (the author, 2026-10-30: the long item list buried the rest; their names, every word capitalised):
+  Overview, Filter Display, Your Grail, Every Item, Target Farming, Corrupted Ears, How It's Worked Out; a link to a
+  section id (#gm-farm) or #tab-<name> opens its
+  tab (grail.md's intro links them). Per item: its best kill spot (Normal / Nightmare / Hell bosses and superuniques)
+  and its best ears (the next ones too: Stalker's Cull is in the Druid and the Assassin pools); a row opens to the
+  best 5 of each group (and the best fixed spot), the maps with each ear and Gheed; "Fixed spots only" keeps to fixed
+  spots; "Target Farming" lists every spot and the items it is best for. Equal rates: a fixed spot first, then the one
+  nearer a waypoint (`spotRank`). An item's best bet (`bet()`, first line of its details, "beats maps" in its farm
+  cell): target farm its best boss or superunique (Normal / Nightmare / Hell, not zones, ubers or events) when one kill
+  there finds it at least as often as a whole map with its best ear, maps otherwise; "a kill = 3 maps" says by how
+  much (no time model: the author's step 6, time inputs, not asked for). Your Grail is a plan (the author, 2026-10-30,
+  steps 4-5 of the review): cards, then 1 run maps with the ear that finds the most missing items in the next 100 maps,
+  2 target farm the best-bet items on as few spots as it takes (`farmGroups`: the spot within 90% of each item's best
+  for the most items; the Cow King in Normal takes 27 of 33 on a fresh grail), with the whole list's per-kill / per-map
+  numbers, 3 the slowest (maps' items under an even chance in 100 maps), 4 the encounters; maps to finish without the
+  farmed items. It works out only while its tab is open (`planSoon`). The ear table ranks ears by the missing items
+  found in the next 100 maps (a repeat counts once) and shows the best
+  ear for 90% and for all of them beside it (the author, 2026-10-30: one "best ear" per goal, never drops per map,
+  which count duplicates). Phones: the settings fold into one line, the tab row fades where more tabs are, and an
+  item's details keep to the visible part of the wide table (`--vis`). Gambling (the author, 2026-10-31, `gamble_rates` / `gamble_price` /
+  `pack_gamble` in grail_farm.py): town gambling is the base game's code, unchanged by PD2, with PD2's
+  DifficultyLevels (unique 50, set 100 in 100,000; exceptional 90, elite 33 per item level in 10,000) and Gamble.txt;
+  item level = character level -5..+4; price per gamble from the base's normal version (rings / amulets: Misc `gamble
+  cost`). The page: a Gambling section on Target Farming (character level 1-99 select, bases by gold per new grail item
+  for your missing items), a line in each item's details, a "Gold to spare" plan step, a FAQ answer. Player text never says the numbers come from the game's data (the author, 2026-10-30): no
+  data date in the footer, "how the game rolls drops" rather than "the game's tables". An item's level there is its
+  "drop level" (the lowest monster level that drops it); each ear's pool and dangers come from the ear's own in-game
+  text (`ears()`: `what`, `harder`), the share of its pool on bases with no unique from the tables (`nounique`).
+  grail.md's intro has "Corrupted Ears in short" (with a pool table) and "Words on this page" (a glossary). A FAQ
+  tab (after Your Grail; `renderFaq`, its numbers follow the bar) answers the first questions a player has. Where
+  ears come from (the author, from the wiki, 2026-10-30): the Corrupted Heroes map event, up to 3 black portals and 5
+  invaders a map, each dropping a full set of rares and the Corrupted Ear of its own class.
 - The website (https://filtersby-erazure.github.io/PD2-Loot-Filter/) is MkDocs with the Material theme:
   `website/mkdocs.yml` and the pages in `website/docs/*.md` (text from the README, in the author's words). Never use
   the repo's `docs/` for it: that is reference material, not for players. `website/hooks.py` adds the players'
@@ -800,7 +846,7 @@ before), and so are throwing and stamina potions (hidden Fulminating / Chilling 
 `Erazure-Non-Magic-Bases.html` · `tools/magic_rare_map.py` + `tools/magic_rare_map_template.html` +
 `Erazure-Magic-Items.html` + `Erazure-Rare-Items.html` · `tools/level_map.py` + `tools/level_map_template.html` +
 `Erazure-Filter-Levels.html` · `tools/shop_map.py` + `tools/shop_map_template.html` + `tools/inv/` +
-`Erazure-Skill-Shop-Highlights.html` · `tools/grail_map.py` + `tools/grail_map_template.html` +
+`Erazure-Skill-Shop-Highlights.html` · `tools/grail_map.py` + `tools/grail_farm.py` + `tools/grail_map_template.html` +
 `Erazure-Grail-Planner.html` · `styles/minimal.filter` + `tools/style_map.py` + `tools/style_map_template.html` +
 `Erazure-Minimal-Style.html` · `styles/corrlorized.edits` + `tools/style_edits.py` + `Corrlorized-*.filter` ·
 `website/` + `site_preview.bat` + `.github/workflows/pages.yml` ·
