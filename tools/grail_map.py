@@ -23,7 +23,9 @@ A model, nothing measured in game:
   weight. Quality: unique, set, rare, magic in turn, each 128 / ((ratio - (item level - quality level) / divisor) x
   128) at least the ratio's minimum, less its modifier / 1024; magic find with diminishing returns (unique 250, set
   500, rare 600); class items use ItemRatio's class rows. A unique (set) is picked among the base's uniques (sets)
-  of a level at most the item level, by weight (weight 0 never); no candidate: a unique becomes rare, a set magic.
+  of a level at most the item level, by weight; a unique of weight 0 only when every candidate weighs 0 (PD2 took
+  out the base game's minimum of 1, but a lone candidate needs no weight: Embersworn, the only unique on Demon Heart,
+  drops though its rarity is empty); no candidate: a unique becomes rare, a set magic.
   Item level = the monster's level.
 - The ears: their cube recipes ("map + ear <class>") through Properties. Per kill of a monster that is not a unique
   monster's minion, the extra drop chance repeats the monster's whole drop, and the class chance drops one item of
@@ -62,7 +64,7 @@ MINIONS = 4.5        # a unique monster's minions: 3-6
 BOSS_LEVEL = 90      # a map boss's own level (MonStats Level(H) 89-91)
 QUEST = {"vip", "msf", "hst", "hfh", "qf1", "qf2"}
 # Uniques that are no grail items (the author, 2026-10-30), by UniqueItems index
-NOT_GRAIL = {"Aidans Scar", "Band of Skulls", "Cage of the Unsullied", "Dark Abyss", "Embersworn", "Hadriels Hand",
+NOT_GRAIL = {"Aidans Scar", "Band of Skulls", "Cage of the Unsullied", "Dark Abyss", "Hadriels Hand",
              "Itheraels Path", "Overlords Helm", "Rainbow Facet", "The Third Eye"}
 CLASS_POOL = {  # the ears' class stats -> the treasure class PD2 drops from for each
     "zon_ear_drops": "Amazon Ear Drop", "sin_ear_drops": "Assassin Ear Drop", "barb_ear_drops": "Barb Ear Drop",
@@ -433,10 +435,17 @@ def candidates(items):
         if it["kind"] == "SET" and it["index"] in COW_SET:
             cand["COW"].add(i)
         for code, lvl, w in it["rows"]:
-            if w > 0:
-                cand[it["kind"]].setdefault(code, []).append((lvl, w, i))
+            cand[it["kind"]].setdefault(code, []).append((lvl, w, i))
     assert len(cand["COW"]) == len(COW_SET), "Cow King's Leathers' items were renamed"
     return cand
+
+
+def weighed(entries):
+    """The unique pick among a base's candidates [(weight, item)] of the item's level: by weight, and a weight-0 row
+    only when every candidate weighs 0: then the game's rand(0) is 0 and its pick runs to the last candidate."""
+    if sum(w for w, _ in entries) > 0:
+        return [(w, i) for w, i in entries if w > 0]
+    return [(1, entries[-1][1])] if entries else []
 
 
 def add_drops(d, cand, dist, lvl, mf, k, out, bovine=False):
@@ -445,7 +454,7 @@ def add_drops(d, cand, dist, lvl, mf, k, out, bovine=False):
     for (code, mods), p in dist.items():
         if not d.grail_kind(code):
             continue
-        cu = [(w, i) for l, w, i in cand["UNI"].get(code, []) if l <= lvl]
+        cu = weighed([(w, i) for l, w, i in cand["UNI"].get(code, []) if l <= lvl])
         cs = [(w, i) for l, w, i in cand["SET"].get(code, []) if l <= lvl and (bovine or i not in cand["COW"])]
         u, s = d.unique_set(code, mods, lvl, mf, bool(cu), bool(cs))
         for q, cl in ((u, cu), (s, cs)):

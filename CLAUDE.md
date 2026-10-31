@@ -520,7 +520,7 @@
   `tools/grail_map_template.html`, grail first (the author, 2026-10-30: "just as much about the grail as about ears"):
   how the filter shows an unidentified unique / set item you haven't discovered and one you have (`LOOK_EXAMPLES`:
   tier_map's engine on the filter's own rules, Main, levels 1 and 12; rerun after a change to 040 / 160 / 170's Grail
-  looks), how long the grail takes and what makes it faster, and how the Corrupted Ears change the time to find every unique and set item (554:
+  looks), how long the grail takes and what makes it faster, and how the Corrupted Ears change the time to find every unique and set item (555:
   enabled uniques, unique maps, quest items and `NOT_GRAIL` left out, and set items; the rows of one name are one item,
   any version finds it, the author 2026-10-30: Akarat's Devotion's two, Cyclopean Roar's two...; set names are the
   game's strings, McAuley's Folly is Sander's Folly) in T1-T3 maps, per T1 / T2 / T3, non-magical or average rare map,
@@ -532,7 +532,9 @@
   patch that changes drop tables, the ears (their cube recipes), unique / set items or the maps. A model, not in-game
   counts; its docstring has the rules (treasure classes, quality, item level gates, the ears).
   `NOT_GRAIL` (the author, 2026-10-30): Itherael's Path, Overlord's Helm, Dark Abyss, Aidan's Scar, Hadriel's Hand,
-  Band of Skulls, Cage of the Unsullied, The Third Eye, Embersworn and (2026-10-31) Rainbow Facet are no grail items; Annihilus and the Hellfire
+  Band of Skulls, Cage of the Unsullied, The Third Eye and (2026-10-31) Rainbow Facet are no grail items (Embersworn is
+  one, the author, 2026-10-31: the game's own Discovery count is 555 too; its rarity is empty, but it is the only
+  unique on Demon Heart, and the unique pick takes a weight-0 row when every candidate of the base weighs 0, `weighed`); Annihilus and the Hellfire
   Torch are. Farm spots (the author, 2026-10-30: per item, where to target farm it and in what difficulty; per kill,
   solo): `tools/grail_farm.py` (imported by grail_map.py; `--item NAME`, `--spot NAME`, `--sources`, `--selftest`)
   has every act boss, superunique (`PLACES`: SuperUniques key -> Levels Id, from the areas' map pieces; `UNPLACED`
@@ -565,7 +567,7 @@
   ear for 90% and for all of them beside it (the author, 2026-10-30: one "best ear" per goal, never drops per map,
   which count duplicates). Phones: the settings fold into one line, the tab row fades where more tabs are, and an
   item's details keep to the visible part of the wide table (`--vis`). Ticks (the author, 2026-10-31: start from a full
-  list and untick what's missing, or tick a few, without 554 clicks): Every Item's "Tick shown" / "Untick shown" act on the
+  list and untick what's missing, or tick a few, without 555 clicks): Every Item's "Tick shown" / "Untick shown" act on the
   rows the search and filters list (`SHOWN`), Enter in its search ticks or unticks the item it names (or the only row), Show
   "Not ticked" / "Ticked"; Your Grail's "Fill in your grail" panel (`#gm-fill`, open when nothing is ticked) has the box's
   Tick these / Untick these / Tick all but these (refused while a line is unrecognised: it would be ticked as found) /

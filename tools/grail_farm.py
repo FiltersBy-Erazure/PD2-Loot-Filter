@@ -563,6 +563,8 @@ def gamble_rates(t, d, items, clvls=GAMBLE_CLVLS):
                 for c, pc in outcome.items():
                     for kind, q in (("UNI", g["GambleUnique"]), ("SET", g["GambleSet"])):
                         cl = [(w, i) for l, w, i in cand[kind].get(c, []) if l <= il and i not in cand["COW"]]
+                        if kind == "UNI":
+                            cl = GM.weighed(cl)
                         tot = sum(w for w, _ in cl)
                         for w, i in cl:
                             acc[i] = acc.get(i, 0) + 0.1 * pc * q / 100000 * w / tot
