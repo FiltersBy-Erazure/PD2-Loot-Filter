@@ -453,6 +453,9 @@
       has a fixed level of its own; in Nightmare and Hell it takes the area's level, but bosses keep theirs; superuniques and their
       minions are 3 levels higher. A kill makes at most six items, gold and potions included, so Duriel's many picks always end
       at six. A boss drops its quest loot only while the quest is open; farming kills drop the usual loot.</li>
+    <li><b>Cow King's Leathers:</b> only a Hell Bovine's drop can be one of its pieces: the cows of the Secret Cow Level, the Cow
+      King, and the Bovine guest a map can roll. Blood Moon's cows are other monsters and never drop it. The Bovine guest is
+      left out here, so maps show no chance for it.</li>
     <li><b>Corrupted Zones:</b> in Hell games made with Baal's quest done, one group of areas at a time has area level 85, so its
       superuniques are level 88 (bosses keep their own level).</li>
     <li><b>Ubers and events:</b> Lilith, Uber Duriel and Uber Izual drop their own loot at level 110. Diablo Clone drops
@@ -756,7 +759,7 @@ function renderFaq() {
     ["Can the planner read my Discovery Progress?",
      `No. The game keeps it, and this page can't see your game. Tick the items you've found under <a href="#gm-list">Every Item</a>, or paste a list under <a href="#gm-planner">Your Grail</a> ("Copy or paste your list"): one item per line, from a spreadsheet, another grail tracker or typed by hand. Your ticks stay in your browser.`],
     [`Why ${N} items?`,
-     `Every unique and set item counts once, whichever of its versions you find (Akarat's Devotion's two are one item). Unique maps, quest items and ten uniques that don't count for the grail are left out (<a href="#gm-method">How It's Worked Out</a> names them). ${idx.length} of the ${N} drop from T1-T3 map monsters; Annihilus and the Hellfire Torch come from one encounter each.`],
+     `Every unique and set item counts once, whichever of its versions you find (Akarat's Devotion's two are one item). Unique maps, quest items and ten uniques that don't count for the grail are left out (<a href="#gm-method">How It's Worked Out</a> names them). ${idx.length} of the ${N} drop from T1-T3 map monsters; Annihilus and the Hellfire Torch come from one encounter each, and Cow King's Leathers only from Hell Bovines: the Secret Cow Level's cows and the Cow King (and the Bovine guest a map can roll, left out here; Blood Moon's cows never drop it).`],
     ["Where do Corrupted Ears come from, and how do I use one?",
      `From the Corrupted Heroes map event: the red text "You feel a corrupted presence watching you, as if you're being hunted..." announces it, and powerful copies of player characters invade the map through black portals (up to 3 portals and 5 invaders a map). Each invader drops a full set of rare items and the Corrupted Ear of its own class. Cube an ear with a map in the Horadric Cube: the ear is used up and the map gets its bonuses and dangers (<a href="#gm-how">Corrupted Ears</a>).`],
     ["Which ear should I use?",
@@ -855,16 +858,20 @@ const cnt = v => v >= 9.95 ? v.toFixed(0) : v.toFixed(1);
 // kill there finds it at least as often as a whole map with the item's best ear, maps otherwise; for the items map
 // monsters never drop, their uber or event. v: the maps one kill is worth.
 function bet(R, i) {
-  if (!(R.none[i] > 0)) return {kind: "enc", f: bestFarm(i, [4])};
+  if (!(R.none[i] > 0)) return {kind: "enc", f: bestFarm(i, [4]) || bestFarm(i)};
   const [ear, map] = bestEar(R, i), f = bestFarm(i), v = f ? f.r[mfi()] / map : 0;
   return {kind: v >= 1 ? "farm" : "maps", ear, map, f, v};
 }
 const times = v => v >= 9.95 ? fmtN(v) : v.toFixed(1).replace(/\.0$/, "");
 const earName = e => e ? `the ${e} ear` : "any Corrupted Ear";
 const BET_TAG = `<span class="bet">beats maps</span>`;
+// Cow King's Leathers drops only from Hell Bovines: the Secret Cow Level, and a map's Bovine guest (left out of the maps)
+const COW = new Set(ITEMS.filter(it => it.set === "Cow King's Leathers").map(it => it.i));
+const noMaps = i => COW.has(i) ? "only a map's rare Bovine guest drops it, left out here" : "map monsters never drop it";
 function betLine(R, i) {  // an item's best bet in words: the first line of its details
   const b = bet(R, i), m = mfi();
-  if (b.kind === "enc") return b.f ? `<b>Best bet: ${b.f.s.name}</b>, ${perUnit(b.f.r[m], b.f.s.unit)}, its only source: map monsters never drop it` : "";
+  if (b.kind === "enc") return !b.f ? "" : b.f.s.group === 4 ? `<b>Best bet: ${b.f.s.name}</b>, ${perUnit(b.f.r[m], b.f.s.unit)}, its only source: ${noMaps(i)}`
+    : `<b>Best bet: target farm ${b.f.s.name} in ${spotWhere(b.f.s)}</b>, ${perUnit(b.f.r[m], b.f.s.unit)}: in maps ${noMaps(i)}`;
   if (b.kind === "farm") return `<b>Best bet: target farm ${b.f.s.name} in ${spotWhere(b.f.s)}</b>, ${perUnit(b.f.r[m], b.f.s.unit)}: one kill finds it as often as ${times(b.v)} maps with ${earName(b.ear)} (${oneIn(b.map)} maps)`;
   return `<b>Best bet: maps with ${earName(b.ear)}</b>, ${oneIn(b.map)} maps: ` + (b.f ? `one map finds it as often as ${times(1 / b.v)} kills of ${b.f.s.name} in ${spotWhere(b.f.s)}, its best farm spot`
     : `no ${state.fixed === "fixed" ? "fixed " : ""}boss or superunique drops it`);
@@ -967,8 +974,8 @@ function renderPlanner() {  // your plan: the ear to run, the items to target fa
     `about ${goldTxt(gb.per)} gold per new grail item, the least of any base (most likely: ${gb.items.sort((x, y) => y[1] - x[1]).slice(0, 3).map(([i]) => ITEMS[i].label).join(", ")}).` +
     (ga && ga.k !== gl ? ` A character of level ${GCL[ga.k]} pays less: ${GB.bases[ga.r.j][1]}, about ${goldTxt(ga.r.per)} gold per new item.` : "") +
     ` Gambling costs gold, not kills: weigh it against the farm spots for the same items (<a href="#gm-gamble">Gambling</a> ranks every base).</p></li>`);
-  if (enc.length) steps.push(`<li><h3>From one encounter</h3><p class="note">${enc.map(i => { const f = bets.get(i).f; return `${ITEMS[i].label}: ${f ? `${f.s.name}, ${perUnit(f.r[m], f.s.unit)}` : "–"}`; }).join(". ")}. ` +
-    `Map monsters never drop ${enc.length > 1 ? "these" : "it"}.</p></li>`);
+  if (enc.length) steps.push(`<li><h3>Not from maps</h3><p class="note">${enc.map(i => { const f = bets.get(i).f; return `${ITEMS[i].label}: ${f ? `${f.s.name}, ${perUnit(f.r[m], f.s.unit)}` : "–"}`; }).join(". ")}. ` +
+    `Map monsters never drop ${enc.length > 1 ? "these" : "it"}${enc.some(i => COW.has(i)) ? " (Cow King's Leathers: but for a map's rare Bovine guest)" : ""}.</p></li>`);
   $("gm-plan").innerHTML = steps.join("");
 
   const td = (v, best, txt) => `<td${best ? ' class="best"' : ""}>${txt}</td>`;
@@ -1038,7 +1045,7 @@ function farmDetail(i) {  // an item's best spots per group (and the best fixed 
   const ears = earRank(R, i), lines = [betLine(R, i)].filter(Boolean);
   lines.push(R.none[i] > 0 ? `<b>T1-T3 maps:</b> ${oneIn(R.none[i])} maps without an ear` +
     (ears.length ? ", " + ears.map(([e, v]) => `${oneIn(v)} with the ${e} ear`).join(", ") + (ears.length < EARS.length ? `, ${oneIn(R.any[i])} with any other ear` : "")
-      : `, ${oneIn(R.any[i])} with any ear`) + ` <span class="meta">(${setting()})</span>` : `<b>T1-T3 maps:</b> map monsters never drop it`);
+      : `, ${oneIn(R.any[i])} with any ear`) + ` <span class="meta">(${setting()})</span>` : `<b>T1-T3 maps:</b> ${noMaps(i)}`);
   if (GHEED[i]) lines.push(`<b><a href="#gm-gheed">Gheed's map event</a>:</b> ${perUnit(GHEED[i], "shop")}`);
   const gl = gambleLine(i); if (gl) lines.push(gl);
   if (high.length) lines.push(`<b>No spot in ${joinAnd(high)}:</b> it drops only from monster level ${it.lvl} up, and no monster there is that high`);
@@ -1077,7 +1084,7 @@ $("gm-clear").onclick = () => { FOUND = new Set(); save(); renderPlanner(); rend
 function renderCant() {
   const R = cur(), no = ITEMS.filter(it => !(R.none[it.i] > 0)), idx = droppable(R);
   const m = mfi(), where = (i, groups) => { const b = bestFarm(i, groups); return b ? `${b.s.name} <span class="ratio">${b.s.group === 4 ? "" : "in " + spotWhere(b.s) + ", "}${perUnit(b.r[m], b.s.unit)}</span>` : "–"; };
-  $("gm-cant-note").textContent = `${no.length} grail items never drop from T1-T3 map monsters, with or without an ear: each comes from one encounter only.`;
+  $("gm-cant-note").textContent = `${no.length} grail items never drop from T1-T3 map monsters, with or without an ear (Cow King's Leathers: but for a map's rare Bovine guest, left out here).`;
   $("gm-t-nodrop").innerHTML = `<thead><tr><th class="l">Item</th><th class="l">Base</th><th class="l">Where</th></tr></thead><tbody>` +
     no.map(it => `<tr><td>${it.label}</td><td class="l">${it.base}</td><td class="l">${where(it.i, [0, 1, 2, 3, 4])}</td></tr>`).join("") + `</tbody>`;
   const slow = idx.map(i => [i, ...bestEar(R, i)]).sort((a, b) => a[2] - b[2]).slice(0, 15);

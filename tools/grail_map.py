@@ -420,24 +420,33 @@ def ears(t):
     return out
 
 
+# Cow King's Leathers: the set pick passes it over unless a Hell Bovine (MonStats hellbovine: the Secret Cow Level's
+# cows and the Cow King, and the "Bovine" guest some maps roll) made the drop; Blood Moon's own cows are other monsters
+COW_SET = {"Cow King's Horns", "Cow King's Hide", "Cow King's Hoofs"}
+
+
 def candidates(items):
     """{"UNI" / "SET": {base code: [(level, weight, item number)]}}: what a unique or set of the base can come out as
-    (a grail item's every row: its versions add up)."""
-    cand = {"UNI": {}, "SET": {}}
+    (a grail item's every row: its versions add up); "COW": the item numbers of Cow King's Leathers."""
+    cand = {"UNI": {}, "SET": {}, "COW": set()}
     for i, it in enumerate(items):
+        if it["kind"] == "SET" and it["index"] in COW_SET:
+            cand["COW"].add(i)
         for code, lvl, w in it["rows"]:
             if w > 0:
                 cand[it["kind"]].setdefault(code, []).append((lvl, w, i))
+    assert len(cand["COW"]) == len(COW_SET), "Cow King's Leathers' items were renamed"
     return cand
 
 
-def add_drops(d, cand, dist, lvl, mf, k, out):
-    """Add k drops of `dist` ({(base code, quality modifiers): expected count}) at item level lvl to out (per item)."""
+def add_drops(d, cand, dist, lvl, mf, k, out, bovine=False):
+    """Add k drops of `dist` ({(base code, quality modifiers): expected count}) at item level lvl to out (per item);
+    bovine: a Hell Bovine's drop, the only one that can be Cow King's Leathers."""
     for (code, mods), p in dist.items():
         if not d.grail_kind(code):
             continue
         cu = [(w, i) for l, w, i in cand["UNI"].get(code, []) if l <= lvl]
-        cs = [(w, i) for l, w, i in cand["SET"].get(code, []) if l <= lvl]
+        cs = [(w, i) for l, w, i in cand["SET"].get(code, []) if l <= lvl and (bovine or i not in cand["COW"])]
         u, s = d.unique_set(code, mods, lvl, mf, bool(cu), bool(cs))
         for q, cl in ((u, cu), (s, cs)):
             if q:

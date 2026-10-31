@@ -556,7 +556,9 @@
   much (no time model: the author's step 6, time inputs, not asked for). Your Grail is a plan (the author, 2026-10-30,
   steps 4-5 of the review): cards, then 1 run maps with the ear that finds the most missing items in the next 100 maps,
   2 target farm the best-bet items on as few spots as it takes (`farmGroups`: the spot within 90% of each item's best
-  for the most items; the Cow King in Normal takes 27 of 33 on a fresh grail), with the whole list's per-kill / per-map
+  for the most items; the Cow King in Normal takes 12 of 18 on a fresh grail, rare maps). Cow King's Leathers (`COW_SET`) drops
+  only from Hell Bovines (MonStats `hellbovine`: the Secret Cow Level's cows and the Cow King; the maps' Bovine guest is
+  left out, Blood Moon's cows are other monsters): `add_drops(..., bovine)`, so maps, ears and gambling never give it), with the whole list's per-kill / per-map
   numbers, 3 the slowest (maps' items under an even chance in 100 maps), 4 the encounters; maps to finish without the
   farmed items. It works out only while its tab is open (`planSoon`). The ear table ranks ears by the missing items
   found in the next 100 maps (a repeat counts once) and shows the best

@@ -359,7 +359,7 @@ def catalogue(t, d, strings):
                 mtc = ms[m]["TreasureClass1" + SUFFIX[diff]]
                 mlv = (ZONE_LEVEL if zone and ms[m].get("boss") != "1" else level_of(t, m, lid, diff)) + SU_BONUS
                 spot(key=key, kind="superunique", name=name, diff=diff, lid=lid, area=area(lid), lvl=lv,
-                     tc=up(tc, cls, lv, diff), zone=zone,
+                     tc=up(tc, cls, lv, diff), zone=zone, cls=cls, mcls=m,
                      minions=(k, up(mtc, m, mlv, diff), mlv) if k and mtc else None)
     for cls, lid in BOSSES:
         for diff in range(3):
@@ -370,7 +370,7 @@ def catalogue(t, d, strings):
                     continue
                 lv = ZONE_LEVEL if zone else level_of(t, cls, lid, diff)
                 spot(key=cls, kind="boss" if ms[cls].get("boss") == "1" else "monster", name=mon(cls), diff=diff,
-                     lid=lid, area=area(lid), lvl=lv, tc=up(tc, cls, lv, diff), zone=zone)
+                     lid=lid, area=area(lid), lvl=lv, tc=up(tc, cls, lv, diff), zone=zone, cls=cls)
     for cls, lid in UBERS:
         spot(key=cls, kind="uber", name=mon(cls), diff=2, lid=lid, area=area(lid), lvl=num(ms[cls]["Level(H)"]),
              tc=ms[cls]["TreasureClass1(H)"])
@@ -466,13 +466,13 @@ def spot_rates(t, d, items, spots, mfs):
         for mf in mfs:
             v = [0.0] * N
             for dist, lvl in dists:
-                GM.add_drops(d, cand, dist, lvl, mf, s.get("per", 1), v)
+                GM.add_drops(d, cand, dist, lvl, mf, s.get("per", 1), v, s.get("cls") == "hellbovine")
             for name, k in s["gives"].items():
                 v[by_index[("UNI", name)]] += k
             named[mf] = v
             if mdist is not None:
                 w = [0.0] * N
-                GM.add_drops(d, cand, mdist, s["minions"][2], mf, s["minions"][0], w)
+                GM.add_drops(d, cand, mdist, s["minions"][2], mf, s["minions"][0], w, s.get("mcls") == "hellbovine")
                 minions[mf] = w
         out[s["id"]] = {"named": named, "minions": minions}
     return out
@@ -562,7 +562,7 @@ def gamble_rates(t, d, items, clvls=GAMBLE_CLVLS):
                         outcome = {uber: pu, ultra: (1 - pu) * px, b: (1 - pu) * (1 - px)} if px else {uber: pu, b: 1 - pu}
                 for c, pc in outcome.items():
                     for kind, q in (("UNI", g["GambleUnique"]), ("SET", g["GambleSet"])):
-                        cl = [(w, i) for l, w, i in cand[kind].get(c, []) if l <= il]
+                        cl = [(w, i) for l, w, i in cand[kind].get(c, []) if l <= il and i not in cand["COW"]]
                         tot = sum(w for w, _ in cl)
                         for w, i in cl:
                             acc[i] = acc.get(i, 0) + 0.1 * pc * q / 100000 * w / tot
