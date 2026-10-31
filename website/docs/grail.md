@@ -59,10 +59,13 @@ Much of this page compares maps with and without a Corrupted Ear, so here is wha
 
 1. **Set the bar.** Pick the tier you run (or All), non-magical or rare maps, and your magic find. Every number on the
    page follows it, and the bar stays at the top while you scroll.
-2. **Tick what you have.** Tick the items you've found under **Every Item**. Your ticks stay in your own browser and are
-   never sent anywhere. To move them to another browser or device, or to bring a list from a spreadsheet or another
-   grail tracker, use **Copy or paste your list** under **Your Grail**: "Show my list" and "Copy" give you your list,
-   "Use pasted list" ticks the items of a pasted one (one item per line).
+2. **Tick what you have.** Tick the items you've found under **Every Item**: "Tick shown" ticks every row the search and
+   filters list (a whole set or base at once), and Enter in the search ticks or unticks the one item it finds. Found most
+   of the grail already? Open [Fill in your grail](#gm-fill) under **Your Grail**, type the names the stash's Uniques and
+   Sets tabs list with "Show Undiscovered" on (hover an item for its name) and press "Tick all but these". The same box
+   takes a list from a spreadsheet or another grail tracker (one item per line). To move your ticks to another browser or
+   device, press "Copy" here, paste the list into the box there and press "Replace my ticks". Undo takes back your changes
+   one at a time while you stay on the page. Your ticks stay in your own browser and are never sent anywhere.
 3. **Read Your Grail.** It's your plan: the Corrupted Ear to run on your maps, the missing items one kill finds at least
    as often as a whole map and where to farm them, the slowest ones, and the maps to finish. Each missing item gets its
    best bet.
@@ -95,7 +98,7 @@ Much of this page compares maps with and without a Corrupted Ear, so here is wha
     ---
 
     Your plan from your ticks: the ear to run, the items to target farm and where, the slowest ones, and the maps to
-    finish, with a best bet for each missing item. Copy or paste your list here.
+    finish, with a best bet for each missing item. Fill in your grail here: tick everything, paste a list, copy your ticks.
 
 -   **[Every Item](#tab-items)**
 

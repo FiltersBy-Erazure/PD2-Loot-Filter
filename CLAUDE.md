@@ -564,7 +564,15 @@
   found in the next 100 maps (a repeat counts once) and shows the best
   ear for 90% and for all of them beside it (the author, 2026-10-30: one "best ear" per goal, never drops per map,
   which count duplicates). Phones: the settings fold into one line, the tab row fades where more tabs are, and an
-  item's details keep to the visible part of the wide table (`--vis`). Gambling (the author, 2026-10-31, `gamble_rates` / `gamble_price` /
+  item's details keep to the visible part of the wide table (`--vis`). Ticks (the author, 2026-10-31: start from a full
+  list and untick what's missing, or tick a few, without 554 clicks): Every Item's "Tick shown" / "Untick shown" act on the
+  rows the search and filters list (`SHOWN`), Enter in its search ticks or unticks the item it names (or the only row), Show
+  "Not ticked" / "Ticked"; Your Grail's "Fill in your grail" panel (`#gm-fill`, open when nothing is ticked) has the box's
+  Tick these / Untick these / Tick all but these (refused while a line is unrecognised: it would be ticked as found) /
+  Replace my ticks, and Tick all / Untick all / Show my list / Copy. Every change keeps the ticks before it (`UNDO`, 100
+  steps, this visit only; a change that changes nothing keeps none). The box skips empty-box lines (`[ ]`), refuses JSON,
+  reads a spreadsheet row by the cell with a name and a name without its leading "The", and reports the `NOT_GRAIL` names
+  apart (`DATA.notGrail`). Gambling (the author, 2026-10-31, `gamble_rates` / `gamble_price` /
   `pack_gamble` in grail_farm.py): town gambling is the base game's code, unchanged by PD2, with PD2's
   DifficultyLevels (unique 50, set 100 in 100,000; exceptional 90, elite 33 per item level in 10,000) and Gamble.txt;
   item level = character level -5..+4; price per gamble from the base's normal version (rings / amulets: Misc `gamble

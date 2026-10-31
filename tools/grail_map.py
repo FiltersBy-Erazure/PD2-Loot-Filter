@@ -532,7 +532,8 @@ def page_data(t, items, ear_list, rates, configs, kills, farm):
                           config=configs.index((e["rarity"], e["extra"])), what=e["what"], harder=e["harder"],
                           nounique=e.get("nounique", 0)) for e in ear_list],
             "items": [{k: it[k] for k in ("kind", "index", "name", "base", "tier", "lvl", "w", "set") if it.get(k)}
-                      for it in items], "rates": {}, "kills": kills, "looks": filter_looks(), "farm": farm}
+                      for it in items], "rates": {}, "kills": kills, "looks": filter_looks(), "farm": farm,
+            "notGrail": sorted(NOT_GRAIL)}  # a pasted list may name them: the page says they're left out
     for key, v in rates.items():
         data["rates"][key] = {"none": [per1000(x) for x in v["none"]],
                               "common": [[per1000(x) for x in c] for c in v["common"]],
