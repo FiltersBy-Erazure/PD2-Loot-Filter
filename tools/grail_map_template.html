@@ -521,12 +521,17 @@ const $ = id => document.getElementById(id);
 const fmtN = v => !isFinite(v) ? "never" : v >= 1e5 ? Math.round(v / 1000).toLocaleString("en-US") + "k" : Math.round(v).toLocaleString("en-US");
 const oneIn = r => r > 0 ? "1 in " + fmtN(1 / r) : "never";
 const pct = v => (v * 100).toFixed(0) + "%";
+// the search boxes match the text as typed, or with only its letters and digits (a version in brackets left out), so a
+// phone's curly apostrophe (Cow King’s), a missing one (Tyraels) or a missing space finds the item too
+const bare = s => s.toLowerCase().replace(/[^a-z0-9]/g, "");
+const finds = (search, q) => { if (!q) return true; const t = q.trim().toLowerCase(), b = bare(t.replace(/\s*[(\[].*$/, ""));
+  return search.text.includes(t) || (!!b && search.bare.includes(b)); };
+const searchable = s => ({text: s.toLowerCase(), bare: bare(s)});
 ITEMS.forEach((it, i) => {
   it.i = i;
   it.key = it.kind + "|" + it.index + "|";
   it.label = it.name;
-  it.search = (it.label + " " + it.base + " " + (it.set || "")).toLowerCase();
-  it.searchN = it.search.replace(/[^a-z0-9]/g, "");  // a typed name without its apostrophes or spaces finds it too
+  it.search = searchable(it.label + " " + it.base + " " + (it.set || ""));
 });
 
 // ---------------------------------------------------------------- farm spots (per kill, run, vault or shop)
@@ -1052,8 +1057,7 @@ $("gm-plan").addEventListener("click", e => {
 EARS.forEach(e => { const o = document.createElement("option"); o.value = e; o.textContent = e + " ear"; $("gm-ear").appendChild(o); });
 function renderItems() {
   const R = cur(), q = $("gm-q").value.trim().toLowerCase(), kind = $("gm-kind").value, show = $("gm-show").value, ear = $("gm-ear").value, sort = $("gm-sort").value;
-  const qn = q.replace(/\s*[(\[].*$/, "").replace(/[^a-z0-9]/g, "");  // a version in brackets, apostrophes, spaces aside
-  let list = ITEMS.filter(it => (!kind || it.kind === kind) && (!q || it.search.includes(q) || (qn && it.searchN.includes(qn))));
+  let list = ITEMS.filter(it => (!kind || it.kind === kind) && finds(it.search, q));
   const inf = new Map(list.map(it => { const i = it.i;
     const [be, bv] = ear ? [R.cls[ear][i] > 0 ? ear : null, R.ear[ear][i]] : bestEar(R, i);
     return [it, {be, bv, gain: R.none[i] ? bv / R.none[i] : 0}]; }));
@@ -1298,7 +1302,7 @@ function gambleDetail(o) {  // every item a base's gamble can find, uniques and 
 
 // ---------------------------------------------------------------- Gheed's map event
 // per base the shop shows (the normal version): the chance a slot shows it and its grail items' chances
-const GHB = F.gheedBases.map(([code, name, p, its]) => ({code, name, p, its, search: (name + " " + its.map(([i]) => ITEMS[i].label).join(" ")).toLowerCase()}));
+const GHB = F.gheedBases.map(([code, name, p, its]) => ({code, name, p, its, search: searchable(name + " " + its.map(([i]) => ITEMS[i].label).join(" "))}));
 const GH_EVENT = {normal: 11 / 9, magic: 17 / 9, rare: 34 / 9};  // % of T1-T3 maps by map quality: 11 / 17 / 34% have an event, one of nine kinds
 const GH_SLOTS = 5 - 1 / 200;  // one shop in 200 gives a slot to a ring of its own
 let GHMORE = false;
@@ -1324,7 +1328,7 @@ function renderGheed() {
       : ["Best offer to see", best ? best.name : "–", "", best ? `${pc(best.n)} chance it is new to you: ${goldTxt(1e6 / best.n)} gold per new item` : ""],
   ].map(([who, big, small, sub]) => `<div class="card"><div class="who">${who}</div><div class="big" style="font-size:${String(big).length > 12 ? 19 : 28}px">${big}${small ? `<small>${small}</small>` : ""}</div><div class="sub">${sub}</div></div>`).join("");
   const q = $("gm-ghq").value.trim().toLowerCase();
-  const list = rows.filter(b => !q || b.search.includes(q)).sort((a, b) => b.n - a.n || b.p - a.p), shown = GHMORE || q ? list : list.slice(0, 15);
+  const list = rows.filter(b => finds(b.search, q)).sort((a, b) => b.n - a.n || b.p - a.p), shown = GHMORE || q ? list : list.slice(0, 15);
   $("gm-ghcount").textContent = `${list.length} bases`;
   $("gm-t-gheed").innerHTML = `<thead><tr><th class="l">Base shown</th><th>A shop has it</th><th>Chance it's new to you</th><th>Gold per new item</th><th class="l">What it can be</th></tr></thead><tbody>` +
     shown.map(b => `<tr><td>${b.name}</td><td>${oneIn(1 - Math.pow(1 - b.p, GH_SLOTS))} shops <span class="ratio">(${oneIn(b.p)} offers)</span></td><td${b.n ? "" : ' class="ratio"'}>${b.n ? pct(b.n) : "none"}</td><td>${b.n ? goldTxt(1e6 / b.n) : "–"}</td>` +
