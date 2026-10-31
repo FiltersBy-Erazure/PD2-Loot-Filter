@@ -2,7 +2,7 @@
 """
 Lint the Erazure filter.
 
-Reads sections/ exactly as build.py does (joined, that text IS Erazure-Main.filter) and reports
+Reads sections/ exactly as build.py does (joined: Erazure-Main.filter before build.py writes its aliases out) and reports
 each problem as sections/<file>:<line>.
 
 What counts as valid comes from the PD2 BH source (github.com/Project-Diablo-2/BH,

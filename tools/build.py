@@ -57,6 +57,14 @@ STYLE_VARIANTS = {"Minimal": (MAIN, "minimal.filter"),
 # whose display_name is not their variant's name (the author, 2026-10-30)
 LAUNCHER_NAMES = {"Erazure - BIG GG - Mystery": "Erazure - BIG GG",
                   "Minimal - BIG GG - Mystery": "Minimal - BIG GG"}
+# The written filters carry every alias but these written into the rules, as BH would when it loads them, and the
+# definitions as comments (the author, 2026-10-30): today's BH tries every alias on every rule at every load, with
+# heap calls the Windows XP SP3 mode PD2 sets makes slow (a reload took 11.8 s, 3.8 s without aliases). sections/ keep
+# the aliases (the tools, the alias editor and the style files read them). The toggles stay aliases, so a player can
+# still switch versions in their copy. False once a BH ships without the cost: the filters keep their aliases again.
+WRITE_OUT_ALIASES = True
+KEEP_ALIASES = {"BIG_GG", "POE_SOUNDS", "REVEALED"}
+WRITTEN_OUT = "// written into the rules: "
 PLACEHOLDER = b"<<VERSION>>"
 CATCH_ALL = b"ItemDisplay[]:"
 BOM = b"\xef\xbb\xbf"
@@ -248,6 +256,124 @@ def apply_style(lines, style, fname, where):
     return out
 
 
+# ---------------------------------------------------------------- aliases written out
+
+def bh_trim(s):
+    """BH's Trim (Config.cpp): spaces off both ends, then tabs."""
+    return s.strip(" ").strip("\t")
+
+
+def bh_entries(lines):
+    """[(line index, key, value)] of the lines BH's Config::Parse keeps: cut at the first //, key and value split at the
+    first ':' and trimmed."""
+    out = []
+    for i, line in enumerate(lines):
+        c = line.find("//")
+        code = line if c < 0 else line[:c]
+        if code:
+            j = code.find(":")
+            out.append((i, bh_trim(code), bh_trim(code)) if j < 0 else (i, bh_trim(code[:j]), bh_trim(code[j + 1:])))
+    return out
+
+
+def bh_aliases(entries):
+    """[(line index, name, value)] as InitializeItemRules has them: ReadMapList("Alias"), the name cut at a space."""
+    out = []
+    for i, key, value in entries:
+        if key.startswith("Alias["):
+            name = bh_trim(key[key.find("[") + 1:len(key) - 1])
+            out.append((i, name.split(" ")[0], value))
+    return out
+
+
+def bh_substitute(texts, aliases):
+    """BH's alias loop over every rule at once: texts = [conditions, outputs], each one string with the rules
+    separated by NUL. For each alias in order: in conditions the name, in outputs %NAME% (ASCII upper case), every
+    occurrence replaced, searching again from the start until none is left. Replacing all at once gives the same text
+    when no replacement makes a new occurrence; otherwise the alias goes rule by rule as BH does."""
+    for name, value in aliases:
+        if not name:
+            continue
+        for k, key in enumerate((name, "%" + "".join(chr(ord(c) - 32) if "a" <= c <= "z" else c for c in name) + "%")):
+            text = texts[k]
+            if key not in text:
+                continue
+            new = text.replace(key, value)
+            if key in new:
+                rules = text.split("\0")
+                for r, rule in enumerate(rules):
+                    for _ in range(10000):
+                        p = rule.find(key)
+                        if p < 0:
+                            break
+                        rule = rule[:p] + value + rule[p + len(key):]
+                    else:
+                        fail(f"Alias[{name}] keeps finding its name in what it writes (BH would hang)")
+                    rules[r] = rule
+                new = "\0".join(rules)
+            texts[k] = new
+    return texts
+
+
+def bh_rules(lines):
+    """(the rules as BH has them after its alias loop, the other entries but aliases) of a filter's lines."""
+    entries = bh_entries(lines)
+    rules = [(key[len("ItemDisplay["):len(key) - 1], value) for _, key, value in entries
+             if key.startswith("ItemDisplay[")]
+    texts = bh_substitute(["\0".join(c for c, _ in rules), "\0".join(o for _, o in rules)],
+                          [(n, v) for _, n, v in bh_aliases(entries)])
+    other = [(k, v) for _, k, v in entries if not k.startswith(("Alias[", "ItemDisplay["))]
+    return texts, other
+
+
+_WRITTEN = {}  # {(rule texts, written aliases): (conditions, outputs)}: the toggle versions share their rules
+
+
+def write_out_aliases(out, where, verify):
+    """The written filter's lines with every alias but KEEP_ALIASES written into the rules and its definition turned
+    into a comment. With verify (--check: build.bat and CI, ~0.5 s a filter), stops unless BH reads the result as
+    exactly the same rules, formulas and other entries as the filter with its aliases (the kept aliases change places
+    with the ones defined after them, which could matter in theory)."""
+    lines = [x.decode("utf-8") for x in out]
+    entries = bh_entries(lines)
+    aliases = bh_aliases(entries)
+    gone = [(i, n, v) for i, n, v in aliases if n not in KEEP_ALIASES]
+    rules = [(i, key[len("ItemDisplay["):len(key) - 1], value) for i, key, value in entries
+             if key.startswith("ItemDisplay[")]
+    key = (tuple((c, o) for _, c, o in rules), tuple((n, v) for _, n, v in gone))
+    if key not in _WRITTEN:
+        _WRITTEN[key] = bh_substitute(["\0".join(c for _, c, _ in rules), "\0".join(o for _, _, o in rules)],
+                                      [(n, v) for _, n, v in gone])
+    conds, outs = _WRITTEN[key]
+    for (i, cond, output), new_cond, new_out in zip(rules, conds.split("\0"), outs.split("\0")):
+        if (new_cond, new_out) == (cond, output):
+            continue
+        if ":" in new_cond or "//" in new_cond or "//" in new_out:
+            fail(f"an alias writes ':' or '//' into the rule at {where(i)}; BH would read the line differently")
+        line = lines[i]
+        c = line.find("//")
+        comment = "" if c < 0 else line[c:]
+        code = line if c < 0 else line[:c]
+        j = code.find(":")
+        lead = code[:len(code) - len(code.lstrip(" \t"))]
+        after = code[j + 1:]
+        space = after[:len(after) - len(after.lstrip(" \t"))]
+        tail = code[len(code.rstrip(" \t")):] if new_out else ""
+        lines[i] = f"{lead}ItemDisplay[{new_cond}]:{space}{new_out}{tail}{comment}"
+    for i, _, _ in gone:
+        lines[i] = WRITTEN_OUT + lines[i]
+    if verify:
+        (new_c, new_o), new_other = bh_rules(lines)
+        (old_c, old_o), old_other = bh_rules([x.decode("utf-8") for x in out])
+        if new_other != old_other:
+            fail("writing the aliases into the rules would change an entry other than a rule")
+        for (i, _, _), a, b, c, d in zip(rules, new_c.split("\0"), old_c.split("\0"), new_o.split("\0"),
+                                          old_o.split("\0")):
+            if (a, c) != (b, d):
+                fail(f"writing the aliases into the rules would change the rule at {where(i)} as BH reads it")
+    return [x.encode("utf-8") for x in lines]
+
+
 def file_name(name):
     """A display name's filter file: 'Corrlorized - BIG GG - PoE' -> 'Corrlorized-BIG-GG-PoE.filter'."""
     return name.replace(" - ", "-").replace(" ", "-") + ".filter"
@@ -349,12 +475,14 @@ def main():
         if name in STYLE_VARIANTS:
             first = STYLE_VARIANTS[name][1] not in done  # a style file several variants share: fixed, written and
             done.add(STYLE_VARIANTS[name][1])            # reported once
-            out, _, _, note = styled(name, lines, blocks, parts, where, args.check if first else True,
-                                     problems if first else [])
+            out, where_out, _, note = styled(name, lines, blocks, parts, where, args.check if first else True,
+                                             problems if first else [])
             if note and first:
                 notes.append(note)
         else:
-            out = render(lines, blocks, name)
+            out, where_out = render(lines, blocks, name), where
+        if WRITE_OUT_ALIASES:
+            out = write_out_aliases(out, where_out, args.check)
         data = b"\r\n".join(out)
         target = ROOT / fname
         if target.exists() and target.read_bytes() == data:

@@ -10,6 +10,18 @@
 - `python tools/build.py` joins `sections/*.filter` in filename order into `Erazure-Main.filter`, fills
   `<<VERSION>>` (Horadric Cube section) from `version.json`, then writes the 7 toggle variants and the 12 style variants.
 - `python tools/build.py --check` changes nothing and must print "All 20 filters in sync" before any commit.
+- Aliases written out (2026-10-30, the author): the 20 written filters carry every alias but the 3 toggles
+  (`KEEP_ALIASES`: BIG_GG, POE_SOUNDS, REVEALED, so a player can still switch versions in their copy) written into
+  the rules, as BH writes them when it loads a filter, and each definition as a comment (`// written into the rules:
+  Alias[...]`). `sections/` keep every alias: the tools, the pages, the alias editor and the style files read them.
+  Why: BH tries every alias on every rule at every load (`InitializeItemRules`), with heap calls that the Windows XP
+  SP3 mode PD2 sets on Game.exe makes slow: a reload took 11.8 s with 621 aliases, 3.8 s written out (0.8 s without
+  XP mode; the rest is BH compiling regexes per rule); per BH's source the first game after starting pays the same.
+  Files grow from
+  1.26 to 2.3 MB. `--check` also reads each written filter as BH does and stops unless every rule, formula and other
+  entry is the same as with the aliases (~15 s); a plain build only writes (~2 s). Hand edits in a game-folder copy
+  now meet written-out text: port them to the alias in `sections/`. When a BH ships with the alias loop fixed (a BH
+  PR is prepared), set `WRITE_OUT_ALIASES = False` in `tools/build.py` and the filters carry their aliases again.
 - A PostToolUse hook runs the build after every Edit/Write to `sections/`, `version.json` or
   `filter_definitions.json`. If it reports an error, fix it. Edits made any other way (Bash, scripts)
   don't trigger it: run `python tools/build.py` yourself afterwards.
