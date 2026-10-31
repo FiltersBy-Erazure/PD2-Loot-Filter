@@ -520,9 +520,9 @@
   `tools/grail_map_template.html`, grail first (the author, 2026-10-30: "just as much about the grail as about ears"):
   how the filter shows an unidentified unique / set item you haven't discovered and one you have (`LOOK_EXAMPLES`:
   tier_map's engine on the filter's own rules, Main, levels 1 and 12; rerun after a change to 040 / 160 / 170's Grail
-  looks), how long the grail takes and what makes it faster, and how the Corrupted Ears change the time to find every unique and set item (555:
+  looks), how long the grail takes and what makes it faster, and how the Corrupted Ears change the time to find every unique and set item (554:
   enabled uniques, unique maps, quest items and `NOT_GRAIL` left out, and set items; the rows of one name are one item,
-  any version finds it, the author 2026-10-30: Rainbow Facet's eight, Akarat's Devotion's two...; set names are the
+  any version finds it, the author 2026-10-30: Akarat's Devotion's two, Cyclopean Roar's two...; set names are the
   game's strings, McAuley's Folly is Sander's Folly) in T1-T3 maps, per T1 / T2 / T3, non-magical or average rare map,
   magic find 0-500 in steps of 100 (`MFS`; the bar is built from it): each item's drops per map
   with no ear, the part every ear gives (extra drop, rarity) and each ear's class pool, best ear, maps for 90%; grail
@@ -532,7 +532,7 @@
   patch that changes drop tables, the ears (their cube recipes), unique / set items or the maps. A model, not in-game
   counts; its docstring has the rules (treasure classes, quality, item level gates, the ears).
   `NOT_GRAIL` (the author, 2026-10-30): Itherael's Path, Overlord's Helm, Dark Abyss, Aidan's Scar, Hadriel's Hand,
-  Band of Skulls, Cage of the Unsullied, The Third Eye and Embersworn are no grail items; Annihilus and the Hellfire
+  Band of Skulls, Cage of the Unsullied, The Third Eye, Embersworn and (2026-10-31) Rainbow Facet are no grail items; Annihilus and the Hellfire
   Torch are. Farm spots (the author, 2026-10-30: per item, where to target farm it and in what difficulty; per kill,
   solo): `tools/grail_farm.py` (imported by grail_map.py; `--item NAME`, `--spot NAME`, `--sources`, `--selftest`)
   has every act boss, superunique (`PLACES`: SuperUniques key -> Levels Id, from the areas' map pieces; `UNPLACED`

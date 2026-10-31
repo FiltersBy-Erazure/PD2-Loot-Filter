@@ -172,7 +172,7 @@ Much of this page compares maps with and without a Corrupted Ear, so here is wha
   Grail picks it for the items you're missing.
 - **Gambling counts too:** a gambled item is unique 1 time in 2,000 and a set item 1 time in 1,000. A low-level character
   gambles a base's low-level uniques and sets cheaply (Discovery Progress is per account, so they count); high-level items cost billions of gold that way.
-- **One version is enough:** an item with several versions (the Rainbow Facets, Akarat's Devotion...) is one grail item.
+- **One version is enough:** an item with several versions (Akarat's Devotion, Cyclopean Roar, Arm of King Leoric) is one grail item.
 
 <!-- the grail planner (website/hooks.py puts it here, from Erazure-Grail-Planner.html) -->
 <div id="grail-map-here"></div>

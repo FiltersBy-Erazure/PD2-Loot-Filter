@@ -63,7 +63,7 @@ BOSS_LEVEL = 90      # a map boss's own level (MonStats Level(H) 89-91)
 QUEST = {"vip", "msf", "hst", "hfh", "qf1", "qf2"}
 # Uniques that are no grail items (the author, 2026-10-30), by UniqueItems index
 NOT_GRAIL = {"Aidans Scar", "Band of Skulls", "Cage of the Unsullied", "Dark Abyss", "Embersworn", "Hadriels Hand",
-             "Itheraels Path", "Overlords Helm", "The Third Eye"}
+             "Itheraels Path", "Overlords Helm", "Rainbow Facet", "The Third Eye"}
 CLASS_POOL = {  # the ears' class stats -> the treasure class PD2 drops from for each
     "zon_ear_drops": "Amazon Ear Drop", "sin_ear_drops": "Assassin Ear Drop", "barb_ear_drops": "Barb Ear Drop",
     "map_mon_dropclassitems": "Druid Ear Drop", "necro_ear_drops": "Necro Ear Drop",
@@ -349,8 +349,8 @@ class Maps:
 # ---------------------------------------------------------------- the grail and the ears
 
 def grail_items(t):
-    """The grail: one item per unique or set name. The table rows of one name (Rainbow Facet's eight versions,
-    Akarat's Devotion's two...) are one grail item: any of them finds it (the author, 2026-10-30). Each item keeps
+    """The grail: one item per unique or set name. The table rows of one name (Akarat's Devotion's two,
+    Cyclopean Roar's two...) are one grail item: any of them finds it (the author, 2026-10-30). Each item keeps
     its rows (base code, level, weight; a unique's UniqueItems row number) for the drop rolls."""
     names = {(r["kind"], r["index"]): r["name"] for r in pd2_data.read_table(
         "".join(l for l in ITEMS_TSV.read_text(encoding="utf-8").splitlines(True) if not l.startswith("#")))}
