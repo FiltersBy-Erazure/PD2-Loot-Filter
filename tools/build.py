@@ -327,50 +327,65 @@ def bh_rules(lines):
 
 
 _WRITTEN = {}  # {(rule texts, written aliases): (conditions, outputs)}: the toggle versions share their rules
+SWITCHED_OFF_RULE = re.compile(r"^([ \t]*//+[ \t]*)(ItemDisplay\[.*)$")
+
+
+def switched_on(lines):
+    """The lines with every switched-off rule (//ItemDisplay[...], the options of 050, Corr's x entries) switched on
+    as a player would: its leading // taken off."""
+    return [m.group(2) if (m := SWITCHED_OFF_RULE.match(line)) else line for line in lines]
 
 
 def write_out_aliases(out, where, verify):
-    """The written filter's lines with every alias but KEEP_ALIASES written into the rules and its definition turned
-    into a comment. With verify (--check: build.bat and CI, ~0.5 s a filter), stops unless BH reads the result as
-    exactly the same rules, formulas and other entries as the filter with its aliases (the kept aliases change places
-    with the ones defined after them, which could matter in theory)."""
+    """The written filter's lines with every alias but KEEP_ALIASES written into the rules, the switched-off ones too
+    (a player who switches one on gets the rule as BH reads it in the filter with its aliases), and its definition
+    turned into a comment. With verify (--check: build.bat and CI, ~0.5 s a filter), stops unless BH reads the result
+    as exactly the same rules, formulas and other entries as the filter with its aliases, with every switched-off rule
+    switched on (the kept aliases change places with the ones defined after them, which could matter in theory)."""
     lines = [x.decode("utf-8") for x in out]
     entries = bh_entries(lines)
     aliases = bh_aliases(entries)
     gone = [(i, n, v) for i, n, v in aliases if n not in KEEP_ALIASES]
-    rules = [(i, key[len("ItemDisplay["):len(key) - 1], value) for i, key, value in entries
+    # (line index, the // a switched-off rule keeps, its text without them, condition, output)
+    rules = [(i, "", lines[i], key[len("ItemDisplay["):len(key) - 1], value) for i, key, value in entries
              if key.startswith("ItemDisplay[")]
-    key = (tuple((c, o) for _, c, o in rules), tuple((n, v) for _, n, v in gone))
+    for i, line in enumerate(lines):
+        if m := SWITCHED_OFF_RULE.match(line):
+            rules += [(i, m.group(1), m.group(2), key[len("ItemDisplay["):len(key) - 1], value)
+                      for _, key, value in bh_entries([m.group(2)]) if key.startswith("ItemDisplay[")]
+    rules.sort()
+    key = (tuple((c, o) for *_, c, o in rules), tuple((n, v) for _, n, v in gone))
     if key not in _WRITTEN:
-        _WRITTEN[key] = bh_substitute(["\0".join(c for _, c, _ in rules), "\0".join(o for _, _, o in rules)],
+        _WRITTEN[key] = bh_substitute(["\0".join(c for *_, c, _ in rules), "\0".join(o for *_, o in rules)],
                                       [(n, v) for _, n, v in gone])
     conds, outs = _WRITTEN[key]
-    for (i, cond, output), new_cond, new_out in zip(rules, conds.split("\0"), outs.split("\0")):
+    for (i, prefix, text, cond, output), new_cond, new_out in zip(rules, conds.split("\0"), outs.split("\0")):
         if (new_cond, new_out) == (cond, output):
             continue
         if ":" in new_cond or "//" in new_cond or "//" in new_out:
             fail(f"an alias writes ':' or '//' into the rule at {where(i)}; BH would read the line differently")
-        line = lines[i]
-        c = line.find("//")
-        comment = "" if c < 0 else line[c:]
-        code = line if c < 0 else line[:c]
+        c = text.find("//")
+        comment = "" if c < 0 else text[c:]
+        code = text if c < 0 else text[:c]
         j = code.find(":")
         lead = code[:len(code) - len(code.lstrip(" \t"))]
         after = code[j + 1:]
         space = after[:len(after) - len(after.lstrip(" \t"))]
         tail = code[len(code.rstrip(" \t")):] if new_out else ""
-        lines[i] = f"{lead}ItemDisplay[{new_cond}]:{space}{new_out}{tail}{comment}"
+        lines[i] = f"{prefix}{lead}ItemDisplay[{new_cond}]:{space}{new_out}{tail}{comment}"
     for i, _, _ in gone:
         lines[i] = WRITTEN_OUT + lines[i]
     if verify:
-        (new_c, new_o), new_other = bh_rules(lines)
-        (old_c, old_o), old_other = bh_rules([x.decode("utf-8") for x in out])
+        new_lines, old_lines = switched_on(lines), switched_on([x.decode("utf-8") for x in out])
+        (new_c, new_o), new_other = bh_rules(new_lines)
+        (old_c, old_o), old_other = bh_rules(old_lines)
         if new_other != old_other:
             fail("writing the aliases into the rules would change an entry other than a rule")
-        for (i, _, _), a, b, c, d in zip(rules, new_c.split("\0"), old_c.split("\0"), new_o.split("\0"),
-                                          old_o.split("\0")):
+        at = [i for i, key, _ in bh_entries(new_lines) if key.startswith("ItemDisplay[")]
+        for i, a, b, c, d in zip(at, new_c.split("\0"), old_c.split("\0"), new_o.split("\0"), old_o.split("\0")):
             if (a, c) != (b, d):
-                fail(f"writing the aliases into the rules would change the rule at {where(i)} as BH reads it")
+                fail(f"writing the aliases into the rules would change the rule at {where(i)} as BH reads it"
+                     f"{' once switched on' if SWITCHED_OFF_RULE.match(lines[i]) else ''}")
     return [x.encode("utf-8") for x in lines]
 
 
