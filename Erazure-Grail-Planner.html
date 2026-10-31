@@ -528,7 +528,7 @@ const DATA = {"date":"26 October 2026","mfs":[0,100,200,300,400,500],"ears":[{"n
 const EARS = DATA.ears.map(e => e.name), ITEMS = DATA.items, N = ITEMS.length, E0 = DATA.ears[0];
 const state = {tier: "all", mt: "rare", mf: "300", fixed: "", clvl: "90"};
 const $ = id => document.getElementById(id);
-const fmtN = v => !isFinite(v) ? "never" : v >= 1e5 ? Math.round(v / 1000).toLocaleString("en-US") + "k" : Math.round(v).toLocaleString("en-US");
+const fmtN = v => !isFinite(v) ? "never" : Math.round(v) >= 1e5 ? Math.round(v / 1000).toLocaleString("en-US") + "k" : Math.round(v).toLocaleString("en-US");  // 99,999.6 reads 100k like 100,000
 const oneIn = r => r > 0 ? "1 in " + fmtN(1 / r) : "never";
 const pct = v => (v * 100).toFixed(0) + "%";
 // the search boxes match the text as typed, or with only its letters and digits (a version in brackets left out), so a
@@ -564,8 +564,10 @@ const GAMBLE = GB.items.map(s => { const out = [];
   for (let p = 0; p < s.length; p += GW) out.push({b: b36(s.substr(p, 2)), r: GCL.map((_, l) => kRate(b36(s.substr(p + 2 + 2 * l, 2))))});
   return out; });
 const gli = () => GCL.indexOf(state.clvl);
-const goldTxt = v => v >= 1e9 ? `${(v / 1e9).toFixed(v >= 1e10 ? 0 : 1)} billion` : v >= 1e6 ? `${(v / 1e6).toFixed(v >= 1e7 ? 0 : 1)}M`
-  : (Math.round(v / 1000) * 1000).toLocaleString("en-US");
+// gold in thousands, millions or billions, the unit picked by the value as it would show: 999,999.9 (Gheed's 1,000,000 over
+// a share that adds up to a hair over 100%) reads 1.0M like 1,000,000, not "1,000,000"
+const goldTxt = v => Math.round(v / 1e6) >= 1000 ? `${(v / 1e9).toFixed(v >= 9.95e9 ? 0 : 1)} billion`
+  : Math.round(v / 1e3) >= 1000 ? `${(v / 1e6).toFixed(v >= 9.95e6 ? 0 : 1)}M` : (Math.round(v / 1000) * 1000).toLocaleString("en-US");
 const perFind = (e, l) => GB.price[e.b][l] / e.r[l];  // gold per find of the item
 function bestGamble(i, l) {  // the base that finds the item for the least gold at this character level
   let b = null;
