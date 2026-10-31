@@ -198,6 +198,7 @@
   .grail-map .fs-m.l { grid-column: 1 / -1; padding-left: 20px; }
   .grail-map .fs-h { font-size: 11.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin-top: 8px; }
   .grail-map td.top { text-align: left; white-space: normal; min-width: 220px; font-size: 13px; }
+  .grail-map button.more { background: none; border: 0; padding: 0; font: inherit; color: var(--accent); cursor: pointer; text-decoration: underline dotted; }
   .grail-map .faq { display: grid; gap: 6px; max-width: 80ch; }
   .grail-map .faq h3 { font-size: 15.5px; margin-top: 12px; }
   .grail-map .faq p { color: var(--fg); font-size: 14.5px; max-width: none; }
@@ -1110,7 +1111,7 @@ function renderFarm() {
 }
 ["gm-fgroup", "gm-fsort"].forEach(id => $(id).addEventListener("input", () => { FMORE = false; renderFarm(); }));
 $("gm-clvl").innerHTML = GCL.map(v => `<option value="${v}"${v === state.clvl ? " selected" : ""}>${v}</option>`).join("");
-let GMORE = false;
+let GMORE = false; const GOPEN = new Set();  // bases whose every item shows
 function renderGamble() {
   const l = gli(), list = ITEMS.filter(it => !FOUND.has(it.key)).map(it => it.i), fresh = list.length === N;
   const rows = gambleBases(l, list), shown = GMORE ? rows : rows.slice(0, 12), what = fresh ? "grail items" : "of your missing items";
@@ -1118,8 +1119,8 @@ function renderGamble() {
   $("gm-t-gamble").innerHTML = !rows.length ? `<tbody><tr><td>Nothing left that gambling finds.</td></tr></tbody>` :
     `<thead><tr><th class="l">Base</th><th>Gold a gamble</th><th>${fresh ? "Grail items" : "Your missing items"} in 1,000 gambles</th><th>Gold per new item</th><th class="l">Most likely</th></tr></thead><tbody>` +
     shown.map(o => `<tr><td>${GB.bases[o.j][1]}</td><td>${o.price.toLocaleString("en-US")}</td><td>${cnt(o.n * 1000)}</td><td>${goldTxt(o.per)}</td>` +
-      `<td class="top">${o.items.sort((x, y) => y[1] - x[1]).slice(0, 4).map(([i, r]) => `${ITEMS[i].label} <span class="ratio">${oneIn(r)}</span>`).join(", ")}` +
-      `${o.items.length > 4 ? `, <span class="ratio">${o.items.length - 4} more</span>` : ""}</td></tr>`).join("") + `</tbody>`;
+      `<td class="top">${o.items.sort((x, y) => y[1] - x[1]).slice(0, GOPEN.has(o.j) ? o.items.length : 4).map(([i, r]) => `${ITEMS[i].label} <span class="ratio">${oneIn(r)}</span>`).join(", ")}` +
+      `${o.items.length > 4 ? ` <button type="button" class="more" data-j="${o.j}">${GOPEN.has(o.j) ? "fewer" : `${o.items.length - 4} more`}</button>` : ""}</td></tr>`).join("") + `</tbody>`;
   $("gm-gmore").hidden = rows.length <= 12;
   $("gm-gmore").textContent = GMORE ? "Show fewer" : `Show all ${rows.length} bases`;
   const ga = gambleBest(list), soj = ITEMS.find(it => it.name === "The Stone of Jordan");
@@ -1132,6 +1133,8 @@ function renderGamble() {
 }
 $("gm-clvl").addEventListener("input", e => { state.clvl = e.target.value; GMORE = false; renderGamble(); renderGheed(); planSoon(); renderItems(); });
 $("gm-gmore").onclick = () => { GMORE = !GMORE; renderGamble(); };
+$("gm-t-gamble").addEventListener("click", e => { const b = e.target.closest("button.more"); if (!b) return;
+  const j = +b.dataset.j; GOPEN.has(j) ? GOPEN.delete(j) : GOPEN.add(j); renderGamble(); });
 
 // ---------------------------------------------------------------- Gheed's map event
 // per base the shop shows (the normal version): the chance a slot shows it and its grail items' chances
