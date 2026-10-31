@@ -569,7 +569,7 @@
   cost`). The page: a Gambling section on Target Farming (character level 1-99 select, bases by gold per new grail item
   for your missing items), a line in each item's details, a "Gold to spare" plan step, a FAQ answer. A Gheed's Map Event tab (the author, 2026-10-30; `gheed_bases`): per base the
   shop shows (the normal version; the unique and its tier are fixed at item level 99 when the shop opens) how often a
-  slot shows it, what it can be and the chance it is a missing item; offers pick UniqueItems rows evenly, a level
+  shop of 5 offers has it (per offer beside it), what it can be and the chance it is a missing item; offers pick UniqueItems rows evenly, a level
   requirement of 60+ passed over (requirement - 49)% of the time (the 10-27 build; earlier traces said - 59). Player text never says the numbers come from the game's data (the author, 2026-10-30): no
   footer at all (the author, 2026-10-30: not even "estimates from a model"), "how the game rolls drops" rather than "the game's tables". An item's level there is its
   "drop level" (the lowest monster level that drops it); each ear's pool and dangers come from the ear's own in-game

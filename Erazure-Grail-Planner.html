@@ -375,7 +375,7 @@
   <ul class="find" id="gm-gheed-facts"></ul>
   <div class="cards" id="gm-gheed-cards"></div>
   <h3>Which offers to buy</h3>
-  <p class="note">Each base Gheed can show, how often a slot shows it, the uniques it can be and the chance it is one you're
+  <p class="note">Each base Gheed can show, how often a shop of 5 offers has it, the uniques it can be and the chance it is one you're
   missing (once you tick some; else any grail item), so the gold a new grail item costs if you buy it. An offer you'd rather
   skip costs nothing: the next shop's offers are new rolls.</p>
   <div class="tools">
@@ -1169,8 +1169,8 @@ function renderGheed() {
   const q = $("gm-ghq").value.trim().toLowerCase();
   const list = rows.filter(b => !q || b.search.includes(q)).sort((a, b) => b.n - a.n || b.p - a.p), shown = GHMORE || q ? list : list.slice(0, 15);
   $("gm-ghcount").textContent = `${list.length} bases`;
-  $("gm-t-gheed").innerHTML = `<thead><tr><th class="l">Base shown</th><th>A slot shows it</th><th>Chance it's new to you</th><th>Gold per new item</th><th class="l">What it can be</th></tr></thead><tbody>` +
-    shown.map(b => `<tr><td>${b.name}</td><td>${oneIn(b.p)} offers</td><td${b.n ? "" : ' class="ratio"'}>${b.n ? pct(b.n) : "none"}</td><td>${b.n ? goldTxt(1e6 / b.n) : "–"}</td>` +
+  $("gm-t-gheed").innerHTML = `<thead><tr><th class="l">Base shown</th><th>A shop has it</th><th>Chance it's new to you</th><th>Gold per new item</th><th class="l">What it can be</th></tr></thead><tbody>` +
+    shown.map(b => `<tr><td>${b.name}</td><td>${oneIn(1 - Math.pow(1 - b.p, GH_SLOTS))} shops <span class="ratio">(${oneIn(b.p)} offers)</span></td><td${b.n ? "" : ' class="ratio"'}>${b.n ? pct(b.n) : "none"}</td><td>${b.n ? goldTxt(1e6 / b.n) : "–"}</td>` +
       `<td class="top">${b.its.map(([i, p]) => `${isNew(i) ? ITEMS[i].label : `<s>${ITEMS[i].label}</s>`} <span class="ratio">${pc(p)}</span>`).join(", ")}` +
       `${b.its.reduce((a, [, p]) => a + p, 0) < 0.995 ? ` <span class="ratio">(the rest: uniques that don't count)</span>` : ""}</td></tr>`).join("") + `</tbody>`;
   $("gm-ghmore").hidden = !!q || list.length <= 15;
