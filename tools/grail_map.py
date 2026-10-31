@@ -62,6 +62,18 @@ RARE_ROLLS = {1: (91, 14), 2: (104, 18), 3: (126, 23)}
 CHAMP_SIZE = 3.0     # a champion pack: the leader + 1-3 more
 MINIONS = 4.5        # a unique monster's minions: 3-6
 BOSS_LEVEL = 90      # a map boss's own level (MonStats Level(H) 89-91)
+# Cow King's Leathers in maps: only Hell Bovines drop it (COW_SET), and a map has them two ways. The Bovine prefix ("Map
+# contains Hell Bovines", one of the map guests' affix group) puts them on rare T1-T3 maps (map_exp.py's roller: these
+# shares; corrupting adds none). The guest joins every area's monster list at weight 1 beside the natives, in groups
+# and elite packs alike, and the prefix brings +25-30% density and +15-20% magic find (BOVINE_ROLLS: the average density
+# and rarity of those maps, all their rolls, as RARE_ROLLS). And the Dark Wanderer map event (11% of non-magical, 34%
+# of rare T1-T3 maps have an event, one of nine kinds) has up to three wanderers, each turning into a random act boss
+# or superunique: the Cow King, a real one with 8 Hell Bovines, in about 1 rare map in 260 (if the player meets all
+# three). Map guests and events are left out for every other item.
+BOVINE = {1: 0.0554, 2: 0.0353, 3: 0.0360}
+BOVINE_ROLLS = {1: (101.3, 13.0), 2: (115.2, 16.4), 3: (134.6, 21.5)}
+BOVINE_MF = range(15, 21)
+DW_COW_KING = {"normal": 1 / 802.5, "rare": 1 / 259.6}
 QUEST = {"vip", "msf", "hst", "hfh", "qf1", "qf2"}
 # Uniques that are no grail items (the author, 2026-10-30), by UniqueItems index
 NOT_GRAIL = {"Aidans Scar", "Band of Skulls", "Cage of the Unsullied", "Dark Abyss", "Hadriels Hand",
@@ -347,6 +359,42 @@ class Maps:
                 acc[k] = acc.get(k, 0) + v / len(codes)
         return acc
 
+    def guest_kills(self, code, guest, d=0, r=0):
+        """{(kind, treasure class, monster level): kills} of a full clear, of a guest monster alone: it joins each
+        area's monster list at weight 1 beside the natives' total weight W, so it takes 1 spawn roll in W + 1, in
+        groups and elite packs alike (a guest with no spawn quirks: Hell Bovines)."""
+        mp, ms = self.maps[code], self.t.monstats
+        g, c = ms[guest], self.t.champ_chance
+        minion = g["minion1"] if g["minion1"] in ms else guest
+        out = {}
+        for a in mp.areas:
+            if not a.rolls > 0:
+                continue
+            lev = self.t.levels[str(a.id)]
+            ids = [lev["nmon%d" % i] for i in range(1, 26) if lev.get("nmon%d" % i)]
+            w = sum(num(ms[x]["Rarity"]) for x in ids[:min(num(lev["NumMon"]), 13, len(ids))] if ms[x]["isSpawn"] == "1")
+            f = 1 / (w + 1)
+            normal = {("normal", guest): f * (num(g["MinGrp"]) + num(g["MaxGrp"])) / 2}
+            elite = {("champion", guest): f * c * CHAMP_SIZE, ("unique", guest): f * (1 - c),
+                     ("minion", minion): f * (1 - c) * MINIONS}
+            t = a.rolls * min(1 + d / 100, 10000 / a.den) if a.den else 0
+            p = G.packs(t, math.floor(a.bmin * (1 + r / 100)), math.floor(a.bmax * (1 + r / 100))) if t > 0 else 0.0
+            for src, k in ((normal, a.reach * (t - p)), (elite, a.reach * p + a.layout_packs)):
+                for (kind, mid), v in src.items():
+                    lvl = mp.level + {"normal": 0, "champion": 2, "unique": 3, "minion": 3}[kind]
+                    tc = ms[mid]["TreasureClass%d(H)" % {"champion": 2, "unique": 3}.get(kind, 1)]
+                    if tc:
+                        out[(kind, tc, lvl)] = out.get((kind, tc, lvl), 0) + k * v
+        return out
+
+    def tier_guest_kills(self, tier, guest, d, r):
+        codes = [c for c, m in self.maps.items() if m.tier == tier]
+        acc = {}
+        for c in codes:
+            for k, v in self.guest_kills(c, guest, d, r).items():
+                acc[k] = acc.get(k, 0) + v / len(codes)
+        return acc
+
 
 # ---------------------------------------------------------------- the grail and the ears
 
@@ -502,6 +550,70 @@ def compute(t, items, ear_list):
     return rates, configs, kills
 
 
+def add_cow_rates(t, items, ear_list, configs, rates):
+    """Cow King's Leathers' pieces per map, into compute's rates: the Bovine guest's kills on rare maps (BOVINE) and
+    the Dark Wanderer's Cow King with his 8 Hell Bovines (DW_COW_KING), each a Hell Bovine's drop. An ear repeats a
+    non-minion's drop (extra) and adds a pick of its class pool (cls: of the pools only the Barbarian ear's holds a Cow
+    King base, War Hat); its rarity adds the guest's packs."""
+    import grail_farm as GF
+    d, m, cand = Drops(t), Maps(t), candidates(items)
+    cow, N = sorted(cand["COW"]), len(items)
+    king_tc = next(r for r in t.superuniques if r.get("Superunique") == "The Cow King")["TC(H)"]
+    king_drop = GF.Flow(d, GF.CAP).per_drop(king_tc)[0]  # his five picks under the six-item limit
+    cache = {}
+
+    def per_kill(key, dist, lvl, mf):  # [expected pieces] of one drop
+        if (key, lvl, mf) not in cache:
+            out = [0.0] * N
+            add_drops(d, cand, dist(), lvl, mf, 1, out, True)
+            cache[(key, lvl, mf)] = [out[i] for i in cow]
+        return cache[(key, lvl, mf)]
+
+    def pieces(kills, mf, extra=0, ear=None):
+        """[expected pieces] of {(kind, treasure class, level): kills}: their own drops (a non-minion's repeated by an
+        ear's extra drop), or with ear, its class pool's picks (non-minions only)."""
+        v = [0.0] * len(cow)
+        for (kind, tc, lvl), n in kills.items():
+            if ear:
+                if kind == "minion":
+                    continue
+                k, r = n * ear["cls"] / 100, per_kill(("pool", ear["name"]), lambda: d.expand(ear["pool"]), lvl, mf)
+            else:
+                drop = (lambda: king_drop) if tc == king_tc else (lambda: d.expand(d.upgrade(tc, lvl)))
+                k, r = n * (1 if kind == "minion" else 1 + extra / 100), per_kill(tc, drop, lvl, mf)
+            for j, x in enumerate(r):
+                v[j] += k * x
+        return v
+
+    for tier in (1, 2, 3):
+        level = {mp.level for mp in m.maps.values() if mp.tier == tier}
+        assert len(level) == 1, level
+        level = level.pop() + 3  # a superunique and his minions: the area level + 3
+        king = {("unique", king_tc, level): 1.0, ("minion", "Cow (H)", level): 8.0}
+        bd, br = BOVINE_ROLLS[tier]
+        guest = {c: m.tier_guest_kills(tier, "hellbovine", bd, br + c[0]) for c in [(0, 0)] + list(configs)}
+        for mt in ("normal", "rare"):
+            for mf in MFS:
+                e = rates[f"{tier}|{mt}|{mf}"]
+
+                def one_map(cfg, **kw):  # an average map of this kind: the guest's pieces and the Cow King's
+                    g = [0.0] * len(cow)
+                    if mt == "rare":  # the prefix's own magic find, 15-20 evenly
+                        for b in BOVINE_MF:
+                            g = [a + x / len(BOVINE_MF) for a, x in zip(g, pieces(guest[cfg], mf + b, **kw))]
+                    k = pieces(king, mf, **kw)
+                    return [BOVINE[tier] * a + DW_COW_KING[mt] * b if mt == "rare" else DW_COW_KING[mt] * b
+                            for a, b in zip(g, k)]
+                for j, x in zip(cow, one_map((0, 0))):
+                    e["none"][j] += x
+                for ci, c in enumerate(configs):
+                    for j, x in zip(cow, one_map(c, extra=c[1])):
+                        e["common"][ci][j] += x
+                for ear in ear_list:
+                    for j, x in zip(cow, one_map((ear["rarity"], ear["extra"]), ear=ear)):
+                        e["cls"][ear["name"]][j] += x
+
+
 # The filter and the grail: how Erazure - Main draws an unidentified item you haven't discovered yet and one you have,
 # on two filter levels, for one item of each kind (tier_map's engine runs the filter's own rules)
 LOOK_EXAMPLES = [("UNI", "ssd", "A unique item in no value tier"), ("SET", "xhl", "A set item"),
@@ -595,6 +707,7 @@ def main():
     rates, configs, kills = compute(t, items, ear_list)
     import grail_farm as GF
     strings = GF.prepare(t, args.game_dir)
+    add_cow_rates(t, items, ear_list, configs, rates)
     d = Drops(t)
     cand = candidates(items)
     for e in ear_list:  # the share of an ear's class items on bases no grail unique can roll on (wasted unique rolls)

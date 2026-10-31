@@ -559,8 +559,12 @@
   steps 4-5 of the review): cards, then 1 run maps with the ear that finds the most missing items in the next 100 maps,
   2 target farm the best-bet items on as few spots as it takes (`farmGroups`: the spot within 90% of each item's best
   for the most items; the Cow King in Normal takes 12 of 18 on a fresh grail, rare maps). Cow King's Leathers (`COW_SET`) drops
-  only from Hell Bovines (MonStats `hellbovine`: the Secret Cow Level's cows and the Cow King; the maps' Bovine guest is
-  left out, Blood Moon's cows are other monsters): `add_drops(..., bovine)`, so maps, ears and gambling never give it), with the whole list's per-kill / per-map
+  only from Hell Bovines (MonStats `hellbovine`: the Secret Cow Level's cows and the Cow King; Blood Moon's cows are other
+  monsters): `add_drops(..., bovine)`; gambling never gives it. In maps (the author, 2026-10-31) `add_cow_rates` adds its
+  two map sources to the pieces' map rates: the Bovine guest (`BOVINE`, the share of rare maps with the prefix; it joins
+  each area's monsters at weight 1, `Maps.guest_kills`; `BOVINE_ROLLS`, `BOVINE_MF`) and the Dark Wanderer event's Cow
+  King with 8 Hell Bovines (`DW_COW_KING`: 1 rare map in 260, 1 non-magical in 800); an ear's extra drop, rarity and
+  class pool (Barbarian: War Hat) count. Guests and events are left out for every other item), with the whole list's per-kill / per-map
   numbers, 3 the slowest (maps' items under an even chance in 100 maps), 4 the encounters; maps to finish without the
   farmed items. It works out only while its tab is open (`planSoon`). The ear table ranks ears by the missing items
   found in the next 100 maps (a repeat counts once) and shows the best
