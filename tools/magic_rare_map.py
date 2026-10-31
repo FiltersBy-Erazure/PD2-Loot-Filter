@@ -147,6 +147,8 @@ class Base:
                     return T.compare(self.qlvl, m)
                 if key == "ALVL":
                     return T.alvl_node(m, self.qlvl, self.mlvl)
+                if key == "MAXSOCKETS":
+                    return T.max_sockets_node(m, self.info)
                 if key == "AREA":
                     return T.compare(self.area, m)
                 return None

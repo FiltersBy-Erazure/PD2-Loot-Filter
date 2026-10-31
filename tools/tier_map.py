@@ -183,10 +183,22 @@ def affix_level(ilvl, qlvl, mlvl):
 def alvl_node(m, qlvl, mlvl):
     """An ALVL comparison on one base, as the item levels that pass it: ("c", 0 / 1) or an ILVL word. The affix
     level never drops as the item level rises (and stops at item level 99), so they are one run."""
-    ok = [i for i in range(1, 100) if compare(affix_level(i, qlvl, mlvl), m)]
+    return ilvl_node([i for i in range(1, 100) if compare(affix_level(i, qlvl, mlvl), m)])
+
+
+def max_sockets_node(m, base):
+    """A MAXSOCKETS comparison on one base, as the item levels that pass it (max_sockets: one run, its caps never
+    drop as the item level rises), or None if they are no one run."""
+    return ilvl_node([i for i in range(1, 100) if compare(max_sockets(base, i), m)])
+
+
+def ilvl_node(ok):
+    """The item levels that pass a test (ascending, 1-99) as ("c", 0 / 1) or an ILVL word; None if no one run."""
     if not ok:
         return ("c", 0)
     lo, hi = ok[0], ok[-1]
+    if hi - lo + 1 != len(ok):
+        return None
     if lo == 1 and hi == 99:
         return ("c", 1)
     word = f"ILVL>{lo - 1}" if hi == 99 else f"ILVL<{hi + 1}" if lo == 1 else \
