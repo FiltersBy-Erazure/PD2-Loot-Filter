@@ -636,7 +636,7 @@ their order is their number (BH reads 12 at most). Since 2026-10-18 (the game's 
 options took over the potion variants): 1 Lowest Strictness, 2 Relaxed (restored from before commit f991a84,
 which had merged it into 1), 3–4 Stricter, 5–7 Advanced (Endgame, but as on 3–4 for magic amulets and Large
 Charms, the unique looks of `160` but Athena's Wrath (Minimal on 0–4 only) and the unidentified rares of
-`190-rares` except low helms and small shields), 8–11 Endgame (8 also shows Select Weapons, 9 Flawless Gems; 10–11
+`190-rares` except small shields; 2 max socket helms show there since 2026-10-30, the author, hidden on 8+), 8–11 Endgame (8 also shows Select Weapons, 9 Flawless Gems; 10–11
 also hide Crafting Bases, or Large Charms), 12 Extreme (both). Flawless Gems (QTY=1 on the ground, not the Skull) are
 hidden on 8 and 10–12 (the author, 2026-10-26; until then 11–12), though only 9's name says so ("Shows Flawless Gems");
 there the Flawless Skull shows with its icon but no chat line. 7 = 6 but it hides unidentified magic amulets and every
