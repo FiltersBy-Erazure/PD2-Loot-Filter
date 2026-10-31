@@ -1148,7 +1148,7 @@ function renderGheed() {
   const fresh = !ITEMS.some(it => FOUND.has(it.key)), isNew = i => !FOUND.has(ITEMS[i].key);
   const rows = GHB.map(b => Object.assign({}, b, {n: b.its.reduce((a, [i, q]) => a + (isNew(i) ? q : 0), 0)})).filter(b => b.n > 0 || b.its.length);
   const perSlot = rows.reduce((a, b) => a + b.p * b.n, 0), perShop = GH_SLOTS * perSlot;
-  const ev = GH_EVENT[state.mt === "rare" ? "rare" : "normal"], what = fresh ? "grail items" : "your missing items";
+  const what = fresh ? "grail items" : "your missing items";
   const gl = gli(), gb = gambleBases(gl, ITEMS.filter(it => !FOUND.has(it.key)).map(it => it.i))[0];
   $("gm-gheed-facts").innerHTML = [
     `<b>What it is:</b> sometimes Gheed waits in a T1-T3 map with a shop of 5 unidentified items, each one a unique, for 1,000,000 gold apiece. The shop is filled once, the first time it opens.`,
@@ -1158,7 +1158,7 @@ function renderGheed() {
   ].map(x => `<li>${x}</li>`).join("");
   const best = rows.slice().sort((a, b) => b.n - a.n)[0];
   $("gm-gheed-cards").innerHTML = [
-    ["A map has the event", `1 in ${Math.round(100 / ev)}`, "maps", `${state.mt === "rare" ? "rare" : "non-magical"} maps, as the bar is set`],
+    ["A rare map has the event", `1 in ${Math.round(100 / GH_EVENT.rare)}`, "maps", `1 in ${Math.round(100 / GH_EVENT.magic)} magic maps, 1 in ${Math.round(100 / GH_EVENT.normal)} non-magical`],
     ["New grail items a shop", cnt(perShop), "", `buying all 5 offers: ${what}`],
     ["Gold per new item", perShop > 0 ? goldTxt(5e6 / perShop) : "–", "", `buying every offer${gb ? `; gambling at level ${GCL[gl]}: ${goldTxt(gb.per)}` : ""}`],
     fresh ? ["Best offer to see", "Any", "", "on a fresh grail nearly every offer is a new grail item"]
