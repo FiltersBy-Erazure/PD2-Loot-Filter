@@ -102,11 +102,11 @@ TAGS = {
     "lres": ("ROLL_LRES_TAG", "LRES", "res", "A"),
     "cres": ("ROLL_CRES_TAG", "CRES", "res", "A"),
     "pres": ("ROLL_PRES_TAG", "PRES", "res", "A"),
-    "maxfr": ("ROLL_MAXFR_TAG", "STAT40", "%max", "A"),
-    "maxlr": ("ROLL_MAXLR_TAG", "STAT42", "%max", "A"),
-    "maxcr": ("ROLL_MAXCR_TAG", "STAT44", "%max", "A"),
-    "maxpr": ("ROLL_MAXPR_TAG", "STAT46", "%max", "A"),
-    "maxres": ("ROLL_MAXRES_TAG", "MAXRES", "%max", "A"),  # items with all four: "6%/5%/4%/4%", "5%max" if equal (author, 2026-10-08)
+    "maxfr": ("ROLL_MAXFR_TAG", "STAT40", "max", "A"),  # 5max, no % (the author, 2026-10-31)
+    "maxlr": ("ROLL_MAXLR_TAG", "STAT42", "max", "A"),
+    "maxcr": ("ROLL_MAXCR_TAG", "STAT44", "max", "A"),
+    "maxpr": ("ROLL_MAXPR_TAG", "STAT46", "max", "A"),
+    "maxres": ("ROLL_MAXRES_TAG", "MAXRES", "max", "A"),  # items with all four: "6%/5%/4%/4%", "5max" if equal (author, 2026-10-08)
     "life": ("ROLL_LIFE_TAG", "LIFE", "lf", "A"),
     "mana": ("ROLL_MANA_TAG", "MANA", "mn", "A"),
     "str": ("ROLL_STR_TAG", "STR", "s", "A"),  # s d v e: the author, 2026-10-11
