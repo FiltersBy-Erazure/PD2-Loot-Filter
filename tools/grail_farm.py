@@ -30,7 +30,8 @@ A model, nothing measured in game. The rules (the base game's unless said):
   "LucionChestHigh" (at most 2, 3 or 4 for PD2's tiers 0, 1, 2) at the opener's character level.
 - Gheed's map event: each of its 5 offers (one in 200 shops gives one slot to a ring of its own) is a unique, a
   UniqueItems row picked at random (jewels, disabled rows, rows of weight 0 or a level outside 1-99 tried again),
-  one with a level requirement of 60 or more turned down (requirement - 59)% of the time, 10 tries a slot.
+  one with a level requirement of 60 or more turned down (requirement - 49)% of the time, 10 tries a slot; made at
+  item level 99 when the shop opens, shown as its base's normal version (the filter names what each can be).
 - Where a spot is: fixed (the same place every game) or anywhere in its area, and the areas from the nearest
   waypoint (FIXED_AREAS, FIXED_KEYS, OUTDOOR below).
 """
@@ -399,11 +400,41 @@ def gheed_offers(t):
         if (r.get("enabled") == "1" and r.get("code") and r["code"] != "jew" and num(r.get("rarity")) > 0
                 and 1 <= num(r.get("lvl")) <= 99):
             req = num(r.get("lvl req"))
-            acc[n] = 1.0 if req < 60 else max(0.0, (159 - req) / 100)
+            acc[n] = 1.0 if req < 60 else max(0.0, (149 - req) / 100)
     a = sum(acc.values()) / R
     slot = (1 - (1 - a) ** 10) / a
     slots = 5 - 1 / 200
     return {n: slots * v / R * slot for n, v in acc.items()}
+
+
+def gheed_bases(t, items):
+    """Gheed's offers by the base the shop shows (the normal version): [[code, name, chance a slot shows it,
+    [[item number, chance the offer is that item], ...]]], most likely base first; the rest of a base's chance is
+    uniques that aren't grail items."""
+    rows = t.uniques
+    w = {}
+    for n, r in enumerate(rows):
+        if (r.get("enabled") == "1" and r.get("code") and r["code"] != "jew" and num(r.get("rarity")) > 0
+                and 1 <= num(r.get("lvl")) <= 99):
+            req = num(r.get("lvl req"))
+            w[n] = 1.0 if req < 60 else max(0.0, (149 - req) / 100)
+    item_of = {u: i for i, it in enumerate(items) for u in it.get("uids", [])}
+    names = {r["code"]: r["name"] for r in pd2_data.read_table("".join(
+        l for l in GM.BASES.read_text(encoding="utf-8").splitlines(True) if not l.startswith("#")))}
+    total = sum(w.values())
+    by = {}
+    for n, v in w.items():
+        c = rows[n]["code"]
+        b = t.items.get(c, {}).get("normcode") or c
+        by.setdefault(b, {})
+        k = item_of.get(n, -1)
+        by[b][k] = by[b].get(k, 0) + v
+    out = []
+    for b, d in by.items():
+        tot = sum(d.values())
+        out.append([b, names.get(b) or t.items.get(b, {}).get("name", b), round(tot / total, 6),
+                    sorted(([i, round(v / tot, 4)] for i, v in d.items() if i >= 0), key=lambda e: -e[1])])
+    return sorted(out, key=lambda e: -e[2])
 
 
 def spot_rates(t, d, items, spots, mfs):

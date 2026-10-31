@@ -527,7 +527,7 @@
   its area, with its areas from the nearest waypoint (Levels Waypoint and Vis links, plus `OUTDOOR`'s outdoor links
   and portals); the author, 2026-10-30: players weigh fixed spots near a waypoint (Bone Ash). The page has tabs, one
   per feature (the author, 2026-10-30: the long item list buried the rest; their names, every word capitalised):
-  Overview, Filter Display, Your Grail, Every Item, Target Farming, Corrupted Ears, How It's Worked Out; a link to a
+  Overview, Filter Display, Your Grail, FAQ, Every Item, Target Farming, Gheed's Map Event, Corrupted Ears, How It's Worked Out; a link to a
   section id (#gm-farm) or #tab-<name> opens its
   tab (grail.md's intro links them). Per item: its best kill spot (Normal / Nightmare / Hell bosses and superuniques)
   and its best ears (the next ones too: Stalker's Cull is in the Druid and the Assassin pools); a row opens to the
@@ -550,7 +550,10 @@
   DifficultyLevels (unique 50, set 100 in 100,000; exceptional 90, elite 33 per item level in 10,000) and Gamble.txt;
   item level = character level -5..+4; price per gamble from the base's normal version (rings / amulets: Misc `gamble
   cost`). The page: a Gambling section on Target Farming (character level 1-99 select, bases by gold per new grail item
-  for your missing items), a line in each item's details, a "Gold to spare" plan step, a FAQ answer. Player text never says the numbers come from the game's data (the author, 2026-10-30): no
+  for your missing items), a line in each item's details, a "Gold to spare" plan step, a FAQ answer. A Gheed's Map Event tab (the author, 2026-10-30; `gheed_bases`): per base the
+  shop shows (the normal version; the unique and its tier are fixed at item level 99 when the shop opens) how often a
+  slot shows it, what it can be and the chance it is a missing item; offers pick UniqueItems rows evenly, a level
+  requirement of 60+ passed over (requirement - 49)% of the time (the 10-27 build; earlier traces said - 59). Player text never says the numbers come from the game's data (the author, 2026-10-30): no
   data date in the footer, "how the game rolls drops" rather than "the game's tables". An item's level there is its
   "drop level" (the lowest monster level that drops it); each ear's pool and dangers come from the ear's own in-game
   text (`ears()`: `what`, `harder`), the share of its pool on bases with no unique from the tables (`nounique`).

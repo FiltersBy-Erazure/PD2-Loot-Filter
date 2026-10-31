@@ -238,6 +238,7 @@
   <button type="button" role="tab" data-tab="faq" aria-selected="false">FAQ</button>
   <button type="button" role="tab" data-tab="items" aria-selected="false">Every Item</button>
   <button type="button" role="tab" data-tab="farm" aria-selected="false">Target Farming</button>
+  <button type="button" role="tab" data-tab="gheed" aria-selected="false">Gheed's Map Event</button>
   <button type="button" role="tab" data-tab="ears" aria-selected="false">Corrupted Ears</button>
   <button type="button" role="tab" data-tab="method" aria-selected="false">How It's Worked Out</button>
  </div>
@@ -362,6 +363,22 @@
   <div class="tools"><button type="button" class="btn" id="gm-gmore">Show every base</button></div>
 </section>
 
+<section id="gm-gheed" data-tab="gheed" hidden>
+  <h2>Gheed's Map Event</h2>
+  <ul class="find" id="gm-gheed-facts"></ul>
+  <div class="cards" id="gm-gheed-cards"></div>
+  <h3>Which offers to buy</h3>
+  <p class="note">Each base Gheed can show, how often a slot shows it, the uniques it can be and the chance it is one you're
+  missing (once you tick some; else any grail item), so the gold a new grail item costs if you buy it. An offer you'd rather
+  skip costs nothing: the next shop's offers are new rolls.</p>
+  <div class="tools">
+    <input type="search" id="gm-ghq" placeholder="Search a base or an item" aria-label="Search bases and items">
+    <span class="count" id="gm-ghcount"></span>
+  </div>
+  <div class="tbl panel"><table class="gm-table" id="gm-t-gheed"></table></div>
+  <div class="tools"><button type="button" class="btn" id="gm-ghmore">Show every base</button></div>
+</section>
+
 <section id="gm-levers" data-tab="overview">
   <h2>What makes it faster</h2>
   <ul class="find" id="gm-lever-list"></ul>
@@ -436,7 +453,7 @@
       items, then 2, 3 or 4 more from better loot on tier 0, 1 or 2, so a harder tier gives more items, not better ones. The
       items' level is the level of the character who opens the chest (95 here), and the numbers are for the whole vault.</li>
     <li><b>Gheed's map event:</b> each of his 5 offers is a random unique: any unique but jewels and the few that never drop. One
-      that needs character level 60 or more is turned down (level − 59)% of the time and another picked; in one shop in 200, one
+      that needs character level 60 or more is turned down (level − 49)% of the time and another picked; in one shop in 200, one
       offer is a special ring instead.</li>
     <li><b>Gambling:</b> each gambled item's item level is your character level −5 to +4. The base becomes exceptional with a
       chance that grows 0.9% per item level above the exceptional version's level, else elite with 0.33% per level above the
@@ -1011,7 +1028,7 @@ function farmDetail(i) {  // an item's best spots per group (and the best fixed 
   lines.push(R.none[i] > 0 ? `<b>T1-T3 maps:</b> ${oneIn(R.none[i])} maps without an ear` +
     (ears.length ? ", " + ears.map(([e, v]) => `${oneIn(v)} with the ${e} ear`).join(", ") + (ears.length < EARS.length ? `, ${oneIn(R.any[i])} with any other ear` : "")
       : `, ${oneIn(R.any[i])} with any ear`) + ` <span class="meta">(${setting()})</span>` : `<b>T1-T3 maps:</b> map monsters never drop it`);
-  if (GHEED[i]) lines.push(`<b>Gheed's map event:</b> ${perUnit(GHEED[i], "shop")}`);
+  if (GHEED[i]) lines.push(`<b><a href="#gm-gheed">Gheed's map event</a>:</b> ${perUnit(GHEED[i], "shop")}`);
   const gl = gambleLine(i); if (gl) lines.push(gl);
   if (high.length) lines.push(`<b>No spot in ${joinAnd(high)}:</b> it drops only from monster level ${it.lvl} up, and no monster there is that high`);
   if (none.length) lines.push(`<b>No ${state.fixed === "fixed" ? "fixed " : ""}spot in ${joinAnd(none)}</b> drops it`);
@@ -1021,7 +1038,7 @@ $("gm-items").addEventListener("change", e => {
   const k = e.target.dataset && e.target.dataset.k; if (!k) return;
   if (e.target.checked) FOUND.add(k); else FOUND.delete(k);
   e.target.closest("tr").classList.toggle("found", e.target.checked);
-  save(); planSoon(); renderGamble();
+  save(); planSoon(); renderGamble(); renderGheed();
 });
 $("gm-items").addEventListener("click", e => {
   if (e.target.closest("input") || e.target.closest("tr.gm-detail")) return;
@@ -1039,10 +1056,10 @@ $("gm-copy").onclick = () => { const t = $("gm-io").value;
 $("gm-import").onclick = () => {
   const lines = $("gm-io").value.split(/\r?\n/).map(s => s.trim()).filter(Boolean), miss = [], next = new Set();
   for (const l of lines) { const k = norm(l); if (!k) continue; const it = byLabel.get(k); if (it) next.add(it.key); else miss.push(l); }
-  FOUND = next; save(); renderPlanner(); renderItems(); renderGamble();
+  FOUND = next; save(); renderPlanner(); renderItems(); renderGamble(); renderGheed();
   $("gm-io-msg").textContent = `${next.size} items ticked.` + (miss.length ? ` Not recognised: ${miss.slice(0, 5).join(", ")}${miss.length > 5 ? "…" : ""}` : "");
 };
-$("gm-clear").onclick = () => { FOUND = new Set(); save(); renderPlanner(); renderItems(); renderGamble(); $("gm-io-msg").textContent = "All ticks cleared."; };
+$("gm-clear").onclick = () => { FOUND = new Set(); save(); renderPlanner(); renderItems(); renderGamble(); renderGheed(); $("gm-io-msg").textContent = "All ticks cleared."; };
 
 // ---------------------------------------------------------------- what ears can't do, settings
 function renderCant() {
@@ -1111,8 +1128,48 @@ function renderGamble() {
     `<b>Low-level items are cheap, high-level ones aren't:</b> a base's low-level uniques and sets cost a low-level character a few million gold or less each, the same items the Normal farm spots are best for; the items only a high item level can make cost far more${sojBest ? ` (The Stone of Jordan about ${goldTxt(sojBest[0])} gold, at character level ${GCL[sojBest[1]]})` : ""}. Gheed's map event sells a unique for 1,000,000 gold an offer, when it shows up.`,
   ].filter(Boolean).map(x => `<li>${x}</li>`).join("");
 }
-$("gm-clvl").addEventListener("input", e => { state.clvl = e.target.value; GMORE = false; renderGamble(); planSoon(); renderItems(); });
+$("gm-clvl").addEventListener("input", e => { state.clvl = e.target.value; GMORE = false; renderGamble(); renderGheed(); planSoon(); renderItems(); });
 $("gm-gmore").onclick = () => { GMORE = !GMORE; renderGamble(); };
+
+// ---------------------------------------------------------------- Gheed's map event
+// per base the shop shows (the normal version): the chance a slot shows it and its grail items' chances
+const GHB = F.gheedBases.map(([code, name, p, its]) => ({code, name, p, its, search: (name + " " + its.map(([i]) => ITEMS[i].label).join(" ")).toLowerCase()}));
+const GH_EVENT = {normal: 11 / 9, magic: 17 / 9, rare: 34 / 9};  // % of T1-T3 maps by map quality: 11 / 17 / 34% have an event, one of nine kinds
+const GH_SLOTS = 5 - 1 / 200;  // one shop in 200 gives a slot to a ring of its own
+let GHMORE = false;
+const pc = v => `${(v * 100).toFixed(v >= 0.0995 ? 0 : 1)}%`;
+function renderGheed() {
+  const fresh = !ITEMS.some(it => FOUND.has(it.key)), isNew = i => !FOUND.has(ITEMS[i].key);
+  const rows = GHB.map(b => Object.assign({}, b, {n: b.its.reduce((a, [i, q]) => a + (isNew(i) ? q : 0), 0)})).filter(b => b.n > 0 || b.its.length);
+  const perSlot = rows.reduce((a, b) => a + b.p * b.n, 0), perShop = GH_SLOTS * perSlot;
+  const ev = GH_EVENT[state.mt === "rare" ? "rare" : "normal"], what = fresh ? "grail items" : "your missing items";
+  const gl = gli(), gb = gambleBases(gl, ITEMS.filter(it => !FOUND.has(it.key)).map(it => it.i))[0];
+  $("gm-gheed-facts").innerHTML = [
+    `<b>What it is:</b> sometimes Gheed waits in a T1-T3 map with a shop of 5 unidentified items, each one a unique, for 1,000,000 gold apiece. The shop is filled once, the first time it opens.`,
+    `<b>How often:</b> one of nine map events, in about 1 non-magical map in ${Math.round(100 / GH_EVENT.normal)}, 1 magic map in ${Math.round(100 / GH_EVENT.magic)} and 1 rare map in ${Math.round(100 / GH_EVENT.rare)}.`,
+    `<b>What an offer can be:</b> any unique in the game but jewels. Each offer picks one at random, every unique as likely as the next, except that one needing character level 60 or more is passed over (requirement − 49)% of the time: a level 99 requirement half as often. One shop in 200 has a special ring in one slot.`,
+    `<b>What you see:</b> each offer shows as its base's normal version (a Coronet that may turn out a Tiara or a Diadem). It is made at item level 99 when the shop opens, so which unique it is is already decided, and buying reveals it. This filter names the uniques each offered base can be, by tier, on its label.`,
+  ].map(x => `<li>${x}</li>`).join("");
+  const best = rows.slice().sort((a, b) => b.n - a.n)[0];
+  $("gm-gheed-cards").innerHTML = [
+    ["A map has the event", `1 in ${Math.round(100 / ev)}`, "maps", `${state.mt === "rare" ? "rare" : "non-magical"} maps, as the bar is set`],
+    ["New grail items a shop", cnt(perShop), "", `buying all 5 offers: ${what}`],
+    ["Gold per new item", perShop > 0 ? goldTxt(5e6 / perShop) : "–", "", `buying every offer${gb ? `; gambling at level ${GCL[gl]}: ${goldTxt(gb.per)}` : ""}`],
+    fresh ? ["Best offer to see", "Any", "", "on a fresh grail nearly every offer is a new grail item"]
+      : ["Best offer to see", best ? best.name : "–", "", best ? `${pc(best.n)} chance it is new to you: ${goldTxt(1e6 / best.n)} gold per new item` : ""],
+  ].map(([who, big, small, sub]) => `<div class="card"><div class="who">${who}</div><div class="big" style="font-size:${String(big).length > 12 ? 19 : 28}px">${big}${small ? `<small>${small}</small>` : ""}</div><div class="sub">${sub}</div></div>`).join("");
+  const q = $("gm-ghq").value.trim().toLowerCase();
+  const list = rows.filter(b => !q || b.search.includes(q)).sort((a, b) => b.n - a.n || b.p - a.p), shown = GHMORE || q ? list : list.slice(0, 15);
+  $("gm-ghcount").textContent = `${list.length} bases`;
+  $("gm-t-gheed").innerHTML = `<thead><tr><th class="l">Base shown</th><th>A slot shows it</th><th>Chance it's new to you</th><th>Gold per new item</th><th class="l">What it can be</th></tr></thead><tbody>` +
+    shown.map(b => `<tr><td>${b.name}</td><td>${oneIn(b.p)} offers</td><td${b.n ? "" : ' class="ratio"'}>${b.n ? pct(b.n) : "none"}</td><td>${b.n ? goldTxt(1e6 / b.n) : "–"}</td>` +
+      `<td class="top">${b.its.map(([i, p]) => `${isNew(i) ? ITEMS[i].label : `<s>${ITEMS[i].label}</s>`} <span class="ratio">${pc(p)}</span>`).join(", ")}` +
+      `${b.its.reduce((a, [, p]) => a + p, 0) < 0.995 ? ` <span class="ratio">(the rest: uniques that don't count)</span>` : ""}</td></tr>`).join("") + `</tbody>`;
+  $("gm-ghmore").hidden = !!q || list.length <= 15;
+  $("gm-ghmore").textContent = GHMORE ? "Show fewer" : `Show all ${list.length} bases`;
+}
+$("gm-ghq").addEventListener("input", renderGheed);
+$("gm-ghmore").onclick = () => { GHMORE = !GHMORE; renderGheed(); };
 $("gm-fmore").onclick = () => { FMORE = !FMORE; renderFarm(); };
 function renderGrid() {
   const rows = [];
@@ -1126,7 +1183,7 @@ function renderGrid() {
 
 // ---------------------------------------------------------------- settings bar
 $("gm-mf").innerHTML = MFS.map(v => `<button type="button" data-v="${v}" aria-pressed="${v === state.mf}">${v}%</button>`).join("");
-function renderAll() { summary(); renderAnswer(); renderSpeed(); renderLevers(); renderEars(); planSoon(); renderItems(); renderFarm(); renderGamble(); renderCant(); renderFaq(); }
+function renderAll() { summary(); renderAnswer(); renderSpeed(); renderLevers(); renderEars(); planSoon(); renderItems(); renderFarm(); renderGamble(); renderGheed(); renderCant(); renderFaq(); }
 document.querySelectorAll(".grail-map .seg").forEach(seg => seg.addEventListener("click", e => {
   const b = e.target.closest("button"); if (!b) return;
   seg.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", String(x === b)));

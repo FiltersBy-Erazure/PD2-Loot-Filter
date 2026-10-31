@@ -111,6 +111,13 @@ Much of this page compares maps with and without a Corrupted Ear, so here is wha
     Every act boss, superunique and special encounter in each difficulty, by the grail items it drops, and the items it
     is the best spot for. Then gambling: the gold per new grail item of every gamble base at your character level.
 
+-   **[Gheed's Map Event](#tab-gheed)**
+
+    ---
+
+    How often Gheed's shop turns up in a map, what its five offers can be, and which offered bases are worth
+    1,000,000 gold for the items you're missing.
+
 -   **[Corrupted Ears](#tab-ears)**
 
     ---

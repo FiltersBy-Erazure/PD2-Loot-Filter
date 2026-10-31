@@ -588,6 +588,7 @@ def main():
     assert not missing, f"grail items no farm spot drops: {missing}"
     farm = GF.pack(items, spots, farm_rates, MFS, GF.gheed_offers(t))
     farm["gamble"] = GF.pack_gamble(t, items, GF.gamble_rates(t, d, items))
+    farm["gheedBases"] = GF.gheed_bases(t, items)
     data = page_data(t, items, ear_list, rates, configs, kills, farm)
     page = DOC_HEAD + TEMPLATE.read_text(encoding="utf-8") + "\n</body>\n</html>\n"
     page = page.replace("/*__DATA__*/null", json.dumps(data, ensure_ascii=False, separators=(",", ":")))
