@@ -134,6 +134,7 @@ About 825 KB is roughly 200k+ tokens per file. **No conversation will "see the w
 | `340-high-alvl-crafting-bases` | 10494–10540 | |
 | `350-ed-dr-highlights` | 10541–10577 | Chest/shield ED and damage-reduction highlights |
 | `360-max-res-cannot-be-frozen` | 10578–10619 | Maximum resistances, then Cannot Be Frozen, the last highlight (was `360-max-res-resist-tags` until 2026-10-29: the resistance tags moved to 285) |
+| `365-special-edition` | (2026-11-01) | The orange "5th Anniversary Edition" line on Season 14's alternate skin uniques (`STAT270=1`; the game writes it only on Season 12's five, `STAT270=5`), under every highlight |
 | `370-catch-all` | 10620–10621 | `ItemDisplay[]:%NAME%{%NAME%}//` (must stay last) |
 
 To add a section, give it a number between its neighbours (`115-new-topic.filter`). To split one, move lines into a new file; `python tools/build.py --check` then proves the 8 filters didn't change.
