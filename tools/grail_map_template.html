@@ -96,6 +96,12 @@
   .grail-map .seg button { font: 600 13.5px var(--body); color: var(--muted); background: transparent; border: 0; padding: 5px 11px; cursor: pointer; margin: 0; }
   .grail-map .seg button + button { border-left: 1px solid var(--line); }
   .grail-map .seg button[aria-pressed="true"] { background: var(--accent-wash); color: var(--fg); }
+  /* phones: magic find's nine steps in rows of three beside the label (in one row they're wider than the screen); the
+     lines between them are shadows, which the segment's edge cuts off on the outside */
+  @media (max-width: 600px) {
+    .grail-map #gm-mf { display: inline-grid; grid-template-columns: repeat(3, 1fr); }
+    .grail-map #gm-mf button { border-left: 0; box-shadow: -1px -1px 0 var(--line); }
+  }
   .grail-map button:focus-visible, .grail-map input:focus-visible, .grail-map select:focus-visible,
   .grail-map textarea:focus-visible, .grail-map summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   .grail-map .ctl-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-right: 6px; }
@@ -719,15 +725,32 @@ function renderAnswer() {
     `<b>A Corrupted Ear on every map cuts the maps:</b> 90% of the grail takes ${fmtN(b90.m90)} maps with the best ear and ${fmtN(w90.m90)} with the worst, instead of ${fmtN(none.m90)}. That's fewer maps, not less time: ear monsters have +${E0.hp}% health. <a href="#gm-planner">Your Grail</a> picks the ear for the items you're missing.`
   ].map(x => `<li>${x}</li>`).join("");
 }
+// "707 maps at 0%, 412 at 100%, ...": a number of maps at each magic find of the bar
+const mfList = f => MFS.map((x, k) => `${fmtN(f(x))}${k ? "" : " maps"} at ${x}%`).join(", ");
+// The magic find where set items stop gaining, "200-600", or "" if one still gains at the bar's last step: the set
+// chance reaches its cap there, while the unique roll, which comes first, keeps taking more of their bases' drops
+function setCap(t, mt) {
+  const per = MFS.map(x => rates(t, mt, x).none);
+  let lo = NM, hi = -1;
+  for (const it of ITEMS) {
+    if (it.kind !== "SET" || !(per[NM - 1][it.i] > 0)) continue;
+    let p = 0; per.forEach((r, m) => { if (r[it.i] > per[p][it.i]) p = m; });
+    if (p === NM - 1) return "";
+    lo = Math.min(lo, p); hi = Math.max(hi, p);
+  }
+  return hi < 0 ? "" : lo === hi ? MFS[lo] : `${MFS[lo]}-${MFS[hi]}`;
+}
 function renderLevers() {
-  const t = state.tier, mt = state.mt, mf = state.mf;
+  const t = state.tier, mt = state.mt, mf = state.mf, cap = setCap(t, mt);
   const m90 = (tier, mapt, magic, ear) => { const R = rates(tier, mapt, magic), idx = droppable(R);
     return ear ? Math.min(...EARS.map(e => mapsTo(R.ear[e], idx, .9))) : mapsTo(R.none, idx, .9); };
-  const mfs = DATA.mfs.map(String), kills = (tier, mapt) => { const k = tier === "all" ? ["1", "2", "3"] : [tier];
+  const kills = (tier, mapt) => { const k = tier === "all" ? ["1", "2", "3"] : [tier];
     return k.reduce((a, x) => a + DATA.kills[x + "|" + mapt], 0) / k.length; };
   const other = mt === "normal" ? "rare" : "normal", mtName = x => x === "normal" ? "non-magical" : "rare";
   $("gm-lever-list").innerHTML = [
-    `<b>Magic find:</b> 90% of the map grail takes ${mfs.map(x => `${fmtN(m90(t, mt, x, false))} maps at ${x}%`).join(", ")} (no ear). Unique and set chances grow ever slower with more magic find.`,
+    `<b>Magic find:</b> 90% of the map grail takes ${mfList(x => m90(t, mt, x, false))} (no ear). ` + (cap ?
+      `Unique chances grow ever slower with more magic find; set items stop gaining at ${cap}%, where their chance reaches its cap, and get a little rarer past it, as more of their bases' drops come out unique.` :
+      `Unique and set chances grow ever slower with more magic find.`),
     `<b>A Corrupted Ear on every map:</b> 90% of the map grail in ${fmtN(m90(t, mt, mf, true))} maps with the best ear instead of ${fmtN(m90(t, mt, mf, false))}; each map takes longer, since ear monsters have +${E0.hp}% health. What ears do, and which to use: <a href="#gm-how">Corrupted Ears</a>.`,
     `<b>Rare maps:</b> an average rare map (with a corruption) has about ${(kills(t, "rare") / kills(t, "normal")).toFixed(1)}× the monsters of a non-magical one, so ${fmtN(m90(t, "rare", mf, false))} maps for 90% instead of ${fmtN(m90(t, "normal", mf, false))}; each clear takes longer, though.`,
     `<b>The tier barely matters:</b> ${["1", "2", "3"].map(x => `T${x} ${fmtN(m90(x, mt, mf, false))}`).join(", ")} maps for 90% on ${mtName(mt)} maps. Every grail item maps can drop drops in all three.`
@@ -790,7 +813,7 @@ function renderFaq() {
   const best90 = ears.reduce((a, b) => b.m90 < a.m90 ? b : a), worst90 = ears.reduce((a, b) => b.m90 > a.m90 ? b : a);
   const find = name => ITEMS.find(it => it.name === name);
   const t = state.tier, mt = state.mt, mf = state.mf, m90 = (tier, mapt, magic) => { const Rx = rates(tier, mapt, magic); return mapsTo(Rx.none, droppable(Rx), .9); };
-  const kills = mapt => { const k = t === "all" ? ["1", "2", "3"] : [t]; return k.reduce((a, x) => a + DATA.kills[x + "|" + mapt], 0) / k.length; };
+  const kills = mapt => { const k = t === "all" ? ["1", "2", "3"] : [t]; return k.reduce((a, x) => a + DATA.kills[x + "|" + mapt], 0) / k.length; }, cap = setCap(t, mt);
   // a worked example: the slowest map item, per map with any ear against its best kill spot, at 3 minutes a map and 1 a kill
   const slow = idx.map(i => [i, bestEar(R, i)[1]]).sort((a, b) => a[1] - b[1])[0], ex = slow && ITEMS[slow[0]], exFarm = ex && bestFarm(ex.i);
   const hours = n => (n / 60).toFixed(n < 600 ? 1 : 0);
@@ -818,7 +841,8 @@ function renderFaq() {
     ["Non-magical or rare maps? Fortified? Which tier?",
      `An average rare map (with a corruption) has about ${(kills("rare") / kills("normal")).toFixed(1)} times the monsters of a non-magical one, so 90% of the grail takes ${fmtN(m90(t, "rare", mf))} rare maps instead of ${fmtN(m90(t, "normal", mf))}, though each takes longer. Fortified maps halve the monsters and give each one a second drop: about the same grail drops a clear. The tier barely matters: every item maps drop, drops in T1, T2 and T3.`],
     ["How much magic find is enough?",
-     `More always helps, but less each time: 90% of the map grail takes ${MFS.map(x => `${fmtN(m90(t, mt, x))} maps at ${x}%`).join(", ")}. Set the bar to your own magic find.`],
+     `More always helps the grail, but less each time: 90% of the map grail takes ${mfList(x => m90(t, mt, x))}. ` +
+     (cap ? `Unique items gain all the way; set items stop gaining at ${cap}%, where their chance reaches its cap. ` : "") + `Set the bar to your own magic find.`],
     ["What are Corrupted Zones?",
      `In Hell games made with Baal's quest done, one group of areas at a time is corrupted: its area level is 85, so its superuniques drop at level 88. The zone is picked when the game is made and changes every 15 minutes for the whole server; a new game gets the current one. The farm spots there are listed apart, under Corrupted Zones.`],
     ["Why does an item I've found still get stars or a chat line?",

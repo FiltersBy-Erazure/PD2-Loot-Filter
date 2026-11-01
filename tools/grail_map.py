@@ -56,7 +56,7 @@ BASES = ROOT / "docs" / "pd2-bases.tsv"
 ITEMS_TSV = ROOT / "docs" / "pd2-unique-set-items.tsv"
 BS = "\\"
 
-MFS = [0, 100, 200, 300, 400, 500]
+MFS = [0, 100, 200, 300, 400, 500, 600, 700, 800]
 # The average rare map with one corruption, per tier (density, rarity %): map_exp.py --ranges, 2026-10-16
 RARE_ROLLS = {1: (91, 14), 2: (104, 18), 3: (126, 23)}
 CHAMP_SIZE = 3.0     # a champion pack: the leader + 1-3 more

@@ -524,7 +524,9 @@
   enabled uniques, unique maps, quest items and `NOT_GRAIL` left out, and set items; the rows of one name are one item,
   any version finds it, the author 2026-10-30: Akarat's Devotion's two, Cyclopean Roar's two...; set names are the
   game's strings, McAuley's Folly is Sander's Folly) in T1-T3 maps, per T1 / T2 / T3, non-magical or average rare map,
-  magic find 0-500 in steps of 100 (`MFS`; the bar is built from it): each item's drops per map
+  magic find 0-800 in steps of 100 (`MFS`; the bar is built from it, on phones in rows of three; 600-800 since
+  2026-10-31, the author; set items stop gaining at 200-600%, where the set chance reaches ItemRatio's minimum, and the
+  page says so, `setCap`): each item's drops per map
   with no ear, the part every ear gives (extra drop, rarity) and each ear's class pool, best ear, maps for 90%; grail
   curves (no ear, the band of the seven ears, switching ears before each map), each ear's top items, and a planner
   (ticks in the player's browser, a pasted list) that ranks the ears for the missing items. It reads the game's
