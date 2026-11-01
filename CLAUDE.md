@@ -677,9 +677,28 @@
   when both markets agree; one market when the other has too few listings). `--report` prints it, `--item NAME` one
   item. Its db: collection `decisions`, one document per card id (`UNI_7cr`, `UNI_amd_eth`), `{choice: take / keep /
   other, tier, note, was, suggested, item, data, savedAt}`; apply only when the author says, in 160 / 170's tier rules
-  (a Medium or High unique has its own drop sound line, Minimal none; sets: High, or Medium on 0-11 with the plain
-  name on 12; Corr's versions keep Medium and set sounds off), then delete the applied documents (keep decisions
+  (a Medium or High unique has its own drop sound line, Minimal none; sets: a sound line per item, limited to the
+  levels of its High / Medium look, which differ per item since the set review; Corr's versions keep Medium and set
+  sounds off), then delete the applied documents (keep decisions
   stay) and republish. First applied 2026-10-29: 26 tier changes and Goldskin's character level limit.
+- Set item review (2026-10-31, the author: many set items hidden on filter levels 5-12 should show their plain name on
+  5-7 and hide from 8): `python tools/set_review.py` writes `tools/set_review.html` (gitignored, from
+  `tools/set_review_template.html`), published to https://claude.ai/artifact/C4YY1V9E5LDvW1xwXA57vQ (republish there
+  after a 170 change). One card per set base (unidentified, Main, outside town, discovered): today's display per filter
+  level (tier_map's engine, split by ethereal / character level where 170 splits) and a grid the author paints with a
+  display (look, minimap icon, chat line, drop sound; the author can add displays), with ethereal / character level
+  splits of its own, the drop sound, what an undiscovered item does and a note; beside it each item's set, required
+  level, drops per map (the Grail Planner page's data) and trade site prices (market_tiers' cache). The cards are
+  grouped by set (the author, 2026-10-31), a tab per tier as the wiki's set pages (`docs/items/Normal.wiki` common,
+  `Exceptional.wiki` uncommon, `Elite.wiki` class-focused; Sander's Folly with the common sets, `TIER_MOVES`), sets by
+  their items' average required level; a base two sets share shows under both (one choice), the set rings and amulets
+  are one card each on a Rings and amulets tab, linked from each set. Its db: collection
+  `cards`, one document per changed base (`SET_cap`: {eth, cuts, rows: {"a|1": [13 display ids]}, sound, grail,
+  note}), `meta/displays` and `meta/note`; read them before republishing, apply to 170 only when the author says.
+  First applied 2026-10-31 (52 bases), then the applied documents deleted: check an application by regenerating the
+  page and comparing each card's today rows with the documents at every level, character level and ethereal state
+  (they matched exactly). A plain-name or hide rule doesn't stop a later rule's minimap icon (BH's notification
+  pass), so the icon rules around one must leave its cases out (`kit (FILTLVL<5 OR (CLVL<60 FILTLVL~5-7))`).
 
 ## Variants (all 20 built from the same sections)
 | display_name | File | BIG_GG | POE_SOUNDS | REVEALED |

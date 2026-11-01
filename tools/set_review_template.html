@@ -1,0 +1,875 @@
+<title>Set Item Review</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* One card per set base: today's display per filter level beside a grid of the same shape the author paints with a
+   display from the sticky bar (look, minimap icon, chat line, drop sound). The cards are grouped by set, one tab per
+   tier of sets (common, uncommon, class-focused), the rings and amulets on a tab of their own; then Changes, Displays. */
+:root {
+  --bg: #f2f0eb; --panel: #ffffff; --sunk: #f7f5f0; --line: #dcd5c7; --fg: #24211b; --muted: #6c6455;
+  --gold: #86621a; --red: #b3261e; --warn: #9a5b00; --warn-bg: #fbefd9; --ok: #2f6b45; --ok-bg: #e2f0e6;
+  --chip: #ece7dc; --chip-on: #e7d6ae; --focus: #86621a; --new: #2f5f8a; --new-bg: #e1ecf6;
+  --set: #2c7a2c; --set-bg: #e3f0df;
+  --game: #12100c; --game-line: #3a3428; --ground-a: #3a3428; --ground-b: #26221b; --ground-c: #15130f;
+  --display: "Cinzel", "Trajan Pro", Georgia, serif;
+  --body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", "Cascadia Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15130f; --panel: #1f1c16; --sunk: #191612; --line: #39322a; --fg: #e9e1cf; --muted: #a59a84;
+    --gold: #d6b468; --red: #f07a6f; --warn: #e8b05a; --warn-bg: #3a2c14; --ok: #86c39b; --ok-bg: #1d3226;
+    --chip: #2a251e; --chip-on: #5a4721; --focus: #d6b468; --new: #8db8e0; --new-bg: #1c2a38;
+    --set: #7fd27f; --set-bg: #1b2e1b; --game: #0b0a08; --game-line: #4a4234; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15130f; --panel: #1f1c16; --sunk: #191612; --line: #39322a; --fg: #e9e1cf; --muted: #a59a84;
+  --gold: #d6b468; --red: #f07a6f; --warn: #e8b05a; --warn-bg: #3a2c14; --ok: #86c39b; --ok-bg: #1d3226;
+  --chip: #2a251e; --chip-on: #5a4721; --focus: #d6b468; --new: #8db8e0; --new-bg: #1c2a38;
+  --set: #7fd27f; --set-bg: #1b2e1b; --game: #0b0a08; --game-line: #4a4234; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 15px; line-height: 1.45; margin: 0; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--panel); }
+button, select, input, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--panel); border-bottom: 1px solid var(--line);
+  padding-block: 10px 0; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.bar-top { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+h1 { font-family: var(--display); font-size: 22px; letter-spacing: .03em; margin: 0; text-wrap: balance; }
+.status { font-size: 13px; padding: 2px 10px; border-radius: 999px; background: var(--chip); color: var(--muted); }
+.status.ok { background: var(--ok-bg); color: var(--ok); }
+.status.warn { background: var(--warn-bg); color: var(--warn); }
+.bar-note { color: var(--muted); font-size: 13px; margin-left: auto; }
+.brush { display: flex; gap: 6px; align-items: center; overflow-x: auto; padding-block: 8px 2px; scrollbar-width: thin; }
+.brush > span { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 700; white-space: nowrap; }
+.bchip { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); background: var(--sunk); border-radius: 6px; padding: 3px 8px 3px 4px; cursor: pointer; white-space: nowrap; font-size: 13px; }
+.bchip:hover { border-color: var(--gold); }
+.bchip[aria-pressed="true"] { border-color: var(--gold); background: var(--chip-on); font-weight: 600; }
+.tabs { display: flex; gap: 2px; overflow-x: auto; margin-top: 4px; scrollbar-width: thin; }
+.tab { border: 0; background: none; padding: 8px 12px 10px; border-bottom: 3px solid transparent; cursor: pointer; white-space: nowrap; color: var(--muted); }
+.tab[aria-selected="true"] { color: var(--fg); border-bottom-color: var(--gold); font-weight: 600; }
+.tab .n { font-size: 12px; font-weight: 600; color: var(--gold); margin-left: 4px; }
+main { padding-block: 16px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 16px; }
+.help { color: var(--muted); font-size: 14px; max-width: 110ch; margin: 0; }
+.help b { color: var(--fg); }
+details.levels { font-size: 13px; color: var(--muted); max-width: 110ch; }
+details.levels summary { cursor: pointer; color: var(--gold); font-weight: 600; width: fit-content; }
+details.levels ol { margin: 6px 0 0; padding-left: 0; list-style: none; columns: 2 260px; }
+details.levels li { font-family: var(--mono); font-size: 12px; }
+.tools { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; font-size: 14px; }
+.tools label { display: inline-flex; gap: 6px; align-items: center; cursor: pointer; }
+.tools select, .tools input[type="search"], .num-in, .opts select, .opts input[type="text"] { background: var(--sunk); border: 1px solid var(--line); border-radius: 5px; padding: 2px 6px; }
+.tools input[type="search"] { width: 15em; }
+.num-in { width: 3.4em; font-family: var(--mono); text-align: right; }
+.tools .sel { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding-left: 14px; border-left: 1px solid var(--line); }
+.btn { border: 1px solid var(--line); background: var(--sunk); border-radius: 5px; padding: 3px 10px; cursor: pointer; font-size: 13px; white-space: nowrap; }
+.btn:hover { border-color: var(--gold); }
+.btn[disabled] { opacity: .5; cursor: default; }
+.btn.main { border-color: var(--set); color: var(--set); font-weight: 600; }
+.group { display: grid; gap: 12px; min-width: 0; }
+.group > h2 { font-family: var(--display); font-size: 19px; margin: 6px 0 0; letter-spacing: .02em; display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.group > h2 small { font-family: var(--body); font-size: 13px; color: var(--muted); font-weight: 400; letter-spacing: 0; }
+.group > h2 .chip { font-family: var(--body); letter-spacing: 0; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; display: grid; gap: 10px; min-width: 0; scroll-margin-top: 180px; }
+.card.picked { border-color: var(--new); box-shadow: 0 0 0 1px var(--new); }
+.card.flash { animation: flash 1.6s ease-out; }
+@keyframes flash { 0%, 40% { box-shadow: 0 0 0 3px var(--gold); } 100% { box-shadow: none; } }
+.jline { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; background: var(--panel); border: 1px dashed var(--line); border-radius: 8px; padding: 8px 14px; font-size: 14px; }
+.jline a, .others a { color: var(--gold); cursor: pointer; text-decoration: underline; }
+.jline .jnote { color: var(--muted); }
+.items li.shared { color: var(--muted); font-size: 13px; }
+.others { color: var(--muted); font-size: 14px; display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: baseline; }
+.chg-tab { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 700; margin: 10px 0 0; }
+.chead { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; }
+.chead h3 { margin: 0; font-family: var(--display); font-size: 17px; letter-spacing: .02em; }
+.chead input[type="checkbox"] { width: 17px; height: 17px; margin: 0; cursor: pointer; accent-color: var(--new); }
+.chip { font-size: 12px; padding: 1px 8px; border-radius: 999px; background: var(--chip); color: var(--muted); white-space: nowrap; }
+.chip.code { font-family: var(--mono); }
+.chip.chg { background: var(--chip-on); color: var(--gold); font-weight: 600; }
+.chip.hid { background: var(--warn-bg); color: var(--warn); }
+.chip.also { background: none; border: 1px dashed var(--line); }
+.items { display: grid; gap: 2px; margin: 0; padding: 0; list-style: none; font-size: 14px; }
+.items li { display: flex; flex-wrap: wrap; gap: 2px 10px; align-items: baseline; }
+.iname { color: var(--set); font-weight: 600; }
+.iset { color: var(--muted); }
+.imeta { color: var(--muted); font-size: 12.5px; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.gridwrap { overflow-x: auto; }
+table.grid { border-collapse: separate; border-spacing: 2px; font-size: 12px; }
+table.grid th { font-weight: 600; color: var(--muted); text-align: center; padding: 0 2px; }
+table.grid thead th { font-family: var(--mono); font-size: 11px; }
+table.grid th.rl { text-align: left; font-weight: 600; font-size: 12px; padding-right: 8px; white-space: nowrap; min-width: 150px; color: var(--fg); }
+table.grid th.rl small { display: block; font-weight: 400; color: var(--muted); }
+table.grid tbody.today th.rl { color: var(--muted); }
+table.grid td.sep, table.grid th.sep { border-left: 2px solid var(--line); padding-left: 2px; }
+table.grid tbody.mine tr:first-child > * { padding-top: 6px; }
+.cell { width: 42px; height: 26px; border-radius: 4px; background: var(--game); border: 1px solid var(--game-line); font-family: var(--mono); font-size: 11px; text-align: center; vertical-align: middle; position: relative; user-select: none; -webkit-user-select: none; white-space: nowrap; }
+tbody.today .cell { opacity: .78; height: 22px; }
+tbody.mine .cell { cursor: crosshair; touch-action: pan-y; }
+tbody.mine .cell:hover { border-color: var(--gold); }
+.cell.chg { outline: 2px solid var(--gold); outline-offset: -1px; }
+.cell .ic { position: absolute; right: 2px; top: 2px; width: 5px; height: 5px; border-radius: 1px; }
+.cell .ch { position: absolute; left: 3px; right: 3px; bottom: 2px; height: 2px; border-radius: 1px; background: #c7b377; opacity: .8; }
+.cell.ro { cursor: default; }
+.lk-SET_HIGH_VALUE { color: #c86bff; } .lk-SET_MEDIUM_VALUE { color: #e2e2e2; } .lk-SET { color: #00ff00; }
+.lk-DECORATED { color: #00b000; } .lk-SET_LLD { color: #3fb5b5; } .lk-NAME { color: #9fdc9f; } .lk-HIDDEN { color: #6e675a; }
+.lk-SET_GRAIL { color: #ffa800; } .lk-x { color: #e8e8e8; }
+.mini { display: inline-grid; place-items: center; min-width: 40px; height: 22px; padding: 0 4px; border-radius: 4px; background: var(--game); border: 1px solid var(--game-line); font-family: var(--mono); font-size: 11px; position: relative; }
+.opts { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; font-size: 13px; }
+.opts label { display: inline-flex; gap: 6px; align-items: center; cursor: pointer; }
+.opts input[type="text"] { width: 6.5em; font-family: var(--mono); }
+.opts .gap { flex: 1 1 auto; }
+.prev { display: flex; flex-wrap: wrap; gap: 8px; }
+.pv { display: flex; align-items: center; gap: 8px; background: var(--sunk); border: 1px solid var(--line); border-radius: 6px; padding: 4px 8px 4px 4px; font-size: 12.5px; color: var(--muted); min-width: 0; }
+.ground { border-radius: 4px; padding: 6px 8px; background: radial-gradient(ellipse at 50% 45%, var(--ground-a) 0%, var(--ground-b) 55%, var(--ground-c) 100%); overflow-x: auto; max-width: 100%; }
+.d2label { font-family: "Palatino Linotype", "Book Antiqua", Georgia, serif; font-size: 15px; line-height: 1.2; white-space: pre; background: rgba(0, 0, 0, .74); padding: 2px 6px 1px; display: inline-block; }
+.d2label.none { font-style: italic; color: #a8a8a8; font-family: var(--body); font-size: 13px; background: none; }
+.c-WHITE { color: #e8e8e8; } .c-RED { color: #ff4d4d; } .c-GREEN { color: #00ff00; } .c-BLUE { color: #6969ff; }
+.c-GOLD { color: #c7b377; } .c-GRAY { color: #8a8a8a; } .c-BLACK { color: #000000; } .c-TAN { color: #d0c27d; }
+.c-ORANGE { color: #ffa800; } .c-YELLOW { color: #ffff64; } .c-PURPLE { color: #ae00ff; }
+.c-DARK_GREEN { color: #00a000; } .c-CORAL { color: #ff7f6e; } .c-SAGE { color: #a3b88f; }
+.c-TEAL { color: #3fb5b5; } .c-LIGHT_GRAY { color: #a8a8a8; }
+.icon { position: relative; width: 16px; height: 16px; background: #0c0b09; border-radius: 2px; flex: none; }
+.icon span { position: absolute; }
+.over { color: var(--red); font-weight: 600; }
+details.words { font-size: 13px; color: var(--muted); }
+details.words summary { cursor: pointer; color: var(--gold); font-weight: 600; width: fit-content; }
+details.words ul { margin: 4px 0 0; padding-left: 18px; }
+textarea.note { width: 100%; min-height: 34px; resize: vertical; background: var(--sunk); border: 1px solid var(--line); border-radius: 6px; padding: 6px 9px; font-size: 14px; }
+textarea.note.big { min-height: 80px; }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; display: grid; gap: 10px; min-width: 0; }
+.panel > h3 { margin: 0; font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); display: flex; gap: 10px; flex-wrap: wrap; align-items: baseline; }
+.panel > h3 .right { margin-left: auto; text-transform: none; letter-spacing: 0; font-weight: 400; display: flex; gap: 8px; flex-wrap: wrap; }
+.chg-card { display: grid; gap: 4px; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+.chg-card:last-child { border-bottom: 0; }
+.chg-card b { font-family: var(--display); font-size: 15px; }
+.chg-card ul { margin: 0; padding-left: 18px; }
+.chg-card .was { color: var(--muted); }
+.chg-card a { color: var(--gold); cursor: pointer; text-decoration: underline; }
+.dlist { display: grid; gap: 0; }
+.drow { display: grid; grid-template-columns: 60px minmax(0, 1fr) minmax(0, 260px) auto; gap: 8px 14px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+.drow:last-child { border-bottom: 0; }
+@media (max-width: 760px) { .drow { grid-template-columns: 60px minmax(0, 1fr); } }
+.drow .what { color: var(--muted); font-size: 13px; }
+.addform { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; font-size: 14px; }
+.addform select { background: var(--sunk); border: 1px solid var(--line); border-radius: 5px; padding: 2px 6px; }
+.addform label { display: inline-flex; gap: 6px; align-items: center; cursor: pointer; }
+.banner { background: var(--warn-bg); color: var(--warn); font-weight: 600; padding-block: 8px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); border-bottom: 1px solid var(--line); }
+.empty { color: var(--muted); font-style: italic; }
+@media (max-width: 600px) { .cell { width: 34px; } table.grid th.rl { min-width: 110px; } .tools .sel { border-left: 0; padding-left: 0; } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="bar">
+  <div class="bar-top">
+    <h1>Set Item Review</h1>
+    <span class="status" id="status">Loading saved choices…</span>
+    <span class="bar-note" id="barNote"></span>
+  </div>
+  <div class="brush" id="brush" role="toolbar" aria-label="Paint with"></div>
+  <div class="tabs" id="tabs" role="tablist" aria-label="Parts"></div>
+</div>
+<div class="banner" id="banner" role="status" hidden></div>
+<main id="main"></main>
+
+<script>
+const DATA = /*__DATA__*/null;
+const LEVELS = DATA.levels, NL = LEVELS.length;
+const CARDS = DATA.cards, BYID = Object.fromEntries(CARDS.map(c => [c.id, c]));
+const SETS = DATA.sets, TIERS = DATA.tiers, JEWELS = "jewelry";
+// the cards on each tab (a base two sets share is on both sets' tabs), each card's first tab, and the order of the
+// Changes tab: the tabs' order, in each its sets' order
+const TAB_CARDS = Object.fromEntries(TIERS.map(t => [t.id, new Set()]).concat([[JEWELS, new Set()]]));
+const CARD_TAB = {}, ORDER = [];
+for (const s of SETS) for (const it of s.items) {
+  const c = BYID[it.card];
+  if (c.jewelry) continue;
+  TAB_CARDS[s.tier].add(c.id);
+  if (!CARD_TAB[c.id]) { CARD_TAB[c.id] = s.tier; ORDER.push(c); }
+}
+for (const c of CARDS) if (!CARD_TAB[c.id]) { CARD_TAB[c.id] = JEWELS; TAB_CARDS[JEWELS].add(c.id); ORDER.push(c); }
+const SOUND_NAME = Object.fromEntries(DATA.sounds.map(s => [s.id, s.name]));
+const SEP = new Set([3, 5, 8, 12]);  // the level groups 170's rules use: 0-2, 3-4, 5-7, 8-11, 12
+const LOOK_SHORT = { SET_HIGH_VALUE: "High", SET_MEDIUM_VALUE: "Med", SET: "Set", DECORATED: "Dim", SET_LLD: "LLD", NAME: "Name", HIDDEN: "—" };
+const ICON_SHORT = { none: "", value: "v", set: "", small: "q", small84: "s", lld: "l", grail: "g" };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+const clone = o => JSON.parse(JSON.stringify(o));
+const fmtN = n => n.toLocaleString("en-US");
+
+// ---------- displays: the starting set (today's combinations) and the author's own
+let custom = [];
+let DISP = {};
+function reindex() { DISP = Object.fromEntries(DATA.displays.concat(custom).map(d => [d.id, d])); }
+reindex();
+function shortOf(d) {
+  if (d.short) return d.short;
+  if (d.look === "HIDDEN") return "—";
+  let s = LOOK_SHORT[d.look] || "?";
+  const tail = (d.icon !== "none" ? (ICON_SHORT[d.icon] || "i") : "") + (d.icon !== "none" && !d.chat ? "q" : "") + (d.chat && d.icon === "none" ? "c" : "");
+  return tail ? s + "·" + tail.replace("qq", "q") : s;
+}
+function dispName(d) {
+  if (!d) return "Unknown display";
+  if (d.look === "HIDDEN") return "Hidden";
+  const parts = [DATA.looks[d.look] ? DATA.looks[d.look].name : d.look];
+  parts.push(d.icon === "none" ? "no icon" : DATA.icons[d.icon].name.toLowerCase());
+  parts.push(d.chat ? "chat line" : "no chat line");
+  if (d.sound) parts.push("drop sound");
+  return parts.join(", ");
+}
+const dispOf = id => DISP[id] || { id, look: "x", icon: "none", chat: false, sound: false, short: "?" };
+
+// ---------- the state: one entry per card, its rows painted per filter level
+function bands(cuts) {
+  const s = [1, ...cuts].sort((a, b) => a - b);
+  return s.map((lo, i) => [lo, i + 1 < s.length ? s[i + 1] - 1 : 99]);
+}
+function partsOf(st) { return st.eth ? ["n", "e"] : ["a"]; }
+function todayParts(card) { return card.today.a ? ["a"] : ["n", "e"]; }
+function todayAt(card, eth, clvl) {  // eth: "n" / "e"
+  const t = card.today.a || card.today[eth];
+  let best = null;
+  for (const lo of Object.keys(t).map(Number)) if (lo <= clvl && (best === null || lo > best)) best = lo;
+  return t[best];
+}
+function todayCutsIn(card, eth, lo, hi) {
+  const t = card.today.a || card.today[eth];
+  return [lo, ...Object.keys(t).map(Number).filter(x => x > lo && x <= hi)];
+}
+function defaultState(card) {
+  const ps = todayParts(card), cuts = {}, rows = {};
+  for (const p of ps) {
+    const tp = card.today[p];
+    cuts[p] = Object.keys(tp).map(Number).filter(x => x > 1).sort((a, b) => a - b);
+    for (const [lo, arr] of Object.entries(tp)) rows[p + "|" + lo] = arr.slice();
+  }
+  return { eth: ps.length === 2, cuts, rows, sound: card.sound, grail: "grail", note: "" };
+}
+const DEFAULT = Object.fromEntries(CARDS.map(c => [c.id, defaultState(c)]));
+const state = { cards: Object.fromEntries(CARDS.map(c => [c.id, clone(DEFAULT[c.id])])), note: "" };
+const ethsOf = (card, p) => p === "a" ? (card.canEth || !card.today.a ? ["n", "e"] : ["n"]) : [p];
+
+// per row of the author's state: which levels differ from today, and today's displays per level
+function rowDiff(card, st, p, lo, hi) {
+  const row = st.rows[p + "|" + lo], chg = [], was = [];
+  for (let L = 0; L < NL; L++) {
+    const vals = new Set();
+    for (const e of ethsOf(card, p)) for (const c of todayCutsIn(card, e, lo, hi)) vals.add(todayAt(card, e, c)[L]);
+    was.push([...vals]);
+    chg.push([...vals].some(v => v !== row[L]));
+  }
+  return { chg, was };
+}
+function usesSound(st) { return Object.values(st.rows).some(r => r.some(id => dispOf(id).sound)); }
+function usesNonTier(st) { return Object.values(st.rows).some(r => r.some(id => !["SET_HIGH_VALUE", "SET_MEDIUM_VALUE"].includes(dispOf(id).look))); }
+function cardChanges(card) {
+  const st = state.cards[card.id];
+  let cells = 0;
+  for (const p of partsOf(st)) for (const [lo, hi] of bands(st.cuts[p])) cells += rowDiff(card, st, p, lo, hi).chg.filter(Boolean).length;
+  const sound = usesSound(st) && st.sound !== card.sound;
+  const grail = st.grail !== "grail" && usesNonTier(st);
+  return { cells, sound, grail, any: cells > 0 || sound || grail };
+}
+function hiddenToday(card) {  // "all": hidden on 5-12 in every case today, "some": in some (ethereal or not, a level range)
+  const rows = Object.values(card.today).flatMap(part => Object.values(part)), hid = rows.filter(arr => arr.slice(5).every(id => id === "hidden"));
+  return hid.length === 0 ? false : hid.length === rows.length ? "all" : "some";
+}
+function setRows(st, newEth, newCuts) {  // reshape the rows, each new row taking the old row its start falls in
+  const old = st, rows = {};
+  const pick = (p, lo) => {
+    const src = old.eth ? (p === "a" ? "n" : p) : "a";
+    const bs = bands(old.cuts[src]);
+    const b = bs.filter(([l]) => l <= lo).pop() || bs[0];
+    return old.rows[src + "|" + b[0]].slice();
+  };
+  const ps = newEth ? ["n", "e"] : ["a"];
+  for (const p of ps) for (const [lo] of bands(newCuts[p])) rows[p + "|" + lo] = pick(p, lo);
+  st.rows = rows; st.eth = newEth; st.cuts = newCuts;
+}
+
+// ---------- drawing: labels, icons, cells
+function nameSegs(card, eth) { return (eth ? [["WHITE", "Eth "]] : []).concat([["GREEN", card.base]]); }
+function labelSegs(card, d, eth) {
+  if (!d || d.look === "HIDDEN") return null;
+  const look = DATA.looks[d.look];
+  const name = nameSegs(card, eth);
+  if (!look || !look.alias) return name;
+  const L = DATA.aliases[look.alias + "_LEFT"] || [], R = DATA.aliases[look.alias + "_RIGHT"] || [];
+  return L.concat([["GREEN", "  "]], name, [["GREEN", "  "]], R);
+}
+function labelHTML(segs) {
+  if (!segs) return `<span class="d2label none">hidden on the ground</span>`;
+  const len = segs.reduce((s, [, t]) => s + t.length, 0);
+  return `<span class="d2label">${segs.map(([c, t]) => `<span class="c-${c}">${esc(t)}</span>`).join("")}</span>` +
+    (len > DATA.nameMax ? ` <span class="over">${len} characters: BH cuts ${len - DATA.nameMax}</span>` : "");
+}
+function iconHTML(icon) {
+  const layers = (DATA.icons[icon] || { layers: [] }).layers;
+  if (!layers.length) return "";
+  let h = `<span class="icon" title="Minimap icon">`;
+  for (const layer of layers) [16, 12, 8, 4].forEach((size, i) => {
+    if (!layer[i]) return;
+    const off = (16 - size) / 2;
+    h += `<span style="left:${off}px;top:${off}px;width:${size}px;height:${size}px;background:${DATA.palette[layer[i]] || "#fff"}"></span>`;
+  });
+  return h + "</span>";
+}
+function iconDot(icon) {
+  const layers = (DATA.icons[icon] || { layers: [] }).layers;
+  if (!layers.length) return "";
+  const l = layers[0], c = l[3] || l[2] || l[1] || l[0];
+  return `<span class="ic" style="background:${DATA.palette[c] || "#fff"}"></span>`;
+}
+function cellInner(id) {
+  const d = dispOf(id);
+  return esc(shortOf(d)) + iconDot(d.icon) + (d.chat ? `<span class="ch"></span>` : "");
+}
+function miniHTML(id) { const d = dispOf(id); return `<span class="mini lk-${DATA.looks[d.look] ? d.look : "x"}">${cellInner(id)}</span>`; }
+function cellClass(id) { const d = dispOf(id); return "cell lk-" + (DATA.looks[d.look] ? d.look : "x"); }
+function levelTitle(L) { return `Level ${L}: ${LEVELS[L]}`; }
+function partLabel(p) { return p === "a" ? "" : p === "n" ? "Not ethereal" : "Ethereal"; }
+function bandLabel(lo, hi, single) { return single ? "" : lo <= 1 ? `character level below ${hi + 1}` : hi >= 99 ? `character level ${lo}+` : `character level ${lo}–${hi}`; }
+function rowLabel(p, lo, hi, single) {
+  const a = partLabel(p), b = bandLabel(lo, hi, single);
+  return a && b ? `${a}, ${b}` : a || (b ? b[0].toUpperCase() + b.slice(1) : "Every case");
+}
+
+// ---------- the bar: tabs and the brush
+const TABS = { ...Object.fromEntries(TIERS.map(t => [t.id, t.name])), [JEWELS]: "Rings and amulets", changes: "Changes", displays: "Displays" };
+const isCardTab = t => !!TAB_CARDS[t];
+let tab = TIERS[0].id, brush = "name", view = { show: "all", q: "" };
+try { const v = JSON.parse(localStorage.getItem("setReviewView") || "null"); if (v) { view = { show: v.show || "all", q: v.q || "" }; if (TABS[v.tab]) tab = v.tab; if (v.brush) brush = v.brush; } } catch (e) {}
+function keepView() { try { localStorage.setItem("setReviewView", JSON.stringify({ ...view, tab, brush })); } catch (e) {} }
+const picked = new Set();
+let editable = true;
+
+function renderBar() {
+  const changedIds = new Set(CARDS.filter(c => cardChanges(c).any).map(c => c.id)), n = changedIds.size;
+  const count = k => k === "changes" ? n : isCardTab(k) ? [...TAB_CARDS[k]].filter(id => changedIds.has(id)).length : 0;
+  document.getElementById("tabs").innerHTML = Object.entries(TABS).map(([k, t]) =>
+    `<button class="tab" role="tab" data-tab="${k}" aria-selected="${tab === k}" ${count(k) && k !== "changes" ? `title="${count(k)} ${count(k) === 1 ? "base" : "bases"} you changed"` : ""}>${t}${count(k) ? `<span class="n">${count(k)}</span>` : ""}</button>`).join("");
+  if (!DISP[brush]) brush = "name";
+  document.getElementById("brush").innerHTML = `<span>Paint with</span>` + DATA.displays.concat(custom).map(d =>
+    `<button class="bchip" data-brush="${esc(d.id)}" aria-pressed="${brush === d.id}" title="${esc(dispName(d))}">${miniHTML(d.id)}${esc(briefName(d))}</button>`).join("");
+  document.getElementById("barNote").textContent = `${n} of ${CARDS.length} bases changed · data of ${DATA.generated}`;
+}
+function briefName(d) {
+  if (d.look === "HIDDEN") return "Hidden";
+  const look = DATA.looks[d.look] ? DATA.looks[d.look].name : d.look;
+  if (d.look === "NAME" && d.icon === "none" && !d.chat) return "Plain name";
+  const bits = [];
+  if (d.icon !== "none") bits.push(d.icon === "small" || d.icon === "small84" ? "small icon" : "icon");
+  bits.push(d.chat ? "chat" : "no chat");
+  return `${look} (${bits.join(", ")})`;
+}
+
+// ---------- the set tabs and the Rings and amulets tab
+function itemMeta(it) {
+  const bits = [];
+  if (it.req != null) bits.push(`req ${it.req}`);
+  if (it.drop) bits.push(it.drop >= 1 ? `${it.drop.toFixed(1)} a map` : `1 in ${fmtN(Math.round(1 / it.drop))} maps`);
+  const px = m => { const p = it.price[m]; if (!p) return null; const v = p.med >= 100 ? `${+(p.med / 100).toFixed(2)} HR` : `${p.med} wss`; return `${m.toUpperCase()} ${v} (${p.n})`; };
+  const pr = ["sc", "hc"].map(px).filter(Boolean);
+  if (pr.length) bits.push(pr.join(" · "));
+  return bits.join(" · ");
+}
+function cardHTML(card, groupSet) {
+  const st = state.cards[card.id], ch = cardChanges(card);
+  const own = groupSet ? card.items.filter(i => i.set === groupSet) : [], others = card.items.filter(i => !own.includes(i));
+  const head = `<header class="chead">
+    <input type="checkbox" data-pick="${card.id}" ${picked.has(card.id) ? "checked" : ""} aria-label="Select ${esc(own.length ? own.map(i => i.name).join(" / ") : card.base)}">
+    <h3>${esc(own.length ? own.map(i => i.name).join(" / ") : card.base)}</h3>${own.length ? `<span class="chip">${esc(card.base)}</span>` : ""}<span class="chip code">${esc(card.code)}</span>
+    ${card.tier ? `<span class="chip">${esc(card.tier)}</span>` : ""}<span class="chip">${esc(card.category)}</span>
+    ${hiddenToday(card) ? `<span class="chip hid">Hidden on 5–12 today${hiddenToday(card) === "some" ? " (some cases)" : ""}</span>` : ""}
+    ${ch.any ? `<span class="chip chg">Changed</span>` : ""}
+  </header>`;
+  const total = card.items.reduce((s, i) => s + (i.drop || 0), 0);
+  const line = it => `<li><span class="iname">${esc(it.name)}</span><span class="iset">${esc(it.set || "")}</span><span class="imeta">${esc(itemMeta(it))}</span></li>`;
+  const shared = own.length && others.length ? `<li class="shared">Same base as ${esc(others.map(i => `${i.name} (${i.set})`).join(", "))}: unidentified, the filter can't tell them apart, so this choice goes for both, and the card shows under both sets.</li>` : "";
+  const items = `<ul class="items">${own.concat(others).map(line).join("")}${shared}
+    ${card.items.length > 1 && total ? `<li><span class="imeta">This base, any of them: ${total >= 1 ? total.toFixed(1) + " a map" : "1 in " + fmtN(Math.round(1 / total)) + " maps"}</span></li>` : ""}</ul>`;
+  // the grid
+  let g = `<div class="gridwrap"><table class="grid"><thead><tr><th class="rl"></th>`;
+  for (let L = 0; L < NL; L++) g += `<th class="${SEP.has(L) ? "sep" : ""}" title="${esc(levelTitle(L))}">${L}</th>`;
+  g += `</tr></thead><tbody class="today">`;
+  const tps = todayParts(card);
+  for (const p of tps) {
+    const bs = bands(Object.keys(card.today[p]).map(Number).filter(x => x > 1));
+    for (const [lo, hi] of bs) {
+      const arr = card.today[p][lo];
+      g += `<tr><th class="rl">Today<small>${esc(rowLabel(p, lo, hi, bs.length === 1))}</small></th>`;
+      arr.forEach((id, L) => { g += `<td class="${cellClass(id)} ro${SEP.has(L) ? " sep" : ""}" title="${esc(levelTitle(L) + ": " + dispName(dispOf(id)))}">${cellInner(id)}</td>`; });
+      g += `</tr>`;
+    }
+  }
+  g += `</tbody><tbody class="mine">`;
+  for (const p of partsOf(st)) {
+    const bs = bands(st.cuts[p]);
+    for (const [lo, hi] of bs) {
+      const key = p + "|" + lo, row = st.rows[key], df = rowDiff(card, st, p, lo, hi);
+      g += `<tr><th class="rl">Your choice<small>${esc(rowLabel(p, lo, hi, bs.length === 1))}</small></th>`;
+      row.forEach((id, L) => {
+        const tip = `${levelTitle(L)}: ${dispName(dispOf(id))}` + (df.chg[L] ? ` (today: ${df.was[L].map(w => dispName(dispOf(w))).join(" / ")})` : "");
+        g += `<td class="${cellClass(id)}${df.chg[L] ? " chg" : ""}${SEP.has(L) ? " sep" : ""}" data-card="${card.id}" data-row="${key}" data-lv="${L}" title="${esc(tip)}">${cellInner(id)}</td>`;
+      });
+      g += `</tr>`;
+    }
+  }
+  g += `</tbody></table></div>`;
+  // options
+  const cutsIn = p => `<label title="Character levels a new row starts at, e.g. 60 or 30, 80">${p === "a" ? "Character level splits" : partLabel(p) + " splits"} <input type="text" data-cuts="${card.id}" data-part="${p}" value="${esc(st.cuts[p].join(", "))}" placeholder="none" ${editable ? "" : "disabled"}></label>`;
+  const opts = `<div class="opts">
+    ${card.canEth || st.eth ? `<label><input type="checkbox" data-eth="${card.id}" ${st.eth ? "checked" : ""} ${editable ? "" : "disabled"}> Ethereal apart</label>` : ""}
+    ${partsOf(st).map(cutsIn).join("")}
+    ${usesSound(st) ? `<label>Drop sound <select data-sound="${card.id}" ${editable ? "" : "disabled"}>${DATA.sounds.map(s => `<option value="${s.id}" ${st.sound === s.id ? "selected" : ""}>${esc(s.name)} (${s.id})</option>`).join("")}</select></label>` : ""}
+    ${usesNonTier(st) ? `<label title="An item you haven't discovered yet (Discovery Progress)">Undiscovered <select data-grail="${card.id}" ${editable ? "" : "disabled"}>
+      <option value="grail" ${st.grail === "grail" ? "selected" : ""}>${card.jewelry ? "Grail icon and chat line (as today)" : "Grail look, icon and chat line (as today)"}</option>
+      <option value="same" ${st.grail === "same" ? "selected" : ""}>Same as when discovered</option></select></label>` : ""}
+    <span class="gap"></span>
+    <button class="btn main" data-quick="${card.id}" ${editable ? "" : "disabled"}>Name on 5–7, hidden on 8–12</button>
+    <button class="btn" data-reset="${card.id}" ${editable && (ch.any || JSON.stringify(st) !== JSON.stringify({ ...DEFAULT[card.id], note: st.note })) ? "" : "disabled"}>Reset to today</button>
+  </div>`;
+  // previews of the displays the author's rows use
+  const used = new Map();
+  for (const [key, row] of Object.entries(st.rows)) for (const id of row) if (!used.has(id)) used.set(id, key.startsWith("e|"));
+  const pv = `<div class="prev">${[...used].map(([id, eth]) => {
+    const d = dispOf(id);
+    const what = d.look === "HIDDEN" ? "in town: plain name" + (st.grail === "grail" ? "; undiscovered: Grail look" : "")
+      : [d.icon === "none" ? null : "icon", d.chat ? "chat line" : null, d.sound ? `♪ ${SOUND_NAME[st.sound] || st.sound}` : null].filter(Boolean).join(", ") || "no notification";
+    return `<div class="pv">${miniHTML(id)}<span class="ground">${labelHTML(labelSegs(card, d, eth))}</span>${iconHTML(d.icon)}<span>${esc(what)}</span></div>`;
+  }).join("")}</div>`;
+  const words = `<details class="words"><summary>Today in words</summary><ul>${card.lines.concat(card.notes).map(l => `<li>${esc(l)}</li>`).join("")}</ul></details>`;
+  const note = `<textarea class="note" data-note="${card.id}" placeholder="Note for this base (optional)" ${editable ? "" : "disabled"}>${esc(st.note)}</textarea>`;
+  return `<article class="card${picked.has(card.id) ? " picked" : ""}" data-id="${card.id}" data-set="${esc(groupSet || "")}">${head}${items}${g}${opts}${pv}${words}${note}</article>`;
+}
+function jewelLine(card, name) {  // a set's ring or amulet: every set ring (amulet) shares one card, on the Rings and amulets tab
+  const it = card.items.find(i => i.name === name) || { name, price: {} }, ch = cardChanges(card).any;
+  const kind = card.code === "amu" ? "amulet" : "ring";
+  return `<div class="jline"><span class="iname">${esc(name)}</span><span class="chip">${esc(card.base)}</span><span class="imeta">${esc(itemMeta(it))}</span>
+    <span class="jnote">Unidentified, every set ${kind} looks alike: one choice for all ${card.items.length}${ch ? " (changed)" : ""}.</span> <a data-goto="${card.id}">Open the ${kind} card</a></div>`;
+}
+function showOk(card) {
+  if (view.show === "hidden" && !hiddenToday(card)) return false;
+  if (view.show === "changed" && !cardChanges(card).any) return false;
+  if (view.show === "note" && !state.cards[card.id].note.trim()) return false;
+  if (view.show === "same" && cardChanges(card).any) return false;
+  return true;
+}
+function qOk(...words) { const q = view.q.trim().toLowerCase(); return !q || words.some(s => (s || "").toLowerCase().includes(q)); }
+function matches(card) { return showOk(card) && qOk(card.base, card.code, card.category, ...card.items.flatMap(i => [i.name, i.set])); }
+function tierGroups(tierId) {  // [{set, entries: [{card, name}]}]: the tier's sets that match, each its matching items in order
+  const out = [];
+  for (const s of SETS) {
+    if (s.tier !== tierId) continue;
+    const entries = [];
+    for (const it of s.items) {
+      const c = BYID[it.card];
+      if (!showOk(c) || !qOk(it.name, s.name, c.base, c.code, c.category)) continue;
+      if (c.jewelry || !entries.some(e => e.card === c)) entries.push({ card: c, name: it.name });
+    }
+    if (entries.length) out.push({ set: s, entries });
+  }
+  return out;
+}
+function shownCards(t) {
+  if (t === JEWELS) return CARDS.filter(c => TAB_CARDS[JEWELS].has(c.id) && matches(c));
+  return [...new Set(tierGroups(t).flatMap(g => g.entries.filter(e => !e.card.jewelry).map(e => e.card)))];
+}
+function reqText(s) { return !s.req ? "" : s.req[0] === s.req[1] ? `required level ${s.req[0]}` : `required levels ${s.req[0]}–${s.req[1]}`; }
+const TAB_HELP = {
+  common: "The common sets: the classic sets on normal bases, and Sander's Folly.",
+  uncommon: "The uncommon sets.",
+  class: "The class-focused sets.",
+  [JEWELS]: "Every set ring is one card and every set amulet is one: unidentified, the filter sees only the base, so one choice goes for all of them. Each set's own tab links its ring or amulet here.",
+};
+function cardsTab() {
+  const groups = tab === JEWELS ? null : tierGroups(tab), shown = shownCards(tab);
+  const inTab = CARDS.filter(c => TAB_CARDS[tab].has(c.id)), nHidden = inTab.filter(hiddenToday).length;
+  const sel = picked.size;
+  let h = `<p class="help">${esc(TAB_HELP[tab] || "")} ${tab === JEWELS ? "" : "Each set's items in order, the sets from the lowest required levels; a card is the item's <b>base</b>, as it drops <b>unidentified</b>: a base two sets share (Heavy Boots: Cow King's Hooves and Sander's Riprap) shows under both, with one choice for both."} Everything here is the ground outside town, once you have discovered the items (Erazure - Main). The <b>Today</b> rows are what the filter does now; paint the <b>Your choice</b> rows: pick a display in the bar, then click a level, drag across levels, or shift-click to fill from the last cell you painted. A small square in a cell is its minimap icon, a line under it the chat line. Hidden items still show their plain name in town, and an item you haven't discovered keeps the Grail look unless its card says otherwise. On level 0 (Show All Items) every minimap icon comes with its chat line.</p>
+  <details class="levels"><summary>Filter levels</summary><ol>${LEVELS.map((n, i) => `<li>${i}  ${esc(n)}</li>`).join("")}</ol></details>
+  <div class="tools">
+    <label>Search <input type="search" id="q" value="${esc(view.q)}" placeholder="item, set or base"></label>
+    <label>Show <select id="show">
+      <option value="all" ${view.show === "all" ? "selected" : ""}>Every base (${inTab.length})</option>
+      <option value="hidden" ${view.show === "hidden" ? "selected" : ""}>Hidden on 5–12 today (${nHidden})</option>
+      <option value="changed" ${view.show === "changed" ? "selected" : ""}>Changed</option>
+      <option value="same" ${view.show === "same" ? "selected" : ""}>Not changed yet</option>
+      <option value="note" ${view.show === "note" ? "selected" : ""}>With a note</option></select></label>
+    <span class="sel">
+      <button class="btn" id="pickShown">Select shown (${shown.length})</button>
+      ${sel ? `<button class="btn" id="pickNone">Clear selection</button>
+      <span><b>${sel}</b> selected:</span>
+      <button class="btn main" id="bulkQuick" ${editable ? "" : "disabled"}>Name on 5–7, hidden on 8–12</button>
+      <span>Paint levels <input class="num-in" id="bFrom" type="number" min="0" max="${NL - 1}" value="5"> to <input class="num-in" id="bTo" type="number" min="0" max="${NL - 1}" value="7"> <button class="btn" id="bulkPaint" ${editable ? "" : "disabled"}>with ${esc(briefName(dispOf(brush)))}</button></span>
+      <button class="btn" id="bulkReset" ${editable ? "" : "disabled"}>Reset</button>` : `<span class="empty">Tick cards to change several at once.</span>`}
+    </span>
+  </div>`;
+  if (!shown.length && !(groups && groups.length)) {
+    const elsewhere = Object.keys(TAB_CARDS).filter(t => t !== tab).map(t => [t, shownCards(t).length]).filter(([, k]) => k);
+    return h + `<p class="empty">Nothing on this tab matches.</p>` + (elsewhere.length ? `<div class="others">Matches on: ${elsewhere.map(([t, k]) =>
+      `<a data-tab="${t}">${esc(TABS[t])} (${k} ${k === 1 ? "base" : "bases"})</a>`).join("")}</div>` : "");
+  }
+  if (tab === JEWELS) return h + shown.map(c => cardHTML(c, null)).join("");
+  for (const g of groups) {
+    const ids = new Set(g.set.items.map(it => it.card).filter(id => !BYID[id].jewelry));
+    const nChg = [...ids].filter(id => cardChanges(BYID[id]).any).length;
+    h += `<section class="group"><h2>${esc(g.set.name)} <small>${g.set.items.length} items · ${esc(reqText(g.set))}</small>${nChg ? `<span class="chip chg">${nChg} changed</span>` : ""}</h2>`;
+    for (const e of g.entries) h += e.card.jewelry ? jewelLine(e.card, e.name) : cardHTML(e.card, g.set.name);
+    h += `</section>`;
+  }
+  return h;
+}
+
+// ---------- the Changes tab
+function runs(levels) {
+  const out = []; let s = null;
+  levels.forEach((L, i) => { if (s === null) s = L; if (i + 1 === levels.length || levels[i + 1] !== L + 1) { out.push(s === L ? `${L}` : `${s}–${L}`); s = null; } });
+  return (levels.length === 1 ? "level " : "levels ") + out.join(", ");
+}
+function changeLines(card) {
+  const st = state.cards[card.id], lines = [];
+  for (const p of partsOf(st)) {
+    const bs = bands(st.cuts[p]);
+    for (const [lo, hi] of bs) {
+      const row = st.rows[p + "|" + lo], df = rowDiff(card, st, p, lo, hi);
+      const by = new Map();
+      for (let L = 0; L < NL; L++) if (df.chg[L]) {
+        const k = df.was[L].join("/") + ">" + row[L];
+        if (!by.has(k)) by.set(k, { was: df.was[L], now: row[L], lv: [] });
+        by.get(k).lv.push(L);
+      }
+      if (!by.size) continue;
+      const head = rowLabel(p, lo, hi, bs.length === 1);
+      const parts = [...by.values()].map(x => `${runs(x.lv)}: ${x.was.map(w => briefName(dispOf(w))).join(" / ")} → ${briefName(dispOf(x.now))}`);
+      lines.push(`${head}: ${parts.join("; ")}`);
+    }
+  }
+  const ch = cardChanges(card);
+  if (ch.sound) lines.push(`Drop sound: ${SOUND_NAME[card.sound] || card.sound} → ${SOUND_NAME[st.sound] || st.sound}`);
+  if (ch.grail) lines.push("Undiscovered: same as when discovered (no Grail look)");
+  return lines;
+}
+function changedByTab() {  // [[tab, [cards]]] of the changed or noted cards, each under its first tab, in the page's order
+  const list = ORDER.filter(c => changeLines(c).length || state.cards[c.id].note.trim());
+  return Object.keys(TAB_CARDS).map(t => [t, list.filter(c => CARD_TAB[c.id] === t)]).filter(([, cs]) => cs.length);
+}
+function cardTitle(c) { return c.jewelry ? c.base : c.items.map(i => i.name).join(" / "); }
+function changesText() {
+  const out = [];
+  for (const [t, cs] of changedByTab()) {
+    if (out.length) out.push("");
+    out.push(TABS[t].toUpperCase());
+    for (const c of cs) {
+      const lines = changeLines(c), note = state.cards[c.id].note.trim();
+      out.push(c.jewelry ? `${c.base} (${c.code}): every set ${c.code === "amu" ? "amulet" : "ring"}` : `${cardTitle(c)}: ${c.base} (${c.code})`);
+      lines.forEach(l => out.push("  " + l));
+      if (note) out.push("  Note: " + note);
+    }
+  }
+  if (state.note.trim()) out.push("", "Note: " + state.note.trim());
+  return out.join("\n");
+}
+function changesTab() {
+  const byTab = changedByTab();
+  let h = `<div class="panel"><h3>Changes <span class="right"><button class="btn" id="copy" ${byTab.length || state.note.trim() ? "" : "disabled"}>Copy as text</button></span></h3>`;
+  if (!byTab.length) h += `<p class="empty">Nothing changed yet. Paint a card's Your choice row on a set tab, and each change shows here, base by base.</p>`;
+  for (const [t, cs] of byTab) {
+    h += `<div class="chg-tab">${esc(TABS[t])}</div>`;
+    for (const c of cs) {
+      const lines = changeLines(c), note = state.cards[c.id].note.trim();
+      h += `<div class="chg-card"><div><b>${esc(cardTitle(c))}</b> <span class="was">${esc(c.jewelry ? c.items.map(i => i.name).join(" / ") : c.base)}</span> · <a data-goto="${c.id}">open the card</a></div>
+        ${lines.length ? `<ul>${lines.map(l => `<li>${esc(l)}</li>`).join("")}</ul>` : ""}${note ? `<div class="was">Note: ${esc(note)}</div>` : ""}</div>`;
+    }
+  }
+  h += `</div><div class="panel"><h3>A note on the whole review</h3><textarea class="note big" id="allNote" placeholder="Anything that goes for every set item" ${editable ? "" : "disabled"}>${esc(state.note)}</textarea></div>`;
+  return h;
+}
+
+// ---------- the Displays tab
+const SAMPLE = { base: "Heavy Boots", items: [] };
+function usedCount(id) { return CARDS.filter(c => Object.values(state.cards[c.id].rows).some(r => r.includes(id))).length; }
+function displaysTab() {
+  let h = `<div class="panel"><h3>Displays</h3><p class="help">What each display draws. The first ones are today's combinations; add your own below, then paint with them like the others.</p><div class="dlist">`;
+  for (const d of DATA.displays.concat(custom)) {
+    const own = custom.includes(d), n = usedCount(d.id);
+    h += `<div class="drow">${miniHTML(d.id)}<div><b>${esc(dispName(d))}</b><div class="what">${own ? "Your display" : "Today's"} · on ${n} ${n === 1 ? "base" : "bases"}${d.sound ? " · the card's drop sound" : ""}</div></div>
+      <span class="ground">${labelHTML(labelSegs(SAMPLE, d, false))}</span>
+      <span>${iconHTML(d.icon)}${own ? ` <button class="btn" data-deldisp="${esc(d.id)}" ${n || !editable ? "disabled" : ""} title="${n ? "Repaint the bases that use it first" : "Remove this display"}">Remove</button>` : ""}</span></div>`;
+  }
+  h += `</div></div><div class="panel"><h3>Add a display</h3><div class="addform">
+    <label>Look <select id="nLook">${Object.entries(DATA.looks).filter(([k]) => k !== "SET_GRAIL" && k !== "HIDDEN").map(([k, l]) => `<option value="${k}">${esc(l.name)}</option>`).join("")}</select></label>
+    <label>Minimap icon <select id="nIcon">${Object.entries(DATA.icons).map(([k, i]) => `<option value="${k}">${esc(i.name)}</option>`).join("")}</select></label>
+    <label><input type="checkbox" id="nChat"> Chat line</label>
+    <label><input type="checkbox" id="nSound"> Drop sound</label>
+    <button class="btn main" id="addDisp" ${editable ? "" : "disabled"}>Add</button><span id="addMsg" class="empty"></span></div></div>`;
+  return h;
+}
+
+// ---------- render
+function render() {
+  renderBar();
+  const main = document.getElementById("main");
+  const y = window.scrollY;
+  main.innerHTML = isCardTab(tab) ? cardsTab() : tab === "changes" ? changesTab() : displaysTab();
+  window.scrollTo(0, y);
+}
+function refreshCard(id) {
+  const card = BYID[id];
+  document.querySelectorAll(`article.card[data-id="${id}"]`).forEach(el => {
+    const tmp = document.createElement("div");
+    tmp.innerHTML = cardHTML(card, el.dataset.set || null);
+    el.replaceWith(tmp.firstElementChild);
+  });
+  renderBar();
+}
+function goto(id) {  // a card on its first tab, every filter cleared
+  tab = CARD_TAB[id]; view.q = ""; view.show = "all"; keepView(); render();
+  const el = document.querySelector(`article.card[data-id="${id}"]`);
+  if (el) { el.scrollIntoView({ block: "start" }); el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash"); }
+}
+function changed(id) { refreshCard(id); queueSave("cards/" + id); }
+
+// ---------- painting
+let paint = null;  // {card, row, last}
+const lastCell = {};
+function paintCell(td) {
+  const id = td.dataset.card, key = td.dataset.row, L = +td.dataset.lv, row = state.cards[id].rows[key];
+  if (row[L] === brush) return false;
+  row[L] = brush;
+  td.className = cellClass(brush) + (SEP.has(L) ? " sep" : "");
+  td.innerHTML = cellInner(brush);
+  return true;
+}
+document.addEventListener("pointerdown", e => {
+  const td = e.target.closest("tbody.mine td.cell");
+  if (!td || !editable || e.button !== 0) return;
+  e.preventDefault();
+  const id = td.dataset.card, key = td.dataset.row, L = +td.dataset.lv;
+  if (e.shiftKey && lastCell[id + key] != null) {
+    const a = Math.min(lastCell[id + key], L), b = Math.max(lastCell[id + key], L), row = state.cards[id].rows[key];
+    for (let i = a; i <= b; i++) row[i] = brush;
+    lastCell[id + key] = L;
+    changed(id);
+    return;
+  }
+  if (td.hasPointerCapture && td.hasPointerCapture(e.pointerId)) td.releasePointerCapture(e.pointerId);
+  paint = { id, key, moved: paintCell(td) };
+  lastCell[id + key] = L;
+});
+document.addEventListener("pointermove", e => {
+  if (!paint) return;
+  const el = document.elementFromPoint(e.clientX, e.clientY);
+  const td = el && el.closest && el.closest("tbody.mine td.cell");
+  if (td && td.dataset.card === paint.id && td.dataset.row === paint.key) { if (paintCell(td)) paint.moved = true; lastCell[paint.id + paint.key] = +td.dataset.lv; }
+});
+function endPaint() { if (!paint) return; const id = paint.id; paint = null; changed(id); }
+document.addEventListener("pointerup", endPaint);
+document.addEventListener("pointercancel", endPaint);
+
+function quick(id) {
+  const st = state.cards[id];
+  for (const row of Object.values(st.rows)) for (let L = 5; L < NL; L++) row[L] = L <= 7 ? "name" : "hidden";
+}
+function reset(id) { state.cards[id] = { ...clone(DEFAULT[id]), note: state.cards[id].note }; }
+function parseCuts(text) { return [...new Set((text.match(/\d+/g) || []).map(Number).filter(x => x > 1 && x <= 99))].sort((a, b) => a - b); }
+
+document.addEventListener("click", e => {
+  const t = e.target.closest("[data-tab],[data-brush],[data-quick],[data-reset],[data-goto],[data-deldisp],#pickShown,#pickNone,#bulkQuick,#bulkPaint,#bulkReset,#copy,#addDisp");
+  if (!t) return;
+  if (t.dataset.tab) { tab = t.dataset.tab; keepView(); render(); window.scrollTo(0, 0); return; }
+  if (t.dataset.brush) { brush = t.dataset.brush; keepView(); renderBar(); const bp = document.getElementById("bulkPaint"); if (bp) bp.textContent = "with " + briefName(dispOf(brush)); return; }
+  if (t.dataset.quick) { quick(t.dataset.quick); changed(t.dataset.quick); return; }
+  if (t.dataset.reset) { reset(t.dataset.reset); changed(t.dataset.reset); return; }
+  if (t.dataset.goto) { goto(t.dataset.goto); return; }
+  if (t.dataset.deldisp) { custom = custom.filter(d => d.id !== t.dataset.deldisp); reindex(); queueSave("meta/displays"); render(); return; }
+  if (t.id === "pickShown") { shownCards(tab).forEach(c => picked.add(c.id)); render(); return; }
+  if (t.id === "pickNone") { picked.clear(); render(); return; }
+  if (t.id === "bulkQuick" || t.id === "bulkPaint" || t.id === "bulkReset") {
+    let a = 0, b = 0;
+    if (t.id === "bulkPaint") { a = Math.max(0, Math.min(NL - 1, +document.getElementById("bFrom").value || 0)); b = Math.max(a, Math.min(NL - 1, +document.getElementById("bTo").value || 0)); }
+    for (const id of picked) {
+      if (t.id === "bulkQuick") quick(id);
+      else if (t.id === "bulkReset") reset(id);
+      else for (const row of Object.values(state.cards[id].rows)) for (let L = a; L <= b; L++) row[L] = brush;
+      queueSave("cards/" + id);
+    }
+    render(); return;
+  }
+  if (t.id === "copy") {
+    const text = changesText();
+    navigator.clipboard.writeText(text).then(() => { t.textContent = "Copied"; setTimeout(() => { t.textContent = "Copy as text"; }, 1500); },
+      () => { const ta = document.createElement("textarea"); ta.value = text; ta.className = "note big"; t.closest(".panel").append(ta); ta.select(); });
+    return;
+  }
+  if (t.id === "addDisp") {
+    const d = { id: "c" + Date.now().toString(36), look: document.getElementById("nLook").value, icon: document.getElementById("nIcon").value,
+      chat: document.getElementById("nChat").checked, sound: document.getElementById("nSound").checked };
+    const same = DATA.displays.concat(custom).find(x => x.look === d.look && x.icon === d.icon && !!x.chat === d.chat && !!x.sound === d.sound);
+    if (same) { document.getElementById("addMsg").textContent = `That one is already there: ${briefName(same)}.`; return; }
+    if (d.chat && d.icon === "none") { document.getElementById("addMsg").textContent = "A chat line needs a minimap icon rule: pick an icon too."; return; }
+    custom.push(d); reindex(); brush = d.id; keepView(); queueSave("meta/displays"); render();
+  }
+});
+document.addEventListener("change", e => {
+  const t = e.target;
+  if (t.dataset.pick) { t.checked ? picked.add(t.dataset.pick) : picked.delete(t.dataset.pick); if (isCardTab(tab)) render(); return; }
+  if (t.dataset.eth) { const st = state.cards[t.dataset.eth], src = st.eth ? st.cuts.n : st.cuts.a; setRows(st, t.checked, t.checked ? { n: src.slice(), e: src.slice() } : { a: src.slice() }); changed(t.dataset.eth); return; }
+  if (t.dataset.cuts) { const st = state.cards[t.dataset.cuts]; setRows(st, st.eth, { ...st.cuts, [t.dataset.part]: parseCuts(t.value) }); changed(t.dataset.cuts); return; }
+  if (t.dataset.sound) { state.cards[t.dataset.sound].sound = +t.value; changed(t.dataset.sound); return; }
+  if (t.dataset.grail) { state.cards[t.dataset.grail].grail = t.value; changed(t.dataset.grail); return; }
+  if (t.id === "show") { view.show = t.value; keepView(); render(); }
+});
+document.addEventListener("input", e => {
+  const t = e.target;
+  if (t.dataset.note) { state.cards[t.dataset.note].note = t.value; queueSave("cards/" + t.dataset.note, true); return; }
+  if (t.id === "allNote") { state.note = t.value; queueSave("meta/note", true); return; }
+  if (t.id === "q") { view.q = t.value; keepView(); clearTimeout(window.qT); window.qT = setTimeout(() => { const pos = t.selectionStart; render(); const q = document.getElementById("q"); q.focus(); q.setSelectionRange(pos, pos); }, 250); }
+});
+document.addEventListener("keydown", e => { if (e.target.dataset && e.target.dataset.cuts && e.key === "Enter") e.target.blur(); });
+
+// ---------- saving (db: cards/<id> = {eth, cuts, rows, sound, grail, note, savedAt}, a card whose state is today's has
+// no document; meta/displays = {list}, meta/note = {text}). Every edit is also kept in this browser until the store has it.
+const pending = new Set(), timers = {}, edits = {}, lastEdit = {}, retries = {};
+let db = null, loaded = false, bannerIsError = false;
+const BACKUP = "setReviewUnsaved";
+function backups() { try { return JSON.parse(localStorage.getItem(BACKUP) || "{}") || {}; } catch (e) { return {}; } }
+function bodyOf(path) {
+  if (path === "meta/displays") return { list: clone(custom) };
+  if (path === "meta/note") return { text: state.note };
+  const id = path.slice(6), st = state.cards[id];
+  return JSON.stringify({ ...st, note: "" }) === JSON.stringify({ ...DEFAULT[id], note: "" }) && !st.note.trim() ? null : clone(st);
+}
+function keepBackup(path) { try { const all = backups(); all[path] = { at: lastEdit[path], body: bodyOf(path) }; localStorage.setItem(BACKUP, JSON.stringify(all)); } catch (e) {} }
+function dropBackup(path, at) { try { const all = backups(); if (all[path] && all[path].at <= at) { delete all[path]; localStorage.setItem(BACKUP, JSON.stringify(all)); } } catch (e) {} }
+function setStatus(text, kind) { const el = document.getElementById("status"); el.textContent = text; el.className = "status" + (kind ? " " + kind : ""); }
+function banner(text, isError = true) { const el = document.getElementById("banner"); el.hidden = !text; el.textContent = text || ""; bannerIsError = !!text && isError; }
+function queueSave(path, typing) {
+  edits[path] = (edits[path] || 0) + 1;
+  lastEdit[path] = Date.now();
+  pending.add(path);
+  keepBackup(path);
+  if (!db) { setStatus("Kept in this browser only", "warn"); return; }
+  setStatus("Saving…");
+  clearTimeout(timers[path]);
+  timers[path] = setTimeout(() => save(path), typing ? 900 : 500);
+}
+async function save(path) {
+  const body = bodyOf(path), n = edits[path], at = lastEdit[path];
+  try {
+    if (body === null) await db.doc(path).delete();
+    else await db.doc(path).set({ ...body, savedAt: new Date(at).toISOString() });
+    retries[path] = 0;
+    if (edits[path] === n) { pending.delete(path); dropBackup(path, at); }
+    if (!pending.size) { setStatus("Saved", "ok"); if (bannerIsError) banner(""); }
+  } catch (err) {
+    const why = (err && (err.message || err.code)) || "unknown error";
+    if (err && err.code === "invalid_argument" && !loaded) { editable = false; render(); }
+    setStatus("Not saved", "warn");
+    banner(`Not saved (${why}). Your edits are kept in this browser; the page tries again, and a reload saves them too.`);
+    retries[path] = (retries[path] || 0) + 1;
+    if (retries[path] <= 3) { clearTimeout(timers[path]); timers[path] = setTimeout(() => save(path), 4000 * retries[path]); }
+  }
+}
+const okId = id => DISP[id] !== undefined || /^c[0-9a-z]+$/.test(id);
+function takeDoc(path, body) {  // a stored document into the state; false if it changes nothing
+  if (path === "meta/displays") {
+    if (!body || !Array.isArray(body.list)) return false;
+    const list = body.list.filter(d => d && typeof d.id === "string" && DATA.looks[d.look] && DATA.icons[d.icon]).map(d => ({ id: d.id, look: d.look, icon: d.icon, chat: !!d.chat, sound: !!d.sound }));
+    if (JSON.stringify(list) === JSON.stringify(custom)) return false;
+    custom = list; reindex(); return true;
+  }
+  if (path === "meta/note") { const t = body && typeof body.text === "string" ? body.text : ""; if (t === state.note) return false; state.note = t; return true; }
+  const id = path.slice(6), card = BYID[id];
+  if (!card) return false;
+  const before = JSON.stringify(state.cards[id]);
+  if (!body) { state.cards[id] = clone(DEFAULT[id]); return JSON.stringify(state.cards[id]) !== before; }
+  const st = { eth: !!body.eth, cuts: {}, rows: {}, sound: DATA.sounds.some(s => s.id === body.sound) ? body.sound : card.sound,
+    grail: body.grail === "same" ? "same" : "grail", note: typeof body.note === "string" ? body.note : "" };
+  const ps = st.eth ? ["n", "e"] : ["a"];
+  for (const p of ps) st.cuts[p] = Array.isArray(body.cuts && body.cuts[p]) ? parseCuts(body.cuts[p].join(" ")) : [];
+  let ok = true;
+  for (const p of ps) for (const [lo] of bands(st.cuts[p])) {
+    const r = body.rows && body.rows[p + "|" + lo];
+    if (!Array.isArray(r) || r.length !== NL || !r.every(x => typeof x === "string" && okId(x))) ok = false;
+    else st.rows[p + "|" + lo] = r.slice();
+  }
+  if (!ok) return false;
+  state.cards[id] = st;
+  return JSON.stringify(st) !== before;
+}
+function restoreBackups(savedAt) {
+  const restored = [];
+  for (const [path, b] of Object.entries(backups())) {
+    if (!b || !(path === "meta/displays" || path === "meta/note" || BYID[path.slice(6)])) continue;
+    if (savedAt[path] && savedAt[path] >= b.at) { dropBackup(path, b.at); continue; }
+    takeDoc(path, b.body);
+    restored.push(path);
+    edits[path] = (edits[path] || 0) + 1; lastEdit[path] = b.at; pending.add(path);
+    if (db) { clearTimeout(timers[path]); timers[path] = setTimeout(() => save(path), 300); }
+  }
+  if (restored.length) {
+    banner(db ? `Put back ${restored.length} edit${restored.length === 1 ? "" : "s"} this browser kept that weren't saved yet; saving them now.`
+      : `This view can't reach the saved choices. It shows ${restored.length} edit${restored.length === 1 ? "" : "s"} this browser kept; nothing is saved until you reload and the page can reach the store.`, !db);
+    render();
+  }
+}
+
+(async () => {
+  render();
+  const timer = setTimeout(() => { if (!loaded) { setStatus("Saved choices not reached yet", "warn"); banner("The saved choices haven't answered yet: this shows today's filter. Edits are kept in this browser until they can be saved."); } }, 10000);
+  try {
+    const [dbNs, user] = await Promise.all([window.claude?.use?.("db") ?? null, window.claude?.use?.("user") ?? null]);
+    db = dbNs;
+    if (!db) {
+      clearTimeout(timer);
+      setStatus("Kept in this browser only", "warn");
+      banner("This view can't reach the saved choices: you see today's filter, and edits are kept in this browser only. Reload the page to load and save your choices.");
+      restoreBackups({});
+      return;
+    }
+    const can = user ? await user.can("data.write") : null;
+    if (can === false) { editable = false; render(); }
+    const seen = { cards: false, meta: false }, savedAt = {};
+    const listen = coll => db.collection(coll).onSnapshot(snap => {
+      let touched = false;
+      const present = new Set();
+      for (const d of snap.docs) {
+        const path = coll + "/" + d.id, body = d.data();
+        present.add(path);
+        savedAt[path] = Date.parse(body.savedAt || 0) || 0;
+        if (pending.has(path) || d.metadata?.hasPendingWrites) continue;
+        if (lastEdit[path] && !(savedAt[path] >= lastEdit[path])) continue;
+        touched = takeDoc(path, body) || touched;
+      }
+      if (coll === "cards" && seen.cards) for (const c of CARDS) {  // a document deleted elsewhere: today's state again
+        const path = "cards/" + c.id;
+        if (!present.has(path) && !pending.has(path)) touched = takeDoc(path, null) || touched;
+      }
+      if (!seen[coll]) {
+        seen[coll] = !snap.metadata?.fromCache || seen[coll];
+        if (seen.cards && seen.meta && !loaded) {
+          loaded = true; clearTimeout(timer);
+          const n = Object.keys(savedAt).filter(p => p.startsWith("cards/")).length;
+          setStatus(editable ? (n ? `Loaded your choices (${n} ${n === 1 ? "base" : "bases"})` : "Nothing saved yet: today's filter") : "Read-only", editable ? "ok" : "warn");
+          if (bannerIsError || document.getElementById("banner").textContent.startsWith("The saved choices haven't")) banner("");
+          if (editable) restoreBackups(savedAt);
+        }
+      }
+      if (touched && !document.activeElement?.matches?.("textarea, input[type=text], input[type=search]") && !paint) render();
+      else if (touched) renderBar();
+    }, err => {
+      clearTimeout(timer);
+      setStatus("Saved choices unavailable", "warn");
+      banner(`The saved choices can't be read (${(err && (err.message || err.code)) || "unknown error"}). Edits are kept in this browser; reload the page.`);
+    });
+    listen("cards");
+    listen("meta");
+  } catch (err) {
+    clearTimeout(timer);
+    setStatus("Kept in this browser only", "warn");
+    banner("This view can't reach the saved choices: edits are kept in this browser only. Reload the page.");
+  }
+})();
+</script>
