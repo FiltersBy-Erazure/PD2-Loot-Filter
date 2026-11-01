@@ -1271,19 +1271,20 @@ FAMILIES = [
      "match": lambda r: has(r, "GLOVES") and label(r).lstrip("+").startswith("2/"),
      "sample": {"base": "vgl", "affixes": ["Spearmaiden's", "of Alacrity"], "clvl": 90}},
     {"id": "caster-armor", "section": "armor",
-     "title": "Rare body armor with +2 class skills and two of cast rate, damage reduction and all resistances",
+     "title": "Rare body armor with +2 class skills and two of cast rate, damage reduction, all resistances and +1 "
+              "to All Skills",
      "match": lambda r: has(r, "CHEST", "RARE") and "CLSK1=2" in r.cond,
      "sample": {"base": "utp", "quality": "RARE", "name": ["Doom", "Shroud"], "class": "SORCERESS", "ilvl": 99,
                 "affixes": ["Arch-Angel's", "Prismatic", "of the Archmage", "of the Whale", "of Guardianship"]}},
     {"id": "caster-shield", "section": "armor",
-     "title": "Shields with +2 class skills or +3 Combat Skills and two of cast rate, damage reduction and all "
-              "resistances",
+     "title": "Shields with +2 class skills or +3 Combat Skills and two of cast rate, damage reduction, all "
+              "resistances and +1 to All Skills",
      "match": lambda r: has(r, "SHIELD") and "!NEC" in r.cond,
      "sample": {"base": "uit", "quality": "RARE", "name": ["Bramble", "Ward"], "class": "PALADIN", "ilvl": 99,
                 "affixes": ["Priest's", "Prismatic", "of the Magus", "of Guardianship"]}},
     {"id": "class-shield", "section": "armor",
      "title": "Paladin shields and Necromancer heads with +2 class skills or +3 to a skill tab, and two of cast "
-              "rate, damage reduction and all resistances",
+              "rate, damage reduction, all resistances and +1 to All Skills",
      "match": lambda r: has(r, "SHIELD") and "(DIN OR NEC)" in r.cond,
      "sample": {"base": "pac", "quality": "RARE", "name": ["Bramble", "Ward"], "class": "PALADIN", "ilvl": 95,
                 "affixes": ["Rose Branded", "of the Magus", ["of Protecting", 20]], "automagic": "Chromatic",
