@@ -663,15 +663,112 @@ def extract(game_dir):
     RUNEWORDS_FILE.write_text("\n".join(lines) + "\n", encoding="utf-8", newline="\n")
     print(f"wrote {RUNEWORDS_FILE.relative_to(ROOT)} ({len({r[1] for r in rows})} runewords, {len(rows)} lines)")
     write_corruptions(game)
-    out = ["# PD2 ItemStatCost.txt: stat id, stat, descpriority (higher = listed higher on the item).",
+    write_priority(game.statcost, stamp)
+    extract_tier_data(game_dir, game)
+
+
+def crt_qsort(a, cmp):
+    """The C runtime's qsort as the game's own copy sorts (median of three, a selection sort for 8 elements or
+    fewer): not stable, so elements that compare equal end up in an order that depends on the whole list. Sorts the
+    list a in place."""
+    if len(a) < 2:
+        return
+
+    def swap(i, j):
+        if i != j:
+            a[i], a[j] = a[j], a[i]
+    stack, lo, hi = [], 0, len(a) - 1
+    while True:
+        size = hi - lo + 1
+        if size <= 8:
+            while hi > lo:
+                top = lo
+                for p in range(lo + 1, hi + 1):
+                    if cmp(a[p], a[top]) > 0:
+                        top = p
+                swap(top, hi)
+                hi -= 1
+        else:
+            mid = lo + size // 2
+            if cmp(a[lo], a[mid]) > 0:
+                swap(lo, mid)
+            if cmp(a[lo], a[hi]) > 0:
+                swap(lo, hi)
+            if cmp(a[mid], a[hi]) > 0:
+                swap(mid, hi)
+            loguy, higuy = lo, hi
+            while True:
+                if mid > loguy:
+                    loguy += 1
+                    while loguy < mid and cmp(a[loguy], a[mid]) <= 0:
+                        loguy += 1
+                if mid <= loguy:
+                    loguy += 1
+                    while loguy <= hi and cmp(a[loguy], a[mid]) <= 0:
+                        loguy += 1
+                higuy -= 1
+                while higuy > mid and cmp(a[higuy], a[mid]) > 0:
+                    higuy -= 1
+                if higuy < loguy:
+                    break
+                swap(loguy, higuy)
+                if mid == higuy:
+                    mid = loguy
+            higuy += 1
+            if mid < higuy:
+                higuy -= 1
+                while higuy > mid and cmp(a[higuy], a[mid]) == 0:
+                    higuy -= 1
+            if mid >= higuy:
+                higuy -= 1
+                while higuy > lo and cmp(a[higuy], a[mid]) == 0:
+                    higuy -= 1
+            if higuy - lo >= hi - loguy:
+                if lo < higuy:
+                    stack.append((lo, higuy))
+                if loguy < hi:
+                    lo = loguy
+                    continue
+            else:
+                if loguy < hi:
+                    stack.append((loguy, hi))
+                if lo < higuy:
+                    hi = higuy
+                    continue
+        if not stack:
+            return
+        lo, hi = stack.pop()
+
+
+def stat_line_order(statcost):
+    """{stat id: line} for every stat with a line of its own on an item (a descfunc), 0 = the top line. The game
+    lists an item's stats in one order for every item: once at load it sorts every ItemStatCost row with a descfunc
+    (in stat ID order) by descpriority with qsort, and writes an item's lines in that order from the bottom up. qsort
+    isn't stable, so stats of equal priority come in an order the stat IDs don't tell (Season 14: -% enemy fire,
+    lightning, cold resistance; Season 13 cold, fire, lightning)."""
+    rows = []
+    for r in statcost:
+        sid = (r.get("*ID") or r.get("ID") or "").strip()
+        if sid.isdigit() and to_int(r.get("descfunc")) & 0xFF:
+            prio = to_int(r.get("descpriority")) & 0xFFFF
+            rows.append((int(sid), prio - 0x10000 if prio & 0x8000 else prio))  # a 16-bit signed number
+    crt_qsort(rows, lambda a, b: -1 if a[1] < b[1] else int(a[1] != b[1]))
+    return {sid: line for line, (sid, _) in enumerate(reversed(rows))}
+
+
+def write_priority(statcost, stamp):
+    """tools/pd2_stat_priority.tsv: each stat's descpriority and its line in the game's order."""
+    lines = stat_line_order(statcost)
+    out = ["# PD2 ItemStatCost.txt: stat id, stat, descpriority (higher = listed higher on the item), line (where the",
+           "# game lists the stat among all stats, 0 = the top line; equal priorities in the game's own order; empty:",
+           "# the stat has no line of its own).",
            f"# Extracted {stamp} from pd2data.mpq by tools/pd2_data.py --extract."]
-    for r in game.statcost:
+    for r in statcost:
         sid = (r.get("*ID") or r.get("ID") or "").strip()
         if sid.isdigit():
-            out.append(f"{int(sid)}\t{r['Stat']}\t{r.get('descpriority', '').strip()}")
+            out.append(f"{int(sid)}\t{r['Stat']}\t{r.get('descpriority', '').strip()}\t{lines.get(int(sid), '')}")
     PRIORITY_FILE.write_text("\n".join(out) + "\n", encoding="utf-8", newline="\n")
-    print(f"wrote {PRIORITY_FILE.relative_to(ROOT)} ({len(out) - 2} stats)")
-    extract_tier_data(game_dir, game)
+    print(f"wrote {PRIORITY_FILE.relative_to(ROOT)} ({len(out) - 4} stats, {len(lines)} with a line)")
 
 
 def write_corruptions(game):

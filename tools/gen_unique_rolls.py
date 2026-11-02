@@ -217,13 +217,12 @@ TAGS.update({f"sk{s}": (f"ROLL_SK{s}_TAG", f"SK{s}", lab, "WA") for s, lab in SK
 # +N to a skill without "(Class Only)" is an oskill: stat 97, read with OS<n> (same label as the class skill)
 TAGS.update({f"os{s}": (f"ROLL_OS{s}_TAG", f"OS{s}", lab, "WA") for s, lab in SKILL_TAG_LABELS.items()})
 # All three -% enemy resistances on one line, "-10%/-15%/-10%" with gray slashes (author, 2026-10-08), in the order
-# the item lists them: c cold, f fire, l lightning. The game lists stats of equal priority in an order that differs between
-# items, so the order comes from the item in game; an item not in ERES_ORDER uses ERES_DEFAULT. Each order
+# the game lists them: c cold, f fire, l lightning. Their priority is equal, and the game lists equal priorities in one
+# order on every item (tag_order.rank, the line column of pd2_stat_priority.tsv): Season 14 fire, lightning, cold (Kira's
+# Guardian and Mang Song's Lesson in the author's screenshots, 2026-10-11; cold, fire, lightning in S13). Each order
 # has its own 300 line (ROLL_ERES<ORDER>_TAG), and the weapon -res corruption lines skip these items.
 ERES_KEYS = {"c": "-cres", "f": "-fres", "l": "-lres"}
-ERES_ORDER = {"UNI Kira's Guardian": "flc",  # the author's screenshots (S14 beta, 2026-10-11; both were cfl in S13)
-              "UNI Mang Song's Lesson": "flc"}
-ERES_DEFAULT = "flc"
+ERES_ORDER = "".join(sorted("cfl", key=lambda k: tag_order.rank({"c": 335, "f": 333, "l": 334}[k]), reverse=True))
 TAGS.update({f"eres_{o}": (f"ROLL_ERES{o.upper()}_TAG", f"ERES{o.upper()}", "%res", "WA")
              for o in ("cfl", "clf", "fcl", "flc", "lcf", "lfc")})
 CLSK_KEYS = [f"clsk{i}" for i in range(7)]
@@ -696,7 +695,7 @@ class Item:
                 self.rolls["maxres"] = (lo, hi)
         three = [self.roll(k) for k in ERES_KEYS.values()]
         if all(three):  # all three -% enemy resistances: one more candidate, one tag in the item's order
-            key = f"eres_{ERES_ORDER.get(self.key, ERES_DEFAULT)}"
+            key = f"eres_{ERES_ORDER}"
             lo, hi = min(r["lo"] for r in three), max(r["hi"] for r in three)
             tagged = self.covers(key)
             self.all_rolls.insert(min(self.all_rolls.index(r) for r in three),

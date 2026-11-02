@@ -45,6 +45,7 @@ import label_cuts as LC  # noqa: E402
 import lint_filter as L  # noqa: E402
 import pd2_data as P  # noqa: E402
 import plain_highlights as PH  # noqa: E402
+import tag_order as TO  # noqa: E402
 import tier_map as T  # noqa: E402
 
 ROOT = build.ROOT
@@ -567,14 +568,14 @@ def code(color):
 
 
 def stat_lines(item):
-    """The affix lines as the game words and orders them (highest descpriority first), each with BH's range."""
+    """The affix lines as the game words and orders them (highest descpriority first; equal priorities in the game's
+    own order, tag_order.rank; one stat's skills from the highest number), each with BH's range."""
     d, lines, done = item.data, [], set()
     groups = defaultdict(list)
     for (sid, param), v in item.stats.items():
         if v and sid in d.stats and d.stats[sid]["dgrp"]:
             groups[d.stats[sid]["dgrp"]].append((sid, v))
-    for (sid, param), v in sorted(item.stats.items(), key=lambda kv: (-d.stats.get(kv[0][0], {}).get(
-            "descpriority", 0), kv[0][0], kv[0][1])):
+    for (sid, param), v in sorted(item.stats.items(), key=lambda kv: (TO.rank(kv[0][0]), kv[0][1]), reverse=True):
         if not v or sid not in d.stats or (sid, param) in done or sid in (194, 18):
             continue
         st = d.stats[sid]

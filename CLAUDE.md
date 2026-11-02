@@ -139,8 +139,13 @@
   game lists stats by PD2's `descpriority` (`tools/pd2_stat_priority.tsv`). So `300-affix-tags` is one block per
   stat, lowest-listed first: put a new tag line anywhere and run `python tools/tag_order.py --fix` (lint flags a
   line out of place; a tag line's description is split off so description notes keep their order). Stats of
-  equal priority come in an order that differs per item; the -res group tag follows each item's own order
-  (`ERES_ORDER` in the generator, from in-game screenshots). One stat with several skills (classes, tabs, auras)
+  equal priority come in one order on every item, but not by stat ID (2026-11-02, from the game's own sort, which
+  isn't stable: `pd2_data.stat_line_order`, checked against the screenshots: Rainbow Facets' +% skill damage above
+  -% enemy resistance, life above mana after each kill, -res fire, lightning, cold in S14 and cold, fire,
+  lightning in S13): the `line` column of `tools/pd2_stat_priority.tsv` (written by `--extract`), which
+  `tag_order.rank` follows (the -res group tag too, `ERES_ORDER`, and shop_map's affix lines). A season's table
+  changes can reshuffle it: after `--extract`, `--fix`, regenerate 305 and move 250 / 260's lines by hand (lint
+  checks the jewel and quiver tags too). One stat with several skills (classes, tabs, auras)
   lists the higher number first (Arm of King Leoric: Raise Skeleton Archer 89, Warrior 70, Skeleton Mastery 69),
   so a block's lines go from the lowest number to the highest (`--fix` sorts them; 310-staffmods' class runs too).
   Special picks: per-level rolls (`life/lvl`, `mf/lvl`) show per level, or the total at your level while worn

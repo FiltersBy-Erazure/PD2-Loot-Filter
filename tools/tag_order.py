@@ -8,23 +8,26 @@ Guardian Angel, Ormus' Robes, Titan's Grip, Nature's Peace and Kira's Guardian).
 stat shown lowest on the item to the one shown highest: one block per stat, the lowest first. A block keeps
 its lines in the order they had.
 
-Stats with the same priority come in an order that differs between items (Ormus' Robes, Nature's Peace, Eschuta's
-Temper and Venom Grip list the higher stat ID first; Kira's Guardian lists -cold, -fire, -lightning, Frostburn
--fire above -cold). Here the higher stat ID goes further left (TIE_RANK: pairs the game has always listed the other
-way, life per kill above mana per kill); where that matters, a grouped tag can follow each
-item's own order (the -res group, ERES_ORDER in gen_unique_rolls.py; one line for both tags in 300: Griffon's Eye,
-Nightwing's Veil, Frostburn). One stat with several skills (classes, tabs, auras) lists the higher skill first (Arm of
-King Leoric: Raise Skeleton Archer 89, Raise Skeleton Warrior 70, Skeleton Mastery 69; Chromatic Ire: Cold,
-Lightning, Fire Mastery), so within a block those lines go from the lowest skill number to the highest.
+Stats with the same priority come in one order on every item, but not in stat ID order: the game sorts all stats
+once at load with a sort that isn't stable (pd2_data.stat_line_order). That order is the line column of
+tools/pd2_stat_priority.tsv, and the blocks follow it: Season 14 lists +% cold, lightning, fire skill damage
+(Ormus' Robes), every +% skill damage above every -% enemy resistance (Rainbow Facets), -% enemy fire, lightning,
+cold resistance (Kira's Guardian, Frostburn; Season 13 had cold, fire, lightning) and life above mana after each
+kill. A tag line that shows two stats (Griffon's Eye, Nightwing's Veil, Frostburn, the Rainbow Facets) shows them
+in that order too. One stat with several skills (classes, tabs, auras) lists the higher skill first (Arm of King
+Leoric: Raise Skeleton Archer 89, Raise Skeleton Warrior 70, Skeleton Mastery 69; Chromatic Ire: Cold, Lightning,
+Fire Mastery), so within a block those lines go from the lowest skill number to the highest.
 
 Description notes stay in their own order: a tag line that also writes a description is split in two, and
 the description lines sit together at the end of the section, in the order they had.
 
-tools/pd2_stat_priority.tsv is PD2's ItemStatCost.txt (id, stat, descpriority), from pd2data.mpq
+tools/pd2_stat_priority.tsv is PD2's ItemStatCost.txt (id, stat, descpriority, line), from pd2data.mpq
 (python tools/pd2_data.py --extract, each season; then --fix).
 
 sections/305-runeword-rolls.filter (the runeword roll tags) is generated in the same order by
-tools/gen_runeword_rolls.py: it is checked here too, and fixed by regenerating it, never by --fix.
+tools/gen_runeword_rolls.py: it is checked here too, and fixed by regenerating it, never by --fix. The jewel and
+quiver tags (250-jewels, 260-arrow-bolt-affixes) are written by hand in one run each, checked here too and fixed by
+hand (--fix only re-sorts 300).
 
 Usage (from the repo root):
     python tools/tag_order.py               list tag lines that are out of order (lint_filter.py runs this)
@@ -44,7 +47,9 @@ SECTION_NAME = "sections/300-affix-tags.filter"
 RUNEWORD_SECTION = ROOT / "sections" / "305-runeword-rolls.filter"
 RUNEWORD_SECTION_NAME = "sections/305-runeword-rolls.filter"
 FIX_HINTS = {SECTION_NAME: "run python tools/tag_order.py --fix",
-             RUNEWORD_SECTION_NAME: "regenerate it: python tools/gen_runeword_rolls.py"}
+             RUNEWORD_SECTION_NAME: "regenerate it: python tools/gen_runeword_rolls.py",
+             "sections/250-jewels.filter": "move it by hand",
+             "sections/260-arrow-bolt-affixes.filter": "move it by hand"}
 TABLE = TOOLS / "pd2_stat_priority.tsv"
 
 # ---------------------------------------------------------------- which stats a tag shows
@@ -60,6 +65,7 @@ LABELS = {"Rep": [252], "Hfd": [118], "ATD": [78], "Cbf": [153], "Res": [39, 41,
           "itd": [115], "ITD": [115], "blk": [20], "all": [127], "Ind": [152], "Knb": [81],
           "Strk": [198], "Cast": [200]}  # a version's tag: its chance to cast on striking / on casting
 CHANCE_TO_CAST = {"amp", "lr"}  # weapon suffixes: on striking (198), on casting for staves (200)
+NO_STAT = {"LLD"}  # tags that show no stat (250's Low Level Dueling jewels): outside the order
 GROUPS = {frozenset([39, 41, 43, 45]): "All Resistances", frozenset([40, 42, 44, 46]): "All Maximum Resistances",
           frozenset([0, 1, 2, 3]): "All Attributes"}
 TITLES = {
@@ -96,27 +102,27 @@ TITLES = {
 COLORS = set("""WHITE RED GREEN BLUE GOLD GRAY BLACK TAN ORANGE YELLOW PURPLE DARK_GREEN CORAL SAGE TEAL
 LIGHT_GRAY CS CL NL PERCENT""".split())
 KEYWORD = re.compile(r"%([A-Z_]+[0-9]*(?:,[0-9]+)?)%")
-WEAPON_WORD = re.compile(r"(?<![!\w])WEAPON\b")
+WEAPON_WORD = re.compile(r"(?<![!\w])(WEAPON|QUIVER)\b")  # BH's ED: +% damage there (not armor)
 
 
 def load_table():
-    prio, names = {}, {}
+    prio, names, lines = {}, {}, {}
     for line in TABLE.read_text(encoding="utf-8").splitlines():
         if line and not line.startswith("#"):
-            sid, name, p = line.split("\t")
+            sid, name, p, n = line.split("\t")
             prio[int(sid)], names[int(sid)] = int(p) if p else -1, name
-    return prio, names
+            if n:
+                lines[int(sid)] = int(n)
+    return prio, names, lines
 
 
-PRIO, STAT_NAMES = load_table() if TABLE.exists() else ({}, {})
-# Stats of the same priority that the game has always listed in the other order (the stat ID they rank by among
-# their equals): Life after each Kill above Mana after each Kill (the author's rings and Dracul's Grasp, 2026-10-29)
-TIE_RANK = {86: 138.5}
+PRIO, STAT_NAMES, LINE = load_table() if TABLE.exists() else ({}, {}, {})
 
 
 def rank(stat):
-    """Higher = shown higher on the item."""
-    return PRIO.get(stat, -1), TIE_RANK.get(stat, stat)
+    """Higher = shown higher on the item: the priority, then the game's line (a stat with no line of its own last,
+    by stat ID)."""
+    return PRIO.get(stat, -1), -LINE[stat] if stat in LINE else stat - 100000
 
 
 def keyword_stats(kw, cond):
@@ -152,10 +158,10 @@ def tag_text(name):
     if "%NAME%" not in name:
         return None
     pre = name.split("%NAME%")[0]
-    return pre if re.sub(r"%(CS|CL|NL)%", "", pre).strip() else None
+    return pre if KEYWORD.sub(lambda m: "" if m.group(1) in COLORS else m.group(0), pre).strip() else None
 
 
-FORMULA = re.compile(r"\$f\(((?:[^()]|\([^()]*\))*)\)")
+FORMULA = re.compile(r"\$f\(((?:[^()]|\((?:[^()]|\((?:[^()]|\([^()]*\))*\))*\))*)\)")  # brackets 3 deep inside
 
 
 def formula_stat(m):
@@ -174,7 +180,7 @@ def tag_stats(pre, cond):
     for chunk in re.sub(r"%(CS|CL|NL)%", " ", pre).split(" "):
         kws = [k for k in KEYWORD.findall(chunk) if k not in COLORS]
         text = KEYWORD.sub("", chunk)
-        if not kws and not text.strip():
+        if not kws and not re.search(r"[A-Za-z0-9]", text):  # nothing, or a frame (the perfect Facets' \\\ ///)
             continue
         stats = []
         for k in kws:
@@ -188,6 +194,8 @@ def tag_stats(pre, cond):
                 stats = [200] if re.search(r"(?<![!\w])STAFF\b", cond) else [198]
             elif label in LABELS:
                 stats = LABELS[label]
+            elif label in NO_STAT:
+                continue
             else:
                 return None
         chunks.append(stats)
@@ -213,7 +221,7 @@ def block_key(chunks):
 
 def block_title(key, chunks):
     first = chunks[0]
-    stat = max(first, key=rank)  # (key[1] is its rank among its equals, not always its ID: TIE_RANK)
+    stat = max(first, key=rank)  # (key[1] is its rank among its equals, not its ID)
     group = GROUPS.get(frozenset(first)) if key[2] else None
     name = group or TITLES.get(stat) or STAT_NAMES.get(stat, f"stat {stat}")
     return f"// ---- {name} (stat {stat}{'+' if group else ''}, priority {key[0]}) ----"
@@ -279,7 +287,9 @@ def check(lines=None, hint=FIX_HINTS[SECTION_NAME]):
             found.append((u["n"], "error", "can't tell which stat this tag shows: add its keyword or label to "
                           "tools/tag_order.py", u["line"]))
             continue
-        top = [PRIO.get(max(c, key=rank), -1) for c in chunks]  # equal priorities: the item decides the order
+        if not chunks:  # a tag that shows no stat (LLD)
+            continue
+        top = [rank(max(c, key=rank)) for c in chunks]
         if any(a < b for a, b in zip(top, top[1:])):
             found.append((u["n"], "warning", "the tag's own parts are not in the order the game lists them",
                           u["line"]))
@@ -357,13 +367,14 @@ def main():
     if args.fix:
         fix()
         return
-    found = [(SECTION_NAME, f) for f in check()]
-    if RUNEWORD_SECTION.exists():
-        rw_lines = RUNEWORD_SECTION.read_bytes().decode("utf-8").split("\r\n")
-        found += [(RUNEWORD_SECTION_NAME, f) for f in check(rw_lines, FIX_HINTS[RUNEWORD_SECTION_NAME])]
+    found = []
+    for name, hint in FIX_HINTS.items():
+        path = ROOT / name
+        if path.exists():
+            found += [(name, f) for f in check(path.read_bytes().decode("utf-8").split("\r\n"), hint)]
     for name, (n, severity, message, _) in found:
         print(f"{name}:{n}: {severity}: {message}")
-    print(f"{len(found)} finding(s)" if found else "affix and runeword tags in the game's stat order")
+    print(f"{len(found)} finding(s)" if found else "affix, runeword, jewel and quiver tags in the game's stat order")
     sys.exit(1 if any(f[1] == "error" for _, f in found) else 0)
 
 

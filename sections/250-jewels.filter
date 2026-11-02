@@ -26,34 +26,34 @@ ItemDisplay[(MAG OR RARE) STAT91<0 ID jew]:%WHITE%%STAT91%%LIGHT_GRAY%%PERCENT%r
 ItemDisplay[(MAG OR RARE) MFIND>0 ID jew]:%WHITE%%MFIND%%YELLOW%mf%CS%%NAME%{%NAME%}%CONTINUE%
 // Gold Find
 ItemDisplay[(MAG OR RARE) GFIND>0 ID jew]:%WHITE%%GFIND%%GOLD%gf%CS%%NAME%{%NAME%}%CONTINUE%
+// Damage to Mana
+ItemDisplay[(MAG OR RARE) DTM>0 ID jew]:%WHITE%%DTM%%BLUE%dtm%CS%%NAME%{%NAME%}%CONTINUE%
 // Attacker Takes Damage
 ItemDisplay[(MAG OR RARE) STAT78>0 ID jew]:%WHITE%%STAT78%%GRAY%atd%CS%%NAME%{%NAME%}%CONTINUE%
-// Life after Kill
-ItemDisplay[(MAG OR RARE) STAT86~1-2 ID jew]:%WHITE%%STAT86%%RED%lpk%CS%%NAME%{%NAME%}%CONTINUE%
-ItemDisplay[(MAG OR RARE) STAT86=3 ID jew]:%WHITE%%STAT86%%PURPLE%lpk%CS%%NAME%{%NAME%}%CONTINUE%
 // Mana after Kill
 ItemDisplay[(MAG OR RARE) STAT138~1-2 ID jew]:%WHITE%%STAT138%%BLUE%mpk%CS%%NAME%{%NAME%}%CONTINUE%
 ItemDisplay[(MAG OR RARE) STAT138=3 ID jew]:%WHITE%%STAT138%%PURPLE%mpk%CS%%NAME%{%NAME%}%CONTINUE%
-// Damage to Mana
-ItemDisplay[(MAG OR RARE) DTM>0 ID jew]:%WHITE%%DTM%%BLUE%dtm%CS%%NAME%{%NAME%}%CONTINUE%
-// All Res
-ItemDisplay[(MAG OR RARE) RES>0 ID jew]:%WHITE%%RES%%PURPLE%res%CS%%NAME%{%NAME%}%CONTINUE%
+// Life after Kill
+ItemDisplay[(MAG OR RARE) STAT86~1-2 ID jew]:%WHITE%%STAT86%%RED%lpk%CS%%NAME%{%NAME%}%CONTINUE%
+ItemDisplay[(MAG OR RARE) STAT86=3 ID jew]:%WHITE%%STAT86%%PURPLE%lpk%CS%%NAME%{%NAME%}%CONTINUE%
+// Poison Res
+ItemDisplay[(MAG OR RARE) !RES>0 PRES>0 ID jew]:%WHITE%%PRES%%DARK_GREEN%res%CS%%NAME%{%NAME%}%CONTINUE%
 // Fire Res
 ItemDisplay[(MAG OR RARE) !RES>0 FRES>0 ID jew]:%WHITE%%FRES%%RED%res%CS%%NAME%{%NAME%}%CONTINUE%
 // Light Res
 ItemDisplay[(MAG OR RARE) !RES>0 LRES>0 ID jew]:%WHITE%%LRES%%YELLOW%res%CS%%NAME%{%NAME%}%CONTINUE%
 // Cold Res
 ItemDisplay[(MAG OR RARE) !RES>0 CRES>0 ID jew]:%WHITE%%CRES%%BLUE%res%CS%%NAME%{%NAME%}%CONTINUE%
-// Poison Res
-ItemDisplay[(MAG OR RARE) !RES>0 PRES>0 ID jew]:%WHITE%%PRES%%DARK_GREEN%res%CS%%NAME%{%NAME%}%CONTINUE%
-// Replenish Life
-ItemDisplay[(MAG OR RARE) STAT74>0 ID jew]:%WHITE%%STAT74%%RED%rep%CS%%NAME%{%NAME%}%CONTINUE%
+// All Res
+ItemDisplay[(MAG OR RARE) RES>0 ID jew]:%WHITE%%RES%%PURPLE%res%CS%%NAME%{%NAME%}%CONTINUE%
 // Mana
 ItemDisplay[(MAG OR RARE) MANA>0 ID jew]:%WHITE%%MANA%%BLUE%mana%CS%%NAME%{%NAME%}%CONTINUE%
-// Energy
-ItemDisplay[(MAG OR RARE) STAT1>0 ID jew]:%WHITE%%STAT1%%BLUE%nrg%CS%%NAME%{%NAME%}%CONTINUE%
+// Replenish Life
+ItemDisplay[(MAG OR RARE) STAT74>0 ID jew]:%WHITE%%STAT74%%RED%rep%CS%%NAME%{%NAME%}%CONTINUE%
 // Life
 ItemDisplay[(MAG OR RARE) LIFE>0 ID jew]:%WHITE%%LIFE%%RED%life%CS%%NAME%{%NAME%}%CONTINUE%
+// Energy
+ItemDisplay[(MAG OR RARE) STAT1>0 ID jew]:%WHITE%%STAT1%%BLUE%nrg%CS%%NAME%{%NAME%}%CONTINUE%
 // Dexterity
 ItemDisplay[(MAG OR RARE) DEX>0 ID jew]:%WHITE%%DEX%%GRAY%dex%CS%%NAME%{%NAME%}%CONTINUE%
 // Strength
@@ -62,11 +62,24 @@ ItemDisplay[(MAG OR RARE) STR>0 ID jew]:%WHITE%%STR%%GRAY%str%CS%%NAME%{%NAME%}%
 ItemDisplay[(MAG OR RARE) DEF>0 ID jew]:%WHITE%%DEF%%GRAY%def%CS%%NAME%{%NAME%}%CONTINUE%
 // Open Wounds
 ItemDisplay[(MAG OR RARE) STAT501>0 ID jew]:%WHITE%%STAT501%%CORAL%ow%CS%%NAME%{%NAME%}%CONTINUE%
-// S14: % Fire / Lightning / Cold / Poison / Magic Skill Damage (new jewel prefixes; large charm look, 240)
-ItemDisplay[(MAG OR RARE) STAT329>0 ID jew]:%WHITE%%STAT329%%RED%%PERCENT%dmg%CS%%NAME%{%NAME%}%CONTINUE%
-ItemDisplay[(MAG OR RARE) STAT330>0 ID jew]:%WHITE%%STAT330%%YELLOW%%PERCENT%dmg%CS%%NAME%{%NAME%}%CONTINUE%
-ItemDisplay[(MAG OR RARE) STAT331>0 ID jew]:%WHITE%%STAT331%%BLUE%%PERCENT%dmg%CS%%NAME%{%NAME%}%CONTINUE%
+// S14: % Poison / Fire / Lightning / Cold / Magic Skill Damage (new jewel prefixes; large charm look, 240), each with its
+// Rainbow Facet (+% skill damage left of -% enemy resistance: every Facet lists them in that order)
 ItemDisplay[(MAG OR RARE) STAT332>0 ID jew]:%WHITE%%STAT332%%DARK_GREEN%%PERCENT%dmg%CS%%NAME%{%NAME%}%CONTINUE%
+// Poison Facet
+ItemDisplay[UNI STAT332~3-5 STAT336~3-5 !(STAT332=5 STAT336=5) ID jew]:%DARK_GREEN%+%STAT332%% -%STAT336%%%NAME%{%NAME%}%CONTINUE%
+ItemDisplay[UNI (STAT332=5 STAT336=5) ID jew]:%DARK_GREEN%\%GOLD%\%DARK_GREEN%\  +%STAT332%% -%STAT336%%  /%GOLD%/%DARK_GREEN%/%NAME%{%NAME%}%CONTINUE%
+ItemDisplay[(MAG OR RARE) STAT329>0 ID jew]:%WHITE%%STAT329%%RED%%PERCENT%dmg%CS%%NAME%{%NAME%}%CONTINUE%
+// Fire Facet
+ItemDisplay[UNI STAT329~3-5 STAT333~3-5 !(STAT329=5 STAT333=5) ID jew]:%RED%+%STAT329%% -%STAT333%%%NAME%{%NAME%}%CONTINUE%
+ItemDisplay[UNI (STAT329=5 STAT333=5) ID jew]:%RED%\%GOLD%\%RED%\  +%STAT329%% -%STAT333%%  /%GOLD%/%RED%/%NAME%{%NAME%}%CONTINUE%
+ItemDisplay[(MAG OR RARE) STAT330>0 ID jew]:%WHITE%%STAT330%%YELLOW%%PERCENT%dmg%CS%%NAME%{%NAME%}%CONTINUE%
+// Light Facet
+ItemDisplay[UNI STAT330~3-5 STAT334~3-5 !(STAT330=5 STAT334=5) ID jew]:%YELLOW%+%STAT330%% -%STAT334%%%NAME%{%NAME%}%CONTINUE%
+ItemDisplay[UNI (STAT330=5 STAT334=5) ID jew]:%YELLOW%\%GOLD%\%YELLOW%\  +%STAT330%% -%STAT334%%  /%GOLD%/%YELLOW%/%NAME%{%NAME%}%CONTINUE%
+ItemDisplay[(MAG OR RARE) STAT331>0 ID jew]:%WHITE%%STAT331%%BLUE%%PERCENT%dmg%CS%%NAME%{%NAME%}%CONTINUE%
+// Cold Facet
+ItemDisplay[UNI STAT331~3-5 STAT335~3-5 !(STAT331=5 STAT335=5) ID jew]:%BLUE%+%STAT331%% -%STAT335%%%NAME%{%NAME%}%CONTINUE%
+ItemDisplay[UNI (STAT331=5 STAT335=5) ID jew]:%BLUE%\%GOLD%\%BLUE%\  +%STAT331%% -%STAT335%%  /%GOLD%/%BLUE%/%NAME%{%NAME%}%CONTINUE%
 ItemDisplay[(MAG OR RARE) STAT357>0 ID jew]:%WHITE%%STAT357%%ORANGE%%PERCENT%dmg%CS%%NAME%{%NAME%}%CONTINUE%
 // Poison Damage (large charm look, 240)
 ItemDisplay[(MAG OR RARE) !STAT57+STAT58=0 ID jew]:%WHITE%$f(FLOOR((STAT57*FLOOR(STAT59/STAT326)+128)/256))%DARK_GREEN%psn%CS%%NAME%{%NAME%}%CONTINUE%
@@ -98,23 +111,10 @@ ItemDisplay[(MAG OR RARE) MINDMG>12 ID jew]:%WHITE%%MINDMG%%PURPLE%min%CS%%NAME%
 ItemDisplay[(MAG OR RARE) EDAM>0 EDAM<30 ID jew]:%WHITE%%EDAM%%RED%ed%CS%%NAME%{%NAME%}%CONTINUE%
 ItemDisplay[(MAG OR RARE) EDAM>29 EDAM<38 ID jew]:%WHITE%%EDAM%%RED%ed%CS%%NAME%{%NAME%}%CONTINUE%
 ItemDisplay[(MAG OR RARE) EDAM>37 ID jew]:%WHITE%%EDAM%%PURPLE%ed%CS%%NAME%{%NAME%}%CONTINUE%
-// 15 Increased Attack Speed
-ItemDisplay[(MAG OR RARE) IAS>0 ID jew]:%WHITE%%IAS%%ORANGE%ias%CS%%NAME%{%NAME%}%CONTINUE%
 // Faster Hit Recovery
 ItemDisplay[(MAG OR RARE) FHR>0 ID jew]:%WHITE%%FHR%%TAN%fhr%CS%%NAME%{%NAME%}%CONTINUE%
-
-// Fire Facet
-ItemDisplay[UNI STAT329~3-5 STAT333~3-5 !(STAT329=5 STAT333=5) ID jew]:%RED%-%STAT333%% +%STAT329%%%NAME%{%NAME%}%CONTINUE%
-ItemDisplay[UNI (STAT329=5 STAT333=5) ID jew]:%RED%\%GOLD%\%RED%\  -%STAT333%% +%STAT329%%  /%GOLD%/%RED%/%NAME%{%NAME%}%CONTINUE%
-// Light Facet
-ItemDisplay[UNI STAT330~3-5 STAT334~3-5 !(STAT330=5 STAT334=5) ID jew]:%YELLOW%-%STAT334%% +%STAT330%%%NAME%{%NAME%}%CONTINUE%
-ItemDisplay[UNI (STAT330=5 STAT334=5) ID jew]:%YELLOW%\%GOLD%\%YELLOW%\  -%STAT334%% +%STAT330%%  /%GOLD%/%YELLOW%/%NAME%{%NAME%}%CONTINUE%
-// Cold Facet
-ItemDisplay[UNI STAT331~3-5 STAT335~3-5 !(STAT331=5 STAT335=5) ID jew]:%BLUE%-%STAT335%% +%STAT331%%%NAME%{%NAME%}%CONTINUE%
-ItemDisplay[UNI (STAT331=5 STAT335=5) ID jew]:%BLUE%\%GOLD%\%BLUE%\  +%STAT331%% -%STAT335%%  /%GOLD%/%BLUE%/%NAME%{%NAME%}%CONTINUE%
-// Poison Facet
-ItemDisplay[UNI STAT332~3-5 STAT336~3-5 !(STAT332=5 STAT336=5) ID jew]:%DARK_GREEN%-%STAT336%% +%STAT332%%%NAME%{%NAME%}%CONTINUE%
-ItemDisplay[UNI (STAT332=5 STAT336=5) ID jew]:%DARK_GREEN%\%GOLD%\%DARK_GREEN%\  +%STAT332%% -%STAT336%%  /%GOLD%/%DARK_GREEN%/%NAME%{%NAME%}%CONTINUE%
+// 15 Increased Attack Speed
+ItemDisplay[(MAG OR RARE) IAS>0 ID jew]:%WHITE%%IAS%%ORANGE%ias%CS%%NAME%{%NAME%}%CONTINUE%
 
 // End of Continue Statements
 ItemDisplay[(MAG OR RARE) ID jew]:%NAME%{%NAME%}//

@@ -335,7 +335,7 @@ class Variant:
                                                  "line": line})
         eres = [self.rolls.get(k) for k in U.ERES_KEYS.values()]
         if all(eres):  # all three -% enemy resistances: one grouped tag, as on Kira's Guardian, in the game's order
-            key = f"eres_{U.ERES_DEFAULT}"  # S14 lists them fire, lightning, cold, whatever the property order (Famine)
+            key = f"eres_{U.ERES_ORDER}"  # S14 lists them fire, lightning, cold, whatever the property order (Famine)
             self.rolls[key] = {"code": U.TAGS[key][1], "lo": min(r["lo"] for r in eres),
                                "hi": max(r["hi"] for r in eres), "roll": None, "line": "All three -% Enemy Resistances"}
         self.fingerprint, self.unresolved = [], []

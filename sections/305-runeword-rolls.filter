@@ -130,17 +130,11 @@ Alias[RW_CSM_TAG]:(RW ((SOCK=3 (HELM OR CIRC) LIFE<-49)))
 // cb: Last Wish
 Alias[RW_CB_TAG]:(RW ((SOCK=6 WEAPON MULTI151,98>19)))
 
-// ls: Breath of the Dying, Chains of Honor, Ferocity, Unbending Will
-Alias[RW_LS_TAG]:(RW ((SOCK=6 WEAPON MULTI198,5928>0) OR (SOCK=4 CHEST CRES>49) OR (SOCK=3 (HELM OR CIRC) MULTI198,8778>0) OR (SOCK=6 WEAPON MULTI198,8786>0)))
+// -pres: Grief, Jealousy, Venom
+Alias[RW_EPRES_TAG]:(RW ((SOCK=5 WEAPON MULTI198,17807>0) OR (SOCK=3 WEAPON OS375>11) OR (SOCK=3 WEAPON MULTI198,5916>0)))
 
-// cdmg: Ice
-Alias[RW_CSKD_TAG]:(RW ((SOCK=4 WEAPON MULTI151,114>17)))
-
-// pdmg: Bramble
-Alias[RW_PSKD_TAG]:(RW ((SOCK=4 CHEST MULTI151,103>17)))
-
-// -fres: Flickering Flame, Hand of Justice
-Alias[RW_EFRES_TAG]:(RW ((SOCK=3 (HELM OR CIRC) MULTI126,1>1) OR (SOCK=4 WEAPON MULTI151,102>13)))
+// -cres: Doom
+Alias[RW_ECRES_TAG]:(RW ((SOCK=5 WEAPON MULTI151,114>15)))
 
 // -lres: Crescent Moon, Infinity
 Alias[RW_ELRES_TAG]:(RW ((SOCK=3 WEAPON (MULTI198,2701>0 OR MULTI198,39053>0)) OR (SOCK=4 WEAPON MULTI151,123>11)))
@@ -148,11 +142,17 @@ Alias[RW_ELRES_TAG]:(RW ((SOCK=3 WEAPON (MULTI198,2701>0 OR MULTI198,39053>0)) O
 // eres_flc: Famine
 Alias[RW_ERESFLC_TAG]:(RW ((SOCK=4 WEAPON STAT48>124)))
 
-// -cres: Doom
-Alias[RW_ECRES_TAG]:(RW ((SOCK=5 WEAPON MULTI151,114>15)))
+// -fres: Flickering Flame, Hand of Justice
+Alias[RW_EFRES_TAG]:(RW ((SOCK=3 (HELM OR CIRC) MULTI126,1>1) OR (SOCK=4 WEAPON MULTI151,102>13)))
 
-// -pres: Grief, Jealousy, Venom
-Alias[RW_EPRES_TAG]:(RW ((SOCK=5 WEAPON MULTI198,17807>0) OR (SOCK=3 WEAPON OS375>11) OR (SOCK=3 WEAPON MULTI198,5916>0)))
+// ls: Breath of the Dying, Chains of Honor, Ferocity, Unbending Will
+Alias[RW_LS_TAG]:(RW ((SOCK=6 WEAPON MULTI198,5928>0) OR (SOCK=4 CHEST CRES>49) OR (SOCK=3 (HELM OR CIRC) MULTI198,8778>0) OR (SOCK=6 WEAPON MULTI198,8786>0)))
+
+// pdmg: Bramble
+Alias[RW_PSKD_TAG]:(RW ((SOCK=4 CHEST MULTI151,103>17)))
+
+// cdmg: Ice
+Alias[RW_CSKD_TAG]:(RW ((SOCK=4 WEAPON MULTI151,114>17)))
 
 // ms: Wisdom
 Alias[RW_MS_TAG]:(RW ((SOCK=3 (HELM OR CIRC) STAT119>14)))
@@ -208,6 +208,9 @@ Alias[RW_CLSK4_TAG]:(RW ((SOCK=3 CHEST CLSK4>0)))
 // allsk: Plague
 Alias[RW_ALLSK_TAG]:(RW ((SOCK=3 WEAPON MULTI151,109>14)))
 
+// multi191_557: Innocence
+Alias[RW_MULTI191_557_TAG]:(RW ((SOCK=4 CHEST MULTI191,557>7)))
+
 // multi151_99: Purity
 Alias[RW_MULTI151_99_TAG]:(RW ((SOCK=3 WEAPON MULTI151,99>9)))
 
@@ -240,9 +243,6 @@ Alias[RW_MULTI151_124_TAG]:(RW ((SOCK=4 SHIELD MULTI151,124>9) OR (SOCK=4 WEAPON
 
 // multi151_125: Zenith
 Alias[RW_MULTI151_125_TAG]:(RW ((SOCK=5 WEAPON MULTI151,125>9)))
-
-// multi191_557: Innocence
-Alias[RW_MULTI191_557_TAG]:(RW ((SOCK=4 CHEST MULTI191,557>7)))
 
 // Put the roll tags on their own line, under the runeword's name
 ItemDisplay[RW]:%CL%%NAME%{%NAME%}%CONTINUE%
@@ -394,34 +394,34 @@ ItemDisplay[RW_CSM_TAG STAT256>0]:%WHITE%%STAT256%%CORAL%mult%CS%%NAME%{%NAME%}%
 
 ItemDisplay[RW_CB_TAG STAT136>9]:%WHITE%%STAT136%%CORAL%cb%CS%%NAME%{%NAME%}%CONTINUE%
 
-// ---- Life Steal (stat 60, priority 88) ----
+// ---- -% Enemy Poison Resist (stat 336, priority 88) ----
 
-ItemDisplay[RW_LS_TAG STAT60>0]:%WHITE%%STAT60%%RED%ls%CS%%NAME%{%NAME%}%CONTINUE%
+ItemDisplay[RW_EPRES_TAG STAT336>0]:%WHITE%-%STAT336%%DARK_GREEN%%PERCENT%r%CS%%NAME%{%NAME%}%CONTINUE%
 
-// ---- +% Cold Skill Damage (stat 331, priority 88) ----
+// ---- -% Enemy Cold Resist (stat 335, priority 88) ----
 
-ItemDisplay[RW_CSKD_TAG STAT331>0]:%WHITE%%STAT331%%BLUE%%PERCENT%c%CS%%NAME%{%NAME%}%CONTINUE%
-
-// ---- +% Poison Skill Damage (stat 332, priority 88) ----
-
-ItemDisplay[RW_PSKD_TAG STAT332>0]:%WHITE%%STAT332%%DARK_GREEN%%PERCENT%p%CS%%NAME%{%NAME%}%CONTINUE%
-
-// ---- -% Enemy Fire Resist (stat 333, priority 88) ----
-
-ItemDisplay[RW_EFRES_TAG STAT333>0]:%WHITE%-%STAT333%%RED%%PERCENT%r%CS%%NAME%{%NAME%}%CONTINUE%
+ItemDisplay[RW_ECRES_TAG STAT335>0]:%WHITE%-%STAT335%%BLUE%%PERCENT%r%CS%%NAME%{%NAME%}%CONTINUE%
 
 // ---- -% Enemy Lightning Resist (stat 334, priority 88) ----
 
 ItemDisplay[RW_ELRES_TAG STAT334>0]:%WHITE%-%STAT334%%YELLOW%%PERCENT%r%CS%%NAME%{%NAME%}%CONTINUE%
 
-// ---- -% Enemy Cold Resist (stat 335, priority 88) ----
+// ---- -% Enemy Fire Resist (stat 333, priority 88) ----
 
 ItemDisplay[RW_ERESFLC_TAG STAT333>0]:%WHITE%-%STAT333%%RED%%PERCENT%%GRAY%/%WHITE%-%STAT334%%YELLOW%%PERCENT%%GRAY%/%WHITE%-%STAT335%%BLUE%%PERCENT%%CS%%NAME%{%NAME%}%CONTINUE%
-ItemDisplay[RW_ECRES_TAG STAT335>0]:%WHITE%-%STAT335%%BLUE%%PERCENT%r%CS%%NAME%{%NAME%}%CONTINUE%
+ItemDisplay[RW_EFRES_TAG STAT333>0]:%WHITE%-%STAT333%%RED%%PERCENT%r%CS%%NAME%{%NAME%}%CONTINUE%
 
-// ---- -% Enemy Poison Resist (stat 336, priority 88) ----
+// ---- Life Steal (stat 60, priority 88) ----
 
-ItemDisplay[RW_EPRES_TAG STAT336>0]:%WHITE%-%STAT336%%DARK_GREEN%%PERCENT%r%CS%%NAME%{%NAME%}%CONTINUE%
+ItemDisplay[RW_LS_TAG STAT60>0]:%WHITE%%STAT60%%RED%ls%CS%%NAME%{%NAME%}%CONTINUE%
+
+// ---- +% Poison Skill Damage (stat 332, priority 88) ----
+
+ItemDisplay[RW_PSKD_TAG STAT332>0]:%WHITE%%STAT332%%DARK_GREEN%%PERCENT%p%CS%%NAME%{%NAME%}%CONTINUE%
+
+// ---- +% Cold Skill Damage (stat 331, priority 88) ----
+
+ItemDisplay[RW_CSKD_TAG STAT331>0]:%WHITE%%STAT331%%BLUE%%PERCENT%c%CS%%NAME%{%NAME%}%CONTINUE%
 
 // ---- Mana Steal (stat 62, priority 89) ----
 
@@ -495,6 +495,10 @@ ItemDisplay[RW_CLSK4_TAG CLSK4>1]:%WHITE%%CLSK4%%GOLD%bar%CS%%NAME%{%NAME%}%CONT
 ItemDisplay[RW_ALLSK_TAG ALLSK=1]:%WHITE%1%GOLD%all%CS%%NAME%{%NAME%}%CONTINUE%
 ItemDisplay[RW_ALLSK_TAG ALLSK=2]:%WHITE%2%GOLD%all%CS%%NAME%{%NAME%}%CONTINUE%
 
+// ---- Skill When Equipped (stat 191, priority 159) ----
+
+ItemDisplay[RW_MULTI191_557_TAG MULTI191,557>0]:%WHITE%%MULTI191,557%%GOLD%bshl%CS%%NAME%{%NAME%}%CONTINUE%
+
 // ---- Aura When Equipped (stat 151, priority 159) ----
 
 ItemDisplay[RW_MULTI151_99_TAG MULTI151,99>0]:%WHITE%%MULTI151,99%%GOLD%pryr%CS%%NAME%{%NAME%}%CONTINUE%
@@ -508,7 +512,3 @@ ItemDisplay[RW_MULTI151_120_TAG MULTI151,120>0]:%WHITE%%MULTI151,120%%GOLD%medi%
 ItemDisplay[RW_MULTI151_122_TAG MULTI151,122>0]:%WHITE%%MULTI151,122%%GOLD%fnat%CS%%NAME%{%NAME%}%CONTINUE%
 ItemDisplay[RW_MULTI151_124_TAG MULTI151,124>0]:%WHITE%%MULTI151,124%%GOLD%rdmp%CS%%NAME%{%NAME%}%CONTINUE%
 ItemDisplay[RW_MULTI151_125_TAG MULTI151,125>0]:%WHITE%%MULTI151,125%%GOLD%salv%CS%%NAME%{%NAME%}%CONTINUE%
-
-// ---- Skill When Equipped (stat 191, priority 159) ----
-
-ItemDisplay[RW_MULTI191_557_TAG MULTI191,557>0]:%WHITE%%MULTI191,557%%GOLD%bshl%CS%%NAME%{%NAME%}%CONTINUE%
