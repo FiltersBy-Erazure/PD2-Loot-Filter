@@ -295,8 +295,8 @@ Alias[REVEALED]:FALSE
 // written into the rules: Alias[UNI_MINIMAL_VALUE_RIGHT]:%GOLD%*%ORANGE%*%RED%*%GOLD%
 
 // Unique Grail: unique items in no value tier that you haven't discovered yet (GRAIL_NEW, 160)
-// written into the rules: Alias[UNI_GRAIL_LEFT]:%ORANGE%*%GOLD%*%LIGHT_GRAY%*
-// written into the rules: Alias[UNI_GRAIL_RIGHT]:%LIGHT_GRAY%*%GOLD%*%ORANGE%*%GOLD%
+// written into the rules: Alias[UNI_GRAIL_LEFT]:%ORANGE%*%YELLOW%*%GOLD%*%LIGHT_GRAY%*
+// written into the rules: Alias[UNI_GRAIL_RIGHT]:%LIGHT_GRAY%*%GOLD%*%YELLOW%*%ORANGE%*%GOLD%
 
 // Unique LLD
 // written into the rules: Alias[UNI_LLD_LEFT]:%TEAL%*%LIGHT_GRAY%*%GRAY%*
@@ -322,9 +322,9 @@ Alias[REVEALED]:FALSE
 // written into the rules: Alias[SET_MEDIUM_VALUE_LEFT]:%PURPLE%*%GREEN%*%DARK_GREEN%*  %WHITE%>
 // written into the rules: Alias[SET_MEDIUM_VALUE_RIGHT]:%WHITE%<  %DARK_GREEN%*%GREEN%*%PURPLE%*%GREEN%
 
-// Set Grail: set items in no value tier, but rings and amulets, that you haven't discovered yet (GRAIL_NEW, 170)
-// written into the rules: Alias[SET_GRAIL_LEFT]:%ORANGE%*%GREEN%*%DARK_GREEN%*
-// written into the rules: Alias[SET_GRAIL_RIGHT]:%DARK_GREEN%*%GREEN%*%ORANGE%*%GREEN%
+// Set Grail: set items in no value tier, rings and amulets too, that you haven't discovered yet (GRAIL_NEW, 170)
+// written into the rules: Alias[SET_GRAIL_LEFT]:%ORANGE%*%YELLOW%*%GREEN%*%DARK_GREEN%*
+// written into the rules: Alias[SET_GRAIL_RIGHT]:%DARK_GREEN%*%GREEN%*%YELLOW%*%ORANGE%*%GREEN%
 
 // Set LLD
 // written into the rules: Alias[SET_LLD_LEFT]:%TEAL%*%GREEN%*%DARK_GREEN%*
@@ -5005,7 +5005,7 @@ ItemDisplay[UNI !ID (cqv2 OR (aqv2 CLVL<60))]:%RED%*%ORANGE%*%GOLD%*  %NAME%  %G
 
 // The Grail look: every unique item the tiers above leave, until you've discovered it, on every filter level, ahead
 // of the Low Level Duel and standard looks
-ItemDisplay[UNI !ID ((UNI OR SET) !ALLDISCOVERED)]:%ORANGE%*%GOLD%*%LIGHT_GRAY%*  %NAME%  %LIGHT_GRAY%*%GOLD%*%ORANGE%*%GOLD%%BORDER-0B%%MAP-69%%DOT-6A%%PX-20%//
+ItemDisplay[UNI !ID ((UNI OR SET) !ALLDISCOVERED)]:%ORANGE%*%YELLOW%*%GOLD%*%LIGHT_GRAY%*  %NAME%  %LIGHT_GRAY%*%GOLD%*%YELLOW%*%ORANGE%*%GOLD%%BORDER-0B%%MAP-69%%DOT-6A%%PX-20%//
 
 // --------------------------------------------------------------------------------------------------------
 // =======================================  Low Level Duel Uniques  =======================================
@@ -5212,20 +5212,13 @@ ItemDisplay[SET !ID ((FILTLVL~5-11 (ulg OR 7qr OR ucl OR (ETH (7fb OR 7gd OR 7ls
 ItemDisplay[SET !ID FILTLVL=12 (dr8 OR uul OR xtb OR ci3 OR uh9 OR xmg OR ne9 OR xhm OR ulg OR 7qr OR ucl OR utc OR uts OR 6cs OR xh9 OR (ETH (7fb OR 7gd OR 7ls)))]:%NAME%// The plain name on level 12: no look, icon or sound
 
 // Undiscovered Set Items (Grail): every unidentified set item you haven't discovered yet (Discovery Progress) that no
-// rule above notifies, rings and amulets too, gets a chat line and the Grail icon on every filter level (the author,
-// 2026-10-25). Identified ones get none: an item is discovered when it is identified, so an identified one on the
-// ground is one a player dropped, in town too. The rules that give the icon stop, so no later rule's icon covers it
-// (the author, 2026-10-29). Rings and amulets keep the set look of their rules below: a rule here gives that look
-// with the Grail icon, and this %CONTINUE% layer (no look) gives the icon where those rules show none (rings on level
-// 12 at character level 80+, amulets on 8-12 at 90+)
-ItemDisplay[SET !ID ((UNI OR SET) !ALLDISCOVERED) (rin OR amu)]:%NAME%{%NAME%}%BORDER-71%%MAP-76%%DOT-7D%%PX-69%%CONTINUE%//
-
-// The Grail look: every set item the tiers above leave, but rings and amulets, until you've discovered it, on every
-// filter level, ahead of the Low Level Duel look
-ItemDisplay[SET !ID ((UNI OR SET) !ALLDISCOVERED) !(rin OR amu)]:%ORANGE%*%GREEN%*%DARK_GREEN%*  %NAME%  %DARK_GREEN%*%GREEN%*%ORANGE%*%GREEN%%BORDER-71%%MAP-76%%DOT-7D%%PX-69%//
-
-// Rings and amulets: the set look of their rules below, with the Grail icon, where those rules show it
-ItemDisplay[SET !ID ((UNI OR SET) !ALLDISCOVERED) ((rin !(CLVL>79 FILTLVL>11)) OR (amu !(CLVL>89 FILTLVL>7)))]:%PURPLE%*%GREEN%*%DARK_GREEN%*  %NAME%  %DARK_GREEN%*%GREEN%*%PURPLE%*%GREEN%%GREEN%%BORDER-71%%MAP-76%%DOT-7D%%PX-69%//
+// rule above notifies gets a chat line and the Grail icon on every filter level (the author, 2026-10-25). Identified
+// ones get none: an item is discovered when it is identified, so an identified one on the ground is one a player
+// dropped, in town too. The rule stops, so no later rule's icon covers it (the author, 2026-10-29).
+// The Grail look: every set item the tiers above leave, rings and amulets too (the author, 2026-11-01: an
+// unidentified set ring or amulet counts as undiscovered while any set ring / amulet is), until you've discovered it,
+// on every filter level, ahead of the Low Level Duel look
+ItemDisplay[SET !ID ((UNI OR SET) !ALLDISCOVERED)]:%ORANGE%*%YELLOW%*%GREEN%*%DARK_GREEN%*  %NAME%  %DARK_GREEN%*%GREEN%*%YELLOW%*%ORANGE%*%GREEN%%BORDER-71%%MAP-76%%DOT-7D%%PX-69%//
 
 // Low Level Duel Set Items
 ItemDisplay[SET !ID !ETH FILTLVL<5 (vbt OR vgl OR xlb)]:%TEAL%*%GREEN%*%DARK_GREEN%*  %NAME%  %DARK_GREEN%*%GREEN%*%TEAL%*%GREEN%%GREEN%%BORDER-71%%MAP-C5%%DOT-9F%%PX-A2%//
