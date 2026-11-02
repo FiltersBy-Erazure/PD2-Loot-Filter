@@ -27,7 +27,9 @@ A model, nothing measured in game. The rules (the base game's unless said):
   (they have no treasure class); the Uber Ancients' altar drops 12t+8 to 18t+11 items of the "UberAncients" class
   (t = the ancients fought: the players switch 1, 2 or 3 of the statues on before touching the altar) at its area's
   level 90; Lucion's vault holds 10 chests (its map piece), each dropping "LucionChestLow" (at most 3 items) and
-  "LucionChestHigh" (at most 2, 3 or 4 for PD2's tiers 0, 1, 2) at the opener's character level.
+  "LucionChestHigh" (at most 2, 3 or 4 for PD2's tiers 0, 1, 2): the items have the chest's area level (89), the
+  opener's character level goes into their quality roll. Modelled at the opener's level for both: no unique or set
+  needs more than item level 87, so the grail counts are the same (4.72 a tier-0 vault at 89 and at 95).
 - Gheed's map event: each of its 5 offers (one in 200 shops gives one slot to a ring of its own) is a unique, a
   UniqueItems row picked at random (jewels, disabled rows, rows of weight 0 or a level outside 1-99 tried again),
   one with a level requirement of 60 or more turned down (requirement - 49)% of the time, 10 tries a slot; made at
@@ -52,7 +54,7 @@ num = GM.num
 DIFFS = ("Normal", "Nightmare", "Hell")
 SUFFIX = ("", "(N)", "(H)")
 CAP = 6
-CLVL = 95            # the character opening Lucion's chests (their item level)
+CLVL = 95            # the character opening Lucion's chests (their quality roll's level)
 SU_BONUS = 3         # superuniques and their minions: 3 levels over the area (or their own boss level)
 ZONE_LEVEL = 85
 

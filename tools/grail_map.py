@@ -16,7 +16,10 @@ A model, nothing measured in game:
   elite pack limits), their monster lists from Levels.txt and MonStats.txt. A normal roll is a group of one monster
   (by its Rarity) with its party; an elite roll is a champion pack (MonUMod's chance; leader + 1-3 champions, each
   with its party) or a unique monster with 3-6 minions. Champions spawn 2 levels up, unique monsters and their
-  minions 3. Rarity multiplies a map's pack limits, density its spawn rolls (as gen_map_exp.py). One map boss a map.
+  minions 3. Rarity multiplies a map's pack limits, density its spawn rolls (as gen_map_exp.py). One map boss a map:
+  its tier's bosses (MAP_BOSSES), each at its own level when boss-flagged.
+- The Bitter Depths map event (EVENT_CHANCE, BD_*): its Lucion chests, monsters and boss, times the chance a map has
+  it. Other map events and guests only for Cow King's Leathers.
 - Drops: the base game's treasure class rules. A class's picks and no-drop chance; a sub-class keeps its parent's
   unique / set / rare / magic modifiers unless its own are higher; the monster's class is the last one of its group
   its level reaches; entries the game can't resolve (an "Act 5 (N) Armo C" that no row has) are left out with their
@@ -61,7 +64,28 @@ MFS = [0, 100, 200, 300, 400, 500, 600, 700, 800]
 RARE_ROLLS = {1: (91, 14), 2: (104, 18), 3: (126, 23)}
 CHAMP_SIZE = 3.0     # a champion pack: the leader + 1-3 more
 MINIONS = 4.5        # a unique monster's minions: 3-6
-BOSS_LEVEL = 90      # a map boss's own level (MonStats Level(H) 89-91)
+# The maps' bosses (MonStats Id), one a map: PD2's map-boss lists per tier, and on T3 Kyovashad's, which is on none
+# (checked in the 2026-11-01 build). In Nightmare and Hell a boss-flagged monster keeps its MonStats Level(H), any other
+# takes the map's level (since 11-01 all are boss-flagged: 80-91). Each drops its own TreasureClass1(H): three use
+# another tier's class (the Sanatorium's Guardian Map Boss T2, Gimli Map Boss T1, Johnathan Map Boss T2).
+MAP_BOSSES = {
+    1: ("megademonboss", "unravelerboss", "IceBoss", "TombBoss", "torajanBoss", "act2hireTraitorBoss", "spiderboss",
+        "westmarchMapBoss", "doomknight3LibraryBoss", "PoisonedWellBoss"),
+    2: ("ArcaneBoss", "ThroneBoss", "SewerBoss", "archerBoss", "CanyonBoss", "AshenBoss", "lernaeanhydra2",
+        "TortureHallsBoss", "DarkTempleBoss", "DescentBoss"),
+    3: ("baalminionboss", "BastionBoss", "CowBoss", "SiegeBoss", "MarketBoss", "leoricMapBoss", "DemonRoadBoss",
+        "SkovosBoss", "KyovoshadBoss"),
+}
+# The Bitter Depths map event (area 207): 11% of non-magical and 34% of rare T1-T3 maps have an event, one of nine kinds
+# (EVENT_CHANCE), and its portal opens late in the clear (BD_OPEN: map_exp.py's room model, 97% of full clears). Since
+# the 2026-11-01 patch it holds 20 Lucion chests (bitterdepths.ds1: Objects 623, each LucionChestLow 3 items and
+# LucionChestHigh 2, the opener's level for the quality roll, as in Lucion's vault) and 7 sparkly chests (the base
+# game's chest code, left out: about 3% of the chests' grail drops), 5 elite packs (Levels.txt) and Zoltun Kulle
+# (BD_BOSS). Its monsters: area 207's monster list, BD_ROLLS spawn rolls (map_exp.py's model, every one in reach) at
+# the area's level. The map's ears reach them (map monster stats carry over), not the chests; density and rarity don't.
+EVENT_CHANCE = {"normal": 0.11 / 9, "rare": 0.34 / 9}
+BD_OPEN = 0.97
+BD_AREA, BD_ROLLS, BD_BOSS, BD_LUCION_CHESTS = 207, 85.364, "TombEventBoss", 20
 # Cow King's Leathers in maps: only Hell Bovines drop it (COW_SET), and a map has them two ways. The Bovine prefix ("Map
 # contains Hell Bovines", one of the map guests' affix group) puts them on rare T1-T3 maps (map_exp.py's roller: these
 # shares; corrupting adds none). The guest joins every area's monster list at weight 1 beside the natives, in groups
@@ -69,7 +93,7 @@ BOSS_LEVEL = 90      # a map boss's own level (MonStats Level(H) 89-91)
 # and rarity of those maps, all their rolls, as RARE_ROLLS). And the Dark Wanderer map event (11% of non-magical, 34%
 # of rare T1-T3 maps have an event, one of nine kinds) has up to three wanderers, each turning into a random act boss
 # or superunique: the Cow King, a real one with 8 Hell Bovines, in about 1 rare map in 260 (if the player meets all
-# three). Map guests and events are left out for every other item.
+# three). Map guests and events are left out for every other item, but for the Bitter Depths (below).
 BOVINE = {1: 0.0554, 2: 0.0353, 3: 0.0360}
 BOVINE_ROLLS = {1: (101.3, 13.0), 2: (115.2, 16.4), 3: (134.6, 21.5)}
 BOVINE_MF = range(15, 21)
@@ -348,16 +372,45 @@ class Maps:
                     tc = row["TreasureClass%d(H)" % {"champion": 2, "unique": 3}.get(kind, 1)]
                     if tc:
                         out[(kind, tc, lvl)] = out.get((kind, tc, lvl), 0) + k * v
-        out[("boss", f"Map Boss T{mp.tier}", BOSS_LEVEL)] = 1.0
         return out
 
+    def boss_kill(self, mid, level):
+        """(kind, treasure class, monster level) of a boss in an area of this level: a boss-flagged one keeps its own."""
+        r = self.t.monstats[mid]
+        return "boss", r["TreasureClass1(H)"], num(r["Level(H)"]) if r["boss"] == "1" and num(r["Level(H)"]) else level
+
     def tier_kills(self, tier, d, r):
+        """kills() averaged over the tier's maps, each with one of the tier's bosses."""
         codes = [c for c, m in self.maps.items() if m.tier == tier]
+        bosses = MAP_BOSSES[tier]
+        assert len(bosses) == len(codes), f"T{tier}: {len(codes)} maps, {len(bosses)} bosses in MAP_BOSSES"
+        level = {self.maps[c].level for c in codes}
+        assert len(level) == 1, level
         acc = {}
         for c in codes:
             for k, v in self.kills(c, d, r).items():
                 acc[k] = acc.get(k, 0) + v / len(codes)
+        for b in bosses:
+            k = self.boss_kill(b, next(iter(level)))
+            acc[k] = acc.get(k, 0) + 1 / len(bosses)
         return acc
+
+    def area_kills(self, lid, rolls, level):
+        """{(kind, treasure class, monster level): kills} of a full clear of one area outside the map model (every
+        spawn roll in reach, the area's own elite pack limits), at the given level."""
+        lev, ms = self.t.levels[str(lid)], self.t.monstats
+        normal, elite = self.mix(lid)
+        p = G.packs(rolls, num(lev["MonUMin(H)"]), num(lev["MonUMax(H)"]))
+        out = {}
+        for src, k in ((normal, rolls - p), (elite, p)):
+            for (kind, mid), v in src.items():
+                lvl = level + {"normal": 0, "party": 0, "champion": 2, "unique": 3, "minion": 3}[kind]
+                if kind == "party" and ms[mid]["boss"] == "1" and num(ms[mid]["Level(H)"]):
+                    lvl = num(ms[mid]["Level(H)"])
+                tc = ms[mid]["TreasureClass%d(H)" % {"champion": 2, "unique": 3}.get(kind, 1)]
+                if tc:
+                    out[(kind, tc, lvl)] = out.get((kind, tc, lvl), 0) + k * v
+        return out
 
     def guest_kills(self, code, guest, d=0, r=0):
         """{(kind, treasure class, monster level): kills} of a full clear, of a guest monster alone: it joins each
@@ -614,6 +667,43 @@ def add_cow_rates(t, items, ear_list, configs, rates):
                         e["cls"][ear["name"]][j] += x
 
 
+def add_bitter_depths_rates(t, items, ear_list, configs, rates):
+    """The Bitter Depths' grail drops per map, into compute's rates: the chance a map has the event and its portal opens
+    (EVENT_CHANCE x BD_OPEN) times one run, the same in every tier: its Lucion chests (no ear reaches them), its
+    monsters and Zoltun Kulle (an ear's extra drop repeats a non-minion's drop, its class chance picks its pool)."""
+    import grail_farm as GF
+    d, m, cand, N = Drops(t), Maps(t), candidates(items), len(items)
+    level = num(t.levels[str(BD_AREA)]["MonLvl3Ex"])
+    kills = m.area_kills(BD_AREA, BD_ROLLS, level)
+    boss = m.boss_kill(BD_BOSS, level)
+    kills[boss] = kills.get(boss, 0) + 1.0
+    chest = [(GF.Flow(d, 3).per_drop("LucionChestLow")[0], GF.CLVL), (GF.Flow(d, 2).per_drop("LucionChestHigh")[0], GF.CLVL)]
+
+    def run(mf, extra=0, ear=None):
+        out = [0.0] * N
+        if ear:  # its class pool's picks only (the "cls" part)
+            for (kind, tc, lvl), n in kills.items():
+                if kind != "minion":
+                    add_drops(d, cand, d.expand(ear["pool"]), lvl, mf, n * ear["cls"] / 100, out)
+            return out
+        for (kind, tc, lvl), n in kills.items():
+            add_drops(d, cand, d.expand(d.upgrade(tc, lvl)), lvl, mf, n * (1 if kind == "minion" else 1 + extra / 100), out)
+        for dist, lvl in chest:
+            add_drops(d, cand, dist, lvl, mf, BD_LUCION_CHESTS, out)
+        return out
+
+    for mf in MFS:
+        none, common = run(mf), [run(mf, c[1]) for c in configs]
+        cls = {e["name"]: run(mf, ear=e) for e in ear_list}
+        for tier in (1, 2, 3):
+            for mt in ("normal", "rare"):
+                f, e = EVENT_CHANCE[mt] * BD_OPEN, rates[f"{tier}|{mt}|{mf}"]
+                e["none"] = [a + f * b for a, b in zip(e["none"], none)]
+                e["common"] = [[a + f * b for a, b in zip(x, y)] for x, y in zip(e["common"], common)]
+                for name, v in cls.items():
+                    e["cls"][name] = [a + f * b for a, b in zip(e["cls"][name], v)]
+
+
 # The filter and the grail: how Erazure - Main draws an unidentified item you haven't discovered yet and one you have,
 # on two filter levels, for one item of each kind (tier_map's engine runs the filter's own rules)
 LOOK_EXAMPLES = [("UNI", "ssd", "A unique item in no value tier"), ("SET", "xhl", "A set item"),
@@ -708,6 +798,7 @@ def main():
     import grail_farm as GF
     strings = GF.prepare(t, args.game_dir)
     add_cow_rates(t, items, ear_list, configs, rates)
+    add_bitter_depths_rates(t, items, ear_list, configs, rates)
     d = Drops(t)
     cand = candidates(items)
     for e in ear_list:  # the share of an ear's class items on bases no grail unique can roll on (wasted unique rolls)
