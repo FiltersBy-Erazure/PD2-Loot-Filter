@@ -12,8 +12,8 @@ Alias[RARE_CLASS_ITEMS_SEEN]:((NECROMANCER (WAND OR NEC)) OR (SORCERESS (wst OR 
 // Shadow Bow family (the author, 2026-10-30)
 Alias[RARE_SELECT_WEAPONS]:(sbb OR 8s8 OR 6s7 OR lbw OR 8lb OR 6lb OR tax OR 9ta OR 7ta OR ssp OR 9s9 OR 7s7 OR bsw OR 9b9 OR 7b7 OR gis OR 9gs OR 7gs OR gsd OR 9gd OR 7gd OR flb OR 9fb OR 7fb OR clm OR 9cm OR 7cm OR whm OR 9wh OR 7wh OR fla OR 9fl OR 7fl OR mst OR 9mt OR 7mt OR mac OR 9ma OR 7ma OR 2ax OR 92a OR 72a)
 
-// Hide Rare Items on Filter Levels 10 and 12 (on 10 not the class items above)
-ItemDisplay[RARE !ID (FILTLVL=10 OR FILTLVL=12) ((ARMOR !CIRC !BOOTS !BELT !(CHEST (ALVL>74 OR CRAFTALVL>74)) !(SHIELD !NEC !DIN (lrg OR spk OR kit OR bsh OR tow OR gts OR xrg OR xpk OR xit OR xsh OR xow OR xts OR urg OR upk OR uit OR ush OR uow OR uts))) OR WEAPON) !(FILTLVL=10 RARE_CLASS_ITEMS_SEEN) GROUND !TOWN]://
+// Hide Rare Items on Filter Levels 10 and 12 (on 10 not the class items above, nor gloves)
+ItemDisplay[RARE !ID (FILTLVL=10 OR FILTLVL=12) ((ARMOR !CIRC !BOOTS !BELT !(CHEST (ALVL>74 OR CRAFTALVL>74)) !(SHIELD !NEC !DIN (lrg OR spk OR kit OR bsh OR tow OR gts OR xrg OR xpk OR xit OR xsh OR xow OR xts OR urg OR upk OR uit OR ush OR uow OR uts))) OR WEAPON) !(FILTLVL=10 (RARE_CLASS_ITEMS_SEEN OR GLOVES)) GROUND !TOWN]://
 
 // Keep orginal coloring for items
 ItemDisplay[RARE]:%YELLOW%%NAME%%CONTINUE%//
@@ -46,9 +46,8 @@ ItemDisplay[RARE !ID BOOTS FILTLVL<8]:%RARE_MEDIUM_VALUE_LEFT%  %NAME%  %RARE_ME
 ItemDisplay[RARE !ID BOOTS FILTLVL~8-11]:%NAME%%DOT-5E%%PX-6D%%TIER-0%// 
 ItemDisplay[RARE !ID BOOTS FILTLVL=12]:%NAME%// 
 // Rare Gloves
-ItemDisplay[RARE !ID GLOVES (CLVL<90 OR FILTLVL<3) !(FILTLVL=10 OR FILTLVL=12)]:%RARE_MEDIUM_VALUE_LEFT%  %NAME%  %RARE_MEDIUM_VALUE_RIGHT%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%// Notify for rare gloves under character level 90
-ItemDisplay[RARE !ID GLOVES (ASSASSIN OR AMAZON) CLVL>89 (FILTLVL<10 OR FILTLVL=11)]:%NAME%%DOT-5E%%PX-6D%%TIER-0%//
-ItemDisplay[RARE !ID GLOVES !(ASSASSIN OR AMAZON) CLVL>89 FILTLVL<8]:%NAME%// No chat notification above character level 89
+ItemDisplay[RARE !ID GLOVES FILTLVL<8]:%RARE_MEDIUM_VALUE_LEFT%  %NAME%  %RARE_MEDIUM_VALUE_RIGHT%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%// Notify for rare gloves on filter levels 0-7, every character
+ItemDisplay[RARE !ID GLOVES FILTLVL~8-11]:%RARE_LOW_VALUE_LEFT%  %NAME%  %RARE_LOW_VALUE_RIGHT%%DOT-5E%%PX-6D%%TIER-0%// Filter levels 8-11, every character: small icon, no chat notification (the author, 2026-11-02)
 
 // Rare Chests
 ItemDisplay[RARE !ID CHEST (ALVL>74 OR CRAFTALVL>74) FILTLVL=12]:%RARE_MEDIUM_VALUE_LEFT%  %NAME%  %RARE_MEDIUM_VALUE_RIGHT%%YELLOW%// 
