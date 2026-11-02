@@ -1,0 +1,619 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Map Experience</title>
+<!-- A Resources page of the website, written by hand, but its numbers (the DATA line between the map-exp-data
+     markers in the script) are written by tools/gen_map_exp.py, from the same model as the filter's map lines
+     (section 146): edit the text, never that line. website/hooks.py puts it on the site's Map Experience page
+     (docs/resources/map-experience.md): it takes the styles after the mapexp-map:css marker, the markup between the
+     mapexp-map:start / :end markers and the script out of this file, so keep those markers. Every rule is scoped to
+     .mapexp-map. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+  /* this file on its own only (the website has its own page around it) */
+  body { margin: 0; background: #151412; }
+</style>
+<!-- mapexp-map:css -->
+<style>
+  /* Layout: one column, read top to bottom: the two lines, each explained, then your level (the monsters' share,
+     the tiers' average maps, every plain map), the example, what's left out, how it's worked out. Dark by default;
+     light when the website (Material) is switched to light. */
+  .mapexp-map {
+    --bg: #151412; --panel: #1f1d1a; --fg: #ece7de; --fg2: #cfc8bb; --muted: #a59e91; --line: #36322c;
+    --grid: #2e2b27; --axis: #4a463f; --accent: #d8b45e; --accent-wash: rgba(216, 180, 94, 0.12); --warn: #f0a24a;
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70;
+    --display: "Cinzel", "Trajan Pro", Georgia, serif;
+    --body: "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    /* the game's text colors, for the pictures of a map's lines (always on the game's dark box) */
+    --g-gold: #c7b377; --g-red: #ff5d5d; --g-purple: #b25cf0; --g-blue: #7b7bff; --g-white: #dedede; --g-gray: #8c8c8c;
+    color-scheme: dark;
+    color: var(--fg); font: 15px/1.5 var(--body);
+  }
+  [data-md-color-scheme="default"] .mapexp-map {
+    --bg: #f3f1ec; --panel: #fffdf8; --fg: #23211c; --fg2: #4a463e; --muted: #6b655a; --line: #ded7c9;
+    --grid: #e7e2d8; --axis: #c3bcae; --accent: #8a6d1f; --accent-wash: rgba(138, 109, 31, 0.10); --warn: #8a4b00;
+    --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a;
+    color-scheme: light;
+  }
+  .mapexp-map *, .mapexp-map *::before, .mapexp-map *::after { box-sizing: border-box; }
+  .mapexp-map .wrap { max-width: 1120px; margin: 0 auto; padding-inline: 16px; }
+  .md-content .mapexp-map .wrap { padding-inline: 0; max-width: none; }
+  .mapexp-map .mx-main { display: grid; gap: 20px; padding-block: 4px 48px; }
+  .mapexp-map .mx-main > * { min-width: 0; }
+  .mapexp-map h1.mx-title { font: 700 30px/1.15 var(--display); letter-spacing: .02em; margin: 0; padding-block: 24px 6px;
+                            color: var(--fg); text-wrap: balance; }
+  .mapexp-map h2, .mapexp-map h3 { margin: 0; color: var(--fg); text-wrap: balance; letter-spacing: 0; }
+  .mapexp-map h2 { font: 700 19px/1.25 var(--body); }
+  .mapexp-map h3 { font: 700 15.5px/1.3 var(--body); margin-top: 6px; }
+  .mapexp-map p { margin: 0; }
+  .mapexp-map a { color: var(--accent); }
+  .mapexp-map :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .mapexp-map .mx-head { display: grid; gap: 8px; }
+  .mapexp-map .eyebrow { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+  .mapexp-map .lede { max-width: 72ch; color: var(--fg2); font-size: 16px; }
+
+  .mapexp-map .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px 18px 16px;
+                       display: grid; gap: 12px; }
+  .mapexp-map .sub { color: var(--fg2); font-size: 14.5px; max-width: 80ch; }
+  .mapexp-map .mx-note { color: var(--muted); font-size: 13px; max-width: 86ch; }
+  .mapexp-map ul.mx-list { margin: 0; padding-left: 20px; display: grid; gap: 7px; max-width: 80ch; color: var(--fg2);
+                           font-size: 14.5px; list-style: disc; }
+  .mapexp-map .mx-list li { margin: 0; }
+  .mapexp-map .mx-list li strong { color: var(--fg); }
+
+  /* the two lines as the game shows them, and what each one answers */
+  .mapexp-map .mx-intro { grid-template-columns: minmax(0, 300px) minmax(0, 1fr); gap: 18px; align-items: center; }
+  .mapexp-map .mx-shot { background: rgba(0, 0, 0, 0.88); border-radius: 4px; padding: 14px 12px; display: grid; gap: 3px;
+                         justify-items: center; text-align: center; font: 700 15px/1.35 var(--display);
+                         letter-spacing: .04em; color: var(--g-white); }
+  .mapexp-map .mx-shot span { display: block; }
+  .mapexp-map .mx-shot .gold { color: var(--g-gold); }
+  .mapexp-map .mx-shot .red { color: var(--g-red); }
+  .mapexp-map .mx-shot .purple { color: var(--g-purple); }
+  .mapexp-map .mx-shot .gray { color: var(--g-gray); }
+  .mapexp-map .mx-shot .blue { color: var(--g-blue); }
+  .mapexp-map .mx-shot .tag { display: inline-flex; align-items: center; gap: 8px; }
+  .mapexp-map .mx-shot .num { font: 700 11px/1 var(--body); color: #151412; background: var(--g-gold); border-radius: 50%;
+                              width: 17px; height: 17px; display: inline-grid; place-items: center; letter-spacing: 0; }
+  .mapexp-map .mx-two { display: grid; gap: 12px; }
+  .mapexp-map .mx-card { display: grid; grid-template-columns: 24px 1fr; gap: 2px 10px; align-items: baseline; }
+  .mapexp-map .mx-card .num { font: 700 12px/1 var(--body); color: var(--bg); background: var(--accent); border-radius: 50%;
+                              width: 20px; height: 20px; display: grid; place-items: center; transform: translateY(3px); }
+  .mapexp-map .mx-card p { grid-column: 2; color: var(--fg2); font-size: 14.5px; }
+  .mapexp-map .mx-rule { border-top: 1px solid var(--line); padding-top: 12px; grid-column: 1 / -1; }
+
+  /* the fraction */
+  .mapexp-map .mx-frac { display: grid; gap: 6px; justify-items: center; text-align: center; padding: 6px 0 2px; max-width: 640px;
+                         margin-inline: auto; font-size: 14.5px; }
+  .mapexp-map .mx-frac .over { width: 100%; border-top: 2px solid var(--fg2); }
+  .mapexp-map .mx-frac strong { color: var(--fg); }
+  .mapexp-map .mx-frac span { color: var(--fg2); }
+
+  /* your level */
+  .mapexp-map .mx-level-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 24px; }
+  .mapexp-map .field { display: grid; gap: 4px; min-width: 0; width: min(100%, 340px); }
+  .mapexp-map .field label { font-size: 13px; font-weight: 600; color: var(--fg2); }
+  .mapexp-map .range-row { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .mapexp-map .range-row input[type="range"] { flex: 1; min-width: 0; accent-color: var(--accent); }
+  .mapexp-map .range-row output { width: 30px; flex: none; text-align: right; font-variant-numeric: tabular-nums; font-weight: 700;
+                                  font-size: 18px; color: var(--fg); }
+
+  /* chart */
+  .mapexp-map ul.mx-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; padding: 0; margin: 0; list-style: none; }
+  .mapexp-map .mx-legend li { display: flex; align-items: baseline; gap: 7px; font-size: 13.5px; margin: 0; color: var(--fg2); }
+  .mapexp-map .mx-legend .key { width: 16px; height: 3px; border-radius: 2px; flex: none; transform: translateY(-3px); }
+  .mapexp-map .plot { position: relative; min-width: 0; }
+  .mapexp-map .plot svg { display: block; width: 100%; max-width: 100%; height: auto; overflow: visible; touch-action: pan-y; }
+  .mapexp-map .plot svg:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 4px; }
+  .mapexp-map .tick { fill: var(--muted); font-size: 11.5px; font-family: var(--body); font-variant-numeric: tabular-nums; }
+  .mapexp-map .axis-title { fill: var(--muted); font-size: 12px; font-family: var(--body); }
+  .mapexp-map .marker-label { fill: var(--fg2); font-size: 11.5px; font-weight: 700; font-family: var(--body); }
+  .mapexp-map .end-label { fill: var(--fg2); font-size: 12px; font-weight: 700; font-family: var(--body); }
+  .mapexp-map .mx-tip { position: absolute; z-index: 5; pointer-events: none; background: var(--panel); border: 1px solid var(--line);
+                        border-radius: 8px; box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25); padding: 8px 10px; font-size: 12.5px;
+                        min-width: 150px; }
+  .mapexp-map .mx-tip-head { font-weight: 700; margin-bottom: 4px; color: var(--fg); }
+  .mapexp-map .mx-tip-row { display: grid; grid-template-columns: 14px auto 1fr; gap: 0 7px; align-items: baseline; padding: 1px 0; }
+  .mapexp-map .mx-tip-row .key { width: 14px; height: 2px; border-radius: 1px; transform: translateY(-3px); }
+  .mapexp-map .mx-tip-row b { font-variant-numeric: tabular-nums; color: var(--fg); }
+  .mapexp-map .mx-tip-row span:last-child { color: var(--fg2); }
+  .mapexp-map .mx-tip-foot { margin-top: 5px; color: var(--muted); font-size: 11.5px; }
+  .mapexp-map button.mx-toggle { font: inherit; font-size: 13.5px; color: var(--fg2); background: none; border: 1px solid var(--axis);
+                                 border-radius: 6px; padding: 3px 10px; cursor: pointer; width: fit-content; }
+  .mapexp-map button.mx-toggle:hover { color: var(--fg); border-color: var(--fg2); }
+
+  /* tables */
+  .mapexp-map .scroll { overflow-x: auto; min-width: 0; }
+  .mapexp-map table.mx-table { border-collapse: collapse; width: 100%; font-size: 13.5px; margin: 0; display: table; }
+  .mapexp-map .mx-table th, .mapexp-map .mx-table td { padding: 7px 10px; text-align: right; border: 0; border-bottom: 1px solid var(--line);
+                                                       white-space: nowrap; background: none; }
+  .mapexp-map .mx-table th { font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: .03em; vertical-align: bottom; }
+  .mapexp-map .mx-table th small { display: block; font-weight: 400; letter-spacing: 0; }
+  .mapexp-map .mx-table th:first-child, .mapexp-map .mx-table td:first-child { text-align: left; }
+  .mapexp-map .mx-table td { font-variant-numeric: tabular-nums; color: var(--fg); }
+  .mapexp-map .mx-table tbody tr:hover td { background: var(--accent-wash); }
+  .mapexp-map .mx-table td.name { font-weight: 600; }
+  .mapexp-map .mx-table td.name small { font-weight: 400; color: var(--muted); font-size: 12px; margin-left: 6px; }
+  .mapexp-map .mx-table td.low { color: var(--warn); font-weight: 600; }
+  .mapexp-map .mx-table td.main { font-weight: 700; }
+  .mapexp-map .mx-table td.under { color: var(--muted); }
+  .mapexp-map .mx-table tr.cur td { background: var(--accent-wash); }
+  .mapexp-map .mx-table tr.cur td:first-child { box-shadow: inset 3px 0 0 var(--accent); }
+  .mapexp-map .sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+  .mapexp-map .mx-bands { max-width: 640px; }
+  .mapexp-map .mx-wide { max-width: 820px; }
+
+  /* the example's steps */
+  .mapexp-map ol.mx-steps { margin: 0; padding-left: 22px; display: grid; gap: 7px; max-width: 80ch; color: var(--fg2); font-size: 14.5px; }
+  .mapexp-map .mx-steps li { margin: 0; }
+  .mapexp-map .mx-steps strong, .mapexp-map .sub strong { color: var(--fg); }
+  .mapexp-map .mx-ex { max-width: 720px; }
+
+  @media (max-width: 760px) {
+    .mapexp-map .mx-intro { grid-template-columns: 1fr; }
+    .mapexp-map .mx-shot { max-width: 320px; width: 100%; justify-self: center; }
+    .mapexp-map .panel { padding: 14px 12px 14px; }
+    .mapexp-map .mx-table th, .mapexp-map .mx-table td { padding: 6px 6px; }
+    .mapexp-map .mx-table th, .mapexp-map .mx-table td.name { white-space: normal; }
+  }
+</style>
+</head>
+<body>
+<div class="mapexp-map">
+<div class="wrap"><h1 class="mx-title">Map Experience</h1></div>
+<!-- mapexp-map:start -->
+<div class="wrap mx-main" id="mx-main">
+  <header class="mx-head">
+    <p class="eyebrow">Season 14 &middot; Maps &middot; Erazure's loot filter</p>
+    <p class="lede">The filter puts two experience lines on every identified map, under its other highlights. The first says how good the map's rolls are; the second, what the map is worth to your character right now. This page explains both, and shows how your level and a map's size change the second one.</p>
+  </header>
+
+  <section class="panel mx-intro" aria-label="The two lines">
+    <div class="mx-shot" role="img" aria-label="A Sanatorium map's two experience lines, over its Experience and Monster Density rolls">
+      <span class="tag"><span class="num">1</span><span class="gold" id="shotTag">1.4x Experience</span></span>
+      <span class="tag"><span class="num">2</span><span class="gold" id="shotLine">1.1x at Level 89</span></span>
+      <span>Experience: <span class="blue" style="display:inline">+15%</span></span>
+      <span>Monster Density: <span class="blue" style="display:inline">+47%</span></span>
+    </div>
+    <div class="mx-two">
+      <div class="mx-card">
+        <span class="num">1</span><h2><a href="#mx-roll">1.4x Experience</a></h2>
+        <p>How much the map's rolls add to it. The same for every character.</p>
+      </div>
+      <div class="mx-card">
+        <span class="num">2</span><h2><a href="#mx-line">1.1x at Level 89</a></h2>
+        <p>What the map is worth to you: experience for the distance you walk, against an average plain map, at your level.</p>
+      </div>
+      <p class="sub mx-rule"><strong>Rule of thumb:</strong> pick which map to run by the "at Level" line. The "Experience" line tells you whether a map rolled well for that map.</p>
+    </div>
+  </section>
+
+  <section class="panel" id="mx-roll">
+    <h2>1.4x Experience: how good the rolls are</h2>
+    <p class="sub">A full clear of this map with its rolls, against the same map with no rolls: 1.4x means the rolls add 40%. Which map it is doesn't matter here, only what its rolls add to it, and your level doesn't change it.</p>
+    <ul class="mx-list">
+      <li><strong>What counts:</strong> Monster Density (more monsters), Monster Rarity (more champion and unique packs), Experience, Area Level (higher level monsters, each worth more), Fortified (half as many monsters, each worth double) and "Map contains ..." monsters (one more kind of monster in the mix).</li>
+      <li><strong>What doesn't:</strong> anything that makes monsters easier or harder to kill, and the loot rolls.</li>
+    </ul>
+    <h3>Its color</h3>
+    <p class="sub">The color says how the rolls compare with other maps of the same tier. Every tier is cut the same way among rare maps: about 1 in 10 shows no line, half are gold, a third red and 1 in 20 purple.</p>
+    <div class="scroll mx-bands">
+      <table class="mx-table" id="bandTable">
+        <thead>
+          <tr>
+            <th scope="col">Tier</th>
+            <th scope="col">No line</th>
+            <th scope="col"><span class="sw" style="background:var(--g-gold)"></span>Gold</th>
+            <th scope="col"><span class="sw" style="background:var(--g-red)"></span>Red</th>
+            <th scope="col"><span class="sw" style="background:var(--g-purple)"></span>Purple</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <p class="mx-note">Unique maps use the colors of the tier their area level matches: 87 T1, 88 T2, 89 T3. T4 dungeons are cut among their rare maps, which come from the Horadric Cube (a T3 map and a Dungeon Scarab) with +40&ndash;50% experience besides their rolls.</p>
+  </section>
+
+  <section class="panel" id="mx-line">
+    <h2>1.1x at Level 89: what the map is worth to you</h2>
+    <div class="mx-frac" aria-label="This map's experience for the distance walked, divided by the average plain map's">
+      <span><strong>This map with its rolls:</strong> the experience of a full clear, for you, divided by the distance you walk to clear it</span>
+      <div class="over" aria-hidden="true"></div>
+      <span><strong>The average non-magical T1&ndash;T3 map:</strong> the same, for you</span>
+    </div>
+    <p class="sub">1.0x is an average plain map. 1.1x is 10% more experience for the same distance walked. Below 1.0x, an average plain map would do better. T4 dungeons are compared with the average plain T3 map instead.</p>
+    <ul class="mx-list">
+      <li><strong>The map itself:</strong> how many monsters spawn, how many champion and unique packs, their level, and the bosses in its layout.</li>
+      <li><strong>Its rolls:</strong> the same ones as in the Experience line.</li>
+      <li><strong>The distance:</strong> every map has a clear path, the route that takes you close to 95% of the places its monsters spawn (most players clear 90&ndash;95% of a map), averaged over its layouts and starting points. A big, spread-out map takes longer to clear, so its experience counts for less.</li>
+      <li><strong>Your level:</strong> monsters well below your level give less experience. More on that <a href="#mx-level">below</a>.</li>
+      <li><strong>Your own +% experience:</strong> the map's Experience roll adds to the bonus you already have; it doesn't multiply it. So it's worth less the more you have: with +50% of your own, a map's +15% gives you 10% more, not 15%.</li>
+    </ul>
+  </section>
+
+  <section class="panel" id="mx-level">
+    <div class="mx-level-head">
+      <h2>At your level</h2>
+      <div class="field">
+        <label for="lvl">Your character's level</label>
+        <div class="range-row">
+          <input type="range" id="lvl" min="80" max="98" step="1" value="89">
+          <output id="lvlOut" for="lvl">89</output>
+        </div>
+      </div>
+    </div>
+
+    <h3>Experience from each monster at level <span class="lvlA">89</span></h3>
+    <p class="sub">Map monsters are level 87 in T1, 88 in T2, 89 in T3 and 92 in T4 dungeons. Champions are 2 levels higher, uniques and their minions 3. A monster up to 5 levels below you gives full experience, and each level more takes 19% off, down to 5%. A monster above your level gives your level divided by its level.</p>
+    <div class="scroll mx-bands">
+      <table class="mx-table" id="penTable">
+        <thead>
+          <tr>
+            <th scope="col">Tier</th>
+            <th scope="col">Normal monsters</th>
+            <th scope="col">Champions<small>+2 levels</small></th>
+            <th scope="col">Uniques and minions<small>+3 levels</small></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <h3>The average plain map of each tier</h3>
+    <p class="sub">Your level counts for the average map too, so it only moves the line where a map's monsters are lower or higher than average. Up to about level 92 hardly anything moves. From there, T1 maps fall behind and T3 maps pull ahead, and an Area Level roll is worth more.</p>
+    <ul class="mx-legend" id="legend"></ul>
+    <div class="plot" id="plot"></div>
+    <button type="button" class="mx-toggle" id="avgToggle" aria-expanded="false" aria-controls="avgWrap">Show as a table</button>
+    <div class="scroll mx-bands" id="avgWrap" hidden><table class="mx-table" id="avgTable"></table></div>
+
+    <h3>Every plain T1&ndash;T3 map at level <span class="lvlA">89</span></h3>
+    <p class="sub">With no rolls. <strong>Full clear:</strong> its experience against the average map's, before your level counts. <strong>Clear path:</strong> its length against the average. <strong>At your level:</strong> the "at Level" line a plain copy of the map shows you (the game shows one decimal, cut: 1.19 shows as 1.1x).</p>
+    <div class="scroll mx-wide">
+      <table class="mx-table" id="mapTable">
+        <thead>
+          <tr>
+            <th scope="col">Map</th>
+            <th scope="col">Tier</th>
+            <th scope="col">Full clear</th>
+            <th scope="col">Clear path</th>
+            <th scope="col">At level <span class="lvlA">89</span></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="panel" id="mx-example">
+    <h2>Example: the Sanatorium above</h2>
+    <p class="sub">A T1 map with <span id="exRolls">+47% Monster Density and +15% Experience</span>.</p>
+    <ol class="mx-steps">
+      <li><strong>Its rolls:</strong> a full clear gives <span id="exRoll">1.48x</span> the experience of a plain Sanatorium. Cut to one decimal: <strong id="exTag">1.4x Experience</strong>, <span id="exBand">gold</span>.</li>
+      <li><strong>The map:</strong> a plain Sanatorium has about as many monsters as the average map (its full clear: <span id="exFull">1.01x</span>), but its clear path is <span id="exPath">1.32x</span> the average's, one of the longest of the T1 maps. Per distance walked that's <span id="exPlain">0.77x</span>.</li>
+      <li><strong>Together:</strong> <span id="exPlain2">0.77</span> &times; <span id="exRoll2">1.48</span> &asymp; <span id="exProd">1.14</span>, shown as <strong id="exLine">1.1x at Level 89</strong>.</li>
+    </ol>
+    <p class="sub">The same map at other levels, with +50% experience of your own, and as if it had rolled +1 to Area Level as well:</p>
+    <div class="scroll mx-ex">
+      <table class="mx-table" id="exTable">
+        <thead>
+          <tr>
+            <th scope="col">Your level</th>
+            <th scope="col">This map</th>
+            <th scope="col">With +50% of your own</th>
+            <th scope="col">With +1 Area Level</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>What it leaves out</h2>
+    <ul class="mx-list">
+      <li><strong>How fast you kill:</strong> monster life, damage, resistances and immunities, and your build. It assumes the time a clear takes grows with the distance you walk.</li>
+      <li><strong>Loot:</strong> Magic Find and the drop rolls.</li>
+      <li><strong>Random map events.</strong></li>
+      <li><strong>Everything between maps:</strong> time in town, loading screens, opening maps.</li>
+    </ul>
+    <h2>Good to know</h2>
+    <ul class="mx-list">
+      <li>Both lines show on identified maps only: an unidentified map has no rolls yet.</li>
+      <li>The "at Level" line shows for characters of level 80&ndash;98. At level 99 there's no experience to gain, so there's no line.</li>
+      <li>Both numbers are cut to one decimal, not rounded: 1.19 shows as 1.1x, and 0.99 as 0.9x.</li>
+      <li>They are estimates, worked out from how maps are built and how monsters spawn, not counted in game.</li>
+    </ul>
+  </section>
+
+  <section class="panel">
+    <h2>How it's worked out</h2>
+    <ul class="mx-list">
+      <li><strong>Monsters.</strong> Every area of a map spawns monsters in its rooms. Monster Density adds spawns, up to a limit each area has. Champion and unique packs fall between the area's own minimum and maximum, and Monster Rarity raises both. Fortified halves the spawns and doubles each monster's experience. A "Map contains ..." monster joins the area's own monsters as one more kind, picked for about 1 spawn in 10 (1 in 7 to 1 in 20, depending on the area). The bosses and monsters placed in a map's layout count too.</li>
+      <li><strong>Experience per monster.</strong> It follows the monster's level: the map's area level, plus any Area Level roll (each level is worth about 2.5% more around level 87), 2 more for champions and 3 more for uniques and their minions.</li>
+      <li><strong>Your level.</strong> Each kind of monster gets the level penalty above: 81%, 62%, 43%, 24% and then 5% for a monster 6, 7, 8, 9 and 10 or more levels below you. Then your own +% experience and the map's are added together and applied.</li>
+      <li><strong>Clear path.</strong> Measured on the map's own layouts: from where you start, walk to the nearest place a monster can spawn that you haven't come close to yet, until you've come close to 95% of them. Averaged over every layout of the map and five starting points. Horazon's Memory's lightning spires are left out (players walk past them).</li>
+      <li><strong>The 1.0x.</strong> The average of the 29 T1&ndash;T3 maps with no rolls: their average experience for you over their average clear path. For T4 dungeons, the average of the T3 maps.</li>
+    </ul>
+  </section>
+</div>
+<!-- mapexp-map:end -->
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  // Written by tools/gen_map_exp.py (never by hand): levels: the "at Level" line's character levels; tiers: [tier,
+  // monster level, gold, red and purple from]; penalty: the share of experience a monster gives at each character
+  // level (rows) and monster level (columns, from "from"); maps: [name, tier, full clear / the average's, clear path /
+  // the average's, the "at Level" line of the plain map at each character level]; example: the Sanatorium above.
+  /* map-exp-data:start */
+  const DATA = {"levels":[80,98],"tiers":[[1,87,1.4,1.7,2.0],[2,88,1.5,1.8,2.2],[3,89,1.6,2.0,2.5],[4,92,2.3,2.6,3.0]],"penalty":{"from":87,"rows":[[0.9195,0.9091,0.8989,0.8889,0.8791,0.8696,0.8602,0.8511,0.8421],[0.931,0.9205,0.9101,0.9,0.8901,0.8804,0.871,0.8617,0.8526],[0.9425,0.9318,0.9213,0.9111,0.9011,0.8913,0.8817,0.8723,0.8632],[0.954,0.9432,0.9326,0.9222,0.9121,0.9022,0.8925,0.883,0.8737],[0.9655,0.9545,0.9438,0.9333,0.9231,0.913,0.9032,0.8936,0.8842],[0.977,0.9659,0.9551,0.9444,0.9341,0.9239,0.914,0.9043,0.8947],[0.9885,0.9773,0.9663,0.9556,0.9451,0.9348,0.9247,0.9149,0.9053],[1.0,0.9886,0.9775,0.9667,0.956,0.9457,0.9355,0.9255,0.9158],[1.0,1.0,0.9888,0.9778,0.967,0.9565,0.9462,0.9362,0.9263],[1.0,1.0,1.0,0.9889,0.978,0.9674,0.957,0.9468,0.9368],[1.0,1.0,1.0,1.0,0.989,0.9783,0.9677,0.9574,0.9474],[1.0,1.0,1.0,1.0,1.0,0.9891,0.9785,0.9681,0.9579],[1.0,1.0,1.0,1.0,1.0,1.0,0.9892,0.9787,0.9684],[0.8102,1.0,1.0,1.0,1.0,1.0,1.0,0.9894,0.9789],[0.6204,0.8102,1.0,1.0,1.0,1.0,1.0,1.0,0.9895],[0.4306,0.6204,0.8102,1.0,1.0,1.0,1.0,1.0,1.0],[0.2408,0.4306,0.6204,0.8102,1.0,1.0,1.0,1.0,1.0],[0.051,0.2408,0.4306,0.6204,0.8102,1.0,1.0,1.0,1.0],[0.0508,0.051,0.2408,0.4306,0.6204,0.8102,1.0,1.0,1.0]]},"maps":[["Ancestral Trial",1,0.964,0.981,[0.994,0.994,0.994,0.994,0.994,0.994,0.994,0.994,0.99,0.989,0.988,0.984,0.983,0.924,0.89,0.87,0.756,0.636,0.638]],["Fall of Caldeum",1,0.895,0.716,[1.262,1.262,1.262,1.262,1.262,1.262,1.262,1.262,1.259,1.257,1.258,1.253,1.251,1.19,1.164,1.158,1.021,0.886,0.884]],["Lost Temple",1,1.044,0.857,[1.229,1.229,1.229,1.229,1.229,1.229,1.229,1.229,1.226,1.225,1.225,1.221,1.218,1.162,1.14,1.137,1.005,0.877,0.873]],["Phlegethon",1,1.108,1.213,[0.925,0.925,0.925,0.925,0.925,0.925,0.925,0.925,0.922,0.92,0.919,0.915,0.914,0.852,0.813,0.783,0.672,0.552,0.554]],["Poisoned Well",1,0.677,0.795,[0.863,0.863,0.863,0.863,0.863,0.863,0.863,0.863,0.86,0.858,0.857,0.854,0.852,0.795,0.759,0.731,0.628,0.516,0.518]],["Ruins of Viz-Jun",1,1.062,1.091,[0.986,0.986,0.986,0.986,0.986,0.986,0.986,0.986,0.982,0.98,0.979,0.975,0.974,0.909,0.869,0.837,0.719,0.592,0.593]],["Sanatorium",1,1.006,1.317,[0.771,0.771,0.771,0.771,0.771,0.771,0.771,0.771,0.769,0.768,0.768,0.765,0.764,0.727,0.71,0.706,0.623,0.54,0.539]],["Shadows of Westmarch",1,0.871,0.932,[0.943,0.943,0.943,0.943,0.943,0.943,0.943,0.943,0.94,0.939,0.939,0.936,0.934,0.888,0.868,0.861,0.759,0.657,0.655]],["Tomb of Zoltun Kulle",1,0.854,0.827,[1.044,1.044,1.044,1.044,1.044,1.044,1.044,1.044,1.041,1.039,1.039,1.035,1.033,0.974,0.942,0.925,0.807,0.685,0.686]],["Torajan Jungle",1,1.063,1.179,[0.911,0.911,0.911,0.911,0.911,0.911,0.911,0.911,0.908,0.907,0.907,0.903,0.901,0.85,0.821,0.805,0.701,0.593,0.594]],["Ashen Plains",2,1.037,1.026,[1.011,1.011,1.011,1.011,1.011,1.011,1.011,1.011,1.012,1.011,1.011,1.013,1.011,1.039,1.014,1.02,1.065,1.026,0.962]],["Canyon of Sescheron",2,0.904,0.991,[0.914,0.914,0.914,0.914,0.914,0.914,0.914,0.914,0.915,0.913,0.913,0.914,0.913,0.938,0.907,0.902,0.928,0.883,0.807]],["Descent from Mount Arreat",2,1.064,0.875,[1.215,1.215,1.215,1.215,1.215,1.215,1.215,1.215,1.217,1.215,1.215,1.217,1.215,1.249,1.217,1.222,1.273,1.223,1.142]],["Fortress of Aranoch",2,1.456,1.172,[1.243,1.243,1.243,1.243,1.243,1.243,1.243,1.243,1.245,1.243,1.242,1.244,1.241,1.276,1.229,1.217,1.245,1.178,1.065]],["Halls of Torture",2,1.364,1.268,[1.076,1.076,1.076,1.076,1.076,1.076,1.076,1.076,1.078,1.076,1.076,1.077,1.076,1.105,1.073,1.073,1.112,1.064,0.985]],["Horazon's Memory",2,0.998,0.863,[1.158,1.158,1.158,1.158,1.158,1.158,1.158,1.158,1.16,1.158,1.158,1.159,1.157,1.189,1.148,1.14,1.168,1.108,1.007]],["Pandemonium Citadel",2,1.041,0.789,[1.316,1.316,1.316,1.316,1.316,1.316,1.316,1.316,1.318,1.317,1.319,1.323,1.32,1.357,1.35,1.387,1.485,1.461,1.429]],["Ruined Cistern",2,0.86,0.879,[0.977,0.977,0.977,0.977,0.977,0.977,0.977,0.977,0.978,0.977,0.978,0.981,0.979,1.006,0.993,1.011,1.072,1.045,1.005]],["Sewers of Harrogath",2,0.871,0.777,[1.118,1.118,1.118,1.118,1.118,1.118,1.118,1.118,1.12,1.119,1.12,1.122,1.12,1.151,1.132,1.148,1.211,1.176,1.121]],["Throne of Insanity",2,0.964,0.873,[1.105,1.105,1.105,1.105,1.105,1.105,1.105,1.105,1.106,1.104,1.104,1.106,1.104,1.135,1.101,1.098,1.136,1.085,0.999]],["Arreat Battlefield",3,1.093,1.121,[0.963,0.963,0.963,0.963,0.963,0.963,0.963,0.963,0.964,0.968,0.968,0.97,0.974,1.001,1.064,1.081,1.157,1.337,1.421]],["Bastion Keep",3,0.876,0.856,[1.013,1.013,1.013,1.013,1.013,1.013,1.013,1.013,1.015,1.018,1.018,1.021,1.024,1.053,1.118,1.132,1.206,1.376,1.453]],["Blood Moon",3,0.843,1.212,[0.691,0.691,0.691,0.691,0.691,0.691,0.691,0.691,0.692,0.694,0.693,0.694,0.696,0.715,0.76,0.747,0.768,0.845,0.86]],["Demon Road",3,0.949,1.041,[0.901,0.901,0.901,0.901,0.901,0.901,0.901,0.901,0.903,0.906,0.906,0.909,0.912,0.938,0.996,1.013,1.085,1.251,1.331]],["Kehjistan Marketplace",3,1.117,1.369,[0.806,0.806,0.806,0.806,0.806,0.806,0.806,0.806,0.807,0.81,0.81,0.812,0.816,0.838,0.891,0.903,0.965,1.112,1.18]],["Kyovashad",3,1.044,1.146,[0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.902,0.905,0.905,0.908,0.911,0.937,0.995,1.012,1.085,1.255,1.336]],["River of Blood",3,1.017,0.913,[1.1,1.1,1.1,1.1,1.1,1.1,1.1,1.1,1.101,1.105,1.106,1.109,1.113,1.144,1.216,1.238,1.33,1.539,1.641]],["Royal Crypts",3,0.905,0.956,[0.936,0.936,0.936,0.936,0.936,0.936,0.936,0.936,0.937,0.941,0.941,0.943,0.947,0.974,1.034,1.051,1.125,1.299,1.381]],["Skovos Stronghold",3,1.051,0.964,[1.077,1.077,1.077,1.077,1.077,1.077,1.077,1.077,1.079,1.083,1.083,1.086,1.09,1.121,1.191,1.21,1.297,1.499,1.596]]],"example":{"name":"Sanatorium","tier":1,"density":47,"xp":15,"full":1.006,"path":1.317,"roll":1.485,"plain":[0.771,0.771,0.771,0.771,0.771,0.771,0.771,0.771,0.769,0.768,0.768,0.765,0.764,0.727,0.71,0.706,0.623,0.54,0.539],"line":[1.147,1.147,1.147,1.147,1.147,1.147,1.147,1.147,1.143,1.141,1.14,1.136,1.134,1.063,1.021,0.995,0.862,0.721,0.724],"own50":[1.097,1.097,1.097,1.097,1.097,1.097,1.097,1.097,1.093,1.091,1.091,1.086,1.085,1.017,0.977,0.952,0.824,0.689,0.693],"area1":[1.163,1.163,1.163,1.163,1.163,1.163,1.163,1.163,1.165,1.163,1.163,1.164,1.162,1.195,1.158,1.155,1.195,1.141,1.05]}};
+  /* map-exp-data:end */
+
+  const $ = id => document.getElementById(id);
+  const [L0, L1] = DATA.levels;
+  const LEVELS = Array.from({ length: L1 - L0 + 1 }, (_, i) => L0 + i);
+  // the filter cuts its numbers to one decimal, it doesn't round them (1.19 shows as 1.1x)
+  const cut = (v, d) => (Math.floor(v * 10 ** d + 1e-4) / 10 ** d).toFixed(d);
+  const pct = v => Math.round(v * 100) + "%";
+  const tierName = t => (t === 4 ? "T4 dungeons" : "T" + t);
+  const SERIES = [
+    { t: 1, label: "T1 maps", short: "T1", color: "var(--s1)" },
+    { t: 2, label: "T2 maps", short: "T2", color: "var(--s2)" },
+    { t: 3, label: "T3 maps", short: "T3", color: "var(--s3)" },
+  ];
+  // the average plain map of each tier at each level: the average of its maps' lines
+  const AVG = SERIES.map(s => {
+    const ms = DATA.maps.filter(m => m[1] === s.t);
+    return LEVELS.map((_, i) => ms.reduce((a, m) => a + m[4][i], 0) / ms.length);
+  });
+  const state = { level: 89, hover: null };
+  const el = { lvl: $("lvl"), lvlOut: $("lvlOut"), plot: $("plot") };
+
+  const cell = (tr, text, cls) => { const td = tr.insertCell(); td.textContent = text; if (cls) td.className = cls; return td; };
+  const range = (a, b) => (a === b ? String(a) : `${a}–${b}`);
+
+  // ---------- the tag's colors ----------
+  function renderBands() {
+    const tb = $("bandTable").tBodies[0];
+    DATA.tiers.forEach(([t, , g, r, p]) => {
+      const tr = tb.insertRow();
+      cell(tr, tierName(t), "name");
+      cell(tr, `below ${g.toFixed(1)}x`, "under");
+      cell(tr, `${g.toFixed(1)}x – ${(r - 0.1).toFixed(1)}x`);
+      cell(tr, `${r.toFixed(1)}x – ${(p - 0.1).toFixed(1)}x`);
+      cell(tr, `${p.toFixed(1)}x and up`);
+    });
+  }
+
+  // ---------- the level penalty ----------
+  function renderPenalty() {
+    const row = DATA.penalty.rows[state.level - L0], from = DATA.penalty.from;
+    const tb = $("penTable").tBodies[0];
+    tb.textContent = "";
+    DATA.tiers.forEach(([t, ml]) => {
+      const tr = tb.insertRow();
+      const name = cell(tr, tierName(t), "name");
+      const s = document.createElement("small"); s.textContent = `level ${ml}`; name.appendChild(s);
+      [0, 2, 3].forEach(k => { const v = row[ml + k - from]; cell(tr, pct(v), v < 0.995 ? "low" : ""); });
+    });
+  }
+
+  // ---------- the tiers' average maps over the levels ----------
+  function niceTicks(lo, hi, n) {
+    const span = hi - lo, raw = span / n, p = Math.pow(10, Math.floor(Math.log10(raw)));
+    const step = [1, 2, 2.5, 5, 10].map(k => k * p).find(s => span / s <= n) || 10 * p;
+    const a = Math.floor(lo / step) * step, b = Math.ceil(hi / step) * step, out = [];
+    for (let v = a; v <= b + step / 2; v += step) out.push(+v.toFixed(8));
+    return out;
+  }
+  const SVGNS = "http://www.w3.org/2000/svg";
+  const mk = (tag, attrs, parent) => { const n = document.createElementNS(SVGNS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); if (parent) parent.appendChild(n); return n; };
+
+  function buildLegend() {
+    const ul = $("legend");
+    SERIES.forEach(s => {
+      const li = document.createElement("li");
+      const k = document.createElement("span"); k.className = "key"; k.style.background = s.color;
+      const t = document.createElement("span"); t.textContent = `Average plain ${s.label}`;
+      li.append(k, t); ul.appendChild(li);
+    });
+  }
+
+  function renderAvgTable() {
+    const t = $("avgTable");
+    const head = t.createTHead().insertRow();
+    ["Your level", ...SERIES.map(s => s.label)].forEach(h => { const th = document.createElement("th"); th.scope = "col"; th.textContent = h; head.appendChild(th); });
+    const tb = t.createTBody();
+    LEVELS.forEach((c, i) => { const tr = tb.insertRow(); cell(tr, String(c)); AVG.forEach(v => cell(tr, cut(v[i], 2) + "x")); });
+  }
+
+  function drawChart() {
+    const plot = el.plot;
+    const W = Math.max(280, Math.round(plot.clientWidth || 600));
+    const narrow = W < 560;
+    const H = narrow ? 240 : 280;
+    const m = { l: narrow ? 40 : 48, r: 34, t: 26, b: 40 };
+    const iw = W - m.l - m.r, ih = H - m.t - m.b;
+    const n = LEVELS.length - 1;
+    let lo = Math.min(1, ...AVG.flat()), hi = Math.max(1, ...AVG.flat());
+    const pad = (hi - lo) * 0.06;
+    const ticks = niceTicks(lo - pad, hi + pad, narrow ? 4 : 5);
+    const y0 = ticks[0], y1 = ticks[ticks.length - 1];
+    const X = i => m.l + i / n * iw;
+    const Y = v => m.t + (1 - (v - y0) / (y1 - y0)) * ih;
+
+    const hadFocus = plot.contains(document.activeElement);
+    plot.textContent = "";
+    const svg = mk("svg", { viewBox: `0 0 ${W} ${H}`, width: W, height: H, role: "img", tabindex: "0",
+      "aria-label": "The average plain T1, T2 and T3 map's at Level line at every character level from 80 to 98; the table under the chart lists every value" }, plot);
+    const grid = mk("g", {}, svg);
+    ticks.forEach(v => {
+      mk("line", { x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v), stroke: "var(--grid)", "stroke-width": 1, "shape-rendering": "crispEdges" }, grid);
+      const t = mk("text", { x: m.l - 8, y: Y(v) + 4, "text-anchor": "end", class: "tick" }, grid); t.textContent = v.toFixed(1) + "x";
+    });
+    mk("line", { x1: m.l, x2: W - m.r, y1: m.t + ih, y2: m.t + ih, stroke: "var(--axis)", "stroke-width": 1, "shape-rendering": "crispEdges" }, grid);
+    const step = narrow ? 3 : 2;
+    LEVELS.forEach((c, i) => {
+      if ((c - L0) % step) return;
+      mk("line", { x1: X(i), x2: X(i), y1: m.t + ih, y2: m.t + ih + 4, stroke: "var(--axis)", "stroke-width": 1, "shape-rendering": "crispEdges" }, grid);
+      const t = mk("text", { x: X(i), y: m.t + ih + 17, "text-anchor": "middle", class: "tick" }, grid); t.textContent = String(c);
+    });
+    const xt = mk("text", { x: m.l + iw / 2, y: H - 4, "text-anchor": "middle", class: "axis-title" }, grid); xt.textContent = "Your character's level";
+
+    // 1.0x: the average plain T1-T3 map
+    const y1x = Y(1);
+    mk("line", { x1: m.l, x2: W - m.r, y1: y1x, y2: y1x, stroke: "var(--fg2)", "stroke-width": 1, opacity: 0.6, "stroke-dasharray": "4 3", "shape-rendering": "crispEdges" }, svg);
+    const hl = mk("text", { x: m.l + 6, y: y1x - 6, "text-anchor": "start", class: "marker-label" }, svg); hl.textContent = "The average plain map";
+
+    // your level
+    const mx = X(state.level - L0);
+    mk("line", { x1: mx, x2: mx, y1: m.t - 6, y2: m.t + ih, stroke: "var(--accent)", "stroke-width": 1.5 }, svg);
+    const ml = mk("text", { x: Math.min(Math.max(mx, m.l + 30), W - m.r - 30), y: m.t - 10, "text-anchor": "middle", class: "marker-label" }, svg);
+    ml.textContent = `Level ${state.level}`;
+
+    SERIES.forEach((s, k) => {
+      const d = AVG[k].map((v, i) => `${i ? "L" : "M"}${X(i).toFixed(1)},${Y(v).toFixed(1)}`).join("");
+      mk("path", { d, fill: "none", stroke: s.color, "stroke-width": 2, "stroke-linejoin": "round", "stroke-linecap": "round" }, svg);
+    });
+    // direct labels at the right end, kept 13px apart
+    const ends = SERIES.map((s, k) => ({ s, y: Y(AVG[k][n]) })).sort((a, b) => a.y - b.y);
+    for (let i = 1; i < ends.length; i++) ends[i].y = Math.max(ends[i].y, ends[i - 1].y + 13);
+    ends.forEach(e => { const t = mk("text", { x: W - m.r + 6, y: e.y + 4, class: "end-label" }, svg); t.textContent = e.s.short; });
+
+    // hover layer
+    const cross = mk("line", { y1: m.t, y2: m.t + ih, stroke: "var(--fg2)", "stroke-width": 1, opacity: 0, "shape-rendering": "crispEdges" }, svg);
+    const dots = SERIES.map(s => mk("circle", { r: 4, fill: s.color, stroke: "var(--panel)", "stroke-width": 2, opacity: 0 }, svg));
+    const hit = mk("rect", { x: m.l - 6, y: 0, width: iw + 12, height: m.t + ih + 24, fill: "transparent", style: "cursor: crosshair" }, svg);
+    const tip = document.createElement("div"); tip.className = "mx-tip"; tip.hidden = true; plot.appendChild(tip);
+
+    const show = (i, px) => {
+      i = Math.max(0, Math.min(n, i));
+      state.hover = i;
+      cross.setAttribute("x1", X(i)); cross.setAttribute("x2", X(i)); cross.setAttribute("opacity", 0.55);
+      dots.forEach((dot, k) => { dot.setAttribute("cx", X(i)); dot.setAttribute("cy", Y(AVG[k][i])); dot.setAttribute("opacity", 1); });
+      tip.textContent = "";
+      const head = document.createElement("div"); head.className = "mx-tip-head"; head.textContent = `Level ${LEVELS[i]}`; tip.appendChild(head);
+      SERIES.map((s, k) => ({ s, v: AVG[k][i] })).sort((a, b) => b.v - a.v).forEach(({ s, v }) => {
+        const row = document.createElement("div"); row.className = "mx-tip-row";
+        const key = document.createElement("span"); key.className = "key"; key.style.background = s.color;
+        const b = document.createElement("b"); b.textContent = cut(v, 2) + "x";
+        const t = document.createElement("span"); t.textContent = s.label;
+        row.append(key, b, t); tip.appendChild(row);
+      });
+      const foot = document.createElement("div"); foot.className = "mx-tip-foot"; foot.textContent = "Click to pick this level"; tip.appendChild(foot);
+      tip.hidden = false;
+      const pw = plot.clientWidth, tw = tip.offsetWidth, scale = pw / W;
+      const xpx = px !== undefined ? px : X(i) * scale;
+      let left = xpx + 14; if (left + tw > pw) left = Math.max(0, xpx - tw - 14);
+      tip.style.left = left + "px"; tip.style.top = Math.max(0, (m.t + 4) * scale) + "px";
+    };
+    const hide = () => { cross.setAttribute("opacity", 0); dots.forEach(d => d.setAttribute("opacity", 0)); tip.hidden = true; state.hover = null; };
+    const toI = ev => { const r = svg.getBoundingClientRect(); const x = (ev.clientX - r.left) * W / r.width; return { i: Math.round((x - m.l) / iw * n), px: ev.clientX - r.left }; };
+    hit.addEventListener("pointermove", ev => { const p = toI(ev); show(p.i, p.px); });
+    hit.addEventListener("pointerdown", ev => { const p = toI(ev); show(p.i, p.px); });
+    hit.addEventListener("pointerleave", hide);
+    hit.addEventListener("click", ev => { const p = toI(ev); setLevel(L0 + Math.max(0, Math.min(n, p.i))); });
+    svg.addEventListener("focus", () => show(state.hover ?? state.level - L0));
+    svg.addEventListener("blur", hide);
+    svg.addEventListener("keydown", ev => {
+      const cur = state.hover ?? state.level - L0;
+      if (ev.key === "ArrowRight" || ev.key === "ArrowLeft") { ev.preventDefault(); show(cur + (ev.key === "ArrowRight" ? 1 : -1)); }
+      else if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); setLevel(L0 + cur); }
+      else if (ev.key === "Escape") hide();
+    });
+    if (hadFocus) svg.focus({ preventScroll: true });
+  }
+
+  // ---------- every plain map ----------
+  function renderMaps() {
+    const i = state.level - L0;
+    const tb = $("mapTable").tBodies[0];
+    tb.textContent = "";
+    DATA.maps.slice().sort((a, b) => b[4][i] - a[4][i]).forEach(([name, tier, full, path, line]) => {
+      const tr = tb.insertRow();
+      cell(tr, name, "name");
+      cell(tr, "T" + tier);
+      cell(tr, full.toFixed(2) + "x");
+      cell(tr, path.toFixed(2) + "x");
+      cell(tr, cut(line[i], 2) + "x", "main");
+    });
+  }
+
+  // ---------- the example ----------
+  function renderExampleText() {
+    const E = DATA.example, i = 89 - L0, band = DATA.tiers.find(r => r[0] === E.tier);
+    const shown = +cut(E.roll, 1);
+    const color = shown >= band[4] ? "purple" : shown >= band[3] ? "red" : shown >= band[2] ? "gold" : null;
+    $("exRolls").textContent = `+${E.density}% Monster Density and +${E.xp}% Experience`;
+    $("exRoll").textContent = cut(E.roll, 2) + "x";
+    $("exRoll2").textContent = cut(E.roll, 2);
+    $("exTag").textContent = color ? `${cut(E.roll, 1)}x Experience` : "no line";
+    $("exBand").textContent = color || "below gold";
+    $("exFull").textContent = E.full.toFixed(2) + "x";
+    $("exPath").textContent = E.path.toFixed(2) + "x";
+    $("exPlain").textContent = E.plain[i].toFixed(2) + "x";
+    $("exPlain2").textContent = E.plain[i].toFixed(2);
+    $("exProd").textContent = E.line[i].toFixed(2);
+    $("exLine").textContent = `${cut(E.line[i], 1)}x at Level 89`;
+    $("shotTag").textContent = `${cut(E.roll, 1)}x Experience`;
+    $("shotLine").textContent = `${cut(E.line[i], 1)}x at Level 89`;
+  }
+
+  function renderExampleTable() {
+    const E = DATA.example, tb = $("exTable").tBodies[0];
+    const vals = i => [E.line[i], E.own50[i], E.area1[i]].map(v => cut(v, 1) + "x");
+    tb.textContent = "";
+    let start = 0;
+    LEVELS.forEach((c, i) => {
+      if (i + 1 < LEVELS.length && vals(i + 1).join() === vals(i).join()) return;
+      const tr = tb.insertRow();
+      if (state.level >= LEVELS[start] && state.level <= c) tr.className = "cur";
+      cell(tr, range(LEVELS[start], c));
+      vals(i).forEach((v, k) => cell(tr, v, k ? "" : "main"));
+      start = i + 1;
+    });
+  }
+
+  // ---------- your level ----------
+  function setLevel(v) {
+    state.level = Math.max(L0, Math.min(L1, v));
+    el.lvl.value = state.level;
+    el.lvlOut.value = el.lvlOut.textContent = String(state.level);
+    document.querySelectorAll(".mapexp-map .lvlA").forEach(s => { s.textContent = String(state.level); });
+    renderPenalty();
+    drawChart();
+    renderMaps();
+    renderExampleTable();
+  }
+  el.lvl.min = L0; el.lvl.max = L1;
+  el.lvl.addEventListener("input", () => setLevel(+el.lvl.value));
+  $("avgToggle").addEventListener("click", ev => {
+    const open = $("avgWrap").hidden;
+    $("avgWrap").hidden = !open;
+    ev.currentTarget.setAttribute("aria-expanded", String(open));
+    ev.currentTarget.textContent = open ? "Hide the table" : "Show as a table";
+  });
+
+  renderBands();
+  buildLegend();
+  renderAvgTable();
+  renderExampleText();
+  setLevel(state.level);
+  // redraw the chart when the page width changes
+  let raf = 0, lastW = 0;
+  new ResizeObserver(() => {
+    const w = el.plot.clientWidth;
+    if (w === lastW) return; lastW = w;
+    cancelAnimationFrame(raf); raf = requestAnimationFrame(drawChart);
+  }).observe(el.plot);
+})();
+</script>
+</body>
+</html>

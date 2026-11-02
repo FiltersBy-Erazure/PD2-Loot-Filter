@@ -16,4 +16,11 @@ time.
     Which ethereal polearm or spear to put Infinity in for the Act 2 mercenary: damage, Crushing Blows and kill time at
     every attack speed, the Jab breakpoints, and what the merc does while you teleport past monsters.
 
+-   **[Map Experience](map-experience.md)**
+
+    ---
+
+    What the filter's two experience lines on a map mean (`1.4x Experience`, `1.1x at Level 89`), how your level and
+    a map's size change them, and every plain T1-T3 map ranked at your level.
+
 </div>

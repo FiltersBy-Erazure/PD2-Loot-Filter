@@ -32,14 +32,18 @@ its rolls for the viewer, per tile of its clear path (docs/pd2-map-paths.tsv: a 
 spots), over the same for the average white map (the author, 2026-10-28: per path, not per clear, since a big map
 also takes longer). Identified maps only (an unidentified map has no stats yet).
 
-    python tools/gen_map_exp.py              write sections/146-map-experience.filter
-    python tools/gen_map_exp.py --check      change nothing; exit 1 if the section is out of date
+The website's Map Experience page (website/resources/Map-Experience.html, written by hand) explains both lines; its
+numbers (page_data) are written here, between its map-exp-data markers.
+
+    python tools/gen_map_exp.py              write sections/146-map-experience.filter and the page's numbers
+    python tools/gen_map_exp.py --check      change nothing; exit 1 if the section or the page is out of date
     python tools/gen_map_exp.py --selftest   evaluate every formula's BH text against the Python model (slow)
     python tools/gen_map_exp.py --print      every map's roll and personal multiplier for a few rolls
 """
 import argparse
 import collections
 import csv
+import json
 import math
 import random
 import re
@@ -51,6 +55,12 @@ TSV = ROOT / "docs" / "pd2-map-exp.tsv"
 GUEST_TSV = ROOT / "docs" / "pd2-map-guests.tsv"
 PATH_TSV = ROOT / "docs" / "pd2-map-paths.tsv"
 OUT = ROOT / "sections" / "146-map-experience.filter"
+# The website's Map Experience page (a Resources page written by hand): its numbers sit between these markers,
+# written here so they follow the filter's lines.
+PAGE = ROOT / "website" / "resources" / "Map-Experience.html"
+PAGE_START, PAGE_END = "/* map-exp-data:start */", "/* map-exp-data:end */"
+PAGE_LEVELS = range(80, 99)  # the experience line's levels (CLVL>79 CLVL<99)
+PAGE_EXAMPLE = ("t14", 47, 15)  # the author's screenshot, 2026-11-02: Sanatorium, +47% density, +15% experience
 TIER_NAMES = {1: "T1", 2: "T2", 3: "T3", 4: "T4 dungeon", 5: "unique map"}
 # Bands per tier on the tenths t (1.4x = 14): (tag from, red from, purple from); gold below red. The same
 # percentiles of rolled rare maps in every tier (half of them corrupted; T4 dungeons: their rare maps, never
@@ -476,6 +486,42 @@ def render_section(maps):
     return "\r\n".join(lines) + "\r\n"
 
 
+def page_data(maps):
+    """The Map Experience page's numbers: the tag bands, each tier's monster level, the level penalty at every
+    level of the experience line, every plain T1-T3 map's experience line at each of those levels (with its full
+    clear and clear path against the average's) and the worked example (the screenshot's map at each level, with
+    +50% experience of the viewer's own, and with +1 area level)."""
+    base = [m for m in maps.values() if m.tier <= 3]
+    avg0, path0 = avg_plain(maps), sum(m.path for m in base) / len(base)
+    levels = {t: next(m.level for m in maps.values() if m.tier == t) for t in (1, 2, 3, 4)}
+    mlv = range(min(levels.values()), max(levels.values()) + 4)
+
+    def r3(v):
+        return round(v, 3)
+    code, d, x = PAGE_EXAMPLE
+    ex = maps[code]
+    return {
+        "levels": [PAGE_LEVELS[0], PAGE_LEVELS[-1]],
+        "tiers": [[t, levels[t]] + [v / 10 for v in BANDS[t]] for t in (1, 2, 3, 4)],
+        "penalty": {"from": mlv[0], "rows": [[round(penalty(c, m), 4) for m in mlv] for c in PAGE_LEVELS]},
+        "maps": [[m.name, m.tier, r3(m.plain / avg0), r3(m.path / path0), [r3(vs_average(m, maps, c)) for c in PAGE_LEVELS]]
+                 for m in sorted(base, key=lambda m: (m.tier, m.name))],
+        "example": {"name": ex.name, "tier": ex.tier, "density": d, "xp": x, "full": r3(ex.plain / avg0),
+                    "path": r3(ex.path / path0), "roll": r3(roll_multiplier(ex, d=d, x=x)),
+                    "plain": [r3(vs_average(ex, maps, c)) for c in PAGE_LEVELS],
+                    "line": [r3(vs_average(ex, maps, c, d=d, x=x)) for c in PAGE_LEVELS],
+                    "own50": [r3(vs_average(ex, maps, c, own_xp=50, d=d, x=x)) for c in PAGE_LEVELS],
+                    "area1": [r3(vs_average(ex, maps, c, d=d, x=x, alvl=1)) for c in PAGE_LEVELS]},
+    }
+
+
+def render_page(maps, text):
+    """The page's text with its numbers (between PAGE_START and PAGE_END) written from the model."""
+    i, j = text.index(PAGE_START) + len(PAGE_START), text.index(PAGE_END)
+    data = json.dumps(page_data(maps), separators=(",", ":"))
+    return text[:i] + "\n  const DATA = " + data + ";\n  " + text[j:]
+
+
 def main():
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     ap = argparse.ArgumentParser(description="Map experience tags (roll multiplier) from docs/pd2-map-exp.tsv.")
@@ -496,15 +542,21 @@ def main():
                   f" (100 den, 30 rar, 15 xp)  personal at 95: x{personal_multiplier(mp, 95, 0, 100, 30, 15):.2f}")
         return
     section = render_section(maps).encode("utf-8")
-    stale = not OUT.exists() or OUT.read_bytes() != section
+    if not PAGE.exists():
+        sys.exit(f"{PAGE.relative_to(ROOT)} is missing: it is written by hand, restore it from git")
+    page_text = PAGE.read_bytes().decode("utf-8")
+    page = render_page(maps, page_text).encode("utf-8")
+    stale = [p for p, new in ((OUT, section), (PAGE, page)) if not p.exists() or p.read_bytes() != new]
+    names = ", ".join(str(p.relative_to(ROOT)) for p in stale)
     if args.check:
         if stale:
-            sys.exit(f"out of date (run: python tools/gen_map_exp.py): {OUT.relative_to(ROOT)}")
-        print("map experience tags up to date")
+            sys.exit(f"out of date (run: python tools/gen_map_exp.py): {names}")
+        print("map experience tags and page up to date")
         return
-    if stale:
-        OUT.write_bytes(section)
-    print(f"{len(maps)} maps; updated: {OUT.relative_to(ROOT) if stale else 'nothing'}")
+    for p, new in ((OUT, section), (PAGE, page)):
+        if p in stale:
+            p.write_bytes(new)
+    print(f"{len(maps)} maps; updated: {names or 'nothing'}")
 
 
 if __name__ == "__main__":
