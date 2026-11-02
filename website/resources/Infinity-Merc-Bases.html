@@ -67,8 +67,11 @@
                      text-transform: uppercase; color: var(--muted); font-weight: 700; }
   .merc-map .field { display: grid; gap: 4px; min-width: 0; }
   .merc-map .field.wide { grid-column: span 2; }
+  .merc-map .field.full { grid-column: 1 / -1; }
+  .merc-map .crit-sum { grid-column: 1 / -1; color: var(--fg2); font-variant-numeric: tabular-nums; }
   .merc-map .field label { font-size: 13px; font-weight: 600; color: var(--fg2); }
   .merc-map .field small { font-size: 12px; color: var(--muted); line-height: 1.35; }
+  .merc-map .field small.over { color: var(--warn); }
   .merc-map input, .merc-map select { font: inherit; color: var(--fg); }
   .merc-map select, .merc-map input[type="number"] { background: var(--bg); border: 1px solid var(--axis); border-radius: 6px;
                                                      padding: 5px 8px; min-width: 0; width: 100%; }
@@ -164,7 +167,7 @@
   <section class="panel controls" aria-label="Settings">
     <fieldset>
       <legend>Your mercenary</legend>
-      <div class="field wide">
+      <div class="field full">
         <label for="ias">Item IAS (increased attack speed from the merc's gear)</label>
         <div class="range-row">
           <input type="range" id="ias" min="0" max="150" step="1" value="40">
@@ -182,6 +185,14 @@
           <input type="range" id="ed" min="255" max="325" step="1" value="290">
           <output id="edOut" for="ed">+290%</output>
         </div>
+      </div>
+      <div class="field">
+        <label for="sup">Superior base</label>
+        <div class="range-row">
+          <input type="range" id="sup" min="4" max="20" step="1" value="4">
+          <output id="supOut" for="sup">None</output>
+        </div>
+        <small>A superior base's +5&ndash;20% damage adds to Infinity's roll</small>
       </div>
       <div class="field">
         <label for="plus">+ Skills on merc gear</label>
@@ -218,6 +229,41 @@
       </div>
     </fieldset>
     <fieldset>
+      <legend>Critical Strike and Deadly Strike, from the merc's gear</legend>
+      <div class="field">
+        <label for="cs">Critical Strike chance</label>
+        <div class="range-row">
+          <input type="range" id="cs" min="0" max="75" step="1" value="0">
+          <output id="csOut" for="cs">0%</output>
+        </div>
+        <small id="csNote">At most 75%. A Critical Strike does 200% damage</small>
+      </div>
+      <div class="field">
+        <label for="csMul">Critical Strike multiplier %</label>
+        <input type="number" id="csMul" min="0" max="500" step="5" value="0">
+        <small>From gear, added to the 200%</small>
+      </div>
+      <div class="field">
+        <label for="ds">Deadly Strike chance</label>
+        <div class="range-row">
+          <input type="range" id="ds" min="0" max="100" step="1" value="0">
+          <output id="dsOut" for="ds">0%</output>
+        </div>
+        <small id="dsNote">Rolled when a hit isn't a Critical Strike; at most 75%. A Deadly Strike does 150% damage</small>
+      </div>
+      <div class="field">
+        <label for="dsMul">Deadly Strike multiplier %</label>
+        <input type="number" id="dsMul" min="0" max="500" step="5" value="0">
+        <small>From gear, added to the 150%</small>
+      </div>
+      <div class="field">
+        <label for="dsMax">Maximum Deadly Strike %</label>
+        <input type="number" id="dsMax" min="0" max="100" step="1" value="0">
+        <small>From gear, raises the 75% cap</small>
+      </div>
+      <p class="mm-note crit-sum" id="critSum" aria-live="polite"></p>
+    </fieldset>
+    <fieldset>
       <legend>Target, for the kill time</legend>
       <div class="field wide">
         <label for="target">Target</label>
@@ -250,7 +296,7 @@
       <legend>Monster you teleport past</legend>
       <div class="field">
         <label for="pLife">Life</label>
-        <input type="number" id="pLife" min="1" step="250" value="3000">
+        <input type="number" id="pLife" min="1" step="250" value="6000">
         <small>Hell monsters at level 85, 1 player: about 1,500 (Fallen) to 9,300 (Zombie) before map modifiers</small>
       </div>
       <div class="field">
@@ -295,7 +341,7 @@
   <section class="panel" id="c-dps">
     <div class="chart-head">
       <h2>Weapon damage per second</h2>
-      <p class="sub">Average physical damage per second over the merc's Jabs and basic attacks, before the target's resistance. Higher is better. Each line is one speed group of elite bases; hover or tap for every group's value, click to set your IAS.</p>
+      <p class="sub">Average physical damage per second over the merc's Jabs and basic attacks, Critical and Deadly Strikes included, before the target's resistance. Higher is better. Each line is one speed group of elite bases; hover or tap for every group's value, click to set your IAS.</p>
     </div>
     <ul class="mm-legend"></ul>
     <div class="plot"></div>
@@ -313,7 +359,7 @@
   <section class="panel" id="c-kill">
     <div class="chart-head">
       <h2>Seconds to kill the target</h2>
-      <p class="sub">Weapon damage and Crushing Blow together, the merc alone. Lower is better.</p>
+      <p class="sub">Weapon damage (Critical and Deadly Strikes included) and Crushing Blow together, the merc alone. Lower is better. The more each hit does, the more the harder-hitting bases gain on the faster ones, whose edge is the extra Crushing Blows.</p>
     </div>
     <ul class="mm-legend"></ul>
     <div class="plot"></div>
@@ -347,7 +393,7 @@
         <tbody></tbody>
       </table>
     </div>
-    <p class="mm-note">Frames count from the frame you land (frame 0). The attack is one Jab (both hits) or, 20% of the time, one basic attack; damage is its average and "Monster dead" the share of 8,000 simulated attacks per base that kill the monster, with every damage roll and Crushing Blow rolled. A monster killed after you've moved on dies where you left it. While you chain teleport, the merc starts its next attack one frame after the last one ends, on whatever is beside it then, so it can attack on only as many landings as its attacks fit: hops of 7 or 8 frames against the length of a Jab (or of a basic attack). Bases of one speed group hit on the same frames; their kill chances differ only through their damage spread.</p>
+    <p class="mm-note">Frames count from the frame you land (frame 0). The attack is one Jab (both hits) or, 20% of the time, one basic attack; damage is its average and "Monster dead" the share of 8,000 simulated attacks per base that kill the monster, with every damage roll, Crushing Blow, Critical Strike and Deadly Strike rolled. A monster killed after you've moved on dies where you left it. While you chain teleport, the merc starts its next attack one frame after the last one ends, on whatever is beside it then, so it can attack on only as many landings as its attacks fit: hops of 7 or 8 frames against the length of a Jab (or of a basic attack). Bases of one speed group hit on the same frames; their kill chances differ only through their damage spread.</p>
   </section>
 
   <section class="panel">
@@ -357,7 +403,7 @@
         <label><input type="checkbox" id="showLow"> Exceptional and normal bases</label>
       </div>
     </div>
-    <p class="sub">Ethereal, with your Infinity roll. Ethereal lowers the Strength and Dexterity needed by 10. The best value of each column has a diamond. Within a speed group, average damage differs by about 1% at most, so pick by what your merc can wear. Amazon spears also take Infinity, but the merc can't wear them.</p>
+    <p class="sub">Ethereal, with your Infinity roll and superior bonus. Ethereal lowers the Strength and Dexterity needed by 10. The best value of each column has a diamond. Within a speed group, average damage differs by about 1% at most, so pick by what your merc can wear. Amazon spears also take Infinity, but the merc can't wear them.</p>
     <div class="scroll">
       <table class="mm-table" id="baseTable">
         <thead>
@@ -394,12 +440,13 @@
     <ul>
       <li><strong>Attack speed.</strong> Item IAS counts as <span class="formula">&lfloor;120 &times; IAS / (120 + IAS)&rfloor;</span>. Add skill IAS, subtract the base's speed (negative is faster), cap at 75: that's the total. The animation then advances <span class="formula">&lfloor;256 &times; (100 + total) / 100&rfloor;</span> per frame. The merc's Jab is a 14-step sequence with two hits (on steps 6 and 10), lasting <span class="formula">&lceil;256 &times; 14 / rate&rceil;</span> frames; its basic attack is a 16-frame swing with one hit (on frame 11), lasting <span class="formula">&lceil;256 &times; 16 / rate&rceil; &minus; 1</span>. These give the PD2 wiki's Desert Guard breakpoints exactly. Between two attacks the merc stands one more frame before it decides on the next one.</li>
       <li><strong>Attack mix.</strong> The merc uses Jab 80% of the time and a basic attack otherwise, so damage and hits per second are averages over that mix (or Jab alone, if you pick it).</li>
-      <li><strong>Damage per hit.</strong> The base's average damage, times 1.25 for ethereal, times (100 + Infinity's damage roll + the Strength and Dexterity bonus + Jab's bonus + other damage %) / 100. Polearms and spears give 0.75% per point of Strength and of Dexterity. Jab gives +30% at level 1 and +15% per level; the merc's Jab is level 24 from merc level 75 on, plus your + skills. A basic attack gets no Jab bonus. A Hell merc has 173 Strength and 139 Dexterity at level 75, then 1.75 and 1.5 more per level.</li>
+      <li><strong>Damage per hit.</strong> First the weapon's own damage: the base's damage, times 1.25 for ethereal, raised by the weapon's enhanced damage, which is Infinity's roll plus a superior base's 5&ndash;20% (both are on the weapon, so they add up). That is the damage the weapon shows. A hit does the weapon's damage times (100 + the Strength and Dexterity bonus + Jab's bonus + other damage %) / 100: enhanced damage on the merc's other gear adds to those bonuses, not to the weapon's. Polearms and spears give 0.75% per point of Strength and of Dexterity. Jab gives +30% at level 1 and +15% per level; the merc's Jab is level 24 from merc level 75 on, plus your + skills. A basic attack gets no Jab bonus. A Hell merc has 173 Strength and 139 Dexterity at level 75, then 1.75 and 1.5 more per level.</li>
+      <li><strong>Critical Strike and Deadly Strike.</strong> Every hit, both Jab hits included, first rolls Critical Strike (at most 75%): it does 200% damage, plus any Critical Strike Multiplier. A hit that isn't a Critical Strike rolls Deadly Strike (at most 75%, plus any Maximum Deadly Strike): 150% damage, plus any Deadly Strike Multiplier. So 50% Deadly Strike alone makes the average hit 25% stronger. Only the hit's physical damage is raised; Crushing Blow takes the same share as without. Every base gains the same share, so neither changes which base does the most damage per second.</li>
       <li><strong>Crushing Blow.</strong> Every hit rolls the chance, both Jab hits included. A proc takes the target's current life divided by 8 for most monsters (normal, champion, unique, minion), 30 for map bosses, or 70 + 10 &times; the % of life it's missing for prime evils. A merc's Crushing Blow works exactly like a player's. Efficiency divides the divisor by (1 + efficiency), a missile multiplies it by 1.5, physical resistance lowers the damage (none at 100%), and with more players in the game the divisor grows (with one player it doesn't).</li>
-      <li><strong>Kill time.</strong> Each hit removes the average damage and the average Crushing Blow (chance &times; share &times; life left), until no life is left; the hit count divided by hits per second is the time. The merc alone, one player. Baal's life and physical resistance are his Hell values with one player (6,336 base life at 7,792% for his level 99); the map monster and map boss are round examples, so type your own target's.</li>
+      <li><strong>Kill time.</strong> Each hit removes the average damage (Critical and Deadly Strikes averaged in) and the average Crushing Blow (chance &times; share &times; life left), until no life is left; the hit count divided by hits per second is the time. The merc alone, one player. Baal's life and physical resistance are his Hell values with one player (6,336 base life at 7,792% for his level 99); the map monster and map boss are round examples, so type your own target's.</li>
       <li><strong>Teleporting.</strong> The sorceress's cast is 14 frames at the same speed scale. FCR counts as <span class="formula">&lfloor;120 &times; FCR / (120 + FCR)&rfloor;</span>, at most 75, and a cast lasts <span class="formula">&lceil;256 &times; 14 / rate&rceil; &minus; 1</span> frames: 8 at 105% FCR, 7 at 200%. You land on one cast's teleport frame and leave on the next one's, so you stand on the monster for exactly one cast.</li>
       <li><strong>The merc during a pass.</strong> When you teleport, your merc is moved to where you land in the same frame (except in guild games). If it was free, it acts 2 frames later; if it was in the middle of an attack, that attack keeps going and keeps its target. A Jab's hits land <span class="formula">&lceil;256 &times; 5 / rate&rceil;</span> and <span class="formula">&lceil;256 &times; 9 / rate&rceil;</span> frames after it starts, a basic attack's at <span class="formula">&lceil;256 &times; 11 / rate&rceil;</span>, and nothing checks distance between the hit frame and the damage, so a Jab finishes on its first target wherever the merc has been moved. When you walk or run away instead, the merc heads back once you're 19 subtiles away and it has no target (about 34 while it fights), and warps beside you past 48.</li>
-      <li><strong>Not counted.</strong> Walking to a target, misses, Deadly Strike, Chain Lightning's damage, and the merc's own base damage (whether it adds to the weapon's damage isn't confirmed).</li>
+      <li><strong>Not counted.</strong> Walking to a target, misses, Chain Lightning's damage, and the merc's own base damage (whether it adds to the weapon's damage isn't confirmed).</li>
     </ul>
   </section>
 </div>
@@ -470,9 +517,17 @@
     return null;
   }
 
+  // the weapon's own two-hand damage: the ethereal base raised by the enhanced damage on the weapon (Infinity's roll
+  // plus a superior base's bonus)
+  function weapon(b, S) {
+    const wed = S.ed + S.sup;
+    const min = b.emin + Math.floor(b.emin * wed / 100), max = b.emax + Math.floor(b.emax * wed / 100);
+    return { min, max, avg: (min + max) / 2 };
+  }
+  // what a hit makes of the weapon's damage: the Strength and Dexterity bonus, Jab's bonus and other gear's damage %
   function multipliers(b, S) {
-    const statPct = Math.floor((S.str * b.sb + S.dex * b.db) / 100);
-    const p = 100 + S.ed + statPct + S.other;
+    const statPct = Math.floor(S.str * b.sb / 100) + Math.floor(S.dex * b.db / 100);
+    const p = 100 + statPct + S.other;
     return { jab: (p + S.jabPct) / 100, swing: p / 100 };
   }
 
@@ -480,8 +535,8 @@
     const t = totalSpeed(i, b.wsm, S.sias);
     const fj = jabFrames(t), fa = swingFrames(t);
     const pj = S.mix, pa = 1 - pj;
-    const m = multipliers(b, S);
-    const dj = b.avg * m.jab, da = b.avg * m.swing;
+    const w = weapon(b, S), m = multipliers(b, S);
+    const dj = w.avg * m.jab * S.crit.mean, da = w.avg * m.swing * S.crit.mean;
     const frames = pj * (fj + AI_GAP) + pa * (fa + AI_GAP), hits = pj * 2 + pa, dmg = pj * 2 * dj + pa * da;
     return { t, fj, fa, dps: 25 * dmg / frames, hps: 25 * hits / frames, dhit: dmg / hits };
   }
@@ -514,7 +569,7 @@
     const r = rate(totalSpeed(S.ias, b.wsm, S.sias));
     const h1 = Math.ceil(256 * 5 / r), h2 = Math.ceil(256 * 9 / r), jl = Math.ceil(256 * 14 / r);
     const ah = Math.ceil(256 * 11 / r), al = Math.ceil(256 * 16 / r) - 1;
-    const m = multipliers(b, S);
+    const w = weapon(b, S), m = multipliers(b, S), C = S.crit;
     const keep = Math.max(0, 1 - P.pr / 100);
     const cbOn = S.cbc > 0 && keep > 0;
     const div = cbDivisor(8, 1, 1, S.cbe);
@@ -522,7 +577,7 @@
     let firstDmg = 0, firstDead = 0;
     const fr = new Int32Array(8), mu = new Float64Array(8);
     const rnd = mulberry32(seed);
-    const spread = b.emax - b.emin;
+    const spread = w.max - w.min;
     for (let k = 0; k < PASS_RUNS; k++) {
       // the merc's one attack on this monster; its next attack goes to whatever is beside it by then
       const t0 = P.d;
@@ -534,7 +589,9 @@
       const hit = () => {
         if (L > 0) {
           if (cbOn && rnd() < S.cbc) { const cb = L / div * keep; L -= cb; dealt += cb; }
-          const x = (b.emin + rnd() * spread) * mu[j] * keep; L -= x; dealt += x;
+          // Critical Strike first; Deadly Strike only on a hit that isn't one
+          const strike = rnd() < C.pc ? C.cm : rnd() < C.pd ? C.dm : 1;
+          const x = (w.min + rnd() * spread) * mu[j] * strike * keep; L -= x; dealt += x;
         }
         j++;
         if (j === firstCount) { firstDmg += dealt; if (L <= 0) firstDead++; }
@@ -552,7 +609,7 @@
 
   // ---------- settings ----------
   const $ = id => document.getElementById(id);
-  const el = { ias: $("ias"), iasNum: $("iasNum"), lvl: $("lvl"), ed: $("ed"), edOut: $("edOut"), plus: $("plus"), other: $("other"), sias: $("sias"), mix: $("mix"), cbc: $("cbc"), cbe: $("cbe"), target: $("target"), life: $("life"), pr: $("pr"), cbs: $("cbs"), pLife: $("pLife"), pPr: $("pPr"), pDelay: $("pDelay"), showLow: $("showLow") };
+  const el = { ias: $("ias"), iasNum: $("iasNum"), lvl: $("lvl"), ed: $("ed"), edOut: $("edOut"), sup: $("sup"), supOut: $("supOut"), plus: $("plus"), other: $("other"), sias: $("sias"), mix: $("mix"), cbc: $("cbc"), cbe: $("cbe"), cs: $("cs"), csOut: $("csOut"), csMul: $("csMul"), ds: $("ds"), dsOut: $("dsOut"), dsMul: $("dsMul"), dsMax: $("dsMax"), target: $("target"), life: $("life"), pr: $("pr"), cbs: $("cbs"), pLife: $("pLife"), pPr: $("pPr"), pDelay: $("pDelay"), showLow: $("showLow") };
   for (let L = 99; L >= BER_LEVEL; L--) el.lvl.add(new Option(String(L), String(L), L === 98, L === 98));
   for (let p = 0; p <= 6; p++) el.plus.add(new Option(p ? "+" + p : "None", String(p)));
   const TARGETS = {
@@ -562,16 +619,27 @@
   };
   const num = (input, lo, hi, dflt) => { const v = parseFloat(input.value); return isFinite(v) ? Math.min(hi, Math.max(lo, v)) : dflt; };
 
+  // Critical Strike (at most 75%) is rolled first, Deadly Strike (at most 75% + Maximum Deadly Strike) on a hit that
+  // isn't one; they do 200% and 150% damage plus their multipliers
+  function strikes() {
+    const cs = +el.cs.value, ds = +el.ds.value;
+    const csMul = num(el.csMul, 0, 500, 0), dsMul = num(el.dsMul, 0, 500, 0), dsCap = 75 + num(el.dsMax, 0, 100, 0);
+    const pc = Math.min(cs, 75) / 100, pd = Math.min(ds, dsCap, 100) / 100;
+    const cm = (200 + csMul) / 100, dm = (150 + dsMul) / 100;
+    return { cs, ds, dsCap, pc, pd, cm, dm, mean: 1 + pc * (cm - 1) + (1 - pc) * pd * (dm - 1) };
+  }
+
   function settings() {
     const L = +el.lvl.value, m = merc(L), plus = +el.plus.value;
     const jabLvl = m.jab + plus;
     const share = el.cbs.value === "pe" || el.cbs.value === "none" ? el.cbs.value : +el.cbs.value;
     return {
       L, str: m.str, dex: m.dex, jabLvl, jabPct: 30 + 15 * (jabLvl - 1),
-      ed: +el.ed.value, other: num(el.other, 0, 5000, 0), sias: Math.round(num(el.sias, 0, 200, 0)), mix: +el.mix.value,
+      ed: +el.ed.value, sup: +el.sup.value < 5 ? 0 : +el.sup.value, crit: strikes(),
+      other: num(el.other, 0, 5000, 0), sias: Math.round(num(el.sias, 0, 200, 0)), mix: +el.mix.value,
       cbc: num(el.cbc, 0, 100, 40) / 100, cbe: num(el.cbe, 0, 500, 0), ias: Math.round(num(el.iasNum, 0, MAX_IAS, 40)),
       target: { life: num(el.life, 0, 1e8, 300000), pr: num(el.pr, 0, 100, 0), share, key: el.target.value },
-      pass: { life: num(el.pLife, 1, 1e7, 3000), pr: num(el.pPr, 0, 100, 0), d: +el.pDelay.value },
+      pass: { life: num(el.pLife, 1, 1e7, 6000), pr: num(el.pPr, 0, 100, 0), d: +el.pDelay.value },
     };
   }
 
@@ -816,7 +884,8 @@
       const tr = document.createElement("tr");
       nameCell(tr, b);
       addCell(tr, signed(b.wsm));
-      addCell(tr, `${nf0.format(Math.floor(b.emin * (100 + S.ed) / 100))}–${nf0.format(Math.floor(b.emax * (100 + S.ed) / 100))}`);
+      const w = weapon(b, S);
+      addCell(tr, `${nf0.format(w.min)}–${nf0.format(w.max)}`);
       addCell(tr, `${b.rs} / ${b.rd}`);
       const lv = addCell(tr, r.need === null ? "over 99" : String(r.need));
       if (r.need === null || r.need > S.L) { lv.className = "low"; lv.title = "Your merc can't wear it yet without Strength or Dexterity from gear"; lv.textContent += " (higher than yours)"; }
@@ -898,11 +967,29 @@
     build("bpA1", swingFrames);
   }
 
+  const nfp = new Intl.NumberFormat("en-US", { maximumFractionDigits: 1 });
+  function renderStrikes(C) {
+    el.csOut.textContent = `${C.cs}%`;
+    el.dsOut.textContent = `${C.ds}%`;
+    $("csNote").textContent = `At most 75%. A Critical Strike does ${nf0.format(C.cm * 100)}% damage`;
+    const over = C.ds > C.dsCap, dsNote = $("dsNote");
+    dsNote.textContent = `Rolled when a hit isn't a Critical Strike; ${over ? `only ${C.dsCap}% counts` : `at most ${C.dsCap}%`}. A Deadly Strike does ${nf0.format(C.dm * 100)}% damage`;
+    dsNote.classList.toggle("over", over);
+    const shareC = nfp.format(C.pc * 100), shareD = nfp.format((1 - C.pc) * C.pd * 100);
+    const which = C.pc && C.pd ? `${shareC}% of hits are Critical Strikes and ${shareD}% Deadly Strikes`
+      : C.pc ? `${shareC}% of hits are Critical Strikes` : `${shareD}% of hits are Deadly Strikes`;
+    $("critSum").textContent = C.mean === 1 ? "No Critical or Deadly Strikes: every hit does its plain damage."
+      : `The average hit does ${nfp.format(C.mean * 100)}% of its plain damage: ${which}.`;
+  }
+
   // ---------- wiring ----------
   function renderAll() {
     const S = settings();
     state.S = S;
     el.edOut.textContent = `+${S.ed}%`;
+    el.supOut.textContent = S.sup ? `+${S.sup}%` : "None";
+    el.sup.setAttribute("aria-valuetext", S.sup ? `${S.sup}% enhanced damage` : "Not superior");
+    renderStrikes(S.crit);
     $("lvlNote").textContent = `Strength ${S.str}, Dexterity ${S.dex} before gear`;
     $("jabNote").textContent = `Jab level ${S.jabLvl}: +${S.jabPct}% damage`;
     state.series = computeSeries(S);
@@ -918,9 +1005,9 @@
 
   el.ias.addEventListener("input", () => { el.iasNum.value = el.ias.value; renderAll(); });
   el.iasNum.addEventListener("input", () => { const v = num(el.iasNum, 0, MAX_IAS, 0); el.ias.value = String(Math.round(v)); renderAll(); });
-  el.ed.addEventListener("input", renderAll);
+  ["ed", "sup", "cs", "ds"].forEach(k => el[k].addEventListener("input", renderAll));
   ["lvl", "plus", "mix", "showLow", "pDelay"].forEach(k => el[k].addEventListener("change", renderAll));
-  ["other", "sias", "cbc", "cbe", "pLife", "pPr"].forEach(k => el[k].addEventListener("input", renderAll));
+  ["other", "sias", "cbc", "cbe", "csMul", "dsMul", "dsMax", "pLife", "pPr"].forEach(k => el[k].addEventListener("input", renderAll));
   el.target.addEventListener("change", () => {
     const T = TARGETS[el.target.value];
     if (T) { el.life.value = String(T.life); el.pr.value = String(T.pr); el.cbs.value = T.cbs; }
