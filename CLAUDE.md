@@ -617,6 +617,18 @@
   (double-click) previews it at http://127.0.0.1:8000/PD2-Loot-Filter/ with MkDocs Material 9.7.7 in
   `tools/.cache/mkdocs-venv`. CI builds it with `--strict`. On `main`, `.github/workflows/pages.yml` builds and
   deploys it on every push (Pages source: GitHub Actions).
+- The website's **Resources** tab (2026-11-02, the author: reference pages players can look things up in, more to
+  come): `website/docs/resources/index.md` lists them, a grid card each (mkdocs.yml has `navigation.indexes`, so it is
+  the tab's own page). A resource is a page written by hand, `website/resources/<Name>.html` (its data, styles and
+  script inside; every rule scoped to its class, dark first, light under `[data-md-color-scheme="default"]`, as the
+  maps), with the hook's markers (`<!-- name:css -->`, `:start`, `:end`); `website/hooks.py` lists it in `MAPS` (tool
+  "by hand") and puts it on its page `website/docs/resources/<name>.md` (`<div id="<name>-here"></div>`), its own copy
+  at `resources/<Name>.html`. To add one: the page, its `MAPS` row, its .md page, its nav entry under Resources in
+  mkdocs.yml, its card on the Resources page. Public text, so no client DLL names or code addresses, and no "from the
+  game's code / tables": say how it works. First (2026-11-02): **Infinity Merc Bases** (`merc-map`): every ethereal
+  4-socket Infinity base on the Act 2 Jab merc at every item IAS (damage, Crushing Blows, kill time, breakpoints, the
+  teleport pass); first made as a claude.ai page, now kept here. The tab bar wraps onto a second line where the 13
+  tabs don't fit (`erazure.css`; until then Examples was cut off from about 1920 px down).
 - The Examples page's pictures (`website/docs/img/examples/*.png`, committed; README's examples show them too) are
   drawn by `python tools/example_shots.py "<Diablo II folder>" [--only NAME]` (2026-10-20; not run by build.bat, the
   hook or CI: it needs the game files): per scene of `SCENES` a floor of the area's own DT1 tiles, each item's

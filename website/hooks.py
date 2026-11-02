@@ -10,8 +10,11 @@ Each is a repo-root HTML file that a tool writes (build.bat runs them):
 - Erazure-Skill-Shop-Highlights.html (tools/shop_map.py), shown on the Skill & Shop Highlights page (docs/shop.md)
 - Erazure-Grail-Planner.html (tools/grail_map.py, from the game's tables: not run by build.bat), shown on the Grail
   Planner page (docs/grail.md)
-Each goes into the site as a file of its own, so its address keeps working. Its site page shows the same map with
-no frame, so its filter bar can stay under the site's header while scrolling: this hook takes the styles, the
+The Resources tab's pages are written by hand, in website/resources/ (each with its data and script inside):
+- Infinity-Merc-Bases.html, shown on the Infinity Merc Bases page (docs/resources/infinity-merc-bases.md)
+Each goes into the site as a file of its own (a Resources page under resources/), so its address keeps working.
+Its site page shows the same map with no frame, so its filter bar can stay under the site's header while
+scrolling: this hook takes the styles, the
 markup between the map's markers (<!-- tier-map:start --> ...) and the script out of the file, puts the markup where
 the page has its placeholder (<div id="tier-map-here"></div> ...), and adds the styles and the script (with the
 data) as two files of their own.
@@ -22,7 +25,7 @@ from mkdocs.exceptions import PluginError
 from mkdocs.structure.files import File
 
 ROOT = Path(__file__).resolve().parent.parent
-MAPS = [  # (the generated page in the repo root, the tool that writes it, its site page, its marker and class name)
+MAPS = [  # (the page, from the repo root; the tool that writes it, or "by hand"; its site page; its marker and class name)
     ("Erazure-Unique-Set-Tiers.html", "tools/tier_map.py", "tiers.md", "tier-map"),
     ("Erazure-Non-Magic-Bases.html", "tools/base_map.py", "bases.md", "base-map"),
     ("Erazure-Magic-Items.html", "tools/magic_rare_map.py", "magic.md", "magic-map"),
@@ -31,6 +34,7 @@ MAPS = [  # (the generated page in the repo root, the tool that writes it, its s
     ("Erazure-Minimal-Style.html", "tools/style_map.py", "minimal.md", "style-map"),
     ("Erazure-Skill-Shop-Highlights.html", "tools/shop_map.py", "shop.md", "shop-map"),
     ("Erazure-Grail-Planner.html", "tools/grail_map.py", "grail.md", "grail-map"),
+    ("website/resources/Infinity-Merc-Bases.html", "by hand", "resources/infinity-merc-bases.md", "merc-map"),
 ]
 FONTS = ('<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700'
          '&family=Source+Sans+3:wght@400;600;700&display=swap">')
@@ -40,6 +44,8 @@ def parts(page, tool, name):
     """(styles, markup, script) of a map, taken out of its generated page."""
     path = ROOT / page
     if not path.exists():
+        if tool == "by hand":
+            raise PluginError(f"{page} is missing: it is written by hand, restore it from git")
         raise PluginError(f"{page} is missing in the repo root: run python {tool} (build.bat does)")
     text = path.read_text(encoding="utf-8")
 
@@ -58,11 +64,16 @@ def assets(name):
     return f"assets/{name}/{name}.css", f"assets/{name}/{name}.js"
 
 
+def own_copy(page):
+    """Where a page's own copy goes on the site: the repo-root pages at the site's root, Resources pages in resources/."""
+    return page.removeprefix("website/")
+
+
 def on_files(files, config):
     for page, tool, _, name in MAPS:
         css, _, script = parts(page, tool, name)
         css_path, js_path = assets(name)
-        files.append(File.generated(config, page, abs_src_path=str(ROOT / page)))
+        files.append(File.generated(config, own_copy(page), abs_src_path=str(ROOT / page)))
         files.append(File.generated(config, css_path, content=css))
         files.append(File.generated(config, js_path, content=script))
     return files

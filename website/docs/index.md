@@ -24,6 +24,8 @@ afterwards.
 - [Skill & Shop Highlights](shop.md): the highlights for +skills and shop items, and what an item needs for each
 - [Customization](customization.md): edit your own copy of the filter
 - [Examples](examples.md): the filter's style in game
+- [Resources](resources/index.md): reference pages on how parts of the game work, such as which Infinity base to give
+  your Act 2 mercenary
 
 ## Contact
 

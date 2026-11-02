@@ -1,0 +1,945 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Infinity Merc Bases</title>
+<!-- A Resources page of the website, written by hand: the base data and the model are in the script below.
+     website/hooks.py puts it on the site's Infinity Merc Bases page (docs/resources/infinity-merc-bases.md): it
+     takes the styles after the merc-map:css marker, the markup between the merc-map:start / :end markers and the
+     script out of this file, so keep those markers. Every rule is scoped to .merc-map. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+  /* this file on its own only (the website has its own page around it) */
+  body { margin: 0; background: #151412; }
+</style>
+<!-- merc-map:css -->
+<style>
+  /* Layout: one column, read top to bottom: settings, the best bases at your IAS, charts on one shared IAS axis,
+     the teleport pass, every base, the breakpoint tables, how it's worked out. Dark by default; light when the
+     website (Material) is switched to light. */
+  .merc-map {
+    --bg: #151412; --panel: #1f1d1a; --fg: #ece7de; --fg2: #cfc8bb; --muted: #a59e91; --line: #36322c;
+    --grid: #2e2b27; --axis: #4a463f; --accent: #d8b45e; --accent-wash: rgba(216, 180, 94, 0.12); --warn: #f0a24a;
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181;
+    --display: "Cinzel", "Trajan Pro", Georgia, serif;
+    --body: "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    color-scheme: dark;
+    color: var(--fg); font: 15px/1.5 var(--body);
+  }
+  [data-md-color-scheme="default"] .merc-map {
+    --bg: #f3f1ec; --panel: #fffdf8; --fg: #23211c; --fg2: #4a463e; --muted: #6b655a; --line: #ded7c9;
+    --grid: #e7e2d8; --axis: #c3bcae; --accent: #8a6d1f; --accent-wash: rgba(138, 109, 31, 0.10); --warn: #8a4b00;
+    --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4;
+    color-scheme: light;
+  }
+  .merc-map *, .merc-map *::before, .merc-map *::after { box-sizing: border-box; }
+  .merc-map .wrap { max-width: 1120px; margin: 0 auto; padding-inline: 16px; }
+  .md-content .merc-map .wrap { padding-inline: 0; max-width: none; }
+  .merc-map .mm-main { display: grid; gap: 20px; padding-block: 4px 48px; }
+  .merc-map .mm-main > * { min-width: 0; }
+  .merc-map h1.mm-title { font: 700 30px/1.15 var(--display); letter-spacing: .02em; margin: 0; padding-block: 24px 6px;
+                          color: var(--fg); text-wrap: balance; }
+  .merc-map h2, .merc-map h3 { margin: 0; color: var(--fg); text-wrap: balance; letter-spacing: 0; }
+  .merc-map h2 { font: 700 19px/1.25 var(--body); }
+  .merc-map h3 { font: 700 15.5px/1.3 var(--body); }
+  .merc-map p { margin: 0; }
+  .merc-map small { opacity: 1; }
+  .merc-map :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .merc-map .mm-head { display: grid; gap: 8px; }
+  .merc-map .eyebrow { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+  .merc-map .lede { max-width: 72ch; color: var(--fg2); font-size: 16px; }
+
+  .merc-map .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px 18px 14px;
+                     display: grid; gap: 12px; }
+  .merc-map .sub { color: var(--fg2); font-size: 14px; max-width: 82ch; }
+  .merc-map .mm-note { color: var(--muted); font-size: 13px; max-width: 92ch; }
+
+  /* settings */
+  .merc-map .controls { gap: 16px; }
+  .merc-map fieldset { border: 0; margin: 0; padding: 0; min-width: 0; display: grid;
+                       grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px 18px; align-items: start; }
+  .merc-map fieldset + fieldset { border-top: 1px solid var(--line); padding-top: 14px; }
+  .merc-map legend { grid-column: 1 / -1; float: left; width: 100%; padding: 0 0 8px; font-size: 11.5px; letter-spacing: .1em;
+                     text-transform: uppercase; color: var(--muted); font-weight: 700; }
+  .merc-map .field { display: grid; gap: 4px; min-width: 0; }
+  .merc-map .field.wide { grid-column: span 2; }
+  .merc-map .field label { font-size: 13px; font-weight: 600; color: var(--fg2); }
+  .merc-map .field small { font-size: 12px; color: var(--muted); line-height: 1.35; }
+  .merc-map input, .merc-map select { font: inherit; color: var(--fg); }
+  .merc-map select, .merc-map input[type="number"] { background: var(--bg); border: 1px solid var(--axis); border-radius: 6px;
+                                                     padding: 5px 8px; min-width: 0; width: 100%; }
+  .merc-map input[type="number"] { font-variant-numeric: tabular-nums; }
+  .merc-map .range-row { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .merc-map .range-row input[type="range"] { flex: 1; min-width: 0; accent-color: var(--accent); }
+  .merc-map .range-row input[type="number"] { width: 76px; flex: none; }
+  .merc-map .range-row output { width: 56px; flex: none; text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+
+  /* the best bases at your IAS */
+  .merc-map .tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+  .merc-map .tile { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px;
+                    display: grid; gap: 4px; align-content: start; }
+  .merc-map .tile-label { font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+  .merc-map .tile-value { font-size: 30px; font-weight: 700; line-height: 1.15; }
+  .merc-map .tile-value span { font-size: 15px; font-weight: 600; color: var(--fg2); margin-left: 4px; }
+  .merc-map .tile-sub { font-size: 14.5px; font-weight: 600; }
+  .merc-map .tile-note { font-size: 12.5px; color: var(--muted); }
+
+  /* charts */
+  .merc-map .chart-head { display: grid; gap: 4px; }
+  .merc-map ul.mm-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; padding: 0; margin: 0; list-style: none; }
+  .merc-map .mm-legend li { display: flex; align-items: baseline; gap: 7px; font-size: 13.5px; cursor: default; min-width: 0; margin: 0; }
+  .merc-map .mm-legend .key { width: 16px; height: 3px; border-radius: 2px; flex: none; transform: translateY(-3px); }
+  .merc-map .mm-legend .spd { color: var(--muted); font-size: 12.5px; font-variant-numeric: tabular-nums; }
+  .merc-map .plot { position: relative; min-width: 0; }
+  .merc-map .plot svg { display: block; width: 100%; max-width: 100%; height: auto; overflow: visible; touch-action: pan-y; }
+  .merc-map .plot svg:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 4px; }
+  .merc-map .tick { fill: var(--muted); font-size: 11.5px; font-family: var(--body); font-variant-numeric: tabular-nums; }
+  .merc-map .axis-title { fill: var(--muted); font-size: 12px; font-family: var(--body); }
+  .merc-map .marker-label { fill: var(--fg2); font-size: 11.5px; font-weight: 700; font-family: var(--body); }
+  .merc-map .mm-tip { position: absolute; z-index: 5; pointer-events: none; background: var(--panel); border: 1px solid var(--line);
+                      border-radius: 8px; box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25); padding: 8px 10px; font-size: 12.5px;
+                      min-width: 210px; max-width: 300px; }
+  .merc-map .mm-tip-head { font-weight: 700; margin-bottom: 4px; color: var(--fg); }
+  .merc-map .mm-tip-row { display: grid; grid-template-columns: 14px auto 1fr; gap: 0 7px; align-items: baseline; padding: 1px 0; }
+  .merc-map .mm-tip-row .key { width: 14px; height: 2px; border-radius: 1px; transform: translateY(-3px); }
+  .merc-map .mm-tip-row b { font-variant-numeric: tabular-nums; color: var(--fg); }
+  .merc-map .mm-tip-row span:last-child { color: var(--fg2); overflow-wrap: anywhere; }
+  .merc-map .mm-tip-foot { margin-top: 5px; color: var(--muted); font-size: 11.5px; }
+
+  /* tables */
+  .merc-map .table-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 20px; }
+  .merc-map .toggles { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 13.5px; color: var(--fg2); }
+  .merc-map .toggles label { display: flex; gap: 6px; align-items: center; }
+  .merc-map .toggles input { accent-color: var(--accent); }
+  .merc-map .scroll { overflow-x: auto; min-width: 0; }
+  .merc-map table.mm-table { border-collapse: collapse; width: 100%; font-size: 13.5px; margin: 0; display: table; }
+  .merc-map .mm-table th, .merc-map .mm-table td { padding: 7px 10px; text-align: right; border: 0; border-bottom: 1px solid var(--line);
+                                                   white-space: nowrap; background: none; }
+  .merc-map .mm-table th { font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: .03em; vertical-align: bottom; }
+  .merc-map .mm-table th:first-child, .merc-map .mm-table td:first-child { text-align: left; }
+  .merc-map .mm-table th.grp { text-align: center; color: var(--fg2); border-bottom-color: var(--axis); }
+  .merc-map .mm-table td { font-variant-numeric: tabular-nums; color: var(--fg); }
+  .merc-map .mm-table tbody tr:hover td { background: var(--accent-wash); }
+  .merc-map .mm-table td.name { font-weight: 600; }
+  .merc-map .mm-table td.name small { display: block; font-weight: 400; color: var(--muted); font-size: 12px; }
+  .merc-map .mm-table td .key { display: inline-block; width: 12px; height: 3px; border-radius: 2px; margin-right: 7px; transform: translateY(-3px); }
+  .merc-map .mm-table td.best { font-weight: 700; }
+  .merc-map .mm-table td.best::after { content: "\25C6"; margin-left: 5px; font-size: 9px; color: var(--accent); vertical-align: 1px; }
+  .merc-map .mm-table td.low { color: var(--warn); font-weight: 600; }
+  .merc-map .mm-table td.sep, .merc-map .mm-table th.sep { border-left: 1px solid var(--line); }
+  .merc-map .bp th:first-child, .merc-map .bp td:first-child { white-space: normal; min-width: 170px; }
+  .merc-map .bp td.zero { color: var(--muted); }
+
+  .merc-map .method { display: grid; gap: 10px; }
+  .merc-map .method ul { margin: 0; padding-left: 20px; display: grid; gap: 7px; max-width: 92ch; color: var(--fg2); list-style: disc; }
+  .merc-map .method li { margin: 0; }
+  .merc-map .method li strong { color: var(--fg); }
+  .merc-map .formula { font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+  @media (max-width: 760px) {
+    .merc-map .tiles { grid-template-columns: 1fr; }
+    .merc-map .field.wide { grid-column: 1 / -1; }
+    .merc-map .panel { padding: 14px 12px 12px; }
+  }
+  @media (max-width: 440px) {
+    .merc-map fieldset { grid-template-columns: 1fr; }
+    .merc-map .tile-value { font-size: 26px; }
+  }
+</style>
+</head>
+<body>
+<div class="merc-map">
+<div class="wrap"><h1 class="mm-title">Infinity Merc Bases</h1></div>
+<!-- merc-map:start -->
+<div class="wrap mm-main" id="mm-main">
+  <header class="mm-head">
+    <p class="eyebrow">Season 14 &middot; Act 2 Desert Mercenary &middot; Jab</p>
+    <p class="lede">Which ethereal 4-socket polearm or spear to put Infinity in, for an Act 2 mercenary that attacks with Jab. Every base is run at every item IAS from 0 to 150%: weapon damage per second, Crushing Blows per second, the time it takes to kill a target, and what the merc does while you teleport past monsters.</p>
+  </header>
+
+  <section class="panel controls" aria-label="Settings">
+    <fieldset>
+      <legend>Your mercenary</legend>
+      <div class="field wide">
+        <label for="ias">Item IAS (increased attack speed from the merc's gear)</label>
+        <div class="range-row">
+          <input type="range" id="ias" min="0" max="150" step="1" value="40">
+          <input type="number" id="iasNum" min="0" max="150" step="1" value="40" aria-label="Item IAS in percent">
+        </div>
+      </div>
+      <div class="field">
+        <label for="lvl">Merc level</label>
+        <select id="lvl"></select>
+        <small id="lvlNote"></small>
+      </div>
+      <div class="field">
+        <label for="ed">Infinity's damage roll</label>
+        <div class="range-row">
+          <input type="range" id="ed" min="255" max="325" step="1" value="290">
+          <output id="edOut" for="ed">+290%</output>
+        </div>
+      </div>
+      <div class="field">
+        <label for="plus">+ Skills on merc gear</label>
+        <select id="plus"></select>
+        <small id="jabNote"></small>
+      </div>
+      <div class="field">
+        <label for="other">Other + % damage</label>
+        <input type="number" id="other" min="0" max="5000" step="5" value="0">
+        <small>Damage % from other gear; each Strength or Dexterity point on gear adds 0.75%</small>
+      </div>
+      <div class="field">
+        <label for="sias">Skill IAS</label>
+        <input type="number" id="sias" min="0" max="200" step="1" value="0">
+        <small>From an aura such as Fanaticism</small>
+      </div>
+      <div class="field">
+        <label for="mix">Attacks</label>
+        <select id="mix">
+          <option value="0.8">Jab 80%, basic attack 20%</option>
+          <option value="1">Jab only</option>
+        </select>
+        <small>The merc picks Jab 80% of the time</small>
+      </div>
+      <div class="field">
+        <label for="cbc">Crushing Blow chance %</label>
+        <input type="number" id="cbc" min="0" max="100" step="1" value="40">
+        <small>Infinity has 40% (two Ber runes)</small>
+      </div>
+      <div class="field">
+        <label for="cbe">Crushing Blow efficiency %</label>
+        <input type="number" id="cbe" min="0" max="500" step="5" value="0">
+        <small>Each Crushing Blow takes this much more</small>
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend>Target, for the kill time</legend>
+      <div class="field wide">
+        <label for="target">Target</label>
+        <select id="target">
+          <option value="pack">Map monster, example: 30,000 life</option>
+          <option value="boss" selected>Map boss, example: 300,000 life, 20% physical resistance</option>
+          <option value="baal">Baal in Hell, 1 player: about 493,700 life, 50% physical resistance</option>
+          <option value="custom">Custom</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="life">Life</label>
+        <input type="number" id="life" min="1" step="1000" value="300000">
+      </div>
+      <div class="field">
+        <label for="pr">Physical resistance %</label>
+        <input type="number" id="pr" min="0" max="100" step="5" value="20">
+      </div>
+      <div class="field wide">
+        <label for="cbs">Each Crushing Blow takes</label>
+        <select id="cbs">
+          <option value="8">1/8 of current life (most monsters)</option>
+          <option value="30" selected>1/30 of current life (map bosses)</option>
+          <option value="pe">1/(70 + 10 &times; % of life missing) (prime evils)</option>
+          <option value="none">Nothing (kill time without Crushing Blow)</option>
+        </select>
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend>Monster you teleport past</legend>
+      <div class="field">
+        <label for="pLife">Life</label>
+        <input type="number" id="pLife" min="1" step="250" value="3000">
+        <small>Hell monsters at level 85, 1 player: about 1,500 (Fallen) to 9,300 (Zombie) before map modifiers</small>
+      </div>
+      <div class="field">
+        <label for="pPr">Physical resistance %</label>
+        <input type="number" id="pPr" min="0" max="100" step="5" value="0">
+      </div>
+      <div class="field">
+        <label for="pDelay">Merc starts its attack</label>
+        <select id="pDelay">
+          <option value="2" selected>2 frames after you land</option>
+          <option value="3">3 frames after</option>
+          <option value="4">4 frames after</option>
+          <option value="5">5 frames after</option>
+          <option value="6">6 frames after</option>
+        </select>
+        <small>Your merc lands with you and, if it's free, acts 2 frames later; later if it first has to step closer</small>
+      </div>
+    </fieldset>
+  </section>
+
+  <section class="tiles" aria-live="polite" aria-label="Best bases at your IAS">
+    <div class="tile">
+      <p class="tile-label">Most damage per second</p>
+      <p class="tile-value" id="t1v">&mdash;</p>
+      <p class="tile-sub" id="t1s"></p>
+      <p class="tile-note" id="t1n"></p>
+    </div>
+    <div class="tile">
+      <p class="tile-label">Most Crushing Blows</p>
+      <p class="tile-value" id="t2v">&mdash;</p>
+      <p class="tile-sub" id="t2s"></p>
+      <p class="tile-note" id="t2n"></p>
+    </div>
+    <div class="tile">
+      <p class="tile-label">Fastest kill</p>
+      <p class="tile-value" id="t3v">&mdash;</p>
+      <p class="tile-sub" id="t3s"></p>
+      <p class="tile-note" id="t3n"></p>
+    </div>
+  </section>
+
+  <section class="panel" id="c-dps">
+    <div class="chart-head">
+      <h2>Weapon damage per second</h2>
+      <p class="sub">Average physical damage per second over the merc's Jabs and basic attacks, before the target's resistance. Higher is better. Each line is one speed group of elite bases; hover or tap for every group's value, click to set your IAS.</p>
+    </div>
+    <ul class="mm-legend"></ul>
+    <div class="plot"></div>
+  </section>
+
+  <section class="panel" id="c-cb">
+    <div class="chart-head">
+      <h2>Crushing Blows per second</h2>
+      <p class="sub">Every hit rolls Crushing Blow, both hits of a Jab included, so this follows the hit rate alone: the weapon's damage doesn't matter. Infinity's Chain Lightning (25% on striking) fires at the same rate, scaled to 25%.</p>
+    </div>
+    <ul class="mm-legend"></ul>
+    <div class="plot"></div>
+  </section>
+
+  <section class="panel" id="c-kill">
+    <div class="chart-head">
+      <h2>Seconds to kill the target</h2>
+      <p class="sub">Weapon damage and Crushing Blow together, the merc alone. Lower is better.</p>
+    </div>
+    <ul class="mm-legend"></ul>
+    <div class="plot"></div>
+  </section>
+
+  <section class="panel" id="c-pass">
+    <div class="chart-head">
+      <h2>Teleporting past a monster</h2>
+      <p class="sub">You land on a monster and teleport on one cast later: <span id="passW105">8</span> frames at 105% FCR, <span id="passW200">7</span> frames at 200% FCR. Your merc is moved to where you land in the same frame; if it's free, it acts 2 frames later and Jabs the monster beside it. That Jab plays out in full, both hits on that monster, even after your next teleport has moved the merc on with you: the hit never checks distance. The chart adds up what that one attack does to the monster set above, frame by frame from the frame you land, at your IAS; the markers show when you teleport on.</p>
+    </div>
+    <ul class="mm-legend"></ul>
+    <div class="plot"></div>
+    <div class="scroll">
+      <table class="mm-table" id="passTable">
+        <thead>
+          <tr>
+            <th scope="col" rowspan="2">Base</th>
+            <th scope="col" rowspan="2">Speed</th>
+            <th scope="col" rowspan="2">Jab hits on frame</th>
+            <th scope="col" rowspan="2">Jab length</th>
+            <th scope="colgroup" colspan="2" class="grp sep">The merc's attack on that monster</th>
+            <th scope="colgroup" colspan="2" class="grp sep">Landings the merc attacks on, chain teleporting</th>
+          </tr>
+          <tr>
+            <th scope="col" class="sep">Damage</th>
+            <th scope="col">Monster dead</th>
+            <th scope="col" class="sep" id="passH200">200% FCR (7 frames)</th>
+            <th scope="col" id="passH105">105% FCR (8 frames)</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <p class="mm-note">Frames count from the frame you land (frame 0). The attack is one Jab (both hits) or, 20% of the time, one basic attack; damage is its average and "Monster dead" the share of 8,000 simulated attacks per base that kill the monster, with every damage roll and Crushing Blow rolled. A monster killed after you've moved on dies where you left it. While you chain teleport, the merc starts its next attack one frame after the last one ends, on whatever is beside it then, so it can attack on only as many landings as its attacks fit: hops of 7 or 8 frames against the length of a Jab (or of a basic attack). Bases of one speed group hit on the same frames; their kill chances differ only through their damage spread.</p>
+  </section>
+
+  <section class="panel">
+    <div class="table-head">
+      <h2>Every base at <span id="tblIas">40</span>% IAS</h2>
+      <div class="toggles">
+        <label><input type="checkbox" id="showLow"> Exceptional and normal bases</label>
+      </div>
+    </div>
+    <p class="sub">Ethereal, with your Infinity roll. Ethereal lowers the Strength and Dexterity needed by 10. The best value of each column has a diamond. Within a speed group, average damage differs by about 1% at most, so pick by what your merc can wear. Amazon spears also take Infinity, but the merc can't wear them.</p>
+    <div class="scroll">
+      <table class="mm-table" id="baseTable">
+        <thead>
+          <tr>
+            <th scope="col">Base</th>
+            <th scope="col">Speed</th>
+            <th scope="col">Two-hand damage</th>
+            <th scope="col">Str / Dex needed</th>
+            <th scope="col">Merc level needed</th>
+            <th scope="col">Jab length</th>
+            <th scope="col">Damage / s</th>
+            <th scope="col">Hits / s</th>
+            <th scope="col">Crushing Blows / s</th>
+            <th scope="col">Kill time</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <p class="mm-note" id="lowNote" hidden>Exceptional and normal bases share the elite bases' speed groups with far less damage: none of them beats the elite base of its speed group.</p>
+  </section>
+
+  <section class="panel">
+    <h2>Jab breakpoints</h2>
+    <p class="sub">Item IAS needed for each Jab length, with your skill IAS. A Jab's length covers both of its hits; the merc stands one more frame before its next attack; 25 frames make one second.</p>
+    <div class="scroll"><table class="mm-table bp" id="bpJab"></table></div>
+    <h3>Basic attack breakpoints</h3>
+    <p class="sub">One hit per swing; the merc swings instead of Jabbing 20% of the time.</p>
+    <div class="scroll"><table class="mm-table bp" id="bpA1"></table></div>
+  </section>
+
+  <section class="panel method">
+    <h2>How it's worked out</h2>
+    <ul>
+      <li><strong>Attack speed.</strong> Item IAS counts as <span class="formula">&lfloor;120 &times; IAS / (120 + IAS)&rfloor;</span>. Add skill IAS, subtract the base's speed (negative is faster), cap at 75: that's the total. The animation then advances <span class="formula">&lfloor;256 &times; (100 + total) / 100&rfloor;</span> per frame. The merc's Jab is a 14-step sequence with two hits (on steps 6 and 10), lasting <span class="formula">&lceil;256 &times; 14 / rate&rceil;</span> frames; its basic attack is a 16-frame swing with one hit (on frame 11), lasting <span class="formula">&lceil;256 &times; 16 / rate&rceil; &minus; 1</span>. These give the PD2 wiki's Desert Guard breakpoints exactly. Between two attacks the merc stands one more frame before it decides on the next one.</li>
+      <li><strong>Attack mix.</strong> The merc uses Jab 80% of the time and a basic attack otherwise, so damage and hits per second are averages over that mix (or Jab alone, if you pick it).</li>
+      <li><strong>Damage per hit.</strong> The base's average damage, times 1.25 for ethereal, times (100 + Infinity's damage roll + the Strength and Dexterity bonus + Jab's bonus + other damage %) / 100. Polearms and spears give 0.75% per point of Strength and of Dexterity. Jab gives +30% at level 1 and +15% per level; the merc's Jab is level 24 from merc level 75 on, plus your + skills. A basic attack gets no Jab bonus. A Hell merc has 173 Strength and 139 Dexterity at level 75, then 1.75 and 1.5 more per level.</li>
+      <li><strong>Crushing Blow.</strong> Every hit rolls the chance, both Jab hits included. A proc takes the target's current life divided by 8 for most monsters (normal, champion, unique, minion), 30 for map bosses, or 70 + 10 &times; the % of life it's missing for prime evils. A merc's Crushing Blow works exactly like a player's. Efficiency divides the divisor by (1 + efficiency), a missile multiplies it by 1.5, physical resistance lowers the damage (none at 100%), and with more players in the game the divisor grows (with one player it doesn't).</li>
+      <li><strong>Kill time.</strong> Each hit removes the average damage and the average Crushing Blow (chance &times; share &times; life left), until no life is left; the hit count divided by hits per second is the time. The merc alone, one player. Baal's life and physical resistance are his Hell values with one player (6,336 base life at 7,792% for his level 99); the map monster and map boss are round examples, so type your own target's.</li>
+      <li><strong>Teleporting.</strong> The sorceress's cast is 14 frames at the same speed scale. FCR counts as <span class="formula">&lfloor;120 &times; FCR / (120 + FCR)&rfloor;</span>, at most 75, and a cast lasts <span class="formula">&lceil;256 &times; 14 / rate&rceil; &minus; 1</span> frames: 8 at 105% FCR, 7 at 200%. You land on one cast's teleport frame and leave on the next one's, so you stand on the monster for exactly one cast.</li>
+      <li><strong>The merc during a pass.</strong> When you teleport, your merc is moved to where you land in the same frame (except in guild games). If it was free, it acts 2 frames later; if it was in the middle of an attack, that attack keeps going and keeps its target. A Jab's hits land <span class="formula">&lceil;256 &times; 5 / rate&rceil;</span> and <span class="formula">&lceil;256 &times; 9 / rate&rceil;</span> frames after it starts, a basic attack's at <span class="formula">&lceil;256 &times; 11 / rate&rceil;</span>, and nothing checks distance between the hit frame and the damage, so a Jab finishes on its first target wherever the merc has been moved. When you walk or run away instead, the merc heads back once you're 19 subtiles away and it has no target (about 34 while it fights), and warps beside you past 48.</li>
+      <li><strong>Not counted.</strong> Walking to a target, misses, Deadly Strike, Chain Lightning's damage, and the merc's own base damage (whether it adds to the weapon's damage isn't confirmed).</li>
+    </ul>
+  </section>
+</div>
+<!-- merc-map:end -->
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  // The bases that take Infinity (polearms and spears with 4 sockets): code, name, tier, speed (WSM), two-hand min,
+  // two-hand max, Strength, Dexterity, Strength bonus, Dexterity bonus, level requirement. Amazon spears take Infinity
+  // too, but the merc can't wear them.
+  const RAW = [["7vo","Colossus Voulge","E",10,21,206,210,55,75,75,48],["7pa","Cryptic Axe","E",10,41,188,165,103,75,75,59],["7st","Ghost Spear","E",0,23,194,122,163,75,75,62],["7wc","Giant Thresher","E",-10,50,142,188,140,75,75,66],["7h7","Great Poleaxe","E",0,58,159,179,99,75,75,63],["7sr","Hyperion Spear","E",-10,44,149,155,120,75,75,43],["7br","Mancatcher","E",-20,52,115,132,134,75,75,55],["7o7","Ogre Axe","E",0,35,181,195,75,75,75,45],["7tr","Stygian Pike","E",0,36,180,168,97,75,75,49],["7s8","Thresher","E",-10,15,176,152,118,75,75,53],["7p7","War Pike","E",20,41,223,165,106,75,75,66],["9s8","Battle Scythe","X",-10,25,64,82,82,75,75,25],["9h9","Bec-de-Corbin","X",0,18,122,133,91,75,75,25],["9vo","Bill","X",0,20,76,95,0,75,75,25],["9tr","Fuscina","X",0,24,53,77,25,75,75,24],["9wc","Grim Scythe","X",-10,44,100,140,140,75,75,25],["9p9","Lance","X",20,33,163,110,88,75,75,25],["9b7","Lochaber Axe","X",10,9,83,80,0,75,75,21],["9pa","Partizan","X",10,49,108,113,67,75,75,23],["9br","War Fork","X",-20,23,58,80,95,75,75,25],["9sr","War Spear","X",-10,15,54,25,25,75,75,21],["9st","Yari","X",0,41,85,101,0,75,75,25],["brn","Brandistock","N",-20,7,17,40,50,75,75,0],["hal","Halberd","N",0,12,45,75,47,75,75,0],["pik","Pike","N",20,14,63,60,45,75,75,0],["pax","Poleaxe","N",10,18,39,62,0,75,75,0],["scy","Scythe","N",-10,8,20,41,41,75,75,0],["spt","Spetum","N",0,15,23,54,35,75,75,0],["tri","Trident","N",0,9,15,38,24,75,75,0],["vou","Voulge","N",0,6,21,50,0,75,75,0],["wsc","War Scythe","N",-10,15,36,80,80,75,75,0]];
+  const TIER = { E: "Elite", X: "Exceptional", N: "Normal" };
+  const MAX_IAS = 150;
+  const BER_LEVEL = 63;
+  const PASS_FRAMES = 20;
+  const PASS_RUNS = 8000;
+  const AI_GAP = 1; // frames the merc stands between two attacks before its next decision
+
+  const root = document.querySelector(".merc-map");
+  const ethD = d => Math.floor((d + Math.floor(d / 2)) * 5 / 6);
+  const BASES = RAW.map(([code, name, tier, wsm, min, max, rs, rd, sb, db, lvl]) => {
+    const emin = ethD(min), emax = ethD(max);
+    return { code, name, tier, wsm, emin, emax, avg: (emin + emax) / 2, rs: Math.max(0, rs - 10), rd: Math.max(0, rd - 10), sb, db, lvl };
+  });
+  const ELITE = BASES.filter(b => b.tier === "E");
+
+  const SLOTS = ["--s1", "--s2", "--s3", "--s4", "--s5"];
+  const GROUPS = [-20, -10, 0, 10, 20].map((wsm, k) => {
+    const bases = ELITE.filter(b => b.wsm === wsm).sort((a, b) => b.avg - a.avg || a.name.localeCompare(b.name));
+    const lead = bases[0];
+    const tied = bases.filter(b => b.avg === lead.avg);
+    return { k, wsm, color: `var(${SLOTS[k]})`, bases, lead, label: bases.map(b => b.name).join(", "), short: tied.map(b => b.name).join(" · ") };
+  });
+  const groupOf = b => GROUPS.find(g => g.wsm === b.wsm);
+
+  const signed = n => (n > 0 ? "+" : n < 0 ? "−" : "") + Math.abs(n);
+  const nf0 = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
+  const nf1 = new Intl.NumberFormat("en-US", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const nf2 = new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const secs = v => !isFinite(v) ? "never" : v >= 100 ? nf0.format(v) + " s" : nf1.format(v) + " s";
+  const pct = v => v <= 0 ? "0%" : v < 0.005 ? "<1%" : v >= 1 ? "100%" : v > 0.995 ? ">99%" : nf0.format(v * 100) + "%";
+
+  // speed: item IAS -> total attack speed -> frames
+  const eias = i => Math.floor(120 * i / (120 + i));
+  const totalSpeed = (i, wsm, sias) => Math.min(75, eias(i) + sias - wsm);
+  const rate = t => Math.floor(256 * (100 + t) / 100);
+  const jabFrames = t => Math.ceil(256 * 14 / rate(t));
+  const swingFrames = t => Math.ceil(256 * 16 / rate(t)) - 1;
+  // the sorceress's cast: 14 frames, FCR counted like IAS, capped at 75
+  const castFrames = fcr => Math.ceil(256 * 14 / rate(Math.min(75, eias(fcr)))) - 1;
+  const W200 = castFrames(200), W105 = castFrames(105);
+
+  // the merc's Strength, Dexterity and Jab level (Nightmare row at level 43, Hell row at level 75; Str / Dex per level
+  // in eighths, Jab per level in 32nds)
+  function merc(L) {
+    const r = L >= 75 ? { L: 75, str: 173, dex: 139, jab: 24, jabPer: 0 } : { L: 43, str: 117, dex: 91, jab: 14, jabPer: 10 };
+    const d = L - r.L;
+    return { str: r.str + Math.floor(d * 14 / 8), dex: r.dex + Math.floor(d * 12 / 8), jab: r.jab + Math.floor(d * r.jabPer / 32) };
+  }
+  function levelNeeded(b) {
+    for (let L = Math.max(BER_LEVEL, b.lvl); L <= 99; L++) {
+      const m = merc(L);
+      if (m.str >= b.rs && m.dex >= b.rd) return L;
+    }
+    return null;
+  }
+
+  function multipliers(b, S) {
+    const statPct = Math.floor((S.str * b.sb + S.dex * b.db) / 100);
+    const p = 100 + S.ed + statPct + S.other;
+    return { jab: (p + S.jabPct) / 100, swing: p / 100 };
+  }
+
+  function evalBase(b, i, S) {
+    const t = totalSpeed(i, b.wsm, S.sias);
+    const fj = jabFrames(t), fa = swingFrames(t);
+    const pj = S.mix, pa = 1 - pj;
+    const m = multipliers(b, S);
+    const dj = b.avg * m.jab, da = b.avg * m.swing;
+    const frames = pj * (fj + AI_GAP) + pa * (fa + AI_GAP), hits = pj * 2 + pa, dmg = pj * 2 * dj + pa * da;
+    return { t, fj, fa, dps: 25 * dmg / frames, hps: 25 * hits / frames, dhit: dmg / hits };
+  }
+
+  // Crushing Blow's divisor by target; efficiency divides it
+  const cbDivisor = (share, lifeLeft, lifeMax, cbe) => (share === "pe" ? 70 + 1000 * (1 - lifeLeft / lifeMax) : share) / (1 + cbe / 100);
+
+  function killTime(e, S) {
+    const T = S.target;
+    if (!(T.life > 0)) return 0;
+    const keep = Math.max(0, 1 - T.pr / 100);
+    const dmg = e.dhit * keep;
+    const c = T.share === "none" ? 0 : S.cbc;
+    if (!(dmg > 0) && !(c > 0 && keep > 0)) return Infinity;
+    let L = T.life, n = 0;
+    while (L > 0.5 && n < 200000) {
+      const cb = c > 0 ? c * L / cbDivisor(T.share, L, T.life, S.cbe) * keep : 0;
+      L -= cb + dmg;
+      n++;
+    }
+    return n >= 200000 ? Infinity : n / e.hps;
+  }
+
+  // teleport pass: the merc's one attack on the monster, simulated hit by hit, frame by frame from the frame you land
+  function mulberry32(a) {
+    return () => { a |= 0; a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+  }
+  function passSim(b, S, seed) {
+    const P = S.pass, F = PASS_FRAMES;
+    const r = rate(totalSpeed(S.ias, b.wsm, S.sias));
+    const h1 = Math.ceil(256 * 5 / r), h2 = Math.ceil(256 * 9 / r), jl = Math.ceil(256 * 14 / r);
+    const ah = Math.ceil(256 * 11 / r), al = Math.ceil(256 * 16 / r) - 1;
+    const m = multipliers(b, S);
+    const keep = Math.max(0, 1 - P.pr / 100);
+    const cbOn = S.cbc > 0 && keep > 0;
+    const div = cbDivisor(8, 1, 1, S.cbe);
+    const dmgAt = new Float64Array(F + 1), deadAt = new Float64Array(F + 1);
+    let firstDmg = 0, firstDead = 0;
+    const fr = new Int32Array(8), mu = new Float64Array(8);
+    const rnd = mulberry32(seed);
+    const spread = b.emax - b.emin;
+    for (let k = 0; k < PASS_RUNS; k++) {
+      // the merc's one attack on this monster; its next attack goes to whatever is beside it by then
+      const t0 = P.d;
+      let n = 0;
+      if (rnd() < S.mix) { fr[n] = t0 + h1; mu[n++] = m.jab; fr[n] = t0 + h2; mu[n++] = m.jab; }
+      else { fr[n] = t0 + ah; mu[n++] = m.swing; }
+      const firstCount = n;
+      let L = P.life, dealt = 0, j = 0;
+      const hit = () => {
+        if (L > 0) {
+          if (cbOn && rnd() < S.cbc) { const cb = L / div * keep; L -= cb; dealt += cb; }
+          const x = (b.emin + rnd() * spread) * mu[j] * keep; L -= x; dealt += x;
+        }
+        j++;
+        if (j === firstCount) { firstDmg += dealt; if (L <= 0) firstDead++; }
+      };
+      for (let f = 0; f <= F; f++) {
+        while (j < n && fr[j] <= f) hit();
+        dmgAt[f] += dealt;
+        if (L <= 0) deadAt[f]++;
+      }
+      while (j < firstCount) hit();
+    }
+    for (let f = 0; f <= F; f++) { dmgAt[f] /= PASS_RUNS; deadAt[f] /= PASS_RUNS; }
+    return { h1, h2, jl, ah, al, dmgAt: Array.from(dmgAt), deadAt: Array.from(deadAt), firstDmg: firstDmg / PASS_RUNS, firstDead: firstDead / PASS_RUNS };
+  }
+
+  // ---------- settings ----------
+  const $ = id => document.getElementById(id);
+  const el = { ias: $("ias"), iasNum: $("iasNum"), lvl: $("lvl"), ed: $("ed"), edOut: $("edOut"), plus: $("plus"), other: $("other"), sias: $("sias"), mix: $("mix"), cbc: $("cbc"), cbe: $("cbe"), target: $("target"), life: $("life"), pr: $("pr"), cbs: $("cbs"), pLife: $("pLife"), pPr: $("pPr"), pDelay: $("pDelay"), showLow: $("showLow") };
+  for (let L = 99; L >= BER_LEVEL; L--) el.lvl.add(new Option(String(L), String(L), L === 98, L === 98));
+  for (let p = 0; p <= 6; p++) el.plus.add(new Option(p ? "+" + p : "None", String(p)));
+  const TARGETS = {
+    pack: { life: 30000, pr: 0, cbs: "8", label: "a map monster" },
+    boss: { life: 300000, pr: 20, cbs: "30", label: "a map boss" },
+    baal: { life: 493700, pr: 50, cbs: "pe", label: "Baal" },
+  };
+  const num = (input, lo, hi, dflt) => { const v = parseFloat(input.value); return isFinite(v) ? Math.min(hi, Math.max(lo, v)) : dflt; };
+
+  function settings() {
+    const L = +el.lvl.value, m = merc(L), plus = +el.plus.value;
+    const jabLvl = m.jab + plus;
+    const share = el.cbs.value === "pe" || el.cbs.value === "none" ? el.cbs.value : +el.cbs.value;
+    return {
+      L, str: m.str, dex: m.dex, jabLvl, jabPct: 30 + 15 * (jabLvl - 1),
+      ed: +el.ed.value, other: num(el.other, 0, 5000, 0), sias: Math.round(num(el.sias, 0, 200, 0)), mix: +el.mix.value,
+      cbc: num(el.cbc, 0, 100, 40) / 100, cbe: num(el.cbe, 0, 500, 0), ias: Math.round(num(el.iasNum, 0, MAX_IAS, 40)),
+      target: { life: num(el.life, 0, 1e8, 300000), pr: num(el.pr, 0, 100, 0), share, key: el.target.value },
+      pass: { life: num(el.pLife, 1, 1e7, 3000), pr: num(el.pPr, 0, 100, 0), d: +el.pDelay.value },
+    };
+  }
+
+  // ---------- charts ----------
+  function niceTicks(lo, hi, n) {
+    if (!(hi > lo)) { hi = lo + 1; lo = Math.max(0, lo - 1); }
+    const span = hi - lo, raw = span / n, p = Math.pow(10, Math.floor(Math.log10(raw)));
+    const step = [1, 2, 2.5, 5, 10].map(k => k * p).find(s => span / s <= n) || 10 * p;
+    const a = Math.floor(lo / step) * step, b = Math.ceil(hi / step) * step, out = [];
+    for (let v = a; v <= b + step / 2; v += step) out.push(+v.toFixed(8));
+    return out;
+  }
+  const SVGNS = "http://www.w3.org/2000/svg";
+  const mk = (tag, attrs, parent) => { const n = document.createElementNS(SVGNS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); if (parent) parent.appendChild(n); return n; };
+
+  const iasChart = (card, better, fmt, tick, metric) => ({
+    card, better, fmt, tick, xMax: MAX_IAS, xTitle: "Item IAS (%)", pick: true, fromZero: false,
+    xStep: narrow => (narrow ? 30 : 10),
+    head: i => `${i}% IAS`,
+    values: g => state.series[g.k].map(e => metric(e, state.S)),
+    extra: (g, i) => `Jab ${state.series[g.k][i].fj}f`,
+    markers: () => [{ x: state.S.ias, label: `Your IAS ${state.S.ias}%`, anchor: "middle" }],
+    hline: () => null,
+  });
+  const CHARTS = {
+    dps: iasChart($("c-dps"), "high", v => nf0.format(v), v => nf0.format(v), e => e.dps),
+    cb: iasChart($("c-cb"), "high", v => nf2.format(v), v => (Math.round(v * 100) / 100).toString(), (e, S) => e.hps * S.cbc),
+    kill: iasChart($("c-kill"), "low", v => secs(v), v => nf0.format(v), e => e.kill),
+    pass: {
+      card: $("c-pass"), better: "high", fmt: v => nf0.format(v), tick: v => nf0.format(v), xMax: PASS_FRAMES, pick: false, fromZero: true,
+      xTitle: "Frames after you land (25 a second)",
+      xStep: narrow => (narrow ? 4 : 1),
+      head: i => `Frame ${i} after you land`,
+      values: g => state.pass.get(g.lead.code).dmgAt,
+      extra: g => { const p = state.pass.get(g.lead.code); return `Jab hits on frames ${p.h1 + state.S.pass.d}, ${p.h2 + state.S.pass.d}`; },
+      markers: () => [{ x: W200, label: "200% FCR", anchor: "end" }, { x: W105, label: "105% FCR", anchor: "start" }],
+      hline: () => ({ v: state.S.pass.life, label: `Monster life ${nf0.format(state.S.pass.life)}` }),
+    },
+  };
+  let state = { S: null, series: null, pass: null, hover: {} };
+
+  function buildLegends() {
+    for (const key in CHARTS) {
+      const ul = CHARTS[key].card.querySelector(".mm-legend");
+      ul.textContent = "";
+      ul.setAttribute("aria-label", "Speed groups");
+      GROUPS.forEach(g => {
+        const li = document.createElement("li");
+        li.tabIndex = 0;
+        const k = document.createElement("span"); k.className = "key"; k.style.background = g.color;
+        const t = document.createElement("span"); t.textContent = g.label;
+        const s = document.createElement("span"); s.className = "spd"; s.textContent = "speed " + signed(g.wsm);
+        li.append(k, t, s);
+        const on = () => emphasize(g.k), off = () => emphasize(null);
+        li.addEventListener("pointerenter", on); li.addEventListener("pointerleave", off);
+        li.addEventListener("focus", on); li.addEventListener("blur", off);
+        ul.appendChild(li);
+      });
+    }
+  }
+  function emphasize(k) {
+    root.querySelectorAll("path.series").forEach(p => { p.style.opacity = k === null || +p.dataset.k === k ? "1" : "0.18"; });
+  }
+
+  function computeSeries(S) {
+    // one entry per group per IAS: evaluated on the group's strongest elite base; cached by total speed
+    const out = {};
+    GROUPS.forEach(g => {
+      const cache = new Map(), rows = [];
+      for (let i = 0; i <= MAX_IAS; i++) {
+        const t = totalSpeed(i, g.wsm, S.sias);
+        let e = cache.get(t);
+        if (!e) { e = evalBase(g.lead, i, S); e.kill = killTime(e, S); cache.set(t, e); }
+        rows.push(e);
+      }
+      out[g.k] = rows;
+    });
+    return out;
+  }
+
+  function drawChart(key) {
+    const C = CHARTS[key], S = state.S, plot = C.card.querySelector(".plot");
+    const W = Math.max(280, Math.round(plot.clientWidth || 600));
+    const narrow = W < 560;
+    const H = narrow ? 250 : 290;
+    const m = { l: narrow ? 46 : 58, r: 14, t: 24, b: 42 };
+    const iw = W - m.l - m.r, ih = H - m.t - m.b;
+    const xMax = C.xMax;
+    const vals = GROUPS.map(g => C.values(g));
+    const hl = C.hline();
+    let lo = Infinity, hi = -Infinity;
+    vals.forEach(v => v.forEach(x => { if (isFinite(x)) { lo = Math.min(lo, x); hi = Math.max(hi, x); } }));
+    if (hl) hi = Math.max(hi, hl.v);
+    if (!isFinite(lo)) { lo = 0; hi = 1; }
+    if (C.fromZero) lo = 0;
+    const pad = (hi - lo) * 0.06;
+    const ticks = niceTicks(C.fromZero ? 0 : Math.max(0, lo - pad), hi + pad, narrow ? 4 : 5);
+    const y0 = ticks[0], y1 = ticks[ticks.length - 1];
+    const X = i => m.l + i / xMax * iw;
+    const Y = v => m.t + (1 - (Math.min(Math.max(v, y0), y1) - y0) / (y1 - y0)) * ih;
+
+    const hadFocus = plot.contains(document.activeElement);
+    plot.textContent = "";
+    const svg = mk("svg", { viewBox: `0 0 ${W} ${H}`, width: W, height: H, role: "img", tabindex: "0", "aria-label": `${C.card.querySelector("h2").textContent}, one line per speed group; the tables list every value` }, plot);
+    const grid = mk("g", {}, svg);
+    ticks.forEach(v => {
+      mk("line", { x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v), stroke: "var(--grid)", "stroke-width": 1, "shape-rendering": "crispEdges" }, grid);
+      const t = mk("text", { x: m.l - 8, y: Y(v) + 4, "text-anchor": "end", class: "tick" }, grid); t.textContent = C.tick(v);
+    });
+    mk("line", { x1: m.l, x2: W - m.r, y1: m.t + ih, y2: m.t + ih, stroke: "var(--axis)", "stroke-width": 1, "shape-rendering": "crispEdges" }, grid);
+    const step = C.xStep(narrow);
+    for (let i = 0; i <= xMax; i += step) {
+      mk("line", { x1: X(i), x2: X(i), y1: m.t + ih, y2: m.t + ih + 4, stroke: "var(--axis)", "stroke-width": 1, "shape-rendering": "crispEdges" }, grid);
+      const t = mk("text", { x: X(i), y: m.t + ih + 17, "text-anchor": "middle", class: "tick" }, grid); t.textContent = String(i);
+    }
+    const xt = mk("text", { x: m.l + iw / 2, y: H - 6, "text-anchor": "middle", class: "axis-title" }, grid); xt.textContent = C.xTitle;
+
+    if (hl) {
+      const y = Y(hl.v);
+      mk("line", { x1: m.l, x2: W - m.r, y1: y, y2: y, stroke: "var(--fg2)", "stroke-width": 1, opacity: 0.6, "shape-rendering": "crispEdges" }, svg);
+      const t = mk("text", { x: W - m.r, y: y - 6, "text-anchor": "end", class: "marker-label" }, svg); t.textContent = hl.label;
+    }
+    C.markers().forEach(mm => {
+      const mx = X(mm.x);
+      mk("line", { x1: mx, x2: mx, y1: m.t - 6, y2: m.t + ih, stroke: "var(--accent)", "stroke-width": 1.5 }, svg);
+      const lx = mm.anchor === "middle" ? Math.min(Math.max(mx, m.l + 30), W - m.r - 30) : mm.anchor === "end" ? mx - 4 : mx + 4;
+      const ml = mk("text", { x: lx, y: m.t - 10, "text-anchor": mm.anchor, class: "marker-label" }, svg);
+      ml.textContent = mm.label;
+    });
+
+    // series: steps hold from i to i + 1
+    GROUPS.forEach((g, n) => {
+      const v = vals[n];
+      let d = `M${X(0).toFixed(1)},${Y(v[0]).toFixed(1)}`;
+      for (let i = 1; i <= xMax; i++) if (v[i] !== v[i - 1]) d += `H${X(i).toFixed(1)}V${Y(v[i]).toFixed(1)}`;
+      d += `H${X(xMax).toFixed(1)}`;
+      mk("path", { d, fill: "none", stroke: g.color, "stroke-width": 2, "stroke-linejoin": "round", "stroke-linecap": "round", class: "series", "data-k": g.k }, svg);
+    });
+
+    // hover layer
+    const cross = mk("line", { y1: m.t, y2: m.t + ih, stroke: "var(--fg2)", "stroke-width": 1, opacity: 0, "shape-rendering": "crispEdges" }, svg);
+    const dots = GROUPS.map(g => mk("circle", { r: 4, fill: g.color, stroke: "var(--panel)", "stroke-width": 2, opacity: 0 }, svg));
+    const hit = mk("rect", { x: m.l - 6, y: 0, width: iw + 12, height: m.t + ih + 24, fill: "transparent", style: "cursor: crosshair" }, svg);
+    const tip = document.createElement("div"); tip.className = "mm-tip"; tip.hidden = true; plot.appendChild(tip);
+
+    const show = (i, px) => {
+      i = Math.max(0, Math.min(xMax, i));
+      state.hover[key] = i;
+      cross.setAttribute("x1", X(i)); cross.setAttribute("x2", X(i)); cross.setAttribute("opacity", 0.55);
+      dots.forEach((dot, n) => { dot.setAttribute("cx", X(i)); dot.setAttribute("cy", Y(vals[n][i])); dot.setAttribute("opacity", 1); });
+      const order = GROUPS.map((g, n) => ({ g, v: vals[n][i] })).sort((a, b) => C.better === "low" ? a.v - b.v : b.v - a.v);
+      tip.textContent = "";
+      const head = document.createElement("div"); head.className = "mm-tip-head"; head.textContent = C.head(i); tip.appendChild(head);
+      order.forEach(({ g, v }) => {
+        const row = document.createElement("div"); row.className = "mm-tip-row";
+        const k = document.createElement("span"); k.className = "key"; k.style.background = g.color;
+        const b = document.createElement("b"); b.textContent = C.fmt(v);
+        const s = document.createElement("span"); s.textContent = `${g.short} · ${C.extra(g, i)}`;
+        row.append(k, b, s); tip.appendChild(row);
+      });
+      if (C.pick) { const foot = document.createElement("div"); foot.className = "mm-tip-foot"; foot.textContent = "Click to set your IAS here"; tip.appendChild(foot); }
+      tip.hidden = false;
+      const pw = plot.clientWidth, tw = tip.offsetWidth;
+      const scale = pw / W, xpx = (px !== undefined ? px : X(i) * scale);
+      let left = xpx + 14; if (left + tw > pw) left = Math.max(0, xpx - tw - 14);
+      tip.style.left = left + "px"; tip.style.top = Math.max(0, (m.t + 4) * scale) + "px";
+    };
+    const hide = () => { cross.setAttribute("opacity", 0); dots.forEach(d => d.setAttribute("opacity", 0)); tip.hidden = true; delete state.hover[key]; };
+    const toX = ev => { const r = svg.getBoundingClientRect(); const x = (ev.clientX - r.left) * W / r.width; return { i: Math.round((x - m.l) / iw * xMax), px: ev.clientX - r.left }; };
+    hit.addEventListener("pointermove", ev => { const p = toX(ev); show(p.i, p.px); });
+    hit.addEventListener("pointerdown", ev => { const p = toX(ev); show(p.i, p.px); });
+    hit.addEventListener("pointerleave", hide);
+    if (C.pick) hit.addEventListener("click", ev => { const p = toX(ev); setIas(Math.max(0, Math.min(xMax, p.i))); });
+    svg.addEventListener("focus", () => show(state.hover[key] ?? (C.pick ? S.ias : W105)));
+    svg.addEventListener("blur", hide);
+    svg.addEventListener("keydown", ev => {
+      const cur = state.hover[key] ?? (C.pick ? S.ias : W105);
+      if (ev.key === "ArrowRight" || ev.key === "ArrowLeft") { ev.preventDefault(); show(cur + (ev.key === "ArrowRight" ? 1 : -1) * (ev.shiftKey ? 10 : 1)); }
+      else if (C.pick && (ev.key === "Enter" || ev.key === " ")) { ev.preventDefault(); setIas(cur); }
+      else if (ev.key === "Escape") hide();
+    });
+    if (hadFocus) svg.focus({ preventScroll: true });
+    else if (state.hover[key] !== undefined) show(state.hover[key]);
+  }
+
+  // ---------- tiles, tables, breakpoints ----------
+  const names = list => list.map(b => b.name).join(", ");
+  function leadersOf(rows, key, better) {
+    const best = better === "low" ? Math.min(...rows.map(r => r[key])) : Math.max(...rows.map(r => r[key]));
+    return { best, rows: rows.filter(r => Math.abs(r[key] - best) <= 1e-9 * Math.max(1, Math.abs(best))) };
+  }
+
+  function renderTiles(S) {
+    const rows = ELITE.map(b => {
+      const e = evalBase(b, S.ias, S);
+      return { b, dps: e.dps, cbs: e.hps * S.cbc, hps: e.hps, kill: killTime(e, S), fj: e.fj };
+    });
+    const a = leadersOf(rows, "dps", "high");
+    $("t1v").textContent = nf0.format(a.best);
+    $("t1s").textContent = names(a.rows.map(r => r.b));
+    const second = rows.filter(r => !a.rows.includes(r)).sort((x, y) => y.dps - x.dps)[0];
+    $("t1n").textContent = second ? `${((a.best / second.dps - 1) * 100).toFixed(1)}% ahead of ${second.b.name} at ${S.ias}% IAS` : `at ${S.ias}% IAS`;
+
+    const c = leadersOf(rows, "cbs", "high");
+    const v2 = $("t2v"); v2.textContent = nf2.format(c.best); const u2 = document.createElement("span"); u2.textContent = "a second"; v2.appendChild(u2);
+    $("t2s").textContent = names(c.rows.map(r => r.b));
+    $("t2n").textContent = `${nf2.format(c.rows[0].hps)} hits a second, Jab ${c.rows[0].fj} frames`;
+
+    const k = leadersOf(rows, "kill", "low");
+    $("t3v").textContent = secs(k.best);
+    $("t3s").textContent = names(k.rows.map(r => r.b));
+    const slow = Math.max(...rows.map(r => r.kill));
+    const tl = TARGETS[S.target.key] ? TARGETS[S.target.key].label : "your target";
+    $("t3n").textContent = `on ${tl}; the slowest elite base takes ${secs(slow)}`;
+  }
+
+  function addCell(tr, text, cls) { const c = document.createElement("td"); c.textContent = text; if (cls) c.className = cls; tr.appendChild(c); return c; }
+  function nameCell(tr, b) {
+    const n = addCell(tr, "", "name"), g = groupOf(b);
+    const key = document.createElement("span"); key.className = "key"; key.style.background = g.color; n.appendChild(key);
+    n.appendChild(document.createTextNode(b.name));
+    if (b.tier !== "E") { const s = document.createElement("small"); s.textContent = TIER[b.tier]; n.appendChild(s); }
+  }
+
+  function renderTable(S) {
+    $("tblIas").textContent = String(S.ias);
+    const showLow = el.showLow.checked;
+    $("lowNote").hidden = !showLow;
+    const rows = BASES.filter(b => b.tier === "E" || showLow).map(b => {
+      const e = evalBase(b, S.ias, S);
+      return { b, e, dps: e.dps, hps: e.hps, cbs: e.hps * S.cbc, kill: killTime(e, S), need: levelNeeded(b) };
+    }).sort((x, y) => y.dps - x.dps || x.b.name.localeCompare(y.b.name));
+    const best = {
+      dps: leadersOf(rows, "dps", "high").best, hps: leadersOf(rows, "hps", "high").best,
+      cbs: leadersOf(rows, "cbs", "high").best, kill: leadersOf(rows, "kill", "low").best,
+    };
+    const isBest = (k, v) => Math.abs(v - best[k]) <= 1e-9 * Math.max(1, Math.abs(best[k]));
+    const tb = $("baseTable").querySelector("tbody");
+    tb.textContent = "";
+    rows.forEach(r => {
+      const { b, e } = r;
+      const tr = document.createElement("tr");
+      nameCell(tr, b);
+      addCell(tr, signed(b.wsm));
+      addCell(tr, `${nf0.format(Math.floor(b.emin * (100 + S.ed) / 100))}–${nf0.format(Math.floor(b.emax * (100 + S.ed) / 100))}`);
+      addCell(tr, `${b.rs} / ${b.rd}`);
+      const lv = addCell(tr, r.need === null ? "over 99" : String(r.need));
+      if (r.need === null || r.need > S.L) { lv.className = "low"; lv.title = "Your merc can't wear it yet without Strength or Dexterity from gear"; lv.textContent += " (higher than yours)"; }
+      addCell(tr, `${e.fj} frames`);
+      addCell(tr, nf0.format(r.dps), isBest("dps", r.dps) ? "best" : "");
+      addCell(tr, nf2.format(r.hps), isBest("hps", r.hps) ? "best" : "");
+      addCell(tr, nf2.format(r.cbs), isBest("cbs", r.cbs) ? "best" : "");
+      addCell(tr, secs(r.kill), isBest("kill", r.kill) ? "best" : "");
+      tb.appendChild(tr);
+    });
+  }
+
+  function computePass(S) {
+    const out = new Map();
+    ELITE.forEach((b, n) => out.set(b.code, passSim(b, S, 9001 + n * 7919)));
+    return out;
+  }
+
+  function renderPass(S) {
+    $("passW105").textContent = String(W105); $("passW200").textContent = String(W200);
+    $("passH200").textContent = `200% FCR (${W200} frames)`;
+    $("passH105").textContent = `105% FCR (${W105} frames)`;
+    const rows = ELITE.map(b => {
+      const p = state.pass.get(b.code);
+      const len = S.mix * (p.jl + AI_GAP) + (1 - S.mix) * (p.al + AI_GAP);
+      return { b, p, dAll: p.firstDmg, kAll: p.firstDead, s200: Math.min(1, W200 / len), s105: Math.min(1, W105 / len) };
+    }).sort((x, y) => x.b.wsm - y.b.wsm || y.b.avg - x.b.avg || x.b.name.localeCompare(y.b.name));
+    const keys = ["dAll", "kAll", "s200", "s105"];
+    const best = {}; keys.forEach(k => { best[k] = Math.max(...rows.map(r => r[k])); });
+    const mark = (k, v) => (best[k] > 0 && Math.abs(v - best[k]) <= 1e-9 * Math.max(1, best[k]) ? "best" : "");
+    const tb = $("passTable").querySelector("tbody");
+    tb.textContent = "";
+    const d = S.pass.d;
+    rows.forEach(r => {
+      const tr = document.createElement("tr");
+      nameCell(tr, r.b);
+      addCell(tr, signed(r.b.wsm));
+      addCell(tr, `${r.p.h1 + d} and ${r.p.h2 + d}`);
+      addCell(tr, `${r.p.jl} frames`);
+      addCell(tr, nf0.format(r.dAll), "sep " + mark("dAll", r.dAll));
+      addCell(tr, pct(r.kAll), mark("kAll", r.kAll));
+      addCell(tr, pct(r.s200), "sep " + mark("s200", r.s200));
+      addCell(tr, pct(r.s105), mark("s105", r.s105));
+      tb.appendChild(tr);
+    });
+  }
+
+  function renderBreakpoints(S) {
+    const build = (id, framesOf) => {
+      const tbl = $(id); tbl.textContent = "";
+      const start = GROUPS.map(g => framesOf(totalSpeed(0, g.wsm, S.sias)));
+      const hiF = Math.max(...start), loF = framesOf(75);
+      const thead = document.createElement("thead"), hr = document.createElement("tr");
+      const th0 = document.createElement("th"); th0.scope = "col"; th0.textContent = "Speed group"; hr.appendChild(th0);
+      for (let f = hiF; f >= loF; f--) { const th = document.createElement("th"); th.scope = "col"; th.textContent = `${f}f`; hr.appendChild(th); }
+      thead.appendChild(hr); tbl.appendChild(thead);
+      const tb = document.createElement("tbody");
+      GROUPS.forEach((g, n) => {
+        const tr = document.createElement("tr");
+        const c0 = document.createElement("td");
+        const key = document.createElement("span"); key.className = "key"; key.style.background = g.color; c0.appendChild(key);
+        c0.appendChild(document.createTextNode(`${signed(g.wsm)}: ${g.label}`));
+        tr.appendChild(c0);
+        for (let f = hiF; f >= loF; f--) {
+          const c = document.createElement("td");
+          if (f <= start[n]) {
+            let need = null;
+            for (let i = 0; i <= 600; i++) if (framesOf(totalSpeed(i, g.wsm, S.sias)) <= f) { need = i; break; }
+            c.textContent = need === null ? "—" : String(need);
+            if (need === 0) c.className = "zero";
+          }
+          tr.appendChild(c);
+        }
+        tb.appendChild(tr);
+      });
+      tbl.appendChild(tb);
+    };
+    build("bpJab", jabFrames);
+    build("bpA1", swingFrames);
+  }
+
+  // ---------- wiring ----------
+  function renderAll() {
+    const S = settings();
+    state.S = S;
+    el.edOut.textContent = `+${S.ed}%`;
+    $("lvlNote").textContent = `Strength ${S.str}, Dexterity ${S.dex} before gear`;
+    $("jabNote").textContent = `Jab level ${S.jabLvl}: +${S.jabPct}% damage`;
+    state.series = computeSeries(S);
+    state.pass = computePass(S);
+    renderTiles(S);
+    for (const k in CHARTS) drawChart(k);
+    renderPass(S);
+    renderTable(S);
+    renderBreakpoints(S);
+    emphasize(null);
+  }
+  function setIas(i) { el.ias.value = String(i); el.iasNum.value = String(i); renderAll(); }
+
+  el.ias.addEventListener("input", () => { el.iasNum.value = el.ias.value; renderAll(); });
+  el.iasNum.addEventListener("input", () => { const v = num(el.iasNum, 0, MAX_IAS, 0); el.ias.value = String(Math.round(v)); renderAll(); });
+  el.ed.addEventListener("input", renderAll);
+  ["lvl", "plus", "mix", "showLow", "pDelay"].forEach(k => el[k].addEventListener("change", renderAll));
+  ["other", "sias", "cbc", "cbe", "pLife", "pPr"].forEach(k => el[k].addEventListener("input", renderAll));
+  el.target.addEventListener("change", () => {
+    const T = TARGETS[el.target.value];
+    if (T) { el.life.value = String(T.life); el.pr.value = String(T.pr); el.cbs.value = T.cbs; }
+    renderAll();
+  });
+  ["life", "pr"].forEach(k => el[k].addEventListener("input", () => { el.target.value = "custom"; renderAll(); }));
+  el.cbs.addEventListener("change", () => { el.target.value = "custom"; renderAll(); });
+
+  buildLegends();
+  renderAll();
+  // redraw the charts when the page width changes
+  let raf = 0, lastW = 0;
+  const main = $("mm-main");
+  new ResizeObserver(() => {
+    const w = main.clientWidth;
+    if (w === lastW) return; lastW = w;
+    cancelAnimationFrame(raf); raf = requestAnimationFrame(() => { for (const k in CHARTS) drawChart(k); });
+  }).observe(main);
+})();
+</script>
+</body>
+</html>
