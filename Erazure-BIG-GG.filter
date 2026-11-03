@@ -346,7 +346,7 @@ Alias[REVEALED]:FALSE
 // written into the rules: Alias[RARE_MEDIUM_VALUE_LEFT]:%PURPLE%• %YELLOW%>
 // written into the rules: Alias[RARE_MEDIUM_VALUE_RIGHT]:%YELLOW%< %PURPLE%•%YELLOW%
 
-// Rare Low Value: rare gloves on filter levels 8-11
+// Rare Low Value: rare gloves on filter levels 8-11, rare non-Paladin shields of affix level 75+ on 8-12, and rare Paladin shields of affix level 75+ for Paladins on 8-11
 // written into the rules: Alias[RARE_LOW_VALUE_LEFT]:%TAN%• %YELLOW%>
 // written into the rules: Alias[RARE_LOW_VALUE_RIGHT]:%YELLOW%< %TAN%•%YELLOW%
 
@@ -5309,7 +5309,7 @@ ItemDisplay[ETH CRAFT]:%WHITE%Eth %NAME%{%NAME%}%CONTINUE%//
 // written into the rules: Alias[RARE_SELECT_WEAPONS]:(sbb OR 8s8 OR 6s7 OR lbw OR 8lb OR 6lb OR tax OR 9ta OR 7ta OR ssp OR 9s9 OR 7s7 OR bsw OR 9b9 OR 7b7 OR gis OR 9gs OR 7gs OR gsd OR 9gd OR 7gd OR flb OR 9fb OR 7fb OR clm OR 9cm OR 7cm OR whm OR 9wh OR 7wh OR fla OR 9fl OR 7fl OR mst OR 9mt OR 7mt OR mac OR 9ma OR 7ma OR 2ax OR 92a OR 72a)
 
 // Hide Rare Items on Filter Levels 10 and 12 (on 10 not the class items above, nor gloves)
-ItemDisplay[RARE !ID (FILTLVL=10 OR FILTLVL=12) ((ARMOR !CIRC !BOOTS !BELT !(CHEST (ALVL>74 OR CRAFTALVL>74)) !(SHIELD !NEC !DIN (lrg OR spk OR kit OR bsh OR tow OR gts OR xrg OR xpk OR xit OR xsh OR xow OR xts OR urg OR upk OR uit OR ush OR uow OR uts))) OR WEAPON) !(FILTLVL=10 (((NECROMANCER (WAND OR NEC)) OR (SORCERESS (wst OR 8ws OR 6ws OR ob5 OR oba OR obf)) OR (PALADIN (SCEPTER OR DIN)) OR (ASSASSIN SIN) OR (DRUID (DRU OR clb OR spc OR 9cl OR 9sp OR 7cl OR 7sp)) OR (BARBARIAN BAR) OR (AMAZON ZON) OR (ETH (am3 OR am4 OR am5 OR am8 OR am9 OR ama OR amd OR ame OR amf)) OR am2 OR am7 OR amc) OR GLOVES)) GROUND !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109 OR MAPID~202-206)]://
+ItemDisplay[RARE !ID (FILTLVL=10 OR FILTLVL=12) ((ARMOR !CIRC !BOOTS !BELT !(CHEST (ALVL>74 OR CRAFTALVL>74)) !(SHIELD !NEC !DIN (ALVL>74 OR CRAFTALVL>74) (lrg OR spk OR kit OR bsh OR tow OR gts OR xrg OR xpk OR xit OR xsh OR xow OR xts OR urg OR upk OR uit OR ush OR uow OR uts))) OR WEAPON) !(FILTLVL=10 (((NECROMANCER (WAND OR NEC)) OR (SORCERESS (wst OR 8ws OR 6ws OR ob5 OR oba OR obf)) OR (PALADIN (SCEPTER OR DIN)) OR (ASSASSIN SIN) OR (DRUID (DRU OR clb OR spc OR 9cl OR 9sp OR 7cl OR 7sp)) OR (BARBARIAN BAR) OR (AMAZON ZON) OR (ETH (am3 OR am4 OR am5 OR am8 OR am9 OR ama OR amd OR ame OR amf)) OR am2 OR am7 OR amc) OR GLOVES)) GROUND !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109 OR MAPID~202-206)]://
 
 // Keep orginal coloring for items
 ItemDisplay[RARE]:%YELLOW%%NAME%%CONTINUE%//
@@ -5352,8 +5352,7 @@ ItemDisplay[RARE !ID CHEST (ALVL>74 OR CRAFTALVL>74) FILTLVL<8]:%PURPLE%• %YEL
 
 // Rare Shields
 ItemDisplay[RARE !ID SHIELD !NEC !DIN (buc OR sml OR xuc OR xml OR uuc OR uml) FILTLVL>4 GROUND !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109 OR MAPID~202-206)]:// Hide specific Rare Shields on filter levels 5+
-ItemDisplay[RARE !ID SHIELD !NEC !DIN (lrg OR spk OR kit OR bsh OR tow OR gts OR xrg OR xpk OR xit OR xsh OR xow OR xts OR urg OR upk OR uit OR ush OR uow OR uts) (FILTLVL=10 OR FILTLVL=12)]:%NAME%%DOT-5E%%PX-6D%%TIER-0%//
-ItemDisplay[RARE !ID SHIELD !NEC !DIN (ALVL>74 OR CRAFTALVL>74) (lrg OR spk OR kit OR bsh OR tow OR gts OR xrg OR xpk OR xit OR xsh OR xow OR xts OR urg OR upk OR uit OR ush OR uow OR uts) FILTLVL~8-11]:%PURPLE%• %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%•%YELLOW%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%%TIER-0%//
+ItemDisplay[RARE !ID SHIELD !NEC !DIN (ALVL>74 OR CRAFTALVL>74) (lrg OR spk OR kit OR bsh OR tow OR gts OR xrg OR xpk OR xit OR xsh OR xow OR xts OR urg OR upk OR uit OR ush OR uow OR uts) FILTLVL>7]:%TAN%• %YELLOW%>  %NAME%  %YELLOW%< %TAN%•%YELLOW%%DOT-5E%%PX-6D%%TIER-0%//
 ItemDisplay[RARE !ID SHIELD !NEC !DIN (ALVL>74 OR CRAFTALVL>74) (lrg OR spk OR kit OR bsh OR tow OR gts OR xrg OR xpk OR xit OR xsh OR xow OR xts OR urg OR upk OR uit OR ush OR uow OR uts) FILTLVL<8]:%PURPLE%• %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%•%YELLOW%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%//
 
 // Rare Helmets
@@ -5400,8 +5399,9 @@ ItemDisplay[RARE !ID !PALADIN FILTLVL>7 SCEPTER GROUND !(MAPID=1 OR MAPID=40 OR 
 ItemDisplay[RARE !ID PALADIN (FILTLVL~2-7 OR (FILTLVL=1 CLVL>49)) SCEPTER CLVL<80]:%YELLOW%•  %NAME%  •%YELLOW%// 
 ItemDisplay[RARE !ID PALADIN FILTLVL<2 CLVL<50 SCEPTER]:%PURPLE%• %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%•%YELLOW%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%// 
 // Rare Paladin Shields
-ItemDisplay[RARE !ID DIN (ALVL>74 OR CRAFTALVL>74) PALADIN FILTLVL<12]:%PURPLE%• %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%•%YELLOW%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%// Chat notification for Paladins on filter levels 0-11
-ItemDisplay[RARE !ID DIN (ALVL>74 OR CRAFTALVL>74) FILTLVL~0-7]:%PURPLE%• %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%•%YELLOW%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%%TIER-0%//
+ItemDisplay[RARE !ID DIN (ALVL>74 OR CRAFTALVL>74) PALADIN FILTLVL<8]:%PURPLE%• %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%•%YELLOW%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%// Chat notification for Paladins on filter levels 0-7
+ItemDisplay[RARE !ID DIN (ALVL>74 OR CRAFTALVL>74) PALADIN FILTLVL~8-11]:%TAN%• %YELLOW%>  %NAME%  %YELLOW%< %TAN%•%YELLOW%%DOT-5E%%PX-6D%%TIER-0%// Small icon, no chat notification for Paladins on filter levels 8-11
+ItemDisplay[RARE !ID DIN (ALVL>74 OR CRAFTALVL>74) FILTLVL~0-4]:%PURPLE%• %YELLOW%>  %NAME%  %YELLOW%< %PURPLE%•%YELLOW%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%%TIER-0%//
 ItemDisplay[RARE !ID DIN NORM !PALADIN FILTLVL>7 GROUND !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109 OR MAPID~202-206)]:// Hide Normal quality Rare Paladin Shields on filter levels 8+
 ItemDisplay[RARE !ID DIN EXC !PALADIN FILTLVL>7 GROUND !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109 OR MAPID~202-206)]:// Hide Exceptional quality Rare Paladin Shields on filter levels 8+
 ItemDisplay[RARE !ID DIN ELT !PALADIN FILTLVL>7 GROUND !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109 OR MAPID~202-206)]:// Hide Elite quality Rare Paladin Shields on filter levels 8+

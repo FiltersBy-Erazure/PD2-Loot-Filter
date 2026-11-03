@@ -410,6 +410,10 @@ class Simplifier:
                 if s == ("c", 1):
                     changed = True
                     continue
+                if s[0] == "and":  # an OR its context decided: its parts are this AND's (and meet the others)
+                    changed = True
+                    others.extend(s[1])
+                    continue
                 if self.literal(s):
                     changed = True
                     local2 = self.merge(local, s)
