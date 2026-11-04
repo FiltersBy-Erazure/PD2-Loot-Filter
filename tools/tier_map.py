@@ -15,6 +15,9 @@ Code hook after a section edit.
 
     python tools/tier_map.py             write Erazure-Unique-Set-Tiers.html (and count the filter checks)
     python tools/tier_map.py --check     exit 1 if Erazure-Unique-Set-Tiers.html is out of date (CI)
+
+Every run first checks the Grail promise (grail_breaks): an undiscovered item gets a Grail look, the Grail icon and a
+chat line wherever, once discovered, it has no High or Medium value look; it stops on a case that breaks it.
     python tools/tier_map.py --findings  list the filter checks: rules and game data that disagree (a tier rule on
                                          a base no such item drops as, a rule comment naming an item that is not
                                          on its base, a label BH cuts at 56 characters, ...)
@@ -1109,6 +1112,40 @@ def negated_only(rpn):
     return set().union(*(n for _, n in stack)) - pos
 
 
+KEEPS_LOOK = {look for look, (_, _, tier) in LOOKS.items() if tier in ("Diablo Clone & Rathma", "High value", "Medium value")}
+
+
+def grail_breaks(groups, variants):
+    """The Grail promise (the author, 2026-11-04): an unidentified unique or set item you haven't discovered yet shows
+    a Grail look, with its kind's one Grail icon and a chat line, wherever the item once discovered has no High or
+    Medium value look (nor the D.Clone / Rathma, Rainbow Facet or BIG GG look): a set item that is High or Medium value
+    on the lower filter levels only gets the Grail look and icon on the others. The cases that break it, as text lines
+    (main stops on any, so the hook, build.bat and CI's --check do)."""
+    out, icons = [], defaultdict(set)
+    for g in groups:
+        gi, fi = g.dims.index["GRAIL"], g.dims.index["FILTLVL"]
+        bad = defaultdict(set)
+        for toggles in variants.values():
+            table = variant_table(g, toggles)
+            for sc, k in table.items():
+                if sc[gi] != "new" or table[sc[:gi] + ("found",) + sc[gi + 1:]][0] in KEEPS_LOOK:
+                    continue
+                if k[0] not in GRAIL_LOOKS:
+                    bad[f"{look_phrase(k)} instead of a Grail look"].add(sc[fi])
+                elif len(k[3]) != 1:
+                    bad["a Grail look with another rule's minimap icon stacked with the Grail icon"].add(sc[fi])
+                elif not k[1]:
+                    bad["a Grail look without a chat line"].add(sc[fi])
+                else:
+                    icons[g.kind].add(k[3][0])
+        out += [f"{g.code} ({display_name(g)}): before it's discovered, {level_runs(sorted(lv))}: {what}"
+                for what, lv in bad.items()]
+    out += [f"{'Unique' if kind == 'UNI' else 'Set'} items' Grail looks show {len(seen)} different minimap icons: "
+            f"{', '.join('/'.join(c or '-' for c in layer) for layer in sorted(seen, key=str))}"
+            for kind, seen in icons.items() if len(seen) > 1]
+    return out
+
+
 def findings(groups, rules, bases):
     """Rules and game data that disagree, as text lines."""
     out = []
@@ -1238,6 +1275,11 @@ def main():
     ap.add_argument("--findings", action="store_true", help="list rules and game data that disagree")
     args = ap.parse_args()
     groups, rules, variants, bases = analyse()
+    breaks = grail_breaks(groups, variants)
+    if breaks:
+        print("An undiscovered item without a High or Medium value look must get the Grail look, icon and chat line:",
+              *breaks, sep="\n", file=sys.stderr)
+        sys.exit(1)
     data, too_long = build_data(groups, variants, load_sounds(), load_palette())
     text = page_text(data)
     current = PAGE.read_text(encoding="utf-8") if PAGE.exists() else ""
