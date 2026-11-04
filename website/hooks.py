@@ -42,8 +42,8 @@ MAPS = [  # (the page, from the repo root; the tool that writes it, or "by hand"
 FONTS = ('<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700'
          '&family=Source+Sans+3:wght@400;600;700&display=swap">')
 # Files a page loads beside it (from the repo root to the site's root, where its own copy is; its site page's script
-# finds them there): the Grail Planner's Compendium view pictures (tools/grail_compendium.py)
-BESIDE = ["Erazure-Grail-Planner-Compendium.png"]
+# finds them there): the Grail Planner's Compendium view pictures and letters (tools/grail_compendium.py)
+BESIDE = ["Erazure-Grail-Planner-Compendium.png", "Erazure-Grail-Planner-Glyphs.png"]
 
 
 def parts(page, tool, name):

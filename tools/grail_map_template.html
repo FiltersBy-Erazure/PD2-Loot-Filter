@@ -283,6 +283,7 @@
   .grail-map .comp.lay-mid { grid-template-columns: calc(110px * var(--k)) calc(320px * var(--k));
     grid-template-areas: "cats stage" "how stage" "prog prog"; grid-template-rows: auto 1fr auto; }
   .grail-map .comp.lay-narrow { grid-template-columns: calc(320px * var(--k)); grid-template-areas: "cats" "stage" "how" "prog"; grid-template-rows: none; }
+  .grail-map .tools.ticks[hidden] { display: none; }  /* the Compendium view has them in its panel's bottom row */
   .grail-map .comp .cats { grid-area: cats; }
   .grail-map .comp .stage { grid-area: stage; }
   .grail-map .comp .how { grid-area: how; align-self: stretch; }
@@ -324,17 +325,10 @@
   .grail-map .comp .row.done .n { color: var(--good); }
   .grail-map .comp .row.done .pbar > i { background: var(--good); }
   .grail-map .comp .row .ic { position: relative; width: 24px; height: 24px; }
-  /* the game's hover text: white Exocet (here the display font) on a dark see-through box, its bottom just above the
-     button or card, centred on it; the arrows of Discovery Progress's options the game writes invisible but for the
-     picked one */
-  .grail-map .comp .ctip { position: absolute; z-index: 5; width: max-content; max-width: 100%; pointer-events: none; text-align: center;
-    background: rgba(0, 0, 0, .78); color: #fefefe; padding: calc(2px * var(--k)) calc(6px * var(--k));
-    font: 600 calc(11.5px * var(--k)) / calc(16px * var(--k)) var(--display); letter-spacing: .02em; }
+  /* the game's hover text: its lines in the game's Exocet (letters as below) on a dark see-through box, its bottom
+     just above the button or card, centred on it (the script sizes and places it) */
+  .grail-map .comp .ctip { position: absolute; z-index: 5; pointer-events: none; background: rgba(0, 0, 0, .78); }
   .grail-map .comp .ctip[hidden] { display: none; }
-  .grail-map .comp .ctip .off { visibility: hidden; }
-  .grail-map .comp .ctip .q-uni { color: #dfb679; }
-  .grail-map .comp .ctip .q-set { color: #25fe00; }
-  .grail-map .comp .ctip .hint { color: #7b7b7b; }
   .grail-map .comp .err { position: absolute; z-index: 6; top: 0; left: 0; right: 0; max-width: none; margin: 0; padding: 8px 12px;
     background: var(--panel); border: 1px solid var(--s2); border-radius: 6px; color: var(--s2); }
   .grail-map .comp .err[hidden] { display: none; }
@@ -350,18 +344,29 @@
   .grail-map .comp .ci[aria-pressed="true"] .sp, .grail-map .comp .ci:hover .sp { --dx: 24; }  /* a button's lit look */
   .grail-map .comp .cat { position: relative; width: calc(110px * var(--k)); height: calc(24px * var(--k)); }
   .grail-map .comp .cat[aria-pressed="true"] .sp { --dx: 110; }
-  .grail-map .comp .cat .cl { position: absolute; inset: 0 0 0 calc(10px * var(--k)); display: grid; place-items: center; color: #fefefe;
-    font: 600 calc(9.5px * var(--k)) "AvQest", "Palatino Linotype", Palatino, Georgia, serif; }
-  .grail-map .comp .cat[aria-pressed="true"] .cl { color: #dfb679; }
+  .grail-map .comp .cat .tx { --cy: 1; }
+  .grail-map .comp .cat[aria-pressed="true"] .tx { --cy: 2; }
   .grail-map .comp .cc:hover .sp:first-child { filter: brightness(1.3); }
   .grail-map .comp .pic { opacity: .5; }  /* not in the Compendium's storage: the game draws it half transparent */
   .grail-map .comp .pic.dark { filter: brightness(.08); opacity: .85; }  /* a hidden unique */
-  .grail-map .comp .ct { display: block; white-space: nowrap; pointer-events: none; color: #7b7b7b; text-shadow: 0 0 calc(1px * var(--k)) #000;
-    font: calc(8.6px * var(--k)) / calc(9px * var(--k)) "AvQest", "Palatino Linotype", Palatino, Georgia, serif; }
-  .grail-map .comp .cn { text-align: center; }
-  .grail-map .comp .sn { text-align: center; color: #25fe00; font-size: calc(9.5px * var(--k)); line-height: calc(var(--h) * var(--k) * 1px); }
-  .grail-map .comp .cnt { color: #dfb679; font-size: calc(9.5px * var(--k)); line-height: calc(var(--h) * var(--k) * 1px); }
-  .grail-map .comp .pgn { text-align: center; color: #fefefe; font-size: calc(9.5px * var(--k)); line-height: calc(var(--h) * var(--k) * 1px); }
+  /* text in the game's own fonts: each letter a piece of the letters' sheet, in game pixels times --k; the sheet has
+     every letter once per color, one block under the other (grail_compendium.TEXT_COLORS: grey, the cards' names, then
+     white, gold, green): --cy picks the block */
+  .grail-map .comp .tx { position: absolute; inset: 0; pointer-events: none; filter: drop-shadow(0 0 calc(.6px * var(--k)) #000); }
+  .grail-map .comp .gl { position: absolute; left: calc(var(--x) * var(--k) * 1px); top: calc(var(--y) * var(--k) * 1px);
+    width: calc(var(--w) * var(--k) * 1px); height: calc(var(--h) * var(--k) * 1px);
+    background: var(--glyphs) no-repeat calc(var(--sx) * var(--k) * -1px) calc((var(--sy) + var(--cy, 0) * var(--gb)) * var(--k) * -1px) /
+      calc(var(--gw) * var(--k) * 1px) calc(var(--gh) * var(--k) * 1px); }
+  .grail-map .comp .c-white { --cy: 1; }
+  .grail-map .comp .c-gold { --cy: 2; }
+  .grail-map .comp .c-green { --cy: 3; }
+  /* the bottom row: the stash's own buttons (lit while pressed) and the gold and Search bars as Tick / Untick shown */
+  .grail-map .comp .gbtn:hover .sp, .grail-map .comp .gbtn:active .sp { --dx: 32; }
+  .grail-map .comp .gbtn.off { cursor: default; }
+  .grail-map .comp .gbtn.off .sp { --dx: 0; opacity: .4; }
+  .grail-map .comp .gbar:not(.off):hover .tx.c-white { --cy: 2; }
+  .grail-map .comp .gbar.off { cursor: default; }
+  .grail-map .comp .clip { overflow: hidden; }
 </style>
 <div class="grail-map">
 <!-- grail-map:start -->
@@ -1388,14 +1393,34 @@ document.querySelectorAll(".grail-map .gm-undo").forEach(b => { b.onclick = () =
 // Uniques, "s": Sets): [item (-1 a hidden unique, -2 an empty place), button (-1: All only), name lines, picture, its x
 // and y in the card, set (Sets)]. The game keeps a button and a page per tab, and one Discovery Progress for both.
 const CP = DATA.comp, CL = CP.layout;
-const CP_ART = (() => { const s = document.currentScript && document.currentScript.src;  // the website's copy: a script in assets/grail-map/
-  return s ? new URL("../../" + CP.file, s).href : CP.file; })();
+const beside = (() => { const s = document.currentScript && document.currentScript.src;  // the website's copy: a script in assets/grail-map/
+  return f => s ? new URL("../../" + f, s).href : f; })();
+const CP_ART = beside(CP.file), CP_GLYPHS = beside(CP.glyphs.file);
 const CV = {view: "list", tab: "u", btn: {u: 0, s: 0}, page: {u: 0, s: 0}, filt: 0, k: 0};
 const esc = s => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
 const box = (x, y, w, h) => `--x:${x};--y:${y};--w:${w};--h:${h}`;
 function piece(key, x, y, cls = "", w = 0) {  // a picture of the sheet at (x, y); w: its left part only (a button's two looks)
   const [sx, sy, pw, ph] = CP.art[key];
   return `<span class="sp${cls ? " " + cls : ""}" style="${box(x, y, w || pw, ph)};--sx:${sx};--sy:${sy}"></span>`;
+}
+// The game's own fonts (CP.glyphs.fonts: the cards' names, the Uniques and Sets buttons, hover texts, the bottom row):
+// per letter [sheet x, y, width, height, left of the pen, top from the baseline, advance], in game pixels
+const GF = CP.glyphs.fonts;
+const tw = (f, s) => { const F = GF[f]; let w = 0; for (const ch of s) w += (F.g[ch] || F.g[" "])[6]; return w + F.sp * Math.max(0, s.length - 1); };
+function tline(f, s, x, y, hide) {  // [the letters of s, the pen after it]: the pen from x on the baseline y, game pixels
+  const F = GF[f]; let h = "";
+  for (const ch of s) {
+    const g = F.g[ch] || F.g[" "];
+    if (g[2] && !hide) h += `<i class="gl" style="--x:${(x + g[4]).toFixed(2)};--y:${(y + g[5]).toFixed(2)};--w:${g[2]};--h:${g[3]};--sx:${g[0]};--sy:${g[1]}"></i>`;
+    x += g[6] + F.sp;
+  }
+  return [h, x];
+}
+// a text's letters, for screen readers its words (label: text of its own) or nothing (text on a button with its own label)
+const txt = (cls, html, label) => `<span class="tx${cls ? " " + cls : ""}" ${label ? `role="img" aria-label="${esc(label)}"` : `aria-hidden="true"`}>${html}</span>`;
+function tbox(f, lines, x, y, w, h, lh, cls = "", label = "") {  // lines centred in the box (x, y, w, h), lh apart, their capitals' middle at its middle
+  const F = GF[f], base = y + h / 2 - (lines.length - 1) * lh / 2 + F.cap / 2;
+  return txt(cls, lines.map((s, i) => tline(f, s, x + (w - tw(f, s)) / 2, base + i * lh)[0]).join(""), label);
 }
 const cFound = c => c[0] >= 0 && FOUND.has(ITEMS[c[0]].key);
 function compPage() {  // what the game shows now: the page's cards, its number and the page count, the set's name
@@ -1419,12 +1444,12 @@ function renderComp() {
   CP.buttons[tab].forEach((b, k) => { const [x, y] = CL.icons[tab][k];
     h += `<button type="button" class="at ci" style="${box(x, y, 24, 24)}" data-b="${k}" data-f="b${k}" data-tip="b${k}" ` +
       `aria-pressed="${CV.btn[tab] === k}" aria-label="${esc(b)}">${piece(tab + k, 0, 0, "", 24)}</button>`; });
-  if (name) h += `<span class="at ct sn" style="${box(...CL.setName)}">${esc(name)}</span>`;
+  if (name) h += tbox("name", [name], ...CL.setName, 0, "c-green", name);
   cards.forEach((c, k) => {
     if (c[0] === -2) return;  // a hidden unique with no base: an empty place
     const [x, y] = CL.cards[k], it = c[0] >= 0 ? ITEMS[c[0]] : null, on = cFound(c), [pt, ph] = CL.plate;
     const inner = piece(on ? "cardFound" : "card", 0, 0) + piece(c[3], c[4], c[5], it ? "pic" : "pic dark") +
-      `<span class="at ct cn" style="${box(0, pt + (ph - 9 * c[2].length) / 2, 90, 9 * c[2].length)}">${c[2].map(esc).join("<br>")}</span>`;
+      tbox("name", c[2], 0, pt, 90, ph, 9);
     h += it ? `<button type="button" class="at cc" style="${box(x, y, 90, 150)}" data-c="${c[0]}" data-f="c${k}" data-tip="c${c[0]}" ` +
       `aria-pressed="${on}" aria-label="${esc(`${it.label}, ${it.base}: ${on ? "discovered" : "undiscovered"}`)}">${inner}</button>`
       : `<span class="at" style="${box(x, y, 90, 150)}" data-tip="hidden">${inner}</span>`;
@@ -1432,16 +1457,29 @@ function renderComp() {
   const found = CP[tab].filter(cFound).length, of = CP[tab].filter(c => c[0] >= 0).length;
   h += `<button type="button" class="at cd" style="${box(...CL.disc, 22, 22)}" data-f="disc" data-tip="disc" ` +
     `aria-label="${esc(`${w.CompendiumFilterDiscoveryProgress}: ${DISC_MODES[CV.filt]}`)}">${piece("disc" + CV.filt, 0, 0)}</button>`;
-  h += `<span class="at ct cnt" style="${box(CL.count[0], CL.count[1] - 8, 130, 11)}">${Math.floor(found * 100 / of)}% (${found}/${of})</span>`;
+  const count = `${Math.floor(found * 100 / of)}% (${found}/${of})`;
+  h += txt("c-gold", tline("name", count, CL.count[0], CL.count[1] - 4 + GF.name.cap / 2)[0], `Discovered: ${count}`);
   h += `<button type="button" class="at" style="${box(...CL.prev, 32, 22)}" data-p="-1" data-f="prev" aria-label="Previous page">${piece("prev", 0, 0)}</button>`;
-  h += `<span class="at ct pgn" style="${box(CL.page[0] - 30, CL.page[1] - 8, 60, 11)}">${page + 1}/${total}</span>`;
+  h += tbox("name", [`${page + 1}/${total}`], CL.page[0] - 30, CL.page[1] - 15, 60, 22, 0, "c-white", `Page ${page + 1} of ${total}`);
   h += `<button type="button" class="at" style="${box(...CL.next, 32, 22)}" data-p="1" data-f="next" aria-label="Next page">${piece("next", 0, 0)}</button>`;
+  // the bottom row (the author, 2026-11-04): Undo, Tick shown and Untick shown (the page's cards: what they act on),
+  // close (the List view)
+  SHOWN = cards.filter(c => c[0] >= 0).map(c => ITEMS[c[0]]);
+  const nOff = SHOWN.filter(it => !FOUND.has(it.key)).length, nOn = SHOWN.length - nOff, last = UNDO[UNDO.length - 1];
+  const gbtn = (act, on, label) => `<button type="button" class="at gbtn${on ? "" : " off"}" style="${box(...CL[act], 32, 32)}" data-act="${act}" data-f="${act}" ` +
+    `data-tip="${act}" aria-label="${esc(label)}"${on ? "" : " aria-disabled=\"true\""}>${piece(act, 0, 0, "", 32)}</button>`;
+  const gbar = (act, n, words, icon) => { const [x, y, w, hh] = CL[act];
+    return `<button type="button" class="at gbar${n ? "" : " off"}" style="${box(x, y, w, hh)}" data-act="${act}" data-f="${act}" data-tip="${act}" ` +
+      `aria-label="${esc(`${words} (${n})`)}"${n ? "" : " aria-disabled=\"true\""}><span class="at clip" style="${box(3, 1, 16, 16)}">${piece(icon, -3, -3)}</span>` +
+      tbox("bar", [`${words} (${n})`], 23, 0, w - 23, hh, 0, n ? "c-white" : "") + `</button>`; };
+  h += gbtn("undo", !!last, last ? `Undo: ${last.label}` : "Nothing to undo") + gbtn("close", true, "Close: back to the List view") +
+    gbar("tick", nOff, "Tick shown", "disc1") + gbar("untick", nOn, "Untick shown", "disc2");
   $("gm-comp-stage").innerHTML = h;
-  $("gm-comp-cats").innerHTML = ["u", "s"].map(t => `<button type="button" class="cat" data-cat="${t}" data-f="t${t}" aria-pressed="${t === tab}">` +
-    `${piece("cat", 0, 0, "", 110)}<span class="cl">${esc(w[t === "u" ? "StashCategoryUniques" : "StashCategorySets"])}</span></button>`).join("");
+  $("gm-comp-cats").innerHTML = ["u", "s"].map(t => { const word = w[t === "u" ? "StashCategoryUniques" : "StashCategorySets"];
+    return `<button type="button" class="cat" data-cat="${t}" data-f="t${t}" aria-pressed="${t === tab}" aria-label="${esc(word)}">` +
+      `${piece("cat", 0, 0, "", 110)}${tbox("cat", [word], 10, 0, 100, 24, 0)}</button>`; }).join("");
   if (!$("gm-comp-how").innerHTML) $("gm-comp-how").innerHTML = howCard();
   $("gm-comp-prog").innerHTML = progressCard();
-  SHOWN = cards.filter(c => c[0] >= 0).map(c => ITEMS[c[0]]);  // what "Tick shown" ticks
   tickUI();
   const back = fk && el.querySelector(`[data-f="${fk}"]`); if (back) back.focus({preventScroll: true});
   compTip(TIP_ON && el.querySelector(`[data-tip="${TIP_ON}"]`));  // a hover text stays over the redrawn button
@@ -1462,7 +1500,7 @@ function howCard() {
       `<b>Discovery Progress</b> shows all items, the discovered or the undiscovered ones.`) +
     step(crop("prev", 0, 0, 32, 22, 1.4) + crop("next", 0, 0, 32, 22, 1.4),
       `<b>Turn the pages</b> here, or with the <span class="keys">←</span> <span class="keys">→</span> keys.`) +
-    step(`<span class="chip">Tick shown</span>`, `Marks every card on the page discovered; <b>Undo</b> takes it back.`) +
+    step(`<span class="chip">Tick shown</span>`, `In the panel's bottom row: marks every card on the page discovered; <b>Undo</b> (the arrows) takes it back.`) +
     `</div><p class="foot">Point at a button or a card for its name, as in the game. What you mark here is ticked in the List view too.</p>`;
 }
 function progressCard() {
@@ -1488,23 +1526,35 @@ function progressCard() {
 const DISC_MODES = [CP.words.CompendiumFilterShowAll, CP.words.CompendiumFilterShowDiscovered, CP.words.CompendiumFilterShowUndiscovered];
 let TIP_ON = "";
 function tipLines(key) {
-  if (key === "disc") return [esc(CP.words.CompendiumFilterDiscoveryProgress), ...CP.words.discDesc.map(esc), "",
-    ...DISC_MODES.map((m, k) => { const off = k === CV.filt ? "" : ' class="off"'; return `<span${off}>-&gt; </span>${esc(m)}<span${off}> &lt;-</span>`; })];
-  if (key === "hidden") return ["???"];
-  if (key[0] === "b") return [esc(CP.buttons[CV.tab][+key.slice(1)])];
-  const it = ITEMS[+key.slice(1)], q = it.kind === "SET" ? "q-set" : "q-uni", on = FOUND.has(it.key);
-  return [`<span class="${q}">${esc(it.label)}</span>`, `<span class="${q}">${esc(it.base)}</span>`,
-    `<span class="hint">Click to mark</span>`, `<span class="hint">${on ? "undiscovered" : "discovered"}</span>`];
+  const one = (s, c = "c-white") => [[s, c]], grey = s => [[s, ""]];
+  if (key === "disc") return [one(CP.words.CompendiumFilterDiscoveryProgress), ...CP.words.discDesc.map(s => one(s)), one(""),
+    ...DISC_MODES.map((m, k) => { const arrow = k === CV.filt ? "c-white" : "off"; return [["-> ", arrow], [m, "c-white"], [" <-", arrow]]; })];
+  if (key === "hidden") return [one("???")];
+  if (key[0] === "b") return [one(CP.buttons[CV.tab][+key.slice(1)])];
+  if (key === "undo") { const last = UNDO[UNDO.length - 1]; return last ? [one("Undo"), grey(last.label)] : [grey("Nothing to undo")]; }
+  if (key === "close") return [one("Close"), grey("back to the List view")];
+  if (key === "tick" || key === "untick") return [one(key === "tick" ? "Tick shown" : "Untick shown"),
+    grey(`marks this page's cards ${key === "tick" ? "discovered" : "undiscovered"}`)];
+  const it = ITEMS[+key.slice(1)], q = it.kind === "SET" ? "c-green" : "c-gold", on = FOUND.has(it.key);
+  return [one(it.label, q), one(it.base, q), grey("Click to mark"), grey(on ? "undiscovered" : "discovered")];
 }
 function compTip(t) {  // show the hover text of t (none: hide it): centred over it, its bottom 4 game pixels above it
   const tip = $("gm-comp-tip");
   TIP_ON = t ? t.dataset.tip : "";
   if (!t) { tip.hidden = true; return; }
-  tip.innerHTML = tipLines(TIP_ON).map(l => `<div>${l || "&nbsp;"}</div>`).join("");
-  tip.hidden = false;
-  const area = $("gm-comp").getBoundingClientRect(), r = t.getBoundingClientRect(), w = tip.offsetWidth;
-  tip.style.left = Math.max(0, Math.min(area.width - w, r.left + r.width / 2 - area.left - w / 2)) + "px";
-  tip.style.top = (r.top - area.top - 4 * CV.k - tip.offsetHeight) + "px";
+  const F = GF.tip, lines = tipLines(TIP_ON), padX = 5, padY = 3;
+  const widths = lines.map(l => tw("tip", l.map(p => p[0]).join(""))), W = Math.max(...widths) + 2 * padX, H = lines.length * F.lh + 2 * padY;
+  let html = "";
+  lines.forEach((l, i) => {
+    let x = padX + (W - 2 * padX - widths[i]) / 2;
+    const y = padY + i * F.lh + (F.lh + F.cap) / 2;
+    l.forEach(([s, cls]) => { const [g, end] = tline("tip", s, x, y, cls === "off"); if (g) html += txt(cls, g); x = end; });
+  });
+  const area = $("gm-comp").getBoundingClientRect(), r = t.getBoundingClientRect(), k = Math.min(CV.k, area.width / W);  // a phone: smaller
+  tip.innerHTML = html; tip.hidden = false; tip.style.setProperty("--k", k);
+  tip.style.width = W * k + "px"; tip.style.height = H * k + "px";
+  tip.style.left = Math.max(0, Math.min(area.width - W * k, r.left + r.width / 2 - area.left - W * k / 2)) + "px";
+  tip.style.top = (r.top - area.top - 4 * CV.k - H * k) + "px";
 }
 $("gm-comp").addEventListener("mouseover", e => { const t = e.target.closest("[data-tip]"); if ((t ? t.dataset.tip : "") !== TIP_ON) compTip(t); });
 $("gm-comp").addEventListener("mouseleave", () => compTip(null));
@@ -1518,6 +1568,12 @@ $("gm-comp").addEventListener("click", e => {
     keep(`marked ${it.label} ${was}`);
     if (on) FOUND.add(it.key); else FOUND.delete(it.key);
     ticksChanged(`Marked ${it.label} ${was}.`, "gm-tickmsg"); return;
+  }
+  if (b.dataset.act) {  // the bottom row: the tick row's own buttons do it (its message, Undo step and counts)
+    if (b.getAttribute("aria-disabled")) return;
+    if (b.dataset.act === "close") { setView("list"); $("gm-view").scrollIntoView({block: "nearest"}); return; }
+    ({tick: $("gm-tickshown"), untick: $("gm-untickshown"), undo: document.querySelector(".grail-map .ticks .gm-undo")})[b.dataset.act].click();
+    return;
   }
   if (b.dataset.b) { CV.btn[CV.tab] = +b.dataset.b; CV.page[CV.tab] = 0; }
   else if (b.dataset.kind) { CV.tab = "u"; CV.btn.u = +b.dataset.kind; CV.page.u = 0; }  // Your progress: a kind of unique
@@ -1541,10 +1597,12 @@ function compScale() {  // 2 game pixels a pixel where the page is wide enough (
   const el = $("gm-comp"), wd = el.clientWidth; if (!wd) return false;
   const lay = wd >= 220 + 640 + 290 + 32 ? "wide" : wd >= 220 + 640 + 16 ? "mid" : "narrow", k = lay === "narrow" ? Math.min(2, wd / 320) : 2;
   if (k === CV.k && lay === CV.lay) return false;
-  if (!CV.k) { const img = new Image(); img.onerror = () => { $("gm-comp-err").hidden = false; }; img.src = CP_ART; }  // a missing sheet says so
+  if (!CV.k) [CP_ART, CP_GLYPHS].forEach(u => { const img = new Image(); img.onerror = () => { $("gm-comp-err").hidden = false; }; img.src = u; });  // a missing sheet says so
   CV.k = k; CV.lay = lay; el.style.setProperty("--k", k); el.classList.toggle("px", k === 2);
   el.classList.toggle("lay-mid", lay === "mid"); el.classList.toggle("lay-narrow", lay === "narrow");
   el.style.setProperty("--art", `url("${CP_ART}")`); el.style.setProperty("--aw", CP.size[0]); el.style.setProperty("--ah", CP.size[1]);
+  el.style.setProperty("--glyphs", `url("${CP_GLYPHS}")`); el.style.setProperty("--gw", CP.glyphs.size[0]); el.style.setProperty("--gh", CP.glyphs.size[1]);
+  el.style.setProperty("--gb", CP.glyphs.block);
   $("gm-comp-stage").style.setProperty("--ph", CL.h);
   return true;
 }
@@ -1556,6 +1614,7 @@ function setView(v) {
   document.querySelectorAll(".grail-map .gm-vlist").forEach(x => { x.hidden = v !== "list"; });
   document.querySelectorAll(".grail-map .gm-vcomp").forEach(x => { x.hidden = v !== "comp"; });
   tickMsg("", "gm-tickmsg");
+  document.querySelector(".grail-map .tools.ticks").hidden = v === "comp";  // the Compendium has them in its panel's bottom row
   if (v === "comp") { compScale(); renderComp(); } else renderItems();
 }
 $("gm-view").addEventListener("click", e => { const b = e.target.closest("button[data-view]"); if (b && b.dataset.view !== CV.view) setView(b.dataset.view); });

@@ -38,8 +38,8 @@ A model, nothing measured in game:
   1 - e^(-rate x n) (the page does that part, and the switching-ears schedule).
 - Farm spots: tools/grail_farm.py (every act boss, superunique and special encounter per difficulty, per kill, with
   the six-item limit; its docstring has those rules).
-- Every Item's Compendium view: tools/grail_compendium.py (the stash Compendium as the game draws it; its pictures go
-  in Erazure-Grail-Planner-Compendium.png beside the page).
+- Every Item's Compendium view: tools/grail_compendium.py (the stash Compendium as the game draws it; its pictures and
+  letters go in Erazure-Grail-Planner-Compendium.png and Erazure-Grail-Planner-Glyphs.png beside the page).
 """
 import argparse
 import datetime
@@ -838,10 +838,11 @@ def main():
     farm["gheedBases"] = GF.gheed_bases(t, items)
     data = page_data(t, items, ear_list, rates, configs, kills, farm)
     import grail_compendium as GC
-    data["comp"], sheet = GC.build(args.game_dir, t, items)
-    if not GC.SHEET.exists() or GC.SHEET.read_bytes() != sheet:
-        GC.SHEET.write_bytes(sheet)
-        print(f"wrote {GC.SHEET.name}: {len(sheet) // 1024} KB")
+    data["comp"], sheet, glyphs = GC.build(args.game_dir, t, items)
+    for path, png in ((GC.SHEET, sheet), (GC.GLYPHS, glyphs)):
+        if not path.exists() or path.read_bytes() != png:
+            path.write_bytes(png)
+            print(f"wrote {path.name}: {len(png) // 1024} KB")
     page = DOC_HEAD + TEMPLATE.read_text(encoding="utf-8") + "\n</body>\n</html>\n"
     page = page.replace("/*__DATA__*/null", json.dumps(data, ensure_ascii=False, separators=(",", ":")))
     PAGE.write_text(page, encoding="utf-8", newline="\n")

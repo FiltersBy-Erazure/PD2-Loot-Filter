@@ -605,16 +605,24 @@
   the hidden uniques after the others (`HIDDEN`), Discovery Progress (all / discovered / undiscovered; the page count
   ignores it, as the game's) and the counter, all as the game shows them, with the game's hover texts (the page's own,
   not the browser's). A card's red diamond = ticked; a click marks it discovered (ticked) or undiscovered (the author:
-  the view says discovered / undiscovered, not ticked / unticked); "Tick shown" ticks the page's cards; the arrow keys
-  turn pages. The owned items' button is left out (the author: its box painted over with the other corner's ornament,
-  mirrored, `OWNED_BOX`). Beside the panel (the author, 2026-11-04, from mockups): "How it works" under the Uniques /
+  the view says discovered / undiscovered, not ticked / unticked); the arrow keys turn pages. The panel's bottom row
+  (the author, 2026-11-04: where the stash has its close button, gold, Search and cancel button) has Undo (the game's
+  arrows button), Tick shown in the gold bar and Untick shown in the Search bar (the page's cards) and the game's close
+  button, back to the List view; the List view's tick row hides in this view. All its text is in the game's own fonts
+  (the author, 2026-11-04): D2GL's atlases (d2gl.mpq; `FONTS`: names 6, Uniques / Sets 0, hover texts 1, bottom row 15)
+  drawn as D2GL's shader draws them onto a second sheet, `Erazure-Grail-Planner-Glyphs.png` (~170 KB), every letter
+  once per color (`TEXT_COLORS`), each letter a piece of it on the page (not a CSS mask: a mask needs the page's own
+  origin, so a page opened from a file showed no text). The owned items' button is left out (the author: its box
+  painted over with the other corner's ornament, mirrored, `OWNED_BOX`). Beside the panel (the author, 2026-11-04,
+  from mockups): "How it works" under the Uniques /
   Sets buttons (the game's own pictures of each state) and "Your progress" (Uniques and Sets bars, then the tab's
   discovered items per kind of unique or per set; a click opens it), the three columns ending level with the panel
   (`compScale` picks the layout: wide; medium, Your progress below; a phone, one column). The List view's help is two
   cards, "Reading the table" and "Marking what you've found", and each column heading has an i with its meaning.
   The view's pictures are one sheet, `Erazure-Grail-Planner-Compendium.png` (repo root, committed, ~600 KB, written
-  only when it changes), loaded the first time the view shows; `website/hooks.py` copies it to the
-  site's root (`BESIDE`), where the site page's script finds it (`../../` from assets/grail-map/). Checked in headless
+  only when it changes; the letters' sheet beside it the same way), loaded the first time the view shows;
+  `website/hooks.py` copies both to the site's root (`BESIDE`), where the site page's script finds them (`../../` from
+  assets/grail-map/). Checked in headless
   Edge against the author's screenshots (positions within a game pixel or two), on the standalone page and the site.
   Gambling (the author, 2026-10-31, `gamble_rates` / `gamble_price` /
   `pack_gamble` in grail_farm.py): town gambling is the base game's code, unchanged by PD2, with PD2's
