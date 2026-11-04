@@ -60,7 +60,9 @@ Much of this page compares maps with and without a Corrupted Ear, so here is wha
 1. **Set the bar.** Pick the tier you run (or All), non-magical or rare maps, and your magic find. Every number on the
    page follows it, and the bar stays at the top while you scroll.
 2. **Tick what you have.** Tick the items you've found under **Every Item**: "Tick shown" ticks every row the search and
-   filters list (a whole set or base at once), and Enter in the search ticks or unticks the one item it finds. Found most
+   filters list (a whole set or base at once), and Enter in the search ticks or unticks the one item it finds. Its
+   [Compendium view](#gm-comp) shows the stash's Compendium page by page, as the game does: page through both side by
+   side and click the cards you've discovered. Found most
    of the grail already? Open [Fill in your grail](#gm-fill) under **Your Grail**, type the names the stash's Uniques and
    Sets tabs list with "Show Undiscovered" on (hover an item for its name) and press "Tick all but these". The same box
    takes a list from a spreadsheet or another grail tracker (one item per line). To move your ticks to another browser or
@@ -105,7 +107,8 @@ Much of this page compares maps with and without a Corrupted Ear, so here is wha
     ---
 
     Every grail item: its chance per map without an ear and with each ear, the maps for a 90% chance to see it, and its
-    best farm spot. Click a row for its best bet and all its spots.
+    best farm spot. Click a row for its best bet and all its spots, or switch to the Compendium view to tick your items
+    page by page as the stash's Compendium shows them.
 
 -   **[Target Farming](#tab-farm)**
 

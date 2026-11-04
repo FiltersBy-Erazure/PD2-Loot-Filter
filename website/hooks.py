@@ -41,6 +41,9 @@ MAPS = [  # (the page, from the repo root; the tool that writes it, or "by hand"
 ]
 FONTS = ('<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700'
          '&family=Source+Sans+3:wght@400;600;700&display=swap">')
+# Files a page loads beside it (from the repo root to the site's root, where its own copy is; its site page's script
+# finds them there): the Grail Planner's Compendium view pictures (tools/grail_compendium.py)
+BESIDE = ["Erazure-Grail-Planner-Compendium.png"]
 
 
 def parts(page, tool, name):
@@ -79,6 +82,10 @@ def on_files(files, config):
         files.append(File.generated(config, own_copy(page), abs_src_path=str(ROOT / page)))
         files.append(File.generated(config, css_path, content=css))
         files.append(File.generated(config, js_path, content=script))
+    for name in BESIDE:
+        if not (ROOT / name).exists():
+            raise PluginError(f"{name} is missing in the repo root: run the tool that writes it")
+        files.append(File.generated(config, name, abs_src_path=str(ROOT / name)))
     return files
 
 

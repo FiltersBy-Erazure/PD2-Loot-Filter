@@ -236,6 +236,60 @@
   .grail-map .slowlist .fs-m.l { padding-left: 0; }
   .grail-map .bet { display: inline-block; font-size: 11px; font-weight: 600; line-height: 1.35; color: var(--good); border: 1px solid currentColor;
     border-radius: 3px; padding: 0 4px; margin-left: 5px; vertical-align: 1px; white-space: nowrap; }
+  /* Every Item's Compendium view (tools/grail_compendium.py): the stash Compendium drawn from the game's own pictures.
+     Every place is in game pixels (--x, --y, --w, --h; on the picture sheet --sx, --sy) times --k, 2 where the page is
+     wide enough (crisp, .px), less on a phone; the game's colors, whatever the website's theme. */
+  /* Every Item's two views: a switch right under the heading, where the eye starts (the author, 2026-11-04: the small
+     one at the far right was easy to miss); the List view first on every visit */
+  .grail-map .viewsw { justify-self: start; display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--bg); }
+  .grail-map .viewsw button { display: inline-flex; align-items: center; gap: 9px; margin: 0; border: 0; padding: 10px 20px; cursor: pointer;
+    font: 600 15.5px var(--body); color: var(--muted); background: transparent; }
+  .grail-map .viewsw button + button { border-left: 1px solid var(--line); }
+  .grail-map .viewsw button:hover { color: var(--fg); background: var(--chip); }
+  .grail-map .viewsw button[aria-pressed="true"] { color: var(--fg); background: var(--accent-wash); box-shadow: inset 0 -3px 0 var(--accent); }
+  .grail-map .viewsw svg { width: 19px; height: 19px; flex: none; }
+  .grail-map .viewsw small { font: 400 13px var(--body); color: var(--muted); }
+  @media (max-width: 600px) { .grail-map .viewsw { justify-self: stretch; } .grail-map .viewsw button { flex: 1; justify-content: center; padding-inline: 10px; }
+    .grail-map .viewsw small { display: none; } }
+  .grail-map .gm-vlist[hidden], .grail-map .gm-vcomp[hidden] { display: none; }
+  .grail-map .comp { --k: 2; position: relative; display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-start; }
+  /* the game's hover text: white Exocet (here the display font) on a dark see-through box, its bottom just above the
+     button or card, centred on it; the arrows of Discovery Progress's options the game writes invisible but for the
+     picked one */
+  .grail-map .comp .ctip { position: absolute; z-index: 5; width: max-content; max-width: 100%; pointer-events: none; text-align: center;
+    background: rgba(0, 0, 0, .78); color: #fefefe; padding: calc(2px * var(--k)) calc(6px * var(--k));
+    font: 600 calc(11.5px * var(--k)) / calc(16px * var(--k)) var(--display); letter-spacing: .02em; }
+  .grail-map .comp .ctip[hidden] { display: none; }
+  .grail-map .comp .ctip .off { visibility: hidden; }
+  .grail-map .comp .ctip .q-uni { color: #dfb679; }
+  .grail-map .comp .ctip .q-set { color: #25fe00; }
+  .grail-map .comp .ctip .hint { color: #7b7b7b; }
+  .grail-map .comp .err { flex-basis: 100%; max-width: none; color: var(--s2); }
+  .grail-map .comp .err[hidden] { display: none; }
+  .grail-map .comp .cats { display: flex; flex-direction: column; gap: calc(3px * var(--k)); }
+  .grail-map .comp .stage { position: relative; flex: none; width: calc(320px * var(--k)); height: calc(var(--ph) * var(--k) * 1px); background: #000; }
+  .grail-map .comp .at, .grail-map .comp .sp { position: absolute; left: calc(var(--x) * var(--k) * 1px); top: calc(var(--y) * var(--k) * 1px);
+    width: calc(var(--w) * var(--k) * 1px); height: calc(var(--h) * var(--k) * 1px); }
+  .grail-map .comp .sp { background: var(--art) no-repeat calc((var(--sx) + var(--dx, 0)) * var(--k) * -1px) calc(var(--sy) * var(--k) * -1px) /
+    calc(var(--aw) * var(--k) * 1px) calc(var(--ah) * var(--k) * 1px); pointer-events: none; }
+  .grail-map .comp.px .sp { image-rendering: pixelated; }
+  .grail-map .comp button { padding: 0; margin: 0; border: 0; background: none; font: inherit; color: inherit; cursor: pointer; }
+  .grail-map .comp button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .grail-map .comp .ci[aria-pressed="true"] .sp, .grail-map .comp .ci:hover .sp { --dx: 24; }  /* a button's lit look */
+  .grail-map .comp .cat { position: relative; width: calc(110px * var(--k)); height: calc(24px * var(--k)); }
+  .grail-map .comp .cat[aria-pressed="true"] .sp { --dx: 110; }
+  .grail-map .comp .cat .cl { position: absolute; inset: 0 0 0 calc(10px * var(--k)); display: grid; place-items: center; color: #fefefe;
+    font: 600 calc(9.5px * var(--k)) "AvQest", "Palatino Linotype", Palatino, Georgia, serif; }
+  .grail-map .comp .cat[aria-pressed="true"] .cl { color: #dfb679; }
+  .grail-map .comp .cc:hover .sp:first-child { filter: brightness(1.3); }
+  .grail-map .comp .pic { opacity: .5; }  /* not in the Compendium's storage: the game draws it half transparent */
+  .grail-map .comp .pic.dark { filter: brightness(.08); opacity: .85; }  /* a hidden unique */
+  .grail-map .comp .ct { display: block; white-space: nowrap; pointer-events: none; color: #7b7b7b; text-shadow: 0 0 calc(1px * var(--k)) #000;
+    font: calc(8.6px * var(--k)) / calc(9px * var(--k)) "AvQest", "Palatino Linotype", Palatino, Georgia, serif; }
+  .grail-map .comp .cn { text-align: center; }
+  .grail-map .comp .sn { text-align: center; color: #25fe00; font-size: calc(9.5px * var(--k)); line-height: calc(var(--h) * var(--k) * 1px); }
+  .grail-map .comp .cnt { color: #dfb679; font-size: calc(9.5px * var(--k)); line-height: calc(var(--h) * var(--k) * 1px); }
+  .grail-map .comp .pgn { text-align: center; color: #fefefe; font-size: calc(9.5px * var(--k)); line-height: calc(var(--h) * var(--k) * 1px); }
 </style>
 <div class="grail-map">
 <!-- grail-map:start -->
@@ -346,7 +400,13 @@
 
 <section id="gm-list" data-tab="items" hidden>
   <h2>Every grail item</h2>
-  <p class="note">How often each item drops in one full map clear, as one in so many maps: without an ear ("No ear"), with any
+  <div class="viewsw" id="gm-view" role="group" aria-label="View">
+    <button type="button" data-view="list" aria-pressed="true"><svg viewBox="0 0 20 20" aria-hidden="true"><path fill="currentColor"
+      d="M2 4h2v2H2zm4 0h12v2H6zM2 9h2v2H2zm4 0h12v2H6zm-4 5h2v2H2zm4 0h12v2H6z"/></svg>List <small>drop rates and farm spots</small></button>
+    <button type="button" data-view="comp" aria-pressed="false"><svg viewBox="0 0 20 20" aria-hidden="true"><path fill="currentColor"
+      d="M1 2h5v7H1zm6.5 0h5v7h-5zM14 2h5v7h-5zM1 11h5v7H1zm6.5 0h5v7h-5zM14 11h5v7h-5z"/></svg>Compendium <small>its pages, as in the game</small></button>
+  </div>
+  <p class="note gm-vlist">How often each item drops in one full map clear, as one in so many maps: without an ear ("No ear"), with any
   Corrupted Ear ("Any ear": the extra drop chance and the extra elite packs every ear gives) and with the ear whose pool has the
   item's base ("Best ear", the next ears under it). "Best ear ×" is how many times more often the best ear finds it; "Maps for 90%"
   the maps for a 90% chance to see it with the best ear. "Drop level" is the lowest monster level that can drop it (not the level
@@ -354,16 +414,23 @@
   means one kill there finds it at least as often as a whole map with its best ear, so target farming is its best bet. Click a
   row for its best bet, its best spots in each difficulty, in the Corrupted Zones and among the ubers and events, and Gheed's
   map event.</p>
-  <p class="note">Tick the items you've found. "Tick shown" ticks every row the search and filters list (a whole set, a base,
+  <p class="note gm-vlist">Tick the items you've found. "Tick shown" ticks every row the search and filters list (a whole set, a base,
   every set item) and "Untick shown" unticks them. Enter in the search ticks or unticks the one item it finds, so you can type
   names one after another. Found most of the grail? Press "Tick all" under <a href="#gm-fill">Fill in your grail</a>, then
-  untick what you're missing (Show: "Not ticked" and "Ticked" check your work). Undo takes back your changes one at a time.</p>
-  <div class="tools">
+  untick what you're missing (Show: "Not ticked" and "Ticked" check your work). Undo takes back your changes one at a time.
+  Sort by "Compendium order" to go through the stash's Compendium page by page: its Uniques, then its Sets, as they list
+  them with All picked, or switch to the Compendium view.</p>
+  <p class="note gm-vcomp" hidden>The stash's Compendium as the game shows it: the same pages, buttons and order, so you can
+  page through both side by side. Click a card to mark its item discovered or undiscovered: a discovered one has the red
+  diamond, as in the game, and counts as ticked everywhere else on this page. The diamond button by the counter shows all
+  items, the discovered or the undiscovered ones, like the game's Discovery Progress button; "Tick shown" marks every card on
+  the page discovered. The arrow keys turn the pages.</p>
+  <div class="tools gm-vlist">
     <input type="search" id="gm-q" placeholder="Search item, base or set" aria-label="Search items">
     <select id="gm-kind" aria-label="Kind"><option value="">Uniques and sets</option><option value="UNI">Uniques</option><option value="SET">Sets</option></select>
     <select id="gm-show" aria-label="Show"><option value="">All items</option><option value="unticked">Not ticked</option><option value="ticked">Ticked</option><option value="missing">Not ticked, from map monsters</option><option value="boost">An ear's pool has it</option><option value="nodrop">Not from map monsters</option><option value="bet">Best bet: target farm</option></select>
     <select id="gm-ear" aria-label="Ear"><option value="">Best ear</option></select>
-    <select id="gm-sort" aria-label="Sort"><option value="rare">Rarest first</option><option value="farm">Rarest at its best farm spot</option><option value="name">Name</option><option value="gain">Most raised by an ear</option><option value="lvl">Drop level</option></select>
+    <select id="gm-sort" aria-label="Sort"><option value="rare">Rarest first</option><option value="farm">Rarest at its best farm spot</option><option value="name">Name</option><option value="gain">Most raised by an ear</option><option value="lvl">Drop level</option><option value="comp">Compendium order</option></select>
     <select class="gm-fixed" aria-label="Farm spots"><option value="">Any farm spot</option><option value="fixed">Fixed spots only</option></select>
     <span class="count" id="gm-count"></span>
   </div>
@@ -373,7 +440,10 @@
     <span class="count" id="gm-tickcount"></span>
     <span class="small" id="gm-tickmsg" aria-live="polite"></span>
   </div>
-  <div class="tbl panel"><table class="gm-table" id="gm-items"></table></div>
+  <div class="tbl panel gm-vlist"><table class="gm-table" id="gm-items"></table></div>
+  <div class="comp gm-vcomp" id="gm-comp" hidden><p class="note err" id="gm-comp-err" hidden>The Compendium's pictures didn't load: reload the
+    page to try again.</p><div class="cats" id="gm-comp-cats"></div><div class="stage" id="gm-comp-stage"></div>
+    <div class="ctip" id="gm-comp-tip" role="tooltip" hidden></div></div>
 </section>
 
 <section id="gm-farm" data-tab="farm" hidden>
@@ -940,7 +1010,7 @@ function tickUI() {  // what follows the ticks: the Undo buttons, Tick shown / U
   if (a && a.closest && a.closest(".grail-map") && (a.disabled || a.hidden)) $(a.closest("#gm-planner") ? "gm-io" : "gm-q").focus({preventScroll: true});
 }
 function ticksChanged(msg, where) {  // the other place's message would be out of date now: it goes
-  save(); planSoon(); renderItems(); renderGamble(); renderGheed();
+  save(); planSoon(); renderItems(); renderComp(); renderGamble(); renderGheed();
   tickMsg("", where === "gm-io-msg" ? "gm-tickmsg" : "gm-io-msg"); tickMsg(msg, where); tickUI();
 }
 function setTicks(next, label, msg, where) {  // a change that changes nothing keeps no Undo step
@@ -1105,10 +1175,10 @@ function renderItems() {
   if (show === "bet") list = list.filter(it => bet(R, it.i).kind === "farm");
   const m = mfi(), bf = new Map(list.map(it => [it, bestFarm(it.i)]));
   const key = {rare: it => inf.get(it).bv || 0, farm: it => (bf.get(it) || {r: []}).r[m] || 0, name: it => it.label,
-    gain: it => -inf.get(it).gain, lvl: it => -it.lvl}[sort];
+    gain: it => -inf.get(it).gain, lvl: it => -it.lvl, comp: it => it.comp}[sort];
   list.sort((a, b) => { const x = key(a), y = key(b); if (sort === "rare" || sort === "farm") { if (!x && y) return 1; if (!y && x) return -1; }
     return x < y ? -1 : x > y ? 1 : a.label.localeCompare(b.label); });
-  SHOWN = list;
+  if (CV.view === "list") SHOWN = list;  // the Compendium view: its page's cards
   $("gm-count").textContent = `${list.length} of ${N} shown`;
   $("gm-items").innerHTML = `<thead><tr><th>Have</th><th class="l">Item</th><th class="l opt">Base</th><th class="opt">Drop level</th><th>No ear</th><th class="opt">Any ear</th><th class="l">${ear ? ear + " ear" : "Best ear"}</th><th class="opt">Best ear ×</th><th>Maps for 90%</th><th class="l">Best farm spot</th></tr></thead><tbody>` +
     list.map(it => { const i = it.i, o = inf.get(it), f = FOUND.has(it.key), b = bf.get(it);
@@ -1203,6 +1273,139 @@ $("gm-untickshown").onclick = () => { const del = SHOWN.filter(it => FOUND.has(i
 document.querySelectorAll(".grail-map .gm-undo").forEach(b => { b.onclick = () => {
   const u = UNDO.pop(); if (!u) return;
   FOUND = new Set(u.keys); ticksChanged(`Undone: ${u.label}.`, b.dataset.msg); }; });
+
+// ---------------------------------------------------------------- the Compendium view
+// Every Item's other view (the author, 2026-11-04): the stash Compendium as the game draws it (tools/grail_compendium.py),
+// its pages, buttons and order the game's, so a player can page through both side by side; a click on a card ticks or
+// unticks its item. DATA.comp: the picture sheet (a file of its own, loaded when the view first shows) and where each
+// picture lies on it, the panel's places, the buttons' names and every card in the Compendium's order per tab ("u":
+// Uniques, "s": Sets): [item (-1 a hidden unique, -2 an empty place), button (-1: All only), name lines, picture, its x
+// and y in the card, set (Sets)]. The game keeps a button and a page per tab, and one Discovery Progress for both.
+const CP = DATA.comp, CL = CP.layout;
+const CP_ART = (() => { const s = document.currentScript && document.currentScript.src;  // the website's copy: a script in assets/grail-map/
+  return s ? new URL("../../" + CP.file, s).href : CP.file; })();
+const CV = {view: "list", tab: "u", btn: {u: 0, s: 0}, page: {u: 0, s: 0}, filt: 0, k: 0};
+const esc = s => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+const box = (x, y, w, h) => `--x:${x};--y:${y};--w:${w};--h:${h}`;
+function piece(key, x, y, cls = "", w = 0) {  // a picture of the sheet at (x, y); w: its left part only (a button's two looks)
+  const [sx, sy, pw, ph] = CP.art[key];
+  return `<span class="sp${cls ? " " + cls : ""}" style="${box(x, y, w || pw, ph)};--sx:${sx};--sy:${sy}"></span>`;
+}
+const cFound = c => c[0] >= 0 && FOUND.has(ITEMS[c[0]].key);
+function compPage() {  // what the game shows now: the page's cards, its number and the page count, the set's name
+  const tab = CV.tab, b = CV.btn[tab], all = CP[tab].filter(c => !b || c[1] === b);
+  const shown = CV.filt ? all.filter(c => cFound(c) === (CV.filt === 1)) : all;
+  if (tab === "u") {  // the count counts the button's items, whatever Discovery Progress shows
+    const total = Math.max(1, Math.ceil(all.length / 6)), page = Math.min(CV.page.u, total - 1);
+    return {cards: shown.slice(page * 6, page * 6 + 6), page, total, name: ""};
+  }
+  // a set a page: the count counts the button's sets, the pages show the sets with a shown item (past them, the last)
+  const total = Math.max(1, new Set(all.map(c => c[6])).size), page = Math.min(CV.page.s, total - 1), runs = [];
+  shown.forEach(c => { const r = runs[runs.length - 1]; if (r && r[0][6] === c[6]) r.push(c); else runs.push([c]); });
+  const cards = runs.length ? runs[Math.min(page, runs.length - 1)] : [];
+  return {cards, page, total, name: cards.length ? CP.sets[cards[0][6]] : ""};
+}
+function renderComp() {
+  const el = $("gm-comp"); if (el.hidden || !CV.k) return;
+  const tab = CV.tab, {cards, page, total, name} = compPage(), w = CP.words;
+  const a = document.activeElement, fk = a && el.contains(a) ? a.dataset.f : "";  // a redrawn button keeps the focus
+  let h = piece(tab === "u" ? "bgU" : "bgS", 0, 0);
+  CP.buttons[tab].forEach((b, k) => { const [x, y] = CL.icons[tab][k];
+    h += `<button type="button" class="at ci" style="${box(x, y, 24, 24)}" data-b="${k}" data-f="b${k}" data-tip="b${k}" ` +
+      `aria-pressed="${CV.btn[tab] === k}" aria-label="${esc(b)}">${piece(tab + k, 0, 0, "", 24)}</button>`; });
+  if (name) h += `<span class="at ct sn" style="${box(...CL.setName)}">${esc(name)}</span>`;
+  cards.forEach((c, k) => {
+    if (c[0] === -2) return;  // a hidden unique with no base: an empty place
+    const [x, y] = CL.cards[k], it = c[0] >= 0 ? ITEMS[c[0]] : null, on = cFound(c), base = CL.name[c[2].length === 2 ? "two" : "one"];
+    const inner = piece(on ? "cardFound" : "card", 0, 0) + piece(c[3], c[4], c[5], it ? "pic" : "pic dark") +
+      `<span class="at ct cn" style="${box(0, base[0] - 7, 90, 9 * c[2].length)}">${c[2].map(esc).join("<br>")}</span>`;
+    h += it ? `<button type="button" class="at cc" style="${box(x, y, 90, 150)}" data-c="${c[0]}" data-f="c${k}" data-tip="c${c[0]}" ` +
+      `aria-pressed="${on}" aria-label="${esc(`${it.label}, ${it.base}: ${on ? "discovered" : "undiscovered"}`)}">${inner}</button>`
+      : `<span class="at" style="${box(x, y, 90, 150)}" data-tip="hidden">${inner}</span>`;
+  });
+  const found = CP[tab].filter(cFound).length, of = CP[tab].filter(c => c[0] >= 0).length;
+  h += `<button type="button" class="at cd" style="${box(...CL.disc, 22, 22)}" data-f="disc" data-tip="disc" ` +
+    `aria-label="${esc(`${w.CompendiumFilterDiscoveryProgress}: ${DISC_MODES[CV.filt]}`)}">${piece("disc" + CV.filt, 0, 0)}</button>`;
+  h += `<span class="at ct cnt" style="${box(CL.count[0], CL.count[1] - 8, 130, 11)}">${Math.floor(found * 100 / of)}% (${found}/${of})</span>`;
+  h += `<button type="button" class="at" style="${box(...CL.prev, 32, 22)}" data-p="-1" data-f="prev" aria-label="Previous page">${piece("prev", 0, 0)}</button>`;
+  h += `<span class="at ct pgn" style="${box(CL.page[0] - 30, CL.page[1] - 8, 60, 11)}">${page + 1}/${total}</span>`;
+  h += `<button type="button" class="at" style="${box(...CL.next, 32, 22)}" data-p="1" data-f="next" aria-label="Next page">${piece("next", 0, 0)}</button>`;
+  $("gm-comp-stage").innerHTML = h;
+  $("gm-comp-cats").innerHTML = ["u", "s"].map(t => `<button type="button" class="cat" data-cat="${t}" data-f="t${t}" aria-pressed="${t === tab}">` +
+    `${piece("cat", 0, 0, "", 110)}<span class="cl">${esc(w[t === "u" ? "StashCategoryUniques" : "StashCategorySets"])}</span></button>`).join("");
+  SHOWN = cards.filter(c => c[0] >= 0).map(c => ITEMS[c[0]]);  // what "Tick shown" ticks
+  tickUI();
+  const back = fk && el.querySelector(`[data-f="${fk}"]`); if (back) back.focus({preventScroll: true});
+  compTip(TIP_ON && el.querySelector(`[data-tip="${TIP_ON}"]`));  // a hover text stays over the redrawn button
+}
+// The game's hover texts: a button's name over its button; Discovery Progress's title, text and ways to show (the
+// picked one between arrows); a card's item name and base in its quality's color (here with what a click does)
+const DISC_MODES = [CP.words.CompendiumFilterShowAll, CP.words.CompendiumFilterShowDiscovered, CP.words.CompendiumFilterShowUndiscovered];
+let TIP_ON = "";
+function tipLines(key) {
+  if (key === "disc") return [esc(CP.words.CompendiumFilterDiscoveryProgress), ...CP.words.discDesc.map(esc), "",
+    ...DISC_MODES.map((m, k) => { const off = k === CV.filt ? "" : ' class="off"'; return `<span${off}>-&gt; </span>${esc(m)}<span${off}> &lt;-</span>`; })];
+  if (key === "hidden") return ["???"];
+  if (key[0] === "b") return [esc(CP.buttons[CV.tab][+key.slice(1)])];
+  const it = ITEMS[+key.slice(1)], q = it.kind === "SET" ? "q-set" : "q-uni", on = FOUND.has(it.key);
+  return [`<span class="${q}">${esc(it.label)}</span>`, `<span class="${q}">${esc(it.base)}</span>`,
+    `<span class="hint">Click to mark</span>`, `<span class="hint">${on ? "undiscovered" : "discovered"}</span>`];
+}
+function compTip(t) {  // show the hover text of t (none: hide it): centred over it, its bottom 4 game pixels above it
+  const tip = $("gm-comp-tip");
+  TIP_ON = t ? t.dataset.tip : "";
+  if (!t) { tip.hidden = true; return; }
+  tip.innerHTML = tipLines(TIP_ON).map(l => `<div>${l || "&nbsp;"}</div>`).join("");
+  tip.hidden = false;
+  const area = $("gm-comp").getBoundingClientRect(), r = t.getBoundingClientRect(), w = tip.offsetWidth;
+  tip.style.left = Math.max(0, Math.min(area.width - w, r.left + r.width / 2 - area.left - w / 2)) + "px";
+  tip.style.top = (r.top - area.top - 4 * CV.k - tip.offsetHeight) + "px";
+}
+$("gm-comp").addEventListener("mouseover", e => { const t = e.target.closest("[data-tip]"); if ((t ? t.dataset.tip : "") !== TIP_ON) compTip(t); });
+$("gm-comp").addEventListener("mouseleave", () => compTip(null));
+$("gm-comp").addEventListener("focusin", e => compTip(e.target.closest("[data-tip]")));
+$("gm-comp").addEventListener("focusout", () => compTip(null));
+function turn(d) { const {total} = compPage(); CV.page[CV.tab] = Math.max(0, Math.min(total - 1, CV.page[CV.tab] + d)); }
+$("gm-comp").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  if (b.dataset.c) {  // a card: mark its item discovered (ticked) or undiscovered
+    const it = ITEMS[+b.dataset.c], on = !FOUND.has(it.key), was = on ? "discovered" : "undiscovered";
+    keep(`marked ${it.label} ${was}`);
+    if (on) FOUND.add(it.key); else FOUND.delete(it.key);
+    ticksChanged(`Marked ${it.label} ${was}.`, "gm-tickmsg"); return;
+  }
+  if (b.dataset.b) { CV.btn[CV.tab] = +b.dataset.b; CV.page[CV.tab] = 0; }
+  else if (b.dataset.cat) CV.tab = b.dataset.cat;
+  else if (b.dataset.p) turn(+b.dataset.p);
+  else if (b.classList.contains("cd")) CV.filt = (CV.filt + 1) % 3;
+  renderComp();
+});
+document.addEventListener("keydown", e => {  // the arrow keys turn the pages
+  if (CV.view !== "comp" || $("gm-list").hidden || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+  if (e.target.closest && e.target.closest("input, select, textarea")) return;
+  const d = e.key === "ArrowLeft" ? -1 : e.key === "ArrowRight" ? 1 : 0; if (!d) return;
+  e.preventDefault(); turn(d); renderComp();
+});
+function compScale() {  // 2 game pixels a pixel where the page is wide enough (crisp), less on a phone
+  const el = $("gm-comp"), wd = el.clientWidth; if (!wd) return false;
+  const k = Math.min(2, wd / 320); if (k === CV.k) return false;
+  if (!CV.k) { const img = new Image(); img.onerror = () => { $("gm-comp-err").hidden = false; }; img.src = CP_ART; }  // a missing sheet says so
+  CV.k = k; el.style.setProperty("--k", k); el.classList.toggle("px", k === 2);
+  el.style.setProperty("--art", `url("${CP_ART}")`); el.style.setProperty("--aw", CP.size[0]); el.style.setProperty("--ah", CP.size[1]);
+  $("gm-comp-stage").style.setProperty("--ph", CL.h);
+  return true;
+}
+if (window.ResizeObserver) new ResizeObserver(() => { if (compScale()) renderComp(); }).observe($("gm-comp"));
+else addEventListener("resize", () => { if (compScale()) renderComp(); });
+function setView(v) {
+  CV.view = v;
+  $("gm-view").querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.view === v)));
+  document.querySelectorAll(".grail-map .gm-vlist").forEach(x => { x.hidden = v !== "list"; });
+  document.querySelectorAll(".grail-map .gm-vcomp").forEach(x => { x.hidden = v !== "comp"; });
+  tickMsg("", "gm-tickmsg");
+  if (v === "comp") { compScale(); renderComp(); } else renderItems();
+}
+$("gm-view").addEventListener("click", e => { const b = e.target.closest("button[data-view]"); if (b && b.dataset.view !== CV.view) setView(b.dataset.view); });
 // the box: its lines as items. A spreadsheet row counts by the cell with a name; an empty box ([ ], ☐) marks an item
 // not found, so its line is skipped; a JSON file (a tracker's export) would otherwise tick every name in it, found or not
 function pasted() {
@@ -1390,7 +1593,7 @@ function renderGrid() {
 // ---------------------------------------------------------------- settings bar
 $("gm-mf").innerHTML = MFS.map(v => `<button type="button" data-v="${v}" aria-pressed="${v === state.mf}">${v}%</button>`).join("");
 function renderAll() { summary(); renderAnswer(); renderSpeed(); renderLevers(); renderEars(); planSoon(); renderItems(); renderFarm(); renderGamble(); renderGheed(); renderCant(); renderFaq(); }
-document.querySelectorAll(".grail-map .seg").forEach(seg => seg.addEventListener("click", e => {
+document.querySelectorAll(".grail-map .seg[data-ctl]").forEach(seg => seg.addEventListener("click", e => {
   const b = e.target.closest("button"); if (!b) return;
   seg.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
   state[seg.dataset.ctl] = b.dataset.v; renderAll(); setSum();
@@ -1434,6 +1637,7 @@ function fromHash() {
   const h = decodeURIComponent(location.hash.slice(1));
   if (h.startsWith("tab-")) {  // a link to a tab (the intro's cards, a shared link) lands on it
     const first = document.querySelector(`.grail-map section[data-tab="${h.slice(4)}"]`); if (first) showTab(h.slice(4), first); return; }
+  if (h === "gm-comp" && CV.view !== "comp") setView("comp");  // a link to the Compendium view opens it
   const el = h && document.getElementById(h), sec = el && el.closest(".grail-map section[data-tab]");
   if (el && el.tagName === "DETAILS") el.open = true;  // a link to a folded panel (Fill in your grail) opens it
   if (sec) showTab(sec.dataset.tab, el);

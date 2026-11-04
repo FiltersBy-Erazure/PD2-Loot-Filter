@@ -740,6 +740,110 @@ def crt_qsort(a, cmp):
         lo, hi = stack.pop()
 
 
+def stl_sort(a, less):
+    """The C++ library's std::sort as PD2's own code sorts (Microsoft's: an insertion sort for 32 elements or fewer,
+    else a three-way partition around the median of three, of nine above 40 elements): not stable either, so elements
+    that compare equal end up in an order that depends on the whole list. less(x, y) is the sort's x < y. Sorts the
+    list a in place."""
+    def swap(i, j):
+        a[i], a[j] = a[j], a[i]
+
+    def insertion(first, last):
+        for mid in range(first + 1, last):
+            val = a[mid]
+            if less(val, a[first]):  # a new first element: everything before it moves up one
+                a[first + 1:mid + 1] = a[first:mid]
+                a[first] = val
+            else:
+                hole = mid
+                while less(val, a[hole - 1]):
+                    a[hole] = a[hole - 1]
+                    hole -= 1
+                a[hole] = val
+
+    def med3(f, m, l):
+        if less(a[m], a[f]):
+            swap(m, f)
+        if less(a[l], a[m]):
+            swap(l, m)
+            if less(a[m], a[f]):
+                swap(m, f)
+
+    def partition(first, last):  # -> (pf, pl): [pf, pl) holds the elements equal to the pivot
+        mid = first + ((last - first) >> 1)
+        count = last - 1 - first
+        if count > 40:  # the median of nine
+            step = (count + 1) >> 3
+            med3(first, first + step, first + 2 * step)
+            med3(mid - step, mid, mid + step)
+            med3(last - 1 - 2 * step, last - 1 - step, last - 1)
+            med3(first + step, mid, last - 1 - step)
+        else:
+            med3(first, mid, last - 1)
+        pf, pl = mid, mid + 1
+        while first < pf and not less(a[pf - 1], a[pf]) and not less(a[pf], a[pf - 1]):
+            pf -= 1
+        while pl < last and not less(a[pl], a[pf]) and not less(a[pf], a[pl]):
+            pl += 1
+        gf, gl = pl, pf
+        while True:
+            while gf < last:
+                if less(a[pf], a[gf]):
+                    pass
+                elif less(a[gf], a[pf]):
+                    break
+                else:
+                    if pl != gf:
+                        swap(pl, gf)
+                    pl += 1
+                gf += 1
+            while first < gl:
+                if less(a[gl - 1], a[pf]):
+                    pass
+                elif less(a[pf], a[gl - 1]):
+                    break
+                else:
+                    pf -= 1
+                    if pf != gl - 1:
+                        swap(pf, gl - 1)
+                gl -= 1
+            if gl == first and gf == last:
+                return pf, pl
+            if gl == first:  # no room at the bottom: the pivot run moves up
+                if pl != gf:
+                    swap(pf, pl)
+                pl += 1
+                swap(pf, gf)
+                pf += 1
+                gf += 1
+            elif gf == last:  # no room at the top: the pivot run moves down
+                gl -= 1
+                pf -= 1
+                if gl != pf:
+                    swap(gl, pf)
+                pl -= 1
+                swap(pf, pl)
+            else:
+                gl -= 1
+                swap(gf, gl)
+                gf += 1
+
+    def sort(first, last, ideal):
+        while last - first > 32:
+            if ideal <= 0:  # the heap sort that stops a bad run of partitions: no list here gets that far
+                raise NotImplementedError("std::sort's heap sort fallback")
+            pf, pl = partition(first, last)
+            ideal = (ideal >> 1) + (ideal >> 2)
+            if pf - first < last - pl:
+                sort(first, pf, ideal)
+                first = pl
+            else:
+                sort(pl, last, ideal)
+                last = pf
+        insertion(first, last)
+    sort(0, len(a), len(a))
+
+
 def stat_line_order(statcost):
     """{stat id: line} for every stat with a line of its own on an item (a descfunc), 0 = the top line. The game
     lists an item's stats in one order for every item: once at load it sorts every ItemStatCost row with a descfunc

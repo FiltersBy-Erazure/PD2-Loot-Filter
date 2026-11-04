@@ -591,7 +591,27 @@
   Replace my ticks, and Tick all / Untick all / Show my list / Copy. Every change keeps the ticks before it (`UNDO`, 100
   steps, this visit only; a change that changes nothing keeps none). The box skips empty-box lines (`[ ]`), refuses JSON,
   reads a spreadsheet row by the cell with a name and a name without its leading "The", and reports the `NOT_GRAIL` names
-  apart (`DATA.notGrail`). Gambling (the author, 2026-10-31, `gamble_rates` / `gamble_price` /
+  apart (`DATA.notGrail`). Every Item's sort "Compendium order" (the author, 2026-11-04: tick items while paging
+  through the stash's Compendium, All picked): its Uniques, then its Sets (`compendium_order`, `comp`). The Compendium
+  sorts the uniques by required level with std::sort, which isn't stable (`pd2_data.stl_sort` sorts as it does: level 5
+  goes Hotspur, Stoutnail, The Hand of Broc...), and keeps the sets in table order, set by set, each by required level;
+  checked against the author's screenshots of the Uniques' first four pages and the Sets' pages 1, 2, 4, 17, 19 and 20
+  (one set a page; Natalya's, Immortal King's and Tal Rasha's items in required level order).
+  Every Item's **Compendium view** (the author, 2026-11-04: a separate compendium-style view; the List / Compendium
+  switch is big, right under the heading, and every visit starts in the List view): `tools/grail_compendium.py`
+  (grail_map.py calls `build()`; its docstring has the rules and places) draws the stash Compendium from the game's own
+  pictures (pd2assets.mpq's stash panel, cards, buttons; each item's inventory picture with its color map; names
+  wrapped by D2GL's font 6 widths): its pages, 24 item-type buttons (`UNIQUE_BUTTONS`), 4 set buttons (`SET_BUTTONS`),
+  the hidden uniques after the others (`HIDDEN`), Discovery Progress (all / discovered / undiscovered; the page count
+  ignores it, as the game's) and the counter, all as the game shows them, with the game's hover texts (the page's own,
+  not the browser's). A card's red diamond = ticked; a click marks it discovered (ticked) or undiscovered (the author:
+  the view says discovered / undiscovered, not ticked / unticked); "Tick shown" ticks the page's cards; the arrow keys
+  turn pages. The owned items' button is left out (the author: its box painted over with the other corner's ornament,
+  mirrored, `OWNED_BOX`). Its pictures are one sheet, `Erazure-Grail-Planner-Compendium.png` (repo root, committed,
+  ~600 KB, written only when it changes), loaded the first time the view shows; `website/hooks.py` copies it to the
+  site's root (`BESIDE`), where the site page's script finds it (`../../` from assets/grail-map/). Checked in headless
+  Edge against the author's screenshots (positions within a game pixel or two), on the standalone page and the site.
+  Gambling (the author, 2026-10-31, `gamble_rates` / `gamble_price` /
   `pack_gamble` in grail_farm.py): town gambling is the base game's code, unchanged by PD2, with PD2's
   DifficultyLevels (unique 50, set 100 in 100,000; exceptional 90, elite 33 per item level in 10,000) and Gamble.txt;
   item level = character level -5..+4; price per gamble from the base's normal version (rings / amulets: Misc `gamble

@@ -38,9 +38,12 @@ A model, nothing measured in game:
   1 - e^(-rate x n) (the page does that part, and the switching-ears schedule).
 - Farm spots: tools/grail_farm.py (every act boss, superunique and special encounter per difficulty, per kill, with
   the six-item limit; its docstring has those rules).
+- Every Item's Compendium view: tools/grail_compendium.py (the stash Compendium as the game draws it; its pictures go
+  in Erazure-Grail-Planner-Compendium.png beside the page).
 """
 import argparse
 import datetime
+import itertools
 import json
 import math
 import re
@@ -461,12 +464,12 @@ def grail_items(t):
         "".join(l for l in BASES.read_text(encoding="utf-8").splitlines(True) if not l.startswith("#")))}
     items, by_name = [], {}
 
-    def add(kind, index, code, lvl, w, uid=None, set_name=""):
+    def add(kind, index, code, lvl, w, req, uid=None, set_name=""):
         name = names.get((kind, index), index)
         it = by_name.get((kind, name))
         if it is None:
             b = bases.get(code, {})
-            it = dict(kind=kind, index=index, name=name, code=code, lvl=lvl, w=0, rows=[], uids=[],
+            it = dict(kind=kind, index=index, name=name, code=code, lvl=lvl, w=0, req=req, rows=[], uids=[],
                       base=b.get("name") or t.items[code].get("name", code),
                       tier=b.get("tier", "") if code not in ("rin", "amu", "jew") and not code.startswith("cm") else "")
             if set_name:
@@ -481,13 +484,34 @@ def grail_items(t):
         code = r.get("code")
         if not code or r.get("enabled") != "1" or code in QUEST or code.startswith("t5") or r["index"] in NOT_GRAIL:
             continue  # unique maps, quest items and the author's list are no grail items
-        add("UNI", r["index"], code, num(r["lvl"]), num(r["rarity"]), uid=n)
+        add("UNI", r["index"], code, num(r["lvl"]), num(r["rarity"]), num(r["lvl req"]), uid=n)
     for r in t.sets:
         if r.get("item"):
             key = t.set_names.get(r.get("set", ""), r.get("set", ""))
-            add("SET", r["index"], r["item"], num(r["lvl"]), num(r["rarity"]),
+            add("SET", r["index"], r["item"], num(r["lvl"]), num(r["rarity"]), num(r["lvl req"]),
                 set_name=t.names.get(key, key))  # the game's name: McAuley's Folly is Sander's Folly
+    compendium_order(items)
     return items
+
+
+def compendium_order(items):
+    """Each item's place in the stash's Compendium, its "All" list (it["comp"], from 1): the uniques, then the sets.
+    The Compendium sorts the uniques once by required level with std::sort, which isn't stable: uniques of one level
+    come in an order the table rows don't tell (level 5: Hotspur, Stoutnail, The Hand of Broc, The Gnasher...), so
+    pd2_data.stl_sort repeats that sort on the rows in table order (a name's first row; the hidden uniques the
+    Compendium lists after them are no grail items). The sets keep their table order, set by set, each set's items
+    sorted by required level the same way (the Sets show one set a page). Checked 2026-11-04 against the author's
+    screenshots of the Uniques' first four pages (Pelta Lunata, Rixot's Keen, Felloak, Biggin's Bonnet, Gull, Hotspur;
+    Stoutnail...; Greyform...; Dimoak's Hew...) and the Sets' pages 1, 2 and 4 (Civerb's, Hsarus', Iratha's)."""
+    by_req = lambda a, b: a["req"] < b["req"]
+    order = [it for it in items if it["kind"] == "UNI"]
+    pd2_data.stl_sort(order, by_req)
+    for _, run in itertools.groupby((it for it in items if it["kind"] == "SET"), key=lambda it: it["set"]):
+        run = list(run)
+        pd2_data.stl_sort(run, by_req)
+        order += run
+    for n, it in enumerate(order, 1):
+        it["comp"] = n
 
 
 def ears(t):
@@ -742,7 +766,7 @@ def page_data(t, items, ear_list, rates, configs, kills, farm):
             "ears": [dict(name=e["name"], rarity=e["rarity"], extra=e["extra"], cls=e["cls"], hp=e["hp"],
                           config=configs.index((e["rarity"], e["extra"])), what=e["what"], harder=e["harder"],
                           nounique=e.get("nounique", 0)) for e in ear_list],
-            "items": [{k: it[k] for k in ("kind", "index", "name", "base", "tier", "lvl", "w", "set") if it.get(k)}
+            "items": [{k: it[k] for k in ("kind", "index", "name", "base", "tier", "lvl", "w", "set", "comp") if it.get(k)}
                       for it in items], "rates": {}, "kills": kills, "looks": filter_looks(), "farm": farm,
             "notGrail": sorted(NOT_GRAIL)}  # a pasted list may name them: the page says they're left out
     for key, v in rates.items():
@@ -813,6 +837,11 @@ def main():
     farm["gamble"] = GF.pack_gamble(t, items, GF.gamble_rates(t, d, items))
     farm["gheedBases"] = GF.gheed_bases(t, items)
     data = page_data(t, items, ear_list, rates, configs, kills, farm)
+    import grail_compendium as GC
+    data["comp"], sheet = GC.build(args.game_dir, t, items)
+    if not GC.SHEET.exists() or GC.SHEET.read_bytes() != sheet:
+        GC.SHEET.write_bytes(sheet)
+        print(f"wrote {GC.SHEET.name}: {len(sheet) // 1024} KB")
     page = DOC_HEAD + TEMPLATE.read_text(encoding="utf-8") + "\n</body>\n</html>\n"
     page = page.replace("/*__DATA__*/null", json.dumps(data, ensure_ascii=False, separators=(",", ":")))
     PAGE.write_text(page, encoding="utf-8", newline="\n")
