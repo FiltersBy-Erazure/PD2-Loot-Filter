@@ -44,7 +44,7 @@ NAME_COLOR = [("UNI_", "GOLD"), ("FACET", "GOLD"), ("SET", "GREEN"), ("RARE_", "
 SAMPLE = {  # %NAME% of the sample rule: an unidentified unique, set or rare item shows its base's name
     "UNI_DCLONE_RATHMA": "Boneweave", "FACET": "Jewel", "FACET_NAME": "Jewel", "UNI_HIGH_VALUE": "Ring",
     "UNI_MEDIUM_VALUE": "Grand Charm",
-    "UNI_MINIMAL_VALUE": "Ceremonial Javelin", "UNI_LLD": "War Hat", "UNI_NORMAL": "Light Plate",
+    "UNI_MINIMAL_VALUE": "Ceremonial Javelin", "UNI_MINIMAL_GRAIL": "Ceremonial Javelin", "UNI_LLD": "War Hat", "UNI_NORMAL": "Light Plate",
     "UNI_EXCEPTIONAL": "Mage Plate", "UNI_ELITE": "Archon Plate", "SET_HIGH_VALUE": "Corona",
     "SET_MEDIUM_VALUE": "Hunter's Guise", "SET_LLD": "Heavy Gloves", "SET": "Ring", "RARE_HIGH_VALUE": "Diadem",
     "RARE_JEWEL_NAME": "Jewel", "RARE_MEDIUM_VALUE": "War Belt", "RARE_ETH_CRAFT": "Spiculum",

@@ -119,6 +119,8 @@ LOOKS = {
     "UNI_MEDIUM_VALUE": ("Medium value", 70, "Medium value"),
     "SET_MEDIUM_VALUE": ("Medium value", 70, "Medium value"),
     "UNI_MINIMAL_VALUE": ("Minimal value", 60, "Minimal value"),
+    # 160: a Minimal value unique you haven't discovered yet (its Minimal rule's GRAIL_NEW twin)
+    "UNI_MINIMAL_GRAIL": ("Minimal value Grail look", 59, "Minimal value"),
     "UNI_LLD": ("Low Level Duel", 50, "Low Level Duel"), "SET_LLD": ("Low Level Duel", 50, "Low Level Duel"),
     "LLD_TAG": ("name with an [LLD] tag", 45, "Low Level Duel"),
     "UNI_NORMAL": ("standard unique look", 30, "Everything else"),
@@ -130,7 +132,7 @@ LOOKS = {
     "NAME": ("name only", 20, "Everything else"),
     "HIDDEN": ("hidden", 0, "Everything else"),
 }
-GRAIL_LOOKS = {"UNI_GRAIL", "SET_GRAIL"}  # the looks only an item you haven't discovered yet gets
+GRAIL_LOOKS = {"UNI_GRAIL", "SET_GRAIL", "UNI_MINIMAL_GRAIL"}  # the looks only an item you haven't discovered yet gets
 TIER_GROUPS = ["Diablo Clone & Rathma", "High value", "Medium value", "Minimal value", "Low Level Duel",
                "Everything else"]
 LOOK_ALIAS_RE = re.compile(r"%((?:UNI|SET)_[A-Z_]+?)_LEFT%")
@@ -1022,7 +1024,7 @@ def item_view(g, toggles, sounds):
         contexts.append(({"LOC": "field", "GRAIL": "new"}, "before you've discovered it"))
     li, gi = dims.index["LOC"], dims.index["GRAIL"]
     by_text = {}
-    grail = LOOKS["UNI_GRAIL"][0]
+    grail, minimal = LOOKS["UNI_GRAIL"][0], LOOKS["UNI_MINIMAL_GRAIL"][0]
     for fixed, where in contexts:
         diff, hidden, kept = {}, True, set()
         for sc, k in restrict(table, dims, fixed).items():
@@ -1034,11 +1036,13 @@ def item_view(g, toggles, sounds):
                 kept.add(m[0])
         if not diff:
             continue
-        if fixed["GRAIL"] == "new" and set(diff.values()) == {grail}:
+        if fixed["GRAIL"] == "new" and set(diff.values()) <= {grail, minimal}:
             # the Grail look wherever no value tier takes the item, in the author's words (2026-10-22): the tiers
-            # it leaves out are named in full, the lines above say where this item is in one
-            tiers = "High value, Medium value, or Minimal value" if g.kind == "UNI" else "High value or Medium value"
-            key = ("grail", f"{grail}, except where it is {tiers}" if kept else grail)
+            # it leaves out are named in full, the lines above say where this item is in one. A Minimal value unique
+            # has a Grail look of its own (160's twins: exactly where it is Minimal value), so it is never left out
+            looks = {grail: grail, minimal: minimal, grail + minimal: f"{grail}, {minimal} where it is Minimal value"}
+            text = looks["".join(p for p in (grail, minimal) if p in diff.values())]
+            key = ("grail", text + (", except where it is High value or Medium value" if kept else ""))
         elif hidden and len(set(diff.values())) == 1:  # it only changes where the item would be hidden
             key = ("hidden", next(iter(diff.values())))
         else:
@@ -1049,7 +1053,7 @@ def item_view(g, toggles, sounds):
         if kind == "hidden":  # "Not hidden in town, or before you've discovered it: shows its name instead"
             shows = "shows its name instead" if text == "name only" else f"shows as {text} instead"
             notes.append(f"Not hidden {', or '.join(wheres)}: {shows}")
-        elif kind == "grail":  # "Before you've discovered it: Grail look, except where it's Minimal value"
+        elif kind == "grail":  # "Before you've discovered it: Grail look, except where it is High value or ..."
             notes.append(clause_text(([], [(None, text)]), lead=" or ".join(wheres)))
         else:
             notes += [clause_text(c, lead=" or ".join(wheres)) for c in json.loads(text)]

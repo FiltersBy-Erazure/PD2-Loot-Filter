@@ -298,6 +298,7 @@ class Linter:
         self.check_runeword_tags()
         self.check_formulas()
         self.check_town_hide()
+        self.check_grail_twins()
         return self.findings
 
     def check_aliases(self):
@@ -503,6 +504,23 @@ class Linter:
                 continue
             self.report(r.idx, "warning", "town-hide", "this rule hides the item in town too (TOWN includes "
                         "the Guild Halls): add !TOWN", r.line)
+
+    def check_grail_twins(self):
+        """160: each Minimal value unique rule has its Grail twin right above it, the same condition with GRAIL_NEW,
+        drawing the Minimal Grail look (the author, 2026-11-04), so an undiscovered item gets that look."""
+        rules = [r for r in self.rules if not r.commented]
+        for i, r in enumerate(rules):
+            if "%UNI_MINIMAL_VALUE_LEFT%" in r.output:
+                twin = rules[i - 1] if i else None
+                words = normalize_cond(twin.cond).split() if twin else []
+                if not (twin and "%UNI_MINIMAL_GRAIL_LEFT%" in twin.output and "GRAIL_NEW" in words
+                        and [w for w in words if w != "GRAIL_NEW"] == normalize_cond(r.cond).split()):
+                    self.report(r.idx, "warning", "grail-twin", "a Minimal value rule needs its Grail twin right "
+                                "above it: the same condition with GRAIL_NEW, drawing %UNI_MINIMAL_GRAIL_LEFT%", r.line)
+            elif "%UNI_MINIMAL_GRAIL_LEFT%" in r.output:
+                if not (i + 1 < len(rules) and "%UNI_MINIMAL_VALUE_LEFT%" in rules[i + 1].output):
+                    self.report(r.idx, "warning", "grail-twin", "a Minimal Grail rule with no Minimal value rule "
+                                "right under it", r.line)
 
 
 RW_COMPARE_RE = re.compile(r"^(STAT360|STAT206)([<>=~])(-?\d+)(?:-(\d+))?$")
