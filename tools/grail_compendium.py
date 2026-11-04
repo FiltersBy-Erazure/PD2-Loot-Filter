@@ -17,7 +17,8 @@ How the Compendium shows its items (checked against the author's screenshots, 20
 - Discovery Progress (the diamond button by the counter) shows all, the discovered or the undiscovered items. The page
   count ("4/73") counts every item of the button either way, so the pages past the shown ones stay empty (Uniques) or
   show the last shown set again (Sets). The counter is the tab's discovered items of all, the percent rounded down.
-- A card has the red diamond when its item is discovered (in the planner: ticked). Its picture is half transparent
+- A card has the red diamond when its item is discovered (in the planner: ticked). Its picture (item_picture: a ring,
+  amulet or charm with no picture of its own shows its item type's first) is half transparent
   unless the item lies in the Compendium (the planner can't know that, so always half), its name grey, on two lines
   when wider than 80 pixels in the game's font, cut at the space nearest the middle (D2Font.lines).
 - Hover texts (the page draws them): a button's name over the button; Discovery Progress's title, its text and the
@@ -325,9 +326,14 @@ class Sheet:
 
 def item_picture(game, t, row, kind):
     """(key, frame, inventory width, height) of a unique's or set item's picture: its own file, else its base's
-    unique / set picture, else the base's; its color map applied (UniqueItems / SetItems invtransform)."""
+    unique / set picture, else, for an item type with several pictures (rings, amulets, charms: ItemTypes VarInvGfx),
+    the type's first (the game draws a card as a stand-in item with picture 0, so every such ring looks alike, every
+    amulet too: Nagelring's dark ring and Civerb's Icon on the author's screenshots), else the base's; its color map
+    applied (UniqueItems / SetItems invtransform)."""
     base = t.items[row["code" if kind == "UNI" else "item"]]
-    f = row.get("invfile") or base.get("uniqueinvfile" if kind == "UNI" else "setinvfile") or base["invfile"]
+    kinds = t.types.get(base["type"], {})
+    f = (row.get("invfile") or base.get("uniqueinvfile" if kind == "UNI" else "setinvfile")
+         or (S.num(kinds.get("VarInvGfx")) and kinds.get("InvGfx1")) or base["invfile"])
     color, tr = row.get("invtransform", ""), S.num(base.get("InvTrans"))
     w, h, px = dc6_frames(game.read("data", "global", "items", f + ".dc6"))[0]
     if color in S.TRANSFORM_COLORS and 1 <= tr <= len(S.TRANSFORMS):

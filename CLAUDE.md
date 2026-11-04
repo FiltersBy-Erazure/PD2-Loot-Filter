@@ -600,7 +600,9 @@
   Every Item's **Compendium view** (the author, 2026-11-04: a separate compendium-style view; the List / Compendium
   switch is big, right under the heading, and every visit starts in the List view): `tools/grail_compendium.py`
   (grail_map.py calls `build()`; its docstring has the rules and places) draws the stash Compendium from the game's own
-  pictures (pd2assets.mpq's stash panel, cards, buttons; each item's inventory picture with its color map; names
+  pictures (pd2assets.mpq's stash panel, cards, buttons; each item's inventory picture with its color map, and a ring,
+  amulet or charm with no picture of its own its item type's first, as the game: every unique ring the dark one, every
+  amulet the round one with the orange stone, the author's screenshots, 2026-11-04; names
   wrapped by D2GL's font 6 widths): its pages, 24 item-type buttons (`UNIQUE_BUTTONS`), 4 set buttons (`SET_BUTTONS`),
   the hidden uniques after the others (`HIDDEN`), Discovery Progress (all / discovered / undiscovered; the page count
   ignores it, as the game's) and the counter, all as the game shows them, with the game's hover texts (the page's own,
