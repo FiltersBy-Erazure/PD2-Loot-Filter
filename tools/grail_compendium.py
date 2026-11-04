@@ -88,7 +88,7 @@ def layout():
             "icons": {"u": icons(len(UNIQUE_BUTTONS)), "s": icons(len(SET_BUTTONS))},
             "disc": [X0 + 4, Y0 + 415], "prev": [X0 + 189, Y0 + 415], "next": [X0 + 254, Y0 + 415],
             "count": [X0 + 34, Y0 + 430], "page": [X0 + 237, Y0 + 430], "setName": [96, 55, 128, 22],
-            "name": {"one": [16], "two": [15, 24]}}  # the names' baselines in a card
+            "plate": [7, 20]}  # a card's name plate (top, height): its name centred in it (the author, 2026-11-04)
 
 
 # ---------------------------------------------------------------- game files

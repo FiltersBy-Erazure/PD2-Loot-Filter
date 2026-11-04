@@ -251,8 +251,79 @@
   .grail-map .viewsw small { font: 400 13px var(--body); color: var(--muted); }
   @media (max-width: 600px) { .grail-map .viewsw { justify-self: stretch; } .grail-map .viewsw button { flex: 1; justify-content: center; padding-inline: 10px; }
     .grail-map .viewsw small { display: none; } }
+  /* the List view's help: two cards side by side (stacked on a phone), and each column's meaning on its heading's i */
+  .grail-map .helpcards { display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 14px; }
+  .grail-map .helpcards[hidden] { display: none; }
+  .grail-map .hcard { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 14px 18px 16px;
+    display: grid; gap: 10px; align-content: start; }
+  .grail-map .hcard h3 { font: 600 16px var(--display); letter-spacing: .02em; color: var(--accent); margin: 0; }
+  .grail-map .gloss { display: grid; grid-template-columns: max-content 1fr; gap: 5px 16px; margin: 0; font-size: 14px; line-height: 1.4; }
+  .grail-map .gloss dt { font-weight: 600; color: var(--fg); white-space: nowrap; }
+  .grail-map .gloss dd { margin: 0; color: var(--muted); }
+  .grail-map .gloss .bet { margin: 0 2px 0 0; }
+  .grail-map .hcard ul { margin: 0; padding-left: 18px; display: grid; gap: 7px; color: var(--muted); font-size: 14px; line-height: 1.4; }
+  .grail-map .hcard b { color: var(--fg); font-weight: 600; }
+  .grail-map .hcard .hfoot { color: var(--muted); font-size: 13.5px; line-height: 1.4; border-top: 1px solid var(--line); padding-top: 9px; max-width: none; }
+  @media (max-width: 420px) { .grail-map .gloss { grid-template-columns: 1fr; gap: 0; } .grail-map .gloss dd { margin-bottom: 5px; } }
+  .grail-map #gm-list { position: relative; }
+  .grail-map th .hi { display: inline-grid; place-items: center; width: 15px; height: 15px; margin: 0 0 0 5px; padding: 0; border-radius: 50%;
+    border: 1px solid var(--axis); background: none; color: var(--muted); font: 600 10px/1 var(--body); vertical-align: 1px; cursor: help; }
+  .grail-map th .hi:hover, .grail-map th .hi:focus-visible { color: var(--fg); border-color: var(--accent); }
+  .grail-map .thtip { position: absolute; z-index: 9; width: 270px; max-width: calc(100% - 8px); pointer-events: none; background: var(--panel);
+    border: 1px solid var(--axis); border-radius: 6px; padding: 9px 11px; box-shadow: 0 6px 18px rgba(0, 0, 0, .45); font: 400 13.5px/1.4 var(--body); color: var(--fg); }
+  .grail-map .thtip[hidden] { display: none; }
+  .grail-map .thtip b { color: var(--accent); }
   .grail-map .gm-vlist[hidden], .grail-map .gm-vcomp[hidden] { display: none; }
-  .grail-map .comp { --k: 2; position: relative; display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-start; }
+  /* the view's layout (compScale picks it from the width): wide, three columns ending level with the panel (the
+     buttons and How it works, the panel, Your progress; the author, 2026-11-04); medium, Your progress under them; a
+     phone, one column */
+  .grail-map .comp { --k: 2; position: relative; display: grid; gap: 12px 16px; align-items: start; justify-content: start;
+    grid-template-columns: calc(110px * var(--k)) calc(320px * var(--k)) minmax(290px, 400px);
+    grid-template-areas: "cats stage prog" "how stage prog"; grid-template-rows: auto 1fr; }
+  .grail-map .comp.lay-mid { grid-template-columns: calc(110px * var(--k)) calc(320px * var(--k));
+    grid-template-areas: "cats stage" "how stage" "prog prog"; grid-template-rows: auto 1fr auto; }
+  .grail-map .comp.lay-narrow { grid-template-columns: calc(320px * var(--k)); grid-template-areas: "cats" "stage" "how" "prog"; grid-template-rows: none; }
+  .grail-map .comp .cats { grid-area: cats; }
+  .grail-map .comp .stage { grid-area: stage; }
+  .grail-map .comp .how { grid-area: how; align-self: stretch; }
+  .grail-map .comp .prog { grid-area: prog; align-self: stretch; }
+  .grail-map .comp.lay-narrow .cats { flex-direction: row; }
+  /* the side cards */
+  .grail-map .comp .side { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px 14px;
+    display: flex; flex-direction: column; min-width: 0; }
+  .grail-map .comp .side h3 { font: 600 16px var(--display); letter-spacing: .02em; color: var(--accent); margin: 0 0 4px; text-align: center; }
+  .grail-map .comp .side h4 { font: 600 12px var(--body); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 12px 0 4px; text-align: center;
+    padding-top: 10px; border-top: 1px solid var(--line); }
+  .grail-map .comp .side .foot { margin: auto 0 0; padding-top: 10px; border-top: 1px solid var(--line); color: var(--muted); text-align: center;
+    font: 400 12.5px/1.4 var(--body); max-width: none; }
+  .grail-map .comp .step { display: grid; gap: 7px; justify-items: center; text-align: center; padding: 10px 0 11px; border-top: 1px solid var(--line); }
+  .grail-map .comp .step:first-of-type { border-top: 0; }
+  .grail-map .comp.lay-narrow .step { grid-template-columns: 130px 1fr; justify-items: start; text-align: left; align-items: center; }
+  .grail-map .comp.lay-narrow .step .fig { justify-self: center; }
+  .grail-map .comp .fig { display: flex; gap: 7px; justify-content: center; align-items: flex-end; }
+  .grail-map .comp .crop { position: relative; display: block; overflow: hidden; flex: none; }
+  .grail-map .comp .fig .cap { display: grid; justify-items: center; gap: 3px; font: 500 11px var(--body); color: var(--muted); }
+  .grail-map .comp .txt { font: 400 13.5px/1.4 var(--body); color: var(--muted); }
+  .grail-map .comp .txt b { color: var(--fg); font-weight: 600; }
+  .grail-map .comp .keys { font: 600 11.5px var(--body); color: var(--fg); border: 1px solid var(--axis); border-radius: 4px; padding: 0 5px; }
+  .grail-map .comp .chip { font: 600 13px var(--body); color: var(--fg); background: var(--chip); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; }
+  .grail-map .comp .tot { display: grid; grid-template-columns: 64px 1fr auto; gap: 10px; align-items: center; padding: 4px 0; font: 600 14px var(--body); color: var(--fg); }
+  .grail-map .comp .tot .n, .grail-map .comp .row .n { font-weight: 400; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .grail-map .comp .pbar { height: 8px; border-radius: 4px; background: var(--chip); border: 1px solid var(--line); overflow: hidden; }
+  .grail-map .comp .pbar > i { display: block; height: 100%; background: linear-gradient(90deg, #8a6d1f, #dfb679); }
+  .grail-map .comp .steps { flex: 1; display: flex; flex-direction: column; justify-content: space-evenly; }
+  .grail-map .comp .rows { flex: 1; display: grid; grid-auto-rows: minmax(21px, 1fr); align-content: stretch; }
+  .grail-map .comp.lay-mid .rows { grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); grid-auto-rows: 28px; column-gap: 24px; }
+  .grail-map .comp .row { display: grid; grid-template-columns: 24px minmax(0, 1fr) 64px 46px; gap: 8px; align-items: center; margin: 0 -6px;
+    padding: 0 6px; border-radius: 5px; font: 400 13px var(--body); color: var(--muted); text-align: left; cursor: pointer; }
+  .grail-map .comp .row.noic { grid-template-columns: minmax(0, 1fr) 64px 46px; }
+  .grail-map .comp .row:hover, .grail-map .comp .row:focus-visible { background: var(--chip); color: var(--fg); }
+  .grail-map .comp .row > span:nth-last-child(3) { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .grail-map .comp .row .pbar { height: 5px; }
+  .grail-map .comp .row .n { text-align: right; }
+  .grail-map .comp .row.done .n { color: var(--good); }
+  .grail-map .comp .row.done .pbar > i { background: var(--good); }
+  .grail-map .comp .row .ic { position: relative; width: 24px; height: 24px; }
   /* the game's hover text: white Exocet (here the display font) on a dark see-through box, its bottom just above the
      button or card, centred on it; the arrows of Discovery Progress's options the game writes invisible but for the
      picked one */
@@ -264,10 +335,11 @@
   .grail-map .comp .ctip .q-uni { color: #dfb679; }
   .grail-map .comp .ctip .q-set { color: #25fe00; }
   .grail-map .comp .ctip .hint { color: #7b7b7b; }
-  .grail-map .comp .err { flex-basis: 100%; max-width: none; color: var(--s2); }
+  .grail-map .comp .err { position: absolute; z-index: 6; top: 0; left: 0; right: 0; max-width: none; margin: 0; padding: 8px 12px;
+    background: var(--panel); border: 1px solid var(--s2); border-radius: 6px; color: var(--s2); }
   .grail-map .comp .err[hidden] { display: none; }
   .grail-map .comp .cats { display: flex; flex-direction: column; gap: calc(3px * var(--k)); }
-  .grail-map .comp .stage { position: relative; flex: none; width: calc(320px * var(--k)); height: calc(var(--ph) * var(--k) * 1px); background: #000; }
+  .grail-map .comp .stage { position: relative; width: calc(320px * var(--k)); height: calc(var(--ph) * var(--k) * 1px); background: #000; }
   .grail-map .comp .at, .grail-map .comp .sp { position: absolute; left: calc(var(--x) * var(--k) * 1px); top: calc(var(--y) * var(--k) * 1px);
     width: calc(var(--w) * var(--k) * 1px); height: calc(var(--h) * var(--k) * 1px); }
   .grail-map .comp .sp { background: var(--art) no-repeat calc((var(--sx) + var(--dx, 0)) * var(--k) * -1px) calc(var(--sy) * var(--k) * -1px) /
@@ -406,25 +478,32 @@
     <button type="button" data-view="comp" aria-pressed="false"><svg viewBox="0 0 20 20" aria-hidden="true"><path fill="currentColor"
       d="M1 2h5v7H1zm6.5 0h5v7h-5zM14 2h5v7h-5zM1 11h5v7H1zm6.5 0h5v7h-5zM14 11h5v7h-5z"/></svg>Compendium <small>its pages, as in the game</small></button>
   </div>
-  <p class="note gm-vlist">How often each item drops in one full map clear, as one in so many maps: without an ear ("No ear"), with any
-  Corrupted Ear ("Any ear": the extra drop chance and the extra elite packs every ear gives) and with the ear whose pool has the
-  item's base ("Best ear", the next ears under it). "Best ear ×" is how many times more often the best ear finds it; "Maps for 90%"
-  the maps for a 90% chance to see it with the best ear. "Drop level" is the lowest monster level that can drop it (not the level
-  to wear it). "Best farm spot" is the boss or superunique that drops it most often per kill, in any difficulty; "beats maps"
-  means one kill there finds it at least as often as a whole map with its best ear, so target farming is its best bet. Click a
-  row for its best bet, its best spots in each difficulty, in the Corrupted Zones and among the ubers and events, and Gheed's
-  map event.</p>
-  <p class="note gm-vlist">Tick the items you've found. "Tick shown" ticks every row the search and filters list (a whole set, a base,
-  every set item) and "Untick shown" unticks them. Enter in the search ticks or unticks the one item it finds, so you can type
-  names one after another. Found most of the grail? Press "Tick all" under <a href="#gm-fill">Fill in your grail</a>, then
-  untick what you're missing (Show: "Not ticked" and "Ticked" check your work). Undo takes back your changes one at a time.
-  Sort by "Compendium order" to go through the stash's Compendium page by page: its Uniques, then its Sets, as they list
-  them with All picked, or switch to the Compendium view.</p>
-  <p class="note gm-vcomp" hidden>The stash's Compendium as the game shows it: the same pages, buttons and order, so you can
-  page through both side by side. Click a card to mark its item discovered or undiscovered: a discovered one has the red
-  diamond, as in the game, and counts as ticked everywhere else on this page. The diamond button by the counter shows all
-  items, the discovered or the undiscovered ones, like the game's Discovery Progress button; "Tick shown" marks every card on
-  the page discovered. The arrow keys turn the pages.</p>
+  <div class="helpcards gm-vlist">
+    <div class="hcard"><h3>Reading the table</h3>
+      <dl class="gloss">
+        <dt>No ear</dt><dd>one in so many full map clears drops it, without a Corrupted Ear</dd>
+        <dt>Any ear</dt><dd>with any ear: its extra drop chance and its extra elite packs</dd>
+        <dt>Best ear</dt><dd>with the ear whose pool has the item's base (the next ears under it)</dd>
+        <dt>Best ear ×</dt><dd>how many times more often the best ear finds it</dd>
+        <dt>Maps for 90%</dt><dd>the maps for a 90% chance to see it, with its best ear</dd>
+        <dt>Drop level</dt><dd>the lowest monster level that can drop it (not the level to wear it)</dd>
+        <dt>Best farm spot</dt><dd>the boss or superunique that drops it most often per kill, in any difficulty;
+          <span class="bet">beats maps</span> one kill there finds it at least as often as a whole map with its best ear</dd>
+      </dl>
+      <p class="hfoot">Point at a column's <b>i</b> for what it means. Click a row for its best bet, its best spots in each
+      difficulty, in the Corrupted Zones and among the ubers and events, and Gheed's map event.</p></div>
+    <div class="hcard"><h3>Marking what you've found</h3>
+      <ul>
+        <li>Tick its box, or type its name in the search and press <b>Enter</b>, then the next name</li>
+        <li><b>Tick shown</b> / <b>Untick shown</b>: every row the search and filters list (a whole set, a base, every set item)</li>
+        <li>Found most of the grail? <b>Tick all</b> under <a href="#gm-fill">Fill in your grail</a>, then untick what you're
+          missing (Show: "Not ticked" and "Ticked" check your work)</li>
+        <li><b>Undo</b> takes your changes back one at a time</li>
+        <li>Paging through the game's Compendium? Sort by <b>Compendium order</b>, or switch to the <b>Compendium</b> view</li>
+      </ul></div>
+  </div>
+  <p class="note gm-vcomp" hidden>The stash's Compendium as the game shows it, the same pages, buttons and order: page through
+  both side by side and mark what you've discovered.</p>
   <div class="tools gm-vlist">
     <input type="search" id="gm-q" placeholder="Search item, base or set" aria-label="Search items">
     <select id="gm-kind" aria-label="Kind"><option value="">Uniques and sets</option><option value="UNI">Uniques</option><option value="SET">Sets</option></select>
@@ -441,8 +520,10 @@
     <span class="small" id="gm-tickmsg" aria-live="polite"></span>
   </div>
   <div class="tbl panel gm-vlist"><table class="gm-table" id="gm-items"></table></div>
+  <div class="thtip" id="gm-thtip" role="tooltip" hidden></div>
   <div class="comp gm-vcomp" id="gm-comp" hidden><p class="note err" id="gm-comp-err" hidden>The Compendium's pictures didn't load: reload the
     page to try again.</p><div class="cats" id="gm-comp-cats"></div><div class="stage" id="gm-comp-stage"></div>
+    <div class="side how" id="gm-comp-how"></div><div class="side prog" id="gm-comp-prog"></div>
     <div class="ctip" id="gm-comp-tip" role="tooltip" hidden></div></div>
 </section>
 
@@ -1161,7 +1242,32 @@ $("gm-plan").addEventListener("click", e => {
 
 // ---------------------------------------------------------------- every item
 EARS.forEach(e => { const o = document.createElement("option"); o.value = e; o.textContent = e + " ear"; $("gm-ear").appendChild(o); });
+// each column's meaning, on its heading's i (pointed at, focused or tapped), as the "Reading the table" card says it
+const COLS = {
+  drop: ["Drop level", "The lowest monster level that can drop it (not the level to wear it)."],
+  none: ["No ear", "One in so many full map clears drops it, without a Corrupted Ear."],
+  any: ["Any ear", "With any Corrupted Ear: its extra drop chance and its extra elite packs."],
+  ear: ["Best ear", "With the ear whose pool has the item's base; the next ears under it. Pick an ear above to see that ear's chance."],
+  gain: ["Best ear ×", "How many times more often the best ear finds it than no ear."],
+  p90: ["Maps for 90%", "The maps for a 90% chance to see it at least once, with its best ear."],
+  farm: ["Best farm spot", "The boss or superunique that drops it most often per kill, in any difficulty. \"Beats maps\": one kill there finds it at least as often as a whole map with its best ear. Click the row for every spot."]};
+const hi = k => `<button type="button" class="hi" data-hi="${k}" aria-label="What ${COLS[k][0]} means">i</button>`;
+function colTip(b) {  // show the meaning of b's column under b (none: hide it)
+  const tip = $("gm-thtip");
+  if (!b) { tip.hidden = true; delete tip.dataset.on; return; }
+  const [name, text] = COLS[b.dataset.hi];
+  tip.innerHTML = `<b>${name}</b><br>${text}`; tip.hidden = false; tip.dataset.on = b.dataset.hi;
+  const area = $("gm-list").getBoundingClientRect(), r = b.getBoundingClientRect();
+  tip.style.left = Math.max(4, Math.min(area.width - tip.offsetWidth - 4, r.right - area.left - tip.offsetWidth)) + "px";
+  tip.style.top = (r.bottom - area.top + 6) + "px";
+}
+$("gm-items").addEventListener("mouseover", e => { const b = e.target.closest(".hi"); if (b) colTip(b); });
+$("gm-items").addEventListener("mouseout", e => { if (e.target.closest(".hi") && !e.target.closest(".hi").contains(e.relatedTarget)) colTip(null); });
+$("gm-items").addEventListener("focusin", e => { const b = e.target.closest(".hi"); if (b) colTip(b); });
+$("gm-items").addEventListener("focusout", e => { if (e.target.closest(".hi")) colTip(null); });
+$("gm-items").addEventListener("click", e => { const b = e.target.closest(".hi"); if (b) colTip(b); });  // a tap on a phone
 function renderItems() {
+  colTip(null);
   const R = cur(), q = $("gm-q").value.trim().toLowerCase(), kind = $("gm-kind").value, show = $("gm-show").value, ear = $("gm-ear").value, sort = $("gm-sort").value;
   let list = ITEMS.filter(it => (!kind || it.kind === kind) && finds(it.search, q));
   const inf = new Map(list.map(it => { const i = it.i;
@@ -1180,7 +1286,7 @@ function renderItems() {
     return x < y ? -1 : x > y ? 1 : a.label.localeCompare(b.label); });
   if (CV.view === "list") SHOWN = list;  // the Compendium view: its page's cards
   $("gm-count").textContent = `${list.length} of ${N} shown`;
-  $("gm-items").innerHTML = `<thead><tr><th>Have</th><th class="l">Item</th><th class="l opt">Base</th><th class="opt">Drop level</th><th>No ear</th><th class="opt">Any ear</th><th class="l">${ear ? ear + " ear" : "Best ear"}</th><th class="opt">Best ear ×</th><th>Maps for 90%</th><th class="l">Best farm spot</th></tr></thead><tbody>` +
+  $("gm-items").innerHTML = `<thead><tr><th>Have</th><th class="l">Item</th><th class="l opt">Base</th><th class="opt">Drop level${hi("drop")}</th><th>No ear${hi("none")}</th><th class="opt">Any ear${hi("any")}</th><th class="l">${ear ? ear + " ear" : "Best ear"}${hi("ear")}</th><th class="opt">Best ear ×${hi("gain")}</th><th>Maps for 90%${hi("p90")}</th><th class="l">Best farm spot${hi("farm")}</th></tr></thead><tbody>` +
     list.map(it => { const i = it.i, o = inf.get(it), f = FOUND.has(it.key), b = bf.get(it);
       return `<tr class="it${f ? " found" : ""}" data-i="${i}" aria-expanded="${OPEN.has(i)}"><td class="have"><input type="checkbox" data-k="${it.key.replace(/"/g, "&quot;")}" ${f ? "checked" : ""} aria-label="Have ${it.label.replace(/"/g, "")}"></td>` +
         `<td class="name"><span class="q" style="background:var(${it.kind === "SET" ? "--q-set" : "--q-unique"})"></span>${it.name}${it.set ? ` <span class="ver">· ${it.set}</span>` : ""}</td>` +
@@ -1316,9 +1422,9 @@ function renderComp() {
   if (name) h += `<span class="at ct sn" style="${box(...CL.setName)}">${esc(name)}</span>`;
   cards.forEach((c, k) => {
     if (c[0] === -2) return;  // a hidden unique with no base: an empty place
-    const [x, y] = CL.cards[k], it = c[0] >= 0 ? ITEMS[c[0]] : null, on = cFound(c), base = CL.name[c[2].length === 2 ? "two" : "one"];
+    const [x, y] = CL.cards[k], it = c[0] >= 0 ? ITEMS[c[0]] : null, on = cFound(c), [pt, ph] = CL.plate;
     const inner = piece(on ? "cardFound" : "card", 0, 0) + piece(c[3], c[4], c[5], it ? "pic" : "pic dark") +
-      `<span class="at ct cn" style="${box(0, base[0] - 7, 90, 9 * c[2].length)}">${c[2].map(esc).join("<br>")}</span>`;
+      `<span class="at ct cn" style="${box(0, pt + (ph - 9 * c[2].length) / 2, 90, 9 * c[2].length)}">${c[2].map(esc).join("<br>")}</span>`;
     h += it ? `<button type="button" class="at cc" style="${box(x, y, 90, 150)}" data-c="${c[0]}" data-f="c${k}" data-tip="c${c[0]}" ` +
       `aria-pressed="${on}" aria-label="${esc(`${it.label}, ${it.base}: ${on ? "discovered" : "undiscovered"}`)}">${inner}</button>`
       : `<span class="at" style="${box(x, y, 90, 150)}" data-tip="hidden">${inner}</span>`;
@@ -1333,10 +1439,49 @@ function renderComp() {
   $("gm-comp-stage").innerHTML = h;
   $("gm-comp-cats").innerHTML = ["u", "s"].map(t => `<button type="button" class="cat" data-cat="${t}" data-f="t${t}" aria-pressed="${t === tab}">` +
     `${piece("cat", 0, 0, "", 110)}<span class="cl">${esc(w[t === "u" ? "StashCategoryUniques" : "StashCategorySets"])}</span></button>`).join("");
+  if (!$("gm-comp-how").innerHTML) $("gm-comp-how").innerHTML = howCard();
+  $("gm-comp-prog").innerHTML = progressCard();
   SHOWN = cards.filter(c => c[0] >= 0).map(c => ITEMS[c[0]]);  // what "Tick shown" ticks
   tickUI();
   const back = fk && el.querySelector(`[data-f="${fk}"]`); if (back) back.focus({preventScroll: true});
   compTip(TIP_ON && el.querySelector(`[data-tip="${TIP_ON}"]`));  // a hover text stays over the redrawn button
+}
+// The side cards (the author, 2026-11-04): How it works, under the Uniques and Sets buttons, with the game's own
+// pictures; Your progress, beside the panel, ending level with it: the tab's discovered items of each kind of unique (its
+// button's icon) or of each set, a click opens it
+function crop(key, x, y, w, h, k) {  // the part (x, y, w, h) of a picture, k times
+  return `<span class="crop" style="--k:${k};width:${w * k}px;height:${h * k}px">${piece(key, -x, -y)}</span>`;
+}
+function howCard() {
+  const cap = (pic, words) => `<span class="cap">${pic}${words}</span>`;
+  const step = (fig, txt) => `<div class="step"><div class="fig">${fig}</div><div class="txt">${txt}</div></div>`;
+  return `<h3>How it works</h3><div class="steps">` +
+    step(cap(crop("card", 30, 24, 32, 20, 2), "not yet") + cap(crop("cardFound", 30, 24, 32, 20, 2), "discovered"),
+      `<b>Click a card</b> to mark it discovered (the red diamond) or undiscovered.`) +
+    step(["all", "found", "missing"].map((m, k) => cap(crop("disc" + k, 0, 0, 22, 22, 1.5), m)).join(""),
+      `<b>Discovery Progress</b> shows all items, the discovered or the undiscovered ones.`) +
+    step(crop("prev", 0, 0, 32, 22, 1.4) + crop("next", 0, 0, 32, 22, 1.4),
+      `<b>Turn the pages</b> here, or with the <span class="keys">←</span> <span class="keys">→</span> keys.`) +
+    step(`<span class="chip">Tick shown</span>`, `Marks every card on the page discovered; <b>Undo</b> takes it back.`) +
+    `</div><p class="foot">Point at a button or a card for its name, as in the game. What you mark here is ticked in the List view too.</p>`;
+}
+function progressCard() {
+  const of = cs => [cs.filter(cFound).length, cs.length];
+  const bar = (n, all) => `<span class="pbar"><i style="width:${(100 * n / all).toFixed(1)}%"></i></span>`;
+  const tot = (name, [n, all]) => `<div class="tot"><span>${name}</span>${bar(n, all)}<span class="n">${n} / ${all}</span></div>`;
+  const row = (attr, ic, name, [n, all]) => `<button type="button" class="row${ic ? "" : " noic"}${n === all ? " done" : ""}" ${attr}>${ic}` +
+    `<span>${esc(name)}</span>${bar(n, all)}<span class="n">${n}/${all}</span></button>`;
+  const uni = CP.u.filter(c => c[0] >= 0), w = CP.words;
+  let h = `<h3>Your progress</h3>` + tot(w.StashCategoryUniques, of(uni)) + tot(w.StashCategorySets, of(CP.s));
+  if (CV.tab === "u") {
+    h += `<h4>Uniques by kind</h4><div class="rows">` + CP.buttons.u.map((name, b) => !b ? "" :
+      row(`data-kind="${b}" aria-label="${esc(`Show the ${name}`)}"`, `<span class="ic">${crop("u" + b, 0, 0, 24, 24, 1)}</span>`,
+        name, of(uni.filter(c => c[1] === b)))).join("") + `</div>`;
+  } else {
+    h += `<h4>Sets</h4><div class="rows">` + CP.sets.map((name, s) =>
+      row(`data-set="${s}" aria-label="${esc(`Show ${name}`)}"`, "", name, of(CP.s.filter(c => c[6] === s)))).join("") + `</div>`;
+  }
+  return h + `<p class="foot">Click a ${CV.tab === "u" ? "kind" : "set"} to open it. Green: all discovered.</p>`;
 }
 // The game's hover texts: a button's name over its button; Discovery Progress's title, text and ways to show (the
 // picked one between arrows); a card's item name and base in its quality's color (here with what a click does)
@@ -1375,6 +1520,12 @@ $("gm-comp").addEventListener("click", e => {
     ticksChanged(`Marked ${it.label} ${was}.`, "gm-tickmsg"); return;
   }
   if (b.dataset.b) { CV.btn[CV.tab] = +b.dataset.b; CV.page[CV.tab] = 0; }
+  else if (b.dataset.kind) { CV.tab = "u"; CV.btn.u = +b.dataset.kind; CV.page.u = 0; }  // Your progress: a kind of unique
+  else if (b.dataset.set) {  // a set: its page among the sets Discovery Progress shows (all of them if it shows none of it)
+    const s = +b.dataset.set, runs = [...new Set(CP.s.filter(c => !CV.filt || cFound(c) === (CV.filt === 1)).map(c => c[6]))];
+    let p = runs.indexOf(s); if (p < 0) { CV.filt = 0; p = s; }
+    CV.tab = "s"; CV.btn.s = 0; CV.page.s = p;
+  }
   else if (b.dataset.cat) CV.tab = b.dataset.cat;
   else if (b.dataset.p) turn(+b.dataset.p);
   else if (b.classList.contains("cd")) CV.filt = (CV.filt + 1) % 3;
@@ -1386,11 +1537,13 @@ document.addEventListener("keydown", e => {  // the arrow keys turn the pages
   const d = e.key === "ArrowLeft" ? -1 : e.key === "ArrowRight" ? 1 : 0; if (!d) return;
   e.preventDefault(); turn(d); renderComp();
 });
-function compScale() {  // 2 game pixels a pixel where the page is wide enough (crisp), less on a phone
+function compScale() {  // 2 game pixels a pixel where the page is wide enough (crisp), less on a phone; the layout
   const el = $("gm-comp"), wd = el.clientWidth; if (!wd) return false;
-  const k = Math.min(2, wd / 320); if (k === CV.k) return false;
+  const lay = wd >= 220 + 640 + 290 + 32 ? "wide" : wd >= 220 + 640 + 16 ? "mid" : "narrow", k = lay === "narrow" ? Math.min(2, wd / 320) : 2;
+  if (k === CV.k && lay === CV.lay) return false;
   if (!CV.k) { const img = new Image(); img.onerror = () => { $("gm-comp-err").hidden = false; }; img.src = CP_ART; }  // a missing sheet says so
-  CV.k = k; el.style.setProperty("--k", k); el.classList.toggle("px", k === 2);
+  CV.k = k; CV.lay = lay; el.style.setProperty("--k", k); el.classList.toggle("px", k === 2);
+  el.classList.toggle("lay-mid", lay === "mid"); el.classList.toggle("lay-narrow", lay === "narrow");
   el.style.setProperty("--art", `url("${CP_ART}")`); el.style.setProperty("--aw", CP.size[0]); el.style.setProperty("--ah", CP.size[1]);
   $("gm-comp-stage").style.setProperty("--ph", CL.h);
   return true;

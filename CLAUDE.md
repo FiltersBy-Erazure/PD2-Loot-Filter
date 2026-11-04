@@ -607,8 +607,13 @@
   not the browser's). A card's red diamond = ticked; a click marks it discovered (ticked) or undiscovered (the author:
   the view says discovered / undiscovered, not ticked / unticked); "Tick shown" ticks the page's cards; the arrow keys
   turn pages. The owned items' button is left out (the author: its box painted over with the other corner's ornament,
-  mirrored, `OWNED_BOX`). Its pictures are one sheet, `Erazure-Grail-Planner-Compendium.png` (repo root, committed,
-  ~600 KB, written only when it changes), loaded the first time the view shows; `website/hooks.py` copies it to the
+  mirrored, `OWNED_BOX`). Beside the panel (the author, 2026-11-04, from mockups): "How it works" under the Uniques /
+  Sets buttons (the game's own pictures of each state) and "Your progress" (Uniques and Sets bars, then the tab's
+  discovered items per kind of unique or per set; a click opens it), the three columns ending level with the panel
+  (`compScale` picks the layout: wide; medium, Your progress below; a phone, one column). The List view's help is two
+  cards, "Reading the table" and "Marking what you've found", and each column heading has an i with its meaning.
+  The view's pictures are one sheet, `Erazure-Grail-Planner-Compendium.png` (repo root, committed, ~600 KB, written
+  only when it changes), loaded the first time the view shows; `website/hooks.py` copies it to the
   site's root (`BESIDE`), where the site page's script finds it (`../../` from assets/grail-map/). Checked in headless
   Edge against the author's screenshots (positions within a game pixel or two), on the standalone page and the site.
   Gambling (the author, 2026-10-31, `gamble_rates` / `gamble_price` /
