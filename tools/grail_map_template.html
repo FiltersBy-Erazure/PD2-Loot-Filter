@@ -156,10 +156,17 @@
   .grail-map .look .names { font-size: 15px; color: var(--fg); font-weight: 600; margin-top: 2px; }
   .grail-map .look .names .ver { font-weight: 400; }
   /* the two levels side by side at a set width (not spread over the card), lined up from one card to the next */
-  /* each filter level its own three columns (Display, Minimap Icon, Notification); a phone scrolls the grid sideways */
-  .grail-map .lwrap { overflow-x: auto; }
-  .grail-map .lgrid { display: grid; grid-template-columns: 96px repeat(2, 270px 84px 112px); justify-content: start;
+  /* each filter level its own three columns (Display, Minimap Icon, Notification), the Display columns as wide as the
+     widest label in any card (--lw); renderLooks picks the widest layout that fits the card, so nothing ever scrolls:
+     the levels side by side (wide), one under the other (stack), or a phone's one column (narrow) */
+  .grail-map .lwrap { overflow: hidden; }
+  .grail-map .lgrid { display: grid; grid-template-columns: 96px repeat(2, var(--lw, 270px) 84px 112px); justify-content: start;
     gap: 10px 14px; align-items: center; }
+  .grail-map .lgrid.stack { grid-template-columns: 96px var(--lw, 270px) 84px 112px; }
+  .grail-map .lgrid.narrow { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .grail-map .lgrid.narrow .hd, .grail-map .lgrid .lgap { grid-column: 1 / -1; }
+  .grail-map .lgrid .lgap { height: 8px; }
+  .grail-map .lgrid .nline { gap: 10px; }
   .grail-map .lgrid .hd { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; grid-column: span 3;
     padding-bottom: 4px; border-bottom: 1px solid var(--line); }
   .grail-map .lgrid .ch { font-size: 12px; color: var(--muted); }
@@ -168,9 +175,9 @@
   .grail-map .lgrid .none { color: var(--muted); font-style: italic; }
   .grail-map .lgrid .rowhd { font-size: 13px; color: var(--fg); font-weight: 600; }
   .grail-map .lgrid .lsep { grid-column: 1 / -1; border-top: 1px solid var(--line); }
-  .grail-map .ground { max-width: 100%; text-align: center; border-radius: 5px; padding: 3px 6px; overflow-x: auto;
+  .grail-map .ground { max-width: 100%; text-align: center; border-radius: 5px; padding: 3px 6px; overflow: hidden;
     background: radial-gradient(ellipse at 50% 45%, #3a3428 0%, #26221b 55%, #15130f 100%); }
-  .grail-map .d2label { display: inline-block; font-family: "AvQest", "Palatino Linotype", Palatino, Georgia, serif; font-size: 15px;
+  .grail-map .d2label { display: inline-block; font-family: "AvQest", "Palatino Linotype", Palatino, Georgia, serif; font-size: var(--lf, 15px);
     line-height: 1.12; text-align: center; white-space: pre; background: rgba(0, 0, 0, .74); padding: 2px 6px 0; }
   .grail-map .d2label .bs { display: inline-block; transform: scaleX(-1); }
   .grail-map .hidden-label { font-size: 12.5px; color: #a8a8a8; font-style: italic; padding-inline: 6px; }
@@ -1008,7 +1015,7 @@ function renderFaq() {
     ["What are Corrupted Zones?",
      `In Hell games made with Baal's quest done, one group of areas at a time is corrupted: its area level is 85, so its superuniques drop at level 88. The zone is picked when the game is made and changes every 15 minutes for the whole server; a new game gets the current one. The farm spots there are listed apart, under Corrupted Zones.`],
     ["Why does an item I've found still get stars or a chat line?",
-     `An unidentified item counts as found only when you've found every unique (or every set item) of its base, since the filter sees the base, not the item. A High, Medium or Minimal value item shows its value look whether you've found it or not. On the lowest filter level a found item still shows its stars, but the outer ones aren't orange: orange outer stars mean you haven't found it yet. <a href="#gm-filter">Filter Display</a> shows each case.`],
+     `An unidentified item counts as found only when you've found every unique (or every set item) of its base, since the filter sees the base, not the item. A High or Medium value item shows its value look whether you've found it or not. On the lowest filter level a found item still shows its stars, but the outer ones aren't orange: orange outer stars (on a Minimal value item, orange outer slashes) mean you haven't found it yet. <a href="#gm-filter">Filter Display</a> shows each case.`],
     ["Do the game's Force Show options matter with this filter?",
      `Force Show Undiscovered (on by default) shows an undiscovered unique or set item the filter would hide; this filter never hides one, so it changes nothing. Force Show Unowned (off by default) does the same for items you've found but don't own.`],
     ["Is gambling worth it for the grail?",
@@ -1028,7 +1035,8 @@ function renderLooks() {
   $("gm-filter-list").innerHTML = [
     `<b>Never hidden until you've found it:</b> a unique or set item you haven't discovered yet (the game's Discovery Progress) is never hidden, on any filter level, and always gets a minimap icon and a chat line when it drops.`,
     `<b>The Grail look:</b> one in no value tier shows orange stars around its name and a Grail minimap icon of its own. Set rings and amulets keep the set look and get the Grail icon.`,
-    `<b>Value tiers look the same either way:</b> a High, Medium or Minimal value item, or one with its own look, shows its tier's look and notifies whether you've found it or not.`,
+    `<b>Minimal value has a Grail look of its own:</b> its slashes in the Grail colors, orange outside, with a star by the name, and the Grail icon, until you've found it.`,
+    `<b>High and Medium value look the same either way:</b> a High or Medium value item, or one with its own look, shows its tier's look and notifies whether you've found it or not.`,
     `<b>Unidentified items:</b> the filter sees the base, not the item, so an unidentified one counts as found only when you've discovered every unique (or set item) of that base. An identified one is discovered already.`,
     `<b>The game's own options:</b> Force Show Undiscovered (on by default) shows an undiscovered unique or set item the filter would hide, with the game's plain name; this filter never hides one, so its looks stay. Force Show Unowned (off by default) does the same for items you've discovered but don't own.`
   ].map(x => `<li>${x}</li>`).join("");
@@ -1039,16 +1047,52 @@ function renderLooks() {
   };
   const icon = layers => !layers.length ? "" : `<span class="icon" title="Minimap icon">${layers.map(l => [16, 12, 8, 4].map((sz, i) => l[i] ? `<span style="left:${(16 - sz) / 2}px;top:${(16 - sz) / 2}px;width:${sz}px;height:${sz}px;background:${l[i]}"></span>` : "").join("")).join("")}</span>`;
   // each filter level three columns: what the ground shows, the minimap icon, the notification (chat line, drop sound)
+  const notify = c => c.chat ? (c.sound ? "Chat notification and drop sound" : "Chat notification") : null;
   const cells = (c, k) => [c.hidden ? `<span class="none">Hidden</span>` : label(c), c.icons.length ? icon(c.icons) : `<span class="none">None</span>`,
-    c.chat ? (c.sound ? "Chat notification and drop sound" : "Chat notification") : `<span class="none">None</span>`]
-    .map((h, j) => `<div class="lcell${k && !j ? " l2" : ""}">${h}</div>`).join("");
-  const row = (x, kind) => lv.map((l, k) => cells(x.cells[kind + "|" + l], k)).join("");
-  $("gm-looks").innerHTML = L.examples.map(x => `<div class="look"><div><div class="what">${x.what}${x.tier === "Everything else" ? "" : `: ${x.tier}`}</div><div class="names">${x.items.join(", ")} <span class="ver">(${x.base})</span></div></div>
-    <div class="lwrap"><div class="lgrid"><span></span>${lv.map((l, k) => `<span class="hd${k ? " l2" : ""}">Filter Level ${l}: ${L.levels[l]}</span>`).join("")}
-    <span></span>${lv.map((l, k) => ["Display", "Minimap Icon", "Notification"].map((h, j) => `<span class="ch${k && !j ? " l2" : ""}">${h}</span>`).join("")).join("")}
-    <span class="rowhd">Not found yet</span>${row(x, "new")}
-    <span class="lsep"></span><span class="rowhd">Found</span>${row(x, "found")}</div></div></div>`).join("");
-  $("gm-looks-note").innerHTML = `What to look for: orange outer stars mean you haven't found the item yet; a found one keeps its stars in other colors on the lowest level and loses the Grail look on the strictest. A value tier's look doesn't change. As Erazure - Main draws them, unidentified on the ground outside town. The <a href="https://filtersby-erazure.github.io/PD2-Loot-Filter/tiers/">Unique &amp; Set Tiers</a> page shows every unique and set item's look on every filter level and version.`;
+    notify(c) || `<span class="none">None</span>`].map((h, j) => `<div class="lcell${k && !j ? " l2" : ""}">${h}</div>`).join("");
+  const hd = (l, cls) => `<span class="hd${cls}">Filter Level ${l}: ${L.levels[l]}</span>`;
+  const chs = cls => ["Display", "Minimap Icon", "Notification"].map((h, j) => `<span class="ch${j ? "" : cls}">${h}</span>`).join("");
+  const KINDS = [["new", "Not found yet"], ["found", "Found"]];
+  const rows = each => KINDS.map(([kind, name], i) => `${i ? `<span class="lsep"></span>` : ""}<span class="rowhd">${name}</span>${each(kind)}`).join("");
+  // three layouts, the widest that fits the card, so there is never a scroll bar: the two levels side by side, one
+  // under the other, or (a phone) each label on a line of its own with its icon and notification under it
+  const LAYOUTS = {
+    wide: x => `<span></span>${lv.map((l, k) => hd(l, k ? " l2" : "")).join("")}<span></span>${lv.map((l, k) => chs(k ? " l2" : "")).join("")}` +
+      rows(kind => lv.map((l, k) => cells(x.cells[kind + "|" + l], k)).join("")),
+    stack: x => lv.map((l, k) => `${k ? `<span class="lgap"></span>` : ""}<span></span>${hd(l, "")}<span></span>${chs("")}` +
+      rows(kind => cells(x.cells[kind + "|" + l], 0))).join(""),
+    narrow: x => lv.map((l, k) => `${k ? `<span class="lgap"></span>` : ""}${hd(l, "")}` + rows(kind => {
+      const c = x.cells[kind + "|" + l], n = notify(c);
+      return `<div class="lcell">${c.hidden ? `<span class="none">Hidden</span>` : label(c)}</div><div class="lcell nline">${c.icons.length ? icon(c.icons) : ""}` +
+        (n || `<span class="none">${c.icons.length ? "No notification" : "No minimap icon or notification"}</span>`) + `</div>`;
+    })).join(""),
+  };
+  const card = (x, lay) => `<div class="look"><div><div class="what">${x.what}${x.tier === "Everything else" ? "" : `: ${x.tier}`}</div><div class="names">${x.items.join(", ")} <span class="ver">(${x.base})</span></div></div>
+    <div class="lwrap"><div class="lgrid ${lay}">${LAYOUTS[lay](x)}</div></div></div>`;
+  // the Display columns as wide as the widest label (every card the same, so they line up), measured in the label's
+  // font (the viewer's AvQest, else Palatino); then the widest layout that fits, again whenever the width changes
+  // (the tab opening, a turned phone) and once the font has loaded; a screen narrower than a label gets smaller labels
+  const box = $("gm-looks"), font = '15px "AvQest", "Palatino Linotype", Palatino, Georgia, serif';
+  const ctx = document.createElement("canvas").getContext("2d");
+  let shown = "", width = -1;
+  const fit = () => {
+    ctx.font = font;
+    const w = Math.max(0, ...L.examples.flatMap(x => Object.values(x.cells)).flatMap(c => c.hidden ? [] : c.lines)
+      .map(line => ctx.measureText(line.map(s => s[1]).join("").split("\\").join("/")).width));
+    box.style.setProperty("--lw", `${Math.max(270, Math.ceil(w) + 44)}px`);  // + paddings, the second level's border
+    box.style.removeProperty("--lf");
+    width = box.clientWidth;
+    for (const lay of Object.keys(LAYOUTS)) {
+      if (lay !== shown) { box.innerHTML = L.examples.map(x => card(x, lay)).join(""); shown = lay; }
+      if (!width || [...box.querySelectorAll(".lwrap")].every(e => e.scrollWidth <= e.clientWidth)) break;
+    }
+    const over = Math.max(1, ...[...box.querySelectorAll(".ground")].map(e => e.scrollWidth / Math.max(1, e.clientWidth)));
+    if (width && over > 1) box.style.setProperty("--lf", `${Math.floor(150 / over * 0.97) / 10}px`);
+  };
+  fit();
+  if (window.ResizeObserver) new ResizeObserver(() => { if (box.clientWidth !== width) fit(); }).observe(box);
+  if (document.fonts) document.fonts.load(font).then(fit, () => {});
+  $("gm-looks-note").innerHTML = `What to look for: orange outer stars mean you haven't found the item yet (on a Minimal value item, orange outer slashes); a found one keeps its stars in other colors on the lowest level and loses the Grail look on the strictest. A High or Medium value look doesn't change. As Erazure - Main draws them, unidentified on the ground outside town. The <a href="https://filtersby-erazure.github.io/PD2-Loot-Filter/tiers/">Unique &amp; Set Tiers</a> page shows every unique and set item's look on every filter level and version.`;
 }
 
 // ---------------------------------------------------------------- each ear

@@ -731,7 +731,8 @@ def add_bitter_depths_rates(t, items, ear_list, configs, rates):
 # The filter and the grail: how Erazure - Main draws an unidentified item you haven't discovered yet and one you have,
 # on two filter levels, for one item of each kind (tier_map's engine runs the filter's own rules)
 LOOK_EXAMPLES = [("UNI", "ssd", "A unique item in no value tier"), ("SET", "xhl", "A set item"),
-                 ("SET", "rin", "A set ring (amulets alike)"), ("UNI", "uar", "A unique item in a value tier")]
+                 ("SET", "rin", "A set ring (amulets alike)"), ("UNI", "7dg", "A unique item in a value tier"),
+                 ("UNI", "uar", "A unique item in a value tier")]
 LOOK_LEVELS = [1, 12]
 
 
