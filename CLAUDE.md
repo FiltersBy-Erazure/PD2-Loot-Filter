@@ -225,9 +225,11 @@
   density, rarity, +XP %, +area level, Fortification, a guest monster) and a tag `1.7x`, one decimal cut off, in
   bands per tier (`BANDS`; the author asked for tier-relative bands and left the cuts to the data, 2026-10-16): the
   same percentiles of rolled rare maps (half corrupted) in every tier, no tag below the 10th, red from the 60th,
-  purple from the 95th: gold / red / purple from T1 1.4x / 1.7x / 2.0x, T2 1.5 / 1.8 / 2.2, T3 1.6 / 2.0 / 2.5, T4
+  purple from the 95th: gold / red / purple from T1 1.4x / 1.7x / 2.0x, T2 1.5 / 1.8 / 2.2, T3 1.5 / 1.9 / 2.4, T4
   2.3 / 2.6 / 3.0 (its rare maps; dungeons only come from the cube, a T3 map + Dungeon Scarab, whose recipe adds
-  +40-50% experience and four monster mods to the six affixes: `recipe_mods` in `map_exp.py`); unique maps use the
+  +40-50% experience and four monster mods to the six affixes: `recipe_mods` in `map_exp.py`). T3 maps also roll
+  the affixes listed for T1 / T2 maps only (ItemTypes t3m -> t2m -> t1m; the trade site's rare T3 maps carry them,
+  2026-11-05), which `map_exp.py`'s roller now follows: T3's bands were 1.6 / 2.0 / 2.5 until then; unique maps use the
   tier of their area level (87 T1, 88 T2, 89 T3). Identified maps only. The tag and the experience line are two
   description lines under 145's density / rarity highlights (the author's layout, tested in game 2026-10-18; BH
   draws description lines bottom up, so a later rule's line sits lower): the tag `2.0x Experience` in its band's

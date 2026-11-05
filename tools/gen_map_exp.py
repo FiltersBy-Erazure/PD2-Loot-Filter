@@ -26,7 +26,7 @@ the area's). A character's own +XP % (stat 85) is added after the penalty, and t
 
 The filter shows the roll multiplier as a description line, "2.0x Experience" (sections/146-map-experience.filter,
 written here), truncated to one decimal (the colour always matches the digits), in bands per tier (BANDS): T1 from
-1.4x gold, 1.7x red, 2.0x purple; T2 1.5x / 1.8x / 2.2x; T3 1.6x / 2.0x / 2.5x; T4 2.3x / 2.6x / 3.0x; no line
+1.4x gold, 1.7x red, 2.0x purple; T2 1.5x / 1.8x / 2.2x; T3 1.5x / 1.9x / 2.4x; T4 2.3x / 2.6x / 3.0x; no line
 below. Under it the experience line, gold "2.6x at Level 98" (the viewer's level): a full clear of this map with
 its rolls for the viewer, per tile of its clear path (docs/pd2-map-paths.tsv: a walk that sees 95% of its spawn
 spots), over the same for the average white map (the author, 2026-10-28: per path, not per clear, since a big map
@@ -69,8 +69,10 @@ TIER_NAMES = {1: "T1", 2: "T2", 3: "T3", 4: "T4 dungeon", 5: "unique map"}
 # falls between two tenths). Unique maps take the tier of their monster level (87 T1, 88 T2, 89 T3, as 130-maps
 # groups them). A band test sits inside the formula, as in the filter's other formula conditions (the repo's
 # tools read a $f(...) island as one unknown word); lo <= t <= hi is written ABS(2t - lo - hi) <= hi - lo, so the
-# long multiplier appears once.
-BANDS = {1: (14, 17, 20), 2: (15, 18, 22), 3: (16, 20, 25), 4: (23, 26, 30)}
+# long multiplier appears once. T3 since 2026-11-05: T3 maps also roll the affixes listed for T1 / T2 only (the
+# ItemTypes equivalence t3m -> t2m -> t1m), so their 10th / 60th / 95th are 1.54x / 1.91x / 2.41x (1.6x / 2.0x /
+# 2.5x until then, from a roll model without the equivalence: 17% of rare T3 maps showed no tag, 3% purple).
+BANDS = {1: (14, 17, 20), 2: (15, 18, 22), 3: (15, 19, 24), 4: (23, 26, 30)}
 
 
 def band_tier(mp):
