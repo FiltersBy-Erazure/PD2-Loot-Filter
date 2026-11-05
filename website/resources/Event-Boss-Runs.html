@@ -270,7 +270,46 @@
 
 
 <main class="wrap ev-grid">
-  <aside class="inputs" aria-label="Your times">
+  <aside class="inputs" aria-label="Your settings and times">
+    <section class="group save" id="save-box">
+      <div class="save-btns">
+        <button type="button" class="btn" id="btn-reset">Reset to the estimated times</button>
+      </div>
+      <div class="save-status" id="save-status" aria-live="polite">Your changes are kept in this browser.</div>
+    </section>
+    <section class="group">
+      <h2>Settings</h2>
+      <div class="settings">
+        <div class="set-row">
+          <label for="sel-measure">Compare by</label>
+          <select id="sel-measure" class="sel">
+            <option value="value" selected>Trade value: uniques, sets and currency</option>
+            <option value="uvalue">Trade value of uniques and sets only</option>
+            <option value="hm">High and Medium value items</option>
+            <option value="grail">Time to 90% of the grail</option>
+            <option value="exp">Experience</option>
+          </select>
+        </div>
+        <div class="set-row">
+          <label for="sel-mf">Magic find <span class="hint">plus the map's own</span></label>
+          <select id="sel-mf" class="sel">
+            <option value="100">100%</option><option value="200" selected>200%</option><option value="300">300%</option><option value="400">400%</option><option value="500">500%</option>
+          </select>
+        </div>
+        <div class="set-row">
+          <label for="sel-pool">Maps</label>
+          <select id="sel-pool" class="sel">
+            <option value="all" selected>All T1-T3, as often each</option><option value="1">T1</option><option value="2">T2</option><option value="3">T3</option>
+          </select>
+        </div>
+        <div class="set-row">
+          <label for="sel-level">Character level <span class="hint">for experience</span></label>
+          <select id="sel-level" class="sel">
+            <option>90</option><option>91</option><option>92</option><option selected>93</option><option>94</option><option>95</option><option>96</option><option>97</option><option>98</option>
+          </select>
+        </div>
+      </div>
+    </section>
     <section class="group">
       <h2>Your times</h2>
 
@@ -418,48 +457,6 @@
         <input id="sl-spire" class="slider" type="range" min="0" max="600" step="1" value="120" aria-label="Spire of Darkness, s">
         <div class="be" id="be-spire" aria-live="polite"></div>
       </div>
-    </section>
-    <section class="group">
-      <h2>Settings</h2>
-      <div class="settings">
-        <div class="set-row">
-          <label for="sel-measure">Compare by</label>
-          <select id="sel-measure" class="sel">
-            <option value="value" selected>Trade value: uniques, sets and currency</option>
-            <option value="uvalue">Trade value of uniques and sets only</option>
-            <option value="hm">High and Medium value items</option>
-            <option value="grail">Time to 90% of the grail</option>
-            <option value="exp">Experience</option>
-          </select>
-        </div>
-        <div class="set-row">
-          <label for="sel-mf">Magic find <span class="hint">plus the map's own</span></label>
-          <select id="sel-mf" class="sel">
-            <option value="100">100%</option><option value="200" selected>200%</option><option value="300">300%</option><option value="400">400%</option><option value="500">500%</option>
-          </select>
-        </div>
-        <div class="set-row">
-          <label for="sel-pool">Maps</label>
-          <select id="sel-pool" class="sel">
-            <option value="all" selected>All T1-T3, as often each</option><option value="1">T1</option><option value="2">T2</option><option value="3">T3</option>
-          </select>
-        </div>
-        <div class="set-row">
-          <label for="sel-level">Character level <span class="hint">for experience</span></label>
-          <select id="sel-level" class="sel">
-            <option>90</option><option>91</option><option>92</option><option selected>93</option><option>94</option><option>95</option><option>96</option><option>97</option><option>98</option>
-          </select>
-        </div>
-      </div>
-    </section>
-    <section class="group save" id="save-box">
-      <h2>Your times</h2>
-      <div class="save-btns">
-        <button type="button" class="btn primary" id="btn-save">Remember my times</button>
-        <button type="button" class="btn" id="btn-load" disabled>Use my remembered times</button>
-        <button type="button" class="btn" id="btn-reset">Use the estimated times</button>
-      </div>
-      <div class="save-status" id="save-status" aria-live="polite"></div>
     </section>
   </aside>
 
@@ -1465,7 +1462,7 @@ const EventRunModel = function (D) {
   // ---------- your times, kept in this browser (the website has no store of its own)
   const STORE = 'erazure-event-runs';
   let saved = null;
-  const btnSave = $('btn-save'), btnLoad = $('btn-load'), btnReset = $('btn-reset'), status = $('save-status');
+  const btnReset = $('btn-reset'), status = $('save-status');
   try { const s = localStorage.getItem(STORE); if (s) saved = JSON.parse(s); } catch (_) { saved = null; }
   function snapshotVals() {
     const out = { O: vals.O, B: vals.B, M: vals.M, tel: vals.tel, X: vals.X, E: {} };
@@ -1512,20 +1509,27 @@ const EventRunModel = function (D) {
     if (isNaN(d)) return '';
     return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) + ' at ' + d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
   }
-  let statusOverride = null;
+  // every change is kept in this browser as it happens (the author, 2026-11-05: no Save button), as the rush times
+  // are; the estimated times with no list and no ear keep nothing, so a later change of the estimates reaches you
+  let storeFailed = false;
   function renderSaveStatus() {
-    if (statusOverride) { status.textContent = statusOverride; return; }
-    btnLoad.disabled = !saved;
-    if (!saved) { status.textContent = sameAs(defaultsObj()) ? 'The fields hold estimated times. Remember your own and this browser keeps them.' : 'Not remembered yet: this browser keeps your times once you press Remember.'; return; }
-    status.textContent = sameAs(saved) ? 'Your times, remembered ' + when(saved.savedAt) + '.' : 'Changed since you remembered them, ' + when(saved.savedAt) + '.';
+    if (dirty) {
+      dirty = false;
+      try {
+        if (sameAs(defaultsObj()) && !GL.value.trim()) localStorage.removeItem(STORE);
+        else localStorage.setItem(STORE, JSON.stringify(Object.assign(snapshotVals(), { savedAt: new Date().toISOString() })));
+        storeFailed = false;
+      } catch (_) { storeFailed = true; }
+    }
+    status.textContent = storeFailed ? 'This browser won\u2019t keep your changes (a private window or blocked storage).' : 'Your changes are kept in this browser.';
   }
-  btnReset.addEventListener('click', () => { apply(defaultsObj()); dirty = true; statusOverride = null; schedule(); });
-  btnLoad.addEventListener('click', () => { if (saved) { apply(saved); dirty = false; statusOverride = null; schedule(); } });
-  btnSave.addEventListener('click', () => {
-    const doc = Object.assign(snapshotVals(), { savedAt: new Date().toISOString() });
-    try { localStorage.setItem(STORE, JSON.stringify(doc)); saved = doc; dirty = false; statusOverride = null; }
-    catch (_) { statusOverride = 'This browser won\u2019t keep them (private window or blocked storage).'; }
-    renderSaveStatus();
+  // back to the estimated times: the fields, the settings, the skips and the ears (your list stays), and the rush times
+  btnReset.addEventListener('click', () => {
+    apply(defaultsObj()); dirty = true;
+    Object.keys(UT).forEach(k => { delete UT[k]; });
+    try { localStorage.removeItem(UKEY); } catch (_) {}
+    document.querySelectorAll('input.u-in').forEach(inp => { inp.value = UDEF[D.umaps[+inp.dataset.u].map] || 90; inp.removeAttribute('aria-invalid'); });
+    schedule();
   });
   // your Grail Planner ticks (the planner on this website keeps them in this browser): your list as the items you have
   const PLANNER_STORE = 'erazure-grail-planner';

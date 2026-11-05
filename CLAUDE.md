@@ -798,8 +798,11 @@
   the private write-up's): full clear 15 min, overhead 60 s, map boss 30 s, a teleport 0.32 s (105% FCR), the fastest
   scout; Gheed 30 s, the Bitter Depths 300, Corrupted Heroes 90 each, Dark Wanderer 30 each, Horazon 60, the Altar 60,
   Mendeln 120, Treasure Fallen 20 each, the Spire 120; trade value, 200% magic find, all T1-T3 maps, character level
-  93; player text calls them "estimated times", without the author's name (the author). Your times are kept in the
-  browser (`erazure-event-runs`, the rush times `erazure-event-runs-umaps`), and "Use my Grail Planner ticks" reads the
+  93; player text calls them "estimated times", without the author's name (the author). The column starts with "Reset
+  to the estimated times" and "Your changes are kept in this browser.", then Settings, then Your times (the author,
+  2026-11-05: no Save button, the old save box was confusing): every change is kept in the browser as it happens
+  (`erazure-event-runs`; the estimated times with no list and no ear keep nothing, so a later change of the estimates
+  reaches the player; the rush times `erazure-event-runs-umaps`, which the reset clears too), and "Use my Grail Planner ticks" reads the
   planner's `erazure-grail-planner` (same site; the data's `keys` are the planner's item keys). `site_page.py` also writes
   the Grail Planner template's `EVRUNS` (between its `evrun-summary` markers: the grail hours at those defaults, read off
   the page's grail card in headless Edge), so rerun `tools/grail_map.py` after it. The tab bar wraps onto
