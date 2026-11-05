@@ -675,7 +675,10 @@
   item level = character level -5..+4; price per gamble from the base's normal version (rings / amulets: Misc `gamble
   cost`). A slot offers a base only at an item level at or above the base's own (Gamble.txt sorted by level, picked
   among the rows that level reaches), so a base is at an item level in proportion to 1 / (rows of that level or lower),
-  a ring and an amulet (the first two slots) at any (the audit, 2026-11-04: a Light Belt was ranked at character level 1). The page: a Gambling section on Target Farming (character level 1-99 select, bases by gold per new grail item
+  a ring and an amulet (the first two slots) at any (the audit, 2026-11-04: a Light Belt was ranked at character level 1).
+  The section says how many bases the shop can show at the level (the data's `lvl`, each base's own level) and how
+  many grail items a gamble there can give; its table lists only the bases that can give one (one you're missing): the
+  author, 2026-11-05, saw 23 bases in game at character level 1 (item level 5) where the table listed 4. The page: a Gambling section on Target Farming (character level 1-99 select, bases by gold per new grail item
   for your missing items), a line in each item's details, a "Gold to spare" plan step, a FAQ answer. A Gheed's Map Event tab (the author, 2026-10-30; `gheed_bases`): per base the
   shop shows (the normal version; the unique and its tier are fixed at item level 99 when the shop opens) how often a
   shop of 5 offers has it (per offer beside it), what it can be and the chance it is a missing item; offers pick UniqueItems rows evenly, a level

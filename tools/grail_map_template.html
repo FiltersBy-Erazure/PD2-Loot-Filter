@@ -1123,6 +1123,10 @@ const GAMBLE = GB.items.map(s => { const out = [];
   for (let p = 0; p < s.length; p += GW) out.push({b: b36(s.substr(p, 2)), r: GCL.map((_, l) => kRate(b36(s.substr(p + 2 + 2 * l, 2))))});
   return out; });
 const gli = () => GCL.indexOf(state.clvl);
+// a gamble's item level at a character level (the character's -5 to +4, at least 5), and the bases the shop shows there:
+// those of that level or lower (rings and amulets, level 1, always)
+const gambleIlvl = l => { const c = +GCL[l]; return [Math.min(99, Math.max(5, c - 5)), Math.min(99, Math.max(5, c + 4))]; };
+const offeredBases = l => GB.bases.filter((_, j) => GB.lvl[j] <= gambleIlvl(l)[1]).length;
 // the bar's settings (and Fixed spots only, the gambling character level) are kept in this browser for the next visit
 // (the author, 2026-11-04); a value this page no longer offers is passed over
 const SETTINGS = "erazure-grail-settings";
@@ -2534,7 +2538,8 @@ let GMORE = false; const GOPEN = new Set();  // bases opened to every item they 
 function renderGamble() {
   const l = gli(), list = ITEMS.filter(it => !FOUND.has(it.key)).map(it => it.i), fresh = list.length === N;
   const rows = gambleBases(l, list), shown = GMORE ? rows : rows.slice(0, 12), what = fresh ? "grail items" : "of your missing items";
-  $("gm-gcount").textContent = `${rows.length} base${rows.length === 1 ? "" : "s"}`;
+  const shop = offeredBases(l), [ilo, ihi] = gambleIlvl(l), can = ITEMS.filter(it => GAMBLE[it.i].some(e => e.r[l] > 0));
+  $("gm-gcount").textContent = `${rows.length} of the ${shop} bases the shop can show at this level can give ${fresh ? "a grail item" : "one of your missing items"}`;
   $("gm-t-gamble").innerHTML = !rows.length ? `<tbody><tr><td>Nothing left that gambling finds.</td></tr></tbody>` :
     `<thead><tr><th class="l">Base</th><th class="opt">Gold a gamble</th><th class="opt">${fresh ? "Grail items" : "Your missing items"} in 1,000 gambles</th><th>Gold per new item</th><th class="l">Most likely</th></tr></thead><tbody>` +
     shown.map(o => { const open = GOPEN.has(o.j); o.items.sort((x, y) => y[1] - x[1]); const per1k = o.n * 1000;
@@ -2547,9 +2552,12 @@ function renderGamble() {
   const ga = gambleBest(list), soj = ITEMS.find(it => it.name === "The Stone of Jordan");
   const sojBest = soj && GCL.map((_, k) => bestGamble(soj.i, k)).map((e, k) => e && [perFind(e, k), k]).filter(Boolean).sort((a, b) => a[0] - b[0])[0];
   $("gm-gamble-list").innerHTML = [
+    `<b>What the shop can show:</b> at character level ${GCL[l]} a gamble's item level is ${ilo === ihi ? ilo : `${ilo} to ${ihi}`}, so its offers come from the ${shop} bases of level ${ihi} or lower, ` +
+      `and only uniques and set items of that level or lower can come out of them: ${can.length} grail item${can.length === 1 ? "" : "s"} in all` +
+      (fresh ? "" : `, ${can.filter(it => !FOUND.has(it.key)).length} of them missing from yours`) + `. The table lists the bases that can give ${fresh ? "one" : "one you're missing"}; the others never can at this level.`,
     rows.length ? `<b>Best at character level ${GCL[l]}:</b> ${GB.bases[rows[0].j][1]}, about ${goldTxt(rows[0].per)} gold per new item (${rows[0].n * 1000 >= .05 ? `${cnt(rows[0].n * 1000)} ${what} in 1,000 gambles` : `1 of ${what} in ${fmtN(1 / rows[0].n)} gambles`}). ` +
       `The levels to pick from are a sample (${GCL[0]} to ${GCL[GCL.length - 1]}); a level between two of them pays about what they do. Prices are the full ones: a quest's or an item's reduced vendor prices take a share off.` : "",
-    ga && ga.k !== l ? `<b>Another character level can pay less:</b> at level ${GCL[ga.k]}, ${GB.bases[ga.r.j][1]} takes about ${goldTxt(ga.r.per)} gold per new item. A gambled item's level follows the character's, so a low level gambles only a base's low-level uniques and sets, at a better chance each; rings and amulets cost the same at every level, other bases more the higher the level. Discovery Progress is kept per account, so what a low-level character of yours gambles counts for your grail.` : "",
+    ga && ga.k !== l ? `<b>Another character level can pay less:</b> at level ${GCL[ga.k]}, ${GB.bases[ga.r.j][1]} takes about ${goldTxt(ga.r.per)} gold per new item. A gambled item's level follows the character's, so a low level gambles only a base's low-level uniques and sets, at a better chance each; rings and amulets cost the same at every level, other bases more the higher the level. Discovery Progress is kept per account and game mode, so what a low-level character of yours gambles counts for your grail.` : "",
     `<b>Low-level items are cheap, high-level ones aren't:</b> a base's low-level uniques and sets cost a low-level character a few million gold or less each, the same items the Normal farm spots are best for; the items only a high item level can make cost far more${sojBest ? ` (The Stone of Jordan about ${goldTxt(sojBest[0])} gold, at character level ${GCL[sojBest[1]]})` : ""}. Gheed's map event sells a unique for 1,000,000 gold an offer, when it shows up.`,
   ].filter(Boolean).map(x => `<li>${x}</li>`).join("");
 }

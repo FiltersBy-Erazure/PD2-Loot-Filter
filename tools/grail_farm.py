@@ -762,7 +762,9 @@ def pack_gamble(t, items, rates):
         for i in sorted({i for l in clvls for i in rates[l][b][1]}):
             per_item[i] += code(j) + "".join(k_of(rates[l][b][1].get(i, 0)) for l in clvls)
     return {"clvls": clvls, "bases": [[b, names.get(b) or t.items[b].get("name", b)] for b in bases],
-            "price": [[rates[l][b][0] for l in clvls] for b in bases], "items": per_item}
+            "price": [[rates[l][b][0] for l in clvls] for b in bases], "items": per_item,
+            # each base's own level: the page says which bases the shop shows at a character level
+            "lvl": [num(t.items[b]["level"]) for b in bases]}
 
 
 # ---------------------------------------------------------------- checks and printouts
