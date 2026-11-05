@@ -1214,7 +1214,7 @@ const UMAPS = F.umap.map(([j, lo, hi, made, sockets, look, n, minis]) => Object.
 const UPICK = UMAPS.filter(s => s.made !== "explode"), UBOOM = UMAPS.filter(s => s.made === "explode");
 const mapOf = s => s.area.replace(/ map$/, "");
 const EVR_URL = "https://filtersby-erazure.github.io/PD2-Loot-Filter/resources/event-boss-runs/";
-const EVRUNS = /* evrun-summary:start */{"runs":{"perHour":71.4,"h50":7.0,"h90":34.9,"all":274.0},"clears":{"perHour":68.0,"h50":7.8,"h90":43.5,"all":419.0},"overhead":60,"clear":11,"mf":300}/* evrun-summary:end */;
+const EVRUNS = /* evrun-summary:start */{"runs":{"perHour":54.2,"h50":9.3,"h90":45.8,"all":344.5},"clears":{"perHour":48.1,"h50":11.1,"h90":61.9,"all":584.4},"overhead":60,"clear":15,"mf":200}/* evrun-summary:end */;
 const picksTxt = s => s.lo === s.hi ? `${s.lo}` : `${s.lo} or ${s.hi}`;
 const boomTxt = s => `${s.n > 1 ? `${s.n === 2 ? "two" : s.n} treasure explosions` : "a treasure explosion"} of ${s.lo} items${s.n > 1 ? " each" : ""}`;
 const umapSay = () => [UPICK.length ? `the bosses of ${joinAnd(UPICK.map(mapOf))} drop ${Math.min(...UPICK.map(s => s.lo))} to ${Math.max(...UPICK.map(s => s.hi))} random uniques a kill` : "",
@@ -1520,8 +1520,8 @@ function renderFaq() {
     ["Do the game's Force Show options matter with this filter?",
      `Force Show Undiscovered (on by default) shows an undiscovered unique or set item the filter would hide; this filter never hides one, so it changes nothing. Force Show Unowned (off by default) does the same for items you've discovered but don't keep in the stash's Compendium: the found uniques and set items this filter hides on its stricter levels then show, with the game's plain name.`],
     ["Should I clear my maps, or only do their event and boss?",
-     `If you teleport, scouting a rare map for its event, doing it and killing the map boss finds grail items a little faster than full clears` +
-     (EVRUNS ? `: at Erazure's estimated times, 90% of the grail about ${Math.round((1 - EVRUNS.runs.h90 / EVRUNS.clears.h90) * 100)}% sooner` : "") +
+     `If you teleport, scouting a rare map for its event, doing it and killing the map boss finds grail items faster than full clears` +
+     (EVRUNS ? `: at estimated times, 90% of the grail about ${Math.round((1 - EVRUNS.runs.h90 / EVRUNS.clears.h90) * 100)}% sooner` : "") +
      `. With a Corrupted Ear on every full clear, full clears win: an ear reaches every monster of a clear but only a run's boss. And when you get a unique map with bonus bosses, rush them. <a href="#gm-evruns">Event and Boss Map Runs</a> says more, and the website's <a href="${EVR_URL}">page</a> works it out for your own times.`],
     ["Is gambling worth it for the grail?",
      (() => { const l = gli(), all = ITEMS.map(it => it.i), r = gambleBases(l, all)[0];
@@ -2456,7 +2456,7 @@ function renderEvruns() {
   const E = EVRUNS, sooner = (a, b) => Math.round((1 - a / b) * 100);
   $("gm-evruns-list").innerHTML = [
     `<b>A run:</b> teleport over a rare map until its event shows, do the event, kill the map boss and leave. Map events spawn as the rooms around you fill with monsters, not as monsters die, so a scout finds them as surely as a full clear; about 1 rare map in 3 has one.`,
-    E ? `<b>For the grail, the runs come out a little ahead:</b> at Erazure's estimated times (${E.overhead} s a map besides the scout, ${E.clear}-minute full clears, ${E.mf}% magic find) they reach 90% of the grail about ${sooner(E.runs.h90, E.clears.h90)}% sooner than full clears, and all of it about ${sooner(E.runs.all, E.clears.all)}% sooner. Gheed's map event and the map bosses, which every run has, hold many of the rarest uniques: Tyrael's Might, Knell Striker, Torch of Iro.` : "",
+    E ? `<b>For the grail, the runs come out ahead:</b> at estimated times (${E.overhead} s a map besides the scout, ${E.clear}-minute full clears, ${E.mf}% magic find) they reach 90% of the grail about ${sooner(E.runs.h90, E.clears.h90)}% sooner than full clears, and all of it about ${sooner(E.runs.all, E.clears.all)}% sooner. Gheed's map event and the map bosses, which every run has, hold many of the rarest uniques: Tyrael's Might, Knell Striker, Torch of Iro.` : "",
     `<b>A Corrupted Ear turns it around:</b> an ear works on every monster of a full clear but on a run only on the map boss, so with an ear on every full clear, full clears reach 90% first.`,
     `<b>Unique maps: rush the bosses.</b> ${capFirst(umapSay())}. When you get one of these maps, kill its bosses and leave: <a href="${EVR_URL}#unique-maps">what a rush is worth</a> at your own times.`,
   ].filter(Boolean).map(x => `<li>${x}</li>`).join("");
