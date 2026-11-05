@@ -43,7 +43,8 @@ A model, nothing measured in game. The rules (the base game's unless said):
   Djinn's Domain's two Djinns (UMAP_EXPLODERS) set off a treasure explosion when they die (EXPLOSION): their own loot
   dropped again and again until 60 items lie on the ground, at their level and with no magic find (not the player's);
   their own loot drops too, a second time half the time (the map's 50% extra drop). Unique maps open only in Hell, one
-  a game; the minibosses (Zayl the Merciful, Cory the Imp, Onion the Accused) drop only their own loot.
+  a game; the minibosses (Zayl the Merciful, Cory the Imp, Onion the Accused) drop only their own loot, which a run
+  counts (UMAP_MINIS: the author, 2026-11-05, players kill them as well).
 - Where a spot is: fixed (the same place every game) or anywhere in its area, and the areas from the nearest
   waypoint (FIXED_AREAS, FIXED_KEYS, OUTDOOR below).
 """
@@ -117,6 +118,10 @@ LUCION_KEYS = [("lucb", "lucbH"), ("lucc", "lucc"), ("lucd", "lucdH")]
 UMAP_BOSSES = [("CityofUrehBoss", "t56", (3, 3), "base", True, "socketed"),  # Gregus Mazi
                ("WarlordOfBlood", "t52", (2, 3), "base", False, "corrupted"),
                ("NaKrulBoss", "t58", (3, 3), "row", False, "ethereal but for the indestructible ones")]
+# Minibosses a run kills too, for their own loot only (no extra drops: no death handler): the author, 2026-11-05, a
+# friend's City of Ureh runs clear Gregus Mazi's room and kill Zayl the Merciful (about 2.5 minutes a run), and Warlord
+# of Blood runs kill Cory the Imp and Onion the Accused. Same treasure class and level as the boss (asserted).
+UMAP_MINIS = {"CityofUrehBoss": ("CityofUrehMiniBoss",), "WarlordOfBlood": ("WarlordMiniBossShaman", "WarlordMiniBossDefiler")}
 # A treasure explosion (checked in the 2026-11-04 build): the boss's death drops its own treasure class again and again,
 # at most 3 items a time, until 60 items lie on the ground, at its level, with the boss itself as the magic-find unit
 # (none: the player's doesn't count); its own loot drops as well. Djinn's Domain's two Djinns, and Zoltun Kulle in the
@@ -427,9 +432,13 @@ def catalogue(t, d, strings):
         assert ms[cls].get("boss") == "1", cls  # a boss keeps its own level in maps
         lv, row = num(ms[cls]["Level(H)"]), maps[code]
         assert prop(row, "map-glob-dropbonus") == (0, 0), code  # no extra drops of its own loot
+        minis = UMAP_MINIS.get(cls, ())
+        assert all(ms[c].get("boss") == "1" and ms[c]["TreasureClass1(H)"] == ms[cls]["TreasureClass1(H)"]
+                   and num(ms[c]["Level(H)"]) == lv for c in minis), minis
         spot(key=cls, kind="umap", name=mon(cls), diff=2, lid=None, area=clean(strings.get(row["index"], row["index"])) + " map",
-             lvl=lv, tc=ms[cls]["TreasureClass1(H)"], unit="map", cls=cls, mf=prop(row, "map-play-mag-gold%"),
-             umap=[*picks, made, sockets, look, 1], bonus=umap_bonus(t, sum(picks) / 2, made, sockets, 99 if made == "base" else lv))
+             lvl=lv, tc=ms[cls]["TreasureClass1(H)"], unit="map", cls=cls, mf=prop(row, "map-play-mag-gold%"), per=1 + len(minis),
+             umap=[*picks, made, sockets, look, 1, " and ".join(mon(c) for c in minis)],
+             bonus=umap_bonus(t, sum(picks) / 2, made, sockets, 99 if made == "base" else lv))
     for code, clss in UMAP_EXPLODERS:  # both bosses: their own loot (a second drop at the map's extra-drop chance) and explosions
         row, (tc, lv) = maps[code], {(ms[c]["TreasureClass1(H)"], num(ms[c]["Level(H)"])) for c in clss}.pop()
         assert all(ms[c].get("boss") == "1" and (ms[c]["TreasureClass1(H)"], num(ms[c]["Level(H)"])) == (tc, lv) for c in clss), clss
@@ -438,7 +447,7 @@ def catalogue(t, d, strings):
              area=clean(strings.get(row["index"], row["index"])) + " map", lvl=lv, tc=tc, unit="map", cls=clss[0],
              mf=prop(row, "map-play-mag-gold%"), per=len(clss) * (1 + extra / 100),
              explode=(tc, lv, len(clss) * EXPLOSION[0] / EXPLOSION[1]),
-             umap=[EXPLOSION[0], EXPLOSION[0], "explode", False, "", len(clss)])
+             umap=[EXPLOSION[0], EXPLOSION[0], "explode", False, "", len(clss), ""])
     assert "Annihilus" in uni and "Hellfire Torch" in uni
     return out
 

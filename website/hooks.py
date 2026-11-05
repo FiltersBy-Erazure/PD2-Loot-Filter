@@ -14,6 +14,8 @@ The Resources tab's pages are written by hand, in website/resources/ (each with 
 - Infinity-Merc-Bases.html, shown on the Infinity Merc Bases page (docs/resources/infinity-merc-bases.md)
 - Map-Experience.html, shown on the Map Experience page (docs/resources/map-experience.md); its numbers are written by
   tools/gen_map_exp.py
+- Event-Boss-Runs.html, shown on the Event and Boss Map Runs page (docs/resources/event-boss-runs.md); the event-run
+  model writes the whole file (its site_page.py, kept out of the repo with the model)
 Each goes into the site as a file of its own (a Resources page under resources/), so its address keeps working.
 Its site page shows the same map with no frame, so its filter bar can stay under the site's header while
 scrolling: this hook takes the styles, the
@@ -38,6 +40,7 @@ MAPS = [  # (the page, from the repo root; the tool that writes it, or "by hand"
     ("Erazure-Grail-Planner.html", "tools/grail_map.py", "grail.md", "grail-map"),
     ("website/resources/Infinity-Merc-Bases.html", "by hand", "resources/infinity-merc-bases.md", "merc-map"),
     ("website/resources/Map-Experience.html", "by hand", "resources/map-experience.md", "mapexp-map"),
+    ("website/resources/Event-Boss-Runs.html", "by hand", "resources/event-boss-runs.md", "evrun-map"),
 ]
 FONTS = ('<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700'
          '&family=Source+Sans+3:wght@400;600;700&display=swap">')

@@ -837,11 +837,23 @@
 <section id="gm-umaps" data-tab="farm" hidden>
   <h2 id="gm-umaps-h">Unique Map Bosses</h2>
   <p class="note">The bosses of four unique maps drop extra loot when they die, on top of their own: three drop random uniques,
-  Djinn's Domain's two Djinns a treasure explosion each. Each run takes a map: here is what one finds, against a whole T1-T3 map.</p>
+  Djinn's Domain's two Djinns a treasure explosion each. Each run takes a map: here is what one finds, against a whole T1-T3 map.
+  What a rush of their bosses is worth at your own times: the website's <a href="https://filtersby-erazure.github.io/PD2-Loot-Filter/resources/event-boss-runs/#unique-maps">Event and Boss Map Runs</a> page.</p>
   <p class="note" id="gm-umap-note"></p>
   <div class="tbl panel"><table class="gm-table" id="gm-t-umap"></table></div>
   <div class="tools"><button type="button" class="btn" id="gm-umore">Show all</button></div>
   <ul class="find" id="gm-umap-list"></ul>
+</section>
+
+<section id="gm-evruns" data-tab="farm" hidden>
+  <h2 id="gm-evruns-h">Event and Boss Map Runs</h2>
+  <p class="note">A character that teleports doesn't have to clear its maps: scout a rare map for its map event, do the event,
+  kill the map boss and open the next map. This planner counts full clears. The website's
+  <a href="https://filtersby-erazure.github.io/PD2-Loot-Filter/resources/event-boss-runs/">Event and Boss Map Runs</a> page weighs those runs against full clears, and works out what rushing a unique
+  map's bosses is worth, at your own times, for your missing items (it reads your ticks from this browser) and your Corrupted
+  Ear.</p>
+  <ul class="find" id="gm-evruns-list"></ul>
+  <div class="tools"><a class="btn" href="https://filtersby-erazure.github.io/PD2-Loot-Filter/resources/event-boss-runs/">Open the Event and Boss Map Runs page</a></div>
 </section>
 
 <section id="gm-lucion" data-tab="farm" hidden>
@@ -940,6 +952,7 @@
       <a href="#tab-overview"><b>Overview</b><span>What the grail takes at your settings, and what makes it faster</span></a></div>
     <div class="grp"><div class="gl2">Farm</div>
       <a href="#tab-farm"><b>Target Farming</b><span>Bosses and superuniques, unique map bosses, Lucion's chests and gambling</span></a>
+      <a href="#gm-evruns"><b>Event and Boss Map Runs</b><span>Scouting rare maps for their event and boss, and rushing unique maps' bosses, against full clears</span></a>
       <a href="#tab-gheed"><b>Gheed's Map Event</b><span>Which of his offers are worth 1,000,000 gold for what you're missing</span></a>
       <a href="#tab-ears"><b>Corrupted Ears</b><span>What each ear does to a map, its pool and its dangers</span></a></div>
     <div class="grp"><div class="gl2">Learn</div>
@@ -1015,7 +1028,8 @@
       <li>Djinn's Domain's two Djinns, Siren of the Forgotten Vault and Djinn of a Thousand Blades, each set off a treasure explosion
         when they die: their own loot again and again until 60 items lie on the ground, at their level (90), with no magic find.
         Their own loot drops too, a second time half the time (the map's extra drop).</li>
-      <li>The minibosses (Zayl the Merciful, Cory the Imp, Onion the Accused) drop only their own loot.</li></ul></li>
+      <li>The minibosses (Zayl the Merciful in City of Ureh, Cory the Imp and Onion the Accused in Warlord of Blood) drop only their
+        own loot, as their map's boss does (level 91). A run counts it: players kill them too.</li></ul></li>
     <li><b>Best bet:</b> an item's best bet compares one kill with one map: target farming its best boss or superunique (any
       difficulty; Corrupted Zones, ubers, events and unique map bosses left out) when one kill there finds it at least as often as a whole map with the
       item's best ear, maps otherwise. That's as if a kill took as long as a map; a quicker kill makes farming better still. Your
@@ -1038,7 +1052,8 @@
     <li><b>Left out:</b><ul>
       <li>T4 dungeons, and the rest of a unique map (only its bosses count).</li>
       <li>The map events but the Bitter Depths (Treasure Fallen, Corrupted Heroes, Horazon, the Dark Wanderer and the rest; Gheed's
-        shop has its own tab), and map guests. Cow King's Leathers alone counts the Bovine guest and the Dark Wanderer's Cow King.</li>
+        shop has its own tab), and map guests. Cow King's Leathers alone counts the Bovine guest and the Dark Wanderer's Cow King.
+        The website's <a href="https://filtersby-erazure.github.io/PD2-Loot-Filter/resources/event-boss-runs/">Event and Boss Map Runs</a> page counts every event.</li>
       <li>A rare map's extra weapon, armor and crafting drops (some of its suffixes).</li>
       <li>Magic maps, Fortified maps and parties (the notes on the Corrupted Ears tab say what the last two change).</li>
       <li>Whole area clears: a full Cow Level, Chaos Sanctuary or Baal run also drops from every monster on the way, so those runs
@@ -1214,9 +1229,14 @@ const spotOk = s => state.fixed !== "fixed" || s.fixed === 1 || s.group >= 4;
 // the unique map bosses: one run a map, their random uniques a kill (fewest, most), made from the picked unique's "base"
 // or its own "row", only bases that take sockets, what they drop as; or "explode": a treasure explosion of lo items a boss
 // (n bosses)
-const UMAPS = F.umap.map(([j, lo, hi, made, sockets, look, n]) => Object.assign(SPOTS[j], {lo, hi, made, sockets, look, n}));
+// minis: the minibosses a run kills too, for their own loot (Zayl the Merciful; Cory the Imp and Onion the Accused)
+const UMAPS = F.umap.map(([j, lo, hi, made, sockets, look, n, minis]) => Object.assign(SPOTS[j], {lo, hi, made, sockets, look, n, minis}));
 const UPICK = UMAPS.filter(s => s.made !== "explode"), UBOOM = UMAPS.filter(s => s.made === "explode");
 const mapOf = s => s.area.replace(/ map$/, "");
+// The website's Event and Boss Map Runs page and its grail hours at Erazure's estimated times (written by the event-run
+// model's site_page.py, between the markers): runs (scout a rare map for its event, do it, kill the boss) and full clears
+const EVR_URL = "https://filtersby-erazure.github.io/PD2-Loot-Filter/resources/event-boss-runs/";
+const EVRUNS = /* evrun-summary:start */{"runs":{"perHour":71.4,"h50":7.0,"h90":34.9,"all":274.0},"clears":{"perHour":68.0,"h50":7.8,"h90":43.5,"all":419.0},"overhead":60,"clear":11,"mf":300}/* evrun-summary:end */;
 const picksTxt = s => s.lo === s.hi ? `${s.lo}` : `${s.lo} or ${s.hi}`;
 const boomTxt = s => `${s.n > 1 ? `${s.n === 2 ? "two" : s.n} treasure explosions` : "a treasure explosion"} of ${s.lo} items${s.n > 1 ? " each" : ""}`;
 // what the unique maps' bosses drop besides their own loot, in one sentence: "the bosses of City of Ureh, ... drop random uniques
@@ -1226,7 +1246,7 @@ const umapSay = () => [UPICK.length ? `the bosses of ${joinAnd(UPICK.map(mapOf))
   .filter(Boolean).join("; ");
 // what a unique map's boss drops besides its own loot ("Na-Krul in Na-Krul's Abyss 3 uniques a kill, ethereal...")
 const umapWhat = s => s.made === "explode" ? `${bossIn(s)}: ${boomTxt(s)} (their own loot again, with no magic find)` :
-  `${bossIn(s)} ${picksTxt(s)} uniques a kill, ${s.look}${s.sockets ? " (only bases that take sockets)" : ""}`;
+  `${bossIn(s)} ${picksTxt(s)} uniques a kill, ${s.look}${s.sockets ? " (only bases that take sockets)" : ""}${s.minis ? `, and a run kills ${s.minis} too, for ${s.minis.includes(" and ") ? "their" : "his"} own loot` : ""}`;
 // spots that drop an item equally often: a fixed one first, then the one nearer a waypoint
 const spotRank = s => (s.fixed === 1 ? 0 : 1000) + (s.wp < 0 ? 999 : s.wp);
 const byRate = m => (a, b) => b.r[m] - a.r[m] || spotRank(a.s) - spotRank(b.s);
@@ -1378,6 +1398,7 @@ function renderLevers() {
       `Unique and set chances grow ever slower with more magic find.`),
     `<b>A Corrupted Ear on every map:</b> 90% of the map grail in ${fmtN(m90(t, mt, mf, true))} maps with the best ear instead of ${fmtN(m90(t, mt, mf, false))}; each map takes longer, since ear monsters have +${E0.hp}% health. What ears do: <a href="#gm-how">Corrupted Ears</a>; which to use for your list: <a href="#tab-planner">Your Grail</a>.`,
     `<b>Rare maps:</b> an average rare map (with a corruption) has about ${(kills(t, "rare") / kills(t, "normal")).toFixed(1)}× the monsters of a non-magical one, so ${fmtN(m90(t, "rare", mf, false))} maps for 90% instead of ${fmtN(m90(t, "normal", mf, false))}; each clear takes longer, though.`,
+    `<b>Teleporting? You needn't clear:</b> scouting a rare map for its event, doing it and killing the map boss can beat a full clear, and a unique map's bonus bosses are worth a rush whenever you get one: <a href="#gm-evruns">Event and Boss Map Runs</a>.`,
     `<b>The tier barely matters:</b> ${["1", "2", "3"].map(x => `T${x} ${fmtN(m90(x, mt, mf, false))}`).join(", ")} maps for 90% on ${mtName(mt)} maps. Every grail item maps can drop drops in all three.`
   ].map(x => `<li>${x}</li>`).join("");
 }
@@ -1539,6 +1560,10 @@ function renderFaq() {
      `An unidentified item counts as found only when you've found every unique (or every set item) of its base, since the filter sees the base, not the item. A High or Medium value item shows its value look whether you've found it or not. On filter levels 0-7 a found unique still shows its stars, icon and chat line (set items on the lower levels, by base), but the outer stars aren't orange: orange outer stars (on a Minimal value item, orange outer slashes) mean you haven't found it yet. <a href="#gm-filter">Filter Display</a> shows each case.`],
     ["Do the game's Force Show options matter with this filter?",
      `Force Show Undiscovered (on by default) shows an undiscovered unique or set item the filter would hide; this filter never hides one, so it changes nothing. Force Show Unowned (off by default) does the same for items you've discovered but don't keep in the stash's Compendium: the found uniques and set items this filter hides on its stricter levels then show, with the game's plain name.`],
+    ["Should I clear my maps, or only do their event and boss?",
+     `If you teleport, scouting a rare map for its event, doing it and killing the map boss finds grail items a little faster than full clears` +
+     (EVRUNS ? `: at Erazure's estimated times, 90% of the grail about ${Math.round((1 - EVRUNS.runs.h90 / EVRUNS.clears.h90) * 100)}% sooner` : "") +
+     `. With a Corrupted Ear on every full clear, full clears win: an ear reaches every monster of a clear but only a run's boss. And when you get a unique map with bonus bosses, rush them. <a href="#gm-evruns">Event and Boss Map Runs</a> says more, and the website's <a href="${EVR_URL}">page</a> works it out for your own times.`],
     ["Is gambling worth it for the grail?",
      (() => { const l = gli(), all = ITEMS.map(it => it.i), r = gambleBases(l, all)[0];
        return `As a place for spare gold, for some items. A gambled item is unique 1 time in 2,000 and a set item 1 time in 1,000, whatever your magic find, and counts for your grail. ` +
@@ -1554,7 +1579,7 @@ function renderFaq() {
   // F21 (the audit): four groups in this order, each question's place in its group by the start of its words
   const GROUPS = [["Getting started", ["Can the planner read", `Why ${N} items`, "When does an item count", "Non-magical or rare", "How much magic find", "What isn't counted"]],
     ["Corrupted Ears", ["Where do Corrupted Ears", "Which ear", "Does an ear", "Can I run an ear"]],
-    ["Farming", ["How do I compare", "Is the \"Best farm spot", `Are ${joinAnd(UMAPS.map(mapOf))}`, "Are Lucion", "Is Gheed", "Is gambling", "Why is Cow King", "What does \"drop level", "What are Corrupted Zones", "Does playing"]],
+    ["Farming", ["How do I compare", "Is the \"Best farm spot", `Are ${joinAnd(UMAPS.map(mapOf))}`, "Should I clear", "Are Lucion", "Is Gheed", "Is gambling", "Why is Cow King", "What does \"drop level", "What are Corrupted Zones", "Does playing"]],
     ["The filter", ["Why does an item I've found", "Do the game's Force Show"]]];
   const place = q => { for (let g = 0; g < GROUPS.length; g++) { const j = GROUPS[g][1].findIndex(k => q.startsWith(k)); if (j >= 0) return [g, j]; } return [GROUPS.length, 0]; };
   const sorted = qa.map(([q, a], k) => ({q, a, k, p: place(q)})).sort((x, y) => x.p[0] - y.p[0] || x.p[1] - y.p[1] || x.k - y.k);
@@ -2462,13 +2487,14 @@ function renderUmaps() {  // what each unique map boss drops, and your missing u
       (tyRow && !FOUND.has(ty.key) && (!beat.length || beat[0].i !== ty.i) ? `; Tyrael's Might ${tyRow.x >= 1 ? `${times(tyRow.x)} times as often` : `${times(1 / tyRow.x)} times less often`} (${oneIn(tyRow.best)} ${mapOf(tyRow.s)} maps, ${oneIn(tyRow.map)} maps with ${earName(tyRow.ear)})` : "") +
       (beat.length && beat.length < rows.length ? `. For the others a whole ${mapsWord()} map with their best ear finds them more often.` : "."),
     `<b>One run a map:</b> unique maps open only in Hell, one a game, so each run takes a map and a new game; the maps you get decide how much they add. ` +
-      `The minibosses (Zayl the Merciful, Cory the Imp, Onion the Accused) drop only their own loot, and the maps' other monsters aren't counted here.`
+      `The minibosses drop only their own loot, which a run counts (${UMAPS.filter(s => s.minis).map(s => `${s.minis} in ${mapOf(s)}`).join("; ")}): players kill them too. ` +
+      `The maps' other monsters aren't counted here.`
   ].filter(Boolean).map(x => `<li>${x}</li>`).join("");
   $("gm-umap-note").textContent = `The table lists ${fresh ? "every item they drop" : "your missing items they drop"} (${rows.length}), the ones these maps raise most over ${mapsWord()} maps first: how often each map finds it ` +
     `(one run a map) and how often a ${mapsWord()} map with its best ear does (${setting()}). "A run =" is the ${mapsWord()} maps one run is worth for it.`;
   const shown = UMORE ? rows : rows.slice(0, 15);
   $("gm-t-umap").innerHTML = !rows.length ? `<tbody><tr><td>None of your missing items comes from these bosses.</td></tr></tbody>` :
-    `<thead><tr><th class="l">Item</th><th class="l opt">Base</th>${UMAPS.map(s => `<th>${mapOf(s)}${s.made === "explode" ? `<br><span class="ratio">its two bosses</span>` : s.name !== mapOf(s) ? `<br><span class="ratio">${s.name}</span>` : ""}</th>`).join("")}` +
+    `<thead><tr><th class="l">Item</th><th class="l opt">Base</th>${UMAPS.map(s => `<th>${mapOf(s)}${s.made === "explode" ? `<br><span class="ratio">its two bosses</span>` : s.minis ? `<br><span class="ratio">${joinAnd([s.name, ...s.minis.split(" and ")])}</span>` : s.name !== mapOf(s) ? `<br><span class="ratio">${s.name}</span>` : ""}</th>`).join("")}` +
     `<th>${mapsWord()} map, best ear</th><th>A run =</th></tr></thead><tbody>` +
     shown.map(o => `<tr><td>${ITEMS[o.i].label}</td><td class="l opt">${ITEMS[o.i].base}</td>` + o.v.map(v => `<td${v === o.best ? ' class="best"' : ""}>${oneIn(v)}</td>`).join("") +
       `<td>${oneIn(o.map)}<br><span class="ratio">${o.ear ? `${o.ear} ear` : "any ear"}</span></td><td>${isFinite(o.x) ? `${nMaps(o.x)}` : "maps never drop it"}</td></tr>`).join("") + `</tbody>`;
@@ -2535,6 +2561,16 @@ function renderLucion() {
 $("gm-lmore").onclick = () => { LMORE = !LMORE; renderLucion(); };
 $("gm-clvl").innerHTML = GCL.map(v => `<option value="${v}"${v === state.clvl ? " selected" : ""}>${v}</option>`).join("");
 let GMORE = false; const GOPEN = new Set();  // bases opened to every item they can find
+// Event and Boss Map Runs: what the website's page finds, in short (its numbers don't follow the bar: Erazure's estimates)
+function renderEvruns() {
+  const E = EVRUNS, sooner = (a, b) => Math.round((1 - a / b) * 100);
+  $("gm-evruns-list").innerHTML = [
+    `<b>A run:</b> teleport over a rare map until its event shows, do the event, kill the map boss and leave. Map events spawn as the rooms around you fill with monsters, not as monsters die, so a scout finds them as surely as a full clear; about 1 rare map in 3 has one.`,
+    E ? `<b>For the grail, the runs come out a little ahead:</b> at Erazure's estimated times (${E.overhead} s a map besides the scout, ${E.clear}-minute full clears, ${E.mf}% magic find) they reach 90% of the grail about ${sooner(E.runs.h90, E.clears.h90)}% sooner than full clears, and all of it about ${sooner(E.runs.all, E.clears.all)}% sooner. Gheed's map event and the map bosses, which every run has, hold many of the rarest uniques: Tyrael's Might, Knell Striker, Torch of Iro.` : "",
+    `<b>A Corrupted Ear turns it around:</b> an ear works on every monster of a full clear but on a run only on the map boss, so with an ear on every full clear, full clears reach 90% first.`,
+    `<b>Unique maps: rush the bosses.</b> ${capFirst(umapSay())}. When you get one of these maps, kill its bosses and leave: <a href="${EVR_URL}#unique-maps">what a rush is worth</a> at your own times.`,
+  ].filter(Boolean).map(x => `<li>${x}</li>`).join("");
+}
 function renderGamble() {
   const l = gli(), list = ITEMS.filter(it => !FOUND.has(it.key)).map(it => it.i), fresh = list.length === N;
   const rows = gambleBases(l, list), shown = GMORE ? rows : rows.slice(0, 12), what = fresh ? "grail items" : "of your missing items";
@@ -2914,7 +2950,7 @@ document.addEventListener("click", e => {  // links to a section, on this page o
 addEventListener("hashchange", () => { if (location.hash) fromHash(); else showTab("overview"); });
 document.querySelectorAll(".grail-map .gm-n").forEach(x => { x.textContent = N; });
 artVars(ROOT); syncBar(); labelsBand();
-renderLooks(); renderHow(); renderAll(); fromHash();
+renderLooks(); renderHow(); renderEvruns(); renderAll(); fromHash();
 if (window.IntersectionObserver) { const io = new IntersectionObserver(es => { if (es.some(x => x.isIntersecting)) { io.disconnect(); renderGrid(); } }, {rootMargin: "800px 0px"}); io.observe($("gm-t-grid")); }
 else renderGrid();
 // the start's cards and the grail curve follow the page's width (a turned phone, a resized window)
