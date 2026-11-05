@@ -573,8 +573,8 @@
   each area's monsters at weight 1, `Maps.guest_kills`; `BOVINE_ROLLS`, `BOVINE_MF`) and the Dark Wanderer event's Cow
   King with 8 Hell Bovines (`DW_COW_KING`: 1 rare map in 260, 1 non-magical in 800); an ear's extra drop, rarity and
   class pool (Barbarian: War Hat) count. Guests and events are left out for every other item but the Bitter Depths:
-  since 2026-11-01 (the author) `add_bitter_depths_rates` adds per map EVENT_CHANCE x BD_OPEN (1 rare map in 27, 1
-  non-magical in 82) times one run: its 20 Lucion chests (as tier-0 vault chests, no ear), area 207's monsters
+  since 2026-11-01 (the author) `add_bitter_depths_rates` adds per map EVENT_CHANCE (1 rare map in 26, 1
+  non-magical in 82; its portal always opens, the author, 2026-11-04: BD_OPEN's 97% is gone) times one run: its 20 Lucion chests (as tier-0 vault chests, no ear), area 207's monsters
   (`Maps.area_kills`, BD_ROLLS, the ear's extra drop and class pool) and Zoltun Kulle, with his treasure explosion
   (2026-11-04: `grail_farm.EXPLOSION`, 60 items of his Map Boss T3 at level 85, no magic find, no ear: +5.3 grail items a
   run, +0.20 a rare map); its 7 sparkly chests are left out (~3%). Each tier's map bosses are `MAP_BOSSES` (PD2's map-boss lists + Kyovashad's), each with its own TC and,

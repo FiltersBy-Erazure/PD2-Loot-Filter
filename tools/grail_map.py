@@ -81,7 +81,8 @@ MAP_BOSSES = {
         "SkovosBoss", "KyovoshadBoss"),
 }
 # The Bitter Depths map event (area 207): 11% of non-magical and 34% of rare T1-T3 maps have an event, one of nine kinds
-# (EVENT_CHANCE), and its portal opens late in the clear (BD_OPEN: map_exp.py's room model, 97% of full clears). Since
+# (EVENT_CHANCE), and its portal always opens, late in the clear (the author, 2026-11-04: anything less would be a bug;
+# until then 97% of full clears, by a room model that left out the map's empty rooms, which the game counts too). Since
 # the 2026-11-01 patch it holds 20 Lucion chests (bitterdepths.ds1: Objects 623, each LucionChestLow 3 items and
 # LucionChestHigh 2, the opener's level for the quality roll, as in Lucion's vault) and 7 sparkly chests (the base
 # game's chest code, left out: about 3% of the chests' grail drops), 5 elite packs (Levels.txt) and Zoltun Kulle
@@ -90,7 +91,6 @@ MAP_BOSSES = {
 # monster list, BD_ROLLS spawn rolls (map_exp.py's model, every one in reach) at the area's level. The map's ears reach
 # them (map monster stats carry over), not the chests or the explosion; density and rarity don't.
 EVENT_CHANCE = {"normal": 0.11 / 9, "rare": 0.34 / 9}
-BD_OPEN = 0.97
 BD_AREA, BD_ROLLS, BD_BOSS, BD_LUCION_CHESTS = 207, 85.364, "TombEventBoss", 20
 # Cow King's Leathers in maps: only Hell Bovines drop it (COW_SET), and a map has them two ways. The Bovine prefix ("Map
 # contains Hell Bovines", one of the map guests' affix group) puts them on rare T1-T3 maps (map_exp.py's roller: these
@@ -717,8 +717,8 @@ def add_cow_rates(t, items, ear_list, configs, rates):
 
 
 def add_bitter_depths_rates(t, items, ear_list, configs, rates):
-    """The Bitter Depths' grail drops per map, into compute's rates: the chance a map has the event and its portal opens
-    (EVENT_CHANCE x BD_OPEN) times one run, the same in every tier: its Lucion chests (no ear reaches them), its
+    """The Bitter Depths' grail drops per map, into compute's rates: the chance a map has the event (EVENT_CHANCE; its
+    portal always opens) times one run, the same in every tier: its Lucion chests (no ear reaches them), its
     monsters and Zoltun Kulle (an ear's extra drop repeats a non-minion's drop, its class chance picks its pool), and
     Zoltun's treasure explosion (no magic find, no ear)."""
     import grail_farm as GF
@@ -750,7 +750,7 @@ def add_bitter_depths_rates(t, items, ear_list, configs, rates):
         cls = {e["name"]: run(mf, ear=e) for e in ear_list}
         for tier in (1, 2, 3):
             for mt in ("normal", "rare"):
-                f, e = EVENT_CHANCE[mt] * BD_OPEN, rates[f"{tier}|{mt}|{mf}"]
+                f, e = EVENT_CHANCE[mt], rates[f"{tier}|{mt}|{mf}"]
                 e["none"] = [a + f * b for a, b in zip(e["none"], none)]
                 e["common"] = [[a + f * b for a, b in zip(x, y)] for x, y in zip(e["common"], common)]
                 for name, v in cls.items():

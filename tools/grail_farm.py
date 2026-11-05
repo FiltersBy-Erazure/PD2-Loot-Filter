@@ -721,8 +721,7 @@ def pack(items, spots, rates, mfs, gheed):
 
 
 def lucion_info(t):
-    """Lucion's chests for the page: chests a vault and a Bitter Depths run, the chance a map has the event (its portal
-    not counted), how much
+    """Lucion's chests for the page: chests a vault and a Bitter Depths run, the chance a map has the event, how much
     more often each chest loot makes a unique or set than a monster's ((lesser, better) x (unique, set): 1024 / (1024 -
     its modifier)), the vault's key (its name) and its three parts [code, name, chance a Hell kill]."""
     name = lambda c: clean(t.names.get(t.items[c].get("namestr", c), c))
