@@ -64,12 +64,15 @@ ITEMS_TSV = ROOT / "docs" / "pd2-unique-set-items.tsv"
 BS = "\\"
 
 MFS = [0, 100, 200, 300, 400, 500, 600, 700, 800]
-# The average rare map with one corruption, per tier (density, rarity %): map_exp.py --ranges, 2026-10-16
-RARE_ROLLS = {1: (91, 14), 2: (104, 18), 3: (126, 23)}
+# The average rare map with one corruption, per tier (density, rarity %): map_exp.py's roller, 2026-10-16. T3 since
+# 2026-11-05: T3 maps also roll the map affixes listed for T1 / T2 maps only (the ItemTypes equivalence t3m -> t2m ->
+# t1m; rare T3 maps on the trade site carry them), which the roller missed until then (T3 was 126, 23)
+RARE_ROLLS = {1: (91, 14), 2: (104, 18), 3: (117, 23)}
 # ... and its own magic find (its affixes' and corruption's map-play-mag-gold%), which the game adds to the player's
 # before the diminishing returns, as it carries into the Bitter Depths (the audit, 2026-11-04: until then the bar's magic
-# find alone): map_exp.py's roller, 200,000 maps a tier (58.5, 79.1, 128.2)
-RARE_MF = {1: 58, 2: 79, 3: 128}
+# find alone): map_exp.py's roller, 400,000 maps a tier, 2026-11-05 (58.5, 79.2, 103.3; T3 was 128.2 without the T1 / T2
+# rows)
+RARE_MF = {1: 58, 2: 79, 3: 103}
 CHAMP_SIZE = 3.0     # a champion pack: the leader + 1-3 more
 MINIONS = 4.5        # a unique monster's minions: 3-6
 # The maps' bosses (MonStats Id), one a map: PD2's map-boss lists per tier, and on T3 Kyovashad's, which is on none
@@ -102,13 +105,14 @@ BD_AREA, BD_ROLLS, BD_BOSS, BD_LUCION_CHESTS = 207, 85.364, "TombEventBoss", 20
 # shares; corrupting adds none). The guest joins every area's monster list at weight 1 beside the natives, in groups
 # and elite packs alike, and the prefix brings +25-30% density and +15-20% magic find (BOVINE_ROLLS: the average density
 # and rarity of those maps, all their rolls, as RARE_ROLLS; BOVINE_MF their magic find, the prefix's with the other
-# affixes', as RARE_MF, 2026-11-04: 57.2, 79.6, 120.4). And the Dark Wanderer map event (11% of non-magical, 34%
+# affixes', as RARE_MF, 2026-11-04: 57.2, 79.6, 120.4; T3 since 2026-11-05 with the T1 / T2 rows, as RARE_ROLLS:
+# share 0.0254, rolls 127.8 / 20.5, magic find 100.9; was 0.0360, 134.6 / 21.5, 120.4). And the Dark Wanderer map event (11% of non-magical, 34%
 # of rare T1-T3 maps have an event, one of nine kinds) has up to three wanderers, each turning into a random act boss
 # or superunique: the Cow King, a real one with 8 Hell Bovines, in about 1 rare map in 260 (if the player meets all
 # three). Map guests and events are left out for every other item, but for the Bitter Depths (below).
-BOVINE = {1: 0.0554, 2: 0.0353, 3: 0.0360}
-BOVINE_ROLLS = {1: (101.3, 13.0), 2: (115.2, 16.4), 3: (134.6, 21.5)}
-BOVINE_MF = {1: 57, 2: 80, 3: 120}
+BOVINE = {1: 0.0554, 2: 0.0353, 3: 0.0254}
+BOVINE_ROLLS = {1: (101.3, 13.0), 2: (115.2, 16.4), 3: (127.8, 20.5)}
+BOVINE_MF = {1: 57, 2: 80, 3: 101}
 DW_COW_KING = {"normal": 1 / 802.5, "rare": 1 / 259.6}
 QUEST = {"vip", "msf", "hst", "hfh", "qf1", "qf2"}
 # Uniques that are no grail items (the author, 2026-10-30), by UniqueItems index

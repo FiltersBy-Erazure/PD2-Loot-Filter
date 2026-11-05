@@ -561,10 +561,12 @@
   tables (pd2data.mpq) and `docs/pd2-map-exp.tsv`, so build.bat, the hook and CI don't run it: run it after a PD2
   patch that changes drop tables, the ears (their cube recipes), unique / set items or the maps. A model, not in-game
   counts; its docstring has the rules (treasure classes, quality, item level gates, the ears). The bar's magic find is
-  the character's: a rare map adds its own (`RARE_MF`, the average rare map with a corruption, +58 / +79 / +128% on
-  T1 / T2 / T3 by map_exp.py's roller, 200,000 maps a tier; the audit, 2026-11-04: until then the bar's alone), before
+  the character's: a rare map adds its own (`RARE_MF`, the average rare map with a corruption, +58 / +79 / +103% on
+  T1 / T2 / T3 by map_exp.py's roller; the audit, 2026-11-04: until then the bar's alone; T3 was +128% until
+  2026-11-05, when the roller learned that T3 maps also roll the T1 / T2-only affixes, which also lowered T3's
+  `RARE_ROLLS` and `BOVINE*`), before
   the diminishing returns, for its monsters, the ear pools, its Dark Wanderer's Cow King and its Bitter Depths (the
-  player's map stats carry over); a Bovine map its own (`BOVINE_MF`, 57 / 80 / 120, the prefix's among it).
+  player's map stats carry over); a Bovine map its own (`BOVINE_MF`, 57 / 80 / 101, the prefix's among it).
   `NOT_GRAIL` (the author, 2026-10-30): Itherael's Path, Overlord's Helm, Dark Abyss, Aidan's Scar, Hadriel's Hand,
   Band of Skulls, Cage of the Unsullied, The Third Eye and (2026-10-31) Rainbow Facet are no grail items (Embersworn is
   one, the author, 2026-10-31: the game's own Discovery count is 555 too; its rarity is empty, but it is the only
