@@ -575,8 +575,9 @@
   class pool (Barbarian: War Hat) count. Guests and events are left out for every other item but the Bitter Depths:
   since 2026-11-01 (the author) `add_bitter_depths_rates` adds per map EVENT_CHANCE x BD_OPEN (1 rare map in 27, 1
   non-magical in 82) times one run: its 20 Lucion chests (as tier-0 vault chests, no ear), area 207's monsters
-  (`Maps.area_kills`, BD_ROLLS, the ear's extra drop and class pool) and Zoltun Kulle; its 7 sparkly chests are left
-  out (~3%). Each tier's map bosses are `MAP_BOSSES` (PD2's map-boss lists + Kyovashad's), each with its own TC and,
+  (`Maps.area_kills`, BD_ROLLS, the ear's extra drop and class pool) and Zoltun Kulle, with his treasure explosion
+  (2026-11-04: `grail_farm.EXPLOSION`, 60 items of his Map Boss T3 at level 85, no magic find, no ear: +5.3 grail items a
+  run, +0.20 a rare map); its 7 sparkly chests are left out (~3%). Each tier's map bosses are `MAP_BOSSES` (PD2's map-boss lists + Kyovashad's), each with its own TC and,
   boss-flagged, its own Level(H) (Rotting Horror 80): the 11-01 patch boss-flagged six), with the whole list's per-kill / per-map
   numbers, 3 the slowest (maps' items under an even chance in 100 maps), 4 the encounters; maps to finish without the
   farmed items. It works out only while its tab is open (`planSoon`). The ear table ranks ears by the missing items
@@ -640,12 +641,19 @@
   Gregus Mazi (City of Ureh) 3 uniques a kill, only bases that take sockets; Warlord of Blood 2 or 3; Na-Krul (Na-Krul's
   Abyss, found in the same check) 3. Each picks a UniqueItems row evenly (a flag, rarity 1+, level 1-99); Warlord and
   Gregus then make a unique of that row's base at item level 99 by rarity (the row only names the base: Tyrael's Might 1 in
-  ~525 City of Ureh maps, Templar's Might on the same Sacred Armor 1 in 66), Na-Krul the row's own unique (1 in ~145).
-  Their own loot (Map Boss T1 / T3 at level 91) drops with the map's own magic find roll. The page: Target Farming's
-  "Unique Map Bosses" section (#gm-umaps: what they drop, your missing uniques against a T1-T3 map with the best ear),
-  a "Got a ... map? Kill its boss" plan step, a line in each unique's details, a FAQ answer. Per map they beat a whole
-  T1-T3 map only for the rarest uniques (rare maps, 300%: 33 of 425, up to 7.8 times; non-magical, 0%: 225, up to 29), so
-  the best bet leaves them out as it leaves out the ubers.
+  ~525 City of Ureh maps, Templar's Might on the same Sacred Armor 1 in 66), Na-Krul the row's own unique (1 in ~145;
+  ethereal, but for the indestructible ones). Their own loot (Map Boss T1 / T3 at level 91) drops with the map's own magic
+  find roll. Djinn's Domain (2026-11-04, the author asked for the missing pieces; `UMAP_EXPLODERS`, umap made "explode"):
+  its two Djinns (Siren of the Forgotten Vault, Djinn of a Thousand Blades: Map Boss T2, level 90) each set off a treasure
+  explosion (`EXPLOSION`: their class again, at most 3 items a call, until 60 lie on the ground, the boss as the
+  magic-find unit, so none) besides their own loot, which drops 1.5 times a kill (the map's map-glob-dropbonus 50): about
+  14.5 grail items a map at 300%. All of it traced in the 11-04 client (private/unique-map-bosses-2026-11-04.md): the "Map
+  boss drops ..." map stats are tooltip text, the drops a per-boss-class death handler; unique maps open only in Hell,
+  one a game; the minibosses (Zayl the Merciful, Cory the Imp, Onion the Accused) have no handler. The page: Target
+  Farming's "Unique Map Bosses" section (#gm-umaps: what they drop, your missing items against a T1-T3 map with the best
+  ear; "A run ="), a "Got a ... map? Kill its bosses" plan step, a line in each item's details, a FAQ answer. Per map they
+  beat a whole T1-T3 map only for the rarest items (rare maps, 300%: 33 of the 550 they drop, up to 7.7 times), so the
+  best bet leaves them out as it leaves out the ubers.
   Lucion's chests (2026-11-04, the author asked to look into them for the grail): Target Farming's "Lucion Chests" section
   (#gm-lucion), a FAQ answer, a farm list line; `lucion_info` (grail_farm.py) and `demon_kills` (grail_map.py) give the
   page the keys and the demons a map clear kills. A chest: 3 LucionChestLow + 2 LucionChestHigh items (tiers 1 / 2 of the

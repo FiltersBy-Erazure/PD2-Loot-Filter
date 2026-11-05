@@ -116,8 +116,8 @@ Much of this page compares maps with and without a Corrupted Ear, so here is wha
     ---
 
     Every act boss, superunique and special encounter in each difficulty, by the grail items it drops, and the items it
-    is the best spot for. The unique map bosses that drop random uniques and Lucion's chests (his vault and its keys, the
-    Bitter Depths), each against T1-T3 maps for your missing items. Then gambling: the gold per new grail item of every
+    is the best spot for. The unique map bosses that drop random uniques or a treasure explosion and Lucion's chests (his
+    vault and its keys, the Bitter Depths), each against T1-T3 maps for your missing items. Then gambling: the gold per new grail item of every
     gamble base at your character level.
 
 -   **[Gheed's Map Event](#tab-gheed)**

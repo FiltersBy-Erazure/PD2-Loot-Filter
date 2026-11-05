@@ -37,8 +37,12 @@ A model, nothing measured in game. The rules (the base game's unless said):
 - Unique map bosses (UMAP_BOSSES): Warlord of Blood, Gregus Mazi (City of Ureh) and Na-Krul (Na-Krul's Abyss) drop
   random uniques besides their own loot, one kill a map. Each is a UniqueItems row picked at random (a row with no
   flag, rarity 0 or a level outside 1-99 is tried again, and Gregus Mazi's one whose base takes no sockets); Warlord of Blood's and Gregus Mazi's become a unique of that row's base at item level 99, the game's own
-  pick among the base's uniques by rarity (the row only names the base), Na-Krul's the row's own unique. Their own
-  loot drops with the map's magic find (its "magic and gold find" roll).
+  pick among the base's uniques by rarity (the row only names the base), Na-Krul's the row's own unique (ethereal,
+  but for the indestructible ones). Their own loot drops with the map's magic find (its "magic and gold find" roll).
+  Djinn's Domain's two Djinns (UMAP_EXPLODERS) set off a treasure explosion when they die (EXPLOSION): their own loot
+  dropped again and again until 60 items lie on the ground, at their level and with no magic find (not the player's);
+  their own loot drops too, a second time half the time (the map's 50% extra drop). Unique maps open only in Hell, one
+  a game; the minibosses (Zayl the Merciful, Cory the Imp, Onion the Accused) drop only their own loot.
 - Where a spot is: fixed (the same place every game) or anywhere in its area, and the areas from the nearest
   waypoint (FIXED_AREAS, FIXED_KEYS, OUTDOOR below).
 """
@@ -111,7 +115,13 @@ LUCION_KEYS = [("lucb", "lucbH"), ("lucc", "lucc"), ("lucd", "lucdH")]
 # boss's level; only bases that take sockets; what the uniques drop as)
 UMAP_BOSSES = [("CityofUrehBoss", "t56", (3, 3), "base", True, "socketed"),  # Gregus Mazi
                ("WarlordOfBlood", "t52", (2, 3), "base", False, "corrupted"),
-               ("NaKrulBoss", "t58", (3, 3), "row", False, "ethereal")]
+               ("NaKrulBoss", "t58", (3, 3), "row", False, "ethereal but for the indestructible ones")]
+# A treasure explosion (checked in the 2026-11-04 build): the boss's death drops its own treasure class again and again,
+# at most 3 items a time, until 60 items lie on the ground, at its level, with the boss itself as the magic-find unit
+# (none: the player's doesn't count); its own loot drops as well. Djinn's Domain's two Djinns, and Zoltun Kulle in the
+# Bitter Depths map event (grail_map.add_bitter_depths_rates). (items, at most a time)
+EXPLOSION = (60, 3)
+UMAP_EXPLODERS = [("t57", ("DjinnDarkBoss", "DjinnLightBoss"))]  # Siren of the Forgotten Vault, Djinn of a Thousand Blades
 
 # Where a spot is. Fixed: its area is one of the game's preset maps (Levels DrlgType 2: the Cathedral, Tower Cellar
 # Level 5, Nihlathak's Temple...), or an outdoor area laid out the same way every game (Travincal, the Chaos
@@ -407,14 +417,25 @@ def catalogue(t, d, strings):
     for tier, cap in LUCION_CAPS.items():
         spot(key=f"lucion{tier}", kind="uber", name=f"Lucion's vault, tier {tier}", diff=2, lid=189, area=area(189),
              lvl=CLVL, tc="LucionChestHigh", cap=cap, unit="vault", per=LUCION_CHESTS, low=("LucionChestLow", 3))
-    maps = {r["code"]: r for r in t.uniques if r.get("code") in {m for _, m, *_ in UMAP_BOSSES}}
+    maps = {r["code"]: r for r in t.uniques if r.get("code") in {m for _, m, *_ in UMAP_BOSSES} | {m for m, _ in UMAP_EXPLODERS}}
+    prop = lambda row, name: next(((num(row[f"min{i}"]), num(row[f"max{i}"])) for i in range(1, 13)
+                                   if row.get(f"prop{i}") == name), (0, 0))
     for cls, code, picks, made, sockets, look in UMAP_BOSSES:
         assert ms[cls].get("boss") == "1", cls  # a boss keeps its own level in maps
         lv, row = num(ms[cls]["Level(H)"]), maps[code]
-        mf = next((num(row[f"min{i}"]), num(row[f"max{i}"])) for i in range(1, 13) if row.get(f"prop{i}") == "map-play-mag-gold%")
+        assert prop(row, "map-glob-dropbonus") == (0, 0), code  # no extra drops of its own loot
         spot(key=cls, kind="umap", name=mon(cls), diff=2, lid=None, area=clean(strings.get(row["index"], row["index"])) + " map",
-             lvl=lv, tc=ms[cls]["TreasureClass1(H)"], unit="map", cls=cls, mf=mf, umap=[*picks, made, sockets, look],
-             bonus=umap_bonus(t, sum(picks) / 2, made, sockets, 99 if made == "base" else lv))
+             lvl=lv, tc=ms[cls]["TreasureClass1(H)"], unit="map", cls=cls, mf=prop(row, "map-play-mag-gold%"),
+             umap=[*picks, made, sockets, look, 1], bonus=umap_bonus(t, sum(picks) / 2, made, sockets, 99 if made == "base" else lv))
+    for code, clss in UMAP_EXPLODERS:  # both bosses: their own loot (a second drop at the map's extra-drop chance) and explosions
+        row, (tc, lv) = maps[code], {(ms[c]["TreasureClass1(H)"], num(ms[c]["Level(H)"])) for c in clss}.pop()
+        assert all(ms[c].get("boss") == "1" and (ms[c]["TreasureClass1(H)"], num(ms[c]["Level(H)"])) == (tc, lv) for c in clss), clss
+        extra = sum(prop(row, "map-glob-dropbonus")) / 2
+        spot(key=code, kind="umap", name=" and ".join(mon(c) for c in clss), diff=2, lid=None,
+             area=clean(strings.get(row["index"], row["index"])) + " map", lvl=lv, tc=tc, unit="map", cls=clss[0],
+             mf=prop(row, "map-play-mag-gold%"), per=len(clss) * (1 + extra / 100),
+             explode=(tc, lv, len(clss) * EXPLOSION[0] / EXPLOSION[1]),
+             umap=[EXPLOSION[0], EXPLOSION[0], "explode", False, "", len(clss)])
     assert "Annihilus" in uni and "Hellfire Torch" in uni
     return out
 
@@ -516,9 +537,13 @@ def spot_rates(t, d, items, spots, mfs):
         elif s["tc"]:
             dists.append((flow(s["cap"]).per_drop(s["tc"])[0], s["lvl"]))
         mdist = flow(CAP).per_drop(s["minions"][1])[0] if s.get("minions") else None
+        boom = [0.0] * N
+        if s.get("explode"):  # a treasure explosion: calls of the class, at most 3 items each, no magic find
+            tc, lvl, calls = s["explode"]
+            GM.add_drops(d, cand, flow(EXPLOSION[1]).per_drop(tc)[0], lvl, 0, calls, boom)
         lo, hi = s.get("mf", (0, 0))  # a map's own magic find, each roll alike
         for mf in mfs:
-            v = [0.0] * N
+            v = list(boom)
             for dist, lvl in dists:
                 for b in range(lo, hi + 1):
                     GM.add_drops(d, cand, dist, lvl, mf + b, s.get("per", 1) / (hi - lo + 1), v, s.get("cls") == "hellbovine")
@@ -691,7 +716,8 @@ def pack(items, spots, rates, mfs, gheed):
     shop = {i: sum(gheed.get(u, 0) for u in it.get("uids", [])) for i, it in enumerate(items)}
     return {"groups": GROUPS, "spots": out_spots, "items": out_items, "ref": ref,
             "gheed": {str(i): k_of(v) for i, v in shop.items() if v > 0},
-            "umap": [[j, *s["umap"]] for j, s in enumerate(spots) if s.get("umap")]}  # spot, uniques a kill, made, sockets, look
+            # spot, uniques a kill (fewest, most), made ("base", "row"; "explode": items an explosion), sockets, look, bosses
+            "umap": [[j, *s["umap"]] for j, s in enumerate(spots) if s.get("umap")]}
 
 
 def lucion_info(t):

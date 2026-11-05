@@ -85,8 +85,10 @@ MAP_BOSSES = {
 # the 2026-11-01 patch it holds 20 Lucion chests (bitterdepths.ds1: Objects 623, each LucionChestLow 3 items and
 # LucionChestHigh 2, the opener's level for the quality roll, as in Lucion's vault) and 7 sparkly chests (the base
 # game's chest code, left out: about 3% of the chests' grail drops), 5 elite packs (Levels.txt) and Zoltun Kulle
-# (BD_BOSS). Its monsters: area 207's monster list, BD_ROLLS spawn rolls (map_exp.py's model, every one in reach) at
-# the area's level. The map's ears reach them (map monster stats carry over), not the chests; density and rarity don't.
+# (BD_BOSS), whose death also sets off a treasure explosion (grail_farm.EXPLOSION: his own loot again and again until 60
+# items lie on the ground, at his level, with no magic find; checked in the 2026-11-04 build). Its monsters: area 207's
+# monster list, BD_ROLLS spawn rolls (map_exp.py's model, every one in reach) at the area's level. The map's ears reach
+# them (map monster stats carry over), not the chests or the explosion; density and rarity don't.
 EVENT_CHANCE = {"normal": 0.11 / 9, "rare": 0.34 / 9}
 BD_OPEN = 0.97
 BD_AREA, BD_ROLLS, BD_BOSS, BD_LUCION_CHESTS = 207, 85.364, "TombEventBoss", 20
@@ -717,7 +719,8 @@ def add_cow_rates(t, items, ear_list, configs, rates):
 def add_bitter_depths_rates(t, items, ear_list, configs, rates):
     """The Bitter Depths' grail drops per map, into compute's rates: the chance a map has the event and its portal opens
     (EVENT_CHANCE x BD_OPEN) times one run, the same in every tier: its Lucion chests (no ear reaches them), its
-    monsters and Zoltun Kulle (an ear's extra drop repeats a non-minion's drop, its class chance picks its pool)."""
+    monsters and Zoltun Kulle (an ear's extra drop repeats a non-minion's drop, its class chance picks its pool), and
+    Zoltun's treasure explosion (no magic find, no ear)."""
     import grail_farm as GF
     d, m, cand, N = Drops(t), Maps(t), candidates(items), len(items)
     level = num(t.levels[str(BD_AREA)]["MonLvl3Ex"])
@@ -725,6 +728,9 @@ def add_bitter_depths_rates(t, items, ear_list, configs, rates):
     boss = m.boss_kill(BD_BOSS, level)
     kills[boss] = kills.get(boss, 0) + 1.0
     chest = [(GF.Flow(d, 3).per_drop("LucionChestLow")[0], GF.CLVL), (GF.Flow(d, 2).per_drop("LucionChestHigh")[0], GF.CLVL)]
+    items_n, cap = GF.EXPLOSION
+    boom = [0.0] * N
+    add_drops(d, cand, GF.Flow(d, cap).per_drop(boss[1])[0], boss[2], 0, items_n / cap, boom)
 
     def run(mf, extra=0, ear=None):
         out = [0.0] * N
@@ -737,7 +743,7 @@ def add_bitter_depths_rates(t, items, ear_list, configs, rates):
             add_drops(d, cand, d.expand(d.upgrade(tc, lvl)), lvl, mf, n * (1 if kind == "minion" else 1 + extra / 100), out)
         for dist, lvl in chest:
             add_drops(d, cand, dist, lvl, mf, BD_LUCION_CHESTS, out)
-        return out
+        return [a + b for a, b in zip(out, boom)]
 
     for mf in MFS:
         none, common = run(mf), [run(mf, c[1]) for c in configs]
