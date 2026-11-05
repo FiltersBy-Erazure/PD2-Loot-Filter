@@ -27,9 +27,10 @@ the area's). A character's own +XP % (stat 85) is added after the penalty, and t
 The filter shows the roll multiplier as a description line, "2.0x Experience" (sections/146-map-experience.filter,
 written here), truncated to one decimal (the colour always matches the digits), in bands per tier (BANDS): T1 from
 1.4x gold, 1.7x red, 2.0x purple; T2 1.5x / 1.8x / 2.2x; T3 1.5x / 1.9x / 2.4x; T4 2.3x / 2.6x / 3.0x; no line
-below. Under it the experience line, gold "2.6x at Level 98" (the viewer's level): a full clear of this map with
-its rolls for the viewer, per tile of its clear path (docs/pd2-map-paths.tsv: a walk that sees 95% of its spawn
-spots), over the same for the average white map (the author, 2026-10-28: per path, not per clear, since a big map
+below. Under it the experience line, gold "2.6x at Level 98" (the viewer's level; rounded to one decimal, since
+2026-11-05, the author: it has no colour bands to match, and 0.99 read as 0.9x): a full clear of this map with
+its rolls for the viewer, per tile of its clear path (docs/pd2-map-paths.tsv: a walk from where the player arrives
+that sees 95% of its spawn spots), over the same for the average white map (the author, 2026-10-28: per path, not per clear, since a big map
 also takes longer). Identified maps only (an unidentified map has no stats yet).
 
 The website's Map Experience page (website/resources/Map-Experience.html, written by hand) explains both lines; its
@@ -477,7 +478,7 @@ def render_section(maps):
         lines += ["", f"// {mp.name} ({tier})", f"Alias[MXR_{c}]:{roll_txt(mp)}"]
         for color, test in band_tests(mp, f"FLOOR(10*(MXR_{c})+0.0001)"):
             lines.append(f"ItemDisplay[{mp.code} ID $f({test})]:%NAME%{{{color}{shown} Experience%CL%%NAME%}}%CONTINUE%//")
-        x_tenths = f"FLOOR(10*(%MXX_{c}%)+0.0001)"
+        x_tenths = f"FLOOR(10*(%MXX_{c}%)+0.5)"  # rounded (the author, 2026-11-05); the tag above is cut
         lines += [f"Alias[MXX_{c}]:{exp_txt(mp, avg0, maps)}",
                   f"ItemDisplay[{mp.code} ID CLVL>79 CLVL<99]:%NAME%{{%GOLD%$f(FLOOR({x_tenths}/10)).$f(MOD({x_tenths},10))"
                   f"x at Level $f(CHARSTAT12)%CL%%NAME%}}%CONTINUE%//"]

@@ -233,16 +233,28 @@
   tier of their area level (87 T1, 88 T2, 89 T3). Identified maps only. The tag and the experience line are two
   description lines under 145's density / rarity highlights (the author's layout, tested in game 2026-10-18; BH
   draws description lines bottom up, so a later rule's line sits lower): the tag `2.0x Experience` in its band's
-  colour, then the experience line, gold `2.6x at Level 98` (the viewer's level, `$f(CHARSTAT12)`). The experience
+  colour, then the experience line, gold `2.6x at Level 98` (the viewer's level, `$f(CHARSTAT12)`; rounded to one
+  decimal since 2026-11-05, the author: it has no colour bands to match, while the tag is cut). The experience
   line: a full clear of this map with its rolls
   for the viewer (level penalty per monster kind: normals, champions +2, uniques +3; their own +XP %,
   `CHARSTAT12`/`CHARSTAT85`) per tile of its clear path, over the average white T1-T3 map's for the same viewer
   (dungeons: the average white T3 map's; the author, 2026-10-17: at level 97 nobody weighs a dungeon against T1
   maps). Per path since 2026-10-28 (the author: a big map also takes longer to clear; until then per clear):
   `docs/pd2-map-paths.tsv`, written by `map_size.py "<Diablo II folder>" --paths` (kept out of the repo; rerun when a
-  PD2 patch changes layouts), holds per map area the tiles of a greedy walk that brings 95% of its reachable spawn
-  spots within 15 subtiles (most players clear 90-95% of a map, the author), averaged over layouts and five starts;
-  the generator folds the map's path over its baseline tiers' average path into `MXX_`'s coefficients. Horazon's
+  PD2 patch changes layouts), holds per map area the tiles of a walk that brings 95% of its reachable spawn
+  spots within 35 subtiles, 7 tiles along the ground (the author, 2026-11-05: at 15 subtiles, 3 tiles, the walk did
+  wide corridors such as Kyovashad's twice; 7 matched players' Kyovashad vs River of Blood) (most players clear 90-95%
+  of a map, the author), from where the player comes in (since
+  2026-11-05, the author; until then averaged over five made-up starts per layout, the corners of its outline and
+  its centre, which made corridor maps such as Kyovashad walk back and forth): the level's start tile, its waypoint
+  or its warp tile, which match the wiki's layout pictures' "Map start" (T1-T3: the waypoint; Zhar's wings: the
+  start tile; Hole of Terror and Djinn's Domain's boss room: their warp tile), the Outer Void's later parts'
+  southern end (`ENTRY_END`), and Djinn's Domain's level 2 the mean of walks from its three doors from level 1
+  (`MULTI_ENTRY`, the author's picture). A greedy walk's stops put in a
+  shorter order (2-opt, Or-opt moving whole side branches) and walked again, also with the stops whose detours show
+  the fewest spawn spots left out (up to 5% of the spots: players clear 90-95%), the shortest at 95% kept; the mean
+  of the walks from the entrance and 6 points 2-6 tiles from it (one walk alone varies up to ~13%), averaged over
+  layouts. Not modelled: weaving left and right (solo players; groups follow the line, the author); the generator folds the map's path over its baseline tiers' average path into `MXX_`'s coefficients. Horazon's
   Memory's 42 lightning spires are left out of its numbers (players walk past them; `SKIPPED_PRESETS` in the
   model, the author, 2026-10-28). Characters of level 80-98
   (`CLVL>79 CLVL<99`; maps need level 80); exact formulas, no shortcut (a tag x base x penalty shortcut is off by
