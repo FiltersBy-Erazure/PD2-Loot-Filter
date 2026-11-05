@@ -126,10 +126,17 @@ def grail_data():
         return {}, None
     kind, mf, tiers = GRAIL_RATES
     total = sum(w for _, w in tiers)
+    lo, hi = data.get("rateRange") or (0, 1)
+
+    def rate(s, i):  # grail_map.pack_rates: 3 base-36 characters a rate, the log10 over rateRange (a list: per 1,000 maps)
+        if isinstance(s, list):
+            return s[i] / 1000
+        c = int(s[3 * i:3 * i + 3], 36)
+        return 10 ** (lo + (c - 1) * (hi - lo) / (36 ** 3 - 2)) if c else 0.0
     out = {}
     for i, it in enumerate(data["items"]):
         if it["kind"] == "SET":
-            out[it["name"]] = sum(data["rates"][f"{t}|{kind}|{mf}"]["none"][i] * w / total for t, w in tiers) / 1000
+            out[it["name"]] = sum(rate(data["rates"][f"{t}|{kind}|{mf}"]["none"], i) * w / total for t, w in tiers)
     return out, data.get("date")
 
 

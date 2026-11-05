@@ -546,7 +546,11 @@
   (ticks in the player's browser, a pasted list) that ranks the ears for the missing items. It reads the game's
   tables (pd2data.mpq) and `docs/pd2-map-exp.tsv`, so build.bat, the hook and CI don't run it: run it after a PD2
   patch that changes drop tables, the ears (their cube recipes), unique / set items or the maps. A model, not in-game
-  counts; its docstring has the rules (treasure classes, quality, item level gates, the ears).
+  counts; its docstring has the rules (treasure classes, quality, item level gates, the ears). The bar's magic find is
+  the character's: a rare map adds its own (`RARE_MF`, the average rare map with a corruption, +58 / +79 / +128% on
+  T1 / T2 / T3 by map_exp.py's roller, 200,000 maps a tier; the audit, 2026-11-04: until then the bar's alone), before
+  the diminishing returns, for its monsters, the ear pools, its Dark Wanderer's Cow King and its Bitter Depths (the
+  player's map stats carry over); a Bovine map its own (`BOVINE_MF`, 57 / 80 / 120, the prefix's among it).
   `NOT_GRAIL` (the author, 2026-10-30): Itherael's Path, Overlord's Helm, Dark Abyss, Aidan's Scar, Hadriel's Hand,
   Band of Skulls, Cage of the Unsullied, The Third Eye and (2026-10-31) Rainbow Facet are no grail items (Embersworn is
   one, the author, 2026-10-31: the game's own Discovery count is 555 too; its rarity is empty, but it is the only
@@ -564,7 +568,37 @@
   per feature (the author, 2026-10-30: the long item list buried the rest; their names, every word capitalised):
   Overview, Filter Display, Your Grail, FAQ, Every Item, Target Farming, Gheed's Map Event, Corrupted Ears, How It's Worked Out; a link to a
   section id (#gm-farm) or #tab-<name> opens its
-  tab (grail.md's intro links them). Per item: its best kill spot (Normal / Nightmare / Hell bosses and superuniques)
+  tab (#gm-comp opens the Compendium view, #gm-fill and #gm-words their panels, #gm-lookup focuses the lookup). Above the
+  bar, on the standalone page and the website alike, the start (the author, 2026-11-04: the landing proposal, "I want all
+  of the changes you've proposed"; `renderStart`, `heroCards`, `labelsBand`): the title and your grail at a glance (a ring
+  and Uniques / Sets bars from the ticks, three Compendium cards in the game's art: Tyrael's Might, Griffon's Eye and
+  Windforce on a fresh grail, else the two latest marks and the rarest missing map item; a click marks one), the
+  "Mark what you've found" shortcut (a menu: the Compendium view, the list, paste a list), a welcome back with the next
+  step, the filter's never-hidden labels (DATA.looks, level 1), and three steps (the bar's settings again, the three
+  ways, the plan's first lines). Overview adds tiles, a log-scale grail curve at the chart's own width, "Where do I find
+  it?" (any item's chances, best ear, best bet and spot, a Mark it found button), "Before you start" (facts with the
+  items' pictures and the bar's numbers) and "Find your way around" (the tabs as Plan / Farm / Learn). The bar's settings,
+  Fixed spots only and the gambling level are kept in localStorage (`erazure-grail-settings`), and the bar shows your
+  count (`#gm-prog`; on phones the folded line; hidden at 1,040 px and less, where the tabs need its room). grail.md is only the placeholder now (with a meta description): its
+  Corrupted Ears in short went to the Ears tab (the pool table, fixed: Assassin daggers, clubs and hammers, Barbarian
+  circlets; pools are exceptional and elite), Words on this page to How It's Worked Out (folded, `#gm-words`, the FAQ
+  links it). The audit (2026-11-04, the author: address every item; https://claude.ai/artifact/X13oPEMhCHMZ1moipt7pgr):
+  a tab or Every Item view not on screen renders when it shows (`paint(pane, ...)` / `WAITING`, panes "list" and
+  "comp" for Every Item's views; `planSoon` as before), `summary()` is kept per setting (`SUMS`), a pressed setting
+  does nothing, the item table draws 100 rows and the rest as they scroll near (`ROWS_FIRST`, an IntersectionObserver;
+  "Tick shown" still takes the whole list), an item's details open in place, the every-setting grid is worked out
+  when it comes near; the tab row is the ARIA tab pattern (`aria-controls`, the sections `role=tabpanel`, one Tab
+  stop, arrows / Home / End), Back to the page's own address shows the Overview, section headings in Title Case with
+  ids (`<section id>-h`: the website's search finds each section and its link opens the tab); the FAQ in four groups
+  with a list of the questions (`GROUPS` in `renderFaq`: a new question needs its group key), How It's Worked Out in
+  the reader's order with sub-lists (static HTML); Every Item's column names stick under the bar from 1,000 px, its
+  optional columns hide up to 1,150 px; Target Farming's table can list your missing items only (`#gm-fwhat`); in the
+  Compendium view a touch shows a card's hover text first and marks it on the second tap, and its page buttons light up
+  (paginatebtn's pressed frames, paired on the sheet). The rates go to the page as text (`pack_rates`: a rate per map
+  as 3 base-36 characters of its log10 over `RATE_RANGE`, an ear's class pool sparse with 2-character item numbers;
+  `set_review.py` reads them so too), an item's `index` only where it isn't its name (the ticks' key falls back to the
+  name), and the page drops the script's whole-line comments (`strip_comments`): 1.31 MB down to 1.09 MB (gzipped,
+  the rates take as much as before: the gain is the browser's parsing). Per item: its best kill spot (Normal / Nightmare / Hell bosses and superuniques)
   and its best ears (the next ones too: Stalker's Cull is in the Druid and the Assassin pools); a row opens to the
   best 5 of each group (and the best fixed spot), the maps with each ear and Gheed; "Fixed spots only" keeps to fixed
   spots; "Target Farming" lists every spot and the items it is best for. Equal rates: a fixed spot first, then the one
@@ -578,7 +612,7 @@
   only from Hell Bovines (MonStats `hellbovine`: the Secret Cow Level's cows and the Cow King; Blood Moon's cows are other
   monsters): `add_drops(..., bovine)`; gambling never gives it. In maps (the author, 2026-10-31) `add_cow_rates` adds its
   two map sources to the pieces' map rates: the Bovine guest (`BOVINE`, the share of rare maps with the prefix; it joins
-  each area's monsters at weight 1, `Maps.guest_kills`; `BOVINE_ROLLS`, `BOVINE_MF`) and the Dark Wanderer event's Cow
+  each area's monsters at weight 1, `Maps.guest_kills`; `BOVINE_ROLLS`, `BOVINE_MF` its maps' magic find) and the Dark Wanderer event's Cow
   King with 8 Hell Bovines (`DW_COW_KING`: 1 rare map in 260, 1 non-magical in 800); an ear's extra drop, rarity and
   class pool (Barbarian: War Hat) count. Guests and events are left out for every other item but the Bitter Depths:
   since 2026-11-01 (the author) `add_bitter_depths_rates` adds per map EVENT_CHANCE (1 rare map in 26, 1
@@ -639,13 +673,16 @@
   `pack_gamble` in grail_farm.py): town gambling is the base game's code, unchanged by PD2, with PD2's
   DifficultyLevels (unique 50, set 100 in 100,000; exceptional 90, elite 33 per item level in 10,000) and Gamble.txt;
   item level = character level -5..+4; price per gamble from the base's normal version (rings / amulets: Misc `gamble
-  cost`). The page: a Gambling section on Target Farming (character level 1-99 select, bases by gold per new grail item
+  cost`). A slot offers a base only at an item level at or above the base's own (Gamble.txt sorted by level, picked
+  among the rows that level reaches), so a base is at an item level in proportion to 1 / (rows of that level or lower),
+  a ring and an amulet (the first two slots) at any (the audit, 2026-11-04: a Light Belt was ranked at character level 1). The page: a Gambling section on Target Farming (character level 1-99 select, bases by gold per new grail item
   for your missing items), a line in each item's details, a "Gold to spare" plan step, a FAQ answer. A Gheed's Map Event tab (the author, 2026-10-30; `gheed_bases`): per base the
   shop shows (the normal version; the unique and its tier are fixed at item level 99 when the shop opens) how often a
   shop of 5 offers has it (per offer beside it), what it can be and the chance it is a missing item; offers pick UniqueItems rows evenly, a level
   requirement of 60+ passed over (requirement - 49)% of the time (the 10-27 build; earlier traces said - 59).
   Unique map bosses (2026-11-04, the author: players target farm City of Ureh and Warlord of Blood maps for Tyrael's Might
-  and other rare uniques): `UMAP_BOSSES` in grail_farm.py, farm group 5 "Unique map bosses", unit "map" (one kill a map).
+  and other rare uniques): `UMAP_BOSSES` in grail_farm.py, farm group 5 "Unique Map Bosses" (group 4 "Ubers and
+  Events"), unit "map" (one kill a map).
   Gregus Mazi (City of Ureh) 3 uniques a kill, only bases that take sockets; Warlord of Blood 2 or 3; Na-Krul (Na-Krul's
   Abyss, found in the same check) 3. Each picks a UniqueItems row evenly (a flag, rarity 1+, level 1-99); Warlord and
   Gregus then make a unique of that row's base at item level 99 by rarity (the row only names the base: Tyrael's Might 1 in
@@ -660,15 +697,16 @@
   one a game; the minibosses (Zayl the Merciful, Cory the Imp, Onion the Accused) have no handler. The page: Target
   Farming's "Unique Map Bosses" section (#gm-umaps: what they drop, your missing items against a T1-T3 map with the best
   ear; "A run ="), a "Got a ... map? Kill its bosses" plan step, a line in each item's details, a FAQ answer. Per map they
-  beat a whole T1-T3 map only for the rarest items (rare maps, 300%: 33 of the 550 they drop, up to 7.7 times), so the
+  beat a whole T1-T3 map only for the rarest items (rare maps, 300%: 29 of the 550 they drop, up to 7.2 times), so the
   best bet leaves them out as it leaves out the ubers.
-  Lucion's chests (2026-11-04, the author asked to look into them for the grail): Target Farming's "Lucion Chests" section
+  Lucion's chests (2026-11-04, the author asked to look into them for the grail): Target Farming's "Lucion's Chests" section
   (#gm-lucion), a FAQ answer, a farm list line; `lucion_info` (grail_farm.py) and `demon_kills` (grail_map.py) give the
   page the keys and the demons a map clear kills. A chest: 3 LucionChestLow + 2 LucionChestHigh items (tiers 1 / 2 of the
   vault: 3 / 4 High), modifiers making equipment and jewelry unique 4.6 / 13.8 and set 8.3 / 16 times as often; the
   opener's character level goes into the quality roll (75 instead of 95: ~10% fewer), the opener's magic find counts. About 0.47 grail
-  items a chest at 300% (59% sets), a vault 4.7 / 6.3 / 7.8 at tiers 0-2 against 11.7 for a whole rare T1-T3 map: on rare
-  maps at 300% only Gheed's Fortune ties a tier-2 vault with a map, on non-magical maps at 0% 35 items (mostly set
+  items a chest at 300% (59% sets), a vault 4.7 / 6.3 / 7.8 at tiers 0-2 (the page shows the chests' item level, 89)
+  against 12.5 for a whole rare T1-T3 map: on rare maps at 300% none beats a map (Gheed's Fortune 0.94 of one), on
+  non-magical maps at 0% 35 items (mostly set
   rings and amulets, up to 1.8 times). Lucion has no loot of his own. Key (Shadow of Hatred, cubed from three): Demonic
   Insignia 1 in 2,000 Hell kills in Abaddon / Pit of Acheron / Infernal Pit, Talisman of Transgression 1 in 4,000 in the
   Corrupted Zone, Flesh of Malic 1 in 26,000 Hell demon kills (34% of map monsters: 1 in ~29 rare maps), solo.
@@ -676,7 +714,7 @@
   footer at all (the author, 2026-10-30: not even "estimates from a model"), "how the game rolls drops" rather than "the game's tables". An item's level there is its
   "drop level" (the lowest monster level that drops it); each ear's pool and dangers come from the ear's own in-game
   text (`ears()`: `what`, `harder`), the share of its pool on bases with no unique from the tables (`nounique`).
-  grail.md's intro has "Corrupted Ears in short" (with a pool table) and "Words on this page" (a glossary). A FAQ
+  The Ears tab has the pool table and How It's Worked Out the glossary (once grail.md's). A FAQ
   tab (after Your Grail; `renderFaq`, its numbers follow the bar) answers the first questions a player has. Where
   ears come from (the author, from the wiki, 2026-10-30): the Corrupted Heroes map event, up to 3 black portals and 5
   invaders a map, each dropping a full set of rares and the Corrupted Ear of its own class.
@@ -692,7 +730,11 @@
   header while scrolling. The styles are scoped to the marker's class (`.tier-map`, `.base-map`...), and turn
   light only with the site's light mode (`[data-md-color-scheme="default"]`). Every visit starts dark:
   `website/overrides/main.html` (theme `custom_dir`) forgets a light/dark switch saved by an earlier visit (Material
-  keeps it in localStorage); the switch still works during a visit. `site_preview.bat`
+  keeps it in localStorage); the switch still works during a visit. Links are gold (`stylesheets/erazure.css`; its
+  dark rule names `[data-md-color-scheme="slate"][data-md-color-primary="black"]` too, since Material's black theme
+  sets blue links with both attributes: the site's dark links were blue until the audit, 2026-11-04). On the Grail
+  Planner page, Material's "Back to top" button sits under the planner's bar (grail.md, from the planner's `--gm-bar`).
+  `site_preview.bat`
   (double-click) previews it at http://127.0.0.1:8000/PD2-Loot-Filter/ with MkDocs Material 9.7.7 in
   `tools/.cache/mkdocs-venv`. CI builds it with `--strict`. On `main`, `.github/workflows/pages.yml` builds and
   deploys it on every push (Pages source: GitHub Actions).

@@ -29,7 +29,8 @@ A model, nothing measured in game. The rules (the base game's unless said):
   level 90; Lucion's vault holds 10 chests (its map piece), each dropping "LucionChestLow" (at most 3 items) and
   "LucionChestHigh" (at most 2, 3 or 4 for PD2's tiers 0, 1, 2): the items have the chest's area level (89), the
   opener's character level goes into their quality roll. Modelled at the opener's level for both: no unique or set
-  needs more than item level 87, so the grail counts are the same (4.72 a tier-0 vault at 89 and at 95).
+  needs more than item level 87, so the grail counts are the same (4.72 a tier-0 vault at 89 and at 95). The page
+  shows the chests' item level (the audit, 2026-11-04: it showed 95).
 - Gheed's map event: each of its 5 offers (one in 200 shops gives one slot to a ring of its own) is a unique, a
   UniqueItems row picked at random (jewels, disabled rows, rows of weight 0 or a level outside 1-99 tried again),
   one with a level requirement of 60 or more turned down (requirement - 49)% of the time, 10 tries a slot; made at
@@ -414,9 +415,11 @@ def catalogue(t, d, strings):
         spot(key=f"uberancients{n}", kind="uber", name=f"Uber Ancients ({n} ancient{'s' if n > 1 else ''})", diff=2,
              lid=ANCIENTS_AREA, area=area(ANCIENTS_AREA), lvl=alvl, tc="UberAncients", unit="run",
              count=(12 * n + 8) + (6 * n + 3) / 2)
+    vault = num(t.levels["189"]["MonLvl3Ex"])  # the chests' item level, which the page shows
     for tier, cap in LUCION_CAPS.items():
         spot(key=f"lucion{tier}", kind="uber", name=f"Lucion's vault, tier {tier}", diff=2, lid=189, area=area(189),
-             lvl=CLVL, tc="LucionChestHigh", cap=cap, unit="vault", per=LUCION_CHESTS, low=("LucionChestLow", 3))
+             lvl=CLVL, shown=vault, tc="LucionChestHigh", cap=cap, unit="vault", per=LUCION_CHESTS,
+             low=("LucionChestLow", 3))
     maps = {r["code"]: r for r in t.uniques if r.get("code") in {m for _, m, *_ in UMAP_BOSSES} | {m for m, _ in UMAP_EXPLODERS}}
     prop = lambda row, name: next(((num(row[f"min{i}"]), num(row[f"max{i}"])) for i in range(1, 13)
                                    if row.get(f"prop{i}") == name), (0, 0))
@@ -622,16 +625,29 @@ def gamble_rates(t, d, items, clvls=GAMBLE_CLVLS):
     character level - 5 to + 4 (5-99); the base becomes exceptional at (item level - its level) x GambleUber + 1 in
     10,000, else elite at (item level - its level) x GambleUltra + 1 in 10,000 (no try when the exceptional chance is
     0 or less); then unique at GambleUnique, set at GambleSet in 100,000, picked like a drop among the base's uniques
-    or sets of level <= item level by weight (none: the roll is lost). Magic find plays no part."""
+    or sets of level <= item level by weight (none: the roll is lost). Magic find plays no part.
+    The shop offers a base only at an item level at or above the base's own: each slot rolls its item level, then a base
+    among the Gamble.txt rows of that level or lower (the table sorted by level), so a base offered is at a given item
+    level in proportion to 1 / (rows of that level or lower); its first two slots are a ring and an amulet at any item
+    level (the audit, 2026-11-04: until then every base at every item level, a Light Belt at character level 1). A base
+    no item level reaches gets no chances there."""
     codes, g = gamble_tables(t)
     cand = GM.candidates(items)
+    levels = sorted(num(t.items[c]["level"]) for c in codes)
+    limit = lambda il: sum(1 for lv in levels if lv <= il)  # the rows a slot of this item level picks among
     out = {}
     for clvl in clvls:
         per = {}
-        for b in codes:
+        for b in dict.fromkeys(codes):
             r = t.items[b]
             acc = {}
-            for il in (min(99, max(5, clvl + k)) for k in range(-5, 5)):
+            ils = [min(99, max(5, clvl + k)) for k in range(-5, 5)]
+            if b in ("rin", "amu"):
+                wts = [(il, 0.1) for il in ils]
+            else:
+                ws = [(il, 1 / limit(il)) for il in ils if num(r["level"]) <= il]
+                wts = [(il, w / sum(x for _, x in ws)) for il, w in ws]
+            for il, wil in wts:
                 outcome = {b: 1.0}
                 uber, ultra = r.get("ubercode", "").strip(), r.get("ultracode", "").strip()
                 if uber in t.items:
@@ -650,7 +666,7 @@ def gamble_rates(t, d, items, clvls=GAMBLE_CLVLS):
                             cl = GM.weighed(cl)
                         tot = sum(w for w, _ in cl)
                         for w, i in cl:
-                            acc[i] = acc.get(i, 0) + 0.1 * pc * q / 100000 * w / tot
+                            acc[i] = acc.get(i, 0) + wil * pc * q / 100000 * w / tot
             per[b] = (gamble_price(t, b, clvl), acc)
         out[clvl] = per
     return out
@@ -658,7 +674,7 @@ def gamble_rates(t, d, items, clvls=GAMBLE_CLVLS):
 
 # ---------------------------------------------------------------- for the page
 
-GROUPS = ["Normal", "Nightmare", "Hell", "Corrupted Zones", "Ubers & events", "Unique map bosses"]
+GROUPS = ["Normal", "Nightmare", "Hell", "Corrupted Zones", "Ubers and Events", "Unique Map Bosses"]
 # spots kept per item and group (and the best fixed spot); every uber and event, so each Lucion vault tier is there
 KEEP = {0: 5, 1: 5, 2: 5, 3: 5, 4: 99, 5: 5}
 B36 = "0123456789abcdefghijklmnopqrstuvwxyz"
@@ -709,7 +725,7 @@ def pack(items, spots, rates, mfs, gheed):
     out_spots = []
     for j, s in enumerate(spots):
         r = rates[s["id"]]["named"]
-        out_spots.append([s["name"], s["diff"], s["area"], s["lvl"], s["unit"], group_of(s),
+        out_spots.append([s["name"], s["diff"], s["area"], s.get("shown", s["lvl"]), s["unit"], group_of(s),
                           round(s["minions"][0], 1) if s.get("minions") else 0,
                           "".join(k_of(sum(r[mf])) for mf in mfs),
                           -1 if s["fixed"] is None else int(s["fixed"]), -1 if s["wp"] is None else s["wp"]])

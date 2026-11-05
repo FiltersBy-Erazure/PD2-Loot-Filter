@@ -33,6 +33,7 @@ How the Compendium shows its items (checked against the author's screenshots, 20
 - Places in game pixels, from the panel's top left (LAYOUT); an item of w x h inventory cells sits in its card in the
   box at (17 + (2 - w) x 29 / 2, 151 - (132 - 29 h) / 2 - 29 h), both rounded toward zero, centred in it.
 """
+import hashlib
 import math
 import struct
 import zlib
@@ -387,9 +388,9 @@ def build(game_dir, t, items):
         frames = ui(name)
         for b in range(len(frames) // 2):
             sheet.pair(f"{prefix}{b}", frames[2 * b], frames[2 * b + 1])
-    pages = ui("paginatebtn")
-    sheet.add("next", pages[0])
-    sheet.add("prev", pages[2])
+    pages = ui("paginatebtn")  # each with its pressed look (the audit, 2026-11-04: the page lights them up)
+    sheet.pair("next", pages[0], pages[1])
+    sheet.pair("prev", pages[2], pages[3])
     stash_buttons = ui("buysellbtn")  # the stash's 32 x 32 buttons, each with its pressed look
     sheet.pair("undo", stash_buttons[22], stash_buttons[23])  # the arrows
     sheet.pair("close", stash_buttons[32], stash_buttons[33])  # the X
@@ -438,7 +439,12 @@ def build(game_dir, t, items):
         c[1] = set_button[row["set"]]
         s_cards.append(c)
     places, png = sheet.pack()
-    data = {"file": SHEET.name, "size": [Sheet.WIDTH, max(p[1] + p[3] for p in places.values())], "art": places,
+    sizes = {}
+    for c in s_cards:
+        sizes[c[6]] = sizes.get(c[6], 0) + 1
+    assert max(sizes.values()) <= 6, "a set of more than 6 items doesn't fit a Compendium page (layout()'s 6 places)"
+    # the address changes with the picture, so a browser never pairs a new page with an old cached sheet
+    data = {"file": f"{SHEET.name}?v={hashlib.sha1(png).hexdigest()[:8]}", "size": [Sheet.WIDTH, max(p[1] + p[3] for p in places.values())], "art": places,
             "layout": layout(), "u": u_cards, "s": s_cards, "sets": set_names,
             "buttons": {"u": [t.names.get(k, k) for k, _ in UNIQUE_BUTTONS],
                         "s": [t.names.get(k, k) for k, _ in SET_BUTTONS]},
@@ -451,5 +457,5 @@ def build(game_dir, t, items):
     printable = "".join(chr(c) for c in range(32, 127))
     glyph_png, glyph_data = glyph_sheet(fonts, {"name": printable, "tip": printable, "bar": printable,
                                                 "cat": data["words"]["StashCategoryUniques"] + data["words"]["StashCategorySets"]})
-    data["glyphs"] = {"file": GLYPHS.name, **glyph_data}
+    data["glyphs"] = {"file": f"{GLYPHS.name}?v={hashlib.sha1(glyph_png).hexdigest()[:8]}", **glyph_data}
     return data, png, glyph_png

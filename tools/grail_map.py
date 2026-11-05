@@ -66,6 +66,10 @@ BS = "\\"
 MFS = [0, 100, 200, 300, 400, 500, 600, 700, 800]
 # The average rare map with one corruption, per tier (density, rarity %): map_exp.py --ranges, 2026-10-16
 RARE_ROLLS = {1: (91, 14), 2: (104, 18), 3: (126, 23)}
+# ... and its own magic find (its affixes' and corruption's map-play-mag-gold%), which the game adds to the player's
+# before the diminishing returns, as it carries into the Bitter Depths (the audit, 2026-11-04: until then the bar's magic
+# find alone): map_exp.py's roller, 200,000 maps a tier (58.5, 79.1, 128.2)
+RARE_MF = {1: 58, 2: 79, 3: 128}
 CHAMP_SIZE = 3.0     # a champion pack: the leader + 1-3 more
 MINIONS = 4.5        # a unique monster's minions: 3-6
 # The maps' bosses (MonStats Id), one a map: PD2's map-boss lists per tier, and on T3 Kyovashad's, which is on none
@@ -89,20 +93,22 @@ MAP_BOSSES = {
 # (BD_BOSS), whose death also sets off a treasure explosion (grail_farm.EXPLOSION: his own loot again and again until 60
 # items lie on the ground, at his level, with no magic find; checked in the 2026-11-04 build). Its monsters: area 207's
 # monster list, BD_ROLLS spawn rolls (map_exp.py's model, every one in reach) at the area's level. The map's ears reach
-# them (map monster stats carry over), not the chests or the explosion; density and rarity don't.
-EVENT_CHANCE = {"normal": 0.11 / 9, "rare": 0.34 / 9}
+# them (map monster stats carry over), not the chests or the explosion; density and rarity don't. The player's map stats
+# carry over too: a rare map's magic find (RARE_MF) counts for its monsters and chests.
+EVENT_CHANCE = {"normal": 0.11 / 9, "magic": 0.17 / 9, "rare": 0.34 / 9}  # the page's Gheed tab reads all three
 BD_AREA, BD_ROLLS, BD_BOSS, BD_LUCION_CHESTS = 207, 85.364, "TombEventBoss", 20
 # Cow King's Leathers in maps: only Hell Bovines drop it (COW_SET), and a map has them two ways. The Bovine prefix ("Map
 # contains Hell Bovines", one of the map guests' affix group) puts them on rare T1-T3 maps (map_exp.py's roller: these
 # shares; corrupting adds none). The guest joins every area's monster list at weight 1 beside the natives, in groups
 # and elite packs alike, and the prefix brings +25-30% density and +15-20% magic find (BOVINE_ROLLS: the average density
-# and rarity of those maps, all their rolls, as RARE_ROLLS). And the Dark Wanderer map event (11% of non-magical, 34%
+# and rarity of those maps, all their rolls, as RARE_ROLLS; BOVINE_MF their magic find, the prefix's with the other
+# affixes', as RARE_MF, 2026-11-04: 57.2, 79.6, 120.4). And the Dark Wanderer map event (11% of non-magical, 34%
 # of rare T1-T3 maps have an event, one of nine kinds) has up to three wanderers, each turning into a random act boss
 # or superunique: the Cow King, a real one with 8 Hell Bovines, in about 1 rare map in 260 (if the player meets all
 # three). Map guests and events are left out for every other item, but for the Bitter Depths (below).
 BOVINE = {1: 0.0554, 2: 0.0353, 3: 0.0360}
 BOVINE_ROLLS = {1: (101.3, 13.0), 2: (115.2, 16.4), 3: (134.6, 21.5)}
-BOVINE_MF = range(15, 21)
+BOVINE_MF = {1: 57, 2: 80, 3: 120}
 DW_COW_KING = {"normal": 1 / 802.5, "rare": 1 / 259.6}
 QUEST = {"vip", "msf", "hst", "hfh", "qf1", "qf2"}
 # Uniques that are no grail items (the author, 2026-10-30), by UniqueItems index
@@ -626,8 +632,9 @@ def compute(t, items, ear_list):
             kills[f"{tier}|{mt}"] = round(sum(k0.values()))
             kc = {c: m.tier_kills(tier, dd, rr + c[0]) for c in configs}
             for mf in MFS:
-                entry = {"none": drop_rates(k0, 0, mf),
-                         "common": [drop_rates(kc[c], c[1], mf) for c in configs], "cls": {}}
+                emf = mf + (RARE_MF[tier] if mt == "rare" else 0)  # the bar's magic find and the map's own
+                entry = {"none": drop_rates(k0, 0, emf),
+                         "common": [drop_rates(kc[c], c[1], emf) for c in configs], "cls": {}}
                 for e in ear_list:
                     calls = {}
                     for (kind, tc, lvl), n in kc[(e["rarity"], e["extra"])].items():
@@ -635,7 +642,7 @@ def compute(t, items, ear_list):
                             calls[lvl] = calls.get(lvl, 0) + n * e["cls"] / 100
                     out = [0.0] * N
                     for lvl, n in calls.items():
-                        add(d.expand(e["pool"]), lvl, mf, n, out)
+                        add(d.expand(e["pool"]), lvl, emf, n, out)
                     entry["cls"][e["name"]] = out
                 rates[f"{tier}|{mt}|{mf}"] = entry
     return rates, configs, kills
@@ -700,10 +707,9 @@ def add_cow_rates(t, items, ear_list, configs, rates):
 
                 def one_map(cfg, **kw):  # an average map of this kind: the guest's pieces and the Cow King's
                     g = [0.0] * len(cow)
-                    if mt == "rare":  # the prefix's own magic find, 15-20 evenly
-                        for b in BOVINE_MF:
-                            g = [a + x / len(BOVINE_MF) for a, x in zip(g, pieces(guest[cfg], mf + b, **kw))]
-                    k = pieces(king, mf, **kw)
+                    if mt == "rare":  # a Bovine map's own magic find, the prefix's among it
+                        g = pieces(guest[cfg], mf + BOVINE_MF[tier], **kw)
+                    k = pieces(king, mf + (RARE_MF[tier] if mt == "rare" else 0), **kw)
                     return [BOVINE[tier] * a + DW_COW_KING[mt] * b if mt == "rare" else DW_COW_KING[mt] * b
                             for a, b in zip(g, k)]
                 for j, x in zip(cow, one_map((0, 0))):
@@ -745,11 +751,18 @@ def add_bitter_depths_rates(t, items, ear_list, configs, rates):
             add_drops(d, cand, dist, lvl, mf, BD_LUCION_CHESTS, out)
         return [a + b for a, b in zip(out, boom)]
 
+    runs = {}
+
+    def runs_at(mf):  # a run at this magic find: no ear, each ear's common part, each ear's class pool
+        if mf not in runs:
+            runs[mf] = run(mf), [run(mf, c[1]) for c in configs], {e["name"]: run(mf, ear=e) for e in ear_list}
+        return runs[mf]
+
     for mf in MFS:
-        none, common = run(mf), [run(mf, c[1]) for c in configs]
-        cls = {e["name"]: run(mf, ear=e) for e in ear_list}
         for tier in (1, 2, 3):
             for mt in ("normal", "rare"):
+                # the player's map stats carry into the event's area: a rare map's magic find too
+                none, common, cls = runs_at(mf + (RARE_MF[tier] if mt == "rare" else 0))
                 f, e = EVENT_CHANCE[mt], rates[f"{tier}|{mt}|{mf}"]
                 e["none"] = [a + f * b for a, b in zip(e["none"], none)]
                 e["common"] = [[a + f * b for a, b in zip(x, y)] for x, y in zip(e["common"], common)]
@@ -790,20 +803,57 @@ def filter_looks():
     return {"levels": {str(lv): names[lv].split(" - ")[0] for lv in LOOK_LEVELS}, "examples": out}
 
 
+# The rate tables as text (the audit, 2026-11-04: the page was 85% data, half of it rates as JSON numbers): each rate per
+# map a 3-character base-36 code of its log10 over RATE_RANGE, steps of 0.05% (the numbers were 3 significant digits),
+# "000" for none; an ear's class pool part, sparse, as 2-character item numbers each with its code
+RATE_RANGE = (-10, 1)
+
+
+def pack_rates(rates):
+    from grail_farm import code
+    lo, hi = RATE_RANGE
+    k = (36 ** 3 - 2) / (hi - lo)
+
+    def enc(x):
+        if x <= 0:
+            return "000"
+        c = round(k * (math.log10(x) - lo)) + 1
+        assert 1 <= c < 36 ** 3, f"a rate outside RATE_RANGE: {x}"
+        return code(c, 3)
+    return {key: {"none": "".join(map(enc, v["none"])), "common": ["".join(map(enc, c)) for c in v["common"]],
+                  "cls": {e: "".join(code(i, 2) + enc(x) for i, x in enumerate(xs) if x > 0) for e, xs in v["cls"].items()}}
+            for key, v in rates.items()}
+
+
 def page_data(t, items, ear_list, rates, configs, kills, farm):
-    per1000 = lambda x: float("%.3g" % (x * 1000))
     data = {"date": t.date.strftime("%d %B %Y").lstrip("0"), "mfs": MFS,
             "ears": [dict(name=e["name"], rarity=e["rarity"], extra=e["extra"], cls=e["cls"], hp=e["hp"],
                           config=configs.index((e["rarity"], e["extra"])), what=e["what"], harder=e["harder"],
                           nounique=e.get("nounique", 0)) for e in ear_list],
-            "items": [{k: it[k] for k in ("kind", "index", "name", "base", "tier", "lvl", "w", "set", "comp") if it.get(k)}
-                      for it in items], "rates": {}, "kills": kills, "looks": filter_looks(), "farm": farm,
-            "notGrail": sorted(NOT_GRAIL)}  # a pasted list may name them: the page says they're left out
-    for key, v in rates.items():
-        data["rates"][key] = {"none": [per1000(x) for x in v["none"]],
-                              "common": [[per1000(x) for x in c] for c in v["common"]],
-                              "cls": {e: {str(i): per1000(x) for i, x in enumerate(xs) if x > 0} for e, xs in v["cls"].items()}}
+            # an item's index (its key in the saved ticks) only where it isn't its name
+            "items": [{k: it[k] for k in ("kind", "index", "name", "base", "tier", "lvl", "w", "set", "comp", "nv")
+                       if it.get(k) and not (k == "index" and it[k] == it["name"])} for it in items],
+            "rates": pack_rates(rates), "rateRange": RATE_RANGE, "kills": kills, "looks": filter_looks(), "farm": farm,
+            "notGrail": sorted(NOT_GRAIL),  # a pasted list may name them: the page says they're left out
+            "rareMf": RARE_MF}  # a rare map's own magic find, which the rates count: the page says so
     return data
+
+
+def strip_comments(page):
+    """The page's scripts without their whole-line comments (the template keeps them): a line inside a template
+    string, an odd number of backticks in, stays."""
+    out, in_script, ticks = [], False, 0
+    for line in page.split("\n"):
+        if line.startswith("<script>"):
+            in_script, ticks = True, 0
+        elif line.startswith("</script>"):
+            in_script = False
+        if in_script and ticks % 2 == 0 and line.lstrip().startswith("//"):
+            continue
+        if in_script:
+            ticks += line.count("`") - line.count("\\`")
+        out.append(line)
+    return "\n".join(out)
 
 
 DOC_HEAD = ("<!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n"
@@ -863,6 +913,18 @@ def main():
     missing = [it["name"] for i, it in enumerate(items)
                if not any(r["named"][MFS[-1]][i] > 0 for r in farm_rates.values())]
     assert not missing, f"grail items no farm spot drops: {missing}"
+    # an item's drop level (the audit, 2026-11-04: it was UniqueItems / SetItems' own level, below its base's for 163
+    # items): at least its own level and its base's, or the lowest boss or superunique that drops it if lower (a
+    # monster's treasure classes can hold a base above its level: M'avina's True Sight on a Diadem from level 81)
+    bases = {r["code"]: r for r in pd2_data.read_table(
+        "".join(l for l in BASES.read_text(encoding="utf-8").splitlines(True) if not l.startswith("#")))}
+    for i, it in enumerate(items):
+        q = min([num(bases.get(c, {}).get("qlvl", 0)) for c, _, _ in it["rows"]] or [0])  # its easiest version
+        low = [s["lvl"] for s in spots if GF.group_of(s) <= 3 and farm_rates[s["id"]]["named"][MFS[-1]][i] > 0]
+        it["lvl"] = min([max(it["lvl"], q)] + low)
+    for it in items:
+        if len(it["rows"]) > 1:
+            it["nv"] = len(it["rows"])  # versions: one grail item, any of them finds it
     farm = GF.pack(items, spots, farm_rates, MFS, GF.gheed_offers(t))
     farm["gamble"] = GF.pack_gamble(t, items, GF.gamble_rates(t, d, items))
     farm["gheedBases"] = GF.gheed_bases(t, items)
@@ -874,7 +936,7 @@ def main():
         if not path.exists() or path.read_bytes() != png:
             path.write_bytes(png)
             print(f"wrote {path.name}: {len(png) // 1024} KB")
-    page = DOC_HEAD + TEMPLATE.read_text(encoding="utf-8") + "\n</body>\n</html>\n"
+    page = strip_comments(DOC_HEAD + TEMPLATE.read_text(encoding="utf-8") + "\n</body>\n</html>\n")
     page = page.replace("/*__DATA__*/null", json.dumps(data, ensure_ascii=False, separators=(",", ":")))
     PAGE.write_text(page, encoding="utf-8", newline="\n")
     print(f"wrote {PAGE.name}: {len(items)} grail items, {len(rates)} settings, {len(page) // 1024} KB")
