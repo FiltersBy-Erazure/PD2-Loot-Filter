@@ -11,6 +11,12 @@ Usage (from the repo root; or double-click build.bat to stamp, build and check):
     python tools/build.py --stamp   set version.json's date to today, then build
     python tools/build.py --check   change nothing; exit 1 if any filter or section file is out of date
 
+<<VERSION>> (the Horadric Cube's description) becomes the season, version.json's date and the day's version number,
+"Season 14 - November 4th - v3", the same in every filter, so a player can tell which of a day's updates is live
+(version_number): the live filters' number (LIVE, what players have) while every filter is as live but its version
+text, one more once any differs, v1 on a new date. Nothing to bump: every commit before a push carries the next
+number, and after the push that number is live. The build and --check print it.
+
 Section and style files with LF line endings, a UTF-8 BOM or no final line break are fixed in place
 (only those invisible characters change) and each fix is reported on a line starting "Fixed".
 
@@ -29,7 +35,9 @@ A launcher entry names its variant by its display_name, or by LAUNCHER_NAMES whe
 import argparse
 import datetime
 import json
+import os
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -66,6 +74,8 @@ WRITE_OUT_ALIASES = True
 KEEP_ALIASES = {"BIG_GG", "POE_SOUNDS", "REVEALED"}
 WRITTEN_OUT = "// written into the rules: "
 PLACEHOLDER = b"<<VERSION>>"
+NUMBER_MARK = "<<NUMBER>>"  # the version number's place in the version text until every filter is built
+LIVE = "origin/main"  # the branch the launcher serves players (the GitHub contents API reads the default branch)
 CATCH_ALL = b"ItemDisplay[]:"
 BOM = b"\xef\xbb\xbf"
 MONTHS = ["January", "February", "March", "April", "May", "June", "July",
@@ -92,10 +102,55 @@ def load_version():
         fail(f'version.json must look like {{"season": "Season 13", "date": "2026-05-28"}} ({e})')
 
 
-def version_text(season, date):
+def date_text(date):
     day = date.day
     suffix = "th" if 11 <= day % 100 <= 13 else {1: "st", 2: "nd", 3: "rd"}.get(day % 10, "th")
-    return f"{season} - {MONTHS[date.month - 1]} {day}{suffix}"
+    return f"{MONTHS[date.month - 1]} {day}{suffix}"
+
+
+def version_text(season, date, number=None):
+    text = f"{season} - {date_text(date)}"
+    return text if number is None else f"{text} - {number}"
+
+
+def live_files(names):
+    """{file name: bytes} of these files as players have them: LIVE's (on GitHub Actions HEAD's, the pushed commit
+    itself); a file git can't give is left out."""
+    ref = "HEAD" if os.environ.get("GITHUB_ACTIONS") else LIVE
+    try:
+        out = subprocess.run(["git", "cat-file", "--batch"], cwd=ROOT, capture_output=True, check=True,
+                             input="".join(f"{ref}:{name}\n" for name in names).encode()).stdout
+    except (OSError, subprocess.CalledProcessError):
+        return {}
+    files, at = {}, 0
+    for name in names:  # per name "<oid> blob <size>\n<data>\n", or "<name> missing\n"
+        end = out.find(b"\n", at)
+        if end < 0:
+            break
+        header, at = out[at:end].split(), end + 1
+        if len(header) == 3 and header[1] == b"blob":
+            files[name], at = out[at:at + int(header[2])], at + int(header[2]) + 1
+    return files
+
+
+def version_number(season, date, built):
+    """The day's version number after the Cube's date (the author, 2026-11-04: which of a day's updates is live; all
+    the filters always the same): the live filters' number while every filter as built (NUMBER_MARK in place of the
+    number) is as live but its version text, else one more; 1 on a new date or season, or when live has none yet."""
+    mark = version_text(season, date, NUMBER_MARK).encode()
+    found = re.compile(re.escape(season.encode()) + rb" - ([A-Z][a-z]+ \d+(?:st|nd|rd|th))(?: - v(\d+))?(?=\})")
+    live = live_files([name for name, _ in built])
+    number, same = 0, True
+    for name, data in built:
+        m = found.search(live.get(name, b""))
+        if not m:
+            same = False
+            continue
+        if m[1] != date_text(date).encode():
+            return 1
+        number = max(number, int(m[2] or 0))
+        same = same and live[name][:m.start()] + mark + live[name][m.end():] == data
+    return number if same and number else number + 1
 
 
 def stamp():
@@ -462,7 +517,6 @@ def main():
     if args.stamp:
         stamp()
     _, season, date = load_version()
-    version = version_text(season, date)
 
     parts, problems = read_sections(args.check)
     where = line_locator(parts)
@@ -472,7 +526,7 @@ def main():
     if count != 1:
         fail(f"'<<VERSION>>' must appear exactly once in sections/ (found {count}); "
              "it belongs in the Horadric Cube section")
-    lines = joined.replace(PLACEHOLDER, version.encode("utf-8")).split(b"\r\n")
+    lines = joined.replace(PLACEHOLDER, version_text(season, date, NUMBER_MARK).encode("utf-8")).split(b"\r\n")
 
     rules = [i for i, line in enumerate(lines) if line.startswith(b"ItemDisplay[")]
     if not rules or not lines[rules[-1]].startswith(CATCH_ALL):
@@ -485,7 +539,7 @@ def main():
     extra = [(name, file_name(name)) for name in STYLE_VARIANTS if name not in dict(defs)]
     check_toggles(lines, blocks, [name for name, _ in defs + extra], where)
 
-    stale, notes, done = [], [], set()
+    built, notes, done = [], [], set()
     for name, fname in defs + extra:
         if name in STYLE_VARIANTS:
             first = STYLE_VARIANTS[name][1] not in done  # a style file several variants share: fixed, written and
@@ -498,7 +552,16 @@ def main():
             out, where_out = render(lines, blocks, name), where
         if WRITE_OUT_ALIASES:
             out = write_out_aliases(out, where_out, args.check)
-        data = b"\r\n".join(out)
+        built.append((fname, b"\r\n".join(out)))
+
+    for fname, data in built:
+        if data.count(NUMBER_MARK.encode()) != 1:
+            fail(f"{fname}: the Horadric Cube's version text must appear exactly once")
+    number = f"v{version_number(season, date, built)}"
+    version = version_text(season, date, number)
+    stale = []
+    for fname, data in built:
+        data = data.replace(NUMBER_MARK.encode(), number.encode())
         target = ROOT / fname
         if target.exists() and target.read_bytes() == data:
             continue

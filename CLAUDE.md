@@ -24,7 +24,7 @@
   entry is the same as with the aliases (~15 s); a plain build only writes (~2 s). Hand edits in a game-folder copy
   now meet written-out text: port them to the alias in `sections/`. Corr's next restyle needs an alias-form base (a
   written-out file won't port: `--port --base REV:FILE` reads written-out files from git): give him
-  `python tools/style_edits.py corrlorized --out FILE [--variant ...]` (byte-identical to the alias build) to edit, or
+  `python tools/style_edits.py corrlorized --out FILE [--variant ...]` (byte-identical to the alias build but the Cube's version number) to edit, or
   map his changed lines by line number (both forms keep the same lines). When a BH ships with the alias loop fixed (a BH
   PR is prepared), set `WRITE_OUT_ALIASES = False` in `tools/build.py` and the filters carry their aliases again.
 - A PostToolUse hook runs the build after every Edit/Write to `sections/`, `version.json` or
@@ -34,6 +34,14 @@
   Files created with the Write tool come out LF, so expect that note for new sections.
 - `build.bat` (the author double-clicks it) = `--stamp` (today's date into `version.json`) + build + check.
   **Never stamp or edit `version.json` unless the author asks.** The season name also lives there.
+- The Cube's version line ends with the day's version number (2026-11-04, the author: which of a day's updates is
+  live, the same in all 20 filters): `Season 14 - November 4th - v3`. Nothing to bump: the build reads the live filters
+  (`origin/main`, what players have; `version_number` in `tools/build.py`) and keeps their number while every filter
+  is as live but its version text, one more once any differs (any change to a filter, comments too), v1 on a new date.
+  So every commit before a push carries the next number and the push makes it live; several commits in one push are
+  one number. After someone's push, a working tree with uncommitted filter changes is one behind: `--check` says out
+  of date until you rebuild. GitHub Actions compares with the pushed commit itself. The build and `--check` print it;
+  when you push, tell the author the number that goes live. The other tools fill `<<VERSION>>` without it.
 - The GitHub Action runs `--check` on every push.
 - Style variant **Minimal** (2026-10-19, in `filter_definitions.json`; "Erazure - Minimal" until 2026-10-24): `STYLE_VARIANTS` in
   `tools/build.py` builds `Erazure-Minimal.filter` = Main with the aliases of `styles/minimal.filter` (one
