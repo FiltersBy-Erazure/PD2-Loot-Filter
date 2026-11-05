@@ -634,7 +634,29 @@
   for your missing items), a line in each item's details, a "Gold to spare" plan step, a FAQ answer. A Gheed's Map Event tab (the author, 2026-10-30; `gheed_bases`): per base the
   shop shows (the normal version; the unique and its tier are fixed at item level 99 when the shop opens) how often a
   shop of 5 offers has it (per offer beside it), what it can be and the chance it is a missing item; offers pick UniqueItems rows evenly, a level
-  requirement of 60+ passed over (requirement - 49)% of the time (the 10-27 build; earlier traces said - 59). Player text never says the numbers come from the game's data (the author, 2026-10-30): no
+  requirement of 60+ passed over (requirement - 49)% of the time (the 10-27 build; earlier traces said - 59).
+  Unique map bosses (2026-11-04, the author: players target farm City of Ureh and Warlord of Blood maps for Tyrael's Might
+  and other rare uniques): `UMAP_BOSSES` in grail_farm.py, farm group 5 "Unique map bosses", unit "map" (one kill a map).
+  Gregus Mazi (City of Ureh) 3 uniques a kill, only bases that take sockets; Warlord of Blood 2 or 3; Na-Krul (Na-Krul's
+  Abyss, found in the same check) 3. Each picks a UniqueItems row evenly (a flag, rarity 1+, level 1-99); Warlord and
+  Gregus then make a unique of that row's base at item level 99 by rarity (the row only names the base: Tyrael's Might 1 in
+  ~525 City of Ureh maps, Templar's Might on the same Sacred Armor 1 in 66), Na-Krul the row's own unique (1 in ~145).
+  Their own loot (Map Boss T1 / T3 at level 91) drops with the map's own magic find roll. The page: Target Farming's
+  "Unique Map Bosses" section (#gm-umaps: what they drop, your missing uniques against a T1-T3 map with the best ear),
+  a "Got a ... map? Kill its boss" plan step, a line in each unique's details, a FAQ answer. Per map they beat a whole
+  T1-T3 map only for the rarest uniques (rare maps, 300%: 33 of 425, up to 7.8 times; non-magical, 0%: 225, up to 29), so
+  the best bet leaves them out as it leaves out the ubers.
+  Lucion's chests (2026-11-04, the author asked to look into them for the grail): Target Farming's "Lucion Chests" section
+  (#gm-lucion), a FAQ answer, a farm list line; `lucion_info` (grail_farm.py) and `demon_kills` (grail_map.py) give the
+  page the keys and the demons a map clear kills. A chest: 3 LucionChestLow + 2 LucionChestHigh items (tiers 1 / 2 of the
+  vault: 3 / 4 High), modifiers making equipment and jewelry unique 4.6 / 13.8 and set 8.3 / 16 times as often; the
+  opener's character level goes into the quality roll (75 instead of 95: ~10% fewer), the opener's magic find counts. About 0.47 grail
+  items a chest at 300% (59% sets), a vault 4.7 / 6.3 / 7.8 at tiers 0-2 against 11.7 for a whole rare T1-T3 map: on rare
+  maps at 300% only Gheed's Fortune ties a tier-2 vault with a map, on non-magical maps at 0% 35 items (mostly set
+  rings and amulets, up to 1.8 times). Lucion has no loot of his own. Key (Shadow of Hatred, cubed from three): Demonic
+  Insignia 1 in 2,000 Hell kills in Abaddon / Pit of Acheron / Infernal Pit, Talisman of Transgression 1 in 4,000 in the
+  Corrupted Zone, Flesh of Malic 1 in 26,000 Hell demon kills (34% of map monsters: 1 in ~29 rare maps), solo.
+  `KEEP[4]` keeps every uber and event spot per item (the page needs all three vault tiers). Player text never says the numbers come from the game's data (the author, 2026-10-30): no
   footer at all (the author, 2026-10-30: not even "estimates from a model"), "how the game rolls drops" rather than "the game's tables". An item's level there is its
   "drop level" (the lowest monster level that drops it); each ear's pool and dangers come from the ear's own in-game
   text (`ears()`: `what`, `harder`), the share of its pool on bases with no unique from the tables (`nounique`).

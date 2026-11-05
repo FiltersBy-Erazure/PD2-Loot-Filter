@@ -37,7 +37,8 @@ A model, nothing measured in game:
 - Grail progress: each item drops as a Poisson process, so the items found after n maps are the sum of
   1 - e^(-rate x n) (the page does that part, and the switching-ears schedule).
 - Farm spots: tools/grail_farm.py (every act boss, superunique and special encounter per difficulty, per kill, with
-  the six-item limit; its docstring has those rules).
+  the six-item limit, and the three unique map bosses that drop random uniques, one kill a map; its docstring has
+  those rules).
 - Every Item's Compendium view: tools/grail_compendium.py (the stash Compendium as the game draws it; its pictures and
   letters go in Erazure-Grail-Planner-Compendium.png and Erazure-Grail-Planner-Glyphs.png beside the page).
 """
@@ -377,6 +378,17 @@ class Maps:
                         out[(kind, tc, lvl)] = out.get((kind, tc, lvl), 0) + k * v
         return out
 
+    def demons(self, code, d=0, r=0):
+        """Demons killed in a full clear (MonStats demon, minions too): each may drop Lucion's Flesh of Malic."""
+        mp, ms, out = self.maps[code], self.t.monstats, 0.0
+        for a in mp.areas:
+            normal, elite = self.mix(a.id)
+            t = a.rolls * min(1 + d / 100, 10000 / a.den) if a.den else 0
+            p = G.packs(t, math.floor(a.bmin * (1 + r / 100)), math.floor(a.bmax * (1 + r / 100))) if t > 0 else 0.0
+            for src, k in ((normal, a.reach * (t - p)), (elite, a.reach * p + a.layout_packs)):
+                out += sum(k * v for (kind, mid), v in src.items() if ms[mid].get("demon") == "1")
+        return out
+
     def boss_kill(self, mid, level):
         """(kind, treasure class, monster level) of a boss in an area of this level: a boss-flagged one keeps its own."""
         r = self.t.monstats[mid]
@@ -627,6 +639,17 @@ def compute(t, items, ear_list):
     return rates, configs, kills
 
 
+def demon_kills(t):
+    """{"tier|map kind": demons killed in a full clear, averaged over the tier's maps} (no ear)."""
+    m, out = Maps(t), {}
+    for tier in (1, 2, 3):
+        codes = [c for c, mp in m.maps.items() if mp.tier == tier]
+        for mt in ("normal", "rare"):
+            dd, rr = (0, 0) if mt == "normal" else RARE_ROLLS[tier]
+            out[f"{tier}|{mt}"] = round(sum(m.demons(c, dd, rr) for c in codes) / len(codes))
+    return out
+
+
 def add_cow_rates(t, items, ear_list, configs, rates):
     """Cow King's Leathers' pieces per map, into compute's rates: the Bovine guest's kills on rare maps (BOVINE) and
     the Dark Wanderer's Cow King with his 8 Hell Bovines (DW_COW_KING), each a Hell Bovine's drop. An ear repeats a
@@ -837,6 +860,7 @@ def main():
     farm = GF.pack(items, spots, farm_rates, MFS, GF.gheed_offers(t))
     farm["gamble"] = GF.pack_gamble(t, items, GF.gamble_rates(t, d, items))
     farm["gheedBases"] = GF.gheed_bases(t, items)
+    farm["lucion"] = dict(GF.lucion_info(t), demons=demon_kills(t))
     data = page_data(t, items, ear_list, rates, configs, kills, farm)
     import grail_compendium as GC
     data["comp"], sheet, glyphs = GC.build(args.game_dir, t, items)

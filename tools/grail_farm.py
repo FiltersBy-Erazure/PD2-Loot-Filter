@@ -34,6 +34,11 @@ A model, nothing measured in game. The rules (the base game's unless said):
   UniqueItems row picked at random (jewels, disabled rows, rows of weight 0 or a level outside 1-99 tried again),
   one with a level requirement of 60 or more turned down (requirement - 49)% of the time, 10 tries a slot; made at
   item level 99 when the shop opens, shown as its base's normal version (the filter names what each can be).
+- Unique map bosses (UMAP_BOSSES): Warlord of Blood, Gregus Mazi (City of Ureh) and Na-Krul (Na-Krul's Abyss) drop
+  random uniques besides their own loot, one kill a map. Each is a UniqueItems row picked at random (a row with no
+  flag, rarity 0 or a level outside 1-99 is tried again, and Gregus Mazi's one whose base takes no sockets); Warlord of Blood's and Gregus Mazi's become a unique of that row's base at item level 99, the game's own
+  pick among the base's uniques by rarity (the row only names the base), Na-Krul's the row's own unique. Their own
+  loot drops with the map's magic find (its "magic and gold find" roll).
 - Where a spot is: fixed (the same place every game) or anywhere in its area, and the areas from the nearest
   waypoint (FIXED_AREAS, FIXED_KEYS, OUTDOOR below).
 """
@@ -94,6 +99,19 @@ ZONE_AREAS = {a for g in ZONES for a in g}
 ANCIENTS_AREA = 168  # the Uber Ancients' map area (its altar's drops: the area's level)
 LUCION_CAPS = {0: 2, 1: 3, 2: 4}  # the vault's tier (PD2's 0-2, easiest first) -> LucionChestHigh's item limit
 LUCION_CHESTS = 10  # chests in the vault's map piece (lucionvault.ds1), every tier
+# The vault opens with the Shadow of Hatred (luca, CubeMain "lucion ingredients"): one each of three keys, each a chance
+# per Hell kill, players / (Unique x Set) of its TreasureClassEx row (Nightmare and Normal rows have none): Demonic
+# Insignia in Abaddon, the Pit of Acheron and the Infernal Pit (Levels 125-127), Talisman of Transgression in the
+# current Corrupted Zone, Flesh of Malic from any demon (MonStats demon). Checked in the 2026-11-04 build.
+LUCION_KEYS = [("lucb", "lucbH"), ("lucc", "lucc"), ("lucd", "lucdH")]
+# Unique map bosses whose death drops random uniques besides their own loot (checked in the 2026-11-04 build; the patch
+# notes: Warlord of Blood "2-3 corrupted uniques", City of Ureh "unique items that can roll sockets", Na-Krul's Abyss
+# "ethereal uniques"). (MonStats Id, the map's item code, uniques a kill (fewest, most), the
+# unique made: "base" a unique of the picked row's base, item level 99, by rarity; "row" the picked row's own unique, the
+# boss's level; only bases that take sockets; what the uniques drop as)
+UMAP_BOSSES = [("CityofUrehBoss", "t56", (3, 3), "base", True, "socketed"),  # Gregus Mazi
+               ("WarlordOfBlood", "t52", (2, 3), "base", False, "corrupted"),
+               ("NaKrulBoss", "t58", (3, 3), "row", False, "ethereal")]
 
 # Where a spot is. Fixed: its area is one of the game's preset maps (Levels DrlgType 2: the Cathedral, Tower Cellar
 # Level 5, Nihlathak's Temple...), or an outdoor area laid out the same way every game (Travincal, the Chaos
@@ -389,7 +407,39 @@ def catalogue(t, d, strings):
     for tier, cap in LUCION_CAPS.items():
         spot(key=f"lucion{tier}", kind="uber", name=f"Lucion's vault, tier {tier}", diff=2, lid=189, area=area(189),
              lvl=CLVL, tc="LucionChestHigh", cap=cap, unit="vault", per=LUCION_CHESTS, low=("LucionChestLow", 3))
+    maps = {r["code"]: r for r in t.uniques if r.get("code") in {m for _, m, *_ in UMAP_BOSSES}}
+    for cls, code, picks, made, sockets, look in UMAP_BOSSES:
+        assert ms[cls].get("boss") == "1", cls  # a boss keeps its own level in maps
+        lv, row = num(ms[cls]["Level(H)"]), maps[code]
+        mf = next((num(row[f"min{i}"]), num(row[f"max{i}"])) for i in range(1, 13) if row.get(f"prop{i}") == "map-play-mag-gold%")
+        spot(key=cls, kind="umap", name=mon(cls), diff=2, lid=None, area=clean(strings.get(row["index"], row["index"])) + " map",
+             lvl=lv, tc=ms[cls]["TreasureClass1(H)"], unit="map", cls=cls, mf=mf, umap=[*picks, made, sockets, look],
+             bonus=umap_bonus(t, sum(picks) / 2, made, sockets, 99 if made == "base" else lv))
     assert "Annihilus" in uni and "Hellfire Torch" in uni
+    return out
+
+
+def umap_bonus(t, picks, made, sockets, ilvl):
+    """{UniqueItems row number: uniques a kill} of a unique map boss's random uniques (UMAP_BOSSES): picks times a row at
+    random among those the boss takes; "base": a unique of the row's base at item level ilvl, picked by rarity as any
+    unique drop (weighed); "row": the row's own unique, or the base's pick when the row's level is over ilvl."""
+    rows = t.uniques
+    flagged = lambda r: any(num(r.get(k)) for k in ("enabled", "ladder", "nolimit", "carry1"))
+    takes = lambda r: (r.get("code") and flagged(r) and num(r.get("rarity")) >= 1 and 1 <= num(r.get("lvl")) <= 99
+                       and (not sockets or num(t.items.get(r["code"], {}).get("gemsockets")) > 0))
+    R = len(rows)  # the pick is one of 32768 values over the rows: the first 32768 % R rows get one value more
+    w = {n: 32768 // R + (n < 32768 % R) for n, r in enumerate(rows) if takes(r)}
+    tot, out = sum(w.values()), {}
+    for n, p in w.items():
+        code = rows[n]["code"]
+        if made == "row" and num(rows[n]["lvl"]) <= ilvl:
+            got = [(1, n)]
+        else:
+            got = GM.weighed([(num(r.get("rarity")), k) for k, r in enumerate(rows)
+                              if r.get("code") == code and r.get("enabled") == "1" and num(r.get("lvl")) <= ilvl])
+        s = sum(x for x, _ in got)
+        for x, k in got:
+            out[k] = out.get(k, 0) + picks * p / tot * x / s
     return out
 
 
@@ -444,6 +494,7 @@ def spot_rates(t, d, items, spots, mfs):
     cand = GM.candidates(items)
     N = len(items)
     by_index = {(it["kind"], it["index"]): i for i, it in enumerate(items)}
+    item_of = {u: i for i, it in enumerate(items) for u in it["uids"]}
     flows = {}
 
     def flow(cap):
@@ -465,12 +516,17 @@ def spot_rates(t, d, items, spots, mfs):
         elif s["tc"]:
             dists.append((flow(s["cap"]).per_drop(s["tc"])[0], s["lvl"]))
         mdist = flow(CAP).per_drop(s["minions"][1])[0] if s.get("minions") else None
+        lo, hi = s.get("mf", (0, 0))  # a map's own magic find, each roll alike
         for mf in mfs:
             v = [0.0] * N
             for dist, lvl in dists:
-                GM.add_drops(d, cand, dist, lvl, mf, s.get("per", 1), v, s.get("cls") == "hellbovine")
+                for b in range(lo, hi + 1):
+                    GM.add_drops(d, cand, dist, lvl, mf + b, s.get("per", 1) / (hi - lo + 1), v, s.get("cls") == "hellbovine")
             for name, k in s["gives"].items():
                 v[by_index[("UNI", name)]] += k
+            for n, k in s.get("bonus", {}).items():
+                if n in item_of:  # Rainbow Facets aren't grail items
+                    v[item_of[n]] += k
             named[mf] = v
             if mdist is not None:
                 w = [0.0] * N
@@ -577,13 +633,14 @@ def gamble_rates(t, d, items, clvls=GAMBLE_CLVLS):
 
 # ---------------------------------------------------------------- for the page
 
-GROUPS = ["Normal", "Nightmare", "Hell", "Corrupted Zones", "Ubers & events"]
-KEEP = {0: 5, 1: 5, 2: 5, 3: 5, 4: 5}   # spots kept per item and group (and the best fixed spot)
+GROUPS = ["Normal", "Nightmare", "Hell", "Corrupted Zones", "Ubers & events", "Unique map bosses"]
+# spots kept per item and group (and the best fixed spot); every uber and event, so each Lucion vault tier is there
+KEEP = {0: 5, 1: 5, 2: 5, 3: 5, 4: 99, 5: 5}
 B36 = "0123456789abcdefghijklmnopqrstuvwxyz"
 
 
 def group_of(s):
-    return 4 if s["kind"] == "uber" else 3 if s["zone"] else s["diff"]
+    return 5 if s["kind"] == "umap" else 4 if s["kind"] == "uber" else 3 if s["zone"] else s["diff"]
 
 
 def code(v, width=2):
@@ -633,7 +690,23 @@ def pack(items, spots, rates, mfs, gheed):
                           -1 if s["fixed"] is None else int(s["fixed"]), -1 if s["wp"] is None else s["wp"]])
     shop = {i: sum(gheed.get(u, 0) for u in it.get("uids", [])) for i, it in enumerate(items)}
     return {"groups": GROUPS, "spots": out_spots, "items": out_items, "ref": ref,
-            "gheed": {str(i): k_of(v) for i, v in shop.items() if v > 0}}
+            "gheed": {str(i): k_of(v) for i, v in shop.items() if v > 0},
+            "umap": [[j, *s["umap"]] for j, s in enumerate(spots) if s.get("umap")]}  # spot, uniques a kill, made, sockets, look
+
+
+def lucion_info(t):
+    """Lucion's chests for the page: chests a vault and a Bitter Depths run, the chance a map has the event (its portal
+    not counted), how much
+    more often each chest loot makes a unique or set than a monster's ((lesser, better) x (unique, set): 1024 / (1024 -
+    its modifier)), the vault's key (its name) and its three parts [code, name, chance a Hell kill]."""
+    name = lambda c: clean(t.names.get(t.items[c].get("namestr", c), c))
+    boost = lambda tc: [round(1024 / max(1, 1024 - num(t.tcs[tc].get(k))), 1) for k in ("Unique", "Set")]
+    keys = []
+    for code, tc in LUCION_KEYS:
+        r = t.tcs[tc]
+        keys.append([code, name(code), 1 / (num(r.get("Unique")) * max(1, num(r.get("Set"))))])
+    return {"chests": LUCION_CHESTS, "bd": GM.BD_LUCION_CHESTS, "bdChance": GM.EVENT_CHANCE,
+            "boost": [boost("LucionChestLow"), boost("LucionChestHigh")], "map": name("luca"), "keys": keys}
 
 
 def pack_gamble(t, items, rates):

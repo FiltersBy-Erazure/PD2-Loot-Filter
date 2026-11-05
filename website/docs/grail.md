@@ -21,8 +21,9 @@ any filter level, and always gets a minimap icon and a chat line when it drops.
 
 This page helps with the rest of the hunt. It works out how many T1-T3 maps the grail
 takes, what makes it faster, which items take the longest, and where to target farm each item instead: every act boss,
-superunique and special encounter, in each difficulty. It keeps track of the items you've found, and tells you what to
-do next for the ones you're missing.
+superunique and special encounter, in each difficulty, and the bosses of City of Ureh, Warlord of Blood and Na-Krul's
+Abyss, which drop random uniques. It keeps track of the items you've found, and tells you what to do next for the ones
+you're missing.
 
 [Open the planner](#tab-overview){ .md-button .md-button--primary } [Your Grail](#tab-planner){ .md-button }
 
@@ -72,7 +73,7 @@ Much of this page compares maps with and without a Corrupted Ear, so here is wha
    as often as a whole map and where to farm them, the slowest ones, and the maps to finish. Each missing item gets its
    best bet.
 4. **Click an item** under Every Item for its best bet, its five best farm spots in each difficulty, in the Corrupted
-   Zones and among the ubers and events, its chance per map with each ear, and Gheed's map event.
+   Zones, among the ubers and events and the unique map bosses, its chance per map with each ear, and Gheed's map event.
 5. **Prefer spots that don't move?** Choose **Fixed spots only** in Your Grail, above the item list or under Target Farming: the
    suggestions then keep to monsters that stand in the same place every game, such as Bone Ash in the Cathedral or
    Pindleskin at the temple's portal.
@@ -115,7 +116,9 @@ Much of this page compares maps with and without a Corrupted Ear, so here is wha
     ---
 
     Every act boss, superunique and special encounter in each difficulty, by the grail items it drops, and the items it
-    is the best spot for. Then gambling: the gold per new grail item of every gamble base at your character level.
+    is the best spot for. The unique map bosses that drop random uniques and Lucion's chests (his vault and its keys, the
+    Bitter Depths), each against T1-T3 maps for your missing items. Then gambling: the gold per new grail item of every
+    gamble base at your character level.
 
 -   **[Gheed's Map Event](#tab-gheed)**
 
@@ -134,8 +137,8 @@ Much of this page compares maps with and without a Corrupted Ear, so here is wha
 
     ---
 
-    What players ask first: reading your Discovery Progress, which ear, ears vs time, maps vs kills, drop level, rare
-    maps, magic find, Corrupted Zones and the filter's stars.
+    What players ask first: reading your Discovery Progress, which ear, ears vs time, maps vs kills, unique maps, Lucion's
+    chests, drop level, rare maps, magic find, Corrupted Zones and the filter's stars.
 
 -   **[How It's Worked Out](#tab-method)**
 

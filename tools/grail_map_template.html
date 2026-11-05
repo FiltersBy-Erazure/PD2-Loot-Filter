@@ -435,7 +435,8 @@
   <h2>Your Grail</h2>
   <p class="note">Tick the items you have under <a href="#gm-list">Every Item</a>, or <a href="#gm-fill">fill in your grail</a> at the
   end of this tab: tick everything but what you're missing, or paste a list. From your ticks and the bar's settings this is
-  your plan: the Corrupted Ear to run, the items a kill finds faster than a map and where to farm them, and the slowest ones. Each
+  your plan: the Corrupted Ear to run, the items a kill finds faster than a map and where to farm them, what a unique map's boss
+  finds, and the slowest ones. Each
   missing item gets its best bet. Your ticks are kept in this browser only.</p>
   <div class="cards" id="gm-plan-cards"></div>
   <div class="tools"><select class="gm-fixed" aria-label="Farm spots"><option value="">Any farm spot</option><option value="fixed">Fixed spots only</option></select></div>
@@ -503,7 +504,7 @@
           <span class="bet">beats maps</span> one kill there finds it at least as often as a whole map with its best ear</dd>
       </dl>
       <p class="hfoot">Point at a column's <b>i</b> for what it means. Click a row for its best bet, its best spots in each
-      difficulty, in the Corrupted Zones and among the ubers and events, and Gheed's map event.</p></div>
+      difficulty, in the Corrupted Zones, among the ubers and events and the unique map bosses, and Gheed's map event.</p></div>
     <div class="hcard"><h3>Marking what you've found</h3>
       <ul>
         <li>Tick its box, or type its name in the search and press <b>Enter</b>, then the next name</li>
@@ -542,8 +543,9 @@
 <section id="gm-farm" data-tab="farm" hidden>
   <h2>Target Farming</h2>
   <p class="note">Maps find the most grail items over time. For an item maps rarely drop, killing one boss or superunique again and
-  again can be the better bet. Here is every act boss, superunique and special encounter in each difficulty, with the grail items
-  it drops per kill (per run, vault or shop where it says so).</p>
+  again can be the better bet. Here is every act boss, superunique and special encounter in each difficulty, and the three
+  unique map bosses that drop random uniques, with the grail items each drops per kill (per run, vault, map or shop where it
+  says so).</p>
   <ul class="find" id="gm-farm-list"></ul>
   <div class="tools">
     <select id="gm-fgroup" aria-label="Where"></select>
@@ -553,6 +555,26 @@
   </div>
   <div class="tbl panel"><table class="gm-table" id="gm-t-farm"></table></div>
   <div class="tools"><button type="button" class="btn" id="gm-fmore">Show every spot</button></div>
+</section>
+
+<section id="gm-umaps" data-tab="farm" hidden>
+  <h2>Unique Map Bosses</h2>
+  <p class="note">The bosses of three unique maps drop random uniques when they die, on top of their own loot. Each kill takes a
+  map: here is what one finds, against a whole T1-T3 map.</p>
+  <ul class="find" id="gm-umap-list"></ul>
+  <p class="note" id="gm-umap-note"></p>
+  <div class="tbl panel"><table class="gm-table" id="gm-t-umap"></table></div>
+  <div class="tools"><button type="button" class="btn" id="gm-umore">Show all</button></div>
+</section>
+
+<section id="gm-lucion" data-tab="farm" hidden>
+  <h2>Lucion Chests</h2>
+  <p class="note">Lucion's chests drop better loot than any monster: their equipment comes out unique, set or rare far more
+  often. They stand in Lucion's vault and in the Bitter Depths map event. Here is what they find, against a whole T1-T3 map.</p>
+  <ul class="find" id="gm-lucion-list"></ul>
+  <p class="note" id="gm-lucion-note"></p>
+  <div class="tbl panel"><table class="gm-table" id="gm-t-lucion"></table></div>
+  <div class="tools"><button type="button" class="btn" id="gm-lmore">Show all</button></div>
 </section>
 
 <section id="gm-gamble" data-tab="farm" hidden>
@@ -641,7 +663,7 @@
     <li><b>Grail progress:</b> each item drops at random at its own rate, so the items found after n maps add up item by item.
       "Switching" works from the expected progress; with your real ticks the planner does better.</li>
     <li><b>Best bet:</b> an item's best bet compares one kill with one map: target farming its best boss or superunique (any
-      difficulty; Corrupted Zones, ubers and events left out) when one kill there finds it at least as often as a whole map with the
+      difficulty; Corrupted Zones, ubers, events and unique map bosses left out) when one kill there finds it at least as often as a whole map with the
       item's best ear, maps otherwise. That's as if a kill took as long as a map; a quicker kill makes farming better still. Your
       Grail's plan sorts your missing items by it, and splits the maps' ones by their chance in your next 100 maps with the ear it
       names: an even chance or better, or the slowest.</li>
@@ -664,6 +686,13 @@
       that chance.</li>
     <li><b>Corrupted Zones:</b> in Hell games made with Baal's quest done, one group of areas at a time has area level 85, so its
       superuniques are level 88 (bosses keep their own level).</li>
+    <li><b>Unique map bosses:</b> three unique maps' bosses drop random uniques when they die, on top of their own loot:
+      Gregus Mazi in City of Ureh 3 (socketed), Warlord of Blood 2 or 3 (corrupted) and Na-Krul in Na-Krul's Abyss 3
+      (ethereal). Each one starts as a unique of the game picked at random, every unique alike but the few that never drop
+      (Rainbow Facets are in; Gregus Mazi passes over bases that take no sockets). Na-Krul drops the unique he picked.
+      Warlord of Blood and Gregus Mazi keep only its base and make a unique of it at item level 99, picked as any dropped
+      unique is, by how common each unique of that base is. Their own loot drops as a map boss's does, at their level (91),
+      with the map's own magic find. One kill a map; the rest of the map isn't counted.</li>
     <li><b>Ubers and events:</b> Lilith, Uber Duriel and Uber Izual drop their own loot at level 110. Diablo Clone drops
       Annihilus every kill; Uber Tristram drops the Hellfire Torch once a run, when its last boss dies (the three bosses drop
       nothing else). The Uber Ancients: before touching the altar you switch on the ancients you want to fight at their
@@ -671,7 +700,8 @@
       three, at item level 90. Lucion's vault has 10 chests at every tier (0, 1 and 2, easiest first); each drops up to 3
       items, then 2, 3 or 4 more from better loot on tier 0, 1 or 2, so a harder tier gives more items, not better ones. The
       items have the vault's level; the level of the character who opens the chest (95 here) goes into their quality. The
-      numbers are for the whole vault.</li>
+      numbers are for the whole vault; Lucion himself drops no grail items. The vault's key is cubed from three parts, each
+      a chance per kill in Hell (<a href="#gm-lucion">Lucion Chests</a> names them; solo, as every number here).</li>
     <li><b>Gheed's map event:</b> each of his 5 offers is a random unique: any unique but jewels and the few that never drop. One
       that needs character level 60 or more is turned down (level − 49)% of the time and another picked; in one shop in 200, one
       offer is a special ring instead.</li>
@@ -762,7 +792,7 @@ function gambleBest(list) {  // the cheapest base and character level for the li
   GCL.forEach((_, k) => { const r = gambleBases(k, list)[0]; if (r && (!best || r.per < best.r.per)) best = {r, k}; });
   return best;
 }
-const UNITS = {kill: "kills", run: "runs", vault: "vaults", shop: "shops"};
+const UNITS = {kill: "kills", run: "runs", vault: "vaults", shop: "shops", map: "maps"};
 
 // ---------------------------------------------------------------- rates per map
 const cache = {};
@@ -796,8 +826,14 @@ const spotWhere = s => DIFF[s.diff] + (s.group === 3 ? ", Corrupted Zone" : "");
 // fixed: the spot never moves (a preset map, or an area laid out the same every game); wp: areas from a waypoint
 const spotTag = s => s.fixed < 0 ? "" : (s.fixed ? "fixed spot" : "random spot") +
   (s.wp < 0 ? "" : s.wp === 0 ? ", waypoint in the area" : `, ${s.wp} area${s.wp > 1 ? "s" : ""} from a waypoint`);
-// "Fixed spots only" keeps to monsters that stand in the same place every game; the ubers and events (group 4) stay
-const spotOk = s => state.fixed !== "fixed" || s.fixed === 1 || s.group === 4;
+// "Fixed spots only" keeps to monsters that stand in the same place every game; the ubers and events (group 4) and the
+// unique map bosses (group 5) stay
+const spotOk = s => state.fixed !== "fixed" || s.fixed === 1 || s.group >= 4;
+// the unique map bosses: one kill a map, their random uniques a kill (fewest, most), made from the picked unique's "base"
+// or its own "row", only bases that take sockets, what they drop as
+const UMAPS = F.umap.map(([j, lo, hi, made, sockets, look]) => Object.assign(SPOTS[j], {lo, hi, made, sockets, look}));
+const mapOf = s => s.area.replace(/ map$/, "");
+const picksTxt = s => s.lo === s.hi ? `${s.lo}` : `${s.lo} or ${s.hi}`;
 // spots that drop an item equally often: a fixed one first, then the one nearer a waypoint
 const spotRank = s => (s.fixed === 1 ? 0 : 1000) + (s.wp < 0 ? 999 : s.wp);
 const byRate = m => (a, b) => b.r[m] - a.r[m] || spotRank(a.s) - spotRank(b.s);
@@ -889,7 +925,11 @@ function renderAnswer() {
     `<b>A few items decide the end:</b> ${slow.slice(0, -1).join(", ")} and ${slow[slow.length - 1]} drop once in thousands of maps here. <a href="#gm-cant">Hard to find in maps</a> lists them, with the ${N - idx.length} items maps never drop.`,
     `<b>Target farm the slow ones:</b> ${lowFarm} items, most of them low-level uniques, drop more often per kill from a Normal boss or superunique than from any in Nightmare or Hell.` +
       (fb.n ? ` For ${fb.n} items one kill finds them at least as often as a whole map with their best ear, so target farming is their best bet: ${fb.text}.` : "") +
-      ` <a href="#gm-farm">Target Farming</a> names the best spot for every item, <a href="#gm-planner">Your Grail</a> the ones to farm for your list.`,
+      ` <a href="#gm-farm">Target Farming</a> names the best spot for every item, <a href="#gm-planner">Your Grail</a> the ones to farm for your list.` +
+      (UMAPS.length ? (() => { const beat = umapRows(R, ITEMS.map(it => it.i)).filter(o => o.x >= 1);
+        return ` And the boss of a ${joinOr(UMAPS.map(mapOf))} map drops ${Math.min(...UMAPS.map(s => s.lo))} or ${Math.max(...UMAPS.map(s => s.hi))} random uniques: ` +
+          (beat.length ? `for ${beat.length} uniques one kill finds them more often than a whole map with their best ear, up to ${times(beat[0].x)} times as often` : `one kill finds about ${UMAPS[0].tot[mfi()].toFixed(1)} grail items`) +
+          ` (<a href="#gm-umaps">Unique Map Bosses</a>).`; })() : ""),
     `<b>Magic find matters most:</b> at ${mf0}% magic find 90% of the grail takes ${fmtN(m0)} maps instead of ${fmtN(none.m90)}.`,
     `<b>A Corrupted Ear on every map cuts the maps:</b> 90% of the grail takes ${fmtN(b90.m90)} maps with the best ear and ${fmtN(w90.m90)} with the worst, instead of ${fmtN(none.m90)}. That's fewer maps, not less time: ear monsters have +${E0.hp}% health. <a href="#gm-planner">Your Grail</a> picks the ear for the items you're missing.`
   ].map(x => `<li>${x}</li>`).join("");
@@ -1004,7 +1044,21 @@ function renderFaq() {
     ["Is the \"Best farm spot\" better than running maps?",
      `Only for some items. It's the boss or superunique that drops the item most often per kill, whatever a kill costs. Each item's details under <a href="#gm-list">Every Item</a> name its best bet: target farming when one kill finds it at least as often as a whole map with its best ear ("beats maps"), maps otherwise. ` +
      (fb.n ? `At these settings that's ${fb.n} items, low-level uniques and sets: ${fb.text}. ` : `At these settings no kill beats a map for any item. `) +
-     `For high-level items maps with the right ear win by far${ty && tyEar && tyFarm ? `: ${ty.name} is ${oneIn(tyEar[1])} maps${tyEar[0] ? ` with the ${tyEar[0]} ear` : ""} but ${perUnit(tyFarm.r[m], tyFarm.s.unit)} from ${tyFarm.s.name} in ${DIFF[tyFarm.s.diff]}` : ""}. <a href="#gm-planner">Your Grail</a> sorts your missing items by their best bet.`],
+     `For high-level items maps with the right ear win by far${ty && tyEar && tyFarm ? `: ${ty.name} is ${oneIn(tyEar[1])} maps${tyEar[0] ? ` with the ${tyEar[0]} ear` : ""} but ${perUnit(tyFarm.r[m], tyFarm.s.unit)} from ${tyFarm.s.name} in ${DIFF[tyFarm.s.diff]}` : ""}. <a href="#gm-planner">Your Grail</a> sorts your missing items by their best bet. The unique map bosses are another matter (next question).`],
+    [`Are ${joinAnd(UMAPS.map(mapOf))} maps worth it for the grail?`,
+     (() => { const row = UMAPS.find(s => s.made === "row"), base = UMAPS.filter(s => s.made === "base"), umr = s => ty ? rateAt(ty.i, s.j, m) : 0;
+       const all = umapRows(R, ITEMS.map(it => it.i)), beat = all.filter(o => o.x >= 1);
+       return `Run every one you get. Their bosses drop random uniques when they die, on top of their own loot: ${joinAnd(UMAPS.map(s => `${bossIn(s)} ${picksTxt(s)} a kill (${s.look})`))}. ` +
+         (beat.length ? `For ${beat.length} of the ${all.length} uniques one kill finds them more often than a whole T1-T3 map with their best ear, up to ${times(beat[0].x)} times as often (${ITEMS[beat[0].i].label}); for the others a map wins, since it drops far more grail items. `
+           : `One kill finds fewer grail items than a whole T1-T3 map, though: for each unique a map with its best ear finds it more often. `) +
+         (ty && tyEar ? `${ty.name} is ${oneIn(tyEar[1])} T1-T3 maps with ${earName(tyEar[0])} and ${joinAnd(UMAPS.slice().sort((x, y) => umr(y) - umr(x)).map(s => `${oneIn(umr(s))} ${mapOf(s)} maps`))}. ` : "") +
+         (row && base.length ? `${row.name} drops the unique he picked, so every unique comes about as often; ${joinAnd(base.map(s => s.name))} make a unique of its base, so a base's common uniques come more often than its rare ones. ` : "") +
+         `<a href="#gm-umaps">Unique Map Bosses</a> compares them with T1-T3 maps for your missing items.`; })()],
+    ["Are Lucion's chests good for the grail?",
+     (() => { const all = lucionRows(R, ITEMS.map(it => it.i)), perMap = idx.reduce((a, i) => a + R.none[i], 0);
+       return `As a bonus, not as a way to the grail. Each chest drops 5 items whose equipment and jewelry come out unique or set far more often than a monster's, about ${(LV[0].tot[m] / LUC.chests).toFixed(2)} grail items a chest at ${state.mf}% magic find, most of them set items. ` +
+         `Lucion's vault has ${LUC.chests}: about ${joinAnd(LV.map(s => s.tot[m].toFixed(1)))} grail items at tiers 0, 1 and 2, where a whole T1-T3 map drops about ${perMap.toFixed(1)}. ${lucionBeat(all, true)}. ` +
+         `Its key, the ${LUC.map}, takes ${joinAnd(LUC.keys.map(k => `a ${k[1]}`))}, rare drops in Hell, so open the vaults you get at the highest tier you can take on. The Bitter Depths map event has ${LUC.bd} of the chests, about ${(LV[0].tot[m] * LUC.bd / LUC.chests).toFixed(1)} grail items a run: <a href="#gm-lucion">Lucion Chests</a>.`; })()],
     ["What does \"drop level\" mean?",
      `The lowest monster level that can drop the item: an item only drops from a monster at least that high. It isn't the level you need to wear it. The farm spots reach level 68 in Normal and 75 in Nightmare, so items with a higher drop level come only from Hell.`],
     ["Non-magical or rare maps? Fortified? Which tier?",
@@ -1024,7 +1078,7 @@ function renderFaq() {
          (r ? `At character level ${GCL[l]} the cheapest base for a fresh grail, ${GB.bases[r.j][1]}, takes about ${goldTxt(r.per)} gold per new grail item, and an item you want in particular much more. ` : "") +
          `A low-level character pays less for a base's low-level items, and since Discovery Progress is kept per account, its finds count for your grail. Each item's details give its gambling odds, and <a href="#gm-gamble">Gambling</a> ranks the bases for your missing items.`; })()],
     ["What isn't counted?",
-     `T4 dungeons, unique maps and whole area clears: a full Cow Level, Chaos Sanctuary or Baal run also drops from every monster on the way, so those runs find more than the boss alone shows. The numbers are estimates for one player, not drop counts.`],
+     `T4 dungeons, the unique maps (of ${joinAnd(UMAPS.map(mapOf))} only the boss counts) and whole area clears: a full Cow Level, Chaos Sanctuary or Baal run also drops from every monster on the way, so those runs find more than the boss alone shows. The numbers are estimates for one player, not drop counts.`],
   ];
   $("gm-faq-list").innerHTML = qa.map(([q, a]) => `<h3>${q}</h3><p>${a}</p>`).join("");
 }
@@ -1140,7 +1194,7 @@ function tickUI() {  // what follows the ticks: the Undo buttons, Tick shown / U
   if (a && a.closest && a.closest(".grail-map") && (a.disabled || a.hidden)) $(a.closest("#gm-planner") ? "gm-io" : "gm-q").focus({preventScroll: true});
 }
 function ticksChanged(msg, where) {  // the other place's message would be out of date now: it goes
-  save(); planSoon(); renderItems(); renderComp(); renderGamble(); renderGheed();
+  save(); planSoon(); renderItems(); renderComp(); renderUmaps(); renderLucion(); renderGamble(); renderGheed();
   tickMsg("", where === "gm-io-msg" ? "gm-tickmsg" : "gm-io-msg"); tickMsg(msg, where); tickUI();
 }
 function setTicks(next, label, msg, where) {  // a change that changes nothing keeps no Undo step
@@ -1158,6 +1212,7 @@ function bet(R, i) {
   return {kind: v >= 1 ? "farm" : "maps", ear, map, f, v};
 }
 const times = v => v >= 9.95 ? fmtN(v) : v.toFixed(1).replace(/\.0$/, "");
+const nMaps = v => `${times(v)} map${times(v) === "1" ? "" : "s"}`;  // "1 map", "2.5 maps"
 const earName = e => e ? `the ${e} ear` : "any Corrupted Ear";
 const BET_TAG = `<span class="bet">beats maps</span>`;
 // Cow King's Leathers drops only from Hell Bovines: in maps the Bovine guest's and the Dark Wanderer's Cow King
@@ -1254,13 +1309,28 @@ function renderPlanner() {  // your plan: the ear to run, the items to target fa
       `</p><div class="spots">${G.map(spotCard).join("")}</div></li>`);
   } else if (left.length) steps.push(`<li><h3>Target farming: no kill beats a map</h3><p class="note">For each of your missing items, one map with its best ear finds it more often ` +
     `than one kill of any ${state.fixed === "fixed" ? "fixed " : ""}boss or superunique.${state.fixed === "fixed" && anyFarm ? ` With any farm spot, ${anyFarm} would be best farmed: choose "Any farm spot" above.` : ""}</p></li>`);
+  // the unique map bosses: what one kill (one map) finds of your whole list, against a T1-T3 map with the plan's ear, and the
+  // missing uniques one kill finds more often than a whole map with their best ear
+  const um = UMAPS.map(s => ({s, n: left.reduce((a, i) => a + rateAt(i, s.j, m), 0)})).sort((x, y) => y.n - x.n);
+  if (left.length && um.length && um[0].n > 0) {
+    const beat = umapRows(R, left).filter(o => o.x >= 1);
+    steps.push(`<li><h3>Got a ${joinOr(UMAPS.map(mapOf))} map? Kill its boss</h3><p class="note">These bosses drop random uniques on top of ` +
+      `their own loot: one kill finds about ${joinAnd(um.map((o, k) => `${o.n.toFixed(2)}${k ? "" : " of your missing items"} in ${mapOf(o.s)}`))}` +
+      (miss.length ? `, where a whole T1-T3 map with the ${b.e} ear finds about ${perMap.toFixed(perMap < 9.95 ? 2 : 1)}` : "") + `. ` +
+      (beat.length ? `For ${beat.length} of your missing uniques one kill beats a whole map with their best ear: ` +
+        `${beat.slice(0, 5).map(o => `${ITEMS[o.i].label} (${o.s.name}: a kill = ${nMaps(o.x)})`).join(", ")}${beat.length > 5 ? "…" : ""}. `
+        : `For each of your missing uniques a whole map with its best ear still finds it more often than one kill. `) +
+      `The map's own monsters come on top. <a href="#gm-umaps">Unique Map Bosses</a> lists every item.</p></li>`);
+  }
   if (slow.length) {
     const SLOWN = 10, list = slow.slice().sort((x, y) => bets.get(x).map - bets.get(y).map), shown = SLOW_ALL ? list : list.slice(0, SLOWN);
-    steps.push(`<li><h3>Keep mapping for the slowest ${slow.length}</h3><p class="note">Less than an even chance in your next 100 maps with the ${b.e} ear, and no kill ` +
-      `beats a map for them: maps are still their best bet, and they decide when your grail ends. The ear that finds all of them soonest: the ${slowFin.e} ear (${fmtN(slowFin.m)} maps).</p>` +
-      `<div class="panel slowlist">` + shown.map(i => { const t = bets.get(i), it = ITEMS[i];
+    const ux = new Map(umapRows(R, shown).filter(o => o.x >= 1).map(o => [o.i, o]));  // a unique map boss's kill beats a map for it
+    steps.push(`<li><h3>Keep mapping for the slowest ${slow.length}</h3><p class="note">Less than an even chance in your next 100 maps with the ${b.e} ear, and no boss ` +
+      `or superunique kill beats a map for them: maps are still their best bet, and they decide when your grail ends. The ear that finds all of them soonest: the ${slowFin.e} ear (${fmtN(slowFin.m)} maps).</p>` +
+      `<div class="panel slowlist">` + shown.map(i => { const t = bets.get(i), it = ITEMS[i], u = ux.get(i);
         return `<div class="fs"><div class="fs-n">${it.label} <span class="ver">${it.base}</span></div><div class="fs-v">${t.ear ? t.ear + " ear" : "Any ear"}: ${oneIn(t.map)} maps</div>` +
-          `<div class="fs-m l">90% chance in ${fmtN(Math.log(10) / t.map)} maps` + (t.f ? ` · best farm spot ${where(t.f.s)}, ${perUnit(t.f.r[m], t.f.s.unit)}: a map = ${times(1 / t.v)} kills` : "") + `</div></div>`; }).join("") +
+          `<div class="fs-m l">90% chance in ${fmtN(Math.log(10) / t.map)} maps` + (t.f ? ` · best farm spot ${where(t.f.s)}, ${perUnit(t.f.r[m], t.f.s.unit)}: a map = ${times(1 / t.v)} kills` : "") +
+          (u ? ` · in a ${mapOf(u.s)} map, a kill of ${u.s.name} = ${nMaps(u.x)}` : "") + `</div></div>`; }).join("") +
       `</div>` + (slow.length > SLOWN ? `<div class="tools"><button type="button" class="btn" data-act="slow">${SLOW_ALL ? `Show the slowest ${SLOWN}` : `Show all ${slow.length}`}</button></div>` : "") + `</li>`);
   }
   const gl = gli(), gb = left.length ? gambleBases(gl, left)[0] : null, ga = left.length ? gambleBest(left) : null;
@@ -1351,12 +1421,30 @@ function farmElse(i) {  // an item no boss or superunique drops: its uber or eve
   const b = bestFarm(i, [4]); return b ? `${b.s.name}<br><span class="where">${perUnit(b.r[mfi()], b.s.unit)}</span>` : "–";
 }
 const OPEN = new Set();
-const TOPLVL = [0, 1, 2, 3, 4].map(g => Math.max(...SPOTS.filter(s => s.group === g).map(s => s.lvl)));
+const TOPLVL = F.groups.map((_, g) => Math.max(...SPOTS.filter(s => s.group === g).map(s => s.lvl)));
+// the uniques of a list (item numbers) the unique map bosses drop: each boss's rate (v, in UMAPS' order), the best (s,
+// best), the item's best ear in T1-T3 maps (ear, map) and the maps one kill is worth (x); the most raised over maps first
+function umapRows(R, list) {
+  const m = mfi();
+  return list.filter(i => ITEMS[i].kind === "UNI").map(i => { const v = UMAPS.map(s => rateAt(i, s.j, m)), best = Math.max(...v), [ear, map] = bestEar(R, i);
+    return {i, v, best, s: UMAPS[v.indexOf(best)], ear, map, x: map > 0 ? best / map : Infinity}; })
+    .filter(o => o.best > 0).sort((a, b) => b.x - a.x || b.best - a.best);
+}
+const bossIn = s => s.name === mapOf(s) ? s.name : `${s.name} in ${mapOf(s)}`;
+function umapLine(R, i) {  // a unique's unique map bosses, per map, and the best one against a T1-T3 map with its best ear
+  const o = umapRows(R, [i])[0]; if (!o) return "";
+  const kill = `one kill of ${o.s.name}`;
+  return `<b><a href="#gm-umaps">Unique map bosses</a>:</b> ` + UMAPS.map((s, k) => [s, o.v[k]]).sort((a, b) => b[1] - a[1]).map(([s, v]) => `${oneIn(v)} ${mapOf(s)} maps`).join(", ") +
+    (!isFinite(o.x) ? "" : o.x >= 1 ? `: ${kill} finds it as often as ${times(o.x)} T1-T3 maps with ${earName(o.ear)}`
+      : `: a T1-T3 map with ${earName(o.ear)} finds it ${times(1 / o.x)} times as often as ${kill}`);
+}
 const joinAnd = a => a.length < 2 ? a.join("") : a.slice(0, -1).join(", ") + " and " + a[a.length - 1];
+const joinOr = a => a.length < 2 ? a.join("") : a.slice(0, -1).join(", ") + " or " + a[a.length - 1];
 function farmDetail(i) {  // an item's best spots per group (and the best fixed one), the maps and ears, Gheed's event
   const m = mfi(), R = cur(), it = ITEMS[i];
   const row = (e, rank) => `<div class="fs"><div class="fs-n"><span class="fs-r">${rank}</span>${e.s.name}</div><div class="fs-v">${perUnit(e.r[m], e.s.unit)}</div>` +
-    `<div class="fs-m l">${[e.s.area, "level " + e.s.lvl, spotTag(e.s), e.s.group === 3 ? "only while its zone is corrupted" : ""].filter(Boolean).join(" · ")}` +
+    `<div class="fs-m l">${[e.s.area, "level " + e.s.lvl, spotTag(e.s), e.s.group === 3 ? "only while its zone is corrupted" : "",
+      e.s.group === 5 ? `${picksTxt(e.s)} random uniques a kill, ${e.s.look}` : ""].filter(Boolean).join(" · ")}` +
     (e.enc > 1.05 ? `<br>with its ${e.s.minions} minions: ${perUnit(e.r[m] * e.enc, e.s.unit)}` : "") + `</div></div>`;
   const cols = [], high = [], none = [];
   F.groups.forEach((g, gi) => {
@@ -1370,6 +1458,7 @@ function farmDetail(i) {  // an item's best spots per group (and the best fixed 
   lines.push(R.none[i] > 0 ? `<b>T1-T3 maps:</b> ${oneIn(R.none[i])} maps without an ear` +
     (ears.length ? ", " + ears.map(([e, v]) => `${oneIn(v)} with the ${e} ear`).join(", ") + (ears.length < EARS.length ? `, ${oneIn(R.any[i])} with any other ear` : "")
       : `, ${oneIn(R.any[i])} with any ear`) + ` <span class="meta">(${setting()})</span>` : `<b>T1-T3 maps:</b> ${noMaps(i)}`);
+  const um = umapLine(R, i); if (um) lines.push(um);
   if (COW.has(i)) lines.push(`<b>In maps only from Hell Bovines:</b> the Bovine guest some rare maps roll ("Map contains Hell Bovines") and a Dark Wanderer that turns into the Cow King (<a href="#gm-method">How It's Worked Out</a>)`);
   if (GHEED[i]) lines.push(`<b><a href="#gm-gheed">Gheed's map event</a>:</b> ${perUnit(GHEED[i], "shop")}`);
   const gl = gambleLine(i); if (gl) lines.push(gl);
@@ -1383,7 +1472,7 @@ $("gm-items").addEventListener("change", e => {  // one box: the list stays as i
   keep(`${e.target.checked ? "ticked" : "unticked"} ${it ? it.label : "an item"}`);
   if (e.target.checked) FOUND.add(k); else FOUND.delete(k);
   e.target.closest("tr").classList.toggle("found", e.target.checked);
-  save(); planSoon(); renderGamble(); renderGheed(); tickMsg("", "gm-tickmsg"); tickUI();
+  save(); planSoon(); renderUmaps(); renderLucion(); renderGamble(); renderGheed(); tickMsg("", "gm-tickmsg"); tickUI();
 });
 $("gm-items").addEventListener("click", e => {
   if (e.target.closest("input") || e.target.closest("tr.gm-detail")) return;
@@ -1758,10 +1847,104 @@ function renderFarm() {
     `<b>The act bosses drop the most grail items per kill:</b> up to six items a kill, and Hell ${baal.name} about ${baal.tot[m].toFixed(1)} grail items. Best for the most items in Hell: ${top[2].join(", ")}${top[1].length ? `; in Nightmare: ${top[1].join(", ")}` : ""}. An item needs an item level of at least its own: items of level ${nmTop + 1} and up only drop in Hell.`,
     ua ? `<b>The Uber Ancients drop the most per fight:</b> about ${ua.tot[m].toFixed(1)} grail items a run with three ancients. ${lil ? `${lil.name}, Uber Duriel and Uber Izual drop two items each besides potions, one grail item about every ${fmtN(1 / lil.tot[m])} kills. ` : ""}Annihilus comes only from Diablo Clone, one every kill, and the Hellfire Torch only from Uber Tristram, one a run.` : "",
     `<b>Corrupted Zones</b> put a Hell area group's superuniques at level 88 while the zone lasts: the same treasure classes, more of the highest-level items.`,
-    ghMid ? `<b>Gheed's map event</b> offers every unique but jewels: each about ${perUnit(ghMid, "shop")}, a little less for items needing level 60 or more.` : ""
+    LV.length ? `<b>Lucion's chests drop better loot than any monster</b>, mostly set items: about ${(LV[0].tot[m] / LUC.chests).toFixed(2)} grail items a chest, ` +
+      `${joinAnd(LV.map(s => s.tot[m].toFixed(1)))} a vault at tiers 0, 1 and 2, ${(LV[0].tot[m] * LUC.bd / LUC.chests).toFixed(1)} from a Bitter Depths run's chests. <a href="#gm-lucion">Lucion Chests</a> compares them with maps.` : "",
+    UMAPS.length ? `<b>Three unique map bosses drop random uniques</b>, one kill a map: ${joinAnd(UMAPS.map(s => `${bossIn(s)} ${picksTxt(s)} a kill`))}, ` +
+      `about ${joinAnd(UMAPS.map(s => s.tot[m].toFixed(1)))} grail items with their own loot. <a href="#gm-umaps">Unique Map Bosses</a> compares them with maps.` : "",
+    ghMid ?`<b>Gheed's map event</b> offers every unique but jewels: each about ${perUnit(ghMid, "shop")}, a little less for items needing level 60 or more.` : ""
   ].filter(Boolean).map(x => `<li>${x}</li>`).join("");
 }
 ["gm-fgroup", "gm-fsort"].forEach(id => $(id).addEventListener("input", () => { FMORE = false; renderFarm(); }));
+
+// ---------------------------------------------------------------- unique map bosses
+let UMORE = false;
+function renderUmaps() {  // what each unique map boss drops, and your missing uniques against T1-T3 maps
+  const R = cur(), m = mfi(), find = name => ITEMS.find(it => it.name === name);
+  const row = UMAPS.find(s => s.made === "row"), base = UMAPS.filter(s => s.made === "base"), ty = find("Tyrael's Might"), tm = find("Templar's Might");
+  const r = (it, s) => it ? rateAt(it.i, s.j, m) : 0, perMap = droppable(R).reduce((a, i) => a + R.none[i], 0);
+  const fresh = !ITEMS.some(it => it.kind === "UNI" && FOUND.has(it.key)), rows = umapRows(R, ITEMS.filter(it => !FOUND.has(it.key)).map(it => it.i));
+  const beat = rows.filter(o => o.x >= 1), tyRow = ty && umapRows(R, [ty.i])[0];
+  $("gm-umap-list").innerHTML = [
+    `<b>What they drop:</b> ${UMAPS.map(s => `${bossIn(s)} ${picksTxt(s)} uniques a kill, ${s.look}${s.sockets ? " (only bases that take sockets)" : ""}`).join("; ")}. ` +
+      `Their own loot comes on top, as any map boss's, with the map's own magic find: about ${joinAnd(UMAPS.map(s => s.tot[m].toFixed(1)))} grail items a kill in all, ` +
+      `where a whole T1-T3 map drops about ${perMap.toFixed(1)} without an ear (${setting()}).`,
+    row && base.length && ty && tm ? `<b>Any unique, but not all alike:</b> each one starts as a unique of the game picked at random, every unique alike but the few that never drop. ` +
+      `${row.name} drops the very unique he picked, so all of them come about as often: Tyrael's Might ${oneIn(r(ty, row))} ${mapOf(row)} maps. ` +
+      `${joinAnd(base.map(s => s.name))} keep only its base and make a unique of it, picked as any dropped unique is, by how common each unique of that base is: ` +
+      `${tm.name} comes ${oneIn(r(tm, base[0]))} ${mapOf(base[0])} maps, Tyrael's Might, on the same ${ty.base}, ${oneIn(r(ty, base[0]))}.` : "",
+    `<b>Better than a whole map for the rarest:</b> ` + (beat.length ? `for ${beat.length} of ${fresh ? "the" : "your"} ${rows.length} ${fresh ? "" : "missing "}uniques one kill finds them more often than a whole T1-T3 map with their best ear, ` +
+      `up to ${times(beat[0].x)} times as often (${ITEMS[beat[0].i].label})` : `for none of ${fresh ? "the" : "your missing"} uniques does one kill beat a whole T1-T3 map with its best ear`) +
+      (tyRow ? `; Tyrael's Might ${tyRow.x >= 1 ? `${times(tyRow.x)} times as often` : `${times(1 / tyRow.x)} times less often`} (${oneIn(tyRow.best)} ${mapOf(tyRow.s)} maps, ${oneIn(tyRow.map)} maps with ${earName(tyRow.ear)})` : "") +
+      `. For the others a map wins: it drops far more grail items, the common uniques again and again.`,
+    `<b>One kill a map:</b> each run takes a map, so the maps you get decide how much they add. The unique map's own monsters come on top and aren't counted here.`
+  ].filter(Boolean).map(x => `<li>${x}</li>`).join("");
+  $("gm-umap-note").textContent = `${fresh ? "Every unique" : "Your missing uniques"} (${rows.length}), the ones these bosses raise most over maps first: how often each drops it, ` +
+    `one kill a map, against a T1-T3 map with its best ear (${setting()}). "A kill =" is the maps one kill is worth for it.`;
+  const shown = UMORE ? rows : rows.slice(0, 15);
+  $("gm-t-umap").innerHTML = !rows.length ? `<tbody><tr><td>None of your missing items comes from these bosses.</td></tr></tbody>` :
+    `<thead><tr><th class="l">Item</th><th class="l opt">Base</th>${UMAPS.map(s => `<th>${mapOf(s)}${s.name !== mapOf(s) ? `<br><span class="ratio">${s.name}</span>` : ""}</th>`).join("")}` +
+    `<th>T1-T3 map, best ear</th><th>A kill =</th></tr></thead><tbody>` +
+    shown.map(o => `<tr><td>${ITEMS[o.i].label}</td><td class="l opt">${ITEMS[o.i].base}</td>` + o.v.map(v => `<td${v === o.best ? ' class="best"' : ""}>${oneIn(v)}</td>`).join("") +
+      `<td>${oneIn(o.map)}${o.ear ? `<br><span class="ratio">${o.ear} ear</span>` : ""}</td><td>${isFinite(o.x) ? `${nMaps(o.x)}` : "maps never drop it"}</td></tr>`).join("") + `</tbody>`;
+  $("gm-umore").hidden = rows.length <= 15;
+  $("gm-umore").textContent = UMORE ? "Show fewer" : `Show all ${rows.length}`;
+}
+$("gm-umore").onclick = () => { UMORE = !UMORE; renderUmaps(); };
+
+// ---------------------------------------------------------------- Lucion's chests
+// LV: the vault at tiers 0, 1 and 2 (10 chests each); a Bitter Depths run has 20 tier-0 chests
+const LV = SPOTS.filter(s => s.unit === "vault").sort((a, b) => a.name.localeCompare(b.name)), LUC = F.lucion;
+const KEY_WHERE = {lucb: "in Abaddon, the Pit of Acheron and the Infernal Pit (the red portals)", lucc: "in the Corrupted Zone", lucd: "of any demon"};
+let LMORE = false;
+function lucionRows(R, list) {  // per item: a vault's rate at each tier (v), the Bitter Depths' chests (bd), its best ear in maps, the maps a tier-2 vault is worth (x)
+  const m = mfi();
+  return list.map(i => { const v = LV.map(s => rateAt(i, s.j, m)), [ear, map] = bestEar(R, i);
+    return {i, v, bd: v[0] * LUC.bd / LUC.chests, ear, map, x: map > 0 ? v[v.length - 1] / map : Infinity}; })
+    .filter(o => o.v[0] > 0).sort((a, b) => b.x - a.x || b.v[0] - a.v[0]);
+}
+// the items (rows of lucionRows) a tier-2 vault finds at least as often as a whole map with their best ear, in words
+function lucionBeat(rows, fresh) {
+  const beat = rows.filter(o => o.x >= 0.995), of = fresh ? `the ${rows.length} items` : `your ${rows.length} missing items`, as = x => x < 1.05 ? "about as often as" : `${times(x)} times as often as`;
+  if (beat.length === 1) return `Of ${of}, only ${ITEMS[beat[0].i].label} comes from a tier-2 vault ${as(beat[0].x)} from a whole T1-T3 map with its best ear`;
+  if (beat.length) return `For ${beat.length} of ${of} a tier-2 vault finds them at least as often as a whole T1-T3 map with their best ear, ` +
+    `the most ${ITEMS[beat[0].i].label}, ${as(beat[0].x)} a map`;
+  return `For none of ${of} does even a tier-2 vault find it as often as a whole T1-T3 map with its best ear` +
+    (rows.length ? `; the closest, ${ITEMS[rows[0].i].label}, ${times(rows[0].x)} maps' worth` : "");
+}
+const perCell = (r, unit) => r >= 0.995 ? `${r.toFixed(1)} a ${unit}` : 1 / r < 9.95 ? `1 in ${(1 / r).toFixed(1).replace(/\.0$/, "")}` : oneIn(r);  // "1 in 13", "1 in 1.4", "1.2 a map"
+function renderLucion() {
+  const R = cur(), m = mfi(), perMap = droppable(R).reduce((a, i) => a + R.none[i], 0), t0 = LV[0], chest = mi => t0.tot[mi] / LUC.chests;
+  const fresh = !ITEMS.some(it => FOUND.has(it.key)), rows = lucionRows(R, ITEMS.filter(it => !FOUND.has(it.key)).map(it => it.i));
+  const sets = ITEMS.filter(it => it.kind === "SET").reduce((a, it) => a + rateAt(it.i, t0.j, m), 0) / t0.tot[m];
+  const tw = state.tier === "all" ? [["1", 10], ["2", 10], ["3", 9]] : [[state.tier, 1]], avg = o => tw.reduce((a, [t, w]) => a + o[t + "|" + state.mt] * w, 0) / tw.reduce((a, [, w]) => a + w, 0);
+  const demons = avg(LUC.demons), flesh = LUC.keys.find(k => k[0] === "lucd"), maps = `${state.tier === "all" ? "T1-T3" : "T" + state.tier} ${state.mt === "normal" ? "non-magical" : "rare"} map`;
+  $("gm-lucion-list").innerHTML = [
+    `<b>What a chest drops:</b> 5 items, 3 from its lesser loot and 2 from its better loot: mostly equipment, then rings, amulets, charms, jewels, runes and gems. ` +
+      `Its equipment and jewelry come out unique up to ${LUC.boost[1][0]} times and set up to ${LUC.boost[1][1]} times as often as a monster's (the lesser loot ${LUC.boost[0][0]} and ${LUC.boost[0][1]} times). ` +
+      `Your magic find counts, and your character level a little (a level 75 character finds about a tenth less than the level 95 one here): about ${chest(0).toFixed(2)} grail items a chest at 0% magic find, ` +
+      `${chest(m).toFixed(2)} at ${state.mf}%, ${pct(sets)} of them set items.`,
+    `<b>Lucion's vault:</b> ${LUC.chests} chests (Lucion himself drops no grail items). The ${LUC.map} opens it: cube ${joinAnd(LUC.keys.map(k => `a ${k[1]}`))} into it, cube it alone to change its tier ` +
+      `(0, 1, 2, then 0 again; tiers 1 and 2 give each chest 1 or 2 more items from the better loot) and use it at the blood fountain in Harrogath. ` +
+      `About ${joinAnd(LV.map(s => s.tot[m].toFixed(1)))} grail items a vault at tiers 0, 1 and 2, where a whole ${maps} drops about ${perMap.toFixed(1)} without an ear (${setting()}).`,
+    `<b>Its keys,</b> solo, each a chance per kill in Hell: ${LUC.keys.map(k => `${k[1]} ${oneIn(k[2])} kills ${KEY_WHERE[k[0]] || ""}`).join("; ")}. ` +
+      (flesh ? `About ${pct(demons / (avg(DATA.kills) || 1))} of map monsters are demons, so a whole ${maps} finds a ${flesh[1]} about ${oneIn(demons * flesh[2])} maps.` : ""),
+    `<b>The Bitter Depths:</b> the map event in about 1 ${maps.replace(/^T\d(-T3)? /, "")} in ${fmtN(1 / LUC.bdChance[state.mt])} has ${LUC.bd} chests, tier-0 Lucion chests: about ${(chest(m) * LUC.bd).toFixed(1)} grail items a run, ` +
+      `besides its monsters and Zoltun Kulle. Every map's numbers on this page count it at that chance.`,
+    `<b>Against maps:</b> a vault finds fewer grail items than a whole map, and its loot leans to set items. ` + lucionBeat(rows, fresh) +
+      `. So open the vaults your keys allow, at the highest tier you can take on, but don't hunt the keys for the grail.`
+  ].map(x => `<li>${x}</li>`).join("");
+  $("gm-lucion-note").textContent = `${fresh ? "Every grail item" : "Your missing items"} (${rows.length}), the ones Lucion's chests raise most over maps first: how often a whole vault finds it at tier 0 and tier 2, ` +
+    `and the ${LUC.bd} chests of a Bitter Depths run, against a T1-T3 map with its best ear (${setting()}). "A tier-2 vault =" is the maps one vault is worth for it.`;
+  const shown = LMORE ? rows : rows.slice(0, 15), last = LV.length - 1;
+  $("gm-t-lucion").innerHTML = !rows.length ? `<tbody><tr><td>None of your missing items comes from Lucion's chests.</td></tr></tbody>` :
+    `<thead><tr><th class="l">Item</th><th class="l opt">Base</th><th>Vault, tier 0</th><th>Vault, tier ${last}</th><th>Bitter Depths run</th><th>T1-T3 map, best ear</th><th>A tier-${last} vault =</th></tr></thead><tbody>` +
+    shown.map(o => `<tr><td><span class="q" style="background:var(${ITEMS[o.i].kind === "SET" ? "--q-set" : "--q-unique"})"></span>${ITEMS[o.i].label}</td><td class="l opt">${ITEMS[o.i].base}</td>` +
+      `<td>${perCell(o.v[0], "vault")}</td><td>${perCell(o.v[last], "vault")}</td><td>${perCell(o.bd, "run")}</td><td>${perCell(o.map, "map")}${o.ear ? `<br><span class="ratio">${o.ear} ear</span>` : ""}</td>` +
+      `<td>${isFinite(o.x) ? `${nMaps(o.x)}` : "maps never drop it"}</td></tr>`).join("") + `</tbody>`;
+  $("gm-lmore").hidden = rows.length <= 15;
+  $("gm-lmore").textContent = LMORE ? "Show fewer" : `Show all ${rows.length}`;
+}
+$("gm-lmore").onclick = () => { LMORE = !LMORE; renderLucion(); };
 $("gm-clvl").innerHTML = GCL.map(v => `<option value="${v}"${v === state.clvl ? " selected" : ""}>${v}</option>`).join("");
 let GMORE = false; const GOPEN = new Set();  // bases opened to every item they can find
 function renderGamble() {
@@ -1848,7 +2031,7 @@ function renderGrid() {
 
 // ---------------------------------------------------------------- settings bar
 $("gm-mf").innerHTML = MFS.map(v => `<button type="button" data-v="${v}" aria-pressed="${v === state.mf}">${v}%</button>`).join("");
-function renderAll() { summary(); renderAnswer(); renderSpeed(); renderLevers(); renderEars(); planSoon(); renderItems(); renderFarm(); renderGamble(); renderGheed(); renderCant(); renderFaq(); }
+function renderAll() { summary(); renderAnswer(); renderSpeed(); renderLevers(); renderEars(); planSoon(); renderItems(); renderFarm(); renderUmaps(); renderLucion(); renderGamble(); renderGheed(); renderCant(); renderFaq(); }
 document.querySelectorAll(".grail-map .seg[data-ctl]").forEach(seg => seg.addEventListener("click", e => {
   const b = e.target.closest("button"); if (!b) return;
   seg.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
