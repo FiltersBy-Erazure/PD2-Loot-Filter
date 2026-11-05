@@ -770,7 +770,9 @@
   teleport pass); first made as a claude.ai page, now kept here. Second (2026-11-02, the author: a write-up to refer
   players to): **Map Experience** (`mapexp-map`): what 146's two lines mean, a level slider (each tier's monster
   share, the tiers' average plain maps over levels 80-98, every plain T1-T3 map ranked), the screenshot's Sanatorium
-  worked through. Its text is by hand, its numbers aren't: `gen_map_exp.py` writes the `DATA` line between its
+  worked through. The slider sits in a bar that stays under the site's header (2026-11-05, the author), with the
+  tiers' average plain map at that level and links to the sections (hidden on phones); the example's "at Level"
+  headings follow the data (`exLineText`). Its text is by hand, its numbers aren't: `gen_map_exp.py` writes the `DATA` line between its
   `map-exp-data` markers from the same model (`page_data`; the hook and `--check` cover it). The tab bar wraps onto
   a second line where the 13 tabs don't fit (`erazure.css`; until then Examples was cut off from about 1920 px down).
 - The Examples page's pictures (`website/docs/img/examples/*.png`, committed; README's examples show them too) are

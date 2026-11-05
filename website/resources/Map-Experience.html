@@ -19,10 +19,12 @@
 </style>
 <!-- mapexp-map:css -->
 <style>
-  /* Layout: one column, read top to bottom: the two lines, each explained, then your level (the monsters' share,
-     the tiers' average maps, every plain map), the example, what's left out, how it's worked out. Dark by default;
-     light when the website (Material) is switched to light. */
+  /* Layout: a bar that stays at the top while scrolling (your level, the tiers' average plain maps at it, the
+     sections), then one column, read top to bottom: the two lines, each explained, then your level (the monsters'
+     share, the tiers' average maps, every plain map), the example, what's left out, how it's worked out. Dark by
+     default; light when the website (Material) is switched to light. */
   .mapexp-map {
+    --top: 0px;  /* where the bar stops while scrolling */
     --bg: #151412; --panel: #1f1d1a; --fg: #ece7de; --fg2: #cfc8bb; --muted: #a59e91; --line: #36322c;
     --grid: #2e2b27; --axis: #4a463f; --accent: #d8b45e; --accent-wash: rgba(216, 180, 94, 0.12); --warn: #f0a24a;
     --s1: #3987e5; --s2: #d95926; --s3: #199e70;
@@ -39,9 +41,27 @@
     --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a;
     color-scheme: light;
   }
+  .md-content .mapexp-map { --top: 2.4rem; }  /* on the website: under its header, which stays at the top */
   .mapexp-map *, .mapexp-map *::before, .mapexp-map *::after { box-sizing: border-box; }
   .mapexp-map .wrap { max-width: 1120px; margin: 0 auto; padding-inline: 16px; }
   .md-content .mapexp-map .wrap { padding-inline: 0; max-width: none; }
+
+  /* the bar */
+  .mapexp-map .mx-bar { position: sticky; top: var(--top); z-index: 6; background: var(--panel); border-block: 1px solid var(--line);
+                        padding-block: 8px; margin-block: 8px 12px; }
+  .mapexp-map .mx-bar-in { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 28px; }
+  .md-content .mapexp-map .mx-bar-in { padding-inline: 10px; }
+  .mapexp-map .mx-avg { display: grid; gap: 4px; min-width: 0; }
+  .mapexp-map .mx-avg-label { font-size: 13px; font-weight: 600; color: var(--fg2); }
+  .mapexp-map .mx-avg-vals { display: flex; flex-wrap: wrap; gap: 2px 16px; font-size: 13.5px; color: var(--fg2);
+                             font-variant-numeric: tabular-nums; }
+  .mapexp-map .mx-avg-vals > span { display: inline-flex; align-items: baseline; gap: 6px; white-space: nowrap; }
+  .mapexp-map .mx-avg-vals .key { width: 12px; height: 3px; border-radius: 2px; flex: none; transform: translateY(-3px); }
+  .mapexp-map .mx-avg-vals b { color: var(--fg); font-size: 16px; }
+  .mapexp-map .mx-jump { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13.5px; margin-left: auto; }
+  .mapexp-map .mx-jump a { text-decoration: none; white-space: nowrap; }
+  .mapexp-map .mx-jump a:hover { text-decoration: underline; }
+  .mapexp-map .mx-main > section { scroll-margin-top: calc(var(--top) + var(--bar, 70px) + 12px); }
   .mapexp-map .mx-main { display: grid; gap: 20px; padding-block: 4px 48px; }
   .mapexp-map .mx-main > * { min-width: 0; }
   .mapexp-map h1.mx-title { font: 700 30px/1.15 var(--display); letter-spacing: .02em; margin: 0; padding-block: 24px 6px;
@@ -95,7 +115,6 @@
   .mapexp-map .mx-frac span { color: var(--fg2); }
 
   /* your level */
-  .mapexp-map .mx-level-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 24px; }
   .mapexp-map .field { display: grid; gap: 4px; min-width: 0; width: min(100%, 340px); }
   .mapexp-map .field label { font-size: 13px; font-weight: 600; color: var(--fg2); }
   .mapexp-map .range-row { display: flex; align-items: center; gap: 10px; min-width: 0; }
@@ -160,6 +179,8 @@
     .mapexp-map .panel { padding: 14px 12px 14px; }
     .mapexp-map .mx-table th, .mapexp-map .mx-table td { padding: 6px 6px; }
     .mapexp-map .mx-table th, .mapexp-map .mx-table td.name { white-space: normal; }
+    .mapexp-map .mx-jump { display: none; }  /* phones: the bar keeps to the level */
+    .mapexp-map .mx-bar-in { gap: 6px 20px; }
   }
 </style>
 </head>
@@ -167,6 +188,28 @@
 <div class="mapexp-map">
 <div class="wrap"><h1 class="mx-title">Map Experience</h1></div>
 <!-- mapexp-map:start -->
+<div class="mx-bar" id="mxBar">
+  <div class="wrap mx-bar-in">
+    <div class="field">
+      <label for="lvl">Your character's level</label>
+      <div class="range-row">
+        <input type="range" id="lvl" min="80" max="98" step="1" value="89">
+        <output id="lvlOut" for="lvl">89</output>
+      </div>
+    </div>
+    <div class="mx-avg">
+      <span class="mx-avg-label">The average plain map at level <span class="lvlA">89</span></span>
+      <span class="mx-avg-vals" id="barAvg"></span>
+    </div>
+    <nav class="mx-jump" aria-label="On this page">
+      <a href="#mx-roll">The rolls</a>
+      <a href="#mx-line">The "at Level" line</a>
+      <a href="#mx-level">Your level</a>
+      <a href="#mx-example">Example</a>
+      <a href="#mx-how">How it's worked out</a>
+    </nav>
+  </div>
+</div>
 <div class="wrap mx-main" id="mx-main">
   <header class="mx-head">
     <p class="eyebrow">Season 14 &middot; Maps &middot; Erazure's loot filter</p>
@@ -176,7 +219,7 @@
   <section class="panel mx-intro" aria-label="The two lines">
     <div class="mx-shot" role="img" aria-label="A Sanatorium map's two experience lines, over its Experience and Monster Density rolls">
       <span class="tag"><span class="num">1</span><span class="gold" id="shotTag">1.4x Experience</span></span>
-      <span class="tag"><span class="num">2</span><span class="gold" id="shotLine">1.1x at Level 89</span></span>
+      <span class="tag"><span class="num">2</span><span class="gold" id="shotLine">1.2x at Level 89</span></span>
       <span>Experience: <span class="blue" style="display:inline">+15%</span></span>
       <span>Monster Density: <span class="blue" style="display:inline">+47%</span></span>
     </div>
@@ -186,7 +229,7 @@
         <p>How much the map's rolls add to it. The same for every character.</p>
       </div>
       <div class="mx-card">
-        <span class="num">2</span><h2><a href="#mx-line">1.1x at Level 89</a></h2>
+        <span class="num">2</span><h2><a href="#mx-line" class="exLineText">1.2x at Level 89</a></h2>
         <p>What the map is worth to you: experience for the distance you walk, against an average plain map, at your level.</p>
       </div>
       <p class="sub mx-rule"><strong>Rule of thumb:</strong> pick which map to run by the "at Level" line. The "Experience" line tells you whether a map rolled well for that map.</p>
@@ -220,7 +263,7 @@
   </section>
 
   <section class="panel" id="mx-line">
-    <h2>1.1x at Level 89: what the map is worth to you</h2>
+    <h2><span class="exLineText">1.2x at Level 89</span>: what the map is worth to you</h2>
     <div class="mx-frac" aria-label="This map's experience for the distance walked, divided by the average plain map's">
       <span><strong>This map with its rolls:</strong> the experience of a full clear, for you, divided by the distance you walk to clear it</span>
       <div class="over" aria-hidden="true"></div>
@@ -237,16 +280,8 @@
   </section>
 
   <section class="panel" id="mx-level">
-    <div class="mx-level-head">
-      <h2>At your level</h2>
-      <div class="field">
-        <label for="lvl">Your character's level</label>
-        <div class="range-row">
-          <input type="range" id="lvl" min="80" max="98" step="1" value="89">
-          <output id="lvlOut" for="lvl">89</output>
-        </div>
-      </div>
-    </div>
+    <h2>At your level</h2>
+    <p class="sub">Set your level in the bar at the top of the page: this section and the example's table follow it.</p>
 
     <h3>Experience from each monster at level <span class="lvlA">89</span></h3>
     <p class="sub">Map monsters are level 87 in T1, 88 in T2, 89 in T3 and 92 in T4 dungeons. Champions are 2 levels higher, uniques and their minions 3. A monster up to 5 levels below you gives full experience, and each level more takes 19% off, down to 5%. A monster above your level gives your level divided by its level.</p>
@@ -295,7 +330,7 @@
     <ol class="mx-steps">
       <li><strong>Its rolls:</strong> a full clear gives <span id="exRoll">1.48x</span> the experience of a plain Sanatorium. Cut to one decimal: <strong id="exTag">1.4x Experience</strong>, <span id="exBand">gold</span>.</li>
       <li><strong>The map:</strong> a plain Sanatorium has about as many monsters as the average map (its full clear: <span id="exFull">1.01x</span>), but its clear path is <span id="exPath">1.32x</span> the average's, one of the longest of the T1 maps. Per distance walked that's <span id="exPlain">0.77x</span>.</li>
-      <li><strong>Together:</strong> <span id="exPlain2">0.77</span> &times; <span id="exRoll2">1.48</span> &asymp; <span id="exProd">1.14</span>, shown as <strong id="exLine">1.1x at Level 89</strong>.</li>
+      <li><strong>Together:</strong> <span id="exPlain2">0.77</span> &times; <span id="exRoll2">1.48</span> &asymp; <span id="exProd">1.14</span>, shown as <strong id="exLine">1.2x at Level 89</strong>.</li>
     </ol>
     <p class="sub">The same map at other levels, with +50% experience of your own, and as if it had rolled +1 to Area Level as well:</p>
     <div class="scroll mx-ex">
@@ -330,7 +365,7 @@
     </ul>
   </section>
 
-  <section class="panel">
+  <section class="panel" id="mx-how">
     <h2>How it's worked out</h2>
     <ul class="mx-list">
       <li><strong>Monsters.</strong> Every area of a map spawns monsters in its rooms. Monster Density adds spawns, up to a limit each area has. Champion and unique packs fall between the area's own minimum and maximum, and Monster Rarity raises both. Fortified halves the spawns and doubles each monster's experience. A "Map contains ..." monster joins the area's own monsters as one more kind, picked for about 1 spawn in 10 (1 in 7 to 1 in 20, depending on the area). The bosses and monsters placed in a map's layout count too.</li>
@@ -565,6 +600,7 @@
     $("exLine").textContent = `${near(E.line[i])}x at Level 89`;
     $("shotTag").textContent = `${cut(E.roll, 1)}x Experience`;
     $("shotLine").textContent = `${near(E.line[i])}x at Level 89`;
+    document.querySelectorAll(".mapexp-map .exLineText").forEach(s => { s.textContent = `${near(E.line[i])}x at Level 89`; });
   }
 
   function renderExampleTable() {
@@ -582,12 +618,25 @@
     });
   }
 
-  // ---------- your level ----------
+  // ---------- your level, and the bar ----------
+  const barAvg = SERIES.map(s => {
+    const sp = document.createElement("span"), key = document.createElement("span"), b = document.createElement("b");
+    key.className = "key"; key.style.background = s.color;
+    sp.append(key, s.short + " ", b);
+    $("barAvg").appendChild(sp);
+    return b;
+  });
+  // the sections' anchors land under the bar, whatever its height (it wraps on narrow screens)
+  const bar = $("mxBar"), root = bar.closest(".mapexp-map") || document.documentElement;
+  const barHeight = () => root.style.setProperty("--bar", bar.offsetHeight + "px");
+  if ("ResizeObserver" in window) new ResizeObserver(barHeight).observe(bar); else barHeight();
+
   function setLevel(v) {
     state.level = Math.max(L0, Math.min(L1, v));
     el.lvl.value = state.level;
     el.lvlOut.value = el.lvlOut.textContent = String(state.level);
     document.querySelectorAll(".mapexp-map .lvlA").forEach(s => { s.textContent = String(state.level); });
+    barAvg.forEach((b, k) => { b.textContent = AVG[k][state.level - L0].toFixed(2) + "x"; });
     renderPenalty();
     drawChart();
     renderMaps();
