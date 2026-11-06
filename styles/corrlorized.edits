@@ -18,6 +18,10 @@
 // Dexterity, % AR, rare max damage), no icons or notifications for Flawless and Perfect gems in maps (Skulls keep
 // theirs, as in his file) nor for runes El to Fal (El to Io keep stopping the display, only their icon codes go),
 // and LIL GG in sage, BIG GG in orange.
+// Undiscovered unique and set items (the Grail, 2026-11-05, the author): one with no sound of its own here (Corr
+// took most of them off) plays the Grail sound 2594 as in Erazure: a line inserted above each High and Medium value
+// look, the look's condition with GRAIL_NEW, after the sound lines Corr kept (so a kept sound still decides). Not
+// the Medium value quivers' bow and crossbow shots (discovered or not), as Corr's Medium value items.
 // Each entry: '@ <section file>:<line>  <name>' (where it last matched, kept up to date by the build), then
 // '- <the author's line>' and '+ <the style's line>' (only what the rule shows changes; its condition and
 // comment stay the author's), '= <anchor line>' and '+ <lines inserted after it>', 'x <a rule switched off>',
@@ -679,24 +683,36 @@ x ItemDisplay[STAT426>19 !STAT360>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TI
 @ 160-uniques-value-tiers.filter:24  Gheed's Fortune Grand Charm
 - ItemDisplay[UNI !ID cm3 FILTLVL<8]:%NAME%%SOUNDID-3915%%CONTINUE%// Gheed's Fortune Grand Charm
 + ItemDisplay[UNI !ID cm3 FILTLVL<8]:%NAME%%SOUNDID-3925%%CONTINUE%// Gheed's Fortune Grand Charm
+@ 160-uniques-value-tiers.filter:24  Undiscovered (Grail): the Grail sound
+= ItemDisplay[UNI !ID cm3 FILTLVL<8]:%NAME%%SOUNDID-3915%%CONTINUE%// Gheed's Fortune Grand Charm
++ ItemDisplay[UNI !ID GRAIL_NEW (cm1 OR cm2 OR (cm3 FILTLVL<8))]:%NAME%%SOUNDID-2594%%CONTINUE%// Undiscovered (Grail): the Grail drop sound, where no sound line above plays (Corrlorized, the author, 2026-11-05)
+@ 160-uniques-value-tiers.filter:27  Undiscovered (Grail): the Grail sound
+= ItemDisplay[UNI !ID cm3 FILTLVL>7]:%NAME%%SOUNDID-3915%%CONTINUE%// Gheed's Fortune Grand Charm
++ ItemDisplay[UNI !ID GRAIL_NEW (cm3 FILTLVL>7)]:%NAME%%SOUNDID-2594%%CONTINUE%// Undiscovered (Grail): the Grail drop sound, where no sound line above plays (Corrlorized, the author, 2026-11-05)
 @ 160-uniques-value-tiers.filter:31  Kira's Guardian Tiara
 - ItemDisplay[UNI !ID ci2 !ETH]:%NAME%%SOUNDID-2585%%CONTINUE%// Kira's Guardian Tiara
 + ItemDisplay[UNI !ID ci2 !ETH]:%NAME%%CONTINUE%// Kira's Guardian Tiara
 @ 160-uniques-value-tiers.filter:32  Griffon's Eye Diadem
 - ItemDisplay[UNI !ID ci3]:%NAME%%SOUNDID-619%%CONTINUE%// Griffon's Eye Diadem
 + ItemDisplay[UNI !ID ci3]:%NAME%%SOUNDID-4717%%CONTINUE%// Griffon's Eye Diadem
+@ 160-uniques-value-tiers.filter:32  Undiscovered (Grail): the Grail sound
+= ItemDisplay[UNI !ID ci3]:%NAME%%SOUNDID-619%%CONTINUE%// Griffon's Eye Diadem
++ ItemDisplay[UNI !ID GRAIL_NEW ((ci2 !ETH) OR ci3)]:%NAME%%SOUNDID-2594%%CONTINUE%// Undiscovered (Grail): the Grail drop sound, where no sound line above plays (Corrlorized, the author, 2026-11-05)
 @ 160-uniques-value-tiers.filter:35  Eth Kira's Guardian Tiara
 - ItemDisplay[UNI !ID ci2 ETH]:%NAME%%SOUNDID-2585%%CONTINUE%// Eth Kira's Guardian Tiara
 + ItemDisplay[UNI !ID ci2 ETH]:%NAME%%CONTINUE%// Eth Kira's Guardian Tiara
+@ 160-uniques-value-tiers.filter:35  Undiscovered (Grail): the Grail sound
+= ItemDisplay[UNI !ID ci2 ETH]:%NAME%%SOUNDID-2585%%CONTINUE%// Eth Kira's Guardian Tiara
++ ItemDisplay[UNI !ID GRAIL_NEW (ci2 ETH)]:%NAME%%SOUNDID-2594%%CONTINUE%// Undiscovered (Grail): the Grail drop sound, where no sound line above plays (Corrlorized, the author, 2026-11-05)
 @ 160-uniques-value-tiers.filter:40  Thunderstroke Matriarchal Javelin
 - ItemDisplay[UNI !ID amf]:%NAME%%SOUNDID-1257%%CONTINUE%// Thunderstroke Matriarchal Javelin
 + ItemDisplay[UNI !ID amf]:%NAME%%CONTINUE%// Thunderstroke Matriarchal Javelin
 @ 160-uniques-value-tiers.filter:41  Ebonbane Grand Matron Bow
 - ItemDisplay[UNI !ID amc]:%NAME%%SOUNDID-2585%%CONTINUE%// Ebonbane Grand Matron Bow
 + ItemDisplay[UNI !ID amc]:%NAME%%CONTINUE%// Ebonbane Grand Matron Bow
-@ 160-uniques-value-tiers.filter:49  Undiscovered (Grail): no Grail sound
-- ItemDisplay[UNI !ID GRAIL_NEW ((ama FILTLVL<8) OR (am7 FILTLVL<8) OR (am5 ETH) OR am9 OR amb)]:%UNI_MINIMAL_GRAIL_LEFT%  %NAME%  %UNI_MINIMAL_GRAIL_RIGHT%%BORDER-0B%%MAP-69%%DOT-6A%%PX-20%%SOUNDID-2594%//
-+ ItemDisplay[UNI !ID GRAIL_NEW ((ama FILTLVL<8) OR (am7 FILTLVL<8) OR (am5 ETH) OR am9 OR amb)]:%UNI_MINIMAL_GRAIL_LEFT%  %NAME%  %UNI_MINIMAL_GRAIL_RIGHT%%BORDER-0B%%MAP-69%%DOT-6A%%PX-20%//
+@ 160-uniques-value-tiers.filter:41  Undiscovered (Grail): the Grail sound
+= ItemDisplay[UNI !ID amc]:%NAME%%SOUNDID-2585%%CONTINUE%// Ebonbane Grand Matron Bow
++ ItemDisplay[UNI !ID GRAIL_NEW (amf OR amc)]:%NAME%%SOUNDID-2594%%CONTINUE%// Undiscovered (Grail): the Grail drop sound, where no sound line above plays (Corrlorized, the author, 2026-11-05)
 @ 160-uniques-value-tiers.filter:54  Whispering Mirage War Fist
 - ItemDisplay[UNI !ID 7xf]:%NAME%%SOUNDID-2324%%CONTINUE%// Whispering Mirage War Fist
 + ItemDisplay[UNI !ID 7xf]:%NAME%%CONTINUE%// Whispering Mirage War Fist
@@ -709,15 +725,18 @@ x ItemDisplay[STAT426>19 !STAT360>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TI
 @ 160-uniques-value-tiers.filter:57  Jade Talon Wrist Sword
 - ItemDisplay[UNI !ID 7wb FILTLVL<8]:%NAME%%SOUNDID-2302%%CONTINUE%// Jade Talon Wrist Sword
 + ItemDisplay[UNI !ID 7wb FILTLVL<8]:%NAME%%CONTINUE%// Jade Talon Wrist Sword
-@ 160-uniques-value-tiers.filter:64  Undiscovered (Grail): no Grail sound
-- ItemDisplay[UNI !ID GRAIL_NEW ((7wb FILTLVL>7) OR (7tw !ETH) OR (7cs FILTLVL<8) OR 9tw)]:%UNI_MINIMAL_GRAIL_LEFT%  %NAME%  %UNI_MINIMAL_GRAIL_RIGHT%%BORDER-0B%%MAP-69%%DOT-6A%%PX-20%%SOUNDID-2594%//
-+ ItemDisplay[UNI !ID GRAIL_NEW ((7wb FILTLVL>7) OR (7tw !ETH) OR (7cs FILTLVL<8) OR 9tw)]:%UNI_MINIMAL_GRAIL_LEFT%  %NAME%  %UNI_MINIMAL_GRAIL_RIGHT%%BORDER-0B%%MAP-69%%DOT-6A%%PX-20%//
+@ 160-uniques-value-tiers.filter:57  Undiscovered (Grail): the Grail sound
+= ItemDisplay[UNI !ID 7wb FILTLVL<8]:%NAME%%SOUNDID-2302%%CONTINUE%// Jade Talon Wrist Sword
++ ItemDisplay[UNI !ID GRAIL_NEW (7xf OR 7lw OR (7tw ETH) OR (7wb FILTLVL<8))]:%NAME%%SOUNDID-2594%%CONTINUE%// Undiscovered (Grail): the Grail drop sound, where no sound line above plays (Corrlorized, the author, 2026-11-05)
 @ 160-uniques-value-tiers.filter:68  Arreat's Face Slayer Guard
 - ItemDisplay[UNI !ID baa FILTLVL<8]:%NAME%%SOUNDID-2585%%CONTINUE%// Arreat's Face Slayer Guard
 + ItemDisplay[UNI !ID baa FILTLVL<8]:%NAME%%CONTINUE%// Arreat's Face Slayer Guard
 @ 160-uniques-value-tiers.filter:69  Halaberd's Reign Conqueror Crown
 - ItemDisplay[UNI !ID bae]:%NAME%%SOUNDID-2585%%CONTINUE%// Halaberd's Reign Conqueror Crown
 + ItemDisplay[UNI !ID bae]:%NAME%%SOUNDID-4717%%CONTINUE%// Halaberd's Reign Conqueror Crown
+@ 160-uniques-value-tiers.filter:69  Undiscovered (Grail): the Grail sound
+= ItemDisplay[UNI !ID bae]:%NAME%%SOUNDID-2585%%CONTINUE%// Halaberd's Reign Conqueror Crown
++ ItemDisplay[UNI !ID GRAIL_NEW ((baa FILTLVL<8) OR bae)]:%NAME%%SOUNDID-2594%%CONTINUE%// Undiscovered (Grail): the Grail drop sound, where no sound line above plays (Corrlorized, the author, 2026-11-05)
 @ 160-uniques-value-tiers.filter:70  UNI !ID ((baa FILTLVL<8) OR bae)
 - ItemDisplay[UNI !ID ((baa FILTLVL<8) OR bae)]:%UNI_HIGH_VALUE_LEFT%  %NAME%  %UNI_HIGH_VALUE_RIGHT%%BORDER-91%%MAP-9B%%DOT-62%%PX-68%%SOUNDID-2585%//
 + ItemDisplay[UNI !ID ((baa FILTLVL<8) OR bae)]:%UNI_HIGH_VALUE_LEFT%  %NAME%  %UNI_HIGH_VALUE_RIGHT%%BORDER-91%%MAP-9B%%DOT-62%%PX-68%//
@@ -727,9 +746,12 @@ x ItemDisplay[STAT426>19 !STAT360>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TI
 @ 160-uniques-value-tiers.filter:73  Raekor's Virtue Guardian Crown
 - ItemDisplay[UNI !ID baf]:%NAME%%SOUNDID-2585%%CONTINUE%// Raekor's Virtue Guardian Crown
 + ItemDisplay[UNI !ID baf]:%NAME%%CONTINUE%// Raekor's Virtue Guardian Crown
-@ 160-uniques-value-tiers.filter:80  Undiscovered (Grail): no Grail sound
-- ItemDisplay[UNI !ID GRAIL_NEW (bac OR bad OR ba6 OR (ba7 BARBARIAN CLVL<60))]:%UNI_MINIMAL_GRAIL_LEFT%  %NAME%  %UNI_MINIMAL_GRAIL_RIGHT%%BORDER-0B%%MAP-69%%DOT-6A%%PX-20%%SOUNDID-2594%//
-+ ItemDisplay[UNI !ID GRAIL_NEW (bac OR bad OR ba6 OR (ba7 BARBARIAN CLVL<60))]:%UNI_MINIMAL_GRAIL_LEFT%  %NAME%  %UNI_MINIMAL_GRAIL_RIGHT%%BORDER-0B%%MAP-69%%DOT-6A%%PX-20%//
+@ 160-uniques-value-tiers.filter:73  Undiscovered (Grail): the Grail sound
+= ItemDisplay[UNI !ID baf]:%NAME%%SOUNDID-2585%%CONTINUE%// Raekor's Virtue Guardian Crown
++ ItemDisplay[UNI !ID GRAIL_NEW ((baa FILTLVL>7) OR baf)]:%NAME%%SOUNDID-2594%%CONTINUE%// Undiscovered (Grail): the Grail drop sound, where no sound line above plays (Corrlorized, the author, 2026-11-05)
+@ 160-uniques-value-tiers.filter:85  Undiscovered (Grail): the Grail sound
+= ItemDisplay[UNI !ID obe FILTLVL<8]:%NAME%%SOUNDID-1257%%CONTINUE%// Skyfall Vortex Orb
++ ItemDisplay[UNI !ID GRAIL_NEW (obf OR (obe FILTLVL<8))]:%NAME%%SOUNDID-2594%%CONTINUE%// Undiscovered (Grail): the Grail drop sound, where no sound line above plays (Corrlorized, the author, 2026-11-05)
 @ 160-uniques-value-tiers.filter:88  Eschuta's Temper Eldritch Orb
 - ItemDisplay[UNI !ID obc]:%NAME%%SOUNDID-1257%%CONTINUE%// Eschuta's Temper Eldritch Orb
 + ItemDisplay[UNI !ID obc]:%NAME%%CONTINUE%// Eschuta's Temper Eldritch Orb
@@ -748,9 +770,9 @@ x ItemDisplay[STAT426>19 !STAT360>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TI
 @ 160-uniques-value-tiers.filter:91  Embersworn Demon Heart
 - ItemDisplay[UNI !ID obd]:%NAME%%SOUNDID-2399%%CONTINUE%// Embersworn Demon Heart
 + ItemDisplay[UNI !ID obd]:%NAME%%CONTINUE%// Embersworn Demon Heart
-@ 160-uniques-value-tiers.filter:95  Undiscovered (Grail): no Grail sound
-- ItemDisplay[UNI !ID GRAIL_NEW (ob6 FILTLVL<8)]:%UNI_MINIMAL_GRAIL_LEFT%  %NAME%  %UNI_MINIMAL_GRAIL_RIGHT%%BORDER-0B%%MAP-69%%DOT-6A%%PX-20%%SOUNDID-2594%//
-+ ItemDisplay[UNI !ID GRAIL_NEW (ob6 FILTLVL<8)]:%UNI_MINIMAL_GRAIL_LEFT%  %NAME%  %UNI_MINIMAL_GRAIL_RIGHT%%BORDER-0B%%MAP-69%%DOT-6A%%PX-20%//
+@ 160-uniques-value-tiers.filter:91  Undiscovered (Grail): the Grail sound
+= ItemDisplay[UNI !ID obd]:%NAME%%SOUNDID-2399%%CONTINUE%// Embersworn Demon Heart
++ ItemDisplay[UNI !ID GRAIL_NEW (obc OR (obe FILTLVL>7) OR oba OR obd)]:%NAME%%SOUNDID-2594%%CONTINUE%// Undiscovered (Grail): the Grail drop sound, where no sound line above plays (Corrlorized, the author, 2026-11-05)
 @ 160-uniques-value-tiers.filter:99  Ravenlore Sky Spirit
 - ItemDisplay[UNI !ID dre !ETH]:%NAME%%SOUNDID-2333%%CONTINUE%// Ravenlore Sky Spirit
 + ItemDisplay[UNI !ID dre !ETH]:%NAME%%CONTINUE%// Ravenlore Sky Spirit
@@ -760,6 +782,9 @@ x ItemDisplay[STAT426>19 !STAT360>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TI
 @ 160-uniques-value-tiers.filter:101  Denmother Sun Spirit
 - ItemDisplay[UNI !ID drc]:%NAME%%SOUNDID-770%%CONTINUE%// Denmother Sun Spirit
 + ItemDisplay[UNI !ID drc]:%NAME%%CONTINUE%// Denmother Sun Spirit
+@ 160-uniques-value-tiers.filter:101  Undiscovered (Grail): the Grail sound
+= ItemDisplay[UNI !ID drc]:%NAME%%SOUNDID-770%%CONTINUE%// Denmother Sun Spirit
++ ItemDisplay[UNI !ID GRAIL_NEW ((dre !ETH) OR drd OR drc)]:%NAME%%SOUNDID-2594%%CONTINUE%// Undiscovered (Grail): the Grail drop sound, where no sound line above plays (Corrlorized, the author, 2026-11-05)
 @ 160-uniques-value-tiers.filter:104  Jalal's Mane Totemic Mask
 - ItemDisplay[UNI !ID dra]:%NAME%%SOUNDID-869%%CONTINUE%// Jalal's Mane Totemic Mask
 + ItemDisplay[UNI !ID dra]:%NAME%%CONTINUE%// Jalal's Mane Totemic Mask
@@ -769,24 +794,30 @@ x ItemDisplay[STAT426>19 !STAT360>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TI
 @ 160-uniques-value-tiers.filter:106  Eth Ravenlore Sky Spirit
 - ItemDisplay[UNI !ID dre ETH]:%NAME%%SOUNDID-2333%%CONTINUE%// Eth Ravenlore Sky Spirit
 + ItemDisplay[UNI !ID dre ETH]:%NAME%%CONTINUE%// Eth Ravenlore Sky Spirit
-@ 160-uniques-value-tiers.filter:112  Undiscovered (Grail): no Grail sound
-- ItemDisplay[UNI !ID GRAIL_NEW (dr6 OR dr2 OR drb)]:%UNI_MINIMAL_GRAIL_LEFT%  %NAME%  %UNI_MINIMAL_GRAIL_RIGHT%%BORDER-0B%%MAP-69%%DOT-6A%%PX-20%%SOUNDID-2594%//
-+ ItemDisplay[UNI !ID GRAIL_NEW (dr6 OR dr2 OR drb)]:%UNI_MINIMAL_GRAIL_LEFT%  %NAME%  %UNI_MINIMAL_GRAIL_RIGHT%%BORDER-0B%%MAP-69%%DOT-6A%%PX-20%//
+@ 160-uniques-value-tiers.filter:106  Undiscovered (Grail): the Grail sound
+= ItemDisplay[UNI !ID dre ETH]:%NAME%%SOUNDID-2333%%CONTINUE%// Eth Ravenlore Sky Spirit
++ ItemDisplay[UNI !ID GRAIL_NEW (dra OR drf OR (dre ETH))]:%NAME%%SOUNDID-2594%%CONTINUE%// Undiscovered (Grail): the Grail drop sound, where no sound line above plays (Corrlorized, the author, 2026-11-05)
 @ 160-uniques-value-tiers.filter:116  Boneflame Succubus Skull
 - ItemDisplay[UNI !ID nee]:%NAME%%SOUNDID-2446%%CONTINUE%// Boneflame Succubus Skull
 + ItemDisplay[UNI !ID nee]:%NAME%%SOUNDID-4717%%CONTINUE%// Boneflame Succubus Skull
+@ 160-uniques-value-tiers.filter:116  Undiscovered (Grail): the Grail sound
+= ItemDisplay[UNI !ID nee]:%NAME%%SOUNDID-2446%%CONTINUE%// Boneflame Succubus Skull
++ ItemDisplay[UNI !ID GRAIL_NEW nee]:%NAME%%SOUNDID-2594%%CONTINUE%// Undiscovered (Grail): the Grail drop sound, where no sound line above plays (Corrlorized, the author, 2026-11-05)
 @ 160-uniques-value-tiers.filter:119  Sacred Totem Hellspawn Skull
 - ItemDisplay[UNI !ID neg]:%NAME%%SOUNDID-2475%%CONTINUE%// Sacred Totem Hellspawn Skull
 + ItemDisplay[UNI !ID neg]:%NAME%%CONTINUE%// Sacred Totem Hellspawn Skull
 @ 160-uniques-value-tiers.filter:120  Darkforce Spawn Bloodlord Skull
 - ItemDisplay[UNI !ID nef]:%NAME%%SOUNDID-2464%%CONTINUE%// Darkforce Spawn Bloodlord Skull
 + ItemDisplay[UNI !ID nef]:%NAME%%CONTINUE%// Darkforce Spawn Bloodlord Skull
-@ 160-uniques-value-tiers.filter:126  Undiscovered (Grail): no Grail sound
-- ItemDisplay[UNI !ID GRAIL_NEW ((ne6 FILTLVL<8) OR nea OR ned)]:%UNI_MINIMAL_GRAIL_LEFT%  %NAME%  %UNI_MINIMAL_GRAIL_RIGHT%%BORDER-0B%%MAP-69%%DOT-6A%%PX-20%%SOUNDID-2594%//
-+ ItemDisplay[UNI !ID GRAIL_NEW ((ne6 FILTLVL<8) OR nea OR ned)]:%UNI_MINIMAL_GRAIL_LEFT%  %NAME%  %UNI_MINIMAL_GRAIL_RIGHT%%BORDER-0B%%MAP-69%%DOT-6A%%PX-20%//
+@ 160-uniques-value-tiers.filter:120  Undiscovered (Grail): the Grail sound
+= ItemDisplay[UNI !ID nef]:%NAME%%SOUNDID-2464%%CONTINUE%// Darkforce Spawn Bloodlord Skull
++ ItemDisplay[UNI !ID GRAIL_NEW (neg OR nef)]:%NAME%%SOUNDID-2594%%CONTINUE%// Undiscovered (Grail): the Grail drop sound, where no sound line above plays (Corrlorized, the author, 2026-11-05)
 @ 160-uniques-value-tiers.filter:130  Herald of Zakarum Gilded Shield
 - ItemDisplay[UNI !ID pa9]:%NAME%%SOUNDID-2387%%CONTINUE%// Herald of Zakarum Gilded Shield
 + ItemDisplay[UNI !ID pa9]:%NAME%%CONTINUE%// Herald of Zakarum Gilded Shield
+@ 160-uniques-value-tiers.filter:133  Undiscovered (Grail): the Grail sound
+= ItemDisplay[UNI !ID pac]:%NAME%%SOUNDID-2387%%CONTINUE%// Alma Negra Sacred Rondache
++ ItemDisplay[UNI !ID GRAIL_NEW (pa9 OR paf OR pab OR pac)]:%NAME%%SOUNDID-2594%%CONTINUE%// Undiscovered (Grail): the Grail drop sound, where no sound line above plays (Corrlorized, the author, 2026-11-05)
 @ 160-uniques-value-tiers.filter:136  Dragonscale Zakarum Shield
 - ItemDisplay[UNI !ID pae]:%NAME%%SOUNDID-1166%%CONTINUE%// Dragonscale Zakarum Shield
 + ItemDisplay[UNI !ID pae]:%NAME%%CONTINUE%// Dragonscale Zakarum Shield
@@ -796,6 +827,9 @@ x ItemDisplay[STAT426>19 !STAT360>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TI
 @ 160-uniques-value-tiers.filter:133  Alma Negra Sacred Rondache
 - ItemDisplay[UNI !ID pac]:%NAME%%SOUNDID-2387%%CONTINUE%// Alma Negra Sacred Rondache
 + ItemDisplay[UNI !ID pac]:%NAME%%CONTINUE%// Alma Negra Sacred Rondache
+@ 160-uniques-value-tiers.filter:136  Undiscovered (Grail): the Grail sound
+= ItemDisplay[UNI !ID pae]:%NAME%%SOUNDID-1166%%CONTINUE%// Dragonscale Zakarum Shield
++ ItemDisplay[UNI !ID GRAIL_NEW pae]:%NAME%%SOUNDID-2594%%CONTINUE%// Undiscovered (Grail): the Grail drop sound, where no sound line above plays (Corrlorized, the author, 2026-11-05)
 @ 160-uniques-value-tiers.filter:141  Eth Purgatory Archon Plate
 - ItemDisplay[UNI !ID utp ETH]:%NAME%%SOUNDID-2585%%CONTINUE%// Eth Purgatory Archon Plate
 + ItemDisplay[UNI !ID utp ETH]:%NAME%%SOUNDID-4717%%CONTINUE%// Eth Purgatory Archon Plate
@@ -826,6 +860,9 @@ x ItemDisplay[STAT426>19 !STAT360>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TI
 @ 160-uniques-value-tiers.filter:150  Wraithskin Diamond Mail
 - ItemDisplay[UNI !ID ung]:%NAME%%SOUNDID-2585%%CONTINUE%// Wraithskin Diamond Mail
 + ItemDisplay[UNI !ID ung]:%NAME%%CONTINUE%// Wraithskin Diamond Mail
+@ 160-uniques-value-tiers.filter:151  Undiscovered (Grail): the Grail sound
+= ItemDisplay[UNI !ID xea]:%NAME%%SOUNDID-2585%%CONTINUE%// Skin of the Vipermagi Serpentskin Armor
++ ItemDisplay[UNI !ID GRAIL_NEW ((utp ETH) OR (xpl ETH) OR uul OR xhn OR uar OR uld OR (upl !ETH) OR (uui !ETH) OR xlt OR ung OR xea)]:%NAME%%SOUNDID-2594%%CONTINUE%// Undiscovered (Grail): the Grail drop sound, where no sound line above plays (Corrlorized, the author, 2026-11-05)
 @ 160-uniques-value-tiers.filter:154  The Gladiator's Bane Wire Fleece
 - ItemDisplay[UNI !ID utu]:%NAME%%SOUNDID-2585%%CONTINUE%// The Gladiator's Bane Wire Fleece
 + ItemDisplay[UNI !ID utu]:%NAME%%CONTINUE%// The Gladiator's Bane Wire Fleece
@@ -850,9 +887,9 @@ x ItemDisplay[STAT426>19 !STAT360>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TI
 @ 160-uniques-value-tiers.filter:160  Spectral Plate Great Hauberk
 - ItemDisplay[UNI !ID urs FILTLVL<8]:%NAME%%SOUNDID-2585%%CONTINUE%// Spectral Plate Great Hauberk
 + ItemDisplay[UNI !ID urs FILTLVL<8]:%NAME%%CONTINUE%// Spectral Plate Great Hauberk
-@ 160-uniques-value-tiers.filter:176  Undiscovered (Grail): no Grail sound
-- ItemDisplay[UNI !ID GRAIL_NEW ((xrs CLVL<80) OR (xui CLVL<60) OR ful OR (aar CLVL<60) OR (scl CLVL<40) OR (fld CLVL<40) OR (ltp FILTLVL<8) OR (xld FILTLVL<8) OR (xul FILTLVL<8) OR (xth FILTLVL>7) OR (xtp FILTLVL>7) OR (utp !ETH) OR (urs FILTLVL>7))]:%UNI_MINIMAL_GRAIL_LEFT%  %NAME%  %UNI_MINIMAL_GRAIL_RIGHT%%BORDER-0B%%MAP-69%%DOT-6A%%PX-20%%SOUNDID-2594%//
-+ ItemDisplay[UNI !ID GRAIL_NEW ((xrs CLVL<80) OR (xui CLVL<60) OR ful OR (aar CLVL<60) OR (scl CLVL<40) OR (fld CLVL<40) OR (ltp FILTLVL<8) OR (xld FILTLVL<8) OR (xul FILTLVL<8) OR (xth FILTLVL>7) OR (xtp FILTLVL>7) OR (utp !ETH) OR (urs FILTLVL>7))]:%UNI_MINIMAL_GRAIL_LEFT%  %NAME%  %UNI_MINIMAL_GRAIL_RIGHT%%BORDER-0B%%MAP-69%%DOT-6A%%PX-20%//
+@ 160-uniques-value-tiers.filter:160  Undiscovered (Grail): the Grail sound
+= ItemDisplay[UNI !ID urs FILTLVL<8]:%NAME%%SOUNDID-2585%%CONTINUE%// Spectral Plate Great Hauberk
++ ItemDisplay[UNI !ID GRAIL_NEW (utu OR (xpl !ETH) OR (xth FILTLVL<8) OR (xtp FILTLVL<8) OR (upl ETH) OR (uui ETH) OR (urs FILTLVL<8))]:%NAME%%SOUNDID-2594%%CONTINUE%// Undiscovered (Grail): the Grail drop sound, where no sound line above plays (Corrlorized, the author, 2026-11-05)
 @ 160-uniques-value-tiers.filter:180  String of Ears Demonhide Sash
 - ItemDisplay[UNI !ID zlb]:%NAME%%SOUNDID-2585%%CONTINUE%// String of Ears Demonhide Sash
 + ItemDisplay[UNI !ID zlb]:%NAME%%CONTINUE%// String of Ears Demonhide Sash
@@ -865,6 +902,9 @@ x ItemDisplay[STAT426>19 !STAT360>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TI
 @ 160-uniques-value-tiers.filter:183  Verdungo's Hearty Cord Mithril Coil
 - ItemDisplay[UNI !ID umc]:%NAME%%SOUNDID-2585%%CONTINUE%// Verdungo's Hearty Cord Mithril Coil
 + ItemDisplay[UNI !ID umc]:%NAME%%SOUNDID-4717%%CONTINUE%// Verdungo's Hearty Cord Mithril Coil
+@ 160-uniques-value-tiers.filter:184  Undiscovered (Grail): the Grail sound
+= ItemDisplay[UNI !ID uhc]:%NAME%%SOUNDID-2585%%CONTINUE%// Siggard's Staunch Colossus Girdle
++ ItemDisplay[UNI !ID GRAIL_NEW (zlb OR (zhb !ETH) OR ulc OR umc OR uhc)]:%NAME%%SOUNDID-2594%%CONTINUE%// Undiscovered (Grail): the Grail drop sound, where no sound line above plays (Corrlorized, the author, 2026-11-05)
 @ 160-uniques-value-tiers.filter:190  Snowclash Battle Belt
 - ItemDisplay[UNI !ID ztb !ETH]:%NAME%%SOUNDID-2440%%CONTINUE%// Snowclash Battle Belt
 + ItemDisplay[UNI !ID ztb !ETH]:%NAME%%CONTINUE%// Snowclash Battle Belt
@@ -880,9 +920,9 @@ x ItemDisplay[STAT426>19 !STAT360>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TI
 @ 160-uniques-value-tiers.filter:189  Eth Thundergod's Vigor War Belt
 - ItemDisplay[UNI !ID zhb ETH]:%NAME%%SOUNDID-2443%%CONTINUE%// Eth Thundergod's Vigor War Belt
 + ItemDisplay[UNI !ID zhb ETH]:%NAME%%CONTINUE%// Eth Thundergod's Vigor War Belt
-@ 160-uniques-value-tiers.filter:196  Undiscovered (Grail): no Grail sound
-- ItemDisplay[UNI !ID GRAIL_NEW (tbl OR (ztb ETH) OR vbl)]:%UNI_MINIMAL_GRAIL_LEFT%  %NAME%  %UNI_MINIMAL_GRAIL_RIGHT%%BORDER-0B%%MAP-69%%DOT-6A%%PX-20%%SOUNDID-2594%//
-+ ItemDisplay[UNI !ID GRAIL_NEW (tbl OR (ztb ETH) OR vbl)]:%UNI_MINIMAL_GRAIL_LEFT%  %NAME%  %UNI_MINIMAL_GRAIL_RIGHT%%BORDER-0B%%MAP-69%%DOT-6A%%PX-20%//
+@ 160-uniques-value-tiers.filter:190  Undiscovered (Grail): the Grail sound
+= ItemDisplay[UNI !ID ztb !ETH]:%NAME%%SOUNDID-2440%%CONTINUE%// Snowclash Battle Belt
++ ItemDisplay[UNI !ID GRAIL_NEW (zvb OR uvc OR (zhb ETH) OR (ztb !ETH))]:%NAME%%SOUNDID-2594%%CONTINUE%// Undiscovered (Grail): the Grail drop sound, where no sound line above plays (Corrlorized, the author, 2026-11-05)
 @ 160-uniques-value-tiers.filter:200  War Traveler Battle Boots
 - ItemDisplay[UNI !ID xtb]:%NAME%%SOUNDID-2585%%CONTINUE%// War Traveler Battle Boots
 + ItemDisplay[UNI !ID xtb]:%NAME%%CONTINUE%// War Traveler Battle Boots
@@ -895,6 +935,9 @@ x ItemDisplay[STAT426>19 !STAT360>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TI
 @ 160-uniques-value-tiers.filter:203  Shadow Dancer Myrmidon Greaves
 - ItemDisplay[UNI !ID uhb]:%NAME%%SOUNDID-2302%%CONTINUE%// Shadow Dancer Myrmidon Greaves
 + ItemDisplay[UNI !ID uhb]:%NAME%%SOUNDID-4717%%CONTINUE%// Shadow Dancer Myrmidon Greaves
+@ 160-uniques-value-tiers.filter:203  Undiscovered (Grail): the Grail sound
+= ItemDisplay[UNI !ID uhb]:%NAME%%SOUNDID-2302%%CONTINUE%// Shadow Dancer Myrmidon Greaves
++ ItemDisplay[UNI !ID GRAIL_NEW (xtb OR xhb OR xvb OR uhb)]:%NAME%%SOUNDID-2594%%CONTINUE%// Undiscovered (Grail): the Grail drop sound, where no sound line above plays (Corrlorized, the author, 2026-11-05)
 @ 160-uniques-value-tiers.filter:206  Marrowwalk Boneweave Boots
 - ItemDisplay[UNI !ID umb]:%NAME%%SOUNDID-2585%%CONTINUE%// Marrowwalk Boneweave Boots
 + ItemDisplay[UNI !ID umb]:%NAME%%CONTINUE%// Marrowwalk Boneweave Boots
@@ -904,9 +947,9 @@ x ItemDisplay[STAT426>19 !STAT360>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TI
 @ 160-uniques-value-tiers.filter:208  Infernostride Demonhide Boots
 - ItemDisplay[UNI !ID xlb FILTLVL<8]:%NAME%%SOUNDID-2585%%CONTINUE%// Infernostride Demonhide Boots
 + ItemDisplay[UNI !ID xlb FILTLVL<8]:%NAME%%CONTINUE%// Infernostride Demonhide Boots
-@ 160-uniques-value-tiers.filter:214  Undiscovered (Grail): no Grail sound
-- ItemDisplay[UNI !ID GRAIL_NEW ((xlb FILTLVL>7) OR ulb OR xmb)]:%UNI_MINIMAL_GRAIL_LEFT%  %NAME%  %UNI_MINIMAL_GRAIL_RIGHT%%BORDER-0B%%MAP-69%%DOT-6A%%PX-20%%SOUNDID-2594%//
-+ ItemDisplay[UNI !ID GRAIL_NEW ((xlb FILTLVL>7) OR ulb OR xmb)]:%UNI_MINIMAL_GRAIL_LEFT%  %NAME%  %UNI_MINIMAL_GRAIL_RIGHT%%BORDER-0B%%MAP-69%%DOT-6A%%PX-20%//
+@ 160-uniques-value-tiers.filter:208  Undiscovered (Grail): the Grail sound
+= ItemDisplay[UNI !ID xlb FILTLVL<8]:%NAME%%SOUNDID-2585%%CONTINUE%// Infernostride Demonhide Boots
++ ItemDisplay[UNI !ID GRAIL_NEW (umb OR uvb OR (xlb FILTLVL<8))]:%NAME%%SOUNDID-2594%%CONTINUE%// Undiscovered (Grail): the Grail drop sound, where no sound line above plays (Corrlorized, the author, 2026-11-05)
 @ 160-uniques-value-tiers.filter:218  Lava Gout Battle Gauntlets
 - ItemDisplay[UNI !ID xtg]:%NAME%%SOUNDID-2403%%CONTINUE%// Lava Gout Battle Gauntlets
 + ItemDisplay[UNI !ID xtg]:%NAME%%CONTINUE%// Lava Gout Battle Gauntlets
@@ -922,6 +965,9 @@ x ItemDisplay[STAT426>19 !STAT360>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TI
 @ 160-uniques-value-tiers.filter:222  Occultist Crusader Gauntlets
 - ItemDisplay[UNI !ID utg]:%NAME%%SOUNDID-2585%%CONTINUE%// Occultist Crusader Gauntlets
 + ItemDisplay[UNI !ID utg]:%NAME%%SOUNDID-4717%%CONTINUE%// Occultist Crusader Gauntlets
+@ 160-uniques-value-tiers.filter:222  Undiscovered (Grail): the Grail sound
+= ItemDisplay[UNI !ID utg]:%NAME%%SOUNDID-2585%%CONTINUE%// Occultist Crusader Gauntlets
++ ItemDisplay[UNI !ID GRAIL_NEW (xtg OR uvg OR umg OR uhg OR utg)]:%NAME%%SOUNDID-2594%%CONTINUE%// Undiscovered (Grail): the Grail drop sound, where no sound line above plays (Corrlorized, the author, 2026-11-05)
 @ 160-uniques-value-tiers.filter:225  Magefist Light Gauntlets
 - ItemDisplay[UNI !ID tgl]:%NAME%%SOUNDID-422%%CONTINUE%// Magefist Light Gauntlets
 + ItemDisplay[UNI !ID tgl]:%NAME%%CONTINUE%// Magefist Light Gauntlets
@@ -931,9 +977,9 @@ x ItemDisplay[STAT426>19 !STAT360>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TI
 @ 160-uniques-value-tiers.filter:227  Gravepalm Sharkskin Gloves
 - ItemDisplay[UNI !ID xvg]:%NAME%%SOUNDID-2585%%CONTINUE%// Gravepalm Sharkskin Gloves
 + ItemDisplay[UNI !ID xvg]:%NAME%%CONTINUE%// Gravepalm Sharkskin Gloves
-@ 160-uniques-value-tiers.filter:237  Undiscovered (Grail): no Grail sound
-- ItemDisplay[UNI !ID GRAIL_NEW ((vgl FILTLVL<8) OR xhg OR (hgl FILTLVL>7) OR ulg OR xlg OR xmg OR mgl)]:%UNI_MINIMAL_GRAIL_LEFT%  %NAME%  %UNI_MINIMAL_GRAIL_RIGHT%%BORDER-0B%%MAP-69%%DOT-6A%%PX-20%%SOUNDID-2594%//
-+ ItemDisplay[UNI !ID GRAIL_NEW ((vgl FILTLVL<8) OR xhg OR (hgl FILTLVL>7) OR ulg OR xlg OR xmg OR mgl)]:%UNI_MINIMAL_GRAIL_LEFT%  %NAME%  %UNI_MINIMAL_GRAIL_RIGHT%%BORDER-0B%%MAP-69%%DOT-6A%%PX-20%//
+@ 160-uniques-value-tiers.filter:227  Undiscovered (Grail): the Grail sound
+= ItemDisplay[UNI !ID xvg]:%NAME%%SOUNDID-2585%%CONTINUE%// Gravepalm Sharkskin Gloves
++ ItemDisplay[UNI !ID GRAIL_NEW (tgl OR (hgl FILTLVL<8) OR xvg)]:%NAME%%SOUNDID-2594%%CONTINUE%// Undiscovered (Grail): the Grail drop sound, where no sound line above plays (Corrlorized, the author, 2026-11-05)
 @ 160-uniques-value-tiers.filter:241  Vampire Gaze Grim Helm
 - ItemDisplay[UNI !ID xh9]:%NAME%%SOUNDID-2585%%CONTINUE%// Vampire Gaze Grim Helm
 + ItemDisplay[UNI !ID xh9]:%NAME%%CONTINUE%// Vampire Gaze Grim Helm
@@ -952,6 +998,9 @@ x ItemDisplay[STAT426>19 !STAT360>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TI
 @ 160-uniques-value-tiers.filter:245  Giant Skull Bone Visage
 - ItemDisplay[UNI !ID uh9]:%NAME%%SOUNDID-2585%%CONTINUE%// Giant Skull Bone Visage
 + ItemDisplay[UNI !ID uh9]:%NAME%%CONTINUE%// Giant Skull Bone Visage
+@ 160-uniques-value-tiers.filter:247  Undiscovered (Grail): the Grail sound
+= ItemDisplay[UNI !ID xhm FILTLVL<8]:%NAME%%SOUNDID-2585%%CONTINUE%// Valkyrie Wing Winged Helm
++ ItemDisplay[UNI !ID GRAIL_NEW (xh9 OR (uap !ETH) OR uhm OR urn OR uh9 OR usk OR (xhm FILTLVL<8))]:%NAME%%SOUNDID-2594%%CONTINUE%// Undiscovered (Grail): the Grail drop sound, where no sound line above plays (Corrlorized, the author, 2026-11-05)
 @ 160-uniques-value-tiers.filter:250  Steel Shade Armet
 - ItemDisplay[UNI !ID ulm]:%NAME%%SOUNDID-2585%%CONTINUE%// Steel Shade Armet
 + ItemDisplay[UNI !ID ulm]:%NAME%%CONTINUE%// Steel Shade Armet
@@ -970,9 +1019,9 @@ x ItemDisplay[STAT426>19 !STAT360>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TI
 @ 160-uniques-value-tiers.filter:247  Valkyrie Wing Winged Helm
 - ItemDisplay[UNI !ID xhm FILTLVL<8]:%NAME%%SOUNDID-2585%%CONTINUE%// Valkyrie Wing Winged Helm
 + ItemDisplay[UNI !ID xhm FILTLVL<8]:%NAME%%CONTINUE%// Valkyrie Wing Winged Helm
-@ 160-uniques-value-tiers.filter:266  Undiscovered (Grail): no Grail sound
-- ItemDisplay[UNI !ID GRAIL_NEW ((xlm CLVL<80) OR (xsk CLVL<80) OR (xrn CLVL<80) OR (xhl CLVL<60) OR (skp CLVL<40) OR (xap CLVL<40) OR (crn CLVL<40 NECROMANCER) OR (xkp FILTLVL>7) OR (uhl FILTLVL>7))]:%UNI_MINIMAL_GRAIL_LEFT%  %NAME%  %UNI_MINIMAL_GRAIL_RIGHT%%BORDER-0B%%MAP-69%%DOT-6A%%PX-20%%SOUNDID-2594%//
-+ ItemDisplay[UNI !ID GRAIL_NEW ((xlm CLVL<80) OR (xsk CLVL<80) OR (xrn CLVL<80) OR (xhl CLVL<60) OR (skp CLVL<40) OR (xap CLVL<40) OR (crn CLVL<40 NECROMANCER) OR (xkp FILTLVL>7) OR (uhl FILTLVL>7))]:%UNI_MINIMAL_GRAIL_LEFT%  %NAME%  %UNI_MINIMAL_GRAIL_RIGHT%%BORDER-0B%%MAP-69%%DOT-6A%%PX-20%//
+@ 160-uniques-value-tiers.filter:254  Undiscovered (Grail): the Grail sound
+= ItemDisplay[UNI !ID uhl FILTLVL<8]:%NAME%%SOUNDID-2585%%CONTINUE%// Sage's Defiance Giant Conch
++ ItemDisplay[UNI !ID GRAIL_NEW (ulm OR (xkp FILTLVL<8) OR (uap ETH) OR (xhm FILTLVL>7) OR (uhl FILTLVL<8))]:%NAME%%SOUNDID-2594%%CONTINUE%// Undiscovered (Grail): the Grail drop sound, where no sound line above plays (Corrlorized, the author, 2026-11-05)
 @ 160-uniques-value-tiers.filter:270  Gerke's Sanctuary Pavise
 - ItemDisplay[UNI !ID xow]:%NAME%%SOUNDID-2585%%CONTINUE%// Gerke's Sanctuary Pavise
 + ItemDisplay[UNI !ID xow]:%NAME%%CONTINUE%// Gerke's Sanctuary Pavise
@@ -982,6 +1031,9 @@ x ItemDisplay[STAT426>19 !STAT360>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TI
 @ 160-uniques-value-tiers.filter:272  Spirit Ward Ward
 - ItemDisplay[UNI !ID uts]:%NAME%%SOUNDID-2301%%CONTINUE%// Spirit Ward Ward
 + ItemDisplay[UNI !ID uts]:%NAME%%CONTINUE%// Spirit Ward Ward
+@ 160-uniques-value-tiers.filter:273  Undiscovered (Grail): the Grail sound
+= ItemDisplay[UNI !ID xpk]:%NAME%%SOUNDID-2585%%CONTINUE%// Lance Guard Barbed Shield
++ ItemDisplay[UNI !ID GRAIL_NEW (xow OR uit OR uts OR xpk)]:%NAME%%SOUNDID-2594%%CONTINUE%// Undiscovered (Grail): the Grail drop sound, where no sound line above plays (Corrlorized, the author, 2026-11-05)
 @ 160-uniques-value-tiers.filter:276  Medusa's Gaze Aegis
 - ItemDisplay[UNI !ID uow FILTLVL<8]:%NAME%%SOUNDID-2585%%CONTINUE%// Medusa's Gaze Aegis
 + ItemDisplay[UNI !ID uow FILTLVL<8]:%NAME%%CONTINUE%// Medusa's Gaze Aegis
@@ -997,15 +1049,18 @@ x ItemDisplay[STAT426>19 !STAT360>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TI
 @ 160-uniques-value-tiers.filter:273  Lance Guard Barbed Shield
 - ItemDisplay[UNI !ID xpk]:%NAME%%SOUNDID-2585%%CONTINUE%// Lance Guard Barbed Shield
 + ItemDisplay[UNI !ID xpk]:%NAME%%CONTINUE%// Lance Guard Barbed Shield
-@ 160-uniques-value-tiers.filter:287  Undiscovered (Grail): no Grail sound
-- ItemDisplay[UNI !ID GRAIL_NEW ((uow FILTLVL>7) OR urg OR uml OR kit OR uuc)]:%UNI_MINIMAL_GRAIL_LEFT%  %NAME%  %UNI_MINIMAL_GRAIL_RIGHT%%BORDER-0B%%MAP-69%%DOT-6A%%PX-20%%SOUNDID-2594%//
-+ ItemDisplay[UNI !ID GRAIL_NEW ((uow FILTLVL>7) OR urg OR uml OR kit OR uuc)]:%UNI_MINIMAL_GRAIL_LEFT%  %NAME%  %UNI_MINIMAL_GRAIL_RIGHT%%BORDER-0B%%MAP-69%%DOT-6A%%PX-20%//
+@ 160-uniques-value-tiers.filter:279  Undiscovered (Grail): the Grail sound
+= ItemDisplay[UNI !ID upk]:%NAME%%SOUNDID-2585%%CONTINUE%// Spike Thorn Blade Barrier
++ ItemDisplay[UNI !ID GRAIL_NEW ((uow FILTLVL<8) OR xsh OR ush OR upk)]:%NAME%%SOUNDID-2594%%CONTINUE%// Undiscovered (Grail): the Grail drop sound, where no sound line above plays (Corrlorized, the author, 2026-11-05)
 @ 160-uniques-value-tiers.filter:291  Pus Spitter Siege Crossbow
 - ItemDisplay[UNI !ID 8mx FILTLVL<8]:%NAME%%SOUNDID-2585%%CONTINUE%// Pus Spitter Siege Crossbow
 + ItemDisplay[UNI !ID 8mx FILTLVL<8]:%NAME%%CONTINUE%// Pus Spitter Siege Crossbow
 @ 160-uniques-value-tiers.filter:292  Windforce Hydra Bow
 - ItemDisplay[UNI !ID 6lw]:%NAME%%SOUNDID-2261%%CONTINUE%// Windforce Hydra Bow
 + ItemDisplay[UNI !ID 6lw]:%NAME%%SOUNDID-4717%%CONTINUE%// Windforce Hydra Bow
+@ 160-uniques-value-tiers.filter:292  Undiscovered (Grail): the Grail sound
+= ItemDisplay[UNI !ID 6lw]:%NAME%%SOUNDID-2261%%CONTINUE%// Windforce Hydra Bow
++ ItemDisplay[UNI !ID GRAIL_NEW ((8mx FILTLVL<8) OR 6lw)]:%NAME%%SOUNDID-2594%%CONTINUE%// Undiscovered (Grail): the Grail drop sound, where no sound line above plays (Corrlorized, the author, 2026-11-05)
 @ 160-uniques-value-tiers.filter:295  Pus Spitter Siege Crossbow
 - ItemDisplay[UNI !ID 8mx FILTLVL>7]:%NAME%%SOUNDID-2585%%CONTINUE%// Pus Spitter Siege Crossbow
 + ItemDisplay[UNI !ID 8mx FILTLVL>7]:%NAME%%CONTINUE%// Pus Spitter Siege Crossbow
@@ -1018,18 +1073,21 @@ x ItemDisplay[STAT426>19 !STAT360>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TI
 @ 160-uniques-value-tiers.filter:298  Gut Siphon Demon Crossbow
 - ItemDisplay[UNI !ID 6rx]:%NAME%%SOUNDID-2472%%CONTINUE%// Gut Siphon Demon Crossbow
 + ItemDisplay[UNI !ID 6rx]:%NAME%%CONTINUE%// Gut Siphon Demon Crossbow
-@ 160-uniques-value-tiers.filter:307  Undiscovered (Grail): no Grail sound
-- ItemDisplay[UNI !ID GRAIL_NEW ((8s8 FILTLVL>7) OR (8rx FILTLVL>7) OR (8hx CLVL<80) OR (6l7 CLVL<80) OR (8sw CLVL<80) OR 6sw)]:%UNI_MINIMAL_GRAIL_LEFT%  %NAME%  %UNI_MINIMAL_GRAIL_RIGHT%%BORDER-0B%%MAP-69%%DOT-6A%%PX-20%%SOUNDID-2594%//
-+ ItemDisplay[UNI !ID GRAIL_NEW ((8s8 FILTLVL>7) OR (8rx FILTLVL>7) OR (8hx CLVL<80) OR (6l7 CLVL<80) OR (8sw CLVL<80) OR 6sw)]:%UNI_MINIMAL_GRAIL_LEFT%  %NAME%  %UNI_MINIMAL_GRAIL_RIGHT%%BORDER-0B%%MAP-69%%DOT-6A%%PX-20%//
+@ 160-uniques-value-tiers.filter:298  Undiscovered (Grail): the Grail sound
+= ItemDisplay[UNI !ID 6rx]:%NAME%%SOUNDID-2472%%CONTINUE%// Gut Siphon Demon Crossbow
++ ItemDisplay[UNI !ID GRAIL_NEW ((8mx FILTLVL>7) OR (8s8 FILTLVL<8) OR (8rx FILTLVL<8) OR 6rx)]:%NAME%%SOUNDID-2594%%CONTINUE%// Undiscovered (Grail): the Grail drop sound, where no sound line above plays (Corrlorized, the author, 2026-11-05)
 @ 160-uniques-value-tiers.filter:311  Ghostflame Legend Spike
 - ItemDisplay[UNI !ID 7bl]:%NAME%%SOUNDID-2594%%CONTINUE%// Ghostflame Legend Spike
 + ItemDisplay[UNI !ID 7bl]:%NAME%%SOUNDID-4717%%CONTINUE%// Ghostflame Legend Spike
-@ 160-uniques-value-tiers.filter:318  Undiscovered (Grail): no Grail sound
-- ItemDisplay[UNI !ID GRAIL_NEW (7dg OR 9kr OR (dgr CLVL<80))]:%UNI_MINIMAL_GRAIL_LEFT%  %NAME%  %UNI_MINIMAL_GRAIL_RIGHT%%BORDER-0B%%MAP-69%%DOT-6A%%PX-20%%SOUNDID-2594%//
-+ ItemDisplay[UNI !ID GRAIL_NEW (7dg OR 9kr OR (dgr CLVL<80))]:%UNI_MINIMAL_GRAIL_LEFT%  %NAME%  %UNI_MINIMAL_GRAIL_RIGHT%%BORDER-0B%%MAP-69%%DOT-6A%%PX-20%//
+@ 160-uniques-value-tiers.filter:311  Undiscovered (Grail): the Grail sound
+= ItemDisplay[UNI !ID 7bl]:%NAME%%SOUNDID-2594%%CONTINUE%// Ghostflame Legend Spike
++ ItemDisplay[UNI !ID GRAIL_NEW 7bl]:%NAME%%SOUNDID-2594%%CONTINUE%// Undiscovered (Grail): the Grail drop sound, where no sound line above plays (Corrlorized, the author, 2026-11-05)
 @ 160-uniques-value-tiers.filter:322  Executioner's Justice Glorious Axe
 - ItemDisplay[UNI !ID 7gi]:%NAME%%SOUNDID-2594%%CONTINUE%// Executioner's Justice Glorious Axe
 + ItemDisplay[UNI !ID 7gi]:%NAME%%SOUNDID-4717%%CONTINUE%// Executioner's Justice Glorious Axe
+@ 160-uniques-value-tiers.filter:322  Undiscovered (Grail): the Grail sound
+= ItemDisplay[UNI !ID 7gi]:%NAME%%SOUNDID-2594%%CONTINUE%// Executioner's Justice Glorious Axe
++ ItemDisplay[UNI !ID GRAIL_NEW 7gi]:%NAME%%SOUNDID-2594%%CONTINUE%// Undiscovered (Grail): the Grail drop sound, where no sound line above plays (Corrlorized, the author, 2026-11-05)
 @ 160-uniques-value-tiers.filter:325  Warlord's Trust Military Axe
 - ItemDisplay[UNI !ID 9la ETH]:%NAME%%SOUNDID-2594%%CONTINUE%// Warlord's Trust Military Axe
 + ItemDisplay[UNI !ID 9la ETH]:%NAME%%CONTINUE%// Warlord's Trust Military Axe
@@ -1039,24 +1097,27 @@ x ItemDisplay[STAT426>19 !STAT360>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TI
 @ 160-uniques-value-tiers.filter:327  Hellslayer Decapitator
 - ItemDisplay[UNI !ID 7bt FILTLVL<8]:%NAME%%SOUNDID-2594%%CONTINUE%// Hellslayer Decapitator
 + ItemDisplay[UNI !ID 7bt FILTLVL<8]:%NAME%%CONTINUE%// Hellslayer Decapitator
-@ 160-uniques-value-tiers.filter:340  Undiscovered (Grail): no Grail sound
-- ItemDisplay[UNI !ID GRAIL_NEW ((9la !ETH) OR (7bt FILTLVL>7) OR 7ga OR (7ha FILTLVL<8) OR (72a FILTLVL<8) OR (9ba CLVL<80) OR (9ha CLVL<60) OR (gix CLVL<60) OR (9gi CLVL<60) OR (9ax CLVL<60))]:%UNI_MINIMAL_GRAIL_LEFT%  %NAME%  %UNI_MINIMAL_GRAIL_RIGHT%%BORDER-0B%%MAP-69%%DOT-6A%%PX-20%%SOUNDID-2594%//
-+ ItemDisplay[UNI !ID GRAIL_NEW ((9la !ETH) OR (7bt FILTLVL>7) OR 7ga OR (7ha FILTLVL<8) OR (72a FILTLVL<8) OR (9ba CLVL<80) OR (9ha CLVL<60) OR (gix CLVL<60) OR (9gi CLVL<60) OR (9ax CLVL<60))]:%UNI_MINIMAL_GRAIL_LEFT%  %NAME%  %UNI_MINIMAL_GRAIL_RIGHT%%BORDER-0B%%MAP-69%%DOT-6A%%PX-20%//
+@ 160-uniques-value-tiers.filter:327  Undiscovered (Grail): the Grail sound
+= ItemDisplay[UNI !ID 7bt FILTLVL<8]:%NAME%%SOUNDID-2594%%CONTINUE%// Hellslayer Decapitator
++ ItemDisplay[UNI !ID GRAIL_NEW ((9la ETH) OR 7wa OR (7bt FILTLVL<8))]:%NAME%%SOUNDID-2594%%CONTINUE%// Undiscovered (Grail): the Grail drop sound, where no sound line above plays (Corrlorized, the author, 2026-11-05)
 @ 160-uniques-value-tiers.filter:345  Eth Warshrike Winged Knife
 - ItemDisplay[UNI !ID 7bk ETH FILTLVL<8]:%NAME%%SOUNDID-2594%%CONTINUE%// Eth Warshrike Winged Knife
 + ItemDisplay[UNI !ID 7bk ETH FILTLVL<8]:%NAME%%CONTINUE%// Eth Warshrike Winged Knife
 @ 160-uniques-value-tiers.filter:346  Lacerator Winged Axe
 - ItemDisplay[UNI !ID 7b8 ETH]:%NAME%%SOUNDID-2594%%CONTINUE%// Lacerator Winged Axe
 + ItemDisplay[UNI !ID 7b8 ETH]:%NAME%%CONTINUE%// Lacerator Winged Axe
-@ 160-uniques-value-tiers.filter:354  Undiscovered (Grail): no Grail sound
-- ItemDisplay[UNI !ID GRAIL_NEW ((7bk ETH FILTLVL>7) OR (7bk !ETH FILTLVL<8) OR (7b8 !ETH) OR (7ta FILTLVL<8) OR (9b8 BARBARIAN CLVL<70))]:%UNI_MINIMAL_GRAIL_LEFT%  %NAME%  %UNI_MINIMAL_GRAIL_RIGHT%%BORDER-0B%%MAP-69%%DOT-6A%%PX-20%%SOUNDID-2594%//
-+ ItemDisplay[UNI !ID GRAIL_NEW ((7bk ETH FILTLVL>7) OR (7bk !ETH FILTLVL<8) OR (7b8 !ETH) OR (7ta FILTLVL<8) OR (9b8 BARBARIAN CLVL<70))]:%UNI_MINIMAL_GRAIL_LEFT%  %NAME%  %UNI_MINIMAL_GRAIL_RIGHT%%BORDER-0B%%MAP-69%%DOT-6A%%PX-20%//
+@ 160-uniques-value-tiers.filter:346  Undiscovered (Grail): the Grail sound
+= ItemDisplay[UNI !ID 7b8 ETH]:%NAME%%SOUNDID-2594%%CONTINUE%// Lacerator Winged Axe
++ ItemDisplay[UNI !ID GRAIL_NEW ((7bk ETH FILTLVL<8) OR (7b8 ETH))]:%NAME%%SOUNDID-2594%%CONTINUE%// Undiscovered (Grail): the Grail drop sound, where no sound line above plays (Corrlorized, the author, 2026-11-05)
 @ 160-uniques-value-tiers.filter:359  Gargoyle's Bite Winged Harpoon
 - ItemDisplay[UNI !ID 7ts FILTLVL<8]:%NAME%%SOUNDID-2232%%CONTINUE%// Gargoyle's Bite Winged Harpoon
 + ItemDisplay[UNI !ID 7ts FILTLVL<8]:%NAME%%CONTINUE%// Gargoyle's Bite Winged Harpoon
-@ 160-uniques-value-tiers.filter:364  Undiscovered (Grail): no Grail sound
-- ItemDisplay[UNI !ID GRAIL_NEW ((7s7 ETH FILTLVL<8) OR (7gl FILTLVL<8))]:%UNI_MINIMAL_GRAIL_LEFT%  %NAME%  %UNI_MINIMAL_GRAIL_RIGHT%%BORDER-0B%%MAP-69%%DOT-6A%%PX-20%%SOUNDID-2594%//
-+ ItemDisplay[UNI !ID GRAIL_NEW ((7s7 ETH FILTLVL<8) OR (7gl FILTLVL<8))]:%UNI_MINIMAL_GRAIL_LEFT%  %NAME%  %UNI_MINIMAL_GRAIL_RIGHT%%BORDER-0B%%MAP-69%%DOT-6A%%PX-20%//
+@ 160-uniques-value-tiers.filter:359  Undiscovered (Grail): the Grail sound
+= ItemDisplay[UNI !ID 7ts FILTLVL<8]:%NAME%%SOUNDID-2232%%CONTINUE%// Gargoyle's Bite Winged Harpoon
++ ItemDisplay[UNI !ID GRAIL_NEW (7ts FILTLVL<8)]:%NAME%%SOUNDID-2594%%CONTINUE%// Undiscovered (Grail): the Grail drop sound, where no sound line above plays (Corrlorized, the author, 2026-11-05)
+@ 160-uniques-value-tiers.filter:368  Undiscovered (Grail): the Grail sound
+= ItemDisplay[UNI !ID 7wh]:%NAME%%SOUNDID-2594%%CONTINUE%// Stone Crusher or Schaefer's Hammer Legendary Mallet
++ ItemDisplay[UNI !ID GRAIL_NEW 7wh]:%NAME%%SOUNDID-2594%%CONTINUE%// Undiscovered (Grail): the Grail drop sound, where no sound line above plays (Corrlorized, the author, 2026-11-05)
 @ 160-uniques-value-tiers.filter:371  Earth Shifter or The Cranium Basher Thunder Maul
 - ItemDisplay[UNI !ID 7gm]:%NAME%%SOUNDID-2594%%CONTINUE%// Earth Shifter or The Cranium Basher Thunder Maul
 + ItemDisplay[UNI !ID 7gm]:%NAME%%SOUNDID-4717%%CONTINUE%// Earth Shifter or The Cranium Basher Thunder Maul
@@ -1072,27 +1133,33 @@ x ItemDisplay[STAT426>19 !STAT360>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TI
 @ 160-uniques-value-tiers.filter:374  The Gavel Of Pain Martel de Fer
 - ItemDisplay[UNI !ID 9gm ETH]:%NAME%%SOUNDID-2333%%CONTINUE%// The Gavel Of Pain Martel de Fer
 + ItemDisplay[UNI !ID 9gm ETH]:%NAME%%CONTINUE%// The Gavel Of Pain Martel de Fer
-@ 160-uniques-value-tiers.filter:385  Undiscovered (Grail): no Grail sound
-- ItemDisplay[UNI !ID GRAIL_NEW ((7m7 (ETH OR FILTLVL<8)) OR (9wh FILTLVL>7) OR (9gm !ETH) OR (9m9 ETH) OR (mau ETH) OR 7sp OR (9sp CLVL<60 DRUID) OR (9cl CLVL<60 DRUID))]:%UNI_MINIMAL_GRAIL_LEFT%  %NAME%  %UNI_MINIMAL_GRAIL_RIGHT%%BORDER-0B%%MAP-69%%DOT-6A%%PX-20%%SOUNDID-2594%//
-+ ItemDisplay[UNI !ID GRAIL_NEW ((7m7 (ETH OR FILTLVL<8)) OR (9wh FILTLVL>7) OR (9gm !ETH) OR (9m9 ETH) OR (mau ETH) OR 7sp OR (9sp CLVL<60 DRUID) OR (9cl CLVL<60 DRUID))]:%UNI_MINIMAL_GRAIL_LEFT%  %NAME%  %UNI_MINIMAL_GRAIL_RIGHT%%BORDER-0B%%MAP-69%%DOT-6A%%PX-20%//
+@ 160-uniques-value-tiers.filter:374  Undiscovered (Grail): the Grail sound
+= ItemDisplay[UNI !ID 9gm ETH]:%NAME%%SOUNDID-2333%%CONTINUE%// The Gavel Of Pain Martel de Fer
++ ItemDisplay[UNI !ID GRAIL_NEW (7gm OR 7fl OR (9wh FILTLVL<8) OR (9gm ETH))]:%NAME%%SOUNDID-2594%%CONTINUE%// Undiscovered (Grail): the Grail drop sound, where no sound line above plays (Corrlorized, the author, 2026-11-05)
 @ 160-uniques-value-tiers.filter:389  The Reaper's Toll Thresher
 - ItemDisplay[UNI !ID 7s8]:%NAME%%SOUNDID-2594%%CONTINUE%// The Reaper's Toll Thresher
 + ItemDisplay[UNI !ID 7s8]:%NAME%%CONTINUE%// The Reaper's Toll Thresher
 @ 160-uniques-value-tiers.filter:390  Stormspire Giant Thresher
 - ItemDisplay[UNI !ID 7wc]:%NAME%%SOUNDID-2594%%CONTINUE%// Stormspire Giant Thresher
 + ItemDisplay[UNI !ID 7wc]:%NAME%%SOUNDID-4717%%CONTINUE%// Stormspire Giant Thresher
+@ 160-uniques-value-tiers.filter:390  Undiscovered (Grail): the Grail sound
+= ItemDisplay[UNI !ID 7wc]:%NAME%%SOUNDID-2594%%CONTINUE%// Stormspire Giant Thresher
++ ItemDisplay[UNI !ID GRAIL_NEW (7s8 OR 7wc)]:%NAME%%SOUNDID-2594%%CONTINUE%// Undiscovered (Grail): the Grail drop sound, where no sound line above plays (Corrlorized, the author, 2026-11-05)
 @ 160-uniques-value-tiers.filter:393  Tomb Reaver Cryptic Axe
 - ItemDisplay[UNI !ID 7pa]:%NAME%%SOUNDID-2594%%CONTINUE%// Tomb Reaver Cryptic Axe
 + ItemDisplay[UNI !ID 7pa]:%NAME%%CONTINUE%// Tomb Reaver Cryptic Axe
 @ 160-uniques-value-tiers.filter:394  Giant Maimer Colossus Voulge
 - ItemDisplay[UNI !ID 7vo ETH]:%NAME%%SOUNDID-2594%%CONTINUE%// Giant Maimer Colossus Voulge
 + ItemDisplay[UNI !ID 7vo ETH]:%NAME%%CONTINUE%// Giant Maimer Colossus Voulge
-@ 160-uniques-value-tiers.filter:401  Undiscovered (Grail): no Grail sound
-- ItemDisplay[UNI !ID GRAIL_NEW (9wc OR (9pa BARBARIAN CLVL<80) OR (7o7 (ETH OR CLVL<80)) OR (9s8 FILTLVL<5))]:%UNI_MINIMAL_GRAIL_LEFT%  %NAME%  %UNI_MINIMAL_GRAIL_RIGHT%%BORDER-0B%%MAP-69%%DOT-6A%%PX-20%%SOUNDID-2594%//
-+ ItemDisplay[UNI !ID GRAIL_NEW (9wc OR (9pa BARBARIAN CLVL<80) OR (7o7 (ETH OR CLVL<80)) OR (9s8 FILTLVL<5))]:%UNI_MINIMAL_GRAIL_LEFT%  %NAME%  %UNI_MINIMAL_GRAIL_RIGHT%%BORDER-0B%%MAP-69%%DOT-6A%%PX-20%//
+@ 160-uniques-value-tiers.filter:394  Undiscovered (Grail): the Grail sound
+= ItemDisplay[UNI !ID 7vo ETH]:%NAME%%SOUNDID-2594%%CONTINUE%// Giant Maimer Colossus Voulge
++ ItemDisplay[UNI !ID GRAIL_NEW (7pa OR (7vo ETH))]:%NAME%%SOUNDID-2594%%CONTINUE%// Undiscovered (Grail): the Grail drop sound, where no sound line above plays (Corrlorized, the author, 2026-11-05)
 @ 160-uniques-value-tiers.filter:405  Eth Steel Pillar War Pike
 - ItemDisplay[UNI !ID 7p7 ETH]:%NAME%%SOUNDID-2594%%CONTINUE%// Eth Steel Pillar War Pike
 + ItemDisplay[UNI !ID 7p7 ETH]:%NAME%%SOUNDID-4717%%CONTINUE%// Eth Steel Pillar War Pike
+@ 160-uniques-value-tiers.filter:405  Undiscovered (Grail): the Grail sound
+= ItemDisplay[UNI !ID 7p7 ETH]:%NAME%%SOUNDID-2594%%CONTINUE%// Eth Steel Pillar War Pike
++ ItemDisplay[UNI !ID GRAIL_NEW (7p7 ETH)]:%NAME%%SOUNDID-2594%%CONTINUE%// Undiscovered (Grail): the Grail drop sound, where no sound line above plays (Corrlorized, the author, 2026-11-05)
 @ 160-uniques-value-tiers.filter:408  Arioc's Needle
 - ItemDisplay[UNI !ID 7sr ETH]:%NAME%%SOUNDID-2594%%CONTINUE%// Arioc's Needle
 + ItemDisplay[UNI !ID 7sr ETH]:%NAME%%CONTINUE%// Arioc's Needle
@@ -1102,21 +1169,27 @@ x ItemDisplay[STAT426>19 !STAT360>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TI
 @ 160-uniques-value-tiers.filter:410  Steel Pillar War Pike
 - ItemDisplay[UNI !ID 7p7 !ETH FILTLVL<8]:%NAME%%SOUNDID-2594%%CONTINUE%// Steel Pillar War Pike
 + ItemDisplay[UNI !ID 7p7 !ETH FILTLVL<8]:%NAME%%SOUNDID-4717%%CONTINUE%// Steel Pillar War Pike
-@ 160-uniques-value-tiers.filter:420  Undiscovered (Grail): no Grail sound
-- ItemDisplay[UNI !ID GRAIL_NEW ((7sr !ETH) OR (amd !ETH) OR (ame AMAZON) OR (7br CLVL<80) OR (9p9 CLVL<60) OR 7st OR (7p7 !ETH FILTLVL>7))]:%UNI_MINIMAL_GRAIL_LEFT%  %NAME%  %UNI_MINIMAL_GRAIL_RIGHT%%BORDER-0B%%MAP-69%%DOT-6A%%PX-20%%SOUNDID-2594%//
-+ ItemDisplay[UNI !ID GRAIL_NEW ((7sr !ETH) OR (amd !ETH) OR (ame AMAZON) OR (7br CLVL<80) OR (9p9 CLVL<60) OR 7st OR (7p7 !ETH FILTLVL>7))]:%UNI_MINIMAL_GRAIL_LEFT%  %NAME%  %UNI_MINIMAL_GRAIL_RIGHT%%BORDER-0B%%MAP-69%%DOT-6A%%PX-20%//
+@ 160-uniques-value-tiers.filter:410  Undiscovered (Grail): the Grail sound
+= ItemDisplay[UNI !ID 7p7 !ETH FILTLVL<8]:%NAME%%SOUNDID-2594%%CONTINUE%// Steel Pillar War Pike
++ ItemDisplay[UNI !ID GRAIL_NEW ((7sr ETH) OR (amd ETH) OR (7p7 !ETH FILTLVL<8))]:%NAME%%SOUNDID-2594%%CONTINUE%// Undiscovered (Grail): the Grail drop sound, where no sound line above plays (Corrlorized, the author, 2026-11-05)
 @ 160-uniques-value-tiers.filter:424  Astreon's Iron Ward Caduceus
 - ItemDisplay[UNI !ID 7ws]:%NAME%%SOUNDID-2594%%CONTINUE%// Astreon's Iron Ward Caduceus
 + ItemDisplay[UNI !ID 7ws]:%NAME%%SOUNDID-4717%%CONTINUE%// Astreon's Iron Ward Caduceus
 @ 160-uniques-value-tiers.filter:425  Hand of Blessed Light Divine Scepter
 - ItemDisplay[UNI !ID 9ws]:%NAME%%SOUNDID-2594%%CONTINUE%// Hand of Blessed Light Divine Scepter
 + ItemDisplay[UNI !ID 9ws]:%NAME%%CONTINUE%// Hand of Blessed Light Divine Scepter
+@ 160-uniques-value-tiers.filter:425  Undiscovered (Grail): the Grail sound
+= ItemDisplay[UNI !ID 9ws]:%NAME%%SOUNDID-2594%%CONTINUE%// Hand of Blessed Light Divine Scepter
++ ItemDisplay[UNI !ID GRAIL_NEW (7ws OR 9ws)]:%NAME%%SOUNDID-2594%%CONTINUE%// Undiscovered (Grail): the Grail drop sound, where no sound line above plays (Corrlorized, the author, 2026-11-05)
 @ 160-uniques-value-tiers.filter:429  Akarat's Devotion, Seraph Rod
 - ItemDisplay[UNI !ID 7qs]:%NAME%%SOUNDID-2594%%CONTINUE%// Akarat's Devotion, Seraph Rod
 + ItemDisplay[UNI !ID 7qs]:%NAME%%CONTINUE%// Akarat's Devotion, Seraph Rod
 @ 160-uniques-value-tiers.filter:428  Heaven's Light or The Redeemer Mighty Scepter
 - ItemDisplay[UNI !ID 7sc]:%NAME%%SOUNDID-2594%%CONTINUE%// Heaven's Light or The Redeemer Mighty Scepter
 + ItemDisplay[UNI !ID 7sc]:%NAME%%CONTINUE%// Heaven's Light or The Redeemer Mighty Scepter
+@ 160-uniques-value-tiers.filter:429  Undiscovered (Grail): the Grail sound
+= ItemDisplay[UNI !ID 7qs]:%NAME%%SOUNDID-2594%%CONTINUE%// Akarat's Devotion, Seraph Rod
++ ItemDisplay[UNI !ID GRAIL_NEW (7sc OR 7qs)]:%NAME%%SOUNDID-2594%%CONTINUE%// Undiscovered (Grail): the Grail drop sound, where no sound line above plays (Corrlorized, the author, 2026-11-05)
 @ 160-uniques-value-tiers.filter:434  Skull Collector Rune Staff
 - ItemDisplay[UNI !ID 8ws]:%NAME%%SOUNDID-2448%%CONTINUE%// Skull Collector Rune Staff
 + ItemDisplay[UNI !ID 8ws]:%NAME%%CONTINUE%// Skull Collector Rune Staff
@@ -1126,18 +1199,24 @@ x ItemDisplay[STAT426>19 !STAT360>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TI
 @ 160-uniques-value-tiers.filter:436  Brimstone Rain Shillelagh
 - ItemDisplay[UNI !ID 6bs]:%NAME%%SOUNDID-2437%%CONTINUE%// Brimstone Rain Shillelagh
 + ItemDisplay[UNI !ID 6bs]:%NAME%%CONTINUE%// Brimstone Rain Shillelagh
+@ 160-uniques-value-tiers.filter:436  Undiscovered (Grail): the Grail sound
+= ItemDisplay[UNI !ID 6bs]:%NAME%%SOUNDID-2437%%CONTINUE%// Brimstone Rain Shillelagh
++ ItemDisplay[UNI !ID GRAIL_NEW (8ws OR 6ws OR 6bs)]:%NAME%%SOUNDID-2594%%CONTINUE%// Undiscovered (Grail): the Grail drop sound, where no sound line above plays (Corrlorized, the author, 2026-11-05)
 @ 160-uniques-value-tiers.filter:439  Chromatic Ire Cedar Staff
 - ItemDisplay[UNI !ID 8cs FILTLVL<8]:%NAME%%SOUNDID-2246%%CONTINUE%// Chromatic Ire Cedar Staff
 + ItemDisplay[UNI !ID 8cs FILTLVL<8]:%NAME%%CONTINUE%// Chromatic Ire Cedar Staff
 @ 160-uniques-value-tiers.filter:440  Ribcracker Quarterstaff
 - ItemDisplay[UNI !ID 8ls ETH]:%NAME%%SOUNDID-329%%CONTINUE%// Ribcracker Quarterstaff
 + ItemDisplay[UNI !ID 8ls ETH]:%NAME%%CONTINUE%// Ribcracker Quarterstaff
-@ 160-uniques-value-tiers.filter:450  Undiscovered (Grail): no Grail sound
-- ItemDisplay[UNI !ID GRAIL_NEW ((8cs FILTLVL>7) OR (8ls !ETH) OR (6cs CLVL<80) OR (8bs CLVL<60) OR (wst CLVL<60) OR (cst CLVL<50) OR (8ss CLVL<50))]:%UNI_MINIMAL_GRAIL_LEFT%  %NAME%  %UNI_MINIMAL_GRAIL_RIGHT%%BORDER-0B%%MAP-69%%DOT-6A%%PX-20%%SOUNDID-2594%//
-+ ItemDisplay[UNI !ID GRAIL_NEW ((8cs FILTLVL>7) OR (8ls !ETH) OR (6cs CLVL<80) OR (8bs CLVL<60) OR (wst CLVL<60) OR (cst CLVL<50) OR (8ss CLVL<50))]:%UNI_MINIMAL_GRAIL_LEFT%  %NAME%  %UNI_MINIMAL_GRAIL_RIGHT%%BORDER-0B%%MAP-69%%DOT-6A%%PX-20%//
+@ 160-uniques-value-tiers.filter:440  Undiscovered (Grail): the Grail sound
+= ItemDisplay[UNI !ID 8ls ETH]:%NAME%%SOUNDID-329%%CONTINUE%// Ribcracker Quarterstaff
++ ItemDisplay[UNI !ID GRAIL_NEW ((8cs FILTLVL<8) OR (8ls ETH))]:%NAME%%SOUNDID-2594%%CONTINUE%// Undiscovered (Grail): the Grail drop sound, where no sound line above plays (Corrlorized, the author, 2026-11-05)
 @ 160-uniques-value-tiers.filter:454  Doombringer Champion Sword
 - ItemDisplay[UNI !ID 7b7]:%NAME%%SOUNDID-2594%%CONTINUE%// Doombringer Champion Sword
 + ItemDisplay[UNI !ID 7b7]:%NAME%%CONTINUE%// Doombringer Champion Sword
+@ 160-uniques-value-tiers.filter:454  Undiscovered (Grail): the Grail sound
+= ItemDisplay[UNI !ID 7b7]:%NAME%%SOUNDID-2594%%CONTINUE%// Doombringer Champion Sword
++ ItemDisplay[UNI !ID GRAIL_NEW 7b7]:%NAME%%SOUNDID-2594%%CONTINUE%// Undiscovered (Grail): the Grail drop sound, where no sound line above plays (Corrlorized, the author, 2026-11-05)
 @ 160-uniques-value-tiers.filter:461  The Grandfather Colossus Blade
 - ItemDisplay[UNI !ID 7gd]:%NAME%%SOUNDID-2594%%CONTINUE%// The Grandfather Colossus Blade
 + ItemDisplay[UNI !ID 7gd]:%NAME%%CONTINUE%// The Grandfather Colossus Blade
@@ -1153,12 +1232,15 @@ x ItemDisplay[STAT426>19 !STAT360>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TI
 @ 160-uniques-value-tiers.filter:460  Crainte Vomir Espandon
 - ItemDisplay[UNI !ID 92h ETH]:%NAME%%SOUNDID-2594%%CONTINUE%// Crainte Vomir Espandon
 + ItemDisplay[UNI !ID 92h ETH]:%NAME%%CONTINUE%// Crainte Vomir Espandon
-@ 160-uniques-value-tiers.filter:478  Undiscovered (Grail): no Grail sound
-- ItemDisplay[UNI !ID GRAIL_NEW ((9bs (CLVL<80 OR ETH)) OR (92h !ETH) OR (7cm PALADIN) OR (9fc CLVL<90) OR (9cr CLVL<60 ETH) OR (9ss CLVL<60 BARBARIAN) OR (9fb CLVL<60) OR (9cm CLVL<60) OR (gsd CLVL<40) OR (9gs !ETH FILTLVL<8) OR 7gs OR 7fb OR 9gd OR 7ls)]:%UNI_MINIMAL_GRAIL_LEFT%  %NAME%  %UNI_MINIMAL_GRAIL_RIGHT%%BORDER-0B%%MAP-69%%DOT-6A%%PX-20%%SOUNDID-2594%//
-+ ItemDisplay[UNI !ID GRAIL_NEW ((9bs (CLVL<80 OR ETH)) OR (92h !ETH) OR (7cm PALADIN) OR (9fc CLVL<90) OR (9cr CLVL<60 ETH) OR (9ss CLVL<60 BARBARIAN) OR (9fb CLVL<60) OR (9cm CLVL<60) OR (gsd CLVL<40) OR (9gs !ETH FILTLVL<8) OR 7gs OR 7fb OR 9gd OR 7ls)]:%UNI_MINIMAL_GRAIL_LEFT%  %NAME%  %UNI_MINIMAL_GRAIL_RIGHT%%BORDER-0B%%MAP-69%%DOT-6A%%PX-20%//
+@ 160-uniques-value-tiers.filter:461  Undiscovered (Grail): the Grail sound
+= ItemDisplay[UNI !ID 7gd]:%NAME%%SOUNDID-2594%%CONTINUE%// The Grandfather Colossus Blade
++ ItemDisplay[UNI !ID GRAIL_NEW (7cr OR 9ls OR (9gs ETH) OR (92h ETH) OR 7gd)]:%NAME%%SOUNDID-2594%%CONTINUE%// Undiscovered (Grail): the Grail drop sound, where no sound line above plays (Corrlorized, the author, 2026-11-05)
 @ 160-uniques-value-tiers.filter:482  Death's Web Unearthed Wand
 - ItemDisplay[UNI !ID 7gw]:%NAME%%SOUNDID-2473%%CONTINUE%// Death's Web Unearthed Wand
 + ItemDisplay[UNI !ID 7gw]:%NAME%%SOUNDID-4717%%CONTINUE%// Death's Web Unearthed Wand
+@ 160-uniques-value-tiers.filter:482  Undiscovered (Grail): the Grail sound
+= ItemDisplay[UNI !ID 7gw]:%NAME%%SOUNDID-2473%%CONTINUE%// Death's Web Unearthed Wand
++ ItemDisplay[UNI !ID GRAIL_NEW 7gw]:%NAME%%SOUNDID-2594%%CONTINUE%// Undiscovered (Grail): the Grail drop sound, where no sound line above plays (Corrlorized, the author, 2026-11-05)
 @ 160-uniques-value-tiers.filter:485  Boneshade Lich Wand
 - ItemDisplay[UNI !ID 7bw]:%NAME%%SOUNDID-2447%%CONTINUE%// Boneshade Lich Wand
 + ItemDisplay[UNI !ID 7bw]:%NAME%%SOUNDID-4717%%CONTINUE%// Boneshade Lich Wand
@@ -1171,21 +1253,18 @@ x ItemDisplay[STAT426>19 !STAT360>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TI
 @ 160-uniques-value-tiers.filter:488  Blackhand Key Grave Wand
 - ItemDisplay[UNI !ID 9gw FILTLVL<8]:%NAME%%SOUNDID-2465%%CONTINUE%// Blackhand Key Grave Wand
 + ItemDisplay[UNI !ID 9gw FILTLVL<8]:%NAME%%CONTINUE%// Blackhand Key Grave Wand
-@ 160-uniques-value-tiers.filter:495  Undiscovered (Grail): no Grail sound
-- ItemDisplay[UNI !ID GRAIL_NEW ((7yw FILTLVL>7) OR (9gw FILTLVL>7) OR (9yw CLVL<80) OR (9wn CLVL<60))]:%UNI_MINIMAL_GRAIL_LEFT%  %NAME%  %UNI_MINIMAL_GRAIL_RIGHT%%BORDER-0B%%MAP-69%%DOT-6A%%PX-20%%SOUNDID-2594%//
-+ ItemDisplay[UNI !ID GRAIL_NEW ((7yw FILTLVL>7) OR (9gw FILTLVL>7) OR (9yw CLVL<80) OR (9wn CLVL<60))]:%UNI_MINIMAL_GRAIL_LEFT%  %NAME%  %UNI_MINIMAL_GRAIL_RIGHT%%BORDER-0B%%MAP-69%%DOT-6A%%PX-20%//
+@ 160-uniques-value-tiers.filter:488  Undiscovered (Grail): the Grail sound
+= ItemDisplay[UNI !ID 9gw FILTLVL<8]:%NAME%%SOUNDID-2465%%CONTINUE%// Blackhand Key Grave Wand
++ ItemDisplay[UNI !ID GRAIL_NEW (7bw OR 9bw OR (7yw FILTLVL<8) OR (9gw FILTLVL<8))]:%NAME%%SOUNDID-2594%%CONTINUE%// Undiscovered (Grail): the Grail drop sound, where no sound line above plays (Corrlorized, the author, 2026-11-05)
 @ 160-uniques-value-tiers.filter:500  Medium value quivers: no sound
 - ItemDisplay[UNI !ID aqv3]:%NAME%%SOUNDID-309%%CONTINUE%// Basilisk's Quill / Doom's Finger Razor Arrows / Aetherwing: a bow shot (the author, 2026-11-05)
 + ItemDisplay[UNI !ID aqv3]:%NAME%%CONTINUE%// Basilisk's Quill / Doom's Finger Razor Arrows / Aetherwing: a bow shot (the author, 2026-11-05)
 @ 160-uniques-value-tiers.filter:501  Medium value quivers: no sound
 - ItemDisplay[UNI !ID cqv3]:%NAME%%SOUNDID-317%%CONTINUE%// Abyssal Ward / Bannerlord's Call / Frozen Sorrow War Bolts: a crossbow shot (the author, 2026-11-05)
 + ItemDisplay[UNI !ID cqv3]:%NAME%%CONTINUE%// Abyssal Ward / Bannerlord's Call / Frozen Sorrow War Bolts: a crossbow shot (the author, 2026-11-05)
-@ 160-uniques-value-tiers.filter:506  Undiscovered (Grail): no Grail sound
-- ItemDisplay[UNI !ID GRAIL_NEW (cqv2 OR (aqv2 CLVL<60))]:%UNI_MINIMAL_GRAIL_LEFT%  %NAME%  %UNI_MINIMAL_GRAIL_RIGHT%%BORDER-0B%%MAP-69%%DOT-6A%%PX-20%%SOUNDID-2594%//
-+ ItemDisplay[UNI !ID GRAIL_NEW (cqv2 OR (aqv2 CLVL<60))]:%UNI_MINIMAL_GRAIL_LEFT%  %NAME%  %UNI_MINIMAL_GRAIL_RIGHT%%BORDER-0B%%MAP-69%%DOT-6A%%PX-20%//
-@ 160-uniques-value-tiers.filter:524  Undiscovered (Grail): no Grail sound
-- ItemDisplay[UNI !ID GRAIL_NEW]:%UNI_GRAIL_LEFT%  %NAME%  %UNI_GRAIL_RIGHT%%BORDER-0B%%MAP-69%%DOT-6A%%PX-20%%SOUNDID-2594%//
-+ ItemDisplay[UNI !ID GRAIL_NEW]:%UNI_GRAIL_LEFT%  %NAME%  %UNI_GRAIL_RIGHT%%BORDER-0B%%MAP-69%%DOT-6A%%PX-20%//
+@ 160-uniques-value-tiers.filter:501  Undiscovered (Grail): the Grail sound
+= ItemDisplay[UNI !ID cqv3]:%NAME%%SOUNDID-317%%CONTINUE%// Abyssal Ward / Bannerlord's Call / Frozen Sorrow War Bolts: a crossbow shot (the author, 2026-11-05)
++ ItemDisplay[UNI !ID GRAIL_NEW (aqv3 OR cqv3)]:%NAME%%SOUNDID-2594%%CONTINUE%// Undiscovered (Grail): the Grail drop sound, where no sound line above plays (Corrlorized, the author, 2026-11-05)
 
 // == 170-sets.filter ==
 @ 170-sets.filter:138  Griswold's Valor Corona
@@ -1203,6 +1282,12 @@ x ItemDisplay[STAT426>19 !STAT360>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TI
 @ 170-sets.filter:142  Tal Rasha's Guardianship Lacquered Plate
 - ItemDisplay[SET !ID uth]:%NAME%%SOUNDID-2585%%CONTINUE%// Tal Rasha's Guardianship Lacquered Plate
 + ItemDisplay[SET !ID uth]:%NAME%%CONTINUE%// Tal Rasha's Guardianship Lacquered Plate
+@ 170-sets.filter:142  Undiscovered (Grail): the Grail sound
+= ItemDisplay[SET !ID uth]:%NAME%%SOUNDID-2585%%CONTINUE%// Tal Rasha's Guardianship Lacquered Plate
++ ItemDisplay[SET !ID GRAIL_NEW FILTLVL<8 (urn OR paf OR 7ws OR uar OR uth)]:%NAME%%SOUNDID-2594%%CONTINUE%// Undiscovered (Grail): the Grail drop sound, where no sound line above plays (Corrlorized, the author, 2026-11-05)
+@ 170-sets.filter:144  Undiscovered (Grail): the Grail sound
+= ItemDisplay[SET !ID FILTLVL<8 (urn OR paf OR 7ws OR uar OR uth)]:%SET_HIGH_VALUE_LEFT%  %GREEN%%NAME%  %SET_HIGH_VALUE_RIGHT%%GREEN%%BORDER-71%%MAP-76%%DOT-84%%PX-20%// The high value look on levels 0-7, the medium value look on 8-12 (the author, 2026-10-31: the set review)
++ ItemDisplay[SET !ID GRAIL_NEW FILTLVL>7 (urn OR paf OR 7ws OR uar OR uth)]:%NAME%%SOUNDID-2594%%CONTINUE%// Undiscovered (Grail): the Grail drop sound, where no sound line above plays (Corrlorized, the author, 2026-11-05)
 @ 170-sets.filter:162  Trang-Oul's Girth Troll Belt
 - ItemDisplay[SET !ID utc FILTLVL<12]:%NAME%%SOUNDID-2585%%CONTINUE%// Trang-Oul's Girth Troll Belt
 + ItemDisplay[SET !ID utc FILTLVL<12]:%NAME%%CONTINUE%// Trang-Oul's Girth Troll Belt
@@ -1263,9 +1348,12 @@ x ItemDisplay[STAT426>19 !STAT360>0 !STAT276>0 (TIER_1_MAPS OR TIER_2_MAPS OR TI
 @ 170-sets.filter:167  Tancred's Hobnails Boots
 - ItemDisplay[SET !ID lbt FILTLVL<8]:%NAME%%SOUNDID-2585%%CONTINUE%// Tancred's Hobnails Boots
 + ItemDisplay[SET !ID lbt FILTLVL<8]:%NAME%%CONTINUE%// Tancred's Hobnails Boots
-@ 170-sets.filter:181  Undiscovered (Grail): no Grail sound
-- ItemDisplay[SET !ID GRAIL_NEW]:%SET_GRAIL_LEFT%  %NAME%  %SET_GRAIL_RIGHT%%BORDER-71%%MAP-76%%DOT-7D%%PX-69%%SOUNDID-2594%//
-+ ItemDisplay[SET !ID GRAIL_NEW]:%SET_GRAIL_LEFT%  %NAME%  %SET_GRAIL_RIGHT%%BORDER-71%%MAP-76%%DOT-7D%%PX-69%//
+@ 170-sets.filter:167  Undiscovered (Grail): the Grail sound
+= ItemDisplay[SET !ID lbt FILTLVL<8]:%NAME%%SOUNDID-2585%%CONTINUE%// Tancred's Hobnails Boots
++ ItemDisplay[SET !ID GRAIL_NEW FILTLVL<5 (ulg OR 7qr OR ucl OR (ETH (7fb OR 7gd OR 7ls)))]:%NAME%%SOUNDID-2594%%CONTINUE%// Undiscovered (Grail): the Grail drop sound, where no sound line above plays (Corrlorized, the author, 2026-11-05)
+@ 170-sets.filter:169  Undiscovered (Grail): the Grail sound
+= ItemDisplay[SET !ID FILTLVL<5 (ulg OR 7qr OR ucl OR (ETH (7fb OR 7gd OR 7ls)))]:%SET_HIGH_VALUE_LEFT%  %GREEN%%NAME%  %SET_HIGH_VALUE_RIGHT%%GREEN%%BORDER-71%%MAP-76%%DOT-84%%PX-20%// The high value look on levels 0-4
++ ItemDisplay[SET !ID GRAIL_NEW ((FILTLVL~5-11 (ulg OR 7qr OR ucl OR (ETH (7fb OR 7gd OR 7ls)))) OR (FILTLVL<12 (uh9 OR xmg OR ne9 OR utc OR uts OR 6cs)) OR (FILTLVL<8 (dr8 OR uul OR xh9 OR lbt)) OR (FILTLVL<5 (xtb OR ci3 OR xhm OR xul)))]:%NAME%%SOUNDID-2594%%CONTINUE%// Undiscovered (Grail): the Grail drop sound, where no sound line above plays (Corrlorized, the author, 2026-11-05)
 
 // == 190-rares.filter ==
 @ 190-rares.filter:27  Rare circlets, rings and amulets on level 12: no minimap icon
