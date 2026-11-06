@@ -56,7 +56,7 @@ ItemDisplay[BIG_GG !POE_SOUNDS !REVEALED box]:%NAME%{%NAME%%CL%%TEAL%Corrlorized
 ItemDisplay[BIG_GG !POE_SOUNDS REVEALED box]:%NAME%{%NAME%%CL%%TEAL%Corrlorized - Revealed - Big GG}%CONTINUE%//
 ItemDisplay[BIG_GG POE_SOUNDS !REVEALED box]:%NAME%{%NAME%%CL%%TEAL%Corrlorized - Big GG - PoE}%CONTINUE%//
 ItemDisplay[BIG_GG POE_SOUNDS REVEALED box]:%NAME%{%NAME%%CL%%TEAL%Corrlorized - Revealed - Big GG - PoE}%CONTINUE%//
-ItemDisplay[box]:%NAME%{%NAME%%CL%%WHITE%Season 14 - November 5th - v3}//
+ItemDisplay[box]:%NAME%{%NAME%%CL%%WHITE%Season 14 - November 5th - v4}//
 
 // =====================================  Toggles  ==================================
 
@@ -5028,8 +5028,8 @@ ItemDisplay[UNI !ID ((7yw FILTLVL>7) OR (9gw FILTLVL>7) OR (9yw CLVL<80) OR (9wn
 
 //     High Value Quivers
 //     Medium Value Quivers
-ItemDisplay[UNI !ID aqv3]:%NAME%%CONTINUE%// Basilisk's Quill / Doom's Finger Razor Arrows / Aetherwing
-ItemDisplay[UNI !ID cqv3]:%NAME%%CONTINUE%// Abyssal Ward / Bannerlord's Call / Frozen Sorrow War Bolts
+ItemDisplay[UNI !ID aqv3]:%NAME%%CONTINUE%// Basilisk's Quill / Doom's Finger Razor Arrows / Aetherwing: a bow shot (the author, 2026-11-05)
+ItemDisplay[UNI !ID cqv3]:%NAME%%CONTINUE%// Abyssal Ward / Bannerlord's Call / Frozen Sorrow War Bolts: a crossbow shot (the author, 2026-11-05)
 ItemDisplay[UNI !ID (aqv3 OR cqv3)]:%PURPLE%\%RED%\\%ORANGE%\\  %GOLD%>  %WHITE%•  %NAME%  %WHITE%•  %GOLD%<  %ORANGE%/%ORANGE%/%RED%/%RED%/%PURPLE%/%GOLD%%BORDER-4B%%MAP-50%%DOT-59%%PX-6A%//
 //     Minimal Value Quivers
 ItemDisplay[UNI !ID cqv2]:%NAME%%CONTINUE%// Shatterhead / Anvilguard Strap Heavy Bolts
@@ -5047,6 +5047,8 @@ ItemDisplay[UNI !ID (cqv2 OR (aqv2 CLVL<60))]:%RED%\%ORANGE%\\  %GOLD%>  %WHITE%
 // look's rule carries the icon and stops, so no later rule's icon covers it (the author, 2026-10-29). A Minimal value
 // unique gets the Grail icon too, with a look of its own: each Minimal value rule above has a twin right above it, the
 // same condition with GRAIL_NEW, drawing UNI_MINIMAL_GRAIL (the author, 2026-11-04; lint's grail-twin checks the pairs)
+// Every undiscovered unique with no drop sound of its own plays SOUNDID-2594 (the author, 2026-11-05): the Grail
+// rules carry it (a High or Medium value unique's own sound line comes first and decides)
 
 // The Grail look: every unique item the tiers above leave, until you've discovered it, on every filter level, ahead
 // of the Low Level Duel and standard looks
@@ -5259,7 +5261,8 @@ ItemDisplay[SET !ID FILTLVL=12 (dr8 OR uul OR xtb OR ci3 OR uh9 OR xmg OR ne9 OR
 // Undiscovered Set Items (Grail): every unidentified set item you haven't discovered yet (Discovery Progress) that no
 // rule above notifies gets a chat line and the Grail icon on every filter level (the author, 2026-10-25). Identified
 // ones get none: an item is discovered when it is identified, so an identified one on the ground is one a player
-// dropped, in town too. The rule stops, so no later rule's icon covers it (the author, 2026-10-29).
+// dropped, in town too. The rule stops, so no later rule's icon covers it (the author, 2026-10-29). It plays
+// SOUNDID-2594, as every undiscovered set item without a drop sound of its own (the author, 2026-11-05).
 // The Grail look: every set item the tiers above leave, rings and amulets too (the author, 2026-11-01: an
 // unidentified set ring or amulet counts as undiscovered while any set ring / amulet is), until you've discovered it,
 // on every filter level, ahead of the Low Level Duel look
@@ -5360,7 +5363,7 @@ ItemDisplay[!POE_SOUNDS RARE !ID jew]:%PURPLE%\%YELLOW%\ %PURPLE%• %YELLOW%>  
 ItemDisplay[POE_SOUNDS RARE !ID jew]:%PURPLE%\%YELLOW%\ %PURPLE%• %YELLOW%>  %TAN%(x  %YELLOW%%NAME%  %TAN%x)%YELLOW%  %YELLOW%< %PURPLE%• %YELLOW%/%PURPLE%/%YELLOW%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%%SOUNDID-4715%// All unidentified rare Jewels
 
 // Filter level 12 
-ItemDisplay[RARE !ID (CIRC OR rin OR amu) FILTLVL=12]:%NAME%// No notifications or flair for rare circlets, rings, or amulets on filter level 12
+ItemDisplay[RARE !ID (CIRC OR rin OR amu) FILTLVL=12]:%TAN%• %YELLOW%>  %NAME%  %YELLOW%< %TAN%•%YELLOW%// Rare circlets, rings and amulets on filter level 12: low value look, small icon, no chat notification (the author, 2026-11-05)
 
 // Rare Circlets
 ItemDisplay[RARE !ID CIRC FILTLVL<12]:%PURPLE%\%YELLOW%\ %PURPLE%• %YELLOW%>  %YELLOW%%NAME%  %YELLOW%< %PURPLE%• %YELLOW%/%PURPLE%/%YELLOW%%YELLOW%%BORDER-8F%%MAP-9B%%DOT-5E%%PX-6D%%SOUNDID-31%// All unidentified rare Circlets
