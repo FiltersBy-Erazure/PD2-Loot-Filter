@@ -348,7 +348,9 @@
   too (corruptions 5 / 77 add +100-150%, so such a corrupted weapon shows its total), below 100 tan, until socketed
   or corrupted (helms and circlets keep red): `FRESH_WEAPON_ROWS` / `WEAPON_ANY_TIME` / `WEAPON_GATE` in the tool. Clubs, orbs, wands and staves (clubs take both sets) tag life / mana after each kill,
   mana, life, single resistances, energy, strength, dexterity and flat physical / magic damage reduction the same way
-  (`FRESH_CASTER_ROWS`; flat PDR on weapons only comes from the Safety craft, so 300's PDR line takes `WEAPON`);
+  (`FRESH_CASTER_ROWS`; flat PDR on weapons only comes from the Safety craft, so 300's PDR line takes `WEAPON`),
+  single resistances and energy only below affix level 60 (`CASTER_LOW_ONLY`, the author, 2026-11-02: a crafted
+  affix level 76 battle staff showed `32r`; scepters and the other weapons get neither from 60 either);
   replenish life, regenerate mana and damage taken goes to mana never show on them. Each is a weapon part in the
   stat's 290 alias beside its low-level part, and a chip on the page's weapon cards. Flat mana and energy are off on
   the physical weapons, below 60 too (the author: removed entirely), and open wounds chance on every rare weapon (the

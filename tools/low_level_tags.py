@@ -615,7 +615,7 @@ def page_data():
             "picks": load_picks(card_rows(bases, affixes)),
             "rows": [{"key": k, "label": lab, "cat": cat, "def": d, "sock": int(k in SOCKETED), "min": MIN_ROLL.get(k, 0),
                       "wpn": 2 if k in WEAPON_ANY_TIME else 1 if k in FRESH_WEAPON_ROWS else 0,
-                      "wpnc": int(k in FRESH_CASTER_ROWS)}
+                      "wpnc": 2 if k in CASTER_LOW_ONLY else int(k in FRESH_CASTER_ROWS)}
                      for k, lab, cat, d in ROWS],
             "wpnCards": NONCASTER_CARDS,
             "affixes": aff_table, "segs": seg_table, "cards": cards}
@@ -691,6 +691,9 @@ FRESH_ONLY_ON_WEAPONS = {"leech_life", "leech_mana", "owd", "ar_pct", "dmg_dem",
 # damage taken goes to mana never show on them
 CASTERS = "(CLUB OR STAFF OR WAND OR SOR)"
 FRESH_CASTER_ROWS = {"lpk", "mpk", "mana", "life", "res", "enr", "str", "dex", "mdr", "pdr_flat"}
+# on clubs, staves, wands and orbs only below affix level 60 (the author, 2026-11-02: a crafted affix level 76
+# battle staff showed 32r)
+CASTER_LOW_ONLY = {"res", "enr"}
 WEAPON_GROUPS = ((WEAPONS, FRESH_WEAPON_ROWS, "weapons but staves, wands and orbs"),
                  (CASTERS, FRESH_CASTER_ROWS, "clubs, orbs, wands and staves"))
 
@@ -752,14 +755,14 @@ def render_section(picks, eligible, off=False):
         wpn, groups = "", [(g, who) for g, rows, who in WEAPON_GROUPS if row in rows]
         if not off and groups:
             types, who = ("WEAPON", "all weapons") if len(groups) == 2 else groups[0]
-            fresh = (f"ALVL<{CUT} " if row in WEAPON_LOW_ONLY else "") + "!GEMMED !STAT360>0"
+            fresh = (f"ALVL<{CUT} " if row in WEAPON_LOW_ONLY | CASTER_LOW_ONLY else "") + "!GEMMED !STAT360>0"
             wpn = f"{types} {WEAPON_GATE[row]} ({WEAPON_ANY_TIME[row]} OR ({fresh}))" if row in WEAPON_ANY_TIME \
                 else f"{types} {fresh}"
         body = "FALSE" if not (low or wpn) else f"((RARE OR CRAFT) {low or wpn})" if not (low and wpn) else \
             f"((RARE OR CRAFT) (({low}) OR ({wpn})))"
         out += ["", f"// {label}: " + (", ".join(CARD_NAME[c].lower() for c in cards) or "none") +
                 (" (not with anything socketed: gems and runes add it)" if gem and cards else "") +
-                (f"; {who} {'below affix level ' + str(CUT) if row in WEAPON_LOW_ONLY else 'at every affix level'} "
+                (f"; {who} {'below affix level ' + str(CUT) if row in WEAPON_LOW_ONLY | CASTER_LOW_ONLY else 'at every affix level'} "
                  "until socketed or corrupted" if wpn else "")
                 + (f" (from affix level {CUT} only with 100%+ enhanced damage; 100 and up at any time)"
                    if row in WEAPON_ANY_TIME and wpn else ""),
@@ -887,7 +890,8 @@ def verify():
                             wrule = (key in NONCASTER_CARDS and row in FRESH_WEAPON_ROWS
                                      and not (row in WEAPON_LOW_ONLY and alvl >= CUT)
                                      and (row not in WEAPON_GATE or alvl < CUT or v.get("ED", 0) > 99)) or \
-                                (row in FRESH_CASTER_ROWS and bool(groups & {"CLUB", "STAFF", "WAND", "SOR"}))
+                                (row in FRESH_CASTER_ROWS and bool(groups & {"CLUB", "STAFF", "WAND", "SOR"})
+                                 and not (row in CASTER_LOW_ONLY and alvl >= CUT))
                             if not (low or wrule):
                                 if got["now"] != got["off"]:
                                     problems.append(f"{where}: not picked, but {got['off']!r} -> {got['now']!r}")
