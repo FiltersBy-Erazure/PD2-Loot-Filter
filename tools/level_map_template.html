@@ -118,6 +118,9 @@
   .level-map .items { column-width: 360px; column-gap: 26px; }
   .level-map .it { break-inside: avoid; display: inline-block; width: 100%; margin: 0 0 12px; }
   .level-map .it.wide { column-span: all; display: block; }
+  /* lanes side by side (a card's gold, healing and mana potions), as wide as the columns under them */
+  .level-map .lanes { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 360px), 1fr));
+                      column-gap: 26px; }
   .level-map .oc.lines > span { display: block; }
   .level-map .it .nm { font-weight: 700; margin-bottom: 2px; }
   .level-map .it .inl { font-size: 14px; }
@@ -562,20 +565,50 @@ DATA.cards.forEach((card) => {
   s.append(el("span", "cs", (col.intro ? col.intro + " " : "") + sub + "."));
   d.append(s);
   const body = el("div", "body");
-  let last = null, items = null;
-  for (const ln of card.lines) {
-    if (ln.sec !== last) {
-      last = ln.sec;
-      const sec = DATA.sections[ln.sec], grp = el("section", "grp");
-      items = el("div", "items");
-      grp.append(el("h4", sec.color ? "sc-" + sec.color : null, sec.name), items);
-      body.append(grp);
-    }
+  const lineEl = (ln) => {
     const it = el("div", ln.b.x ? "it wide" : "it");  // a table of many kinds of change: the card's whole width
     const nm = el("div", "nm", ln.name);
     if (ln.as !== undefined) nm.append(el("span", "as", "as on " + levelsText(DATA.cols[ln.as].levels).toLowerCase()));
     it.append(nm, blockEl(ln.b, ln.cols.map(T), ln.was));
-    items.append(it);
+    return it;
+  };
+  // a section's lines by band, one under the other: a band's lanes side by side, a column each (gold, healing and
+  // mana potions); a band with lines in one lane only flows with the next band
+  const secs = [];
+  for (const ln of card.lines) {
+    let s = secs[secs.length - 1];
+    if (!s || s.sec !== ln.sec) secs.push(s = { sec: ln.sec, bands: [] });
+    let b = s.bands[s.bands.length - 1];
+    if (!b || b.band !== ln.band) s.bands.push(b = { band: ln.band, lines: [] });
+    b.lines.push(ln);
+  }
+  for (const s of secs) {
+    const sec = DATA.sections[s.sec], grp = el("section", "grp");
+    grp.append(el("h4", sec.color ? "sc-" + sec.color : null, sec.name));
+    let carry = [];
+    const flush = () => {
+      if (!carry.length) return;
+      const items = el("div", "items");
+      carry.forEach((ln) => items.append(lineEl(ln)));
+      grp.append(items);
+      carry = [];
+    };
+    s.bands.forEach((b, i) => {
+      const lanes = new Set(b.lines.map((ln) => ln.lane));
+      if (lanes.size > 1 && !lanes.has(undefined)) {
+        flush();
+        const box = el("div", "lanes");
+        const cols = Array.from({ length: Math.max(...lanes) + 1 }, () => el("div", "lane"));
+        b.lines.forEach((ln) => cols[ln.lane].append(lineEl(ln)));
+        box.append(...cols);
+        grp.append(box);
+        return;
+      }
+      carry.push(...b.lines);
+      if (!lanes.has(undefined) && i + 1 < s.bands.length) return;
+      flush();
+    });
+    body.append(grp);
   }
   if (!card.lines.length) body.append(el("p", "none", "Nothing changes."));
   d.append(body);

@@ -533,11 +533,12 @@ def cap(text):
 class Row:
     """A row of the page: a kind of item, its drops as the page shows them, split into sub-rows where they behave
     differently. Non-magical items: a row of plain drops and a `best` one (the most a base can show with any sockets and
-    stats); `tag` says which."""
+    stats); `tag` says which. On a "What changes" card a section's lines go by `band` (rows of one band flow together,
+    bands one under the other) and a band's `lane` rows side by side, a column each."""
 
-    def __init__(self, name, specs, link=None, split=None, look=False, best=False, tag=""):
+    def __init__(self, name, specs, link=None, split=None, look=False, best=False, tag="", band=None, lane=None):
         self.name, self.specs, self.link, self.split, self.look = name, specs, link, split, look
-        self.best, self.tag = best, tag
+        self.best, self.tag, self.band, self.lane = best, tag, band, lane
 
 
 def bases_where(bases, pred):
@@ -583,16 +584,17 @@ def make_sections(bases):
         codes = [c for c, i in bases_where(spawn, lambda c, i: T.category(i) in cats and set(i["types"]) & kinds)]
         return [c for c in codes if c not in quest and not set(bases[c]["types"]) & {"tpot"}]
 
-    misc = [
-        Row("Gold", specs(["gld"])),
-        Row("Healing potions", specs(["hp1", "hp2", "hp3", "hp4", "hp5"]), split="name"),
-        Row("Mana potions", specs(["mp1", "mp2", "mp3", "mp4", "mp5"]), split="name"),
-        Row("Rejuvenation potions", specs(["rvs", "rvl"]), split="name"),
-        Row("Antidote, thawing and stamina potions", specs(["yps", "wms", "vps"]), split="name"),
-        Row("Throwing potions", specs(of_type("tpot"))),
-        Row("Scrolls", specs(["tsc", "isc"]), split="name"),
-        Row("Tomes", specs(["tbk", "ibk"]), split="name"),
-        Row("Keys", specs(["key"])),
+    misc = [  # the cards (the author, 2026-10-28): gold, healing and mana potions a column each, then the other
+        # potions, then throwing potions
+        Row("Gold", specs(["gld"]), band=0, lane=0),
+        Row("Healing potions", specs(["hp1", "hp2", "hp3", "hp4", "hp5"]), split="name", band=0, lane=1),
+        Row("Mana potions", specs(["mp1", "mp2", "mp3", "mp4", "mp5"]), split="name", band=0, lane=2),
+        Row("Rejuvenation potions", specs(["rvs", "rvl"]), split="name", band=1),
+        Row("Antidote, thawing and stamina potions", specs(["yps", "wms", "vps"]), split="name", band=1),
+        Row("Throwing potions", specs(of_type("tpot")), band=2),
+        Row("Scrolls", specs(["tsc", "isc"]), split="name", band=3),
+        Row("Tomes", specs(["tbk", "ibk"]), split="name", band=3),
+        Row("Keys", specs(["key"]), band=3),
     ]
     gems = [Row(f"{label} gems", [s for s in specs(of_type("gem")) if s.gem and s.gem[0] == lvl and
                                   "(old)" not in s.name])
@@ -1480,6 +1482,7 @@ class Page:
             groups.setdefault((now, was), []).append(spec)
         if not groups:
             return []
+        place = {k: v for k, v in (("band", row.band), ("lane", row.lane)) if v is not None}
         head = f"{row.name} ({row.tag})" if row.tag else row.name
 
         def line(name, now, spec):
@@ -1495,7 +1498,7 @@ class Page:
             if "rows" in b and k:
                 for r in b["rows"]:
                     r.append(set(r[1][:k]) != set(r[1][k:]))
-            return {"sec": title, "name": name, "link": row.link, "cols": cols, "was": k, "b": b, "key": now}
+            return {"sec": title, "name": name, "link": row.link, "cols": cols, "was": k, "b": b, "key": now, **place}
         if len(groups) == 1 and len(next(iter(groups.values()))) == len(row.specs):
             ((now, _), specs), = groups.items()
             return [line(head, now, specs[0])]
@@ -1518,7 +1521,8 @@ class Page:
             rows.append([cap(self.label(row, specs)), cells])  # every line changed: none marked
         cols = ([group_head(list(lp), True)] if p else []) + [group_head(list(lc), True)]
         return [{"sec": title, "name": head, "link": row.link, "cols": cols, "was": 1 if p else 0,
-                 "b": {"head": "Items", "rows": rows, "items": True}, "key": json.dumps(sorted(g[0] for g in groups))}]
+                 "b": {"head": "Items", "rows": rows, "items": True}, "key": json.dumps(sorted(g[0] for g in groups)),
+                 **place}]
 
     def label(self, row, specs, kind=False):
         """Some of a row's drops in words: its tier or kind when they are all of it, else their names. With kind:
