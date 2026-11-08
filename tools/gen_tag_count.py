@@ -191,10 +191,37 @@ def classes(rs, tags):
     return sorted(codes)
 
 
+SUFFIX_RE = re.compile(r"^SUFFIX=(\d+)$")
+_SUFFIX_GROUPS = {}
+
+
+def suffix_group(tree):
+    """The affix group of every SUFFIX=n the rule asks, when they share one (an item has one suffix of a group at
+    most), else None."""
+    if not _SUFFIX_GROUPS:
+        rows = [line for line in (ROOT / "docs" / "pd2-magic-affixes.tsv").read_text(encoding="utf-8").splitlines()
+                if not line.startswith("#")]
+        head = rows[0].split("\t")
+        for line in rows[1:]:
+            a = dict(zip(head, line.split("\t")))
+            if a["kind"] == "suffix" and a["group"]:
+                _SUFFIX_GROUPS[int(a["row"])] = a["group"]
+    groups = {_SUFFIX_GROUPS.get(int(m.group(1))) for w in LC.words_of(tree) for m in [SUFFIX_RE.match(w)] if m}
+    return next(iter(groups)) if len(groups) == 1 and None not in groups else None
+
+
 def terms_text(terms):
-    """[(look, condition text)] of the tag rules formulas can't read."""
+    """[(look, condition text)] of the tag rules formulas can't read. The rules that ask a suffix of one affix group
+    are one term whatever their look (2026-11-07: the amp / lr tags and the staves' sorceress skills on casting, all
+    suffix group 44): an item has one such suffix at most, so one tag of them at most, and every set of terms would
+    otherwise be written out (2^9 sets made the alias 500,000 characters)."""
+    buckets = {}
+    for k, ts in sorted(terms.items()):
+        for t in ts:
+            g = suffix_group(t)
+            buckets.setdefault(f"suffix group {g}" if g else k, []).append(t)
     return [(k, ctext(ts[0]) if len(ts) == 1 else "(" + " OR ".join(ctext(t) for t in ts) + ")")
-            for k, ts in sorted(terms.items())]
+            for k, ts in sorted(buckets.items())]
 
 
 def crowded(ref, terms):

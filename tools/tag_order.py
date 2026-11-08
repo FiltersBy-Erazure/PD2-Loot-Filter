@@ -64,7 +64,8 @@ ELEM_SKILLS = {1: 363, 2: 364, 3: 366, 4: 362, 5: 365}  # MULTI126,<element>: th
 LABELS = {"Rep": [252], "Hfd": [118], "ATD": [78], "Cbf": [153], "Res": [39, 41, 43, 45], "drain": [74],
           "itd": [115], "ITD": [115], "blk": [20], "all": [127], "Ind": [152], "Knb": [81],
           "Strk": [198], "Cast": [200]}  # a version's tag: its chance to cast on striking / on casting
-CHANCE_TO_CAST = {"amp", "lr"}  # weapon suffixes: on striking (198), on casting for staves (200)
+# weapon suffixes: on striking (198), on casting for staves (200; the sorceress skills since 2026-11-07)
+CHANCE_TO_CAST = {"amp", "lr", "chb", "fnv", "fbl", "nov", "ltn", "chl", "ibr"}
 NO_STAT = {"LLD"}  # tags that show no stat (250's Low Level Dueling jewels): outside the order
 GROUPS = {frozenset([39, 41, 43, 45]): "All Resistances", frozenset([40, 42, 44, 46]): "All Maximum Resistances",
           frozenset([0, 1, 2, 3]): "All Attributes"}

@@ -425,6 +425,14 @@
   corrupted rare claw with two jewels showed `10%f`). Their -% enemy fire, lightning, cold and poison resistance tags
   (300, `-8%f`; druid pelts too) skip socketed and corrupted items, `!GEMMED !STAT360>0`, the weapon -res
   corruption's own tag too (2026-10-30, the author: room on a corrupted rare scepter's label).
+- Chance to cast when casting on magic, rare and crafted staves (suffix group 44, staves only; 300's stat 200 block):
+  Amplify Damage and Lower Resist as before (`19amp`, `1lr`; the lowest tier below character level 80), and since
+  2026-11-07 (the author, after the review page https://claude.ai/artifact/Vhr1wp2E12RxyCi8FsWnVZ) the sorceress
+  skills as the skill's level and a short name: Charged Bolt `chb`, Lightning `ltn`, Nova `nov`, Chain Lightning
+  `chl` (yellow), Fire Ball `fbl` (red), Frost Nova `fnv`, Ice Barrage `ibr` (blue), `24fbl`. One rule per suffix
+  row (`SUFFIX=856`-`894`, levels 18 / 24 / 30), shown below affix level 60 (`ALVL<60`, as the low-level tags) or with +6 or more to
+  the skill: all skills, sorceress skills, its tab and the skill itself added up, `(MULTI188,8+MULTI83,1+MULTI107,47
+  +STAT127>5)` (tabs: fire 8, lightning 9, cold 10). `tag_order.py`'s `CHANCE_TO_CAST` knows the short names.
 - Quivers (2026-10-30, the author, on the page https://claude.ai/artifact/MNJ48VqDN4fKksSgSGfPHy: `python
   tools/quiver_tags.py --page` writes `tools/quiver_tags.html`, gitignored, from `tools/quiver_tags_template.html`;
   it reads 260 as it is, so republish after a 260 change; db collection `quivers`, documents `tags` `{cut, quals,
