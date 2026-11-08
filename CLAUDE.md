@@ -315,7 +315,10 @@
   https://claude.ai/artifact/UR9CFPmG4j88WvLN1HtwNu (`python tools/low_level_tags.py --page` writes
   `tools/low_level_tags.html`, gitignored, from `tools/low_level_tags_template.html`; republish it to that URL): per
   item type (weapons as melee, bows and crossbows, throwing, staves / wands / orbs) every stat a rare can roll below
-  affix level 60 (`docs/pd2-magic-affixes.tsv`, the eligibility of `rare_weapon_review.py`), its affixes and rolls,
+  affix level 60 (`docs/pd2-magic-affixes.tsv`, the eligibility of `rare_weapon_review.py`; since 2026-11-07 also a
+  base's automagic mod where it is one of several, side `A`: an orb's +life or +mana, Amazon weapons' skill tab,
+  paladin shields' resistances, necromancer heads' poison; the orbs gave the staves / wands / orbs card its Life row,
+  kept off in the picks file, as the weapon tagging already covers it), its affixes and rolls,
   what 300 tags without these tags (label_cuts' engine, 300's lines, a level 50 viewer, a base's automod: daggers'
   +20% deadly strike) and a switch; `--dump CARD` prints a card. Its db: collection `picks`, one document per item
   type `{stats, note, savedAt}` (read it before republishing; apply only when the author says): save the documents as

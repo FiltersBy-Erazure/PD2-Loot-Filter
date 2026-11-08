@@ -249,15 +249,37 @@ NAME_OF = {v: k for k, v in LC.COLOR_CODE.items()}
 
 # ---------------------------------------------------------------- game data
 
+def auto_bases():
+    """{automod group: {base names}}: the bases whose automagic mod is one of several (orbs' life or mana, Amazon
+    weapons' skill tab, paladin shields' resistances, necromancer heads' poison); a group of one row is a base stat
+    (base_values)."""
+    rows = [line for line in (ROOT / "docs" / "pd2-base-stats.tsv").read_text(encoding="utf-8").splitlines()
+            if not line.startswith("#")]
+    head = rows[0].split("\t")
+    names = {}
+    for r in rows[1:]:
+        f = dict(zip(head, r.split("\t")))
+        if f["auto prefix"]:
+            names.setdefault(f["auto prefix"], set()).add(f["name"])
+    return names
+
+
 def load_affixes(below=True):
-    """The affixes a rare can get (below the cut only, unless below is False)."""
+    """The affixes a rare can get (below the cut only, unless below is False): its prefixes and suffixes, and its
+    base's automagic mod where the base gets one of several (2026-11-07: an orb's +life or +mana; the author missed
+    the life row on the staves, wands and orbs card)."""
     rows = [line for line in AFFIXES.read_text(encoding="utf-8").splitlines() if not line.startswith("#")]
     header = rows[0].split("\t")
+    autos = auto_bases()
+    group_rows = Counter(dict(zip(header, line.split("\t")))["group"] for line in rows[1:]
+                         if line.startswith("automagic\t"))
     out = []
     for line in rows[1:]:
         a = dict(zip(header, line.split("\t")))
-        if a["kind"] not in ("prefix", "suffix") or a["spawnable"] != "1" or a["version"] in ("", "0") or \
-                a["rare"] in ("", "0") or a["frequency"] in ("", "0") or (below and int(a["level"] or 0) >= CUT):
+        auto = a["kind"] == "automagic" and group_rows[a["group"]] > 1 and a["group"] in autos
+        if (a["kind"] not in ("prefix", "suffix") and not auto) or a["spawnable"] != "1" or \
+                a["version"] in ("", "0") or (a["rare"] in ("", "0") and not auto) or a["frequency"] in ("", "0") or \
+                (below and int(a["level"] or 0) >= CUT):
             continue
         a["mods"] = [m for m in json.loads(a["mods"] or "[]") if m[0].lower() in PROPS]
         if not a["mods"]:
@@ -265,11 +287,15 @@ def load_affixes(below=True):
         a["itypes"] = {t for t in a["itypes"].split(",") if t}
         a["etypes"] = {t for t in a["etypes"].split(",") if t}
         a["level"], a["maxlevel"] = int(a["level"] or 0), int(a["maxlevel"] or 0)
+        if auto:
+            a["auto"] = autos[a["group"]]
         out.append(a)
     return out
 
 
 def fits(a, base):
+    if "auto" in a:
+        return base["name"] in a["auto"]
     types = set(base["types"])
     return bool(a["itypes"] & types) and not a["etypes"] & types
 
@@ -463,7 +489,8 @@ def affix_values(a, row, high, weapon, base_vals):
                 x *= 256
             for w in stat_words(sid, par, weapon):
                 v[w] = base_vals.get(w, 0) + x  # on top of the base's own (a shield's block, a dagger's automod)
-    v["SUFFIX" if a["kind"] == "suffix" else "PREFIX"] = int(a["row"])
+    if a["kind"] in ("prefix", "suffix"):  # an automagic mod is neither
+        v["SUFFIX" if a["kind"] == "suffix" else "PREFIX"] = int(a["row"])
     return with_derived(v)
 
 
@@ -1168,14 +1195,15 @@ def verify():
             lengths = {}
             for s in ("off", "now"):
                 fold = sets[s].folded(codes[0], groups, base_vals)
-                sides = {"prefix": {}, "suffix": {}}
+                sides = {"prefix": {}, "suffix": {}, "automagic": {}}
                 for a in mine:
                     t = vis(sets[s].tagline(fold, codes[0], groups, full_values([a], weapon, base_vals),
                                             first["name"])[0])
                     g = a["group"] or a["row"]
                     if t and len(t) > len(sides[a["kind"]].get(g, ("",))[0]):
                         sides[a["kind"]][g] = (t, a)
-                chosen = [a for side in sides.values() for _, a in sorted(side.values(), key=lambda x: -len(x[0]))[:3]]
+                chosen = [a for k, side in sides.items()
+                          for _, a in sorted(side.values(), key=lambda x: -len(x[0]))[:1 if k == "automagic" else 3]]
                 lengths[s] = vis(sets[s].tagline(fold, codes[0], groups, full_values(chosen, weapon, base_vals),
                                                  first["name"])[0])
             longest = max((bases[c]["name"] for c in codes), key=len)
