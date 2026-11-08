@@ -403,10 +403,10 @@
   .grail-map .comp .c-white { --cy: 1; }
   .grail-map .comp .c-gold { --cy: 2; }
   .grail-map .comp .c-green { --cy: 3; }
-  /* the bottom row: the stash's own buttons (lit while pressed) and the gold and Search bars as Tick / Untick shown */
+  /* the bottom row: the stash's own buttons (lit while pressed) and the gold and Search bars as Mark discovered / undiscovered */
   .grail-map .comp .gbtn:hover .sp, .grail-map .comp .gbtn:active .sp, .grail-map .comp .pg:hover .sp, .grail-map .comp .pg:active .sp { --dx: 32; }
   .grail-map .comp .cd:hover .sp { filter: brightness(1.25); }
-  /* phones: Tick shown and Untick shown sit a game pixel apart; each takes taps a little beyond its outer edge (C11) */
+  /* phones: Mark discovered and Mark undiscovered sit a game pixel apart; each takes taps a little beyond its outer edge (C11) */
   @media (pointer: coarse) {
     .grail-map .comp .gbar[data-act="tick"]::after, .grail-map .comp .gbar[data-act="untick"]::after { content: ""; position: absolute; left: 0; right: 0; height: 10px; }
     .grail-map .comp .gbar[data-act="tick"]::after { bottom: 100%; }
@@ -695,11 +695,11 @@
 
 <section id="gm-planner" data-tab="planner" hidden>
   <h2 id="gm-planner-h">Your Grail</h2>
-  <p class="note">Tick the items you have under <a href="#gm-list">Every Item</a>, or <a href="#gm-fill">fill in your grail</a> at the
-  end of this tab: tick everything but what you're missing, or paste a list. From your ticks and the bar's settings this is
+  <p class="note">Mark the items you've discovered under <a href="#gm-list">Every Item</a>, or <a href="#gm-fill">fill in your grail</a> at the
+  end of this tab: mark everything discovered but what you're missing, or paste a list. From your list and the bar's settings this is
   your plan: the Corrupted Ear to run, the items one kill finds more often than one whole map and where to farm them, what a
   unique map's bosses find, and the slowest ones. <a href="#tab-items" data-show="unticked">Every Item</a> shows each missing
-  item's best bet. Your ticks are kept in this browser only.</p>
+  item's best bet. Your list is kept in this browser only.</p>
   <div class="ways" id="gm-plan-start" hidden></div>
   <div class="cards" id="gm-plan-cards"></div>
   <div class="tools"><label class="small" for="gm-fixed-p">Farm spots</label><select class="gm-fixed" id="gm-fixed-p"><option value="">Any farm spot</option><option value="fixed">Fixed spots only</option></select>
@@ -712,34 +712,35 @@
   <p class="small" id="gm-plan-cap"></p>
   </div>
   <details class="panel" id="gm-fill">
-    <summary><b>Fill in your grail</b>: tick everything, paste a list, copy your ticks</summary>
+    <summary><b>Fill in your grail</b>: mark everything discovered, paste a list, copy your list</summary>
     <ul class="find small">
       <li><b>Quickest:</b> open the <a href="#gm-comp">Compendium view</a> and page through it beside the game's own Compendium,
         clicking the cards you've discovered.</li>
-      <li><b>Found most of it?</b> Type what you're missing in the box, one name per line, and press "Tick all but these": every
-        other item gets ticked. In game, the stash's Uniques and Sets tabs list what you're missing when you turn on "Show
-        Undiscovered" (hover an item for its name). Or press "Tick all" and untick them one by one under
-        <a href="#gm-list">Every Item</a>: type a name in its search and press Enter.</li>
-      <li><b>Found a few?</b> Type them in the box and press "Tick these", or tick them under <a href="#gm-list">Every Item</a>. For
-        a whole set or base at once, search it there and press "Tick shown".</li>
-      <li><b>The box's buttons:</b> "Tick these" adds the names to your ticks, "Untick these" takes them off, "Tick all but these"
-        ticks every item but the names, and "Replace my ticks" ticks the names and unticks everything else.</li>
+      <li><b>Found most of it?</b> Type what you're missing in the box, one name per line, and press "Mark all but these
+        discovered": every other item is marked discovered. In game, the stash's Uniques and Sets tabs list what you're missing
+        when you turn on "Show Undiscovered" (hover an item for its name). Or press "Mark all discovered" and mark the missing
+        ones undiscovered one by one under <a href="#gm-list">Every Item</a>: type a name in its search and press Enter.</li>
+      <li><b>Found a few?</b> Type them in the box and press "Mark these discovered", or click their boxes under
+        <a href="#gm-list">Every Item</a>. For a whole set or base at once, search it there and press "Mark listed items discovered".</li>
+      <li><b>The box's buttons:</b> "Mark these discovered" adds the names to your list, "Mark these undiscovered" takes them off,
+        "Mark all but these discovered" marks every item discovered but the names, and "Replace my list" marks the names
+        discovered and everything else undiscovered.</li>
       <li><b>What the box reads:</b> one item per line, from a spreadsheet, another grail tracker or typed by hand
         (<code>Harlequin Crest</code>, <code>Arm of King Leoric</code>). Capitals, apostrophes, a leading "The", bullets,
-        numbering and a ticked box such as <code>[x]</code> don't matter, a version in brackets counts as the item
+        numbering and a checked box such as <code>[x]</code> don't matter, a version in brackets counts as the item
         (<code>Harlequin Crest (Shako)</code>), and a spreadsheet row counts by the cell with the name. Lines with an empty box
         (<code>[ ]</code>, ✗) and rows marked no, false, 0 or ✗ are skipped, and the lines it doesn't recognize are listed under the
         buttons (the first 10). Items that don't count for the grail (How It's Worked Out names them) are listed apart.</li>
-      <li><b>Keep or move your ticks:</b> "Copy" copies the list of your ticks ("Show my list" shows it in the box). On another
-        browser or device, paste it into this box and press "Replace my ticks".</li>
+      <li><b>Keep or move your list:</b> "Copy" copies the list of your discovered items ("Show my list" shows it in the box). On
+        another browser or device, paste it into this box and press "Replace my list".</li>
       <li><b>Undo</b> takes back your changes one at a time, latest first, while you stay on the page.</li>
     </ul>
     <textarea id="gm-io" spellcheck="false" aria-label="Item names, one per line" placeholder="One item a line, such as&#10;Harlequin Crest&#10;Tal Rasha's Guardianship"></textarea>
     <div class="tools"><span class="small">The names in the box:</span>
-      <button type="button" class="btn" id="gm-paste-tick">Tick these</button><button type="button" class="btn" id="gm-paste-untick">Untick these</button>
-      <button type="button" class="btn" id="gm-paste-allbut">Tick all but these</button><button type="button" class="btn" id="gm-import">Replace my ticks</button></div>
-    <div class="tools"><span class="small">All your ticks:</span>
-      <button type="button" class="btn" id="gm-tickall">Tick all</button><button type="button" class="btn" id="gm-clear">Untick all</button>
+      <button type="button" class="btn" id="gm-paste-tick">Mark these discovered</button><button type="button" class="btn" id="gm-paste-untick">Mark these undiscovered</button>
+      <button type="button" class="btn" id="gm-paste-allbut">Mark all but these discovered</button><button type="button" class="btn" id="gm-import">Replace my list</button></div>
+    <div class="tools"><span class="small">Your whole list:</span>
+      <button type="button" class="btn" id="gm-tickall">Mark all discovered</button><button type="button" class="btn" id="gm-clear">Mark all undiscovered</button>
       <button type="button" class="btn" id="gm-export">Show my list</button><button type="button" class="btn" id="gm-copy">Copy</button>
       <button type="button" class="btn gm-undo" data-msg="gm-io-msg" hidden>Undo</button></div>
     <p class="small" id="gm-io-msg" aria-live="polite"></p>
@@ -779,10 +780,12 @@
       in each difficulty, in the Corrupted Zones, among the ubers and events and the unique map bosses, Gheed's map event and gambling.</p></div>
     <div class="hcard"><h3>Marking what you've found</h3>
       <ul>
-        <li>Tick its box, or type its name in the search and press <b>Enter</b> (Enter again unticks it), then the next name</li>
-        <li><b>Tick shown</b> / <b>Untick shown</b>: every row the search and filters list (a whole set, a base, every set item)</li>
-        <li>Found most of the grail? <b>Tick all</b> under <a href="#gm-fill">Fill in your grail</a>, then untick what you're
-          missing (Show: "Not ticked" and "Ticked" check your work)</li>
+        <li>Click its box, or type its name in the search and press <b>Enter</b> (on a discovered item, Enter marks it
+          undiscovered), then the next name</li>
+        <li><b>Mark listed items discovered</b> / <b>undiscovered</b>: every row the search and filters list (a whole set, a base,
+          every set item)</li>
+        <li>Found most of the grail? <b>Mark all discovered</b> under <a href="#gm-fill">Fill in your grail</a>, then mark what
+          you're missing undiscovered (Show: "Undiscovered" and "Discovered" check your work)</li>
         <li><b>Undo</b> takes your changes back one at a time</li>
         <li>Paging through the game's Compendium? Sort by <b>Compendium order</b>, or switch to the <b>Compendium</b> view</li>
       </ul></div>
@@ -792,14 +795,14 @@
   <div class="tools gm-vlist">
     <input type="search" id="gm-q" placeholder="Search item, base or set" aria-label="Search items" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false">
     <select id="gm-kind" aria-label="Kind"><option value="">Uniques and sets</option><option value="UNI">Uniques</option><option value="SET">Sets</option></select>
-    <label class="small" for="gm-show">Show</label><select id="gm-show"><option value="">All items</option><option value="unticked">Not ticked</option><option value="ticked">Ticked</option><option value="missing">Not ticked, from map monsters</option><option value="boost">An ear's pool has it</option><option value="nodrop">Not from map monsters</option><option value="bet">Best bet: target farm</option></select>
+    <label class="small" for="gm-show">Show</label><select id="gm-show"><option value="">All items</option><option value="unticked">Undiscovered</option><option value="ticked">Discovered</option><option value="missing">Undiscovered, from map monsters</option><option value="boost">An ear's pool has it</option><option value="nodrop">Not from map monsters</option><option value="bet">Best bet: target farm</option></select>
     <label class="small" for="gm-ear">Ear</label><select id="gm-ear"><option value="">Best ear</option></select>
     <label class="small" for="gm-sort">Sort</label><select id="gm-sort"><option value="rare">Rarest with its best ear</option><option value="farm">Rarest at its best farm spot</option><option value="name">Name</option><option value="gain">Most raised by an ear</option><option value="lvl">Drop level, highest first</option><option value="comp">Compendium order</option></select>
     <select class="gm-fixed" aria-label="Farm spots"><option value="">Any farm spot</option><option value="fixed">Fixed spots only</option></select>
     <span class="count" id="gm-count"></span>
   </div>
   <div class="tools ticks">
-    <button type="button" class="btn" id="gm-tickshown">Tick shown</button><button type="button" class="btn" id="gm-untickshown">Untick shown</button>
+    <button type="button" class="btn" id="gm-tickshown">Mark listed items discovered</button><button type="button" class="btn" id="gm-untickshown">Mark listed items undiscovered</button>
     <button type="button" class="btn gm-undo" data-msg="gm-tickmsg" hidden>Undo</button>
     <span class="count" id="gm-tickcount"></span>
     <span class="small" id="gm-tickmsg" aria-live="polite"></span>
@@ -850,7 +853,7 @@
   <p class="note">A character that teleports doesn't have to clear its maps: scout a rare map for its map event, do the event,
   kill the map boss and open the next map. This planner counts full clears. The website's
   <a href="https://filtersby-erazure.github.io/PD2-Loot-Filter/resources/event-boss-runs/">Event and Boss Map Runs</a> page weighs those runs against full clears, and works out what rushing a unique
-  map's bosses is worth, at your own times, for your missing items (it reads your ticks from this browser) and your Corrupted
+  map's bosses is worth, at your own times, for your missing items (it reads your list from this browser) and your Corrupted
   Ear.</p>
   <ul class="find" id="gm-evruns-list"></ul>
   <div class="tools"><a class="btn" href="https://filtersby-erazure.github.io/PD2-Loot-Filter/resources/event-boss-runs/">Open the Event and Boss Map Runs page</a></div>
@@ -870,7 +873,7 @@
   <h2 id="gm-gamble-h">Gambling</h2>
   <p class="note">Gambling buys an unidentified item of a base you pick, for gold. Each one has a 1 in 2,000 chance to be unique
   and 1 in 1,000 to be a set item, whatever your magic find, and it counts for your grail like a drop. The table ranks the gamble
-  bases by the gold they take per new grail item: for your missing items once you tick some, else for a fresh grail. Click a base for
+  bases by the gold they take per new grail item: for your missing items once you mark some discovered, else for a fresh grail. Click a base for
   every item it can find, uniques and sets apart.</p>
   <div class="tools">
     <label class="small" for="gm-clvl">Character level</label><select id="gm-clvl"></select>
@@ -887,7 +890,7 @@
   <div class="cards" id="gm-gheed-cards"></div>
   <h3>Which offers to buy</h3>
   <p class="note">The table lists each base Gheed can show: how often a shop of 5 offers has it, the uniques it can be and the
-  chance it is one you're missing (once you tick some; else any grail item), so the gold a new grail item costs if you buy it. An offer you'd rather
+  chance it is one you're missing (once you mark some discovered; else any grail item), so the gold a new grail item costs if you buy it. An offer you'd rather
   skip costs nothing: the next shop's offers are new rolls.</p>
   <div class="tools">
     <input type="search" id="gm-ghq" placeholder="Search a base or an item" aria-label="Search bases and items">
@@ -991,7 +994,7 @@
       act boss or superunique: the Cow King, with his 8 Hell Bovines, in about 1 rare map in 260 and 1 non-magical map in 800
       (an event always brings all three). </li>
     <li><b>Grail progress:</b> each item drops at random at its own rate, so the items found after n maps add up item by item.
-      "Switching" works from the expected progress; with your real ticks the planner does better.</li>
+      "Switching" works from the expected progress; with your real list the planner does better.</li>
     <li><b>Farm spots:</b> one kill of each act boss and superunique in each difficulty, solo: the monster's own drop at its own
       level. The drops of the minions around a superunique are counted apart, as "with its minions". In Normal difficulty a monster
       has a fixed level of its own; in Nightmare and Hell it takes the area's level, but bosses keep theirs; superuniques and their
@@ -1338,7 +1341,7 @@ function renderAnswer() {
   const {R, idx, rows, rr} = SUM, none = rows[0], ears = rows.slice(1);
   const by = k => ears.reduce((a, b) => b[k] < a[k] ? b : a), worst = k => ears.reduce((a, b) => b[k] > a[k] ? b : a);
   const b50 = by("m50"), b90 = by("m90"), bAll = by("all"), w90 = worst("m90");
-  $("gm-answer-note").textContent = `${setting()[0].toUpperCase() + setting().slice(1)}, for a fresh grail (nothing found yet${ITEMS.some(it => FOUND.has(it.key)) ? `; you've ticked ${ITEMS.filter(it => FOUND.has(it.key)).length}, and Your Grail has your plan` : ": Your Grail counts from your ticks"}). The big numbers are without an ear; each goal names the Corrupted Ear that gets there in the fewest maps, which changes with the goal, since each ear's pool holds different items.`;
+  $("gm-answer-note").textContent = `${setting()[0].toUpperCase() + setting().slice(1)}, for a fresh grail (nothing found yet${ITEMS.some(it => FOUND.has(it.key)) ? `; you've marked ${ITEMS.filter(it => FOUND.has(it.key)).length} discovered, and Your Grail has your plan` : ": Your Grail counts from your list"}). The big numbers are without an ear; each goal names the Corrupted Ear that gets there in the fewest maps, which changes with the goal, since each ear's pool holds different items.`;
   const bPer = ears.reduce((a, b) => b.perMap > a.perMap ? b : a);
   $("gm-cards").innerHTML = [
     ["Grail items a map", none.perMap.toFixed(1), "", `${bPer.perMap.toFixed(1)} with ${earsTxt(ears, "perMap", true)}`, false],
@@ -1473,7 +1476,7 @@ function renderHow() {
     `<b>What it is:</b> a Corrupted Ear is cubed with a map in the Horadric Cube. The ear is used up, and the map gets its bonuses and its dangers: monsters have +${E0.hp}% health and each ear makes the map harder in its own way (the cards below list them). So an ear map takes longer; the numbers on this page count maps, not time.`,
     `<b>Every ear, the same:</b> each kill has a ${E0.extra}% chance to drop its whole loot a second time, and the map gets +${E0.rarity}% monster rarity (a few more elite packs). That alone makes every grail item that map monsters drop about ${(1 + E0.extra / 100).toFixed(1)} times as common, whichever ear you use.`,
     `<b>Each ear, its own pool:</b> each kill also has a ${E0.cls}% chance to drop one item from the ear's pool, rolled for quality like any other drop at the monster's level: ${DATA.ears.map(e => `${e.what} (${e.name})`).join(", ")}. The uniques and sets among them are where the ears differ: up to ${times(top.x)} times the usual chance (${top.i != null ? `${ITEMS[top.i].label} with the ${top.e} ear, ${setting()}` : ""}).`,
-    `<b>Which ear:</b> the one whose pool holds the most of what you're missing (each ear's pool is in the table below): <a href="#tab-planner">Your Grail</a> picks it from your ticks.`,
+    `<b>Which ear:</b> the one whose pool holds the most of what you're missing (each ear's pool is in the table below): <a href="#tab-planner">Your Grail</a> picks it from your list.`,
     `<b>Class items roll better:</b> orbs, Paladin shields, Barbarian helms, claws, pelts, heads and Amazon weapons have better chances to be unique, set or rare than other bases.`,
     `<b>Some rolls are wasted:</b> a unique roll on a base that has no unique becomes a rare, and a set roll on a base with no set item becomes magic. Of each pool's items, this share is on bases with no unique: ${DATA.ears.slice().sort((a, b) => b.nounique - a.nounique).map(e => `${e.name} ${Math.round(e.nounique * 100)}%`).join(", ")}.`,
     `<b>Drop level:</b> a unique or set item only drops from a monster of at least its drop level (not the level to wear it). Map monsters are level 87 to 92 (champions +2, unique monsters and their minions +3), so everything but ${joinAnd(never)} can drop in any T1-T3 map: the tier barely matters for the grail.`,
@@ -1504,7 +1507,7 @@ function renderFaq() {
   const ty = find("Tyrael's Might"), tyEar = ty && bestEar(R, ty.i), tyFarm = ty && bestFarm(ty.i), fb = farmBets(R, idx);
   const qa = [
     ["Can the planner read my Discovery Progress?",
-     `No. PD2 has no way to export it, and this page can't see your game. The quickest way in: in game, open the stash's Uniques and Sets tabs and turn on "Show Undiscovered": they list the items you're missing (hover one for its name). Type those names in the box under <a href="#gm-fill">Fill in your grail</a> and press "Tick all but these". Or press "Tick all" there and untick each one under <a href="#gm-list">Every Item</a>: type its name in the search and press Enter. Early in the grail, tick what you've found instead. Your ticks stay in your browser.`],
+     `No. PD2 has no way to export it, and this page can't see your game. The quickest way in: in game, open the stash's Uniques and Sets tabs and turn on "Show Undiscovered": they list the items you're missing (hover one for its name). Type those names in the box under <a href="#gm-fill">Fill in your grail</a> and press "Mark all but these discovered". Or press "Mark all discovered" there and mark each missing one undiscovered under <a href="#gm-list">Every Item</a>: type its name in the search and press Enter. Early in the grail, mark what you've found discovered instead. Your list stays in your browser.`],
     [`Why ${N} items?`,
      `Every unique and set item counts once, whichever of its versions you find (Akarat's Devotion's two are one item). Unique maps, quest items and nine uniques that don't count for the grail are left out (<a href="#gm-method">How It's Worked Out</a> names them): ${N} is the stash's Compendium's own count too. ${idx.length} of the ${N} drop in T1-T3 maps; Annihilus and the Hellfire Torch come from one encounter each.`],
     ["Why is Cow King's Leathers so slow in maps?",
@@ -1516,7 +1519,7 @@ function renderFaq() {
     ["Where do Corrupted Ears come from, and how do I use one?",
      `From the Corrupted Heroes map event: the red text "You feel a corrupted presence watching you, as if you're being hunted..." announces it, and powerful copies of player characters invade the map through black portals (up to 3 portals and 5 invaders a map). Each invader drops a full set of rare items and the Corrupted Ear of its own class. Cube an ear with a map in the Horadric Cube: the ear is used up and the map gets its bonuses and dangers (<a href="#gm-how">Corrupted Ears</a>).`],
     ["Which ear should I use?",
-     `The one whose pool holds the most of what you're missing, and that changes as your grail fills. Early on, the ear that finds the most new items soon; near the end, the ear whose pool holds your last items. <a href="#gm-planner">Your Grail</a> ranks the ears for your ticks three ways (your next 100 maps, 90% of your missing items, all of them), and switching ears as your list shrinks does better than any one ear.`],
+     `The one whose pool holds the most of what you're missing, and that changes as your grail fills. Early on, the ear that finds the most new items soon; near the end, the ear whose pool holds your last items. <a href="#gm-planner">Your Grail</a> ranks the ears for your list three ways (your next 100 maps, 90% of your missing items, all of them), and switching ears as your list shrinks does better than any one ear.`],
     ["Does an ear make the grail faster?",
      `In maps, yes: 90% of the map grail takes ${fmtN(best90.m90)} maps with the best ear (${best90.n}) and ${fmtN(worst90.m90)} with the worst (${worst90.n}), instead of ${fmtN(none.m90)}. In time, not always: ear monsters have +${E0.hp}% health and each ear adds dangers of its own, so each map takes longer. For 90% of the map grail, the best ear saves time when your ear maps take less than ${(none.m90 / best90.m90).toFixed(1)} times as long as your maps without one.`],
     ["Can I run an ear on every map?",
@@ -1691,21 +1694,24 @@ const save = () => { try { localStorage.setItem(STORE, JSON.stringify([...FOUND]
 // the page open in two tabs (the website's and the standalone page share them): a change in one reaches the other
 addEventListener("storage", e => { if (e.key !== STORE) return;
   try { FOUND = new Set(JSON.parse(e.newValue || "[]")); } catch (err) { return; }
-  ticksChanged("Your ticks changed in another tab of this page.", "gm-hmsg"); });
+  ticksChanged("Your list changed in another tab of this page.", "gm-hmsg"); });
 // every change of the ticks keeps the ticks before it, so Undo takes changes back one at a time (this visit only)
 const UNDO = [], UNDO_MAX = 100, BYKEY = new Map(ITEMS.map(it => [it.key, it]));
-let SHOWN = [];  // the rows Every Item lists now: what "Tick shown" and Enter in its search act on
+let SHOWN = [];  // the rows Every Item lists now: what "Mark listed items discovered" and Enter in its search act on
 const nItems = n => n === 1 ? "1 item" : `${n} items`;
 const keep = label => { UNDO.push({label, keys: [...FOUND]}); if (UNDO.length > UNDO_MAX) UNDO.shift(); };
 // a message goes under the controls that made it: Every Item's tick row ("gm-tickmsg") or the box ("gm-io-msg")
 function tickMsg(msg, where) { const el = $(where); if (el) el.textContent = msg; }
-function tickUI() {  // what follows the ticks: the Undo buttons, Tick shown / Untick shown and the ticked count
+function tickUI() {  // what follows the list: the Undo buttons, the two "Mark listed items" buttons and the discovered count
   const a = document.activeElement, last = UNDO[UNDO.length - 1];  // read first: hiding a focused button blurs it at once
   document.querySelectorAll(".grail-map .gm-undo").forEach(b => { b.hidden = !last; if (last) b.textContent = `Undo: ${last.label}`; });
   const off = SHOWN.filter(it => !FOUND.has(it.key)).length, on = SHOWN.length - off;
-  $("gm-tickshown").textContent = `Tick shown (${off})`; $("gm-tickshown").disabled = !off;
-  $("gm-untickshown").textContent = `Untick shown (${on})`; $("gm-untickshown").disabled = !on;
-  $("gm-tickcount").textContent = `${ITEMS.filter(it => FOUND.has(it.key)).length} of ${N} ticked`;
+  // the game's words, discovered / undiscovered (the author, 2026-11-06: players found "Tick shown" / "Untick shown"
+  // confusing); the number is how many items the button changes
+  const listed = (n, word) => `Mark ${n ? `${n} ` : ""}listed item${n === 1 ? "" : "s"} ${word}`;
+  $("gm-tickshown").textContent = listed(off, "discovered"); $("gm-tickshown").disabled = !off;
+  $("gm-untickshown").textContent = listed(on, "undiscovered"); $("gm-untickshown").disabled = !on;
+  $("gm-tickcount").textContent = `${ITEMS.filter(it => FOUND.has(it.key)).length} of ${N} discovered`;
   // a button that just went disabled or hidden would drop the keyboard focus to the page's top: keep it nearby
   if (a && a.closest && a.closest(".grail-map") && (a.disabled || a.hidden)) $(a.closest("#gm-planner") ? "gm-io" : "gm-q").focus({preventScroll: true});
 }
@@ -1716,7 +1722,7 @@ function ticksChanged(msg, where) {  // the other places' messages would be out 
   ["gm-tickmsg", "gm-io-msg", "gm-hmsg", "gm-comp-msg"].forEach(x => { if (x !== where) tickMsg("", x); }); tickMsg(msg, where); tickUI();
 }
 function setTicks(next, label, msg, where) {  // a change that changes nothing keeps no Undo step
-  if (next.size === FOUND.size && [...next].every(k => FOUND.has(k))) { tickMsg("Nothing to change: your ticks are already that.", where); return; }
+  if (next.size === FOUND.size && [...next].every(k => FOUND.has(k))) { tickMsg("Nothing to change: your list is already that.", where); return; }
   keep(label); FOUND = next; ticksChanged(msg, where);
 }
 const cnt = v => v >= 9.95 ? v.toFixed(0) : v.toFixed(1);
@@ -1802,7 +1808,7 @@ function renderPlanner() {  // your plan: the ear to run, the items to target fa
 
   const card = (who, big, small, sub, hl) => `<div class="card${hl ? " hl" : ""}"><div class="who">${who}</div><div class="big" style="font-size:${String(big).length > 12 ? 19 : 28}px">${big}${small ? ` <small>${small}</small>` : ""}</div><div class="sub">${sub}</div></div>`;
   $("gm-plan-cards").innerHTML = [
-    card("Ticked", `${have}`, `of ${N}`, !have ? `nothing yet: <a href="#gm-fill">fill in your grail</a>` : left.length ? `<a href="#tab-items" data-show="unticked">${pl(left.length, "1 grail item", "# grail items")}</a> to go` : "your grail is complete"),
+    card("Discovered", `${have}`, `of ${N}`, !have ? `nothing yet: <a href="#gm-fill">fill in your grail</a>` : left.length ? `<a href="#tab-items" data-show="unticked">${pl(left.length, "1 grail item", "# grail items")}</a> to go` : "your grail is complete"),
     miss.length ? card("Run your maps with", tied.length >= 4 ? "any ear" : `${tied.length > 1 ? joinOr(tied.map(o => o.e)) : b.e} ear`, "", `the most of your missing items in your next 100 maps: about ${cnt(b.n)} (${cnt(none.n)} without an ear)`, true)
       : card("Maps", "Done", "", "nothing left that map monsters drop", true),
     card("Target farm", miss.length ? `${farm.length}` : "–", miss.length ? (farm.length === 1 ? "item" : "items") : "", !miss.length ? "nothing left that maps drop" :
@@ -1818,13 +1824,13 @@ function renderPlanner() {  // your plan: the ear to run, the items to target fa
   const where = s => `${s.name} in ${DIFF[s.diff]}`;
   const mapsSet = `${state.tier === "all" ? "T1-T3" : "T" + state.tier} ${state.mt === "normal" ? "non-magical" : "rare"} maps at ${state.mf}% magic find`;
   const steps = [];
-  if (!left.length) steps.push(`<li><h3>Your grail is complete</h3><p class="note">You've ticked every grail item.</p></li>`);
-  else if (!miss.length) steps.push(`<li><h3>Maps: nothing left</h3><p class="note">You've ticked every item map monsters drop.</p></li>`);
-  else steps.push(`<li><h3>Run your maps with ${earSay}</h3><p class="note">${have ? "" : "Nothing is ticked yet, so this is the plan for a fresh grail. "}On ${mapsSet}, ` +
+  if (!left.length) steps.push(`<li><h3>Your grail is complete</h3><p class="note">You've marked every grail item discovered.</p></li>`);
+  else if (!miss.length) steps.push(`<li><h3>Maps: nothing left</h3><p class="note">You've marked every item map monsters drop discovered.</p></li>`);
+  else steps.push(`<li><h3>Run your maps with ${earSay}</h3><p class="note">${have ? "" : "Nothing is marked discovered yet, so this is the plan for a fresh grail. "}On ${mapsSet}, ` +
     `your next 100 maps should find about ${cnt(b.n)} of the ${pl(miss.length, "item", "# items")} you're missing that map monsters drop (${cnt(none.n)} without an ear)` +
     `${likely.length ? `; for ${pl(likely.length, "one of them", "# of them")} the chance is 50% or better, so maps are ${likely.length === 1 ? "its" : "their"} best bet` : ""}. ` +
     (tied.length >= 4 ? "Every ear does about as well for these, as long as you use one. " : fast.e !== b.e ? `To finish rather than find the most soon, the ${fast.e} ear (the table below). ` : "") +
-    `Tick what you find and look again: the best ear changes as your list shrinks (<a href="#gm-t-plan">every ear</a>; switching ears as it shrinks does better still).</p></li>`);
+    `Mark what you find discovered and look again: the best ear changes as your list shrinks (<a href="#gm-t-plan">every ear</a>; switching ears as it shrinks does better still).</p></li>`);
   if (farm.length) {
     const top = G.reduce((x, g) => g.kill > x.kill ? g : x), K = perMap / top.kill;  // the spot that finds the most of your list
     const spotCard = g => { const open = SPOT_OPEN.has(g.s.j), its = open ? g.items : g.items.slice(0, 8);
@@ -1948,10 +1954,10 @@ function renderItems() {
   $("gm-count").textContent = `${list.length} of ${N} shown`;
   const qa = ALIAS[bare(q)] || q, out = q && !list.length && [...LEFT_OUT].some(k => k.startsWith(bare(qa)) && bare(qa).length > 2);
   if (!list.length) { $("gm-items").innerHTML = `<tbody><tr><td class="l wrapc">${out ? `"${esc(q)}" doesn't count for the grail: <a href="#gm-method">How It's Worked Out</a> names the items left out.` :
-    show === "unticked" && !q && !kind ? "Every item is ticked: your grail is complete." : show === "ticked" && !q && !kind ? "Nothing is ticked yet." : "No item matches the search and filters."}</td></tr></tbody>`;
+    show === "unticked" && !q && !kind ? "Every item is marked discovered: your grail is complete." : show === "ticked" && !q && !kind ? "Nothing is marked discovered yet." : "No item matches the search and filters."}</td></tr></tbody>`;
     ITEM_MORE = null; watchMore(); tickUI(); return; }
   const row = it => { const i = it.i, o = inf.get(it), f = FOUND.has(it.key), b = bf.get(it);
-    return `<tr class="it${f ? " found" : ""}" data-i="${i}" aria-expanded="${OPEN.has(i)}"><td class="have"><input type="checkbox" data-k="${it.key.replace(/"/g, "&quot;")}" ${f ? "checked" : ""} aria-label="Have ${it.label.replace(/"/g, "")}"></td>` +
+    return `<tr class="it${f ? " found" : ""}" data-i="${i}" aria-expanded="${OPEN.has(i)}"><td class="have"><input type="checkbox" data-k="${it.key.replace(/"/g, "&quot;")}" ${f ? "checked" : ""} aria-label="Discovered: ${it.label.replace(/"/g, "")}"></td>` +
         `<td class="name"><span class="q" style="background:var(${it.kind === "SET" ? "--q-set" : "--q-unique"})"></span>${it.name}${it.set ? ` <span class="ver">· ${it.set}</span>` : ""}${it.nv ? ` <span class="ver">· ${it.nv} versions, one grail item</span>` : ""}</td>` +
         `<td class="base opt">${it.base}${it.tier ? ` <span class="ver">${it.tier} base</span>` : ""}</td><td class="opt">${it.lvl}</td>` +
         `<td>${oneIn(R.none[i])}</td><td class="opt">${oneIn(R.any[i])}</td><td class="l">${!(R.none[i] > 0) ? "–" : o.be ? `${o.be}: ${oneIn(o.bv)}` : ear ? `${ear}: ${oneIn(o.bv)}<br><span class="ratio">not in its pool</span>` : `<span class="ratio">same for every ear</span>`}` +
@@ -1959,13 +1965,13 @@ function renderItems() {
         `<td class="opt">${R.none[i] ? "×" + o.gain.toFixed(1) : "–"}</td><td>${o.bv ? fmtN(Math.log(10) / o.bv) + " maps" : "–"}</td>` +
         `<td class="farm">${b ? `${b.s.name} <span class="where">in ${DIFF[b.s.diff]}</span><br><span class="where">${perUnit(b.r[m], b.s.unit)}</span>${bet(R, i).kind === "farm" ? BET_TAG : ""}` : farmElse(i)}<button type="button" class="tw" aria-expanded="${OPEN.has(i)}" aria-label="Details of ${it.label.replace(/"/g, "")}">${OPEN.has(i) ? "▴" : "▾"}</button></td></tr>` +
         (OPEN.has(i) ? `<tr class="gm-detail"><td colspan="10">${farmDetail(i)}</td></tr>` : ""); };
-  $("gm-items").innerHTML = `<thead><tr><th>Have</th><th class="l">Item</th><th class="l opt">Base</th><th class="opt">Drop level${hi("drop")}</th><th>No ear${hi("none")}</th><th class="opt">Any other ear${hi("any")}</th><th class="l">${ear ? ear + " ear" : "Best ear"}${hi("ear")}</th><th class="opt">${ear ? ear + " ear ×" : "Best ear ×"}${hi("gain")}</th><th>Maps for 90%${hi("p90")}</th><th class="l">Best farm spot${hi("farm")}</th></tr></thead><tbody>` +
+  $("gm-items").innerHTML = `<thead><tr><th>Discovered</th><th class="l">Item</th><th class="l opt">Base</th><th class="opt">Drop level${hi("drop")}</th><th>No ear${hi("none")}</th><th class="opt">Any other ear${hi("any")}</th><th class="l">${ear ? ear + " ear" : "Best ear"}${hi("ear")}</th><th class="opt">${ear ? ear + " ear ×" : "Best ear ×"}${hi("gain")}</th><th>Maps for 90%${hi("p90")}</th><th class="l">Best farm spot${hi("farm")}</th></tr></thead><tbody>` +
     list.slice(0, ROWS_FIRST).map(row).join("") + `</tbody>`;
   ITEM_MORE = list.length > ROWS_FIRST ? {list, k: ROWS_FIRST, row} : null; watchMore();
   tickUI();
 }
 // The item table's rows past the first ROWS_FIRST are drawn as the list scrolls near them (the audit: every search, sort
-// or filter rebuilt all 555 rows); "Tick shown" and the counts still take the whole list
+// or filter rebuilt all 555 rows); "Mark listed items" and the counts still take the whole list
 const ROWS_FIRST = 100;
 let ITEM_MORE = null;
 const MORE_IO = window.IntersectionObserver ? new IntersectionObserver(es => { if (es.some(x => x.isIntersecting)) drawMore(); }, {rootMargin: "1500px 0px"}) : null;
@@ -2036,7 +2042,7 @@ function farmDetail(i) {  // an item's best spots per group (and the best fixed 
 $("gm-items").addEventListener("change", e => {  // one box: the list stays as it is, so the row doesn't jump away
   const k = e.target.dataset && e.target.dataset.k; if (!k) return;
   const it = BYKEY.get(k);
-  keep(`${e.target.checked ? "ticked" : "unticked"} ${it ? it.label : "an item"}`);
+  keep(`marked ${it ? it.label : "an item"} ${e.target.checked ? "discovered" : "undiscovered"}`);
   if (e.target.checked) FOUND.add(k); else FOUND.delete(k);
   e.target.closest("tr").classList.toggle("found", e.target.checked);
   save(); planSoon(); renderStart();
@@ -2072,20 +2078,21 @@ $("gm-q").addEventListener("keydown", e => {
   const it = byLabel.get(q) || (SHOWN.length === 1 ? SHOWN[0] : null);
   if (!it) { tickMsg(LEFT_OUT.has(q) ? "That item doesn't count for the grail here (How It's Worked Out names the ones left out)."
     : SHOWN.length ? `${SHOWN.length} items match: type more of the name, then press Enter again.` : "No item matches.", "gm-tickmsg"); return; }
-  if (q === ENTERED) { tickMsg(`${it.label} is ${FOUND.has(it.key) ? "ticked" : "not ticked"}: type the next name.`, "gm-tickmsg"); return; }
+  if (q === ENTERED) { tickMsg(`${it.label} is marked ${FOUND.has(it.key) ? "discovered" : "undiscovered"}: type the next name.`, "gm-tickmsg"); return; }
   ENTERED = q;
   const next = new Set(FOUND), was = next.delete(it.key);
   if (!was) next.add(it.key);
-  setTicks(next, `${was ? "unticked" : "ticked"} ${it.label}`, `${was ? "Unticked" : "Ticked"} ${it.label}.`, "gm-tickmsg");
+  const word = was ? "undiscovered" : "discovered";
+  setTicks(next, `marked ${it.label} ${word}`, `Marked ${it.label} ${word}.`, "gm-tickmsg");
   f.setSelectionRange(0, f.value.length);
 });
 $("gm-tickshown").onclick = () => { const add = SHOWN.filter(it => !FOUND.has(it.key)); if (!add.length) return;
   const what = add.length === 1 ? add[0].label : nItems(add.length);
-  setTicks(new Set([...FOUND, ...add.map(it => it.key)]), `ticked ${what}`, `Ticked ${what}.`, "gm-tickmsg"); };
+  setTicks(new Set([...FOUND, ...add.map(it => it.key)]), `marked ${what} discovered`, `Marked ${what} discovered.`, "gm-tickmsg"); };
 $("gm-untickshown").onclick = () => { const del = SHOWN.filter(it => FOUND.has(it.key)); if (!del.length) return;
   const what = del.length === 1 ? del[0].label : nItems(del.length), next = new Set(FOUND);
   del.forEach(it => next.delete(it.key));
-  setTicks(next, `unticked ${what}`, `Unticked ${what}.`, "gm-tickmsg"); };
+  setTicks(next, `marked ${what} undiscovered`, `Marked ${what} undiscovered.`, "gm-tickmsg"); };
 document.querySelectorAll(".grail-map .gm-undo").forEach(b => { b.onclick = () => {
   const u = UNDO.pop(); if (!u) return;
   FOUND = new Set(u.keys); ticksChanged(`Undone: ${u.label}.`, b.dataset.msg); }; });
@@ -2170,18 +2177,18 @@ function renderComp() {
   h += `<button type="button" class="at pg" style="${box(...CL.prev, 32, 22)}" data-p="-1" data-f="prev" aria-label="Previous page">${piece("prev", 0, 0, "", 32)}</button>`;
   h += tbox("name", [`${page + 1}/${total}`], CL.page[0] - 30, CL.page[1] - 15, 60, 22, 0, "c-white", `Page ${page + 1} of ${total}`);
   h += `<button type="button" class="at pg" style="${box(...CL.next, 32, 22)}" data-p="1" data-f="next" aria-label="Next page">${piece("next", 0, 0, "", 32)}</button>`;
-  // the bottom row (the author, 2026-11-04): Undo, Tick shown and Untick shown (the page's cards: what they act on),
-  // close (the List view)
+  // the bottom row (the author, 2026-11-04): Undo, Mark discovered and Mark undiscovered (the page's cards: what they act
+  // on; the number is how many they change), close (the List view)
   SHOWN = cards.filter(c => c[0] >= 0).map(c => ITEMS[c[0]]);
   const nOff = SHOWN.filter(it => !FOUND.has(it.key)).length, nOn = SHOWN.length - nOff, last = UNDO[UNDO.length - 1];
   const gbtn = (act, on, label) => `<button type="button" class="at gbtn${on ? "" : " off"}" style="${box(...CL[act], 32, 32)}" data-act="${act}" data-f="${act}" ` +
     `data-tip="${act}" aria-label="${esc(label)}"${on ? "" : " aria-disabled=\"true\""}>${piece(act, 0, 0, "", 32)}</button>`;
-  const gbar = (act, n, words, icon) => { const [x, y, w, hh] = CL[act];
+  const gbar = (act, n, word, icon) => { const [x, y, w, hh] = CL[act], words = `Mark ${n ? `${n} ` : ""}${word}`;
     return `<button type="button" class="at gbar${n ? "" : " off"}" style="${box(x, y, w, hh)}" data-act="${act}" data-f="${act}" data-tip="${act}" ` +
-      `aria-label="${esc(`${words} (${n})`)}"${n ? "" : " aria-disabled=\"true\""}><span class="at clip" style="${box(3, 1, 16, 16)}">${piece(icon, -3, -3)}</span>` +
-      tbox("bar", [`${words} (${n})`], 23, 0, w - 23, hh, 0, n ? "c-white" : "") + `</button>`; };
-  h += gbtn("undo", !!last, last ? `Undo: ${last.label}` : "Nothing to undo") + gbar("tick", nOff, "Tick shown", "disc1") +
-    gbar("untick", nOn, "Untick shown", "disc2") + gbtn("close", true, "Close: back to the List view");
+      `aria-label="${esc(`${words} (cards on this page)`)}"${n ? "" : " aria-disabled=\"true\""}><span class="at clip" style="${box(3, 1, 16, 16)}">${piece(icon, -3, -3)}</span>` +
+      tbox("bar", [words], 23, 0, w - 23, hh, 0, n ? "c-white" : "") + `</button>`; };
+  h += gbtn("undo", !!last, last ? `Undo: ${last.label}` : "Nothing to undo") + gbar("tick", nOff, "discovered", "disc1") +
+    gbar("untick", nOn, "undiscovered", "disc2") + gbtn("close", true, "Close: back to the List view");
   $("gm-comp-stage").innerHTML = h;
   $("gm-comp-cats").innerHTML = ["u", "s"].map(t => { const word = w[t === "u" ? "StashCategoryUniques" : "StashCategorySets"];
     return `<button type="button" class="cat" data-cat="${t}" data-f="t${t}" aria-pressed="${t === tab}" aria-label="${esc(word)}">` +
@@ -2211,9 +2218,9 @@ function howCard() {
       `<b>Discovery Progress</b> shows all items, the discovered or the undiscovered ones; the pages and their count stay, as in the game.`) +
     step(crop("prev", 0, 0, 32, 22, 1.4) + crop("next", 0, 0, 32, 22, 1.4),
       `<b>Turn the pages</b> here, or with the <span class="keys">←</span> <span class="keys">→</span> keys.`) +
-    step(`<span class="chip">Tick shown</span>`, `In the panel's bottom row: marks every card on the page discovered, <b>Untick shown</b> undiscovered; <b>Undo</b> (the arrows) takes it back, and the X closes the view.`) +
+    step(`<span class="chip">Mark 6 discovered</span>`, `In the panel's bottom row: marks the page's cards discovered (the number: how many it changes); <b>Mark … undiscovered</b> under it does the opposite, <b>Undo</b> (the arrows) takes it back, and the X closes the view.`) +
     `</div><p class="foot">${matchMedia("(hover: hover)").matches ? "Point at" : "Tap"} a button or a card for its name, as in the game. "???" cards are the hidden uniques, which don't count. ` +
-    `Every picture is half see-through, as the game draws an item not in your Compendium's storage: the planner can't know which you keep there. What you mark here is ticked in the List view too.</p>`;
+    `Every picture is half see-through, as the game draws an item not in your Compendium's storage: the planner can't know which you keep there. What you mark here shows in the List view too.</p>`;
 }
 function progressCard() {
   const of = cs => [cs.filter(cFound).length, cs.length];
@@ -2245,11 +2252,11 @@ function tipLines(key) {
   if (key[0] === "b") return [one(CP.buttons[CV.tab][+key.slice(1)])];
   if (key === "undo") { const last = UNDO[UNDO.length - 1]; return last ? [one("Undo"), grey(last.label)] : [grey("Nothing to undo")]; }
   if (key === "close") return [one("Close"), grey("back to the List view")];
-  if (key === "tick" || key === "untick") return [one(key === "tick" ? "Tick shown" : "Untick shown"),
-    grey(`marks this page's cards ${key === "tick" ? "discovered" : "undiscovered"}`)];
+  if (key === "tick" || key === "untick") return [one(key === "tick" ? "Mark discovered" : "Mark undiscovered"),
+    grey("every card on this page")];
   const it = ITEMS[+key.slice(1)], q = it.kind === "SET" ? "c-green" : "c-gold", on = FOUND.has(it.key);
   const act = matchMedia("(hover: hover)").matches ? "a click" : "a tap";
-  return [one(it.label, q), one(it.base, q), grey(on ? `Discovered: ${act} unmarks it` : `${capFirst(act)} marks it discovered`)];
+  return [one(it.label, q), one(it.base, q), grey(on ? `Discovered: ${act} marks it undiscovered` : `${capFirst(act)} marks it discovered`)];
 }
 function compTip(t) {  // show the hover text of t (none: hide it): centred over it, its bottom 4 game pixels above it
   const tip = $("gm-comp-tip");
@@ -2287,7 +2294,7 @@ $("gm-comp").addEventListener("click", e => {
   const b = e.target.closest("button"); if (!b) return;
   if (b.dataset.c && COMP_TAP !== null && COMP_TAP !== "c" + b.dataset.c) { compTip(b); COMP_TAP = null; return; }  // a tap: its hover text first
   COMP_TAP = null;
-  if (b.dataset.c) {  // a card: mark its item discovered (ticked) or undiscovered
+  if (b.dataset.c) {  // a card: mark its item discovered or undiscovered
     const it = ITEMS[+b.dataset.c], on = !FOUND.has(it.key), was = on ? "discovered" : "undiscovered";
     keep(`marked ${it.label} ${was}`);
     if (on) FOUND.add(it.key); else FOUND.delete(it.key);
@@ -2385,30 +2392,30 @@ function fromBox(f) {  // run f on the box's items, unless it has none
   f(p, say);
 }
 $("gm-paste-tick").onclick = () => fromBox((p, say) => { const n = p.keys.size, add = [...p.keys].filter(k => !FOUND.has(k)).length;
-  if (!add) { say(`${n === 1 ? "The item in the box is" : `The ${n} items in the box are`} already ticked.` + pasteNote(p)); return; }
-  setTicks(new Set([...FOUND, ...p.keys]), `ticked ${nItems(add)} from the box`,
-    `Ticked ${nItems(add)}${add < n ? ` (${n - add} already ticked)` : ""}.` + pasteNote(p), "gm-io-msg"); });
-const MARKS = "This list marks found and missing items: press \"Replace my ticks\", which ticks the ones marked found and unticks the rest.";
+  if (!add) { say(`${n === 1 ? "The item in the box is" : `The ${n} items in the box are`} already marked discovered.` + pasteNote(p)); return; }
+  setTicks(new Set([...FOUND, ...p.keys]), `marked ${nItems(add)} from the box discovered`,
+    `Marked ${nItems(add)} discovered${add < n ? ` (${n - add} already were)` : ""}.` + pasteNote(p), "gm-io-msg"); });
+const MARKS = "This list says which items are found and which are missing: press \"Replace my list\", which marks the found ones discovered and the rest undiscovered.";
 $("gm-paste-untick").onclick = () => fromBox((p, say) => { if (p.marked) { say(MARKS); return; }
   const n = p.keys.size, next = new Set(FOUND), del = [...p.keys].filter(k => next.delete(k)).length;
-  if (!del) { say((n === 1 ? "The item in the box isn't ticked." : `None of the ${n} items in the box are ticked.`) + pasteNote(p)); return; }
-  setTicks(next, `unticked ${nItems(del)} from the box`,
-    `Unticked ${nItems(del)}${del < n ? ` (${n - del} ${n - del === 1 ? "wasn't" : "weren't"} ticked)` : ""}.` + pasteNote(p), "gm-io-msg"); });
-$("gm-paste-allbut").onclick = () => fromBox((p, say) => {  // a line it doesn't know would end up ticked as found: fix it first
+  if (!del) { say((n === 1 ? "The item in the box is already undiscovered." : `The ${n} items in the box are already undiscovered.`) + pasteNote(p)); return; }
+  setTicks(next, `marked ${nItems(del)} from the box undiscovered`,
+    `Marked ${nItems(del)} undiscovered${del < n ? ` (${n - del} already ${n - del === 1 ? "was" : "were"})` : ""}.` + pasteNote(p), "gm-io-msg"); });
+$("gm-paste-allbut").onclick = () => fromBox((p, say) => {  // a line it doesn't know would end up marked discovered: fix it first
   if (p.marked) { say(MARKS); return; }
-  if (p.miss.length) { say("Nothing changed: the lines it doesn't recognize would be ticked as found. Fix them, then press again." + pasteNote(p)); return; }
-  setTicks(new Set(ITEMS.filter(it => !p.keys.has(it.key)).map(it => it.key)), `ticked all but ${nItems(p.keys.size)}`,
-    `Ticked every item but ${inBox(p.keys.size)}: ${N - p.keys.size} of ${N} ticked.` + pasteNote(p), "gm-io-msg"); });
-$("gm-import").onclick = () => fromBox(p => setTicks(new Set(p.keys), "replaced your ticks",
-  `Your ticks are now ${inBox(p.keys.size)}.` + pasteNote(p), "gm-io-msg"));
-$("gm-tickall").onclick = () => setTicks(new Set(ITEMS.map(it => it.key)), "ticked all",
-  `All ${N} items ticked. Now untick what you're missing: type the names in the box and press "Untick these", or type each one in Every Item's search and press Enter.`, "gm-io-msg");
-$("gm-clear").onclick = () => setTicks(new Set(), "unticked all", "Every tick taken off.", "gm-io-msg");
+  if (p.miss.length) { say("Nothing changed: the lines it doesn't recognize would be marked discovered. Fix them, then press again." + pasteNote(p)); return; }
+  setTicks(new Set(ITEMS.filter(it => !p.keys.has(it.key)).map(it => it.key)), `marked all but ${nItems(p.keys.size)} discovered`,
+    `Marked every item discovered but ${inBox(p.keys.size)}: ${N - p.keys.size} of ${N} discovered.` + pasteNote(p), "gm-io-msg"); });
+$("gm-import").onclick = () => fromBox(p => setTicks(new Set(p.keys), "replaced your list",
+  `Your discovered items are now ${inBox(p.keys.size)}.` + pasteNote(p), "gm-io-msg"));
+$("gm-tickall").onclick = () => setTicks(new Set(ITEMS.map(it => it.key)), "marked all discovered",
+  `All ${N} items marked discovered. Now mark what you're missing undiscovered: type the names in the box and press "Mark these undiscovered", or type each one in Every Item's search and press Enter.`, "gm-io-msg");
+$("gm-clear").onclick = () => setTicks(new Set(), "marked all undiscovered", "Every item marked undiscovered.", "gm-io-msg");
 const myList = () => ITEMS.filter(it => FOUND.has(it.key)).map(it => it.label);
 $("gm-export").onclick = () => { const l = myList(); $("gm-io").value = l.join("\n");
-  tickMsg(l.length ? `${nItems(l.length)} listed.` : "Nothing is ticked yet.", "gm-io-msg"); };
-$("gm-copy").onclick = () => {  // copies the list of your ticks; the box keeps what you typed in it
-  const l = myList(); if (!l.length) { tickMsg("Nothing is ticked yet.", "gm-io-msg"); return; }
+  tickMsg(l.length ? `${nItems(l.length)} listed.` : "Nothing is marked discovered yet.", "gm-io-msg"); };
+$("gm-copy").onclick = () => {  // copies the list of your discovered items; the box keeps what you typed in it
+  const l = myList(); if (!l.length) { tickMsg("Nothing is marked discovered yet.", "gm-io-msg"); return; }
   const text = l.join("\n"), fail = () => tickMsg('This browser didn\'t let the page copy: press "Show my list", then select the box\'s text and copy it.', "gm-io-msg");
   try { navigator.clipboard.writeText(text).then(() => tickMsg(`Copied your list of ${nItems(l.length)}.`, "gm-io-msg"), fail); } catch (e) { fail(); } };
 if (!ITEMS.some(it => FOUND.has(it.key))) $("gm-fill").open = true;  // a fresh grail: the ways to fill it in show at once
@@ -2591,6 +2598,14 @@ function renderGamble() {
     `<b>What the shop can show:</b> at character level ${GCL[l]} a gamble's item level is ${ilo === ihi ? ilo : `${ilo} to ${ihi}`}, so its offers come from the ${shop} bases of level ${ihi} or lower, ` +
       `and only uniques and set items of that level or lower can come out of them: ${can.length} grail item${can.length === 1 ? "" : "s"} in all` +
       (fresh ? "" : `, ${can.filter(it => !FOUND.has(it.key)).length} of them missing from yours`) + `. The table lists the bases that can give ${fresh ? "one" : "one you're missing"}; the others never can at this level.`,
+    // the kinds no gamble gives (the author, 2026-11-06: a friend missing Gull looked for the Dagger here)
+    (() => { const never = ITEMS.filter(it => !GAMBLE[it.i].length), miss = never.filter(it => !FOUND.has(it.key));
+      const ex = ["Gull", "The Oculus", "Annihilus"].filter(n => never.some(it => it.name === n));
+      return `<b>Never from gambling:</b> the shop never offers ${joinAnd(GB.never)}${GB.cow ? ", and a gamble never makes Cow King's Leathers (only Hell Bovines drop it)" : ""}, ` +
+        `so ${never.length} grail items can't come from a gamble, ` +
+        (fresh ? `${joinAnd(ex)} among them` : !miss.length ? "none of them missing from yours" :
+          `${miss.length} of them missing from yours${miss.length <= 5 ? `: ${joinAnd(miss.map(it => it.label))}` : ""}`) +
+        `. Their details under <a href="#gm-list">Every Item</a> give where to farm them.`; })(),
     rows.length ? `<b>Best at character level ${GCL[l]}:</b> ${GB.bases[rows[0].j][1]}, about ${goldTxt(rows[0].per)} gold per new item (${rows[0].n * 1000 >= .05 ? `${cnt(rows[0].n * 1000)} ${what} in 1,000 gambles` : `1 of ${what} in ${fmtN(1 / rows[0].n)} gambles`}). ` +
       `The levels to pick from are a sample (${GCL[0]} to ${GCL[GCL.length - 1]}); a level between two of them pays about what they do. Prices are the full ones: a quest's or an item's reduced vendor prices take a share off.` : "",
     ga && ga.k !== l ? `<b>Another character level can pay less:</b> at level ${GCL[ga.k]}, ${GB.bases[ga.r.j][1]} takes about ${goldTxt(ga.r.per)} gold per new item. A gambled item's level follows the character's, so a low level gambles only a base's low-level uniques and sets, at a better chance each; rings and amulets cost the same at every level, other bases more the higher the level. Discovery Progress is kept per account and game mode, so what a low-level character of yours gambles counts for your grail.` : "",
@@ -2687,7 +2702,7 @@ const pic = (it, k) => { const c = it && CARD[it.i]; if (!c) return ""; const a 
 // the three ways to mark what you've found: the hero's menu and step 2
 const WAYS = [["gm-comp", "Page through the Compendium", "The stash's Uniques and Sets pages as the game shows them: click the cards you've discovered.",
   `<span class="comp mini">${crop("cardFound", 30, 24, 32, 20, 1.1)}</span>`],
-  ["tab-items", "Tick them in a list", "Search a name, or tick a whole set or base at once.",
+  ["tab-items", "Mark them in a list", "Search a name, or mark a whole set or base at once.",
   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h1M4 12h1M4 18h1M9 6h11M9 12h11M9 18h11"/></svg>`],
   ["gm-fill", "Paste a list", "From the stash with Show Undiscovered on, a spreadsheet or another grail tracker.",
   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M8.5 10h7M8.5 14h7M8.5 18h4"/></svg>`]];
@@ -2712,12 +2727,12 @@ function heroCards() {
   const [pt, ph] = CL.plate;
   hc.innerHTML = pick.map((it, n) => { const c = CARD[it.i], on = FOUND.has(it.key);
     return `<button type="button" class="at cc" style="${box(n * (90 + gap), 0, 90, 150)}" data-hc="${it.i}" aria-pressed="${on}" ` +
-      `aria-label="${esc(`${it.label}, ${it.base}: ${on ? "found; click to mark it not found" : "click to mark it found"}`)}">` +
+      `aria-label="${esc(`${it.label}, ${it.base}: ${on ? "discovered; click to mark it undiscovered" : "click to mark it discovered"}`)}">` +
       piece(on ? "cardFound" : "card", 0, 0) + piece(c[3], c[4], c[5]) + tbox("name", c[2], 0, pt, 90, ph, 9) + `</button>`; }).join("");
 }
 $("gm-hcards").addEventListener("click", e => {
   const b = e.target.closest("button[data-hc]"); if (!b) return;
-  const it = ITEMS[+b.dataset.hc], on = !FOUND.has(it.key), was = on ? "found" : "not found";
+  const it = ITEMS[+b.dataset.hc], on = !FOUND.has(it.key), was = on ? "discovered" : "undiscovered";
   keep(`marked ${it.label} ${was}`);
   if (on) FOUND.add(it.key); else FOUND.delete(it.key);
   ticksChanged(`Marked ${it.label} ${was}.`, "gm-hmsg");
@@ -2749,7 +2764,7 @@ function renderStart() {
     `<div class="small">${!n ? "Nothing marked yet" : n === N ? "Every grail item found" : `${N - n} to go`}</div>`;
   heroCards();
   $("gm-hcap").textContent = n ? "Your two latest marks and the rarest one you're missing in maps. A click marks a card, as in the game's Compendium." :
-    "Click a card to mark it found, as in the game's Compendium.";
+    "Click a card to mark it discovered, as in the game's Compendium.";
   $("gm-lede").hidden = !!n; $("gm-welcome").hidden = !n;
   if (n) $("gm-welcome").innerHTML = n === N ? `<b>Your grail is complete:</b> all ${N} found.` : `<b>Welcome back.</b> You've found ${n} of ${N}. ` +
     (miss.length ? `Next: the ${e100} ear on your maps${first ? `, and ${first}${/for \d+$/.test(first) ? " of your missing items" : ""}` : ""}.` :
@@ -2786,7 +2801,7 @@ function renderLookup() {
     `<div class="facts">${facts.map(([v, k]) => `<div class="fact"><span class="v">${v}</span><span class="k">${k}</span></div>`).join("")}</div>` +
     `<div class="betl">${betLine(R, i)}</div>` +
     (f ? `<div class="spot1"><b>Best farm spot:</b> ${esc(f.s.name)} in ${DIFF[f.s.diff]} (${esc(f.s.area)}): ${perUnit(f.r[m], f.s.unit)}.</div>` : "") +
-    `<div class="acts"><button type="button" class="btn" id="gm-lmark">${on ? "Mark it not found" : "Mark it found"}</button>` +
+    `<div class="acts"><button type="button" class="btn" id="gm-lmark">${on ? "Mark it undiscovered" : "Mark it discovered"}</button>` +
     `<a href="#tab-items" id="gm-lall">All its farm spots, under Every Item</a></div></div>`;
 }
 const LQI = $("gm-lq"), LSG = $("gm-lsugg");
@@ -2814,7 +2829,7 @@ $("gm-lchips").innerHTML = ["Tyrael's Might", "Griffon's Eye", "Windforce", "Dea
 $("gm-lchips").addEventListener("click", e => { const b = e.target.closest("button[data-i]"); if (b) lpick(ITEMS[+b.dataset.i]); });
 $("gm-lans").addEventListener("click", e => {
   if (e.target.closest("#gm-lmark")) {
-    const it = LQ, on = !FOUND.has(it.key), was = on ? "found" : "not found";
+    const it = LQ, on = !FOUND.has(it.key), was = on ? "discovered" : "undiscovered";
     keep(`marked ${it.label} ${was}`); if (on) FOUND.add(it.key); else FOUND.delete(it.key);
     ticksChanged(`Marked ${it.label} ${was}.`, "gm-hmsg"); $("gm-lmark").focus(); return;
   }
@@ -2942,7 +2957,7 @@ document.querySelector(".grail-map .tabs").addEventListener("click", e => {
 document.addEventListener("click", e => {  // links to a section, on this page or in the website's text above it
   const a = e.target.closest('a[href^="#gm-"], a[href^="#tab-"]'); if (!a) return;
   e.preventDefault();
-  if (a.dataset.show) { if (CV.view !== "list") setView("list"); $("gm-show").value = a.dataset.show; renderItems(); }  // "your missing items": Every Item, Not ticked
+  if (a.dataset.show) { if (CV.view !== "list") setView("list"); $("gm-show").value = a.dataset.show; renderItems(); }  // "your missing items": Every Item, Undiscovered
   if (a.dataset.comp) compGoTo(+a.dataset.comp);  // an item's page in the Compendium view
   try { history.pushState(null, "", a.getAttribute("href")); } catch (err) {}
   fromHash();

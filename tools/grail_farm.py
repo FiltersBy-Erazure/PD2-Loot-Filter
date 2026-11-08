@@ -759,21 +759,44 @@ def lucion_info(t):
             "boost": [boost("LucionChestLow"), boost("LucionChestHigh")], "map": name("luca"), "keys": keys}
 
 
+# The kinds of grail items no gamble can give (Gamble.txt lists no base of theirs: the 2026-11-04 build), in the
+# Gambling section's words, each with its item types (an item's own type, the first of docs/pd2-bases.tsv's types).
+# The author, 2026-11-06: a friend missing Gull looked for the Dagger in the gambling table. pack_gamble checks them
+# against the data: a patch that changes the gamble list stops the run until this list says what it does.
+NOT_GAMBLED = [("daggers", {"knif"}), ("clubs", {"club"}), ("wands", {"wand"}), ("scepters", {"scep"}),
+               ("staves", {"staf"}), ("sorceress orbs", {"orb"}), ("assassin claws", {"h2h", "h2h2"}),
+               ("Amazon weapons", {"abow", "aspe", "ajav"}), ("druid pelts", {"pelt"}), ("barbarian helms", {"phlm"}),
+               ("necromancer heads", {"head"}), ("paladin shields", {"ashd"}), ("charms", {"scha", "mcha", "lcha"})]
+
+
 def pack_gamble(t, items, rates):
     """Gambling for the page: the bases (code, name), each base's gold a gamble per character level, and per grail
-    item its bases with the chance a gamble per character level (base index + a rate code per level)."""
+    item its bases with the chance a gamble per character level (base index + a rate code per level); "never": the
+    kinds of NOT_GAMBLED that grail items no gamble gives are of, "cow": a gamble never makes Cow King's Leathers."""
     clvls = sorted(rates)
     bases = list(rates[clvls[0]])
-    names = {r["code"]: r["name"] for r in pd2_data.read_table("".join(
-        l for l in GM.BASES.read_text(encoding="utf-8").splitlines(True) if not l.startswith("#")))}
+    table = pd2_data.read_table("".join(
+        l for l in GM.BASES.read_text(encoding="utf-8").splitlines(True) if not l.startswith("#")))
+    names = {r["code"]: r["name"] for r in table}
+    own_type = {r["code"]: r["types"].split(",")[0] for r in table}
     per_item = [""] * len(items)
     for j, b in enumerate(bases):
         for i in sorted({i for l in clvls for i in rates[l][b][1]}):
             per_item[i] += code(j) + "".join(k_of(rates[l][b][1].get(i, 0)) for l in clvls)
+    # an item is of a kind NOT_GAMBLED names exactly when no gamble gives it (each of its versions' bases counts);
+    # Cow King's Leathers ("cow") on gambled bases, but only a Hell Bovine's drop can be it
+    known = set().union(*(s for _, s in NOT_GAMBLED)) | {"cow"}
+    kinds = [{"cow"} if it["kind"] == "SET" and it["index"] in GM.COW_SET else
+             {own_type.get(c, "?") for c, _, _ in it["rows"]} for it in items]
+    wrong = [f'{it["name"]} ({"gambled" if per_item[i] else "never gambled"}, {"/".join(sorted(kinds[i]))})'
+             for i, it in enumerate(items) if bool(per_item[i]) == (kinds[i] <= known)]
+    assert not wrong, f"NOT_GAMBLED in grail_farm.py no longer matches the gamble list: {wrong}"
+    never = set().union(*(k for i, k in enumerate(kinds) if not per_item[i]))
     return {"clvls": clvls, "bases": [[b, names.get(b) or t.items[b].get("name", b)] for b in bases],
             "price": [[rates[l][b][0] for l in clvls] for b in bases], "items": per_item,
             # each base's own level: the page says which bases the shop shows at a character level
-            "lvl": [num(t.items[b]["level"]) for b in bases]}
+            "lvl": [num(t.items[b]["level"]) for b in bases],
+            "never": [w for w, s in NOT_GAMBLED if s & never], "cow": "cow" in never}
 
 
 # ---------------------------------------------------------------- checks and printouts

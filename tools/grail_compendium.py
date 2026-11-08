@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 The Grail Planner's Compendium view (the author, 2026-11-04): the stash Compendium's pages as the game draws them, so
-a player can page through the game's Compendium and the planner side by side and tick what they've found there.
+a player can page through the game's Compendium and the planner side by side and mark what they've discovered there.
 
 tools/grail_map.py calls build() with the game folder. It reads the Compendium's own pictures (pd2assets.mpq: the
 stash panel, the cards, the buttons), every grail item's inventory picture and D2GL's fonts (d2gl.mpq), and returns
@@ -17,7 +17,7 @@ How the Compendium shows its items (checked against the author's screenshots, 20
 - Discovery Progress (the diamond button by the counter) shows all, the discovered or the undiscovered items. The page
   count ("4/73") counts every item of the button either way, so the pages past the shown ones stay empty (Uniques) or
   show the last shown set again (Sets). The counter is the tab's discovered items of all, the percent rounded down.
-- A card has the red diamond when its item is discovered (in the planner: ticked). Its picture (item_picture: a ring,
+- A card has the red diamond when its item is discovered (in the planner: marked discovered). Its picture (item_picture: a ring,
   amulet or charm with no picture of its own shows its item type's first) is half transparent
   unless the item lies in the Compendium (the planner can't know that, so always half), its name grey, on two lines
   when wider than 80 pixels in the game's font, cut at the space nearest the middle (D2Font.lines).
@@ -28,8 +28,8 @@ How the Compendium shows its items (checked against the author's screenshots, 20
   shader draws it (median of the three distances, the font's weight and smoothing), SCALE pixels a game pixel, once
   per color the view writes in (TEXT_COLORS).
 - The bottom row (the author, 2026-11-04): where the stash has its close button, gold, Search and cancel button, the
-  view has Undo (the game's arrows button), Tick shown and Untick shown (the page's cards discovered / undiscovered)
-  and the game's close button, back to the List view.
+  view has Undo (the game's arrows button), "Mark N discovered" and "Mark N undiscovered" (the page's cards; N: how
+  many it changes) and the game's close button, back to the List view.
 - Places in game pixels, from the panel's top left (LAYOUT); an item of w x h inventory cells sits in its card in the
   box at (17 + (2 - w) x 29 / 2, 151 - (132 - 29 h) / 2 - 29 h), both rounded toward zero, centred in it.
 """
@@ -103,8 +103,8 @@ def layout():
     return {"h": PANEL_H, "cards": [[X0 + 5 + 95 * c, Y0 + 69 + 158 * r] for r in range(2) for c in range(3)],
             "icons": {"u": icons(len(UNIQUE_BUTTONS)), "s": icons(len(SET_BUTTONS))},
             "disc": [X0 + 4, Y0 + 415], "prev": [X0 + 189, Y0 + 415], "next": [X0 + 254, Y0 + 415],
-            # the bottom row (the panel's boxes): Undo in the left square, Tick shown in the gold bar (its coin box,
-            # its text box), Untick shown in the Search bar, close in the right square
+            # the bottom row (the panel's boxes): Undo in the left square, Mark discovered in the gold bar (its coin
+            # box, its text box), Mark undiscovered in the Search bar, close in the right square
             "undo": [15, 462], "close": [273, 462], "tick": [73, 460, 174, 18], "untick": [73, 479, 174, 18],
             "count": [X0 + 34, Y0 + 430], "page": [X0 + 237, Y0 + 430], "setName": [96, 55, 128, 22],
             "plate": [7, 20]}  # a card's name plate (top, height): its name centred in it (the author, 2026-11-04)

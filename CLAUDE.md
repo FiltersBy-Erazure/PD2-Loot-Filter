@@ -674,12 +674,15 @@
   found in the next 100 maps (a repeat counts once) and shows the best
   ear for 90% and for all of them beside it (the author, 2026-10-30: one "best ear" per goal, never drops per map,
   which count duplicates). Phones: the settings fold into one line, the tab row fades where more tabs are, and an
-  item's details keep to the visible part of the wide table (`--vis`). Ticks (the author, 2026-10-31: start from a full
-  list and untick what's missing, or tick a few, without 555 clicks): Every Item's "Tick shown" / "Untick shown" act on the
-  rows the search and filters list (`SHOWN`), Enter in its search ticks or unticks the item it names (or the only row), Show
-  "Not ticked" / "Ticked"; Your Grail's "Fill in your grail" panel (`#gm-fill`, open when nothing is ticked) has the box's
-  Tick these / Untick these / Tick all but these (refused while a line is unrecognised: it would be ticked as found) /
-  Replace my ticks, and Tick all / Untick all / Show my list / Copy. Every change keeps the ticks before it (`UNDO`, 100
+  item's details keep to the visible part of the wide table (`--vis`). The player's list (the author, 2026-10-31: start
+  from a full list and mark what's missing, or mark a few, without 555 clicks; its words are the game's, discovered /
+  undiscovered, since 2026-11-06, the author: players found "tick" / "untick" confusing; the code still says ticks):
+  Every Item's "Mark N listed items discovered" / "... undiscovered" (N: how many it changes) act on the
+  rows the search and filters list (`SHOWN`), Enter in its search marks the item it names (or the only row) discovered or
+  undiscovered, its box column is "Discovered", Show "Undiscovered" / "Discovered"; Your Grail's "Fill in your grail"
+  panel (`#gm-fill`, open when nothing is discovered) has the box's Mark these discovered / Mark these undiscovered / Mark
+  all but these discovered (refused while a line is unrecognised: it would be marked discovered) / Replace my list, and
+  Mark all discovered / Mark all undiscovered / Show my list / Copy. Every change keeps the list before it (`UNDO`, 100
   steps, this visit only; a change that changes nothing keeps none). The box skips empty-box lines (`[ ]`), refuses JSON,
   reads a spreadsheet row by the cell with a name and a name without its leading "The", and reports the `NOT_GRAIL` names
   apart (`DATA.notGrail`). Every Item's sort "Compendium order" (the author, 2026-11-04: tick items while paging
@@ -697,11 +700,11 @@
   wrapped by D2GL's font 6 widths): its pages, 24 item-type buttons (`UNIQUE_BUTTONS`), 4 set buttons (`SET_BUTTONS`),
   the hidden uniques after the others (`HIDDEN`), Discovery Progress (all / discovered / undiscovered; the page count
   ignores it, as the game's) and the counter, all as the game shows them, with the game's hover texts (the page's own,
-  not the browser's). A card's red diamond = ticked; a click marks it discovered (ticked) or undiscovered (the author:
-  the view says discovered / undiscovered, not ticked / unticked); the arrow keys turn pages. The panel's bottom row
+  not the browser's). A card's red diamond = discovered; a click marks it discovered or undiscovered (the author:
+  the view says discovered / undiscovered); the arrow keys turn pages. The panel's bottom row
   (the author, 2026-11-04: where the stash has its close button, gold, Search and cancel button) has Undo (the game's
-  arrows button), Tick shown in the gold bar and Untick shown in the Search bar (the page's cards) and the game's close
-  button, back to the List view; the List view's tick row hides in this view. All its text is in the game's own fonts
+  arrows button), "Mark N discovered" in the gold bar and "Mark N undiscovered" in the Search bar (the page's cards) and
+  the game's close button, back to the List view; the List view's mark buttons hide in this view. All its text is in the game's own fonts
   (the author, 2026-11-04): D2GL's atlases (d2gl.mpq; `FONTS`: names 6, Uniques / Sets 0, hover texts 1, bottom row 15)
   drawn as D2GL's shader draws them onto a second sheet, `Erazure-Grail-Planner-Glyphs.png` (~170 KB), every letter
   once per color (`TEXT_COLORS`), each letter a piece of it on the page (not a CSS mask: a mask needs the page's own
@@ -726,7 +729,12 @@
   a ring and an amulet (the first two slots) at any (the audit, 2026-11-04: a Light Belt was ranked at character level 1).
   The section says how many bases the shop can show at the level (the data's `lvl`, each base's own level) and how
   many grail items a gamble there can give; its table lists only the bases that can give one (one you're missing): the
-  author, 2026-11-05, saw 23 bases in game at character level 1 (item level 5) where the table listed 4. The page: a Gambling section on Target Farming (character level 1-99 select, bases by gold per new grail item
+  author, 2026-11-05, saw 23 bases in game at character level 1 (item level 5) where the table listed 4. Gamble.txt has
+  no dagger, club, wand, scepter, staff, orb, claw, other class-only item or charm (Season 3's notes: claws and clubs
+  were taken off as they roll staffmods; daggers no note says), so 123 grail items (Gull..., with Cow King's Leathers,
+  which only Hell Bovines drop) never come from gambling:
+  the section names those kinds (`NOT_GAMBLED` in grail_farm.py, the author, 2026-11-06: a friend missing Gull looked
+  for the Dagger; `pack_gamble` stops the run when the gamble list no longer matches it). The page: a Gambling section on Target Farming (character level 1-99 select, bases by gold per new grail item
   for your missing items), a line in each item's details, a "Gold to spare" plan step, a FAQ answer. A Gheed's Map Event tab (the author, 2026-10-30; `gheed_bases`): per base the
   shop shows (the normal version; the unique and its tier are fixed at item level 99 when the shop opens) how often a
   shop of 5 offers has it (per offer beside it), what it can be and the chance it is a missing item; offers pick UniqueItems rows evenly, a level
@@ -834,7 +842,7 @@
   to the estimated times" and "Your changes are kept in this browser.", then Settings, then Your times (the author,
   2026-11-05: no Save button, the old save box was confusing): every change is kept in the browser as it happens
   (`erazure-event-runs`; the estimated times with no list and no ear keep nothing, so a later change of the estimates
-  reaches the player; the rush times `erazure-event-runs-umaps`, which the reset clears too), and "Use my Grail Planner ticks" reads the
+  reaches the player; the rush times `erazure-event-runs-umaps`, which the reset clears too), and "Use my Grail Planner list" reads the
   planner's `erazure-grail-planner` (same site; the data's `keys` are the planner's item keys). `site_page.py` also writes
   the Grail Planner template's `EVRUNS` (between its `evrun-summary` markers: the grail hours at those defaults, read off
   the page's grail card in headless Edge), so rerun `tools/grail_map.py` after it. The tab bar wraps onto

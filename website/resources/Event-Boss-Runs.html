@@ -262,7 +262,7 @@
       <li><b>Unique maps:</b> the bosses of City of Ureh, Warlord of Blood, Na-Krul's Abyss and Djinn's Domain drop extra
         uniques, or a treasure explosion, every kill. Rush them and leave: <a href="#unique-maps">Unique maps: rush the
         bosses</a>.</li>
-      <li><b>For the grail</b>, put in your missing items under Your grail (it can take your Grail Planner ticks), and the
+      <li><b>For the grail</b>, put in your missing items under Your grail (it can take your Grail Planner list), and the
         Corrupted Ear you use: an ear works on every monster of a full clear, but on a run only on the map boss.</li>
     </ul>
   </div>
@@ -473,8 +473,8 @@
 
     <section class="card" aria-labelledby="g-title">
       <h2 id="g-title">Your grail</h2>
-      <p class="sub">For grail farming: paste your list and the grail numbers count only the items you're missing. <a href="https://filtersby-erazure.github.io/PD2-Loot-Filter/grail/">The Grail Planner</a>'s "Copy" gives the items you've ticked, one a line. Pick the Corrupted Ear you put on your maps. Compare by "Time to 90% of the grail" to put the verdict at the top on your list too.</p>
-      <div class="g-planner" id="g-planner" hidden><button type="button" class="btn" id="g-planner-btn">Use my Grail Planner ticks</button><span class="g-note" id="g-planner-note"></span></div>
+      <p class="sub">For grail farming: paste your list and the grail numbers count only the items you're missing. <a href="https://filtersby-erazure.github.io/PD2-Loot-Filter/grail/">The Grail Planner</a>'s "Copy" gives the items you've marked discovered, one a line. Pick the Corrupted Ear you put on your maps. Compare by "Time to 90% of the grail" to put the verdict at the top on your list too.</p>
+      <div class="g-planner" id="g-planner" hidden><button type="button" class="btn" id="g-planner-btn">Use my Grail Planner list</button><span class="g-note" id="g-planner-note"></span></div>
       <div class="g-grid">
         <div class="g-in">
           <label class="g-lab" for="g-list">Your list <span class="hint">one item a line</span></label>
@@ -1540,7 +1540,7 @@ const EventRunModel = function (D) {
   function showPlanner() {
     const t = plannerTicks();
     $('g-planner').hidden = !t;
-    if (t) $('g-planner-note').textContent = t.length + ' of ' + GNAME.length + ' ticked in your Grail Planner, in this browser';
+    if (t) $('g-planner-note').textContent = t.length + ' of ' + GNAME.length + ' discovered in your Grail Planner, in this browser';
   }
   $('g-planner-btn').addEventListener('click', () => {
     const t = plannerTicks(); if (!t) return;
