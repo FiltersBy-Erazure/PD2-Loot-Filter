@@ -861,8 +861,8 @@
   Affix Level; a later rule's note sits higher), `{%NAME% X}` extends the top line, and a stopping rule ends it.
   The author's order (applied 2026-10-29), top first: the notes as before; jewel notes, then Low Level Dueling, then
   charm highlights (250's notes sit over its LLD rules); boss tags (270), skill and shop highlights (280), resistance
-  tags (`285-resist-tags`), Amplify Damage / Lower Resist then Enhanced Damage (320; body armor and shields 350),
-  Damage Reduction (300's description notes, 350), Max Resistances and last Cannot Be Frozen
+  tags (`285-resist-tags`), Enhanced Damage (320; body armor and shields 350) then Amplify Damage / Lower Resist (320,
+  after its Enhanced Damage rules; over Enhanced Damage until 2026-11-07, the author), Damage Reduction (300's description notes, 350), Max Resistances and last Cannot Be Frozen
   (`360-max-res-cannot-be-frozen`). Under all of them, right above the game's Corrupted line, `365-special-edition`
   (2026-11-01, the author): a unique with an alternate skin has stat 270; the game writes the orange "5th Anniversary
   Edition" only on Season 12's five (`STAT270=5`), so the 18 of Season 14 (`STAT270=1`) get the same line from the

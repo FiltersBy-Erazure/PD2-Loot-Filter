@@ -53,7 +53,8 @@ def plain(desc):
 
 # id, name, group, where it shows, match(section number, template without colors, raw template). The order is the
 # filter's: the notes (their rules run latest first), then the highlights (earliest first); the author's order of
-# 2026-10-29 (the page's db, order/main), every sample's lines in it (page_data checks).
+# 2026-10-29 (the page's db, order/main), but Enhanced Damage over Lower Resist / Amplify Damage since 2026-11-07
+# (the author), every sample's lines in it (page_data checks).
 KINDS = [
     ("crafted-alvl", "Crafted Affix Level", "note",
      "Uncorrupted magic and rare crafting bases (not equipped)",
@@ -109,15 +110,15 @@ KINDS = [
      "All, Triple or Dual Resist (the first that holds), else one line per resistance; most gear on levels 0-4 "
      "below character level 80, boots, belts and gloves on every level",
      lambda n, t, raw: n == 285 and "Resist" in t),
+    ("ed", "Enhanced Damage", "highlight",
+     "Weapons from 250% (magic, rare, crafted); body armor from 100%, shields with 10% damage reduction",
+     lambda n, t, raw: n in (320, 350) and "Enhanced Damage" in t),
     ("lr", "Lower Resist", "highlight",
      "Weapons that cast it on striking, staves on casting (never with Amplify Damage: one affix group)",
      lambda n, t, raw: n == 320 and "Lower Resist" in t),
     ("amp", "Amplify Damage", "highlight",
      "Weapons that cast it on striking, staves on casting (never with Lower Resist: one affix group)",
      lambda n, t, raw: n == 320 and "Amplify Damage" in t),
-    ("ed", "Enhanced Damage", "highlight",
-     "Weapons from 250% (magic, rare, crafted); body armor from 100%, shields with 10% damage reduction",
-     lambda n, t, raw: n in (320, 350) and "Enhanced Damage" in t),
     ("dr", "Damage Reduction", "highlight",
      "Belts, helms, circlets, rings, boots, body armor, shields",
      lambda n, t, raw: n in (300, 350) and "Damage Reduction" in t),
