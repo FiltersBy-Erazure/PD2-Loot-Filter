@@ -347,11 +347,13 @@
   every roll, from 60 only on a weapon with 100%+ enhanced damage (`ED>99`); 100 and up red, socketed or corrupted
   too (corruptions 5 / 77 add +100-150%, so such a corrupted weapon shows its total), below 100 tan, until socketed
   or corrupted (helms and circlets keep red): `FRESH_WEAPON_ROWS` / `WEAPON_ANY_TIME` / `WEAPON_GATE` in the tool. Clubs, orbs, wands and staves (clubs take both sets) tag life / mana after each kill,
-  mana, life, single resistances, energy, strength, dexterity and flat physical / magic damage reduction the same way
+  mana, life, single resistances and flat physical / magic damage reduction the same way
   (`FRESH_CASTER_ROWS`; flat PDR on weapons only comes from the Safety craft, so 300's PDR line takes `WEAPON`),
-  single resistances and energy only below affix level 60 (`CASTER_LOW_ONLY`, the author, 2026-11-02: a crafted
-  affix level 76 battle staff showed `32r`; scepters and the other weapons get neither from 60 either);
-  replenish life, regenerate mana and damage taken goes to mana never show on them. Each is a weapon part in the
+  single resistances only below affix level 60 (`CASTER_LOW_ONLY`, the author, 2026-11-02: a crafted
+  affix level 76 battle staff showed `32r`; scepters and the other weapons get them neither from 60 either);
+  replenish life, regenerate mana and damage taken goes to mana never show on them, nor strength, dexterity and
+  energy (2026-11-07, the author: out of the weapon part, so only the item type cards' picks tag them; clubs follow
+  the melee card's). Each is a weapon part in the
   stat's 290 alias beside its low-level part, and a chip on the page's weapon cards. Flat mana and energy are off on
   the physical weapons, below 60 too (the author: removed entirely), and open wounds chance on every rare weapon (the
   author: the damage alone). Life / mana leech, open wounds damage and attack rating % show on weapons only below
@@ -371,8 +373,25 @@
   2026-10-29 the formula said STAT22, which a two-handed weapon's flat maximum damage never is, so a crossbow with +60
   maximum damage and 39 per level showed `39max`). New looks (2026-10-28, for the
   author's OK in game): knockback `Knb` (gray; the arrows' `Knbk` is `Knb` too, the author), open wounds chance `10%ow` (coral; 501's damage is `ow`).
+  From affix level 60 (2026-11-02, the author: tell apart what tags below 60 and what tags or not from 60) each item
+  type has a second choice per wired stat (`ALIASES`), the page's "From affix level 60" select: Default (300's
+  thresholds and the weapon parts above), Every roll (an `ALVL>59` part of `LOWLVL_<X>_TAG`; weapons until socketed
+  or corrupted, armor and jewelry `!GEMMED` as below 60), or Never (`LOWLVL_<X>_OFF` = `((RARE OR CRAFT) ALVL>59
+  (types))`, else `FALSE`: no tag of the stat on a rare or crafted item of the type, its corruption's tag too; magic,
+  unique and set lines are untouched). Every 300 line whose tag shows the stat and whose condition doesn't rule out a
+  rare or crafted item (045's `ROLL_` aliases count as unique / set) ends with `!LOWLVL_<X>_OFF`: `--wire` puts it
+  there (and takes it out of lines that no longer need it), `--check` names a line that lacks it, so a new tag line of
+  a wired stat needs `--wire`. Minimum and maximum damage share one choice (`LINKED`: their tags join). The picks file
+  keeps the choices under `"high"` (`{card: {row: "all" / "never"}}`), the db documents under `high` beside `stats`;
+  the page shows per stat the best roll from 60, and above each control what Default tags, in words (2026-11-07, the
+  author found "As today" unclear): below 60 the filter with the switch off at affix level 59, from 60 the filter with
+  the built picks but none of the choices from 60 (so Default keeps its meaning once they're applied) at affix level
+  60, with every affix (60+ ones too). A stat 300 asks no alias for ("Can't change yet" on the page) needs wiring
+  before it can take a choice.
   `--verify` runs every affix of every item type through 300 three ways (as built, aliases FALSE, the last commit's
-  300; a deliberate change outside the aliases differs from it until committed) and measures the longest tag lines.
+  300; a deliberate change outside the aliases differs from it until committed), checks the choices from 60 (never:
+  no tag of the stat, its corruption's neither; every roll: one tag, socketed / corrupted weapons without), magic
+  items unchanged, and measures the longest tag lines.
   Corrlorized: Corr's `x` entries on the rewired lines stay off (the low-level parts with them), and the max damage
   per level total has an `x` of its own; careful: when a rewired line's text
   changes a lot, the build's look-alike matching can move an entry onto a neighbour (it moved 5 here: check

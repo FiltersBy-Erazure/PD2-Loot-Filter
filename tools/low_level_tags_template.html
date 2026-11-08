@@ -3,7 +3,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
 <style>
 /* Layout: a sticky bar of item types; under it the chosen type's label estimate, then its stats grouped as in the
-   game, one row per stat with its switch, today's tags and its rolls by affix level. */
+   game, one row per stat with its two choices (each under what Default tags), its tags and its rolls by affix level. */
 :root {
   --bg: #f2f0eb; --panel: #ffffff; --sunk: #f7f5f0; --line: #dcd5c7; --fg: #24211b; --muted: #6c6455;
   --gold: #86621a; --red: #b3261e; --warn: #9a5b00; --warn-bg: #fbefd9; --ok: #2f6b45; --ok-bg: #e2f0e6;
@@ -89,6 +89,18 @@ main { padding-block: 16px 64px; padding-left: max(16px, env(safe-area-inset-lef
 .sw input:checked::after { left: 18px; background: var(--panel); }
 .sw input[disabled] { opacity: .5; cursor: default; }
 .fixed { font-size: 12px; color: var(--ok); font-weight: 600; }
+.swcol { display: grid; gap: 12px; align-content: start; }
+.ctl { display: grid; gap: 3px; font-size: 12px; color: var(--muted); }
+.ctl-h { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; font-weight: 700; }
+.ctl-def { color: var(--fg); font-size: 13px; }
+.ctl-def b { font-weight: 600; }
+.hi { display: grid; gap: 3px; font-size: 12px; color: var(--muted); }
+.hi select { font-size: 13px; padding: 2px 4px; border: 1px solid var(--line); border-radius: 5px; background: var(--panel); max-width: 100%; }
+.hi select.set { border-color: var(--new); color: var(--new); font-weight: 600; }
+.hi .na { font-style: italic; }
+.chip.hiall { background: var(--new-bg); color: var(--new); }
+.chip.hinever { background: none; border: 1px solid var(--red); color: var(--red); }
+.bands span.b60 { outline: 1px solid var(--line); }
 .rmain { display: grid; gap: 5px; min-width: 0; }
 .rtitle { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
 .rtitle b { font-size: 15px; }
@@ -100,10 +112,10 @@ main { padding-block: 16px 64px; padding-left: max(16px, env(safe-area-inset-lef
 .samples { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 4px 8px; align-items: center; font-size: 12px; color: var(--muted); }
 .samples .newl { color: var(--new); font-weight: 600; }
 .none { color: var(--muted); font-style: italic; }
-.bands { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; font-family: var(--mono); font-size: 12px; font-variant-numeric: tabular-nums; text-align: center; }
+.bands { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; font-family: var(--mono); font-size: 12px; font-variant-numeric: tabular-nums; text-align: center; }
 .bands span { background: var(--sunk); border-radius: 3px; padding: 2px 0; }
 .bands span.na { color: var(--muted); opacity: .6; }
-.bands-head { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; font-size: 11px; color: var(--muted); text-align: center; }
+.bands-head { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; font-size: 11px; color: var(--muted); text-align: center; }
 details.aff { grid-column: 1 / -1; font-size: 13px; }
 details.aff summary { cursor: pointer; color: var(--gold); font-weight: 600; width: fit-content; }
 .tbl { overflow-x: auto; margin-top: 6px; }
@@ -153,7 +165,16 @@ for (const c of DATA.cards) {
   const built = (DATA.picks || {})[c.key] || {};
   for (const r of c.rows) if (canPick(r)) DEFAULTS[c.key][r.key] = r.key in built ? !!built[r.key] : !!ROW[r.key].def;
 }
-const state = { picks: clone(DEFAULTS), notes: Object.fromEntries(DATA.cards.map(c => [c.key, ""])) };
+// from affix level CUT up, per wired stat: "keep" (as 300 and the weapon parts tag it), "all" (every roll), "never"
+const HI_DEFAULTS = {};
+for (const c of DATA.cards) {
+  HI_DEFAULTS[c.key] = {};
+  const built = (DATA.high || {})[c.key] || {};
+  for (const r of c.rows) if (ROW[r.key].hi) HI_DEFAULTS[c.key][r.key] = built[r.key] || "keep";
+}
+const LINKED = Object.fromEntries((DATA.linked || []).flatMap(g => g.map(r => [r, g])));
+const HI_TEXT = { keep: "Default", all: "Every roll", never: "Never" };
+const state = { picks: clone(DEFAULTS), high: clone(HI_DEFAULTS), notes: Object.fromEntries(DATA.cards.map(c => [c.key, ""])) };
 let current = DATA.cards[0].key;
 try { const t = localStorage.getItem("lowLevelTagsTab"); if (t && CARD[t]) current = t; } catch (e) {}
 let db = null, editable = true;
@@ -161,9 +182,14 @@ let db = null, editable = true;
 const visLen = i => i < 0 ? 0 : DATA.segs[i].reduce((s, [, t]) => s + t.length, 0);
 const segHTML = i => DATA.segs[i].map(([c, t]) => `<span class="c-${c}">${esc(t)}</span>`).join("");
 const picked = (card, row) => !!state.picks[card][row];
+const hiOf = (card, row) => state.high[card][row] || "keep";
 function changedRows(card) {
-  return Object.keys(DEFAULTS[card]).filter(r => picked(card, r) !== DEFAULTS[card][r]);
+  const low = Object.keys(DEFAULTS[card]).filter(r => picked(card, r) !== DEFAULTS[card][r]);
+  const hi = Object.keys(HI_DEFAULTS[card]).filter(r => hiOf(card, r) !== HI_DEFAULTS[card][r] && !low.includes(r));
+  return [...low, ...hi];
 }
+// the db document's high part: only the stats that aren't "Default"
+const hiDoc = card => Object.fromEntries(Object.entries(state.high[card]).filter(([, v]) => v !== "keep"));
 
 // ---------- the longest tag line a rare of the card can get (an estimate): per kind, per side the 3 affix groups
 // whose tags are widest (PD2: 3 prefixes and 3 suffixes at most, one per group), each affix at its best roll below
@@ -216,26 +242,59 @@ function renderTabs() {
   const el = document.getElementById("tabs");
   el.innerHTML = DATA.cards.map(c => {
     const on = Object.keys(DEFAULTS[c.key]).filter(r => picked(c.key, r)).length;
+    const hi = Object.keys(hiDoc(c.key)).length;
     const chg = changedRows(c.key).length;
     return `<button class="tab" role="tab" id="tab-${c.key}" aria-selected="${c.key === current}" data-card="${c.key}">
-      <span>${esc(c.name)}</span><span class="sub${chg ? " chg" : ""}">${on} switched on${chg ? ` · ${chg} changed` : ""}</span></button>`;
+      <span>${esc(c.name)}</span><span class="sub${chg ? " chg" : ""}">${on} switched on${hi ? ` · ${hi} from ${CUT}` : ""}${chg ? ` · ${chg} changed` : ""}</span></button>`;
   }).join("");
   const total = DATA.cards.reduce((s, c) => s + changedRows(c.key).length, 0);
   document.getElementById("changed").textContent = total ? `${total} change${total > 1 ? "s" : ""} from the built filter` : "Matches the built filter";
 }
 
-function stateChips(card, row) {
+// what Default tags, in words: below affix level CUT the filter with the switch off (an affix level CUT - 1 rare),
+// from CUT (at60) the filter without a choice there (an affix level CUT rare, every affix that can roll there). Item
+// kinds of the card that differ are named: "not tagged; Clubs: every roll". A weapon part tags a fresh weapon whatever
+// the switch says: then a fresh weapon's Default comes first ("every roll until socketed or corrupted, then not tagged")
+function defaultText(card, row, at60) {
+  const one = (st, from) => st === "any" ? "every roll" : st === "from" ? `tagged from ${from}` :
+    st === "some" ? "some affixes tagged" : "not tagged";
+  const words = kr => {
+    const fresh = at60 ? one(kr.st60, kr.from60) : one(kr.stw ?? kr.st, kr.stw ? kr.fromw : kr.from);
+    const rest = at60 ? one(kr.st60x ?? kr.st60, kr.st60x ? kr.from60x : kr.from60) : one(kr.st, kr.from);
+    return fresh === rest ? fresh : `${fresh} until socketed or corrupted, then ${rest}`;
+  };
   const groups = new Map();
   for (const kr of row.kinds) {
-    const key = kr.st + "|" + (kr.from ?? "");
-    if (!groups.has(key)) groups.set(key, { kr, names: [] });
-    groups.get(key).names.push(card.kinds[kr.k].name);
+    const w = words(kr);
+    if (!groups.has(w)) groups.set(w, []);
+    groups.get(w).push(card.kinds[kr.k].name);
   }
-  const many = card.kinds.length > 1 && (groups.size > 1 || row.kinds.length < card.kinds.length);
-  const text = kr => kr.st === "any" ? "Tagged at any roll" : kr.st === "from" ? `Tagged from ${kr.from}` :
-    kr.st === "some" ? "Some affixes tagged" : "Not tagged";
-  return [...groups.values()].map(({ kr, names }) =>
-    `<span class="chip ${kr.st}">${many ? esc(names.join(", ")) + ": " : ""}${text(kr)}</span>`).join("");
+  const named = card.kinds.length > 1 && row.kinds.length < card.kinds.length;  // the stat rolls on some kinds only
+  return [...groups.entries()].sort((a, b) => b[1].length - a[1].length)
+    .map(([w, names], i) => (i || named ? `${names.join(", ")}: ` : "") + w).join("; ");
+}
+const defaultLine = (card, row, at60) =>
+  `<span class="ctl-h">${at60 ? "From" : "Below"} affix level ${CUT}</span><span class="ctl-def"><b>Default:</b> ${esc(defaultText(card, row, at60))}</span>`;
+
+// the choice below affix level CUT: a switch (off: Default, on: every roll)
+function lowControl(card, row, pick, on) {
+  const body = pick ?
+    `<label class="sw" for="sw-${card.key}-${row.key}"><input type="checkbox" role="switch" id="sw-${card.key}-${row.key}"
+      data-row="${row.key}" ${on ? "checked" : ""} ${editable ? "" : "disabled"}> Every roll</label>` :
+    `<span class="fixed">${row.lock ? "Fresh weapons only" : "Already every roll"}</span>`;
+  return `<div class="ctl">${defaultLine(card, row, false)}${body}</div>`;
+}
+
+// the choice from affix level CUT up: a select for the wired stats (Default, Every roll, Never)
+function hiControl(card, row) {
+  const info = ROW[row.key];
+  if (!info.hi) return `<div class="ctl hi">${defaultLine(card, row, true)}<span class="na" title="300's lines don't ask a low-level alias for this stat yet: ask Claude to wire it">Can't change yet</span></div>`;
+  const v = hiOf(card.key, row.key);
+  const link = LINKED[row.key] ? ` title="${esc(LINKED[row.key].map(r => ROW[r].label).join(" and "))} share this choice: their tags join (1-3dmg)"` : "";
+  return `<div class="ctl hi"${link}>${defaultLine(card, row, true)}
+    <select id="hi-${card.key}-${row.key}" data-hirow="${row.key}" aria-label="${esc(info.label)} from affix level ${CUT}" class="${v !== "keep" ? "set" : ""}" ${editable ? "" : "disabled"}>
+      ${Object.entries(HI_TEXT).map(([k, t]) => `<option value="${k}" ${k === v ? "selected" : ""}>${t}</option>`).join("")}
+    </select></div>`;
 }
 
 const segNum = i => { const m = DATA.segs[i].map(s => s[1]).join("").match(/-?\d+(\.\d+)?/); return m ? parseFloat(m[0]) : 0; };
@@ -274,16 +333,25 @@ function rowHTML(card, row) {
   const noLook = pick && row.kinds.some(k => k.st !== "any" && !k.look);
   const today = uniqSegs(row.kinds.flatMap(k => k.aff.map(a => a[2])));
   const after = uniqSegs(row.kinds.flatMap(k => k.aff.map(a => (k.st !== "any" && a[4] >= 0) ? a[4] : a[2])));
-  const bands = DATA.bands.map((_, i) => {
+  const bands = [...DATA.bands, CUT].map((_, i) => {  // the last: the best roll from affix level CUT (any affix)
     const vals = row.kinds.map(k => k.bands[i]).filter(v => v !== null && v !== undefined);
-    return vals.length ? Math.max(...vals) : null;
+    return !vals.length ? null : vals.includes("yes") ? "yes" : Math.max(...vals);
   });
-  const sw = pick ?
-    `<label class="sw" for="sw-${card.key}-${row.key}"><input type="checkbox" role="switch" id="sw-${card.key}-${row.key}"
-      data-row="${row.key}" ${on ? "checked" : ""} ${editable ? "" : "disabled"}> ${on ? "Every roll" : "As today"}</label>` :
-    `<span class="fixed">${row.lock ? "Fresh weapons only" : "Already tagged"}</span>`;
   const isDef = pick && on === !!info.def;
+  const hi = info.hi ? hiOf(card.key, row.key) : "keep";
+  const hiChanged = info.hi && hi !== HI_DEFAULTS[card.key][row.key];
+  const hiChip = hi === "all" ? `<span class="chip hiall">Every roll from ${CUT}</span>` :
+    hi === "never" ? `<span class="chip hinever">Never from ${CUT}</span>` : "";
+  const today60 = uniqSegs(row.kinds.flatMap(k => k.aff60.map(a => a[2])));
   const many = card.kinds.length > 1;
+  const aff60Rows = row.kinds.flatMap(kr => kr.aff60.map(([ai, roll, seg, from60]) => {
+    const [side, name, lvl, mx] = DATA.affixes[ai];
+    return `<tr><td><span class="side">${side}</span>${esc(name)}${from60 ? ` <span class="somebases">(${CUT}+)</span>` : ""}</td>
+      ${many ? `<td>${esc(card.kinds[kr.k].name)}</td>` : ""}
+      <td class="num">${lvl}${mx ? "–" + mx : ""}</td><td class="num">${esc(roll)}</td>
+      <td>${seg >= 0 ? `<span class="tagbox"><span class="t">${segHTML(seg)}</span></span>` : '<span class="none">none</span>'}</td></tr>`;
+  })).join("");
+  const n60 = row.kinds.reduce((s, k) => s + k.aff60.length, 0);
   const affRows = row.kinds.flatMap(kr => kr.aff.map(([ai, roll, tSeg, , nSeg, some]) => {
     const [side, name, lvl, mx] = DATA.affixes[ai];
     const newCell = kr.st === "any" ? '<span class="none">same</span>' :
@@ -295,16 +363,19 @@ function rowHTML(card, row) {
       <td>${newCell}</td></tr>`;
   })).join("");
   const nAff = row.kinds.reduce((s, k) => s + k.aff.length, 0);
-  return `<div class="row${on ? " on" : ""}${pick ? "" : " fixedrow"}" data-row="${row.key}">
-    <div>${sw}</div>
+  return `<div class="row${on || hi !== "keep" ? " on" : ""}${pick || hi !== "keep" ? "" : " fixedrow"}" data-row="${row.key}">
+    <div class="swcol">${lowControl(card, row, pick, on)}${hiControl(card, row)}</div>
     <div class="rmain">
-      <div class="rtitle"><b>${esc(info.label)}</b>${pick ? stateChips(card, row) : ""}${pick && info.sock ? '<span class="chip" title="Gems and runes add this stat, so an item with anything socketed shows it as without the low-level tags">Not when socketed</span>' : ""}${pick && info.min ? `<span class="chip" title="Rare and crafted items tag this stat from ${info.min} up, at every level">From ${info.min}</span>` : ""}${wpnChip(card, info, row)}${noLook ? '<span class="chip nolook">No tag look in 300 yet</span>' : ""}${pick && !isDef ? '<span class="chip def">changed</span>' : ""}</div>
-      <div class="samples"><span>Today</span>${tagsHTML(today)}${pick ? `<span class="newl">Every roll</span>${tagsHTML(after)}` : ""}</div>
+      <div class="rtitle"><b>${esc(info.label)}</b>${pick && info.sock ? '<span class="chip" title="Gems and runes add this stat, so an item with anything socketed shows it as without the low-level tags">Not when socketed</span>' : ""}${pick && info.min ? `<span class="chip" title="Rare and crafted items tag this stat from ${info.min} up, at every level">From ${info.min}</span>` : ""}${wpnChip(card, info, row)}${noLook ? '<span class="chip nolook">No tag look in 300 yet</span>' : ""}${hiChip}${(pick && !isDef) || hiChanged ? '<span class="chip def">changed</span>' : ""}</div>
+      <div class="samples"><span>Below ${CUT}, default</span>${tagsHTML(today)}${pick ? `<span class="newl">Below ${CUT}, every roll</span>${tagsHTML(after)}` : ""}<span>From ${CUT}, default</span>${tagsHTML(today60)}</div>
     </div>
-    <div><div class="bands">${bands.map(v => v === null ? '<span class="na">–</span>' : `<span>${v}</span>`).join("")}</div></div>
-    <details class="aff"><summary>${nAff} affix${nAff > 1 ? "es" : ""}</summary><div class="tbl"><table>
-      <thead><tr><th>Affix</th>${many ? "<th>Kind</th>" : ""}<th>Affix level</th><th>Roll</th><th>Tag today, best roll</th><th>Every roll</th></tr></thead>
+    <div><div class="bands">${bands.map((v, i) => `<span class="${v === null || v === undefined ? "na" : ""}${i === DATA.bands.length ? " b60" : ""}">${v === null || v === undefined ? "–" : v}</span>`).join("")}</div></div>
+    <details class="aff"><summary>${nAff} affix${nAff > 1 ? "es" : ""} below affix level ${CUT}</summary><div class="tbl"><table>
+      <thead><tr><th>Affix</th>${many ? "<th>Kind</th>" : ""}<th>Affix level</th><th>Roll</th><th>Tag by default, best roll</th><th>Every roll</th></tr></thead>
       <tbody>${affRows}</tbody></table></div></details>
+    <details class="aff"><summary>${n60} affix${n60 > 1 ? "es" : ""} at affix level ${CUT} and up</summary><div class="tbl"><table>
+      <thead><tr><th>Affix</th>${many ? "<th>Kind</th>" : ""}<th>Affix level</th><th>Roll</th><th>Tag by default at affix level ${CUT}, best roll</th></tr></thead>
+      <tbody>${aff60Rows}</tbody></table></div></details>
   </div>`;
 }
 
@@ -317,12 +388,12 @@ function render() {
   const cats = DATA.cats.map(cat => {
     const rows = card.rows.filter(r => ROW[r.key].cat === cat);
     if (!rows.length) return "";
-    return `<section class="cat"><h3>${esc(cat)}<span class="cols">Best roll up to affix level ${DATA.bands.join(" · ")}</span></h3>
+    return `<section class="cat"><h3>${esc(cat)}<span class="cols">Best roll up to affix level ${DATA.bands.join(" · ")} · ${CUT}+</span></h3>
       ${rows.map(r => rowHTML(card, r)).join("")}</section>`;
   }).join("");
   const nChanged = changedRows(card.key).length;
   document.getElementById("main").innerHTML = `
-    <p class="help">Below affix level ${CUT}, a rare or crafted item shows a tag for <b>every roll</b> of each stat switched on, in the look 300 gives it. From ${CUT} up nothing changes. The switches start from what the built filter has. <b>Today</b> is what the filter tags without these switches on an identified rare at affix level ${CUT - 1}, seen by a level ${DATA.viewer} character. Tell Claude when to apply your changes.</p>
+    <p class="help">Each stat has two choices. Above each one, <b>Default</b> says what the filter tags without that choice, on an identified rare or crafted item seen by a level ${DATA.viewer} character. <b>Below affix level ${CUT}</b>: switch it on and the item tags <b>every roll</b> of the stat, in the look 300 gives it; off, it tags as Default says. <b>From affix level ${CUT}</b>: <b>Default</b>, <b>Every roll</b>, or <b>Never</b> (no tag of the stat on a rare or crafted item of this type, its corruption's tag neither; magic, unique and set items keep theirs). On weapons, every roll means until socketed or corrupted. The page starts from what the filter has now; tell Claude when to apply your changes.</p>
     <div class="head">
       <div class="head-text">
         <h2>${esc(card.name)}</h2>
@@ -332,7 +403,7 @@ function render() {
       </div>
       <div class="measure">
         <h3>Longest tag line (estimate)</h3>
-        <div class="mrow"><span>Today</span><span><span class="mnum">${today.len}</span> characters${today.kind && card.kinds.length > 1 ? " · " + esc(today.kind) : ""}</span></div>
+        <div class="mrow"><span>Default</span><span><span class="mnum">${today.len}</span> characters${today.kind && card.kinds.length > 1 ? " · " + esc(today.kind) : ""}</span></div>
         <div class="mrow"><span>Your switches</span><span><span class="mnum">${now.len}</span> characters${now.kind && card.kinds.length > 1 ? " · " + esc(now.kind) : ""}</span></div>
         <div class="mrow"><span>Name room</span><span><span class="mnum${room(now) < 9 ? " over" : ""}">${roomText(now)}</span> characters of BH's ${NAME_MAX} left for the rare's own name, beside its longest base name (${esc(card.longestBase)})</span></div>
         <div class="ground">${labelHTML(card, now)}</div>
@@ -341,10 +412,8 @@ function render() {
     ${cats}
     <div class="notebox"><label for="note">Notes on ${esc(card.name.toLowerCase())}</label>
       <textarea class="note" id="note" ${editable ? "" : "disabled"} placeholder="Anything Claude should know when applying these">${esc(state.notes[card.key] || "")}</textarea></div>
-    <div class="legend"><span class="chip any">Tagged at any roll</span> already tagged, no choice needed
-      <span class="chip from">Tagged from N</span> today only from that roll
-      <span class="chip">Not tagged</span> no tag today
-      <span class="chip nolook">No tag look in 300 yet</span> switching on asks for a new tag line</div>`;
+    <div class="legend"><span class="chip nolook">No tag look in 300 yet</span> switching on asks for a new tag line
+      <span class="chip hiall">Every roll from ${CUT}</span> / <span class="chip hinever">Never from ${CUT}</span> your choice from affix level ${CUT}</div>`;
   document.getElementById("main").classList.toggle("hide-fixed", !document.getElementById("showFixed").checked);
 }
 
@@ -363,6 +432,12 @@ document.getElementById("main").addEventListener("change", e => {
     state.picks[current][el.dataset.row] = el.checked;
     queueSave(current);
     render();
+  } else if (el.matches("select[data-hirow]")) {
+    for (const r of LINKED[el.dataset.hirow] || [el.dataset.hirow]) {
+      if (r in state.high[current]) state.high[current][r] = el.value;
+    }
+    queueSave(current);
+    render();
   }
 });
 document.getElementById("main").addEventListener("input", e => {
@@ -371,12 +446,13 @@ document.getElementById("main").addEventListener("input", e => {
 document.getElementById("main").addEventListener("click", e => {
   if (e.target.id === "reset") {
     state.picks[current] = clone(DEFAULTS[current]);
+    state.high[current] = clone(HI_DEFAULTS[current]);
     queueSave(current);
     render();
   }
 });
 
-// ---------- saving (db: picks/<item type> = {stats: {row: on}, note, savedAt})
+// ---------- saving (db: picks/<item type> = {stats: {row: on}, high: {row: "all" / "never"}, note, savedAt})
 // Every edit is also kept in this browser until the store has it, so an edit made while the page can't save comes
 // back on the next visit and is saved then.
 const pending = new Set(), saveTimers = {}, edits = {}, lastEdit = {}, retries = {};
@@ -386,7 +462,7 @@ function backups() { try { return JSON.parse(localStorage.getItem(BACKUP) || "{}
 function keepBackup(card) {
   try {
     const all = backups();
-    all[card] = { at: lastEdit[card] || Date.now(), stats: state.picks[card], note: state.notes[card] };
+    all[card] = { at: lastEdit[card] || Date.now(), stats: state.picks[card], high: hiDoc(card), note: state.notes[card] };
     localStorage.setItem(BACKUP, JSON.stringify(all));
   } catch (e) {}
 }
@@ -422,7 +498,7 @@ function queueSave(card) {
   saveTimers[card] = setTimeout(() => save(card), 700);
 }
 async function save(card) {
-  const body = { stats: state.picks[card], note: state.notes[card] || "", savedAt: new Date().toISOString() };
+  const body = { stats: state.picks[card], high: hiDoc(card), note: state.notes[card] || "", savedAt: new Date().toISOString() };
   const n = edits[card], at = lastEdit[card];
   try {
     await db.doc("picks/" + card).set(body);
@@ -442,6 +518,13 @@ function takeDoc(card, body) {
   if (body.stats && typeof body.stats === "object") {
     for (const [r, v] of Object.entries(body.stats)) {
       if (r in DEFAULTS[card] && picked(card, r) !== !!v) { state.picks[card][r] = !!v; touched = true; }
+    }
+  }
+  // a document saved before the high part existed leaves the choices from affix level CUT as built
+  if (body.high && typeof body.high === "object") {
+    for (const r of Object.keys(HI_DEFAULTS[card])) {
+      const v = ["all", "never"].includes(body.high[r]) ? body.high[r] : "keep";
+      if (hiOf(card, r) !== v) { state.high[card][r] = v; touched = true; }
     }
   }
   if (typeof body.note === "string" && body.note !== state.notes[card]) { state.notes[card] = body.note; touched = true; }

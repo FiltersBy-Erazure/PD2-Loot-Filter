@@ -11,14 +11,22 @@ picks on a page:
     python tools/low_level_tags.py --page     write tools/low_level_tags.html (gitignored): per item type, every stat a
                                               rare can roll below affix level 60, what the filter tags today and the
                                               author's choice; published as a claude.ai page whose db holds the choices
-    python tools/low_level_tags.py --apply FILE   take the page's db documents ({"<item type>": {"stats": {...}}})
-                                              into tools/low_level_tag_picks.json, then write the section
+    python tools/low_level_tags.py --apply FILE   take the page's db documents ({"<item type>": {"stats": {...},
+                                              "high": {...}}}) into tools/low_level_tag_picks.json, then write the
+                                              section
     python tools/low_level_tags.py --verify   check the built rules: a picked stat tags every roll below affix level
-                                              60 once, nothing else changes, and measure the longest labels
+                                              60 once, the choices from 60 hold, nothing else changes, and measure
+                                              the longest labels
+    python tools/low_level_tags.py --wire     give every 300 line that can tag a wired stat on a rare or crafted item
+                                              its !LOWLVL_<X>_OFF (and take it out of the others); --check names a
+                                              line that lacks it
 
 The section holds one alias per stat 300 is wired to, LOWLVL_<X>_TAG = (RARE OR CRAFT) ALVL<60 and the picked item
 types; 300's lines ask it (a line with a threshold also takes every roll; an item type no rare line of the stat covers
-gets a type group or a line of its own, never one another rare line of the stat covers).
+gets a type group or a line of its own, never one another rare line of the stat covers). From affix level 60 the
+author picks per item type and stat (the page's second control, the picks file's "high"): default, every roll (a part
+of LOWLVL_<X>_TAG with ALVL>59) or never (LOWLVL_<X>_OFF, which every 300 line that can tag the stat on a rare or
+crafted item asks as !LOWLVL_<X>_OFF).
 
 A row of the page is a stat, as BH tags a stat (several affixes can add up to it), with the affixes that give it: the
 MagicPrefix / MagicSuffix rows of docs/pd2-magic-affixes.tsv a rare can get (spawnable, version and rare flag not 0,
@@ -241,14 +249,15 @@ NAME_OF = {v: k for k, v in LC.COLOR_CODE.items()}
 
 # ---------------------------------------------------------------- game data
 
-def load_affixes():
+def load_affixes(below=True):
+    """The affixes a rare can get (below the cut only, unless below is False)."""
     rows = [line for line in AFFIXES.read_text(encoding="utf-8").splitlines() if not line.startswith("#")]
     header = rows[0].split("\t")
     out = []
     for line in rows[1:]:
         a = dict(zip(header, line.split("\t")))
         if a["kind"] not in ("prefix", "suffix") or a["spawnable"] != "1" or a["version"] in ("", "0") or \
-                a["rare"] in ("", "0") or a["frequency"] in ("", "0") or int(a["level"] or 0) >= CUT:
+                a["rare"] in ("", "0") or a["frequency"] in ("", "0") or (below and int(a["level"] or 0) >= CUT):
             continue
         a["mods"] = [m for m in json.loads(a["mods"] or "[]") if m[0].lower() in PROPS]
         if not a["mods"]:
@@ -511,12 +520,34 @@ def look_of(a, row):
 def page_data():
     bases = T.load_bases()
     affixes = load_affixes()
+    every = load_affixes(below=False)
     rules = Rules()
-    for a in affixes:
-        for mod in a["mods"]:
-            for sid, par, lo, hi in mod[5]:
-                rules.sample_keys.update(stat_words(sid, par, True) + stat_words(sid, par, False))
-    rules.sample_keys.update({"STAT20", "BASEBLOCK"})
+    # what the page's Default from the cut tags: the built picks and weapon parts, none of the choices from the cut
+    # (so Default keeps its meaning once choices are applied)
+    eligible = card_rows(bases, affixes)
+    built = Rules({SECTION.name: render_section(load_picks(eligible), eligible, {})})
+    # a weapon's Default below the cut: the switches off but the weapon parts on (they tag a fresh weapon whatever the
+    # switch says; a socketed or corrupted one tags as with every alias off)
+    no_picks = {c: {r: False for r in rows} for c, rows in load_picks(eligible).items()}
+    wparts = Rules({SECTION.name: render_section(no_picks, eligible, {})})
+    rules.sample_keys = built.sample_keys = wparts.sample_keys = sample_keys(every)
+
+    def state_of(rs, fold, vals, plain_, affs, code, groups, base_name, row, weapon):
+        """(state, first tagged value) of a row: any / from / some / never, as the page reads them."""
+        low_ok, high_any = True, False
+        for a in affs:
+            for high in (False, True):
+                line, _ = rs.tagline(fold, code, groups, affix_values(a, row, high, weapon, vals), base_name)
+                t = (line[:len(line) - len(plain_)] if plain_ and line.endswith(plain_) else line).strip()
+                shown = bool(LC.visible(t).strip())
+                low_ok = low_ok and (shown or high)
+                high_any = high_any or (shown and high)
+        st = "any" if low_ok else "never" if not high_any else "some"
+        start = None
+        if st == "some":
+            start = first_tagged(rs, fold, code, groups, vals, base_name, plain_, affs, row, weapon)
+            st = "from" if start is not None else st
+        return st, start
     blocks = block_lines()
     aff_index, aff_table = {}, []
     seg_index, seg_table = {}, []
@@ -549,6 +580,15 @@ def page_data():
             base_vals = base_values(codes[0], first, groups, CUT - 1)
             folded = rules.folded(codes[0], groups, base_vals)
             plain, _ = rules.tagline(folded, codes[0], groups, dict(base_vals), first["name"])
+            vals60 = base_values(codes[0], first, groups, CUT)
+            folded60 = built.folded(codes[0], groups, vals60)
+            plain60, _ = built.tagline(folded60, codes[0], groups, dict(vals60), first["name"])
+            if weapon:
+                wfold = wparts.folded(codes[0], groups, base_vals)
+                wplain, _ = wparts.tagline(wfold, codes[0], groups, dict(base_vals), first["name"])
+                xfold60 = rules.folded(codes[0], groups, vals60)
+                xplain60, _ = rules.tagline(xfold60, codes[0], groups, dict(vals60), first["name"])
+            mine60 = [a for a in every if any(fits(a, bases[c]) for c in codes)]
             for c in codes:
                 r = reach(bases[c])
                 if r > reach_max:
@@ -605,17 +645,61 @@ def page_data():
                                   if PROPS[mod[0].lower()][0] == row and mod[5]).most_common(1)
                 pos = blocks.get(primary[0][0], 0) if primary else 0
                 has_look = all(look_of(a, row) for a in row_affixes)
-                kind_rows.setdefault(row, []).append({"k": ki, "st": state, "from": start, "bands": bands,
-                                                      "pos": pos, "look": int(has_look), "aff": entries})
+                # from the cut: every affix of the row (those of affix level 60 and up too), as the built filter tags
+                # them at affix level 60
+                row60 = [a for a in mine60 if any(PROPS[m[0].lower()][0] == row for m in a["mods"])]
+                aff60, low60, any60 = [], True, False
+                for a in sorted(row60, key=lambda x: (x["level"], x["kind"], x["name"])):
+                    tags = []
+                    for high in (False, True):
+                        line, _ = built.tagline(folded60, codes[0], groups, affix_values(a, row, high, weapon, vals60),
+                                                first["name"])
+                        tags.append((line[:len(line) - len(plain60)] if plain60 and line.endswith(plain60)
+                                     else line).strip())
+                    low60 = low60 and bool(LC.visible(tags[0]).strip())
+                    any60 = any60 or bool(LC.visible(tags[1]).strip())
+                    aff60.append([aid(a), roll_text(a, row), seg(tags[1]) if tags[1] else -1,
+                                  int(a["level"] >= CUT)])
+                st60 = "any" if low60 else "never" if not any60 else "some"
+                from60 = None
+                if st60 == "some":
+                    from60 = first_tagged(built, folded60, codes[0], groups, vals60, first["name"], plain60, row60,
+                                          row, weapon)
+                    st60 = "from" if from60 is not None else st60
+                best60 = None
+                for a in row60:
+                    for m in a["mods"]:
+                        if PROPS[m[0].lower()][0] != row:
+                            continue
+                        for sid, par, lo, hi in m[5]:
+                            val = hi / 8 if sid in EIGHTHS else hi / 2 if sid in HALVES else hi
+                            if best60 is None or abs(val) > abs(best60):
+                                best60 = val
+                bands.append("yes" if best60 is not None and row in FLAG_ROWS else best60)
+                entry = {"k": ki, "st": state, "from": start, "bands": bands, "pos": pos, "look": int(has_look),
+                         "aff": entries, "st60": st60, "from60": from60, "aff60": aff60}
+                if weapon and row in FRESH_WEAPON_ROWS | FRESH_CASTER_ROWS:
+                    # a weapon part: below the cut st is a socketed or corrupted weapon's Default, stw a fresh one's;
+                    # from the cut st60 is a fresh weapon's, st60x a socketed or corrupted one's
+                    stw, fromw = state_of(wparts, wfold, base_vals, wplain, row_affixes, codes[0], groups,
+                                          first["name"], row, weapon)
+                    stx, fromx = state_of(rules, xfold60, vals60, xplain60, row60, codes[0], groups, first["name"],
+                                          row, weapon)
+                    if (stw, fromw) != (state, start):
+                        entry.update(stw=stw, fromw=fromw)
+                    if (stx, fromx) != (st60, from60):
+                        entry.update(st60x=stx, from60x=fromx)
+                kind_rows.setdefault(row, []).append(entry)
         rows = [{"key": r[0], "kinds": kind_rows[r[0]],
                  "lock": int(key in WEAPON_CARDS and r[0] in FRESH_ONLY_ON_WEAPONS)} for r in ROWS if r[0] in kind_rows]
         cards.append({"key": key, "name": name, "cond": cond, "kinds": kind_list, "rows": rows,
                       "reach": reach_max, "reachBase": reach_base, "longestBase": longest[0]})
     return {"cut": CUT, "nameMax": LC.NAME_MAX, "bands": list(BANDS), "viewer": VIEWER, "cats": CATS,
-            "picks": load_picks(card_rows(bases, affixes)),
+            "picks": load_picks(eligible), "high": load_high(),
+            "linked": [list(g) for g in LINKED], "weaponCards": WEAPON_CARDS,
             "rows": [{"key": k, "label": lab, "cat": cat, "def": d, "sock": int(k in SOCKETED), "min": MIN_ROLL.get(k, 0),
                       "wpn": 2 if k in WEAPON_ANY_TIME else 1 if k in FRESH_WEAPON_ROWS else 0,
-                      "wpnc": 2 if k in CASTER_LOW_ONLY else int(k in FRESH_CASTER_ROWS)}
+                      "wpnc": 2 if k in CASTER_LOW_ONLY else int(k in FRESH_CASTER_ROWS), "hi": int(k in ALIASES)}
                      for k, lab, cat, d in ROWS],
             "wpnCards": NONCASTER_CARDS,
             "affixes": aff_table, "segs": seg_table, "cards": cards}
@@ -688,12 +772,13 @@ WEAPON_GATE = {"dmg_dem": f"(ALVL<{CUT} OR ED>99)", "dmg_und": f"(ALVL<{CUT} OR 
 FRESH_ONLY_ON_WEAPONS = {"leech_life", "leech_mana", "owd", "ar_pct", "dmg_dem", "dmg_und"}
 # clubs, orbs, wands and staves tag these the same way, until socketed or corrupted (the author, 2026-10-28; clubs take
 # both sets; flat physical damage reduction only comes from the Safety craft). Replenish life, regenerate mana and
-# damage taken goes to mana never show on them
+# damage taken goes to mana never show on them, nor (the author, 2026-11-07) strength, dexterity and energy: those
+# only as the item type's cards pick them
 CASTERS = "(CLUB OR STAFF OR WAND OR SOR)"
-FRESH_CASTER_ROWS = {"lpk", "mpk", "mana", "life", "res", "enr", "str", "dex", "mdr", "pdr_flat"}
+FRESH_CASTER_ROWS = {"lpk", "mpk", "mana", "life", "res", "mdr", "pdr_flat"}
 # on clubs, staves, wands and orbs only below affix level 60 (the author, 2026-11-02: a crafted affix level 76
 # battle staff showed 32r)
-CASTER_LOW_ONLY = {"res", "enr"}
+CASTER_LOW_ONLY = {"res"}
 WEAPON_GROUPS = ((WEAPONS, FRESH_WEAPON_ROWS, "weapons but staves, wands and orbs"),
                  (CASTERS, FRESH_CASTER_ROWS, "clubs, orbs, wands and staves"))
 
@@ -723,8 +808,22 @@ def load_picks(eligible):
     return {c: {r: bool(data.get(c, {}).get(r, ROW[r][3])) for r in rows} for c, rows in eligible.items()}
 
 
-def write_picks(picks):
-    PICKS.write_text(json.dumps(picks, indent=1) + "\n", encoding="utf-8", newline="\n")
+# from affix level CUT up, per item type and wired stat: "all" (every roll) or "never"; a stat it doesn't name is as
+# 300 and the weapon parts make it. Minimum and maximum damage share one choice (their tags join: 1-3dmg)
+HIGH_CHOICES = ("all", "never")
+LINKED = (("min", "max"),)
+
+
+def load_high():
+    """{card: {row: "all" / "never"}}: the picks file's "high" part."""
+    data = json.loads(PICKS.read_text(encoding="utf-8")) if PICKS.exists() else {}
+    return {c: {r: v for r, v in rows.items() if r in ALIASES and v in HIGH_CHOICES}
+            for c, rows in data.get("high", {}).items() if c in CARD_NAME}
+
+
+def write_picks(picks, high):
+    data = dict(picks, high={c: dict(sorted(rows.items())) for c, rows in high.items() if rows})
+    PICKS.write_text(json.dumps(data, indent=1) + "\n", encoding="utf-8", newline="\n")
 
 
 def card_condition(cards):
@@ -734,7 +833,13 @@ def card_condition(cards):
     return conds[0] if len(conds) == 1 else "(" + " OR ".join(conds) + ")"
 
 
-def render_section(picks, eligible, off=False):
+def high_cards(high, row, choice):
+    """The item types whose choice from affix level CUT up is choice ("all" / "never") for this row."""
+    return [c for c, *_ in CARDS if high.get(c, {}).get(row) == choice]
+
+
+def render_section(picks, eligible, high=None, off=False):
+    high = {} if off or high is None else high
     out = ["// ------------------------------------------------------------------------------",
            "//    =====================  Low-Level Rare Tags (aliases)  =====================",
            "// ------------------------------------------------------------------------------",
@@ -742,9 +847,11 @@ def render_section(picks, eligible, off=False):
            "// GENERATED by tools/low_level_tags.py from tools/low_level_tag_picks.json (the author's choices on the",
            f"// page {PAGE_URL}); never edit by hand. Below affix level {CUT} a rare or crafted",
            "// item of a picked item type tags every roll of the stat, in 300-affix-tags' look: 300's lines ask these",
-           f"// aliases. From affix level {CUT} up nothing changes, but rare and crafted weapons tag some of these stats",
-           "// at every affix level while nothing is socketed and they aren't corrupted (the physical ones one set;",
-           "// clubs, orbs, wands and staves another)."]
+           f"// aliases. From affix level {CUT} up 300's own thresholds decide, but rare and crafted weapons tag some of",
+           "// these stats at every affix level while nothing is socketed and they aren't corrupted (the physical ones",
+           "// one set; clubs, orbs, wands and staves another), and the author's choices from affix level",
+           f"// {CUT} per item type win: every roll (the _TAG alias), or never (the _OFF alias, which every 300 line that",
+           "// can tag the stat on a rare or crafted item asks)."]
     for row, label, _, _ in ROWS:
         if row not in ALIASES:
             continue
@@ -758,16 +865,97 @@ def render_section(picks, eligible, off=False):
             fresh = (f"ALVL<{CUT} " if row in WEAPON_LOW_ONLY | CASTER_LOW_ONLY else "") + "!GEMMED !STAT360>0"
             wpn = f"{types} {WEAPON_GATE[row]} ({WEAPON_ANY_TIME[row]} OR ({fresh}))" if row in WEAPON_ANY_TIME \
                 else f"{types} {fresh}"
-        body = "FALSE" if not (low or wpn) else f"((RARE OR CRAFT) {low or wpn})" if not (low and wpn) else \
-            f"((RARE OR CRAFT) (({low}) OR ({wpn})))"
+        # from affix level CUT, every roll: armor as below it (socket fillers aside), weapons until socketed or
+        # corrupted (as the weapon parts)
+        hi_parts = []
+        for c in high_cards(high, row, "all"):
+            fresh = " !GEMMED !STAT360>0" if c in WEAPON_CARDS else gem
+            hi_parts.append(f"ALVL>{CUT - 1}{fresh} {CARD_COND[c]}")
+        parts = [p for p in (low, wpn) if p] + hi_parts
+        body = "FALSE" if not parts else f"((RARE OR CRAFT) {parts[0]})" if len(parts) == 1 else \
+            "((RARE OR CRAFT) (" + " OR ".join(f"({p})" for p in parts) + "))"
+        never = high_cards(high, row, "never")
+        all_ = high_cards(high, row, "all")
         out += ["", f"// {label}: " + (", ".join(CARD_NAME[c].lower() for c in cards) or "none") +
                 (" (not with anything socketed: gems and runes add it)" if gem and cards else "") +
                 (f"; {who} {'below affix level ' + str(CUT) if row in WEAPON_LOW_ONLY | CASTER_LOW_ONLY else 'at every affix level'} "
                  "until socketed or corrupted" if wpn else "")
                 + (f" (from affix level {CUT} only with 100%+ enhanced damage; 100 and up at any time)"
-                   if row in WEAPON_ANY_TIME and wpn else ""),
-                f"Alias[{ALIASES[row]}]:" + body]
+                   if row in WEAPON_ANY_TIME and wpn else "")
+                + (f"; every roll from affix level {CUT}: " + ", ".join(CARD_NAME[c].lower() for c in all_)
+                   if all_ else ""),
+                f"Alias[{ALIASES[row]}]:" + body,
+                f"// never from affix level {CUT}: " + (", ".join(CARD_NAME[c].lower() for c in never) or "none"),
+                f"Alias[{off_alias(row)}]:" + (f"((RARE OR CRAFT) ALVL>{CUT - 1} {card_condition(never)})"
+                                              if never else "FALSE")]
     return ("\r\n".join(out) + "\r\n").encode("utf-8")
+
+
+def off_alias(row):
+    return ALIASES[row][:-len("_TAG")] + "_OFF"
+
+
+# a 300 line that can put the row's tag on a rare or crafted item asks the row's _OFF alias (as !<alias>, at the end
+# of its condition): its condition doesn't rule out a rare or a crafted item (045's roll aliases are unique / set
+# fingerprints)
+TAG_SKIP = {"WHITE", "RED", "BLUE", "GRAY", "TAN", "GOLD", "YELLOW", "DARK_GREEN", "LIGHT_GRAY", "ORANGE", "TEAL",
+            "CORAL", "PURPLE", "PERCENT", "CS", "NAME", "GREEN", "SAGE", "BLACK"}
+
+
+def row_words(row):
+    """The words a 300 tag of the row shows (its looks' value codes), or the looks themselves for a flag tag."""
+    looks = {PROPS[p][2] for p in PROPS if PROPS[p][0] == row and PROPS[p][2]}
+    words = set()
+    for look in looks:
+        words |= set(re.findall(r"%([A-Z0-9_]+)%", look)) - TAG_SKIP
+        words |= set(re.findall(r"\b(MAXDMG|MINDMG|STAT\d+)\b", look))
+    return words, looks
+
+
+def off_lines(lines=None):
+    """{row: [300 line numbers that must ask its _OFF alias]}."""
+    lines = TAGS_300.read_text(encoding="utf-8").splitlines() if lines is None else lines
+    out = {}
+    for row in ALIASES:
+        words, looks = row_words(row)
+        for i, line in enumerate(lines, 1):
+            if not line.startswith("ItemDisplay["):
+                continue
+            cond, output = line[len("ItemDisplay["):].split("]:", 1)
+            tag = output.split("%NAME%")[0]
+            if not (any(re.search(r"(?<![A-Z0-9_])" + w + r"(?![A-Z0-9_])", tag) for w in words) if words
+                    else any(look in tag for look in looks)):
+                continue
+            t = LC.tree(LC.rpn(cond))
+            if any(LC.fold(t, lambda w, q=q: 1 if w == q else 0 if w in QUALITIES or re.fullmatch(r"ROLL_\w+_TAG", w)
+                           else None) != 0 for q in ("RARE", "CRAFT")):
+                out.setdefault(row, []).append(i)
+    return out
+
+
+QUALITIES = {"RARE", "CRAFT", "MAG", "UNI", "SET", "NMAG", "SUP", "INF"}
+
+
+def wire_off():
+    """Put !<row>_OFF at the end of each 300 line off_lines names that lacks it, and take it out of the others."""
+    raw = TAGS_300.read_bytes().decode("utf-8")
+    lines = raw.split("\r\n")
+    want, n = off_lines(lines), 0
+    for row in ALIASES:
+        token = " !" + off_alias(row)
+        for i, line in enumerate(lines, 1):
+            if not line.startswith("ItemDisplay["):
+                continue
+            k = line.index("]:")
+            has = re.search(re.escape(token) + r"(?![A-Z0-9_])", line[:k])
+            if i in want.get(row, []) and not has:
+                lines[i - 1] = line[:k] + token + line[k:]
+                n += 1
+            elif has and i not in want.get(row, []):
+                lines[i - 1] = line[:has.start()] + line[has.end():]
+                n += 1
+    TAGS_300.write_bytes("\r\n".join(lines).encode("utf-8"))
+    print(f"changed {n} line(s) of {TAGS_300.relative_to(ROOT)}")
 
 
 def check_aliases():
@@ -778,6 +966,20 @@ def check_aliases():
     ours = set(ALIASES.values())
     out = [f"300 asks {a}, which the section lacks" for a in sorted(used - ours)]
     out += [f"300 never asks {a} (wire it, or take it out of ALIASES)" for a in sorted(ours - used)]
+    # the _OFF aliases: exactly the lines that can tag the row on a rare or crafted item ask them
+    lines = text.splitlines()
+    want = off_lines(lines)
+    for row in ALIASES:
+        token = "!" + off_alias(row)
+        has = {i for i, line in enumerate(lines, 1) if line.startswith("ItemDisplay[")
+               and re.search(re.escape(token) + r"(?![A-Z0-9_])", line.split("]:", 1)[0])}
+        need = set(want.get(row, []))
+        out += [f"300:{i} can tag {ROW[row][1].lower()} on a rare but lacks {token} "
+                "(python tools/low_level_tags.py --wire)" for i in sorted(need - has)]
+        out += [f"300:{i} asks {token} but can't tag {ROW[row][1].lower()} on a rare" for i in sorted(has - need)]
+    ours |= {off_alias(r) for r in ALIASES}
+    bad = set(re.findall(r"LOWLVL_[A-Z0-9_]+?_OFF", text)) - ours
+    out += [f"300 asks {a}, which the section lacks" for a in sorted(bad)]
     others = set()
     for f in (ROOT / "sections").glob("*.filter"):
         if f != SECTION:
@@ -802,7 +1004,7 @@ def apply(path):
     data = json.loads(Path(path).read_text(encoding="utf-8"))
     bases, affixes = T.load_bases(), load_affixes()
     eligible = card_rows(bases, affixes)
-    picks = load_picks(eligible)
+    picks, high = load_picks(eligible), load_high()
     for card, doc in data.items():
         if card not in picks:
             sys.exit(f"--apply: unknown item type {card}")
@@ -813,8 +1015,16 @@ def apply(path):
                 continue  # the flat row's own switch decides the merged tag
             if target in picks[card]:
                 picks[card][target] = bool(on)
-    write_picks(picks)
-    SECTION.write_bytes(render_section(picks, eligible))
+        if "high" in doc:
+            mine = {r: v for r, v in (doc["high"] or {}).items() if r in ALIASES and v in HIGH_CHOICES}
+            for group in LINKED:
+                vals = {mine.get(r) for r in group}
+                if len(vals) > 1:
+                    sys.exit(f"--apply: {CARD_NAME[card]}: {' and '.join(ROW[r][1] for r in group)} share one choice "
+                             f"from affix level {CUT}, but the document has {sorted(map(str, vals))}")
+            high[card] = mine
+    write_picks(picks, high)
+    SECTION.write_bytes(render_section(picks, eligible, high))
     print(f"applied {', '.join(data)} to {PICKS.relative_to(ROOT)}; wrote {SECTION.relative_to(ROOT)}")
     states = {(c["key"], r["key"]): {k["st"] for k in r["kinds"]} for c in page_data()["cards"] for r in c["rows"]}
     todo = [f"{CARD_NAME[c]}: {ROW[r][1]}" for c in picks for r, on in picks[c].items()
@@ -842,7 +1052,7 @@ def verify():
     tag line per item type: per side the 3 affix groups whose tags are widest, together through the rules."""
     bases, affixes = T.load_bases(), load_affixes()
     eligible = card_rows(bases, affixes)
-    picks = load_picks(eligible)
+    picks, hi_picks = load_picks(eligible), load_high()
     head = subprocess.run(["git", "show", f"HEAD:sections/{TAGS_300.name}"], cwd=ROOT, capture_output=True,
                           check=True).stdout
     sets = {"head": Rules({TAGS_300.name: head, SECTION.name: b""}), "off": Rules(), "now": Rules({})}
@@ -863,7 +1073,7 @@ def verify():
             for alvl in (CUT - 1, CUT):
                 base_vals = base_values(codes[0], first, groups, alvl)
                 folds = {s: r.folded(codes[0], groups, base_vals) for s, r in sets.items()}
-                mags = {s: sets[s].folded(codes[0], groups, base_vals, "MAG") for s in ("head", "off")}
+                mags = {s: sets[s].folded(codes[0], groups, base_vals, "MAG") for s in sets}
 
                 def line(s, v, kind="RARE"):
                     f = mags[s] if kind == "MAG" else folds[s]
@@ -885,6 +1095,22 @@ def verify():
                                 problems.append(f"{where}: aliases off {got['off']!r}, last commit {got['head']!r}")
                             if line("head", v, "MAG") != line("off", v, "MAG"):
                                 problems.append(f"{where}, as a magic item: changed with the aliases off")
+                            if line("now", v, "MAG") != line("off", v, "MAG"):
+                                problems.append(f"{where}, as a magic item: changed by the low-level aliases")
+                            choice = hi_picks.get(key, {}).get(row) if alvl >= CUT and row in ALIASES else None
+                            look = look_of(a, row)
+                            shown = look and roll_value(a, row, high) >= MIN_ROLL.get(row, 1)
+                            want = Counter(vis(LC.apply(look, "", v, first["name"])).split()) if shown else Counter()
+                            before, after = Counter(got["off"].split()), Counter(got["now"].split())
+                            if choice == "never":  # from the cut: none of the stat's tags, nothing else changed
+                                if any(after[t] for t in want) or after - before:
+                                    problems.append(f"{where}: never from affix level {CUT}, but {got['off']!r} -> "
+                                                    f"{got['now']!r}")
+                                for c in CORRUPTIONS.get(row, []) if high else []:
+                                    now = Counter(line("now", dict(v, STAT360=c)).split())
+                                    if any(now[t] for t in want):
+                                        problems.append(f"{where}, corruption {c}: never, but {' '.join(now)!r}")
+                                continue
                             low = alvl < CUT and row in ALIASES and picks[key].get(row) and \
                                 not (key in WEAPON_CARDS and row in FRESH_ONLY_ON_WEAPONS)
                             wrule = (key in NONCASTER_CARDS and row in FRESH_WEAPON_ROWS
@@ -892,14 +1118,11 @@ def verify():
                                      and (row not in WEAPON_GATE or alvl < CUT or v.get("ED", 0) > 99)) or \
                                 (row in FRESH_CASTER_ROWS and bool(groups & {"CLUB", "STAFF", "WAND", "SOR"})
                                  and not (row in CASTER_LOW_ONLY and alvl >= CUT))
-                            if not (low or wrule):
+                            hi_all = choice == "all"
+                            if not (low or wrule or hi_all):
                                 if got["now"] != got["off"]:
                                     problems.append(f"{where}: not picked, but {got['off']!r} -> {got['now']!r}")
                                 continue
-                            look = look_of(a, row)
-                            shown = look and roll_value(a, row, high) >= MIN_ROLL.get(row, 1)
-                            want = Counter(vis(LC.apply(look, "", v, first["name"])).split()) if shown else Counter()
-                            before, after = Counter(got["off"].split()), Counter(got["now"].split())
                             had = all(before[t] >= c for t, c in want.items())
                             if after != (before if had else before + want):
                                 problems.append(f"{where}: {got['off']!r} -> {got['now']!r}, wanted "
@@ -913,9 +1136,9 @@ def verify():
                                 # socketed, and a weapon's fresh tags corrupted too (an outcome these lines don't
                                 # count): as without the low-level tags, but a weapon's demons / undead from 100
                                 any_time = wrule and row in WEAPON_ANY_TIME and roll_value(a, row, high) > 99
-                                cases = [("socketed", dict(v, GEMMED=1))] if row in SOCKETED or (wrule and not low) \
-                                    else []
-                                cases += [("corrupted", dict(v, STAT360=6))] if wrule and not low else []
+                                fresh = (wrule or (hi_all and key in WEAPON_CARDS)) and not low
+                                cases = [("socketed", dict(v, GEMMED=1))] if row in SOCKETED or fresh else []
+                                cases += [("corrupted", dict(v, STAT360=6))] if fresh else []
                                 for what, g in cases:
                                     b, n_ = Counter(line("off", g).split()), Counter(line("now", g).split())
                                     keep = any_time and not all(b[t] >= c for t, c in want.items())
@@ -992,6 +1215,8 @@ def main():
     ap.add_argument("--apply", metavar="FILE", help="take the page's db documents (JSON) into the picks file")
     ap.add_argument("--verify", action="store_true", help="check the built rules and measure the longest labels")
     ap.add_argument("--dump", metavar="CARD", help="print a card's rows (what the page shows), for checking")
+    ap.add_argument("--wire", action="store_true", help="give every 300 line that can tag a wired stat on a rare "
+                                                        "its !LOWLVL_<X>_OFF")
     args = ap.parse_args()
     if args.apply:
         apply(args.apply)
@@ -1014,9 +1239,12 @@ def main():
     if args.page:
         write_page()
         return 0
+    if args.wire:
+        wire_off()
+        return 0
     bases, affixes = T.load_bases(), load_affixes()
     eligible = card_rows(bases, affixes)
-    text = render_section(load_picks(eligible), eligible)
+    text = render_section(load_picks(eligible), eligible, load_high())
     if args.check:
         problems = check_aliases()
         if not SECTION.exists() or SECTION.read_bytes() != text:
