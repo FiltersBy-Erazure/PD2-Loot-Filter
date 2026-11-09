@@ -56,7 +56,7 @@ ItemDisplay[BIG_GG !POE_SOUNDS !REVEALED box]:%NAME%{%NAME%%CL%%TEAL%Corrlorized
 ItemDisplay[BIG_GG !POE_SOUNDS REVEALED box]:%NAME%{%NAME%%CL%%TEAL%Corrlorized - Revealed - Big GG}%CONTINUE%//
 ItemDisplay[BIG_GG POE_SOUNDS !REVEALED box]:%NAME%{%NAME%%CL%%TEAL%Corrlorized - Big GG - PoE}%CONTINUE%//
 ItemDisplay[BIG_GG POE_SOUNDS REVEALED box]:%NAME%{%NAME%%CL%%TEAL%Corrlorized - Revealed - Big GG - PoE}%CONTINUE%//
-ItemDisplay[box]:%NAME%{%NAME%%CL%%WHITE%Season 14 - November 8th - v2}//
+ItemDisplay[box]:%NAME%{%NAME%%CL%%WHITE%Season 14 - November 8th - v3}//
 
 // =====================================  Toggles  ==================================
 
@@ -380,6 +380,10 @@ Alias[REVEALED]:FALSE
 // Magic Rings
 // written into the rules: Alias[MAGIC_RING_LEFT]:%TAN%•
 // written into the rules: Alias[MAGIC_RING_RIGHT]:%TAN%•%BLUE%
+
+// Magic Class Items: unidentified ones of your own class and its weapons on filter levels 0-4 below character level 80 (the ring's dots)
+// written into the rules: Alias[MAGIC_CLASS_LEFT]:%TAN%•
+// written into the rules: Alias[MAGIC_CLASS_RIGHT]:%TAN%•%BLUE%
 
 // Magic Small, Grand and Large Charms (Small and Grand on levels 0-4 or of item level 90+, Large on levels 0-6)
 // written into the rules: Alias[MAGIC_CHARMS_LEFT]:%YELLOW%\%ORANGE%(%RED%(
@@ -5624,6 +5628,10 @@ ItemDisplay[MAG !ID (cm1 OR cm3)]:%RED%%NAME%%CONTINUE%// Excluding Small and Gr
 ItemDisplay[MAG !ID cm2]:%CORAL%%NAME%%CONTINUE%// Excluding Large Charms
 ItemDisplay[MAG]:%BLUE%%NAME%{%NAME%}%CONTINUE%//
 ItemDisplay[ETH MAG]:%WHITE%Eth %NAME%{%NAME%}%CONTINUE%//
+
+// Magic Class Items of your own class, and as for rare ones its weapons (Assassins and Necromancers: daggers; Druids: clubs; Necromancers: wands;
+// Paladins: scepters; Sorceresses: staves): the ring's dots around the name on filter levels 0-4 below character level 80
+ItemDisplay[MAG !ID FILTLVL<5 CLVL<80 ((AMAZON ZON) OR (ASSASSIN (SIN OR (DAGGER !THROWING))) OR (BARBARIAN BAR) OR (DRUID (DRU OR clb OR spc OR 9cl OR 9sp OR 7cl OR 7sp)) OR (NECROMANCER (NEC OR WAND OR (DAGGER !THROWING))) OR (PALADIN (DIN OR SCEPTER)) OR (SORCERESS (SOR OR STAFF)))]:%TAN%•  %NAME%  %TAN%•%BLUE%{%NAME%}%CONTINUE%//
 
 // Magic Amulets
 ItemDisplay[MAG !ID amu FILTLVL>6 GROUND !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109 OR MAPID~202-206)]:// Hide unidentified magic amulets on filter levels 7+
