@@ -525,7 +525,8 @@ def base_values(code, base, groups, alvl):
     return v
 
 
-def look_of(a, row):
+def look_of(a, row, groups=frozenset()):
+    """The affix's tag look for the row; on a mace or scepter damage to undead with the game's +50% (300 shows it so)."""
     looks = []
     for mod in a["mods"]:
         prop = mod[0].lower()
@@ -539,6 +540,8 @@ def look_of(a, row):
             look = f"%WHITE%%TABSK{tab}%%TAN%{TAB_LOOK[tab]}" if tab in TAB_LOOK else None
         if look is None:
             return None
+        if row == "dmg_und" and groups & BLUNT_GROUPS:
+            look = look.replace("%STAT122%", f"$f(STAT122+{UND_BONUS})")
         if look not in looks:
             looks.append(look)
     return " ".join(looks) if looks else None
@@ -641,7 +644,7 @@ def page_data():
                         tags.append((new.strip(), pos))
                     low_ok = low_ok and bool(LC.visible(tags[0][0]).strip())
                     high_any = high_any or bool(LC.visible(tags[1][0]).strip())
-                    look = look_of(a, row)
+                    look = look_of(a, row, groups)
                     new_text = LC.apply(look, "", affix_values(a, row, True, weapon, base_vals), first["name"]) \
                         if look and roll_value(a, row, True) >= MIN_ROLL.get(row, 1) else ""
                     some = not all(fits(a, bases[c]) for c in codes)
@@ -790,8 +793,15 @@ FRESH_WEAPON_ROWS = {"leech_life", "leech_mana", "frw", "ar_pct", "owd", "itd", 
 # on weapons only below affix level 60 (the author, 2026-10-29; attack rating % the same day)
 WEAPON_LOW_ONLY = {"leech_life", "leech_mana", "owd", "ar_pct"}
 # damage to demons / undead (the author, 2026-10-29): below affix level 60 every roll, from 60 only on a weapon with
-# 100%+ enhanced damage; 100 and up (300 shows it red) socketed or corrupted too, below 100 (tan) until then
-WEAPON_ANY_TIME = {"dmg_dem": "STAT121>99", "dmg_und": "STAT122>99"}
+# 100%+ enhanced damage; 100 and up (300 shows it red) socketed or corrupted too, below 100 (tan) until then. Maces and
+# scepters (the blunt melee weapons) show damage to undead with the game's own +50% added, as their hover box does (the
+# author, 2026-11-08; staves and wands keep the stat alone): red, and so tagged at any time, from a roll of 50
+BLUNT_MELEE, UND_BONUS = "(MACE OR SCEPTER)", 50
+BLUNT_GROUPS = {"MACE", "SCEPTER"}
+WEAPON_ANY_TIME = {"dmg_dem": "STAT121>99",
+                   "dmg_und": f"(STAT122>99 OR ({BLUNT_MELEE} STAT122>{99 - UND_BONUS}))"}
+ANY_TIME_NOTE = {"dmg_und": f"; maces and scepters show the game's +{UND_BONUS}% with it, so theirs from "
+                            f"{100 - UND_BONUS}"}
 WEAPON_GATE = {"dmg_dem": f"(ALVL<{CUT} OR ED>99)", "dmg_und": f"(ALVL<{CUT} OR ED>99)"}
 # on weapons these show only while nothing is socketed and the item isn't corrupted, below affix level 60 too (the
 # author, 2026-10-28; demons / undead below 100): the weapon cards leave their low-level part, the weapon part
@@ -907,8 +917,8 @@ def render_section(picks, eligible, high=None, off=False):
                 (" (not with anything socketed: gems and runes add it)" if gem and cards else "") +
                 (f"; {who} {'below affix level ' + str(CUT) if row in WEAPON_LOW_ONLY | CASTER_LOW_ONLY else 'at every affix level'} "
                  "until socketed or corrupted" if wpn else "")
-                + (f" (from affix level {CUT} only with 100%+ enhanced damage; 100 and up at any time)"
-                   if row in WEAPON_ANY_TIME and wpn else "")
+                + (f" (from affix level {CUT} only with 100%+ enhanced damage; 100 and up at any time"
+                   f"{ANY_TIME_NOTE.get(row, '')})" if row in WEAPON_ANY_TIME and wpn else "")
                 + (f"; every roll from affix level {CUT}: " + ", ".join(CARD_NAME[c].lower() for c in all_)
                    if all_ else ""),
                 f"Alias[{ALIASES[row]}]:" + body,
@@ -1125,7 +1135,7 @@ def verify():
                             if line("now", v, "MAG") != line("off", v, "MAG"):
                                 problems.append(f"{where}, as a magic item: changed by the low-level aliases")
                             choice = hi_picks.get(key, {}).get(row) if alvl >= CUT and row in ALIASES else None
-                            look = look_of(a, row)
+                            look = look_of(a, row, groups)
                             shown = look and roll_value(a, row, high) >= MIN_ROLL.get(row, 1)
                             want = Counter(vis(LC.apply(look, "", v, first["name"])).split()) if shown else Counter()
                             before, after = Counter(got["off"].split()), Counter(got["now"].split())
@@ -1162,7 +1172,8 @@ def verify():
                                         problems.append(f"{where}, corruption {c}: {' '.join(twice)} twice")
                                 # socketed, and a weapon's fresh tags corrupted too (an outcome these lines don't
                                 # count): as without the low-level tags, but a weapon's demons / undead from 100
-                                any_time = wrule and row in WEAPON_ANY_TIME and roll_value(a, row, high) > 99
+                                bonus = UND_BONUS if row == "dmg_und" and groups & BLUNT_GROUPS else 0
+                                any_time = wrule and row in WEAPON_ANY_TIME and roll_value(a, row, high) + bonus > 99
                                 fresh = (wrule or (hi_all and key in WEAPON_CARDS)) and not low
                                 cases = [("socketed", dict(v, GEMMED=1))] if row in SOCKETED or fresh else []
                                 cases += [("corrupted", dict(v, STAT360=6))] if fresh else []

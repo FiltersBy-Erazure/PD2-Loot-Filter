@@ -85,6 +85,31 @@ def staffmods_labels():
 SKILL_LABELS = {**U.SKILL_TAG_LABELS, **staffmods_labels()}  # 310 first; the generator's own for Amazon skills
 LINES = U.tag_lines()  # the 300 tag lines
 AFFIX_TEXT = (ROOT / "sections" / "300-affix-tags.filter").read_text(encoding="utf-8").splitlines()
+# A 300 line can narrow its look to some weapon groups with a term of its own: maces and scepters show damage to
+# undead with the game's +50% added, `WEAPON (MACE OR SCEPTER) ... $f(STAT122+50)`, the other weapons the stat alone,
+# `WEAPON !(MACE OR SCEPTER) ...` (the author, 2026-11-08). A runeword's lines for that slot split the same way: the
+# term goes into their condition, and the formula into their tag ({f:...}).
+GROUP_WORD = r"(?:MACE|TMACE|CLUB|HAMMER|SCEPTER|STAFF|WAND|SOR)"
+GROUP_TERM = re.compile(r"(?<![A-Za-z0-9_!])(!?\(%s(?: OR %s)*\))" % (GROUP_WORD, GROUP_WORD))
+
+
+def group_term(cond):
+    """The line's top-level weapon group term ('(MACE OR SCEPTER)', '!(MACE OR SCEPTER)'), or ''."""
+    for m in GROUP_TERM.finditer(cond):
+        if cond[:m.start()].count("(") == cond[:m.start()].count(")"):
+            return m.group(1)
+    return ""
+
+
+for _line in LINES:
+    _line["only"] = group_term(_line["cond"])
+    for _chunk in _line["chunks"] if _line["only"] else []:
+        for _part in _chunk["parts"]:
+            _m = tag_order.FORMULA.search(_part[1])
+            _stat = tag_order.formula_stat(_m) if _m else ""
+            if _stat.startswith("%") and not _chunk["kw"]:
+                _chunk["kw"] = _stat.strip("%")
+                _part[1] = _part[1][:_m.start()] + "{f:%s}" % _m.group(1) + _part[1][_m.end():]
 PER_LEVEL = {}  # per-level stat code -> (the stat it adds to, divisor), from docs/pd2-runewords.tsv (load())
 
 
@@ -165,7 +190,7 @@ def variant(line, src, code, whole=False, cmp_src=None):
         a, b = span(cmps + [[op, int(num)]])
         if same_stat(c, cmp_src or src) and a <= b:
             cmps.append([op, int(num)])
-    return {"n": line["n"], "parts": parts, "cmps": cmps}
+    return {"n": line["n"], "parts": parts, "cmps": cmps, "only": line.get("only", "")}
 
 
 def relabel(line, code, label):
@@ -247,7 +272,7 @@ def dedupe(variants):
 
 def signature(variants):
     """A look's identity: its parts and comparisons (not the 300 line it came from)."""
-    return json.dumps([[v["parts"], v["cmps"]] for v in variants])
+    return json.dumps([[v["parts"], v["cmps"]] + ([v["only"]] if v.get("only") else []) for v in variants])
 
 
 def span(cmps):
@@ -264,11 +289,13 @@ def span(cmps):
 
 def exclusive(variants):
     """The variants whose value ranges do not overlap an earlier one's: one tag per stat (300 can have a second
-    line for a stat in a slot, e.g. for corrupted items; on a runeword the first applies)."""
+    line for a stat in a slot, e.g. for corrupted items; on a runeword the first applies). Lines for other weapon
+    groups (their own term, group_term) never overlap."""
     out = []
     for v in variants:
         a, b = span(v["cmps"])
-        if all(b < c or d < a for c, d in (span(o["cmps"]) for o in out)):
+        if all(b < c or d < a or o.get("only", "") != v.get("only", "")
+               for (c, d), o in ((span(o["cmps"]), o) for o in out)):
             out.append(v)
     return out
 
@@ -649,6 +676,7 @@ def render_section(rws, picks):
                 if not guard:  # the stat must be there (a version of the runeword may lack the roll)
                     code = ERES_STAT[key[5]] if key.startswith("eres_") else GUARD_CODE.get(c["code"], c["code"])
                     guard = [f"{code}<0" if c["hi"] < 0 else f"{code}>0"]
+                guard = ([var["only"]] if var.get("only") else []) + guard  # maces and scepters apart
                 shown = [(guard, var["parts"])]
                 if c["code"] in PER_LEVEL:  # per level (0.75s) unless your character wears it: then the total at its level
                     total = [[col, re.sub(r"\{f:([^/}]+)/(\d+)\}", r"{f:FLOOR(\1*CLVL/\2)}", t)] for col, t in var["parts"]]

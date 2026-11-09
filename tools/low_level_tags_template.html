@@ -318,6 +318,7 @@ function wpnChip(card, info, row) {
   let text = "";
   if (info.wpn && DATA.wpnCards.includes(card.key)) {
     text = info.wpn === 2 ? `Below affix level ${DATA.cut}; from ${DATA.cut} with 100%+ enhanced damage. 100+ always, tan under 100 until socketed or corrupted` : "Every affix level until socketed or corrupted";
+    if (info.wpn === 2 && info.key === "dmg_und" && card.key === "melee") text += ". Maces and scepters show the game's +50% in the tag: 120und for a 70 roll";
   } else if (info.wpnc && card.key === "caster") {
     text = info.wpnc === 2 ? `Below affix level ${DATA.cut} until socketed or corrupted` : "Every affix level until socketed or corrupted";
   } else if (info.wpnc && card.key === "melee") {

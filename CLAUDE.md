@@ -349,7 +349,13 @@
   aren't corrupted (`!GEMMED !STAT360>0`). Damage to demons / undead (the author, 2026-10-29): below affix level 60
   every roll, from 60 only on a weapon with 100%+ enhanced damage (`ED>99`); 100 and up red, socketed or corrupted
   too (corruptions 5 / 77 add +100-150%, so such a corrupted weapon shows its total), below 100 tan, until socketed
-  or corrupted (helms and circlets keep red): `FRESH_WEAPON_ROWS` / `WEAPON_ANY_TIME` / `WEAPON_GATE` in the tool. Clubs, orbs, wands and staves (clubs take both sets) tag life / mana after each kill,
+  or corrupted (helms and circlets keep red): `FRESH_WEAPON_ROWS` / `WEAPON_ANY_TIME` / `WEAPON_GATE` in the tool.
+  Maces and scepters (`(MACE OR SCEPTER)`, the blunt melee weapons) show damage to undead with the game's own +50%
+  added, as their hover box does (`$f(STAT122+50)`: 70 rolled is `120und`; the author, 2026-11-08; the game adds it
+  to every blunt weapon in combat too, but staves and wands keep the stat alone, the author's choice): the colour and
+  the any-time cut go by the shown total (red, and tagged when socketed or corrupted, from a roll of 50), on uniques,
+  sets (300) and runewords (305: `gen_runeword_rolls.py` carries a 300 line's weapon group term, `!(MACE OR
+  SCEPTER)`, and its formula into its own lines) too. Clubs, orbs, wands and staves (clubs take both sets) tag life / mana after each kill,
   mana, life, single resistances and flat physical / magic damage reduction the same way
   (`FRESH_CASTER_ROWS`; flat PDR on weapons only comes from the Safety craft, so 300's PDR line takes `WEAPON`),
   single resistances only below affix level 60 (`CASTER_LOW_ONLY`, the author, 2026-11-02: a crafted
