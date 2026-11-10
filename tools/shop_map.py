@@ -1352,7 +1352,7 @@ FAMILIES = [
     {"id": "barbarian", "section": "skills", "title": "Barbarian helms", "match": lambda r: has(r, "BAR"),
      "sample": {"base": "ba1", "affixes": ["Echoing"], "staffmods": {"War Cry": 3}, "class": "BARBARIAN",
                 "clvl": 90}},
-    {"id": "druid", "section": "skills", "title": "Druid pelts and clubs", "match": lambda r: has(r, "CLUB", "DRU"),
+    {"id": "druid", "section": "skills", "title": "Druid pelts and clubs", "match": lambda r: has(r, "DRU"),
      "sample": {"base": "dr1", "affixes": ["Gaean"], "staffmods": {"Tornado": 3}, "class": "DRUID", "clvl": 90}},
     {"id": "scepters-fcr", "section": "casters", "title": "Scepters with cast rate",
      "match": lambda r: has(r, "SCEPTER") and kind(r) == 2,
