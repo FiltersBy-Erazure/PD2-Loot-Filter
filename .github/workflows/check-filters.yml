@@ -22,6 +22,8 @@ jobs:
           python tools/lint_filter.py --style "Corrlorized - Main - PoE"
       - name: Every +N to one skill highlight (sections/280) has its plain twin for corrupted items
         run: python tools/plain_highlights.py --check
+      - name: Every hide rule marked !SMALL_SELL_BASE (sections/210, 220, 310) has its sell tag twins
+        run: python tools/sell_label_twins.py --check
       - name: Unique/set label cut cases match the filter and tools/unique_cut_rules.txt
         run: python tools/label_cuts.py --check
       - name: Unique/set roll tags match docs/items and tools/unique_roll_picks.txt

@@ -308,6 +308,35 @@ Alias[AMPLIFY_RIGHT]:%YELLOW%*%ORANGE%**%RED%**%PURPLE%**
 Alias[LOWER_RES_LEFT]:%BLUE%**%PURPLE%**%RED%**%ORANGE%*
 Alias[LOWER_RES_RIGHT]:%ORANGE%*%RED%**%PURPLE%**%BLUE%**
 
+// Enhanced Damage 250-299, below character level 80
+// (320's weapon highlights, a pair per tier; each left part ends with the color of the number and text)
+Alias[HIGHLIGHT_ED_250_LEFT]:%ORANGE%**%YELLOW%**%ORANGE%
+Alias[HIGHLIGHT_ED_250_RIGHT]:%YELLOW%**%ORANGE%**
+
+// Enhanced Damage 300-399, below character level 80
+Alias[HIGHLIGHT_ED_300_LEFT]:%RED%*%ORANGE%**%YELLOW%**%ORANGE%
+Alias[HIGHLIGHT_ED_300_RIGHT]:%YELLOW%**%ORANGE%**%RED%*
+
+// Enhanced Damage 300-399, from character level 80
+Alias[HIGHLIGHT_ED_300_CLVL80_LEFT]:%ORANGE%**%YELLOW%**%ORANGE%
+Alias[HIGHLIGHT_ED_300_CLVL80_RIGHT]:%YELLOW%**%ORANGE%**
+
+// Enhanced Damage 400-499
+Alias[HIGHLIGHT_ED_400_LEFT]:%PURPLE%**%RED%**%ORANGE%**%RED%
+Alias[HIGHLIGHT_ED_400_RIGHT]:%ORANGE%**%RED%**%PURPLE%**
+
+// Enhanced Damage 500-599
+Alias[HIGHLIGHT_ED_500_LEFT]:%BLUE%**%PURPLE%**%RED%**%ORANGE%**%PURPLE%
+Alias[HIGHLIGHT_ED_500_RIGHT]:%ORANGE%**%RED%**%PURPLE%**%BLUE%**
+
+// Enhanced Damage 600-699
+Alias[HIGHLIGHT_ED_600_LEFT]:%TEAL%**%BLUE%**%PURPLE%**%RED%**%PURPLE%
+Alias[HIGHLIGHT_ED_600_RIGHT]:%RED%**%PURPLE%**%BLUE%**%TEAL%**
+
+// Enhanced Damage 700+
+Alias[HIGHLIGHT_ED_700_LEFT]:%TAN%**%TEAL%**%BLUE%**%PURPLE%**%TEAL%
+Alias[HIGHLIGHT_ED_700_RIGHT]:%PURPLE%**%BLUE%**%TEAL%**%TAN%**
+
 // Tier 1 Maps - non-unique
 Alias[TIER_1_MAPS]:(MAPTIER=1 !UNI)
 
@@ -328,4 +357,15 @@ Alias[DUNGEONS]:(t41 OR t42 OR t43 OR t44)
 // 210-nonmagic-armor and 220-nonmagic-weapons that could hide one has !LOWEST_SOCKETED_BASE, and a new one needs it
 // too (class items keep their +skill rules)
 Alias[LOWEST_SOCKETED_BASE]:(FILTLVL=1 SOCK>1)
+
+// Filter levels 1-4: a non-magical item of 2 inventory squares or less (daggers, wands, most orbs) that a hide rule
+// would hide but that gets 315-sell-value-tags' sell tag (the same difficulty, character level and price cuts) shows
+// as that tag alone: a gold ($) (SMALL_SELL_GOLD), a gray ($) (SMALL_SELL_GRAY) or, in Normal below character level
+// 30, its $Nk (SMALL_SELL_NK); 315's SELL_ONLY_ aliases are the looks. Each hide rule of 210-nonmagic-armor,
+// 220-nonmagic-weapons and 310-staffmods that could hide one on those levels has !SMALL_SELL_BASE (the three tiers
+// together), and tools/sell_label_twins.py writes its twins above it, one per tier: edit only the hide rule
+Alias[SMALL_SELL_BASE]:(NMAG !RW AREA<3 FILTLVL~1-4 STAT360=0 ((DIFF=0 ((SELLPRICE>999 CLVL<5) OR (SELLPRICE>2999 CLVL~5-9) OR (SELLPRICE>4999 CLVL~10-19) OR (SELLPRICE>9999 CLVL~20-59) OR SELLPRICE>19999)) OR (DIFF=1 ((SELLPRICE>9999 CLVL<60) OR SELLPRICE>19999)) OR (DIFF=2 SELLPRICE>24999)))
+Alias[SMALL_SELL_GOLD]:(NMAG !RW AREA<3 FILTLVL~1-4 STAT360=0 ((DIFF=0 CLVL>29 SELLPRICE>19999) OR (DIFF=1 SELLPRICE>19999) OR (DIFF=2 SELLPRICE>24999)))
+Alias[SMALL_SELL_GRAY]:(NMAG !RW AREA<3 FILTLVL~1-4 STAT360=0 SELLPRICE~10000-19999 ((DIFF=0 CLVL~30-59) OR (DIFF=1 CLVL<60)))
+Alias[SMALL_SELL_NK]:(NMAG !RW AREA<3 FILTLVL~1-4 STAT360=0 DIFF=0 ((SELLPRICE>999 CLVL<5) OR (SELLPRICE>2999 CLVL~5-9) OR (SELLPRICE>4999 CLVL~10-19) OR (SELLPRICE>9999 CLVL~20-29)))
 

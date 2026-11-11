@@ -134,9 +134,16 @@ def islands(cond):
     return cond
 
 
+def formulas_as_n(text):
+    """Output text with each $f(...) island as N, a number the item decides (315's sell tag alone: $Nk)."""
+    for a, b in reversed(L.formula_ranges(text)):
+        text = text[:a] + "N" + text[b:]
+    return text
+
+
 def literal_text(name):
     """A rule's name output without %NAME%, keywords and color codes: the words it adds."""
-    return re.sub(r"%[A-Z_]+%", "", name.replace("%NAME%", "")).strip()
+    return re.sub(r"%[A-Z_]+%", "", formulas_as_n(name).replace("%NAME%", "")).strip()
 
 
 def classify(rules):
@@ -806,7 +813,9 @@ class Words:
                 named_out += [y[1] for y in x[1][1]]
                 continue
             if x[0] == "bool" and x[1].startswith("@"):
-                refs.append(f"except when it shows as {self.refs.get(x[1], x[1])}")
+                ref = f"except when it shows as {self.refs.get(x[1], x[1])}"
+                if ref not in refs:  # the gold and the gray ($) are both "($)"
+                    refs.append(ref)
                 continue
             if x[0] == "or" and self.skillish(x):
                 text = self.phrase(x, base, where, depth + 1)
@@ -1378,7 +1387,7 @@ class Analysis:
         if kind not in ("tag", "show"):
             return None, None
         name = "" if kind == "tag" else base.name
-        text = r.name.replace("%NAME%", name).replace("%BASENAME%", name)
+        text = formulas_as_n(r.name).replace("%NAME%", name).replace("%BASENAME%", name)
         lines, color = [], "WHITE"
         for part in text.split("%NL%"):
             segs, pos = [], 0

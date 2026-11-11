@@ -1,0 +1,793 @@
+<title>ED Highlight Tiers</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* One table: a row per weapon type, a column per 320 highlight tier (and the ED tag's purple band), each cell the
+   threshold and how many items reach it in the scenario above. A row opens to its chart: the share of items with at
+   least each ED, uncorrupted and with an ED corruption, with the thresholds drawn on it. */
+:root {
+  --bg: #f2f0eb; --panel: #ffffff; --sunk: #f7f5f0; --line: #dcd5c7; --fg: #24211b; --muted: #6c6455;
+  --gold: #86621a; --red: #b3261e; --warn: #9a5b00; --warn-bg: #fbefd9; --ok: #2f6b45; --ok-bg: #e2f0e6;
+  --chip: #ece7dc; --chip-on: #e7d6ae; --focus: #86621a; --new: #2f5f8a; --new-bg: #e1ecf6; --sel: #f6efdf;
+  --grid: #e6e0d4; --s1: #2a78d6; --s2: #eb6834; --game: #0d0c0a;
+  --display: "Cinzel", "Trajan Pro", Georgia, serif;
+  --body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", "Cascadia Mono", Consolas, monospace;
+  --d2: "Palatino Linotype", "Book Antiqua", Georgia, serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15130f; --panel: #1f1c16; --sunk: #191612; --line: #39322a; --fg: #e9e1cf; --muted: #a59a84;
+    --gold: #d6b468; --red: #f07a6f; --warn: #e8b05a; --warn-bg: #3a2c14; --ok: #86c39b; --ok-bg: #1d3226;
+    --chip: #2a251e; --chip-on: #5a4721; --focus: #d6b468; --new: #8db8e0; --new-bg: #1c2a38; --sel: #29231a;
+    --grid: #2e2922; --s1: #3987e5; --s2: #d95926; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15130f; --panel: #1f1c16; --sunk: #191612; --line: #39322a; --fg: #e9e1cf; --muted: #a59a84;
+  --gold: #d6b468; --red: #f07a6f; --warn: #e8b05a; --warn-bg: #3a2c14; --ok: #86c39b; --ok-bg: #1d3226;
+  --chip: #2a251e; --chip-on: #5a4721; --focus: #d6b468; --new: #8db8e0; --new-bg: #1c2a38; --sel: #29231a;
+  --grid: #2e2922; --s1: #3987e5; --s2: #d95926; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 15px; line-height: 1.45; margin: 0; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--panel); }
+button, select, input, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--panel); border-bottom: 1px solid var(--line);
+  padding-block: 10px 0; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.bar-top { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+h1 { font-family: var(--display); font-size: 22px; letter-spacing: .03em; margin: 0; text-wrap: balance; }
+.status { font-size: 13px; padding: 2px 10px; border-radius: 999px; background: var(--chip); color: var(--muted); }
+.status.ok { background: var(--ok-bg); color: var(--ok); }
+.status.warn { background: var(--warn-bg); color: var(--warn); }
+.bar-note { color: var(--muted); font-size: 13px; margin-left: auto; }
+.tabs { display: flex; gap: 2px; overflow-x: auto; margin-top: 8px; scrollbar-width: thin; }
+.tab { border: 0; background: none; padding: 8px 12px 10px; border-bottom: 3px solid transparent; cursor: pointer; white-space: nowrap; color: var(--muted); display: grid; gap: 2px; justify-items: start; }
+.tab[aria-selected="true"] { color: var(--fg); border-bottom-color: var(--gold); font-weight: 600; }
+.tab .sub { font-size: 11px; font-weight: 600; color: var(--muted); }
+.tab .sub.chg { color: var(--gold); }
+.banner { background: var(--warn-bg); color: var(--warn); font-weight: 600; padding-block: 8px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); border-bottom: 1px solid var(--line); }
+main { padding-block: 16px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 16px; min-width: 0; }
+.help { color: var(--muted); font-size: 14px; max-width: 110ch; margin: 0; }
+.help b { color: var(--fg); }
+.settings { display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: center; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; font-size: 14px; }
+.settings label { display: inline-flex; gap: 6px; align-items: center; }
+.settings .derived { color: var(--muted); font-size: 13px; }
+.settings select, .settings input[type="number"], .num-in { background: var(--sunk); border: 1px solid var(--line); border-radius: 5px; padding: 2px 6px; }
+.settings input[type="number"] { width: 4.2em; font-family: var(--mono); font-variant-numeric: tabular-nums; text-align: right; }
+.settings input[type="range"] { width: 120px; accent-color: var(--gold); }
+.presets { display: inline-flex; gap: 4px; flex-wrap: wrap; }
+.btn { border: 1px solid var(--line); background: var(--sunk); border-radius: 5px; padding: 3px 10px; cursor: pointer; font-size: 13px; }
+.btn:hover { border-color: var(--gold); }
+.btn[disabled] { opacity: .5; cursor: default; }
+.btn.small { padding: 1px 7px; font-size: 12px; }
+.btn.danger { color: var(--red); }
+[hidden] { display: none !important; }
+.looks { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 390px), 1fr)); gap: 8px; }
+.look { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; display: grid; gap: 4px; min-width: 0; }
+.look .lname { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; font-size: 13px; }
+.look .lname b { font-size: 14px; }
+.look .lname span { color: var(--muted); }
+.d2 { font-family: var(--d2); font-size: 14px; background: var(--game); border-radius: 4px; padding: 2px 8px; white-space: pre; overflow-x: auto; scrollbar-width: none; }
+.d2.mini { display: inline-block; padding: 0 5px; font-size: 13px; line-height: 1.35; overflow: visible; }
+.c-WHITE { color: #fefefe; } .c-RED { color: #fe6950; } .c-GREEN { color: #25fe00; } .c-BLUE { color: #7b7bfe; }
+.c-GOLD { color: #dfb679; } .c-GRAY { color: #7b7b7b; } .c-TAN { color: #d9cd8e; } .c-ORANGE { color: #ffb200; }
+.c-YELLOW { color: #ebeb75; } .c-PURPLE { color: #b700ff; } .c-TEAL { color: #5ca6a4; } .c-LIGHT_GRAY { color: #a9a9b0; }
+.c-CORAL { color: #e09595; } .c-SAGE { color: #b6e12e; } .c-DARK_GREEN { color: #008c00; } .c-BLACK { color: #000; }
+.tbl { overflow-x: auto; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; }
+table.m { border-collapse: separate; border-spacing: 0; width: 100%; min-width: 980px; font-size: 13px; }
+table.m th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 700; padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: bottom; background: var(--panel); }
+table.m th.grp { text-align: center; border-bottom: 1px solid var(--line); padding-bottom: 2px; }
+table.m th .tl { display: grid; gap: 3px; justify-items: start; text-transform: none; letter-spacing: 0; font-size: 12px; color: var(--fg); }
+table.m td { padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+table.m tr.r:hover td { background: var(--sunk); }
+table.m tr.r.sel td { background: var(--sel); }
+table.m td.type, table.m th.type { position: sticky; left: 0; z-index: 1; background: var(--panel); border-right: 1px solid var(--line); min-width: 170px; }
+table.m tr.r:hover td.type { background: var(--sunk); }
+table.m tr.r.sel td.type { background: var(--sel); }
+.tname { display: flex; gap: 6px; align-items: center; border: 0; background: none; padding: 0; cursor: pointer; font-weight: 600; font-size: 14px; text-align: left; }
+.tname .car { color: var(--muted); width: 12px; display: inline-block; transition: transform .12s; }
+tr.sel .tname .car { transform: rotate(90deg); color: var(--gold); }
+.tmeta { color: var(--muted); font-size: 12px; margin-top: 2px; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.link { display: inline-flex; gap: 5px; align-items: center; font-size: 12px; color: var(--muted); margin-top: 3px; cursor: pointer; }
+.cell { display: grid; gap: 2px; justify-items: start; min-width: 78px; }
+.num-in { width: 4.6em; font-family: var(--mono); font-variant-numeric: tabular-nums; text-align: right; }
+.num-in.chg { border-color: var(--gold); background: var(--chip-on); }
+.num-in.bad { border-color: var(--red); color: var(--red); }
+.num-in:disabled { opacity: .7; }
+.odds { font-family: var(--mono); font-size: 12px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.odds.off { color: var(--muted); font-family: var(--body); font-style: italic; }
+.was { font-size: 11px; color: var(--gold); font-family: var(--mono); white-space: nowrap; }
+.bad-note { font-size: 11px; color: var(--red); white-space: nowrap; }
+td.detail { padding: 0 !important; background: var(--sunk); }
+.dwrap { position: sticky; left: 0; padding: 14px; display: grid; gap: 14px; }
+.dhead { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
+.dhead h3 { font-family: var(--display); font-size: 18px; margin: 0; letter-spacing: .02em; }
+.dhead .tools { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; font-size: 13px; }
+.dhead select { background: var(--panel); border: 1px solid var(--line); border-radius: 5px; padding: 2px 6px; }
+.dgrid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 380px); gap: 14px; align-items: start; }
+@media (max-width: 1100px) { .dgrid { grid-template-columns: minmax(0, 1fr); } }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; display: grid; gap: 8px; min-width: 0; }
+.card h4 { margin: 0; font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; color: var(--muted); align-items: center; }
+.legend i { display: inline-block; width: 18px; height: 2px; vertical-align: middle; margin-right: 6px; border-radius: 1px; }
+.legend i.l1 { background: var(--s1); } .legend i.l2 { background: var(--s2); }
+.legend i.lt { background: var(--fg); opacity: .25; height: 10px; width: 2px; margin-left: 8px; }
+.chart { position: relative; min-width: 0; }
+.chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.chart text { font-family: var(--body); font-size: 11px; fill: var(--muted); }
+.chart text.lab { fill: var(--fg); font-weight: 600; }
+.tip { position: absolute; pointer-events: none; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 9px; font-size: 12px; box-shadow: 0 2px 10px rgba(0,0,0,.18); white-space: nowrap; display: grid; gap: 2px; }
+.tip b { font-size: 13px; }
+.tip .k { display: inline-block; width: 10px; height: 2px; vertical-align: middle; margin-right: 5px; }
+.reach { width: 100%; border-collapse: collapse; font-size: 13px; }
+.reach th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); font-weight: 700; padding: 4px 6px; border-bottom: 1px solid var(--line); }
+.reach td { padding: 4px 6px; border-bottom: 1px solid var(--line); }
+.reach td.n { font-family: var(--mono); font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+.reach th.n { text-align: right; }
+.reach tr:last-child td { border-bottom: 0; }
+.reach .sub { color: var(--muted); font-size: 11px; }
+.facts { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 3px 10px; font-size: 13px; }
+.facts > span:nth-child(odd) { color: var(--muted); }
+details.how { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; }
+details.how summary { cursor: pointer; font-weight: 600; color: var(--gold); }
+details.how .body { display: grid; gap: 12px; margin-top: 10px; font-size: 14px; max-width: 120ch; }
+details.how p { margin: 0; }
+.mini-tbl { overflow-x: auto; }
+.mini-tbl table { border-collapse: collapse; font-size: 13px; min-width: 420px; }
+.mini-tbl th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); padding: 3px 10px 3px 0; border-bottom: 1px solid var(--line); }
+.mini-tbl td { padding: 3px 10px 3px 0; border-bottom: 1px solid var(--line); }
+.mini-tbl td.n { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+textarea.note { width: 100%; min-height: 70px; resize: vertical; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; }
+.notebox { display: grid; gap: 6px; max-width: 110ch; }
+.notebox label { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 700; }
+.mhead { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
+.mhead h2 { font-family: var(--display); font-size: 19px; margin: 0; letter-spacing: .02em; }
+.mhead .tools { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; }
+#selftest { white-space: pre-wrap; font-family: var(--mono); font-size: 11px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="bar">
+  <div class="bar-top">
+    <h1>ED Highlight Tiers</h1>
+    <span class="status" id="status">Loading saved thresholds…</span>
+    <span class="bar-note" id="changed"></span>
+  </div>
+  <div class="tabs" id="tabs" role="tablist" aria-label="Item quality"></div>
+</div>
+<div class="banner" id="banner" role="status" hidden></div>
+<main id="main">
+  <p class="help">Each row is a weapon type and each column a highlight tier of <b>320</b> (the stars around
+    <b>+412% Enhanced Damage</b>), plus the ED tag's purple band from <b>300</b>. Type a tier's lowest ED in a cell, or
+    clear it to switch the tier off for that type. Under each number: how many items of that type reach it, for the
+    item level, map and corruption picked below. Open a row for its chart. Your thresholds are saved as you type; the
+    filter changes only when you tell Claude to apply them. Magic weapons keep today's thresholds.</p>
+  <div class="settings" id="settings"></div>
+  <div class="looks" id="looks"></div>
+  <div class="mhead"><h2 id="mtitle">Rare weapons</h2><div class="tools" id="mtools"></div></div>
+  <div class="tbl" id="tblwrap"><table class="m" id="matrix"></table></div>
+  <div class="notebox">
+    <label for="note">Notes for Claude</label>
+    <textarea class="note" id="note" placeholder="Anything to keep in mind when these thresholds are applied (saved with the thresholds)."></textarea>
+  </div>
+  <details class="how" id="how"><summary>How the numbers are worked out</summary><div class="body" id="howbody"></div></details>
+  <pre id="selftest" hidden></pre>
+</main>
+
+<script>
+const DATA = /*__DATA__*/null;
+const N = 801;                                       // ED 0..800
+const KEYS = ["lvl", "high", "high80", "purple", "lr", "top", "gold", "tag"];
+const TIER = Object.fromEntries(DATA.tiers.map(t => [t.key, t]));
+const TYPES = DATA.types.map(([key, label], i) => ({ key, label, i }));
+const TYPE = Object.fromEntries(TYPES.map(t => [t.key, t]));
+const BOWS = new Set(["bow", "xbow", "abow"]);
+const AFF = DATA.affixes.map(a => ({ name: a[0], g: a[1], w: a[2], level: a[3], max: a[4], rare: a[5], ver: a[6], lo: a[7], hi: a[8] }));
+const BASES = DATA.bases.map(b => ({ code: b[0], name: b[1], type: DATA.types[b[2]][0], tier: b[3], qlvl: b[4], pool: b[5] }));
+const fmtN = new Intl.NumberFormat("en-US");
+const clone = o => JSON.parse(JSON.stringify(o));
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+// ---------------------------------------------------------------- the model (exact)
+function affixLevel(ilvl, qlvl) {
+  ilvl = Math.max(Math.min(ilvl, 99), qlvl);
+  const h = Math.floor(qlvl / 2);
+  return ilvl < 99 - h ? ilvl - h : ilvl * 2 - 99;
+}
+function binom(n, k) { let r = 1; for (let i = 1; i <= k; i++) r = r * (n - k + i) / i; return r; }
+function rareCounts(ilvl) {
+  if (ilvl >= 85) return { 6: 1 };
+  if (ilvl >= 65) return { 5: 1 / 2, 6: 1 / 2 };
+  if (ilvl >= 45) return { 4: 1 / 3, 5: 1 / 3, 6: 1 / 3 };
+  return { 3: 1 / 4, 4: 1 / 4, 5: 1 / 4, 6: 1 / 4 };
+}
+const craftCount = cil => cil < 31 ? 1 : cil < 51 ? 2 : cil < 71 ? 3 : 4;
+function prefixCounts(counts) {      // each pick a prefix or a suffix at even odds, at most 3 a side
+  const out = {};
+  for (const [n0, pn] of Object.entries(counts)) {
+    const n = +n0;
+    for (let b = 0; b <= n; b++) {
+      const k = Math.min(3, Math.max(b, n - 3));
+      out[k] = (out[k] || 0) + pn * binom(n, b) / 2 ** n;
+    }
+  }
+  return out;
+}
+function uniform(lo, hi) { const a = new Float64Array(N); for (let v = lo; v <= hi && v < N; v++) a[v] = 1 / (hi - lo + 1); return a; }
+const DELTA0 = (() => { const a = new Float64Array(N); a[0] = 1; return a; })();
+function span(a) { let lo = 0, hi = N - 1; while (lo < N && !a[lo]) lo++; while (hi >= 0 && !a[hi]) hi--; return [lo, hi]; }
+function conv(a, b) {
+  const out = new Float64Array(N), [al, ah] = span(a), [bl, bh] = span(b);
+  for (let i = al; i <= ah; i++) { const x = a[i]; if (!x) continue; for (let j = bl; j <= bh && i + j < N; j++) out[i + j] += x * b[j]; }
+  return out;
+}
+function addScaled(out, a, s) { for (let i = 0; i < N; i++) out[i] += a[i] * s; }
+const mapBonus = (ver, M) => (M < 0 || ver < 100) ? 1 : (100 + Math.min(10 * (ver - 100 + 1), 10 * (M + 1))) / 100;
+
+const POOLS = new Map();
+function pool(poolIdx, alvl, craft, M) {       // the prefix groups a pick can take, and each ED group's ED
+  const key = `${poolIdx}|${alvl}|${craft ? 1 : 0}|${M}`;
+  let p = POOLS.get(key);
+  if (p) return p;
+  const groups = new Map();
+  for (const i of DATA.pools[poolIdx]) {
+    const a = AFF[i];
+    if (a.level > alvl || (a.max && alvl > a.max)) continue;
+    if (craft ? a.rare !== 1 : !a.rare) continue;
+    const w = a.w * mapBonus(a.ver, M);
+    if (!groups.has(a.g)) groups.set(a.g, { w: 0, parts: [] });
+    const g = groups.get(a.g); g.w += w; g.parts.push({ w, a });
+  }
+  const gl = [...groups.values()], edGroups = gl.filter(g => g.parts.some(x => x.a.hi > 0));
+  const edPmf = edGroups.map(g => { const d = new Float64Array(N); for (const x of g.parts) addScaled(d, x.a.hi ? uniform(x.a.lo, x.a.hi) : DELTA0, x.w / g.w); return d; });
+  p = { ws: gl.map(g => g.w), ed: gl.map(g => edGroups.indexOf(g)), edPmf, edGroups, masks: {}, combos: {} };
+  POOLS.set(key, p);
+  return p;
+}
+function maskProbs(p, k) {          // the chance of each set of ED groups among k picks of distinct groups
+  if (p.masks[k]) return p.masks[k];
+  const E = p.edPmf.length, out = new Float64Array(1 << E), G = p.ws.length, used = new Uint8Array(G);
+  const tot = p.ws.reduce((s, w) => s + w, 0);
+  (function rec(depth, rem, pr, mask) {
+    if (depth === k || rem <= 1e-9) { out[mask] += pr; return; }
+    for (let g = 0; g < G; g++) {
+      if (used[g]) continue;
+      used[g] = 1;
+      rec(depth + 1, rem - p.ws[g], pr * p.ws[g] / rem, p.ed[g] >= 0 ? mask | (1 << p.ed[g]) : mask);
+      used[g] = 0;
+    }
+  })(0, tot, 1, 0);
+  return (p.masks[k] = out);
+}
+function combo(p, mask) {
+  if (p.combos[mask]) return p.combos[mask];
+  let d = DELTA0;
+  p.edPmf.forEach((e, i) => { if (mask & (1 << i)) d = conv(d, e); });
+  return (p.combos[mask] = d);
+}
+function basePmf(p, kd) {
+  const out = new Float64Array(N);
+  for (const [k, pk] of Object.entries(kd)) {
+    const m = maskProbs(p, +k);
+    for (let mask = 0; mask < m.length; mask++) if (m[mask]) addScaled(out, combo(p, mask), pk * m[mask]);
+  }
+  return out;
+}
+const CORR_W = DATA.corr.reduce((s, c) => s + c.per1000, 0);
+const CORR = (() => { const d = new Float64Array(N); for (const c of DATA.corr) addScaled(d, uniform(c.lo, c.hi), c.per1000 / CORR_W); return d; })();
+function survival(pmf) { const s = new Float64Array(N + 1); for (let i = N - 1; i >= 0; i--) s[i] = s[i + 1] + pmf[i]; return s; }
+
+// The ED distribution of one weapon type for a scenario: {n bases, u, c (with an ED corruption), any, best}
+const RESULTS = new Map();
+function scenarioKey(q, sc) {
+  return q === "rare" ? `r|${sc.ilvl}|${sc.map}|${sc.bases}` : `c|${sc.clvl}|${sc.bilvl}|${sc.craft}|${sc.bases}`;
+}
+function typeResult(typeKey, q, sc) {
+  const key = typeKey + "|" + scenarioKey(q, sc);
+  let r = RESULTS.get(key);
+  if (r) return r;
+  const craft = q === "craft", dropLvl = craft ? sc.bilvl : sc.ilvl;
+  const bases = BASES.filter(b => b.type === typeKey && b.qlvl <= dropLvl && (sc.bases === "all" || b.tier === +sc.bases));
+  const cil = Math.floor(sc.clvl / 2) + Math.floor(sc.bilvl / 2);
+  const kd = prefixCounts(craft ? { [craftCount(cil)]: 1 } : rareCounts(sc.ilvl));
+  const u = new Float64Array(N);
+  let best = null;
+  for (const b of bases) {
+    const alvl = affixLevel(craft ? cil : sc.ilvl, b.qlvl);
+    const p = pool(b.pool, alvl, craft, craft ? -1 : sc.map);
+    addScaled(u, basePmf(p, kd), 1 / bases.length);
+    const tops = p.edGroups.map(g => g.parts.filter(x => x.a.hi).sort((x, y) => y.a.hi - x.a.hi)[0].a).sort((x, y) => y.hi - x.hi).slice(0, 3);
+    const sum = tops.reduce((s, a) => s + a.hi, 0);
+    if (!best || sum > best.sum) best = { sum, tops };
+  }
+  let pmf = u;
+  const cr = craft ? DATA.crafts[sc.craft] : null;
+  if (cr && cr.hi) pmf = conv(u, uniform(cr.lo, cr.hi));
+  const cpmf = conv(pmf, CORR);
+  r = { n: bases.length, u: survival(pmf), c: survival(cpmf), any: bases.length ? 1 - pmf[0] : 0, best, cr };
+  const pAny = CORR_W / 1000;
+  r.a = r.u.map((x, i) => (1 - pAny) * x + pAny * r.c[i]);
+  RESULTS.set(key, r);
+  return r;
+}
+const reach = (s, x) => x == null ? null : x <= 0 ? 1 : x > N - 1 ? 0 : s[x];
+function curveOf(r, mode) { return mode === "u" ? r.u : mode === "c" ? r.c : r.a; }
+function fmtOdds(p) {
+  if (p == null) return "";
+  if (p <= 1e-15) return "never";
+  if (p >= 0.9995) return "all";
+  if (p >= 0.1) return Math.round(p * 100) + "%";
+  const n = 1 / p;
+  if (n < 1e4) return "1 in " + fmtN.format(Math.round(n));
+  if (n < 1e6) return "1 in " + fmtN.format(Math.round(n / 100) * 100);
+  if (n < 1e9) return "1 in " + (n / 1e6).toFixed(n < 1e7 ? 1 : 0) + "M";
+  return "1 in " + (n / 1e9).toFixed(1) + "B";
+}
+
+// ---------------------------------------------------------------- state
+const TODAY = DATA.today;
+function startState() {
+  const s = { rare: {}, craft: {}, note: "" };
+  for (const t of TYPES) { s.rare[t.key] = clone(TODAY[t.key]); s.craft[t.key] = { linked: true, t: clone(TODAY[t.key]) }; }
+  return s;
+}
+let state = startState();
+let db = null, editable = true;
+const VIEW_KEY = "edHighlightTiersView";
+const view = Object.assign({ q: "rare", open: "swor2", sc: { ilvl: 90, map: -1, clvl: 90, bilvl: 90, craft: 0, bases: "all", mode: "u" } },
+  (() => { try { return JSON.parse(localStorage.getItem(VIEW_KEY) || "{}"); } catch (e) { return {}; } })());
+view.sc = Object.assign({ ilvl: 90, map: -1, clvl: 90, bilvl: 90, craft: 0, bases: "all", mode: "u" }, view.sc || {});
+function keepView() { try { localStorage.setItem(VIEW_KEY, JSON.stringify(view)); } catch (e) {} }
+function thr(q, k) { return q === "rare" || state.craft[k].linked ? state.rare[k] : state.craft[k].t; }
+function rowChanged(q, k) {
+  if (q === "craft" && state.craft[k].linked) return false;
+  const t = thr(q, k);
+  return KEYS.some(x => t[x] !== TODAY[k][x]);
+}
+function problems(t) {       // cells out of order: each tier must start above the one before it
+  const bad = {};
+  const chain = (ks) => { let prev = null; for (const x of ks) { if (t[x] == null) continue; if (prev && t[x] <= t[prev]) bad[x] = `must be above ${TIER[prev].name.toLowerCase()} (${t[prev]})`; prev = x; } };
+  chain(["lvl", "high", "purple", "lr", "top", "gold"]);
+  chain(["high80", "purple", "lr", "top", "gold"]);
+  return bad;
+}
+
+// ---------------------------------------------------------------- rendering
+const $ = id => document.getElementById(id);
+function lookHtml(segs, mini) {
+  return `<span class="d2${mini ? " mini" : ""}">${segs.map(([c, t]) => `<span class="c-${c}">${esc(t)}</span>`).join("")}</span>`;
+}
+function starsOf(segs) {             // the outer stars of a look, for the column heads
+  const out = [];
+  for (const [c, t] of segs) { const m = t.match(/^\*+/); if (!m) break; out.push([c, m[0]]); if (m[0].length < t.length) break; }
+  return out;
+}
+const COLS = [
+  { key: "lvl", grp: "below", label: "Orange stars" }, { key: "high", grp: "below", label: "Red stars" },
+  { key: "high80", grp: "from", label: "Orange stars" },
+  { key: "purple", grp: "every", label: "Purple stars" }, { key: "lr", grp: "every", label: "Blue stars" }, { key: "top", grp: "every", label: "Teal stars" },
+  { key: "gold", grp: "every", label: "Gold stars" },
+  { key: "tag", grp: "tag", label: "Tag purple" },
+];
+const TAG_LOOK = [["WHITE", "412"], ["PURPLE", "ed"]];
+
+function renderTabs() {
+  const n = q => TYPES.filter(t => rowChanged(q, t.key)).length;
+  $("tabs").innerHTML = [["rare", "Rare weapons"], ["craft", "Crafted weapons"]].map(([q, lab]) =>
+    `<button class="tab" role="tab" id="tab-${q}" aria-selected="${view.q === q}" data-q="${q}">${lab}<span class="sub${n(q) ? " chg" : ""}">${n(q) ? n(q) + " changed" : "as today"}</span></button>`).join("");
+  const total = n("rare") + n("craft");
+  $("changed").textContent = total ? `${total} row${total > 1 ? "s" : ""} differ from today's filter` : "Every row as in today's filter";
+}
+function renderSettings() {
+  const sc = view.sc, q = view.q;
+  const modes = [["u", "Uncorrupted"], ["c", "With an ED corruption"], ["a", "Corrupted, any outcome"]];
+  const baseOpts = [["all", "All bases"], ["0", "Normal bases"], ["1", "Exceptional bases"], ["2", "Elite bases"]];
+  let html = "";
+  if (q === "rare") {
+    html += `<label for="sc-ilvl">Item level <input id="sc-ilvl" type="range" min="1" max="99" value="${sc.ilvl}"><input id="sc-ilvl-n" type="number" min="1" max="99" value="${sc.ilvl}"></label>
+      <span class="presets">${[[70, "70"], [80, "80"], [87, "T1 maps 87"], [90, "90"], [99, "99"]].map(([v, l]) => `<button class="btn small" data-ilvl="${v}">${l}</button>`).join("")}</span>
+      <label for="sc-map">Where <select id="sc-map">${[[-1, "Outside maps"], [1, "T1 map"], [2, "T2 map"], [3, "T3 map"]].map(([v, l]) => `<option value="${v}"${sc.map === v ? " selected" : ""}>${l}</option>`).join("")}</select></label>`;
+  } else {
+    const cil = Math.floor(sc.clvl / 2) + Math.floor(sc.bilvl / 2);
+    html += `<label for="sc-clvl">Character level <input id="sc-clvl" type="number" min="1" max="99" value="${sc.clvl}"></label>
+      <label for="sc-bilvl">Base's item level <input id="sc-bilvl" type="number" min="1" max="99" value="${sc.bilvl}"></label>
+      <span class="derived">crafted item level ${cil}, ${craftCount(cil)} random affix${craftCount(cil) > 1 ? "es" : ""}</span>
+      <label for="sc-craft">Craft <select id="sc-craft">${DATA.crafts.map((c, i) => `<option value="${i}"${sc.craft === i ? " selected" : ""}>${esc(c.names.join(", "))}${c.hi ? ` (+${c.lo}-${c.hi}%)` : " (no ED)"}</option>`).join("")}</select></label>`;
+  }
+  html += `<label for="sc-mode">Corruption <select id="sc-mode">${modes.map(([v, l]) => `<option value="${v}"${sc.mode === v ? " selected" : ""}>${l}</option>`).join("")}</select></label>
+    <label for="sc-bases">Bases <select id="sc-bases">${baseOpts.map(([v, l]) => `<option value="${v}"${sc.bases === v ? " selected" : ""}>${l}</option>`).join("")}</select></label>`;
+  $("settings").innerHTML = html;
+}
+function renderLooks() {
+  $("looks").innerHTML = DATA.tiers.map(t => `<div class="look"><div class="lname"><b>${esc(t.name)}</b><span>${esc(t.when)}${t.dagger ? ", not daggers" : ""} · 320:${t.line}</span></div>${lookHtml(t.look)}</div>`).join("") +
+    `<div class="look"><div class="lname"><b>Tag purple</b><span>the ED tag before the name · 300</span></div>${lookHtml([["WHITE", "412"], ["RED", "ed"], ["WHITE", " below  "], ["WHITE", "412"], ["PURPLE", "ed"], ["WHITE", " from it"]])}</div>`;
+}
+function headHtml() {
+  const grp = [["below", "Below character level 80", 2], ["from", "From level 80", 1], ["every", "Every character level", 3], ["tag", "Name tag", 1]];
+  const r1 = `<tr><th class="type" rowspan="2">Weapon type</th><th rowspan="2">Any ED · most</th>${grp.map(([, l, n]) => `<th class="grp" colspan="${n}">${l}</th>`).join("")}</tr>`;
+  const r2 = `<tr>${COLS.map(c => `<th><span class="tl">${lookHtml(c.key === "tag" ? TAG_LOOK : starsOf(TIER[c.key].look), true)}<span>${c.label}</span></span></th>`).join("")}</tr>`;
+  return `<thead>${r1}${r2}</thead>`;
+}
+function cellHtml(q, k, x, r) {
+  const t = thr(q, k), v = t[x], today = TODAY[k][x], bad = problems(t)[x];
+  const s = curveOf(r, view.sc.mode), p = reach(s, v);
+  const id = `in-${q}-${k}-${x}`;
+  const chg = v !== today && !(q === "craft" && state.craft[k].linked);
+  return `<div class="cell"><input class="num-in${chg ? " chg" : ""}${bad ? " bad" : ""}" id="${id}" type="number" min="1" max="800" step="10" inputmode="numeric" placeholder="off" aria-label="${esc(TYPE[k].label)}: ${esc(COLS.find(c => c.key === x).label)}${x === "lvl" || x === "high" ? " below 80" : x === "high80" ? " from 80" : ""}" value="${v ?? ""}" data-k="${k}" data-x="${x}"${editable ? "" : " disabled"}>
+    <span class="odds${v == null ? " off" : ""}" id="o-${id}">${v == null ? "off" : fmtOdds(p)}</span>
+    ${chg ? `<span class="was">today ${today ?? "off"}</span>` : ""}${bad ? `<span class="bad-note">${esc(bad)}</span>` : ""}</div>`;
+}
+function rowHtml(q, t) {
+  const r = typeResult(t.key, q, view.sc);
+  const open = view.open === t.key;
+  const most = r.best ? r.best.sum + (r.cr ? r.cr.hi : 0) : 0;
+  const linked = q === "craft" && state.craft[t.key].linked;
+  return `<tr class="r${open ? " sel" : ""}" data-k="${t.key}">
+    <td class="type"><button class="tname" data-open="${t.key}" aria-expanded="${open}"><span class="car">▸</span>${esc(t.label)}</button>
+      <div class="tmeta">${r.n} base${r.n === 1 ? "" : "s"}</div>
+      ${q === "craft" ? `<label class="link"><input type="checkbox" data-link="${t.key}"${linked ? " checked" : ""}${editable ? "" : " disabled"}> Same as rare</label>` : ""}</td>
+    <td><div class="cell"><span class="odds">${r.n ? fmtOdds(r.any) : "-"}</span><span class="tmeta">up to ${most}${r.n ? `, ${most + 120} corr.` : ""}</span></div></td>
+    ${COLS.map(c => `<td>${cellHtml(q, t.key, c.key, r)}</td>`).join("")}</tr>` + (open ? `<tr class="drow"><td class="detail" colspan="${COLS.length + 2}"><div class="dwrap" id="dwrap"></div></td></tr>` : "");
+}
+function renderMatrix() {
+  const q = view.q;
+  $("mtitle").textContent = q === "rare" ? "Rare weapons" : "Crafted weapons";
+  $("mtools").innerHTML = (q === "craft" ? `<button class="btn" id="linkAll"${editable ? "" : " disabled"}>Every row same as rare</button>` : "") +
+    `<button class="btn danger" id="resetAll"${editable ? "" : " disabled"}>Reset every ${q === "rare" ? "rare" : "crafted"} row to today</button>`;
+  $("matrix").innerHTML = headHtml() + `<tbody>${TYPES.map(t => rowHtml(q, t)).join("")}</tbody>`;
+  renderDetail();
+}
+function refreshOdds() {       // after an edit: the odds and marks of the edited row, without redrawing the inputs
+  const q = view.q;
+  for (const t of TYPES) {
+    const r = typeResult(t.key, q, view.sc), th = thr(q, t.key), bad = problems(th);
+    for (const c of COLS) {
+      const id = `in-${q}-${t.key}-${c.key}`, inp = $(id), o = $("o-" + id);
+      if (!inp || !o) continue;
+      const v = th[c.key];
+      o.textContent = v == null ? "off" : fmtOdds(reach(curveOf(r, view.sc.mode), v));
+      o.className = "odds" + (v == null ? " off" : "");
+      const chg = v !== TODAY[t.key][c.key] && !(q === "craft" && state.craft[t.key].linked);
+      inp.classList.toggle("chg", chg); inp.classList.toggle("bad", !!bad[c.key]);
+      const cell = inp.parentElement;
+      cell.querySelectorAll(".was, .bad-note").forEach(e => e.remove());
+      if (chg) cell.insertAdjacentHTML("beforeend", `<span class="was">today ${TODAY[t.key][c.key] ?? "off"}</span>`);
+      if (bad[c.key]) cell.insertAdjacentHTML("beforeend", `<span class="bad-note">${esc(bad[c.key])}</span>`);
+    }
+  }
+  renderTabs();
+  renderDetail();
+}
+
+// ---------------------------------------------------------------- the open row: chart, reach table, facts
+function renderDetail() {
+  const el = $("dwrap");
+  if (!el) return;
+  const q = view.q, k = view.open, t = TYPE[k], r = typeResult(k, q, view.sc), th = thr(q, k);
+  const wrap = $("tblwrap");
+  el.style.width = (wrap.clientWidth - 2) + "px";
+  const copyOpts = [["others", "every other type"], ["notbows", "every type but bows and crossbows"], ["bows", "bows, crossbows, Amazon bows"]];
+  if (q === "rare") copyOpts.push(["craft", "crafted " + t.label.toLowerCase()]);
+  const best = r.best ? r.best.tops.map(a => `${a.name} ${a.lo}-${a.hi}`).join(" + ") : "none";
+  const cr = r.cr && r.cr.hi ? ` + craft ${r.cr.lo}-${r.cr.hi}` : "";
+  const most = r.best ? r.best.sum + (r.cr ? r.cr.hi : 0) : 0;
+  const rows = COLS.map(c => {
+    const v = th[c.key], tv = TODAY[k][c.key];
+    return `<tr><td>${lookHtml(c.key === "tag" ? TAG_LOOK : starsOf(TIER[c.key].look), true)} ${esc(c.label)}${c.key === "lvl" || c.key === "high" ? ' <span class="sub">below 80</span>' : c.key === "high80" ? ' <span class="sub">from 80</span>' : ""}</td>
+      <td class="n">${v ?? "off"}${v !== tv ? `<div class="sub">today ${tv ?? "off"}</div>` : ""}</td>
+      <td class="n">${v == null ? "" : fmtOdds(reach(r.u, v))}</td><td class="n">${v == null ? "" : fmtOdds(reach(r.c, v))}</td></tr>`;
+  }).join("");
+  el.innerHTML = `<div class="dhead"><h3>${esc(t.label)}, ${q === "rare" ? "rare" : "crafted"}</h3>
+      <div class="tools"><label>Copy these thresholds to <select id="copyTo">${copyOpts.map(([v, l]) => `<option value="${v}">${esc(l)}</option>`).join("")}</select></label>
+        <button class="btn" id="copyGo"${editable ? "" : " disabled"}>Copy</button>
+        <button class="btn" id="resetRow"${editable && rowChanged(q, k) ? "" : " disabled"}>Reset to today</button></div></div>
+    <div class="dgrid">
+      <div class="card"><h4>Share of items with at least this much ED</h4>
+        <div class="legend"><span><i class="l1"></i>Uncorrupted</span><span><i class="l2"></i>With an ED corruption</span><span><i class="lt"></i>Today's threshold, where it differs</span></div>
+        <div class="chart" id="chart"></div></div>
+      <div class="card"><h4>How many reach each tier</h4>
+        <table class="reach"><thead><tr><th>Tier</th><th class="n">From</th><th class="n">Uncorr.</th><th class="n">ED corr.</th></tr></thead><tbody>${rows}</tbody></table>
+        <div class="facts"><span>Any ED</span><span>${fmtOdds(r.any)} of them</span>
+          <span>Most ED</span><span>${most}: ${esc(best)}${cr}</span>
+          <span>Corrupted</span><span>up to ${most + 120}; 8% of corruptions add ED</span>
+          <span>Counted</span><span>${r.n} base${r.n === 1 ? "" : "s"} that drop at ${q === "rare" ? "item level " + view.sc.ilvl : "item level " + view.sc.bilvl}, each the same</span></div></div>
+    </div>`;
+  drawChart($("chart"), r, th, TODAY[k]);
+}
+function drawChart(el, r, th, today) {
+  const W = Math.max(320, el.clientWidth || 600), H = 290, ml = 76, mr = 14, mt = 44, mb = 34;
+  const last = s => { let i = N - 1; while (i > 0 && s[i] <= 1e-15) i--; return i; };
+  const xmaxData = Math.max(last(r.c), 50);
+  const marks = COLS.map(c => th[c.key]).filter(v => v != null);
+  const xmax = Math.ceil((Math.max(xmaxData, ...marks) + 20) / 50) * 50;
+  const ymin = -7;
+  const X = v => ml + (W - ml - mr) * v / xmax;
+  const Y = p => { const l = p > 0 ? Math.max(Math.log10(p), ymin) : ymin; return mt + (H - mt - mb) * (l / ymin); };
+  const yl = d => d === 0 ? "all" : d === -1 ? "10%" : "1 in " + (d <= -6 ? (10 ** -d / 1e6) + "M" : fmtN.format(10 ** -d));
+  let g = "";
+  for (let d = 0; d >= ymin; d--) g += `<line x1="${ml}" x2="${W - mr}" y1="${Y(10 ** d)}" y2="${Y(10 ** d)}" stroke="var(--grid)" stroke-width="1"/><text x="${ml - 6}" y="${Y(10 ** d) + 4}" text-anchor="end">${yl(d)}</text>`;
+  const step = xmax > 500 ? 100 : 50;
+  for (let v = 0; v <= xmax; v += step) g += `<text x="${X(v)}" y="${H - mb + 16}" text-anchor="middle">${v}</text>`;
+  g += `<text x="${(ml + W - mr) / 2}" y="${H - 4}" text-anchor="middle">Enhanced damage, at least</text>`;
+  const path = s => { let d = "", started = false; for (let v = 0; v <= Math.min(xmax, N - 1); v++) { const p = s[v]; if (p <= 1e-15) { if (started) { d += `L${X(v).toFixed(1)},${Y(0).toFixed(1)}`; } break; } d += (started ? "L" : "M") + X(v).toFixed(1) + "," + Y(p).toFixed(1); started = true; } return d; };
+  // today's thresholds where they differ, faint; then the edited ones with labels
+  for (const c of COLS) { const tv = today[c.key]; if (tv != null && tv !== th[c.key] && tv <= xmax) g += `<line x1="${X(tv)}" x2="${X(tv)}" y1="${mt}" y2="${H - mb}" stroke="var(--fg)" stroke-opacity=".22" stroke-width="2"/>`; }
+  const byX = new Map();
+  for (const c of COLS) { const v = th[c.key]; if (v == null || v > xmax) continue; if (!byX.has(v)) byX.set(v, []); byX.get(v).push(c); }
+  const xs = [...byX.keys()].sort((a, b) => a - b);
+  let lastX = -1e9, row = 0;
+  for (const v of xs) {
+    const cs = byX.get(v), px = X(v);
+    row = px - lastX < 70 ? (row + 1) % 3 : 0;
+    lastX = px;
+    g += `<line x1="${px}" x2="${px}" y1="${mt - 4}" y2="${H - mb}" stroke="var(--fg)" stroke-opacity=".55" stroke-width="1"/>`;
+    const sw = cs.map(c => { const st = c.key === "tag" ? [["PURPLE", "*"]] : starsOf(TIER[c.key].look); return st.length ? st[0][0] : "WHITE"; });
+    const ly = 10 + row * 12;
+    g += `<g>${sw.map((col, i) => `<rect x="${px - 3 + i * 7}" y="${ly - 7}" width="5" height="7" rx="1" class="c-${col}" fill="currentColor"/>`).join("")}<text class="lab" x="${px + 4 + (sw.length - 1) * 7}" y="${ly}">${v}</text></g>`;
+  }
+  g += `<path d="${path(r.u)}" fill="none" stroke="var(--s1)" stroke-width="2" stroke-linejoin="round"/>`;
+  g += `<path d="${path(r.c)}" fill="none" stroke="var(--s2)" stroke-width="2" stroke-linejoin="round"/>`;
+  g += `<line id="cx" x1="0" x2="0" y1="${mt}" y2="${H - mb}" stroke="var(--fg)" stroke-opacity=".5" stroke-width="1" visibility="hidden"/>
+    <circle id="d1" r="4" fill="var(--s1)" stroke="var(--panel)" stroke-width="2" visibility="hidden"/><circle id="d2" r="4" fill="var(--s2)" stroke="var(--panel)" stroke-width="2" visibility="hidden"/>
+    <rect id="hit" x="${ml}" y="${mt}" width="${W - ml - mr}" height="${H - mt - mb}" fill="transparent"/>`;
+  el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Share of items with at least each amount of enhanced damage">${g}</svg><div class="tip" id="tip" hidden></div>`;
+  const svg = el.querySelector("svg"), tip = el.querySelector("#tip"), cx = svg.querySelector("#cx"), d1 = svg.querySelector("#d1"), d2 = svg.querySelector("#d2");
+  const move = ev => {
+    const box = svg.getBoundingClientRect(), sx = (ev.clientX - box.left) * W / box.width;
+    const v = Math.max(0, Math.min(xmax, Math.round((sx - ml) / (W - ml - mr) * xmax)));
+    const px = X(v);
+    cx.setAttribute("x1", px); cx.setAttribute("x2", px); cx.setAttribute("visibility", "visible");
+    const pu = reach(r.u, v), pc = reach(r.c, v);
+    for (const [dot, p] of [[d1, pu], [d2, pc]]) { if (p > 1e-15) { dot.setAttribute("cx", px); dot.setAttribute("cy", Y(p)); dot.setAttribute("visibility", "visible"); } else dot.setAttribute("visibility", "hidden"); }
+    tip.hidden = false;
+    tip.innerHTML = `<b>${v}% ED or more</b><span><i class="k" style="background:var(--s1)"></i>Uncorrupted: ${fmtOdds(pu)}</span><span><i class="k" style="background:var(--s2)"></i>With an ED corruption: ${fmtOdds(pc)}</span>`;
+    const tx = px * box.width / W, half = tip.offsetWidth / 2;
+    tip.style.left = Math.max(0, Math.min(box.width - tip.offsetWidth, tx - half)) + "px";
+    tip.style.top = (mt * box.height / H + 6) + "px";
+  };
+  const hit = svg.querySelector("#hit");
+  hit.addEventListener("pointermove", move);
+  hit.addEventListener("pointerdown", move);
+  hit.addEventListener("pointerleave", () => { tip.hidden = true; cx.setAttribute("visibility", "hidden"); d1.setAttribute("visibility", "hidden"); d2.setAttribute("visibility", "hidden"); });
+}
+function renderHow() {
+  const ed = AFF.filter(a => a.hi).sort((a, b) => a.g - b.g || a.lo - b.lo);
+  const grpName = { 105: "ED", 111: "ED + attack rating" };
+  $("howbody").innerHTML = `<p>Everything is worked out exactly in this page, with no random rolls. A weapon's ED comes only from its prefixes. Each prefix pick takes an affix by weight from the groups not on the item yet, so a weapon can roll one pure ED prefix and one ED + attack rating prefix, and their ED adds up. Visceral rolls on rares only (not crafts); Grandmaster's rolls on rare and crafted bows and crossbows only (on other weapons it is a magic prefix).</p>
+    <p>A rare's affix count goes by its item level: 6 from 85, 5-6 from 65, 4-6 from 45, 3-6 below. Each pick is a prefix or a suffix at even odds, at most 3 a side, so from item level 85 every rare has 3 prefixes. A crafted weapon gets 1-4 random affixes by its own item level (character level / 2 + the base's item level / 2: under 31 one, 31-50 two, 51-70 three, 71+ four), plus its craft's fixed ED. The affix level is BH's ALVL from the item level and the base's quality level. In maps, tiered affixes weigh more (the T1-T3 map setting); crafting happens in town, so crafts get no map bonus. Bases count only where they can drop (quality level up to the item level), each the same.</p>
+    <p>Corruption of an unsocketed weapon: 25% turn it into a new rare, 25% add sockets, 50% add a stat. Of those stats, the ones below add ED: 8% of all corruptions. "With an ED corruption" assumes one of them; "any outcome" mixes the 8% in.</p>
+    <div class="mini-tbl"><table><thead><tr><th>Corruption</th><th>ED</th><th>Also</th><th>Share of corruptions</th></tr></thead><tbody>${DATA.corr.map(c => `<tr><td class="n">${c.n}</td><td class="n">+${c.lo}-${c.hi}</td><td>${esc(c.with || "-")}</td><td class="n">${(c.per1000 / 10).toFixed(1)}%</td></tr>`).join("")}</tbody></table></div>
+    <div class="mini-tbl"><table><thead><tr><th>Craft</th><th>ED</th></tr></thead><tbody>${DATA.crafts.map(c => `<tr><td>${esc(c.names.join(", "))}</td><td class="n">${c.hi ? `+${c.lo}-${c.hi}` : "none"}</td></tr>`).join("")}</tbody></table></div>
+    <div class="mini-tbl"><table><thead><tr><th>Prefix</th><th>Group</th><th>ED</th><th>Affix level</th><th>Weight</th><th>Rolls on</th></tr></thead><tbody>${ed.map(a => `<tr><td>${esc(a.name)}</td><td>${grpName[a.g] || a.g}</td><td class="n">${a.lo}-${a.hi}</td><td class="n">${a.level}${a.max ? "-" + a.max : "+"}</td><td class="n">${a.w}</td><td>${a.rare === 3 ? "rares only" : "rares and crafts"}${a.name === "Grandmaster's" ? ", bows and crossbows" : ""}</td></tr>`).join("")}</tbody></table></div>
+    <p>Thresholds read from the filter of ${esc(DATA.date)} (${esc(DATA.season)}).</p>`;
+}
+function render() {
+  renderTabs(); renderSettings(); renderMatrix();
+  const note = $("note");
+  if (document.activeElement !== note) note.value = state.note || "";
+  note.disabled = !editable;
+}
+
+// ---------------------------------------------------------------- editing
+function setCell(k, x, raw) {
+  const q = view.q;
+  const v = raw === "" ? null : Math.max(1, Math.min(800, Math.round(+raw)));
+  if (raw !== "" && !Number.isFinite(+raw)) return;
+  if (q === "craft") {
+    const row = state.craft[k];
+    if (row.linked) { row.t = clone(state.rare[k]); row.linked = false; }
+    row.t[x] = v;
+  } else state.rare[k][x] = v;
+  queueSave(`${q}-${k}`);
+}
+document.addEventListener("input", ev => {
+  const el = ev.target;
+  if (el.matches("input.num-in")) {
+    setCell(el.dataset.k, el.dataset.x, el.value.trim());
+    if (view.q === "craft") { const cb = document.querySelector(`input[data-link="${el.dataset.k}"]`); if (cb) cb.checked = false; }
+    refreshOdds();
+  } else if (el.id === "note") {
+    state.note = el.value; queueSave("note");
+  } else if (el.id === "sc-ilvl" || el.id === "sc-ilvl-n") {
+    const v = Math.max(1, Math.min(99, +el.value || 1)); view.sc.ilvl = v;
+    const other = $(el.id === "sc-ilvl" ? "sc-ilvl-n" : "sc-ilvl"); if (other) other.value = v;
+    keepView(); renderMatrix(); renderTabs();
+  }
+});
+document.addEventListener("change", ev => {
+  const el = ev.target, sc = view.sc;
+  if (el.id === "sc-map") sc.map = +el.value;
+  else if (el.id === "sc-clvl") sc.clvl = Math.max(1, Math.min(99, +el.value || 1));
+  else if (el.id === "sc-bilvl") sc.bilvl = Math.max(1, Math.min(99, +el.value || 1));
+  else if (el.id === "sc-craft") sc.craft = +el.value;
+  else if (el.id === "sc-mode") sc.mode = el.value;
+  else if (el.id === "sc-bases") sc.bases = el.value;
+  else if (el.matches("input[data-link]")) {
+    const k = el.dataset.link, row = state.craft[k];
+    if (el.checked) row.linked = true; else { row.linked = false; row.t = clone(state.rare[k]); }
+    queueSave(`craft-${k}`); renderMatrix(); renderTabs(); return;
+  } else return;
+  keepView(); renderSettings(); renderMatrix();
+});
+let resetArmed = null;
+document.addEventListener("click", ev => {
+  const b = ev.target.closest("button");
+  if (!b) return;
+  if (b.dataset.q) { view.q = b.dataset.q; keepView(); render(); return; }
+  if (b.dataset.ilvl) { view.sc.ilvl = +b.dataset.ilvl; keepView(); renderSettings(); renderMatrix(); return; }
+  if (b.dataset.open) { view.open = view.open === b.dataset.open ? null : b.dataset.open; keepView(); renderMatrix(); return; }
+  const q = view.q, k = view.open;
+  if (b.id === "copyGo" && k) {
+    const to = $("copyTo").value, src = clone(thr(q, k));
+    if (to === "craft") { state.craft[k] = { linked: false, t: src }; queueSave(`craft-${k}`); }
+    else {
+      for (const t of TYPES) {
+        if (t.key === k) continue;
+        if (to === "notbows" && BOWS.has(t.key)) continue;
+        if (to === "bows" && !BOWS.has(t.key)) continue;
+        if (q === "rare") state.rare[t.key] = clone(src); else state.craft[t.key] = { linked: false, t: clone(src) };
+        queueSave(`${q}-${t.key}`);
+      }
+    }
+    renderMatrix(); renderTabs();
+  } else if (b.id === "resetRow" && k) {
+    if (q === "rare") state.rare[k] = clone(TODAY[k]); else state.craft[k] = { linked: true, t: clone(TODAY[k]) };
+    queueSave(`${q}-${k}`); renderMatrix(); renderTabs();
+  } else if (b.id === "linkAll") {
+    for (const t of TYPES) if (!state.craft[t.key].linked) { state.craft[t.key].linked = true; queueSave(`craft-${t.key}`); }
+    renderMatrix(); renderTabs();
+  } else if (b.id === "resetAll") {
+    if (resetArmed !== q) { resetArmed = q; b.textContent = "Click again to reset all 20 rows"; setTimeout(() => { if (resetArmed === q) { resetArmed = null; renderMatrix(); } }, 4000); return; }
+    resetArmed = null;
+    for (const t of TYPES) {
+      if (q === "rare") state.rare[t.key] = clone(TODAY[t.key]); else state.craft[t.key] = { linked: true, t: clone(TODAY[t.key]) };
+      queueSave(`${q}-${t.key}`);
+    }
+    renderMatrix(); renderTabs();
+  }
+});
+let resizeT;
+window.addEventListener("resize", () => { clearTimeout(resizeT); resizeT = setTimeout(renderDetail, 150); });
+
+// ---------------------------------------------------------------- saving (db: tiers/rare-<type> = {t, savedAt},
+// tiers/craft-<type> = {linked, t, savedAt}, tiers/note = {note, savedAt}; a row as today's filter (a crafted row
+// linked to rare) has no document). Every edit is also kept in this browser until the store has it.
+const pending = new Set(), saveTimers = {}, edits = {}, lastEdit = {}, retries = {};
+let loaded = false, bannerIsError = false;
+const BACKUP = "edHighlightTiersUnsaved";
+function backups() { try { return JSON.parse(localStorage.getItem(BACKUP) || "{}") || {}; } catch (e) { return {}; } }
+function bodyOf(doc) {
+  if (doc === "note") return state.note ? { note: state.note } : null;
+  const [q, k] = doc.split("-");
+  if (q === "rare") return KEYS.some(x => state.rare[k][x] !== TODAY[k][x]) ? { t: clone(state.rare[k]) } : null;
+  const row = state.craft[k];
+  return row.linked ? null : { linked: false, t: clone(row.t) };
+}
+function keepBackup(doc) { try { const all = backups(); all[doc] = { at: lastEdit[doc] || Date.now(), body: bodyOf(doc) }; localStorage.setItem(BACKUP, JSON.stringify(all)); } catch (e) {} }
+function dropBackup(doc, at) { try { const all = backups(); if (all[doc] && all[doc].at <= at) { delete all[doc]; localStorage.setItem(BACKUP, JSON.stringify(all)); } } catch (e) {} }
+function setStatus(text, kind) { const el = $("status"); el.textContent = text; el.className = "status" + (kind ? " " + kind : ""); }
+function banner(text, isError = true) { const el = $("banner"); el.hidden = !text; el.textContent = text || ""; bannerIsError = !!text && isError; }
+function queueSave(doc) {
+  edits[doc] = (edits[doc] || 0) + 1;
+  lastEdit[doc] = Date.now();
+  pending.add(doc);
+  keepBackup(doc);
+  if (!db) { setStatus("Kept in this browser only", "warn"); return; }
+  setStatus("Saving…");
+  clearTimeout(saveTimers[doc]);
+  saveTimers[doc] = setTimeout(() => save(doc), 700);
+}
+async function save(doc) {
+  const n = edits[doc], at = lastEdit[doc], body = bodyOf(doc);
+  try {
+    if (body) await db.doc("tiers/" + doc).set({ ...body, savedAt: new Date().toISOString() });
+    else await db.doc("tiers/" + doc).delete();
+    retries[doc] = 0;
+    if (edits[doc] === n) { pending.delete(doc); dropBackup(doc, at); }
+    if (!pending.size) { setStatus("Saved", "ok"); if (bannerIsError) banner(""); }
+  } catch (err) {
+    const why = (err && (err.message || err.code)) || "unknown error";
+    setStatus("Not saved", "warn");
+    banner(`Not saved (${why}). Your edits are kept in this browser; the page tries again, and a reload saves them too.`);
+    retries[doc] = (retries[doc] || 0) + 1;
+    if (retries[doc] <= 3) { clearTimeout(saveTimers[doc]); saveTimers[doc] = setTimeout(() => save(doc), 5000 * retries[doc]); }
+  }
+}
+function validT(t, k) {         // a key the document lacks (a tier added since it was saved) keeps today's value
+  const out = {};
+  for (const x of KEYS) { if (!t || !(x in t)) { out[x] = TODAY[k][x]; continue; } const v = t[x]; out[x] = v == null ? null : Number.isFinite(+v) ? Math.max(1, Math.min(800, Math.round(+v))) : null; }
+  return out;
+}
+function takeDoc(doc, body) {       // a saved document (or null: deleted) into the state
+  const before = JSON.stringify(doc === "note" ? state.note : doc.startsWith("rare-") ? state.rare[doc.slice(5)] : state.craft[doc.slice(6)]);
+  if (doc === "note") state.note = body && typeof body.note === "string" ? body.note : "";
+  else {
+    const [q, k] = [doc.slice(0, doc.indexOf("-")), doc.slice(doc.indexOf("-") + 1)];
+    if (!TYPE[k]) return false;
+    if (q === "rare") state.rare[k] = body && body.t ? validT(body.t, k) : clone(TODAY[k]);
+    else if (q === "craft") state.craft[k] = body && body.linked === false && body.t ? { linked: false, t: validT(body.t, k) } : { linked: true, t: clone(TODAY[k]) };
+    else return false;
+  }
+  const after = JSON.stringify(doc === "note" ? state.note : doc.startsWith("rare-") ? state.rare[doc.slice(5)] : state.craft[doc.slice(6)]);
+  return before !== after;
+}
+const isDoc = id => id === "note" || (/^(rare|craft)-/.test(id) && !!TYPE[id.slice(id.indexOf("-") + 1)]);
+function restoreBackups(savedAt) {
+  const all = backups(); let n = 0;
+  for (const [doc, b] of Object.entries(all)) {
+    if (!isDoc(doc) || !b) continue;
+    if (savedAt[doc] && savedAt[doc] >= b.at) { dropBackup(doc, b.at); continue; }
+    takeDoc(doc, b.body); n++; queueSave(doc);
+  }
+  if (n) { banner(db ? `Put back ${n} edit${n > 1 ? "s" : ""} this browser kept that weren't saved yet; saving them now.` : "This view can't reach the saved thresholds; it shows edits this browser kept.", !db); render(); }
+}
+
+// ---------------------------------------------------------------- self-test (#selftest): the model's numbers for
+// tools/ed_highlights.py's check against an independent Python model
+function selftest() {
+  const TH = [200, 250, 300, 350, 400, 450, 500, 550, 600, 650], out = {};
+  const sc = { ilvl: 90, map: -1, clvl: 90, bilvl: 90, craft: 0, bases: "all", mode: "u" };
+  for (const t of TYPES) {
+    const o = out[t.label] = {};
+    const r = typeResult(t.key, "rare", sc);
+    o.rare = TH.map(x => reach(r.u, x)); o.rare_corr = TH.map(x => reach(r.c, x));
+    DATA.crafts.forEach((c, i) => { const cr = typeResult(t.key, "craft", { ...sc, craft: i }); o["craft" + i] = TH.map(x => reach(cr.u, x)); o["craft" + i + "_corr"] = TH.map(x => reach(cr.c, x)); });
+  }
+  const el = $("selftest"); el.hidden = false; el.textContent = JSON.stringify(out);
+}
+
+(async () => {
+  render();
+  renderLooks();
+  renderHow();
+  if (location.hash === "#selftest") selftest();
+  try {
+    const [dbNs, user] = await Promise.all([window.claude?.use?.("db") ?? null, window.claude?.use?.("user") ?? null]);
+    db = dbNs;
+    if (!db) {
+      setStatus("Kept in this browser only", "warn");
+      banner("This view can't reach the saved thresholds: it shows today's filter, and edits are kept in this browser only. Reload the page to load and save them.");
+      restoreBackups({});
+      return;
+    }
+    const can = user ? await user.can("data.write") : null;
+    if (can === false) { editable = false; render(); }
+    const timer = setTimeout(() => { if (!loaded) setStatus("Saved thresholds not reached yet", "warn"); }, 10000);
+    db.collection("tiers").onSnapshot(snap => {
+      let touched = false;
+      const savedAt = {}, seen = new Set();
+      for (const d of snap.docs) {
+        if (!isDoc(d.id)) continue;
+        seen.add(d.id);
+        const body = d.data();
+        savedAt[d.id] = Date.parse(body.savedAt || 0) || 0;
+        if (pending.has(d.id) || (d.metadata && d.metadata.hasPendingWrites)) continue;
+        if (lastEdit[d.id] && !(savedAt[d.id] >= lastEdit[d.id])) continue;
+        touched = takeDoc(d.id, body) || touched;
+      }
+      if (loaded) for (const ch of snap.docChanges()) {
+        if (ch.type === "removed" && isDoc(ch.doc.id) && !pending.has(ch.doc.id) && !seen.has(ch.doc.id)) touched = takeDoc(ch.doc.id, null) || touched;
+      }
+      if (!snap.metadata.fromCache) clearTimeout(timer);
+      if (!loaded) {
+        loaded = true;
+        const n = snap.docs.filter(d => isDoc(d.id) && d.id !== "note").length;
+        setStatus(editable ? (n ? "Loaded your thresholds" : "Today's filter: nothing saved yet") : "Read-only", editable ? "ok" : "warn");
+        if (touched) render();
+        if (editable) restoreBackups(savedAt);
+        return;
+      }
+      if (touched && !document.activeElement?.matches?.("input.num-in, textarea")) render();
+    }, err => {
+      clearTimeout(timer);
+      setStatus("Saved thresholds unavailable", "warn");
+      banner(`The saved thresholds can't be read (${(err && (err.message || err.code)) || "unknown error"}). Edits are kept in this browser; reload the page.`);
+    });
+  } catch (err) {
+    setStatus("Kept in this browser only", "warn");
+    banner("This view can't reach the saved thresholds: edits are kept in this browser only. Reload the page.");
+  }
+})();
+</script>

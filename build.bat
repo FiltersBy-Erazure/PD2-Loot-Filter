@@ -12,6 +12,10 @@ if errorlevel 1 (
 rem +N to one skill highlights (section 280): each one's plain twin without stars for corrupted items, under it
 python tools\plain_highlights.py
 if errorlevel 1 goto failed
+rem Small non-magical items that sell for gold (sections 210 / 220 / 310): each hide rule marked !SMALL_SELL_BASE gets
+rem its twins above it, which show the sell tag alone
+python tools\sell_label_twins.py
+if errorlevel 1 goto failed
 rem Unique/set labels BH would cut: where each step of tools\unique_cut_rules.txt applies (tools\unique_cut_cases.tsv)
 python tools\label_cuts.py
 if errorlevel 1 goto failed

@@ -122,7 +122,9 @@ def template(names, rule):
     else:
         out = re.sub(r"\{.*\}", "", out)
     out = NOTIFY_RE.sub("", out)
-    out = out.replace("%QTY%", "12").replace("%ILVL%", "92").replace("%ED%", "512").replace("%EDAM%", "512")
+    band = re.search(r"\bED(?:>(\d+)|~(\d+)-)", line.split("]:", 1)[0])  # a sample in the rule's own ED band
+    ed = str((int(band[1]) + 1 if band[1] else int(band[2])) + 12) if band else "512"
+    out = out.replace("%QTY%", "12").replace("%ILVL%", "92").replace("%ED%", ed).replace("%EDAM%", ed)
     return out.rstrip(), f"sections/{f}:{n}"
 
 

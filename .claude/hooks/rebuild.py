@@ -4,7 +4,8 @@ Claude Code PostToolUse hook: after Claude edits a file in sections/, version.js
 filter_definitions.json, tools/unique_roll_picks.txt, tools/unique_cut_rules.txt, tools/runeword_roll_picks.txt,
 tools/boss_tag_rules.json or tools/low_level_tag_picks.json,
 write the plain twins of the +N to one skill highlights for corrupted items (tools/plain_highlights.py: section
-280), regenerate the unique/set label cut cases (tools/label_cuts.py: tools/unique_cut_cases.tsv), the unique/set and
+280) and the sell tag twins of the hide rules marked !SMALL_SELL_BASE (tools/sell_label_twins.py: 210 / 220 / 310),
+regenerate the unique/set label cut cases (tools/label_cuts.py: tools/unique_cut_cases.tsv), the unique/set and
 runeword roll tags (for section and picks edits: tools/gen_unique_rolls.py and
 tools/gen_runeword_rolls.py), the map experience tags (tools/gen_map_exp.py), the boss gear tags (tools/gen_boss_tags.py), the low-level rare tag aliases (tools/low_level_tags.py), the tag count of rares (tools/gen_tag_count.py) and the players' pages (tools/tier_map.py: Erazure-Unique-Set-Tiers.html,
 tools/base_map.py: Erazure-Non-Magic-Bases.html, tools/magic_rare_map.py: Erazure-Magic-Items.html and
@@ -27,7 +28,7 @@ ROOT = Path(__file__).resolve().parents[2]
 ROOT_FILES = {"version.json", "filter_definitions.json"}
 PICKS = [["tools", "unique_roll_picks.txt"], ["tools", "unique_cut_rules.txt"], ["tools", "runeword_roll_picks.txt"],
          ["tools", "boss_tag_rules.json"], ["tools", "low_level_tag_picks.json"]]
-GENERATORS = ["plain_highlights.py", "label_cuts.py", "gen_unique_rolls.py", "gen_runeword_rolls.py", "gen_map_exp.py",
+GENERATORS = ["plain_highlights.py", "sell_label_twins.py", "label_cuts.py", "gen_unique_rolls.py", "gen_runeword_rolls.py", "gen_map_exp.py",
               "gen_boss_tags.py", "low_level_tags.py", "gen_tag_count.py", "tier_map.py",
               "base_map.py", "magic_rare_map.py", "level_map.py", "style_map.py", "shop_map.py"]  # in this order:
 #                                                                                         all read sections/

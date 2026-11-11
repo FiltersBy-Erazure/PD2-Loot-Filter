@@ -2,9 +2,9 @@
 // ===============================  Necro Wands  ===============================
 // ---------------------------------------------------------------------------------
 
-// Hide nonmagical necromancer wands that are not Dominion bases: on filter levels 3-4 from character level 80 (only a ($) shows when one sells for 25,000+ gold and takes 2 inventory squares or less), and on filter levels 5+
-ItemDisplay[NMAG !RW WAND (FILTLVL~3-4 CLVL>79) !RWB_DOMINION_WAND GROUND !TOWN SELLPRICE>24999 AREA<3]:%GRAY%(%TAN%$%GRAY%)//
-ItemDisplay[NMAG !RW WAND (FILTLVL~3-4 CLVL>79) !RWB_DOMINION_WAND GROUND !TOWN (SELLPRICE<25000 OR AREA>2)]://
+// Hide nonmagical necromancer wands that are not Dominion bases: on filter levels 3-4 from character level 80 (only a ($) shows when one gets 315's sell tag and takes 2 inventory squares or less: SMALL_SELL_BASE), and on filter levels 5+
+ItemDisplay[NMAG !RW WAND (FILTLVL~3-4 CLVL>79) !RWB_DOMINION_WAND SMALL_SELL_GOLD GROUND !TOWN]:%SELL_ONLY_GOLD%//
+ItemDisplay[NMAG !RW WAND (FILTLVL~3-4 CLVL>79) !RWB_DOMINION_WAND !SMALL_SELL_BASE GROUND !TOWN]://
 ItemDisplay[NMAG !RW WAND FILTLVL>4 !RWB_DOMINION_WAND GROUND !TOWN]:// On filter levels 5+, hide nonmagical necromancer wands that are not Dominion bases
 
 //      Dominion runeword wand bases
@@ -15,7 +15,10 @@ ItemDisplay[NMAG !RW WAND RWB_DOMINION_WAND]:%ORANGE%Dominion %WHITE%%NAME%{%NAM
 ItemDisplay[NMAG !RW WAND ((CLVL<90 FILTLVL<5) OR FILTLVL<3) ((!NECROMANCER CLVL<60) OR (NECROMANCER CLVL<80)) !(wnd OR ywn OR 9wn) (SOCK=0 OR SOCK=2) (SK67>2 OR SK84>2 OR SK74>2)]:%ORANGE%White %WHITE%%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%//
 
 // Hides all other wands that don't have + to skills
-ItemDisplay[NMAG !RW WAND CLVL>9 FILTLVL>0 !(SK66>0 OR SK67>0 OR SK68>0 OR SK69>0 OR SK70>0 OR SK71>0 OR SK72>0 OR SK73>0 OR SK74>0 OR SK75>0 OR SK76>0 OR SK77>0 OR SK78>0 OR SK79>0 OR SK80>0 OR SK81>0 OR SK82>0 OR SK83>0 OR SK84>0 OR SK85>0 OR SK86>0 OR SK87>0 OR SK88>0 OR SK89>0 OR SK90>0 OR SK91>0 OR SK92>0 OR SK93>0 OR SK94>0 OR SK95>0 OR SK367>0 OR SK374>0 OR SK381>0) GROUND !TOWN]://
+ItemDisplay[NMAG !RW WAND CLVL>9 FILTLVL>0 !(SK66>0 OR SK67>0 OR SK68>0 OR SK69>0 OR SK70>0 OR SK71>0 OR SK72>0 OR SK73>0 OR SK74>0 OR SK75>0 OR SK76>0 OR SK77>0 OR SK78>0 OR SK79>0 OR SK80>0 OR SK81>0 OR SK82>0 OR SK83>0 OR SK84>0 OR SK85>0 OR SK86>0 OR SK87>0 OR SK88>0 OR SK89>0 OR SK90>0 OR SK91>0 OR SK92>0 OR SK93>0 OR SK94>0 OR SK95>0 OR SK367>0 OR SK374>0 OR SK381>0) SMALL_SELL_GOLD GROUND !TOWN]:%SELL_ONLY_GOLD%//
+ItemDisplay[NMAG !RW WAND CLVL>9 FILTLVL>0 !(SK66>0 OR SK67>0 OR SK68>0 OR SK69>0 OR SK70>0 OR SK71>0 OR SK72>0 OR SK73>0 OR SK74>0 OR SK75>0 OR SK76>0 OR SK77>0 OR SK78>0 OR SK79>0 OR SK80>0 OR SK81>0 OR SK82>0 OR SK83>0 OR SK84>0 OR SK85>0 OR SK86>0 OR SK87>0 OR SK88>0 OR SK89>0 OR SK90>0 OR SK91>0 OR SK92>0 OR SK93>0 OR SK94>0 OR SK95>0 OR SK367>0 OR SK374>0 OR SK381>0) SMALL_SELL_GRAY GROUND !TOWN]:%SELL_ONLY_GRAY%//
+ItemDisplay[NMAG !RW WAND CLVL>9 FILTLVL>0 !(SK66>0 OR SK67>0 OR SK68>0 OR SK69>0 OR SK70>0 OR SK71>0 OR SK72>0 OR SK73>0 OR SK74>0 OR SK75>0 OR SK76>0 OR SK77>0 OR SK78>0 OR SK79>0 OR SK80>0 OR SK81>0 OR SK82>0 OR SK83>0 OR SK84>0 OR SK85>0 OR SK86>0 OR SK87>0 OR SK88>0 OR SK89>0 OR SK90>0 OR SK91>0 OR SK92>0 OR SK93>0 OR SK94>0 OR SK95>0 OR SK367>0 OR SK374>0 OR SK381>0) SMALL_SELL_NK GROUND !TOWN]:%SELL_ONLY_NK%//
+ItemDisplay[NMAG !RW WAND CLVL>9 FILTLVL>0 !(SK66>0 OR SK67>0 OR SK68>0 OR SK69>0 OR SK70>0 OR SK71>0 OR SK72>0 OR SK73>0 OR SK74>0 OR SK75>0 OR SK76>0 OR SK77>0 OR SK78>0 OR SK79>0 OR SK80>0 OR SK81>0 OR SK82>0 OR SK83>0 OR SK84>0 OR SK85>0 OR SK86>0 OR SK87>0 OR SK88>0 OR SK89>0 OR SK90>0 OR SK91>0 OR SK92>0 OR SK93>0 OR SK94>0 OR SK95>0 OR SK367>0 OR SK374>0 OR SK381>0) !SMALL_SELL_BASE GROUND !TOWN]://
 
 // ------------------------------------------------------------------------------
 //    =============================  Amazon Bows  ============================   
@@ -76,9 +79,11 @@ ItemDisplay[NMAG TABSK2<2 (am3 OR am4 OR am8 OR am9 OR amd OR ame OR am5 OR ama 
 ItemDisplay[NMAG TABSK2<3 (am3 OR am4 OR am8 OR am9 OR amd OR ame OR am5 OR ama OR amf) CLVL>69 FILTLVL>0 GROUND !TOWN]://
 
 // Hides nonmagical Zon Class Javelins on filter levels 3+ (by then most Amazons have used their imbue quests); levels 1-2 keep +3 ones at every character level (for alts and LLDs)
-ItemDisplay[NMAG TABSK2=3 (am5 OR ama OR amf) FILTLVL>2 FILTLVL>0 !(amf ETH (SOCK=0 OR SOCK=3)) GROUND !TOWN]:// S14: eth +3 Matriarchal Javelins with 0 or 3 sockets (Jealousy base) show on every level
-ItemDisplay[NMAG !INF !RW amf ETH TABSK2=3 (SOCK=0 OR SOCK=3) FILTLVL<5]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// S14: Notify eth +3 Matriarchal Javelins (Jealousy base) with 0 or 3os on filter levels 0-4
-ItemDisplay[NMAG !INF !RW amf ETH TABSK2=3 ED>4 (SOCK=0 OR SOCK=3) FILTLVL>4]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// S14: Notify eth +3 Matriarchal Javelins (Jealousy base) with ED>4 and 0 or 3os on filter levels 5+
+ItemDisplay[NMAG TABSK2=3 (am5 OR ama OR amf) FILTLVL>2 FILTLVL>0 !RWB_JEALOUSY_JAV GROUND !TOWN]:// S14: eth +3 Matriarchal Javelins with 0 or 3 sockets (Jealousy base) show on every level
+ItemDisplay[NMAG !INF !RW RWB_JEALOUSY_JAV FILTLVL<5]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// S14: Notify eth +3 Matriarchal Javelins (Jealousy base) with 0 or 3os on filter levels 0-4
+ItemDisplay[NMAG !INF !RW RWB_JEALOUSY_JAV ED>4 FILTLVL>4]:%NAME%{%NAME%}%DOT-20%%PX-00%%CONTINUE%// S14: Notify eth +3 Matriarchal Javelins (Jealousy base) with ED>4 and 0 or 3os on filter levels 5+
+//      Jealousy: eth +3 Matriarchal Javelins with 0 or 3 sockets, any ED, every filter level
+ItemDisplay[NMAG !INF !RW RWB_JEALOUSY_JAV]:%ORANGE%Jealousy %NAME%{%NAME%}%CONTINUE%//
 
 //           Maiden Spear, Maiden Pike
 ItemDisplay[NMAG !INF !RW (am3 OR am4) !AMAZON SOCK=0 CLVL>19 FILTLVL>0 GROUND !TOWN]:// 
@@ -134,9 +139,9 @@ ItemDisplay[NMAG !RW SIN CLVL>9 FILTLVL>0 !(SK251>1 OR SK252>0 OR SK253>0 OR SK2
 //     ===============================  Daggers  ============================= 
 // ------------------------------------------------------------------------------
 
-// Hide nonmagical daggers that are not Venom bases (throwing knives: see Javelins and Throwing Weapons): on filter levels 3-4 from character level 80 (only a ($) shows when one sells for 25,000+ gold and takes 2 inventory squares or less), and on filter levels 5+
-ItemDisplay[NMAG !RW DAGGER !THROWING (FILTLVL~3-4 CLVL>79) !RWB_VENOM_DAGGER GROUND !TOWN SELLPRICE>24999 AREA<3]:%GRAY%(%TAN%$%GRAY%)//
-ItemDisplay[NMAG !RW DAGGER !THROWING (FILTLVL~3-4 CLVL>79) !RWB_VENOM_DAGGER GROUND !TOWN (SELLPRICE<25000 OR AREA>2)]://
+// Hide nonmagical daggers that are not Venom bases (throwing knives: see Javelins and Throwing Weapons): on filter levels 3-4 from character level 80 (only a ($) shows when one gets 315's sell tag and takes 2 inventory squares or less: SMALL_SELL_BASE), and on filter levels 5+
+ItemDisplay[NMAG !RW DAGGER !THROWING (FILTLVL~3-4 CLVL>79) !RWB_VENOM_DAGGER SMALL_SELL_GOLD GROUND !TOWN]:%SELL_ONLY_GOLD%//
+ItemDisplay[NMAG !RW DAGGER !THROWING (FILTLVL~3-4 CLVL>79) !RWB_VENOM_DAGGER !SMALL_SELL_BASE GROUND !TOWN]://
 ItemDisplay[NMAG !RW DAGGER !THROWING FILTLVL>4 !RWB_VENOM_DAGGER GROUND !TOWN]:// On filter levels 5+, hide nonmagical daggers that are not Venom bases
 
 //      Venom: +3 Poison Strike
@@ -144,15 +149,18 @@ ItemDisplay[NMAG !INF !RW NECROMANCER RWB_VENOM_DAGGER]:%ORANGE%Venom %NAME%{%NA
 ItemDisplay[NMAG !INF !RW !NECROMANCER RWB_VENOM_DAGGER]:%TEAL%Venom %NAME%{%NAME%}%CONTINUE%// 
 
 //      Hides dagger that do no have +1 to at least 1 skill past level 10
-ItemDisplay[NMAG !RW DAGGER !THROWING CLVL>9 FILTLVL>0 !(SK73>0 OR SK254>0 OR SK257>0 OR SK259>0 OR SK265>0 OR SK266>0 OR SK269>0 OR SK270>0 OR SK274>0 OR SK275>0 OR SK280>0) GROUND !TOWN]:// All tiers
+ItemDisplay[NMAG !RW DAGGER !THROWING CLVL>9 FILTLVL>0 !(SK73>0 OR SK254>0 OR SK257>0 OR SK259>0 OR SK265>0 OR SK266>0 OR SK269>0 OR SK270>0 OR SK274>0 OR SK275>0 OR SK280>0) SMALL_SELL_GOLD GROUND !TOWN]:%SELL_ONLY_GOLD%//
+ItemDisplay[NMAG !RW DAGGER !THROWING CLVL>9 FILTLVL>0 !(SK73>0 OR SK254>0 OR SK257>0 OR SK259>0 OR SK265>0 OR SK266>0 OR SK269>0 OR SK270>0 OR SK274>0 OR SK275>0 OR SK280>0) SMALL_SELL_GRAY GROUND !TOWN]:%SELL_ONLY_GRAY%//
+ItemDisplay[NMAG !RW DAGGER !THROWING CLVL>9 FILTLVL>0 !(SK73>0 OR SK254>0 OR SK257>0 OR SK259>0 OR SK265>0 OR SK266>0 OR SK269>0 OR SK270>0 OR SK274>0 OR SK275>0 OR SK280>0) SMALL_SELL_NK GROUND !TOWN]:%SELL_ONLY_NK%//
+ItemDisplay[NMAG !RW DAGGER !THROWING CLVL>9 FILTLVL>0 !(SK73>0 OR SK254>0 OR SK257>0 OR SK259>0 OR SK265>0 OR SK266>0 OR SK269>0 OR SK270>0 OR SK274>0 OR SK275>0 OR SK280>0) !SMALL_SELL_BASE GROUND !TOWN]:// All tiers
 
 // ------------------------------------------------------------------------------
 //     ===========================  Sorceress Orbs  =========================   
 // ------------------------------------------------------------------------------
 
-// Hide nonmagical orbs that are not Plague bases: on filter levels 3-4 from character level 80 (only a ($) shows when one sells for 25,000+ gold and takes 2 inventory squares or less), and on filter levels 5+
-ItemDisplay[NMAG !RW SOR (FILTLVL~3-4 CLVL>79) !RWB_PLAGUE_ORB GROUND !TOWN SELLPRICE>24999 AREA<3]:%GRAY%(%TAN%$%GRAY%)//
-ItemDisplay[NMAG !RW SOR (FILTLVL~3-4 CLVL>79) !RWB_PLAGUE_ORB GROUND !TOWN (SELLPRICE<25000 OR AREA>2)]://
+// Hide nonmagical orbs that are not Plague bases: on filter levels 3-4 from character level 80 (only a ($) shows when one gets 315's sell tag and takes 2 inventory squares or less: SMALL_SELL_BASE), and on filter levels 5+
+ItemDisplay[NMAG !RW SOR (FILTLVL~3-4 CLVL>79) !RWB_PLAGUE_ORB SMALL_SELL_GOLD GROUND !TOWN]:%SELL_ONLY_GOLD%//
+ItemDisplay[NMAG !RW SOR (FILTLVL~3-4 CLVL>79) !RWB_PLAGUE_ORB !SMALL_SELL_BASE GROUND !TOWN]://
 ItemDisplay[NMAG !RW SOR FILTLVL>4 !RWB_PLAGUE_ORB GROUND !TOWN]:// On filter levels 5+, hide nonmagical orbs that are not Plague bases
 
 //      Neophyte runeword orb bases: 
@@ -161,7 +169,10 @@ ItemDisplay[NMAG !RW SOR SORCERESS ((CLVL<90 FILTLVL<5) OR FILTLVL<3) ((!SORCERE
 ItemDisplay[NMAG !RW SOR !SORCERESS ((CLVL<90 FILTLVL<5) OR FILTLVL<3) ((!SORCERESS CLVL<60) OR (SORCERESS CLVL<80)) RWB_NEOPHYTE_ORB]:%TEAL%Neophyte %WHITE%%NAME%{%NAME%}%CONTINUE%//
 
 // Hides all other orbs that don't have + to skills
-ItemDisplay[NMAG !RW SOR CLVL>9 FILTLVL>0 !(SK36>0 OR SK37>0 OR SK38>0 OR SK39>0 OR SK40>0 OR SK41>0 OR SK42>0 OR SK43>0 OR SK44>0 OR SK45>0 OR SK46>0 OR SK47>0 OR SK48>0 OR SK49>0 OR SK50>0 OR SK51>0 OR SK52>0 OR SK53>0 OR SK54>0 OR SK55>0 OR SK56>0 OR SK57>0 OR SK58>0 OR SK59>0 OR SK60>0 OR SK61>0 OR SK62>0 OR SK63>0 OR SK64>0 OR SK65>0 OR SK369>0 OR SK383>0) GROUND !TOWN]://
+ItemDisplay[NMAG !RW SOR CLVL>9 FILTLVL>0 !(SK36>0 OR SK37>0 OR SK38>0 OR SK39>0 OR SK40>0 OR SK41>0 OR SK42>0 OR SK43>0 OR SK44>0 OR SK45>0 OR SK46>0 OR SK47>0 OR SK48>0 OR SK49>0 OR SK50>0 OR SK51>0 OR SK52>0 OR SK53>0 OR SK54>0 OR SK55>0 OR SK56>0 OR SK57>0 OR SK58>0 OR SK59>0 OR SK60>0 OR SK61>0 OR SK62>0 OR SK63>0 OR SK64>0 OR SK65>0 OR SK369>0 OR SK383>0) SMALL_SELL_GOLD GROUND !TOWN]:%SELL_ONLY_GOLD%//
+ItemDisplay[NMAG !RW SOR CLVL>9 FILTLVL>0 !(SK36>0 OR SK37>0 OR SK38>0 OR SK39>0 OR SK40>0 OR SK41>0 OR SK42>0 OR SK43>0 OR SK44>0 OR SK45>0 OR SK46>0 OR SK47>0 OR SK48>0 OR SK49>0 OR SK50>0 OR SK51>0 OR SK52>0 OR SK53>0 OR SK54>0 OR SK55>0 OR SK56>0 OR SK57>0 OR SK58>0 OR SK59>0 OR SK60>0 OR SK61>0 OR SK62>0 OR SK63>0 OR SK64>0 OR SK65>0 OR SK369>0 OR SK383>0) SMALL_SELL_GRAY GROUND !TOWN]:%SELL_ONLY_GRAY%//
+ItemDisplay[NMAG !RW SOR CLVL>9 FILTLVL>0 !(SK36>0 OR SK37>0 OR SK38>0 OR SK39>0 OR SK40>0 OR SK41>0 OR SK42>0 OR SK43>0 OR SK44>0 OR SK45>0 OR SK46>0 OR SK47>0 OR SK48>0 OR SK49>0 OR SK50>0 OR SK51>0 OR SK52>0 OR SK53>0 OR SK54>0 OR SK55>0 OR SK56>0 OR SK57>0 OR SK58>0 OR SK59>0 OR SK60>0 OR SK61>0 OR SK62>0 OR SK63>0 OR SK64>0 OR SK65>0 OR SK369>0 OR SK383>0) SMALL_SELL_NK GROUND !TOWN]:%SELL_ONLY_NK%//
+ItemDisplay[NMAG !RW SOR CLVL>9 FILTLVL>0 !(SK36>0 OR SK37>0 OR SK38>0 OR SK39>0 OR SK40>0 OR SK41>0 OR SK42>0 OR SK43>0 OR SK44>0 OR SK45>0 OR SK46>0 OR SK47>0 OR SK48>0 OR SK49>0 OR SK50>0 OR SK51>0 OR SK52>0 OR SK53>0 OR SK54>0 OR SK55>0 OR SK56>0 OR SK57>0 OR SK58>0 OR SK59>0 OR SK60>0 OR SK61>0 OR SK62>0 OR SK63>0 OR SK64>0 OR SK65>0 OR SK369>0 OR SK383>0) !SMALL_SELL_BASE GROUND !TOWN]://
 
 // ------------------------------------------------------------------------------
 //     ==========================  Sorceress Staves  ========================   
