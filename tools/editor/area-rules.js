@@ -712,7 +712,8 @@ EZ.areas = EZ.areas || [];
   }
 
   /* For the rules browser: the highlighter and a rule's label and alerts. */
-  EZ.rulesArea = {lineTokens, miniLabel, alertsOf, aliasValues};
+  EZ.rulesArea = {lineTokens, miniLabel, alertsOf, aliasValues, STAT_KINDS, STAT_WORDS, OPS, CLASS_INDEX,
+                  CLASS_NAMES, TABS, GROUPS, GROUP_NAME};
 
   EZ.areas.push({
     id: "rules", title: "My rules", icon: "⊕", order: 80, group: "c",

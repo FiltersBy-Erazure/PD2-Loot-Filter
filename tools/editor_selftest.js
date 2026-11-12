@@ -317,6 +317,40 @@
     return {fail: bad.length ? bad.join("\n  ") : null, cases: n, ms: Math.round(performance.now() - t0)};
   });
 
+  /* Wishlists tag the identified items that have the stats, and only them (tools/editor/wishlists.js). */
+  test("wishlists", () => {
+    EZ.items.init({catalog: EXPECT.catalog});
+    const main = src.variants.find((v) => v.name === src.main);
+    const opts = {statMax: EXPECT.catalog.statMax, skillMax: EXPECT.catalog.skillMax, soundCount: EXPECT.soundCount};
+    const w = {id: "w1", name: "Caster amulet", codes: ["amu"], quals: ["RARE", "CRAFT"],
+               need: [{kind: "word", word: "FCR", op: "min", a: "10"}],
+               pool: [{kind: "word", word: "LIFE", op: "min", a: "40"}, {kind: "word", word: "STR", op: "min", a: "15"},
+                      {kind: "SKTOTAL", n: "54", op: "min", a: "2"}], n: "2", line: "Caster amulet", color: "GREEN",
+               tag: "WL", alert: {icon: {MAP: "0A"}, sound: 4728}};
+    const p = EZ.store.normalize({name: "t", edits: {base: {style: "erazure"}, wishlists: [w]}});
+    const F = E.compile(EZ.edits.apply(src, p, C.variantLines(src, main)).lines, opts);
+    const c = {filtlvl: 1, clvl: 90, cls: 1, diff: 2, mapid: 2, charstats: {12: 90}};
+    const run = (quality, stats, id) => E.run(F, EZ.items.make({code: "amu", quality, id: id !== false, stats,
+                                                                place: "GROUND"}), c, {});
+    const tagged = (r) => r.desc.indexOf("Caster amulet") >= 0 && r.name.indexOf("WL") >= 0;
+    const bad = [];
+    const cases = [
+      ["FCR 10, life 40, strength 15", "RARE", [[105, 0, 10], [7, 0, 40], [0, 0, 15]], true],
+      ["FCR 10, life 40, +2 Teleport through all skills", "CRAFT", [[105, 0, 10], [7, 0, 40], [127, 0, 2]], true],
+      ["FCR 10, +1 Teleport, +1 lightning skills", "RARE", [[105, 0, 10], [107, 54, 1], [188, 9, 1], [0, 0, 15]], true],
+      ["FCR 10, life 40 only", "RARE", [[105, 0, 10], [7, 0, 40]], false],
+      ["FCR 5, life 40, strength 15", "RARE", [[105, 0, 5], [7, 0, 40], [0, 0, 15]], false],
+      ["magic, FCR 10, life 40, strength 15", "MAG", [[105, 0, 10], [7, 0, 40], [0, 0, 15]], false],
+    ];
+    for (const [what, q, stats, want] of cases) {
+      const r = run(q, stats);
+      if (tagged(r) !== want) bad.push(`${what}: ${want ? "not tagged" : "tagged"} (${show([r.name, r.desc])})`);
+      if (want && (r.sound !== 4728 || !r.icons.some((x) => x.map === 10))) bad.push(`${what}: no alert`);
+    }
+    if (tagged(run("RARE", undefined, false))) bad.push("an unidentified amulet is tagged");
+    return {fail: bad.length ? bad.join("\n  ") : null, cases: cases.length + 1};
+  });
+
   /* The Changes area's line diff (tools/editor/diff.js): it rebuilds both sides, pairs only equal lines and is as
      short as a diff can be (the longest common subsequence's), on random short texts. */
   test("diff", () => {

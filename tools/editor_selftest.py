@@ -63,7 +63,7 @@ EDITOR = ROOT / "tools" / "editor"
 SOURCE = ROOT / "Erazure-Filter-Editor-Source.js"
 FIXTURES = ROOT / "tools" / "editor_fixtures"
 MODULES = ["core.js", "ui.js", "store.js", "filter.js", "features.js", "edits.js", "rules.js", "ops.js",
-           "overrides.js", "volume.js", "engine.js", "lint.js", "words.js", "diff.js", "items.js", "sound.js", "glyphs.js"]  # in order
+           "overrides.js", "volume.js", "wishlists.js", "engine.js", "lint.js", "words.js", "diff.js", "items.js", "sound.js", "glyphs.js"]  # in order
 TESTS_JS = ROOT / "tools" / "editor_selftest.js"  # the engine tests' code
 BROWSERS = [
     r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
@@ -161,7 +161,7 @@ test("edits", async () => {
     const decoded = header.length ? await EZ.edits.fromFile(header.join("\\n")) : null;
     out[name] = {variant: variant.name, count: r.report.count, unplaced: r.report.unplaced, crcs: crcs(lines),
                  header: header.length, decoded, ops: r.report.ops || [],
-                 aliasLines: fx.edits.items ? r.lines : undefined};
+                 aliasLines: fx.edits.items || fx.edits.wishlists ? r.lines : undefined};
   }
   return {results: out};
 });
@@ -538,6 +538,8 @@ def count(e, feats):
     n = sum(1 for v in (e.get("options") or {}).values() if v)
     n += sum(1 for o in (e.get("ops") or []) if valid_op(o))
     n += sum(1 for v in (e.get("volume") or {}).values() if v in VOLUME_MODES)
+    n += sum(1 for w in (e.get("wishlists") or []) if isinstance(w, dict) and (w.get("codes") or w.get("groups")
+                                                                                or w.get("need") or w.get("pool")))
     n += sum(1 for o in (e.get("items") or []) if isinstance(o, dict) and o.get("action") in ITEM_ACTIONS
              and isinstance(o.get("scope"), dict) and isinstance(o["scope"].get("codes"), list) and o["scope"]["codes"])
     n += sum(1 for fid, on, *_ in feats if fid in (e.get("features") or {}) and bool(e["features"][fid]) != on)
@@ -759,7 +761,7 @@ def check_edits(src, detail, fixtures):
             continue
         toggle, style = fixture_variant(src, fx["edits"])
         variant = next(v for v in src["variants"] if v["toggle"] == toggle and v["style"] == style)
-        if fx["edits"].get("items"):
+        if fx["edits"].get("items") or fx["edits"].get("wishlists"):
             # item overrides (overrides.js) have no Python port: build.py writes the page's lines out with its
             # --check verification (BH reads every rule of the written file as the alias form), the same bytes
             try:

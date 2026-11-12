@@ -5,7 +5,6 @@ EZ.areas = EZ.areas || [];
 (function () {
   "use strict";
   const TODO = [
-    ["wishlists", "Wishlists", "★", 60, "b", "Rares, shop items, runeword and crafting bases, charms and jewels you want."],
     ["maps", "Maps", "⌖", 70, "b", "Map lines, mod warnings and hides, minimum experience."],
   ];
   for (const [id, title, icon, order, group, what] of TODO) {
