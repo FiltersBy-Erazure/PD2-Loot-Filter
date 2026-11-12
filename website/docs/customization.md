@@ -26,7 +26,7 @@ I recommend using either [VS Code](https://code.visualstudio.com/download) or
 - Under File - Open File - Navigate to where the file was downloaded and open it
 - You are then free to make the edits you want
 - After this, save the file to Diablo II\ProjectD2\filters\local. Be sure that it is saved as a .filter file
-- In the launcher under Item Filter Properties, click Local Filter, select the file, then click Save Filter
+- In the launcher under Item Filter Profiles, click Local Filter, select the file, then click Save Filter
 
 <img width="979" height="729" alt="Choosing a local filter in the PD2 launcher" src="https://github.com/user-attachments/assets/3c6ac94d-bac9-4585-b821-2823207b92ad" />
 
@@ -41,6 +41,6 @@ I recommend using either [VS Code](https://code.visualstudio.com/download) or
 
 - You are then free to make the edits you want
 - After this, save the file to Diablo II\ProjectD2\filters\local. Be sure that it is saved as a .filter file
-- In the launcher under Item Filter Properties, click Local Filter, select the file, then click Save Filter
+- In the launcher under Item Filter Profiles, click Local Filter, select the file, then click Save Filter
 
 <img width="979" height="729" alt="Choosing a local filter in the PD2 launcher" src="https://github.com/user-attachments/assets/3c6ac94d-bac9-4585-b821-2823207b92ad" />
