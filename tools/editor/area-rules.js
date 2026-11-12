@@ -552,19 +552,19 @@ EZ.areas = EZ.areas || [];
           const shared = B.quals.filter((q) => q === "UNI" || q === "SET").map((q) =>
             cat.uniques.filter((u) => u.code === code && u.kind === q).length).reduce((a, b) => a + b, 0);
           return h("span.fe-bd-chip", {title: code},
+            h("button.fe-x", {type: "button", "aria-label": "Remove " + code, onclick: () =>
+              set((b) => { b.codes = b.codes.filter((c) => c !== code); }, true)}, "✕"),
             (base ? plainName(base.name) : code) + " ", h("code.fe-small", code),
             fam.length > 1 && missing.length ? h("button.fe-btn.ghost.small", {type: "button",
               title: "Add its other tiers: " + missing.map((c) => plainName((cat.bases.get(c) || {}).name || c)).join(", "),
               onclick: () => set((b) => { for (const c of missing) if (b.codes.indexOf(c) < 0) b.codes.push(c); }, true)},
               "+ tiers") : null,
             shared > 1 ? h("span.fe-sub", {title: "They share this base: the editor can't single out one of them, " +
-              "identified or not"}, ` (${shared} share it)`) : null,
-            h("button.fe-x", {type: "button", "aria-label": "Remove " + code, onclick: () =>
-              set((b) => { b.codes = b.codes.filter((c) => c !== code); }, true)}, "✕"));
+              "identified or not"}, ` (${shared} share it)`) : null);
         }),
-        B.groups.map((g) => h("span.fe-bd-chip", GROUP_NAME.get(g) || g, " ", h("code.fe-small", g),
-          h("button.fe-x", {type: "button", "aria-label": "Remove " + g, onclick: () =>
-            set((b) => { b.groups = b.groups.filter((x) => x !== g); }, true)}, "✕"))));
+        B.groups.map((g) => h("span.fe-bd-chip", h("button.fe-x", {type: "button", "aria-label": "Remove " + g,
+          onclick: () => set((b) => { b.groups = b.groups.filter((x) => x !== g); }, true)}, "✕"),
+          GROUP_NAME.get(g) || g, " ", h("code.fe-small", g))));
       search.box.classList.add("fe-bd-search");
       return h("div.fe-bd-field.wide", h("span.fe-bd-label", "Items (any of these; none: every item)"),
         h("div.fe-row", search.box, group), chipsRow);

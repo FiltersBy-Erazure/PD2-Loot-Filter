@@ -251,7 +251,8 @@ EZ.areas = EZ.areas || [];
   }
 
   /* The table: the item at each level, Erazure's, the player's saved changes, and with the change being made (worked
-     out a moment later: it builds the whole filter). trial: the edits with the draft's change, or null. */
+     out a moment later: it builds the whole filter). Levels in a row that look alike in every column are one row
+     ("1-12 Hidden"), the levels' names in its tooltip. trial: the edits with the draft's change, or null. */
   let stripToken = 0;
   function strip(app, spec, trial) {
     const got = levelsOf(app, spec);
@@ -265,41 +266,58 @@ EZ.areas = EZ.areas || [];
       r.invisible || r.hidden ? EZ.render.hiddenNode(r) : EZ.render.label(r.name, {start: r.start}), marks(r));
     const key = (r) => JSON.stringify([r.name, r.sound, r.chat, r.invisible, r.icons.map((x) => [x.border, x.map, x.dot,
       x.px])]);
-    const my = ++stripToken;
-    const pending = [];
-    const rows = got.rows.map(({lv, name, a, b}) => {
-      const changed = b && key(a) !== key(b);
-      const tcell = trial ? h("td", h("span.fe-sub", "…")) : null;
-      const tr = h("tr" + (changed ? ".is-changed" : ""), h("td.fe-num", String(lv)), h("td.fe-sub.fe-small", name),
-        h("td", cell(a)), got.mine ? h("td", cell(b || a)) : null, tcell);
-      if (tcell) pending.push({lv, a, b, td: tcell, tr});
-      return tr;
-    });
-    if (trial && pending.length) {
+    const wrap = h("div.fe-it-table");
+    const draw = (trials) => {
+      const groups = [];
+      for (const r of got.rows) {
+        const now = r.b || r.a, t = trials ? trials[r.lv] : null;
+        const k = key(r.a) + "|" + (got.mine ? key(now) : "") + "|" + (trials ? (t ? key(t) : "?") : "");
+        const last = groups[groups.length - 1];
+        if (last && last.k === k && last.to === r.lv - 1) { last.to = r.lv; last.names.push(r.name); continue; }
+        groups.push({k, from: r.lv, to: r.lv, names: [r.name], a: r.a, now, t});
+      }
+      let same = 0;
+      const rows = groups.map((g) => {
+        const changed = got.mine && key(g.a) !== key(g.now);
+        const tip = g.names.map((n, i) => (g.from + i) + " · " + n).join("\n");
+        let tcell = null;
+        if (trial) {
+          if (!trials) tcell = h("td", h("span.fe-sub", "…"));
+          else {
+            const differs = g.t && key(g.t) !== key(g.now);
+            if (g.t && !differs) same++;
+            tcell = h("td" + (differs ? ".fe-it-new" : ""), g.t ? cell(g.t) : h("span.fe-sub", "?"));
+          }
+        }
+        return h("tr" + (changed ? ".is-changed" : ""),
+          h("td.fe-num", {title: tip}, g.from === g.to ? String(g.from) : g.from + "–" + g.to),
+          h("td.fe-sub.fe-small.fe-it-lvname", {title: tip}, g.names.length === 1 ? g.names[0] :
+            g.names[0] + " … " + g.names[g.names.length - 1]),
+          h("td", cell(g.a)), got.mine ? h("td", cell(g.now)) : null, tcell);
+      });
+      fill(wrap, h("div.fe-tablewrap", h("table.fe-it-strip",
+        h("thead", h("tr", h("th", "Lv"), h("th", "Level"), h("th", "Erazure"), got.mine ? h("th", {title: "With your " +
+          "changes so far"}, "Yours now") : null, trial ? h("th", {title: "With this change"}, "New") : null)),
+        h("tbody", rows))),
+        h("p.fe-sub.fe-small", {style: {margin: ".3em 0 0"}}, (got.mine ? "A gold bar: your filter differs from " +
+          "Erazure's there now. " : "") + (trial ? "New: with this change; a gold box where it changes something. " : "") +
+          "♪ a drop sound, chat a chat line; hover a level for its name."),
+        trials && same === groups.length ? h("p.fe-note.warn.fe-small", "This change changes nothing for this item " +
+          "at these settings: Erazure (or your other changes) already does it.") : null);
+    };
+    draw(null);
+    if (trial) {
+      const my = ++stripToken;
       setTimeout(() => {
-        if (my !== stripToken) return;
+        if (my !== stripToken || !wrap.isConnected) return;
         let f = null;
         try { f = P.withEdits(trial); } catch (e) { f = null; }
-        let same = 0;
-        for (const x of pending) {
-          const t = f ? P.run(f, spec, x.lv) : null;
-          if (!t) { fill(x.td, h("span.fe-sub", "?")); continue; }
-          fill(x.td, cell(t));
-          if (key(t) !== key(x.b || x.a)) x.td.classList.add("fe-it-new"); else same++;
-        }
-        const note = document.getElementById("fe-it-same");
-        if (note) note.hidden = same !== pending.length;
+        const trials = {};
+        for (const r of got.rows) trials[r.lv] = f ? P.run(f, spec, r.lv) : null;
+        draw(trials);
       }, 60);
     }
-    return h("div.fe-tablewrap", h("table.fe-it-strip",
-      h("thead", h("tr", h("th", "Lv"), h("th", "Level"), h("th", "Erazure"), got.mine ? h("th", "Yours now") : null,
-        trial ? h("th", "With this change") : null)),
-      h("tbody", rows)),
-      h("p.fe-sub.fe-small", {style: {margin: ".3em 0 0"}}, (got.mine ? "A gold bar: a level where your filter " +
-        "differs from Erazure's now. " : "") + (trial ? "A gold box: a level this change changes. " : "") +
-        "♪ a drop sound, chat a chat line."),
-      trial ? h("p.fe-note.warn.fe-small", {id: "fe-it-same", hidden: true}, "This change changes nothing for this " +
-        "item at these settings: Erazure (or your other changes) already does it.") : null);
+    return wrap;
   }
 
   /* The draft as the override it adds: {o} or {error}. */
@@ -375,10 +393,11 @@ EZ.areas = EZ.areas || [];
     const basesField = h("div.fe-bd-field.wide", h("span.fe-bd-label", `Bases (${s.codes.length})`),
       h("div.fe-row.fe-small", shownCodes.map((c) => h("span.fe-bd-chip" + (c === spec.code ? ".is-on" : ""),
         {title: "Item code " + c},
-        h("button.fe-linkbtn", {type: "button", title: "Show this one in the table above", onclick: () =>
-          set((x) => { x.spec.code = c; })}, nameOf(c)),
+        // the remove button first: removing many, the next one comes to the same place
         s.codes.length > 1 ? h("button.fe-x", {type: "button", "aria-label": "Leave out " + nameOf(c), onclick: () =>
-          set((x) => { x.scope.codes = x.scope.codes.filter((k) => k !== c); })}, "✕") : null)),
+          set((x) => { x.scope.codes = x.scope.codes.filter((k) => k !== c); })}, "✕") : null,
+        h("button.fe-linkbtn", {type: "button", title: "Show this one in the result", onclick: () =>
+          set((x) => { x.spec.code = c; })}, nameOf(c)))),
         shownCodes.length < s.codes.length ? h("button.fe-btn.ghost.small", {type: "button", onclick: () =>
           set((x) => { x.allBases = true; })}, `+ ${s.codes.length - shownCodes.length} more · show`) : null,
         missingTiers.length ? h("button.fe-btn.ghost.small", {type: "button", onclick: () => addCodes(missingTiers)},
@@ -584,17 +603,23 @@ EZ.areas = EZ.areas || [];
       "unique and set items";
     const P = EZ.preview;
     const idWord = spec.id === false && (spec.quality === "UNI" || spec.quality === "SET") ? " (unidentified, as it " +
-      "drops: Identified Yes below shows it identified)" : "";
+      "drops: Identified Yes shows it identified)" : "";
+    // the result: the picked base at every filter level, beside the form on a wide card (it stays in view while the
+    // form scrolls), under it on a narrow one
+    const result = h("aside.fe-it-result", {"aria-label": "The result"},
+      h("h4", "At every filter level"),
+      h("p.fe-sub.fe-small", {style: {margin: "0 0 .35em"}}, h("b", plain(base ? base.name : spec.code)),
+        idWord + ": click another base to see it. " + (d.action ? "" : "Pick what to do, and a column shows it with " +
+          "the change.")),
+      P && P.context ? P.context(() => app.drawArea()) : null,
+      strip(app, spec, trialEdits(d)));
     fill(box,
       h("div.fe-row", h("h3", {style: {margin: 0}, title: "Item code " + spec.code}, d.label),
         base && plain(base.name) !== d.label ? h("span.fe-sub", {title: "Item code " + spec.code}, plain(base.name)) : null,
         d.added && !d.touched ? EZ.ui.pill("added", "good") : null, h("span.fe-bar-gap"),
         h("button.fe-btn.ghost.small", {type: "button", "aria-label": "Close this change", title: "Close this change",
           onclick: () => { draft = null; app.drawArea(); }}, "✕")),
-      P && P.context ? P.context(() => app.drawArea(), {lead: "The item below at every filter level, for a level"}) : null,
-      strip(app, spec, trialEdits(d)),
-      h("p.fe-sub.fe-small", "Made to fit what you pick below (click a base to see that one)" + idWord + ". " +
-        (d.action ? "The last column is with this change." : "Pick what to do, and the table shows it with the change.")),
+      h("div.fe-it-layout", h("div.fe-it-form",
       h("fieldset.fe-bd-set", h("legend", "Which of them"),
         basesField,
         shared.length ? h("p.fe-note.warn.fe-bd-field.wide", (shared.length > 1 ? `${shared.length} ${sharedWord} ` +
@@ -642,10 +667,11 @@ EZ.areas = EZ.areas || [];
           h("p.fe-note.warn.fe-bd-field.wide", "This " + (d.action === "hide" ? "hides" : "quietens") + " " +
             sharedWord + " too: " + shared.slice(0, 4).join(", ") + (shared.length > 4 ? "…" : "") + ". To leave " +
             "them out, pick the qualities it is for (Non-magical, Magic, Rare…).") : null),
-      h("div.fe-row", h("button.fe-btn.primary", {type: "button", onclick: add, disabled: !d.action},
+      ), result,
+      h("div.fe-row.fe-it-add", h("button.fe-btn.primary", {type: "button", onclick: add, disabled: !d.action},
         d.id ? "Save the change" : "Add this change"),
         h("span.fe-sub.fe-small", d.action ? ACTION_NAME[d.action] + " · " + summary({action: d.action, look: d.look,
-          asLevel: d.asLevel, scope: s}) : "Pick what to do with them first (What to do).")));
+          asLevel: d.asLevel, scope: s}) : "Pick what to do with them first (What to do)."))));
   }
 
   /* An override back into the form. */

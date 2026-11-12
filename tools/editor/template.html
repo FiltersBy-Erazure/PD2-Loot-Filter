@@ -613,7 +613,27 @@
 .edit-map .fe-chiptog[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-fg);
   font-weight: 600; }
 .edit-map .fe-bd-chip { display: inline-flex; align-items: center; gap: .3em; border: 1px solid var(--line2);
-  background: var(--panel2); border-radius: 999px; padding: .1em .2em .1em .65em; }
+  background: var(--panel2); border-radius: 999px; padding: .1em .65em .1em .2em; }
+/* Items: a change's form beside its result (the result stays in view while the form scrolls), stacked when narrow */
+.edit-map #fe-item-edit { container-type: inline-size; }
+.edit-map .fe-it-layout { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-areas: "form" "result" "add";
+  gap: .2em 1.4em; align-items: start; }
+.edit-map .fe-it-form { grid-area: form; min-width: 0; }
+.edit-map .fe-it-result { grid-area: result; min-width: 0; margin: .7em 0 .4em; }
+.edit-map .fe-it-result h4 { margin: 0 0 .2em; font-family: Cinzel, Georgia, serif; color: var(--accent); }
+.edit-map .fe-it-add { grid-area: add; margin-top: .3em; }
+.edit-map .fe-it-lvname { max-width: 15em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.edit-map table.fe-it-strip td.fe-num { white-space: nowrap; }
+@container (min-width: 900px) {
+  .edit-map .fe-it-layout { grid-template-columns: minmax(0, 1.45fr) minmax(300px, 1fr);
+    grid-template-areas: "form result" "add result"; }
+  .edit-map .fe-it-result { position: sticky; top: calc(var(--top) + var(--bar) + .6em); border: 1px solid var(--line);
+    border-radius: 9px; padding: .55em .7em; background: var(--panel2);
+    max-height: calc(100vh - var(--top) - var(--bar) - 1.6em); overflow: auto; }
+  .edit-map .fe-it-result .fe-it-lvname { max-width: 8.5em; }
+  .edit-map .fe-it-result table.fe-it-strip td .fe-label { font-size: 10.5px; }
+  .edit-map .fe-it-result table.fe-it-strip td, .edit-map .fe-it-result table.fe-it-strip th { padding: .2em .3em; }
+}
 .edit-map .fe-x { border: 0; background: none; color: var(--muted); cursor: pointer; padding: 0 .3em; font-size: .9em; }
 .edit-map .fe-x:hover { color: var(--bad); }
 .edit-map .fe-bd-chip.is-on { border-color: var(--accent); }
