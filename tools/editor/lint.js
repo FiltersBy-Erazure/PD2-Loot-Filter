@@ -199,7 +199,7 @@ EZ.lint = (function () {
       if (key.startsWith("Formula[")) { formulaLine(n, key, value, env, say); return; }
       if (key.startsWith("ItemDisplayFilterName[")) {
         say(n, "warning", "BH reads 12 filter level names and Erazure has 12: this one is never shown. Rename a level " +
-          "on Options instead.");
+          "on Quick Edits instead.");
         return;
       }
       if (!key.startsWith("ItemDisplay[")) {

@@ -800,7 +800,7 @@ EZ.areas = EZ.areas || [];
         h("div.fe-area-head", h("div", h("h2", "My rules"),
           h("p.fe-sub", "Your own rules in BH's filter language, above or below Erazure's. Build one with the form, or " +
             "write them yourself: every line is checked as BH will read it."))),
-        any ? null : h("p.fe-note", "Most changes don't need rules of your own: Options, Looks and Alerts change " +
+        any ? null : h("p.fe-note", "Most changes don't need rules of your own: Quick Edits, Features, Looks and Alerts change " +
           "Erazure's own rules, and they follow every Erazure update."),
         builder(app, add), blockCard("top"), blockCard("bottom"), help]);
       if (app.sub && box.querySelector("#fe-" + app.sub)) box.querySelector("#fe-" + app.sub).scrollIntoView();

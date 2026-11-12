@@ -439,11 +439,11 @@ EZ.items = (function () {
     return out;
   }
 
-  /* Whether a base drops in more than one quality (weapons, armor, rings, amulets, charms, jewels, maps): everything
-     else (gems, runes, potions, keys, PD2 items, quest items...) is always a normal item. */
+  /* Whether a base drops in more than one quality (weapons, armor, rings, amulets, charms, jewels, maps, arrows and
+     bolts): everything else (gems, runes, potions, keys, PD2 items, quest items...) is always a normal item. */
   function qualities(b) {
     return !!b && (b.armor || b.weapon || b.map || b.code === "jew" || b.groups.indexOf("CHARM") >= 0 ||
-                   b.groups.indexOf("JEWELRY") >= 0);
+                   b.groups.indexOf("JEWELRY") >= 0 || b.groups.indexOf("QUIVER") >= 0);
   }
 
   return {init, base, unique, make, describe, picks, search, statChoices, statLabel, statLine, statLines, gameName,

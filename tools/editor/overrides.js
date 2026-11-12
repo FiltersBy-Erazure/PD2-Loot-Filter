@@ -603,6 +603,51 @@ EZ.overrides = (function () {
     return scope;
   }
 
+  /* An item a condition can match, to draw it (Quick Edits' samples): {spec (for EZ.items.make), levels (the filter
+     levels it holds on, [] for every one), cls, clvl} or null. Its base an elite one where the condition takes several
+     (the first in the game's order), its quality the condition's (normal when it says none, superior with an enhanced
+     defense / damage), ethereal, sockets and item level as the condition asks. */
+  function sampleOf(cond, opts) {
+    opts = opts || {};
+    const t = treeOf(cond, opts);
+    if (!t) return null;
+    const codes = codesOf(t.tree, t.F);
+    if (!codes.length) return null;
+    const sc = scopeOf(cond, codes, opts, false);
+    if (!sc) return null;
+    const cat = EZ.items.catalog();
+    const elite = (c) => (cat.bases.get(c).groups.indexOf("ELT") >= 0 ? 1 : 0);
+    const order = codes.map((c, k) => [c, k]).sort((a, b) => elite(b[0]) - elite(a[0]) || a[1] - b[1]).map((x) => x[0]);
+    const words = (sc.extra || "").split(/[\s()]+/);
+    const clsWord = Object.keys(EZ.engine.CLASS_ID).find((w) => words.indexOf(w) >= 0);
+    const cls = clsWord === undefined ? undefined : EZ.engine.CLASS_ID[clsWord];
+    const clvl = int(sc.clvl[0]) || (int(sc.clvl[1]) ? Math.min(90, int(sc.clvl[1])) : 90);
+    const [ia, ib] = ilvlOf(sc);
+    const ilvl = ia || (ib ? Math.min(85, ib) : 85);
+    const ed = edOf(sc);
+    const prefer = ["NORM", "MAG", "RARE", "SUP", "CRAFT", "UNI", "SET", "INF"];
+    for (const code of order.slice(0, 16)) {
+      const b = cat.bases.get(code);
+      const quals = !EZ.items.qualities(b) ? [undefined] : (sc.quals.length ? sc.quals : ["NORM"]).slice()
+        .sort((x, y) => (ed ? (y === "SUP") - (x === "SUP") : 0) || prefer.indexOf(x) - prefer.indexOf(y));
+      for (const quality of quals) {
+        const spec = {code, ilvl};
+        if (quality) spec.quality = quality;
+        if (sc.eth === "yes") spec.eth = true;
+        if (sc.id === "yes") spec.id = true;
+        if (sc.sockets.length) spec.sockets = sc.sockets[0];
+        if (ed && (b.armor || b.weapon)) spec.stats = [[b.armor ? 16 : 17, 0, ed]];
+        const it = EZ.items.make(Object.assign({place: "GROUND"}, spec));
+        if (!it) continue;
+        const lv = sc.levels.length ? sc.levels : [1];
+        const ok = lv.some((filtlvl) => EZ.engine.evalCondition(t.tree, it, {filtlvl, clvl, cls, diff: 2, mapid: 2,
+          charstats: {12: clvl}}, t.F) !== 0);
+        if (ok) return {spec, levels: sc.levels, cls, clvl: sc.clvl.some((x) => x !== "") ? clvl : undefined};
+      }
+    }
+    return null;
+  }
+
   /* A rule of the player's own (My rules, above Erazure's) as item changes: {list: [override]} or {why}. A hide
      becomes a hide (which takes Erazure's icons, chat lines and sounds too); a rule that decides the look becomes a
      show, with its text as the player's look unless it is just the name, and its alerts as alerts instead of
@@ -642,6 +687,7 @@ EZ.overrides = (function () {
 
   return {apply, one, cond, partials, contexts, read, alertText, valid, narrowness, overlap, beats, expand, qualsOf,
           socketsOf, edOf, ilvlOf, qualityWords, colorCases, colored, fromRule, scopeOf, topWords, treeOf, codesOf, alertsMeeting,
+          sampleOf,
           ACTIONS, MARKS, HUNT, QUALS, WHITE, generators};
 })();
 

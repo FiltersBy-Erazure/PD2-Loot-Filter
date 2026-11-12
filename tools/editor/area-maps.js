@@ -30,10 +30,10 @@ EZ.areas = EZ.areas || [];
         if (on) x[key].push(sid);
       });
 
-      // Erazure's map lines: the features of the Maps group (the same switches as on Options)
+      // Erazure's map lines: the features of the Maps group (the same switches as on Features)
       const feats = EZ.features.filter((f) => f.group === "Maps");
       const lines = h("section.fe-card", h("h3", "Erazure's map lines"),
-        h("p.fe-sub", "The lines Erazure writes under an identified map's name. The same switches are on Options."),
+        h("p.fe-sub", "The lines Erazure writes under an identified map's name. The same switches are on Features."),
         h("div.fe-stack", feats.map((f) => {
           const on = e.features && f.id in e.features ? !!e.features[f.id] : EZ.edits.featureDefault(f);
           return toggle(f.title, on, (v) => EZ.store.change((ed) => {

@@ -147,7 +147,7 @@ EZ.areas.push({
         h("h4", {style: {marginTop: ".9em"}}, "Tags on items (the short stat tags before their names)?"),
         h("div.fe-choice",
           option("All of Erazure's", "Affix, roll, runeword, charm, jewel, resistance and sell tags.", true, () => {}),
-          option("None", "Plain names: every kind of tag switched off (each can come back on Options).", false, () =>
+          option("None", "Plain names: every kind of tag switched off (each can come back on Features).", false, () =>
             EZ.store.change((e) => {
               e.features = Object.assign({}, e.features);
               for (const f of tags) if (EZ.edits.featureDefault(f)) e.features[f.id] = false;

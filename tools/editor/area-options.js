@@ -1,131 +1,190 @@
-/* Options: Erazure's own player options (050), Erazure's features to switch off, and the filter levels (their names,
-   and a level made to behave like another so it can be tuned on its own). */
+/* Quick Edits (until 2026-11-12 "Options"; the author: a name that says these are quick, simple, high-level edits):
+   Erazure's own player options (050), each group beside sample items drawn as the game draws them with the player's
+   choices (the author: "Show Rare Ethereal Druid Pelts" draws an Eth Blood Spirit, its Hide draws nothing), and the
+   filter levels (their names, and a level made to behave like another so it can be tuned on its own). Erazure's
+   features (tags and description lines to switch off) have their own area (area-features.js). */
 var EZ = typeof EZ !== "undefined" ? EZ : {};
 EZ.areas = EZ.areas || [];
-EZ.areas.push({
-  id: "options", title: "Options", icon: "⚙", order: 20, group: "b",
-  count: (e) => EZ.edits.countArea("options", e),
-  render(box, app) {
-    const {h, toggle, pill} = EZ.ui;
-    const F = EZ.filter, R = EZ.render;
-    const e = EZ.store.current().edits;
-    const lines = app.versionLines();
-    const sub = app.sub;
+(function () {
+  "use strict";
+  let sampleLevel = null;  // the filter level the samples are drawn at (the preview's at first)
+  const QUAL_WORD = {NORM: "Non-magical", SUP: "Superior", INF: "Low quality", MAG: "Magic", RARE: "Rare",
+                     CRAFT: "Crafted", SET: "Set", UNI: "Unique"};
+  const CLASS_NAME = ["Amazon", "Sorceress", "Necromancer", "Paladin", "Barbarian", "Druid", "Assassin"];
+  const cache = {key: null, samples: new Map()};
 
-    /* ---- Erazure's options (050) */
-    const groups = F.options(app.src, lines);
-    const setOption = (o, on) => EZ.store.change((ed) => {
-      ed.options = ed.options || {};
-      for (const id of o.choice) delete ed.options[id];
-      if (on) ed.options[o.id] = true;
-    }, {label: o.label});
-    const optionCards = groups.map((g) => {
-      const seen = new Set(), rows = [];
-      for (const o of g.options) {
-        if (seen.has(o.id)) continue;
-        if (o.choice.length > 1) {
-          const set = g.options.filter((x) => o.choice.indexOf(x.id) >= 0);
-          set.forEach((x) => seen.add(x.id));
-          const name = "fe-opt-" + g.title.replace(/\W+/g, "") + rows.length;
-          const chosen = set.find((x) => e.options && e.options[x.id]);
-          const radio = (label, checked, onpick, extra) => h("label.fe-radio",
-            h("input", {type: "radio", name, checked, onchange: onpick}), h("span", label), extra || null);
-          rows.push(h("fieldset.fe-choiceset", h("legend.fe-sub", "Pick one"),
-            radio("Erazure's own", !chosen, () => setOption(set[0], false), pill("default")),
-            set.map((x) => radio(x.label, chosen === x, () => setOption(x, true)))));
-        } else {
-          seen.add(o.id);
-          rows.push(toggle(o.label, !!(e.options && e.options[o.id]), (on) => setOption(o, on)));
-        }
+  /* The sample items of an option group: [{spec, levels, cls, clvl}] (at most 6, one per kind of item its rules are
+     for). */
+  function samplesOf(g, lines, aliases) {
+    if (cache.key !== lines) { cache.key = lines; cache.samples = new Map(); }
+    if (cache.samples.has(g.title)) return cache.samples.get(g.title);
+    const out = [], seen = new Set();
+    for (const o of g.options) {
+      const picks = o.lines.length > 1 ? [o.lines[0], o.lines[o.lines.length - 1]] : o.lines;
+      for (const i of picks) {
+        const r = EZ.filter.rule(lines[i].replace(/^\s*\/\/+\s*/, ""));
+        if (!r) continue;
+        let s = null;
+        try { s = EZ.overrides.sampleOf(r.cond, {aliases}); } catch (e) { s = null; }
+        if (!s) continue;
+        const key = JSON.stringify(s);
+        if (seen.has(key)) continue;
+        seen.add(key);
+        out.push(s);
+        if (out.length >= 6) break;
       }
-      const rulesShown = h("details.fe-rules", h("summary", "The rules these switch on"),
-        h("pre.fe-code", g.options.map((o) => o.lines.map((i) => lines[i].replace(/^\/\/+/, "")).join("\n")).join("\n")));
-      return h("div.fe-optgroup", h("h4", g.title), h("div.fe-stack", rows), rulesShown);
-    });
-
-    /* ---- features */
-    const fgroups = [];
-    for (const f of EZ.features) {
-      let g = fgroups.find((x) => x.title === f.group);
-      if (!g) fgroups.push(g = {title: f.group, list: []});
-      g.list.push(f);
+      if (out.length >= 6) break;
     }
-    const featureRow = (f) => {
-      const def = EZ.edits.featureDefault(f);
-      const pinned = e.features && f.id in e.features;
-      const on = pinned ? !!e.features[f.id] : def;
-      return h("div.fe-feature" + (on !== def ? ".is-changed" : ""),
-        toggle(f.title, on, (v) => EZ.store.change((ed) => {
-          ed.features = ed.features || {};
-          ed.features[f.id] = v;
-        }, {label: f.title}), {sub: f.sub}),
-        pinned ? h("button.fe-btn.ghost.small", {type: "button", title: "Follow Erazure again (its own choice, today " +
-          (def ? "on" : "off") + ")", onclick: () => EZ.store.change((ed) => { delete ed.features[f.id]; })},
-          "↺ Follow Erazure") : null);
-    };
+    cache.samples.set(g.title, out);
+    return out;
+  }
 
-    /* ---- filter levels */
-    const found = F.levels(lines);
-    const lv = e.levels || {};
-    const colorChoices = [["", "its own colors"], ["0", "White"], ["4", "Gold"], ["2", "Green"], ["3", "Blue"],
-      ["9", "Yellow"], ["8", "Orange"], ["1", "Red"], [";", "Purple"], ["7", "Tan"], ["5", "Gray"], [")", "Cyan"]];
-    const levelRows = found.map((l, k) => {
-      const n = k + 1;
-      const name = lv.names && lv.names[n] !== undefined ? lv.names[n] : l.text;
-      const plainName = R.plain(name);
-      const own = /^ÿc(.)/.exec(name);
-      const input = h("input", {type: "text", value: plainName, "aria-label": `Level ${n}'s name`,
-        style: {width: "100%"}});
-      const color = h("select", {"aria-label": `Level ${n}'s color`},
-        colorChoices.map(([c, t]) => h("option", {value: c, selected: lv.names && lv.names[n] !== undefined &&
-          own && own[1] === c && /^ÿc.[^ÿ]*$/.test(name)}, t)));
-      const saveName = () => EZ.store.change((ed) => {
-        ed.levels = ed.levels || {};
-        ed.levels.names = ed.levels.names || {};
-        const text = input.value.trim();
-        if (!text || (!color.value && text === R.plain(l.text))) delete ed.levels.names[n];
-        else ed.levels.names[n] = color.value ? "ÿc" + color.value + text : (text === R.plain(l.text) ? l.text : text);
-      }, {label: `level ${n}'s name`});
-      input.addEventListener("change", saveName);
-      color.addEventListener("change", saveName);
-      const like = h("select", {"aria-label": `Level ${n} behaves like`, onchange: (ev) => EZ.store.change((ed) => {
-        ed.levels = ed.levels || {};
-        ed.levels.copies = ed.levels.copies || {};
-        if (+ev.target.value === n) delete ed.levels.copies[n];
-        else ed.levels.copies[n] = +ev.target.value;
-      }, {label: `level ${n}`})},
-        found.map((x, kk) => h("option", {value: kk + 1, selected: (lv.copies && lv.copies[n] ? lv.copies[n] : n) === kk + 1},
-          kk + 1 === n ? "itself" : `level ${kk + 1}: ${R.plain(x.text)}`)));
-      return h("tr",
-        h("td.fe-num", String(n)),
-        h("td", R.levelName(name), lv.names && lv.names[n] !== undefined ? h("div.fe-sub", "Erazure: ", R.levelName(l.text)) : null),
-        h("td", h("div.fe-row", {style: {flexWrap: "nowrap"}}, input, color)),
-        h("td", like));
-    });
+  /* A sample's words: "Rare ethereal Blood Spirit, item level 85". */
+  function describe(s) {
+    const b = EZ.items.base(s.spec.code);
+    const name = b ? EZ.render.plain(b.name).split("\n")[0] : s.spec.code;
+    const bits = [(s.spec.quality ? QUAL_WORD[s.spec.quality] + " " : "") + (s.spec.eth ? "ethereal " : "") + name];
+    if (s.spec.sockets) bits.push(s.spec.sockets + " socket" + (s.spec.sockets === 1 ? "" : "s"));
+    if (s.spec.stats) bits.push(s.spec.stats[0][2] + "% enhanced " + (s.spec.stats[0][0] === 16 ? "defense" : "damage"));
+    if (b && (b.groups.indexOf("CHARM") >= 0 || s.spec.ilvl !== 85)) bits.push("item level " + s.spec.ilvl);
+    if (s.cls !== undefined) bits.push("as " + CLASS_NAME[s.cls] + "s");
+    return bits.join(", ");
+  }
 
-    box.append(
-      h("div.fe-area-head", h("div", h("h2", "Options"),
-        h("p.fe-sub", "Erazure's own choices, the parts of Erazure you can switch off, and the filter levels."))),
-      h("section.fe-card", {id: "fe-options"},
-        h("h3", "Erazure's options"),
-        h("p.fe-sub", "Erazure's own choices for potions, quivers, class items and more. Where two options cover the " +
-          "same item, the one higher in this list wins."),
-        groups.length ? h("div.fe-optgrid", optionCards) : h("p.fe-empty", "This version has no options.")),
-      h("section.fe-card", {id: "fe-features"},
-        h("h3", "Erazure's features"),
-        h("p.fe-sub", "Switch off what you don't want to see. Tags and description lines only: what shows, hides and " +
-          "notifies stays Erazure's. A switch you changed keeps your choice even when Erazure changes its own."),
-        fgroups.map((g) => h("div.fe-featgroup", h("h4", g.title), h("div.fe-stack", g.list.map(featureRow))))),
-      h("section.fe-card", {id: "fe-levels"},
-        h("h3", "Filter levels"),
-        h("p.fe-sub", "Rename a level, or make it behave like another level: then tune it on its own (Items, Alerts) " +
-          "and keep Erazure's levels as they are. BH reads 12 levels; level 0 always shows everything."),
-        h("div.fe-tablewrap", h("table.fe-levels",
-          h("thead", h("tr", h("th", "#"), h("th", "Shows as"), h("th", "Name and color"), h("th", "Behaves like"))),
-          h("tbody", levelRows)))));
-    if (sub) {
-      const el = box.querySelector("#fe-" + sub);
-      if (el) el.scrollIntoView();
-    }
-  },
-});
+  EZ.areas.push({
+    id: "quick", title: "Quick Edits", icon: "⚡", order: 20, group: "b",
+    count: (e) => EZ.edits.countArea("options", e),
+    render(box, app) {
+      const {h, toggle, pill} = EZ.ui;
+      const F = EZ.filter, R = EZ.render, P = EZ.preview;
+      const e = EZ.store.current().edits;
+      const lines = app.versionLines();
+      const sub = app.sub;
+      const aliases = EZ.core.bhAliases(EZ.core.bhEntries(lines));
+      const levelNames = F.levels(lines).map((l) => R.plain(l.text));
+      if (sampleLevel === null) sampleLevel = P && P.state && P.state.filtlvl ? P.state.filtlvl : 12;
+      const z = P && P.erazure ? P.erazure() : null, y = P && P.yours ? P.yours() || z : z;
+
+      /* ---- one sample item, drawn with the player's choices (and what Erazure's own does, where it differs) */
+      const outcome = (r) => JSON.stringify([r.name, r.hidden, r.icons.map((x) => [x.border, x.map, x.dot, x.px]), r.sound]);
+      const drawn = (r) => r.hidden ? h("span.fe-pv-hidden", r.invisible ? "hidden: nothing shows" : "hidden: icon only") :
+        R.label(r.name, {start: r.start});
+      const sampleBox = (s) => {
+        if (!z) return null;
+        const lv = s.levels.length && s.levels.indexOf(sampleLevel) < 0 ? s.levels[s.levels.length - 1] : sampleLevel;
+        const ctx = Object.assign(P.ctx(lv), s.cls !== undefined ? {cls: s.cls} : {},
+          s.clvl !== undefined ? {clvl: s.clvl, charstats: {12: s.clvl}} : {});
+        const it = EZ.items.make(Object.assign({place: "GROUND"}, s.spec));
+        if (!it) return null;
+        const a = EZ.engine.run(z.F, it, ctx, P.state.opts), b = EZ.engine.run(y.F, it, ctx, P.state.opts);
+        const changed = outcome(a) !== outcome(b);
+        return h("div.fe-optsample" + (changed ? ".is-changed" : ""),
+          h("div.fe-optsample-label", drawn(b), b.icons.length && !b.invisible ? P.iconCanvas(b.icons, 2) : null),
+          h("div.fe-sub.fe-small", describe(s) + (lv !== sampleLevel ? ` (level ${lv})` : "")),
+          changed ? h("div.fe-sub.fe-small.fe-optsample-was", "Erazure's own: ", a.hidden ? (a.invisible ? "hidden" :
+            "icon only") : R.label(a.name, {start: a.start})) : null);
+      };
+
+      /* ---- Erazure's options (050) */
+      const groups = F.options(app.src, lines);
+      const setOption = (o, on) => EZ.store.change((ed) => {
+        ed.options = ed.options || {};
+        for (const id of o.choice) delete ed.options[id];
+        if (on) ed.options[o.id] = true;
+      }, {label: o.label});
+      const optionRows = groups.map((g) => {
+        const seen = new Set(), rows = [];
+        for (const o of g.options) {
+          if (seen.has(o.id)) continue;
+          if (o.choice.length > 1) {
+            const set = g.options.filter((x) => o.choice.indexOf(x.id) >= 0);
+            set.forEach((x) => seen.add(x.id));
+            const name = "fe-opt-" + g.title.replace(/\W+/g, "") + rows.length;
+            const chosen = set.find((x) => e.options && e.options[x.id]);
+            const radio = (label, checked, onpick, extra) => h("label.fe-radio",
+              h("input", {type: "radio", name, checked, onchange: onpick}), h("span", label), extra || null);
+            rows.push(h("fieldset.fe-choiceset", h("legend.fe-sub", "Pick one"),
+              radio("Erazure's own", !chosen, () => setOption(set[0], false), pill("default")),
+              set.map((x) => radio(x.label, chosen === x, () => setOption(x, true)))));
+          } else {
+            seen.add(o.id);
+            rows.push(toggle(o.label, !!(e.options && e.options[o.id]), (on) => setOption(o, on)));
+          }
+        }
+        const rulesShown = h("details.fe-rules", h("summary", "The rules these switch on"),
+          h("pre.fe-code", g.options.map((o) => o.lines.map((i) => lines[i].replace(/^\/\/+/, "")).join("\n")).join("\n")));
+        const samples = samplesOf(g, lines, aliases).map(sampleBox).filter(Boolean);
+        return h("div.fe-optrow",
+          h("div.fe-optgroup", h("h4", g.title), h("div.fe-stack", rows), rulesShown),
+          h("div.fe-optsamples", {"aria-label": g.title + ": how the items look"},
+            samples.length ? samples : h("p.fe-sub.fe-small", "No sample item for these.")));
+      });
+      const levelPick = h("select", {"aria-label": "Draw the samples at filter level", onchange: (ev) => {
+        sampleLevel = +ev.target.value;
+        app.drawArea();
+      }}, levelNames.map((n, k) => h("option", {value: k + 1, selected: sampleLevel === k + 1}, `${k + 1} · ${n}`)));
+
+      /* ---- filter levels */
+      const found = F.levels(lines);
+      const lv = e.levels || {};
+      const colorChoices = [["", "its own colors"], ["0", "White"], ["4", "Gold"], ["2", "Green"], ["3", "Blue"],
+        ["9", "Yellow"], ["8", "Orange"], ["1", "Red"], [";", "Purple"], ["7", "Tan"], ["5", "Gray"], [")", "Cyan"]];
+      const levelRows = found.map((l, k) => {
+        const n = k + 1;
+        const name = lv.names && lv.names[n] !== undefined ? lv.names[n] : l.text;
+        const plainName = R.plain(name);
+        const own = /^ÿc(.)/.exec(name);
+        const input = h("input", {type: "text", value: plainName, "aria-label": `Level ${n}'s name`,
+          style: {width: "100%"}});
+        const color = h("select", {"aria-label": `Level ${n}'s color`},
+          colorChoices.map(([c, t]) => h("option", {value: c, selected: lv.names && lv.names[n] !== undefined &&
+            own && own[1] === c && /^ÿc.[^ÿ]*$/.test(name)}, t)));
+        const saveName = () => EZ.store.change((ed) => {
+          ed.levels = ed.levels || {};
+          ed.levels.names = ed.levels.names || {};
+          const text = input.value.trim();
+          if (!text || (!color.value && text === R.plain(l.text))) delete ed.levels.names[n];
+          else ed.levels.names[n] = color.value ? "ÿc" + color.value + text : (text === R.plain(l.text) ? l.text : text);
+        }, {label: `level ${n}'s name`});
+        input.addEventListener("change", saveName);
+        color.addEventListener("change", saveName);
+        const like = h("select", {"aria-label": `Level ${n} behaves like`, onchange: (ev) => EZ.store.change((ed) => {
+          ed.levels = ed.levels || {};
+          ed.levels.copies = ed.levels.copies || {};
+          if (+ev.target.value === n) delete ed.levels.copies[n];
+          else ed.levels.copies[n] = +ev.target.value;
+        }, {label: `level ${n}`})},
+          found.map((x, kk) => h("option", {value: kk + 1, selected: (lv.copies && lv.copies[n] ? lv.copies[n] : n) === kk + 1},
+            kk + 1 === n ? "itself" : `level ${kk + 1}: ${R.plain(x.text)}`)));
+        return h("tr",
+          h("td.fe-num", String(n)),
+          h("td", R.levelName(name), lv.names && lv.names[n] !== undefined ? h("div.fe-sub", "Erazure: ", R.levelName(l.text)) : null),
+          h("td", h("div.fe-row", {style: {flexWrap: "nowrap"}}, input, color)),
+          h("td", like));
+      });
+
+      box.append(
+        h("div.fe-area-head", h("div", h("h2", "Quick Edits"),
+          h("p.fe-sub", "Simple switches for whole kinds of items: show or hide them in one click, each beside an item " +
+            "drawn as the game will show it. And your filter levels' names."))),
+        h("section.fe-card", {id: "fe-options"},
+          h("div.fe-row", h("h3", {style: {margin: 0}}, "Show or hide kinds of items"), h("span.fe-bar-gap"),
+            h("label.fe-row.fe-small", h("span.fe-sub", "Items drawn at filter level"), levelPick)),
+          h("p.fe-sub", "Erazure's own choices for potions, quivers, class items and more. Where two of them cover the " +
+            "same item, the one higher in this list wins. Every hide is for the ground outside town: in town, your " +
+            "inventory and stash the items look as always."),
+          groups.length ? h("div.fe-optrows", optionRows) : h("p.fe-empty", "This version has no options.")),
+        h("section.fe-card", {id: "fe-levels"},
+          h("h3", "Filter levels"),
+          h("p.fe-sub", "Rename a level, or make it behave like another level: then tune it on its own (Items, Alerts) " +
+            "and keep Erazure's levels as they are. BH reads 12 levels; level 0 always shows everything."),
+          h("div.fe-tablewrap", h("table.fe-levels",
+            h("thead", h("tr", h("th", "#"), h("th", "Shows as"), h("th", "Name and color"), h("th", "Behaves like"))),
+            h("tbody", levelRows)))));
+      if (sub) {
+        const el = box.querySelector("#fe-" + sub);
+        if (el) el.scrollIntoView();
+      }
+    },
+  });
+})();

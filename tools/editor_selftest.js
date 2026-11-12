@@ -522,6 +522,50 @@
             items: items.length, cases: n, ms: Math.round(performance.now() - t0)};
   });
 
+  /* Quick Edits' samples (EZ.overrides.sampleOf): an item for each of Erazure's options (050), drawn with the option
+     as the game will draw it; the author's example, Show Rare Ethereal Druid Pelts, draws an ethereal Blood Spirit,
+     and an option's hide line is for the ground outside town only. */
+  test("quick", () => {
+    EZ.items.init({catalog: EXPECT.catalog});
+    const main = src.variants.find((v) => v.name === src.main);
+    const lines = C.variantLines(src, main);
+    const opts = {statMax: EXPECT.catalog.statMax, skillMax: EXPECT.catalog.skillMax, soundCount: EXPECT.soundCount};
+    const aliases = C.bhAliases(C.bhEntries(lines));
+    const t0 = performance.now(), bad = [], without = [];
+    let n = 0;
+    for (const g of EZ.filter.options(src, lines)) {
+      for (const o of g.options) {
+        const r = EZ.filter.rule(lines[o.lines[0]].replace(/^\s*\/\/+\s*/, ""));
+        const s = r && EZ.overrides.sampleOf(r.cond, {aliases});
+        if (s) n++; else without.push(o.id);
+      }
+    }
+    if (without.length > 2) bad.push("options without a sample item: " + without.join("; "));
+    const build = (options) => E.compile(EZ.edits.apply(src, EZ.store.normalize({name: "t", edits: {base: {style:
+      "erazure"}, options}}), lines).lines, opts);
+    const at = (F, spec, lv, place) => E.run(F, EZ.items.make(Object.assign({place: place || "GROUND"}, spec)),
+      {filtlvl: lv, clvl: 90, cls: 1, diff: 2, mapid: 2, charstats: {12: 90}}, {});
+    const pelts = EZ.filter.options(src, lines).find((g) => g.title === "Druid Pelts");
+    const show = pelts && pelts.options.find((o) => /^Show Rare Ethereal/.test(o.label));
+    const hide = pelts && pelts.options.find((o) => /^Hide Rare Non-Ethereal/.test(o.label));
+    if (!show || !hide) bad.push("no Show Rare Ethereal / Hide Rare Non-Ethereal Druid Pelts option");
+    else {
+      const s = EZ.overrides.sampleOf(EZ.filter.rule(lines[show.lines[0]].replace(/^\s*\/\/+\s*/, "")).cond, {aliases});
+      if (!s || s.spec.quality !== "RARE" || !s.spec.eth || EZ.items.base(s.spec.code).groups.indexOf("DRU") < 0) {
+        bad.push("the sample of " + show.id + ": " + JSON.stringify(s));
+      } else {
+        const F0 = build({}), F1 = build({[show.id]: true}), F2 = build({[hide.id]: true});
+        if (!at(F0, s.spec, 12).hidden) bad.push("Erazure shows a rare ethereal pelt on level 12 (the test expects it hidden)");
+        if (at(F1, s.spec, 12).hidden) bad.push(show.id + " on: the rare ethereal pelt is still hidden on level 12");
+        const plain = Object.assign({}, s.spec, {eth: false});
+        const h1 = at(F2, plain, 1);
+        if (!h1.hidden) bad.push(hide.id + " on: a rare non-ethereal pelt shows on level 1");
+        if (at(F2, plain, 1, "INVENTORY").hidden) bad.push(hide.id + " on: it is hidden in the inventory too");
+      }
+    }
+    return {fail: bad.length ? bad.join("\n  ") : null, samples: n, without, ms: Math.round(performance.now() - t0)};
+  });
+
   /* Wishlists tag the identified items that have the stats, and only them (tools/editor/wishlists.js). */
   test("wishlists", () => {
     EZ.items.init({catalog: EXPECT.catalog});

@@ -440,7 +440,7 @@ EZ.areas = EZ.areas || [];
           h("p.fe-sub", "Every line of your version as BH reads it. Open a rule to switch it off, change it, or add " +
             "your own lines before or after it."))),
         h("p.fe-note", "For changing Erazure's rules one by one. Your changes are kept by what each line says, so they " +
-          "follow Erazure's updates, and this page says when Erazure has changed a rule you changed. Options, Looks " +
+          "follow Erazure's updates, and this page says when Erazure has changed a rule you changed. Quick Edits, Features, Looks " +
           "and Alerts change many rules at once and never need checking."),
         changesCard(app), browser(app)]);
       if (app.sub && box.querySelector("#fe-" + app.sub)) box.querySelector("#fe-" + app.sub).scrollIntoView();

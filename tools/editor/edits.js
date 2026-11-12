@@ -295,8 +295,8 @@ EZ.edits = (function () {
   /* The player's changes, by area: {area: n} (a pinned choice counts even where it equals Erazure's today). */
   const counters = {
     options: (e) => Object.keys(e.options || {}).filter((k) => e.options[k]).length +
-      EZ.features.filter((f) => e.features && f.id in e.features && !!e.features[f.id] !== featureDefault(f)).length +
       Object.keys((e.levels || {}).names || {}).length + Object.keys((e.levels || {}).copies || {}).length,
+    features: (e) => EZ.features.filter((f) => e.features && f.id in e.features && !!e.features[f.id] !== featureDefault(f)).length,
     looks: (e) => Object.keys(e.looks || {}).length + Object.keys(e.remap || {}).length + Object.keys(e.icons || {}).length,
     alerts: (e) => Object.keys(e.sounds || {}).length +
       ["noSounds", "noIcons", "iconsOnly"].filter((k) => e.alerts && e.alerts[k]).length +

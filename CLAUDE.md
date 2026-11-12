@@ -823,7 +823,10 @@
   save builds the newest Erazure with them (`edits.js`, in this order: changes to Erazure's own rules `ops.js`
   (found again by `style_edits.Filter.find`'s stages, merged with `merge3`), 050's options (an option's hide line
   gets GROUND and !TOWN where it has neither, `groundOnly`: 2026-11-12, the author, every hide line the editor
-  writes is for the ground outside town, so items show as always in town, the inventory and the stash), features, looks, color
+  writes is for the ground outside town, so items show as always in town, the inventory and the stash; the area is
+  Quick Edits since 2026-11-12, the author, until then Options: each group of options beside sample items drawn as
+  the game will draw them with the player's choices, `sampleOf`, at a filter level the player picks; Erazure's
+  features have their own area, Features), features, looks, color
   remap, sounds, icons, alert switches, level names and copies, how loud each kind is `volume.js`, item overrides
   `overrides.js` (show / hide / mute / sound / icon / icon only / alert / look / replace / hunt, exact for BH: only
   the rules the engine says can match the items change), wishlists `wishlists.js` (the area is called Highlights
@@ -839,7 +842,9 @@
   cases and `tier_map.py` (39,702 cases), the golden edit sets of `tools/editor_fixtures/` against a Python
   reference (built on `build.py`'s own functions and `style_edits.py`; item overrides, wishlists and maps are
   checked by what they do and by `build.py`'s write-out verification), lint over every Erazure rule (no error),
-  the rule builder, wishlists, maps, the diff, and `level12`: a player's own level 12 (2026-11-12, the author: his 19
+  the rule builder, wishlists, maps, the diff, `quick` (a sample item for each of 050's options, the author's
+  example: Show Rare Ethereal Druid Pelts draws an ethereal Blood Spirit; 050's "Show Ethereal Non-Magic Throwing
+  Weapons" has none: its `NMAG !ID` never matches, non-magical items are identified), and `level12`: a player's own level 12 (2026-11-12, the author: his 19
   asks, from showing white bases with 0 or 3 sockets for Worldstone Shard corruption to hiding rare amulets under
   item level 90) as 18 item changes, 313 items as he meant them, levels 0-11 as Erazure's. An item change picks
   bases (one, a kind of the rule builder's groups, typed codes, then left out one by one), qualities (several, or
