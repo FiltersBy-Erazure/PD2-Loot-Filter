@@ -190,9 +190,10 @@ EZ.areas = EZ.areas || [];
       h("li", "The file is in ", h("code", "Diablo II\\ProjectD2\\filters\\local"), " and ends in ", h("code", ".filter"),
         " (not ", h("code", ".filter.txt"), ": Windows can hide that end)."),
       h("li", "In the launcher: Item Filter Profiles, ", h("b", "Local Filter"), ", your file, ", h("b", "Save Filter"), "."),
-      h("li", "In game, after every save: press ", h("kbd", "Numpad 0"), " to reload the filter."),
+      h("li", "After every change here: save to game again (or download again and replace the file), then press the " +
+        "reload filter key in game (", h("kbd", "Numpad 0"), " unless you changed it in Configure Controls)."),
       h("li", "Options, Loot Filter: ", h("b", "Enable Loot Filter"), " is on, and the filter level is the one you " +
-        "expect (", h("kbd", "Ctrl"), "+", h("kbd", "Numpad 0-9"), " jumps to levels 0-9). Level 0 shows everything."),
+        "expect. Level 0 shows everything."),
       h("li", "No sound: the game's ", h("b", "Drop Sounds"), " option; no chat line: ", h("b", "Detailed Notifications"),
         "; potions gone: the ", h("b", "Hide Healing / Mana Potions"), " options.")));
     return card;

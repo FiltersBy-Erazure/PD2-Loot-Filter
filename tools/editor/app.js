@@ -9,6 +9,7 @@ EZ.app = (function () {
   const SOURCE_FILE = "Erazure-Filter-Editor-Source.js";
   const STYLES = {erazure: null, minimal: "minimal.filter", corrlorized: "corrlorized.edits"};
   const STYLE_NAMES = {erazure: "Erazure", minimal: "Minimal", corrlorized: "Corrlorized"};
+  const RELOAD = "the reload filter key in game (Numpad 0 unless you changed it in Configure Controls)";
 
   const app = {src: null, data: null, root: null, area: "start", sub: "", els: {}, building: null};
 
@@ -141,11 +142,12 @@ EZ.app = (function () {
     });
     EZ.store.remember(EZ.store.current(), how === "download" ? "downloaded" : "saved to the game");
     if (how === "download") {
-      toast(h("span", "Downloaded ", h("b", built.name), ". Put it in Diablo II\\ProjectD2\\filters\\local and pick it " +
-              "in the launcher (Local Filter, then Save Filter)."), "good", {ms: 9000});
+      toast(h("span", "Downloaded ", h("b", built.name), ". Put it in Diablo II\\ProjectD2\\filters\\local (replace " +
+              "the one there) and pick it in the launcher once (Local Filter, then Save Filter); then press " + RELOAD + "."),
+            "good", {ms: 11000});
     } else {
-      toast(h("span", "Saved ", h("b", built.name), " in ", h("b", folder), ". In game, press Numpad 0 to reload it."),
-            "good", {ms: 7000});
+      toast(h("span", "Saved ", h("b", built.name), " in ", h("b", folder), ". Press " + RELOAD + "."),
+            "good", {ms: 8000});
     }
     redraw();
   }
@@ -213,7 +215,7 @@ EZ.app = (function () {
               h("li", "Pick the ", h("b", "local"), " folder (inside ProjectD2\\filters)."),
               h("li", "Once: in the launcher open Item Filter Profiles, click ", h("b", "Local Filter"), ", pick ",
                 h("b", built.name), " and click ", h("b", "Save Filter"), "."),
-              h("li", "After every save here, press ", h("kbd", "Numpad 0"), " in game: the filter reloads.")),
+              h("li", "After every save here, press " + RELOAD + ".")),
           ],
           buttons: [{text: "Download instead", onclick: () => resolve("download")},
                     {text: "Pick the folder", primary: true, onclick: () => resolve("pick")}],

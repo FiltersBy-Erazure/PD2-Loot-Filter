@@ -63,9 +63,14 @@ EZ.areas.push({
           : ["Download, and put the file in ", h("code", "Diablo II\\ProjectD2\\filters\\local"), "."]),
         h("li", "Once: in the launcher open ", h("b", "Item Filter Profiles"), ", click ", h("b", "Local Filter"),
           ", pick your file and click ", h("b", "Save Filter"), "."),
-        h("li", "In game: Options, Loot Filter, turn on ", h("b", "Enable Loot Filter"), " and pick a filter level (",
-          h("kbd", "Ctrl"), "+", h("kbd", "Numpad 0"), "–", h("kbd", "9"), " jump to levels 0–9)."),
-        h("li", "After every save here, press ", h("kbd", "Numpad 0"), " in game to reload the filter.")));
+        h("li", "In game: Options, Loot Filter, turn on ", h("b", "Enable Loot Filter"), " and pick a filter level. " +
+          "You can also set hotkeys to increase and decrease the filter level in the game's options."),
+        h("li", app.canSaveInPlace()
+          ? ["After a change here, ", h("b", "Save to game"), " again (it replaces your file), then press the reload " +
+             "filter key in game (", h("kbd", "Numpad 0"), " unless you changed it in Configure Controls)."]
+          : ["A change here doesn't reach your file by itself: after a change, ", h("b", "Download"), " again and " +
+             "replace the file in ", h("code", "filters\\local"), " (keep its name), then press the reload filter key " +
+             "in game (", h("kbd", "Numpad 0"), " unless you changed it in Configure Controls)."])));
 
     /* ---- profiles */
     const profiles = EZ.store.profiles();

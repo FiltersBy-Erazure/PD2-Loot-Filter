@@ -13,8 +13,10 @@ EZ.areas = EZ.areas || [];
     ["How do I get my filter into the game?", [
       "Save to game (Chrome and Edge) writes it straight into Diablo II\\ProjectD2\\filters\\local; other browsers " +
       "download it, and you put it there yourself.",
-      "Once: in the launcher, Item Filter Profiles, Local Filter, pick your file, Save Filter. After every save, press " +
-      "Numpad 0 in game to reload it."]],
+      "Once: in the launcher, Item Filter Profiles, Local Filter, pick your file, Save Filter.",
+      "A change here reaches the game only with the file: after a change, save to game again (or download again and " +
+      "replace the file in filters\\local), then press the reload filter key in game (Numpad 0 unless you changed it " +
+      "in Configure Controls)."]],
     ["Erazure has updated. What do I do?", [
       "Your local filter doesn't update itself. Open the editor and save again: the bar says when Erazure has changed " +
       "since your last save, and your changes go onto the new Erazure.",
@@ -25,9 +27,9 @@ EZ.areas = EZ.areas || [];
       "(the menu next to Save to game): clearing the browser's data takes them with it.",
       "Every file the editor saves holds your changes too: import it on any computer to get them back."]],
     ["How do filter levels work?", [
-      "Level 0 shows every item. Levels 1 to 12 are Erazure's, from the least strict to the most; Ctrl+Numpad 0-9 " +
-      "jumps to levels 0-9, and the in-game menu reaches 10-12. Quick Edits can rename a level or make it a copy of " +
-      "another, to change one level only."]],
+      "Level 0 shows every item. Levels 1 to 12 are Erazure's, from the least strict to the most: pick one in the " +
+      "game's Options, Loot Filter, or set hotkeys to increase and decrease the filter level in the game's options. " +
+      "Quick Edits can rename a level or make it a copy of another, to change one level only."]],
     ["Why does an item still have its own color?", [
       "The game colors some names itself (runes orange, the Worldstone Shard red, unique and set items by quality): " +
       "the filter writes its text after the game's color, so a look that doesn't set a color keeps the game's."]],

@@ -7121,6 +7121,7 @@ EZ.app = (function () {
   const SOURCE_FILE = "Erazure-Filter-Editor-Source.js";
   const STYLES = {erazure: null, minimal: "minimal.filter", corrlorized: "corrlorized.edits"};
   const STYLE_NAMES = {erazure: "Erazure", minimal: "Minimal", corrlorized: "Corrlorized"};
+  const RELOAD = "the reload filter key in game (Numpad 0 unless you changed it in Configure Controls)";
 
   const app = {src: null, data: null, root: null, area: "start", sub: "", els: {}, building: null};
 
@@ -7253,11 +7254,12 @@ EZ.app = (function () {
     });
     EZ.store.remember(EZ.store.current(), how === "download" ? "downloaded" : "saved to the game");
     if (how === "download") {
-      toast(h("span", "Downloaded ", h("b", built.name), ". Put it in Diablo II\\ProjectD2\\filters\\local and pick it " +
-              "in the launcher (Local Filter, then Save Filter)."), "good", {ms: 9000});
+      toast(h("span", "Downloaded ", h("b", built.name), ". Put it in Diablo II\\ProjectD2\\filters\\local (replace " +
+              "the one there) and pick it in the launcher once (Local Filter, then Save Filter); then press " + RELOAD + "."),
+            "good", {ms: 11000});
     } else {
-      toast(h("span", "Saved ", h("b", built.name), " in ", h("b", folder), ". In game, press Numpad 0 to reload it."),
-            "good", {ms: 7000});
+      toast(h("span", "Saved ", h("b", built.name), " in ", h("b", folder), ". Press " + RELOAD + "."),
+            "good", {ms: 8000});
     }
     redraw();
   }
@@ -7325,7 +7327,7 @@ EZ.app = (function () {
               h("li", "Pick the ", h("b", "local"), " folder (inside ProjectD2\\filters)."),
               h("li", "Once: in the launcher open Item Filter Profiles, click ", h("b", "Local Filter"), ", pick ",
                 h("b", built.name), " and click ", h("b", "Save Filter"), "."),
-              h("li", "After every save here, press ", h("kbd", "Numpad 0"), " in game: the filter reloads.")),
+              h("li", "After every save here, press " + RELOAD + ".")),
           ],
           buttons: [{text: "Download instead", onclick: () => resolve("download")},
                     {text: "Pick the folder", primary: true, onclick: () => resolve("pick")}],
@@ -7648,9 +7650,14 @@ EZ.areas.push({
           : ["Download, and put the file in ", h("code", "Diablo II\\ProjectD2\\filters\\local"), "."]),
         h("li", "Once: in the launcher open ", h("b", "Item Filter Profiles"), ", click ", h("b", "Local Filter"),
           ", pick your file and click ", h("b", "Save Filter"), "."),
-        h("li", "In game: Options, Loot Filter, turn on ", h("b", "Enable Loot Filter"), " and pick a filter level (",
-          h("kbd", "Ctrl"), "+", h("kbd", "Numpad 0"), "–", h("kbd", "9"), " jump to levels 0–9)."),
-        h("li", "After every save here, press ", h("kbd", "Numpad 0"), " in game to reload the filter.")));
+        h("li", "In game: Options, Loot Filter, turn on ", h("b", "Enable Loot Filter"), " and pick a filter level. " +
+          "You can also set hotkeys to increase and decrease the filter level in the game's options."),
+        h("li", app.canSaveInPlace()
+          ? ["After a change here, ", h("b", "Save to game"), " again (it replaces your file), then press the reload " +
+             "filter key in game (", h("kbd", "Numpad 0"), " unless you changed it in Configure Controls)."]
+          : ["A change here doesn't reach your file by itself: after a change, ", h("b", "Download"), " again and " +
+             "replace the file in ", h("code", "filters\\local"), " (keep its name), then press the reload filter key " +
+             "in game (", h("kbd", "Numpad 0"), " unless you changed it in Configure Controls)."])));
 
     /* ---- profiles */
     const profiles = EZ.store.profiles();
@@ -10721,9 +10728,10 @@ EZ.areas = EZ.areas || [];
       h("li", "The file is in ", h("code", "Diablo II\\ProjectD2\\filters\\local"), " and ends in ", h("code", ".filter"),
         " (not ", h("code", ".filter.txt"), ": Windows can hide that end)."),
       h("li", "In the launcher: Item Filter Profiles, ", h("b", "Local Filter"), ", your file, ", h("b", "Save Filter"), "."),
-      h("li", "In game, after every save: press ", h("kbd", "Numpad 0"), " to reload the filter."),
+      h("li", "After every change here: save to game again (or download again and replace the file), then press the " +
+        "reload filter key in game (", h("kbd", "Numpad 0"), " unless you changed it in Configure Controls)."),
       h("li", "Options, Loot Filter: ", h("b", "Enable Loot Filter"), " is on, and the filter level is the one you " +
-        "expect (", h("kbd", "Ctrl"), "+", h("kbd", "Numpad 0-9"), " jumps to levels 0-9). Level 0 shows everything."),
+        "expect. Level 0 shows everything."),
       h("li", "No sound: the game's ", h("b", "Drop Sounds"), " option; no chat line: ", h("b", "Detailed Notifications"),
         "; potions gone: the ", h("b", "Hide Healing / Mana Potions"), " options.")));
     return card;
@@ -10828,8 +10836,10 @@ EZ.areas = EZ.areas || [];
     ["How do I get my filter into the game?", [
       "Save to game (Chrome and Edge) writes it straight into Diablo II\\ProjectD2\\filters\\local; other browsers " +
       "download it, and you put it there yourself.",
-      "Once: in the launcher, Item Filter Profiles, Local Filter, pick your file, Save Filter. After every save, press " +
-      "Numpad 0 in game to reload it."]],
+      "Once: in the launcher, Item Filter Profiles, Local Filter, pick your file, Save Filter.",
+      "A change here reaches the game only with the file: after a change, save to game again (or download again and " +
+      "replace the file in filters\\local), then press the reload filter key in game (Numpad 0 unless you changed it " +
+      "in Configure Controls)."]],
     ["Erazure has updated. What do I do?", [
       "Your local filter doesn't update itself. Open the editor and save again: the bar says when Erazure has changed " +
       "since your last save, and your changes go onto the new Erazure.",
@@ -10840,9 +10850,9 @@ EZ.areas = EZ.areas || [];
       "(the menu next to Save to game): clearing the browser's data takes them with it.",
       "Every file the editor saves holds your changes too: import it on any computer to get them back."]],
     ["How do filter levels work?", [
-      "Level 0 shows every item. Levels 1 to 12 are Erazure's, from the least strict to the most; Ctrl+Numpad 0-9 " +
-      "jumps to levels 0-9, and the in-game menu reaches 10-12. Quick Edits can rename a level or make it a copy of " +
-      "another, to change one level only."]],
+      "Level 0 shows every item. Levels 1 to 12 are Erazure's, from the least strict to the most: pick one in the " +
+      "game's Options, Loot Filter, or set hotkeys to increase and decrease the filter level in the game's options. " +
+      "Quick Edits can rename a level or make it a copy of another, to change one level only."]],
     ["Why does an item still have its own color?", [
       "The game colors some names itself (runes orange, the Worldstone Shard red, unique and set items by quality): " +
       "the filter writes its text after the game's color, so a look that doesn't set a color keeps the game's."]],
