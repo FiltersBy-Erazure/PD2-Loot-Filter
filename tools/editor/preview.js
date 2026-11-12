@@ -517,7 +517,7 @@ EZ.preview = (function () {
         "so these count only once it is identified (switch Identified on above)."));
     }
     list.forEach(([sid, p, v], i) => {
-      wrap.appendChild(h("span.fe-chip", {title: "stat " + sid + (p ? ", " + p : "")}, EZ.items.statLabel(sid, p, v),
+      wrap.appendChild(h("span.fe-chip", {title: "stat " + sid + (p ? ", " + p : "")}, EZ.items.statText(sid, p, v),
         h("button.fe-btn.ghost.small", {type: "button", "aria-label": "Remove",
         onclick: () => set(() => { spec.stats.splice(i, 1); })}, "✕")));
     });
@@ -528,9 +528,26 @@ EZ.preview = (function () {
     const val = h("input.fe-pv-num", {type: "number", value: 10, "aria-label": "Its value"});
     const param = h("input.fe-pv-num", {type: "number", value: 0, title: "Its parameter (a skill, class or tab number)",
       "aria-label": "Its parameter"});
-    const addBtn = h("button.fe-btn.small", {type: "button", onclick: () => {
+    // the stat the box names: its name in the list, a stat number, else the first name that starts or holds the words
+    const named = () => {
+      const q = input.value.trim().toLowerCase();
+      if (!q) return undefined;
+      const exact = statChoices.find((c) => c.name.toLowerCase() === q);
+      if (exact) return exact.id;
       const m = /\(stat (\d+)\)\s*$/.exec(input.value) || /^\s*(\d+)\s*$/.exec(input.value);
-      const hit = m ? +m[1] : (statChoices.find((c) => c.name.toLowerCase().startsWith(input.value.trim().toLowerCase())) || {}).id;
+      if (m) return +m[1];
+      return (statChoices.find((c) => c.name.toLowerCase().startsWith(q)) ||
+              statChoices.find((c) => c.name.toLowerCase().indexOf(q) >= 0) || {}).id;
+    };
+    // a map mod picked from the list takes the value a map rolls (a monster's number for "Map contains ...")
+    input.addEventListener("input", () => {
+      const q = input.value.trim().toLowerCase();
+      const c = statChoices.find((x) => x.name.toLowerCase() === q);
+      const roll = c && EZ.maps && EZ.maps.rollOf ? EZ.maps.rollOf(c.id) : undefined;
+      if (roll !== undefined) val.value = roll;
+    });
+    const addBtn = h("button.fe-btn.small", {type: "button", onclick: () => {
+      const hit = named();
       if (hit === undefined) { EZ.ui.toast("Pick a stat from the list."); return; }
       set(() => {
         (spec.stats = spec.stats || []).push([hit, +param.value || 0, +val.value || 0]);

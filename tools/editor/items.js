@@ -446,9 +446,49 @@ EZ.items = (function () {
     return up.join("\n");
   }
 
-  /* The stats a player can add, by name: [{id, name}] (the game's own wording where it has one). */
-  /* The stats to pick from, as {id, name}: the ones an item of this kind can have (its affixes, automagic,
-     corruptions, crafts, and a unique's or set item's own: statPools), or every stat (all, or no item given). */
+  /* A stat with its value as the game words it on the item, without color codes ("Players have -20% Fire Resist",
+     "Map contains Stygian Dolls", "Magic Find: +40%"); one with a skill, class or tab, or with no line of its own, as
+     statLabel words it. */
+  const SKILL_STATS = new Set([83, 97, 107, 188, 195, 196, 197, 198, 199, 200, 201, 204]);
+  function statText(sid, p, v) {
+    const st = C.stats.get(sid);
+    if (!st || !st.func || SKILL_FUNCS.has(st.func) || SKILL_STATS.has(sid)) return statLabel(sid, p, v);
+    const t = cleanText(statLine(sid, p, v));
+    return /%[+0-9]*[a-z]/i.test(t) ? statLabel(sid, p, v) : t;
+  }
+
+  /* A stat's name in the picker: its line with X for the value (the sign a map's roll has: "Players have -X% Fire
+     Resist"), else its text without the value's codes, else its name in the game's tables. A stat about a skill,
+     class or tab says what its parameter (the box after the value) holds. */
+  const PARAM_HINT = {13: "the class's number", 14: "the tab's number", 15: "skill number × 64 + level",
+                      16: "the skill's number", 24: "skill number × 64 + level", 27: "the skill's number",
+                      28: "the skill's number"};
+  const SKILL_TEXT = {83: "+X to a class's skills", 97: "+X to a skill of any class", 107: "+X to a skill",
+                      151: "An aura when equipped", 188: "+X to a skill tab", 191: "A skill when equipped",
+                      204: "Charges of a skill"};
+  function choiceName(s) {
+    if (SKILL_FUNCS.has(s.func) || SKILL_STATS.has(s.id)) {
+      const t = SKILL_TEXT[s.id] || cleanText(s.text || s.name).replace(/%d%%/g, "X%")
+        .replace(/level %d %s/gi, "a skill").replace(/%d %s/g, "X a skill").replace(/%\+?d/g, "X").replace(/%s/g, "a skill")
+        .replace(/%%/g, "%");
+      const hint = SKILL_TEXT[s.id] || /%[ds]/.test(s.text || "") ? PARAM_HINT[s.func] : null;
+      return t[0].toUpperCase() + t.slice(1) + (hint ? " (parameter: " + hint + ")" : "");
+    }
+    if (s.func) {
+      const roll = EZ.maps && EZ.maps.rollOf ? EZ.maps.rollOf(s.id) : undefined;
+      const t = statText(s.id, 0, roll < 0 ? -7777 : 7777);
+      if (t) return t.replace(/7777/g, "X").replace(/^./, (c) => c.toUpperCase());
+    }
+    const t = s.text ? cleanText(s.text).replace(/%[a-z0-9+]+/gi, "").replace(/\s+/g, " ").trim() : "";
+    if (t) return t[0].toUpperCase() + t.slice(1);
+    // a stat the game shows no line for: its name in the game's tables, made readable ("item_extra_charges")
+    const n = String(s.name).replace(/^item_/, "").replace(/_/g, " ");
+    return n[0].toUpperCase() + n.slice(1) + " (no line in the game)";
+  }
+
+  /* The stats to pick from, as {id, name} by name: the ones an item of this kind can have (its affixes, automagic,
+     corruptions, crafts, and a unique's or set item's own: statPools), or every stat (all, or no item given). Two
+     that read the same get their stat number. */
   function statChoices(spec, all) {
     const b = spec && base(spec.code);
     let pool = null;
@@ -462,10 +502,12 @@ EZ.items = (function () {
     const out = [];
     for (const s of C.stats.values()) {
       if (pool && !pool.has(s.id)) continue;
-      const t = s.text ? cleanText(s.text).replace(/%[a-z0-9+]+/gi, "").replace(/\s+/g, " ").trim() : "";
-      out.push({id: s.id, name: (t ? t[0].toUpperCase() + t.slice(1) : s.name) + " (stat " + s.id + ")"});
+      out.push({id: s.id, name: choiceName(s)});
     }
-    return out;
+    const n = new Map();
+    for (const c of out) n.set(c.name.toLowerCase(), (n.get(c.name.toLowerCase()) || 0) + 1);
+    for (const c of out) if (n.get(c.name.toLowerCase()) > 1) c.name += " (stat " + c.id + ")";
+    return out.sort((x, y) => x.name.localeCompare(y.name));
   }
 
   /* A stat's name as the game words it on an item, its value as X ("+X to Vitality", "X% Deadly Strike", "Cannot Be
@@ -487,7 +529,8 @@ EZ.items = (function () {
                    b.groups.indexOf("JEWELRY") >= 0 || b.groups.indexOf("QUIVER") >= 0);
   }
 
-  return {init, base, unique, make, describe, picks, search, statChoices, statLabel, statLine, statLines, statTitle,
+  return {init, base, unique, make, describe, picks, search, statChoices, statLabel, statText, statLine, statLines,
+          statTitle,
           gameName, fromGame, hoverText, qualities, alwaysId,
           QUALITY_TINT, QUALITY_NAMES,
           catalog: () => C};

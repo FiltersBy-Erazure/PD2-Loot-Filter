@@ -103,7 +103,8 @@ EZ.maps = (function () {
   /* Whether a mod's text shows its value (a guest monster or splash damage shows none: no roll to read). */
   const hasValue = (sid) => /X/.test(name(sid));
 
-  return {init, apply, hides, count, name, codes, choices, ids, mapCodes, levelsOf, hasValue, BONUS, MAPS, SECTION};
+  return {init, apply, hides, count, name, codes, choices, ids, mapCodes, levelsOf, hasValue, BONUS, MAPS, SECTION,
+          rollOf: (sid) => samples.get(sid)};
 })();
 
 if (EZ.edits) {
