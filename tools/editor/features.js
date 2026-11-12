@@ -47,7 +47,7 @@ EZ.features = [
    sections: ["315-sell-value-tags.filter"], parts: true},
   {id: "small-sell", group: "Tags", title: "Sell tags on small items Erazure hides",
    sub: "On filter levels 1-4 (the less strict ones), a small non-magical item that sells for a lot shows as its ($) " +
-        "tag instead of hiding. Off: Erazure hides it there.",
+        "tag instead of being hidden. Switched off, it stays hidden there.",
    aliases: ["SMALL_SELL_BASE", "SMALL_SELL_GOLD", "SMALL_SELL_GRAY", "SMALL_SELL_NK"],
    samples: [{spec: {code: "dgr", sockets: 0, sell: 30000}, level: 1, clvl: 48}]},
   {id: "resist-tags", group: "Descriptions", title: "Resistance lines",
@@ -93,13 +93,14 @@ EZ.features = [
    sub: "A map's experience tag (2.0x Experience) and the experience at your level.",
    sections: ["146-map-experience.filter"], parts: "text"},
   {id: "grail-looks", group: "Grail", title: "Grail looks of undiscovered items",
-   sub: "Unique and set items you haven't discovered look different and always show. Off: they look and hide like " +
-        "discovered ones (the game's Force Show Undiscovered option still shows hidden ones with the game's name).",
+   sub: "Unique and set items you haven't discovered look different and always show. Switched off, they look like " +
+        "discovered ones and are hidden where those are (the game's Force Show Undiscovered option still shows the " +
+        "hidden ones, with the game's name).",
    aliases: ["GRAIL_NEW"],
    samples: [{spec: {code: "cap", quality: "UNI", discovered: false}, level: 12},
              {spec: {code: "cap", quality: "UNI", discovered: false}, level: 1}]},
   {id: "lowest-sockets", group: "Strictness", title: "Level 1 shows every non-magical base with 2+ sockets",
-   sub: "On filter level 1 (Lowest Strictness). Off: level 1 hides them by character level, as level 2 " +
-        "(Relaxed Filtering) does.", aliases: ["LOWEST_SOCKETED_BASE"],
+   sub: "Filter level 1 (Lowest Strictness) shows them at every character level. Switched off, it hides them once " +
+        "your character reaches a certain level, as level 2 (Relaxed Filtering) does.", aliases: ["LOWEST_SOCKETED_BASE"],
    samples: [{spec: {code: "lbw", sockets: 4}, level: 1, clvl: 40}]},
 ];

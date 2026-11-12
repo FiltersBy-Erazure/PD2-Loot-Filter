@@ -236,7 +236,8 @@ EZ.areas.push({
       const shown = FA.drawn(rules, vals, 3);
       if (!shown.length) return null;
       return h("div.fe-featpreview", h("span.fe-sub.fe-small", on ? "It draws, for example:" :
-        "Switched on, it would draw, for example:"), shown, on ? h("span.fe-sub.fe-small", "Off, these go.") : null);
+        "Switched on, it would draw, for example:"), shown, on ? h("span.fe-sub.fe-small",
+        `Switched off, items show without these ${f.group === "Tags" ? "tags" : "lines"}.`) : null);
     };
 
     /* The feature's parts, each its own switch, with what it draws. */
@@ -249,7 +250,7 @@ EZ.areas.push({
         const q = (area.query[f.id] || "").trim().toLowerCase();
         const list = parts.filter((p) => !q || titleOf(p).toLowerCase().indexOf(q) >= 0);
         EZ.ui.fill(body,
-          on ? null : h("p.fe-note.fe-small", "The switch above is off, so all of them are: switch it on to choose."),
+          on ? null : h("p.fe-note.fe-small", "The switch above is off, so these are all off too. Switch it on to choose."),
           h("div.fe-row.fe-small.fe-featparts-tools",
             parts.length > 12 ? h("input", {type: "search", value: area.query[f.id] || "", placeholder: "Find a part…",
               "aria-label": "Find a part of " + f.title, oninput: (ev) => { area.query[f.id] = ev.target.value; draw(); }}) : null,
@@ -272,8 +273,8 @@ EZ.areas.push({
         if (wrap.open) { area.open.add(f.id); if (!body.childNodes.length) draw(); } else area.open.delete(f.id);
       });
       if (wrap.open) draw();
-      wrap.append(h("summary", `Choose its parts: ${parts.length}` + (off.size ? `, ${off.size} switched off` : "")),
-        body);
+      wrap.append(h("summary", `Choose its parts (${parts.length}` + (off.size ? `, ${off.size} switched off` : "") +
+        ")"), body);
       return wrap;
     };
 
@@ -301,11 +302,11 @@ EZ.areas.push({
     };
     box.append(
       h("div.fe-area-head", h("div", h("h2", "Features"),
-        h("p.fe-sub", "Switch off what you don't want to see. Most switches are tags and description lines only, so " +
-          "what shows, hides and alerts stays Erazure's; the Grail and Strictness switches and the sell tags on small " +
-          "items also change what shows. Under each switch: what it draws (its numbers an example), and where it has " +
-          "parts, each part its own switch: Charm tags' Gold Find, a highlight's skill. Erazure's map lines are on Maps " +
-          "too."))),
+        h("p.fe-sub", "Switch off what you don't want to see. Most of these switches only add tags and description " +
+          "lines, so they don't change what shows, what's hidden or what alerts you. The Grail and Strictness " +
+          "switches, and the sell tags on small items, do change what shows. Under each switch are a few examples of " +
+          "what it draws (with sample numbers). Where a switch has parts, such as the Gold Find tag among the Charm " +
+          "tags or one skill's highlight, each part has its own switch. You'll also find Erazure's map lines on Maps."))),
       h("section.fe-card", {id: "fe-features"},
         groups.map((g) => h("div.fe-featgroup", h("h4", g.title), h("div.fe-stack", g.list.map(row))))));
     if (app.sub) {
