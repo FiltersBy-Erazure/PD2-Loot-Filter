@@ -59,8 +59,14 @@ EZ.areas = EZ.areas || [];
 
       // the mods: the bonuses (good for the player, and most maps roll one) take a gold line only; every other mod a
       // red warning line or a hide. One table layout for all, so the columns line up from group to group.
-      const stats = (app.data.mapStats || []).map(([sid, prop, lo, hi]) => ({sid, prop, lo, hi, name: EZ.maps.name(sid)}));
-      const bonus = stats.filter((s) => EZ.maps.BONUS.has(s.sid)), rest = stats.filter((s) => !EZ.maps.BONUS.has(s.sid));
+      // (a stat that rolls lower on some maps and higher on others has a line for each side: its lower one is warned
+      // of, its higher one marked)
+      const stats = (app.data.mapStats || []).map(([sid, prop, lo, hi]) => {
+        const side = EZ.maps.mixed(sid) ? (Math.max(lo, hi) < 0 ? -1 : 1) : 0;
+        return {sid, prop, lo, hi, side, name: EZ.maps.name(sid, side)};
+      });
+      const isBonus = (s) => s.side ? s.side > 0 : EZ.maps.BONUS.has(s.sid);
+      const bonus = stats.filter(isBonus), rest = stats.filter((s) => !isBonus(s));
       const groups = GROUPS.map(([pre, title]) => [title, rest.filter((s) => (pre ? s.prop.startsWith(pre) :
         !GROUPS.some(([p]) => p && s.prop.startsWith(p))))]).filter(([, list]) => list.length);
       const rolls = (s) => !EZ.maps.hasValue(s.sid) ? "" : s.lo === s.hi ? String(Math.abs(s.lo)) :

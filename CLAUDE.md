@@ -968,6 +968,13 @@
   last build, and Changes' every-item table keeps Erazure's runs and gives an item whose rules read alike in both
   filters Erazure's run (`preview.pairs`, `engine.sameRules`). An edit then took 0.1-0.2 s on the author's PC
   instead of 1-1.5 s.
+  Map mods (the Maps area, and the preview's stat picker for maps): a map's spawnable affixes and its corruptions
+  (2026-11-12, the author: +1 area level comes only from a corruption), `docs/pd2-map-corruptions.tsv` (CubeMain's
+  rows that set a map's corruptnum; `python tools/pd2_data.py --map-corruptions "<Diablo II folder>"`, and
+  `--tier-data` / `--extract` write it too; `docs/pd2-corruptions.tsv` leaves maps out). Players' attack and cast
+  speed roll lower on one corruption and higher on another: a line each, warned of below 0 (`STAT451<0`), marked
+  above (`EZ.maps.mixed`). The stat picker words every stat as the game does, X for the value
+  (`EZ.items.statText`).
 - The website's **Resources** tab (2026-11-02, the author: reference pages players can look things up in, more to
   come): `website/docs/resources/index.md` lists them, a grid card each (mkdocs.yml has `navigation.indexes`, so it is
   the tab's own page). A resource is a page written by hand, `website/resources/<Name>.html` (its data, styles and

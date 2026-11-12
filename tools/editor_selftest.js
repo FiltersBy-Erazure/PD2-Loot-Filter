@@ -676,6 +676,7 @@
      identified maps with a mod or a low experience multiplier, nothing else changed. */
   test("maps", () => {
     EZ.items.init({catalog: EXPECT.catalog});
+    EZ.maps.init({mapStats: EXPECT.mapStats});
     const main = src.variants.find((v) => v.name === src.main);
     const lines = C.variantLines(src, main);
     const opts = {statMax: EXPECT.catalog.statMax, skillMax: EXPECT.catalog.skillMax, soundCount: EXPECT.soundCount};
@@ -693,6 +694,17 @@
     if (!at(F, {id: true, stats: [[440, 0, 391]]}).invisible) bad.push("a map with Hell Bovines isn't hidden");
     if (at(F, {id: true, stats: [[442, 0, 1111]]}).hidden) bad.push("a map without Hell Bovines is hidden");
     if (at(F, {id: true, stats: [[440, 0, 391]]}, 1).hidden) bad.push("a map with Hell Bovines is hidden in town");
+    // players' attack speed: one corruption lowers it, another raises it; a warning is for the lower, a mark for the
+    // higher (and +1 area level, a corruption's, can be marked)
+    if (!EZ.maps.mixed(451) || EZ.maps.mixed(374)) bad.push("players' attack speed isn't the one stat with two sides");
+    F = build({warn: [451], mark: [374]});
+    const lower = at(F, {id: true, stats: [[451, 0, -25]]}).desc, higher = at(F, {id: true, stats: [[451, 0, 30]]}).desc;
+    if (lower.indexOf("ÿc1! ") < 0 || higher.indexOf("ÿc1! ") >= 0) bad.push("the warning on lower attack speed: " +
+      JSON.stringify([lower, higher]));
+    if (at(F, {id: true, stats: [[374, 0, 1]]}).desc.indexOf("+ Area Level") < 0) bad.push("no mark on +1 area level");
+    F = build({mark: [451]});
+    if (at(F, {id: true, stats: [[451, 0, 30]]}).desc.indexOf("+ Players have") < 0 ||
+        at(F, {id: true, stats: [[451, 0, -25]]}).desc.indexOf("+ Players have") >= 0) bad.push("the mark on higher attack speed");
     // a map the player never picks up: its non-magical ones hidden on the ground outside town, on the levels picked
     const skip = EZ.maps.choices()[0].maps[0].code;
     F = build({hideMaps: [skip], hideMapsLevels: [11, 12]});
@@ -708,7 +720,7 @@
     if (run({quality: "MAG"}, 12).hidden !== base12.hidden) bad.push("a magic " + skip + " changed");
     if (EZ.maps.choices().some((t) => t.maps.some((x) => EZ.items.base(x.code).maptier !== t.tier)) ||
         EZ.maps.choices().reduce((n, t) => n + t.maps.length, 0) < 25) bad.push("the T1-T3 map list is off");
-    return {fail: bad.length ? bad.join("\n  ") : null, map: code, hidden: skip, cases: 11};
+    return {fail: bad.length ? bad.join("\n  ") : null, map: code, hidden: skip, cases: 16};
   });
 
   /* The Changes area's line diff (tools/editor/diff.js): it rebuilds both sides, pairs only equal lines and is as

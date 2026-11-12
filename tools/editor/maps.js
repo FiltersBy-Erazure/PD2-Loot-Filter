@@ -14,12 +14,20 @@ EZ.maps = (function () {
   const MAPS = "(MAPTIER>0 OR UNIQUE_MAPS)";
   const WHITE = ["INF", "NORM", "SUP"];
 
-  /* A roll of each map stat (the page's data: the affixes' highest), so a stat's text reads as on a map ("-38% Fire
-     Resist" is "less Fire Resist"). */
-  const samples = new Map();
+  /* A roll of each map stat (the page's data: the affixes' and corruptions' highest), so a stat's text reads as on a
+     map ("-38% Fire Resist" is "less Fire Resist"); signs: 1 when it rolls below 0, 2 above, 3 both (players' attack
+     and cast speed: a corruption lowers them, another raises them; the page's data has a line for each). */
+  const samples = new Map(), signs = new Map();
   function init(data) {
-    for (const [sid, , lo, hi] of (data && data.mapStats) || []) samples.set(sid, Math.abs(hi) >= Math.abs(lo) ? hi : lo);
+    for (const [sid, , lo, hi] of (data && data.mapStats) || []) {
+      samples.set(sid, Math.abs(hi) >= Math.abs(lo) ? hi : lo);
+      signs.set(sid, (signs.get(sid) || 0) | (Math.max(lo, hi) < 0 ? 1 : 2));
+    }
   }
+  /* Whether a map stat rolls both below and above 0: a warning (or a hide) is for the lower, a mark for the higher. */
+  const mixed = (sid) => signs.get(sid) === 3;
+  /* The condition of a warning or hide (bad) or a mark: the map rolls the mod (for a mixed one, on that side). */
+  const rolls = (sid, bad) => mixed(sid) ? "STAT" + sid + (bad ? "<0" : ">0") : "!STAT" + sid + "=0";
 
   const ids = (list) => [...new Set((Array.isArray(list) ? list : []).map((x) => parseInt(x, 10)).filter((n) => n > 0 && n < 4096))];
   /* The map codes the player hides (item codes, as the edit set keeps them). */
@@ -30,15 +38,16 @@ EZ.maps = (function () {
 
   /* A mod's name as the game words it on a map, its rolled value as X ("Monsters have X% of Physical Damage as Extra
      Poison Damage over 5 Seconds", "Players have -X Drain Life"): the stat's own text with a stand-in value of the
-     roll's sign, so fixed numbers and the minus sign stay. */
-  function name(sid) {
-    const roll = samples.get(sid) || 1;
+     roll's sign (sign: -1 or 1 for a side of a mixed one), so fixed numbers and the minus sign stay. */
+  function name(sid, sign) {
+    const roll = sign || samples.get(sid) || 1;
     const line = EZ.items.catalog() ? EZ.items.statLine(sid, 0, roll < 0 ? -7777 : 7777) : "";
     const plain = String(line || "").replace(/ÿc./g, "").replace(/7777/g, "X").replace(/\s+/g, " ")
       .replace(/:\s*$/, "").trim();
     return plain || "stat " + sid;
   }
-  /* The warning line's words (in game, under the map's own line with the value): the name without its X. */
+  /* The warning line's words (in game, under the map's own line with the value): the name without its X (a mixed
+     stat's red warning shows only when it rolls lower, its gold mark only when higher). */
   const lineName = (sid) => name(sid).replace(/[+-]?X%?\s*(?:to |of )?/g, "").replace(/\s+/g, " ").trim();
 
   /* The map item codes (the catalog's map bases) and those with an experience multiplier (146's MXR aliases). */
@@ -65,7 +74,7 @@ EZ.maps = (function () {
     const hide = ids(m.hide);
     if (hide.length) {
       const c = codes(ctx.lines);
-      for (const sid of hide) out.push({action: "hide", tag: "maps", scope: {codes: c.all, id: "yes", extra: "!STAT" + sid + "=0"}});
+      for (const sid of hide) out.push({action: "hide", tag: "maps", scope: {codes: c.all, id: "yes", extra: rolls(sid, true)}});
     }
     const cat = EZ.items.catalog();
     const skip = mapCodes(m.hideMaps).filter((c) => { const b = cat.bases.get(c); return b && b.map; });
@@ -82,9 +91,9 @@ EZ.maps = (function () {
     const secs = EZ.filter.sections(ctx.src, ctx.lines);
     const range = secs[SECTION];
     if (!range) { ctx.unplaced("maps", "Map warnings", "Erazure moved its map lines"); return; }
-    const line = (sid, look) => "ItemDisplay[ID " + MAPS + " !STAT" + sid + "=0]:%NAME%{%NAME%%CL%" + look +
+    const line = (sid, look, bad) => "ItemDisplay[ID " + MAPS + " " + rolls(sid, bad) + "]:%NAME%{%NAME%%CL%" + look +
       lineName(sid).replace(/[{}]/g, "").replace(/\/\/+/g, "/") + "}%CONTINUE%";
-    const lines = warn.map((sid) => line(sid, "%RED%! ")).concat(mark.map((sid) => line(sid, "%GOLD%+ ")));
+    const lines = warn.map((sid) => line(sid, "%RED%! ", true)).concat(mark.map((sid) => line(sid, "%GOLD%+ ", false)));
     ctx.lines.splice(range[0], 0, MARKS[0], ...lines, MARKS[1]);
   }
 
@@ -98,13 +107,14 @@ EZ.maps = (function () {
   }
 
   /* The bonuses a map rolls (more magic find, gold, experience, density, rarity, an area level, more drops, an extra
-     boss): good for the player, and most maps roll one, so the Maps area offers them a gold line only. */
-  const BONUS = new Set([370, 371, 372, 373, 374, 375, 494, 495, 496, 497, 498]);
+     boss, players' faster movement): good for the player, and most maps roll one, so the Maps area offers them a gold
+     line only; a mixed stat's higher side (players' faster attacks and casts) is a bonus too. */
+  const BONUS = new Set([370, 371, 372, 373, 374, 375, 457, 494, 495, 496, 497, 498]);
   /* Whether a mod's text shows its value (a guest monster or splash damage shows none: no roll to read). */
   const hasValue = (sid) => /X/.test(name(sid));
 
-  return {init, apply, hides, count, name, codes, choices, ids, mapCodes, levelsOf, hasValue, BONUS, MAPS, SECTION,
-          rollOf: (sid) => samples.get(sid)};
+  return {init, apply, hides, count, name, codes, choices, ids, mapCodes, levelsOf, hasValue, mixed, BONUS, MAPS,
+          SECTION, rollOf: (sid) => samples.get(sid)};
 })();
 
 if (EZ.edits) {

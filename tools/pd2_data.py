@@ -66,6 +66,7 @@ STAT_TEXT_FILE = ROOT / "docs" / "pd2-stat-text.tsv"
 BASE_STATS_FILE = ROOT / "docs" / "pd2-base-stats.tsv"
 VENDORS_FILE = ROOT / "docs" / "pd2-vendors.tsv"
 TOOLTIP_STRINGS_FILE = ROOT / "docs" / "pd2-tooltip-strings.tsv"
+MAP_CORRUPTIONS_FILE = ROOT / "docs" / "pd2-map-corruptions.tsv"
 BS = chr(92)
 
 # Stats the filter has a name for (the generator's vocabulary); others are STAT<id>
@@ -1040,6 +1041,49 @@ def mod_stats(game, prop, par, lo, hi):
     return out
 
 
+def write_map_corruptions(game, stamp):
+    """docs/pd2-map-corruptions.tsv: what corrupting a T1-T4 map adds. CubeMain.txt's rows on a map's item type (t1me
+    to t4me) that set its corruptnum (op 16 on stat 361) are one roll, each row up to its value; those that keep the
+    map (output useitem) add their mods, the others turn it into a unique map. docs/pd2-corruptions.tsv leaves maps
+    out (its tools read item stats only). tools/editor_map.py reads this: the editor's Maps area and its stat
+    picker (2026-11-12, the author: +1 area level comes only from a map's corruption)."""
+    props = read_rows(game.pd2.read(BS.join(["data", "global", "excel", "Properties.txt"])).decode("latin-1"))
+    prop_index = {r["code"].strip().lower(): i for i, r in enumerate(props) if r["code"].strip()}
+    rolls = {}
+    for r in game.cube:
+        first = r.get("input 1", "").strip().strip('"')
+        if (r.get("enabled", "").strip() != "1" or r.get("op", "").strip() != "16" or
+                r.get("param", "").strip() != "361" or not re.fullmatch(r"t[1-4]me", first)):
+            continue
+        rolls.setdefault(first, []).append(r)
+    out = ["# PD2 map corruptions (CubeMain.txt rows that set a T1-T4 map's corruptnum, op 16 on stat 361) from",
+           f"# pd2data.mpq, extracted {stamp} by tools/pd2_data.py: the map's item type, the outcome (STAT360=n), its",
+           "# chance (the roll's rows go up to their value; the rows that turn the map into a unique map aren't",
+           "# listed) and its mods as docs/pd2-magic-affixes.tsv has them: [property, its Properties.txt row, param,",
+           "# min, max, [[stat id, stat param, low, high], ...]].",
+           "input\toutcome\tchance\tmods"]
+    for first in sorted(rolls):
+        rows, prev = rolls[first], 0
+        top = max(to_int(r.get("value", "")) for r in rows) or 1
+        for r in rows:
+            v = to_int(r.get("value", ""))
+            share, prev = (v - prev) / top, v
+            if r.get("output", "").strip().strip('"') != "useitem":
+                continue
+            outcome, mods = "", []
+            for k in range(1, 6):
+                code = r.get(f"mod {k}", "").strip()
+                par, lo, hi = r.get(f"mod {k} param", ""), r.get(f"mod {k} min", ""), r.get(f"mod {k} max", "")
+                if code == "corrupt":
+                    outcome = str(to_int(lo))
+                elif code and code != "corruptnum":
+                    mods.append([code, prop_index.get(code.lower(), -1), par.strip(), to_int(lo), to_int(hi),
+                                 mod_stats(game, code, par, lo, hi)])
+            out.append("\t".join([first, outcome, f"{share:.4f}", compact(mods)]))
+    MAP_CORRUPTIONS_FILE.write_text("\n".join(out) + "\n", encoding="utf-8", newline="\n")
+    print(f"wrote {MAP_CORRUPTIONS_FILE.relative_to(ROOT)} ({len(out) - 6} outcomes)")
+
+
 def extract_shop_data(game_dir, game=None):
     """For tools/shop_map.py (the Skill & Shop Highlights page's hover boxes and prices): docs/pd2-magic-affixes.tsv,
     docs/pd2-stat-text.tsv, docs/pd2-base-stats.tsv, docs/pd2-vendors.tsv, docs/pd2-tooltip-strings.tsv, and the
@@ -1085,6 +1129,7 @@ def extract_shop_data(game_dir, game=None):
                                  [",".join(itypes), ",".join(etypes), "", "", "", "[]"]))
     MAGIC_AFFIXES_FILE.write_text("\n".join(out) + "\n", encoding="utf-8", newline="\n")
     print(f"wrote {MAGIC_AFFIXES_FILE.relative_to(ROOT)} ({len(out) - 5} affixes)")
+    write_map_corruptions(game, stamp)
 
     cols = ["descpriority", "descfunc", "descval", "descstrpos", "descstrneg", "descstr2", "dgrp", "dgrpfunc",
             "dgrpval", "dgrpstrpos", "dgrpstrneg", "dgrpstr2", "Encode", "Add", "Multiply", "Divide", "ValShift",
@@ -1222,6 +1267,7 @@ def main():
     ap.add_argument("--tier-data", metavar="DIABLO_II_FOLDER")
     ap.add_argument("--shop-data", metavar="DIABLO_II_FOLDER")
     ap.add_argument("--bases", metavar="DIABLO_II_FOLDER")
+    ap.add_argument("--map-corruptions", metavar="DIABLO_II_FOLDER")
     ap.add_argument("--report", metavar="NAME")
     args = ap.parse_args()
     if args.extract:
@@ -1232,6 +1278,8 @@ def main():
         extract_shop_data(args.shop_data)
     elif args.bases:
         write_bases(Game(Path(args.bases)), datetime.date.today().isoformat())
+    elif args.map_corruptions:
+        write_map_corruptions(Game(Path(args.map_corruptions)), datetime.date.today().isoformat())
     if args.report is not None:
         for it in load_items():
             if args.report.lower() in it["name"].lower():
@@ -1247,7 +1295,8 @@ def main():
                 for text, p in zip(rw["runetexts"], rw["runestats"]):
                     print(f"    {text:48} " + "  ".join(f"{c} {lo}" + (f"-{hi}" if hi != lo else "") for c, lo, hi in p))
                 print(f"    a white base can bring: {', '.join(rw['addable']) or 'nothing'}")
-    if not args.extract and not args.tier_data and not args.shop_data and not args.bases and args.report is None:
+    if (not args.extract and not args.tier_data and not args.shop_data and not args.bases and not args.map_corruptions
+            and args.report is None):
         ap.print_help()
 
 

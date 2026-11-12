@@ -191,6 +191,8 @@ def stat_pools(bases, shift):
         ids = {sid for prop in json.loads(c.get("props") or "[]") for code, _lo, _hi in prop
                for sid, _p, _f in code_stats(code, shift)}
         sources.append(({c.get("type") or ""}, set(), ids))
+    for c in map_corruptions():  # a map's corruptions (t2me: the item type every T2 map has)
+        sources.append(({c["input"]}, set(), {st[0] for mod in c["mods"] for st in mod[5]} | {360}))
     out = {}
     for b in bases.values():
         key = ",".join(b["types"])
@@ -201,20 +203,39 @@ def stat_pools(bases, shift):
     return {k: v for k, v in out.items() if v}
 
 
+def map_corruptions():
+    """[{input (t1me...), outcome, chance, mods}] of docs/pd2-map-corruptions.tsv (tools/pd2_data.py): what corrupting a
+    map adds ([] without the file)."""
+    path = ROOT / "docs" / "pd2-map-corruptions.tsv"
+    if not path.exists():
+        return []
+    rows = [line.split("\t") for line in path.read_text(encoding="utf-8").splitlines() if line and not line.startswith("#")]
+    head = rows[0]
+    return [{**dict(zip(head, r)), "mods": json.loads(r[head.index("mods")])} for r in rows[1:]]
+
+
 def map_stats():
-    """[[stat, property code, lowest, highest]] of every stat a map's affixes roll (docs/pd2-magic-affixes.tsv: the
-    affixes whose item types are maps): the Maps area's mods."""
+    """[[stat, property code, lowest, highest]] of every stat a map can roll: its spawnable affixes
+    (docs/pd2-magic-affixes.tsv, the affixes whose item types are maps) and its corruptions (map_corruptions: +1 to
+    area level, monsters' deadly strike, players' -% maximum resistances...). The Maps area's mods; an affix the
+    game's tables switch off (of Darkness: light radius) is left out. A stat that rolls below 0 on some maps and
+    above on others (players' attack and cast speed: one corruption lowers them, another raises them) has a line for
+    each, the lower first: the Maps area warns of one and marks the other."""
     path = ROOT / "docs" / "pd2-magic-affixes.tsv"
-    rows = [line.split("	") for line in path.read_text(encoding="utf-8").splitlines() if line and not line.startswith("#")]
+    rows = [line.split("\t") for line in path.read_text(encoding="utf-8").splitlines() if line and not line.startswith("#")]
     head, out = rows[0], {}
-    types, mods = head.index("itypes"), head.index("mods")
+    types, mods, spawn = head.index("itypes"), head.index("mods"), head.index("spawnable")
+    props = []
     for r in rows[1:]:
-        if len(r) <= mods or not any(t in ("t1m", "t2m", "t3m", "t4m") for t in r[types].split(",")):
+        if len(r) <= mods or r[spawn] != "1" or not any(t in ("t1m", "t2m", "t3m", "t4m") for t in r[types].split(",")):
             continue
-        for prop in json.loads(r[mods]):
-            for sid, _p, lo, hi in prop[5]:
-                cur = out.setdefault(sid, [sid, prop[0], lo, hi])
-                cur[2], cur[3] = min(cur[2], lo), max(cur[3], hi)
+        props += json.loads(r[mods])
+    for c in map_corruptions():
+        props += c["mods"]
+    for prop in props:
+        for sid, _p, lo, hi in prop[5]:
+            cur = out.setdefault((sid, max(lo, hi) >= 0), [sid, prop[0], lo, hi])
+            cur[2], cur[3] = min(cur[2], lo), max(cur[3], hi)
     return [out[k] for k in sorted(out)]
 
 
