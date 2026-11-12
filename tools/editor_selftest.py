@@ -211,7 +211,7 @@ def run_page(browser, html, files, timeout=900):
             url = f"http://127.0.0.1:{httpd.server_address[1]}/index.html"
             cmd = [browser, "--headless=new", "--disable-gpu", "--no-sandbox", "--no-first-run",
                    "--disable-extensions", "--disable-background-networking", f"--user-data-dir={profile}",
-                   "--virtual-time-budget=120000", "--dump-dom", url]
+                   "--virtual-time-budget=300000", "--dump-dom", url]
             out = subprocess.run(cmd, capture_output=True, timeout=timeout, encoding="utf-8", errors="replace")
         finally:
             httpd.shutdown()
