@@ -8212,6 +8212,13 @@ EZ.areas = EZ.areas || [];
         o.asLevel = d.asLevel;
       }
       if (d.action === "look" || d.action === "replace" || d.action === "hunt" || (d.action === "show" && d.look === "own")) {
+        const label = String(d.text || "").replace(/\{[^}]*\}?/, "")
+          .replace(/%(?:CONTINUE|(?:BORDER|MAP|DOT|PX|LINE|NOTIFY)-[0-9a-f]{1,4}|SOUNDID-\d{1,4}|TIER-\d)%/gi, "").trim();
+        if (!label) {  // an empty label would hide the item everywhere, in town and the inventory too
+          EZ.ui.toast("The look is empty, which would hide the item everywhere. To hide it on the ground outside town, " +
+            "pick Hide it.", "bad");
+          return;
+        }
         o.text = d.text;
         o.keepColor = !!d.keepColor;
         if (d.action === "show") o.look = "own";
