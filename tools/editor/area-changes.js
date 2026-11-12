@@ -226,6 +226,49 @@ EZ.areas = EZ.areas || [];
         "take BH a little longer to load when the game starts or you reload the filter."));
   }
 
+  /* A short report to paste in Discord when asking for help: the version, the changes by area, and the preview's
+     item with what Erazure's filter and the player's do with it (the lines that decide it). */
+  function report(app) {
+    const P = EZ.preview, p = EZ.store.current(), ch = app.changes(), v = app.variant() || {};
+    const out = ["Erazure Filter Editor: " + (v.launcher || "?") + ", Erazure " + app.src.version];
+    const areas = EZ.areas.filter((a) => (ch.byArea[a.id] || {}).n).map((a) => a.title + " " + ch.byArea[a.id].n);
+    out.push("Changes: " + (ch.count ? ch.count + " (" + areas.join(", ") + ")" : "none") +
+      (ch.warn ? ", " + ch.warn + " need a look" : ""));
+    if (P && P.state && P.erazure && P.erazure()) {
+      const s = P.state, spec = s.spec;
+      const cls = ["Amazon", "Sorceress", "Necromancer", "Paladin", "Barbarian", "Druid", "Assassin"][s.cls] || "?";
+      out.push("Item: " + EZ.items.describe(spec) + " at filter level " + s.filtlvl + ", level " + s.clvl + " " + cls +
+        ", " + ["Normal", "Nightmare", "Hell"][s.diff] + ", " + s.where);
+      for (const [who, f] of [["Erazure", P.erazure()], ["Yours", P.yours()]]) {
+        if (!f) continue;
+        const r = P.run(f, spec);
+        if (!r) continue;
+        const secs = EZ.filter.sections(app.src, f.lines);
+        const at = (i) => {
+          if (i === null || i === undefined) return "none";
+          const own = EZ.rules.locate(f.lines, i);
+          if (own) return "yours " + own.block + ":" + own.n;
+          const name = EZ.filter.sectionOf(secs, i);
+          return name ? name.replace(/\.filter$/, "") + ":" + (i - secs[name][0] + 1) : "line " + (i + 1);
+        };
+        out.push(who + ": " + (r.invisible ? "nothing (hidden, no alert)" : r.hidden ? "no label" :
+          EZ.render.plain(r.name)) + " | decided by " + at(r.stop) + (r.sound ? " | sound " + r.sound + " (" + at(r.soundRule) + ")" : "") +
+          (r.icons.length ? " | icon" : "") + (r.chat !== null ? " | chat" : ""));
+      }
+    }
+    void p;
+    return out.join("\n").slice(0, 1900);
+  }
+
+  if (EZ.app && EZ.app.saveMenu) {
+    EZ.app.saveMenu.push((app) => ({text: "Copy a report for Discord", sub: "your version, changes and the preview's item",
+      onclick: async () => {
+        const text = report(app);
+        try { await navigator.clipboard.writeText(text); EZ.ui.toast("Copied: paste it in Discord with your question.", "good"); }
+        catch (e) { EZ.ui.dialog({title: "Your report", body: [h("textarea", {rows: 8, readonly: true, text})]}); }
+      }}));
+  }
+
   EZ.areas.push({
     id: "changes", title: "Changes", icon: "⇄", order: 100, group: "d",
     render(box, app) {

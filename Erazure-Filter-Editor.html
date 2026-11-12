@@ -7138,10 +7138,46 @@ EZ.areas.push({
         "storage): save them to a file before you leave.") : null,
       h("h4", {style: {marginTop: "1em"}}, "History"), historyBox);
 
+    // a quick setup while the profile has no changes (each answer is an ordinary change, shown in its area after)
+    let quick = null;
+    const DONE = "erazure-filter-editor-setup-done";
+    let dismissed = false;
+    try { dismissed = localStorage.getItem(DONE) === "1"; } catch (e) { /* show it */ }
+    if (!app.changes().count && !dismissed) {
+      const tags = EZ.features.filter((f) => f.group === "Tags");
+      const LOUD = ["uni-high", "set-high", "runes"];
+      quick = h("section.fe-card", {id: "fe-quick"},
+        h("h3", "Quick setup"),
+        h("p.fe-sub", "Two questions to start from; every answer is an ordinary change you can see and undo later."),
+        h("h4", "How many alerts do you want?"),
+        h("div.fe-choice",
+          option("Erazure's", "Icons, chat lines and sounds as Erazure gives them.", true, () => {}),
+          option("Fewer sounds", "Sounds only for High value uniques and sets, and for runes; icons and chat lines stay.",
+            false, () => EZ.store.change((e) => {
+              e.volume = {};
+              for (const k of EZ.volume.kinds(app.src, app.versionLines())) if (LOUD.indexOf(k.id) < 0) e.volume[k.id] = "mute";
+            }, {label: "quick setup"})),
+          option("Icons only", "Minimap icons, no chat lines and no sounds.", false, () => EZ.store.change((e) => {
+            e.alerts = Object.assign({}, e.alerts, {iconsOnly: true});
+          }, {label: "quick setup"}))),
+        h("h4", {style: {marginTop: ".9em"}}, "Tags on items (the short stat tags before their names)?"),
+        h("div.fe-choice",
+          option("All of Erazure's", "Affix, roll, runeword, charm, jewel, resistance and sell tags.", true, () => {}),
+          option("None", "Plain names: every kind of tag switched off (each can come back on Options).", false, () =>
+            EZ.store.change((e) => {
+              e.features = Object.assign({}, e.features);
+              for (const f of tags) if (EZ.edits.featureDefault(f)) e.features[f.id] = false;
+            }, {label: "quick setup"}))),
+        h("div.fe-row", {style: {marginTop: ".6em"}}, h("button.fe-btn.ghost.small", {type: "button", onclick: () => {
+          try { localStorage.setItem(DONE, "1"); } catch (e) { /* asked again */ }
+          app.drawArea();
+        }}, "Don't show this again")));
+    }
+
     box.append(
       h("div.fe-area-head", h("div", h("h2", "Start"),
         h("p.fe-sub", "Pick your version, change what you like, and save it straight into your game."))),
-      version, save, profilesCard, moveCard);
+      version, quick || "", save, profilesCard, moveCard);
     if (app.sub) {
       const el = box.querySelector("#fe-" + app.sub);
       if (el) el.scrollIntoView();
@@ -9754,6 +9790,49 @@ EZ.areas = EZ.areas || [];
       h("p.fe-sub.fe-small", `${after.toLocaleString()} rules (Erazure's version: ${before.toLocaleString()}` +
         (after !== before ? `, ${after > before ? "+" : ""}${(after - before).toLocaleString()}` : "") + "). More rules " +
         "take BH a little longer to load when the game starts or you reload the filter."));
+  }
+
+  /* A short report to paste in Discord when asking for help: the version, the changes by area, and the preview's
+     item with what Erazure's filter and the player's do with it (the lines that decide it). */
+  function report(app) {
+    const P = EZ.preview, p = EZ.store.current(), ch = app.changes(), v = app.variant() || {};
+    const out = ["Erazure Filter Editor: " + (v.launcher || "?") + ", Erazure " + app.src.version];
+    const areas = EZ.areas.filter((a) => (ch.byArea[a.id] || {}).n).map((a) => a.title + " " + ch.byArea[a.id].n);
+    out.push("Changes: " + (ch.count ? ch.count + " (" + areas.join(", ") + ")" : "none") +
+      (ch.warn ? ", " + ch.warn + " need a look" : ""));
+    if (P && P.state && P.erazure && P.erazure()) {
+      const s = P.state, spec = s.spec;
+      const cls = ["Amazon", "Sorceress", "Necromancer", "Paladin", "Barbarian", "Druid", "Assassin"][s.cls] || "?";
+      out.push("Item: " + EZ.items.describe(spec) + " at filter level " + s.filtlvl + ", level " + s.clvl + " " + cls +
+        ", " + ["Normal", "Nightmare", "Hell"][s.diff] + ", " + s.where);
+      for (const [who, f] of [["Erazure", P.erazure()], ["Yours", P.yours()]]) {
+        if (!f) continue;
+        const r = P.run(f, spec);
+        if (!r) continue;
+        const secs = EZ.filter.sections(app.src, f.lines);
+        const at = (i) => {
+          if (i === null || i === undefined) return "none";
+          const own = EZ.rules.locate(f.lines, i);
+          if (own) return "yours " + own.block + ":" + own.n;
+          const name = EZ.filter.sectionOf(secs, i);
+          return name ? name.replace(/\.filter$/, "") + ":" + (i - secs[name][0] + 1) : "line " + (i + 1);
+        };
+        out.push(who + ": " + (r.invisible ? "nothing (hidden, no alert)" : r.hidden ? "no label" :
+          EZ.render.plain(r.name)) + " | decided by " + at(r.stop) + (r.sound ? " | sound " + r.sound + " (" + at(r.soundRule) + ")" : "") +
+          (r.icons.length ? " | icon" : "") + (r.chat !== null ? " | chat" : ""));
+      }
+    }
+    void p;
+    return out.join("\n").slice(0, 1900);
+  }
+
+  if (EZ.app && EZ.app.saveMenu) {
+    EZ.app.saveMenu.push((app) => ({text: "Copy a report for Discord", sub: "your version, changes and the preview's item",
+      onclick: async () => {
+        const text = report(app);
+        try { await navigator.clipboard.writeText(text); EZ.ui.toast("Copied: paste it in Discord with your question.", "good"); }
+        catch (e) { EZ.ui.dialog({title: "Your report", body: [h("textarea", {rows: 8, readonly: true, text})]}); }
+      }}));
   }
 
   EZ.areas.push({

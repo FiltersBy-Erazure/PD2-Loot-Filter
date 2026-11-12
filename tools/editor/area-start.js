@@ -122,10 +122,46 @@ EZ.areas.push({
         "storage): save them to a file before you leave.") : null,
       h("h4", {style: {marginTop: "1em"}}, "History"), historyBox);
 
+    // a quick setup while the profile has no changes (each answer is an ordinary change, shown in its area after)
+    let quick = null;
+    const DONE = "erazure-filter-editor-setup-done";
+    let dismissed = false;
+    try { dismissed = localStorage.getItem(DONE) === "1"; } catch (e) { /* show it */ }
+    if (!app.changes().count && !dismissed) {
+      const tags = EZ.features.filter((f) => f.group === "Tags");
+      const LOUD = ["uni-high", "set-high", "runes"];
+      quick = h("section.fe-card", {id: "fe-quick"},
+        h("h3", "Quick setup"),
+        h("p.fe-sub", "Two questions to start from; every answer is an ordinary change you can see and undo later."),
+        h("h4", "How many alerts do you want?"),
+        h("div.fe-choice",
+          option("Erazure's", "Icons, chat lines and sounds as Erazure gives them.", true, () => {}),
+          option("Fewer sounds", "Sounds only for High value uniques and sets, and for runes; icons and chat lines stay.",
+            false, () => EZ.store.change((e) => {
+              e.volume = {};
+              for (const k of EZ.volume.kinds(app.src, app.versionLines())) if (LOUD.indexOf(k.id) < 0) e.volume[k.id] = "mute";
+            }, {label: "quick setup"})),
+          option("Icons only", "Minimap icons, no chat lines and no sounds.", false, () => EZ.store.change((e) => {
+            e.alerts = Object.assign({}, e.alerts, {iconsOnly: true});
+          }, {label: "quick setup"}))),
+        h("h4", {style: {marginTop: ".9em"}}, "Tags on items (the short stat tags before their names)?"),
+        h("div.fe-choice",
+          option("All of Erazure's", "Affix, roll, runeword, charm, jewel, resistance and sell tags.", true, () => {}),
+          option("None", "Plain names: every kind of tag switched off (each can come back on Options).", false, () =>
+            EZ.store.change((e) => {
+              e.features = Object.assign({}, e.features);
+              for (const f of tags) if (EZ.edits.featureDefault(f)) e.features[f.id] = false;
+            }, {label: "quick setup"}))),
+        h("div.fe-row", {style: {marginTop: ".6em"}}, h("button.fe-btn.ghost.small", {type: "button", onclick: () => {
+          try { localStorage.setItem(DONE, "1"); } catch (e) { /* asked again */ }
+          app.drawArea();
+        }}, "Don't show this again")));
+    }
+
     box.append(
       h("div.fe-area-head", h("div", h("h2", "Start"),
         h("p.fe-sub", "Pick your version, change what you like, and save it straight into your game."))),
-      version, save, profilesCard, moveCard);
+      version, quick || "", save, profilesCard, moveCard);
     if (app.sub) {
       const el = box.querySelector("#fe-" + app.sub);
       if (el) el.scrollIntoView();
