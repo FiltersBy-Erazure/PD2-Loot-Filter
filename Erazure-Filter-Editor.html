@@ -397,8 +397,43 @@
 .edit-map .fe-featgroup { margin-top: .8em; }
 .edit-map .fe-featgroup h4 { color: var(--muted); font-size: .82em; text-transform: uppercase; letter-spacing: .06em;
   font-family: inherit; }
-.edit-map .fe-feature { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: flex-start;
-  gap: .3em 1em; padding: .25em .4em; border-radius: 6px; }
+.edit-map .fe-feature { display: block; padding: .3em .4em .45em; border-radius: 6px; }
+.edit-map .fe-feature + .fe-feature { border-top: 1px solid var(--line); }
+.edit-map .fe-feature-head { align-items: flex-start; justify-content: flex-start; gap: .3em 1em; }
+/* under a switch: what it draws, then its parts (each its own switch, with what it draws) */
+.edit-map .fe-featmore { margin: .35em 0 .1em 2.85em; display: flex; flex-direction: column; gap: .4em; min-width: 0; }
+.edit-map .fe-featpreview { display: flex; flex-wrap: wrap; align-items: center; gap: .35em .6em; }
+.edit-map .fe-featsample { display: inline-flex; flex-direction: column; align-items: center; gap: 3px;
+  background: var(--game); border: 1px solid var(--line); border-radius: 5px; padding: 4px 9px; max-width: 100%; }
+.edit-map .fe-featsample .fe-label { font-size: 12px; max-width: 100%; overflow: hidden; }
+.edit-map .fe-featrow { display: flex; flex-wrap: wrap; align-items: center; gap: .35em .7em; width: 100%; }
+.edit-map .fe-featpair { display: inline-flex; align-items: center; gap: .5em; background: var(--game);
+  border: 1px solid var(--line); border-radius: 5px; padding: 3px 9px; max-width: 100%; }
+.edit-map .fe-featpair > small { color: #a9a294; white-space: nowrap; }
+.edit-map .fe-featpair .fe-label { font-size: 12px; }
+.edit-map .fe-featcell { display: inline-flex; flex-direction: column; align-items: center; gap: 3px; }
+.edit-map .fe-featparts > summary { cursor: pointer; color: var(--accent); font-size: .88em; width: max-content;
+  max-width: 100%; }
+.edit-map .fe-featparts-body { margin-top: .45em; }
+.edit-map .fe-featparts-tools { gap: .4em .6em; }
+.edit-map .fe-featparts-tools input[type=search] { min-width: min(14em, 100%); }
+.edit-map .fe-partlist { list-style: none; margin: .45em 0 0; padding: 0; display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: .2em .9em; }
+.edit-map .fe-part { display: flex; align-items: center; gap: .5em; min-width: 0; padding: .15em .3em;
+  border-radius: 5px; }
+.edit-map .fe-part:hover { background: var(--panel2); }
+.edit-map .fe-part label { display: flex; align-items: center; gap: .45em; cursor: pointer; flex: 0 1 auto;
+  min-width: 8em; }
+.edit-map .fe-part label input { accent-color: var(--accent); }
+.edit-map .fe-part.is-off .fe-part-title { color: var(--faint); text-decoration: line-through; }
+.edit-map .fe-part.is-off .fe-part-draws, .edit-map .fe-featparts.is-disabled .fe-part-draws { opacity: .4; }
+.edit-map .fe-part-draws { display: flex; gap: .3em; min-width: 0; overflow: hidden; flex: 1 1 auto;
+  justify-content: flex-end; }
+.edit-map .fe-part-draws .fe-featsample { padding: 2px 6px; flex: 0 1 auto; min-width: 0; }
+.edit-map .fe-part-draws .fe-label { font-size: 11px; }
+.edit-map .fe-part-draws .fe-minidesc { font-size: 10.5px; white-space: nowrap; max-width: 240px; overflow: hidden;
+  text-overflow: ellipsis; }
+@media (max-width: 640px) { .edit-map .fe-featmore { margin-left: 0; } }
 .edit-map table.fe-levels td { vertical-align: middle; }
 .edit-map table.fe-maptable { table-layout: fixed; }
 .edit-map table.fe-maptable col.fe-mapcol-rolls { width: 7.5em; }
@@ -1423,6 +1458,16 @@ EZ.store = (function () {
       if (list.length) e.items = list; else delete e.items;
     }
     if (e.maps !== undefined && (!e.maps || typeof e.maps !== "object" || Array.isArray(e.maps))) delete e.maps;
+    if (e.featureParts !== undefined) {  // a feature's parts switched off: {feature id: [part key]}
+      const fp = e.featureParts && typeof e.featureParts === "object" && !Array.isArray(e.featureParts) ? e.featureParts : {};
+      const keep = {};
+      for (const k of Object.keys(fp).slice(0, 100)) {
+        const list = Array.isArray(fp[k]) ? fp[k].filter((x) => typeof x === "string" && x).map((x) => x.slice(0, 300))
+          .slice(0, 2000) : [];
+        if (list.length) keep[k] = [...new Set(list)];
+      }
+      if (Object.keys(keep).length) e.featureParts = keep; else delete e.featureParts;
+    }
     if (e.wishlists !== undefined && !Array.isArray(e.wishlists)) delete e.wishlists;
     if (e.volume !== undefined && (!e.volume || typeof e.volume !== "object" || Array.isArray(e.volume))) delete e.volume;
     if (e.rules !== undefined) {  // My rules: two blocks of text (a link or file could hold anything)
@@ -1644,8 +1689,22 @@ EZ.filter = (function () {
   const LEVEL_RE = /^ItemDisplayFilterName\[\]:/;
 
   /* {name: [first line, one past the last]} of the source's sections, for the lines of a version (a style edits
-     patch adds lines: their places come from section starts counted on the version's own lines, found by the
-     sections' first lines). */
+     patch adds lines: their places come from the version's own lines). Each section is found by its anchor, its
+     first line that appears once in the source (a section's first lines are often the same row of dashes as the
+     next one's), counted back to the section's start. */
+  function anchors(src) {
+    if (src.sectionAnchors) return src.sectionAnchors;
+    const seen = new Map();
+    for (const line of src.lines) seen.set(line, (seen.get(line) || 0) + 1);
+    const list = src.sections;
+    src.sectionAnchors = list.map((sec, k) => {
+      const end = k + 1 < list.length ? list[k + 1][1] : src.lines.length;
+      let a = sec[1];
+      while (a < end && seen.get(src.lines[a]) !== 1) a++;
+      return a < end ? a : sec[1];
+    });
+    return src.sectionAnchors;
+  }
   function sections(src, lines) {
     const out = {}, list = src.sections;
     if (lines === src.lines || lines.length === src.lines.length) {
@@ -1654,12 +1713,16 @@ EZ.filter = (function () {
       }
       return out;
     }
+    const anchor = anchors(src);
     let at = 0;
     for (let k = 0; k < list.length; k++) {
-      const first = src.lines[list[k][1]];
-      while (at < lines.length && lines[at] !== first) at++;
-      out[list[k][0]] = [at, lines.length];
-      if (k) out[list[k - 1][0]][1] = at;
+      const first = src.lines[anchor[k]];
+      let j = at;
+      while (j < lines.length && lines[j] !== first) j++;
+      const start = Math.max(0, j - (anchor[k] - list[k][1]));
+      out[list[k][0]] = [start, lines.length];
+      if (k) out[list[k - 1][0]][1] = start;
+      if (j < lines.length) at = j + 1;
     }
     return out;
   }
@@ -1956,59 +2019,76 @@ EZ.filter = (function () {
                only the rules that write description lines alone (output %NAME%{...}: the label untouched);
      aliases:  these aliases (names or a name pattern) are set to FALSE, the way Erazure's own tag systems are wired;
      switchOn: (on: false by default) the switched-off rules of a section whose text has `match` are switched on.
+   Finer switches (2026-11-12, the author: "players may want more granular control ... for charm tags, they may want to
+   choose individual tags to turn off"), each part switched off on its own while the feature is on
+   (EZ.edits.featureParts has the rules):
+     parts: true    the rules the feature switches off, a part per stat block (300, 305) or comment heading ("Gold
+                    Find", "+N Chain Lightning Sentry");
+     parts: "text"  a part per line the rules draw ("+#% Monster Rarity");
+     partAliases:   a part per stat the aliases show (set to FALSE), named by the tagLines section's stat blocks;
+     samples:       items the Features area runs with the feature on and off, to show what it changes (for the
+                    features whose rules can't be drawn on their own).
    tools/editor_selftest.py checks every feature against today's source. */
 var EZ = typeof EZ !== "undefined" ? EZ : {};
 EZ.features = [
   {id: "affix-tags", group: "Tags", title: "Affix tags",
    sub: "The short tags of magic, rare, unique and set items' stats (11r, 3fcr, 15ias...).",
-   sections: ["300-affix-tags.filter"]},
+   sections: ["300-affix-tags.filter"], parts: true},
   {id: "roll-tags", group: "Tags", title: "Unique and set roll tags",
    sub: "The tags of the rolls that vary on unique and set items (Shako's life, Griffon's damage...).",
-   aliases: /^ROLL_.*_TAG$/},
+   aliases: /^ROLL_.*_TAG$/, partAliases: /^ROLL_.*_TAG$/,
+   tagLines: "300-affix-tags.filter"},
   {id: "rw-tags", group: "Tags", title: "Runeword roll tags", sub: "The tags of the rolls that vary on runewords.",
-   sections: ["305-runeword-rolls.filter"]},
+   sections: ["305-runeword-rolls.filter"], parts: true},
   {id: "lowlvl-tags", group: "Tags", title: "Low-level rare tags",
    sub: "Every roll of the stats Erazure picks, on rare and crafted items below affix level 60.",
-   aliases: /^LOWLVL_.*_TAG$/},
+   aliases: /^LOWLVL_.*_TAG$/, partAliases: /^LOWLVL_.*_TAG$/,
+   tagLines: "300-affix-tags.filter"},
   {id: "staffmods", group: "Tags", title: "Staffmod tags",
-   sub: "The +skills of non-magical class items, staves, wands, scepters and orbs.", sections: ["310-staffmods.filter"]},
+   sub: "The +skills of non-magical class items, staves, wands, scepters and orbs.", sections: ["310-staffmods.filter"],
+   parts: true},
   {id: "charm-tags", group: "Tags", title: "Charm tags", sub: "The tags of identified magic charms.",
-   sections: ["240-charms.filter"]},
+   sections: ["240-charms.filter"], parts: true},
   {id: "jewel-tags", group: "Tags", title: "Jewel tags", sub: "The tags of identified jewels.",
-   sections: ["250-jewels.filter"]},
+   sections: ["250-jewels.filter"], parts: true},
   {id: "quiver-tags", group: "Tags", title: "Arrow and bolt tags", sub: "The tags of magic and rare quivers.",
-   sections: ["260-arrow-bolt-affixes.filter"]},
+   sections: ["260-arrow-bolt-affixes.filter"], parts: true},
   {id: "sell-tags", group: "Tags", title: "Sell value tags ($)", sub: "Items that sell to vendors for a lot of gold.",
-   sections: ["315-sell-value-tags.filter"]},
+   sections: ["315-sell-value-tags.filter"], parts: true},
   {id: "small-sell", group: "Tags", title: "Sell tags on small items Erazure hides",
    sub: "On filter levels 1-4 (the less strict ones), a small non-magical item that sells for a lot shows as its ($) " +
         "tag instead of hiding. Off: Erazure hides it there.",
-   aliases: ["SMALL_SELL_BASE", "SMALL_SELL_GOLD", "SMALL_SELL_GRAY", "SMALL_SELL_NK"]},
+   aliases: ["SMALL_SELL_BASE", "SMALL_SELL_GOLD", "SMALL_SELL_GRAY", "SMALL_SELL_NK"],
+   samples: [{spec: {code: "dgr", sockets: 0, sell: 30000}, level: 1, clvl: 48}]},
   {id: "resist-tags", group: "Descriptions", title: "Resistance lines",
    sub: "The starred All Resistances, Triple and Dual Resist lines in an item's description (the short 11r tags on " +
-        "its label are Affix tags).", sections: ["285-resist-tags.filter"]},
+        "its label are Affix tags).", sections: ["285-resist-tags.filter"], parts: "text"},
   {id: "boss-tags", group: "Descriptions", title: "Boss gear tags",
-   sub: "Rathma, D.Clone and Lucion under items that suit those fights.", sections: ["270-boss-gear-tags.filter"]},
+   sub: "Rathma, D.Clone and Lucion under items that suit those fights.", sections: ["270-boss-gear-tags.filter"],
+   parts: true},
   {id: "highlights", group: "Descriptions", title: "Skill and shop highlights",
-   sub: "The starred +skills lines, and the Cost line of good shop items.", sections: ["280-skills-shop-highlights.filter"]},
+   sub: "The starred +skills lines, and the Cost line of good shop items.", sections: ["280-skills-shop-highlights.filter"],
+   parts: true},
   {id: "ed-highlights", group: "Descriptions", title: "Enhanced damage, Amplify and Lower Resist highlights",
    sub: "High enhanced damage, damage reduction, Amplify Damage and Lower Resist on striking.",
-   sections: ["320-highlights-ed-amp-lr.filter", "350-ed-dr-highlights.filter"]},
+   sections: ["320-highlights-ed-amp-lr.filter", "350-ed-dr-highlights.filter"], parts: "text"},
   {id: "notes", group: "Descriptions", title: "Item notes",
    sub: "Recipes, upgrades, max sockets and other notes over the item's stats.",
-   sections: ["230-item-description-notes.filter"]},
+   sections: ["230-item-description-notes.filter"], parts: true},
   {id: "craft-notes", group: "Descriptions", title: "Crafting base notes",
    sub: "The Crafted Affix Level: N line on rings, amulets and other bases worth crafting with.",
-   sections: ["340-high-alvl-crafting-bases.filter"]},
+   sections: ["340-high-alvl-crafting-bases.filter"], parts: true},
   {id: "max-res", group: "Descriptions", title: "Max resistance and Cannot Be Frozen lines",
-   sub: "The totals of maximum resistances and Cannot Be Frozen.", sections: ["360-max-res-cannot-be-frozen.filter"]},
+   sub: "The totals of maximum resistances and Cannot Be Frozen.", sections: ["360-max-res-cannot-be-frozen.filter"],
+   parts: "text"},
   {id: "anniversary", group: "Descriptions", title: "Anniversary Edition line",
    sub: "The orange line on uniques with an alternate skin.", sections: ["365-special-edition.filter"]},
   {id: "speed", group: "Descriptions", title: "Weapon speed and range",
    sub: "A weapon's base speed and range under its name.", sections: ["330-tooltip-tags.filter"]},
   {id: "tier-lines", group: "Descriptions", title: "Item tier lines", on: false,
    sub: "Normal, Exceptional or Elite under weapons and armor in the inventory, stash and Cube (off in Erazure).",
-   switchOn: {section: "330-tooltip-tags.filter", match: "Tier:"}},
+   switchOn: {section: "330-tooltip-tags.filter", match: "Tier:"},
+   samples: [{spec: {code: "uar", place: "INVENTORY"}, level: 1}]},
   {id: "key-notes", group: "Items", title: "Key notes", sub: "Where each kind of key drops and where it's used.",
    sections: ["070-keys.filter"]},
   {id: "map-resists", group: "Maps", title: "Map resistance lines",
@@ -2016,17 +2096,20 @@ EZ.features = [
   {id: "map-mods", group: "Maps", title: "Map mod highlights",
    sub: "The hover box lines that point out a map's monster density, rarity and dangerous mods (the tier, Map and " +
         "mf / den / rar tags on its label stay).",
-   sections: ["145-map-rolls-and-notifications.filter"], descOnly: true},
+   sections: ["145-map-rolls-and-notifications.filter"], descOnly: true, parts: "text"},
   {id: "map-exp", group: "Maps", title: "Map experience lines",
    sub: "A map's experience tag (2.0x Experience) and the experience at your level.",
-   sections: ["146-map-experience.filter"]},
+   sections: ["146-map-experience.filter"], parts: "text"},
   {id: "grail-looks", group: "Grail", title: "Grail looks of undiscovered items",
    sub: "Unique and set items you haven't discovered look different and always show. Off: they look and hide like " +
         "discovered ones (the game's Force Show Undiscovered option still shows hidden ones with the game's name).",
-   aliases: ["GRAIL_NEW"]},
+   aliases: ["GRAIL_NEW"],
+   samples: [{spec: {code: "cap", quality: "UNI", discovered: false}, level: 12},
+             {spec: {code: "cap", quality: "UNI", discovered: false}, level: 1}]},
   {id: "lowest-sockets", group: "Strictness", title: "Level 1 shows every non-magical base with 2+ sockets",
    sub: "On filter level 1 (Lowest Strictness). Off: level 1 hides them by character level, as level 2 " +
-        "(Relaxed Filtering) does.", aliases: ["LOWEST_SOCKETED_BASE"]},
+        "(Relaxed Filtering) does.", aliases: ["LOWEST_SOCKETED_BASE"],
+   samples: [{spec: {code: "lbw", sockets: 4}, level: 1, clvl: 40}]},
 ];
 
 /* ---- tools/editor/edits.js ---- */
@@ -2078,6 +2161,159 @@ EZ.edits = (function () {
   }
 
   function featureDefault(f) { return f.on === undefined ? true : f.on; }
+
+  /* The rules a section feature switches off: its %CONTINUE% rules that notify nothing (descOnly: those that write
+     description lines alone). */
+  const switchable = (f, line) => {
+    if (!line.startsWith("ItemDisplay[")) return false;
+    const r = F.rule(line);
+    return !!r && F.continues(r.out) && !F.notifies(r.out) && (!f.descOnly || descOnly(r.out));
+  };
+  const OFF_RULE = /^\s*\/\/+\s*ItemDisplay\[/;
+
+  /* A feature's finer switches (features.js `parts`, `partAliases`): [{key, title, lines: [line]} or {key, title,
+     aliases: [name]}] in the version's order. A key is what the edit set keeps, so it stays when Erazure renames a
+     title where it can: a stat block's "stat 80".
+     parts (the feature's switchable rules, those that write text: a rule that only moves the name to a new line or
+     colors it is the layout and stays):
+       - in a section whose tag lines come in stat blocks (300, 305: "// ---- Magic Find (stat 80, priority 8) ----"),
+         a part per block, its other comments are notes;
+       - elsewhere a part per comment heading: a comment block's first line, without its (remarks), the words before
+         ": " (or after a short tag such as "S14: "), a +number as +N and " Highlight" left off ("+N Chain Lightning
+         Sentry"), so the per level rules are one part; a long line or one with the author's notes (a date, a tool) is
+         a note: one that starts in lower case goes on with the heading above, any other leaves the rules after it to
+         go by what they draw;
+       - parts: "text": a part per line drawn, its numbers as # ("+#% Monster Rarity"; a sign in front doesn't
+         count), for the description features where the drawn line says it best.
+     partAliases: a part per stat the aliases (tags wired into the tag lines of f.tagLines) show, named by the stat
+     block of the first tag line that asks the alias; an alias that is FALSE does nothing and is left out.
+     tools/editor_selftest.py has a Python version of it (feature_parts). */
+  const STAT_BLOCK = /^\/\/+\s*-{3,}\s*(.+?)\s*\((stat \d+\+?)[^)]*\)\s*-{3,}\s*$/;
+  const BLOCK_HEAD = /^\/\/+\s*-{3,}\s*(.+?)\s*-{3,}\s*$/;
+  const NOTE_WORDS = /\(the author|\b\d{4}-\d\d-\d\d\b|sections\/|tools\/|\.py\b|\.filter\b/;
+  const LAYOUT_WORDS = new Set(COLORS.concat(["NAME", "CL", "NL", "CS"]));
+
+  /* A comment line as a part's title, or null for a note. */
+  function headingTitle(text) {
+    if (NOTE_WORDS.test(text)) return null;
+    let t = text.replace(/\([^()]*\)/g, "").replace(/\(.*$/, "");
+    const k = t.indexOf(": ");
+    if (k >= 0) t = k <= 4 ? t.slice(k + 2) : t.slice(0, k);
+    t = t.replace(/\s+/g, " ").replace(/ ,/g, ",").trim().replace(/\s*-$/, "").replace(/\s+Highlight$/i, "").trim();
+    if (!t || t.length > 64 || /^[a-z]/.test(t) || /[,:(]$/.test(t)) return null;
+    return t.replace(/^\+\d+(?=\s)/, "+N");
+  }
+
+  /* A $f(...) formula (its parentheses matched) as the word given. */
+  function noFormulas(text, word) {
+    let out = "", i = 0;
+    while (i < text.length) {
+      const k = text.indexOf("$f(", i);
+      if (k < 0) { out += text.slice(i); break; }
+      out += text.slice(i, k);
+      let depth = 0, j = k + 2;
+      for (; j < text.length; j++) {
+        if (text[j] === "(") depth++;
+        else if (text[j] === ")" && --depth === 0) break;
+      }
+      out += word;
+      i = j + 1;
+    }
+    return out;
+  }
+
+  /* A rule's output split as BH reads it: [the label part, the description or null]. */
+  function outParts(out) {
+    const d = /\{([^}]*)\}?/.exec(out);
+    return [out.replace(/\{[^}]*\}?/, "").replace(/%CONTINUE%/g, ""), d ? d[1] : null];
+  }
+
+  /* A rule that writes no text of its own (the name on a new line, a color): the layout, not a part. */
+  function layoutOnly(out) {
+    const bare = (s) => (s || "").replace(/%([A-Z_]+)%/g, (m, w) => LAYOUT_WORDS.has(w) ? "" : m).replace(/ÿc./g, "").trim();
+    const [label, desc] = outParts(out);
+    return !bare(label) && !bare(desc);
+  }
+
+  /* The line a rule draws, its numbers as # (its own description line, else its label's text); colors, aliases
+     (frames, stars) and stars left out. */
+  function drawnTitle(out, names) {
+    const vis = (s) => noFormulas(s.replace(/%PERCENT%/g, "%"), "#").replace(/%([A-Z0-9_]+(?:,\d+)?)%/g, (m, w) =>
+      COLORS.indexOf(w) >= 0 ? "" : LAYOUT_WORDS.has(w) || names.has(w) ? " " : "#").replace(/ÿc./g, "");
+    const [label, desc] = outParts(out);
+    const own = desc !== null && vis(desc.replace(/%NAME%/g, "")).trim();
+    return vis(own ? desc : label).replace(/\d+/g, "#").replace(/#(?:[.,]#)+/g, "#").replace(/\*+/g, " ")
+      .replace(/\s+/g, " ").trim();
+  }
+
+  function featureParts(src, lines, f) {
+    const out = [], byKey = new Map();
+    const add = (key, title, field, v) => {
+      let p = byKey.get(key);
+      if (!p) { p = {key, title}; p[field] = []; byKey.set(key, p); out.push(p); }
+      if (p[field].indexOf(v) < 0) p[field].push(v);
+    };
+    if (f.parts && f.sections) {
+      const secs = F.sections(src, lines), names = new Set(Object.keys(F.aliases(lines)));
+      for (const name of f.sections) {
+        const range = secs[name];
+        if (!range) continue;
+        let heading = null, key = null, stat = false, block = null;
+        for (let i = range[0]; i < range[1]; i++) {
+          const line = lines[i];
+          if (line.startsWith("//") && !OFF_RULE.test(line)) {
+            const m = STAT_BLOCK.exec(line);
+            if (m) { heading = m[1].trim(); key = m[2]; stat = true; block = null; continue; }
+            if (BLOCK_HEAD.test(line)) { heading = key = null; stat = false; block = null; continue; }
+            const text = line.replace(/^\/\/+/, "").trim();
+            if (!text || /^[-=]{3}/.test(text)) { block = null; continue; }
+            if (block === null) block = text;
+            continue;
+          }
+          if (block !== null) {
+            if (!stat) {
+              const t = headingTitle(block);
+              if (t) heading = key = t;
+              else if (!/^[a-z]/.test(block)) heading = key = null;
+            }
+            block = null;
+          }
+          if (!switchable(f, line)) continue;
+          const r = F.rule(line);
+          if (layoutOnly(r.out)) continue;
+          if (f.parts !== "text" && heading) { add(key, heading, "lines", i); continue; }
+          const t = drawnTitle(r.out, names);
+          if (t) add("text:" + t.replace(/^[+-]+/, ""), t, "lines", i);
+        }
+      }
+    } else if (f.partAliases) {
+      const al = F.aliases(lines), secs = F.sections(src, lines), range = secs[f.tagLines];
+      const names = Object.keys(al).filter((n) => f.partAliases.test(n) && al[n].value !== "FALSE")
+        .sort((a, b) => al[a].i - al[b].i);
+      // the stat block of each tag line (as above), and the first tag line that asks each alias
+      const asked = new Map();
+      if (range) {
+        let heading = null, key = null;
+        const want = new Map(names.map((n) => [n, new RegExp("(^|[^A-Za-z0-9_])" + n + "($|[^A-Za-z0-9_])")]));
+        for (let i = range[0]; i < range[1] && want.size; i++) {
+          const line = lines[i];
+          const m = STAT_BLOCK.exec(line);
+          if (m) { heading = m[1].trim(); key = m[2]; continue; }
+          if (!line.startsWith("ItemDisplay[") || !heading) continue;
+          const r = F.rule(line);
+          if (!r) continue;
+          for (const [n, re] of want) {
+            if (re.test(r.cond)) { asked.set(n, [key, heading]); want.delete(n); }
+          }
+        }
+      }
+      for (const n of names) {
+        const [key, title] = asked.get(n) || [n, n.replace(/^[A-Z]+_|_TAG$/g, "").replace(/_/g, " ")];
+        add(key, title, "aliases", n);
+      }
+    }
+    return out;
+  }
 
   /* ---------------------------------------------------------------- the steps */
 
@@ -2165,6 +2401,30 @@ EZ.edits = (function () {
         if (!n) ctx.unplaced("features", f.title, "Erazure no longer has the lines this switch turns on");
       }
     }
+    // the finer switches: the parts switched off of each feature that is on (a feature switched off takes them all)
+    const parts = ctx.edits.featureParts || {};
+    for (const f of EZ.features) {
+      const off = partsOff(parts, f);
+      if (!off.length) continue;
+      const on = f.id in want ? !!want[f.id] : featureDefault(f);
+      if (!on) continue;
+      const have = new Map(featureParts(ctx.src, ctx.lines, f).map((p) => [p.key, p]));
+      for (const key of off) {
+        const p = have.get(key);
+        if (!p) {
+          ctx.unplaced("features", f.title + ": " + key.replace(/^text:/, ""), "Erazure no longer has this part");
+          continue;
+        }
+        if (p.aliases) for (const n of p.aliases) setAlias(ctx.lines, n, "FALSE");
+        else for (const i of p.lines) if (!OFF_RULE.test(ctx.lines[i])) ctx.lines[i] = "//" + ctx.lines[i];
+      }
+    }
+  }
+
+  /* The parts of a feature the player switched off (the edit set's featureParts: {feature id: [part key]}). */
+  function partsOff(parts, f) {
+    const list = parts && Array.isArray(parts[f.id]) ? parts[f.id] : [];
+    return [...new Set(list.filter((k) => typeof k === "string" && k))];
   }
 
   function looks(ctx) {
@@ -2365,13 +2625,19 @@ EZ.edits = (function () {
     options: (e) => Object.keys(e.options || {}).filter((k) => e.options[k]).length +
       Object.keys((e.levels || {}).names || {}).length + Object.keys((e.levels || {}).copies || {}).length,
     // (the map lines' switches count on Maps, where they are too: maps.js)
-    features: (e) => EZ.features.filter((f) => f.group !== "Maps" && e.features && f.id in e.features &&
-      !!e.features[f.id] !== featureDefault(f)).length,
+    features: (e) => EZ.features.filter((f) => f.group !== "Maps").reduce((n, f) => n + featureChanges(e, f), 0),
     looks: (e) => Object.keys(e.looks || {}).length + Object.keys(e.remap || {}).length + Object.keys(e.icons || {}).length,
     alerts: (e) => Object.keys(e.sounds || {}).length +
       ["noSounds", "noIcons", "iconsOnly"].filter((k) => e.alerts && e.alerts[k]).length +
       (e.alerts && (e.alerts.iconSize === "smaller" || e.alerts.iconSize === "bigger") ? 1 : 0),
   };
+  /* A feature's changes: its switch set apart from Erazure's default (1), else each part switched off. */
+  function featureChanges(e, f) {
+    const def = featureDefault(f);
+    const on = e.features && f.id in e.features ? !!e.features[f.id] : def;
+    if (on !== def) return 1;
+    return on ? partsOff(e.featureParts, f).length : 0;
+  }
   function countArea(area, e) { return counters[area] ? counters[area](e) : 0; }
   function count(e) { return Object.keys(counters).reduce((n, k) => n + counters[k](e), 0); }
   function counter(area, fn) { counters[area] = fn; }
@@ -2478,6 +2744,7 @@ EZ.edits = (function () {
   }
 
   return {apply, step, count, countArea, counter, headerLines, fromFile, pack, unpack, copyLevels, groundOnly, COLORS,
+          featureParts, partsOff, featureChanges,
           featureDefault, resized, slashes, SITE};
 })();
 
@@ -4340,8 +4607,7 @@ EZ.maps = (function () {
   /* The Maps area's changes: its warnings and hides, and Erazure's map lines switched (Features lists them too, and
      counts them here). */
   function count(e) {
-    const lines = EZ.features.filter((f) => f.group === "Maps" && e.features && f.id in e.features &&
-      !!e.features[f.id] !== EZ.edits.featureDefault(f)).length;
+    const lines = EZ.features.filter((f) => f.group === "Maps").reduce((n, f) => n + EZ.edits.featureChanges(e, f), 0);
     const m = e.maps;
     if (!m || typeof m !== "object") return lines;
     return lines + ids(m.warn).length + ids(m.hide).length + ids(m.mark).length + mapCodes(m.hideMaps).length;
@@ -9462,48 +9728,316 @@ EZ.areas = EZ.areas || [];
 /* ---- tools/editor/area-features.js ---- */
 /* Features: the parts of Erazure a player can switch off (tags, description lines, map lines...: EZ.features), an
    area of their own since 2026-11-12 (the author; until then a card of Options). Mostly what Erazure writes on and under
-   names; a few switches (Grail looks, level 1's sockets, the sell tags on small items) change what shows too. */
+   names; a few switches (Grail looks, level 1's sockets, the sell tags on small items) change what shows too.
+   Each switch shows what it changes (2026-11-12, the author: "each of the sections ... needs to have some kind of
+   preview that shows what having the option on or off would affect"): a few of its rules drawn on an item they are
+   for, or (features.js `samples`) items run with the feature on and off; and a feature with parts lists them, each
+   its own switch with what it draws ("for charm tags, they may want to choose individual tags to turn off";
+   EZ.edits.featureParts groups the rules). */
 var EZ = typeof EZ !== "undefined" ? EZ : {};
 EZ.areas = EZ.areas || [];
+EZ.featuresArea = (function () {
+  "use strict";
+  const KEYWORDS = /%(?:CONTINUE|(?:BORDER|MAP|DOT|PX|LINE|NOTIFY)-[0-9A-Fa-f]{1,4}|SOUNDID-\d{1,4}|TIER-\d)%/g;
+  const KEEP = new Set(["NAME", "CL", "CS", "NL", "PERCENT"]);
+  // a value the item's numbers take where a rule's condition asks for none (else 10, the condition's bounds kept)
+  const TYPICAL = {QTY: 12, ILVL: 85, CRAFTALVL: 80, ALVL: 80, QLVL: 60, MAXSOCKETS: 4, SOCKETS: 3, SOCK: 3,
+                   CLVL: 90, CHARSTAT12: 90, RUNENUM: 30, LVLREQ: 40, GOLD: 1500, PRICE: 25000, SELLPRICE: 25000,
+                   DEF: 200, ED: 150, EDAM: 150, EDEF: 100};
+  const QCOLOR = [["UNI", "GOLD"], ["SET", "GREEN"], ["RARE", "YELLOW"], ["CRAFT", "ORANGE"], ["MAG", "BLUE"]];
+  // the item kinds a condition can name, as the name a sample is drawn with
+  const KIND_NAMES = {HELM: "Helm", CIRC: "Circlet", CHEST: "Body Armor", SHIELD: "Shield", GLOVES: "Gloves",
+    BOOTS: "Boots", BELT: "Belt", ARMOR: "Armor", AXE: "Axe", MACE: "Mace", CLUB: "Club", TMACE: "Mace",
+    HAMMER: "Hammer", SWORD: "Sword", DAGGER: "Dagger", THROWING: "Throwing Knife", JAV: "Javelin", SPEAR: "Spear",
+    POLEARM: "Polearm", BOW: "Bow", XBOW: "Crossbow", STAFF: "Staff", WAND: "Wand", SCEPTER: "Scepter",
+    WEAPON: "Weapon", CLASS: "Class Item", ZON: "Amazon Javelin", SOR: "Sorceress Orb", NEC: "Necromancer Head",
+    DIN: "Paladin Shield", BAR: "Barbarian Helm", DRU: "Druid Pelt", SIN: "Assassin Claw", JEWELRY: "Ring",
+    CHARM: "Grand Charm", QUIVER: "Arrows"};
+
+  /* A value of `word` the condition asks for: its own comparisons' bounds around a typical value. */
+  function valueFor(word, cond) {
+    const esc = word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const re = new RegExp("(^|[\\s(])(!?)" + esc + "([<>=~])(\\d+)(?:-(\\d+))?(?=$|[\\s)])", "g");
+    let lo = -Infinity, hi = Infinity, eq = null, m;
+    while ((m = re.exec(cond))) {
+      if (m[2]) continue;
+      const a = +m[4];
+      if (m[3] === ">") lo = Math.max(lo, a + 1);
+      else if (m[3] === "<") hi = Math.min(hi, a - 1);
+      else if (m[3] === "=") eq = a;
+      else { lo = Math.max(lo, a); hi = Math.min(hi, m[5] === undefined ? a : +m[5]); }
+    }
+    if (eq !== null) return eq;
+    const t = TYPICAL[word] !== undefined ? TYPICAL[word] : 10;
+    return lo > hi ? lo : Math.max(lo, Math.min(hi, t));
+  }
+
+  /* A $f(...) formula (its parentheses matched) as a number: the viewer's level where it reads it, a map experience
+     multiplier's parts as 1.7, else the given number. */
+  function formulaValue(f, n) {
+    if (/^\$f\(\s*(?:CHARSTAT12|CLVL)\s*\)$/.test(f)) return 90;
+    if (/MOD\(/.test(f) && /MX[RX]_/.test(f)) return 7;
+    if (/MX[RX]_/.test(f)) return 1;
+    return n;
+  }
+  function noFormulas(text, n) {
+    let out = "", i = 0;
+    while (i < text.length) {
+      const k = text.indexOf("$f(", i);
+      if (k < 0) { out += text.slice(i); break; }
+      out += text.slice(i, k);
+      let depth = 0, j = k + 2;
+      for (; j < text.length; j++) {
+        if (text[j] === "(") depth++;
+        else if (text[j] === ")" && --depth === 0) break;
+      }
+      out += String(formulaValue(text.slice(k, j + 1), n));
+      i = j + 1;
+    }
+    return out;
+  }
+
+  /* The words of a condition the item has (not under a !): a sample must not be what the rule leaves out. */
+  function positiveWords(cond) {
+    const out = [], neg = [false], re = /(!?)\(|\)|(!?)([A-Za-z0-9_]+)/g;
+    let m;
+    while ((m = re.exec(cond))) {
+      if (m[0].endsWith("(")) neg.push(neg[neg.length - 1] || m[1] === "!");
+      else if (m[0] === ")") { if (neg.length > 1) neg.pop(); }
+      else if (!neg[neg.length - 1] && !m[2]) out.push(m[3]);
+    }
+    return out;
+  }
+
+  /* The name a rule is drawn on: the first item its condition names (a base, else a kind), in its quality's color. */
+  function sampleName(cond) {
+    const toks = positiveWords(cond);
+    let name = null;
+    for (const t of toks) {
+      if (!/^[a-z0-9]{3,4}$/.test(t) || /^\d+$/.test(t)) continue;
+      const b = EZ.items.base(t);
+      if (b) { name = EZ.render.plain(b.name).split(" / ")[0].trim(); break; }
+    }
+    if (!name) name = KIND_NAMES[toks.find((t) => KIND_NAMES[t])] || "Item";
+    const q = QCOLOR.find(([w]) => toks.indexOf(w) >= 0);
+    return "%" + (q ? q[1] : toks.indexOf("ETH") >= 0 ? "GRAY" : "WHITE") + "%" + name;
+  }
+
+  /* A rule drawn on its own (no item runs it): {label (the label's codes, or "" when the rule writes nothing on it),
+     desc (its description lines)}: its looks filled, %NAME% the sample's, the item's numbers a value its condition
+     asks for. */
+  function drawRule(r, vals) {
+    const name = sampleName(r.cond);
+    const num = (s) => noFormulas(s, 10).replace(/%([A-Z][A-Z0-9_]*(?:,\d+)?)%/g, (m, w) =>
+      KEEP.has(w) || EZ.render.WORDS[w] !== undefined || w in vals ? m : String(valueFor(w, r.cond)));
+    const out = num(r.out.replace(KEYWORDS, ""));
+    const labelText = out.replace(/\{[^}]*\}?/, "");
+    const own = labelText.replace(/%NAME%/g, "").replace(/%[A-Z_]+%/g, "").replace(/ÿc./g, "").trim();
+    return {label: own ? EZ.looks.fill(labelText, vals, name) : "", desc: EZ.render.descOf(out, vals)};
+  }
+
+  /* What some rules draw: each different label (on the item's name) or description line, `max` at most. */
+  function drawn(rules, vals, max) {
+    const {h} = EZ.ui;
+    const seen = new Set(), out = [];
+    for (const r of rules) {
+      const d = drawRule(r, vals);
+      const key = d.label + "|" + d.desc;
+      if (seen.has(key) || (!d.label && !d.desc)) continue;
+      seen.add(key);
+      out.push(h("span.fe-featsample", d.label ? EZ.render.label(d.label) : null,
+        d.desc ? h("span.fe-minidesc", EZ.render.coded(d.desc, "3")) : null));
+      if (out.length >= (max || 3)) break;
+    }
+    return out;
+  }
+
+  return {drawRule, drawn, sampleName, valueFor};
+})();
+
 EZ.areas.push({
   id: "features", title: "Features", icon: "✦", order: 25, group: "b",
   count: (e) => EZ.edits.countArea("features", e),
   render(box, app) {
     const {h, toggle} = EZ.ui;
+    const FA = EZ.featuresArea, F = EZ.filter;
     const e = EZ.store.current().edits;
+    const lines = app.versionLines();
+    const vals = EZ.looks.values(lines), al = F.aliases(lines);
+    const area = this;
+    // a stat block named by the game's own stat name where Erazure has no title of its own
+    const titleOf = (p) => ({item_nonclassskill: "+ Skills of another class"})[p.title] || p.title;
+    // the parts a switch's examples come from first: the stats every player knows
+    const KNOWN = ["Magic Find", "Faster Cast Rate", "All Resistances", "All Resist", "Life", "+ All Skills",
+                   "Enhanced Damage", "Increased Attack Speed", "Gold Find", "Faster Run/Walk"];
+    area.open = area.open || new Set();      // the features whose parts list is open (kept while the area redraws)
+    area.query = area.query || {};           // and the words its list is narrowed to
+    // a link to a switch's parts (Maps' "Choose its parts on Features") opens them
+    if (app.drawn !== "features" && /^feat-/.test(app.sub || "")) area.open.add(app.sub.slice(5));
     const groups = [];
     for (const f of EZ.features) {
       let g = groups.find((x) => x.title === f.group);
       if (!g) groups.push(g = {title: f.group, list: []});
       g.list.push(f);
     }
+
+    /* A part's rules: its own lines, or the tag lines that ask its aliases (an alias read as TRUE). */
+    const rulesOf = (f, p, max) => {
+      if (p.lines) return p.lines.slice(0, max).map((i) => F.rule(lines[i])).filter(Boolean);
+      const range = F.sections(app.src, lines)[f.tagLines], out = [];
+      if (!range) return out;
+      const res = p.aliases.map((n) => new RegExp("(^|[^A-Za-z0-9_])" + n + "($|[^A-Za-z0-9_])", "g"));
+      for (let i = range[0]; i < range[1] && out.length < max; i++) {
+        if (!lines[i].startsWith("ItemDisplay[")) continue;
+        const r = F.rule(lines[i]);
+        if (!r || !res.some((re) => { re.lastIndex = 0; return re.test(r.cond); })) continue;
+        let cond = r.cond;
+        for (const re of res) cond = cond.replace(re, "$1TRUE$2");
+        const own = p.aliases.map((n) => al[n] ? "(" + al[n].value + ")" : "").join(" ");
+        out.push(Object.assign({}, r, {cond: own + " " + cond}));
+      }
+      return out;
+    };
+    /* A section feature's own rules (those it switches off), for its preview. */
+    const featureRules = (f) => {
+      const secs = F.sections(app.src, lines), out = [];
+      for (const name of f.sections || []) {
+        const r0 = secs[name];
+        if (!r0) continue;
+        for (let i = r0[0]; i < r0[1] && out.length < 40; i++) {
+          if (!lines[i].startsWith("ItemDisplay[")) continue;
+          const r = F.rule(lines[i]);
+          if (r && F.continues(r.out) && !F.notifies(r.out) &&
+              (!f.descOnly || /^%NAME%$/.test(r.out.replace(/\{[^}]*\}?/, "").replace(/%CONTINUE%/g, "").trim()))) out.push(r);
+        }
+      }
+      return out;
+    };
+
+    const setParts = (f, fn) => EZ.store.change((ed) => {
+      const fp = Object.assign({}, ed.featureParts || {});
+      const now = new Set(fp[f.id] || []);
+      fn(now);
+      if (now.size) fp[f.id] = [...now]; else delete fp[f.id];
+      if (Object.keys(fp).length) ed.featureParts = fp; else delete ed.featureParts;
+    }, {label: f.title});
+
+    /* What the switch changes: a few of its rules drawn (its first parts', else its first rules), or its sample items
+       run with the switch on and off (worked out when asked: it builds the filter with it flipped). */
+    const preview = (f, on, parts) => {
+      const def = EZ.edits.featureDefault(f);
+      if (f.samples) {
+        const out = h("div.fe-featpreview");
+        const run = () => {
+          EZ.ui.fill(out, h("span.fe-sub.fe-small", h("span.fe-spin"), " Working it out…"));
+          setTimeout(() => {
+            const P = EZ.preview, z = P.erazure();
+            let y = null;
+            try { y = P.withEdits({v: e.v, base: e.base, features: {[f.id]: !def}}); } catch (err) { y = null; }
+            const words = def ? ["On (Erazure's default)", "Off"] : ["Off (Erazure's default)", "On"];
+            // the description only where it differs (with the switch on and off), as the hover box shows it
+            const cell = (r, other) => r.hidden || r.invisible ? EZ.render.hiddenNode(r) : h("span.fe-featcell",
+              EZ.render.label(r.name, {start: r.start}),
+              r.desc && !(other.hidden || other.invisible) && String(r.desc) !== String(other.desc) ?
+                h("span.fe-minidesc", EZ.render.coded(String(r.desc), "3")) : null);
+            EZ.ui.fill(out, f.samples.map((s) => {
+              const ctx = Object.assign(P.ctx(s.level), {mapid: 2},
+                s.clvl ? {clvl: s.clvl, charstats: {12: s.clvl}} : {});
+              const it = EZ.items.make(Object.assign({place: "GROUND"}, s.spec));
+              if (!it || !z || !y) return null;
+              const a = EZ.engine.run(z.F, it, ctx, P.state.opts), b = EZ.engine.run(y.F, it, ctx, P.state.opts);
+              const place = s.spec.place && s.spec.place !== "GROUND" ? "in the " + s.spec.place.toLowerCase() :
+                "on the ground";
+              return h("div.fe-featrow", h("span.fe-sub.fe-small", `${EZ.items.describe(s.spec)}, ${place}, filter ` +
+                `level ${s.level}` + (s.clvl ? `, character level ${s.clvl}` : "") + ":"),
+                h("span.fe-featpair", h("small", words[0]), cell(a, b)), h("span.fe-featpair", h("small", words[1]),
+                  cell(b, a)));
+            }));
+          }, 30);
+        };
+        out.appendChild(h("button.fe-btn.small", {type: "button", onclick: run}, "Show it on an item"));
+        return out;
+      }
+      const known = (p) => { const k = KNOWN.indexOf(titleOf(p)); return k < 0 ? KNOWN.length : k; };
+      const pick = parts.map((p, i) => [known(p), i, p]).sort((a, b) => a[0] - b[0] || a[1] - b[1]).map((x) => x[2]);
+      const rules = parts.length ? pick.slice(0, 8).flatMap((p) => rulesOf(f, p, 1)) : featureRules(f).slice(0, 12);
+      const shown = FA.drawn(rules, vals, 3);
+      if (!shown.length) return null;
+      return h("div.fe-featpreview", h("span.fe-sub.fe-small", on ? "It draws, for example:" :
+        "Switched on, it would draw, for example:"), shown, on ? h("span.fe-sub.fe-small", "Off, these go.") : null);
+    };
+
+    /* The feature's parts, each its own switch, with what it draws. */
+    const partsList = (f, on, parts) => {
+      const off = new Set(EZ.edits.partsOff(e.featureParts, f));
+      const gone = [...off].filter((k) => !parts.some((p) => p.key === k));
+      const wrap = h("details.fe-featparts" + (on ? "" : ".is-disabled"), {open: area.open.has(f.id) || null});
+      const body = h("div.fe-featparts-body");
+      const draw = () => {
+        const q = (area.query[f.id] || "").trim().toLowerCase();
+        const list = parts.filter((p) => !q || titleOf(p).toLowerCase().indexOf(q) >= 0);
+        EZ.ui.fill(body,
+          on ? null : h("p.fe-note.fe-small", "The switch above is off, so all of them are: switch it on to choose."),
+          h("div.fe-row.fe-small.fe-featparts-tools",
+            parts.length > 12 ? h("input", {type: "search", value: area.query[f.id] || "", placeholder: "Find a part…",
+              "aria-label": "Find a part of " + f.title, oninput: (ev) => { area.query[f.id] = ev.target.value; draw(); }}) : null,
+            h("button.fe-btn.small", {type: "button", disabled: !on || !off.size, onclick: () =>
+              setParts(f, (s) => s.clear())}, "All on"),
+            h("button.fe-btn.small", {type: "button", disabled: !on || off.size >= parts.length, onclick: () =>
+              setParts(f, (s) => { for (const p of parts) s.add(p.key); })}, "All off")),
+          h("ul.fe-partlist", list.map((p) => h("li.fe-part" + (off.has(p.key) ? ".is-off" : ""),
+            h("label",
+              h("input", {type: "checkbox", checked: !off.has(p.key), disabled: !on, onchange: (ev) =>
+                setParts(f, (s) => { if (ev.target.checked) s.delete(p.key); else s.add(p.key); })}),
+              h("span.fe-part-title", titleOf(p).length > 80 ? titleOf(p).slice(0, 78) + "…" : titleOf(p))),
+            h("span.fe-part-draws", FA.drawn(rulesOf(f, p, 6), vals, 2))))),
+          list.length ? null : h("p.fe-sub.fe-small", "No part matches."),
+          gone.length ? h("p.fe-note.warn.fe-small", "Switched off but no longer in Erazure: " +
+            gone.map((k) => k.replace(/^text:/, "")).join(", ") + ". ", h("button.fe-btn.ghost.small", {type: "button",
+              onclick: () => setParts(f, (s) => { for (const k of gone) s.delete(k); })}, "Forget them")) : null);
+      };
+      wrap.addEventListener("toggle", () => {
+        if (wrap.open) { area.open.add(f.id); if (!body.childNodes.length) draw(); } else area.open.delete(f.id);
+      });
+      if (wrap.open) draw();
+      wrap.append(h("summary", `Choose its parts: ${parts.length}` + (off.size ? `, ${off.size} switched off` : "")),
+        body);
+      return wrap;
+    };
+
     // a switch put back to Erazure's default follows Erazure again (as on Maps); one Erazure's own default came to
     // meet (a choice kept from before) can be let go with the button right after its title
     const row = (f) => {
       const def = EZ.edits.featureDefault(f);
       const pinned = e.features && f.id in e.features;
       const on = pinned ? !!e.features[f.id] : def;
-      return h("div.fe-feature" + (on !== def ? ".is-changed" : ""),
-        toggle(f.title, on, (v) => EZ.store.change((ed) => {
-          ed.features = ed.features || {};
-          if (v === def) delete ed.features[f.id]; else ed.features[f.id] = v;
-          if (!Object.keys(ed.features).length) delete ed.features;
-        }, {label: f.title}), {sub: f.sub}),
-        pinned ? h("button.fe-btn.ghost.small", {type: "button", title: "Back to Erazure's default (today " +
-          (def ? "on" : "off") + "), which follows Erazure's updates", onclick: () => EZ.store.change((ed) => {
-          delete ed.features[f.id];
-          if (!Object.keys(ed.features).length) delete ed.features;
-        })}, "↺ Erazure's default") : null);
+      const parts = f.parts || f.partAliases ? EZ.edits.featureParts(app.src, lines, f) : [];
+      const offN = EZ.edits.partsOff(e.featureParts, f).length;
+      return h("div.fe-feature" + (on !== def || (on && offN) ? ".is-changed" : ""), {id: "fe-feat-" + f.id},
+        h("div.fe-row.fe-feature-head",
+          toggle(f.title, on, (v) => EZ.store.change((ed) => {
+            ed.features = ed.features || {};
+            if (v === def) delete ed.features[f.id]; else ed.features[f.id] = v;
+            if (!Object.keys(ed.features).length) delete ed.features;
+          }, {label: f.title}), {sub: f.sub}),
+          pinned ? h("button.fe-btn.ghost.small", {type: "button", title: "Back to Erazure's default (today " +
+            (def ? "on" : "off") + "), which follows Erazure's updates", onclick: () => EZ.store.change((ed) => {
+            delete ed.features[f.id];
+            if (!Object.keys(ed.features).length) delete ed.features;
+          })}, "↺ Erazure's default") : null),
+        h("div.fe-featmore", preview(f, on, parts), parts.length > 1 ? partsList(f, on, parts) : null));
     };
     box.append(
       h("div.fe-area-head", h("div", h("h2", "Features"),
         h("p.fe-sub", "Switch off what you don't want to see. Most switches are tags and description lines only, so " +
           "what shows, hides and alerts stays Erazure's; the Grail and Strictness switches and the sell tags on small " +
-          "items also change what shows. Erazure's map lines are on Maps too."))),
+          "items also change what shows. Under each switch: what it draws (its numbers an example), and where it has " +
+          "parts, each part its own switch: Charm tags' Gold Find, a highlight's skill. Erazure's map lines are on Maps " +
+          "too."))),
       h("section.fe-card", {id: "fe-features"},
         groups.map((g) => h("div.fe-featgroup", h("h4", g.title), h("div.fe-stack", g.list.map(row))))));
     if (app.sub) {
-      const el = box.querySelector("#fe-" + app.sub);
+      const el = box.querySelector("#fe-" + app.sub) || box.querySelector("#fe-feat-" + app.sub);
       if (el) el.scrollIntoView();
     }
   },
@@ -10524,7 +11058,8 @@ EZ.areas = EZ.areas || [];
           const def = EZ.edits.featureDefault(f);
           const pinned = e.features && f.id in e.features;
           const on = pinned ? !!e.features[f.id] : def;
-          return h("div.fe-feature" + (on !== def ? ".is-changed" : ""), toggle(f.title, on, (v) => EZ.store.change((ed) => {
+          const offN = EZ.edits.partsOff(e.featureParts, f).length;
+          return h("div.fe-feature" + (on !== def || (on && offN) ? ".is-changed" : ""), toggle(f.title, on, (v) => EZ.store.change((ed) => {
             ed.features = ed.features || {};
             if (v === def) delete ed.features[f.id]; else ed.features[f.id] = v;
             if (!Object.keys(ed.features).length) delete ed.features;
@@ -10533,7 +11068,10 @@ EZ.areas = EZ.areas || [];
             (def ? "on" : "off") + "), which follows Erazure's updates", onclick: () => EZ.store.change((ed) => {
             delete ed.features[f.id];
             if (!Object.keys(ed.features).length) delete ed.features;
-          })}, "↺ Erazure's default") : null);
+          })}, "↺ Erazure's default") : null,
+          f.parts ? h("div.fe-featmore.fe-small", h("a", {href: "#features/feat-" + f.id, onclick: (ev) => {
+            ev.preventDefault(); app.go("features", "feat-" + f.id); }}, "Choose its parts on Features" +
+            (offN ? ` (${offN} switched off)` : ""))) : null);
         })));
 
       // the mods: the bonuses (good for the player, and most maps roll one) take a gold line only; every other mod a
@@ -11795,8 +12333,8 @@ EZ.areas = EZ.areas || [];
               title: "Add its other tiers: " + missing.map((c) => plainName((cat.bases.get(c) || {}).name || c)).join(", "),
               onclick: () => set((b) => { for (const c of missing) if (b.codes.indexOf(c) < 0) b.codes.push(c); }, true)},
               "+ tiers") : null,
-            shared > 1 ? h("span.fe-sub", {title: "Unidentified, the loot filter can't tell them apart: they share " +
-              "this base"}, ` (${shared} share it)`) : null,
+            shared > 1 ? h("span.fe-sub", {title: "They share this base: the editor can't single out one of them, " +
+              "identified or not"}, ` (${shared} share it)`) : null,
             h("button.fe-x", {type: "button", "aria-label": "Remove " + code, onclick: () =>
               set((b) => { b.codes = b.codes.filter((c) => c !== code); }, true)}, "✕"));
         }),
@@ -12839,8 +13377,8 @@ EZ.areas = EZ.areas || [];
     const set = new Set();
     let every = false;
     const lv = (list) => { if (!list || !list.length) every = true; else for (const n of list) set.add(+n); };
-    for (const k of ["options", "features", "looks", "remap", "sounds", "icons", "alerts", "volume", "wishlists",
-                     "ops", "rules"]) {
+    for (const k of ["options", "features", "featureParts", "looks", "remap", "sounds", "icons", "alerts", "volume",
+                     "wishlists", "ops", "rules"]) {
       const v = e[k];
       if (v && (Array.isArray(v) ? v.length : typeof v === "object" ? Object.keys(v).length : true)) every = true;
     }

@@ -391,8 +391,43 @@
 .edit-map .fe-featgroup { margin-top: .8em; }
 .edit-map .fe-featgroup h4 { color: var(--muted); font-size: .82em; text-transform: uppercase; letter-spacing: .06em;
   font-family: inherit; }
-.edit-map .fe-feature { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: flex-start;
-  gap: .3em 1em; padding: .25em .4em; border-radius: 6px; }
+.edit-map .fe-feature { display: block; padding: .3em .4em .45em; border-radius: 6px; }
+.edit-map .fe-feature + .fe-feature { border-top: 1px solid var(--line); }
+.edit-map .fe-feature-head { align-items: flex-start; justify-content: flex-start; gap: .3em 1em; }
+/* under a switch: what it draws, then its parts (each its own switch, with what it draws) */
+.edit-map .fe-featmore { margin: .35em 0 .1em 2.85em; display: flex; flex-direction: column; gap: .4em; min-width: 0; }
+.edit-map .fe-featpreview { display: flex; flex-wrap: wrap; align-items: center; gap: .35em .6em; }
+.edit-map .fe-featsample { display: inline-flex; flex-direction: column; align-items: center; gap: 3px;
+  background: var(--game); border: 1px solid var(--line); border-radius: 5px; padding: 4px 9px; max-width: 100%; }
+.edit-map .fe-featsample .fe-label { font-size: 12px; max-width: 100%; overflow: hidden; }
+.edit-map .fe-featrow { display: flex; flex-wrap: wrap; align-items: center; gap: .35em .7em; width: 100%; }
+.edit-map .fe-featpair { display: inline-flex; align-items: center; gap: .5em; background: var(--game);
+  border: 1px solid var(--line); border-radius: 5px; padding: 3px 9px; max-width: 100%; }
+.edit-map .fe-featpair > small { color: #a9a294; white-space: nowrap; }
+.edit-map .fe-featpair .fe-label { font-size: 12px; }
+.edit-map .fe-featcell { display: inline-flex; flex-direction: column; align-items: center; gap: 3px; }
+.edit-map .fe-featparts > summary { cursor: pointer; color: var(--accent); font-size: .88em; width: max-content;
+  max-width: 100%; }
+.edit-map .fe-featparts-body { margin-top: .45em; }
+.edit-map .fe-featparts-tools { gap: .4em .6em; }
+.edit-map .fe-featparts-tools input[type=search] { min-width: min(14em, 100%); }
+.edit-map .fe-partlist { list-style: none; margin: .45em 0 0; padding: 0; display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: .2em .9em; }
+.edit-map .fe-part { display: flex; align-items: center; gap: .5em; min-width: 0; padding: .15em .3em;
+  border-radius: 5px; }
+.edit-map .fe-part:hover { background: var(--panel2); }
+.edit-map .fe-part label { display: flex; align-items: center; gap: .45em; cursor: pointer; flex: 0 1 auto;
+  min-width: 8em; }
+.edit-map .fe-part label input { accent-color: var(--accent); }
+.edit-map .fe-part.is-off .fe-part-title { color: var(--faint); text-decoration: line-through; }
+.edit-map .fe-part.is-off .fe-part-draws, .edit-map .fe-featparts.is-disabled .fe-part-draws { opacity: .4; }
+.edit-map .fe-part-draws { display: flex; gap: .3em; min-width: 0; overflow: hidden; flex: 1 1 auto;
+  justify-content: flex-end; }
+.edit-map .fe-part-draws .fe-featsample { padding: 2px 6px; flex: 0 1 auto; min-width: 0; }
+.edit-map .fe-part-draws .fe-label { font-size: 11px; }
+.edit-map .fe-part-draws .fe-minidesc { font-size: 10.5px; white-space: nowrap; max-width: 240px; overflow: hidden;
+  text-overflow: ellipsis; }
+@media (max-width: 640px) { .edit-map .fe-featmore { margin-left: 0; } }
 .edit-map table.fe-levels td { vertical-align: middle; }
 .edit-map table.fe-maptable { table-layout: fixed; }
 .edit-map table.fe-maptable col.fe-mapcol-rolls { width: 7.5em; }

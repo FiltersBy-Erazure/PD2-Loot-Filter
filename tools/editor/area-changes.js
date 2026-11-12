@@ -91,8 +91,8 @@ EZ.areas = EZ.areas || [];
     const set = new Set();
     let every = false;
     const lv = (list) => { if (!list || !list.length) every = true; else for (const n of list) set.add(+n); };
-    for (const k of ["options", "features", "looks", "remap", "sounds", "icons", "alerts", "volume", "wishlists",
-                     "ops", "rules"]) {
+    for (const k of ["options", "features", "featureParts", "looks", "remap", "sounds", "icons", "alerts", "volume",
+                     "wishlists", "ops", "rules"]) {
       const v = e[k];
       if (v && (Array.isArray(v) ? v.length : typeof v === "object" ? Object.keys(v).length : true)) every = true;
     }

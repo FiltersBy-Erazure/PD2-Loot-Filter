@@ -91,8 +91,7 @@ EZ.maps = (function () {
   /* The Maps area's changes: its warnings and hides, and Erazure's map lines switched (Features lists them too, and
      counts them here). */
   function count(e) {
-    const lines = EZ.features.filter((f) => f.group === "Maps" && e.features && f.id in e.features &&
-      !!e.features[f.id] !== EZ.edits.featureDefault(f)).length;
+    const lines = EZ.features.filter((f) => f.group === "Maps").reduce((n, f) => n + EZ.edits.featureChanges(e, f), 0);
     const m = e.maps;
     if (!m || typeof m !== "object") return lines;
     return lines + ids(m.warn).length + ids(m.hide).length + ids(m.mark).length + mapCodes(m.hideMaps).length;

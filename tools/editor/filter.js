@@ -18,8 +18,22 @@ EZ.filter = (function () {
   const LEVEL_RE = /^ItemDisplayFilterName\[\]:/;
 
   /* {name: [first line, one past the last]} of the source's sections, for the lines of a version (a style edits
-     patch adds lines: their places come from section starts counted on the version's own lines, found by the
-     sections' first lines). */
+     patch adds lines: their places come from the version's own lines). Each section is found by its anchor, its
+     first line that appears once in the source (a section's first lines are often the same row of dashes as the
+     next one's), counted back to the section's start. */
+  function anchors(src) {
+    if (src.sectionAnchors) return src.sectionAnchors;
+    const seen = new Map();
+    for (const line of src.lines) seen.set(line, (seen.get(line) || 0) + 1);
+    const list = src.sections;
+    src.sectionAnchors = list.map((sec, k) => {
+      const end = k + 1 < list.length ? list[k + 1][1] : src.lines.length;
+      let a = sec[1];
+      while (a < end && seen.get(src.lines[a]) !== 1) a++;
+      return a < end ? a : sec[1];
+    });
+    return src.sectionAnchors;
+  }
   function sections(src, lines) {
     const out = {}, list = src.sections;
     if (lines === src.lines || lines.length === src.lines.length) {
@@ -28,12 +42,16 @@ EZ.filter = (function () {
       }
       return out;
     }
+    const anchor = anchors(src);
     let at = 0;
     for (let k = 0; k < list.length; k++) {
-      const first = src.lines[list[k][1]];
-      while (at < lines.length && lines[at] !== first) at++;
-      out[list[k][0]] = [at, lines.length];
-      if (k) out[list[k - 1][0]][1] = at;
+      const first = src.lines[anchor[k]];
+      let j = at;
+      while (j < lines.length && lines[j] !== first) j++;
+      const start = Math.max(0, j - (anchor[k] - list[k][1]));
+      out[list[k][0]] = [start, lines.length];
+      if (k) out[list[k - 1][0]][1] = start;
+      if (j < lines.length) at = j + 1;
     }
     return out;
   }

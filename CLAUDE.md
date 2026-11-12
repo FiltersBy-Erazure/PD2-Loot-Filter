@@ -915,6 +915,21 @@
   the preview and where to ask (erazure on Discord, as README says). 050's labels on main (653e109): Super Healing and
   Mana Potions, 3-Square / 2-Square orbs, Hide Magic / Rare Quivers, and Show Ethereal Non-Magical Throwing Weapons
   without `!ID`; the launcher's menu is Item Filter Profiles (its button image says so).
+  Features (2026-11-12, the author: "each of the sections ... needs to have some kind of preview that shows what having
+  the option on or off would affect", and "for charm tags, they may want to choose individual tags to turn off"):
+  under each switch a few of its rules drawn on an item they name (`EZ.featuresArea`: the numbers a value the condition
+  asks for, the well-known stats first), or for a switch that changes what shows (`samples` in features.js: small
+  sell tags, tier lines, Grail looks, level 1's sockets) "Show it on an item", the items run with it on and off; and
+  its parts, each its own switch (edit set `featureParts: {feature: [part key]}`, applied after the switches, only
+  while the feature is on, a part Erazure no longer has reported in Changes): 300 and 305 by their stat blocks (key
+  `stat 80`), the other tag and note sections by their comment headings (a +number as +N, so 280's per level rules
+  are one part per skill; a long note or one with a date is no heading), the description lines (285, 320 / 350, 360,
+  145, 146) by the line drawn (`text:#% Monster Rarity`), roll and low-level tags by the stat their aliases show;
+  a rule that writes no text (the name on a new line) is layout and stays. `EZ.edits.featureParts` and the
+  selftest's `feature_parts` find the same parts in Main and a Corrlorized version (1,293). `EZ.filter.sections` finds
+  a style-patched version's sections by each section's first line that appears once in the source (until then by
+  its first line, often the same row of dashes as the next section's, so Corrlorized's sections were off; the
+  selftest's `features` checks every version's starts).
 - The website's **Resources** tab (2026-11-02, the author: reference pages players can look things up in, more to
   come): `website/docs/resources/index.md` lists them, a grid card each (mkdocs.yml has `navigation.indexes`, so it is
   the tab's own page). A resource is a page written by hand, `website/resources/<Name>.html` (its data, styles and

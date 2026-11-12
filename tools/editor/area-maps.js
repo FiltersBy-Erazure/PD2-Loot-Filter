@@ -41,7 +41,8 @@ EZ.areas = EZ.areas || [];
           const def = EZ.edits.featureDefault(f);
           const pinned = e.features && f.id in e.features;
           const on = pinned ? !!e.features[f.id] : def;
-          return h("div.fe-feature" + (on !== def ? ".is-changed" : ""), toggle(f.title, on, (v) => EZ.store.change((ed) => {
+          const offN = EZ.edits.partsOff(e.featureParts, f).length;
+          return h("div.fe-feature" + (on !== def || (on && offN) ? ".is-changed" : ""), toggle(f.title, on, (v) => EZ.store.change((ed) => {
             ed.features = ed.features || {};
             if (v === def) delete ed.features[f.id]; else ed.features[f.id] = v;
             if (!Object.keys(ed.features).length) delete ed.features;
@@ -50,7 +51,10 @@ EZ.areas = EZ.areas || [];
             (def ? "on" : "off") + "), which follows Erazure's updates", onclick: () => EZ.store.change((ed) => {
             delete ed.features[f.id];
             if (!Object.keys(ed.features).length) delete ed.features;
-          })}, "↺ Erazure's default") : null);
+          })}, "↺ Erazure's default") : null,
+          f.parts ? h("div.fe-featmore.fe-small", h("a", {href: "#features/feat-" + f.id, onclick: (ev) => {
+            ev.preventDefault(); app.go("features", "feat-" + f.id); }}, "Choose its parts on Features" +
+            (offN ? ` (${offN} switched off)` : ""))) : null);
         })));
 
       // the mods: the bonuses (good for the player, and most maps roll one) take a gold line only; every other mod a

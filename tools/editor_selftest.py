@@ -142,11 +142,44 @@ test("features", () => {
       }
     }
   }
+  // every version's sections start with the source's first lines (a style patch adds lines inside them)
+  for (const v of src.variants) {
+    const vl = C.variantLines(src, v), vs = F.sections(src, vl);
+    let last = -1;
+    for (const [name, start] of src.sections) {
+      const r = vs[name];
+      if (!r || r[0] < last || vl[r[0]] !== src.lines[start]) { bad.push(`${v.name}: section ${name} not found`); break; }
+      last = r[0];
+    }
+  }
+  // the finer switches: the same parts as the Python reference finds (Main and a Corrlorized version), each with
+  // something to switch; a part switched off that the version lacks is reported, not dropped in silence
+  let partsN = 0;
+  for (const vname of Object.keys(EXPECT.parts || {})) {
+    const v = src.variants.find((x) => x.name === vname);
+    const vl = C.variantLines(src, v);
+    for (const f of EZ.features) {
+      if (!f.parts && !f.partAliases) continue;
+      const got = EZ.edits.featureParts(src, vl, f).map((q) => [q.key, q.title, (q.lines || q.aliases).length]);
+      const want = EXPECT.parts[vname][f.id] || [];
+      if (JSON.stringify(got) !== JSON.stringify(want)) {
+        const k = got.findIndex((g, i) => JSON.stringify(g) !== JSON.stringify(want[i]));
+        bad.push(`${vname} ${f.id}: parts differ from the reference at ${k}: ${JSON.stringify(got[k])} vs ` +
+                 JSON.stringify(want[k]));
+      }
+      if (got.length < 2) bad.push(`${vname} ${f.id}: ${got.length} part(s)`);
+      if (new Set(got.map((g) => g[0])).size !== got.length) bad.push(`${vname} ${f.id}: two parts share a key`);
+      partsN += got.length;
+    }
+  }
+  const gone = EZ.edits.apply(src, {edits: {v: 1, base: {style: "erazure"}, featureParts: {"charm-tags": ["No such part"]}}},
+    lines).report.unplaced;
+  if (gone.length !== 1 || gone[0].area !== "features") bad.push("a part Erazure lacks isn't reported: " + JSON.stringify(gone));
   const groups = F.options(src, lines);
   const opts = groups.reduce((n, g) => n + g.options.length, 0);
   if (!groups.length || !opts) bad.push("050's options didn't parse");
   return {fail: bad.length ? bad.join("; ") : null, features: EZ.features.length, rulesTheySwitch: switched,
-          optionGroups: groups.length, options: opts};
+          parts: partsN, optionGroups: groups.length, options: opts};
 });
 
 test("edits", async () => {
@@ -248,21 +281,227 @@ SIZES = ["BORDER", "MAP", "DOT", "PX"]
 
 def features():
     """The feature definitions of tools/editor/features.js: [(id, on default, sections, aliases (list or regex),
-    switch-on (section, match))]."""
+    switch-on (section, match), descOnly, parts (None, "headings" or "text"), partAliases (regex), tagLines)]."""
     text = (EDITOR / "features.js").read_text(encoding="utf-8")
     out = []
     for m in FEATURE_RE.finditer(text):
         body = m.group(0)
-        secs = re.findall(r'"(\d{3}-[\w-]+\.filter)"', body.split("switchOn")[0]) if "sections:" in body else []
+        head = re.split(r"switchOn|tagLines", body)[0]
+        secs = re.findall(r'"(\d{3}-[\w-]+\.filter)"', head) if "sections:" in body else []
         al = None
-        a = re.search(r"aliases: (\[[^\]]*\]|/[^/]+/)", body)
+        a = re.search(r"\baliases: (\[[^\]]*\]|/[^/]+/)", body)
         if a:
             al = json.loads(a.group(1)) if a.group(1).startswith("[") else re.compile(a.group(1)[1:-1])
         so = re.search(r'switchOn: \{section: "([^"]+)", match: "([^"]+)"\}', body)
         on = not re.search(r"\bon: false\b", body)
+        pm = re.search(r'\bparts: (true|"text")', body)
+        pa = re.search(r"\bpartAliases: /([^/]+)/", body)
+        tl = re.search(r'\btagLines: "([^"]+)"', body)
         out.append((m.group(1), on, secs, al, (so.group(1), so.group(2)) if so else None,
-                    bool(re.search(r"\bdescOnly: true\b", body))))
+                    bool(re.search(r"\bdescOnly: true\b", body)),
+                    ("text" if pm.group(1) == '"text"' else "headings") if pm else None,
+                    re.compile(pa.group(1)) if pa else None, tl.group(1) if tl else None))
     return out
+
+
+# ---------------------------------------------------------------- a feature's parts (edits.js featureParts)
+
+STAT_BLOCK = re.compile(r"^//+\s*-{3,}\s*(.+?)\s*\((stat \d+\+?)[^)]*\)\s*-{3,}\s*$")
+BLOCK_HEAD = re.compile(r"^//+\s*-{3,}\s*(.+?)\s*-{3,}\s*$")
+NOTE_WORDS = re.compile(r"\(the author|\b\d{4}-\d\d-\d\d\b|sections/|tools/|\.py\b|\.filter\b")
+OFF_RULE = re.compile(r"^\s*//+\s*ItemDisplay\[")
+
+
+def heading_title(text):
+    """A comment line as a part's title, or None for a note."""
+    if NOTE_WORDS.search(text):
+        return None
+    t = re.sub(r"\([^()]*\)", "", text)
+    t = re.sub(r"\(.*$", "", t)
+    k = t.find(": ")
+    if k >= 0:
+        t = t[k + 2:] if k <= 4 else t[:k]
+    t = re.sub(r"\s+", " ", t).replace(" ,", ",").strip()
+    t = re.sub(r"\s+Highlight$", "", re.sub(r"\s*-$", "", t), flags=re.I).strip()
+    if not t or len(t) > 64 or re.match(r"[a-z]", t) or re.search(r"[,:(]$", t):
+        return None
+    return re.sub(r"^\+\d+(?=\s)", "+N", t)
+
+
+def no_formulas(text, word):
+    out, i = "", 0
+    while i < len(text):
+        k = text.find("$f(", i)
+        if k < 0:
+            out += text[i:]
+            break
+        out += text[i:k]
+        depth, j = 0, k + 2
+        while j < len(text):
+            if text[j] == "(":
+                depth += 1
+            elif text[j] == ")":
+                depth -= 1
+                if depth == 0:
+                    break
+            j += 1
+        out += word
+        i = j + 1
+    return out
+
+
+def out_parts(out):
+    d = re.search(r"\{([^}]*)\}?", out)
+    return re.sub(r"\{[^}]*\}?", "", out, count=1).replace("%CONTINUE%", ""), (d.group(1) if d else None)
+
+
+LAYOUT_WORDS = set(COLORS) | {"NAME", "CL", "NL", "CS"}
+
+
+def layout_only(out):
+    def bare(x):
+        x = re.sub(r"%([A-Z_]+)%", lambda m: "" if m.group(1) in LAYOUT_WORDS else m.group(0), x or "")
+        return re.sub(r"\u00ffc.", "", x).strip()
+    label, desc = out_parts(out)
+    return not bare(label) and not bare(desc)
+
+
+def drawn_title(out, names):
+    def vis(x):
+        x = no_formulas(x.replace("%PERCENT%", "%"), "#")
+        x = re.sub(r"%([A-Z0-9_]+(?:,\d+)?)%", lambda m: "" if m.group(1) in COLORS else " "
+                   if m.group(1) in LAYOUT_WORDS or m.group(1) in names else "#", x)
+        return re.sub(r"\u00ffc.", "", x)
+    label, desc = out_parts(out)
+    own = desc is not None and vis(desc.replace("%NAME%", "")).strip()
+    t = vis(desc if own else label)
+    t = re.sub(r"#(?:[.,]#)+", "#", re.sub(r"\d+", "#", t))
+    return re.sub(r"\s+", " ", re.sub(r"\*+", " ", t)).strip()
+
+
+def switchable(line, desc_only):
+    if not line.startswith("ItemDisplay["):
+        return False
+    r = rule(line)
+    if not r:
+        return False
+    outside = re.sub(r"\{[^}]*\}?", "", r["out"], count=1)
+    return "%CONTINUE%" in r["out"] and not NOTIFY_RE.search(r["out"]) and \
+        (not desc_only or outside.replace("%CONTINUE%", "").strip() == "%NAME%")
+
+
+def alias_values(lines):
+    out = {}
+    for i, line in enumerate(lines):
+        m = ALIAS_RE.match(line)
+        if m and m.group(1) not in out:
+            out[m.group(1)] = (i, build.bh_trim(m.group(2).split("//")[0]))
+    return out
+
+
+def feature_parts(src, lines, f):
+    """edits.js's featureParts: [{key, title, lines | aliases}] of a feature, in the version's order."""
+    fid, _on, secs, _al, _so, desc_only, mode, part_aliases, tag_lines = f
+    out, by_key = [], {}
+
+    def add(key, title, field, v):
+        p = by_key.get(key)
+        if not p:
+            p = by_key[key] = {"key": key, "title": title, field: []}
+            out.append(p)
+        if v not in p[field]:
+            p[field].append(v)
+    if mode and secs:
+        rngs, names = sections(src, lines), set(aliases(lines))
+        for name in secs:
+            if name not in rngs:
+                continue
+            heading = key = block = None
+            stat = False
+            for i in range(*rngs[name]):
+                line = lines[i]
+                if line.startswith("//") and not OFF_RULE.match(line):
+                    m = STAT_BLOCK.match(line)
+                    if m:
+                        heading, key, stat, block = m.group(1).strip(), m.group(2), True, None
+                        continue
+                    if BLOCK_HEAD.match(line):
+                        heading = key = block = None
+                        stat = False
+                        continue
+                    text = re.sub(r"^/+", "", line).strip()
+                    if not text or re.match(r"[-=]{3}", text):
+                        block = None
+                        continue
+                    if block is None:
+                        block = text
+                    continue
+                if block is not None:
+                    if not stat:
+                        t = heading_title(block)
+                        if t:
+                            heading = key = t
+                        elif not re.match(r"[a-z]", block):
+                            heading = key = None
+                    block = None
+                if not switchable(line, desc_only):
+                    continue
+                r = rule(line)
+                if layout_only(r["out"]):
+                    continue
+                if mode != "text" and heading:
+                    add(key, heading, "lines", i)
+                    continue
+                t = drawn_title(r["out"], names)
+                if t:
+                    add("text:" + t.lstrip("+-"), t, "lines", i)
+    elif part_aliases:
+        vals = alias_values(lines)
+        rng = sections(src, lines).get(tag_lines)
+        names = sorted((n for n in vals if part_aliases.search(n) and vals[n][1] != "FALSE"), key=lambda n: vals[n][0])
+        asked = {}
+        if rng:
+            heading = key = None
+            want = {n: re.compile(r"(^|[^A-Za-z0-9_])" + n + r"($|[^A-Za-z0-9_])") for n in names}
+            for i in range(*rng):
+                if not want:
+                    break
+                line = lines[i]
+                m = STAT_BLOCK.match(line)
+                if m:
+                    heading, key = m.group(1).strip(), m.group(2)
+                    continue
+                if not line.startswith("ItemDisplay[") or not heading:
+                    continue
+                r = rule(line)
+                if not r:
+                    continue
+                for n, rx in list(want.items()):
+                    if rx.search(r["cond"]):
+                        asked[n] = (key, heading)
+                        del want[n]
+        for n in names:
+            key, title = asked.get(n) or (n, re.sub(r"^[A-Z]+_|_TAG$", "", n).replace("_", " "))
+            add(key, title, "aliases", n)
+    return out
+
+
+def parts_off(fp, fid):
+    lst = fp.get(fid) if isinstance(fp, dict) and isinstance(fp.get(fid), list) else []
+    seen = []
+    for k in lst:
+        if isinstance(k, str) and k and k not in seen:
+            seen.append(k)
+    return seen
+
+
+def feature_changes(e, f):
+    fid, on_default = f[0], f[1]
+    fe = e.get("features") or {}
+    on = bool(fe[fid]) if fid in fe else on_default
+    if on != on_default:
+        return 1
+    return len(parts_off(e.get("featureParts"), fid)) if on else 0
 
 
 LOOK_COLOR_RE = re.compile(r"%(WHITE|RED|GREEN|BLUE|GOLD|GRAY|BLACK|TAN|ORANGE|YELLOW|PURPLE|DARK_GREEN|CORAL|SAGE|"
@@ -304,6 +543,23 @@ def each_output(lines, fn):
                 lines[i] = r["head"] + out + r["comment"]
 
 
+def section_anchors(src):
+    """filter.js's anchors: each section's first line that appears once in the source."""
+    if "_anchors" not in src:
+        seen = {}
+        for line in src["lines"]:
+            seen[line] = seen.get(line, 0) + 1
+        lst, out = src["sections"], []
+        for k, (name, start) in enumerate(lst):
+            end = lst[k + 1][1] if k + 1 < len(lst) else len(src["lines"])
+            a = start
+            while a < end and seen.get(src["lines"][a]) != 1:
+                a += 1
+            out.append(a if a < end else start)
+        src["_anchors"] = out
+    return src["_anchors"]
+
+
 def sections(src, lines):
     lst = src["sections"]
     out = {}
@@ -311,14 +567,19 @@ def sections(src, lines):
         for k, (name, start) in enumerate(lst):
             out[name] = [start, lst[k + 1][1] if k + 1 < len(lst) else len(lines)]
         return out
+    anchor = section_anchors(src)
     at = 0
     for k, (name, start) in enumerate(lst):
-        first = src["lines"][start]
-        while at < len(lines) and lines[at] != first:
-            at += 1
-        out[name] = [at, len(lines)]
+        first = src["lines"][anchor[k]]
+        j = at
+        while j < len(lines) and lines[j] != first:
+            j += 1
+        begin = max(0, j - (anchor[k] - start))
+        out[name] = [begin, len(lines)]
         if k:
-            out[lst[k - 1][0]][1] = at
+            out[lst[k - 1][0]][1] = begin
+        if j < len(lines):
+            at = j + 1
     return out
 
 
@@ -622,7 +883,7 @@ def count(e, feats):
                                                                                 or w.get("need") or w.get("pool")))
     n += sum(1 for o in (e.get("items") or []) if isinstance(o, dict) and o.get("action") in ITEM_ACTIONS
              and isinstance(o.get("scope"), dict) and isinstance(o["scope"].get("codes"), list) and o["scope"]["codes"])
-    n += sum(1 for fid, on, *_ in feats if fid in (e.get("features") or {}) and bool(e["features"][fid]) != on)
+    n += sum(feature_changes(e, f) for f in feats)
     lv = e.get("levels") or {}
     n += len(lv.get("names") or {}) + len(lv.get("copies") or {})
     n += len(e.get("looks") or {}) + len(e.get("remap") or {}) + len(e.get("icons") or {})
@@ -646,7 +907,7 @@ def reference(src, edits, lines, feats):
                 lines[i] = ground_only(re.sub(r"^\s*//+\s*", "", lines[i], count=1))
     # features
     want = edits.get("features") or {}
-    for fid, on_default, secs, al, so, desc_only in feats:
+    for fid, on_default, secs, al, so, desc_only, *_ in feats:
         if fid not in want or bool(want[fid]) == on_default:
             continue
         on = bool(want[fid])
@@ -670,6 +931,24 @@ def reference(src, edits, lines, feats):
                 r = rule(lines[i])
                 if r and r["off"] and so[1] in lines[i]:
                     lines[i] = re.sub(r"^\s*//+\s*", "", lines[i], count=1)
+    # the finer switches: the parts switched off of each feature that is on
+    for f in feats:
+        off = parts_off(edits.get("featureParts"), f[0])
+        on = bool(want[f[0]]) if f[0] in want else f[1]
+        if not off or not on:
+            continue
+        have = {p["key"]: p for p in feature_parts(src, lines, f)}
+        for key in off:
+            p = have.get(key)
+            if not p:
+                continue
+            if "aliases" in p:
+                for n in p["aliases"]:
+                    set_alias(lines, n, "FALSE")
+            else:
+                for i in p["lines"]:
+                    if not OFF_RULE.match(lines[i]):
+                        lines[i] = "//" + lines[i]
     # looks
     for name, value in (edits.get("looks") or {}).items():
         if isinstance(value, str):
@@ -1189,6 +1468,13 @@ def expectations(src, only=""):
         toggle[name], style[name] = fixture_variant(src, fx["edits"])
     out = {"files": files, "fixtures": fixtures, "toggle": toggle, "style": style,
            "engine": {"formulas": ENGINE_FORMULAS, "conditions": ENGINE_CONDITIONS, "rules": ENGINE_RULES}}
+    # each feature's parts in Main and in Corrlorized - Main - PoE as the Python reference finds them: [key, title,
+    # how many lines or aliases], for the page's featureParts to match
+    out["parts"] = {}
+    for v in [x for x in src["variants"] if x["name"] in (src["main"], "Corrlorized - Main - PoE")]:
+        vl = variant_lines(src, v)
+        out["parts"][v["name"]] = {f[0]: [[q["key"], q["title"], len(q.get("lines") or q.get("aliases"))]
+                                          for q in feature_parts(src, vl, f)] for f in features() if f[6] or f[7]}
     import editor_map
     data = editor_map.page_data()
     out.update(catalog=data["catalog"], soundCount=data["soundCount"], paste=PASTE_CASES, sound=sound_case(),

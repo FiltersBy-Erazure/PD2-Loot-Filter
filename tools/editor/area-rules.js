@@ -556,8 +556,8 @@ EZ.areas = EZ.areas || [];
               title: "Add its other tiers: " + missing.map((c) => plainName((cat.bases.get(c) || {}).name || c)).join(", "),
               onclick: () => set((b) => { for (const c of missing) if (b.codes.indexOf(c) < 0) b.codes.push(c); }, true)},
               "+ tiers") : null,
-            shared > 1 ? h("span.fe-sub", {title: "Unidentified, the loot filter can't tell them apart: they share " +
-              "this base"}, ` (${shared} share it)`) : null,
+            shared > 1 ? h("span.fe-sub", {title: "They share this base: the editor can't single out one of them, " +
+              "identified or not"}, ` (${shared} share it)`) : null,
             h("button.fe-x", {type: "button", "aria-label": "Remove " + code, onclick: () =>
               set((b) => { b.codes = b.codes.filter((c) => c !== code); }, true)}, "✕"));
         }),

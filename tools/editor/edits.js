@@ -47,6 +47,159 @@ EZ.edits = (function () {
 
   function featureDefault(f) { return f.on === undefined ? true : f.on; }
 
+  /* The rules a section feature switches off: its %CONTINUE% rules that notify nothing (descOnly: those that write
+     description lines alone). */
+  const switchable = (f, line) => {
+    if (!line.startsWith("ItemDisplay[")) return false;
+    const r = F.rule(line);
+    return !!r && F.continues(r.out) && !F.notifies(r.out) && (!f.descOnly || descOnly(r.out));
+  };
+  const OFF_RULE = /^\s*\/\/+\s*ItemDisplay\[/;
+
+  /* A feature's finer switches (features.js `parts`, `partAliases`): [{key, title, lines: [line]} or {key, title,
+     aliases: [name]}] in the version's order. A key is what the edit set keeps, so it stays when Erazure renames a
+     title where it can: a stat block's "stat 80".
+     parts (the feature's switchable rules, those that write text: a rule that only moves the name to a new line or
+     colors it is the layout and stays):
+       - in a section whose tag lines come in stat blocks (300, 305: "// ---- Magic Find (stat 80, priority 8) ----"),
+         a part per block, its other comments are notes;
+       - elsewhere a part per comment heading: a comment block's first line, without its (remarks), the words before
+         ": " (or after a short tag such as "S14: "), a +number as +N and " Highlight" left off ("+N Chain Lightning
+         Sentry"), so the per level rules are one part; a long line or one with the author's notes (a date, a tool) is
+         a note: one that starts in lower case goes on with the heading above, any other leaves the rules after it to
+         go by what they draw;
+       - parts: "text": a part per line drawn, its numbers as # ("+#% Monster Rarity"; a sign in front doesn't
+         count), for the description features where the drawn line says it best.
+     partAliases: a part per stat the aliases (tags wired into the tag lines of f.tagLines) show, named by the stat
+     block of the first tag line that asks the alias; an alias that is FALSE does nothing and is left out.
+     tools/editor_selftest.py has a Python version of it (feature_parts). */
+  const STAT_BLOCK = /^\/\/+\s*-{3,}\s*(.+?)\s*\((stat \d+\+?)[^)]*\)\s*-{3,}\s*$/;
+  const BLOCK_HEAD = /^\/\/+\s*-{3,}\s*(.+?)\s*-{3,}\s*$/;
+  const NOTE_WORDS = /\(the author|\b\d{4}-\d\d-\d\d\b|sections\/|tools\/|\.py\b|\.filter\b/;
+  const LAYOUT_WORDS = new Set(COLORS.concat(["NAME", "CL", "NL", "CS"]));
+
+  /* A comment line as a part's title, or null for a note. */
+  function headingTitle(text) {
+    if (NOTE_WORDS.test(text)) return null;
+    let t = text.replace(/\([^()]*\)/g, "").replace(/\(.*$/, "");
+    const k = t.indexOf(": ");
+    if (k >= 0) t = k <= 4 ? t.slice(k + 2) : t.slice(0, k);
+    t = t.replace(/\s+/g, " ").replace(/ ,/g, ",").trim().replace(/\s*-$/, "").replace(/\s+Highlight$/i, "").trim();
+    if (!t || t.length > 64 || /^[a-z]/.test(t) || /[,:(]$/.test(t)) return null;
+    return t.replace(/^\+\d+(?=\s)/, "+N");
+  }
+
+  /* A $f(...) formula (its parentheses matched) as the word given. */
+  function noFormulas(text, word) {
+    let out = "", i = 0;
+    while (i < text.length) {
+      const k = text.indexOf("$f(", i);
+      if (k < 0) { out += text.slice(i); break; }
+      out += text.slice(i, k);
+      let depth = 0, j = k + 2;
+      for (; j < text.length; j++) {
+        if (text[j] === "(") depth++;
+        else if (text[j] === ")" && --depth === 0) break;
+      }
+      out += word;
+      i = j + 1;
+    }
+    return out;
+  }
+
+  /* A rule's output split as BH reads it: [the label part, the description or null]. */
+  function outParts(out) {
+    const d = /\{([^}]*)\}?/.exec(out);
+    return [out.replace(/\{[^}]*\}?/, "").replace(/%CONTINUE%/g, ""), d ? d[1] : null];
+  }
+
+  /* A rule that writes no text of its own (the name on a new line, a color): the layout, not a part. */
+  function layoutOnly(out) {
+    const bare = (s) => (s || "").replace(/%([A-Z_]+)%/g, (m, w) => LAYOUT_WORDS.has(w) ? "" : m).replace(/ÿc./g, "").trim();
+    const [label, desc] = outParts(out);
+    return !bare(label) && !bare(desc);
+  }
+
+  /* The line a rule draws, its numbers as # (its own description line, else its label's text); colors, aliases
+     (frames, stars) and stars left out. */
+  function drawnTitle(out, names) {
+    const vis = (s) => noFormulas(s.replace(/%PERCENT%/g, "%"), "#").replace(/%([A-Z0-9_]+(?:,\d+)?)%/g, (m, w) =>
+      COLORS.indexOf(w) >= 0 ? "" : LAYOUT_WORDS.has(w) || names.has(w) ? " " : "#").replace(/ÿc./g, "");
+    const [label, desc] = outParts(out);
+    const own = desc !== null && vis(desc.replace(/%NAME%/g, "")).trim();
+    return vis(own ? desc : label).replace(/\d+/g, "#").replace(/#(?:[.,]#)+/g, "#").replace(/\*+/g, " ")
+      .replace(/\s+/g, " ").trim();
+  }
+
+  function featureParts(src, lines, f) {
+    const out = [], byKey = new Map();
+    const add = (key, title, field, v) => {
+      let p = byKey.get(key);
+      if (!p) { p = {key, title}; p[field] = []; byKey.set(key, p); out.push(p); }
+      if (p[field].indexOf(v) < 0) p[field].push(v);
+    };
+    if (f.parts && f.sections) {
+      const secs = F.sections(src, lines), names = new Set(Object.keys(F.aliases(lines)));
+      for (const name of f.sections) {
+        const range = secs[name];
+        if (!range) continue;
+        let heading = null, key = null, stat = false, block = null;
+        for (let i = range[0]; i < range[1]; i++) {
+          const line = lines[i];
+          if (line.startsWith("//") && !OFF_RULE.test(line)) {
+            const m = STAT_BLOCK.exec(line);
+            if (m) { heading = m[1].trim(); key = m[2]; stat = true; block = null; continue; }
+            if (BLOCK_HEAD.test(line)) { heading = key = null; stat = false; block = null; continue; }
+            const text = line.replace(/^\/\/+/, "").trim();
+            if (!text || /^[-=]{3}/.test(text)) { block = null; continue; }
+            if (block === null) block = text;
+            continue;
+          }
+          if (block !== null) {
+            if (!stat) {
+              const t = headingTitle(block);
+              if (t) heading = key = t;
+              else if (!/^[a-z]/.test(block)) heading = key = null;
+            }
+            block = null;
+          }
+          if (!switchable(f, line)) continue;
+          const r = F.rule(line);
+          if (layoutOnly(r.out)) continue;
+          if (f.parts !== "text" && heading) { add(key, heading, "lines", i); continue; }
+          const t = drawnTitle(r.out, names);
+          if (t) add("text:" + t.replace(/^[+-]+/, ""), t, "lines", i);
+        }
+      }
+    } else if (f.partAliases) {
+      const al = F.aliases(lines), secs = F.sections(src, lines), range = secs[f.tagLines];
+      const names = Object.keys(al).filter((n) => f.partAliases.test(n) && al[n].value !== "FALSE")
+        .sort((a, b) => al[a].i - al[b].i);
+      // the stat block of each tag line (as above), and the first tag line that asks each alias
+      const asked = new Map();
+      if (range) {
+        let heading = null, key = null;
+        const want = new Map(names.map((n) => [n, new RegExp("(^|[^A-Za-z0-9_])" + n + "($|[^A-Za-z0-9_])")]));
+        for (let i = range[0]; i < range[1] && want.size; i++) {
+          const line = lines[i];
+          const m = STAT_BLOCK.exec(line);
+          if (m) { heading = m[1].trim(); key = m[2]; continue; }
+          if (!line.startsWith("ItemDisplay[") || !heading) continue;
+          const r = F.rule(line);
+          if (!r) continue;
+          for (const [n, re] of want) {
+            if (re.test(r.cond)) { asked.set(n, [key, heading]); want.delete(n); }
+          }
+        }
+      }
+      for (const n of names) {
+        const [key, title] = asked.get(n) || [n, n.replace(/^[A-Z]+_|_TAG$/g, "").replace(/_/g, " ")];
+        add(key, title, "aliases", n);
+      }
+    }
+    return out;
+  }
+
   /* ---------------------------------------------------------------- the steps */
 
   /* A hide line hides on the ground outside town only, as Erazure's own hide rules do: GROUND and !TOWN added where
@@ -133,6 +286,30 @@ EZ.edits = (function () {
         if (!n) ctx.unplaced("features", f.title, "Erazure no longer has the lines this switch turns on");
       }
     }
+    // the finer switches: the parts switched off of each feature that is on (a feature switched off takes them all)
+    const parts = ctx.edits.featureParts || {};
+    for (const f of EZ.features) {
+      const off = partsOff(parts, f);
+      if (!off.length) continue;
+      const on = f.id in want ? !!want[f.id] : featureDefault(f);
+      if (!on) continue;
+      const have = new Map(featureParts(ctx.src, ctx.lines, f).map((p) => [p.key, p]));
+      for (const key of off) {
+        const p = have.get(key);
+        if (!p) {
+          ctx.unplaced("features", f.title + ": " + key.replace(/^text:/, ""), "Erazure no longer has this part");
+          continue;
+        }
+        if (p.aliases) for (const n of p.aliases) setAlias(ctx.lines, n, "FALSE");
+        else for (const i of p.lines) if (!OFF_RULE.test(ctx.lines[i])) ctx.lines[i] = "//" + ctx.lines[i];
+      }
+    }
+  }
+
+  /* The parts of a feature the player switched off (the edit set's featureParts: {feature id: [part key]}). */
+  function partsOff(parts, f) {
+    const list = parts && Array.isArray(parts[f.id]) ? parts[f.id] : [];
+    return [...new Set(list.filter((k) => typeof k === "string" && k))];
   }
 
   function looks(ctx) {
@@ -333,13 +510,19 @@ EZ.edits = (function () {
     options: (e) => Object.keys(e.options || {}).filter((k) => e.options[k]).length +
       Object.keys((e.levels || {}).names || {}).length + Object.keys((e.levels || {}).copies || {}).length,
     // (the map lines' switches count on Maps, where they are too: maps.js)
-    features: (e) => EZ.features.filter((f) => f.group !== "Maps" && e.features && f.id in e.features &&
-      !!e.features[f.id] !== featureDefault(f)).length,
+    features: (e) => EZ.features.filter((f) => f.group !== "Maps").reduce((n, f) => n + featureChanges(e, f), 0),
     looks: (e) => Object.keys(e.looks || {}).length + Object.keys(e.remap || {}).length + Object.keys(e.icons || {}).length,
     alerts: (e) => Object.keys(e.sounds || {}).length +
       ["noSounds", "noIcons", "iconsOnly"].filter((k) => e.alerts && e.alerts[k]).length +
       (e.alerts && (e.alerts.iconSize === "smaller" || e.alerts.iconSize === "bigger") ? 1 : 0),
   };
+  /* A feature's changes: its switch set apart from Erazure's default (1), else each part switched off. */
+  function featureChanges(e, f) {
+    const def = featureDefault(f);
+    const on = e.features && f.id in e.features ? !!e.features[f.id] : def;
+    if (on !== def) return 1;
+    return on ? partsOff(e.featureParts, f).length : 0;
+  }
   function countArea(area, e) { return counters[area] ? counters[area](e) : 0; }
   function count(e) { return Object.keys(counters).reduce((n, k) => n + counters[k](e), 0); }
   function counter(area, fn) { counters[area] = fn; }
@@ -446,5 +629,6 @@ EZ.edits = (function () {
   }
 
   return {apply, step, count, countArea, counter, headerLines, fromFile, pack, unpack, copyLevels, groundOnly, COLORS,
+          featureParts, partsOff, featureChanges,
           featureDefault, resized, slashes, SITE};
 })();

@@ -82,6 +82,16 @@ EZ.store = (function () {
       if (list.length) e.items = list; else delete e.items;
     }
     if (e.maps !== undefined && (!e.maps || typeof e.maps !== "object" || Array.isArray(e.maps))) delete e.maps;
+    if (e.featureParts !== undefined) {  // a feature's parts switched off: {feature id: [part key]}
+      const fp = e.featureParts && typeof e.featureParts === "object" && !Array.isArray(e.featureParts) ? e.featureParts : {};
+      const keep = {};
+      for (const k of Object.keys(fp).slice(0, 100)) {
+        const list = Array.isArray(fp[k]) ? fp[k].filter((x) => typeof x === "string" && x).map((x) => x.slice(0, 300))
+          .slice(0, 2000) : [];
+        if (list.length) keep[k] = [...new Set(list)];
+      }
+      if (Object.keys(keep).length) e.featureParts = keep; else delete e.featureParts;
+    }
     if (e.wishlists !== undefined && !Array.isArray(e.wishlists)) delete e.wishlists;
     if (e.volume !== undefined && (!e.volume || typeof e.volume !== "object" || Array.isArray(e.volume))) delete e.volume;
     if (e.rules !== undefined) {  // My rules: two blocks of text (a link or file could hold anything)
