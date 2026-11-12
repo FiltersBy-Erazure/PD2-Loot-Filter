@@ -16,6 +16,16 @@ Tests:
              equals this file's Python reference built on tools/build.py's own functions, line by line; the
              reference writes the aliases out with build.py's --check verification (BH reads every rule of the
              written file as it reads the edited alias form), and the EDITS header decodes to the edit set.
+  engine     the engine (tools/editor/engine.js, BH's rules ported) on hand-checked cases from BH's source: formulas
+             (Formula.h: precedence, functions, float math, BH's number), conditions (implicit AND, AND / OR left to
+             right, a ) without its (, words BH drops, a rule with no condition left), whole rules (name and
+             description passes, %NL% where BH allows it, TrimItemText, the 56-letter cut, unknown keywords,
+             notifications and %TIER-n%, hiding and invisibility, Force Show, named formulas and $f islands).
+  paste      items BH copies in the game (Ctrl+C: its JSON) read into the preview's items: base, quality, flags,
+             the unique or set item, its stats as the game holds them, the socket fillers.
+  tiers      the engine on Erazure - Main against tools/tier_map.py's model (the Unique / Set Tiers page): every
+             unique and set base, unidentified on the ground, in every scenario the page has (filter level,
+             character level, class, ethereal, place, discovered): its label, chat line, drop sound and minimap icon.
 
 The page under test is served over http from a temporary folder; the browser writes the results as JSON into the
 page, which --dump-dom prints.
@@ -43,7 +53,8 @@ ROOT = Path(__file__).resolve().parent.parent
 EDITOR = ROOT / "tools" / "editor"
 SOURCE = ROOT / "Erazure-Filter-Editor-Source.js"
 FIXTURES = ROOT / "tools" / "editor_fixtures"
-MODULES = ["core.js", "ui.js", "store.js", "filter.js", "features.js", "edits.js"]  # what the tests need, in order
+MODULES = ["core.js", "ui.js", "store.js", "filter.js", "features.js", "edits.js", "engine.js", "items.js"]  # in order
+TESTS_JS = ROOT / "tools" / "editor_selftest.js"  # the engine tests' code
 BROWSERS = [
     r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
     r"C:\Program Files\Microsoft\Edge\Application\msedge.exe",
@@ -144,6 +155,9 @@ test("edits", async () => {
   return {results: out};
 });
 
+</script>
+<script src="tests.js"></script>
+<script>
 Promise.all(running).then(() => { document.getElementById("result").textContent = JSON.stringify(results); });
 </script></body></html>
 """
@@ -616,9 +630,151 @@ def decode(path):
     print(json.dumps(json.loads(raw.decode("utf-8")), indent=1, ensure_ascii=False))
 
 
+# ---------------------------------------------------------------- the engine's cases (from BH's source)
+
+# formulas: (text, item stats, the character, what BH shows: its %.2f with ".00" / one trailing 0 dropped; None: the
+# formula doesn't compile, so BH leaves the island as text)
+ENGINE_FORMULAS = [
+    ("1+2*3", {}, {}, "7"), ("2^3^2", {}, {}, "512"), ("-2^2", {}, {}, "4"), ("(1+2)*3", {}, {}, "9"),
+    ("7/2", {}, {}, "3.5"), ("1/3", {}, {}, "0.33"), ("2/3", {}, {}, "0.67"), ("0.125", {}, {}, "0.12"),
+    ("0.375", {}, {}, "0.38"), ("0.625", {}, {}, "0.62"), ("0.005", {}, {}, "0"), ("floor(7/2)", {}, {}, "3"),
+    ("round(-2.5)", {}, {}, "-3"), ("round(2.5)", {}, {}, "3"), ("mod(7,3)", {}, {}, "1"), ("min(3,1,2)", {}, {}, "1"),
+    ("max(3,1,2)", {}, {}, "3"), ("countif(1,2,1,1)", {}, {}, "2"), ("count(0,1,2)", {}, {}, "2"),
+    ("if(0,1,2)", {}, {}, "2"), ("and(1,0)", {}, {}, "0"), ("or(0,2)", {}, {}, "1"), ("xor(1,1,1)", {}, {}, "1"),
+    ("abs(-3)", {}, {}, "3"), ("sign(-0.5)", {}, {}, "-1"), ("1/0", {}, {}, "f_err"), ("-0.001", {}, {}, "-0"),
+    ("2147483648", {}, {}, "2147483648"), ("2147483904", {}, {}, "f_err"), ("stat0", {"0": 5}, {}, "5"),
+    ("stat7", {"7": 10240}, {}, "40"), ("multi7,0", {"7": 10240}, {}, "40"), ("STAT0*2", {"0": 5}, {}, "10"),
+    ("stat0+", {}, {}, None), ("max()", {}, {}, None), ("foo", {}, {}, None), ("stat", {}, {}, None),
+    ("1 2", {}, {}, None), ("cl8", {}, {}, "f_err"), ("and(cl8,0)", {}, {}, "0"), ("5.", {}, {}, "5"),
+    (".5", {}, {}, "0.5"), ("1e2", {}, {}, "100"), ("sqrt(2)", {}, {}, "1.41"), ("ln(0)", {}, {}, "f_err"),
+    ("average(1,2)", {}, {}, "1.5"), ("pow(2,10)", {}, {}, "1024"), ("!0", {}, {}, "1"), ("!5", {}, {}, "0"),
+    ("3>2", {}, {}, "1"), ("2==2", {}, {}, "1"), ("1!=1", {}, {}, "0"), ("2>=3", {}, {}, "0"),
+    ("1+2==3", {}, {}, "1"), ("clvl", {}, {"clvl": 90}, "90"), ("stat218/8*clvl", {"218": 3}, {"clvl": 90}, "33.75"),
+]
+# conditions: (text, item, the character, 1 / 0)
+ENGINE_CONDITIONS = [
+    ("TRUE OR FALSE FALSE", {}, {}, 0), ("FALSE TRUE OR TRUE", {}, {}, 1), ("!TRUE OR TRUE", {}, {}, 1),
+    ("!(TRUE OR TRUE)", {}, {}, 0), ("TRUE) FALSE", {}, {}, 1), ("(TRUE", {}, {}, 1), ("TRUE (FALSE", {}, {}, 0),
+    ("FOOBAR TRUE", {}, {}, 1), ("FOOBAR FALSE", {}, {}, 0), ("FOOBAR", {}, {}, 1), ("", {}, {}, 1),
+    ("ILVL>abc", {"ilvl": 5}, {}, 1), ("ILVL>abc FALSE", {"ilvl": 5}, {}, 0), ("ILVL>", {"ilvl": 5}, {}, 1),
+    ("ILVL>4 ILVL<6", {"ilvl": 5}, {}, 1), ("ILVL~5-9", {"ilvl": 5}, {}, 1), ("ILVL~6-9", {"ilvl": 5}, {}, 0),
+    ("ILVL", {"ilvl": 5}, {}, 0), ("r30", {"code": "r30"}, {}, 1), ("r30 OR r31", {"code": "r31"}, {}, 1),
+    ("7cr", {"code": "7cr2"}, {}, 0), ("7cr2", {"code": "7cr2"}, {}, 1),
+    ("LIFE>39", {"stats": {"7": 10240}}, {}, 1), ("LIFE>40", {"stats": {"7": 10240}}, {}, 0),
+    ("STAT7>39", {"stats": {"7": 10240}}, {}, 1), ("MULTI7,0>39", {"stats": {"7": 10240}}, {}, 1),
+    ("RES>10", {"stats": {"39": 11, "41": 11, "43": 11, "45": 11}}, {}, 1),
+    ("RES>10", {"stats": {"39": 11, "41": 10, "43": 11, "45": 11}}, {}, 0),
+    ("STR+DEX>9", {"stats": {"0": 5, "2": 5}}, {}, 1), ("STR+DEX~5-20", {"stats": {"0": 5, "2": 5}}, {}, 0),
+    ("SK54>2", {"stats": {"107,54": 3}}, {}, 1), ("SK54x>2", {"stats": {"107,54": 3}}, {}, 1),
+    ("CHSK54>2", {"stats": {"204,3459": 5}}, {}, 1), ("CHSK54>3", {"stats": {"204,3459": 3}}, {}, 0),
+    ("$f(STAT0*2)>9", {"stats": {"0": 5}}, {}, 1), ("$f(STAT0*2)", {"stats": {"0": 5}}, {}, 1),
+    ("$f(STAT0-5)", {"stats": {"0": 5}}, {}, 0), ("$f(FOO)>1 TRUE", {"code": "r30"}, {}, 0),
+    ("CLVL>89", {}, {"clvl": 90}, 1), ("FILTLVL=3", {}, {"filtlvl": 3}, 1), ("AMAZON", {}, {"cls": 0}, 1),
+    ("AMAZON>3", {}, {"cls": 0}, 1), ("MAPID=0", {}, {"mapid": 0}, 0), ("GOLD>100", {"code": "rin"}, {}, 0),
+    ("GOLD>100", {"code": "gld", "stats": {"14": 500}}, {}, 1),
+]
+# whole rules: (lines, item, the character, the game's options, what BH gives: name / desc / hidden / invisible /
+# forced / sound / chat / icons / cut)
+ENGINE_RULES = [
+    (["ItemDisplay[r30]: %NAME% x%CONTINUE%", "ItemDisplay[r30]: [%NAME%]{%NAME%desc}"],
+     {"code": "r30", "quality": "NORM", "id": True, "gameName": "Ber Rune"}, {"filtlvl": 1}, {},
+     {"name": "[Ber Rune x]", "desc": "desc"}),
+    (["ItemDisplay[]: %NAME%%NL%two"], {"code": "rin", "quality": "RARE", "id": False, "gameName": "Ring"},
+     {"filtlvl": 1}, {}, {"name": "Ringtwo"}),
+    (["ItemDisplay[]: %NAME%%NL%two"], {"code": "rin", "quality": "RARE", "id": True, "gameName": "Ring\nGrim Coil"},
+     {"filtlvl": 1}, {}, {"name": "Ring\nGrim Coil\ntwo"}),
+    (["ItemDisplay[]: %NAME%%NL%a%NL%b"], {"code": "x", "quality": "SUP", "id": True, "gameName": "X",
+      "base": {"groups": [], "staffmod": False, "autoprefix": 0}}, {"filtlvl": 1}, {}, {"name": "X\nab"}),
+    (["ItemDisplay[]: %NAME%%NL%a"], {"code": "x", "quality": "NORM", "id": True, "gameName": "X",
+      "base": {"groups": [], "staffmod": False, "autoprefix": 0}}, {"filtlvl": 1}, {}, {"name": "Xa"}),
+    (["ItemDisplay[]: %CL%a%CL%%CL%b%CS%%CS%c%CS%"], {"code": "x", "quality": "UNI", "id": True, "gameName": "X"},
+     {"filtlvl": 1}, {}, {"name": "a\nb c"}),
+    (["ItemDisplay[]: %RED%" + "x" * 60], {"code": "x", "quality": "UNI", "id": True, "gameName": "X"},
+     {"filtlvl": 1}, {}, {"name": "ÿc1" + "x" * 56, "cut": {"name": 4, "copy": 0}}),
+    (["ItemDisplay[]: %FOO%bar %RED5% %red%x %PERCENT%"], {"code": "x", "quality": "UNI", "id": True,
+      "gameName": "X"}, {"filtlvl": 1}, {}, {"name": "%FOO%bar %RED5% ÿc1x %"}),
+    (["ItemDisplay[]: a{b %SOUNDID-5%}%SOUNDID-7%"], {"code": "x", "quality": "UNI", "id": True, "gameName": "X"},
+     {"filtlvl": 1}, {}, {"name": "a", "desc": "b %SOUNDID-5%", "sound": 7}),
+    (["ItemDisplay[r30]: %NAME%%BORDER-21%%TIER-0%%CONTINUE%", "ItemDisplay[r30]: %NAME%%MAP-0A%%SOUNDID-100%"],
+     {"code": "r30", "quality": "NORM", "id": True, "gameName": "Ber Rune"}, {"filtlvl": 5}, {},
+     {"sound": 100, "icons": [[0x21, None, None, None], [None, 0x0A, None, None]], "chatRule": 1}),
+    (["ItemDisplay[r30]: %NAME%%BORDER-21%%TIER-0%%CONTINUE%", "ItemDisplay[r30]: %NAME%%MAP-0A%%SOUNDID-100%"],
+     {"code": "r30", "quality": "NORM", "id": True, "gameName": "Ber Rune"}, {"filtlvl": 0}, {},
+     {"sound": 0, "chatRule": 0}),
+    (["ItemDisplay[r30]: %NAME%%BORDER-21%%TIER-0%", "ItemDisplay[r30]: %NAME%%MAP-0A%%SOUNDID-100%"],
+     {"code": "r30", "quality": "NORM", "id": True, "gameName": "Ber Rune"}, {"filtlvl": 5}, {},
+     {"sound": 0, "chatRule": None, "icons": [[0x21, None, None, None]]}),
+    (["ItemDisplay[r30 FILTLVL>0]:"], {"code": "r30", "quality": "NORM", "id": True, "gameName": "Ber Rune"},
+     {"filtlvl": 1}, {}, {"name": "", "hidden": True, "invisible": True}),
+    (["ItemDisplay[r30 FILTLVL>0]:"], {"code": "r30", "quality": "NORM", "id": True, "gameName": "Ber Rune"},
+     {"filtlvl": 0}, {}, {"name": "Ber Rune", "hidden": False}),
+    (["ItemDisplay[r30 FILTLVL>0]:", "ItemDisplay[r30]: %NAME%%MAP-0A%"],
+     {"code": "r30", "quality": "NORM", "id": True, "gameName": "Ber Rune"}, {"filtlvl": 1}, {},
+     {"name": "", "hidden": True, "invisible": False}),
+    (["ItemDisplay[r30]: %CONTINUE%", "ItemDisplay[r30]: x%NAME%"],
+     {"code": "r30", "quality": "NORM", "id": True, "gameName": "Ber Rune"}, {"filtlvl": 1}, {},
+     {"name": "x", "invisible": True}),
+    (["ItemDisplay[$f(STAT0*2)>9]: %NAME% $f(STAT0/8)"], {"code": "x", "quality": "UNI", "id": True,
+      "gameName": "X", "stats": {"0": 5}}, {"filtlvl": 1}, {}, {"name": "X 0.62"}),
+    (["Formula[test]: stat0+1", "ItemDisplay[FORMULATEST>5]: ok %FORMULATEST%"], {"code": "x", "quality": "UNI",
+      "id": True, "gameName": "X", "stats": {"0": 5}}, {"filtlvl": 1}, {}, {"name": "ok 6"}),
+    (["ItemDisplay[LIFE>39]: %LIFE% %STAT7% %MULTI7,0%"], {"code": "x", "quality": "UNI", "id": True,
+      "gameName": "X", "stats": {"7": 10240}}, {"filtlvl": 1}, {}, {"name": "40 40 10240"}),
+    (["ItemDisplay[uap FILTLVL>0]:"], {"code": "uap", "quality": "UNI", "id": False, "gameName": "Shako",
+      "disc": {"ALLDISCOVERED": False}}, {"filtlvl": 1}, {}, {"name": "Shako", "forced": True, "invisible": False}),
+    (["ItemDisplay[uap FILTLVL>0]:"], {"code": "uap", "quality": "UNI", "id": False, "gameName": "Shako",
+      "disc": {"ALLDISCOVERED": True}}, {"filtlvl": 1}, {}, {"name": "", "forced": False, "invisible": True}),
+    (["ItemDisplay[hp5]: %NAME%%MAP-0A%"], {"code": "hp5", "quality": "NORM", "id": True, "gameName": "Potion"},
+     {"filtlvl": 0}, {"hideHealing": True}, {"name": "", "invisible": True, "icons": []}),
+    (["Alias[ME]:r30", "ItemDisplay[ME]: %ME%!"], {"code": "r30", "quality": "NORM", "id": True,
+      "gameName": "Ber"}, {"filtlvl": 1}, {}, {"name": "r30!"}),
+]
+
+
+# items BH copies in the game (Ctrl+C, StashExport::CopyItemJSONToClipboard's JSON) and what the editor makes of them
+PASTE_CASES = [
+    ({"type": "Shako", "quality": "Unique", "iLevel": 87, "location": "Stash", "isEthereal": False,
+      "unidentified": False, "sockets": 1, "defense": 141, "quantity": 0, "name": "Harlequin Crest",
+      "stats": [{"name": "item_allskills", "stat_id": 127, "value": 2},
+                {"name": "item_hp_perlevel", "stat_id": 216, "value": 8},
+                {"name": "item_magicbonus", "stat_id": 80, "value": 47, "range": {"min": 25, "max": 50}},
+                {"name": "strength", "stat_id": 0, "value": 2}, {"name": "maxhp", "stat_id": 7, "value": 30}],
+      "socketed": [{"type": "Ber Rune", "quality": "Normal", "iLevel": 1, "isRune": True}]},
+     {"code": "uap", "quality": "UNI", "id": True, "sockets": 1, "place": "STASH", "filled": 1},
+     {"127": 2, "216": 2048, "80": 47, "0": 2, "7": 7680, "31": 141, "194": 1}, 1),
+    ({"type": "Grand Charm", "quality": "Magic", "iLevel": 91, "location": "Inventory", "isEthereal": False,
+      "unidentified": False, "sockets": 0, "defense": 0, "quantity": 0, "name": "Sparking Grand Charm of Life",
+      "stats": [{"name": "item_addskill_tab", "skill": "Lightning Skills (Sorceress)", "value": 1},
+                {"name": "maxhp", "stat_id": 7, "value": 40}]},
+     {"code": "cm3", "quality": "MAG", "id": True, "name": "Sparking Grand Charm of Life"},
+     {"188,9": 1, "7": 10240}, 0),
+]
+
+
+def tier_cases():
+    """tools/tier_map.py's outcomes on Erazure - Main for every unique and set base, unidentified on the ground, in
+    every scenario of the page: [[kind, code, eth, class, clvl, place, grail, level, chat, sound, icons, label, look]]."""
+    import tier_map as T
+    groups, _, variants, _ = T.analyse()
+    main = variants[build.MAIN] if build.MAIN in variants else variants["Erazure - Main"]
+    out = []
+    for g in groups:
+        if not g.base:
+            continue
+        for sc in g.dims.scenarios():
+            a = dict(zip(T.DIMS, sc))
+            if any(a[t] != main[t] for t in T.TOGGLES):
+                continue
+            look, chat, sound, icons = g.table[sc]
+            label = T.label(g, sc, main) if look != "HIDDEN" else None
+            out.append([g.kind, g.code, a["ETH"], a["CLASS"], a["CLVL"], a["LOC"], a["GRAIL"], a["FILTLVL"], chat,
+                        sound, [list(i) for i in icons], label, look])
+    return out
+
+
 # ---------------------------------------------------------------- main
 
-def expectations(src):
+def expectations(src, only=""):
     files = {}
     for v in src["variants"]:
         path = ROOT / v["file"]
@@ -629,7 +785,14 @@ def expectations(src):
     toggle, style = {}, {}
     for name, fx in fixtures.items():
         toggle[name], style[name] = fixture_variant(src, fx["edits"])
-    return {"files": files, "fixtures": fixtures, "toggle": toggle, "style": style}
+    out = {"files": files, "fixtures": fixtures, "toggle": toggle, "style": style,
+           "engine": {"formulas": ENGINE_FORMULAS, "conditions": ENGINE_CONDITIONS, "rules": ENGINE_RULES}}
+    import editor_map
+    data = editor_map.page_data()
+    out.update(catalog=data["catalog"], soundCount=data["soundCount"], paste=PASTE_CASES)
+    if not only or "tiers".startswith(only[:5]) or only.startswith("tiers"):
+        out["tiers"] = tier_cases()
+    return out
 
 
 def main():
@@ -647,13 +810,14 @@ def main():
         sys.exit("editor_selftest: Erazure-Filter-Editor-Source.js is missing (run: python tools/build.py)")
     src = load_source()
     browser = find_browser(args.browser)
-    expect = expectations(src)
+    expect = expectations(src, args.only)
     scripts = "\n".join(f'<script src="{m}"></script>' for m in MODULES)
     html = (PAGE.replace("__SCRIPTS__", scripts)
                 .replace("__EXPECT__", json.dumps(expect))
                 .replace("__ONLY__", json.dumps(args.only or None)))
     files = {m: EDITOR / m for m in MODULES}
     files["source.js"] = SOURCE
+    files["tests.js"] = TESTS_JS
     results = run_page(browser, html, files)
     for r in results:
         if r["name"] == "edits" and r["ok"]:
@@ -663,8 +827,11 @@ def main():
     failed = [r for r in results if not r["ok"]]
     for r in results:
         detail = r.get("detail") or {}
-        note = detail.get("fail") if not r["ok"] else ", ".join(f"{k} {v}" for k, v in detail.items() if k != "fail")
+        note = detail.get("fail") if not r["ok"] else ", ".join(f"{k} {v}" for k, v in detail.items()
+                                                               if k not in ("fail", "examples"))
         print(f"{'ok  ' if r['ok'] else 'FAIL'} {r['name']} ({r['ms']} ms){': ' + str(note) if note else ''}")
+        if not r["ok"] and detail.get("examples"):
+            print(json.dumps(detail["examples"], ensure_ascii=False, indent=1)[:12000])
     if not results:
         sys.exit("editor_selftest: no test ran")
     if failed:

@@ -182,6 +182,70 @@
 .edit-map .fe-game { background: var(--game); border-radius: 8px; border: 1px solid var(--line); overflow: hidden;
   position: relative; }
 .edit-map .fe-game canvas { display: block; max-width: 100%; }
+.edit-map .fe-pill.info { color: var(--info); border-color: var(--info); }
+.edit-map .fe-pvctx { display: grid; grid-template-columns: repeat(auto-fill, minmax(9.5em, 1fr)); gap: .35em .6em;
+  align-items: end; font-size: .88em; }
+.edit-map .fe-pvfield { display: flex; flex-direction: column; gap: .15em; color: var(--muted); min-width: 0; }
+.edit-map .fe-pvfield > span:first-child { font-weight: 600; font-size: .9em; }
+.edit-map .fe-pvfield.wide { grid-column: 1 / -1; }
+.edit-map .fe-pvfield select, .edit-map .fe-pvfield .fe-pv-level { width: 100%; }
+.edit-map .fe-pvfield .fe-row { flex-wrap: nowrap; gap: .3em; }
+.edit-map .fe-pvfield .fe-row select { flex: 1; min-width: 0; }
+.edit-map input.fe-pv-num { width: 4.4em; padding: .3em .4em; }
+.edit-map input.fe-pv-num.wide { width: 6.5em; }
+.edit-map details.fe-pv-options { grid-column: 1 / -1; }
+.edit-map .fe-pv-body details > summary { cursor: pointer; color: var(--muted); font-weight: 600; font-size: .88em;
+  margin: .2em 0 .4em; }
+.edit-map .fe-pvctx details > summary { cursor: pointer; color: var(--muted); font-size: .92em; }
+.edit-map .fe-pv-pick { position: relative; margin-bottom: .6em; }
+.edit-map input.fe-pv-search { width: 100%; max-width: none; }
+.edit-map .fe-pv-picks { position: absolute; z-index: 10; left: 0; right: 0; top: calc(100% + 3px); background: var(--panel);
+  border: 1px solid var(--line2); border-radius: 9px; box-shadow: var(--shadow); padding: .25em; max-height: 22em;
+  overflow: auto; }
+.edit-map .fe-pv-picks button { display: flex; width: 100%; justify-content: space-between; gap: .8em; border: 0;
+  background: none; padding: .35em .55em; border-radius: 6px; cursor: pointer; color: var(--fg); text-align: left; }
+.edit-map .fe-pv-picks button:hover, .edit-map .fe-pv-picks button:focus-visible { background: var(--panel2); }
+.edit-map .fe-pv-picks small { color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.edit-map .fe-pv-item { display: flex; flex-direction: column; gap: .45em; padding: .5em .6em; border: 1px solid var(--line);
+  border-radius: 9px; background: var(--panel2); margin-bottom: .7em; }
+.edit-map .fe-pv-itemname { font-weight: 700; }
+.edit-map .fe-pv-item .fe-pvfield { flex-direction: row; align-items: center; gap: .5em; }
+.edit-map .fe-pv-stats { display: flex; flex-wrap: wrap; gap: .3em; align-items: center; }
+.edit-map input.fe-pv-statname { flex: 1 1 12em; }
+.edit-map .fe-pvres { display: grid; gap: .7em; margin: .2em 0 .8em; }
+.edit-map .fe-pvres.two { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+.edit-map .fe-pvres-col { min-width: 0; display: flex; flex-direction: column; gap: .4em; }
+.edit-map .fe-pvres-title { font-family: Cinzel, Georgia, serif; font-weight: 700; color: var(--accent); font-size: .9em; }
+.edit-map .fe-pvground { min-height: 3.4em; justify-content: center; overflow-x: auto; }
+.edit-map .fe-pv-hidden { color: #8a8378; font-style: italic; font-size: .85em; }
+.edit-map .fe-pvkv { font-size: .86em; align-items: center; }
+.edit-map .fe-pvkv dd { min-width: 0; overflow-wrap: anywhere; padding: .1em .3em; border-radius: 4px; }
+.edit-map .fe-pvkv dd.is-changed { box-shadow: inset 3px 0 0 var(--accent); padding-left: .55em; }
+.edit-map canvas.fe-pv-icon { display: inline-block; vertical-align: middle; border-radius: 3px; image-rendering: pixelated; }
+.edit-map .fe-chatline, .edit-map .fe-pvdesc { background: #0d0c0b; color: #fefefe; padding: .15em .45em; border-radius: 4px;
+  display: inline-block; font-family: "Palatino Linotype", Palatino, Georgia, serif; }
+.edit-map .fe-pvdesc { text-align: center; font-family: Cinzel, Georgia, serif; font-size: .92em; }
+.edit-map .fe-trace { margin: 0; padding: 0; list-style: none; font-size: .82em; }
+.edit-map .fe-trace-row { display: flex; flex-wrap: wrap; gap: .3em .5em; align-items: baseline; padding: .25em 0;
+  border-bottom: 1px solid var(--line); }
+.edit-map .fe-trace-row.maybe { opacity: .6; }
+.edit-map .fe-trace-where { font-family: var(--mono); color: var(--accent); }
+.edit-map code.fe-trace-text { flex-basis: 100%; white-space: pre-wrap; overflow-wrap: anywhere; background: none;
+  border: 0; padding: 0; color: var(--muted); }
+.edit-map .fe-pv-strip { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: .35em; }
+.edit-map .fe-pv-cell { display: flex; flex-direction: column; align-items: center; gap: .25em; border: 1px solid var(--line);
+  background: #13110f; border-radius: 7px; padding: .3em .25em .4em; cursor: pointer; min-width: 0; overflow: hidden; }
+.edit-map .fe-pv-cell.on { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.edit-map .fe-pv-cell .fe-label { font-size: 11px; max-width: 100%; overflow: hidden; }
+.edit-map .fe-pv-lv { font-size: .72em; color: #a59d8e; align-self: flex-start; }
+.edit-map .fe-pv-snd { color: var(--accent); font-size: .8em; }
+.edit-map .fe-pv-samples { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: .45em; }
+.edit-map .fe-pv-sample { display: flex; flex-direction: column; align-items: center; gap: .3em; border: 1px solid var(--line);
+  background: #13110f; color: #ece7de; border-radius: 8px; padding: .4em .3em .5em; cursor: pointer; min-width: 0;
+  overflow: hidden; text-align: center; }
+.edit-map .fe-pv-sample.is-changed { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.edit-map .fe-pv-sample small { color: #a59d8e; }
+.edit-map .fe-pv-sample .fe-label { font-size: 12px; max-width: 100%; overflow: hidden; }
 
 /* toasts, menus, dialogs */
 .edit-map .fe-toasts { position: fixed; right: 1em; bottom: 1em; display: flex; flex-direction: column; gap: .5em;
