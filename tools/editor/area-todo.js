@@ -7,8 +7,6 @@ EZ.areas = EZ.areas || [];
   const TODO = [
     ["wishlists", "Wishlists", "★", 60, "b", "Rares, shop items, runeword and crafting bases, charms and jewels you want."],
     ["maps", "Maps", "⌖", 70, "b", "Map lines, mod warnings and hides, minimum experience."],
-    ["changes", "Changes", "⇄", 100, "d", "What your changes do, item by item; every item; compare; troubleshooting."],
-    ["help", "Help", "?", 110, "d", "How the editor works, updates, and answers to common questions."],
   ];
   for (const [id, title, icon, order, group, what] of TODO) {
     if (EZ.areas.some((a) => a.id === id)) continue;

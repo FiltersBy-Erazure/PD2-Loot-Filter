@@ -470,6 +470,21 @@
 .edit-map table.fe-it-strip td .fe-label { font-size: 11.5px; }
 .edit-map table.fe-it-strip tr.is-changed td:first-child { box-shadow: inset 3px 0 0 var(--accent); }
 
+/* Changes and Help */
+.edit-map table.fe-ch-table td { vertical-align: middle; }
+.edit-map table.fe-ch-table td .fe-label { font-size: 11.5px; }
+.edit-map table.fe-ch-table tr.is-changed td:first-child { box-shadow: inset 3px 0 0 var(--accent); }
+.edit-map .fe-ch-hunk { margin: .6em 0; }
+.edit-map .fe-ch-where { font-family: var(--mono); font-size: .8em; color: var(--accent); margin-bottom: .2em; }
+.edit-map pre.fe-ch-pre { font: 12px/1.5 var(--mono); background: var(--bg); border: 1px solid var(--line);
+  border-radius: 7px; padding: .4em .6em; margin: 0; overflow-x: auto; white-space: pre; color: var(--muted); }
+.edit-map .fe-ch-add { color: var(--good); background: rgba(124,196,127,.08); display: block; }
+.edit-map .fe-ch-del { color: var(--bad); background: rgba(228,111,92,.08); display: block; }
+.edit-map .fe-ch-same { display: block; }
+.edit-map details.fe-faq { border-bottom: 1px solid var(--line); padding: .45em 0; }
+.edit-map details.fe-faq summary { cursor: pointer; font-weight: 600; }
+.edit-map details.fe-faq p { margin: .45em 0 .2em 1em; color: var(--muted); }
+
 /* Erazure's rules: the browser (a list that draws only the rows in view: every row ROW px high) */
 .edit-map .fe-rb-tools > input[type=search] { flex: 1 1 18em; min-width: 0; }
 .edit-map .fe-rb-tools > select { max-width: 100%; }
@@ -2667,7 +2682,8 @@ EZ.overrides = (function () {
     for (const code of s.codes || []) {
       const base = EZ.items.base(code);
       if (!base) continue;
-      out.push({code, base, quality: s.quality && s.quality !== "NMAG" ? s.quality : undefined,
+      out.push({code, base, quality: !EZ.items.qualities(base) ? "NORM" : s.quality && s.quality !== "NMAG" ? s.quality :
+        undefined,
                 eth: s.eth === "yes" ? true : s.eth === "no" ? false : undefined,
                 id: s.id === "yes" ? true : s.id === "no" ? false : undefined});
     }
@@ -5644,6 +5660,92 @@ EZ.words = (function () {
   return {cond, word, tokens, parse, PLAIN};
 })();
 
+/* ---- tools/editor/diff.js ---- */
+/* A line diff (Myers' O((N+M)D) algorithm), for the Changes area's readable diff of Erazure's version and the
+   player's: [{kind: "same" | "del" | "add", a (line in the first), b (line in the second)}] in order, and hunks of
+   them with a few lines of context. */
+var EZ = typeof EZ !== "undefined" ? EZ : {};
+EZ.diff = (function () {
+  "use strict";
+
+  /* The shortest edit script from a to b (arrays of strings): [{kind, a, b}]. Lines equal at both ends are taken
+     off first (most edits change a few places of a long file). maxD: give up past that many differences (null). */
+  function lines(a, b, maxD) {
+    let s = 0;
+    while (s < a.length && s < b.length && a[s] === b[s]) s++;
+    let ea = a.length, eb = b.length;
+    while (ea > s && eb > s && a[ea - 1] === b[eb - 1]) { ea--; eb--; }
+    const A = a.slice(s, ea), B = b.slice(s, eb), N = A.length, M = B.length, MAX = N + M;
+    const limit = Math.min(MAX, maxD || 20000);
+    const v = new Int32Array(2 * limit + 4), trace = [];
+    const off = limit + 1;
+    let found = -1;
+    v[off + 1] = 0;
+    outer:
+    for (let d = 0; d <= limit; d++) {
+      trace.push(v.slice(off - d - 1, off + d + 2));  // k from -d-1 to d+1, at k + d + 1
+      for (let k = -d; k <= d; k += 2) {
+        let x = k === -d || (k !== d && v[off + k - 1] < v[off + k + 1]) ? v[off + k + 1] : v[off + k - 1] + 1;
+        let y = x - k;
+        while (x < N && y < M && A[x] === B[y]) { x++; y++; }
+        v[off + k] = x;
+        if (x >= N && y >= M) { found = d; break outer; }
+      }
+    }
+    if (found < 0) return null;
+    // walk back through the trace
+    const edits = [];
+    let x = N, y = M;
+    for (let d = found; d > 0; d--) {
+      const vp = trace[d], k = x - y, at = (kk) => vp[kk + d + 1];
+      const down = k === -d || (k !== d && at(k - 1) < at(k + 1));
+      const pk = down ? k + 1 : k - 1, px = at(pk), py = px - pk;
+      while (x > px && y > py) { edits.push({kind: "same", a: s + x - 1, b: s + y - 1}); x--; y--; }
+      if (down) edits.push({kind: "add", a: s + x, b: s + py}); else edits.push({kind: "del", a: s + px, b: s + y});
+      x = px; y = py;
+    }
+    while (x > 0 && y > 0) { edits.push({kind: "same", a: s + x - 1, b: s + y - 1}); x--; y--; }
+    edits.reverse();
+    const head = [], tail = [];
+    for (let i = 0; i < s; i++) head.push({kind: "same", a: i, b: i});
+    for (let i = 0; i < a.length - ea; i++) tail.push({kind: "same", a: ea + i, b: eb + i});
+    return head.concat(edits, tail);
+  }
+
+  /* The edits in hunks: [{a, b (first lines), rows: [{kind, a, b}]}], each change with `context` same lines around
+     it. */
+  function hunks(edits, context) {
+    context = context === undefined ? 2 : context;
+    const out = [];
+    let cur = null, lastChange = -1e9;
+    edits.forEach((e, n) => {
+      if (e.kind === "same") return;
+      const from = Math.max(0, n - context);
+      if (!cur || from > lastChange + context + 1) {
+        cur = {rows: []};
+        out.push(cur);
+        for (let k = from; k < n; k++) cur.rows.push(edits[k]);
+      } else {
+        for (let k = lastChange + 1; k < n; k++) cur.rows.push(edits[k]);
+      }
+      cur.rows.push(e);
+      lastChange = n;
+      cur.end = n;
+    });
+    for (const hk of out) {
+      for (let k = hk.end + 1; k <= Math.min(edits.length - 1, hk.end + context); k++) {
+        if (edits[k].kind !== "same") break;
+        hk.rows.push(edits[k]);
+      }
+      hk.a = hk.rows[0].a;
+      hk.b = hk.rows[0].b;
+    }
+    return out;
+  }
+
+  return {lines, hunks};
+})();
+
 /* ---- tools/editor/items.js ---- */
 /* The Filter Editor's items: the catalog the page carries (tools/editor_map.py: the game's bases, unique and set items,
    stats and skills, from docs/) and the items the preview runs through the filter, made the way the game makes them
@@ -6086,8 +6188,15 @@ EZ.items = (function () {
     return out;
   }
 
+  /* Whether a base drops in more than one quality (weapons, armor, rings, amulets, charms, jewels, maps): everything
+     else (gems, runes, potions, keys, PD2 items, quest items...) is always a normal item. */
+  function qualities(b) {
+    return !!b && (b.armor || b.weapon || b.map || b.code === "jew" || b.groups.indexOf("CHARM") >= 0 ||
+                   b.groups.indexOf("JEWELRY") >= 0);
+  }
+
   return {init, base, unique, make, describe, picks, search, statChoices, statLabel, statLine, statLines, gameName,
-          fromGame, hoverText,
+          fromGame, hoverText, qualities,
           QUALITY_TINT, QUALITY_NAMES,
           catalog: () => C};
 })();
@@ -6979,10 +7088,40 @@ EZ.areas = EZ.areas || [];
 
   const plain = (s) => String(s || "").replace(/ÿc./g, "").split("\n")[0].trim();
 
+  /* Kinds of items, for changing many at once (their codes from the catalog: gems by grade, runes by number). */
+  function kinds() {
+    const cat = EZ.items.catalog(), bases = [...cat.bases.values()];
+    const by = (f) => bases.filter(f).map((b) => b.code);
+    const list = (codes) => codes.filter((c) => cat.bases.has(c));
+    const grades = ["", "Chipped", "Flawed", "Normal", "Flawless", "Perfect"];
+    const out = [];
+    for (let l = 1; l <= 5; l++) out.push({id: "gems" + l, title: grades[l] + " gems and skulls", codes: by((b) => b.gem && b.gem[0] === l)});
+    for (const [a, b, t] of [[1, 7, "El to Tal"], [8, 11, "Ral to Amn"], [12, 15, "Sol to Hel"], [16, 19, "Io to Fal"],
+                             [20, 21, "Lem and Pul"], [22, 25, "Um to Gul"], [26, 33, "Vex to Zod"]]) {
+      out.push({id: `runes${a}`, title: "Runes " + t, codes: by((x) => x.rune >= a && x.rune <= b)});
+    }
+    out.push({id: "hp", title: "Healing potions", codes: list(["hp1", "hp2", "hp3", "hp4", "hp5"])},
+      {id: "mp", title: "Mana potions", codes: list(["mp1", "mp2", "mp3", "mp4", "mp5"])},
+      {id: "rv", title: "Rejuvenation potions", codes: list(["rvs", "rvl"])},
+      {id: "util", title: "Antidote, stamina and thawing potions", codes: list(["yps", "vps", "wms"])},
+      {id: "throw", title: "Throwing potions", codes: list(["gpl", "gpm", "gps", "opl", "opm", "ops"])},
+      {id: "scrolls", title: "Scrolls and tomes", codes: list(["tsc", "isc", "tbk", "ibk"])},
+      {id: "keys", title: "Keys", codes: list(["key"])},
+      {id: "gold", title: "Gold", codes: list(["gld"])},
+      {id: "quivers", title: "Arrows and bolts", codes: by((b) => /^(aqv|cqv)/.test(b.code))},
+      {id: "charms", title: "Magic charms", codes: list(["cm1", "cm2", "cm3"]), quality: "MAG"},
+      {id: "jewels-mag", title: "Magic jewels", codes: list(["jew"]), quality: "MAG"},
+      {id: "jewels-rare", title: "Rare jewels", codes: list(["jew"]), quality: "RARE"},
+      {id: "jewelry-mag", title: "Magic rings and amulets", codes: list(["rin", "amu"]), quality: "MAG"},
+      {id: "jewelry-rare", title: "Rare rings and amulets", codes: list(["rin", "amu"]), quality: "RARE"});
+    return out.filter((k) => k.codes.length);
+  }
+
   function newDraft(pick) {
     const q = pick.spec.quality || "";
     return {spec: Object.assign({}, pick.spec), label: pick.label,
-            scope: {codes: [pick.spec.code], quality: q, eth: "any", id: "any", levels: [], clvl: ["", ""]},
+            scope: {codes: (pick.codes || [pick.spec.code]).slice(), quality: q, eth: "any", id: "any", levels: [],
+                    clvl: ["", ""]},
             action: "hide", sound: 0, icon: "", alert: {icon: {}, sound: 0, chat: "all", tier: 4}, mode: "add",
             text: "%NAME%"};
   }
@@ -7192,6 +7331,13 @@ EZ.areas = EZ.areas || [];
       input.addEventListener("input", show);
       input.addEventListener("keydown", (ev) => { if (ev.key === "Escape") picks.hidden = true; });
       input.addEventListener("blur", () => setTimeout(() => { picks.hidden = true; }, 150));
+      const kindList = kinds();
+      const kindSel = h("select", {"aria-label": "Or a kind of item", onchange: (ev) => {
+        const k = kindList.find((x) => x.id === ev.target.value);
+        if (!k) return;
+        draft = newDraft({spec: {code: k.codes[0], quality: k.quality}, codes: k.codes, label: k.title});
+        app.drawArea();
+      }}, h("option", {value: ""}, "…or a kind of item"), kindList.map((k) => h("option", {value: k.id}, k.title)));
       const card = h("section.fe-card", {id: "fe-item-edit"});
       if (draft) editor(app, card);
       const list = (e.items || []).filter(EZ.overrides.valid);
@@ -7217,7 +7363,7 @@ EZ.areas = EZ.areas || [];
         h("div.fe-area-head", h("div", h("h2", "Items"),
           h("p.fe-sub", "Change single items: show or hide them, change their alerts or their look. Only the rules " +
             "for these items change, so everything else stays Erazure's, and it follows Erazure's updates."))),
-        h("section.fe-card", h("div.fe-pv-pick", input, picks),
+        h("section.fe-card", h("div.fe-row", h("div.fe-pv-pick.fe-bd-search", input, picks), kindSel),
           draft ? null : h("p.fe-sub.fe-small", {style: {marginTop: ".5em"}}, "Unique and set items are told apart only " +
             "once identified: unidentified, a change is for every unique (or set item) on that base.")),
         draft ? card : null, yours]);
@@ -8882,6 +9028,317 @@ EZ.areas = EZ.areas || [];
   });
 })();
 
+/* ---- tools/editor/area-changes.js ---- */
+/* Changes: what the player's changes do. A summary by area (and what needs a look), every item's label and alerts
+   at a filter level, Erazure's beside the player's (only what changes, by default), the filter file's differences in
+   a readable diff, and troubleshooting for "I didn't see my item". */
+var EZ = typeof EZ !== "undefined" ? EZ : {};
+EZ.areas = EZ.areas || [];
+(function () {
+  "use strict";
+  const {h, fill, pill, seg, toggle} = EZ.ui;
+  const view = {level: null, onlyChanged: true, q: ""};
+  const CHUNK = 250;
+
+  const plain = (s) => String(s || "").replace(/ÿc./g, "").trim();
+  const boxes = (r) => r.icons.map((x) => [x.border, x.map, x.dot, x.px]);
+  const outcome = (r) => JSON.stringify([r.name, boxes(r), r.sound, r.chat, r.invisible, r.desc]);
+
+  /* Every kind of drop the editor checks: each misc base as it drops, each weapon and armor base non-magical, magic
+     and rare (unidentified), rings, amulets, jewels and charms magic and rare, each unique and set base unidentified. */
+  let specCache = null;
+  function specs() {
+    if (specCache) return specCache;
+    const cat = EZ.items.catalog(), out = [], seen = new Set();
+    const add = (spec) => {
+      const k = spec.code + "|" + (spec.quality || "NORM");
+      if (seen.has(k)) return;
+      seen.add(k);
+      out.push(spec);
+    };
+    for (const b of cat.bases.values()) {
+      if (!b.spawnable && !b.quest && b.code !== "gld") continue;
+      if (b.groups.indexOf("CHARM") >= 0) { add({code: b.code, quality: "MAG"}); continue; }
+      if (b.groups.indexOf("JEWELRY") >= 0 || b.code === "jew") {
+        add({code: b.code, quality: "MAG"});
+        add({code: b.code, quality: "RARE"});
+        continue;
+      }
+      if (!EZ.items.qualities(b)) { add(b.code === "gld" ? {code: b.code, gold: 1000} : {code: b.code}); continue; }
+      add({code: b.code});
+      add({code: b.code, quality: "MAG"});
+      add({code: b.code, quality: "RARE"});
+    }
+    for (const u of cat.uniques) if (cat.bases.has(u.code)) add({code: u.code, quality: u.kind});
+    specCache = out;
+    return out;
+  }
+
+  function cell(r) {
+    if (!r) return h("span.fe-sub", "?");
+    const parts = [];
+    if (r.invisible) parts.push(h("span.fe-pv-hidden", "nothing (hidden, no alert)"));
+    else if (r.hidden) parts.push(h("span.fe-pv-hidden", "no label"));
+    else parts.push(EZ.render.label(r.name, {start: r.start}));
+    if (r.icons.length && EZ.preview.iconCanvas) parts.push(EZ.preview.iconCanvas(r.icons, 2));
+    if (r.sound) parts.push(h("span.fe-pv-snd", "♪ " + EZ.sounds.name(EZ.app.data || {}, r.sound)));
+    if (r.chat !== null && !r.sound) parts.push(pill("chat", "info"));
+    return h("div.fe-row.fe-small", parts);
+  }
+
+  /* ---------------------------------------------------------------- every item */
+
+  function everyItem(app) {
+    const P = EZ.preview;
+    const card = h("section.fe-card", {id: "fe-ch-items"});
+    const base = P && P.erazure && P.erazure(), mine = P && P.yours && P.yours();
+    if (!base) { fill(card, h("p.fe-sub", "The preview isn't ready yet.")); return card; }
+    const names = ["Show All Items"].concat(EZ.filter.levels(base.lines).map((l) => plain(l.text)));
+    if (view.level === null) view.level = P.state.filtlvl;
+    const table = h("tbody");
+    const status = h("span.fe-sub.fe-small");
+    let token = 0;
+    const draw = () => {
+      const my = ++token;
+      EZ.ui.clear(table);
+      if (!mine) { status.textContent = "No changes yet: every item is Erazure's."; return; }
+      const list = specs(), q = view.q.trim().toLowerCase();
+      let k = 0, shown = 0, changed = 0;
+      const step = () => {
+        if (my !== token) return;
+        const end = Math.min(list.length, k + CHUNK);
+        for (; k < end; k++) {
+          const spec = list[k];
+          const label = EZ.items.describe(spec);
+          if (q && label.toLowerCase().indexOf(q) < 0) continue;
+          const a = P.run(base, spec, view.level), b = P.run(mine, spec, view.level);
+          if (!a || !b) continue;
+          const diff = outcome(a) !== outcome(b);
+          if (diff) changed++;
+          if (view.onlyChanged && !diff) continue;
+          if (shown >= 400) continue;
+          shown++;
+          table.appendChild(h("tr" + (diff ? ".is-changed" : ""), h("td.fe-small", h("button.fe-btn.ghost.small",
+            {type: "button", title: "Open in the preview", onclick: () => {
+              P.state.spec = Object.assign({}, spec);
+              P.state.mode = "item";
+              P.changed({}, app);
+              if (!app.els.root.classList.contains("pv-open") && window.innerWidth <= 1000) app.els.root.classList.add("pv-open");
+            }}, label)), h("td", cell(a)), h("td", cell(b))));
+        }
+        status.textContent = `${changed.toLocaleString()} of ${k.toLocaleString()} kinds of drop change` +
+          (k < list.length ? "…" : "") + (shown >= 400 ? " (the first 400 shown)" : "");
+        if (k < list.length) setTimeout(step, 0);
+      };
+      step();
+    };
+    const lv = h("select", {"aria-label": "Filter level", onchange: (e) => { view.level = +e.target.value; draw(); }},
+      names.map((n, i) => h("option", {value: String(i), selected: i === view.level}, i + " · " + n)));
+    const search = h("input", {type: "search", value: view.q, placeholder: "Only items named…", "aria-label": "Only items named"});
+    search.addEventListener("input", EZ.ui.debounce(() => { view.q = search.value; draw(); }, 250));
+    fill(card,
+      h("h3", "Every item"),
+      h("p.fe-sub", "Each kind of drop on the ground at one filter level, with the preview's character and place: " +
+        "Erazure's label and alerts beside yours."),
+      h("div.fe-row", lv, search, toggle("Only what changes", view.onlyChanged, (v) => { view.onlyChanged = v; draw(); })),
+      h("p", status),
+      h("div.fe-tablewrap", h("table.fe-ch-table", h("thead", h("tr", h("th", "Item"), h("th", "Erazure"), h("th", "Yours"))),
+        table)));
+    setTimeout(draw, 0);
+    return card;
+  }
+
+  /* ---------------------------------------------------------------- the file's differences */
+
+  function diffCard(app) {
+    const card = h("section.fe-card", {id: "fe-ch-diff"});
+    const out = h("div");
+    const go = () => {
+      const p = EZ.store.current();
+      const before = app.versionLines();
+      const after = EZ.edits.apply(app.src, p, before).lines;
+      const edits = EZ.diff.lines(before, after);
+      if (!edits) { fill(out, h("p.fe-note.warn", "Too many differences to show here.")); return; }
+      const hunks = EZ.diff.hunks(edits, 2);
+      const secA = EZ.filter.sections(app.src, before), secB = EZ.filter.sections(app.src, after);
+      const where = (secs, i) => {
+        const own = EZ.rules.locate(after, i);
+        if (secs === secB && own) return (own.block === "top" ? "your rules above:" : "your rules below:") + own.n;
+        const name = EZ.filter.sectionOf(secs, i);
+        return name ? name.replace(/\.filter$/, "") + ":" + (i - secs[name][0] + 1) : "line " + (i + 1);
+      };
+      const adds = edits.filter((e) => e.kind === "add").length, dels = edits.filter((e) => e.kind === "del").length;
+      fill(out, h("p.fe-sub", `${hunks.length.toLocaleString()} places: ${adds.toLocaleString()} lines added or ` +
+        `changed, ${dels.toLocaleString()} taken out or changed (aliases as Erazure writes them; the saved file has ` +
+        "them written out)."),
+      hunks.slice(0, 150).map((hk) => h("div.fe-ch-hunk",
+        h("div.fe-ch-where", where(secA, hk.a) + (hk.a !== hk.b ? "  →  " + where(secB, hk.b) : "")),
+        h("pre.fe-ch-pre", hk.rows.map((r) => h("span.fe-ch-" + r.kind, (r.kind === "add" ? "+ " : r.kind === "del" ?
+          "- " : "  ") + (r.kind === "add" ? after[r.b] : before[r.a])))))),
+      hunks.length > 150 ? h("p.fe-sub", `… and ${hunks.length - 150} more places.`) : null);
+    };
+    fill(card, h("h3", "The filter file's differences"),
+      h("p.fe-sub", "Every line your changes add, change or take out of Erazure's version, as a diff."),
+      h("button.fe-btn", {type: "button", onclick: go}, "Show the differences"), out);
+    return card;
+  }
+
+  /* ---------------------------------------------------------------- troubleshooting */
+
+  function trouble(app) {
+    const P = EZ.preview;
+    const card = h("section.fe-card", {id: "fe-ch-help"}, h("h3", "I didn't see my item"));
+    const f = P && (P.yours() || P.erazure());
+    const spec = P && P.state && P.state.spec;
+    if (f && spec) {
+      const r = P.run(f, spec);
+      const o = P.state.opts || {};
+      const item = EZ.items.describe(spec), lines = [];
+      const secs = EZ.filter.sections(app.src, f.lines);
+      const where = (i) => {
+        const own = EZ.rules.locate(f.lines, i);
+        if (own) return (own.block === "top" ? "your rules above Erazure's, line " : "your rules below, line ") + own.n;
+        const name = EZ.filter.sectionOf(secs, i);
+        return name ? name.replace(/\.filter$/, "") + ":" + (i - secs[name][0] + 1) : "line " + (i + 1);
+      };
+      if (r.byOption) lines.push("The game's Hide Healing / Mana Potions option hides it before any rule (Loot Filter options).");
+      else if (r.invisible) lines.push(`Hidden by ${where(r.stop)}, and no rule gives it an alert, so BH draws nothing at all.`);
+      else if (r.hidden) lines.push(`Its label is hidden by ${where(r.stop)}; ${r.icons.length ? "its minimap icon still shows" :
+        "no icon"}.`);
+      else lines.push(`It shows (decided by ${r.stop === null ? "no rule: the game's own name" : where(r.stop)}).`);
+      if (r.forced) lines.push("The game's Force Show Undiscovered option shows it anyway (it isn't discovered yet).");
+      if (r.chatRule === null && !r.invisible) lines.push("No chat line: " + (o.detailed === 0 ? "Detailed Notifications is off." :
+        "no rule gives it an alert at this level."));
+      if (r.chatRule !== null && !r.sound) lines.push(o.dropSounds === false ? "No sound: Drop Sounds is off in the game's options." :
+        "No drop sound: the rule that gives its alert has none.");
+      card.appendChild(h("p", "The preview's item, ", h("b", item), ", at level " + P.state.filtlvl + ":"));
+      card.appendChild(h("ul", lines.map((t) => h("li", t))));
+      card.appendChild(h("p.fe-sub.fe-small", "Pick another item, level or character in the preview; its Item view lists " +
+        "every rule that builds the label (How it's built)."));
+    }
+    card.appendChild(h("h4", "If nothing you change shows in game"));
+    card.appendChild(h("ol.fe-steps",
+      h("li", "The file is in ", h("code", "Diablo II\\ProjectD2\\filters\\local"), " and ends in ", h("code", ".filter"),
+        " (not ", h("code", ".filter.txt"), ": Windows can hide that end)."),
+      h("li", "In the launcher: Item Filter Profiles, ", h("b", "Local Filter"), ", your file, ", h("b", "Save Filter"), "."),
+      h("li", "In game, after every save: press ", h("kbd", "Numpad 0"), " to reload the filter."),
+      h("li", "Options, Loot Filter: ", h("b", "Enable Loot Filter"), " is on, and the filter level is the one you " +
+        "expect (", h("kbd", "Ctrl"), "+", h("kbd", "Numpad 0-9"), " jumps to levels 0-9). Level 0 shows everything."),
+      h("li", "No sound: the game's ", h("b", "Drop Sounds"), " option; no chat line: ", h("b", "Detailed Notifications"),
+        "; potions gone: the ", h("b", "Hide Healing / Mana Potions"), " options.")));
+    return card;
+  }
+
+  /* ---------------------------------------------------------------- the summary */
+
+  function summary(app) {
+    const ch = app.changes();
+    const p = EZ.store.current();
+    let report = null, lines = null;
+    try {
+      const r = EZ.edits.apply(app.src, p, app.versionLines());
+      report = r.report;
+      lines = r.lines;
+    } catch (e) { report = {unplaced: [{area: "?", what: "", why: e.message}]}; }
+    const rulesOf = (ls) => ls.filter((l) => l.startsWith("ItemDisplay[")).length;
+    const before = rulesOf(app.versionLines()), after = lines ? rulesOf(lines) : before;
+    const rows = EZ.areas.filter((a) => (ch.byArea[a.id] || {}).n || (ch.byArea[a.id] || {}).w).map((a) => {
+      const c = ch.byArea[a.id];
+      return h("li", h("a", {href: "#" + a.id, onclick: (e) => { e.preventDefault(); app.go(a.id); }}, a.title), ": ",
+        EZ.ui.plural(c.n, "change"), c.w ? h("span", " · ", pill("⚠ " + c.w + " need a look", "warn")) : null);
+    });
+    return h("section.fe-card", {id: "fe-ch-summary"},
+      h("h3", "Your changes"),
+      ch.count ? h("ul", rows) : h("p.fe-sub", "None yet: your filter is Erazure's own " + ((app.variant() || {}).launcher || "") + "."),
+      report && report.unplaced && report.unplaced.length ? h("div.fe-note.warn", h("b", "Not placed: "),
+        h("ul", report.unplaced.map((u) => h("li", (u.what ? u.what + ": " : "") + u.why)))) : null,
+      h("p.fe-sub.fe-small", `${after.toLocaleString()} rules (Erazure's version: ${before.toLocaleString()}` +
+        (after !== before ? `, ${after > before ? "+" : ""}${(after - before).toLocaleString()}` : "") + "). More rules " +
+        "take BH a little longer to load when the game starts or you reload the filter."));
+  }
+
+  EZ.areas.push({
+    id: "changes", title: "Changes", icon: "⇄", order: 100, group: "d",
+    render(box, app) {
+      EZ.ui.add(box, [
+        h("div.fe-area-head", h("div", h("h2", "Changes"),
+          h("p.fe-sub", "What your changes do, item by item, and what to check when something doesn't show."))),
+        summary(app), everyItem(app), diffCard(app), trouble(app)]);
+      if (app.sub && box.querySelector("#fe-" + app.sub)) box.querySelector("#fe-" + app.sub).scrollIntoView();
+    },
+  });
+})();
+
+/* ---- tools/editor/area-help.js ---- */
+/* Help: how the editor works, saving and updates, the game's options and keys, and the questions players ask. */
+var EZ = typeof EZ !== "undefined" ? EZ : {};
+EZ.areas = EZ.areas || [];
+(function () {
+  "use strict";
+  const {h} = EZ.ui;
+
+  const QA = [
+    ["How does the editor work?", [
+      "You pick one of Erazure's versions and change what you like. The editor keeps your changes, never a copy of " +
+      "the filter: each time you save, it builds the newest Erazure with your changes on top.",
+      "With no changes, the file it saves is exactly the launcher's."]],
+    ["How do I get my filter into the game?", [
+      "Save to game (Chrome and Edge) writes it straight into Diablo II\\ProjectD2\\filters\\local; other browsers " +
+      "download it, and you put it there yourself.",
+      "Once: in the launcher, Item Filter Profiles, Local Filter, pick your file, Save Filter. After every save, press " +
+      "Numpad 0 in game to reload it."]],
+    ["Erazure has updated. What do I do?", [
+      "Your local filter doesn't update itself. Open the editor and save again: the bar says when Erazure has changed " +
+      "since your last save, and your changes go onto the new Erazure.",
+      "Changes to Erazure's own rules follow each rule by what it says; if Erazure changed one of those rules, " +
+      "Erazure's rules lists it so you can check it."]],
+    ["Where are my changes kept?", [
+      "In this browser (profiles, and the last 30 saves of each in its history). Save changes to a file now and then " +
+      "(the menu next to Save to game): clearing the browser's data takes them with it.",
+      "Every file the editor saves holds your changes too: import it on any computer to get them back."]],
+    ["How do filter levels work?", [
+      "Level 0 shows every item. Levels 1 to 12 are Erazure's, from the least strict to the most; Ctrl+Numpad 0-9 " +
+      "jumps to levels 0-9, and the in-game menu reaches 10-12. Options can rename a level or make it a copy of " +
+      "another, to change one level only."]],
+    ["Why does an item still have its own color?", [
+      "The game colors some names itself (runes orange, the Worldstone Shard red, unique and set items by quality): " +
+      "the filter writes its text after the game's color, so a look that doesn't set a color keeps the game's."]],
+    ["Why is an item hidden that Erazure shows, or the other way round?", [
+      "Changes shows every item at a filter level, Erazure's beside yours, and the preview's Item view lists every " +
+      "rule that builds an item's label. The game's own options can hide items too: Hide Healing / Mana Potions, " +
+      "and Force Show Undiscovered shows unique and set items you haven't found yet whatever the filter says."]],
+    ["What are rules, %CONTINUE% and alerts?", [
+      "BH reads the rules from the top; the first one that matches without %CONTINUE% decides the label, and one " +
+      "with %CONTINUE% passes its text on to the next. Minimap icons, sounds and chat lines are decided apart: the " +
+      "first matching rule with one decides the sound and the chat line, and icons add up until a rule without " +
+      "%CONTINUE%. My rules has a rule builder and checks every line you write."]],
+    ["Can I share my changes?", [
+      "Copy a share link or save the changes to a file (the menu next to Save to game). Anyone who opens the link or " +
+      "imports the file gets your changes on their own copy of Erazure."]],
+  ];
+
+  EZ.areas.push({
+    id: "help", title: "Help", icon: "?", order: 110, group: "d",
+    render(box, app) {
+      const site = "https://filtersby-erazure.github.io/PD2-Loot-Filter/";
+      EZ.ui.add(box, [
+        h("div.fe-area-head", h("div", h("h2", "Help"), h("p.fe-sub", "How the editor works, and answers to common " +
+          "questions."))),
+        h("section.fe-card", QA.map(([q, a]) => h("details.fe-faq", h("summary", q), a.map((t) => h("p", t))))),
+        h("section.fe-card.flat", h("h3", "More"),
+          h("ul",
+            h("li", h("a", {href: site + "filter-levels/", target: "_blank", rel: "noopener"}, "Filter Levels"),
+              ": what each level shows and hides."),
+            h("li", h("a", {href: site + "tiers/", target: "_blank", rel: "noopener"}, "Unique and Set Tiers"),
+              ": every unique and set item's look, by tier."),
+            h("li", h("a", {href: "https://wiki.projectdiablo2.com/wiki/Item_Filtering", target: "_blank",
+              rel: "noopener"}, "The PD2 wiki's Item Filtering page"), ": every word a rule can use."))),
+        h("p.fe-sub.fe-small", "Erazure " + app.src.version + "."),
+      ]);
+    },
+  });
+})();
+
 /* ---- tools/editor/preview.js ---- */
 /* The Filter Editor's preview column: an item run through Erazure's filter and through the player's (EZ.engine), at
    the filter level, character and place the column's settings pick, with the game's options. Two views:
@@ -8972,6 +9429,7 @@ EZ.preview = (function () {
 
   /* Erazure's version (the player's base, no edits). */
   function erazure() {
+    if (!app) app = EZ.app;  // an area asked before the preview was drawn
     const v = app.variant();
     if (!v) return null;
     if (cache.baseName !== v.name) {
@@ -8983,6 +9441,7 @@ EZ.preview = (function () {
 
   /* The player's filter (null while it has no edits: it is Erazure's). */
   function yours() {
+    if (!app) app = EZ.app;
     const p = EZ.store.current();
     if (!app.changes().count) return null;
     const key = (app.variant() || {}).name + "|" + JSON.stringify(p.edits);
@@ -9495,7 +9954,7 @@ EZ.preview = (function () {
   return {
     render(b, a) { box = b; app = a; draw(); },
     changed(ev, a) { app = a; redraw(); },
-    state, run, erazure, yours, ctx, SAMPLES,
+    state, run, erazure, yours, ctx, iconCanvas, SAMPLES,
   };
 })();
 
@@ -9509,8 +9968,6 @@ EZ.areas = EZ.areas || [];
   const TODO = [
     ["wishlists", "Wishlists", "★", 60, "b", "Rares, shop items, runeword and crafting bases, charms and jewels you want."],
     ["maps", "Maps", "⌖", 70, "b", "Map lines, mod warnings and hides, minimum experience."],
-    ["changes", "Changes", "⇄", 100, "d", "What your changes do, item by item; every item; compare; troubleshooting."],
-    ["help", "Help", "?", 110, "d", "How the editor works, updates, and answers to common questions."],
   ];
   for (const [id, title, icon, order, group, what] of TODO) {
     if (EZ.areas.some((a) => a.id === id)) continue;

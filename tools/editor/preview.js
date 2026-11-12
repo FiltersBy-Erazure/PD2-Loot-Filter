@@ -87,6 +87,7 @@ EZ.preview = (function () {
 
   /* Erazure's version (the player's base, no edits). */
   function erazure() {
+    if (!app) app = EZ.app;  // an area asked before the preview was drawn
     const v = app.variant();
     if (!v) return null;
     if (cache.baseName !== v.name) {
@@ -98,6 +99,7 @@ EZ.preview = (function () {
 
   /* The player's filter (null while it has no edits: it is Erazure's). */
   function yours() {
+    if (!app) app = EZ.app;
     const p = EZ.store.current();
     if (!app.changes().count) return null;
     const key = (app.variant() || {}).name + "|" + JSON.stringify(p.edits);
@@ -610,6 +612,6 @@ EZ.preview = (function () {
   return {
     render(b, a) { box = b; app = a; draw(); },
     changed(ev, a) { app = a; redraw(); },
-    state, run, erazure, yours, ctx, SAMPLES,
+    state, run, erazure, yours, ctx, iconCanvas, SAMPLES,
   };
 })();

@@ -27,10 +27,40 @@ EZ.areas = EZ.areas || [];
 
   const plain = (s) => String(s || "").replace(/ÿc./g, "").split("\n")[0].trim();
 
+  /* Kinds of items, for changing many at once (their codes from the catalog: gems by grade, runes by number). */
+  function kinds() {
+    const cat = EZ.items.catalog(), bases = [...cat.bases.values()];
+    const by = (f) => bases.filter(f).map((b) => b.code);
+    const list = (codes) => codes.filter((c) => cat.bases.has(c));
+    const grades = ["", "Chipped", "Flawed", "Normal", "Flawless", "Perfect"];
+    const out = [];
+    for (let l = 1; l <= 5; l++) out.push({id: "gems" + l, title: grades[l] + " gems and skulls", codes: by((b) => b.gem && b.gem[0] === l)});
+    for (const [a, b, t] of [[1, 7, "El to Tal"], [8, 11, "Ral to Amn"], [12, 15, "Sol to Hel"], [16, 19, "Io to Fal"],
+                             [20, 21, "Lem and Pul"], [22, 25, "Um to Gul"], [26, 33, "Vex to Zod"]]) {
+      out.push({id: `runes${a}`, title: "Runes " + t, codes: by((x) => x.rune >= a && x.rune <= b)});
+    }
+    out.push({id: "hp", title: "Healing potions", codes: list(["hp1", "hp2", "hp3", "hp4", "hp5"])},
+      {id: "mp", title: "Mana potions", codes: list(["mp1", "mp2", "mp3", "mp4", "mp5"])},
+      {id: "rv", title: "Rejuvenation potions", codes: list(["rvs", "rvl"])},
+      {id: "util", title: "Antidote, stamina and thawing potions", codes: list(["yps", "vps", "wms"])},
+      {id: "throw", title: "Throwing potions", codes: list(["gpl", "gpm", "gps", "opl", "opm", "ops"])},
+      {id: "scrolls", title: "Scrolls and tomes", codes: list(["tsc", "isc", "tbk", "ibk"])},
+      {id: "keys", title: "Keys", codes: list(["key"])},
+      {id: "gold", title: "Gold", codes: list(["gld"])},
+      {id: "quivers", title: "Arrows and bolts", codes: by((b) => /^(aqv|cqv)/.test(b.code))},
+      {id: "charms", title: "Magic charms", codes: list(["cm1", "cm2", "cm3"]), quality: "MAG"},
+      {id: "jewels-mag", title: "Magic jewels", codes: list(["jew"]), quality: "MAG"},
+      {id: "jewels-rare", title: "Rare jewels", codes: list(["jew"]), quality: "RARE"},
+      {id: "jewelry-mag", title: "Magic rings and amulets", codes: list(["rin", "amu"]), quality: "MAG"},
+      {id: "jewelry-rare", title: "Rare rings and amulets", codes: list(["rin", "amu"]), quality: "RARE"});
+    return out.filter((k) => k.codes.length);
+  }
+
   function newDraft(pick) {
     const q = pick.spec.quality || "";
     return {spec: Object.assign({}, pick.spec), label: pick.label,
-            scope: {codes: [pick.spec.code], quality: q, eth: "any", id: "any", levels: [], clvl: ["", ""]},
+            scope: {codes: (pick.codes || [pick.spec.code]).slice(), quality: q, eth: "any", id: "any", levels: [],
+                    clvl: ["", ""]},
             action: "hide", sound: 0, icon: "", alert: {icon: {}, sound: 0, chat: "all", tier: 4}, mode: "add",
             text: "%NAME%"};
   }
@@ -240,6 +270,13 @@ EZ.areas = EZ.areas || [];
       input.addEventListener("input", show);
       input.addEventListener("keydown", (ev) => { if (ev.key === "Escape") picks.hidden = true; });
       input.addEventListener("blur", () => setTimeout(() => { picks.hidden = true; }, 150));
+      const kindList = kinds();
+      const kindSel = h("select", {"aria-label": "Or a kind of item", onchange: (ev) => {
+        const k = kindList.find((x) => x.id === ev.target.value);
+        if (!k) return;
+        draft = newDraft({spec: {code: k.codes[0], quality: k.quality}, codes: k.codes, label: k.title});
+        app.drawArea();
+      }}, h("option", {value: ""}, "…or a kind of item"), kindList.map((k) => h("option", {value: k.id}, k.title)));
       const card = h("section.fe-card", {id: "fe-item-edit"});
       if (draft) editor(app, card);
       const list = (e.items || []).filter(EZ.overrides.valid);
@@ -265,7 +302,7 @@ EZ.areas = EZ.areas || [];
         h("div.fe-area-head", h("div", h("h2", "Items"),
           h("p.fe-sub", "Change single items: show or hide them, change their alerts or their look. Only the rules " +
             "for these items change, so everything else stays Erazure's, and it follows Erazure's updates."))),
-        h("section.fe-card", h("div.fe-pv-pick", input, picks),
+        h("section.fe-card", h("div.fe-row", h("div.fe-pv-pick.fe-bd-search", input, picks), kindSel),
           draft ? null : h("p.fe-sub.fe-small", {style: {marginTop: ".5em"}}, "Unique and set items are told apart only " +
             "once identified: unidentified, a change is for every unique (or set item) on that base.")),
         draft ? card : null, yours]);

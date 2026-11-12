@@ -63,7 +63,7 @@ EDITOR = ROOT / "tools" / "editor"
 SOURCE = ROOT / "Erazure-Filter-Editor-Source.js"
 FIXTURES = ROOT / "tools" / "editor_fixtures"
 MODULES = ["core.js", "ui.js", "store.js", "filter.js", "features.js", "edits.js", "rules.js", "ops.js",
-           "overrides.js", "volume.js", "engine.js", "lint.js", "words.js", "items.js", "sound.js", "glyphs.js"]  # in order
+           "overrides.js", "volume.js", "engine.js", "lint.js", "words.js", "diff.js", "items.js", "sound.js", "glyphs.js"]  # in order
 TESTS_JS = ROOT / "tools" / "editor_selftest.js"  # the engine tests' code
 BROWSERS = [
     r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",

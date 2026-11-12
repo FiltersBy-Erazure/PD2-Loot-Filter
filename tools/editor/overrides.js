@@ -64,7 +64,8 @@ EZ.overrides = (function () {
     for (const code of s.codes || []) {
       const base = EZ.items.base(code);
       if (!base) continue;
-      out.push({code, base, quality: s.quality && s.quality !== "NMAG" ? s.quality : undefined,
+      out.push({code, base, quality: !EZ.items.qualities(base) ? "NORM" : s.quality && s.quality !== "NMAG" ? s.quality :
+        undefined,
                 eth: s.eth === "yes" ? true : s.eth === "no" ? false : undefined,
                 id: s.id === "yes" ? true : s.id === "no" ? false : undefined});
     }

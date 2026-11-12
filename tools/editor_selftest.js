@@ -317,6 +317,37 @@
     return {fail: bad.length ? bad.join("\n  ") : null, cases: n, ms: Math.round(performance.now() - t0)};
   });
 
+  /* The Changes area's line diff (tools/editor/diff.js): it rebuilds both sides, pairs only equal lines and is as
+     short as a diff can be (the longest common subsequence's), on random short texts. */
+  test("diff", () => {
+    const bad = [];
+    let seed = 7;
+    const rnd = () => { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff; };
+    const lcs = (a, b) => {
+      const dp = Array.from({length: a.length + 1}, () => new Array(b.length + 1).fill(0));
+      for (let i = 1; i <= a.length; i++) for (let j = 1; j <= b.length; j++) {
+        dp[i][j] = a[i - 1] === b[j - 1] ? dp[i - 1][j - 1] + 1 : Math.max(dp[i - 1][j], dp[i][j - 1]);
+      }
+      return dp[a.length][b.length];
+    };
+    for (let t = 0; t < 400; t++) {
+      const len = () => Math.floor(rnd() * 28);
+      const a = Array.from({length: len()}, () => "abcd"[Math.floor(rnd() * 4)]);
+      const b = t % 3 ? a.map((x) => rnd() < 0.2 ? "abcd"[Math.floor(rnd() * 4)] : x).filter(() => rnd() > 0.1)
+        : Array.from({length: len()}, () => "abcd"[Math.floor(rnd() * 4)]);
+      const e = EZ.diff.lines(a, b);
+      const ra = e.filter((x) => x.kind !== "add").map((x) => a[x.a]);
+      const rb = e.filter((x) => x.kind !== "del").map((x) => x.kind === "add" ? b[x.b] : b[x.b]);
+      if (show(ra) !== show(a) || show(rb) !== show(b)) { bad.push(`${show(a)} -> ${show(b)}: doesn't rebuild`); continue; }
+      if (e.some((x) => x.kind === "same" && a[x.a] !== b[x.b])) bad.push(`${show(a)} -> ${show(b)}: pairs unequal lines`);
+      const n = e.filter((x) => x.kind !== "same").length;
+      if (n !== a.length + b.length - 2 * lcs(a, b)) bad.push(`${show(a)} -> ${show(b)}: ${n} edits, the shortest has ` +
+        (a.length + b.length - 2 * lcs(a, b)));
+      if (bad.length > 5) break;
+    }
+    return {fail: bad.length ? bad.join("\n  ") : null, cases: 400};
+  });
+
   test("rules", () => {
     EZ.items.init({catalog: EXPECT.catalog});
     const bad = [];

@@ -34,8 +34,9 @@ PAGE = ROOT / "Erazure-Filter-Editor.html"
 ASSET_INFO = ROOT / "tools" / "editor_assets.json"
 # the modules, in the order the page runs them (each adds itself to the EZ namespace)
 MODULES = ["core.js", "ui.js", "store.js", "filter.js", "features.js", "edits.js", "rules.js", "ops.js", "overrides.js", "volume.js", "render.js", "glyphs.js",
-           "scene.js", "sound.js", "engine.js", "lint.js", "words.js", "items.js", "share.js", "app.js", "area-start.js",
-           "area-options.js", "area-items.js", "area-looks.js", "area-alerts.js", "area-rules.js", "area-erazure.js", "preview.js",
+           "scene.js", "sound.js", "engine.js", "lint.js", "words.js", "diff.js", "items.js", "share.js", "app.js", "area-start.js",
+           "area-options.js", "area-items.js", "area-looks.js", "area-alerts.js", "area-rules.js", "area-erazure.js", "area-changes.js",
+           "area-help.js", "preview.js",
            "area-todo.js"]
 ASSETS = ROOT / "Erazure-Filter-Editor-Assets"
 # PD2's own drop sounds (pd2\dropsounds\tinkNN.wav), the PoE versions' picks
