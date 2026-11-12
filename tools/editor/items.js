@@ -5,8 +5,8 @@
    An item spec (what the preview keeps and the player edits): {code, quality (NORM SUP INF MAG RARE CRAFT UNI SET),
    uni (a unique or set item's index in the catalog), roll (0..1 within its ranges, 1 = the best), id, eth, sockets,
    filled (items in its sockets), ilvl, stats [[stat, param, value as shown]], qty, gold, rw (a runeword's name),
-   corrupt (the corruption outcome, stat 360), name (a magic or rare item's name), place, discovered, owned, sell, buy,
-   lvlreq}. Left out: the game's defaults (identified when it can't be otherwise, item level 85, no sockets, on the
+   corrupt (the corruption outcome, stat 360: it adds that outcome's stats, at roll), desecrate (an amulet's second
+   outcome, stat 206), name (a magic or rare item's name), place, discovered, owned, sell, buy, lvlreq}. Left out: the game's defaults (identified when it can't be otherwise, item level 85, no sockets, on the
    ground, discovered). */
 var EZ = typeof EZ !== "undefined" ? EZ : {};
 EZ.items = (function () {
@@ -45,12 +45,18 @@ EZ.items = (function () {
     const uniques = cat.uniques.map(([kind, name, code, lvlreq, eth, props, set], index) =>
       ({index, kind: kind ? "SET" : "UNI", name, code, lvlreq, eth: !!eth, props, set}));
     const stats = new Map(cat.stats.map(([id, name, shift, pri, text, neg, str2, func, val, dgrp, gfunc, gval, gpos, op,
-                                          opParam]) =>
-      [id, {id, name, shift, pri, text, neg, str2, func, val, dgrp, gfunc, gval, gpos, op, opParam}]));
+                                          opParam, gstr2]) =>
+      [id, {id, name, shift, pri, text, neg, str2, func, val, dgrp, gfunc, gval, gpos, op, opParam, gstr2: gstr2 || ""}]));
     const skills = new Map(cat.skills.map(([id, name, cls, tab]) => [id, {id, name, cls,
       tab: tab === undefined || tab < 0 ? null : tab}]));
+    // the cube's corruption rows: input "weap,sock,rar" = the item type, then the words that narrow it
+    const corruptions = (cat.corruptions || []).map(([input, n, sockets, st]) => {
+      const [type, ...words] = String(input).split(",");
+      return {type, words: new Set(words), n, sockets, stats: st};
+    });
     C = {bases, uniques, stats, skills, cats: cat.cats, statMax: cat.statMax || 1023, skillMax: cat.skillMax || 1023,
-         townIds: cat.townIds || [1, 40, 75, 103, 109], strings: cat.strings || {}, statPools: cat.statPools || {}};
+         townIds: cat.townIds || [1, 40, 75, 103, 109], strings: cat.strings || {}, statPools: cat.statPools || {},
+         corruptions};
     return C;
   }
 
@@ -98,7 +104,13 @@ EZ.items = (function () {
       }
     };
     if (id) shown(own, spec.stats);
-    if (spec.corrupt) own[key(360, 0)] = spec.corrupt;
+    // a corruption: its outcome (an amulet's desecration a second one, stat 206) and, identified, its stats
+    for (const [field, sid] of [["corrupt", 360], ["desecrate", 206]]) {
+      const n = spec[field];
+      if (!n) continue;
+      own[key(sid, 0)] = n;
+      if (id) for (const [s, p, lo, hi] of outcomeStats(spec, b, n)) add(own, s, p, Math.round(lo + (hi - lo) * roll));
+    }
     for (const k of Object.keys(own)) stats[k] = own[k];
     // what the socket fillers bring (BH's stat words read them, its special stats' list too)
     const sock = {};
@@ -370,7 +382,7 @@ EZ.items = (function () {
       const st = C.stats.get(s), g = st.dgrp;
       if (g && groups[g].length === members[g].length && new Set(groups[g].map((x) => x[1])).size === 1) {
         for (const m of members[g]) done.add(m + ",0");
-        out.push(describeStat(st.gfunc, st.gval, st.gpos, "", shown(s, v)));
+        out.push(describeStat(st.gfunc, st.gval, st.gpos, st.gstr2, shown(s, v)));
         continue;
       }
       out.push(statLine(s, p, shown(s, v), clvl));
@@ -486,6 +498,85 @@ EZ.items = (function () {
     return n[0].toUpperCase() + n.slice(1) + " (no line in the game)";
   }
 
+  /* ---------------------------------------------------------------- corruption
+
+     The outcomes the cube gives an item (docs/pd2-corruptions.tsv, and a map's docs/pd2-map-corruptions.tsv): the
+     rows of its item type (or a unique of its own, Annihilus) that fit its sockets (nos / sock); where some name its
+     quality (a non-magical item's sockets, a socketed item's own outcomes), those alone, else the rows that name
+     none. One per outcome, a socket outcome with its most sockets: [{n, sockets, stats, name}] by name. */
+  const QWORD = {NORM: "nor", SUP: "hiq", INF: "low", MAG: "mag", RARE: "rar", SET: "set", UNI: "uni", CRAFT: "crf"};
+  const QWORDS = new Set(Object.values(QWORD));
+  function rowsFor(spec, b) {
+    if (!C || !b) return [];
+    const types = new Set(b.types), q = spec.quality || "NORM", sock = (spec.sockets || 0) > 0;
+    const u = (q === "UNI" || q === "SET") && spec.uni != null ? unique(spec.uni) : null;
+    const fits = C.corruptions.filter((r) => (types.has(r.type) || (u && r.type === u.name)) &&
+      !(r.words.has("nos") && sock) && !(r.words.has("sock") && !sock));
+    const named = (r) => [...r.words].some((w) => QWORDS.has(w));
+    const own = fits.filter((r) => r.words.has(QWORD[q]));
+    return own.length ? own : fits.filter((r) => !named(r));
+  }
+  function corruptionsFor(spec) {
+    const b = base(spec && spec.code);
+    const by = new Map();
+    for (const r of rowsFor(spec, b)) {
+      const o = by.get(r.n);
+      if (o) o.sockets = Math.max(o.sockets, r.sockets);
+      else by.set(r.n, {n: r.n, sockets: r.sockets, stats: r.stats});
+    }
+    const list = [...by.values()].map((o) => Object.assign(o, {name: outcomeName(o)}));
+    const twice = new Set(list.filter((o) => list.some((x) => x !== o && x.name === o.name)));
+    for (const o of twice) o.name += " (outcome " + o.n + ")";
+    return list.sort((x, y) => (y.sockets ? 1 : 0) - (x.sockets ? 1 : 0) || x.name.localeCompare(y.name));
+  }
+  /* An outcome's stats for the item: its own rows', else any row of its item type with that outcome (the item has
+     changed since: sockets added, say). */
+  function outcomeStats(spec, b, n) {
+    const r = rowsFor(spec, b).find((x) => x.n === n) ||
+      C.corruptions.find((x) => x.n === n && b.types.indexOf(x.type) >= 0);
+    return r ? r.stats : [];
+  }
+  /* An outcome in the game's words, each stat's roll as a range ("+5-8% to all Resistances", "+1 to Area Level,
+     Monster Density: +15-20%"): a group the game words as one line (all resistances, all attributes) as one. */
+  function outcomeName(o) {
+    if (!o.stats.length) return o.sockets ? `Sockets (up to ${o.sockets})` : "Corrupted";
+    const shown = o.stats.map(([sid, p, lo, hi]) => {
+      const sh = (C.stats.get(sid) || {}).shift || 0;
+      const a = Math.trunc(lo / (1 << sh)), z = Math.trunc(hi / (1 << sh));
+      return {sid, p, a: Math.min(a, z), z: Math.max(a, z)};
+    });
+    // a stand-in value per range, so the text can be worded and the range put in after
+    const ranges = [], at = (x) => {
+      const k = x.a + ":" + x.z;
+      let i = ranges.findIndex((r) => r.k === k);
+      if (i < 0) { ranges.push({k, a: x.a, z: x.z}); i = ranges.length - 1; }
+      return (x.z < 0 ? -1 : 1) * (7701 + i);
+    };
+    const parts = [], done = new Set();
+    const members = {};
+    for (const st of C.stats.values()) if (st.dgrp) (members[st.dgrp] = members[st.dgrp] || []).push(st.id);
+    for (const x of shown) {
+      const st = C.stats.get(x.sid);
+      const g = st && st.dgrp;
+      if (g && !done.has("g" + g) && members[g].every((m) => shown.some((y) => y.sid === m && y.a === x.a && y.z === x.z))) {
+        members[g].forEach((m) => done.add(m + ",0"));
+        done.add("g" + g);
+        parts.push(cleanText(describeStat(st.gfunc, st.gval, st.gpos, st.gstr2, at(x))));
+        continue;
+      }
+      // (+% damage is two stats, maximum and minimum, the game's one line)
+      if (done.has(x.sid + "," + x.p) || (x.sid === 18 && shown.some((y) => y.sid === 17))) continue;
+      done.add(x.sid + "," + x.p);
+      parts.push(statText(x.sid, x.p, at(x)));
+    }
+    const range = (r) => r.a === r.z ? String(Math.abs(r.a)) : Math.abs(r.z < 0 ? r.z : r.a) + "-" +
+      Math.abs(r.z < 0 ? r.a : r.z);
+    return [...new Set(parts)].map((t) => t.replace(/77(\d\d)/g, (m, d) => {
+      const r = ranges[+d - 1];
+      return r ? range(r) : m;
+    })).join(", ");
+  }
+
   /* The stats to pick from, as {id, name} by name: the ones an item of this kind can have (its affixes, automagic,
      corruptions, crafts, and a unique's or set item's own: statPools), or every stat (all, or no item given). Two
      that read the same get their stat number. */
@@ -530,7 +621,7 @@ EZ.items = (function () {
   }
 
   return {init, base, unique, make, describe, picks, search, statChoices, statLabel, statText, statLine, statLines,
-          statTitle,
+          statTitle, corruptionsFor,
           gameName, fromGame, hoverText, qualities, alwaysId,
           QUALITY_TINT, QUALITY_NAMES,
           catalog: () => C};

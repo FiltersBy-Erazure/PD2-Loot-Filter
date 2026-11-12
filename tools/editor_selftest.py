@@ -35,6 +35,8 @@ Tests:
              error or warning it shouldn't) and on every rule of Erazure's versions (none may be an error).
   rules      the rule builder (tools/editor/rules.js): forms and the rule lines they must make, each read by the
              engine without a word BH drops.
+  corruption the preview's Corruption field: an item's outcomes (the cube's rows for its type, sockets and quality;
+             a map's), named in the game's words, and the stats a picked one adds (identified only; desecration).
   substitute the page's alias loop (each text on its own, kept per alias table) against BH's loop over every rule
              (core.substituteAll, build.py's bh_substitute): every version as the engine and the write-out read it,
              again from what it kept and after an edit, made-up tables whose values write keys, and the case where

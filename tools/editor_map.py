@@ -156,7 +156,8 @@ def catalog():
     stats = [[i, s["stat"], s["ValShift"] or 0, s["descpriority"] or 0, game_text(s.get("descstrpos") or ""),
               game_text(s.get("descstrneg") or ""), game_text(s.get("descstr2") or ""), s["descfunc"] or 0,
               s["descval"] or 0, s["dgrp"] or 0, s["dgrpfunc"] or 0, s["dgrpval"] or 0,
-              game_text(s.get("dgrpstrpos") or ""), num(s.get("op")), num(s.get("op param"))]
+              game_text(s.get("dgrpstrpos") or ""), num(s.get("op")), num(s.get("op param")),
+              game_text(s.get("dgrpstr2") or "")]
              for i, s in sorted(data.stats.items())]
     # a class skill's tab (TABSK number) from the assets' index (tools/editor_assets.py reads it from the game)
     tabs = json.loads(ASSET_INFO.read_text(encoding="utf-8")).get("skillTabs", {}) if ASSET_INFO.exists() else {}
@@ -164,7 +165,31 @@ def catalog():
     strings = {k: game_text(v) for k, v in data.strings.items() if k.isdigit() or k.startswith("class:")}
     return {"baseFields": BASE_FIELDS, "flags": FLAGS, "cats": cats, "bases": out_bases, "uniques": uniques,
             "stats": stats, "skills": skills, "statMax": max(data.stats) + 1, "skillMax": max(data.skills) + 1,
-            "townIds": sorted(T.TOWN_IDS), "strings": strings, "statPools": stat_pools(bases, shift)}
+            "townIds": sorted(T.TOWN_IDS), "strings": strings, "statPools": stat_pools(bases, shift),
+            "corruptions": corruption_rows(shift)}
+
+
+def corruption_rows(shift):
+    """[[cube input, outcome (STAT360=n), most sockets it adds, [[stat, param, low, high], ...]]]: what corrupting an
+    item (docs/pd2-corruptions.tsv) or a map (docs/pd2-map-corruptions.tsv) can give, stats as the game holds them.
+    The preview's Corruption field picks one (tools/editor/items.js corruptionsFor matches an item's inputs)."""
+    path = ROOT / "docs" / "pd2-corruptions.tsv"
+    rows = [line.split("\t") for line in path.read_text(encoding="utf-8").splitlines() if line and not line.startswith("#")]
+    out = []
+    for r in rows[1:]:
+        stats = {}
+        for prop in json.loads(r[3] or "[]"):
+            for code, lo, hi in prop:
+                for sid, p, f in code_stats(code, shift):
+                    stats.setdefault((sid, p), [sid, p, lo * f, hi * f])  # (RES and FRES... name the same stats)
+        out.append([r[0], int(r[1]), num(r[2]), list(stats.values())])
+    for c in map_corruptions():
+        stats = {}
+        for mod in c["mods"]:
+            for sid, p, lo, hi in mod[5]:
+                stats.setdefault((sid, p), [sid, p, lo, hi])
+        out.append([c["input"], int(c["outcome"]), 0, list(stats.values())])
+    return out
 
 
 def stat_pools(bases, shift):

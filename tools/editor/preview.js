@@ -471,6 +471,36 @@ EZ.preview = (function () {
       flags.appendChild(toggle("Discovered", spec.discovered !== false, (on) => change((s) => { s.discovered = on; })));
     }
     if (flags.childNodes.length) rows.push(flags);
+    // the corruption (and an amulet's desecration): the outcomes the cube gives this item as it is now; picking one
+    // adds its stats (at the item's rolls), a socket outcome its sockets (an item pasted from the game keeps its own)
+    if (!spec.noProps) {
+      const list = EZ.items.corruptionsFor(spec);
+      const field = (label, key, none) => {
+        const cur = spec[key] || 0;
+        const opts = [{value: 0, text: none}].concat(list.map((o) => ({value: o.n, text: o.name})));
+        if (cur && !list.some((o) => o.n === cur)) {
+          opts.push({value: cur, text: "Outcome " + cur + " (not one this item gets as it is now)"});
+        }
+        return h("label.fe-pvfield", h("span", label), select(opts, cur, (v) => change((s) => {
+          const n = +v || 0;
+          if (n) s[key] = n; else delete s[key];
+          if (key === "corrupt" && !n) delete s.desecrate;
+          const o = list.find((x) => x.n === n);
+          if (o && o.sockets && !(s.sockets > 0)) {
+            const ilvl = s.ilvl === undefined ? 85 : s.ilvl;
+            const cap = b.maxsock ? (ilvl <= 25 ? b.maxsock[0] : ilvl <= 40 ? b.maxsock[1] : b.maxsock[2]) : 6;
+            s.sockets = Math.max(1, Math.min(o.sockets, cap || o.sockets, 6));
+          }
+          // its stats are what an identified item shows: a magical item with them is identified
+          if (o && o.stats.length && !EZ.items.alwaysId(b, s.quality) && !s.id) {
+            s.id = true;
+            EZ.ui.toast("Identified, so the loot filter can read the corruption's stats.");
+          }
+        }), label));
+      };
+      if (list.length || spec.corrupt) rows.push(field("Corruption", "corrupt", "Not corrupted"));
+      if (spec.corrupt && b.code === "amu") rows.push(field("Desecration", "desecrate", "Not desecrated"));
+    }
     const nums = h("div.fe-row.fe-small");
     const numField = (label, value, min, max, fn) => h("label.fe-row", label + " ",
       h("input.fe-pv-num", {type: "number", min, max, value, onchange: (e) => change((s) => fn(s,

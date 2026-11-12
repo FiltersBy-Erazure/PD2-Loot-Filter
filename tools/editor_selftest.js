@@ -723,6 +723,37 @@
     return {fail: bad.length ? bad.join("\n  ") : null, map: code, hidden: skip, cases: 16};
   });
 
+  /* The preview's Corruption field (tools/editor/items.js corruptionsFor, make): the outcomes the cube gives an item as
+     it is (docs/pd2-corruptions.tsv, a map's docs/pd2-map-corruptions.tsv), named in the game's words, and the stats
+     a picked one adds (identified only; an amulet's desecration a second outcome, stat 206). */
+  test("corruption", () => {
+    EZ.items.init({catalog: EXPECT.catalog});
+    const I = EZ.items, bad = [];
+    const names = (spec) => I.corruptionsFor(spec).map((o) => o.n + ": " + o.name);
+    const has = (spec, want) => {
+      const got = names(spec);
+      if (got.indexOf(want) < 0) bad.push(`${JSON.stringify(spec)}: no "${want}" in ${JSON.stringify(got.slice(0, 6))}…`);
+      return got;
+    };
+    if (has({code: "xvg", quality: "RARE"}, "33: +50-80% Enhanced Defense").length !== 24) bad.push("rare gloves: not 24");
+    const white = has({code: "crs", quality: "NORM"}, "32: Sockets (up to 6)");
+    if (white.length !== 1) bad.push("a white sword gets more than sockets: " + JSON.stringify(white));
+    has({code: "t29", quality: "RARE"}, "85: +1 to Area Level, Monster Density: +20-25%");
+    has({code: "t29", quality: "RARE"}, "87: Players have -3-4% to All Maximum Resistances, Monster Density: +40-50%, " +
+      "Monster Rarity: +15-20%");
+    has({code: "amu", quality: "RARE"}, "51: All Resistances +7-10");
+    has({code: "uap", quality: "UNI", sockets: 1}, "50: +1 to All Skills");
+    if (names({code: "cm1", quality: "MAG"}).length) bad.push("a charm has corruptions");
+    const own = (spec) => I.make(spec).own;
+    const g = own({code: "xvg", quality: "RARE", id: true, corrupt: 33});
+    if (g["16"] !== 80 || g["360"] !== 33) bad.push("corrupted rare gloves (outcome 33): " + JSON.stringify(g));
+    const u = own({code: "xvg", quality: "RARE", corrupt: 33});
+    if (u["16"] !== undefined || u["360"] !== 33) bad.push("unidentified, its stats show: " + JSON.stringify(u));
+    const a = own({code: "amu", quality: "RARE", id: true, corrupt: 50, desecrate: 51});
+    if (a["127"] !== 1 || a["206"] !== 51 || a["39"] !== 10) bad.push("a corrupted, desecrated amulet: " + JSON.stringify(a));
+    return {fail: bad.length ? bad.join("\n  ") : null, cases: 11};
+  });
+
   /* The Changes area's line diff (tools/editor/diff.js): it rebuilds both sides, pairs only equal lines and is as
      short as a diff can be (the longest common subsequence's), on random short texts. */
   test("diff", () => {

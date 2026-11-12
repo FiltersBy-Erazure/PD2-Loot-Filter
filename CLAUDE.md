@@ -974,7 +974,11 @@
   `--tier-data` / `--extract` write it too; `docs/pd2-corruptions.tsv` leaves maps out). Players' attack and cast
   speed roll lower on one corruption and higher on another: a line each, warned of below 0 (`STAT451<0`), marked
   above (`EZ.maps.mixed`). The stat picker words every stat as the game does, X for the value
-  (`EZ.items.statText`).
+  (`EZ.items.statText`). The preview's item has a Corruption field (2026-11-12, the author), and an amulet a
+  Desecration one once corrupted (stat 206): the outcomes the cube gives it as it is (`EZ.items.corruptionsFor`: the
+  rows of its item type that fit its sockets; where some name its quality, those alone, so a non-magical item gets
+  only sockets), named in the game's words with each roll's range; a picked one sets stat 360 / 206 and, identified,
+  adds its stats at the item's rolls (a socket outcome its sockets). The catalog's `corruptions` hold both tables.
 - The website's **Resources** tab (2026-11-02, the author: reference pages players can look things up in, more to
   come): `website/docs/resources/index.md` lists them, a grid card each (mkdocs.yml has `navigation.indexes`, so it is
   the tab's own page). A resource is a page written by hand, `website/resources/<Name>.html` (its data, styles and
