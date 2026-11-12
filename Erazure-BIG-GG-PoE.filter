@@ -56,7 +56,7 @@ ItemDisplay[BIG_GG !POE_SOUNDS !REVEALED box]:%NAME%{%NAME%%CL%%TEAL%Erazure - B
 ItemDisplay[BIG_GG !POE_SOUNDS REVEALED box]:%NAME%{%NAME%%CL%%TEAL%Erazure - Revealed - Big GG}%CONTINUE%//
 ItemDisplay[BIG_GG POE_SOUNDS !REVEALED box]:%NAME%{%NAME%%CL%%TEAL%Erazure - Big GG - PoE}%CONTINUE%//
 ItemDisplay[BIG_GG POE_SOUNDS REVEALED box]:%NAME%{%NAME%%CL%%TEAL%Erazure - Revealed - Big GG - PoE}%CONTINUE%//
-ItemDisplay[box]:%NAME%{%NAME%%CL%%WHITE%Season 14 - November 10th - v2}//
+ItemDisplay[box]:%NAME%{%NAME%%CL%%WHITE%Season 14 - November 12th - v3}//
 
 // =====================================  Toggles  ==================================
 
@@ -430,8 +430,8 @@ Alias[REVEALED]:FALSE
 // written into the rules: Alias[HIGHLIGHT_ED_600_RIGHT]:%RED%**%PURPLE%**%BLUE%**%TEAL%**
 
 // Enhanced Damage 700+
-// written into the rules: Alias[HIGHLIGHT_ED_700_LEFT]:%TAN%**%TEAL%**%BLUE%**%PURPLE%**%TEAL%
-// written into the rules: Alias[HIGHLIGHT_ED_700_RIGHT]:%PURPLE%**%BLUE%**%TEAL%**%TAN%**
+// written into the rules: Alias[HIGHLIGHT_ED_700_LEFT]:%GREEN%**%TEAL%**%BLUE%**%PURPLE%**
+// written into the rules: Alias[HIGHLIGHT_ED_700_RIGHT]:%PURPLE%**%BLUE%**%TEAL%**%GREEN%**
 
 // Tier 1 Maps - non-unique
 // written into the rules: Alias[TIER_1_MAPS]:(MAPTIER=1 !UNI)
@@ -1011,6 +1011,14 @@ Alias[REVEALED]:FALSE
 // written into the rules: Alias[ROLL_TABSKS_TAG]:((UNI ID ((nef TABSK16>1 ((ETH STAT360>0 !STAT360=32 !STAT360=43 !STAT360=45) OR (STAT360=48 OR STAT360=73) OR (ETH SOCK>0 (STAT360=43 OR STAT360=45)))))))
 // written into the rules: Alias[ROLL_SLASH_SK89_SK70_TAG]:((UNI ID (((9bw OR 7bw) SK69>1 ((STAT360=22 OR STAT360=26) OR (ETH (STAT360=17 OR STAT360=23 OR STAT360=24 OR STAT360=25 OR STAT360=28 OR STAT360=29 OR STAT360=30 OR STAT360=31)) OR (ETH SOCK>0 STAT360>0 !STAT360=2 !STAT360=4 !STAT360=7 !STAT360=8 !STAT360=9 !STAT360=19 !STAT360=21 !STAT360=27 !STAT360=32) OR (SOCK>0 (STAT360=23 OR STAT360=25 OR STAT360=28 OR STAT360=29 OR STAT360=30 OR STAT360=31)))))))
 
+// Sockets that roll in a range (Hellrack 3-5), per top roll: the identified uniques and sets that have one.
+// 210-nonmagic-armor shows the top after the socket count of an uncorrupted one: Hellrack 4/5 (the author,
+// 2026-11-12).
+// written into the rules: Alias[ROLL_SOCK_MAX2]:((UNI ID (((ne6 OR neb)))))
+// written into the rules: Alias[ROLL_SOCK_MAX3]:((UNI ID (((9b8 OR 7b8) SK147>1) OR ((9fc OR 7fc) DEX>4 STAT54<1) OR (urn STAT109>49 CRES>19) OR (drc SK233>1) OR (7sm MULTI151,100>5) OR (ush (MULTI198,28315>0 OR MULTI198,28319>0)) OR (7sc CLSK3>1 STAT136>32 IAS>19))) OR (SET ID (((9mt OR 7mt)) OR ((xar OR uar) CLSK3>0) OR (paf) OR (urn STAT91<-39 MFIND>29) OR (ucl TABSK49>1))))
+// written into the rules: Alias[ROLL_SOCK_MAX4]:((UNI ID (((xul OR uul) STAT118>0 STAT121>184) OR (7o7 (MULTI198,5398>0 OR MULTI198,5401>0)) OR ((8s8 OR 6s7) (MULTI198,28315>0 OR MULTI198,28319>0)))))
+// written into the rules: Alias[ROLL_SOCK_MAX5]:((UNI ID ((6hx MULTI126,1>3) OR (72a STAT153>0 STAT44>4) OR (7pa CRES>29 IAS>59))) OR (SET ID ((7ws STAT122>199 IAS>39))))
+
 // Base names (BASE_RENAMES in the generator): the name every item of the base shows where BH can name it
 // again: unidentified and non-magical items (210-nonmagic-armor's Superior/Inferior trim skips them:
 // !RENAMED_BASES), identified uniques and sets (their own name above it), runewords (047). Identified magic,
@@ -1380,12 +1388,18 @@ ItemDisplay[GOLD<25000 CLVL>94 FILTLVL>11 GROUND !(MAPID=1 OR MAPID=40 OR MAPID=
 
 // ================================  Health Potions  =================================
 
-// Display for Healing Potions on filter level 0
-ItemDisplay[hp1 FILTLVL=0]:%GRAY%I%RED%O%GRAY%I%WHITE%{%WHITE% Minor Healing Potion }//
-ItemDisplay[hp2 FILTLVL=0]:%GRAY%iI%RED%O%GRAY%Ii%WHITE%{%WHITE% Light Healing Potion }//
-ItemDisplay[hp3 FILTLVL=0]:%GRAY%iI%RED%O%GRAY%Ii%WHITE%{%WHITE% Mid Healing Potion }//
-ItemDisplay[hp4 FILTLVL=0]:%GRAY%i%RED%IOI%GRAY%i%WHITE%{%WHITE% Greater Healing Potion }//
-ItemDisplay[hp5 FILTLVL=0]:%CORAL%i%RED%IOI%CORAL%i%WHITE%{%WHITE% Super Healing Potion }//
+// Display for Healing Potions on filter level 0: the label of levels 1-12 without the minimap icon; on the ground
+// outside town where levels 1-12 hide the potion (Super: show IOI), the label without its number
+ItemDisplay[hp1 FILTLVL=0 CLVL>14 GROUND !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109 OR MAPID~202-206)]:%RED%- %WHITE%H %RED%-%WHITE%{%WHITE% Minor Healing Potion }//
+ItemDisplay[hp1 FILTLVL=0]:%RED%- %WHITE%H1 %RED%-%WHITE%{%WHITE% Minor Healing Potion }//
+ItemDisplay[hp2 FILTLVL=0 CLVL>19 GROUND !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109 OR MAPID~202-206)]:%RED%• %WHITE%H %RED%•%WHITE%{%WHITE% Light Healing Potion }//
+ItemDisplay[hp2 FILTLVL=0]:%RED%• %WHITE%H2 %RED%•%WHITE%{%WHITE% Light Healing Potion }//
+ItemDisplay[hp3 FILTLVL=0 CLVL>23 !DIFF=0 GROUND !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109 OR MAPID~202-206)]:%RED%+ %WHITE%H %RED%+%WHITE%{%WHITE% Mid Healing Potion }//
+ItemDisplay[hp3 FILTLVL=0]:%RED%+ %WHITE%H3 %RED%+%WHITE%{%WHITE% Mid Healing Potion }//
+ItemDisplay[hp4 FILTLVL=0 CLVL>49 !DIFF=0 GROUND !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109 OR MAPID~202-206)]:%GRAY%i%RED%( %WHITE%H %RED%)%GRAY%i%WHITE%{%WHITE% Greater Healing Potion }//
+ItemDisplay[hp4 FILTLVL=0]:%GRAY%i%RED%( %WHITE%H4 %RED%)%GRAY%i%WHITE%{%WHITE% Greater Healing Potion }//
+ItemDisplay[hp5 FILTLVL=0 CLVL>49 !DIFF=0 GROUND !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109 OR MAPID~202-206)]:%CORAL%i%RED%( %WHITE%H %RED%)%CORAL%i%WHITE%{%WHITE% Super Healing Potion }//
+ItemDisplay[hp5 FILTLVL=0]:%CORAL%i%RED%( %WHITE%H5 %RED%)%CORAL%i%WHITE%{%WHITE% Super Healing Potion }//
 
 // Display for Healing Potions during levels 1-25
 ItemDisplay[hp1 !FILTLVL=0 (CLVL<15 OR SHOP)]:%RED%- %WHITE%H1 %RED%-%WHITE%%PX-50%%TIER-0%{%WHITE% Minor Healing Potion }//
@@ -1405,17 +1419,25 @@ ItemDisplay[hp2 !SHOP CLVL>19 (MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR M
 ItemDisplay[hp3 !SHOP CLVL>23 (MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109 OR MAPID~202-206)]:%RED%+ %WHITE%H3 %RED%+%WHITE%{%WHITE% Healing Potion }//
 ItemDisplay[hp4 !SHOP (CLVL>49 OR FILTLVL>2) (MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109 OR MAPID~202-206)]:%GRAY%i%RED%( %WHITE%H4 %RED%)%GRAY%i%WHITE%{%WHITE% Greater Healing Potion }//
 
-// Super Healing Potion: never hidden (the game's Hide Healing Potions option decides)
+// Super Healing Potion: never hidden (the game's Hide Healing Potions option decides); in town its label, as the
+// lesser potions' town looks have theirs
+ItemDisplay[hp5 CLVL>49 (MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109 OR MAPID~202-206)]:%CORAL%i%RED%( %WHITE%H5 %RED%)%CORAL%i%WHITE%{%WHITE% Super Healing Potion }//
 ItemDisplay[hp5 CLVL>49]:%CORAL%i%RED%IOI%CORAL%i%WHITE%{%WHITE% Super Healing Potion }//
 
 // ==================================  Mana Potions  ====================================
 
-// Display for Mana Potions on filter level 0
-ItemDisplay[mp1 FILTLVL=0]:%GRAY%I%BLUE%O%GRAY%I%WHITE%{%WHITE% Minor Mana Potion }//
-ItemDisplay[mp2 FILTLVL=0]:%GRAY%iI%BLUE%O%GRAY%Ii%WHITE%{%WHITE% Light Mana Potion }//
-ItemDisplay[mp3 FILTLVL=0]:%GRAY%iI%BLUE%O%GRAY%Ii%WHITE%{%WHITE% Mana Potion }//
-ItemDisplay[mp4 FILTLVL=0]:%GRAY%i%BLUE%IOI%GRAY%i%WHITE%{%WHITE% Greater Mana Potion }//
-ItemDisplay[mp5 FILTLVL=0]:%TEAL%i%BLUE%IOI%TEAL%i%WHITE%{%WHITE% Super Mana Potion }//
+// Display for Mana Potions on filter level 0: the label of levels 1-12 without the minimap icon; on the ground
+// outside town where levels 1-12 hide the potion (Super: show IOI), the label without its number
+ItemDisplay[mp1 FILTLVL=0 CLVL>14 GROUND !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109 OR MAPID~202-206)]:%BLUE%- %WHITE%M %BLUE%-%WHITE%{%WHITE% Minor Mana Potion }//
+ItemDisplay[mp1 FILTLVL=0]:%BLUE%- %WHITE%M1 %BLUE%-%WHITE%{%WHITE% Minor Mana Potion }//
+ItemDisplay[mp2 FILTLVL=0 CLVL>22 GROUND !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109 OR MAPID~202-206)]:%BLUE%• %WHITE%M %BLUE%•%WHITE%{%WHITE% Light Mana Potion }//
+ItemDisplay[mp2 FILTLVL=0]:%BLUE%• %WHITE%M2 %BLUE%•%WHITE%{%WHITE% Light Mana Potion }//
+ItemDisplay[mp3 FILTLVL=0 CLVL>28 !DIFF=0 GROUND !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109 OR MAPID~202-206)]:%BLUE%+ %WHITE%M %BLUE%+%WHITE%{%WHITE% Mana Potion }//
+ItemDisplay[mp3 FILTLVL=0]:%BLUE%+ %WHITE%M3 %BLUE%+%WHITE%{%WHITE% Mana Potion }//
+ItemDisplay[mp4 FILTLVL=0 CLVL>49 !DIFF=0 GROUND !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109 OR MAPID~202-206)]:%GRAY%i%BLUE%( %WHITE%M %BLUE%)%GRAY%i%WHITE%{%WHITE% Greater Mana Potion }//
+ItemDisplay[mp4 FILTLVL=0]:%GRAY%i%BLUE%( %WHITE%M4 %BLUE%)%GRAY%i%WHITE%{%WHITE% Greater Mana Potion }//
+ItemDisplay[mp5 FILTLVL=0 CLVL>49 !DIFF=0 GROUND !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109 OR MAPID~202-206)]:%TEAL%i%BLUE%( %WHITE%M %BLUE%)%TEAL%i%WHITE%{%WHITE% Super Mana Potion }//
+ItemDisplay[mp5 FILTLVL=0]:%TEAL%i%BLUE%( %WHITE%M5 %BLUE%)%TEAL%i%WHITE%{%WHITE% Super Mana Potion }//
 
 // Display for Mana Potions during levels 1-25
 ItemDisplay[mp1 !FILTLVL=0 (CLVL<15 OR SHOP)]:%BLUE%- %WHITE%M1 %BLUE%-%WHITE%%PX-97%%TIER-0%{%WHITE% Minor Mana Potion }//
@@ -1435,11 +1457,13 @@ ItemDisplay[mp2 !SHOP CLVL>22 (MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR M
 ItemDisplay[mp3 !SHOP CLVL>28 (MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109 OR MAPID~202-206)]:%BLUE%+ %WHITE%M3 %BLUE%+%WHITE%{%WHITE% Mana Potion }//
 ItemDisplay[mp4 !SHOP (CLVL>49 OR FILTLVL>2) (MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109 OR MAPID~202-206)]:%GRAY%i%BLUE%( %WHITE%M4 %BLUE%)%GRAY%i%WHITE%{%WHITE% Greater Mana Potion }//
 
-// Super Mana Potion: never hidden (the game's Hide Mana Potions option decides)
+// Super Mana Potion: never hidden (the game's Hide Mana Potions option decides); in town its label, as the lesser
+// potions' town looks have theirs
+ItemDisplay[mp5 CLVL>49 (MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109 OR MAPID~202-206)]:%TEAL%i%BLUE%( %WHITE%M5 %BLUE%)%TEAL%i%WHITE%{%WHITE% Super Mana Potion }//
 ItemDisplay[mp5 CLVL>49]:%TEAL%i%BLUE%IOI%TEAL%i%WHITE%{%WHITE% Super Mana Potion }//
 
 // Dueling Mana Potion
-ItemDisplay[pvpp]:%BLUE% %WHITE%M%BLUE%+ %WHITE%{%WHITE% Dueling Mana Potion }//
+ItemDisplay[pvpp]:%TEAL%i%BLUE%( %WHITE%M %BLUE%)%TEAL%i%WHITE%{%WHITE% Dueling Mana Potion }//
 
 // ==================================  Rejuvenation Potions  ================================
 
@@ -1459,9 +1483,9 @@ ItemDisplay[rvs !(MAPID~161-163 OR MAPID=137 OR MAPID~188-189) (FILTLVL~1-3 OR F
 ItemDisplay[rvs !(MAPID~161-163 OR MAPID=137 OR MAPID~188-189) (FILTLVL~1-3 OR FILTLVL=5) CLVL>49]:%GRAY%i%PURPLE%(%WHITE% 35% %PURPLE%)%GRAY%i{%WHITE% Rejuvenation Potion }//
 
 
-// Lower Levels with minimap icon
-ItemDisplay[rvl !(MAPID~161-163 OR MAPID=137 OR MAPID~188-189) (FILTLVL~1-3 OR FILTLVL=5) CLVL<50]:%PURPLE%i(%WHITE% Full Rejuv %PURPLE%)i%WHITE%{%WHITE% Full Rejuvenation Potion }%DOT-9B%%PX-20%%TIER-0%//
-ItemDisplay[rvl !(MAPID~161-163 OR MAPID=137 OR MAPID~188-189) (FILTLVL~1-3 OR FILTLVL=5) CLVL>49]:%PURPLE%i(%WHITE% Full %PURPLE%)i%WHITE%{%WHITE% Full Rejuvenation Potion }%DOT-9B%%PX-20%%TIER-0%//
+// Lower Levels: minimap icon below character level 80
+ItemDisplay[rvl !(MAPID~161-163 OR MAPID=137 OR MAPID~188-189) (FILTLVL~1-3 OR FILTLVL=5) CLVL<80]:%PURPLE%i(%WHITE% Full %PURPLE%)i%WHITE%{%WHITE% Full Rejuvenation Potion }%DOT-9B%%PX-20%%TIER-0%//
+ItemDisplay[rvl !(MAPID~161-163 OR MAPID=137 OR MAPID~188-189) (FILTLVL~1-3 OR FILTLVL=5) CLVL>79]:%PURPLE%i(%WHITE% Full %PURPLE%)i%WHITE%{%WHITE% Full Rejuvenation Potion }//
 
 // Higher Levels
 ItemDisplay[rvl !(MAPID~161-163 OR MAPID=137 OR MAPID~188-189) (FILTLVL=4 OR FILTLVL>5) CLVL<80]:%PURPLE%i%GRAY%I%PURPLE%(O)%GRAY%I%PURPLE%i%WHITE%{%WHITE% Full Rejuvenation Potion }%DOT-9B%%PX-20%%TIER-0%//
@@ -6174,6 +6198,11 @@ ItemDisplay[(ARMOR OR WEAPON OR QUIVER) NMAG (SOCK>0 OR ETH)]:%GRAY%%NAME%{%NAME
 
 // Regular Sockets
 ItemDisplay[(MAG OR RARE OR SET OR UNI OR CRAFT) ID !STAT360=32 SOCK>0]:%NAME% %WHITE%%SOCKETS%{%NAME%}%CONTINUE%//
+// Uncorrupted uniques and sets whose sockets roll in a range: the most they roll (045's ROLL_SOCK_MAX aliases), Hellrack 4/5
+ItemDisplay[((UNI ID (((ne6 OR neb))))) !STAT360>0]:%NAME%%LIGHT_GRAY%/%GRAY%2{%NAME%}%CONTINUE%//
+ItemDisplay[((UNI ID (((9b8 OR 7b8) SK147>1) OR ((9fc OR 7fc) DEX>4 STAT54<1) OR (urn STAT109>49 CRES>19) OR (drc SK233>1) OR (7sm MULTI151,100>5) OR (ush (MULTI198,28315>0 OR MULTI198,28319>0)) OR (7sc CLSK3>1 STAT136>32 IAS>19))) OR (SET ID (((9mt OR 7mt)) OR ((xar OR uar) CLSK3>0) OR (paf) OR (urn STAT91<-39 MFIND>29) OR (ucl TABSK49>1)))) !STAT360>0]:%NAME%%LIGHT_GRAY%/%GRAY%3{%NAME%}%CONTINUE%//
+ItemDisplay[((UNI ID (((xul OR uul) STAT118>0 STAT121>184) OR (7o7 (MULTI198,5398>0 OR MULTI198,5401>0)) OR ((8s8 OR 6s7) (MULTI198,28315>0 OR MULTI198,28319>0))))) !STAT360>0]:%NAME%%LIGHT_GRAY%/%GRAY%4{%NAME%}%CONTINUE%//
+ItemDisplay[((UNI ID ((6hx MULTI126,1>3) OR (72a STAT153>0 STAT44>4) OR (7pa CRES>29 IAS>59))) OR (SET ID ((7ws STAT122>199 IAS>39)))) !STAT360>0]:%NAME%%LIGHT_GRAY%/%GRAY%5{%NAME%}%CONTINUE%//
 ItemDisplay[NMAG !RW !STAT360=32 SOCK>0]:%NAME% %WHITE%%SOCKETS%%GRAY%{%NAME%}%CONTINUE%//
 // Sockets from Corruption
 ItemDisplay[(MAG OR RARE OR SET OR UNI OR CRAFT) ID STAT360=32 SOCK>0]:%NAME% %WHITE%%SOCKETS%%RED%*{%NAME%}%CONTINUE%//
@@ -11572,8 +11601,8 @@ ItemDisplay[WEAPON !STAFF !WAND !SOR (MAG OR RARE OR CRAFT) ED~500-599 EQUIPPED]
 ItemDisplay[WEAPON !STAFF !WAND !SOR (MAG OR RARE OR CRAFT) ED~600-699 !EQUIPPED]:%NAME%{%TEAL%**%BLUE%**%PURPLE%**%RED%**%PURPLE%    +%ED%% Enhanced Damage    %RED%**%PURPLE%**%BLUE%**%TEAL%**%CL%%NAME%}%CONTINUE%//
 ItemDisplay[WEAPON !STAFF !WAND !SOR (MAG OR RARE OR CRAFT) ED~600-699 EQUIPPED]:%NAME%{%TEAL%**%BLUE%**%PURPLE%**%RED%**%PURPLE%    +%EDAM%% Enhanced Damage    %RED%**%PURPLE%**%BLUE%**%TEAL%**%CL%%NAME%}%CONTINUE%//
 //  High Enhanced Damage Weapons (700+)
-ItemDisplay[WEAPON !STAFF !WAND !SOR (MAG OR RARE OR CRAFT) ED>699 !EQUIPPED]:%NAME%{%TAN%**%TEAL%**%BLUE%**%PURPLE%**%TEAL%    +%ED%% Enhanced Damage    %PURPLE%**%BLUE%**%TEAL%**%TAN%**%CL%%NAME%}%CONTINUE%//
-ItemDisplay[WEAPON !STAFF !WAND !SOR (MAG OR RARE OR CRAFT) ED>699 EQUIPPED]:%NAME%{%TAN%**%TEAL%**%BLUE%**%PURPLE%**%TEAL%    +%EDAM%% Enhanced Damage    %PURPLE%**%BLUE%**%TEAL%**%TAN%**%CL%%NAME%}%CONTINUE%//
+ItemDisplay[WEAPON !STAFF !WAND !SOR (MAG OR RARE OR CRAFT) ED>699 !EQUIPPED]:%NAME%{%GREEN%**%TEAL%**%BLUE%**%PURPLE%**    +%ED%% Enhanced Damage    %PURPLE%**%BLUE%**%TEAL%**%GREEN%**%CL%%NAME%}%CONTINUE%//
+ItemDisplay[WEAPON !STAFF !WAND !SOR (MAG OR RARE OR CRAFT) ED>699 EQUIPPED]:%NAME%{%GREEN%**%TEAL%**%BLUE%**%PURPLE%**    +%EDAM%% Enhanced Damage    %PURPLE%**%BLUE%**%TEAL%**%GREEN%**%CL%%NAME%}%CONTINUE%//
 
 // Amplify Damage and Lower Resist sit under Enhanced Damage (the author, 2026-11-07; over it from 2026-10-29)
 // Corrupted items show them without stars (the author, 2026-10-30: a full hover box cut the item's name)

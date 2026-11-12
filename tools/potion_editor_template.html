@@ -1,0 +1,922 @@
+<title>Erazure Potion Editor</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+@font-face { font-family: "AvQest"; src: /*__FONT__*/local("AvQest"); font-display: block; }
+/* Layout: one card per potion: its looks (the brushes, each editable as in the alias editor), then a grid per part
+   (the ground outside town, and each case the rules treat otherwise): filter levels down, character level columns
+   across, Today beside Your choice. One dark look on purpose, the game's world, as the alias editor. Written by
+   tools/potion_editor.py, which fills in the data. */
+:root {
+  --bg: #131210; --panel: #1b1916; --raise: #24211c; --line: #36312a; --fg: #ebe5d8; --muted: #a39a8b;
+  --accent: #c7b377; --err: #ff8a7a; --ok: #92cc80; --info: #9dbbdc; --ground: #070605; --ground-edge: #2b2720;
+  --chat: #e0c060;
+  --font-ui: "Barlow", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", Consolas, ui-monospace, monospace;
+  --font-game: "AvQest", "Palatino Linotype", "Book Antiqua", serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { background: var(--bg); color: var(--fg); font: 15px/1.5 var(--font-ui); }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+.wrap { max-width: 1180px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+h1, h2, h3, h4 { text-wrap: balance; margin: 0; font-weight: 600; }
+code, input.mono { font-family: var(--font-mono); }
+button, select, input, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* header */
+.top { padding-block: 28px 18px; }
+.eyebrow { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.top h1 { font-family: var(--font-game); font-weight: 400; font-size: 34px; letter-spacing: .02em; color: var(--accent); margin-top: 4px; }
+.lede { max-width: 76ch; margin: 10px 0 0; }
+.lede code, .how code { font-size: 13px; color: var(--accent); }
+.how { max-width: 76ch; margin: 10px 0 0; padding-left: 20px; color: var(--muted); font-size: 14px; display: grid; gap: 3px; }
+.how b { color: var(--fg); font-weight: 500; }
+.toc { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 14px; font-size: 14px; }
+.toc a { color: var(--muted); text-decoration: none; border-bottom: 1px solid var(--line); }
+.toc a:hover { color: var(--fg); }
+.toc b { color: var(--fg); font-weight: 500; font-variant-numeric: tabular-nums; }
+.toc .chg { color: var(--info); }
+
+/* sticky bar */
+.bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: rgba(19,18,16,.96); border-block: 1px solid var(--line); backdrop-filter: blur(4px); }
+.bar .wrap { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; padding-block: 8px; }
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--line); border-radius: 5px; overflow: hidden; }
+.seg button { background: transparent; border: 0; padding: 3px 10px; font-size: 13px; cursor: pointer; color: var(--muted); }
+.seg button + button { border-left: 1px solid var(--line); }
+.seg button[aria-pressed="true"] { background: var(--raise); color: var(--fg); }
+.status { font-size: 13px; color: var(--muted); }
+.status.ok { color: var(--ok); } .status.bad { color: var(--err); }
+.btn { border: 1px solid var(--accent); background: transparent; color: var(--accent); border-radius: 5px; padding: 3px 12px; font-size: 13px; cursor: pointer; white-space: nowrap; }
+.btn:hover { background: rgba(199,179,119,.12); }
+.btn.quiet { border-color: var(--line); color: var(--muted); }
+.btn.quiet:hover { color: var(--fg); border-color: var(--muted); background: transparent; }
+.btn:disabled { opacity: .45; cursor: default; }
+.spacer { flex: 1; }
+
+/* groups and cards */
+main { padding-block: 8px 48px; }
+section.group { margin-top: 30px; display: grid; gap: 12px; }
+section.group > header h2 { font-size: 20px; }
+section.group > header p { margin: 2px 0 0; color: var(--muted); font-size: 14px; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px 14px; min-width: 0; display: grid; gap: 12px; scroll-margin-top: 70px; }
+.card.changed { border-color: rgba(157,187,220,.45); }
+.c-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
+.c-head h3 { font-size: 17px; }
+.pill { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; border-radius: 99px; padding: 1px 8px; border: 1px solid var(--line); color: var(--muted); }
+.pill.code { font-family: var(--font-mono); text-transform: none; letter-spacing: 0; }
+.pill.edited { border-color: rgba(157,187,220,.5); color: var(--info); }
+.meta { font-size: 12px; color: var(--muted); margin-left: auto; }
+.meta code { font-size: 11.5px; }
+
+/* game labels */
+.label { font-family: var(--font-game); font-size: 16px; line-height: 1.2; white-space: pre; background: rgba(0,0,0,.72); padding: 1px 6px; color: #e8e8e8; }
+.hidlabel { font-style: italic; font-size: 12.5px; color: var(--muted); }
+.icon { position: relative; flex: none; display: inline-block; background: #0c0b09; border-radius: 2px; }
+.icon span { position: absolute; }
+
+/* brushes */
+.brushes { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.brushes > .k { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-right: 2px; }
+.bchip { display: inline-flex; align-items: stretch; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; background: var(--ground); }
+.bchip[data-on="true"] { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.bchip .pick { display: inline-flex; align-items: center; gap: 6px; border: 0; background: transparent; padding: 3px 8px; cursor: pointer; min-height: 30px; }
+.bchip .pick .label { font-size: 15px; background: none; padding: 0; }
+.bchip .chatmark { width: 10px; height: 2px; background: var(--chat); border-radius: 1px; }
+.bchip .edit { border: 0; border-left: 1px solid var(--line); background: var(--raise); color: var(--muted); font-size: 12px; padding: 0 8px; cursor: pointer; }
+.bchip .edit:hover, .bchip .edit[aria-expanded="true"] { color: var(--fg); }
+.bchip.custom .pick::after { content: "new"; font-size: 10px; letter-spacing: .06em; text-transform: uppercase; color: var(--info); }
+.bchip.edited .pick::after { content: "edited"; font-size: 10px; letter-spacing: .06em; text-transform: uppercase; color: var(--info); }
+
+/* look editor */
+.editor { border: 1px solid var(--line); border-radius: 8px; background: var(--raise); padding: 10px 12px; display: grid; gap: 10px; }
+.ed-top { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
+.ed-top h4 { font-size: 14px; }
+.ground { background: radial-gradient(120% 90% at 50% 0%, #1d1a14 0%, var(--ground) 70%); border: 1px solid var(--ground-edge); border-radius: 4px; padding: 8px 10px; display: inline-flex; align-items: center; gap: 10px; min-width: 0; max-width: 100%; overflow-x: auto; }
+.len { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.len.over { color: var(--err); }
+.ed-row { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 8px; align-items: center; }
+.ed-row > .k { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+input.text { width: 100%; min-width: 0; font-size: 13px; background: var(--bg); color: var(--fg); border: 1px solid var(--line); border-radius: 5px; padding: 6px 8px; }
+input.text:focus, input.hex:focus, input.cuts:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 2px rgba(199,179,119,.25); }
+input.text.err { border-color: var(--err); }
+.chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.chip { border: 1px solid var(--line); background: var(--panel); border-radius: 4px; padding: 1px 6px; font-size: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; }
+.chip:hover { border-color: var(--muted); }
+.chip .sw { width: 10px; height: 10px; border-radius: 2px; border: 1px solid rgba(255,255,255,.25); }
+.chip.sym { font-family: var(--font-game); font-size: 16px; min-width: 26px; justify-content: center; padding: 0 6px; }
+.layers { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; }
+.layer { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; color: var(--muted); }
+input.hex { width: 3.4em; font-size: 13px; text-transform: uppercase; background: var(--bg); color: var(--fg); border: 1px solid var(--line); border-radius: 4px; padding: 3px 5px; }
+input.hex.err { border-color: var(--err); }
+.layer .sw { width: 14px; height: 14px; border-radius: 2px; border: 1px solid rgba(255,255,255,.25); }
+.ed-notes { display: grid; gap: 2px; font-size: 13px; }
+.ed-notes .err { color: var(--err); } .ed-notes .info { color: var(--info); }
+.ed-btns { display: flex; flex-wrap: wrap; gap: 8px; }
+select.sel { background: var(--bg); border: 1px solid var(--line); border-radius: 5px; padding: 3px 6px; font-size: 13px; max-width: 100%; }
+
+/* parts and grids */
+.part { display: grid; gap: 6px; min-width: 0; }
+.p-head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; }
+.p-head h4 { font-size: 14px; color: var(--accent); font-weight: 500; }
+.p-head label { display: inline-flex; gap: 6px; align-items: center; font-size: 13px; color: var(--muted); cursor: pointer; }
+.p-head input[type="checkbox"] { accent-color: var(--accent); margin: 0; }
+input.cuts { width: 8em; font-size: 13px; background: var(--bg); border: 1px solid var(--line); border-radius: 4px; padding: 2px 6px; }
+.p-note { font-size: 13px; color: var(--muted); }
+.gridwrap { overflow-x: auto; max-width: 100%; }
+table.grid { border-collapse: separate; border-spacing: 2px; font-size: 12px; }
+table.grid th { font-weight: 500; color: var(--muted); text-align: center; padding: 0 2px; white-space: nowrap; }
+table.grid thead th.grp { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; padding-bottom: 2px; }
+table.grid thead th.band { font-family: var(--font-mono); font-size: 11px; font-weight: 400; }
+table.grid th.lv { text-align: left; padding-right: 10px; white-space: normal; min-width: 150px; max-width: 220px; font-size: 12px; line-height: 1.25; }
+table.grid th.lv b { color: var(--fg); font-family: var(--font-mono); font-weight: 500; margin-right: 6px; }
+table.grid td.gap, table.grid th.gap { width: 10px; border-left: 1px solid var(--line); }
+.bandbtn { border: 1px dashed var(--line); background: transparent; border-radius: 4px; padding: 0 6px; cursor: pointer; font: inherit; color: var(--muted); }
+.bandbtn:hover { color: var(--fg); border-color: var(--accent); }
+.cell { display: flex; align-items: center; justify-content: center; gap: 5px; min-width: 92px; height: 26px; padding: 0 6px; border-radius: 4px; background: var(--ground); border: 1px solid var(--ground-edge); position: relative; white-space: pre; overflow: hidden; user-select: none; -webkit-user-select: none; }
+.cell .label { font-size: 14px; background: none; padding: 0; }
+.cell .chatbar { position: absolute; left: 6px; right: 6px; bottom: 2px; height: 2px; border-radius: 1px; background: var(--chat); opacity: .85; }
+button.cell { width: 100%; cursor: crosshair; font: inherit; color: inherit; touch-action: manipulation; }
+button.cell:hover { border-color: var(--accent); }
+.cell.today { opacity: .82; }
+.cell.follow { opacity: .5; }
+.cell.chg { box-shadow: inset 0 0 0 2px var(--info); }
+.else-wrap { display: grid; gap: 6px; }
+details.else > summary, details.legend > summary { cursor: pointer; color: var(--muted); font-size: 13px; width: fit-content; }
+details.else > summary:hover, details.legend > summary:hover { color: var(--fg); }
+details.else[open] > summary { margin-bottom: 6px; }
+.opts { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; font-size: 13px; color: var(--muted); }
+.opts label { display: inline-flex; gap: 6px; align-items: center; cursor: pointer; }
+.opts input[type="checkbox"] { accent-color: var(--accent); margin: 0; }
+textarea.note { width: 100%; min-height: 36px; resize: vertical; background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 6px 9px; font-size: 14px; }
+textarea.note:focus { border-color: var(--accent); outline: none; }
+.foot { margin-top: 36px; color: var(--muted); font-size: 13px; display: grid; gap: 8px; max-width: 90ch; }
+.foot h2 { font-size: 16px; color: var(--fg); }
+.copybox { width: 100%; height: 200px; font: 12px/1.4 var(--font-mono); background: var(--bg); color: var(--fg); border: 1px solid var(--line); border-radius: 5px; padding: 8px; }
+.empty { color: var(--muted); font-style: italic; }
+
+@media (max-width: 720px) {
+  .ed-row { grid-template-columns: 1fr; gap: 2px; }
+  .meta { margin-left: 0; width: 100%; }
+  table.grid th.lv { min-width: 110px; }
+  .cell { min-width: 76px; }
+}
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition: none !important; } }
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <div class="eyebrow">Erazure loot filter · potions</div>
+    <h1>Erazure Potion Editor</h1>
+    <p class="lede">How every potion shows on each filter level, at every character level, as the rules in
+      <code id="secname"></code> draw it today, beside your choice. Paint the <b>Your choice</b> columns and edit the
+      looks: your choices are saved here, and Claude writes them into the filter when you say so.</p>
+    <ul class="how">
+      <li><b>Paint</b>: pick a look in a card's <b>Paint with</b> row, then click a cell, drag down a column, or
+        shift-click to fill from the last cell you painted. A column's heading paints the whole column.</li>
+      <li><b>Character levels</b>: type where a column starts (<code>15, 50</code>) to add or remove columns.</li>
+      <li><b>Looks</b>: <b>Edit</b> on a look changes its text, minimap icon and chat line everywhere the card uses
+        it; <b>New look</b> adds one. A small square in a cell is the minimap icon, a gold line under it the chat
+        line.</li>
+      <li><b>Parts</b>: each grid is one case, on the ground outside town in Nightmare and Hell first. A card shows
+        a part for each case today's rules treat otherwise, and can split off Normal difficulty or maps.</li>
+      <li>A potion hidden on the ground keeps a look in town (pick which) and in shops. On level 0 every potion
+        shows, and a minimap icon brings its chat line.</li>
+    </ul>
+    <nav class="toc" id="toc" aria-label="Kinds of potion"></nav>
+  </div>
+</header>
+
+<div class="bar">
+  <div class="wrap">
+    <div class="seg" role="group" aria-label="Show">
+      <button type="button" data-show="all" aria-pressed="true">All potions</button>
+      <button type="button" data-show="changed" aria-pressed="false">Changed</button>
+      <button type="button" data-show="same" aria-pressed="false">Not changed</button>
+    </div>
+    <button type="button" class="btn quiet" id="undo" disabled title="Undo the last change (Ctrl+Z)">Undo</button>
+    <span class="spacer"></span>
+    <span class="status" id="status" role="status">Connecting…</span>
+    <button type="button" class="btn" id="copy">Copy changes</button>
+  </div>
+</div>
+
+<main class="wrap" id="main"></main>
+
+<div class="wrap foot">
+  <h2>Anything else</h2>
+  <textarea class="note" id="gnote" placeholder="A note for Claude about the potions as a whole (optional)"></textarea>
+  <p id="gen"></p>
+  <textarea class="copybox" id="copybox" readonly hidden aria-label="Your changes as text"></textarea>
+</div>
+
+<script>
+const DATA = /*__DATA__*/null;
+const COLORS = { WHITE: "#e8e8e8", RED: "#ff4d4d", GREEN: "#00ff00", BLUE: "#6969ff", GOLD: "#c7b377",
+  GRAY: "#696969", BLACK: "#000000", TAN: "#d0c27d", ORANGE: "#ffa800", YELLOW: "#ffff64", PURPLE: "#ae00ff",
+  DARK_GREEN: "#008000", CORAL: "#ff7f6e", SAGE: "#a3b88f", TEAL: "#3fb5b5", LIGHT_GRAY: "#a8a8a8" };
+const SYMBOLS = ["-", "•", "+", "i", "I", "O", "o", "(", ")", "[", "]", "|", "*", "x", "<", ">", "/", "\\"];
+const KEYWORDS = new Set(["NAME", "BASENAME", "QTY", "ILVL", "CODE", "PRICE", "SELLPRICE", "PERCENT", "NL", "CL"]);
+const NOTIFY_WORDS = /%(CONTINUE|BORDER-|MAP-|DOT-|PX-|TIER-|SOUNDID-|NOTIFY-|LINE-)/i;
+const LAYERS = ["BORDER", "MAP", "DOT", "PX"];
+const LAYER_SIZE = [8, 6, 4, 2];  // BH's nested boxes, in game pixels
+const QUICK_ICONS = ["50", "97", "9B", "20", "76", "6C"];  // the potions' minimap colors today
+const LV = DATA.levels, NL = LV.length, CARDS = DATA.cards, BY = Object.fromEntries(CARDS.map(c => [c.code, c]));
+const MAIN_PART = "main";
+
+const $ = (s, el = document) => el.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+const clone = o => JSON.parse(JSON.stringify(o));
+const canon = o => JSON.stringify(o, (k, v) => v && typeof v === "object" && !Array.isArray(v)
+  ? Object.fromEntries(Object.keys(v).sort().map(x => [x, v[x]])) : v);
+const keyOf = d => d ? JSON.stringify([d.label, d.icons, d.tier]) : "?";
+
+// ------------------------------------------------------------ the state: per card its parts, looks, town look, note
+function bands(cuts) {
+  const s = [1, ...cuts].sort((a, b) => a - b);
+  return s.map((lo, i) => [lo, i + 1 < s.length ? s[i + 1] - 1 : 99]);
+}
+const cutsOf = today => Object.keys(today).map(Number).filter(x => x > 1).sort((a, b) => a - b);
+const rowsOf = today => Object.fromEntries(Object.entries(today).map(([k, v]) => [k, v.slice()]));
+function rowAt(rows, clvl) {  // the row of the column holding this character level
+  let best = 1;
+  for (const k of Object.keys(rows).map(Number)) if (k <= clvl && k > best) best = k;
+  return rows[best];
+}
+function defaultState(c) {
+  const parts = {};
+  for (const p of c.parts) parts[p.id] = { apart: true, cuts: cutsOf(p.today), rows: rowsOf(p.today) };
+  for (const p of c.optional) parts[p.id] = { apart: false, cuts: null, rows: null };
+  return { parts, displays: clone(c.displays), town: c.town, note: "" };
+}
+const DEFAULT = Object.fromEntries(CARDS.map(c => [c.code, defaultState(c)]));
+const state = Object.fromEntries(CARDS.map(c => [c.code, clone(DEFAULT[c.code])]));
+const brush = Object.fromEntries(CARDS.map(c => [c.code, "hidden"]));
+const editing = {};  // code -> the look open in its editor
+let gnote = "";
+
+const partsOf = c => c.parts.concat(c.optional);
+const todayOf = (c, pid) => partsOf(c).find(p => p.id === pid).today;
+function choiceOf(code, pid) {  // {cuts, rows} the part uses: its own, or the ground outside town's
+  const sp = state[code].parts[pid];
+  return sp && sp.apart && sp.rows ? sp : state[code].parts[MAIN_PART];
+}
+// normalized for comparing: a part that follows the ground outside town keeps no rows of its own
+function normal(code) {
+  const st = clone(state[code]);
+  for (const [pid, p] of Object.entries(st.parts)) if (pid !== MAIN_PART && !p.apart) { p.cuts = null; p.rows = null; }
+  return st;
+}
+const isDefault = code => canon(normal(code)) === canon(DEFAULT[code]);
+
+// What differs from today, per part: [{pid, lo, hi, levels: [[from, to, todayId, choiceId]]}] by runs of character
+// levels where the whole column does the same
+function partDiffs(c, pid) {
+  const st = state[c.code], today = todayOf(c, pid), ch = choiceOf(c.code, pid);
+  const col = clvl => LV.map((_, L) => {
+    const t = rowAt(today, clvl)[L], y = rowAt(ch.rows, clvl)[L];
+    return [t, y, keyOf(c.displays[t]) !== keyOf(st.displays[y])];
+  });
+  const out = [];
+  let prev = null, start = 1;
+  for (let clvl = 1; clvl <= 100; clvl++) {
+    const now = clvl <= 99 ? col(clvl) : null, sig = now && JSON.stringify(now);
+    if (prev && sig !== prev.sig) {
+      const levels = [];
+      prev.col.forEach(([t, y, d], L) => {
+        if (!d) return;
+        const last = levels[levels.length - 1];
+        if (last && last[1] === L - 1 && last[2] === t && last[3] === y) last[1] = L; else levels.push([L, L, t, y]);
+      });
+      if (levels.length) out.push({ pid, lo: start, hi: clvl - 1, levels });
+      start = clvl;
+    }
+    if (now) prev = { sig, col: now };
+  }
+  return out;
+}
+function cardChanges(c) {
+  const st = state[c.code], d = DEFAULT[c.code];
+  const pids = c.parts.map(p => p.id).concat(c.optional.filter(p => st.parts[p.id].apart).map(p => p.id));
+  const diffs = pids.flatMap(pid => partDiffs(c, pid));
+  const cells = diffs.reduce((n, x) => n + x.levels.reduce((m, [a, b]) => m + b - a + 1, 0) * (x.hi - x.lo + 1), 0);
+  const looks = Object.keys(st.displays).filter(id => !c.displays[id] || keyOf(st.displays[id]) !== keyOf(c.displays[id]));
+  const parts = Object.keys(st.parts).filter(pid => pid !== MAIN_PART && st.parts[pid].apart !== d.parts[pid].apart);
+  const town = st.town !== d.town && st.displays[st.town].label !== c.displays[d.town].label;
+  return { diffs, cells, looks, parts, town, note: !!st.note.trim(), any: !isDefault(c.code) };
+}
+
+// ------------------------------------------------------------ drawing a label and an icon as the game does
+function segments(text, start = "WHITE") {
+  const out = []; let color = start, pos = 0; const re = /%([A-Z_]+)%/g; let m;
+  while ((m = re.exec(text))) {
+    if (m.index > pos) out.push([color, text.slice(pos, m.index)]);
+    if (COLORS[m[1]]) color = m[1];
+    else out.push([color, m[1] === "PERCENT" ? "%" : m[0]]);  // BH shows an unknown %word% as text
+    pos = re.lastIndex;
+  }
+  if (pos < text.length) out.push([color, text.slice(pos)]);
+  return out;
+}
+const visibleLength = text => segments(text).reduce((n, [, t]) => n + [...t].length, 0);
+const plain = label => label ? segments(label).map(([, t]) => t).join("") : "";
+function labelHTML(c, label) {
+  if (!label) return `<span class="hidlabel">Hidden</span>`;
+  const t = label.split("%NAME%").join("%WHITE%" + c.name);
+  return `<span class="label">${segments(t).map(([k, s]) => `<span style="color:${COLORS[k]}">${esc(s)}</span>`).join("")}</span>`;
+}
+function iconHTML(icons, px = 2) {  // BH's nested boxes, layer after layer (a later box covers an earlier one)
+  if (!icons || !icons.length) return "";
+  const size = LAYER_SIZE[0] * px;
+  let h = `<span class="icon" style="width:${size}px;height:${size}px" title="Minimap icon">`;
+  for (const layer of icons) LAYERS.forEach((_, i) => {
+    const code = layer[i];
+    if (!code) return;
+    const s = LAYER_SIZE[i] * px, off = (size - s) / 2;
+    h += `<span style="left:${off}px;top:${off}px;width:${s}px;height:${s}px;background:${DATA.palette[code.toUpperCase().padStart(2, "0")] || "#fff"}"></span>`;
+  });
+  return h + "</span>";
+}
+const chatAt = (d, L) => d.tier !== null && (d.tier === "all" || L === 0 || L <= d.tier);
+function describe(d, L = null) {
+  if (!d) return "unknown look";
+  const bits = [d.label ? `“${plain(d.label)}”` : "hidden"];
+  if (d.icons.length) bits.push("minimap icon " + d.icons.map(l => l.map((x, i) => x ? `${LAYERS[i]}-${x}` : null).filter(Boolean).join("/")).join(" + "));
+  if (d.tier !== null) bits.push(L === null ? (d.tier === "all" ? "chat line" : d.tier === 0 ? "no chat line" : `chat line on levels 0-${d.tier}`) : (chatAt(d, L) ? "chat line" : "no chat line"));
+  return bits.join(", ");
+}
+function cellInner(c, d, L) {
+  if (!d) return `<span class="hidlabel">?</span>`;
+  return labelHTML(c, d.label) + iconHTML(d.icons, 1.5) + (chatAt(d, L) ? `<span class="chatbar"></span>` : "");
+}
+
+// ------------------------------------------------------------ the page
+const bandText = (lo, hi, n) => n === 1 ? "every level" : hi >= 99 ? `${lo}+` : `${lo}–${hi}`;
+const lvHead = L => `<th class="lv" scope="row" title="${esc(`Level ${L}: ${LV[L]}`)}"><b>${L}</b>${esc(LV[L])}</th>`;
+const main = $("#main"), toc = $("#toc");
+$("#secname").textContent = "sections/" + DATA.section;
+for (const g of DATA.groups) {
+  const cards = CARDS.filter(c => c.group === g.id);
+  const sec = document.createElement("section");
+  sec.className = "group"; sec.id = g.id;
+  sec.innerHTML = `<header><h2>${esc(g.title)}</h2>${g.note ? `<p>${esc(g.note)}</p>` : ""}</header>`;
+  for (const c of cards) {
+    const el = document.createElement("article");
+    el.className = "card"; el.id = "c-" + c.code; el.dataset.code = c.code;
+    el.innerHTML = `<div class="c-head"></div><div class="c-brush"></div><div class="c-editor"></div>
+      <div class="c-parts"></div><div class="c-opts"></div>${elseHTML(c)}
+      <textarea class="note" data-note="${c.code}" id="note-${c.code}" placeholder="Note for this potion (optional)"></textarea>`;
+    sec.append(el);
+  }
+  main.append(sec);
+}
+const cardEl = code => document.getElementById("c-" + code);
+
+function elseHTML(c) {  // today's looks elsewhere: in town, in a shop, in the stash (read only)
+  let head1 = `<th class="lv" rowspan="2">Filter level</th>`, head2 = "", body = "";
+  for (const p of c.elsewhere) {
+    const bs = bands(cutsOf(p.today));
+    head1 += `<th class="gap"></th><th class="grp" colspan="${bs.length}">${esc(p.name)}</th>`;
+    head2 += `<th class="gap"></th>` + bs.map(([lo, hi]) => `<th class="band">${bandText(lo, hi, bs.length)}</th>`).join("");
+  }
+  LV.forEach((name, L) => {
+    body += `<tr>${lvHead(L)}`;
+    for (const p of c.elsewhere) {
+      body += `<td class="gap"></td>` + bands(cutsOf(p.today)).map(([lo]) => {
+        const d = c.displays[p.today[lo][L]];
+        return `<td><div class="cell today" title="${esc(describe(d, L))}">${cellInner(c, d, L)}</div></td>`;
+      }).join("");
+    }
+    body += `</tr>`;
+  });
+  return `<details class="else"><summary>Elsewhere today: on the ground in town, in a shop, in the stash</summary>
+    <div class="gridwrap"><table class="grid"><thead><tr>${head1}</tr><tr>${head2}</tr></thead><tbody>${body}</tbody></table></div></details>`;
+}
+
+// ------------------------------------------------------------ rendering a card (the editor and note stay put)
+function render(code, { editor = false } = {}) {
+  const c = BY[code], el = cardEl(code), st = state[code], ch = cardChanges(c);
+  el.classList.toggle("changed", ch.any);
+  const what = [];
+  if (ch.cells) what.push(`${ch.cells} cell${ch.cells === 1 ? "" : "s"}`);
+  if (ch.looks.length) what.push(`${ch.looks.length} look${ch.looks.length === 1 ? "" : "s"}`);
+  if (ch.parts.length) what.push("parts");
+  if (ch.town) what.push("town look");
+  if (ch.note) what.push("note");
+  $(".c-head", el).innerHTML = `<h3>${esc(c.name)}</h3><span class="pill code">${esc(c.code)}</span>
+    ${ch.any ? `<span class="pill edited">Changed${what.length ? ": " + esc(what.join(", ")) : ""}</span>` : ""}
+    <span class="meta">${c.rules ? `Rules: <code>${esc(c.rules)}</code>` : ""}</span>`;
+  // brushes
+  if (!st.displays[brush[code]]) brush[code] = "hidden";
+  let b = `<span class="k">Paint with</span>`;
+  for (const [id, d] of Object.entries(st.displays)) {
+    const custom = !c.displays[id], edited = !custom && keyOf(d) !== keyOf(c.displays[id]);
+    b += `<span class="bchip${custom ? " custom" : edited ? " edited" : ""}" data-on="${brush[code] === id}">
+      <button type="button" class="pick" data-brush="${id}" aria-pressed="${brush[code] === id}" title="${esc("Paint with: " + describe(d))}">${labelHTML(c, d.label)}${iconHTML(d.icons, 1.5)}${d.tier === "all" ? `<span class="chatmark" title="Chat line"></span>` : ""}</button>
+      ${id === "hidden" ? "" : `<button type="button" class="edit" data-edit="${id}" aria-expanded="${editing[code] === id}" title="Edit this look">Edit</button>`}</span>`;
+  }
+  b += `<button type="button" class="btn quiet" data-new="1" title="A new look, starting from the one you paint with">New look</button>`;
+  $(".c-brush", el).innerHTML = `<div class="brushes" role="toolbar" aria-label="Paint ${esc(c.name)} with">${b}</div>`;
+  if (editor) renderEditor(code);
+  // parts
+  let parts = "";
+  for (const p of c.parts) parts += partHTML(c, p);
+  for (const p of c.optional) if (st.parts[p.id].apart) parts += partHTML(c, p);
+  $(".c-parts", el).innerHTML = parts;
+  // options
+  const shown = Object.entries(st.displays).filter(([, d]) => d.label);
+  const labels = new Map();
+  for (const [id, d] of shown) if (!labels.has(d.label) || id === st.town) labels.set(d.label, id);
+  const hides = Object.keys(st.parts).some(pid => Object.values(choiceOf(code, pid).rows).some(r => r.slice(1).some(id => !st.displays[id].label)));
+  $(".c-opts", el).innerHTML = `<div class="opts">
+    ${c.optional.length ? `<span>Split off:</span>${c.optional.map(p => `<label><input type="checkbox" data-split="${p.id}" ${st.parts[p.id].apart ? "checked" : ""}> ${esc(p.name)}</label>`).join("")}` : ""}
+    <label>In town, where hidden on the ground: <select class="sel" data-town="1">${[...labels].map(([label, id]) =>
+      `<option value="${id}" ${st.displays[st.town].label === label ? "selected" : ""}>${esc(plain(label))}</option>`).join("")}</select></label>
+    ${hides ? "" : `<span class="empty">(no level hides it)</span>`}
+    <span class="spacer"></span>
+    <button type="button" class="btn quiet" data-reset="1" ${ch.any ? "" : "disabled"}>Reset to today</button></div>`;
+  const note = $(`[data-note]`, el);
+  if (document.activeElement !== note && note.value !== st.note) note.value = st.note;
+}
+
+function partHTML(c, p) {
+  const st = state[c.code], sp = st.parts[p.id], own = p.id === MAIN_PART || sp.apart;
+  const ch = choiceOf(c.code, p.id);
+  const tb = bands(cutsOf(p.today)), cb = bands(ch.cuts);
+  const isOpt = c.optional.some(o => o.id === p.id);
+  let head = `<div class="p-head"><h4>${esc(p.name)}</h4>`;
+  if (p.id !== MAIN_PART && !isOpt) head += `<label title="Untick: this case does what the ground outside town does"><input type="checkbox" data-apart="${p.id}" ${sp.apart ? "checked" : ""}> Its own choices</label>`;
+  if (own) head += `<label>Columns start at character level <input class="cuts mono" type="text" inputmode="numeric" id="cuts-${c.code}-${p.id}" data-cuts="${p.id}" value="${esc(ch.cuts.join(", "))}" placeholder="none" title="Character levels a new column starts at, e.g. 15, 50"></label>`;
+  head += `</div>`;
+  if (!own) head += `<p class="p-note">Follows the ground outside town: its choices are drawn faded. Tick <b>Its own choices</b> to paint this case apart.</p>`;
+  let h1 = `<th class="lv" rowspan="2">Filter level</th><th class="grp" colspan="${tb.length}">Today</th><th class="gap"></th><th class="grp" colspan="${cb.length}">Your choice</th>`;
+  let h2 = tb.map(([lo, hi]) => `<th class="band">${bandText(lo, hi, tb.length)}</th>`).join("") + `<th class="gap"></th>`;
+  h2 += cb.map(([lo, hi]) => own
+    ? `<th class="band"><button type="button" class="bandbtn" data-col="${lo}" data-part="${p.id}" title="Paint every filter level of this column">${bandText(lo, hi, cb.length)}</button></th>`
+    : `<th class="band">${bandText(lo, hi, cb.length)}</th>`).join("");
+  let body = "";
+  LV.forEach((_, L) => {
+    body += `<tr>${lvHead(L)}`;
+    for (const [lo] of tb) {
+      const d = c.displays[p.today[lo][L]];
+      body += `<td><div class="cell today" title="${esc(`Level ${L}, ${bandWords(lo, tb)}: ${describe(d, L)}`)}">${cellInner(c, d, L)}</div></td>`;
+    }
+    body += `<td class="gap"></td>`;
+    for (const [lo, hi] of cb) {
+      const id = ch.rows[lo][L], d = st.displays[id];
+      const was = new Set();
+      for (const [tlo, thi] of tb) if (tlo <= hi && thi >= lo) was.add(p.today[tlo][L]);
+      const changed = [...was].some(t => keyOf(c.displays[t]) !== keyOf(d));
+      const tip = `Level ${L}, ${bandWords(lo, cb)}: ${describe(d, L)}` + (changed ? ` (today: ${[...was].map(t => describe(c.displays[t], L)).join("; ")})` : "");
+      body += own
+        ? `<td><button type="button" class="cell${changed ? " chg" : ""}" data-part="${p.id}" data-lo="${lo}" data-lv="${L}" title="${esc(tip)}">${cellInner(c, d, L)}</button></td>`
+        : `<td><div class="cell follow${changed ? " chg" : ""}" title="${esc(tip)}">${cellInner(c, d, L)}</div></td>`;
+    }
+    body += `</tr>`;
+  });
+  return `<div class="part">${head}<div class="gridwrap"><table class="grid"><thead><tr>${h1}</tr><tr>${h2}</tr></thead><tbody>${body}</tbody></table></div></div>`;
+}
+function bandWords(lo, bs) {
+  if (bs.length === 1) return "every character level";
+  const hi = bs.find(b => b[0] === lo)[1];
+  return hi >= 99 ? `character level ${lo}+` : `character levels ${lo}–${hi}`;
+}
+
+// ------------------------------------------------------------ the look editor
+function renderEditor(code) {
+  const c = BY[code], box = $(".c-editor", cardEl(code)), id = editing[code], st = state[code];
+  if (!id || !st.displays[id]) { box.innerHTML = ""; editing[code] = undefined; return; }
+  const d = st.displays[id], custom = !c.displays[id];
+  const layer = d.icons[0] || [null, null, null, null];
+  box.innerHTML = `<div class="editor" data-ed="${id}">
+    <div class="ed-top"><h4>${custom ? "New look" : "Look"} <code>${esc(id)}</code></h4>
+      <span class="ground" data-prev="1"></span><span class="len" data-len="1"></span></div>
+    <div class="ed-row"><label class="k" for="ed-label-${code}">Label</label>
+      <input class="text mono" id="ed-label-${code}" data-field="label" type="text" spellcheck="false" autocomplete="off" autocapitalize="off" value="${esc(d.label)}" placeholder="empty: hidden on the ground"></div>
+    <div class="ed-row"><span class="k">Colors</span><div class="chips">${Object.entries(COLORS).map(([n, hex]) =>
+      `<button type="button" class="chip" data-ins="%${n}%" title="Insert %${n}%"><span class="sw" style="background:${hex}"></span>${n}</button>`).join("")}</div></div>
+    <div class="ed-row"><span class="k">Symbols</span><div class="chips">${SYMBOLS.map(s =>
+      `<button type="button" class="chip sym" data-ins="${esc(s)}" title="Insert ${esc(s)}">${esc(s)}</button>`).join("")}</div></div>
+    <div class="ed-row"><span class="k">Minimap icon</span><div class="layers">${LAYERS.map((n, i) =>
+      `<label class="layer">${n} <input class="hex mono" id="ed-${n}-${code}" data-layer="${i}" type="text" maxlength="2" spellcheck="false" autocomplete="off" value="${esc(layer[i] || "")}" placeholder="—"><span class="sw" data-sw="${i}"></span></label>`).join("")}
+      <span class="chips">${QUICK_ICONS.map(x => `<button type="button" class="chip" data-quick="${x}" title="Only a PX-${x} centre"><span class="sw" style="background:${DATA.palette[x]}"></span>${x}</button>`).join("")}
+      <button type="button" class="chip" data-quick="" title="No minimap icon">None</button></span></div></div>
+    <div class="ed-row"><label class="k" for="ed-chat-${code}">Chat line</label>
+      <select class="sel" id="ed-chat-${code}" data-field="tier"></select></div>
+    <div class="ed-notes" data-notes="1" aria-live="polite"></div>
+    <div class="ed-btns">
+      ${custom ? `<button type="button" class="btn quiet" data-del="${id}">Delete this look</button>` : `<button type="button" class="btn quiet" data-back="${id}">Back to today's look</button>`}
+      <button type="button" class="btn" data-done="1">Done</button></div></div>`;
+  updateEditor(code);
+}
+function problems(d) {
+  const out = [], v = d.label;
+  if (v.includes("//")) out.push(["err", "Holds //: BH reads the rest of the line as a comment. Put a color code between the two slashes."]);
+  if (/[{}]/.test(v)) out.push(["err", "Braces start the item's description: leave them out of the label."]);
+  if (NOTIFY_WORDS.test(v)) out.push(["err", "Minimap icons and chat lines go in their own fields, not in the label."]);
+  for (const m of v.matchAll(/%([A-Z_]+)%/g))
+    if (!COLORS[m[1]] && !KEYWORDS.has(m[1])) out.push(["err", `%${m[1]}% isn't a color code or BH keyword: the game shows it as text.`]);
+  if (/%[A-Z_]*$/.test(v.replace(/%[A-Z_]+%/g, ""))) out.push(["err", "A color code isn't closed: it needs a % at both ends."]);
+  d.icons.forEach(l => l.forEach((x, i) => { if (x && !/^[0-9A-F]{1,2}$/.test(x)) out.push(["err", `${LAYERS[i]}: a palette code is 1 or 2 hex digits (00-FF).`]); }));
+  if (!v && !d.icons.length) out.push(["info", "Hidden on the ground, with no minimap icon. In town it shows the card's town look."]);
+  else if (!v) out.push(["info", "Hidden on the ground, but its minimap icon still shows."]);
+  if (visibleLength(v) > DATA.nameMax) out.push(["err", `BH shows ${DATA.nameMax} characters at most: this label is cut.`]);
+  return out;
+}
+function updateEditor(code) {
+  const box = $(".editor", cardEl(code));
+  if (!box) return;
+  const c = BY[code], d = state[code].displays[editing[code]];
+  $("[data-prev]", box).innerHTML = labelHTML(c, d.label) + iconHTML(d.icons, 2);
+  const n = visibleLength(d.label), len = $("[data-len]", box);
+  len.textContent = d.label ? `${n} characters` : "";
+  len.classList.toggle("over", n > DATA.nameMax);
+  const layer = d.icons[0] || [];
+  LAYERS.forEach((_, i) => {
+    const x = layer[i], sw = $(`[data-sw="${i}"]`, box), inp = $(`[data-layer="${i}"]`, box);
+    sw.style.background = x && DATA.palette[x.padStart(2, "0")] ? DATA.palette[x.padStart(2, "0")] : "transparent";
+    if (document.activeElement !== inp && inp.value !== (x || "")) inp.value = x || "";
+    inp.classList.toggle("err", !!x && !/^[0-9A-F]{1,2}$/.test(x));
+  });
+  const lab = $("[data-field=label]", box);
+  if (document.activeElement !== lab && lab.value !== d.label) lab.value = d.label;
+  const sel = $("[data-field=tier]", box);
+  sel.disabled = !d.icons.length;
+  sel.innerHTML = d.icons.length
+    ? `<option value="0" ${d.tier === 0 ? "selected" : ""}>No chat line: the icon only (%TIER-0%, as today's potions)</option>
+       <option value="all" ${d.tier === "all" ? "selected" : ""}>A chat line on every filter level</option>`
+    : `<option>No minimap icon, so no chat line</option>`;
+  const list = problems(d);
+  $("[data-notes]", box).innerHTML = list.map(([k, m]) => `<div class="${k}">${esc(m)}</div>`).join("");
+  lab.classList.toggle("err", list.some(([k, m]) => k === "err" && !/^(BORDER|MAP|DOT|PX):/.test(m)));
+}
+
+// ------------------------------------------------------------ changing the state
+const undoStack = [];
+function before(code) {
+  undoStack.push({ code, st: clone(state[code]) });
+  if (undoStack.length > 200) undoStack.shift();
+  $("#undo").disabled = false;
+}
+function changed(code, opts) { render(code, opts); refreshNav(); queueSave(code); }
+function paint(code, pid, lo, L) {
+  const sp = state[code].parts[pid], row = sp.rows[lo];
+  if (row[L] === brush[code]) return false;
+  row[L] = brush[code];
+  return true;
+}
+function setCuts(code, pid, text) {
+  const sp = state[code].parts[pid];
+  const cuts = [...new Set((text.match(/\d+/g) || []).map(Number).filter(x => x > 1 && x < 100))].sort((a, b) => a - b);
+  if (canon(cuts) === canon(sp.cuts)) return false;
+  const rows = {};
+  for (const [lo] of bands(cuts)) rows[lo] = rowAt(sp.rows, lo).slice();  // each column starts as the one it falls in
+  sp.cuts = cuts; sp.rows = rows;
+  return true;
+}
+function newLook(code) {
+  const st = state[code], from = st.displays[brush[code]];
+  let n = 1;
+  while (st.displays["c" + n]) n++;
+  const id = "c" + n;
+  st.displays[id] = from && from.label ? clone(from) : { label: "%WHITE%" + BY[code].name, icons: [], tier: null };
+  brush[code] = id; editing[code] = id;
+  return id;
+}
+function used(code, id) {
+  const st = state[code];
+  return st.town === id || Object.keys(st.parts).some(pid => {
+    const sp = st.parts[pid];
+    return sp.rows && Object.values(sp.rows).some(r => r.includes(id));
+  });
+}
+
+// pointer painting: a mouse paints on press and while dragging; touch and keys paint on click
+let drag = null, lastType = "mouse", lastCell = {};
+main.addEventListener("pointerdown", e => {
+  lastType = e.pointerType || "mouse";
+  const cell = e.target.closest("button.cell");
+  if (!cell || lastType !== "mouse" || e.button !== 0) return;
+  e.preventDefault();
+  const code = cell.closest(".card").dataset.code;
+  before(code);
+  drag = { code, any: false };
+  hitCell(cell, e.shiftKey);
+});
+document.addEventListener("pointermove", e => {
+  if (!drag || !(e.buttons & 1)) return;
+  const el = document.elementFromPoint(e.clientX, e.clientY), cell = el && el.closest("button.cell");
+  if (cell && cell.closest(".card").dataset.code === drag.code) hitCell(cell, false);
+});
+document.addEventListener("pointerup", () => {
+  if (!drag) return;
+  const { code, any } = drag;
+  drag = null;
+  if (any) { refreshNav(); queueSave(code); } else undoStack.pop();
+  $("#undo").disabled = !undoStack.length;
+});
+function hitCell(cell, shift) {
+  const code = cell.closest(".card").dataset.code, pid = cell.dataset.part, lo = cell.dataset.lo, L = +cell.dataset.lv;
+  const last = lastCell[code];
+  let any = false;
+  if (shift && last && last.pid === pid && last.lo === lo) {
+    for (let x = Math.min(last.L, L); x <= Math.max(last.L, L); x++) any = paint(code, pid, lo, x) || any;
+  } else any = paint(code, pid, lo, L);
+  lastCell[code] = { pid, lo, L };
+  if (any) {
+    if (drag) drag.any = true;
+    render(code);
+    const again = cardEl(code).querySelector(`button.cell[data-part="${pid}"][data-lo="${lo}"][data-lv="${L}"]`);
+    if (again && !drag) again.focus();
+  }
+  return any;
+}
+main.addEventListener("click", e => {
+  const t = e.target, card = t.closest(".card");
+  if (!card) return;
+  const code = card.dataset.code, st = state[code];
+  const cell = t.closest("button.cell");
+  if (cell) {
+    if (lastType === "mouse" && e.detail > 0) return;  // painted on press
+    before(code);
+    if (hitCell(cell, e.shiftKey)) { refreshNav(); queueSave(code); } else undoStack.pop();
+    $("#undo").disabled = !undoStack.length;
+    return;
+  }
+  const col = t.closest("[data-col]");
+  if (col) {
+    before(code);
+    let any = false;
+    for (let L = 0; L < NL; L++) any = paint(code, col.dataset.part, col.dataset.col, L) || any;
+    if (any) changed(code); else undoStack.pop();
+    return;
+  }
+  const pick = t.closest("[data-brush]");
+  if (pick) { brush[code] = pick.dataset.brush; render(code); return; }
+  const ed = t.closest("[data-edit]");
+  if (ed) { editing[code] = editing[code] === ed.dataset.edit ? undefined : ed.dataset.edit; render(code, { editor: true }); if (editing[code]) $("[data-field=label]", cardEl(code)).focus(); return; }
+  if (t.closest("[data-new]")) { before(code); newLook(code); changed(code, { editor: true }); $("[data-field=label]", cardEl(code)).focus(); return; }
+  if (t.closest("[data-done]")) { editing[code] = undefined; render(code, { editor: true }); return; }
+  const back = t.closest("[data-back]");
+  if (back) { before(code); st.displays[back.dataset.back] = clone(BY[code].displays[back.dataset.back]); changed(code, { editor: true }); return; }
+  const del = t.closest("[data-del]");
+  if (del) {
+    const id = del.dataset.del;
+    if (used(code, id)) { setStatus("Paint its cells with another look first: this one is still in use.", "bad"); return; }
+    before(code); delete st.displays[id]; editing[code] = undefined;
+    if (brush[code] === id) brush[code] = "hidden";
+    changed(code, { editor: true }); return;
+  }
+  const ins = t.closest("[data-ins]");
+  if (ins) {
+    const input = $("[data-field=label]", card);
+    const s = input.selectionStart ?? input.value.length, f = input.selectionEnd ?? s;
+    input.setRangeText(ins.dataset.ins, s, f, "end");
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+    input.focus();
+    return;
+  }
+  const quick = t.closest("[data-quick]");
+  if (quick) {
+    before(code);
+    const d = st.displays[editing[code]];
+    d.icons = quick.dataset.quick ? [[null, null, null, quick.dataset.quick]] : [];
+    d.tier = d.icons.length ? (d.tier === null ? 0 : d.tier) : null;
+    changed(code); updateEditor(code); return;
+  }
+  if (t.closest("[data-reset]")) {
+    before(code);
+    state[code] = clone(DEFAULT[code]); editing[code] = undefined;
+    changed(code, { editor: true }); return;
+  }
+});
+main.addEventListener("pointerdown", e => {  // chips keep the label field's cursor
+  if (e.target.closest("[data-ins], [data-quick]")) e.preventDefault();
+});
+let typing = null;  // one undo step per burst of typing in a field
+main.addEventListener("input", e => {
+  const t = e.target, card = t.closest(".card");
+  if (!card) return;
+  const code = card.dataset.code, st = state[code];
+  if (t.dataset.note !== undefined) {
+    if (typing !== t) { before(code); typing = t; }
+    st.note = t.value; render(code); refreshNav(); queueSave(code); return;
+  }
+  const d = st.displays[editing[code]];
+  if (!d) return;
+  if (t.dataset.field === "label") {
+    if (typing !== t) { before(code); typing = t; }
+    d.label = t.value;
+  } else if (t.dataset.layer !== undefined) {
+    if (typing !== t) { before(code); typing = t; }
+    const v = t.value.trim().toUpperCase(), layer = (d.icons[0] || [null, null, null, null]).slice();
+    layer[+t.dataset.layer] = v || null;
+    d.icons = layer.some(Boolean) ? [layer] : [];
+    d.tier = d.icons.length ? (d.tier === null ? 0 : d.tier) : null;
+  } else return;
+  render(code); updateEditor(code); refreshNav(); queueSave(code);
+});
+main.addEventListener("focusout", e => { if (e.target === typing) typing = null; });
+main.addEventListener("change", e => {
+  const t = e.target, card = t.closest(".card");
+  if (!card) return;
+  const code = card.dataset.code, st = state[code];
+  if (t.dataset.field === "tier") {
+    before(code);
+    st.displays[editing[code]].tier = t.value === "all" ? "all" : 0;
+    changed(code); updateEditor(code); return;
+  }
+  if (t.dataset.cuts !== undefined) {
+    before(code);
+    if (setCuts(code, t.dataset.cuts, t.value)) changed(code); else { undoStack.pop(); render(code); }
+    return;
+  }
+  if (t.dataset.apart !== undefined || t.dataset.split !== undefined) {
+    before(code);
+    const pid = t.dataset.apart ?? t.dataset.split, sp = st.parts[pid];
+    sp.apart = t.checked;
+    if (sp.apart && !sp.rows) { const m = st.parts[MAIN_PART]; sp.cuts = m.cuts.slice(); sp.rows = clone(m.rows); }
+    changed(code); return;
+  }
+  if (t.dataset.town !== undefined) { before(code); st.town = t.value; changed(code); return; }
+});
+function undo() {
+  const u = undoStack.pop();
+  $("#undo").disabled = !undoStack.length;
+  if (!u) return;
+  state[u.code] = u.st;
+  if (editing[u.code] && !u.st.displays[editing[u.code]]) editing[u.code] = undefined;
+  render(u.code, { editor: true });
+  refreshNav(); queueSave(u.code);
+  setStatus(`Undone in ${BY[u.code].name}.`);
+}
+$("#undo").onclick = undo;
+document.addEventListener("keydown", e => {
+  if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key.toLowerCase() === "z" && !e.target.closest("input, textarea")) {
+    e.preventDefault(); undo();
+  }
+});
+
+// ------------------------------------------------------------ the bar: show, contents
+let show = "all";
+for (const b of document.querySelectorAll(".seg button")) b.onclick = () => {
+  show = b.dataset.show;
+  for (const x of document.querySelectorAll(".seg button")) x.setAttribute("aria-pressed", String(x === b));
+  refreshNav();
+};
+function refreshNav() {
+  let links = "";
+  for (const g of DATA.groups) {
+    const cards = CARDS.filter(c => c.group === g.id);
+    const n = cards.filter(c => !isDefault(c.code)).length;
+    links += `<a href="#${g.id}">${esc(g.title)} <b>${cards.length}</b>${n ? ` <span class="chg">· ${n} changed</span>` : ""}</a>`;
+    for (const c of cards) {
+      const ch = !isDefault(c.code);
+      cardEl(c.code).hidden = (show === "changed" && !ch) || (show === "same" && ch);
+    }
+    const sec = document.getElementById(g.id);
+    sec.hidden = ![...sec.querySelectorAll(".card")].some(el => !el.hidden);
+  }
+  toc.innerHTML = links;
+}
+
+// ------------------------------------------------------------ your changes as text (the copy button)
+function changesText() {
+  const out = [`Potion editor changes (data of ${DATA.generated})`, ""];
+  for (const c of CARDS) {
+    if (isDefault(c.code)) continue;
+    const st = state[c.code], ch = cardChanges(c), lines = [`${c.name} (${c.code})`];
+    const partName = pid => partsOf(c).find(p => p.id === pid).name;
+    for (const pid of ch.parts) lines.push(`  ${partName(pid)}: ${st.parts[pid].apart ? "its own choices" : "follows the ground outside town"}`);
+    let last = null;
+    for (const x of ch.diffs) {
+      if (x.pid !== last) { lines.push(`  ${partName(x.pid)}:`); last = x.pid; }
+      const cl = x.lo === 1 && x.hi === 99 ? "every character level" : x.hi === 99 ? `character level ${x.lo}+` : `character levels ${x.lo}-${x.hi}`;
+      for (const [a, b, t, y] of x.levels)
+        lines.push(`    ${cl}, filter level${a === b ? ` ${a}` : `s ${a}-${b}`}: ${describe(c.displays[t])} -> ${describe(st.displays[y])}`);
+    }
+    for (const id of ch.looks) lines.push(`  look ${id}: ${c.displays[id] ? describe(c.displays[id]) + " -> " : "new: "}${describe(st.displays[id])}  [${st.displays[id].label}]`);
+    if (ch.town) lines.push(`  in town where hidden on the ground: ${describe(st.displays[st.town])}`);
+    if (ch.note) lines.push(`  note: ${st.note.trim()}`);
+    out.push(...lines, "");
+  }
+  if (gnote.trim()) out.push("Note: " + gnote.trim());
+  return out.length > 2 ? out.join("\n") : "No potion is changed.\n";
+}
+$("#copy").onclick = async () => {
+  const text = changesText(), box = $("#copybox");
+  try { await navigator.clipboard.writeText(text); box.hidden = true; setStatus("Changes copied.", "ok"); }
+  catch { box.value = text; box.hidden = false; box.focus(); box.select(); setStatus("Copy them from the box at the bottom.", "bad"); }
+};
+$("#gen").textContent = `Built ${DATA.generated} by tools/potion_editor.py from the filter's rules (Erazure - Main).`;
+
+// ------------------------------------------------------------ saving (the page's db: Claude reads it)
+const statusEl = $("#status");
+function setStatus(text, cls = "") { statusEl.textContent = text; statusEl.className = "status " + cls; }
+let db = null;
+const S = {};  // per card: its save timer and state
+for (const c of CARDS) S[c.code] = { timer: null, saving: false, again: false, dirty: false };
+const G = { timer: null, saving: false, again: false, dirty: false };
+function queueSave(code) {
+  S[code].dirty = true;
+  if (!db) { setStatus("Your choices stay in this tab: saving isn't available here. Use Copy changes.", "bad"); return; }
+  setStatus("Edited…");
+  clearTimeout(S[code].timer); S[code].timer = setTimeout(() => save(code), 900);
+}
+async function save(code) {
+  const s = S[code];
+  if (s.saving) { s.again = true; return; }
+  s.saving = true; setStatus("Saving…");
+  try {
+    const ref = db.doc("cards/" + code);
+    if (isDefault(code)) await ref.delete();
+    else await ref.set({ ...normal(code), savedAt: new Date().toISOString() });
+    s.dirty = false;
+    setStatus("Saved " + new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }), "ok");
+  } catch (err) {
+    setStatus("Not saved: " + (err && err.message ? err.message : "the store refused it") + ". Use Copy changes.", "bad");
+  }
+  s.saving = false;
+  if (s.again) { s.again = false; save(code); }
+}
+function fromDoc(c, doc) {  // a saved document as a card state; anything malformed falls back to today's
+  const st = clone(DEFAULT[c.code]);
+  const okD = d => d && typeof d.label === "string" && Array.isArray(d.icons) && (d.tier === null || d.tier === "all" || Number.isInteger(d.tier));
+  if (doc.displays && typeof doc.displays === "object")
+    for (const [id, d] of Object.entries(doc.displays)) if (okD(d)) st.displays[id] = { label: d.label, icons: d.icons, tier: d.tier };
+  for (const [pid, p] of Object.entries(doc.parts || {})) {
+    const sp = st.parts[pid];
+    if (!sp || !p || typeof p !== "object") continue;
+    if (pid !== MAIN_PART && typeof p.apart === "boolean") sp.apart = p.apart;
+    if (Array.isArray(p.cuts) && p.rows && typeof p.rows === "object") {
+      const cuts = [...new Set(p.cuts.filter(x => Number.isInteger(x) && x > 1 && x < 100))].sort((a, b) => a - b);
+      const rows = {};
+      let ok = true;
+      for (const [lo] of bands(cuts)) {
+        const r = p.rows[lo];
+        if (!Array.isArray(r) || r.length !== NL) { ok = false; break; }
+        rows[lo] = r.map(id => st.displays[id] ? id : "hidden");
+      }
+      if (ok) { sp.cuts = cuts; sp.rows = rows; }
+    }
+    if (pid !== MAIN_PART && sp.apart && !sp.rows) sp.apart = false;
+  }
+  if (typeof doc.town === "string" && st.displays[doc.town]) st.town = doc.town;
+  if (typeof doc.note === "string") st.note = doc.note;
+  return st;
+}
+for (const c of CARDS) render(c.code);
+refreshNav();
+const gnoteEl = $("#gnote");
+gnoteEl.addEventListener("input", () => {
+  gnote = gnoteEl.value; G.dirty = true;
+  if (!db) return;
+  clearTimeout(G.timer); G.timer = setTimeout(saveNote, 900);
+});
+async function saveNote() {
+  if (G.saving) { G.again = true; return; }
+  G.saving = true;
+  try { await db.doc("meta/note").set({ text: gnote, savedAt: new Date().toISOString() }); G.dirty = false; setStatus("Saved", "ok"); }
+  catch (err) { setStatus("Note not saved: " + (err && err.message ? err.message : "the store refused it"), "bad"); }
+  G.saving = false;
+  if (G.again) { G.again = false; saveNote(); }
+}
+const use = window.claude && window.claude.use ? window.claude.use("db") : Promise.resolve(null);
+use.then(d => {
+  db = d;
+  if (!d) { setStatus("Saving isn't available in this view: use Copy changes.", "bad"); return; }
+  setStatus("Loading your saved choices…");
+  const slow = setTimeout(() => setStatus("Your saved choices can't be reached yet: what you see may be out of date.", "bad"), 10000);
+  d.collection("cards").onSnapshot(snap => {
+    if (!snap.metadata.fromCache) clearTimeout(slow);
+    const seen = new Set();
+    let latest = null;
+    for (const doc of snap.docs) {
+      const c = BY[doc.id];
+      if (!c) continue;
+      seen.add(doc.id);
+      if (doc.metadata.hasPendingWrites || S[doc.id].dirty || S[doc.id].saving) continue;
+      const data = doc.data() || {};
+      const st = fromDoc(c, data);
+      if (canon(st) !== canon(state[doc.id])) { state[doc.id] = st; render(doc.id, { editor: true }); }
+      if (data.savedAt && (!latest || data.savedAt > latest)) latest = data.savedAt;
+    }
+    for (const c of CARDS) {  // a document deleted elsewhere (applied, then cleared): back to today's
+      if (seen.has(c.code) || S[c.code].dirty || S[c.code].saving || isDefault(c.code)) continue;
+      state[c.code] = clone(DEFAULT[c.code]); render(c.code, { editor: true });
+    }
+    refreshNav();
+    if (!snap.metadata.fromCache) setStatus(latest ? "Saved choices loaded (" + new Date(latest).toLocaleString([], { dateStyle: "medium", timeStyle: "short" }) + ")" : "Ready: your choices save as you go.", "ok");
+  }, () => { clearTimeout(slow); setStatus("Your saved choices couldn't be loaded. Use Copy changes.", "bad"); });
+  d.doc("meta/note").onSnapshot(snap => {
+    if (snap.metadata.hasPendingWrites || G.dirty || G.saving) return;
+    const text = snap.exists ? String((snap.data() || {}).text || "") : "";
+    gnote = text;
+    if (document.activeElement !== gnoteEl) gnoteEl.value = text;
+  }, () => {});
+}, () => setStatus("Saving isn't available in this view: use Copy changes.", "bad"));
+</script>
