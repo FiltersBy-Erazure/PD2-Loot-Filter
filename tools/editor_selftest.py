@@ -15,7 +15,10 @@ Tests:
   edits      every golden edit set of tools/editor_fixtures/ built by the editor (its lines, the aliases written out)
              equals this file's Python reference built on tools/build.py's own functions, line by line; the
              reference writes the aliases out with build.py's --check verification (BH reads every rule of the
-             written file as it reads the edited alias form), and the EDITS header decodes to the edit set.
+             written file as it reads the edited alias form), and the EDITS header decodes to the edit set. Changes
+             to Erazure's rules (tools/editor/ops.js) are placed by tools/style_edits.py's own Filter.find and
+             merge3 in the reference: ops.json anchors them to an older commit's lines, so the stages and the merge
+             are compared (each op's stage too).
   engine     the engine (tools/editor/engine.js, BH's rules ported) on hand-checked cases from BH's source: formulas
              (Formula.h: precedence, functions, float math, BH's number), conditions (implicit AND, AND / OR left to
              right, a ) without its (, words BH drops, a rule with no condition left), whole rules (name and
@@ -59,8 +62,8 @@ ROOT = Path(__file__).resolve().parent.parent
 EDITOR = ROOT / "tools" / "editor"
 SOURCE = ROOT / "Erazure-Filter-Editor-Source.js"
 FIXTURES = ROOT / "tools" / "editor_fixtures"
-MODULES = ["core.js", "ui.js", "store.js", "filter.js", "features.js", "edits.js", "rules.js", "engine.js",
-           "lint.js", "items.js", "sound.js", "glyphs.js"]  # in order
+MODULES = ["core.js", "ui.js", "store.js", "filter.js", "features.js", "edits.js", "rules.js", "ops.js",
+           "engine.js", "lint.js", "words.js", "items.js", "sound.js", "glyphs.js"]  # in order
 TESTS_JS = ROOT / "tools" / "editor_selftest.js"  # the engine tests' code
 BROWSERS = [
     r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
@@ -157,7 +160,7 @@ test("edits", async () => {
     const header = r.report.count ? await EZ.edits.headerLines(src, p, variant, r.report.count) : [];
     const decoded = header.length ? await EZ.edits.fromFile(header.join("\\n")) : null;
     out[name] = {variant: variant.name, count: r.report.count, unplaced: r.report.unplaced, crcs: crcs(lines),
-                 header: header.length, decoded};
+                 header: header.length, decoded, ops: r.report.ops || []};
   }
   return {results: out};
 });
@@ -411,8 +414,75 @@ def active_rules(block):
     return [x for x in block if x.strip() and not re.match(r"^\s*//", x)]
 
 
+OP_KINDS = ("off", "on", "change", "before", "after")
+OFF_RE = re.compile(r"^\s*//+\s*(?=ItemDisplay\[)")
+
+
+def valid_op(o):
+    """ops.js's valid(): a change to one of Erazure's rules the editor reads."""
+    return (isinstance(o, dict) and o.get("kind") in OP_KINDS and isinstance(o.get("at"), dict)
+            and isinstance(o["at"].get("text"), str) and o["at"]["text"] != ""
+            and (isinstance(o["at"].get("file"), str) or o["at"].get("file") is None))
+
+
+def place_ops(src, ops, lines):
+    """Each op's line by style_edits.Filter.find, stage by stage: [(op, index or None, stage)]."""
+    import style_edits as SE
+    rngs = sections(src, lines)
+    flt = SE.Filter(lines, sorted(((name, r[0]) for name, r in rngs.items()), key=lambda t: t[1]))
+    placed, taken = [[o, None, None] for o in ops], set()
+    for stage in SE.STAGES:
+        for p in placed:
+            if p[1] is not None:
+                continue
+            o = p[0]
+            pos = flt.pos(o["at"].get("file"), o["at"].get("line"))
+            claims = o["kind"] in ("off", "on", "change")
+            i = flt.find(o["at"]["text"], o["at"].get("file"), pos, taken if claims else set(), stage)
+            if i is not None:
+                p[1], p[2] = i, stage
+                if claims:
+                    taken.add(i)
+    return placed
+
+
+def apply_ops(src, ops, lines):
+    """ops.js's apply: the lines with the changes to Erazure's rules (a moved changed line gets merge3)."""
+    import style_edits as SE
+    ops = [o for o in (ops or []) if valid_op(o)]
+    if not ops:
+        return lines, []
+    placed = place_ops(src, ops, lines)
+    before, after, swap = {}, {}, {}
+    for o, i, how in placed:
+        if i is None:
+            continue
+        cur, kind = swap.get(i, lines[i]), o["kind"]
+        if kind == "off":
+            if not OFF_RE.match(cur) and cur.startswith("ItemDisplay["):
+                swap[i] = "//" + cur
+        elif kind == "on":
+            if OFF_RE.match(cur):
+                swap[i] = re.sub(r"^\s*//+\s*", "", cur, count=1)
+        elif kind == "change":
+            if not isinstance(o.get("line"), str):
+                continue
+            text = re.sub(r"[\r\n]+", " ", o["line"])
+            swap[i] = text if how == "exact" else SE.merge3(o["at"]["text"], text, cur)[0]
+        else:
+            add = [re.sub(r"[\r\n]+", " ", x) for x in (o.get("lines") or []) if isinstance(x, str)]
+            (before if kind == "before" else after).setdefault(i, []).extend(add)
+    out = []
+    for i, line in enumerate(lines):
+        out += before.get(i, [])
+        out.append(swap.get(i, line))
+        out += after.get(i, [])
+    return out, [(o.get("id"), how, i) for o, i, how in placed]
+
+
 def count(e, feats):
     n = sum(1 for v in (e.get("options") or {}).values() if v)
+    n += sum(1 for o in (e.get("ops") or []) if valid_op(o))
     n += sum(1 for fid, on, *_ in feats if fid in (e.get("features") or {}) and bool(e["features"][fid]) != on)
     lv = e.get("levels") or {}
     n += len(lv.get("names") or {}) + len(lv.get("copies") or {})
@@ -427,6 +497,8 @@ def count(e, feats):
 def reference(src, edits, lines, feats):
     """tools/editor/edits.js's apply, in Python: the version's lines with the edit set, before the write-out."""
     lines = list(lines)
+    # changes to Erazure's own rules (ops.js), first: on the lines as the player saw them
+    lines, _ = apply_ops(src, edits.get("ops"), lines)
     # Erazure's options (050)
     opts = options050(src, lines)
     for oid, on in (edits.get("options") or {}).items():
@@ -644,8 +716,15 @@ def check_edits(src, detail, fixtures):
             if a != b:
                 bad.append(f"{name}: line {i + 1} differs; the reference has: {lines[i][:200]}")
                 break
-        if js.get("unplaced"):
-            bad.append(f"{name}: unplaced edits {js['unplaced']}")
+        _, placed = apply_ops(src, fx["edits"].get("ops"), variant_lines(src, variant))
+        want_ops = [[oid, how, i] for oid, how, i in placed]
+        got_ops = [[x.get("id"), x.get("how"), x.get("i")] for x in js.get("ops") or []]
+        if got_ops != want_ops:
+            diffs = [f"{g} vs {w}" for g, w in zip(got_ops, want_ops) if g != w][:5]
+            bad.append(f"{name}: the page places the changes to Erazure's rules differently: {'; '.join(diffs)}")
+        unplaced = [u for u in js.get("unplaced") or [] if u.get("area") != "erazure"]
+        if unplaced:
+            bad.append(f"{name}: unplaced edits {unplaced}")
         dec = js.get("decoded")
         if n and (not dec or dec.get("edits", {}).get("base") != fx["edits"]["base"] or dec.get("name") != fx["name"]):
             bad.append(f"{name}: the EDITS header doesn't decode to the edit set")
@@ -829,6 +908,18 @@ LINT_CASES = [
     ("ItemDisplay[r30]", "top", [("error", "No ':'")]),
 ]
 
+# conditions in words (tools/editor/words.js): BH's reading, AND and OR left to right
+WORDS_CASES = [
+    ("UNI !ID uap", "unique, not identified, Shako"),
+    ("(r30 OR r31) FILTLVL>4", "(Ber Rune or Jah Rune), filter levels 5-12"),
+    ("r30 OR r31 FILTLVL>4", "(Ber Rune or Jah Rune), filter levels 5-12"),
+    ("CLVL>79 DIFF=2 GROUND !TOWN", "character level 80+, Hell, on the ground, not in town"),
+    ("MULTI107,54+MULTI188,9+MULTI83,1+STAT127>2", "+ Teleport + its tab + class skills + all skills 3+"),
+    ("!(SET OR UNI) SOCK~2-4 FILTLVL=1", "not (set or unique), sockets 2-4, filter level 1"),
+    ("UNI (xh9 OR (uap !ETH) OR uhm)", "unique, (Grim Helm or (Shako, not ethereal) or Spired Helm)"),
+    ("", "every item"),
+]
+
 # the rule builder: (its form, the rule line it must make)
 BUILD_CASES = [
     ({}, "ItemDisplay[]:%NAME%{%NAME%}"),
@@ -931,7 +1022,7 @@ def expectations(src, only=""):
     import editor_map
     data = editor_map.page_data()
     out.update(catalog=data["catalog"], soundCount=data["soundCount"], paste=PASTE_CASES, sound=sound_case(),
-               lint=LINT_CASES, build=BUILD_CASES, assets=data.get("assets"))
+               lint=LINT_CASES, build=BUILD_CASES, words=WORDS_CASES, assets=data.get("assets"))
     if not only or "tiers".startswith(only[:5]) or only.startswith("tiers"):
         out["tiers"] = tier_cases()
     return out

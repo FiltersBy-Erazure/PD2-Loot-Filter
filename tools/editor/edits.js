@@ -3,8 +3,9 @@
    option labels, alias names, rule text), so the same edits apply to every new Erazure; a step that can't place an
    edit says so in the report instead of guessing.
 
-   The order: Erazure's options (050) -> features -> looks -> color remap -> sounds -> icons -> alert switches ->
-   filter level names and copies -> (later steps: categories, items, rules...) -> the Cube's Custom mark. The header
+   The order: changes to Erazure's own rules (EZ.ops) -> Erazure's options (050) -> features -> looks -> color remap
+   -> sounds -> icons -> alert switches -> filter level names and copies -> (later steps: categories, items, the
+   player's own rules...) -> the Cube's Custom mark. The header
    (the edit set itself, so a saved file can be imported again) is added by headerLines, after the aliases are
    written out. tools/editor_selftest.py checks every step against a Python version of it. */
 var EZ = typeof EZ !== "undefined" ? EZ : {};
@@ -269,7 +270,8 @@ EZ.edits = (function () {
     }
   }
 
-  /* Steps other modules add (categories, items, rules...), each (ctx) => void, run in their order after levels. */
+  /* Steps other modules add, each (ctx) => void, in their order: below 0 before every other edit (changes to
+     Erazure's own lines: EZ.ops), from 0 after levels (categories, items, the player's own rules...). */
   const later = [];
   function step(order, fn) { later.push({order, fn}); later.sort((a, b) => a.order - b.order); }
 
@@ -295,6 +297,7 @@ EZ.edits = (function () {
   function apply(src, profile, lines) {
     const ctx = {src, edits: profile.edits, lines: lines.slice(), report: {unplaced: [], count: 0}};
     ctx.unplaced = (area, what, why) => ctx.report.unplaced.push({area, what, why});
+    for (const s of later) if (s.order < 0) s.fn(ctx);  // changes to Erazure's own lines, as the player saw them
     options(ctx);
     features(ctx);
     looks(ctx);
@@ -303,7 +306,7 @@ EZ.edits = (function () {
     icons(ctx);
     alerts(ctx);
     levels(ctx);
-    for (const s of later) s.fn(ctx);
+    for (const s of later) if (s.order >= 0) s.fn(ctx);
     ctx.report.count = count(profile.edits);
     mark(ctx, ctx.report.count);
     return {lines: ctx.lines, report: ctx.report};

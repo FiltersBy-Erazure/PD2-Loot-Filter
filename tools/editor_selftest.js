@@ -223,6 +223,10 @@
         bad.push(`${r.line}: BH drops ${a.dropped.map((d) => d.token).join(", ")}${a.never ? " (it never matches)" : ""}`);
       }
     }
+    for (const [cond, want] of EXPECT.words) {
+      const got = EZ.words.cond(cond, {levels: 12});
+      if (got !== want) bad.push(`words ${cond || "(empty)"}: ${got}, want ${want}`);
+    }
     // the blocks go in between their markers, and the preview finds a rule's line in them
     const p = EZ.store.normalize({name: "t", edits: {base: {style: "erazure"}, rules: {top: "// note\nItemDisplay[r30]:%NAME%{%NAME%}\n\n", bottom: " \n// only a note\n"}}});
     const built = EZ.edits.apply(src, p, C.variantLines(src, main));

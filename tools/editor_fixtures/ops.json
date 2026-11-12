@@ -1,0 +1,385 @@
+{
+ "name": "Changes to Erazure's rules, made on an older Erazure",
+ "file": "Test-Ops",
+ "edits": {
+  "v": 1,
+  "base": {
+   "style": "erazure",
+   "revealed": false,
+   "bigGG": false,
+   "poe": false
+  },
+  "ops": [
+   {
+    "id": "o1",
+    "kind": "off",
+    "at": {
+     "file": "300-affix-tags.filter",
+     "line": 216,
+     "text": "ItemDisplay[(HELM OR CIRC) !MAG (RARE OR CRAFT OR STAT360=52 OR ROLL_PDR_TAG) (STAT36>0 STAT36<13)]:%WHITE%%STAT36%%GOLD%%PERCENT%pdr%CS%%NAME%{%NAME%}%CONTINUE%"
+    }
+   },
+   {
+    "id": "o2",
+    "kind": "change",
+    "at": {
+     "file": "200-magic.filter",
+     "line": 70,
+     "text": "ItemDisplay[MAG !ID jew MAPID~183-184]:%MAGIC_JEWEL_NAME%%BLUE%%DOT-97%%PX-0E%%TIER-0%// All unidentified magic jewels"
+    },
+    "line": "ItemDisplay[MAG !ID jew MAPID~183-184 !ETH]:%MAGIC_JEWEL_NAME%%BLUE%%DOT-97%%PX-0E%%TIER-0%// All unidentified magic jewels"
+   },
+   {
+    "id": "o3",
+    "kind": "change",
+    "at": {
+     "file": "280-skills-shop-highlights.filter",
+     "line": 453,
+     "text": "ItemDisplay[(SOR OR STAFF) (MAG OR RARE OR CRAFT) (MULTI188,8+MULTI83,1+MULTI107,56+STAT127=8)]:%NAME%{%HIGHLIGHT_1_LEFT%   %GREEN%+8 Meteor   %HIGHLIGHT_1_RIGHT%%CL%%NAME%}%CONTINUE%//"
+    },
+    "line": "ItemDisplay[(SOR OR STAFF) (MAG OR RARE OR CRAFT) (MULTI188,8+MULTI83,1+MULTI107,56+STAT127=8)]:%NAME% %GRAY%(mine){%HIGHLIGHT_1_LEFT%   %GREEN%+8 Meteor   %HIGHLIGHT_1_RIGHT%%CL%%NAME%}%CONTINUE%//"
+   },
+   {
+    "id": "o4",
+    "kind": "before",
+    "at": {
+     "file": "090-gems.filter",
+     "line": 45,
+     "text": "ItemDisplay[GEMTYPE=3 QTY>1]:%NAME% %WHITE%Emeralds%CONTINUE%//"
+    },
+    "lines": [
+     "ItemDisplay[r30 FILTLVL=9]:%NAME% %GRAY%(before 3)%CONTINUE%",
+     "// a note of mine"
+    ]
+   },
+   {
+    "id": "o5",
+    "kind": "after",
+    "at": {
+     "file": "090-gems.filter",
+     "line": 8,
+     "text": "ItemDisplay[glg QTY=1 (FILTLVL=8 OR FILTLVL>9) GROUND !TOWN]:// Flawless Emerald"
+    },
+    "lines": [
+     "ItemDisplay[r30 FILTLVL=9]:%NAME% %GRAY%(after 4)%CONTINUE%",
+     "// a note of mine"
+    ]
+   },
+   {
+    "id": "o6",
+    "kind": "off",
+    "at": {
+     "file": "070-keys.filter",
+     "line": 257,
+     "text": "ItemDisplay[(key OR rkey) !TOWN MAPID=60]:%NAME%{%WHITE%Character %BLUE%Left %WHITE%for %GOLD%Bloodwitch %WHITE%and the %GOLD%Horadric Cube%NL%%NAME%}%CONTINUE%"
+    }
+   },
+   {
+    "id": "o7",
+    "kind": "change",
+    "at": {
+     "file": "150-uniques.filter",
+     "line": 401,
+     "text": "ItemDisplay[REVEALED !ID UNI 7gd]:The Grandfather%CONTINUE%"
+    },
+    "line": "ItemDisplay[REVEALED !ID UNI 7gd !ETH]:The Grandfather%CONTINUE%"
+   },
+   {
+    "id": "o8",
+    "kind": "off",
+    "at": {
+     "file": "300-affix-tags.filter",
+     "line": 528,
+     "text": "ItemDisplay[WEAPON ROLL_SK6_TAG SK6>0]:%WHITE%%SK6%%TAN%marw%CS%%NAME%{%NAME%}%CONTINUE%"
+    }
+   },
+   {
+    "id": "o9",
+    "kind": "change",
+    "at": {
+     "file": "310-staffmods.filter",
+     "line": 71,
+     "text": "ItemDisplay[(NMAG OR (MAG !STAT360>0)) !EQUIPPED !RW ((SK278=1 (CLVL<40 OR FILTLVL=0)) OR (SK278=2 (CLVL<80 OR FILTLVL=0)) OR (SK278=3) OR (SK278>0 (TOWN OR INVENTORY)))]:%TAN%%SK278%%DARK_GREEN%venm%CS%%NAME%{%NAME%}%CONTINUE%//"
+    },
+    "line": "ItemDisplay[(NMAG OR (MAG !STAT360>0)) !EQUIPPED !RW ((SK278=1 (CLVL<40 OR FILTLVL=0)) OR (SK278=2 (CLVL<80 OR FILTLVL=0)) OR (SK278=3) OR (SK278>0 (TOWN OR INVENTORY)))]:%TAN%%SK278%%DARK_GREEN%venm%CS%%NAME% %GRAY%(mine){%NAME%}%CONTINUE%//"
+   },
+   {
+    "id": "o10",
+    "kind": "change",
+    "at": {
+     "file": "220-nonmagic-weapons.filter",
+     "line": 268,
+     "text": "ItemDisplay[NMAG !RW !INF (8hb OR 8cb) !SOCK=4 CLVL<50 FILTLVL>0 GROUND !TOWN]:// Hide Razor Bow, Double Bow without 4os below clvl 50 on filter levels 1+"
+    },
+    "line": "ItemDisplay[NMAG !RW !INF (8hb OR 8cb) !SOCK=4 CLVL<50 FILTLVL>0 GROUND !TOWN !ETH]:// Hide Razor Bow, Double Bow without 4os below clvl 50 on filter levels 1+"
+   },
+   {
+    "id": "o11",
+    "kind": "before",
+    "at": {
+     "file": "310-staffmods.filter",
+     "line": 216,
+     "text": "ItemDisplay[(NMAG OR (MAG !STAT360>0)) !EQUIPPED !RW ((SK112=1 (CLVL<40 OR FILTLVL=0)) OR (SK112=2 (CLVL<80 OR FILTLVL=0)) OR (SK112=3) OR (SK112>0 (TOWN OR INVENTORY)))]:%TAN%%SK112%%DARK_GREEN%bhmr%CS%%NAME%{%NAME%}%CONTINUE%//"
+    },
+    "lines": [
+     "ItemDisplay[r30 FILTLVL=9]:%NAME% %GRAY%(before 10)%CONTINUE%",
+     "// a note of mine"
+    ]
+   },
+   {
+    "id": "o12",
+    "kind": "after",
+    "at": {
+     "file": "310-staffmods.filter",
+     "line": 60,
+     "text": "ItemDisplay[(NMAG OR (MAG !STAT360>0)) !EQUIPPED !RW ((SK267=1 (CLVL<40 OR FILTLVL=0)) OR (SK267=2 (CLVL<80 OR FILTLVL=0)) OR (SK267=3) OR (SK267>0 (TOWN OR INVENTORY)))]:%TAN%%SK267%%DARK_GREEN%fade%CS%%NAME%{%NAME%}%CONTINUE%//"
+    },
+    "lines": [
+     "ItemDisplay[r30 FILTLVL=9]:%NAME% %GRAY%(after 11)%CONTINUE%",
+     "// a note of mine"
+    ]
+   },
+   {
+    "id": "o13",
+    "kind": "off",
+    "at": {
+     "file": "320-highlights-ed-amp-lr.filter",
+     "line": 30,
+     "text": "ItemDisplay[(MAG OR CRAFT OR RARE) WEAPON !STAFF !WAND !SOR ((SUFFIX=662 CLVL<60) OR SUFFIX=898 OR SUFFIX=899) (CLVL<60 OR ED>299)]:%NAME%{%AMPLIFY_LEFT%    %RED%Amplify Damage    %AMPLIFY_RIGHT%%CL%%NAME%}%CONTINUE%//"
+    }
+   },
+   {
+    "id": "o14",
+    "kind": "change",
+    "at": {
+     "file": "060-gold-potions-tomes.filter",
+     "line": 146,
+     "text": "ItemDisplay[tpgs CLVL<9]:%GRAY%i%DARK_GREEN%(  %GRAY%Strangling  %DARK_GREEN%)%GRAY%i%WHITE%{ %WHITE%Strangling Potion }// Strangling Gas Potion (Level 6 Req)"
+    },
+    "line": "ItemDisplay[tpgs CLVL<9]:%GRAY%i%DARK_GREEN%(  %GRAY%Strangling  %DARK_GREEN%)%GRAY%i%WHITE% %GRAY%(mine){ %WHITE%Strangling Potion }// Strangling Gas Potion (Level 6 Req)"
+   },
+   {
+    "id": "o15",
+    "kind": "off",
+    "at": {
+     "file": "146-map-experience.filter",
+     "line": 141,
+     "text": "ItemDisplay[t2a ID $f(ABS(2*FLOOR(10*(MXR_T2A)+0.0001)-39)<=3)]:%NAME%{%RED%$f(FLOOR(FLOOR(10*(%MXR_T2A%)+0.0001)/10)).$f(MOD(FLOOR(10*(%MXR_T2A%)+0.0001),10))x Experience%CL%%NAME%}%CONTINUE%//"
+    }
+   },
+   {
+    "id": "o16",
+    "kind": "change",
+    "at": {
+     "file": "310-staffmods.filter",
+     "line": 136,
+     "text": "ItemDisplay[(NMAG OR (MAG !STAT360>0)) !EQUIPPED !RW ((SK237=1 (CLVL<40 OR FILTLVL=0)) OR (SK237=2 (CLVL<80 OR FILTLVL=0)) OR (SK237=3) OR (SK237>0 (TOWN OR INVENTORY OR leg)))]:%TAN%%SK237%%DARK_GREEN%dwlf%CS%%NAME%{%NAME%}%CONTINUE%//"
+    },
+    "line": "ItemDisplay[(NMAG OR (MAG !STAT360>0)) !EQUIPPED !RW ((SK237=1 (CLVL<40 OR FILTLVL=0)) OR (SK237=2 (CLVL<80 OR FILTLVL=0)) OR (SK237=3) OR (SK237>0 (TOWN OR INVENTORY OR leg)))]:%TAN%%SK237%%DARK_GREEN%dwlf%CS%%NAME% %GRAY%(mine){%NAME%}%CONTINUE%//"
+   },
+   {
+    "id": "o17",
+    "kind": "change",
+    "at": {
+     "file": "070-keys.filter",
+     "line": 177,
+     "text": "ItemDisplay[(key OR rkey) !TOWN MAPID=43]:%NAME%{%WHITE%Exit to %TAN%Lost City %WHITE%in left, top, right, or bottom corner%NL%%NAME%}%CONTINUE%"
+    },
+    "line": "ItemDisplay[(key OR rkey) !TOWN MAPID=43]:%NAME% %GRAY%(mine){%WHITE%Exit to %TAN%Lost City %WHITE%in left, top, right, or bottom corner%NL%%NAME%}%CONTINUE%"
+   },
+   {
+    "id": "o18",
+    "kind": "before",
+    "at": {
+     "file": "310-staffmods.filter",
+     "line": 107,
+     "text": "ItemDisplay[(NMAG OR (MAG !STAT360>0)) !EQUIPPED !RW ((SK153=1 (CLVL<40 OR FILTLVL=0)) OR (SK153=2 (CLVL<80 OR FILTLVL=0)) OR (SK153=3) OR (SK153>0 (TOWN OR INVENTORY)))]:%TAN%%SK153%%DARK_GREEN%nres%CS%%NAME%{%NAME%}%CONTINUE%//"
+    },
+    "lines": [
+     "ItemDisplay[r30 FILTLVL=9]:%NAME% %GRAY%(before 17)%CONTINUE%",
+     "// a note of mine"
+    ]
+   },
+   {
+    "id": "o19",
+    "kind": "after",
+    "at": {
+     "file": "310-staffmods.filter",
+     "line": 72,
+     "text": "ItemDisplay[(NMAG OR (MAG !STAT360>0)) !EQUIPPED !RW ((SK279=1 (CLVL<40 OR FILTLVL=0)) OR (SK279=2 (CLVL<80 OR FILTLVL=0)) OR (SK279=3) OR (SK279>0 (TOWN OR INVENTORY)))]:%TAN%%SK279%%DARK_GREEN%smas%CS%%NAME%{%NAME%}%CONTINUE%//"
+    },
+    "lines": [
+     "ItemDisplay[r30 FILTLVL=9]:%NAME% %GRAY%(after 18)%CONTINUE%",
+     "// a note of mine"
+    ]
+   },
+   {
+    "id": "o20",
+    "kind": "off",
+    "at": {
+     "file": "070-keys.filter",
+     "line": 353,
+     "text": "ItemDisplay[(key OR rkey) !TOWN MAPID=91]:%NAME%{%NL%%TAN%Flayer Dungeon Level 3%NL%%LIGHT_GRAY%Type: %WHITE%Semi-Static%NL%%NAME%}%CONTINUE%"
+    }
+   },
+   {
+    "id": "o21",
+    "kind": "change",
+    "at": {
+     "file": "220-nonmagic-weapons.filter",
+     "line": 249,
+     "text": "ItemDisplay[NMAG !RW !INF (72a OR 7wa) ED<15 FILTLVL>4 GROUND !TOWN]:// Hide Berserker Axe, Ettin Axe with ED<15 on filter levels 5+"
+    },
+    "line": "ItemDisplay[NMAG !RW !INF (72a OR 7wa) ED<15 FILTLVL>4 GROUND !TOWN !ETH]:// Hide Berserker Axe, Ettin Axe with ED<15 on filter levels 5+"
+   },
+   {
+    "id": "o22",
+    "kind": "off",
+    "at": {
+     "file": "310-staffmods.filter",
+     "line": 289,
+     "text": "ItemDisplay[NMAG !RW TABSK2=2]:%WHITE%2%DARK_GREEN%jav%TAN%sk%CS%%GRAY%%NAME%{%NAME%}%CONTINUE%"
+    }
+   },
+   {
+    "id": "o23",
+    "kind": "change",
+    "at": {
+     "file": "310-staffmods.filter",
+     "line": 224,
+     "text": "ItemDisplay[(NMAG OR (MAG !STAT360>0)) !EQUIPPED !RW ((SK120=1 (CLVL<40 OR FILTLVL=0)) OR (SK120=2 (CLVL<80 OR FILTLVL=0)) OR (SK120=3) OR (SK120>0 (TOWN OR INVENTORY)))]:%TAN%%SK120%%DARK_GREEN%medi%CS%%NAME%{%NAME%}%CONTINUE%//"
+    },
+    "line": "ItemDisplay[(NMAG OR (MAG !STAT360>0)) !EQUIPPED !RW ((SK120=1 (CLVL<40 OR FILTLVL=0)) OR (SK120=2 (CLVL<80 OR FILTLVL=0)) OR (SK120=3) OR (SK120>0 (TOWN OR INVENTORY)))]:%TAN%%SK120%%DARK_GREEN%medi%CS%%NAME% %GRAY%(mine){%NAME%}%CONTINUE%//"
+   },
+   {
+    "id": "o24",
+    "kind": "change",
+    "at": {
+     "file": "230-item-description-notes.filter",
+     "line": 67,
+     "text": "ItemDisplay[CUBE (HELM OR CIRC) !INF SOCK=0 NMAG]:%NAME%{%WHITE%Ral %TAN%+ %WHITE%Thul %TAN%+ %LIGHT_GRAY%Perf %WHITE%Sapphire %BLUE%o%CL%%WHITE%Cube Socketing Recipe:}%CONTINUE%"
+    },
+    "line": "ItemDisplay[CUBE (HELM OR CIRC) !INF SOCK=0 NMAG]:%NAME% %GRAY%(mine){%WHITE%Ral %TAN%+ %WHITE%Thul %TAN%+ %LIGHT_GRAY%Perf %WHITE%Sapphire %BLUE%o%CL%%WHITE%Cube Socketing Recipe:}%CONTINUE%"
+   },
+   {
+    "id": "o25",
+    "kind": "before",
+    "at": {
+     "file": "220-nonmagic-weapons.filter",
+     "line": 239,
+     "text": "ItemDisplay[NMAG !RW !INF (9ha OR 9ax OR 92a OR 9mp OR 9wa) CLVL>69 FILTLVL>0 GROUND !TOWN]:// Hide Exceptional 1H Axes at clvl 70+ on filter levels 1+"
+    },
+    "lines": [
+     "ItemDisplay[r30 FILTLVL=9]:%NAME% %GRAY%(before 24)%CONTINUE%",
+     "// a note of mine"
+    ]
+   },
+   {
+    "id": "o26",
+    "kind": "after",
+    "at": {
+     "file": "140-map-resistances.filter",
+     "line": 422,
+     "text": "ItemDisplay[t39 STAT499>0 !STAT360>0 !STAT276>0]:%NAME%{%DARK_GREEN%95% %WHITE%* %NAME%}%CONTINUE%// Poison with Minions of Destruction (95)"
+    },
+    "lines": [
+     "ItemDisplay[r30 FILTLVL=9]:%NAME% %GRAY%(after 25)%CONTINUE%",
+     "// a note of mine"
+    ]
+   },
+   {
+    "id": "o27",
+    "kind": "off",
+    "at": {
+     "file": "120-pd2-items.filter",
+     "line": 51,
+     "text": "ItemDisplay[BIG_GG rkey !(GROUND !INVENTORY !TOWN)]:%SKELETON_KEY%  %GOLD%Skeleton Key  %SKELETON_KEY%%BORDER-21%%MAP-21%%DOT-0E%%PX-20%{%NAME%}// Skeleton Key"
+    }
+   },
+   {
+    "id": "o28",
+    "kind": "change",
+    "at": {
+     "file": "160-uniques-value-tiers.filter",
+     "line": 443,
+     "text": "ItemDisplay[UNI !ID (7cr OR 9ls OR (9gs ETH) OR (92h ETH))]:%UNI_MEDIUM_VALUE_LEFT%  %NAME%  %UNI_MEDIUM_VALUE_RIGHT%%BORDER-4B%%MAP-50%%DOT-59%%PX-6A%//"
+    },
+    "line": "ItemDisplay[UNI !ID (7cr OR 9ls OR (9gs ETH) OR (92h ETH)) !ETH]:%UNI_MEDIUM_VALUE_LEFT%  %NAME%  %UNI_MEDIUM_VALUE_RIGHT%%BORDER-4B%%MAP-50%%DOT-59%%PX-6A%//"
+   },
+   {
+    "id": "o29",
+    "kind": "on",
+    "at": {
+     "file": "050-customization.filter",
+     "line": 125,
+     "text": "//ItemDisplay[MAG !ID ETH GLOVES]:%WHITE%Eth %BLUE%%NAME%//"
+    }
+   },
+   {
+    "id": "o30",
+    "kind": "on",
+    "at": {
+     "file": "050-customization.filter",
+     "line": 163,
+     "text": "//ItemDisplay[RARE !ID !ETH SHIELD !NEC !DIN]:%YELLOW%%NAME%//"
+    }
+   },
+   {
+    "id": "o31",
+    "kind": "change",
+    "at": {
+     "file": "060-gold-potions-tomes.filter",
+     "line": 126,
+     "text": "ItemDisplay[vps FILTLVL>0 !SHOP GROUND !TOWN]:{%GRAY%Stamina Potion}// Hides Stamina Potions on filter levels 1+"
+    },
+    "line": "ItemDisplay[vps FILTLVL>0 !SHOP GROUND !TOWN]: %TAN%(mine){%GRAY%Stamina Potion}// Hides Stamina Potions on filter levels 1+"
+   },
+   {
+    "id": "o32",
+    "kind": "off",
+    "at": {
+     "file": "340-high-alvl-crafting-bases.filter",
+     "line": 46,
+     "text": "ItemDisplay[STAT360=0 (MAG OR RARE) CLVL>64 CRAFTALVL>64 (BAR OR DRU OR NEC) !SHOP !EQUIPPED]:%NAME%{%NAME%%CL%%ORANGE%Crafted %GRAY%Affix Level: %BLUE%%CRAFTALVL%}%CONTINUE%// "
+    }
+   },
+   {
+    "id": "o33",
+    "kind": "off",
+    "at": {
+     "file": "060-gold-potions-tomes.filter",
+     "line": 36,
+     "text": "ItemDisplay[hp4 FILTLVL=0]:%GRAY%i%RED%IOI%GRAY%i%GRAY%{%WHITE% Greater Healing Potion }//"
+    }
+   },
+   {
+    "id": "o34",
+    "kind": "off",
+    "at": {
+     "file": "110-runes.filter",
+     "line": 40,
+     "text": "ItemDisplay[r99 QTY>1]:%NAME% that never was//"
+    }
+   },
+   {
+    "id": "o35",
+    "kind": "change",
+    "at": {
+     "file": "045-unique-set-rolls.filter",
+     "line": 552,
+     "text": "ItemDisplay[9qs !RW (!ID OR NMAG)]:Holy Sprinkler{%NAME%}%CONTINUE%"
+    },
+    "line": "ItemDisplay[9qs !RW (!ID OR NMAG)]:Holy Sprinkler %GRAY%(mine){%NAME%}%CONTINUE%"
+   },
+   {
+    "id": "o36",
+    "kind": "off",
+    "at": {
+     "file": "045-unique-set-rolls.filter",
+     "line": 552,
+     "text": "ItemDisplay[9qs !RW (!ID OR NMAG)]:Holy Sprinkler{%NAME%}%CONTINUE%"
+    }
+   }
+  ]
+ }
+}

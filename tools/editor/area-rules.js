@@ -711,6 +711,9 @@ EZ.areas = EZ.areas || [];
     });
   }
 
+  /* For the rules browser: the highlighter and a rule's label and alerts. */
+  EZ.rulesArea = {lineTokens, miniLabel, alertsOf, aliasValues};
+
   EZ.areas.push({
     id: "rules", title: "My rules", icon: "⊕", order: 80, group: "c",
     count: (e) => EZ.edits.countArea("rules", e),

@@ -610,6 +610,6 @@ EZ.preview = (function () {
   return {
     render(b, a) { box = b; app = a; draw(); },
     changed(ev, a) { app = a; redraw(); },
-    state, run, erazure, yours, SAMPLES,
+    state, run, erazure, yours, ctx, SAMPLES,
   };
 })();

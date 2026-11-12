@@ -46,6 +46,11 @@ EZ.store = (function () {
     e.v = SCHEMA;
     e.base = {style: ["erazure", "minimal", "corrlorized"].includes(b.style) ? b.style : "erazure",
               revealed: !!b.revealed, bigGG: !!b.bigGG, poe: !!b.poe};
+    if (e.ops !== undefined) {  // changes to Erazure's rules: a list of objects (EZ.ops checks each one's fields)
+      const list = Array.isArray(e.ops) ? e.ops.filter((o) => o && typeof o === "object" && !Array.isArray(o) &&
+        o.at && typeof o.at === "object" && typeof o.at.text === "string").slice(0, 5000) : [];
+      if (list.length) e.ops = list; else delete e.ops;
+    }
     if (e.rules !== undefined) {  // My rules: two blocks of text (a link or file could hold anything)
       const r = e.rules && typeof e.rules === "object" ? e.rules : {}, keep = {};
       for (const k of ["top", "bottom"]) if (typeof r[k] === "string" && r[k].trim()) keep[k] = r[k].slice(0, 400000);

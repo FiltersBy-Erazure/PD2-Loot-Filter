@@ -459,6 +459,36 @@
   font-size: .85em; }
 .edit-map .fe-bd-templates { margin: .2em 0 .4em; }
 
+/* Erazure's rules: the browser (a list that draws only the rows in view: every row ROW px high) */
+.edit-map .fe-rb-tools > input[type=search] { flex: 1 1 18em; min-width: 0; }
+.edit-map .fe-rb-tools > select { max-width: 100%; }
+.edit-map .fe-rb-list { position: relative; height: min(70vh, 900px); min-height: 320px; overflow: auto; margin-top: .6em;
+  border: 1px solid var(--line); border-radius: 9px; background: var(--bg); }
+.edit-map .fe-rb-inner { position: relative; }
+.edit-map .fe-rb-row { position: absolute; left: 0; right: 0; height: 56px; display: flex; flex-direction: column;
+  justify-content: center; gap: 2px; padding: 0 .7em; border: 0; border-bottom: 1px solid var(--line); background: none;
+  color: var(--fg); text-align: left; cursor: pointer; overflow: hidden; font: inherit; }
+.edit-map button.fe-rb-row:hover, .edit-map button.fe-rb-row:focus-visible { background: var(--panel2); }
+.edit-map .fe-rb-row.off { opacity: .55; }
+.edit-map .fe-rb-sec { background: var(--panel2); cursor: default; flex-direction: row; justify-content: flex-start;
+  align-items: center; gap: .5em; font-family: Cinzel, Georgia, serif; color: var(--accent); }
+.edit-map .fe-rb-top { display: flex; align-items: center; gap: .45em; min-width: 0; white-space: nowrap;
+  font-size: .86em; }
+.edit-map .fe-rb-where { font-family: var(--mono); color: var(--accent); font-size: .92em; flex: none; }
+.edit-map .fe-rb-words { overflow: hidden; text-overflow: ellipsis; color: var(--muted); min-width: 0; }
+.edit-map .fe-rb-draw { display: flex; align-items: center; gap: .5em; min-width: 0; overflow: hidden; height: 24px; }
+.edit-map .fe-rb-draw .fe-label { font-size: 11.5px; flex: none; max-width: 100%; overflow: hidden; }
+.edit-map .fe-rb-text { flex-direction: row; justify-content: flex-start; align-items: center; gap: .6em; }
+.edit-map .fe-rb-comment { font-family: var(--mono); font-size: .8em; color: var(--faint); white-space: pre;
+  overflow: hidden; text-overflow: ellipsis; }
+.edit-map pre.fe-rb-code { font: 12.5px/1.55 var(--mono); background: var(--bg); border: 1px solid var(--line);
+  border-radius: 7px; padding: .5em .65em; margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; color: var(--fg); }
+.edit-map .fe-rb-op { border: 1px solid var(--line); border-radius: 8px; padding: .45em .6em; margin: .4em 0;
+  background: var(--panel2); display: flex; flex-direction: column; gap: .3em; }
+.edit-map .fe-rb-op.warn { border-color: var(--warn); }
+.edit-map .fe-rb-op.bad { border-color: var(--bad); }
+.edit-map code.fe-rb-optext { display: block; white-space: pre-wrap; overflow-wrap: anywhere; font-size: .8em; }
+
 /* narrower screens: the sidebar shrinks to its icons, then the preview becomes a drawer */
 @media (max-width: 1400px) {
   .edit-map .fe-app { grid-template-columns: 64px minmax(0, 1fr) var(--pw, 420px); }
