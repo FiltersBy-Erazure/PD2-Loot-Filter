@@ -36,7 +36,7 @@ ASSET_INFO = ROOT / "tools" / "editor_assets.json"
 MODULES = ["core.js", "ui.js", "store.js", "filter.js", "features.js", "edits.js", "rules.js", "ops.js",
            "overrides.js", "volume.js", "wishlists.js", "maps.js", "render.js", "glyphs.js", "scene.js", "sound.js",
            "engine.js", "lint.js", "words.js", "diff.js", "items.js", "share.js", "app.js", "area-start.js",
-           "area-options.js", "area-features.js", "area-items.js", "area-wishlists.js", "area-maps.js", "area-looks.js", "area-alerts.js",
+           "area-options.js", "area-levels.js", "area-features.js", "area-items.js", "area-wishlists.js", "area-maps.js", "area-looks.js", "area-alerts.js",
            "area-rules.js", "area-erazure.js", "area-changes.js", "area-help.js", "preview.js"]
 ASSETS = ROOT / "Erazure-Filter-Editor-Assets"
 # PD2's own drop sounds (pd2\dropsounds\tinkNN.wav), the PoE versions' picks
@@ -164,7 +164,41 @@ def catalog():
     strings = {k: game_text(v) for k, v in data.strings.items() if k.isdigit() or k.startswith("class:")}
     return {"baseFields": BASE_FIELDS, "flags": FLAGS, "cats": cats, "bases": out_bases, "uniques": uniques,
             "stats": stats, "skills": skills, "statMax": max(data.stats) + 1, "skillMax": max(data.skills) + 1,
-            "townIds": sorted(T.TOWN_IDS), "strings": strings}
+            "townIds": sorted(T.TOWN_IDS), "strings": strings, "statPools": stat_pools(bases, shift)}
+
+
+def stat_pools(bases, shift):
+    """{a base's item types (its types column, as the catalog has it): [the stats the game can give an item of them]}:
+    its magic and rare affixes and automagic (docs/pd2-magic-affixes.tsv: an affix one of whose item types the base
+    has and none of whose excluded ones), its corruptions (docs/pd2-corruptions.tsv) and crafts (docs/pd2-crafts.tsv).
+    The preview's stat picker offers these (and a unique's or set item's own); a stat outside them is a click away."""
+    def tsv(name):
+        lines = [ln.rstrip("\n").split("\t") for ln in (ROOT / "docs" / name).read_text(encoding="utf-8").splitlines()
+                 if ln.strip() and not ln.startswith("#")]
+        return [dict(zip(lines[0], r)) for r in lines[1:]]
+    sources = []  # (item types it rolls on, item types it never rolls on, stat ids)
+    for a in tsv("pd2-magic-affixes.tsv"):
+        if a.get("spawnable") != "1" and a.get("kind") != "automagic":
+            continue
+        ids = {st[0] for mod in json.loads(a.get("mods") or "[]") for st in mod[5]}
+        sources.append((set(filter(None, (a.get("itypes") or "").split(","))),
+                        set(filter(None, (a.get("etypes") or "").split(","))), ids))
+    for c in tsv("pd2-corruptions.tsv"):
+        ids = {sid for prop in json.loads(c.get("props") or "[]") for code, _lo, _hi in prop
+               for sid, _p, _f in code_stats(code, shift)}
+        sources.append(({(c.get("input") or "").split(",")[0]}, set(), ids | {360}))
+    for c in tsv("pd2-crafts.tsv"):
+        ids = {sid for prop in json.loads(c.get("props") or "[]") for code, _lo, _hi in prop
+               for sid, _p, _f in code_stats(code, shift)}
+        sources.append(({c.get("type") or ""}, set(), ids))
+    out = {}
+    for b in bases.values():
+        key = ",".join(b["types"])
+        if key in out:
+            continue
+        chain = set(b["types"])
+        out[key] = sorted({sid for inc, exc, ids in sources if inc & chain and not exc & chain for sid in ids})
+    return {k: v for k, v in out.items() if v}
 
 
 def map_stats():

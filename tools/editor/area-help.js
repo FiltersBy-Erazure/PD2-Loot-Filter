@@ -50,7 +50,7 @@ EZ.areas = EZ.areas || [];
     ["How do filter levels work?", [
       "Level 0 shows every item. Levels 1 to 12 are Erazure's, from the least strict to the most: pick one in the " +
       "game's Options, Loot Filter, or set hotkeys to increase and decrease the filter level in the game's options. " +
-      "[[Quick Edits|quick/levels]] can rename a level or make it behave like another, to change one level only."]],
+      "[[Filter levels|levels]] can rename a level or make it behave like another, to change one level only."]],
     ["Why does an item still have its own color?", [
       "The game colors some names itself (runes orange, the Worldstone Shard red, unique and set items by quality): " +
       "the filter writes its text after the game's color, so a look that doesn't set a color keeps the game's."]],

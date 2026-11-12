@@ -50,7 +50,7 @@ EZ.items = (function () {
     const skills = new Map(cat.skills.map(([id, name, cls, tab]) => [id, {id, name, cls,
       tab: tab === undefined || tab < 0 ? null : tab}]));
     C = {bases, uniques, stats, skills, cats: cat.cats, statMax: cat.statMax || 1023, skillMax: cat.skillMax || 1023,
-         townIds: cat.townIds || [1, 40, 75, 103, 109], strings: cat.strings || {}};
+         townIds: cat.townIds || [1, 40, 75, 103, 109], strings: cat.strings || {}, statPools: cat.statPools || {}};
     return C;
   }
 
@@ -83,7 +83,8 @@ EZ.items = (function () {
     const own = {}, list = {}, stats = {};
     const add = (map, sid, p, v) => { const k = key(sid, p); map[k] = (map[k] || 0) + v; };
     const roll = spec.roll === undefined ? 1 : spec.roll;
-    // the item's own properties: a unique's or set item's, the player's (as shown), a corruption
+    // the item's own properties: a unique's or set item's, the player's (as shown), a corruption; an unidentified
+    // item has none the loot filter can read (the game doesn't send them)
     if (u && id && !spec.noProps) {
       for (const [sid, p, lo, hi] of u.props) add(own, sid, p, Math.round(lo + (hi - lo) * roll));
     }
@@ -93,7 +94,7 @@ EZ.items = (function () {
         add(map, sid, p || 0, Math.round(v * (1 << (s ? s.shift : 0))));
       }
     };
-    shown(own, spec.stats);
+    if (id) shown(own, spec.stats);
     if (spec.corrupt) own[key(360, 0)] = spec.corrupt;
     for (const k of Object.keys(own)) stats[k] = own[k];
     // what the socket fillers bring (BH's stat words read them, its special stats' list too)
@@ -166,14 +167,25 @@ EZ.items = (function () {
     const out = [];
     for (const b of C.bases.values()) {
       if (!b.spawnable && !b.quest && b.code !== "gld" && !/^(pk|t[0-9]|bet|ceh|fed|tes|ubr)/.test(b.code)) continue;
+      // a unique map's base (every one is called "Map") drops only as its unique: the unique's entry stands for it
+      if (b.maptier === 5) continue;
       const plain = b.name.replace(/ÿc./g, "");
       out.push({key: "b:" + b.code, label: plain, sub: b.cat === "Other" ? "Misc" : b.cat, spec: {code: b.code}});
+    }
+    // bases that share a name (a map of two tiers, PD2's throwing potions beside the old ones): told apart by the
+    // map's tier, else the base's code
+    const seen = new Map();
+    for (const p of out) seen.set(p.label, (seen.get(p.label) || 0) + 1);
+    for (const p of out) {
+      if (seen.get(p.label) < 2) continue;
+      const b = base(p.spec.code);
+      p.label += b && b.maptier > 0 ? ` (T${b.maptier})` : ` (${p.spec.code})`;
     }
     for (const u of C.uniques) {
       const b = base(u.code);
       if (!b) continue;
-      out.push({key: "u:" + u.index, label: u.name, sub: (u.kind === "SET" ? "Set" : "Unique") + " · " +
-        b.name.replace(/ÿc./g, ""), spec: {code: u.code, quality: u.kind, uni: u.index, id: true}});
+      out.push({key: "u:" + u.index, label: u.name, sub: b.maptier === 5 ? "Unique map" : (u.kind === "SET" ? "Set" :
+        "Unique") + " · " + b.name.replace(/ÿc./g, ""), spec: {code: u.code, quality: u.kind, uni: u.index, id: true}});
     }
     pickList = out;
     return out;
@@ -373,10 +385,12 @@ EZ.items = (function () {
     if (sid === 204) return `Level ${p & 63} ${sk(p >> 6)} (${v} charges)`;
     if (sid >= 195 && sid <= 201) return `${v}% chance to cast level ${p & 63} ${sk(p >> 6)}`;
     const s = C.stats.get(sid);
-    const text = s && s.text ? s.text : (s ? s.name : "stat " + sid);
+    const text = s && s.text ? cleanText(s.text) : (s ? s.name : "stat " + sid);
     if (/%\+?d/.test(text)) return text.replace(/%\+d/, plus).replace(/%d/, String(v)).replace(/%%/g, "%");
     return `${plus} ${text}${p ? " (" + p + ")" : ""}`;
   }
+  /* A stat's text without the game's color codes and a closing colon ("ÿc0Monster Density:ÿc3"). */
+  const cleanText = (t) => String(t).replace(/ÿc./g, "").replace(/:\s*$/, "").replace(/\s+/g, " ").trim();
 
   /* ---------------------------------------------------------------- the hover box
 
@@ -430,10 +444,22 @@ EZ.items = (function () {
   }
 
   /* The stats a player can add, by name: [{id, name}] (the game's own wording where it has one). */
-  function statChoices() {
+  /* The stats to pick from, as {id, name}: the ones an item of this kind can have (its affixes, automagic,
+     corruptions, crafts, and a unique's or set item's own: statPools), or every stat (all, or no item given). */
+  function statChoices(spec, all) {
+    const b = spec && base(spec.code);
+    let pool = null;
+    if (b && !all) {
+      pool = new Set(C.statPools[b.types.join(",")] || []);
+      const u = (spec.quality === "UNI" || spec.quality === "SET") && spec.uni != null ? unique(spec.uni) : null;
+      for (const ps of u ? [u.props] : C.uniques.filter((x) => x.code === b.code).map((x) => x.props)) {
+        for (const [sid] of ps) pool.add(sid);
+      }
+    }
     const out = [];
     for (const s of C.stats.values()) {
-      const t = s.text ? s.text.replace(/%[a-z0-9+]+/gi, "").replace(/\s+/g, " ").trim() : "";
+      if (pool && !pool.has(s.id)) continue;
+      const t = s.text ? cleanText(s.text).replace(/%[a-z0-9+]+/gi, "").replace(/\s+/g, " ").trim() : "";
       out.push({id: s.id, name: (t ? t[0].toUpperCase() + t.slice(1) : s.name) + " (stat " + s.id + ")"});
     }
     return out;

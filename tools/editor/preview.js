@@ -466,17 +466,22 @@ EZ.preview = (function () {
       spec.noProps ? h("span.fe-pill.info", {style: {marginLeft: ".5em"}}, "from the game") : null), notes, rows);
   }
 
-  let statChoices = null;
+  let everyStat = false;  // the picker lists every stat, not only the ones this kind of item can have
   function statsEditor() {
     const spec = state.spec;
     const wrap = h("div.fe-pv-stats");
     const list = spec.stats || [];
+    const magical = ["MAG", "RARE", "CRAFT", "UNI", "SET"].indexOf(spec.quality) >= 0;
+    if (magical && !spec.id && list.length) {
+      wrap.appendChild(h("p.fe-note.warn.fe-small", "Unidentified: the game shows the loot filter none of its stats, " +
+        "so these count only once it is identified (switch Identified on above)."));
+    }
     list.forEach(([sid, p, v], i) => {
       wrap.appendChild(h("span.fe-chip", {title: "stat " + sid + (p ? ", " + p : "")}, EZ.items.statLabel(sid, p, v),
         h("button.fe-btn.ghost.small", {type: "button", "aria-label": "Remove",
         onclick: () => set(() => { spec.stats.splice(i, 1); })}, "✕")));
     });
-    if (!statChoices) statChoices = EZ.items.statChoices();
+    const statChoices = EZ.items.statChoices(spec, everyStat);
     const dlId = "fe-pv-statlist";
     const input = h("input.fe-pv-statname", {type: "text", list: dlId, placeholder: "Add a stat: strength, faster cast…",
       "aria-label": "Add a stat"});
@@ -487,10 +492,17 @@ EZ.preview = (function () {
       const m = /\(stat (\d+)\)\s*$/.exec(input.value) || /^\s*(\d+)\s*$/.exec(input.value);
       const hit = m ? +m[1] : (statChoices.find((c) => c.name.toLowerCase().startsWith(input.value.trim().toLowerCase())) || {}).id;
       if (hit === undefined) { EZ.ui.toast("Pick a stat from the list."); return; }
-      set(() => { (spec.stats = spec.stats || []).push([hit, +param.value || 0, +val.value || 0]); });
+      set(() => {
+        (spec.stats = spec.stats || []).push([hit, +param.value || 0, +val.value || 0]);
+        // stats are what an identified item shows: a magical item with one is identified
+        if (magical && !spec.id) { spec.id = true; EZ.ui.toast("Identified, so the loot filter can read its stats."); }
+      });
     }}, "Add");
     const dl = h("datalist", {id: dlId}, statChoices.map((c) => h("option", {value: c.name})));
-    add(wrap, [h("div.fe-row.fe-small", input, val, param, addBtn), dl]);
+    const every = h("label.fe-row.fe-small", h("input", {type: "checkbox", checked: everyStat, onchange: (ev) => {
+      everyStat = ev.target.checked; redraw(); }}), h("span.fe-sub", "List every stat (not only the ones this kind of " +
+      "item can have)"));
+    add(wrap, [h("div.fe-row.fe-small", input, val, param, addBtn), dl, every]);
     return h("details.fe-pv-statsbox", {open: list.length ? true : null}, h("summary", "Stats" +
       (list.length ? " (" + list.length + ")" : "")), wrap);
   }

@@ -936,6 +936,17 @@
   (every hide leaves no alert: an Items hide takes Erazure's too; BH's %NOTIFY-DEAD% does nothing in today's BH).
   Erazure's rules open on the rules the preview's item can match (`view.match`). An item change on a unique or set
   item picked by name covers every one of its base, identified or not, and says so (q12: no fingerprints).
+  Filter levels is an area of its own (`area-levels.js`, after Quick Edits; the author, q8: players look for "a
+  level of my own"): the levels' names, colors and Behaves like, the steps for a level of one's own, a link to the
+  website's Filter Levels page; its changes count there (`levels` counter), `#quick/levels` still opens it. Quick
+  setup stays on Start (q5: no "Don't show this again"), at the top until both questions are answered (or when the
+  player has changes and never answered), then under the save card. The preview's item picker lists a unique map
+  (eight bases all called "Map") by its unique only, and tells apart other bases that share a name by the map's tier
+  or the code; its stat picker offers the stats the item can have (`statPools` in the catalog: magic, rare and
+  automagic affixes by item type, corruptions, crafts, and a unique's own), "List every stat" for the rest, names
+  without the game's color codes; an unidentified magical item's own stats are left out (the game doesn't send them),
+  and adding one identifies it. Features' "Key notes" are "Area notes on Keys": 070 writes, in a Key's or Skeleton
+  Key's hover box outside town, the area's layout and where its exits, dungeons and bosses are.
 - The website's **Resources** tab (2026-11-02, the author: reference pages players can look things up in, more to
   come): `website/docs/resources/index.md` lists them, a grid card each (mkdocs.yml has `navigation.indexes`, so it is
   the tab's own page). A resource is a page written by hand, `website/resources/<Name>.html` (its data, styles and

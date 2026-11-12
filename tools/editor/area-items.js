@@ -197,6 +197,9 @@ EZ.areas = EZ.areas || [];
         spec.quality = "SUP";
       }
       spec.stats = [[b.armor ? 16 : 17, 0, ed]];
+      if (spec.id === undefined && spec.quality && ["MAG", "RARE", "CRAFT", "UNI", "SET"].indexOf(spec.quality) >= 0) {
+        spec.id = true;  // its stat shows only identified
+      }
     }
     const [ia, ib] = O().ilvlOf(s);
     if (ia || ib) spec.ilvl = ia || ib;

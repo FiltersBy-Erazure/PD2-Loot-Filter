@@ -689,7 +689,10 @@ EZ.overrides = (function () {
         if (sc.eth === "yes") spec.eth = true;
         if (sc.id === "yes") spec.id = true;
         if (sc.sockets.length) spec.sockets = sc.sockets[0];
-        if (ed && (b.armor || b.weapon)) spec.stats = [[b.armor ? 16 : 17, 0, ed]];
+        if (ed && (b.armor || b.weapon)) {
+          spec.stats = [[b.armor ? 16 : 17, 0, ed]];
+          if (sc.id !== "no" && quality && quality !== "NORM" && quality !== "SUP" && quality !== "INF") spec.id = true;
+        }
         const it = EZ.items.make(Object.assign({place: "GROUND"}, spec));
         if (!it) continue;
         const lv = sc.levels.length ? sc.levels : [1];

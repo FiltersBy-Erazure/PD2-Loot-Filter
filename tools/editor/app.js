@@ -362,6 +362,7 @@ EZ.app = (function () {
     const m = /^#([a-z-]+)(?:\/(.*))?$/.exec(location.hash || "");
     if (m && m[1] === "wishlists") m[1] = "highlights";  // the areas' names until 2026-11-12
     if (m && m[1] === "options") m[1] = "quick";
+    if (m && m[1] === "quick" && m[2] === "levels") { m[1] = "levels"; m[2] = ""; }  // a card of Quick Edits until 2026-11-12
     if (m && EZ.areas.some((a) => a.id === m[1])) {
       app.area = m[1];
       app.sub = m[2] ? decodeURIComponent(m[2]) : "";
@@ -754,7 +755,8 @@ EZ.app = (function () {
       h("summary", h("b", "Advanced"), ": rules in the loot filter's own language (BH, the part of the game that " +
         "reads the filter)."),
       h("p", "To show, hide or restyle particular items, use ", link("items", "Items"), "; whole kinds of items, ",
-        link("quick", "Quick Edits"), "; sounds, chat lines and icons, ", link("alerts", "Alerts"), "; colors and " +
+        link("quick", "Quick Edits"), "; a level of your own, ", link("levels", "Filter levels"), "; sounds, chat " +
+        "lines and icons, ", link("alerts", "Alerts"), "; colors and " +
         "symbols, ", link("looks", "Looks"), "; tags and description lines, ", link("features", "Features"),
         "; the rares you want, ", link("highlights", "Highlights"), ". Those follow every Erazure update and never " +
         "need checking."));

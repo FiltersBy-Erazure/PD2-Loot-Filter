@@ -52,7 +52,7 @@ EZ.areas.push({
     const goals = [
       ["Show or hide particular items", "items", "a base, a unique, a kind of item; on the levels you pick"],
       ["Show or hide whole kinds at once", "quick", "potions, class items, quivers, charms…"],
-      ["A filter level of your own", "quick", "rename one, or make it behave like another and tune it", "levels"],
+      ["A filter level of your own", "levels", "rename one, or make it behave like another and tune it"],
       ["Fewer sounds or chat lines", "alerts", "per kind of drop, or everywhere at once"],
       ["Other colors or symbols", "looks", "the looks around names, colors, minimap icons"],
       ["Switch off tags or description lines", "features", "affix tags, roll tags, resistances, highlights…"],
@@ -205,15 +205,14 @@ EZ.areas.push({
         "storage): back them up (Back up my changes) before you leave.") : null,
       h("h4", {style: {marginTop: "1em"}}, "History"), historyBox);
 
-    /* ---- the quick setup: two questions, kept on screen until both are answered or it is put away (the answers are
-       ordinary changes, each in its own area; p.setup remembers which were answered) */
+    /* ---- the quick setup: two questions, always on Start (the author, 2026-11-12: it stays, with no way to put it
+       away), first until both are answered, then under the save card. The answers are ordinary changes, each in its
+       own area; p.setup remembers which were answered. */
     let quick = null;
-    const DONE = "erazure-filter-editor-setup-done";
-    let dismissed = false;
-    try { dismissed = localStorage.getItem(DONE) === "1"; } catch (e) { /* show it */ }
+    try { localStorage.removeItem("erazure-filter-editor-setup-done"); } catch (e) { /* the old "don't show" */ }
     const answered = p.setup || {};
-    const started = answered.alerts || answered.tags;
-    if (!dismissed && !(answered.alerts && answered.tags) && (started || !app.changes().count)) {
+    const settled = !!(answered.alerts && answered.tags) || (!(answered.alerts || answered.tags) && app.changes().count > 0);
+    {  // (a block of its own: the names below stay in it)
       const tags = EZ.features.filter((f) => f.group === "Tags");
       const ed = p.edits;
       const loud = ed.alerts && ed.alerts.iconsOnly ? "icons" : EZ.volume.isFewer(app.src, app.versionLines(), ed.volume) &&
@@ -260,17 +259,15 @@ EZ.areas.push({
               e.features = Object.assign({}, e.features);
               for (const f of tags) if (EZ.edits.featureDefault(f)) e.features[f.id] = false;
             }, ["Tags switched off. Each kind can come back on Features.", "features", "Features"]))),
-        h("div.fe-row", {style: {marginTop: ".6em"}}, h("button.fe-btn.ghost.small", {type: "button", onclick: () => {
-          try { localStorage.setItem(DONE, "1"); } catch (e) { /* asked again */ }
-          app.drawArea();
-        }}, "Don't show this again")));
+        settled ? null : h("p.fe-sub.fe-small", {style: {marginTop: ".6em"}}, "It stays on Start: come back to it " +
+          "any time."));
     }
 
     box.append(
       h("div.fe-area-head", h("div", h("h2", "Start"),
         h("p.fe-sub", app.canSaveInPlace() ? "Pick your version, change what you like, and save it straight into your game."
           : "Pick your version, change what you like, and download it for your game."))),
-      intro, quick || "", goalsCard, version, save, profilesCard, moveCard);
+      intro, settled ? "" : quick, goalsCard, version, save, settled ? quick : "", profilesCard, moveCard);
     if (app.sub) {
       const el = box.querySelector("#fe-" + app.sub);
       if (el) el.scrollIntoView();

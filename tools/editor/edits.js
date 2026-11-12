@@ -444,7 +444,7 @@ EZ.edits = (function () {
     const found = F.levels(ctx.lines);
     for (const k of Object.keys(names)) {
       const n = +k, at = found[n - 1];
-      if (!at || typeof names[k] !== "string") { ctx.unplaced("quick", "The name of filter level " + k, "Erazure has no filter level " + k + " now"); continue; }
+      if (!at || typeof names[k] !== "string") { ctx.unplaced("levels", "The name of filter level " + k, "Erazure has no filter level " + k + " now"); continue; }
       const line = ctx.lines[at.i];
       const colon = line.indexOf(":") + 1, c = line.indexOf("//", colon);
       ctx.lines[at.i] = line.slice(0, colon) + names[k].replace(/\/\//g, "/") + (c < 0 ? "" : line.slice(c));
@@ -507,8 +507,8 @@ EZ.edits = (function () {
 
   /* The player's changes, by area: {area: n} (a pinned choice counts even where it equals Erazure's today). */
   const counters = {
-    options: (e) => Object.keys(e.options || {}).filter((k) => e.options[k]).length +
-      Object.keys((e.levels || {}).names || {}).length + Object.keys((e.levels || {}).copies || {}).length,
+    options: (e) => Object.keys(e.options || {}).filter((k) => e.options[k]).length,
+    levels: (e) => Object.keys((e.levels || {}).names || {}).length + Object.keys((e.levels || {}).copies || {}).length,
     // (the map lines' switches count on Maps, where they are too: maps.js)
     features: (e) => EZ.features.filter((f) => f.group !== "Maps").reduce((n, f) => n + featureChanges(e, f), 0),
     looks: (e) => Object.keys(e.looks || {}).length + Object.keys(e.remap || {}).length + Object.keys(e.icons || {}).length,
