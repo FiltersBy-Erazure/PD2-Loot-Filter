@@ -52,6 +52,11 @@ jobs:
         run: |
           python tools/shop_map.py --selftest
           python tools/shop_map.py --check
+      - name: Filter Editor page (Erazure-Filter-Editor.html) matches tools/editor/, and its JavaScript builds every
+          version byte for byte as tools/build.py does (headless Chrome)
+        run: |
+          python tools/editor_map.py --check
+          python tools/editor_selftest.py --browser google-chrome
       - name: The website builds (website/, MkDocs Material; no broken links)
         run: |
           pip install --quiet mkdocs-material==9.7.7

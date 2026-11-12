@@ -1,0 +1,1471 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>html { color-scheme: dark; } body { margin: 0; background: #151412; } [hidden] { display: none !important; }</style>
+<title>Filter Editor</title>
+<!-- The Filter Editor: written by tools/editor_map.py from this template and the modules of tools/editor/ (the
+     generator puts them into the one script below). website/hooks.py takes the first <style> after the css marker,
+     the markup between the start and end markers and the first <script> after the end marker: keep them so. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Source+Sans+3:wght@400;600;700&display=swap">
+<!-- edit-map:css -->
+<style>
+.edit-map {
+  --top: 0px; --bar: 52px;
+  --bg: #151412; --panel: #1f1d1a; --panel2: #27241f; --panel3: #2f2b25; --line: #3b362e; --line2: #4c463b;
+  --fg: #ece7de; --muted: #a59d8e; --faint: #7d7668; --accent: #d8b45e; --accent2: #b8932f; --accent-fg: #1b160b;
+  --good: #7cc47f; --warn: #e3ae52; --bad: #e46f5c; --info: #8fb4e8; --focus: #f2d58c;
+  --chip: #2c2822; --chip-on: #4a3d1d; --shadow: 0 6px 22px rgba(0,0,0,.45);
+  --game: #0b0a09; --mono: ui-monospace, "Cascadia Mono", Consolas, "Liberation Mono", monospace;
+  color-scheme: dark; color: var(--fg); background: var(--bg);
+  font: 400 15px/1.45 "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  position: relative; text-align: left;
+}
+[data-md-color-scheme="default"] .edit-map {
+  --bg: #f3f1ec; --panel: #fffdf8; --panel2: #f7f3ea; --panel3: #efe9dc; --line: #ddd4c2; --line2: #cbbfa7;
+  --fg: #23211c; --muted: #685f50; --faint: #8f8676; --accent: #8a6d1f; --accent2: #6f5615; --accent-fg: #fffdf8;
+  --good: #2f7d34; --warn: #a86a08; --bad: #b8402e; --info: #2c5d9e; --focus: #8a6d1f;
+  --chip: #eee7d8; --chip-on: #f3e2b4; --shadow: 0 6px 22px rgba(60,45,10,.18);
+  color-scheme: light;
+}
+.md-content .edit-map { --top: 2.4rem; margin: 0 -.8rem; }
+.edit-map *, .edit-map *::before, .edit-map *::after { box-sizing: border-box; }
+.edit-map [hidden] { display: none !important; }
+.edit-map h2, .edit-map h3, .edit-map h4 { font-family: Cinzel, Georgia, serif; font-weight: 700; color: var(--accent);
+  letter-spacing: .01em; margin: 0 0 .5em; line-height: 1.25; }
+.edit-map h2 { font-size: 1.35em; }
+.edit-map h3 { font-size: 1.05em; }
+.edit-map h4 { font-size: .92em; color: var(--fg); }
+.edit-map p { margin: 0 0 .6em; }
+.edit-map a { color: var(--accent); }
+.edit-map ul, .edit-map ol { margin: .2em 0 .7em 1.3em; padding: 0; }
+.edit-map li { margin: .15em 0; }
+.edit-map code, .edit-map kbd { font-family: var(--mono); font-size: .86em; background: var(--panel3);
+  border: 1px solid var(--line); border-radius: 4px; padding: .05em .35em; color: var(--fg); }
+.edit-map kbd { border-bottom-width: 2px; }
+.edit-map table { border-collapse: collapse; width: 100%; display: table; margin: 0; background: none;
+  border: 0; font-size: inherit; }
+.edit-map th, .edit-map td { border: 0; border-bottom: 1px solid var(--line); padding: .35em .5em;
+  text-align: left; vertical-align: top; background: none; }
+.edit-map th { color: var(--muted); font-weight: 600; font-size: .85em; }
+.edit-map button { font: inherit; color: inherit; }
+.edit-map :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+/* ---------------------------------------------------------------- the frame: bar, sidebar, area, preview */
+.edit-map .fe-app { display: grid; grid-template-columns: 200px minmax(0, 1fr) var(--pw, 520px);
+  grid-template-rows: auto 1fr; grid-template-areas: "bar bar bar" "side area preview"; min-height: 70vh; }
+.edit-map .fe-bar { grid-area: bar; position: sticky; top: var(--top); z-index: 20; display: flex; flex-wrap: wrap;
+  align-items: center; gap: .5em .75em; padding: .55em .8em; background: var(--panel);
+  border-bottom: 1px solid var(--line); box-shadow: 0 2px 8px rgba(0,0,0,.25); min-height: var(--bar); }
+.edit-map .fe-side { grid-area: side; border-right: 1px solid var(--line); background: var(--panel);
+  position: sticky; top: calc(var(--top) + var(--bar)); align-self: start;
+  max-height: calc(100vh - var(--top) - var(--bar)); overflow: auto; padding: .5em 0; }
+.edit-map .fe-area { grid-area: area; min-width: 0; padding: 1em 1.25em 3em; }
+.edit-map .fe-preview { grid-area: preview; border-left: 1px solid var(--line); background: var(--panel);
+  position: sticky; top: calc(var(--top) + var(--bar)); align-self: start;
+  height: calc(100vh - var(--top) - var(--bar)); overflow: auto; }
+.edit-map .fe-grip { position: absolute; left: -4px; top: 0; bottom: 0; width: 8px; cursor: col-resize; z-index: 3; }
+.edit-map .fe-preview { position: sticky; }
+.edit-map .fe-preview-inner { position: relative; min-height: 100%; }
+
+/* the bar */
+.edit-map .fe-title { display: flex; align-items: baseline; gap: .55em; min-width: 0; }
+.edit-map .fe-title b { font-family: Cinzel, Georgia, serif; color: var(--accent); font-size: 1.02em; white-space: nowrap; }
+.edit-map .fe-chip { display: inline-flex; align-items: center; gap: .35em; border: 1px solid var(--line2);
+  background: var(--chip); border-radius: 999px; padding: .12em .6em; font-size: .82em; white-space: nowrap;
+  color: var(--fg); cursor: default; }
+.edit-map button.fe-chip { cursor: pointer; }
+.edit-map button.fe-chip:hover { border-color: var(--accent); }
+.edit-map .fe-chip.warn { border-color: var(--warn); color: var(--warn); }
+.edit-map .fe-chip.good { border-color: var(--good); color: var(--good); }
+.edit-map .fe-search { flex: 1 1 220px; min-width: 160px; max-width: 460px; position: relative; }
+.edit-map .fe-search input { width: 100%; }
+.edit-map .fe-bar-gap { flex: 1 1 0; }
+.edit-map .fe-bar .fe-btn { white-space: nowrap; }
+
+/* sidebar */
+.edit-map .fe-nav { list-style: none; margin: 0; padding: 0; }
+.edit-map .fe-nav li { margin: 0; }
+.edit-map .fe-nav button { display: flex; width: 100%; align-items: center; gap: .55em; padding: .48em .9em;
+  border: 0; background: none; cursor: pointer; text-align: left; color: var(--fg); border-left: 3px solid transparent; }
+.edit-map .fe-nav button:hover { background: var(--panel2); }
+.edit-map .fe-nav button[aria-current="page"] { background: var(--panel2); border-left-color: var(--accent);
+  color: var(--accent); font-weight: 600; }
+.edit-map .fe-nav .ic { width: 1.25em; text-align: center; opacity: .85; flex: none; }
+.edit-map .fe-nav .lbl { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.edit-map .fe-nav .n { font-size: .74em; background: var(--chip-on); color: var(--fg); border-radius: 999px;
+  padding: 0 .45em; min-width: 1.3em; text-align: center; }
+.edit-map .fe-nav .n.warn { background: var(--warn); color: var(--accent-fg); }
+.edit-map .fe-nav-sep { border-top: 1px solid var(--line); margin: .4em .9em; }
+
+/* controls */
+.edit-map .fe-btn { display: inline-flex; align-items: center; justify-content: center; gap: .4em;
+  border: 1px solid var(--line2); background: var(--panel2); color: var(--fg); border-radius: 7px;
+  padding: .38em .8em; cursor: pointer; font-weight: 600; font-size: .9em; line-height: 1.2; text-decoration: none; }
+.edit-map .fe-btn:hover { border-color: var(--accent); }
+.edit-map .fe-btn:disabled { opacity: .45; cursor: not-allowed; border-color: var(--line2); }
+.edit-map .fe-btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-fg); }
+.edit-map .fe-btn.primary:hover { background: var(--accent2); border-color: var(--accent2); }
+.edit-map .fe-btn.ghost { background: none; border-color: transparent; }
+.edit-map .fe-btn.ghost:hover { border-color: var(--line2); }
+.edit-map .fe-btn.small { padding: .2em .5em; font-size: .82em; border-radius: 6px; }
+.edit-map .fe-btn.danger { color: var(--bad); }
+.edit-map input[type=text], .edit-map input[type=search], .edit-map input[type=number], .edit-map select,
+.edit-map textarea { font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--line2);
+  border-radius: 7px; padding: .38em .6em; min-width: 0; }
+.edit-map input:focus, .edit-map select:focus, .edit-map textarea:focus { border-color: var(--accent); outline: none; }
+.edit-map textarea { font-family: var(--mono); font-size: .86em; line-height: 1.45; resize: vertical; width: 100%; }
+.edit-map label.fe-field { display: flex; flex-direction: column; gap: .25em; font-size: .88em; color: var(--muted); }
+.edit-map label.fe-field > span { font-weight: 600; }
+.edit-map .fe-seg { display: inline-flex; border: 1px solid var(--line2); border-radius: 8px; overflow: hidden;
+  background: var(--panel2); flex-wrap: wrap; }
+.edit-map .fe-seg button { border: 0; background: none; padding: .38em .8em; cursor: pointer; color: var(--fg);
+  border-right: 1px solid var(--line2); font-size: .9em; }
+.edit-map .fe-seg button:last-child { border-right: 0; }
+.edit-map .fe-seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-fg); font-weight: 600; }
+.edit-map .fe-switch { display: inline-flex; align-items: center; gap: .55em; cursor: pointer; user-select: none; }
+.edit-map .fe-switch input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.edit-map .fe-switch .track { width: 2.3em; height: 1.3em; border-radius: 999px; background: var(--line2);
+  position: relative; transition: background .15s; flex: none; }
+.edit-map .fe-switch .track::after { content: ""; position: absolute; left: 3px; top: 3px; width: calc(1.3em - 6px);
+  height: calc(1.3em - 6px); border-radius: 50%; background: var(--fg); transition: transform .15s; }
+.edit-map .fe-switch input:checked + .track { background: var(--accent); }
+.edit-map .fe-switch input:checked + .track::after { transform: translateX(1em); background: var(--accent-fg); }
+.edit-map .fe-switch input:focus-visible + .track { outline: 2px solid var(--focus); outline-offset: 2px; }
+.edit-map .fe-switch input:disabled + .track { opacity: .5; }
+
+/* cards and layout helpers */
+.edit-map .fe-card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 1em 1.1em;
+  margin: 0 0 1em; }
+.edit-map .fe-card.flat { background: none; }
+.edit-map .fe-card > h3:first-child { margin-bottom: .35em; }
+.edit-map .fe-sub { color: var(--muted); font-size: .9em; }
+.edit-map .fe-row { display: flex; flex-wrap: wrap; gap: .6em; align-items: center; }
+.edit-map .fe-grid { display: grid; gap: .8em; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+.edit-map .fe-stack > * + * { margin-top: .6em; }
+.edit-map .fe-crumb { color: var(--muted); font-size: .85em; margin-bottom: .2em; }
+.edit-map .fe-area-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between;
+  gap: .5em 1em; margin-bottom: 1em; }
+.edit-map .fe-area-head h2 { margin: 0; font-size: 1.5em; }
+.edit-map .fe-pill { display: inline-block; border-radius: 999px; padding: .02em .5em; font-size: .76em;
+  font-weight: 600; border: 1px solid var(--line2); color: var(--muted); white-space: nowrap; }
+.edit-map .fe-pill.good { color: var(--good); border-color: var(--good); }
+.edit-map .fe-pill.warn { color: var(--warn); border-color: var(--warn); }
+.edit-map .fe-pill.bad { color: var(--bad); border-color: var(--bad); }
+.edit-map .fe-pill.accent { color: var(--accent); border-color: var(--accent); }
+.edit-map .fe-note { border-left: 3px solid var(--accent); background: var(--panel2); padding: .55em .8em;
+  border-radius: 0 8px 8px 0; margin: .6em 0; font-size: .92em; }
+.edit-map .fe-note.warn { border-left-color: var(--warn); }
+.edit-map .fe-note.bad { border-left-color: var(--bad); }
+.edit-map .fe-empty { text-align: center; color: var(--muted); padding: 2em 1em; border: 1px dashed var(--line2);
+  border-radius: 10px; }
+.edit-map .fe-choice { display: grid; gap: .7em; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); }
+.edit-map .fe-option { text-align: left; border: 1px solid var(--line2); background: var(--panel2); border-radius: 10px;
+  padding: .7em .8em; cursor: pointer; color: var(--fg); display: flex; flex-direction: column; gap: .3em; }
+.edit-map .fe-option:hover { border-color: var(--accent); }
+.edit-map .fe-option[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent);
+  background: var(--chip-on); }
+.edit-map .fe-option b { font-family: Cinzel, Georgia, serif; color: var(--accent); }
+.edit-map .fe-option small { color: var(--muted); font-size: .84em; line-height: 1.35; }
+.edit-map .fe-steps { counter-reset: st; list-style: none; margin: .3em 0; padding: 0; }
+.edit-map .fe-steps li { counter-increment: st; position: relative; padding: .25em 0 .25em 2.1em; margin: .2em 0; }
+.edit-map .fe-steps li::before { content: counter(st); position: absolute; left: 0; top: .2em; width: 1.5em;
+  height: 1.5em; border-radius: 50%; background: var(--chip-on); color: var(--fg); font-weight: 700; font-size: .8em;
+  display: flex; align-items: center; justify-content: center; }
+.edit-map .fe-kv { display: grid; grid-template-columns: max-content 1fr; gap: .25em .9em; font-size: .92em; }
+.edit-map .fe-kv dt { color: var(--muted); }
+.edit-map .fe-kv dd { margin: 0; }
+.edit-map .fe-mono { font-family: var(--mono); font-size: .85em; }
+
+/* the preview column */
+.edit-map .fe-pv-head { position: sticky; top: 0; z-index: 2; background: var(--panel); border-bottom: 1px solid var(--line);
+  padding: .55em .8em; display: flex; flex-direction: column; gap: .45em; }
+.edit-map .fe-pv-body { padding: .8em; }
+.edit-map .fe-game { background: var(--game); border-radius: 8px; border: 1px solid var(--line); overflow: hidden;
+  position: relative; }
+.edit-map .fe-game canvas { display: block; max-width: 100%; }
+
+/* toasts, menus, dialogs */
+.edit-map .fe-toasts { position: fixed; right: 1em; bottom: 1em; display: flex; flex-direction: column; gap: .5em;
+  z-index: 60; max-width: min(28em, calc(100vw - 2em)); }
+.edit-map .fe-toast { background: var(--panel3); border: 1px solid var(--line2); border-left: 4px solid var(--accent);
+  border-radius: 8px; padding: .6em .8em; box-shadow: var(--shadow); display: flex; gap: .6em; align-items: start; }
+.edit-map .fe-toast.bad { border-left-color: var(--bad); }
+.edit-map .fe-toast.good { border-left-color: var(--good); }
+.edit-map .fe-toast .x { margin-left: auto; }
+.edit-map .fe-menu { position: absolute; z-index: 40; background: var(--panel); border: 1px solid var(--line2);
+  border-radius: 9px; box-shadow: var(--shadow); padding: .3em; min-width: 15em; }
+.edit-map .fe-menu button { display: flex; width: 100%; gap: .5em; text-align: left; border: 0; background: none;
+  padding: .45em .6em; border-radius: 6px; cursor: pointer; color: var(--fg); }
+.edit-map .fe-menu button:hover, .edit-map .fe-menu button:focus-visible { background: var(--panel2); }
+.edit-map .fe-menu small { color: var(--muted); display: block; }
+.edit-map .fe-dialog-back { position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 70; display: flex;
+  align-items: center; justify-content: center; padding: 1em; }
+.edit-map .fe-dialog { background: var(--panel); border: 1px solid var(--line2); border-radius: 12px;
+  box-shadow: var(--shadow); width: min(40em, 100%); max-height: calc(100vh - 2em); overflow: auto; padding: 1.1em 1.2em; }
+.edit-map .fe-dialog h3 { margin-bottom: .6em; }
+.edit-map .fe-dialog-foot { display: flex; justify-content: flex-end; gap: .5em; margin-top: 1em; flex-wrap: wrap; }
+.edit-map .fe-loading { padding: 3em 1em; text-align: center; color: var(--muted); }
+.edit-map .fe-spin { display: inline-block; width: 1em; height: 1em; border: 2px solid var(--line2);
+  border-top-color: var(--accent); border-radius: 50%; animation: fe-spin .8s linear infinite; vertical-align: -2px; }
+@keyframes fe-spin { to { transform: rotate(360deg); } }
+.edit-map .fe-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* narrower screens: the sidebar shrinks to its icons, then the preview becomes a drawer */
+@media (max-width: 1400px) {
+  .edit-map .fe-app { grid-template-columns: 64px minmax(0, 1fr) var(--pw, 420px); }
+  .edit-map .fe-nav .lbl { display: none; }
+  .edit-map .fe-nav button { justify-content: center; padding: .55em .2em; position: relative; }
+  .edit-map .fe-nav .n { position: absolute; top: .15em; right: .3em; font-size: .66em; padding: 0 .3em; }
+  .edit-map .fe-nav-sep { margin: .4em .5em; }
+}
+@media (max-width: 1000px) {
+  .edit-map .fe-app { grid-template-columns: 64px minmax(0, 1fr); grid-template-areas: "bar bar" "side area"; }
+  .edit-map .fe-preview { position: fixed; top: calc(var(--top) + var(--bar)); right: 0; bottom: 0; height: auto;
+    width: min(560px, 100vw); z-index: 30; box-shadow: var(--shadow); transform: translateX(105%);
+    transition: transform .2s; }
+  .edit-map .fe-app.pv-open .fe-preview { transform: none; }
+  .edit-map .fe-grip { display: none; }
+}
+@media (max-width: 640px) {
+  .edit-map .fe-app { grid-template-columns: minmax(0, 1fr); grid-template-areas: "bar" "area"; }
+  .edit-map .fe-side { position: fixed; top: calc(var(--top) + var(--bar)); left: 0; bottom: 0; max-height: none;
+    width: min(18em, 85vw); z-index: 31; transform: translateX(-105%); transition: transform .2s; box-shadow: var(--shadow); }
+  .edit-map .fe-app.nav-open .fe-side { transform: none; }
+  .edit-map .fe-nav .lbl { display: inline; }
+  .edit-map .fe-nav button { justify-content: flex-start; padding: .6em .9em; }
+  .edit-map .fe-nav .n { position: static; }
+  .edit-map .fe-preview { width: 100vw; }
+  .edit-map .fe-area { padding: .8em .8em 3em; }
+  .edit-map .fe-search { order: 9; flex-basis: 100%; max-width: none; }
+}
+@media (min-width: 641px) { .edit-map .fe-only-phone { display: none !important; } }
+@media (min-width: 1001px) { .edit-map .fe-only-narrow { display: none !important; } }
+@media (prefers-reduced-motion: reduce) {
+  .edit-map *, .edit-map *::before, .edit-map *::after { transition: none !important; animation: none !important; }
+}
+</style>
+<div class="edit-map">
+<!-- edit-map:start -->
+<div class="fe-app" data-fe-root>
+  <div class="fe-loading" data-fe-loading><span class="fe-spin"></span> Loading the filter&hellip;</div>
+  <noscript><p class="fe-note">The Filter Editor runs in your browser: please turn JavaScript on.</p></noscript>
+</div>
+<!-- edit-map:end -->
+</div>
+<script>
+(function () {
+  "use strict";
+  const DATA = {};
+  const SCRIPT_SRC = document.currentScript && document.currentScript.src || "";
+  const SOURCE_V = "__SOURCE_V__";  /* website/hooks.py puts the source's CRC here (a new name when it changes) */
+/* ---- tools/editor/core.js ---- */
+/* The Filter Editor's core: builds any of the launcher's versions from Erazure-Filter-Editor-Source.js (written by
+   tools/build.py) exactly as tools/build.py builds it, so that a version with no edits comes out byte for byte as the
+   launcher's file. Ports of build.py's render (the toggle blocks), apply_style (Minimal's aliases), the Corrlorized
+   patch (styles/corrlorized.edits as applied by style_edits.py, stored by build.py as the lines it replaced and
+   inserted) and write_out_aliases / bh_entries / bh_aliases / bh_substitute (every alias but the three toggles written
+   into the rules as BH writes them when it loads a filter).
+
+   Loaded by the page (the generator puts every module of tools/editor/ into one script) and by tools/editor_selftest.py
+   (a test page in headless Chromium). No DOM here. */
+var EZ = typeof EZ !== "undefined" ? EZ : {};
+EZ.core = (function () {
+  "use strict";
+
+  const ALIAS_DEF_RE = /^Alias\[([A-Za-z0-9_]+)\]:/;
+  const SWITCHED_OFF_RULE = /^([ \t]*\/\/+[ \t]*)(ItemDisplay\[.*)$/;
+  const RULE_KEY = "ItemDisplay[";
+
+  /* BH's Trim (Config.cpp), as build.py's bh_trim: spaces off both ends, then tabs. */
+  function bhTrim(s) {
+    let a = 0, b = s.length;
+    while (a < b && s.charCodeAt(a) === 32) a++;
+    while (b > a && s.charCodeAt(b - 1) === 32) b--;
+    if (a || b < s.length) s = s.slice(a, b);
+    a = 0; b = s.length;
+    while (a < b && s.charCodeAt(a) === 9) a++;
+    while (b > a && s.charCodeAt(b - 1) === 9) b--;
+    return a || b < s.length ? s.slice(a, b) : s;
+  }
+
+  /* [{i, key, value}] of the lines BH's Config::Parse keeps: cut at the first //, key and value split at the first ':'
+     and trimmed (build.py's bh_entries). */
+  function bhEntries(lines, first) {
+    const out = [];
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      const c = line.indexOf("//");
+      const code = c < 0 ? line : line.slice(0, c);
+      if (!code) continue;
+      const j = code.indexOf(":");
+      if (j < 0) {
+        const t = bhTrim(code);
+        out.push({i: i + (first || 0), key: t, value: t});
+      } else {
+        out.push({i: i + (first || 0), key: bhTrim(code.slice(0, j)), value: bhTrim(code.slice(j + 1))});
+      }
+    }
+    return out;
+  }
+
+  /* [{i, name, value}] as InitializeItemRules has them: ReadMapList("Alias"), the name cut at a space. */
+  function bhAliases(entries) {
+    const out = [];
+    for (const e of entries) {
+      if (e.key.startsWith("Alias[")) {
+        const name = bhTrim(e.key.slice(e.key.indexOf("[") + 1, e.key.length - 1)).split(" ")[0];
+        out.push({i: e.i, name: name, value: e.value});
+      }
+    }
+    return out;
+  }
+
+  /* ASCII upper case only, as BH's output key (build.py: chr(ord(c) - 32) for a-z). */
+  function upperAscii(s) {
+    return s.replace(/[a-z]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 32));
+  }
+
+  function replaceLeftmost(rule, key, value, name) {
+    for (let n = 0; n < 10000; n++) {
+      const p = rule.indexOf(key);
+      if (p < 0) return rule;
+      rule = rule.slice(0, p) + value + rule.slice(p + key.length);
+    }
+    throw new Error(`Alias[${name}] keeps finding its name in what it writes (BH would hang)`);
+  }
+
+  /* BH's alias loop over every rule (build.py's bh_substitute): texts = [conditions[], outputs[]], changed in place.
+     For each alias in order: in conditions the name, in outputs %NAME% (ASCII upper case), every occurrence replaced,
+     searching again from the start until none is left. As build.py: all at once, unless that leaves the key in some
+     rule's text; then every rule goes BH's way, leftmost first. */
+  function substitute(texts, aliases) {
+    for (const a of aliases) {
+      if (!a.name) continue;
+      const keys = [a.name, "%" + upperAscii(a.name) + "%"];
+      for (let k = 0; k < 2; k++) {
+        const key = keys[k], list = texts[k];
+        let hit = null, again = false;
+        for (let r = 0; r < list.length; r++) {
+          const s = list[r];
+          if (s.indexOf(key) < 0) continue;
+          const n = s.split(key).join(a.value);
+          if (n.indexOf(key) >= 0) again = true;
+          (hit || (hit = [])).push(r, n);
+        }
+        if (!hit) continue;
+        if (!again) {
+          for (let h = 0; h < hit.length; h += 2) list[hit[h]] = hit[h + 1];
+        } else {
+          for (let r = 0; r < list.length; r++) {
+            if (list[r].indexOf(key) >= 0) list[r] = replaceLeftmost(list[r], key, a.value, a.name);
+          }
+        }
+      }
+    }
+    return texts;
+  }
+
+  /* The rules of a filter's lines, each {i, prefix, text, cond, out}: the active ItemDisplay entries and every
+     switched-off one (//ItemDisplay[...], the options of 050, Corr's x entries), by line. */
+  function ruleEntries(lines, entries) {
+    const rules = [];
+    for (const e of entries) {
+      if (e.key.startsWith(RULE_KEY)) {
+        rules.push({i: e.i, prefix: "", text: lines[e.i], cond: e.key.slice(RULE_KEY.length, e.key.length - 1),
+                    out: e.value});
+      }
+    }
+    for (let i = 0; i < lines.length; i++) {
+      const m = SWITCHED_OFF_RULE.exec(lines[i]);
+      if (!m) continue;
+      for (const e of bhEntries([m[2]])) {
+        if (e.key.startsWith(RULE_KEY)) {
+          rules.push({i: i, prefix: m[1], text: m[2], cond: e.key.slice(RULE_KEY.length, e.key.length - 1),
+                      out: e.value});
+        }
+      }
+    }
+    rules.sort((x, y) => x.i - y.i);
+    return rules;
+  }
+
+  function leadingBlank(s) {
+    let n = 0;
+    while (n < s.length && (s.charCodeAt(n) === 32 || s.charCodeAt(n) === 9)) n++;
+    return s.slice(0, n);
+  }
+
+  function trailingBlank(s) {
+    let n = s.length;
+    while (n > 0 && (s.charCodeAt(n - 1) === 32 || s.charCodeAt(n - 1) === 9)) n--;
+    return s.slice(n);
+  }
+
+  /* The lines with every alias but `keep` written into the rules, the switched-off ones too, and each definition
+     turned into a comment (build.py's write_out_aliases, without its --check verification, which
+     tools/editor_selftest.py does for the page). Throws where an alias writes ':' or '//' into a rule. */
+  function writeOut(lines, keep, prefix) {
+    lines = lines.slice();
+    const entries = bhEntries(lines);
+    const gone = bhAliases(entries).filter((a) => !keep.has(a.name));
+    const rules = ruleEntries(lines, entries);
+    const texts = substitute([rules.map((r) => r.cond), rules.map((r) => r.out)], gone);
+    for (let n = 0; n < rules.length; n++) {
+      const r = rules[n], cond = texts[0][n], out = texts[1][n];
+      if (cond === r.cond && out === r.out) continue;
+      if (cond.indexOf(":") >= 0 || cond.indexOf("//") >= 0 || out.indexOf("//") >= 0) {
+        const err = new Error("an alias writes ':' or '//' into a rule; BH would read the line differently");
+        err.line = r.i;
+        throw err;
+      }
+      const c = r.text.indexOf("//");
+      const comment = c < 0 ? "" : r.text.slice(c);
+      const code = c < 0 ? r.text : r.text.slice(0, c);
+      const j = code.indexOf(":");
+      const lead = leadingBlank(code);
+      const space = leadingBlank(code.slice(j + 1));
+      const tail = out ? trailingBlank(code) : "";
+      lines[r.i] = `${r.prefix}${lead}${RULE_KEY}${cond}]:${space}${out}${tail}${comment}`;
+    }
+    for (const a of gone) lines[a.i] = prefix + lines[a.i];
+    return lines;
+  }
+
+  /* The filter's lines with only `active`'s toggle block switched on (build.py's render): toggles =
+     {block name: [[line index, its Alias line without // or trailing blanks], ...]}. */
+  function render(lines, toggles, active) {
+    const out = lines.slice();
+    for (const name of Object.keys(toggles)) {
+      for (const [i, body] of toggles[name]) out[i] = name === active ? body : "//" + body;
+    }
+    return out;
+  }
+
+  /* A style file's aliases ({name: its line}) in place of the same aliases' lines (build.py's apply_style). */
+  function applyStyleLines(lines, style) {
+    const out = lines.slice();
+    for (let i = 0; i < out.length; i++) {
+      const m = ALIAS_DEF_RE.exec(out[i]);
+      if (m && Object.prototype.hasOwnProperty.call(style, m[1])) out[i] = style[m[1]];
+    }
+    return out;
+  }
+
+  /* A style edits file as build.py stores it: {replaced: {line index: its line}, inserted: [[after line index,
+     line], ...]} (style_edits.apply's output by its origin). */
+  function applyPatch(lines, patch) {
+    const after = new Map();
+    for (const [i, line] of patch.inserted) {
+      if (!after.has(i)) after.set(i, []);
+      after.get(i).push(line);
+    }
+    const out = [];
+    for (let i = 0; i < lines.length; i++) {
+      out.push(Object.prototype.hasOwnProperty.call(patch.replaced, i) ? patch.replaced[i] : lines[i]);
+      const more = after.get(i);
+      if (more) for (const line of more) out.push(line);
+    }
+    return out;
+  }
+
+  /* The alias-form lines of a version (one of src.variants), before any edit. */
+  function variantLines(src, variant) {
+    let lines = render(src.lines, src.toggles, variant.toggle);
+    if (variant.style) {
+      const style = src.styles[variant.style];
+      lines = style.kind === "aliases" ? applyStyleLines(lines, style.lines) : applyPatch(lines, style.patch);
+    }
+    return lines;
+  }
+
+  /* The written file's lines (aliases written out when the source says the build writes them). */
+  function written(src, lines) {
+    return src.writeOut ? writeOut(lines, new Set(src.keep), src.writtenOut) : lines;
+  }
+
+  /* CRLF between lines (the last line is the empty one after the final line break), UTF-8 without BOM. */
+  function encode(lines) {
+    return new TextEncoder().encode(lines.join("\r\n"));
+  }
+
+  let crcTable = null;
+  function crc32(bytes) {
+    if (!crcTable) {
+      crcTable = new Uint32Array(256);
+      for (let n = 0; n < 256; n++) {
+        let c = n;
+        for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1;
+        crcTable[n] = c >>> 0;
+      }
+    }
+    let c = 0xFFFFFFFF;
+    for (let i = 0; i < bytes.length; i++) c = crcTable[(c ^ bytes[i]) & 0xFF] ^ (c >>> 8);
+    return (c ^ 0xFFFFFFFF) >>> 0;
+  }
+
+  /* A launcher version's file as the build writes it: {lines, bytes}. */
+  function buildVariant(src, variant) {
+    const lines = written(src, variantLines(src, variant));
+    return {lines: lines, bytes: encode(lines)};
+  }
+
+  return {bhTrim, bhEntries, bhAliases, substitute, ruleEntries, writeOut, render, applyStyleLines, applyPatch,
+          variantLines, written, encode, crc32, buildVariant, ALIAS_DEF_RE, SWITCHED_OFF_RULE};
+})();
+
+/* ---- tools/editor/ui.js ---- */
+/* The Filter Editor's small UI kit: DOM building (text only, never HTML from data), toasts, dialogs, menus and the
+   common controls (segmented choices, switches, option cards). */
+var EZ = typeof EZ !== "undefined" ? EZ : {};
+EZ.ui = (function () {
+  "use strict";
+
+  /* h("button.fe-btn.primary", {onclick, title, ...}, "text", child, [children]) */
+  function h(spec, attrs, ...kids) {
+    const m = /^([a-z0-9]+)?((?:\.[\w-]+)*)$/i.exec(spec) || [];
+    const el = document.createElement(m[1] || "div");
+    if (m[2]) el.className = m[2].slice(1).split(".").join(" ");
+    if (attrs && (typeof attrs !== "object" || attrs instanceof Node || Array.isArray(attrs))) {
+      kids.unshift(attrs);
+      attrs = null;
+    }
+    if (attrs) {
+      for (const k of Object.keys(attrs)) {
+        const v = attrs[k];
+        if (v === undefined || v === null || v === false) continue;
+        if (k.startsWith("on") && typeof v === "function") el.addEventListener(k.slice(2), v);
+        else if (k === "class") el.className += (el.className ? " " : "") + v;
+        else if (k === "style" && typeof v === "object") Object.assign(el.style, v);
+        else if (k === "dataset") Object.assign(el.dataset, v);
+        else if (k === "text") el.textContent = v;
+        else if (k in el && k !== "list" && typeof v !== "string") el[k] = v;
+        else el.setAttribute(k, v === true ? "" : String(v));
+      }
+    }
+    add(el, kids);
+    return el;
+  }
+
+  function add(el, kids) {
+    for (const k of kids) {
+      if (k === null || k === undefined || k === false) continue;
+      if (Array.isArray(k)) add(el, k);
+      else el.appendChild(k instanceof Node ? k : document.createTextNode(String(k)));
+    }
+    return el;
+  }
+
+  function clear(el) {
+    while (el.firstChild) el.removeChild(el.firstChild);
+    return el;
+  }
+
+  function fill(el, ...kids) {
+    return add(clear(el), kids);
+  }
+
+  /* The editor's root, for toasts, menus and dialogs to live in (so the page's own styles apply). */
+  let host = null;
+  function setHost(el) { host = el; }
+
+  let toastBox = null;
+  function toast(text, kind, opts) {
+    opts = opts || {};
+    if (!toastBox || !toastBox.isConnected) {
+      toastBox = h("div.fe-toasts", {role: "status", "aria-live": "polite"});
+      (host || document.body).appendChild(toastBox);
+    }
+    const close = h("button.fe-btn.ghost.small.x", {type: "button", "aria-label": "Close", text: "✕"});
+    const t = h("div.fe-toast" + (kind ? "." + kind : ""), h("div", text, opts.action || null), close);
+    const done = () => { if (t.isConnected) t.remove(); };
+    close.addEventListener("click", done);
+    toastBox.appendChild(t);
+    if (!opts.sticky) setTimeout(done, opts.ms || 5000);
+    return done;
+  }
+
+  /* A modal dialog: dialog({title, body: [nodes], buttons: [{text, primary, danger, onclick: () => keepOpen?}]}) */
+  function dialog(opts) {
+    const before = document.activeElement;
+    const box = h("div.fe-dialog", {role: "dialog", "aria-modal": "true"});
+    const back = h("div.fe-dialog-back", box);
+    const close = () => {
+      back.remove();
+      document.removeEventListener("keydown", onkey, true);
+      if (before && before.focus) before.focus();
+      if (opts.onclose) opts.onclose();
+    };
+    const onkey = (e) => {
+      if (e.key === "Escape") { e.preventDefault(); close(); }
+      else if (e.key === "Tab") trapTab(e, box);
+    };
+    const title = h("h3", {id: "fe-dlg-" + Math.random().toString(36).slice(2)}, opts.title);
+    box.setAttribute("aria-labelledby", title.id);
+    const foot = h("div.fe-dialog-foot");
+    for (const b of opts.buttons || [{text: "Close"}]) {
+      foot.appendChild(h("button.fe-btn" + (b.primary ? ".primary" : "") + (b.danger ? ".danger" : ""),
+        {type: "button", onclick: () => { if (!(b.onclick && b.onclick(close) === true)) close(); }}, b.text));
+    }
+    add(box, [title, opts.body || [], foot]);
+    back.addEventListener("mousedown", (e) => { if (e.target === back && !opts.modal) close(); });
+    document.addEventListener("keydown", onkey, true);
+    (host || document.body).appendChild(back);
+    const first = box.querySelector("input, select, textarea, button.primary, button");
+    if (first) first.focus();
+    return close;
+  }
+
+  function trapTab(e, box) {
+    const els = [...box.querySelectorAll("button, input, select, textarea, a[href], [tabindex='0']")]
+      .filter((x) => !x.disabled && x.offsetParent !== null);
+    if (!els.length) return;
+    const first = els[0], last = els[els.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  }
+
+  function confirmBox(title, text, yes, onyes) {
+    dialog({title, body: [h("p", text)], buttons: [{text: "Cancel"}, {text: yes, primary: true, onclick: onyes}]});
+  }
+
+  /* A menu under an anchor: menu(anchor, [{text, sub, onclick, disabled}]) */
+  let openMenu = null;
+  function menu(anchor, items) {
+    if (openMenu) openMenu();
+    const box = h("div.fe-menu", {role: "menu"});
+    for (const it of items) {
+      if (!it) continue;
+      box.appendChild(h("button", {type: "button", role: "menuitem", disabled: !!it.disabled, onclick: () => {
+        close();
+        it.onclick();
+      }}, h("span", h("span", it.text), it.sub ? h("small", it.sub) : null)));
+    }
+    const root = host || document.body;
+    root.appendChild(box);
+    const r = anchor.getBoundingClientRect(), rr = root.getBoundingClientRect();
+    const w = box.offsetWidth;
+    let left = r.right - rr.left - w;
+    if (left < 4) left = 4;
+    box.style.left = left + "px";
+    box.style.top = (r.bottom - rr.top + 4) + "px";
+    const away = (e) => { if (!box.contains(e.target) && e.target !== anchor) close(); };
+    const key = (e) => {
+      if (e.key === "Escape") { close(); anchor.focus(); }
+      else if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+        const bs = [...box.querySelectorAll("button:not(:disabled)")];
+        const i = bs.indexOf(document.activeElement);
+        const n = e.key === "ArrowDown" ? (i + 1) % bs.length : (i - 1 + bs.length) % bs.length;
+        if (bs[n]) bs[n].focus();
+        e.preventDefault();
+      }
+    };
+    function close() {
+      box.remove();
+      document.removeEventListener("mousedown", away, true);
+      document.removeEventListener("keydown", key, true);
+      openMenu = null;
+    }
+    document.addEventListener("mousedown", away, true);
+    document.addEventListener("keydown", key, true);
+    openMenu = close;
+    const first = box.querySelector("button:not(:disabled)");
+    if (first) first.focus();
+    return close;
+  }
+
+  /* A segmented choice: seg([{value, text, title}], current, onchange, {label}) */
+  function seg(options, current, onchange, opts) {
+    const box = h("div.fe-seg", {role: "group", "aria-label": opts && opts.label || null});
+    for (const o of options) {
+      box.appendChild(h("button", {type: "button", "aria-pressed": String(o.value === current), title: o.title || null,
+        disabled: !!o.disabled, onclick: () => { if (o.value !== current) onchange(o.value); }}, o.text));
+    }
+    return box;
+  }
+
+  /* A switch: toggle(label, checked, onchange, {disabled, title, sub}) */
+  function toggle(label, checked, onchange, opts) {
+    opts = opts || {};
+    const input = h("input", {type: "checkbox", checked: !!checked, disabled: !!opts.disabled,
+      onchange: (e) => onchange(e.target.checked)});
+    return h("label.fe-switch", {title: opts.title || null}, input, h("span.track"),
+      h("span", h("span", label), opts.sub ? h("small.fe-sub", {style: {display: "block"}}, opts.sub) : null));
+  }
+
+  /* An option card in a choice: option(title, sub, pressed, onclick) */
+  function option(title, sub, pressed, onclick, extra) {
+    return h("button.fe-option", {type: "button", "aria-pressed": String(!!pressed), onclick},
+      h("b", title), sub ? h("small", sub) : null, extra || null);
+  }
+
+  function pill(text, kind) {
+    return h("span.fe-pill" + (kind ? "." + kind : ""), text);
+  }
+
+  function debounce(fn, ms) {
+    let t = null;
+    const d = (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
+    d.flush = (...args) => { clearTimeout(t); fn(...args); };
+    return d;
+  }
+
+  /* "2 minutes ago", "yesterday", "Nov 9" */
+  function ago(ms) {
+    if (!ms) return "";
+    const s = Math.round((Date.now() - ms) / 1000);
+    if (s < 45) return "just now";
+    if (s < 90) return "a minute ago";
+    const m = Math.round(s / 60);
+    if (m < 60) return `${m} minutes ago`;
+    const hrs = Math.round(m / 60);
+    if (hrs < 24) return hrs === 1 ? "an hour ago" : `${hrs} hours ago`;
+    const d = new Date(ms);
+    return d.toLocaleDateString(undefined, {month: "short", day: "numeric", year:
+      d.getFullYear() === new Date().getFullYear() ? undefined : "numeric"});
+  }
+
+  function plural(n, one, many) {
+    return `${n.toLocaleString()} ${n === 1 ? one : (many || one + "s")}`;
+  }
+
+  return {h, add, clear, fill, setHost, toast, dialog, confirmBox, menu, seg, toggle, option, pill, debounce, ago,
+          plural};
+})();
+
+/* ---- tools/editor/store.js ---- */
+/* The Filter Editor's storage: the player's profiles (each an edit set: what they changed, never a filter file) in
+   localStorage, undo / redo for this visit, a persistent history and the game folder's handle in IndexedDB. Every read
+   and write is guarded: a private window or blocked storage keeps the editor working for the visit, and says so. */
+var EZ = typeof EZ !== "undefined" ? EZ : {};
+EZ.store = (function () {
+  "use strict";
+  const KEY = "erazure-filter-editor";
+  const SCHEMA = 1;
+  const UNDO_MAX = 100;
+  const HISTORY_MAX = 30;
+
+  function newEdits() {
+    return {v: SCHEMA, base: {style: "erazure", revealed: false, bigGG: false, poe: false}};
+  }
+
+  function newProfile(name) {
+    const id = "p" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    return {id, name: name || "My Erazure", file: "Erazure-Custom", edits: newEdits(), saved: null,
+            created: Date.now(), changed: Date.now()};
+  }
+
+  let data = null, okToSave = true, warned = false;
+  const undo = [], redo = [];
+  const listeners = new Set();
+
+  function load() {
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (raw) data = JSON.parse(raw);
+    } catch (e) {
+      okToSave = false;
+    }
+    if (!data || typeof data !== "object" || data.v !== SCHEMA || !data.profiles) {
+      const p = newProfile();
+      data = {v: SCHEMA, current: p.id, order: [p.id], profiles: {[p.id]: p}};
+    }
+    for (const id of Object.keys(data.profiles)) normalize(data.profiles[id]);
+    if (!data.profiles[data.current]) data.current = data.order[0];
+    return data;
+  }
+
+  /* An edit set read back from storage, a file or a link: every field the editor reads, of the right kind. */
+  function normalize(p) {
+    const e = p.edits && typeof p.edits === "object" ? p.edits : newEdits();
+    const b = e.base && typeof e.base === "object" ? e.base : {};
+    e.v = SCHEMA;
+    e.base = {style: ["erazure", "minimal", "corrlorized"].includes(b.style) ? b.style : "erazure",
+              revealed: !!b.revealed, bigGG: !!b.bigGG, poe: !!b.poe};
+    p.edits = e;
+    p.name = typeof p.name === "string" && p.name.trim() ? p.name.slice(0, 60) : "My Erazure";
+    p.file = typeof p.file === "string" ? p.file : "Erazure-Custom";
+    return p;
+  }
+
+  function save() {
+    if (!okToSave) return false;
+    try {
+      localStorage.setItem(KEY, JSON.stringify(data));
+      return true;
+    } catch (e) {
+      okToSave = false;
+      if (!warned) {
+        warned = true;
+        EZ.ui.toast("This browser won't keep your changes (a private window or blocked storage). Use Save changes " +
+                    "to a file before you leave.", "bad", {sticky: true});
+      }
+      return false;
+    }
+  }
+
+  function current() { return data.profiles[data.current]; }
+  function profiles() { return data.order.map((id) => data.profiles[id]).filter(Boolean); }
+  function storageOk() { return okToSave; }
+
+  /* Change the current profile's edits: fn(edits) changes them in place. One undo step per call. */
+  function change(fn, opts) {
+    const p = current();
+    const before = JSON.stringify(p.edits);
+    fn(p.edits);
+    const after = JSON.stringify(p.edits);
+    if (after === before) return false;
+    if (!(opts && opts.noUndo)) {
+      undo.push({id: p.id, edits: before});
+      if (undo.length > UNDO_MAX) undo.shift();
+      redo.length = 0;
+    }
+    p.changed = Date.now();
+    save();
+    emit({what: "edits", label: opts && opts.label, quiet: !!(opts && opts.quiet)});
+    return true;
+  }
+
+  /* Change the current profile's own fields (name, file, saved); opts.quiet: the area isn't drawn again. */
+  function changeProfile(fn, opts) {
+    fn(current());
+    current().changed = Date.now();
+    save();
+    emit({what: "profile", quiet: !!(opts && opts.quiet)});
+  }
+
+  function step(from, to) {
+    const p = current();
+    for (let i = from.length - 1; i >= 0; i--) {
+      if (from[i].id !== p.id) continue;
+      const s = from.splice(i, 1)[0];
+      to.push({id: p.id, edits: JSON.stringify(p.edits)});
+      p.edits = normalize({edits: JSON.parse(s.edits)}).edits;
+      p.changed = Date.now();
+      save();
+      emit({what: "edits", undo: true});
+      return true;
+    }
+    return false;
+  }
+
+  const undoStep = () => step(undo, redo);
+  const redoStep = () => step(redo, undo);
+  const canUndo = () => undo.some((s) => s.id === data.current);
+  const canRedo = () => redo.some((s) => s.id === data.current);
+
+  function switchTo(id) {
+    if (!data.profiles[id] || id === data.current) return;
+    data.current = id;
+    save();
+    emit({what: "switch"});
+  }
+
+  function addProfile(name, edits) {
+    const p = newProfile(name);
+    if (edits) p.edits = normalize({edits: JSON.parse(JSON.stringify(edits))}).edits;
+    data.profiles[p.id] = p;
+    data.order.push(p.id);
+    data.current = p.id;
+    save();
+    emit({what: "switch"});
+    return p;
+  }
+
+  function removeProfile(id) {
+    if (data.order.length < 2) return false;
+    delete data.profiles[id];
+    data.order = data.order.filter((x) => x !== id);
+    if (data.current === id) data.current = data.order[0];
+    save();
+    emit({what: "switch"});
+    return true;
+  }
+
+  function on(fn) { listeners.add(fn); return () => listeners.delete(fn); }
+  function emit(ev) { for (const fn of listeners) fn(ev); }
+
+  /* IndexedDB: the game folder handles (File System Access) and the history snapshots. */
+  let dbp = null;
+  function db() {
+    if (!dbp) {
+      dbp = new Promise((resolve, reject) => {
+        if (!("indexedDB" in window)) { reject(new Error("no IndexedDB")); return; }
+        const req = indexedDB.open(KEY, 1);
+        req.onupgradeneeded = () => {
+          const d = req.result;
+          if (!d.objectStoreNames.contains("kv")) d.createObjectStore("kv");
+        };
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+      });
+    }
+    return dbp;
+  }
+
+  async function kvGet(key) {
+    try {
+      const d = await db();
+      return await new Promise((resolve, reject) => {
+        const r = d.transaction("kv").objectStore("kv").get(key);
+        r.onsuccess = () => resolve(r.result);
+        r.onerror = () => reject(r.error);
+      });
+    } catch (e) {
+      return undefined;
+    }
+  }
+
+  async function kvSet(key, value) {
+    try {
+      const d = await db();
+      await new Promise((resolve, reject) => {
+        const t = d.transaction("kv", "readwrite");
+        if (value === undefined) t.objectStore("kv").delete(key);
+        else t.objectStore("kv").put(value, key);
+        t.oncomplete = () => resolve();
+        t.onerror = () => reject(t.error);
+      });
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /* A snapshot of a profile's edits in its history (the last HISTORY_MAX saves), newest first. */
+  async function remember(p, why) {
+    const key = "history:" + p.id;
+    const list = (await kvGet(key)) || [];
+    const edits = JSON.stringify(p.edits);
+    if (list.length && list[0].edits === edits) return;
+    list.unshift({at: Date.now(), why: why || "", edits});
+    await kvSet(key, list.slice(0, HISTORY_MAX));
+  }
+
+  async function history(p) { return (await kvGet("history:" + p.id)) || []; }
+
+  return {load, save, current, profiles, change, changeProfile, undoStep, redoStep, canUndo, canRedo, switchTo,
+          addProfile, removeProfile, on, normalize, newEdits, storageOk, kvGet, kvSet, remember, history, SCHEMA};
+})();
+
+/* ---- tools/editor/app.js ---- */
+/* The Filter Editor's frame: loads the filter's source, keeps the player's profile, draws the bar, the sidebar of
+   areas (each area is a module that registers itself in EZ.areas), the chosen area and the preview column, and builds,
+   saves and downloads the player's filter. */
+var EZ = typeof EZ !== "undefined" ? EZ : {};
+EZ.areas = EZ.areas || [];
+EZ.app = (function () {
+  "use strict";
+  const {h, fill, toast, dialog, menu} = EZ.ui;
+  const SOURCE_FILE = "Erazure-Filter-Editor-Source.js";
+  const STYLES = {erazure: null, minimal: "minimal.filter", corrlorized: "corrlorized.edits"};
+  const STYLE_NAMES = {erazure: "Erazure", minimal: "Minimal", corrlorized: "Corrlorized"};
+
+  const app = {src: null, data: null, root: null, area: "start", sub: "", els: {}, building: null};
+
+  /* ---------------------------------------------------------------- the source */
+
+  function sourceUrl(scriptSrc, v) {
+    const q = v && !v.startsWith("__") ? "?v=" + v : "";
+    if (scriptSrc) {
+      try { return new URL("../../" + SOURCE_FILE + q, scriptSrc).href; } catch (e) { /* the file's own name */ }
+    }
+    return SOURCE_FILE + q;
+  }
+
+  function loadSource(url) {
+    return new Promise((resolve, reject) => {
+      if (window.ERAZURE_EDITOR_SOURCE) { resolve(window.ERAZURE_EDITOR_SOURCE); return; }
+      const s = document.createElement("script");
+      s.src = url;
+      s.onload = () => window.ERAZURE_EDITOR_SOURCE ? resolve(window.ERAZURE_EDITOR_SOURCE)
+                                                     : reject(new Error("the filter's data file is empty"));
+      s.onerror = () => reject(new Error("the filter's data file didn't load"));
+      document.head.appendChild(s);
+    });
+  }
+
+  /* ---------------------------------------------------------------- versions */
+
+  function toggleName(base) {
+    const parts = [];
+    if (base.revealed) parts.push("Revealed");
+    if (base.bigGG) parts.push("BIG GG");
+    if (base.poe || base.style === "corrlorized") parts.push("PoE");
+    if (!base.revealed && !base.bigGG) parts.unshift("Main");
+    return "Erazure - " + parts.join(" - ");
+  }
+
+  /* The launcher version the player's base is: one of the source's variants. */
+  function variantFor(base) {
+    const toggle = toggleName(base), style = STYLES[base.style];
+    return app.src.variants.find((v) => v.toggle === toggle && (v.style || null) === style) || null;
+  }
+
+  function variant() { return variantFor(EZ.store.current().edits.base); }
+
+  /* What the player's edits change beyond their version: {count, warn, byArea} (each edit module counts its own). */
+  function changes() {
+    const out = {count: 0, warn: 0, byArea: {}};
+    const e = EZ.store.current().edits;
+    for (const a of EZ.areas) {
+      const n = a.count ? a.count(e, app) : 0, w = a.warn ? a.warn(e, app) : 0;
+      out.byArea[a.id] = {n, w};
+      out.count += n;
+      out.warn += w;
+    }
+    return out;
+  }
+
+  /* ---------------------------------------------------------------- building and saving */
+
+  /* The player's filter: {bytes, lines, name, variant, crc, report}. EZ.edits applies the edits when that module is
+     there; with none the file is the launcher's. */
+  function build() {
+    const p = EZ.store.current(), v = variant();
+    let lines = EZ.core.variantLines(app.src, v), report = null;
+    if (EZ.edits && EZ.edits.apply) {
+      const r = EZ.edits.apply(app.src, p, lines, app);
+      lines = r.lines;
+      report = r.report;
+    }
+    lines = EZ.core.written(app.src, lines);
+    const bytes = EZ.core.encode(lines);
+    return {bytes, lines, name: fileName(p), variant: v, crc: EZ.core.crc32(bytes), report};
+  }
+
+  function fileName(p) {
+    const base = (p.file || "Erazure-Custom").replace(/\.filter$/i, "").replace(/[\\/:*?"<>|]+/g, "-").trim();
+    return (base || "Erazure-Custom") + ".filter";
+  }
+
+  /* Build in the next frame (the page shows that it's working), then hand the file to fn. */
+  function withBuild(what, fn) {
+    if (app.building) return;
+    const done = toast(h("span", h("span.fe-spin"), " " + what + "…"), null, {sticky: true});
+    app.building = true;
+    setTimeout(async () => {
+      try {
+        await fn(build());
+      } catch (e) {
+        if (e && e.name === "AbortError") return;
+        toast("Couldn't build your filter: " + (e && e.message || e), "bad", {sticky: true});
+        if (window.console) console.error(e);
+      } finally {
+        app.building = false;
+        done();
+      }
+    }, 30);
+  }
+
+  function download(built) {
+    const url = URL.createObjectURL(new Blob([built.bytes], {type: "application/octet-stream"}));
+    const a = h("a", {href: url, download: built.name});
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 30000);
+    saved(built, "download");
+  }
+
+  function saved(built, how, folder) {
+    EZ.store.changeProfile((p) => {
+      p.saved = {version: app.src.version, build: app.src.build, at: Date.now(), crc: built.crc, how, folder: folder || "",
+                 file: built.name};
+    });
+    EZ.store.remember(EZ.store.current(), how === "download" ? "downloaded" : "saved to the game");
+    if (how === "download") {
+      toast(h("span", "Downloaded ", h("b", built.name), ". Put it in Diablo II\\ProjectD2\\filters\\local and pick it " +
+              "in the launcher (Local Filter, then Save Filter)."), "good", {ms: 9000});
+    } else {
+      toast(h("span", "Saved ", h("b", built.name), " in ", h("b", folder), ". In game, press Numpad 0 to reload it."),
+            "good", {ms: 7000});
+    }
+    redraw();
+  }
+
+  const canSaveInPlace = () => window.isSecureContext && "showDirectoryPicker" in window;
+
+  async function folderHandle(ask) {
+    let dir = await EZ.store.kvGet("dir");
+    if (dir && dir.queryPermission) {
+      let state = await dir.queryPermission({mode: "readwrite"});
+      if (state === "prompt") state = await dir.requestPermission({mode: "readwrite"});
+      if (state === "granted") return dir;
+    }
+    if (!ask) return null;
+    dir = await window.showDirectoryPicker({id: "pd2-filters-local", mode: "readwrite"});
+    await EZ.store.kvSet("dir", dir);
+    return dir;
+  }
+
+  async function writeInPlace(built, dir) {
+    let old = null;
+    try {
+      const f = await (await dir.getFileHandle(built.name)).getFile();
+      old = await f.arrayBuffer();
+    } catch (e) { /* no file yet */ }
+    if (old && old.byteLength) {
+      const bak = await dir.getFileHandle(built.name + ".bak", {create: true});
+      const w = await bak.createWritable();
+      await w.write(old);
+      await w.close();
+    }
+    const fh = await dir.getFileHandle(built.name, {create: true});
+    const w = await fh.createWritable();
+    await w.write(built.bytes);
+    await w.close();
+  }
+
+  function saveToGame() {
+    if (!canSaveInPlace()) { withBuild("Building your filter", download); return; }
+    withBuild("Saving your filter", async (built) => {
+      let dir = await folderHandle(false);
+      if (!dir) {
+        const ok = await new Promise((resolve) => dialog({
+          title: "Save straight into your game",
+          body: [
+            h("p", "Pick the folder ", h("code", "Diablo II\\ProjectD2\\filters\\local"), ". The editor saves ",
+              h("b", built.name), " there, keeps the one it replaces as ", h("code", built.name + ".bak"),
+              " and remembers the folder for next time."),
+            h("ol.fe-steps",
+              h("li", "Pick the ", h("b", "local"), " folder (inside ProjectD2\\filters)."),
+              h("li", "Once: in the launcher open Item Filter Profiles, click ", h("b", "Local Filter"), ", pick ",
+                h("b", built.name), " and click ", h("b", "Save Filter"), "."),
+              h("li", "After every save here, press ", h("kbd", "Numpad 0"), " in game: the filter reloads.")),
+          ],
+          buttons: [{text: "Download instead", onclick: () => resolve("download")},
+                    {text: "Pick the folder", primary: true, onclick: () => resolve("pick")}],
+          onclose: () => resolve(null),
+        }));
+        if (ok === "download") { download(built); return; }
+        if (ok !== "pick") return;
+        dir = await folderHandle(true);
+      }
+      if (dir.name !== "local" && !(await new Promise((resolve) => dialog({
+        title: "Is this the right folder?",
+        body: [h("p", "The folder you picked is ", h("b", dir.name), ". The launcher's local filters live in ",
+                 h("code", "Diablo II\\ProjectD2\\filters\\local"), ". Save here anyway?")],
+        buttons: [{text: "Pick another", onclick: async () => { await EZ.store.kvSet("dir", undefined); resolve(false); }},
+                  {text: "Save here", primary: true, onclick: () => resolve(true)}],
+        onclose: () => resolve(false),
+      })))) return;
+      await writeInPlace(built, dir);
+      saved(built, "folder", dir.name);
+    });
+  }
+
+  async function forgetFolder() {
+    await EZ.store.kvSet("dir", undefined);
+    toast("The editor forgot the game folder; the next save asks for it again.");
+  }
+
+  /* ---------------------------------------------------------------- the frame */
+
+  function go(area, sub, opts) {
+    if (!EZ.areas.some((a) => a.id === area)) area = "start";
+    app.area = area;
+    app.sub = sub || "";
+    const hash = "#" + area + (app.sub ? "/" + app.sub : "");
+    if (location.hash !== hash) {
+      try { history[opts && opts.replace ? "replaceState" : "pushState"](null, "", hash); } catch (e) { /* file: */ }
+    }
+    app.els.root.classList.remove("nav-open");
+    drawArea();
+    drawSide();
+    if (!(opts && opts.keepScroll)) {
+      const top = app.els.root.getBoundingClientRect().top + window.scrollY - topOffset();
+      if (window.scrollY > top) window.scrollTo({top});
+    }
+  }
+
+  function topOffset() {
+    const v = getComputedStyle(app.els.root).getPropertyValue("--top").trim();
+    if (v.endsWith("rem")) return parseFloat(v) * parseFloat(getComputedStyle(document.documentElement).fontSize);
+    return parseFloat(v) || 0;
+  }
+
+  function fromHash() {
+    const m = /^#([a-z-]+)(?:\/(.*))?$/.exec(location.hash || "");
+    if (m && EZ.areas.some((a) => a.id === m[1])) {
+      app.area = m[1];
+      app.sub = m[2] ? decodeURIComponent(m[2]) : "";
+    }
+  }
+
+  function drawBar() {
+    const p = EZ.store.current(), v = variant(), ch = changes();
+    const bar = app.els.bar;
+    const stale = p.saved && p.saved.version !== app.src.version;
+    const saveBtn = h("button.fe-btn.primary", {type: "button", onclick: saveToGame,
+      title: canSaveInPlace() ? "Save your filter into the game's filters\\local folder" : "Download your filter"},
+      canSaveInPlace() ? "Save to game" : "Download");
+    const more = h("button.fe-btn", {type: "button", "aria-label": "More ways to save", "aria-haspopup": "menu"}, "▾");
+    more.addEventListener("click", () => menu(more, [
+      {text: "Download the file", sub: "to put in filters\\local yourself", onclick: () => withBuild("Building your filter", download)},
+      canSaveInPlace() ? {text: "Forget the game folder", sub: "the next save asks for it again", onclick: forgetFolder} : null,
+      ...(EZ.app.saveMenu || []).map((f) => f(app)),
+    ]));
+    fill(bar,
+      h("button.fe-btn.ghost.fe-only-phone", {type: "button", "aria-label": "Areas", onclick: () => {
+        app.els.root.classList.toggle("nav-open");
+      }}, "☰"),
+      h("div.fe-title", h("b", p.name)),
+      h("button.fe-chip", {type: "button", title: "Your version: change it on Start", onclick: () => go("start")},
+        v ? v.launcher : "?"),
+      h("span.fe-chip" + (ch.count ? ".good" : ""), {title: "Your changes to Erazure"},
+        ch.count ? EZ.ui.plural(ch.count, "change") : "No changes"),
+      ch.warn ? h("button.fe-chip.warn", {type: "button", title: "Changes that need a look",
+        onclick: () => go("changes")}, "⚠ " + ch.warn) : null,
+      h("span.fe-chip" + (stale ? ".warn" : ""), {title: stale ? "Erazure has changed since you last saved: save " +
+        "again to get the new version with your changes" : "The Erazure version this page builds"},
+        stale ? "Update: " + app.src.version : app.src.version),
+      app.els.search || null,
+      h("span.fe-bar-gap"),
+      h("button.fe-btn.ghost", {type: "button", onclick: () => EZ.store.undoStep(), disabled: !EZ.store.canUndo(),
+        title: "Undo (Ctrl+Z)"}, "↶"),
+      h("button.fe-btn.ghost", {type: "button", onclick: () => EZ.store.redoStep(), disabled: !EZ.store.canRedo(),
+        title: "Redo (Ctrl+Y)"}, "↷"),
+      h("button.fe-btn.fe-only-narrow", {type: "button", onclick: togglePreview, "aria-expanded":
+        String(app.els.root.classList.contains("pv-open"))}, "Preview"),
+      h("span.fe-row", {style: {gap: "0"}}, saveBtn, more));
+  }
+
+  function drawSide() {
+    const ch = changes();
+    const list = h("ul.fe-nav");
+    let group = null;
+    for (const a of EZ.areas) {
+      if (group !== null && a.group !== group) list.appendChild(h("li.fe-nav-sep", {"aria-hidden": "true"}));
+      group = a.group;
+      const c = ch.byArea[a.id] || {n: 0, w: 0};
+      list.appendChild(h("li", h("button", {type: "button", "aria-current": a.id === app.area ? "page" : null,
+        title: a.title, onclick: () => go(a.id)},
+        h("span.ic", {"aria-hidden": "true"}, a.icon), h("span.lbl", a.title),
+        c.w ? h("span.n.warn", {title: `${c.w} need a look`}, "⚠" + c.w) : c.n ? h("span.n", String(c.n)) : null)));
+    }
+    fill(app.els.side, h("nav", {"aria-label": "Editor areas"}, list));
+  }
+
+  function drawArea() {
+    const a = EZ.areas.find((x) => x.id === app.area) || EZ.areas[0];
+    const box = app.els.area;
+    fill(box);
+    try {
+      a.render(box, app);
+    } catch (e) {
+      fill(box, h("p.fe-note.bad", "This area failed to draw: " + (e && e.message || e)));
+      if (window.console) console.error(e);
+    }
+  }
+
+  function drawPreview() {
+    const box = app.els.preview;
+    if (EZ.preview && EZ.preview.render) {
+      EZ.preview.render(box, app);
+    } else {
+      fill(box, h("div.fe-pv-head", h("h3", "Preview")),
+        h("div.fe-pv-body", h("p.fe-sub", "The preview comes in a later step of the editor's build.")));
+    }
+  }
+
+  function togglePreview() {
+    app.els.root.classList.toggle("pv-open");
+    drawBar();
+  }
+
+  function redraw() {
+    drawBar();
+    drawSide();
+    drawArea();
+  }
+
+  function frame(root) {
+    const bar = h("header.fe-bar");
+    const side = h("aside.fe-side");
+    const area = h("main.fe-area", {tabindex: "-1"});
+    const preview = h("aside.fe-preview", {"aria-label": "Preview"});
+    const grip = h("div.fe-grip", {title: "Drag to make the preview wider or narrower", "aria-hidden": "true"});
+    fill(root, bar, side, area, preview);
+    preview.appendChild(grip);
+    const inner = h("div.fe-preview-inner");
+    preview.appendChild(inner);
+    Object.assign(app.els, {root, bar, side, area, preview: inner, grip});
+    grip.addEventListener("pointerdown", (e) => {
+      e.preventDefault();
+      const x0 = e.clientX, w0 = preview.getBoundingClientRect().width;
+      const move = (ev) => {
+        const w = Math.max(340, Math.min(window.innerWidth * 0.6, w0 + (x0 - ev.clientX)));
+        root.style.setProperty("--pw", Math.round(w) + "px");
+      };
+      const up = () => {
+        window.removeEventListener("pointermove", move);
+        window.removeEventListener("pointerup", up);
+        try { localStorage.setItem("erazure-filter-editor-pw", root.style.getPropertyValue("--pw")); } catch (er) { /**/ }
+      };
+      window.addEventListener("pointermove", move);
+      window.addEventListener("pointerup", up);
+    });
+    try {
+      const pw = localStorage.getItem("erazure-filter-editor-pw");
+      if (pw) root.style.setProperty("--pw", pw);
+    } catch (e) { /* the default width */ }
+  }
+
+  function keys(e) {
+    if (e.defaultPrevented) return;
+    const t = e.target, typing = t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable);
+    if ((e.ctrlKey || e.metaKey) && !e.altKey && !typing) {
+      const k = e.key.toLowerCase();
+      if (k === "z" && !e.shiftKey) { if (EZ.store.undoStep()) e.preventDefault(); }
+      else if (k === "y" || (k === "z" && e.shiftKey)) { if (EZ.store.redoStep()) e.preventDefault(); }
+    }
+  }
+
+  /* ---------------------------------------------------------------- start */
+
+  async function start(root, data, scriptSrc, sourceV) {
+    app.data = data || {};
+    EZ.ui.setHost(root.parentElement || root);
+    EZ.store.load();
+    EZ.areas.sort((a, b) => a.order - b.order);
+    try {
+      app.src = await loadSource(sourceUrl(scriptSrc, sourceV));
+    } catch (e) {
+      fill(root, h("div.fe-loading", h("p", "The editor couldn't load Erazure's filter: " + e.message + "."),
+        h("p", "Reload the page to try again.")));
+      return;
+    }
+    if (EZ.edits && EZ.edits.init) EZ.edits.init(app.src, app);
+    frame(root);
+    fromHash();
+    redraw();
+    drawPreview();
+    window.addEventListener("popstate", () => { fromHash(); drawArea(); drawSide(); });
+    document.addEventListener("keydown", keys);
+    EZ.store.on((ev) => {
+      if (ev.what === "switch" || ev.undo) redraw();
+      else { drawBar(); drawSide(); if (!ev.quiet) drawArea(); }
+      if (EZ.preview && EZ.preview.changed) EZ.preview.changed(ev, app);
+    });
+  }
+
+  Object.assign(app, {start, go, redraw, drawBar, drawSide, drawArea, drawPreview, variant, variantFor, toggleName,
+                      changes, build, withBuild, download, saveToGame, canSaveInPlace, forgetFolder, fileName,
+                      STYLE_NAMES, saveMenu: []});
+  return app;
+})();
+
+/* ---- tools/editor/area-start.js ---- */
+/* Start: the player's version (style and switches), the file name, saving it into the game, and what to do in the
+   launcher and in game. */
+var EZ = typeof EZ !== "undefined" ? EZ : {};
+EZ.areas = EZ.areas || [];
+EZ.areas.push({
+  id: "start", title: "Start", icon: "⌂", order: 10, group: "a",
+  render(box, app) {
+    const {h, option, toggle, ago} = EZ.ui;
+    const p = EZ.store.current(), base = p.edits.base, v = app.variant();
+    const set = (fn) => EZ.store.change((e) => fn(e.base), {label: "version"});
+
+    const styles = [
+      ["erazure", "Erazure", "Erazure's full look: colorful, intuitive symbols for runes, gems, maps, charms and more."],
+      ["minimal", "Minimal", "The same filter with a minimal style: fewer, simpler symbols around the names of items."],
+      ["corrlorized", "Corrlorized", "Corr's restyle of Erazure: his own colors, symbols and Path of Exile sound picks."],
+    ];
+    const corr = base.style === "corrlorized";
+
+    const version = h("section.fe-card",
+      h("h3", "Your version"),
+      h("p.fe-sub", "Every version shows and hides the same items at each filter level; they differ in looks, names " +
+        "and sounds. Your changes go on top of the version you pick, and you can switch at any time."),
+      h("div.fe-choice", styles.map(([id, name, text]) =>
+        option(name, text, base.style === id, () => set((b) => { b.style = id; })))),
+      h("div.fe-stack", {style: {marginTop: ".9rem"}},
+        toggle("Revealed names", base.revealed, (on) => set((b) => { b.revealed = on; }),
+          {sub: "Unidentified unique and set items show the names they identify to."}),
+        toggle("BIG GG mystery", base.bigGG, (on) => set((b) => { b.bigGG = on; }),
+          {sub: "High runes and super rare drops hide what they are on the ground (BIG GG or LIL GG) until you " +
+                "pick them up."}),
+        toggle("Path of Exile sounds", base.poe || corr, (on) => set((b) => { b.poe = on; }),
+          {disabled: corr, sub: corr ? "Corrlorized always has them." : "Path of Exile sound effects on valuable drops."})),
+      v ? h("p.fe-note", "This is the launcher's ", h("b", v.launcher), ". ", v.description || "") : null);
+
+    const s = p.saved;
+    const stale = s && s.version !== app.src.version;
+    const fileInput = h("input", {type: "text", value: p.file || "Erazure-Custom", "aria-label": "File name",
+      spellcheck: "false", style: {width: "16rem"}});
+    fileInput.addEventListener("change", () => {
+      const v2 = fileInput.value.replace(/\.filter$/i, "").trim() || "Erazure-Custom";
+      EZ.store.changeProfile((pp) => { pp.file = v2; }, {quiet: true});
+      fileInput.value = v2;
+    });
+    const save = h("section.fe-card",
+      h("h3", "Save it to your game"),
+      h("div.fe-row",
+        h("label.fe-field", h("span", "File name"), h("span.fe-row", {style: {gap: ".35rem"}}, fileInput,
+          h("span.fe-sub", ".filter")))),
+      h("div.fe-row", {style: {marginTop: ".8rem"}},
+        h("button.fe-btn.primary", {type: "button", onclick: () => app.saveToGame()},
+          app.canSaveInPlace() ? "Save to game" : "Download"),
+        app.canSaveInPlace() ? h("button.fe-btn", {type: "button", onclick: () =>
+          app.withBuild("Building your filter", app.download)}, "Download") : null),
+      s ? h("p.fe-sub", {style: {marginTop: ".6rem"}},
+        `Last ${s.how === "folder" ? "saved to the game" : "downloaded"} ${ago(s.at)}: ${s.file || ""}, Erazure ${s.version}.`)
+        : null,
+      stale ? h("p.fe-note.warn", "Erazure has changed since then (now ", h("b", app.src.version), "). Save again to " +
+        "get the new version with your changes: a local filter never updates by itself.") : null,
+      h("h4", {style: {marginTop: "1rem"}}, "In the launcher and in game"),
+      h("ol.fe-steps",
+        h("li", app.canSaveInPlace()
+          ? ["Save to game, and pick the folder ", h("code", "Diablo II\\ProjectD2\\filters\\local"), " the first time."]
+          : ["Download, and put the file in ", h("code", "Diablo II\\ProjectD2\\filters\\local"), "."]),
+        h("li", "Once: in the launcher open ", h("b", "Item Filter Profiles"), ", click ", h("b", "Local Filter"),
+          ", pick your file and click ", h("b", "Save Filter"), "."),
+        h("li", "In game: Options, Loot Filter, turn on ", h("b", "Enable Loot Filter"), " and pick a filter level (",
+          h("kbd", "Ctrl"), "+", h("kbd", "Numpad 0"), "–", h("kbd", "9"), " jump to levels 0–9)."),
+        h("li", "After every save here, press ", h("kbd", "Numpad 0"), " in game to reload the filter.")));
+
+    box.append(
+      h("div.fe-area-head", h("div", h("h2", "Start"),
+        h("p.fe-sub", "Pick your version, change what you like, and save it straight into your game."))),
+      version, save);
+  },
+});
+
+/* ---- tools/editor/area-todo.js ---- */
+/* The areas still being built on the filter-editor branch: each draws a note until its module registers it.
+   Removed piece by piece as the areas arrive; the branch is merged only when this file is gone. */
+var EZ = typeof EZ !== "undefined" ? EZ : {};
+EZ.areas = EZ.areas || [];
+(function () {
+  "use strict";
+  const TODO = [
+    ["options", "Options", "⚙", 20, "b", "Erazure's own options, features to switch off, category controls, filter levels."],
+    ["items", "Items", "◈", 30, "b", "Show, hide, mute or restyle single items; your hunt list; unique and set tiers."],
+    ["looks", "Looks", "✎", 40, "b", "Erazure's symbols and colors, styles, colorblind presets, minimap icons."],
+    ["alerts", "Alerts", "♪", 50, "b", "Drop sounds, chat lines and minimap icons: how loud each kind of drop is."],
+    ["wishlists", "Wishlists", "★", 60, "b", "Rares, shop items, runeword and crafting bases, charms and jewels you want."],
+    ["maps", "Maps", "⌖", 70, "b", "Map lines, mod warnings and hides, minimum experience."],
+    ["rules", "My rules", "⊕", 80, "c", "Your own rules: the rule builder and the code editor."],
+    ["erazure", "Erazure's rules", "≡", 90, "c", "Every rule of Erazure: browse, switch off or change them."],
+    ["changes", "Changes", "⇄", 100, "d", "What your changes do, item by item; every item; compare; troubleshooting."],
+    ["help", "Help", "?", 110, "d", "How the editor works, updates, and answers to common questions."],
+  ];
+  for (const [id, title, icon, order, group, what] of TODO) {
+    if (EZ.areas.some((a) => a.id === id)) continue;
+    EZ.areas.push({id, title, icon, order, group, render(box) {
+      const {h} = EZ.ui;
+      box.append(h("div.fe-area-head", h("h2", title)), h("div.fe-empty", h("p", what),
+        h("p.fe-sub", "This part of the editor is still being built.")));
+    }});
+  }
+})();
+
+  EZ.app.start(document.querySelector("[data-fe-root]"), DATA, SCRIPT_SRC, SOURCE_V);
+})();
+</script>
+</body>
+</html>

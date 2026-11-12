@@ -1,5 +1,11 @@
 # Loot Filter Customization and Edits
 
+The easiest way: the [Filter Editor](editor.md) makes your own copy of Erazure in your browser (looks, sounds,
+items, your own rules) and saves it straight into your game. Your changes carry over to every Erazure update:
+open the editor and save again.
+
+To edit a copy of the filter by hand instead:
+
 I recommend using either [VS Code](https://code.visualstudio.com/download) or
 [Notepad++](https://notepad-plus-plus.org/downloads/) for editing a customized version of the filter.
 

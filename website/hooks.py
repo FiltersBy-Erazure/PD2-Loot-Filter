@@ -10,6 +10,10 @@ Each is a repo-root HTML file that a tool writes (build.bat runs them):
 - Erazure-Skill-Shop-Highlights.html (tools/shop_map.py), shown on the Skill & Shop Highlights page (docs/shop.md)
 - Erazure-Grail-Planner.html (tools/grail_map.py, from the game's tables: not run by build.bat), shown on the Grail
   Planner page (docs/grail.md)
+- Erazure-Filter-Editor.html (tools/editor_map.py), shown on the Filter Editor page (docs/editor.md); it loads the
+  filter from Erazure-Filter-Editor-Source.js (tools/build.py writes it with the filters) and its game art from
+  Erazure-Filter-Editor-Assets/ (tools/editor_map.py --assets), both copied beside it; the source's name in its script
+  gets the source's CRC (SOURCE_V), so a browser never keeps an old copy of the filter after a push
 The Resources tab's pages are written by hand, in website/resources/ (each with its data and script inside):
 - Infinity-Merc-Bases.html, shown on the Infinity Merc Bases page (docs/resources/infinity-merc-bases.md)
 - Map-Experience.html, shown on the Map Experience page (docs/resources/map-experience.md); its numbers are written by
@@ -23,6 +27,7 @@ markup between the map's markers (<!-- tier-map:start --> ...) and the script ou
 the page has its placeholder (<div id="tier-map-here"></div> ...), and adds the styles and the script (with the
 data) as two files of their own.
 """
+import zlib
 from pathlib import Path
 
 from mkdocs.exceptions import PluginError
@@ -38,6 +43,7 @@ MAPS = [  # (the page, from the repo root; the tool that writes it, or "by hand"
     ("Erazure-Minimal-Style.html", "tools/style_map.py", "minimal.md", "style-map"),
     ("Erazure-Skill-Shop-Highlights.html", "tools/shop_map.py", "shop.md", "shop-map"),
     ("Erazure-Grail-Planner.html", "tools/grail_map.py", "grail.md", "grail-map"),
+    ("Erazure-Filter-Editor.html", "tools/editor_map.py", "editor.md", "edit-map"),
     ("website/resources/Infinity-Merc-Bases.html", "by hand", "resources/infinity-merc-bases.md", "merc-map"),
     ("website/resources/Map-Experience.html", "by hand", "resources/map-experience.md", "mapexp-map"),
     ("website/resources/Event-Boss-Runs.html", "by hand", "resources/event-boss-runs.md", "evrun-map"),
@@ -45,8 +51,14 @@ MAPS = [  # (the page, from the repo root; the tool that writes it, or "by hand"
 FONTS = ('<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700'
          '&family=Source+Sans+3:wght@400;600;700&display=swap">')
 # Files a page loads beside it (from the repo root to the site's root, where its own copy is; its site page's script
-# finds them there): the Grail Planner's Compendium view pictures and letters (tools/grail_compendium.py)
-BESIDE = ["Erazure-Grail-Planner-Compendium.png", "Erazure-Grail-Planner-Glyphs.png"]
+# finds them there): the Grail Planner's Compendium view pictures and letters (tools/grail_compendium.py), the Filter
+# Editor's copy of the filter (tools/build.py)
+BESIDE = ["Erazure-Grail-Planner-Compendium.png", "Erazure-Grail-Planner-Glyphs.png", "Erazure-Filter-Editor-Source.js"]
+# Folders copied beside the pages the same way, file by file: the Filter Editor's game art (tools/editor_map.py
+# --assets; until it's written the editor draws with a web font and no pictures)
+BESIDE_FOLDERS = ["Erazure-Filter-Editor-Assets"]
+# The Filter Editor's script names its source with the source's CRC, so a new filter is a new address for browsers
+EDITOR_SOURCE, SOURCE_V = "Erazure-Filter-Editor-Source.js", "__SOURCE_V__"
 
 
 def parts(page, tool, name):
@@ -82,6 +94,11 @@ def on_files(files, config):
     for page, tool, _, name in MAPS:
         css, _, script = parts(page, tool, name)
         css_path, js_path = assets(name)
+        if SOURCE_V in script:
+            source = ROOT / EDITOR_SOURCE
+            if not source.exists():
+                raise PluginError(f"{EDITOR_SOURCE} is missing in the repo root: run python tools/build.py")
+            script = script.replace(SOURCE_V, f"{zlib.crc32(source.read_bytes()) & 0xffffffff:08x}")
         files.append(File.generated(config, own_copy(page), abs_src_path=str(ROOT / page)))
         files.append(File.generated(config, css_path, content=css))
         files.append(File.generated(config, js_path, content=script))
@@ -89,6 +106,11 @@ def on_files(files, config):
         if not (ROOT / name).exists():
             raise PluginError(f"{name} is missing in the repo root: run the tool that writes it")
         files.append(File.generated(config, name, abs_src_path=str(ROOT / name)))
+    for folder in BESIDE_FOLDERS:
+        for path in sorted((ROOT / folder).rglob("*")) if (ROOT / folder).is_dir() else []:
+            if path.is_file():
+                rel = path.relative_to(ROOT).as_posix()
+                files.append(File.generated(config, rel, abs_src_path=str(path)))
     return files
 
 

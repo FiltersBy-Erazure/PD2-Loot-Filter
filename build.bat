@@ -59,6 +59,10 @@ rem Skill & shop highlights page for players (Erazure-Skill-Shop-Highlights.html
 rem criteria and sample items drawn as in a shop)
 python tools\shop_map.py
 if errorlevel 1 goto failed
+rem Filter Editor page for players (Erazure-Filter-Editor.html: the editor's modules of tools\editor\; the
+rem filter it edits is Erazure-Filter-Editor-Source.js, which tools\build.py writes with the filters)
+python tools\editor_map.py
+if errorlevel 1 goto failed
 python tools\build.py --check
 if errorlevel 1 goto failed
 

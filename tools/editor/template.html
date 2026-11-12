@@ -1,0 +1,261 @@
+<title>Filter Editor</title>
+<!-- The Filter Editor: written by tools/editor_map.py from this template and the modules of tools/editor/ (the
+     generator puts them into the one script below). website/hooks.py takes the first <style> after the css marker,
+     the markup between the start and end markers and the first <script> after the end marker: keep them so. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Source+Sans+3:wght@400;600;700&display=swap">
+<!-- edit-map:css -->
+<style>
+.edit-map {
+  --top: 0px; --bar: 52px;
+  --bg: #151412; --panel: #1f1d1a; --panel2: #27241f; --panel3: #2f2b25; --line: #3b362e; --line2: #4c463b;
+  --fg: #ece7de; --muted: #a59d8e; --faint: #7d7668; --accent: #d8b45e; --accent2: #b8932f; --accent-fg: #1b160b;
+  --good: #7cc47f; --warn: #e3ae52; --bad: #e46f5c; --info: #8fb4e8; --focus: #f2d58c;
+  --chip: #2c2822; --chip-on: #4a3d1d; --shadow: 0 6px 22px rgba(0,0,0,.45);
+  --game: #0b0a09; --mono: ui-monospace, "Cascadia Mono", Consolas, "Liberation Mono", monospace;
+  color-scheme: dark; color: var(--fg); background: var(--bg);
+  font: 400 15px/1.45 "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  position: relative; text-align: left;
+}
+[data-md-color-scheme="default"] .edit-map {
+  --bg: #f3f1ec; --panel: #fffdf8; --panel2: #f7f3ea; --panel3: #efe9dc; --line: #ddd4c2; --line2: #cbbfa7;
+  --fg: #23211c; --muted: #685f50; --faint: #8f8676; --accent: #8a6d1f; --accent2: #6f5615; --accent-fg: #fffdf8;
+  --good: #2f7d34; --warn: #a86a08; --bad: #b8402e; --info: #2c5d9e; --focus: #8a6d1f;
+  --chip: #eee7d8; --chip-on: #f3e2b4; --shadow: 0 6px 22px rgba(60,45,10,.18);
+  color-scheme: light;
+}
+.md-content .edit-map { --top: 2.4rem; margin: 0 -.8rem; }
+.edit-map *, .edit-map *::before, .edit-map *::after { box-sizing: border-box; }
+.edit-map [hidden] { display: none !important; }
+.edit-map h2, .edit-map h3, .edit-map h4 { font-family: Cinzel, Georgia, serif; font-weight: 700; color: var(--accent);
+  letter-spacing: .01em; margin: 0 0 .5em; line-height: 1.25; }
+.edit-map h2 { font-size: 1.35em; }
+.edit-map h3 { font-size: 1.05em; }
+.edit-map h4 { font-size: .92em; color: var(--fg); }
+.edit-map p { margin: 0 0 .6em; }
+.edit-map a { color: var(--accent); }
+.edit-map ul, .edit-map ol { margin: .2em 0 .7em 1.3em; padding: 0; }
+.edit-map li { margin: .15em 0; }
+.edit-map code, .edit-map kbd { font-family: var(--mono); font-size: .86em; background: var(--panel3);
+  border: 1px solid var(--line); border-radius: 4px; padding: .05em .35em; color: var(--fg); }
+.edit-map kbd { border-bottom-width: 2px; }
+.edit-map table { border-collapse: collapse; width: 100%; display: table; margin: 0; background: none;
+  border: 0; font-size: inherit; }
+.edit-map th, .edit-map td { border: 0; border-bottom: 1px solid var(--line); padding: .35em .5em;
+  text-align: left; vertical-align: top; background: none; }
+.edit-map th { color: var(--muted); font-weight: 600; font-size: .85em; }
+.edit-map button { font: inherit; color: inherit; }
+.edit-map :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+/* ---------------------------------------------------------------- the frame: bar, sidebar, area, preview */
+.edit-map .fe-app { display: grid; grid-template-columns: 200px minmax(0, 1fr) var(--pw, 520px);
+  grid-template-rows: auto 1fr; grid-template-areas: "bar bar bar" "side area preview"; min-height: 70vh; }
+.edit-map .fe-bar { grid-area: bar; position: sticky; top: var(--top); z-index: 20; display: flex; flex-wrap: wrap;
+  align-items: center; gap: .5em .75em; padding: .55em .8em; background: var(--panel);
+  border-bottom: 1px solid var(--line); box-shadow: 0 2px 8px rgba(0,0,0,.25); min-height: var(--bar); }
+.edit-map .fe-side { grid-area: side; border-right: 1px solid var(--line); background: var(--panel);
+  position: sticky; top: calc(var(--top) + var(--bar)); align-self: start;
+  max-height: calc(100vh - var(--top) - var(--bar)); overflow: auto; padding: .5em 0; }
+.edit-map .fe-area { grid-area: area; min-width: 0; padding: 1em 1.25em 3em; }
+.edit-map .fe-preview { grid-area: preview; border-left: 1px solid var(--line); background: var(--panel);
+  position: sticky; top: calc(var(--top) + var(--bar)); align-self: start;
+  height: calc(100vh - var(--top) - var(--bar)); overflow: auto; }
+.edit-map .fe-grip { position: absolute; left: -4px; top: 0; bottom: 0; width: 8px; cursor: col-resize; z-index: 3; }
+.edit-map .fe-preview { position: sticky; }
+.edit-map .fe-preview-inner { position: relative; min-height: 100%; }
+
+/* the bar */
+.edit-map .fe-title { display: flex; align-items: baseline; gap: .55em; min-width: 0; }
+.edit-map .fe-title b { font-family: Cinzel, Georgia, serif; color: var(--accent); font-size: 1.02em; white-space: nowrap; }
+.edit-map .fe-chip { display: inline-flex; align-items: center; gap: .35em; border: 1px solid var(--line2);
+  background: var(--chip); border-radius: 999px; padding: .12em .6em; font-size: .82em; white-space: nowrap;
+  color: var(--fg); cursor: default; }
+.edit-map button.fe-chip { cursor: pointer; }
+.edit-map button.fe-chip:hover { border-color: var(--accent); }
+.edit-map .fe-chip.warn { border-color: var(--warn); color: var(--warn); }
+.edit-map .fe-chip.good { border-color: var(--good); color: var(--good); }
+.edit-map .fe-search { flex: 1 1 220px; min-width: 160px; max-width: 460px; position: relative; }
+.edit-map .fe-search input { width: 100%; }
+.edit-map .fe-bar-gap { flex: 1 1 0; }
+.edit-map .fe-bar .fe-btn { white-space: nowrap; }
+
+/* sidebar */
+.edit-map .fe-nav { list-style: none; margin: 0; padding: 0; }
+.edit-map .fe-nav li { margin: 0; }
+.edit-map .fe-nav button { display: flex; width: 100%; align-items: center; gap: .55em; padding: .48em .9em;
+  border: 0; background: none; cursor: pointer; text-align: left; color: var(--fg); border-left: 3px solid transparent; }
+.edit-map .fe-nav button:hover { background: var(--panel2); }
+.edit-map .fe-nav button[aria-current="page"] { background: var(--panel2); border-left-color: var(--accent);
+  color: var(--accent); font-weight: 600; }
+.edit-map .fe-nav .ic { width: 1.25em; text-align: center; opacity: .85; flex: none; }
+.edit-map .fe-nav .lbl { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.edit-map .fe-nav .n { font-size: .74em; background: var(--chip-on); color: var(--fg); border-radius: 999px;
+  padding: 0 .45em; min-width: 1.3em; text-align: center; }
+.edit-map .fe-nav .n.warn { background: var(--warn); color: var(--accent-fg); }
+.edit-map .fe-nav-sep { border-top: 1px solid var(--line); margin: .4em .9em; }
+
+/* controls */
+.edit-map .fe-btn { display: inline-flex; align-items: center; justify-content: center; gap: .4em;
+  border: 1px solid var(--line2); background: var(--panel2); color: var(--fg); border-radius: 7px;
+  padding: .38em .8em; cursor: pointer; font-weight: 600; font-size: .9em; line-height: 1.2; text-decoration: none; }
+.edit-map .fe-btn:hover { border-color: var(--accent); }
+.edit-map .fe-btn:disabled { opacity: .45; cursor: not-allowed; border-color: var(--line2); }
+.edit-map .fe-btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-fg); }
+.edit-map .fe-btn.primary:hover { background: var(--accent2); border-color: var(--accent2); }
+.edit-map .fe-btn.ghost { background: none; border-color: transparent; }
+.edit-map .fe-btn.ghost:hover { border-color: var(--line2); }
+.edit-map .fe-btn.small { padding: .2em .5em; font-size: .82em; border-radius: 6px; }
+.edit-map .fe-btn.danger { color: var(--bad); }
+.edit-map input[type=text], .edit-map input[type=search], .edit-map input[type=number], .edit-map select,
+.edit-map textarea { font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--line2);
+  border-radius: 7px; padding: .38em .6em; min-width: 0; }
+.edit-map input:focus, .edit-map select:focus, .edit-map textarea:focus { border-color: var(--accent); outline: none; }
+.edit-map textarea { font-family: var(--mono); font-size: .86em; line-height: 1.45; resize: vertical; width: 100%; }
+.edit-map label.fe-field { display: flex; flex-direction: column; gap: .25em; font-size: .88em; color: var(--muted); }
+.edit-map label.fe-field > span { font-weight: 600; }
+.edit-map .fe-seg { display: inline-flex; border: 1px solid var(--line2); border-radius: 8px; overflow: hidden;
+  background: var(--panel2); flex-wrap: wrap; }
+.edit-map .fe-seg button { border: 0; background: none; padding: .38em .8em; cursor: pointer; color: var(--fg);
+  border-right: 1px solid var(--line2); font-size: .9em; }
+.edit-map .fe-seg button:last-child { border-right: 0; }
+.edit-map .fe-seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-fg); font-weight: 600; }
+.edit-map .fe-switch { display: inline-flex; align-items: center; gap: .55em; cursor: pointer; user-select: none; }
+.edit-map .fe-switch input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.edit-map .fe-switch .track { width: 2.3em; height: 1.3em; border-radius: 999px; background: var(--line2);
+  position: relative; transition: background .15s; flex: none; }
+.edit-map .fe-switch .track::after { content: ""; position: absolute; left: 3px; top: 3px; width: calc(1.3em - 6px);
+  height: calc(1.3em - 6px); border-radius: 50%; background: var(--fg); transition: transform .15s; }
+.edit-map .fe-switch input:checked + .track { background: var(--accent); }
+.edit-map .fe-switch input:checked + .track::after { transform: translateX(1em); background: var(--accent-fg); }
+.edit-map .fe-switch input:focus-visible + .track { outline: 2px solid var(--focus); outline-offset: 2px; }
+.edit-map .fe-switch input:disabled + .track { opacity: .5; }
+
+/* cards and layout helpers */
+.edit-map .fe-card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 1em 1.1em;
+  margin: 0 0 1em; }
+.edit-map .fe-card.flat { background: none; }
+.edit-map .fe-card > h3:first-child { margin-bottom: .35em; }
+.edit-map .fe-sub { color: var(--muted); font-size: .9em; }
+.edit-map .fe-row { display: flex; flex-wrap: wrap; gap: .6em; align-items: center; }
+.edit-map .fe-grid { display: grid; gap: .8em; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+.edit-map .fe-stack > * + * { margin-top: .6em; }
+.edit-map .fe-crumb { color: var(--muted); font-size: .85em; margin-bottom: .2em; }
+.edit-map .fe-area-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between;
+  gap: .5em 1em; margin-bottom: 1em; }
+.edit-map .fe-area-head h2 { margin: 0; font-size: 1.5em; }
+.edit-map .fe-pill { display: inline-block; border-radius: 999px; padding: .02em .5em; font-size: .76em;
+  font-weight: 600; border: 1px solid var(--line2); color: var(--muted); white-space: nowrap; }
+.edit-map .fe-pill.good { color: var(--good); border-color: var(--good); }
+.edit-map .fe-pill.warn { color: var(--warn); border-color: var(--warn); }
+.edit-map .fe-pill.bad { color: var(--bad); border-color: var(--bad); }
+.edit-map .fe-pill.accent { color: var(--accent); border-color: var(--accent); }
+.edit-map .fe-note { border-left: 3px solid var(--accent); background: var(--panel2); padding: .55em .8em;
+  border-radius: 0 8px 8px 0; margin: .6em 0; font-size: .92em; }
+.edit-map .fe-note.warn { border-left-color: var(--warn); }
+.edit-map .fe-note.bad { border-left-color: var(--bad); }
+.edit-map .fe-empty { text-align: center; color: var(--muted); padding: 2em 1em; border: 1px dashed var(--line2);
+  border-radius: 10px; }
+.edit-map .fe-choice { display: grid; gap: .7em; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); }
+.edit-map .fe-option { text-align: left; border: 1px solid var(--line2); background: var(--panel2); border-radius: 10px;
+  padding: .7em .8em; cursor: pointer; color: var(--fg); display: flex; flex-direction: column; gap: .3em; }
+.edit-map .fe-option:hover { border-color: var(--accent); }
+.edit-map .fe-option[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent);
+  background: var(--chip-on); }
+.edit-map .fe-option b { font-family: Cinzel, Georgia, serif; color: var(--accent); }
+.edit-map .fe-option small { color: var(--muted); font-size: .84em; line-height: 1.35; }
+.edit-map .fe-steps { counter-reset: st; list-style: none; margin: .3em 0; padding: 0; }
+.edit-map .fe-steps li { counter-increment: st; position: relative; padding: .25em 0 .25em 2.1em; margin: .2em 0; }
+.edit-map .fe-steps li::before { content: counter(st); position: absolute; left: 0; top: .2em; width: 1.5em;
+  height: 1.5em; border-radius: 50%; background: var(--chip-on); color: var(--fg); font-weight: 700; font-size: .8em;
+  display: flex; align-items: center; justify-content: center; }
+.edit-map .fe-kv { display: grid; grid-template-columns: max-content 1fr; gap: .25em .9em; font-size: .92em; }
+.edit-map .fe-kv dt { color: var(--muted); }
+.edit-map .fe-kv dd { margin: 0; }
+.edit-map .fe-mono { font-family: var(--mono); font-size: .85em; }
+
+/* the preview column */
+.edit-map .fe-pv-head { position: sticky; top: 0; z-index: 2; background: var(--panel); border-bottom: 1px solid var(--line);
+  padding: .55em .8em; display: flex; flex-direction: column; gap: .45em; }
+.edit-map .fe-pv-body { padding: .8em; }
+.edit-map .fe-game { background: var(--game); border-radius: 8px; border: 1px solid var(--line); overflow: hidden;
+  position: relative; }
+.edit-map .fe-game canvas { display: block; max-width: 100%; }
+
+/* toasts, menus, dialogs */
+.edit-map .fe-toasts { position: fixed; right: 1em; bottom: 1em; display: flex; flex-direction: column; gap: .5em;
+  z-index: 60; max-width: min(28em, calc(100vw - 2em)); }
+.edit-map .fe-toast { background: var(--panel3); border: 1px solid var(--line2); border-left: 4px solid var(--accent);
+  border-radius: 8px; padding: .6em .8em; box-shadow: var(--shadow); display: flex; gap: .6em; align-items: start; }
+.edit-map .fe-toast.bad { border-left-color: var(--bad); }
+.edit-map .fe-toast.good { border-left-color: var(--good); }
+.edit-map .fe-toast .x { margin-left: auto; }
+.edit-map .fe-menu { position: absolute; z-index: 40; background: var(--panel); border: 1px solid var(--line2);
+  border-radius: 9px; box-shadow: var(--shadow); padding: .3em; min-width: 15em; }
+.edit-map .fe-menu button { display: flex; width: 100%; gap: .5em; text-align: left; border: 0; background: none;
+  padding: .45em .6em; border-radius: 6px; cursor: pointer; color: var(--fg); }
+.edit-map .fe-menu button:hover, .edit-map .fe-menu button:focus-visible { background: var(--panel2); }
+.edit-map .fe-menu small { color: var(--muted); display: block; }
+.edit-map .fe-dialog-back { position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 70; display: flex;
+  align-items: center; justify-content: center; padding: 1em; }
+.edit-map .fe-dialog { background: var(--panel); border: 1px solid var(--line2); border-radius: 12px;
+  box-shadow: var(--shadow); width: min(40em, 100%); max-height: calc(100vh - 2em); overflow: auto; padding: 1.1em 1.2em; }
+.edit-map .fe-dialog h3 { margin-bottom: .6em; }
+.edit-map .fe-dialog-foot { display: flex; justify-content: flex-end; gap: .5em; margin-top: 1em; flex-wrap: wrap; }
+.edit-map .fe-loading { padding: 3em 1em; text-align: center; color: var(--muted); }
+.edit-map .fe-spin { display: inline-block; width: 1em; height: 1em; border: 2px solid var(--line2);
+  border-top-color: var(--accent); border-radius: 50%; animation: fe-spin .8s linear infinite; vertical-align: -2px; }
+@keyframes fe-spin { to { transform: rotate(360deg); } }
+.edit-map .fe-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* narrower screens: the sidebar shrinks to its icons, then the preview becomes a drawer */
+@media (max-width: 1400px) {
+  .edit-map .fe-app { grid-template-columns: 64px minmax(0, 1fr) var(--pw, 420px); }
+  .edit-map .fe-nav .lbl { display: none; }
+  .edit-map .fe-nav button { justify-content: center; padding: .55em .2em; position: relative; }
+  .edit-map .fe-nav .n { position: absolute; top: .15em; right: .3em; font-size: .66em; padding: 0 .3em; }
+  .edit-map .fe-nav-sep { margin: .4em .5em; }
+}
+@media (max-width: 1000px) {
+  .edit-map .fe-app { grid-template-columns: 64px minmax(0, 1fr); grid-template-areas: "bar bar" "side area"; }
+  .edit-map .fe-preview { position: fixed; top: calc(var(--top) + var(--bar)); right: 0; bottom: 0; height: auto;
+    width: min(560px, 100vw); z-index: 30; box-shadow: var(--shadow); transform: translateX(105%);
+    transition: transform .2s; }
+  .edit-map .fe-app.pv-open .fe-preview { transform: none; }
+  .edit-map .fe-grip { display: none; }
+}
+@media (max-width: 640px) {
+  .edit-map .fe-app { grid-template-columns: minmax(0, 1fr); grid-template-areas: "bar" "area"; }
+  .edit-map .fe-side { position: fixed; top: calc(var(--top) + var(--bar)); left: 0; bottom: 0; max-height: none;
+    width: min(18em, 85vw); z-index: 31; transform: translateX(-105%); transition: transform .2s; box-shadow: var(--shadow); }
+  .edit-map .fe-app.nav-open .fe-side { transform: none; }
+  .edit-map .fe-nav .lbl { display: inline; }
+  .edit-map .fe-nav button { justify-content: flex-start; padding: .6em .9em; }
+  .edit-map .fe-nav .n { position: static; }
+  .edit-map .fe-preview { width: 100vw; }
+  .edit-map .fe-area { padding: .8em .8em 3em; }
+  .edit-map .fe-search { order: 9; flex-basis: 100%; max-width: none; }
+}
+@media (min-width: 641px) { .edit-map .fe-only-phone { display: none !important; } }
+@media (min-width: 1001px) { .edit-map .fe-only-narrow { display: none !important; } }
+@media (prefers-reduced-motion: reduce) {
+  .edit-map *, .edit-map *::before, .edit-map *::after { transition: none !important; animation: none !important; }
+}
+</style>
+<div class="edit-map">
+<!-- edit-map:start -->
+<div class="fe-app" data-fe-root>
+  <div class="fe-loading" data-fe-loading><span class="fe-spin"></span> Loading the filter&hellip;</div>
+  <noscript><p class="fe-note">The Filter Editor runs in your browser: please turn JavaScript on.</p></noscript>
+</div>
+<!-- edit-map:end -->
+</div>
+<script>
+(function () {
+  "use strict";
+  const DATA = /*__DATA__*/null;
+  const SCRIPT_SRC = document.currentScript && document.currentScript.src || "";
+  const SOURCE_V = "__SOURCE_V__";  /* website/hooks.py puts the source's CRC here (a new name when it changes) */
+/*__MODULES__*/
+  EZ.app.start(document.querySelector("[data-fe-root]"), DATA, SCRIPT_SRC, SOURCE_V);
+})();
+</script>

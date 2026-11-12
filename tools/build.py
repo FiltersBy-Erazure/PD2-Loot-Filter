@@ -449,16 +449,17 @@ def file_name(name):
     return name.replace(" - ", "-").replace(" ", "-") + ".filter"
 
 
-def styled(name, lines, blocks, parts, where, check, problems):
+def styled(name, lines, blocks, parts, where, check, problems, origin=None):
     """A style variant as built: (its lines, where(i) for them, the indices of the lines its style wrote, a status
-    line for a style edits file or None)."""
+    line for a style edits file or None). With a list as origin, a style edits file's origin goes into it
+    (style_edits.apply: per line its index in the rendered variant, or (entry, anchor index) for an inserted line)."""
     base, style_file = STYLE_VARIANTS[name]
     rendered = render(lines, blocks, base)
     if not style_file.endswith(".edits"):
         out = apply_style(rendered, load_style(style_file, check, problems), style_file, where)
         return out, where, {i for i, line in enumerate(out) if line != rendered[i]}, None
     import style_edits  # it imports this module: only here
-    origin = []
+    origin = [] if origin is None else origin
     out, entries = style_edits.build_lines(Path(style_file).stem, [x.decode("utf-8") for x in rendered],
                                            style_edits.section_starts(parts), check, problems, origin)
     out = [x.encode("utf-8") for x in out]
@@ -472,6 +473,98 @@ def styled(name, lines, blocks, parts, where, check, problems):
     if any(e.status in style_edits.LOOK for e in entries):
         status += f" (python tools/style_edits.py {Path(style_file).stem} --report)"
     return out, where_styled, own, status
+
+
+# ---------------------------------------------------------------- the filter editor's source
+
+EDITOR_SOURCE = ROOT / "Erazure-Filter-Editor-Source.js"
+
+
+def style_patch(rendered, out, origin):
+    """A style edits file's result as the filter editor applies it: {replaced: {index: line}, inserted: [[after index,
+    line], ...]} on the rendered variant's lines."""
+    replaced, inserted = {}, []
+    for j, o in enumerate(origin):
+        if isinstance(o, int):
+            if out[j] != rendered[o]:
+                replaced[str(o)] = out[j].decode("utf-8")
+        else:
+            inserted.append([o[1], out[j].decode("utf-8")])
+    return {"replaced": replaced, "inserted": inserted}
+
+
+def patched(rendered, patch):
+    """The rendered variant's lines with a style_patch applied (the editor's applyPatch, to check the patch here)."""
+    after = {}
+    for i, line in patch["inserted"]:
+        after.setdefault(i, []).append(line.encode("utf-8"))
+    out = []
+    for i, line in enumerate(rendered):
+        out.append(patch["replaced"][str(i)].encode("utf-8") if str(i) in patch["replaced"] else line)
+        out += after.get(i, [])
+    return out
+
+
+def editor_source(lines, blocks, parts, number, defs, extra, built, edits):
+    """The Filter Editor's copy of the filters (the website's Filter Editor page builds every version from it, and the
+    player's edits on top): Erazure - Main's lines in alias form with the live version, each toggle block's lines, the
+    style variants' styles (Minimal: its alias lines; Corrlorized: the lines its edits replaced and inserted, the same
+    on all four), the section files' first lines, and each written filter's name, launcher entry, CRC32 and size, so
+    the page (and tools/editor_selftest.py) can check that it builds every version byte for byte as this build does.
+    edits = {style file: [(name, rendered lines, styled lines, origin)]} of the style edits variants built."""
+    import zlib
+    info = {}
+    try:
+        for key, e in json.loads(DEFS.read_text(encoding="utf-8-sig"))["filter_info"].items():
+            info[e["file_name"]] = {"key": key, "launcher": e["display_name"], "description": e.get("description", "")}
+    except (OSError, ValueError, KeyError, TypeError, AttributeError) as e:
+        fail(f"cannot read filter_definitions.json ({e})")
+    toggles = {name: [[i, ALIAS_RE.match(lines[i]).group(2).decode("utf-8")] for i in idxs]
+               for name, idxs in blocks.items()}
+    toggle_lines = {i for idxs in blocks.values() for i in idxs}
+    styles = {}
+    for name, (base, style_file) in STYLE_VARIANTS.items():
+        if style_file in styles:
+            continue
+        if not style_file.endswith(".edits"):
+            style = load_style(style_file, True, [])
+            styles[style_file] = {"kind": "aliases", "lines": {k.decode(): v.decode("utf-8") for k, v in style.items()}}
+            continue
+        made = edits.get(style_file) or []
+        if not made:
+            fail(f"styles/{style_file}: no variant built to take the editor's patch from")
+        patch = style_patch(*made[0][1:])
+        for vname, rendered, out, origin in made:
+            if style_patch(rendered, out, origin) != patch or patched(rendered, patch) != out:
+                fail(f"styles/{style_file}: {vname} does not come out as its patch on its toggle variant; the Filter "
+                     "Editor builds every version with that style from one patch")
+            near = [int(i) for i in patch["replaced"] if int(i) in toggle_lines] + \
+                   [i for i, _ in patch["inserted"] if i in toggle_lines]
+            if near:
+                fail(f"styles/{style_file}: its edits touch the toggle lines of 030 ({near}); the Filter Editor's "
+                     "patch can't hold them")
+        styles[style_file] = {"kind": "patch", "patch": patch}
+    starts, n = [], 0
+    for name, data in parts:
+        starts.append([name, n])
+        n += data.count(b"\r\n")
+    variants = []
+    for name, fname in defs + extra:
+        data = built[fname]
+        base, style_file = STYLE_VARIANTS.get(name, (name, None))
+        entry = info.get(fname, {})
+        variants.append({"name": name, "file": fname, "toggle": base, "style": style_file,
+                         "key": entry.get("key"), "launcher": entry.get("launcher", name),
+                         "description": entry.get("description", ""),
+                         "crc": zlib.crc32(data) & 0xffffffff, "size": len(data)})
+    source = {"version": number, "writeOut": WRITE_OUT_ALIASES, "keep": sorted(KEEP_ALIASES),
+              "writtenOut": WRITTEN_OUT, "main": MAIN, "sections": starts, "toggles": toggles, "styles": styles,
+              "variants": variants,
+              "lines": [x.decode("utf-8") for x in lines]}
+    body = json.dumps(source, ensure_ascii=True, separators=(",", ":"))
+    build = zlib.crc32(body.encode("ascii")) & 0xffffffff
+    return (f"/* GENERATED by tools/build.py: the Filter Editor's copy of the filters (never edit by hand). */\n"
+            f"window.ERAZURE_EDITOR_SOURCE={body[:-1]},\"build\":\"{build:08x}\"}};\n").encode("ascii")
 
 
 def variant_text(name):
@@ -539,15 +632,19 @@ def main():
     extra = [(name, file_name(name)) for name in STYLE_VARIANTS if name not in dict(defs)]
     check_toggles(lines, blocks, [name for name, _ in defs + extra], where)
 
-    built, notes, done = [], [], set()
+    built, notes, done, edits = [], [], set(), {}
     for name, fname in defs + extra:
         if name in STYLE_VARIANTS:
             first = STYLE_VARIANTS[name][1] not in done  # a style file several variants share: fixed, written and
             done.add(STYLE_VARIANTS[name][1])            # reported once
+            origin = []
             out, where_out, _, note = styled(name, lines, blocks, parts, where, args.check if first else True,
-                                             problems if first else [])
+                                             problems if first else [], origin)
             if note and first:
                 notes.append(note)
+            if origin:  # a style edits file: the editor's patch is taken from it (editor_source)
+                edits.setdefault(STYLE_VARIANTS[name][1], []).append(
+                    (name, render(lines, blocks, STYLE_VARIANTS[name][0]), out, origin))
         else:
             out, where_out = render(lines, blocks, name), where
         if WRITE_OUT_ALIASES:
@@ -560,8 +657,14 @@ def main():
     number = f"v{version_number(season, date, built)}"
     version = version_text(season, date, number)
     stale = []
-    for fname, data in built:
-        data = data.replace(NUMBER_MARK.encode(), number.encode())
+    final = {fname: data.replace(NUMBER_MARK.encode(), number.encode()) for fname, data in built}
+    numbered = [line.replace(NUMBER_MARK.encode(), number.encode()) for line in lines]
+    final[EDITOR_SOURCE.name] = editor_source(numbered, blocks, parts, version, defs, extra, final, {
+        style_file: [(n, [x.replace(NUMBER_MARK.encode(), number.encode()) for x in r],
+                      [x.replace(NUMBER_MARK.encode(), number.encode()) for x in o], origin)
+                     for n, r, o, origin in made]
+        for style_file, made in edits.items()})
+    for fname, data in final.items():
         target = ROOT / fname
         if target.exists() and target.read_bytes() == data:
             continue

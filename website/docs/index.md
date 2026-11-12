@@ -22,6 +22,8 @@ afterwards.
 - [Magic Items](magic.md): how every magic item shows when it drops, and when it is hidden
 - [Rare Items](rare.md): how every rare item shows when it drops, and when it is hidden
 - [Skill & Shop Highlights](shop.md): the highlights for +skills and shop items, and what an item needs for each
+- [Filter Editor](editor.md): make the filter your own (looks, sounds, items, your own rules), preview drops as
+  the game draws them, and save it straight into your game
 - [Customization](customization.md): edit your own copy of the filter
 - [Examples](examples.md): the filter's style in game
 - [Resources](resources/index.md): reference pages on how parts of the game work, such as which Infinity base to give

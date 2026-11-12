@@ -30,7 +30,8 @@ PICKS = [["tools", "unique_roll_picks.txt"], ["tools", "unique_cut_rules.txt"], 
          ["tools", "boss_tag_rules.json"], ["tools", "low_level_tag_picks.json"]]
 GENERATORS = ["plain_highlights.py", "sell_label_twins.py", "label_cuts.py", "gen_unique_rolls.py", "gen_runeword_rolls.py", "gen_map_exp.py",
               "gen_boss_tags.py", "low_level_tags.py", "gen_tag_count.py", "tier_map.py",
-              "base_map.py", "magic_rare_map.py", "level_map.py", "style_map.py", "shop_map.py"]  # in this order:
+              "base_map.py", "magic_rare_map.py", "level_map.py", "style_map.py", "shop_map.py",
+              "editor_map.py"]  # in this order:
 #                                                                                         all read sections/
 STYLE_GENERATORS = ["style_map.py"]  # the ones that read styles/
 
