@@ -202,8 +202,8 @@
   "the generator needs to choose actually distinct traits".
 - Sockets that roll in a range (2026-11-12, the author): an identified, uncorrupted unique or set item whose sockets
   roll in a range (UniqueItems / SetItems `sock` with min < max: 14 uniques and 6 sets, Hellrack 3-5, Kalan's Legacy
-  1-2...) shows the top roll after its socket count, `Hellrack %WHITE%4%GRAY%/%LIGHT_GRAY%5` (the slash darker than
-  the top: the author swapped the two grays the same day, after a screenshot of Griswold's Honor). Every base holds its
+  1-2...) shows the top roll after its socket count, `Hellrack %WHITE%4%LIGHT_GRAY%/%GRAY%5` (the slash lighter than
+  the top: the author tried the two grays swapped the same day, v2, and went back to this). Every base holds its
   item's top roll at the item levels it drops. 210's socket count rule is followed by one rule per top,
   `ROLL_SOCK_MAX<n> !STAT360>0`; `gen_unique_rolls.py` writes those aliases into 045 from each item's fingerprint and
   stops when an item's top has no rule there (add one beside the others). Fixed counts (Hone Sundan 3) keep the plain
