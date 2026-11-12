@@ -51,6 +51,11 @@ EZ.store = (function () {
         o.at && typeof o.at === "object" && typeof o.at.text === "string").slice(0, 5000) : [];
       if (list.length) e.ops = list; else delete e.ops;
     }
+    if (e.items !== undefined) {  // item overrides: a list of objects (EZ.overrides checks each one's fields)
+      const list = Array.isArray(e.items) ? e.items.filter((o) => o && typeof o === "object" && !Array.isArray(o) &&
+        o.scope && typeof o.scope === "object" && Array.isArray(o.scope.codes)).slice(0, 2000) : [];
+      if (list.length) e.items = list; else delete e.items;
+    }
     if (e.rules !== undefined) {  // My rules: two blocks of text (a link or file could hold anything)
       const r = e.rules && typeof e.rules === "object" ? e.rules : {}, keep = {};
       for (const k of ["top", "bottom"]) if (typeof r[k] === "string" && r[k].trim()) keep[k] = r[k].slice(0, 400000);

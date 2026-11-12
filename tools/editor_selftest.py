@@ -63,7 +63,7 @@ EDITOR = ROOT / "tools" / "editor"
 SOURCE = ROOT / "Erazure-Filter-Editor-Source.js"
 FIXTURES = ROOT / "tools" / "editor_fixtures"
 MODULES = ["core.js", "ui.js", "store.js", "filter.js", "features.js", "edits.js", "rules.js", "ops.js",
-           "engine.js", "lint.js", "words.js", "items.js", "sound.js", "glyphs.js"]  # in order
+           "overrides.js", "engine.js", "lint.js", "words.js", "items.js", "sound.js", "glyphs.js"]  # in order
 TESTS_JS = ROOT / "tools" / "editor_selftest.js"  # the engine tests' code
 BROWSERS = [
     r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
@@ -160,7 +160,8 @@ test("edits", async () => {
     const header = r.report.count ? await EZ.edits.headerLines(src, p, variant, r.report.count) : [];
     const decoded = header.length ? await EZ.edits.fromFile(header.join("\\n")) : null;
     out[name] = {variant: variant.name, count: r.report.count, unplaced: r.report.unplaced, crcs: crcs(lines),
-                 header: header.length, decoded, ops: r.report.ops || []};
+                 header: header.length, decoded, ops: r.report.ops || [],
+                 aliasLines: fx.edits.items ? r.lines : undefined};
   }
   return {results: out};
 });
@@ -415,6 +416,7 @@ def active_rules(block):
 
 
 OP_KINDS = ("off", "on", "change", "before", "after")
+ITEM_ACTIONS = ("show", "hide", "mute", "sound", "icon", "iconOnly", "notify", "look", "replace")
 OFF_RE = re.compile(r"^\s*//+\s*(?=ItemDisplay\[)")
 
 
@@ -483,6 +485,8 @@ def apply_ops(src, ops, lines):
 def count(e, feats):
     n = sum(1 for v in (e.get("options") or {}).values() if v)
     n += sum(1 for o in (e.get("ops") or []) if valid_op(o))
+    n += sum(1 for o in (e.get("items") or []) if isinstance(o, dict) and o.get("action") in ITEM_ACTIONS
+             and isinstance(o.get("scope"), dict) and isinstance(o["scope"].get("codes"), list) and o["scope"]["codes"])
     n += sum(1 for fid, on, *_ in feats if fid in (e.get("features") or {}) and bool(e["features"][fid]) != on)
     lv = e.get("levels") or {}
     n += len(lv.get("names") or {}) + len(lv.get("copies") or {})
@@ -700,6 +704,27 @@ def check_edits(src, detail, fixtures):
             continue
         toggle, style = fixture_variant(src, fx["edits"])
         variant = next(v for v in src["variants"] if v["toggle"] == toggle and v["style"] == style)
+        if fx["edits"].get("items"):
+            # item overrides (overrides.js) have no Python port: build.py writes the page's lines out with its
+            # --check verification (BH reads every rule of the written file as the alias form), the same bytes
+            try:
+                lines = written(src, js["aliasLines"])
+            except SystemExit as e:
+                bad.append(f"{name}: the written-out filter doesn't read as its alias form ({e})")
+                continue
+            got = [format(int(c, 36), "x") for c in js["crcs"]]
+            want = [format(zlib.crc32(x.encode("utf-8")) & 0xffffffff, "x") for x in lines]
+            if got != want:
+                bad.append(f"{name}: the page writes the aliases out differently from build.py")
+            n = count(fx["edits"], feats)
+            if js["count"] != n:
+                bad.append(f"{name}: the page counts {js['count']} changes, the reference {n}")
+            if js.get("unplaced"):
+                bad.append(f"{name}: unplaced edits {js['unplaced']}")
+            changed = sum(1 for a, b in zip(js["aliasLines"], variant_lines(src, variant)) if a != b)
+            if not changed:
+                bad.append(f"{name}: the item changes changed nothing")
+            continue
         lines, n = reference(src, fx["edits"], variant_lines(src, variant), feats)
         try:
             lines = written(src, lines)

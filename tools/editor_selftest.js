@@ -209,6 +209,104 @@
             ms: Math.round(performance.now() - t0), erazureWarnings: show(kinds)};
   });
 
+  /* Item overrides do what they say for the items they name, and change nothing for the others (tools/editor/
+     overrides.js): each built into Erazure - Main and run by the engine beside Erazure's own. */
+  test("items", () => {
+    EZ.items.init({catalog: EXPECT.catalog});
+    const main = src.variants.find((v) => v.name === src.main);
+    const lines = C.variantLines(src, main);
+    const opts = {statMax: EXPECT.catalog.statMax, skillMax: EXPECT.catalog.skillMax, soundCount: EXPECT.soundCount};
+    const base = E.compile(lines, opts);
+    const bad = [], t0 = performance.now();
+    const ground = (filtlvl, mapid) => ({filtlvl, clvl: 90, cls: 1, diff: 2, mapid: mapid || 2, charstats: {12: 90}});
+    const make = (spec) => EZ.items.make(Object.assign({place: "GROUND"}, spec));
+    const run = (F, spec, c) => E.run(F, make(spec), c, {});
+    const boxes = (r) => r.icons.map((x) => [x.border, x.map, x.dot, x.px]);
+    const same = (a, b) => show([a.name, boxes(a), a.sound, a.chat, a.invisible]) === show([b.name, boxes(b), b.sound, b.chat, b.invisible]);
+    const built = (items) => {
+      const p = EZ.store.normalize({name: "t", edits: {base: {style: "erazure"}, items}});
+      const r = EZ.edits.apply(src, p, lines);
+      return E.compile(r.lines, opts);
+    };
+    const levels = [0, 1, 5, 9, 12];
+    // an item Erazure hides at level 12 on the ground, and one it shows without any alert at level 1
+    const hiddenCode = ["gcr", "gcv", "gcb", "gcg", "gcw", "gcy", "skc", "isc", "tsc", "hp1", "mp1"].find((c) =>
+      EZ.items.base(c) && run(base, {code: c}, ground(12)).hidden);
+    const quietCode = ["tsc", "isc", "key", "hp2", "mp2", "yps", "vps", "wms"].find((c) => {
+      if (!EZ.items.base(c)) return false;
+      const r = run(base, {code: c}, ground(1));
+      return !r.hidden && !r.icons.length && r.chatRule === null;
+    });
+    const cases = [
+      ["hide Ber Rune on levels 8-12", [{action: "hide", scope: {codes: ["r30"], levels: [8, 9, 10, 11, 12]}}], (F) => {
+        const r = run(F, {code: "r30"}, ground(9));
+        if (!r.hidden || !r.invisible || r.icons.length || r.sound) return "not hidden at level 9: " + show([r.name, boxes(r), r.sound]);
+        for (const [lv, mapid] of [[5, 2], [9, 1], [12, 1], [0, 2]]) {
+          if (!same(run(F, {code: "r30"}, ground(lv, mapid)), run(base, {code: "r30"}, ground(lv, mapid)))) return `changed at level ${lv} (area ${mapid})`;
+        }
+        return same(run(F, {code: "r31"}, ground(9)), run(base, {code: "r31"}, ground(9))) ? null : "Jah Rune changed";
+      }],
+      ["show " + hiddenCode, [{action: "show", scope: {codes: [hiddenCode]}}], (F) => {
+        const r = run(F, {code: hiddenCode}, ground(12));
+        if (r.hidden) return "still hidden at level 12";
+        return same(run(F, {code: "r30"}, ground(12)), run(base, {code: "r30"}, ground(12))) ? null : "Ber Rune changed";
+      }],
+      ["mute unique Shakos", [{action: "mute", scope: {codes: ["uap"], quality: "UNI"}}], (F) => {
+        for (const lv of levels) {
+          const a = run(F, {code: "uap", quality: "UNI"}, ground(lv)), b = run(base, {code: "uap", quality: "UNI"}, ground(lv));
+          if (a.sound) return `a sound at level ${lv}`;
+          if (a.name !== b.name || show(boxes(a)) !== show(boxes(b)) || (a.chat === null) !== (b.chat === null)) return `more than the sound changed at level ${lv}`;
+        }
+        return same(run(F, {code: "uap", quality: "SET"}, ground(1)), run(base, {code: "uap", quality: "SET"}, ground(1))) ? null : "a set Shako changed";
+      }],
+      ["another icon on unique Shakos", [{action: "icon", icon: "BORDER-0A", scope: {codes: ["uap"], quality: "UNI"}}], (F) => {
+        const a = run(F, {code: "uap", quality: "UNI"}, ground(1)), b = run(base, {code: "uap", quality: "UNI"}, ground(1));
+        if (!a.icons.length || a.icons.some((x) => show([x.border, x.map, x.dot, x.px]) !== show([10, null, null, null]))) return "icons " + show(boxes(a));
+        return a.sound === b.sound && a.name === b.name ? null : "more than the icon changed";
+      }],
+      ["icon only for Ber Runes", [{action: "iconOnly", scope: {codes: ["r30"]}}], (F) => {
+        const a = run(F, {code: "r30"}, ground(1)), b = run(base, {code: "r30"}, ground(1));
+        if (a.chat !== null || a.sound) return "a chat line or sound at level 1";
+        return show(boxes(a)) === show(boxes(b)) && a.name === b.name ? null : "the icon or label changed";
+      }],
+      ["replace the look of unidentified rare rings", [{action: "replace", text: "%RED%My ring",
+        scope: {codes: ["rin"], quality: "RARE", id: "no"}}], (F) => {
+        const a = run(F, {code: "rin", quality: "RARE"}, ground(1));
+        if (a.name !== "ÿc1My ring") return "name " + show(a.name);
+        return same(run(F, {code: "rin", quality: "MAG"}, ground(1)), run(base, {code: "rin", quality: "MAG"}, ground(1))) ? null : "magic rings changed";
+      }],
+      ["change the look of Ber Runes", [{action: "look", text: "%GOLD%B %NAME%", scope: {codes: ["r30"]}}], (F) => {
+        const a = run(F, {code: "r30"}, ground(1)), b = run(base, {code: "r30"}, ground(1));
+        if (!a.name.startsWith("ÿc4B ")) return "name " + show(a.name);
+        return show(boxes(a)) === show(boxes(b)) && a.sound === b.sound ? null : "the alerts changed";
+      }],
+      ["an alert for " + quietCode + " where Erazure has none", [
+        {action: "notify", alert: {icon: {MAP: "0A"}, sound: 4728}, scope: {codes: [quietCode]}},
+        {action: "notify", alert: {icon: {MAP: "0A"}, sound: 4728}, scope: {codes: ["r30"]}}], (F) => {
+        const a = run(F, {code: quietCode}, ground(1));
+        if (!a.icons.some((x) => x.map === 10) || a.sound !== 4728) return "no alert: " + show([boxes(a), a.sound]);
+        const r = run(F, {code: "r30"}, ground(1)), b = run(base, {code: "r30"}, ground(1));
+        return r.sound === b.sound && r.chatRule !== null ? null : "Ber Rune's own alert changed";
+      }],
+    ];
+    let n = 0;
+    for (const [what, items, check] of cases) {
+      if (what.indexOf("undefined") >= 0) { bad.push(what + ": no item to test it on"); continue; }
+      let F;
+      try { F = built(items); } catch (e) { bad.push(what + ": " + e.message); continue; }
+      const why = check(F);
+      n++;
+      if (why) bad.push(what + ": " + why);
+    }
+    // all of them at once still builds, and a hidden item stays hidden where a wider show meets it
+    try {
+      const F = built(cases.flatMap((c) => c[1]).concat([{action: "show", scope: {codes: ["r30"]}}]));
+      const r = run(F, {code: "r30"}, ground(9));
+      if (!r.hidden) bad.push("together: the narrower hide of Ber Runes lost to the wider show");
+    } catch (e) { bad.push("together: " + e.message); }
+    return {fail: bad.length ? bad.join("\n  ") : null, cases: n, ms: Math.round(performance.now() - t0)};
+  });
+
   test("rules", () => {
     EZ.items.init({catalog: EXPECT.catalog});
     const bad = [];

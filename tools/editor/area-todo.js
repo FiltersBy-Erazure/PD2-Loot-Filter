@@ -5,7 +5,6 @@ EZ.areas = EZ.areas || [];
 (function () {
   "use strict";
   const TODO = [
-    ["items", "Items", "◈", 30, "b", "Show, hide, mute or restyle single items; your hunt list; unique and set tiers."],
     ["wishlists", "Wishlists", "★", 60, "b", "Rares, shop items, runeword and crafting bases, charms and jewels you want."],
     ["maps", "Maps", "⌖", 70, "b", "Map lines, mod warnings and hides, minimum experience."],
     ["changes", "Changes", "⇄", 100, "d", "What your changes do, item by item; every item; compare; troubleshooting."],
