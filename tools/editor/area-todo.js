@@ -5,10 +5,7 @@ EZ.areas = EZ.areas || [];
 (function () {
   "use strict";
   const TODO = [
-    ["options", "Options", "⚙", 20, "b", "Erazure's own options, features to switch off, category controls, filter levels."],
     ["items", "Items", "◈", 30, "b", "Show, hide, mute or restyle single items; your hunt list; unique and set tiers."],
-    ["looks", "Looks", "✎", 40, "b", "Erazure's symbols and colors, styles, colorblind presets, minimap icons."],
-    ["alerts", "Alerts", "♪", 50, "b", "Drop sounds, chat lines and minimap icons: how loud each kind of drop is."],
     ["wishlists", "Wishlists", "★", 60, "b", "Rares, shop items, runeword and crafting bases, charms and jewels you want."],
     ["maps", "Maps", "⌖", 70, "b", "Map lines, mod warnings and hides, minimum experience."],
     ["rules", "My rules", "⊕", 80, "c", "Your own rules: the rule builder and the code editor."],

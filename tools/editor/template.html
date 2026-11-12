@@ -138,7 +138,9 @@
 .edit-map .fe-sub { color: var(--muted); font-size: .9em; }
 .edit-map .fe-row { display: flex; flex-wrap: wrap; gap: .6em; align-items: center; }
 .edit-map .fe-grid { display: grid; gap: .8em; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+.edit-map .fe-stack { display: flex; flex-direction: column; align-items: stretch; }
 .edit-map .fe-stack > * + * { margin-top: .6em; }
+.edit-map .fe-stack > .fe-switch { align-self: flex-start; }
 .edit-map .fe-crumb { color: var(--muted); font-size: .85em; margin-bottom: .2em; }
 .edit-map .fe-area-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between;
   gap: .5em 1em; margin-bottom: 1em; }
@@ -206,6 +208,99 @@
   border-top-color: var(--accent); border-radius: 50%; animation: fe-spin .8s linear infinite; vertical-align: -2px; }
 @keyframes fe-spin { to { transform: rotate(360deg); } }
 .edit-map .fe-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* changed things: a gold edge */
+.edit-map .is-changed { box-shadow: inset 3px 0 0 var(--accent); }
+.edit-map input.is-changed { box-shadow: none; border-color: var(--accent); }
+.edit-map .fe-small { font-size: .85em; gap: .3em; }
+.edit-map .fe-num { color: var(--muted); font-variant-numeric: tabular-nums; width: 2em; }
+.edit-map .fe-tablewrap { overflow-x: auto; }
+.edit-map details.fe-rules { margin-top: .5em; }
+.edit-map details.fe-rules summary { cursor: pointer; color: var(--muted); font-size: .85em; }
+.edit-map pre.fe-code { font-family: var(--mono); font-size: .78em; line-height: 1.5; background: var(--bg);
+  border: 1px solid var(--line); border-radius: 7px; padding: .6em .7em; overflow-x: auto; white-space: pre;
+  margin: .4em 0 0; color: var(--fg); max-height: 22em; }
+
+/* Options */
+.edit-map .fe-optgrid { display: grid; gap: 1em 1.4em; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+.edit-map .fe-optgroup { border-top: 1px solid var(--line); padding-top: .7em; }
+.edit-map .fe-optgroup h4 { margin-bottom: .4em; }
+.edit-map fieldset.fe-choiceset { border: 1px solid var(--line); border-radius: 8px; padding: .3em .7em .5em; margin: 0; }
+.edit-map fieldset.fe-choiceset legend { padding: 0 .3em; font-size: .8em; }
+.edit-map label.fe-radio { display: flex; align-items: center; gap: .5em; padding: .15em 0; cursor: pointer; }
+.edit-map label.fe-radio input { accent-color: var(--accent); }
+.edit-map .fe-featgroup { margin-top: .8em; }
+.edit-map .fe-featgroup h4 { color: var(--muted); font-size: .82em; text-transform: uppercase; letter-spacing: .06em;
+  font-family: inherit; }
+.edit-map .fe-feature { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between;
+  gap: .3em 1em; padding: .25em .4em; border-radius: 6px; }
+.edit-map table.fe-levels td { vertical-align: middle; }
+.edit-map table.fe-levels select { max-width: 16em; }
+.edit-map .fe-levelname { font-family: Cinzel, Georgia, serif; font-weight: 600; background: #0d0c0b;
+  padding: .1em .45em; border-radius: 4px; white-space: nowrap; }
+
+/* a label as the game draws it (HTML: D2GL's colors on the 60% black box with faded ends) */
+.edit-map .fe-label { display: inline-flex; flex-direction: column; align-items: center; color: #fefefe;
+  font-family: Cinzel, Georgia, serif; font-weight: 600; font-size: 13.5px; line-height: 1.18; letter-spacing: .03em;
+  padding: 1px 15px; white-space: pre; text-shadow: 0 0 2px rgba(0,0,0,.85);
+  background: linear-gradient(90deg, rgba(0,0,0,0), rgba(0,0,0,.6) 13px, rgba(0,0,0,.6) calc(100% - 13px), rgba(0,0,0,0)); }
+.edit-map .fe-label.is-alt { background: linear-gradient(90deg, rgba(33,63,152,0), rgba(33,63,152,.867) 13px,
+  rgba(33,63,152,.867) calc(100% - 13px), rgba(33,63,152,0)); }
+.edit-map .fe-label.is-hover { background: rgba(0,0,0,.8); padding: 1px 4px; text-shadow: none; }
+.edit-map .fe-label-line { display: block; text-align: center; }
+.edit-map .fe-ground { background: #191613 radial-gradient(ellipse at 50% 40%, #2a241d 0%, #13110f 75%);
+  border-radius: 8px; padding: .7em .6em; display: flex; flex-direction: column; align-items: center; gap: .45em; }
+
+/* Looks */
+.edit-map .fe-remaps { display: grid; gap: .35em 1.2em; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
+.edit-map .fe-remap { display: flex; align-items: center; gap: .5em; padding: .15em .4em; border-radius: 6px; }
+.edit-map .fe-remap select { flex: 1; }
+.edit-map .fe-swatch-text { font-weight: 700; min-width: 7.5em; text-shadow: 0 0 2px #000; }
+.edit-map .fe-looktools { position: sticky; top: calc(var(--top) + var(--bar)); z-index: 4; background: var(--panel);
+  border: 1px solid var(--line); border-radius: 10px; padding: .45em .6em; margin: 0 0 1em; display: flex; flex-wrap: wrap;
+  gap: .25em; align-items: center; }
+.edit-map .fe-chipbtn { min-width: 1.9em; height: 1.9em; border: 1px solid var(--line2); background: #0d0c0b; color: #fefefe;
+  border-radius: 5px; cursor: pointer; font-family: Cinzel, Georgia, serif; font-weight: 700; padding: 0 .3em; }
+.edit-map .fe-chipbtn:hover { border-color: var(--accent); }
+.edit-map .fe-lookgrid { display: grid; gap: .8em; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); }
+.edit-map .fe-lookcard { border: 1px solid var(--line); border-radius: 9px; padding: .6em .7em; background: var(--panel2); }
+.edit-map .fe-looktitle { font-weight: 700; margin-bottom: .4em; }
+.edit-map .fe-lookprev { background: #191613 radial-gradient(ellipse at 50% 40%, #2a241d 0%, #13110f 75%);
+  border-radius: 7px; padding: .6em .4em; display: flex; flex-direction: column; align-items: center; gap: .35em;
+  margin-bottom: .5em; overflow-x: auto; }
+.edit-map .fe-aliasrow { display: grid; gap: .25em; margin-top: .45em; }
+.edit-map .fe-aliasrow input { width: 100%; font-size: .85em; }
+.edit-map .fe-aliasname { font-size: .72em; color: var(--muted); background: none; border: 0; padding: 0; }
+
+/* minimap icons and the palette */
+.edit-map .fe-iconlist { display: grid; gap: .5em; }
+.edit-map .fe-iconrow { display: flex; align-items: center; gap: .6em; padding: .35em .45em; border-radius: 8px;
+  border: 1px solid var(--line); background: var(--panel2); flex-wrap: wrap; }
+.edit-map canvas.fe-icon { width: 28px; height: 28px; image-rendering: pixelated; border-radius: 3px; flex: none; }
+.edit-map .fe-iconinfo { flex: 1 1 280px; min-width: 0; }
+.edit-map .fe-layer { display: inline-flex; align-items: center; gap: .3em; border: 1px solid var(--line2);
+  background: var(--panel); border-radius: 6px; padding: .1em .45em; cursor: pointer; color: var(--fg); font-size: .85em; }
+.edit-map .fe-layerbox { width: .95em; height: .95em; border: 1px solid var(--line2); display: inline-block; }
+.edit-map .fe-palette-menu { padding: .5em; }
+.edit-map .fe-palette { display: grid; grid-template-columns: repeat(16, 16px); gap: 2px; margin-top: .4em; }
+.edit-map .fe-swatch { width: 16px; height: 16px; border: 1px solid rgba(255,255,255,.12); padding: 0; cursor: pointer;
+  border-radius: 2px; }
+.edit-map .fe-swatch.on, .edit-map .fe-swatch:hover { outline: 2px solid var(--focus); outline-offset: 0; }
+
+/* sounds */
+.edit-map .fe-soundlist { display: grid; gap: .4em; max-height: none; }
+.edit-map .fe-dialog .fe-soundlist { max-height: 55vh; overflow: auto; margin-top: .6em; }
+.edit-map .fe-soundrow { display: flex; flex-wrap: wrap; align-items: center; gap: .3em 1em; padding: .4em .55em;
+  border: 1px solid var(--line); border-radius: 8px; background: var(--panel2); }
+.edit-map .fe-soundrow.on { border-color: var(--accent); }
+.edit-map .fe-soundmain { flex: 1 1 320px; min-width: 0; }
+.edit-map .fe-soundto { color: var(--accent); }
+
+/* profiles and history */
+.edit-map .fe-profiles { display: grid; gap: .6em; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); }
+.edit-map ul.fe-histlist { list-style: none; margin: .3em 0 0; padding: 0; }
+.edit-map ul.fe-histlist li { display: flex; align-items: center; justify-content: space-between; gap: .6em;
+  border-bottom: 1px solid var(--line); padding: .25em 0; }
 
 /* narrower screens: the sidebar shrinks to its icons, then the preview becomes a drawer */
 @media (max-width: 1400px) {

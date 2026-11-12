@@ -1,11 +1,11 @@
-/* Start: the player's version (style and switches), the file name, saving it into the game, and what to do in the
-   launcher and in game. */
+/* Start: the player's version (style and switches), the file name, saving it into the game (and what to do in the
+   launcher and in game), profiles, the saved history, and importing, exporting and sharing changes. */
 var EZ = typeof EZ !== "undefined" ? EZ : {};
 EZ.areas = EZ.areas || [];
 EZ.areas.push({
   id: "start", title: "Start", icon: "⌂", order: 10, group: "a",
   render(box, app) {
-    const {h, option, toggle, ago} = EZ.ui;
+    const {h, option, toggle, ago, dialog, confirmBox, toast} = EZ.ui;
     const p = EZ.store.current(), base = p.edits.base, v = app.variant();
     const set = (fn) => EZ.store.change((e) => fn(e.base), {label: "version"});
 
@@ -16,13 +16,13 @@ EZ.areas.push({
     ];
     const corr = base.style === "corrlorized";
 
-    const version = h("section.fe-card",
+    const version = h("section.fe-card", {id: "fe-version"},
       h("h3", "Your version"),
       h("p.fe-sub", "Every version shows and hides the same items at each filter level; they differ in looks, names " +
         "and sounds. Your changes go on top of the version you pick, and you can switch at any time."),
       h("div.fe-choice", styles.map(([id, name, text]) =>
         option(name, text, base.style === id, () => set((b) => { b.style = id; })))),
-      h("div.fe-stack", {style: {marginTop: ".9rem"}},
+      h("div.fe-stack", {style: {marginTop: ".9em"}},
         toggle("Revealed names", base.revealed, (on) => set((b) => { b.revealed = on; }),
           {sub: "Unidentified unique and set items show the names they identify to."}),
         toggle("BIG GG mystery", base.bigGG, (on) => set((b) => { b.bigGG = on; }),
@@ -35,28 +35,28 @@ EZ.areas.push({
     const s = p.saved;
     const stale = s && s.version !== app.src.version;
     const fileInput = h("input", {type: "text", value: p.file || "Erazure-Custom", "aria-label": "File name",
-      spellcheck: "false", style: {width: "16rem"}});
+      spellcheck: "false", style: {width: "16em"}});
     fileInput.addEventListener("change", () => {
       const v2 = fileInput.value.replace(/\.filter$/i, "").trim() || "Erazure-Custom";
       EZ.store.changeProfile((pp) => { pp.file = v2; }, {quiet: true});
       fileInput.value = v2;
     });
-    const save = h("section.fe-card",
+    const save = h("section.fe-card", {id: "fe-save"},
       h("h3", "Save it to your game"),
       h("div.fe-row",
-        h("label.fe-field", h("span", "File name"), h("span.fe-row", {style: {gap: ".35rem"}}, fileInput,
+        h("label.fe-field", h("span", "File name"), h("span.fe-row", {style: {gap: ".35em"}}, fileInput,
           h("span.fe-sub", ".filter")))),
-      h("div.fe-row", {style: {marginTop: ".8rem"}},
+      h("div.fe-row", {style: {marginTop: ".8em"}},
         h("button.fe-btn.primary", {type: "button", onclick: () => app.saveToGame()},
           app.canSaveInPlace() ? "Save to game" : "Download"),
         app.canSaveInPlace() ? h("button.fe-btn", {type: "button", onclick: () =>
           app.withBuild("Building your filter", app.download)}, "Download") : null),
-      s ? h("p.fe-sub", {style: {marginTop: ".6rem"}},
+      s ? h("p.fe-sub", {style: {marginTop: ".6em"}},
         `Last ${s.how === "folder" ? "saved to the game" : "downloaded"} ${ago(s.at)}: ${s.file || ""}, Erazure ${s.version}.`)
         : null,
       stale ? h("p.fe-note.warn", "Erazure has changed since then (now ", h("b", app.src.version), "). Save again to " +
         "get the new version with your changes: a local filter never updates by itself.") : null,
-      h("h4", {style: {marginTop: "1rem"}}, "In the launcher and in game"),
+      h("h4", {style: {marginTop: "1em"}}, "In the launcher and in game"),
       h("ol.fe-steps",
         h("li", app.canSaveInPlace()
           ? ["Save to game, and pick the folder ", h("code", "Diablo II\\ProjectD2\\filters\\local"), " the first time."]
@@ -67,9 +67,68 @@ EZ.areas.push({
           h("kbd", "Ctrl"), "+", h("kbd", "Numpad 0"), "–", h("kbd", "9"), " jump to levels 0–9)."),
         h("li", "After every save here, press ", h("kbd", "Numpad 0"), " in game to reload the filter.")));
 
+    /* ---- profiles */
+    const profiles = EZ.store.profiles();
+    const rename = () => {
+      const input = h("input", {type: "text", value: p.name, style: {width: "100%"}});
+      dialog({title: "Rename this profile", body: [input], buttons: [{text: "Cancel"}, {text: "Rename", primary: true,
+        onclick: () => { const n = input.value.trim(); if (n) EZ.store.changeProfile((pp) => { pp.name = n.slice(0, 60); }); }}]});
+    };
+    const profilesCard = h("section.fe-card", {id: "fe-profiles"},
+      h("h3", "Profiles"),
+      h("p.fe-sub", "A profile is one set of changes: one per character or build, if you like. Each saves to its own " +
+        "file name; the launcher uses the one you picked there."),
+      h("div.fe-profiles", profiles.map((x) => h("button.fe-option", {type: "button", "aria-pressed": String(x.id === p.id),
+        onclick: () => EZ.store.switchTo(x.id)},
+        h("b", x.name), h("small", `${app.fileName(x)} · ${EZ.edits.count(x.edits)} change${EZ.edits.count(x.edits) === 1 ? "" : "s"}` +
+          (x.saved ? ` · saved ${ago(x.saved.at)}` : ""))))),
+      h("div.fe-row", {style: {marginTop: ".7em"}},
+        h("button.fe-btn", {type: "button", onclick: () => EZ.store.addProfile("New profile")}, "New profile"),
+        h("button.fe-btn", {type: "button", onclick: () => EZ.store.addProfile(p.name + " (copy)", p.edits)}, "Duplicate"),
+        h("button.fe-btn", {type: "button", onclick: rename}, "Rename"),
+        profiles.length > 1 ? h("button.fe-btn.danger", {type: "button", onclick: () => confirmBox("Delete this profile?",
+          `${p.name} and its changes go (its saved file in your game stays).`, "Delete", () => EZ.store.removeProfile(p.id))},
+          "Delete") : null));
+
+    /* ---- history, import, export */
+    const historyBox = h("div.fe-history", h("p.fe-sub", "Loading…"));
+    EZ.store.history(p).then((list) => {
+      EZ.ui.fill(historyBox, list.length ? h("ul.fe-histlist", list.slice(0, 12).map((it) => h("li",
+        h("span", ago(it.at) + (it.why ? " · " + it.why : ""),
+          h("span.fe-sub", ` · ${EZ.edits.count(JSON.parse(it.edits))} changes`)),
+        h("button.fe-btn.ghost.small", {type: "button", onclick: () => confirmBox("Restore these changes?",
+          "Your profile's changes become the ones you had then (Undo brings back today's).", "Restore", () =>
+            EZ.store.change((e) => {
+              const old = EZ.store.normalize({edits: JSON.parse(it.edits)}).edits;
+              for (const k of Object.keys(e)) delete e[k];
+              Object.assign(e, old);
+            }, {label: "restore"}))}, "Restore"))))
+        : h("p.fe-sub", "Each save and download keeps a copy of your changes here (in this browser)."));
+    }).catch(() => EZ.ui.fill(historyBox, h("p.fe-sub", "This browser keeps no history (blocked storage).")));
+    const moveCard = h("section.fe-card", {id: "fe-share"},
+      h("h3", "Keep, share and bring in changes"),
+      h("p.fe-sub", "Your changes live in this browser. Keep a copy as a file, share them with a link, or bring in " +
+        "changes from a file, a link, or a filter this editor saved (its changes are in it)."),
+      h("div.fe-row",
+        h("button.fe-btn", {type: "button", onclick: () => EZ.share.exportFile(app)}, "Save changes to a file"),
+        h("button.fe-btn", {type: "button", onclick: () => EZ.share.copyLink()}, "Copy a share link"),
+        h("button.fe-btn", {type: "button", onclick: () => EZ.share.importFile()}, "Import a file"),
+        h("button.fe-btn", {type: "button", onclick: () => EZ.share.importPaste()}, "Paste a link"),
+        h("button.fe-btn.danger", {type: "button", onclick: () => confirmBox("Clear all changes?",
+          "Every change of this profile goes; your version stays. Undo brings them back.", "Clear", () =>
+            EZ.store.change((e) => { const b = e.base; for (const k of Object.keys(e)) delete e[k]; e.v = EZ.store.SCHEMA; e.base = b; },
+              {label: "clear"}))}, "Clear all changes")),
+      !EZ.store.storageOk() ? h("p.fe-note.bad", "This browser doesn't keep your changes (a private window or blocked " +
+        "storage): save them to a file before you leave.") : null,
+      h("h4", {style: {marginTop: "1em"}}, "History"), historyBox);
+
     box.append(
       h("div.fe-area-head", h("div", h("h2", "Start"),
         h("p.fe-sub", "Pick your version, change what you like, and save it straight into your game."))),
-      version, save);
+      version, save, profilesCard, moveCard);
+    if (app.sub) {
+      const el = box.querySelector("#fe-" + app.sub);
+      if (el) el.scrollIntoView();
+    }
   },
 });

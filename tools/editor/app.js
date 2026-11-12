@@ -53,6 +53,14 @@ EZ.app = (function () {
 
   function variant() { return variantFor(EZ.store.current().edits.base); }
 
+  /* A version's lines in alias form, before any edit (cached: the areas read them to list what can change). */
+  const lineCache = new Map();
+  function versionLines(v) {
+    v = v || variant();
+    if (!lineCache.has(v.name)) lineCache.set(v.name, EZ.core.variantLines(app.src, v));
+    return lineCache.get(v.name);
+  }
+
   /* What the player's edits change beyond their version: {count, warn, byArea} (each edit module counts its own). */
   function changes() {
     const out = {count: 0, warn: 0, byArea: {}};
@@ -70,7 +78,7 @@ EZ.app = (function () {
 
   /* The player's filter: {bytes, lines, name, variant, crc, report}. EZ.edits applies the edits when that module is
      there; with none the file is the launcher's. */
-  function build() {
+  async function build() {
     const p = EZ.store.current(), v = variant();
     let lines = EZ.core.variantLines(app.src, v), report = null;
     if (EZ.edits && EZ.edits.apply) {
@@ -79,6 +87,7 @@ EZ.app = (function () {
       report = r.report;
     }
     lines = EZ.core.written(app.src, lines);
+    if (report && report.count) lines = (await EZ.edits.headerLines(app.src, p, v, report.count)).concat(lines);
     const bytes = EZ.core.encode(lines);
     return {bytes, lines, name: fileName(p), variant: v, crc: EZ.core.crc32(bytes), report};
   }
@@ -95,7 +104,7 @@ EZ.app = (function () {
     app.building = true;
     setTimeout(async () => {
       try {
-        await fn(build());
+        await fn(await build());
       } catch (e) {
         if (e && e.name === "AbortError") return;
         toast("Couldn't build your filter: " + (e && e.message || e), "bad", {sticky: true});
@@ -253,6 +262,9 @@ EZ.app = (function () {
     more.addEventListener("click", () => menu(more, [
       {text: "Download the file", sub: "to put in filters\\local yourself", onclick: () => withBuild("Building your filter", download)},
       canSaveInPlace() ? {text: "Forget the game folder", sub: "the next save asks for it again", onclick: forgetFolder} : null,
+      {text: "Save changes to a file", sub: "to keep or move them (import it here)", onclick: () => EZ.share.exportFile(app)},
+      {text: "Copy a share link", sub: "anyone opening it can load your changes", onclick: () => EZ.share.copyLink()},
+      {text: "Import changes", sub: "a changes file, or a filter this editor saved", onclick: () => EZ.share.importFile()},
       ...(EZ.app.saveMenu || []).map((f) => f(app)),
     ]));
     fill(bar,
@@ -391,6 +403,7 @@ EZ.app = (function () {
     redraw();
     drawPreview();
     window.addEventListener("popstate", () => { fromHash(); drawArea(); drawSide(); });
+    EZ.share.fromLocation();
     document.addEventListener("keydown", keys);
     EZ.store.on((ev) => {
       if (ev.what === "switch" || ev.undo) redraw();
@@ -400,6 +413,7 @@ EZ.app = (function () {
   }
 
   Object.assign(app, {start, go, redraw, drawBar, drawSide, drawArea, drawPreview, variant, variantFor, toggleName,
+                      versionLines,
                       changes, build, withBuild, download, saveToGame, canSaveInPlace, forgetFolder, fileName,
                       STYLE_NAMES, saveMenu: []});
   return app;

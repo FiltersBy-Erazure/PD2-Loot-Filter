@@ -20,7 +20,8 @@ from pathlib import Path
 
 sys.dont_write_bytecode = True
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-import tier_map as T  # noqa: E402  (DOC_HEAD, the players' pages' document head)
+import style_map  # noqa: E402  (the look cards' sample names and name colors, the Minimal page's)
+import tier_map as T  # noqa: E402  (DOC_HEAD, the players' pages' document head; sounds, palette)
 
 ROOT = Path(__file__).resolve().parent.parent
 EDITOR = ROOT / "tools" / "editor"
@@ -28,12 +29,21 @@ TEMPLATE = EDITOR / "template.html"
 PAGE = ROOT / "Erazure-Filter-Editor.html"
 ASSET_INFO = ROOT / "tools" / "editor_assets.json"
 # the modules, in the order the page runs them (each adds itself to the EZ namespace)
-MODULES = ["core.js", "ui.js", "store.js", "app.js", "area-start.js", "area-todo.js"]
+MODULES = ["core.js", "ui.js", "store.js", "filter.js", "features.js", "edits.js", "render.js", "share.js", "app.js",
+           "area-start.js", "area-options.js", "area-looks.js", "area-alerts.js", "area-todo.js"]
+# PD2's own drop sounds (pd2\dropsounds\tinkNN.wav), the PoE versions' picks
+POE_SOUNDS = range(4714, 4730)
 
 
 def page_data():
-    """The catalogs the page embeds (from docs/ and the committed asset info; nothing from sections/)."""
-    data = {}
+    """The catalogs the page embeds (from docs/, the tools and the committed asset info; nothing from sections/)."""
+    sounds = T.load_sounds()
+    data = {
+        "palette": [T.load_palette().get(f"{i:02X}", "#000000") for i in range(256)],
+        "sounds": {str(i): s["name"] for i, s in sorted(sounds.items())},
+        "poeSounds": [i for i in POE_SOUNDS if i in sounds],
+        "looks": {"sample": style_map.SAMPLE, "nameColor": style_map.NAME_COLOR},
+    }
     if ASSET_INFO.exists():
         data["assets"] = json.loads(ASSET_INFO.read_text(encoding="utf-8"))
     return data
