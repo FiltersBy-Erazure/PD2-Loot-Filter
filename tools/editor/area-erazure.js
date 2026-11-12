@@ -150,9 +150,20 @@ EZ.areas = EZ.areas || [];
 
   /* ---------------------------------------------------------------- one rule, opened */
 
+  const lintEnv = (app) => EZ.lint.context(app.src, app.versionLines(), {top: [], bottom: []},
+    {soundCount: app.data.soundCount});
   function lintFor(app, text) {
-    const ctx = EZ.lint.context(app.src, app.versionLines(), {top: [], bottom: []}, {soundCount: app.data.soundCount});
-    return EZ.lint.lines([text], Object.assign(ctx, {block: "erazure"}));
+    return EZ.lint.lines([text], Object.assign(lintEnv(app), {block: "erazure"}));
+  }
+
+  /* The player's changed and added lines the game can't read as written (lint errors): how many changes have one. */
+  function opErrors(app, o) {
+    const ls = o.kind === "change" ? [o.line || ""] : o.kind === "before" || o.kind === "after" ? o.lines || [] : [];
+    return ls.length ? EZ.lint.lines(ls, Object.assign(lintEnv(app), {block: "erazure"})).filter((f) => f.level === "error")
+      : [];
+  }
+  function errorOps(app) {
+    return (EZ.store.current().edits.ops || []).filter((o) => opErrors(app, o).length).length;
   }
 
   function findingsList(list) {
@@ -180,6 +191,8 @@ EZ.areas = EZ.areas || [];
         d.kind === "rule" && d.notifies ? RA.alertsOf(d.out, app) : null,
         d.kind === "rule" ? pill(d.hides ? "hides" : d.stops ? "decides the look" : "adds a layer",
           d.hides ? "bad" : d.stops ? "accent" : "info") : null));
+      const desc = d.kind === "rule" ? RA.miniDesc(d.out, vals) : null;
+      if (desc) body.appendChild(h("div.fe-row", h("b", "In the hover box: "), desc));
       const pv = EZ.preview && EZ.preview.erazure && EZ.preview.erazure();
       if (pv && !r.off && EZ.preview.state) {
         const item = EZ.items.make(EZ.preview.state.spec);
@@ -204,34 +217,48 @@ EZ.areas = EZ.areas || [];
         h("button.fe-btn.ghost.small", {type: "button", onclick: () => { close(); dropOp(p.op.id); }}, "Undo it")));
     }
     const editBox = h("div");
+    let typing = null;  // the open text box: {ta, initial}, for the dialog's "Discard what you typed?"
     const editor = (initial, kind) => {
       const ta = h("textarea", {rows: kind === "change" ? 3 : 4, spellcheck: "false", "aria-label": kind === "change" ?
         "The rule" : "Your lines"});
       ta.value = initial;
+      typing = {ta, initial};
       const out = h("div.fe-stack");
+      const findingsOf = () => {
+        const ls = EZ.rules.lines(ta.value);
+        return EZ.lint.lines(ls, Object.assign(lintEnv(app), {block: "erazure"})).map((f) => Object.assign({}, f,
+          {text: (ls.length > 1 ? "Line " + (f.line + 1) + ": " : "") + f.text}));
+      };
       const draw = () => {
         const ls = EZ.rules.lines(ta.value);
-        const findings = [];
-        for (const f of EZ.lint.lines(ls, Object.assign(EZ.lint.context(app.src, app.versionLines(), {top: [], bottom: []},
-          {soundCount: app.data.soundCount}), {block: "erazure"}))) findings.push(Object.assign({}, f, {text: (ls.length > 1 ?
-            "Line " + (f.line + 1) + ": " : "") + f.text}));
         const d = ls.length === 1 ? EZ.rules.describe(ls[0]) : null;
         fill(out, d && d.kind === "rule" ? h("div.fe-row", h("span.fe-ed-rulelabel", RA.miniLabel(d.out, vals,
           sample(d.cond))),
-          d.notifies ? RA.alertsOf(d.out, app) : null) : null, findingsList(findings));
+          d.notifies ? RA.alertsOf(d.out, app) : null, RA.miniDesc(d.out, vals)) : null, findingsList(findingsOf()));
       };
       ta.addEventListener("input", debounce(draw, 150));
       draw();
+      const keep = () => {
+        const ls = EZ.rules.lines(ta.value);
+        typing = null;
+        if (kind === "change") {
+          const text = ls.join(" ").trim();
+          close();
+          if (!text || text === line) setClaim(app, i, null); else setClaim(app, i, "change", {line: text});
+        } else if (ls.some((l) => l.trim())) { close(); addLines(app, i, kind, ls); }
+      };
       fill(editBox, h("div.fe-stack", h("h4", kind === "change" ? "Change the rule" : kind === "before" ?
         "Your lines before it" : "Your lines after it"), ta, out,
         h("div.fe-row", h("button.fe-btn.primary", {type: "button", onclick: () => {
-          const ls = EZ.rules.lines(ta.value);
-          if (kind === "change") {
-            const text = ls.join(" ").trim();
-            close();
-            if (!text || text === line) setClaim(app, i, null); else setClaim(app, i, "change", {line: text});
-          } else if (ls.some((l) => l.trim())) { close(); addLines(app, i, kind, ls); }
-        }}, "Keep it"), h("button.fe-btn.ghost", {type: "button", onclick: () => fill(editBox)}, "Cancel"))));
+          const errors = findingsOf().filter((f) => f.level === "error");
+          if (!errors.length) { keep(); return; }
+          EZ.ui.dialog({title: "Keep it with errors?", body: [
+            h("p", "The game won't read your line" + (EZ.rules.lines(ta.value).length > 1 ? "s" : "") + " as written:"),
+            h("ul", errors.slice(0, 6).map((f) => h("li", f.text))),
+            h("p.fe-sub", "Kept as it is, the rule can match more items (or other ones) than you meant.")],
+            buttons: [{text: "Keep it anyway", danger: true, onclick: keep}, {text: "Fix it", primary: true}]});
+        }}, "Keep it"), h("button.fe-btn.ghost", {type: "button", onclick: () => { typing = null; fill(editBox); }},
+          "Cancel"))));
       ta.focus();
     };
     const buttons = h("div.fe-row");
@@ -255,7 +282,9 @@ EZ.areas = EZ.areas || [];
     }
     body.appendChild(buttons);
     body.appendChild(editBox);
-    const close = dialog({title: where(m, i), body: [body], buttons: [{text: "Close"}]});
+    const close = dialog({title: where(m, i), body: [body], buttons: [{text: "Close"}],
+      guard: () => typing && typing.ta.value.trim() !== typing.initial.trim() ?
+        "Your lines aren't kept yet: Keep it keeps them. Close without them?" : null});
   }
 
   function opText(op) {
@@ -272,9 +301,12 @@ EZ.areas = EZ.areas || [];
     if (!list.length) return null;
     const rows = list.map((p) => {
       const op = p.op;
+      const errs = opErrors(app, op);
       const status = p.i === null ? pill("needs attention", "bad") : p.how === "exact" ? pill("in place", "good") :
         pill("Erazure changed this rule", "warn");
-      return h("div.fe-rb-op" + (p.i === null ? ".bad" : p.how !== "exact" ? ".warn" : ""),
+      return h("div.fe-rb-op" + (p.i === null || errs.length ? ".bad" : p.how !== "exact" ? ".warn" : ""),
+        errs.length ? h("p.fe-sub.fe-small", pill("error", "bad"), " The game can't read it as written: " +
+          errs.slice(0, 2).map((f) => f.text).join(" ")) : null,
         h("div.fe-row.fe-small", status, h("b", op.kind === "change" ? "Changed" : op.kind === "off" ? "Switched off" :
           op.kind === "on" ? "Switched on" : op.kind === "before" ? "Lines before" : "Lines after"),
           p.i !== null ? h("button.fe-btn.ghost.small", {type: "button", onclick: () => open(app, p.i)}, where(m, p.i)) :
@@ -370,7 +402,8 @@ EZ.areas = EZ.areas || [];
           mine ? pill(mine.map((p) => p.op.kind === "change" ? "changed" : p.op.kind).join(", "), "warn") : null,
           h("span.fe-rb-words", words.get(i))),
         h("span.fe-rb-draw", d.kind === "rule" ? EZ.rulesArea.miniLabel(d.out, vals, sample(r.cond)) : null,
-          d.kind === "rule" && d.notifies ? h("span.fe-row.fe-small", EZ.rulesArea.alertsOf(d.out, app)) : null));
+          d.kind === "rule" && d.notifies ? h("span.fe-row.fe-small", EZ.rulesArea.alertsOf(d.out, app)) : null,
+          d.kind === "rule" ? EZ.rulesArea.miniDesc(d.out, vals) : null));
     };
 
     let painted = [-1, -1];
@@ -417,17 +450,30 @@ EZ.areas = EZ.areas || [];
 
   /* ---------------------------------------------------------------- the area */
 
-  let warnCache = {key: null, n: 0};
+  let warnCache = {key: null, n: 0, bad: 0};
   function needLook(app) {
     const e = EZ.store.current().edits;
     if (!e.ops || !e.ops.length) return 0;
     const key = JSON.stringify(e.ops) + "|" + (app.variant() || {}).name;
     if (warnCache.key !== key) {
-      let n = 0;
+      let n = 0, bad = 0;
       try { n = placed(app).list.filter((p) => p.i === null || p.how !== "exact").length; } catch (err) { n = 0; }
-      warnCache = {key, n};
+      try { bad = errorOps(app); } catch (err) { bad = 0; }
+      warnCache = {key, n: n + bad, bad};
     }
     return warnCache.n;
+  }
+
+  /* For links from other areas ("110-runes:132" in Changes and the preview): open that rule's dialog. */
+  EZ.erazureArea = {open: (app, i) => { if (model(app).lines[i] !== undefined) open(app, i); }};
+
+  if (EZ.app && EZ.app.checks) {
+    EZ.app.checks.push((app) => {
+      needLook(app);
+      const n = warnCache.bad;
+      return n ? {text: `Erazure's rules: ${n} of your changed or added lines the game can't read as written (see ` +
+        "their red notes there).", area: "erazure"} : null;
+    });
   }
 
   EZ.areas.push({
@@ -436,12 +482,11 @@ EZ.areas = EZ.areas || [];
     warn: (e, app) => needLook(app),
     render(box, app) {
       EZ.ui.add(box, [
-        h("div.fe-area-head", h("div", h("h2", "Erazure's rules"),
+        h("div.fe-area-head", h("div", h("h2", "Erazure's rules ", pill("Advanced", "info")),
           h("p.fe-sub", "Every line of your version as BH reads it. Open a rule to switch it off, change it, or add " +
-            "your own lines before or after it."))),
-        h("p.fe-note", "For changing Erazure's rules one by one. Your changes are kept by what each line says, so they " +
-          "follow Erazure's updates, and this page says when Erazure has changed a rule you changed. Quick Edits, Features, Looks " +
-          "and Alerts change many rules at once and never need checking."),
+            "your own lines before or after it. Your changes are kept by what each line says, so they follow " +
+            "Erazure's updates, and this page says when Erazure has changed a rule you changed."))),
+        app.advancedNote(),
         changesCard(app), browser(app)]);
       if (app.sub && box.querySelector("#fe-" + app.sub)) box.querySelector("#fe-" + app.sub).scrollIntoView();
     },

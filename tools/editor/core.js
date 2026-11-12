@@ -70,7 +70,7 @@ EZ.core = (function () {
       if (p < 0) return rule;
       rule = rule.slice(0, p) + value + rule.slice(p + key.length);
     }
-    throw new Error(`Alias[${name}] keeps finding its name in what it writes (BH would hang)`);
+    throw new Error(`Alias[${name}] keeps finding its name in what it writes (the game would hang)`);
   }
 
   /* BH's alias loop over every rule (build.py's bh_substitute): texts = [conditions[], outputs[]], changed in place.
@@ -153,7 +153,7 @@ EZ.core = (function () {
       const r = rules[n], cond = texts[0][n], out = texts[1][n];
       if (cond === r.cond && out === r.out) continue;
       if (cond.indexOf(":") >= 0 || cond.indexOf("//") >= 0 || out.indexOf("//") >= 0) {
-        const err = new Error("an alias writes ':' or '//' into a rule; BH would read the line differently");
+        const err = new Error("an alias writes ':' or '//' into a rule; the game would read the line differently");
         err.line = r.i;
         throw err;
       }

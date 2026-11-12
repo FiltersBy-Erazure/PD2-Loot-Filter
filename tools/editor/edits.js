@@ -71,11 +71,28 @@ EZ.edits = (function () {
     const groups = F.options(ctx.src, ctx.lines);
     const byId = new Map();
     for (const g of groups) for (const o of g.options) byId.set(o.id, o);
+    const on = [];
     for (const id of ids) {
       const o = byId.get(id);
       if (!o) { ctx.unplaced("options", id, "Erazure no longer has this option"); continue; }
-      for (const i of o.lines) ctx.lines[i] = groundOnly(ctx.lines[i].replace(/^\s*\/\/+\s*/, ""));
+      for (const i of o.lines) {
+        ctx.lines[i] = groundOnly(ctx.lines[i].replace(/^\s*\/\/+\s*/, ""));
+        on.push(i);
+      }
     }
+    // an option's hide also takes away the minimap icon, chat line and sound of the items it hides, as an Items hide
+    // does (the overrides step: EZ.overrides' "unalert"): of the items this line hides, not the ones an option line
+    // above it decides first (higher in the list wins)
+    on.sort((a, b) => a - b);
+    const stops = on.map((i) => F.rule(ctx.lines[i])).map((r) => r && !/%CONTINUE%/i.test(r.out) ? r : null);
+    ctx.optionHides = [];
+    stops.forEach((r, k) => {
+      if (!r) return;
+      const label = r.out.replace(/\{[^}]*\}?/, "")
+        .replace(/%(?:(?:BORDER|MAP|DOT|PX|LINE|NOTIFY)-[0-9a-f]{1,4}|SOUNDID-\d{1,4}|TIER-\d)%/gi, "").trim();
+      if (label) return;
+      ctx.optionHides.push({cond: r.cond.trim(), above: stops.slice(0, k).filter(Boolean).map((x) => x.cond.trim())});
+    });
   }
 
   function features(ctx) {
@@ -92,7 +109,9 @@ EZ.edits = (function () {
             const line = ctx.lines[i];
             if (!line.startsWith("ItemDisplay[")) continue;
             const r = F.rule(line);
-            if (r && F.continues(r.out) && !F.notifies(r.out)) ctx.lines[i] = "//" + line;
+            if (r && F.continues(r.out) && !F.notifies(r.out) && (!f.descOnly || descOnly(r.out))) {
+              ctx.lines[i] = "//" + line;
+            }
           }
         }
       } else if (f.aliases && !on) {
@@ -120,9 +139,22 @@ EZ.edits = (function () {
     const want = ctx.edits.looks || {};
     for (const name of Object.keys(want)) {
       if (typeof want[name] !== "string") continue;
-      if (!setAlias(ctx.lines, name, want[name])) ctx.unplaced("looks", name, "Erazure no longer has this look");
+      if (!setAlias(ctx.lines, name, slashes(want[name]))) ctx.unplaced("looks", name, "Erazure no longer has this look");
     }
   }
+
+  /* BH ends a line at its first //: two slashes in a row in a look get the color in effect written between them
+     (/%GOLD%/, as Erazure writes its own looks); with no color before them in the look, one slash stays. */
+  const LOOK_COLOR_RE = /%(WHITE|RED|GREEN|BLUE|GOLD|GRAY|BLACK|TAN|ORANGE|YELLOW|PURPLE|DARK_GREEN|CORAL|SAGE|TEAL|LIGHT_GRAY)%/g;
+  function slashes(v) {
+    return String(v).replace(/\/{2,}/g, (run, at, all) => {
+      const before = all.slice(0, at).match(LOOK_COLOR_RE);
+      return before ? run.split("").join(before[before.length - 1]) : "/";
+    });
+  }
+
+  /* A rule that writes description lines alone: its label is just %NAME%. */
+  const descOnly = (out) => out.replace(/\{[^}]*\}?/, "").replace(/%CONTINUE%/g, "").trim() === "%NAME%";
 
   function remap(ctx) {
     const map = ctx.edits.remap || {};
@@ -408,5 +440,5 @@ EZ.edits = (function () {
   }
 
   return {apply, step, count, countArea, counter, headerLines, fromFile, pack, unpack, copyLevels, groundOnly, COLORS,
-          featureDefault, resized, SITE};
+          featureDefault, resized, slashes, SITE};
 })();

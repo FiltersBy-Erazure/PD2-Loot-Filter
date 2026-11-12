@@ -22,7 +22,7 @@ EZ.areas = EZ.areas || [];
     ["mute", "Mute it", "No drop sound; the label, icon and chat line stay."],
     ["sound", "Another sound", "Its drop sound, wherever Erazure gives it one (or adds one)."],
     ["icon", "Another icon", "Its minimap icon, wherever Erazure gives it one."],
-    ["iconOnly", "Icon only", "Keep the minimap icon; no chat line and no sound (BH gives them together)."],
+    ["iconOnly", "Icon only", "Keep the minimap icon; no chat line and no sound (the game gives them together)."],
     ["notify", "Add an alert", "An icon, sound and chat line of your own."],
     ["look", "Change its look", "Your text where Erazure decides its look; Erazure's tags and description stay."],
     ["replace", "Replace its look", "Your look, decided before any of Erazure's rules."],
@@ -114,34 +114,35 @@ EZ.areas = EZ.areas || [];
       list.filter((k) => k.group === g).map((k) => h("option", {value: k.id}, k.title + " (" + k.codes.length + ")")))));
   }
 
-  /* A search box for items: onPick(pick) with the picked item (EZ.items.search's). */
+  /* A search box for items (the keyboard's arrows and Enter pick too): onPick(pick) with the picked item
+     (EZ.items.search's). */
   function searchBox(placeholder, onPick) {
-    const input = h("input.fe-pv-search", {type: "search", placeholder, "aria-label": placeholder});
-    const picks = h("div.fe-pv-picks", {hidden: true, role: "listbox"});
-    const show = () => {
-      const found = EZ.items.search(input.value, 14);
-      fill(picks, found.map((p) => h("button", {type: "button", role: "option", onclick: () => {
-        picks.hidden = true;
-        input.value = "";
-        onPick(p);
-      }}, h("span", p.label), h("small", p.sub + " · " + p.spec.code))));
-      picks.hidden = !found.length;
-    };
-    input.addEventListener("input", show);
-    input.addEventListener("keydown", (ev) => { if (ev.key === "Escape") picks.hidden = true; });
-    input.addEventListener("blur", () => setTimeout(() => { picks.hidden = true; }, 150));
-    return h("div.fe-pv-pick.fe-bd-search", input, picks);
+    const c = EZ.ui.combo({placeholder, label: placeholder, empty: (q) => `No item matches "${q}".`,
+      find: (q) => EZ.items.search(q, 14).map((p) => ({label: p.label, sub: p.sub + " · " + p.spec.code,
+        pick: () => onPick(p)}))});
+    c.box.classList.add("fe-bd-search");
+    return c.box;
   }
 
   /* ---------------------------------------------------------------- the draft */
 
+  /* A change being made. A unique or set item picked by its name is a change for every unique (or set item) of its
+     base: the card's title says so ("Unique Amulet: Mara's Kaleidoscope and the 13 others"). No action at first:
+     the player picks what to do. */
   function newDraft(pick) {
     const q = pick.spec.quality || "";
-    return {spec: Object.assign({}, pick.spec), label: pick.label,
+    let label = pick.label;
+    if (pick.spec.uni !== undefined && pick.spec.uni !== null && (q === "UNI" || q === "SET")) {
+      const cat = EZ.items.catalog(), b = cat.bases.get(pick.spec.code);
+      const n = cat.uniques.filter((u) => u.code === pick.spec.code && u.kind === q).length;
+      label = `${q === "UNI" ? "Unique" : "Set"} ${b ? plain(b.name) : pick.spec.code}: ${pick.label}` +
+        (n > 1 ? ` and the ${n - 1} other${n > 2 ? "s" : ""}` : "");
+    }
+    return {spec: Object.assign({}, pick.spec), label,
             scope: {codes: (pick.codes || [pick.spec.code]).slice(), quals: q ? [q] : [], eth: "any", id: "any",
                     sockets: [], ed: "", ilvl: ["", ""], levels: [], clvl: ["", ""], extra: ""},
-            action: "hide", sound: 0, icon: "", alert: {icon: {}, sound: 0, chat: "all", tier: 4}, mode: "add",
-            text: "%NAME%", look: "erazure", asLevel: null, keepColor: true, unknown: []};
+            action: "", sound: 0, icon: "", alert: {icon: {}, sound: 0, chat: "all", tier: 4}, mode: "add",
+            text: "%NAME%", look: "erazure", asLevel: null, keepColor: true, unknown: [], touched: false};
   }
 
   /* The draft's scope as an override keeps it (empty fields left out). */
@@ -190,8 +191,10 @@ EZ.areas = EZ.areas || [];
     const q = O().qualsOf(s);
     const white = WHITE.every((x) => q.indexOf(x) >= 0);
     const qn = (white ? ["Non-magical"] : []).concat(q.filter((x) => !white || WHITE.indexOf(x) < 0).map((x) => QUAL_NAME[x]));
-    const bits = [(qn.length ? qn.join(" or ") + " " : "") + names.slice(0, 3).join(", ") +
-      (names.length > 3 ? ` +${names.length - 3}` : "")];
+    const many = s.codes.some((c) => EZ.items.qualities(cat.bases.get(c)));  // bases that drop in every quality
+    const uniques = !q.length && cat.uniques.some((u) => s.codes.indexOf(u.code) >= 0);
+    const bits = [(qn.length ? qn.join(" or ") + " " : many ? "Every quality of " : "") + names.slice(0, 3).join(", ") +
+      (names.length > 3 ? ` +${names.length - 3}` : "") + (uniques ? " (unique and set items too)" : "")];
     if (s.eth === "yes") bits.push("ethereal"); else if (s.eth === "no") bits.push("not ethereal");
     if (s.id === "yes") bits.push("identified"); else if (s.id === "no") bits.push("unidentified");
     const so = O().socketsOf(s);
@@ -225,22 +228,87 @@ EZ.areas = EZ.areas || [];
     return {rows: out, mine: !!mine};
   }
 
-  function strip(app, spec) {
+  /* The table: the item at each level, Erazure's, the player's saved changes, and with the change being made (worked
+     out a moment later: it builds the whole filter). trial: the edits with the draft's change, or null. */
+  let stripToken = 0;
+  function strip(app, spec, trial) {
     const got = levelsOf(app, spec);
     if (!got) return null;
+    const P = EZ.preview;
     const cell = (r) => r.invisible || r.hidden ? h("span.fe-pv-hidden", r.invisible ? "nothing" : "no label") :
       EZ.render.label(r.name, {start: r.start});
     const key = (r) => JSON.stringify([r.name, r.sound, r.chat, r.invisible, r.icons.map((x) => [x.border, x.map, x.dot,
       x.px])]);
+    const my = ++stripToken;
+    const pending = [];
     const rows = got.rows.map(({lv, name, a, b}) => {
       const changed = b && key(a) !== key(b);
-      return h("tr" + (changed ? ".is-changed" : ""), h("td.fe-num", String(lv)), h("td.fe-sub.fe-small", name),
+      const tcell = trial ? h("td", h("span.fe-sub", "…")) : null;
+      const tr = h("tr" + (changed ? ".is-changed" : ""), h("td.fe-num", String(lv)), h("td.fe-sub.fe-small", name),
         h("td", cell(a), a.sound ? h("span.fe-pv-snd", " ♪") : null),
-        got.mine ? h("td", cell(b || a), (b || a).sound ? h("span.fe-pv-snd", " ♪") : null) : null);
+        got.mine ? h("td", cell(b || a), (b || a).sound ? h("span.fe-pv-snd", " ♪") : null) : null, tcell);
+      if (tcell) pending.push({lv, a, b, td: tcell, tr});
+      return tr;
     });
+    if (trial && pending.length) {
+      setTimeout(() => {
+        if (my !== stripToken) return;
+        let f = null;
+        try { f = P.withEdits(trial); } catch (e) { f = null; }
+        let same = 0;
+        for (const x of pending) {
+          const t = f ? P.run(f, spec, x.lv) : null;
+          if (!t) { fill(x.td, h("span.fe-sub", "?")); continue; }
+          fill(x.td, cell(t), t.sound ? h("span.fe-pv-snd", " ♪") : null);
+          if (key(t) !== key(x.b || x.a)) x.td.classList.add("fe-it-new"); else same++;
+        }
+        const note = document.getElementById("fe-it-same");
+        if (note) note.hidden = same !== pending.length;
+      }, 60);
+    }
     return h("div.fe-tablewrap", h("table.fe-it-strip",
-      h("thead", h("tr", h("th", "Lv"), h("th", "Level"), h("th", "Erazure"), got.mine ? h("th", "Yours") : null)),
-      h("tbody", rows)));
+      h("thead", h("tr", h("th", "Lv"), h("th", "Level"), h("th", "Erazure"), got.mine ? h("th", "Yours now") : null,
+        trial ? h("th", "With this change") : null)),
+      h("tbody", rows)),
+      trial ? h("p.fe-note.warn.fe-small", {id: "fe-it-same", hidden: true}, "This change changes nothing for this " +
+        "item at these settings: Erazure (or your other changes) already does it.") : null);
+  }
+
+  /* The draft as the override it adds: {o} or {error}. */
+  function overrideOf(d) {
+    if (!d.action) return {error: "Pick what to do with them (What to do)."};
+    const o = {id: d.id || "i" + Date.now().toString(36) + Math.random().toString(36).slice(2, 5), action: d.action,
+               scope: scopeOf(d.scope)};
+    if (d.action === "sound") o.sound = d.sound;
+    if (d.action === "icon") o.icon = d.icon;
+    if (d.action === "notify") { o.alert = JSON.parse(JSON.stringify(d.alert)); o.mode = d.mode; }
+    if (d.action === "hunt") o.alert = JSON.parse(JSON.stringify(d.alert));
+    if (d.action === "show" && d.look === "level") {
+      if (d.asLevel === null || d.asLevel === undefined) return {error: "Pick the level whose look it takes."};
+      o.look = "level";
+      o.asLevel = d.asLevel;
+    }
+    if (d.action === "look" || d.action === "replace" || d.action === "hunt" || (d.action === "show" && d.look === "own")) {
+      const label = String(d.text || "").replace(/\{[^}]*\}?/, "")
+        .replace(/%(?:CONTINUE|(?:BORDER|MAP|DOT|PX|LINE|NOTIFY)-[0-9a-f]{1,4}|SOUNDID-\d{1,4}|TIER-\d)%/gi, "").trim();
+      if (!label) {  // an empty label would hide the item everywhere, in town and the inventory too
+        return {error: "The look is empty, which would hide the item everywhere. To hide it on the ground outside " +
+          "town, pick Hide it."};
+      }
+      o.text = d.text;
+      o.keepColor = !!d.keepColor;
+      if (d.action === "show") o.look = "own";
+    }
+    return {o};
+  }
+
+  /* The player's edits with the draft's change in them (for the table's last column), or null. */
+  function trialEdits(d) {
+    const r = overrideOf(Object.assign({}, d, {id: d.id || "draft"}));
+    if (!r.o) return null;
+    const e = JSON.parse(JSON.stringify(EZ.store.current().edits));
+    e.items = (e.items || []).filter((x) => x.id !== r.o.id).concat([r.o]);
+    return e;
   }
 
   /* ---------------------------------------------------------------- the form */
@@ -249,7 +317,7 @@ EZ.areas = EZ.areas || [];
     const d = draft, cat = EZ.items.catalog();
     const s = d.scope;
     const redraw = () => editor(app, box);
-    const set = (fn) => { fn(d); redraw(); };
+    const set = (fn) => { fn(d); d.touched = true; redraw(); };
     const flip = (arr, v) => { const i = arr.indexOf(v); if (i >= 0) arr.splice(i, 1); else arr.push(v); };
     const levelNames = EZ.filter.levels(app.versionLines()).map((l) => plain(l.text));
     const spec = sample(d);
@@ -285,8 +353,6 @@ EZ.areas = EZ.areas || [];
         typed, h("button.fe-btn.small", {type: "button", onclick: addTyped}, "Add")),
       (d.unknown || []).length ? h("p.fe-note.warn.fe-small", d.unknown.join(", ") + (d.unknown.length === 1 ?
         " isn't an item code." : " aren't item codes.") + " Find the item by its name in Add a base.") : null);
-    const shared = quals.filter((q) => q === "UNI" || q === "SET").flatMap((q) =>
-      cat.uniques.filter((u) => s.codes.indexOf(u.code) >= 0 && u.kind === q).map((u) => u.name));
     const white = WHITE.every((x) => quals.indexOf(x) >= 0);
     const qualityField = h("div.fe-bd-field.wide", h("span.fe-bd-label", "Quality (none picked: every quality)"),
       h("div.fe-row.fe-small",
@@ -325,7 +391,7 @@ EZ.areas = EZ.areas || [];
       h("span", "to"), h("input.fe-pv-num", {type: "number", min: 1, max: 99, value: ilvl[1], placeholder: "to",
         "aria-label": "To item level", onchange: (e) => set((x) => { x.scope.ilvl = [(x.scope.ilvl || [])[0] || "", e.target.value]; })})));
     const extraField = h("details.fe-bd-field.wide", s.extra ? {open: true} : {},
-      h("summary.fe-sub.fe-small", "More conditions (BH's words)"),
+      h("summary.fe-sub.fe-small", "More conditions (the loot filter's own words)"),
       h("input.fe-mono", {type: "text", value: s.extra || "", spellcheck: "false", placeholder: "e.g. SORCERESS or RES>29",
         "aria-label": "More conditions", style: {width: "100%"}, onchange: (e) => set((x) => { x.scope.extra = e.target.value; })}),
       h("p.fe-sub.fe-small", "Added to the rest as they are (an OR needs its brackets). Lint them on My rules first."));
@@ -397,6 +463,7 @@ EZ.areas = EZ.areas || [];
       }}, h("option", {value: ""}, "Start from a look…"),
         h("optgroup", {label: "Simple"}, PRESETS.map(([t, v]) => h("option", {value: v}, t))),
         EZ.filter.GROUPS.map((g) => h("optgroup", {label: "Erazure: " + g.title}, cards.filter((c) => c.group === g.id &&
+          c.used !== false &&
           c.tpls[0] && c.tpls[0].tpl.indexOf("%NAME%") >= 0).map((c) => h("option", {value: c.tpls[0].tpl}, c.title))))));
       const input = h("input.fe-mono", {type: "text", value: d.text, spellcheck: "false", "aria-label": "The look",
         oninput: (e) => { d.text = e.target.value; prev(); }});
@@ -414,49 +481,41 @@ EZ.areas = EZ.areas || [];
           "%NAME% is the game's name (and Erazure's base names)." : "%NAME% is the name with Erazure's tags so far."))));
     }
     const add = () => {
-      const o = {id: d.id || "i" + Date.now().toString(36) + Math.random().toString(36).slice(2, 5), action: d.action,
-                 scope: scopeOf(s)};
-      if (d.action === "sound") o.sound = d.sound;
-      if (d.action === "icon") o.icon = d.icon;
-      if (d.action === "notify") { o.alert = JSON.parse(JSON.stringify(d.alert)); o.mode = d.mode; }
-      if (d.action === "hunt") o.alert = JSON.parse(JSON.stringify(d.alert));
-      if (d.action === "show" && d.look === "level") {
-        if (d.asLevel === null || d.asLevel === undefined) { EZ.ui.toast("Pick the level whose look it takes.", "bad"); return; }
-        o.look = "level";
-        o.asLevel = d.asLevel;
-      }
-      if (d.action === "look" || d.action === "replace" || d.action === "hunt" || (d.action === "show" && d.look === "own")) {
-        const label = String(d.text || "").replace(/\{[^}]*\}?/, "")
-          .replace(/%(?:CONTINUE|(?:BORDER|MAP|DOT|PX|LINE|NOTIFY)-[0-9a-f]{1,4}|SOUNDID-\d{1,4}|TIER-\d)%/gi, "").trim();
-        if (!label) {  // an empty label would hide the item everywhere, in town and the inventory too
-          EZ.ui.toast("The look is empty, which would hide the item everywhere. To hide it on the ground outside town, " +
-            "pick Hide it.", "bad");
-          return;
-        }
-        o.text = d.text;
-        o.keepColor = !!d.keepColor;
-        if (d.action === "show") o.look = "own";
-      }
-      draft = null;  // before the change: the area is drawn again without the form
+      const r = overrideOf(d);
+      if (r.error) { EZ.ui.toast(r.error, "bad"); return; }
+      const o = r.o, was = !!d.id;
+      // the card stays open on the change just added (Erazure beside yours), until the player closes it
+      d.id = o.id;
+      d.touched = false;
+      d.added = true;
       EZ.store.change((ed) => {
         ed.items = (ed.items || []).filter((x) => x.id !== o.id);
         ed.items.push(o);
       }, {label: "items"});
-      EZ.ui.toast((d.id ? "Changed: " : "Added: ") + ACTION_NAME[o.action] + " · " + summary(o), "good");
+      EZ.ui.toast((was ? "Changed: " : "Added: ") + ACTION_NAME[o.action] + " · " + summary(o), "good");
     };
+    // unique and set items on these bases: a change can't single one out, identified or not
+    const uniKinds = quals.length ? quals.filter((q) => q === "UNI" || q === "SET") : ["UNI", "SET"];
+    const shared = uniKinds.flatMap((q) => cat.uniques.filter((u) => s.codes.indexOf(u.code) >= 0 && u.kind === q)
+      .map((u) => u.name));
+    const sharedWord = uniKinds.length === 1 ? (uniKinds[0] === "SET" ? "set items" : "unique items") :
+      "unique and set items";
+    const P = EZ.preview;
     fill(box,
       h("div.fe-row", h("h3", {style: {margin: 0}}, d.label), h("span.fe-sub", (base ? plain(base.name) : "") + " · " +
-        spec.code), h("span.fe-bar-gap"), h("button.fe-btn.ghost.small", {type: "button", onclick: () => {
+        spec.code), d.added && !d.touched ? EZ.ui.pill("added", "good") : null, h("span.fe-bar-gap"),
+        h("button.fe-btn.ghost.small", {type: "button", "aria-label": "Close", title: "Close", onclick: () => {
           draft = null; app.drawArea(); }}, "✕")),
-      strip(app, spec),
-      h("p.fe-sub.fe-small", "The item as the preview shows it (its character, place and the game's options), made to " +
-        "fit what you pick below; click a base to see that one."),
+      P && P.context ? P.context(() => app.drawArea(), {lead: "The item below at every filter level, for a level"}) : null,
+      strip(app, spec, trialEdits(d)),
+      h("p.fe-sub.fe-small", "Made to fit what you pick below (click a base to see that one). " + (d.action ?
+        "The last column is with this change." : "Pick what to do, and the table shows it with the change.")),
       h("fieldset.fe-bd-set", h("legend", "Which of them"),
         basesField,
-        shared.length > 1 ? h("p.fe-note.warn.fe-bd-field.wide", `${shared.length} ${quals.indexOf("SET") >= 0 &&
-          quals.indexOf("UNI") < 0 ? "set items" : "uniques and set items"} share these bases (${shared.slice(0, 6).join(", ")}` +
-          `${shared.length > 6 ? "…" : ""}): until it's identified BH can't tell them apart, so the change is for all of ` +
-          "them.") : null,
+        shared.length ? h("p.fe-note.warn.fe-bd-field.wide", (shared.length > 1 ? `${shared.length} ${sharedWord} ` +
+          `share these bases (${shared.slice(0, 6).join(", ")}${shared.length > 6 ? "…" : ""})` : `${shared[0]} is on ` +
+          "this base") + ": a change can't single out one of them, identified or not, so it is for every one of them." +
+          (!quals.length ? " With no quality picked it is for every quality, unique and set items too." : "")) : null,
         qualityField,
         h("div.fe-bd-field", h("span.fe-bd-label", "Ethereal"), seg([{value: "any", text: "Either"}, {value: "yes",
           text: "Yes"}, {value: "no", text: "No"}], s.eth, (v) => set((x) => { x.scope.eth = v; }), {label: "Ethereal"})),
@@ -483,10 +542,15 @@ EZ.areas = EZ.areas || [];
               x.keepColor = false;
             }
           }))))),
-        extra.length ? h("div.fe-bd-field.wide", extra) : null),
-      h("div.fe-row", h("button.fe-btn.primary", {type: "button", onclick: add}, d.id ? "Keep the change" : "Add this change"),
-        h("span.fe-sub.fe-small", ACTION_NAME[d.action] + " · " + summary({action: d.action, look: d.look,
-          asLevel: d.asLevel, scope: s}))));
+        extra.length ? h("div.fe-bd-field.wide", extra) : null,
+        (d.action === "hide" || d.action === "mute" || d.action === "iconOnly") && shared.length ?
+          h("p.fe-note.warn.fe-bd-field.wide", "This " + (d.action === "hide" ? "hides" : "quietens") + " unique and " +
+            "set items too: " + shared.slice(0, 4).join(", ") + (shared.length > 4 ? "…" : "") + ". To leave them " +
+            "out, pick the qualities it is for (Non-magical, Magic, Rare…).") : null),
+      h("div.fe-row", h("button.fe-btn.primary", {type: "button", onclick: add, disabled: !d.action},
+        d.id ? "Keep the change" : "Add this change"),
+        h("span.fe-sub.fe-small", d.action ? ACTION_NAME[d.action] + " · " + summary({action: d.action, look: d.look,
+          asLevel: d.asLevel, scope: s}) : "Pick what to do with them first (What to do).")));
   }
 
   /* An override back into the form. */
@@ -511,19 +575,29 @@ EZ.areas = EZ.areas || [];
     count: (e) => EZ.edits.countArea("items", e),
     render(box, app) {
       const e = EZ.store.current().edits;
-      const pick = searchBox("Find an item: Shako, Ber Rune, Small Charm, Thresher…", (p) => {
-        draft = newDraft(p);
-        app.drawArea();
-        if (EZ.preview && EZ.preview.state) {  // the preview follows the item
-          EZ.preview.state.spec = Object.assign({}, p.spec);
-          EZ.preview.state.mode = "item";
-          EZ.preview.changed({}, app);
-        }
-      });
-      const kindSel = kindSelect("…or a kind of item", (k) => {
-        draft = newDraft({spec: {code: k.codes[0], quality: k.quality}, codes: k.codes, label: k.title});
-        app.drawArea();
-      });
+      /* A pick here while a change is being made asks first: add it to that change, or start a new one. */
+      const startNew = (next, codes, then) => {
+        const go = () => { draft = next; app.drawArea(); if (then) then(); };
+        if (!draft || !draft.touched) { go(); return; }
+        EZ.ui.dialog({title: "Start a new change?", body: [h("p", "Your choices for ", h("b", draft.label),
+          " aren't added yet. Add what you picked to that change, or start a new one (those choices go).")],
+          buttons: [{text: "Cancel"},
+            {text: "Add it to this change", onclick: () => {
+              for (const c of codes) if (draft.scope.codes.indexOf(c) < 0) draft.scope.codes.push(c);
+              app.drawArea();
+            }},
+            {text: "Start a new change", primary: true, onclick: go}]});
+      };
+      const pick = searchBox("Find an item: Shako, Ber Rune, Small Charm, Thresher…", (p) => startNew(newDraft(p),
+        [p.spec.code], () => {
+          if (EZ.preview && EZ.preview.state) {  // the preview follows the item
+            EZ.preview.state.spec = Object.assign({}, p.spec);
+            EZ.preview.state.mode = "item";
+            EZ.preview.changed({}, app);
+          }
+        }));
+      const kindSel = kindSelect("…or a kind of item", (k) => startNew(newDraft({spec: {code: k.codes[0],
+        quality: k.quality}, codes: k.codes, label: k.title}), k.codes));
       const card = h("section.fe-card", {id: "fe-item-edit"});
       if (draft) editor(app, card);
       const list = (e.items || []).filter(EZ.overrides.valid);
@@ -546,10 +620,13 @@ EZ.areas = EZ.areas || [];
         h("section.fe-card", h("div.fe-row", pick, kindSel),
           draft ? null : h("p.fe-sub.fe-small", {style: {marginTop: ".5em"}}, "Pick one item or a kind (throwing " +
             "weapons, paladin shields, helms…), then add more bases, leave some out, and narrow it down by quality, " +
-            "sockets, enhanced defense, item level and filter level. Unique and set items are told apart only once " +
-            "identified: unidentified, a change is for every unique (or set item) on that base.")),
+            "sockets, enhanced defense, item level and filter level. A change is for every unique (or set item) on " +
+            "the bases it picks: it can't single out one of them, identified or not.")),
         draft ? card : null, yours]);
       if (draft) requestAnimationFrame(() => { const el = box.querySelector("#fe-item-edit"); if (el) el.scrollIntoView({block: "nearest"}); });
     },
   });
+
+  /* For other areas (a rule's name in Changes and the preview): an item change in a few words. */
+  EZ.itemsArea = {title: (o) => (ACTION_NAME[o.action] || o.action) + " · " + summary(o)};
 })();

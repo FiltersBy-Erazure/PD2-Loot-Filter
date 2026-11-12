@@ -58,8 +58,8 @@ EZ.share = (function () {
     } else {
       data = await EZ.edits.fromFile(text);
       if (!data) {
-        throw new Error("This filter has no editor changes in it: it wasn't saved by the Filter Editor (or was " +
-                        "edited by hand afterwards and lost its EDITS lines).");
+        throw new Error("This file has no Filter Editor changes in it: it wasn't saved by this page, or the lines at " +
+                        "its top that hold the changes were taken out by hand.");
       }
     }
     if (!data || typeof data !== "object" || data.app !== "erazure-filter-editor" || !data.edits) {
@@ -77,21 +77,24 @@ EZ.share = (function () {
     const n = EZ.edits.count(imported.edits);
     dialog({title: "Import changes", body: [
       h("p", h("b", imported.name), ` (${n} change${n === 1 ? "" : "s"}) ` + (source || "") + "."),
-      h("p.fe-sub", "As a new profile keeps your own changes as they are; over yours replaces your current profile's " +
-        "changes (Undo brings them back)."),
+      h("p.fe-sub", "As a new profile keeps your own changes as they are (it gets a file of its own); over yours " +
+        "replaces your current profile's changes (History keeps a copy of yours, and Undo brings them back while this " +
+        "page is open)."),
     ], buttons: [
       {text: "Cancel"},
       {text: "Over my current profile", onclick: () => {
-        EZ.store.change((e) => {
-          for (const k of Object.keys(e)) delete e[k];
-          Object.assign(e, JSON.parse(JSON.stringify(imported.edits)));
-        }, {label: "import"});
-        toast("Imported over your current profile.", "good");
+        EZ.store.keepCopy("before importing over it").then(() => {
+          EZ.store.change((e) => {
+            for (const k of Object.keys(e)) delete e[k];
+            Object.assign(e, JSON.parse(JSON.stringify(imported.edits)));
+          }, {label: "import"});
+          toast("Imported over your current profile.", "good");
+        });
       }},
       {text: "As a new profile", primary: true, onclick: () => {
-        const p = EZ.store.addProfile(imported.name, imported.edits);
-        EZ.store.changeProfile((pp) => { pp.file = imported.file || pp.file; });
-        toast(`Imported as the profile ${p.name}.`, "good");
+        const p = EZ.store.addProfile(imported.name, imported.edits,
+          imported.file && imported.file !== "Erazure-Custom" ? imported.file : null);
+        toast(`Imported as the profile ${p.name}, saving to ${p.file}.filter.`, "good");
       }},
     ]});
   }

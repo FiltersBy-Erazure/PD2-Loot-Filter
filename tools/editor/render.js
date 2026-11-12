@@ -112,5 +112,34 @@ EZ.render = (function () {
     return out;
   }
 
-  return {CODES, WORDS, QUALITY, codes, rgb, lines, label, plain, levelName};
+  /* Text with color codes as lines of colored spans, in the game's order (a chat line, a description). */
+  function coded(text, start, cls) {
+    const out = h("span." + (cls || "fe-coded"));
+    lines(text, start).forEach((segs, i) => {
+      if (i) out.appendChild(h("br"));
+      for (const s of segs) {
+        const span = h("span", s.text);
+        const c = rgb(s.color);
+        if (c) span.style.color = c;
+        out.appendChild(span);
+      }
+    });
+    return out;
+  }
+
+  /* The hover-box lines a rule's output writes of its own ({…}: %NAME% is what earlier rules wrote, %CL% a new
+     line), in the game's codes, or "" when it writes none. vals: the alias values (its looks). */
+  function descOf(out, vals) {
+    const l = out.indexOf("{"), r = out.indexOf("}", l + 1);
+    if (l < 0 || r < 0) return "";
+    let t = out.slice(l + 1, r);
+    for (let n = 0; n < 4 && /%[A-Z0-9_]+%/.test(t); n++) {
+      t = t.replace(/%([A-Z0-9_]+)%/g, (m, k) => k === "NAME" || !vals || !(k in vals) ? m : vals[k]);
+    }
+    t = codes(t.replace(/%(?:CL|NL)%/g, "\n").replace(/%PERCENT%/g, "%").replace(/%CS%/g, " "));
+    return t.split("\n").filter((x) => x.replace(/ÿc./g, "").replace(/%NAME%/g, "").trim())
+      .map((x) => x.replace(/%NAME%/g, "…")).join("\n");
+  }
+
+  return {CODES, WORDS, QUALITY, codes, rgb, lines, label, plain, levelName, coded, descOf};
 })();

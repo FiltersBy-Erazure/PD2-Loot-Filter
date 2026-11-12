@@ -1,7 +1,8 @@
 /* Erazure's features a player can switch off (or, for the few Erazure ships switched off, on). Each names sections or
    aliases by name, so it follows every new Erazure:
      sections: the %CONTINUE% rules of these sections that notify nothing are switched off (//), so only label text and
-               description lines go; a section's stopping rules, hides and alerts are never touched;
+               description lines go; a section's stopping rules, hides and alerts are never touched; with descOnly,
+               only the rules that write description lines alone (output %NAME%{...}: the label untouched);
      aliases:  these aliases (names or a name pattern) are set to FALSE, the way Erazure's own tag systems are wired;
      switchOn: (on: false by default) the switched-off rules of a section whose text has `match` are switched on.
    tools/editor_selftest.py checks every feature against today's source. */
@@ -58,8 +59,9 @@ EZ.features = [
   {id: "map-resists", group: "Maps", title: "Map resistance lines",
    sub: "The monsters' highest resistances and immunities on maps.", sections: ["140-map-resistances.filter"]},
   {id: "map-mods", group: "Maps", title: "Map mod highlights",
-   sub: "The lines that point out a map's monster density, rarity and dangerous mods.",
-   sections: ["145-map-rolls-and-notifications.filter"]},
+   sub: "The hover box lines that point out a map's monster density, rarity and dangerous mods (the tier, Map and " +
+        "mf / den / rar tags on its label stay).",
+   sections: ["145-map-rolls-and-notifications.filter"], descOnly: true},
   {id: "map-exp", group: "Maps", title: "Map experience lines",
    sub: "A map's experience tag (2.0x Experience) and the experience at your level.",
    sections: ["146-map-experience.filter"]},

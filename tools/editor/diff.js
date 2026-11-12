@@ -80,5 +80,38 @@ EZ.diff = (function () {
     return out;
   }
 
-  return {lines, hunks};
+  /* Where each line of b came from in a: Int32Array (a's line, or -1 for a line of b's own). In a changed place, a
+     line taken out and a line put in are paired when both are rules starting with the same 24 characters of
+     condition, so a rule the player's changes narrowed (an exception added at its end) still points at Erazure's.
+     Cached per b. */
+  const origins = new WeakMap();
+  const head = (s) => { const m = /^ItemDisplay\[([^\]]{0,24})/.exec(s || ""); return m ? m[1] : null; };
+  function origin(a, b) {
+    const hit = origins.get(b);
+    if (hit && hit.a === a) return hit.map;
+    const map = new Int32Array(b.length).fill(-1);
+    const edits = lines(a, b, 60000);
+    if (edits) {
+      let run = [];
+      const flush = () => {
+        const dels = run.filter((e) => e.kind === "del").map((e) => e.a);
+        for (const e of run) {
+          if (e.kind !== "add") continue;
+          const hb = head(b[e.b]);
+          if (hb === null) continue;
+          const k = dels.findIndex((d) => head(a[d]) === hb);
+          if (k >= 0) { map[e.b] = dels[k]; dels.splice(k, 1); }
+        }
+        run = [];
+      };
+      for (const e of edits) {
+        if (e.kind === "same") { flush(); map[e.b] = e.a; } else run.push(e);
+      }
+      flush();
+    }
+    origins.set(b, {a, map});
+    return map;
+  }
+
+  return {lines, hunks, origin};
 })();

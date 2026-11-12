@@ -61,6 +61,12 @@ EZ.words = (function () {
     const m = /^([A-Z_]+?)(\d*(?:,\d+)?)([<=>~])(-?\d+)(?:-(-?\d+))?$/.exec(w);
     if (m) {
       const key = m[1], id = m[2], op = m[3], a = +m[4], b = m[5];
+      // + to a skill, a skill tab or a class's skills: "+2 or more to Teleport"
+      const tabs = EZ.rulesArea && EZ.rulesArea.TABS, classes = EZ.rulesArea && EZ.rulesArea.CLASS_NAMES;
+      const what = /^(SK|OS)$/.test(key) && id ? skill(+id) : key === "TABSK" && id && tabs ?
+        (tabs.find(([t]) => t === +id) || [0, "skill tab " + id])[1] : key === "CLSK" && id && classes ?
+        (classes[+id] || "class " + id) + " skills" : null;
+      if (what && (op === ">" || op === "=")) return op === "=" ? `+${a} to ${what}` : `+${a + 1} or more to ${what}`;
       let name = NUMBER[key + id] || NUMBER[key];
       if (!name && /^(SK|OS)$/.test(key) && id) name = "+ to " + skill(+id);
       else if (!name && key === "CHSK" && id) name = "charges of " + skill(+id);
@@ -172,5 +178,57 @@ EZ.words = (function () {
     return t ? text(t, opts, false) : c;
   }
 
-  return {cond, word, tokens, parse, PLAIN};
+  /* The items a condition is for, in a few words ("Lem Rune, Pul Rune", "unique Ceremonial Javelin, Ceremonial Bow
+     and 3 more", "rare helms"): the qualities, item names and kinds it asks for (not the ones it rules out), never its
+     code. "" when it names none. Used where a sound or icon says what it is for. */
+  const QUALS = ["UNI", "SET", "RARE", "CRAFT", "MAG", "NMAG", "SUP", "INF"];
+  const KINDS = ["HELM", "CIRC", "CHEST", "SHIELD", "GLOVES", "BOOTS", "BELT", "ARMOR", "AXE", "MACE", "CLUB", "TMACE",
+    "HAMMER", "SWORD", "DAGGER", "THROWING", "JAV", "SPEAR", "POLEARM", "BOW", "XBOW", "STAFF", "WAND", "SCEPTER",
+    "WEAPON", "ZON", "SOR", "NEC", "DIN", "BAR", "DRU", "SIN", "JEWELRY", "CHARM", "QUIVER", "CLASS"];
+  function items(c, max) {
+    max = max || 3;
+    const t = c && c.trim() ? parse(tokens(c)) : null;
+    if (!t) return "";
+    const pos = [];
+    (function walk(n, neg) {
+      if (!n) return;
+      if (n.k === "w") { if (!neg) pos.push(n.w); return; }
+      if (n.k === "not") { walk(n.x, !neg); return; }
+      if (n.k === "group") { walk(n.x, neg); return; }
+      walk(n.a, neg);
+      walk(n.b, neg);
+    })(t, false);
+    const names = [], seen = new Set();
+    const add = (n) => { if (n && !seen.has(n)) { seen.add(n); names.push(n); } };
+    for (const w of pos) {
+      if (/^[a-z0-9]{3,4}$/.test(w) && !/^\d+$/.test(w)) {
+        const b = EZ.items && EZ.items.base && EZ.items.base(w);
+        if (b) add(b.name.replace(/ÿc./g, "").split("\n")[0].trim());
+      } else if (/^RUNE[<>=~]/.test(w)) add(word(w).replace(/^rune /, "runes "));
+    }
+    const q = QUALS.filter((w) => pos.indexOf(w) >= 0).map((w) => PLAIN[w]);
+    const qual = q.length ? q.join(" or ") + " " : "";
+    if (names.length) {
+      const more = names.length - max;
+      return qual + names.slice(0, max).join(", ") + (more > 0 ? ` and ${more} more` : "");
+    }
+    const PLURAL = {MACE: "maces (clubs and hammers too)", GLOVES: "gloves", BOOTS: "boots", ARMOR: "armor",
+      CHEST: "body armor", JEWELRY: "rings and amulets", STAFF: "staves"};
+    const kinds = KINDS.filter((w) => pos.indexOf(w) >= 0).map((w) => PLURAL[w] || PLAIN[w] + "s");
+    if (kinds.length) return qual + kinds.slice(0, max).join(", ");
+    const tier = pos.map((w) => /^MAPTIER([=~])(\d+)(?:-(\d+))?$/.exec(w)).find(Boolean);
+    if (tier) return qual + "T" + tier[2] + (tier[3] ? "-T" + tier[3] : "") + " maps";
+    if (pos.some((w) => /^MAPTIER/.test(w))) return qual + "maps";
+    return q.length ? q.join(" or ") + " items" : "";
+  }
+
+  /* What a rule is for, said for a player: its own note where it reads as a name ("Kira's Guardian Tiara"), else the
+     items its condition names ("2os" and other shorthand notes give way to the items). */
+  function forWhat(cond, comment, max) {
+    const c = String(comment || "").replace(/^\/\/\s*/, "").trim();
+    if (c && c.length < 60 && /^[A-Z]/.test(c) && !/^[(!A-Z0-9_ ]+$/.test(c)) return c;
+    return items(cond, max);
+  }
+
+  return {cond, word, tokens, parse, items, forWhat, PLAIN};
 })();

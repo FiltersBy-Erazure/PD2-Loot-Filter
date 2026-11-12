@@ -112,12 +112,31 @@ EZ.app = (function () {
     const done = toast(h("span", h("span.fe-spin"), " " + what + "…"), null, {sticky: true});
     app.building = true;
     setTimeout(async () => {
+      let built = null;
       try {
-        await fn(await build());
+        built = await build();
       } catch (e) {
-        if (e && e.name === "AbortError") return;
         toast("Couldn't build your filter: " + (e && e.message || e), "bad", {sticky: true});
         if (window.console) console.error(e);
+        app.building = false;
+        done();
+        return;
+      }
+      try {
+        await fn(built);
+      } catch (e) {
+        // the folder picker closed without a folder (the player cancelled, or the browser refused a system folder
+        // such as Program Files), or the browser couldn't write there: offer the download
+        const offer = h("button.fe-btn.small", {type: "button", style: {marginLeft: ".6em"}, onclick: () => {
+          close();
+          download(built);
+        }}, "Download instead");
+        const close = e && e.name === "AbortError"
+          ? toast(h("span", "No folder picked, so nothing was saved. If Diablo II is under Program Files, your " +
+              "browser can't save there: download the file and move it into ", h("code", "filters\\local"), " yourself."),
+            null, {ms: 14000, action: offer})
+          : toast("Couldn't save into the folder: " + (e && e.message || e), "bad", {sticky: true, action: offer});
+        if (!(e && e.name === "AbortError") && window.console) console.error(e);
       } finally {
         app.building = false;
         done();
@@ -185,17 +204,31 @@ EZ.app = (function () {
     await w.close();
   }
 
-  /* What a module wants the player to know before saving (EZ.app.checks: fn(app) -> {text, area} or null): a
-     dialog lists them, with Save anyway or Fix them (the first one's area). */
+  /* What a module wants the player to know before saving (EZ.app.checks: fn(app) -> {text, area, sub} or null): a
+     dialog lists them, with Fix them (the first one's area) or Save anyway. */
   function checked(then) {
     const issues = app.checks.map((f) => { try { return f(app); } catch (e) { return null; } }).filter(Boolean);
     if (!issues.length) { then(); return; }
     dialog({title: "Before you save", body: [
-      h("p", "BH will trip over some of your changes:"),
+      h("p", issues.length === 1 ? "Have a look at this first:" : "Have a look at these first:"),
       h("ul", issues.map((x) => h("li", x.text))),
-      h("p.fe-sub", "Save anyway, or fix them first.")],
-      buttons: [{text: "Fix them", onclick: () => { const at = issues.find((x) => x.area); if (at) go(at.area); }},
-                {text: "Save anyway", primary: true, onclick: () => { then(); }}]});
+      h("p.fe-sub", "Fix them first, or save as it is.")],
+      buttons: [{text: "Save anyway", onclick: () => { then(); }},
+                {text: "Fix them", primary: true, onclick: () => {
+                  const at = issues.find((x) => x.area);
+                  if (at) go(at.area, at.sub || "");
+                }}]});
+  }
+
+  /* Two profiles that save to the same file replace each other's filter in the game folder. */
+  function sharedFileCheck() {
+    const p = EZ.store.current();
+    const same = EZ.store.sharedFiles().find((list) => list.some((x) => x.id === p.id));
+    if (!same) return null;
+    const others = same.filter((x) => x.id !== p.id).map((x) => x.name);
+    return {text: `Your profile ${p.name} saves to the same file as ${others.join(", ")} (${fileName(p)}): saving it ` +
+      "replaces that profile's filter in your game folder. Give it a file name of its own on Start.", area: "start",
+      sub: "save"};
   }
 
   function saveToGame() { checked(saveNow); }
@@ -216,6 +249,8 @@ EZ.app = (function () {
               h("li", "Once: in the launcher open Item Filter Profiles, click ", h("b", "Local Filter"), ", pick ",
                 h("b", built.name), " and click ", h("b", "Save Filter"), "."),
               h("li", "After every save here, press " + RELOAD + ".")),
+            h("p.fe-sub", "If Diablo II is installed under Program Files, your browser won't let the page save there: " +
+              "use Download instead and move the file into filters\\local yourself."),
           ],
           buttons: [{text: "Download instead", onclick: () => resolve("download")},
                     {text: "Pick the folder", primary: true, onclick: () => resolve("pick")}],
@@ -256,7 +291,7 @@ EZ.app = (function () {
     app.els.root.classList.remove("nav-open");
     drawArea();
     drawSide();
-    if (!(opts && opts.keepScroll)) {
+    if (!(opts && opts.keepScroll) && !sub) {  // with a sub-section, the area has scrolled to it
       const top = app.els.root.getBoundingClientRect().top + window.scrollY - topOffset();
       if (window.scrollY > top) window.scrollTo({top});
     }
@@ -324,8 +359,12 @@ EZ.app = (function () {
     const ch = changes();
     const list = h("ul.fe-nav");
     let group = null;
+    const NAMED = {c: "Advanced"};  // My rules and Erazure's rules: the filter's own language
     for (const a of EZ.areas) {
-      if (group !== null && a.group !== group) list.appendChild(h("li.fe-nav-sep", {"aria-hidden": "true"}));
+      if (group !== null && a.group !== group) {
+        list.appendChild(NAMED[a.group] ? h("li.fe-nav-sep.named", NAMED[a.group])
+          : h("li.fe-nav-sep", {"aria-hidden": "true"}));
+      }
       group = a.group;
       const c = ch.byArea[a.id] || {n: 0, w: 0};
       list.appendChild(h("li", h("button", {type: "button", "aria-current": a.id === app.area ? "page" : null,
@@ -336,6 +375,8 @@ EZ.app = (function () {
     fill(app.els.side, h("nav", {"aria-label": "Editor areas"}, list));
   }
 
+  /* Draw the chosen area. A sub-section (app.sub: a link such as Alerts' "change them on Looks", or the address)
+     is scrolled to by the area on this drawing only: later redraws (every change) leave the page where it is. */
   function drawArea() {
     const a = EZ.areas.find((x) => x.id === app.area) || EZ.areas[0];
     const box = app.els.area;
@@ -346,6 +387,7 @@ EZ.app = (function () {
       fill(box, h("p.fe-note.bad", "This area failed to draw: " + (e && e.message || e)));
       if (window.console) console.error(e);
     }
+    app.sub = "";
   }
 
   function drawPreview() {
@@ -462,11 +504,81 @@ EZ.app = (function () {
       if (ev.what === "switch" || ev.undo) redraw();
       else { drawBar(); drawSide(); if (!ev.quiet) drawArea(); }
       if (EZ.preview && EZ.preview.changed && previewShown()) EZ.preview.changed(ev, app);
+      if (ev.other) otherTab();
     });
+    document.addEventListener("visibilitychange", () => { if (!document.hidden && app.otherTab) otherTab(); });
+    app.checks.unshift(sharedFileCheck);
+  }
+
+  /* A line of a built filter (the player's, or Erazure's version) named for the player: Erazure's lines as Erazure's
+     rules numbers them ("110-runes:132"; open() shows that rule there), the player's by what made them ("your item
+     change: Hide it · Shako", "your rule above Erazure's, line 3", "your highlight: Caster amulet"). -> {text, open} */
+  function lineRef(lines, i) {
+    if (i === null || i === undefined || i < 0 || !lines) return {text: "no rule", open: null};
+    const line = lines[i] || "";
+    const own = EZ.rules.locate(lines, i);
+    if (own) {
+      return {text: (own.block === "top" ? "your rule above Erazure's, line " : "your rule below Erazure's, line ") +
+        own.n, open: () => go("rules")};
+    }
+    const m = /\/\/ Your item change \[([^\]]*)\]\s*$/.exec(line);
+    if (m) {
+      const id = m[1];
+      const o = (EZ.store.current().edits.items || []).find((x) => x.id === id);
+      const what = o && EZ.itemsArea ? EZ.itemsArea.title(o) : id === "maps" ? "a map you don't pick up" : "";
+      return {text: "your item change" + (what ? ": " + what : ""), open: () => go(id === "maps" ? "maps" : "items")};
+    }
+    const hl = /\/\/ Your highlight: (.*)$/.exec(line);
+    if (hl) return {text: "your highlight: " + hl[1].trim(), open: () => go("highlights")};
+    const v = versionLines();
+    const j = lines === v ? i : EZ.diff.origin(v, lines)[i];
+    if (j >= 0) {
+      const secs = EZ.filter.sections(app.src, v), name = EZ.filter.sectionOf(secs, j);
+      return {text: name ? name.replace(/\.filter$/, "") + ":" + (j - secs[name][0] + 1) : "line " + (j + 1),
+        open: () => { go("erazure"); if (EZ.erazureArea) EZ.erazureArea.open(app, j); }};
+    }
+    return {text: "a line your changes added", open: () => go("changes")};
+  }
+  /* lineRef as a link (a button) or as text. */
+  function lineLink(lines, i) {
+    const r = lineRef(lines, i);
+    return r.open ? h("button.fe-linkbtn", {type: "button", title: "Open it", onclick: r.open}, r.text) : r.text;
+  }
+
+  /* My rules and Erazure's rules open with this (it folds, and stays folded in this browser): they are for the loot
+     filter's own language, and most changes have an area of their own that follows every update. */
+  function advancedNote() {
+    const KEY = "erazure-filter-editor-adv";
+    let folded = false;
+    try { folded = localStorage.getItem(KEY) === "folded"; } catch (e) { /* open */ }
+    const link = (area, text) => h("a", {href: "#" + area, onclick: (ev) => { ev.preventDefault(); go(area); }}, text);
+    const d = h("details.fe-note.fe-advnote", folded ? {} : {open: true},
+      h("summary", h("b", "Advanced"), ": rules in the loot filter's own language (BH, the part of the game that " +
+        "reads the filter)."),
+      h("p", "To show, hide or restyle particular items, use ", link("items", "Items"), "; whole kinds of items, ",
+        link("quick", "Quick Edits"), "; sounds, chat lines and icons, ", link("alerts", "Alerts"), "; colors and " +
+        "symbols, ", link("looks", "Looks"), "; tags and description lines, ", link("features", "Features"),
+        "; the rares you want, ", link("highlights", "Highlights"), ". Those follow every Erazure update and never " +
+        "need checking."));
+    d.addEventListener("toggle", () => {
+      try { localStorage.setItem(KEY, d.open ? "open" : "folded"); } catch (e) { /* this visit */ }
+    });
+    return d;
+  }
+
+  /* Another tab of the editor saved: this tab took its changes (EZ.store). Say so once the player looks at this tab. */
+  let otherSaid = 0;
+  function otherTab() {
+    if (document.hidden) { app.otherTab = true; return; }
+    app.otherTab = false;
+    if (Date.now() - otherSaid < 60000) return;
+    otherSaid = Date.now();
+    toast("The editor is open in another tab too, and it changed your profiles there: this tab now shows those " +
+      "changes. Work in one tab at a time.", null, {ms: 10000});
   }
 
   Object.assign(app, {start, go, redraw, drawBar, drawSide, drawArea, drawPreview, variant, variantFor, toggleName,
-                      versionLines,
+                      versionLines, advancedNote, lineRef, lineLink,
                       changes, build, withBuild, download, saveToGame, canSaveInPlace, forgetFolder, fileName,
                       STYLE_NAMES, saveMenu: [], checks: []});
   return app;

@@ -96,37 +96,60 @@ EZ.areas.push({
   id: "looks", title: "Looks", icon: "✎", order: 40, group: "b",
   count: (e) => EZ.edits.countArea("looks", e),
   render(box, app) {
-    const {h, seg} = EZ.ui;
+    const {h} = EZ.ui;
     const F = EZ.filter, R = EZ.render, L = EZ.looks;
     const e = EZ.store.current().edits;
     const lines = app.versionLines();
     const base = L.values(lines);
     const vals = Object.assign({}, base, e.looks || {});
+    const shown = (v) => {  // the looks as the game reads them (two slashes in a row get a color between them)
+      const out = Object.assign({}, v);
+      for (const k of Object.keys(out)) if (typeof out[k] === "string" && out[k] !== base[k]) out[k] = EZ.edits.slashes(out[k]);
+      return out;
+    };
     const palette = app.data.palette || [];
     const styles = {erazure: L.styleValues(app, "erazure"), minimal: L.styleValues(app, "minimal"),
                     corrlorized: L.styleValues(app, "corrlorized")};
-    const cards = F.lookCards(app.src, lines);
-    const names = cards.flatMap((c) => c.aliases.map((a) => a.name));
+    // the cards no rule uses change nothing in game: left out (040 keeps some on purpose)
+    const cards = F.lookCards(app.src, lines).filter((c) => c.used !== false);
+    // a style's looks, the Horadric Cube's version names aside (they name the version the file is)
+    const names = cards.filter((c) => c.group !== "cube").flatMap((c) => c.aliases.map((a) => a.name));
+    const own = Object.keys(e.looks || {}).length;
 
-    /* ---- presets */
-    const preset = (style) => EZ.store.change((ed) => {
-      ed.looks = {};
-      if (style === "erazure" && e.base.style === "erazure") return;
-      for (const n of names) {
-        const v = styles[style][n];
-        if (v !== undefined && v !== base[n]) ed.looks[n] = v;
+    /* ---- presets (they replace the player's own looks: a toast with Undo says so) */
+    const preset = (style) => {
+      const changed = EZ.store.change((ed) => {
+        const keep = {};  // the Cube's names stay the player's
+        for (const k of Object.keys(ed.looks || {})) if (names.indexOf(k) < 0) keep[k] = ed.looks[k];
+        ed.looks = keep;
+        if (!(style === "erazure" && e.base.style === "erazure")) {
+          for (const n of names) {
+            const v = styles[style][n];
+            if (v !== undefined && v !== base[n]) ed.looks[n] = v;
+          }
+        }
+        if (!Object.keys(ed.looks).length) delete ed.looks;
+      }, {label: "looks preset"});
+      if (changed) {
+        EZ.ui.undoToast(`${app.STYLE_NAMES[style]}'s looks are in` + (own ? ` (your ${own} own look${own === 1 ? "" :
+          "s"} went).` : "."));
       }
-    }, {label: "looks preset"});
+    };
     const presets = h("section.fe-card",
       h("h3", "Start from a style"),
-      h("p.fe-sub", "Put every look below to a style's own, then change what you like. Your version (Start) stays as " +
-        "it is: its sounds and what it shows are unchanged."),
+      h("p.fe-sub", "Put the looks below to a style's own, then change what you like" + (own ? ": this replaces your " +
+        own + " own look" + (own === 1 ? "" : "s") + " (Undo brings them back)" : "") + ". Your version (Start) stays " +
+        "as it is: its sounds and what it shows are unchanged, and the Horadric Cube keeps your version's name."),
       h("div.fe-row", ["erazure", "minimal", "corrlorized"].map((s) => h("button.fe-btn", {type: "button",
         onclick: () => preset(s)}, app.STYLE_NAMES[s] + "'s looks"))),
-      Object.keys(e.looks || {}).length ? h("p.fe-sub", {style: {marginTop: ".5rem"}},
-        `${Object.keys(e.looks).length} looks are your own.`, " ",
-        h("button.fe-btn.ghost.small", {type: "button", onclick: () => EZ.store.change((ed) => { ed.looks = {}; })},
-          "Use your version's looks again")) : null);
+      h("p.fe-sub.fe-small", "Corr's own colors, symbols and sounds come with the Corrlorized version on Start; " +
+        "Corrlorized's looks here are the few he sets by name (magic charms, the Vial and the Mirror)."),
+      own ? h("p.fe-sub", {style: {marginTop: ".5rem"}},
+        `${own} look${own === 1 ? " is" : "s are"} your own.`, " ",
+        h("button.fe-btn.ghost.small", {type: "button", onclick: () => {
+          EZ.store.change((ed) => { delete ed.looks; }, {label: "looks"});
+          EZ.ui.undoToast("Your version's looks are back.");
+        }}, "Use your version's looks again")) : null);
 
     /* ---- color remap */
     const remap = e.remap || {};
@@ -159,33 +182,54 @@ EZ.areas.push({
     };
     const tools = h("div.fe-looktools",
       h("span.fe-sub", "Insert into the look you're editing: "),
-      EZ.edits.COLORS.map((c) => h("button.fe-chipbtn", {type: "button", title: "%" + c + "%",
-        style: {color: R.rgb(R.WORDS[c]) || "inherit"}, onmousedown: (ev) => ev.preventDefault(),
+      EZ.edits.COLORS.map((c) => h("button.fe-chipbtn", {type: "button", title: nice(c) + " (%" + c + "%)",
+        "aria-label": nice(c), style: {color: R.rgb(R.WORDS[c]) || "inherit"}, onmousedown: (ev) => ev.preventDefault(),
         onclick: () => insertAt("%" + c + "%")}, "■")),
       ["•", "·", "*", "x", "X", "o", "O", "\\", "/", ">", "<", "|", "-", "=", "~", "+", "#", "$", "(", ")", "[", "]"]
         .map((s) => h("button.fe-chipbtn", {type: "button", onmousedown: (ev) => ev.preventDefault(),
           onclick: () => insertAt(s)}, s)));
+    const howTo = h("p.fe-note.fe-small", "A look is text around the item's name: its left part, the name, its right " +
+      "part. A color word (", h("code", "%RED%"), ", the colored squares above) colors everything after it. Two " +
+      "slashes in a row would end the line in game, so the editor puts the color between them.");
+    const caption = (n) => /_LEFT$/.test(n) ? "Left of the name" : /_RIGHT$/.test(n) ? "Right of the name" :
+      /VERSION_NAME$/.test(n) ? "The version's name in the Cube" : /_NAME$/.test(n) ? "The name" : "The look";
+    const SAMPLE = {UNI_NORMAL: "%GOLD%Sacred Armor"};  // the look of every other unique, elite bases too
     const groupBoxes = F.GROUPS.map((g) => {
       const mine = cards.filter((c) => c.group === g.id);
       if (!mine.length) return null;
       return h("section.fe-card", {id: "fe-looks-" + g.id}, h("h3", g.title), h("p.fe-sub", g.note),
         h("div.fe-lookgrid", mine.map((c) => {
-          const sample = L.sampleFor(c.key, app.data);
+          const sample = SAMPLE[c.key] || L.sampleFor(c.key, app.data);
           const preview = h("div.fe-lookprev");
           const draw = (v) => {
             EZ.ui.fill(preview, c.tpls.map((t) => R.label(L.fill(t.tpl, v, sample))));
           };
-          draw(vals);
+          draw(shown(vals));
           const rows = c.aliases.map((a) => {
-            const own = e.looks && a.name in e.looks;
-            const input = h("input", {type: "text", value: vals[a.name] || "", spellcheck: "false",
-              "aria-label": a.name, class: "fe-mono" + (own ? " is-changed" : "")});
+            const mineToo = e.looks && a.name in e.looks;
+            const note = h("p.fe-sub.fe-small.fe-looknote", {hidden: true});
+            const input = h("textarea", {rows: 1, spellcheck: "false", "aria-label": c.title + ": " + caption(a.name),
+              title: a.name, class: "fe-mono fe-lookfield" + (mineToo ? " is-changed" : "")});
+            input.value = vals[a.name] || "";
+            const check = () => {
+              const v = input.value;
+              note.hidden = !/\/\//.test(v) || EZ.edits.slashes(v) !== v.replace(/\/{2,}/g, "/");
+              note.textContent = "Two slashes in a row end the line in game, and no color comes before them here: one " +
+                "slash stays (put a color before them to keep them).";
+            };
             input.addEventListener("focus", () => { editing = input; });
-            input.addEventListener("input", () => draw(Object.assign({}, vals, {[a.name]: input.value})));
+            input.addEventListener("keydown", (ev) => { if (ev.key === "Enter") { ev.preventDefault(); input.blur(); } });
+            input.addEventListener("input", () => {
+              if (/[\r\n]/.test(input.value)) input.value = input.value.replace(/[\r\n]+/g, "");
+              check();
+              draw(shown(Object.assign({}, vals, {[a.name]: input.value})));
+            });
             input.addEventListener("change", () => EZ.store.change((ed) => {
               ed.looks = ed.looks || {};
               if (input.value === base[a.name]) delete ed.looks[a.name]; else ed.looks[a.name] = input.value;
+              if (!Object.keys(ed.looks).length) delete ed.looks;
             }, {label: a.name}));
+            check();
             const from = (style, label) => {
               const v = styles[style][a.name];
               return v !== undefined && v !== vals[a.name] ? h("button.fe-btn.ghost.small", {type: "button",
@@ -194,10 +238,10 @@ EZ.areas.push({
                   if (v === base[a.name]) delete ed.looks[a.name]; else ed.looks[a.name] = v;
                 })}, label) : null;
             };
-            return h("div.fe-aliasrow", h("code.fe-aliasname", a.name.replace(/_/g, "_​")), input,
+            return h("div.fe-aliasrow", h("span.fe-bd-label", {title: a.name}, caption(a.name)), input, note,
               h("div.fe-row.fe-small", from("erazure", "Erazure's"), from("minimal", "Minimal's"),
                 from("corrlorized", "Corrlorized's"),
-                own ? h("button.fe-btn.ghost.small", {type: "button", onclick: () => EZ.store.change((ed) => {
+                mineToo ? h("button.fe-btn.ghost.small", {type: "button", onclick: () => EZ.store.change((ed) => {
                   delete ed.looks[a.name];
                 })}, "↺ Your version's") : null));
           });
@@ -221,16 +265,20 @@ EZ.areas.push({
         ed.icons = ed.icons || {};
         if (next === combo) delete ed.icons[combo]; else ed.icons[combo] = next;
       }, {label: "minimap icon"});
-      const where = notes.icons[combo].slice(0, 3).map((i) => {
+      // what the icon is for, as the items its rules name (a rule's own note where it has one), never its code
+      const where = [];
+      for (const i of notes.icons[combo]) {
         const r = F.rule(lines[i]);
-        const note = r.comment.replace(/^\/\/\s*/, "").trim();
-        return note || r.cond.slice(0, 60);
-      }).filter(Boolean);
+        const c = r.comment.replace(/^\/\/\s*/, "").trim();
+        const w = EZ.words.forWhat(r.cond, c, 2);
+        if (w && where.indexOf(w) < 0) where.push(w);
+        if (where.length >= 3) break;
+      }
+      const more = notes.icons[combo].length > where.length;
       return h("div.fe-iconrow" + (combo in swaps ? ".is-changed" : ""),
         L.icon(combo, palette, 3), h("span.fe-sub", "→"), L.icon(to, palette, 3),
         h("div.fe-iconinfo",
-          h("div", h("b", `${notes.icons[combo].length} rule${notes.icons[combo].length === 1 ? "" : "s"}`),
-            where.length ? h("span.fe-sub", " · " + where.join(" · ")) : null),
+          h("div.fe-sub", where.length ? "For " + where.join("; ") + (more ? "; and more" : "") : ""),
           h("div.fe-row.fe-small", ["BORDER", "MAP", "DOT", "PX"].map((l) => {
             const b = h("button.fe-layer", {type: "button", title: `${l}: ${layers[l] || "none"}`},
               h("span.fe-layerbox", {style: {background: layers[l] ? palette[parseInt(layers[l], 16)] : "transparent"}}),
@@ -255,7 +303,7 @@ EZ.areas.push({
     EZ.ui.add(box, [
       h("div.fe-area-head", h("div", h("h2", "Looks"),
         h("p.fe-sub", "The symbols and colors around item names, and the minimap icons."))),
-      presets, recolor, tools, groupBoxes, iconsCard]);
+      presets, recolor, howTo, tools, groupBoxes, iconsCard]);
     if (app.sub) {
       const el = box.querySelector("#fe-" + app.sub);
       if (el) el.scrollIntoView();

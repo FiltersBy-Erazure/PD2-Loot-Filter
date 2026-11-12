@@ -13,10 +13,35 @@ EZ.store = (function () {
     return {v: SCHEMA, base: {style: "erazure", revealed: false, bigGG: false, poe: false}};
   }
 
-  function newProfile(name) {
+  function newProfile(name, file) {
     const id = "p" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
-    return {id, name: name || "My Erazure", file: "Erazure-Custom", edits: newEdits(), saved: null,
+    return {id, name: name || "My Erazure", file: file || "Erazure-Custom", edits: newEdits(), saved: null,
             created: Date.now(), changed: Date.now()};
+  }
+
+  /* A file name from a profile's name ("Barbarian" -> "Erazure-Barbarian"), and one no other profile saves to. */
+  const fileFrom = (name) => "Erazure-" + (String(name || "").replace(/[^A-Za-z0-9 _-]+/g, " ").trim()
+    .replace(/\s+/g, "-").slice(0, 40) || "Custom");
+  function freeFile(want, except) {
+    const used = new Set(Object.values(data.profiles).filter((p) => p.id !== except).map((p) => String(p.file || "").toLowerCase()));
+    let f = want, n = 2;
+    while (used.has(f.toLowerCase())) f = want + "-" + n++;
+    return f;
+  }
+  function freeName(want) {
+    const used = new Set(Object.values(data.profiles).map((p) => p.name));
+    let s = want, n = 2;
+    while (used.has(s)) s = want + " (" + n++ + ")";
+    return s;
+  }
+  /* The profiles that save to the same file as another: [[name, name...]] per shared file. */
+  function sharedFiles() {
+    const by = new Map();
+    for (const p of profiles()) {
+      const k = String(p.file || "Erazure-Custom").toLowerCase();
+      by.set(k, (by.get(k) || []).concat([p]));
+    }
+    return [...by.values()].filter((list) => list.length > 1);
   }
 
   let data = null, okToSave = true, warned = false;
@@ -143,8 +168,9 @@ EZ.store = (function () {
     emit({what: "switch"});
   }
 
-  function addProfile(name, edits) {
-    const p = newProfile(name);
+  function addProfile(name, edits, file) {
+    const nm = freeName(name || "My Erazure");
+    const p = newProfile(nm, freeFile(file || fileFrom(nm)));
     if (edits) p.edits = normalize({edits: JSON.parse(JSON.stringify(edits))}).edits;
     data.profiles[p.id] = p;
     data.order.push(p.id);
@@ -166,6 +192,22 @@ EZ.store = (function () {
 
   function on(fn) { listeners.add(fn); return () => listeners.delete(fn); }
   function emit(ev) { for (const fn of listeners) fn(ev); }
+
+  /* Another tab of the editor saved (the browser's storage event): this tab takes its store, so neither overwrites the
+     other's work with an old copy; this tab stays on its profile while it still exists. */
+  function fromOtherTab(ev) {
+    if (ev.key !== KEY || ev.newValue === null || !data) return;
+    let next = null;
+    try { next = JSON.parse(ev.newValue); } catch (e) { return; }
+    if (!next || typeof next !== "object" || next.v !== SCHEMA || !next.profiles || !Array.isArray(next.order)) return;
+    const cur = data.current;
+    data = next;
+    for (const id of Object.keys(data.profiles)) normalize(data.profiles[id]);
+    if (data.profiles[cur]) data.current = cur;
+    else if (!data.profiles[data.current]) data.current = data.order[0];
+    emit({what: "switch", other: true});
+  }
+  if (typeof window !== "undefined" && window.addEventListener) window.addEventListener("storage", fromOtherTab);
 
   /* IndexedDB: the game folder handles (File System Access) and the history snapshots. */
   let dbp = null;
@@ -214,11 +256,12 @@ EZ.store = (function () {
     }
   }
 
-  /* A snapshot of a profile's edits in its history (the last HISTORY_MAX saves), newest first. */
+  /* A snapshot of a profile's edits in its history (the last HISTORY_MAX saves), newest first. The edits are read at
+     once, so a change made right after the call (Clear, Restore, Import over) doesn't reach the snapshot. */
   async function remember(p, why) {
     const key = "history:" + p.id;
-    const list = (await kvGet(key)) || [];
     const edits = JSON.stringify(p.edits);
+    const list = (await kvGet(key)) || [];
     if (list.length && list[0].edits === edits) return;
     list.unshift({at: Date.now(), why: why || "", edits});
     await kvSet(key, list.slice(0, HISTORY_MAX));
@@ -226,6 +269,15 @@ EZ.store = (function () {
 
   async function history(p) { return (await kvGet("history:" + p.id)) || []; }
 
+  /* Keep the current profile's changes in its history before something replaces them all (Clear, Restore, Import
+     over): Undo lasts only while the page is open, the history stays. */
+  function keepCopy(why) {
+    const p = current();
+    if (EZ.edits && EZ.edits.count && !EZ.edits.count(p.edits)) return Promise.resolve();
+    return remember(p, why).catch(() => {});
+  }
+
   return {load, save, current, profiles, change, changeProfile, undoStep, redoStep, canUndo, canRedo, switchTo,
-          addProfile, removeProfile, on, normalize, newEdits, storageOk, kvGet, kvSet, remember, history, SCHEMA};
+          addProfile, removeProfile, on, normalize, newEdits, storageOk, kvGet, kvSet, remember, history, keepCopy,
+          sharedFiles, freeFile, fileFrom, SCHEMA};
 })();

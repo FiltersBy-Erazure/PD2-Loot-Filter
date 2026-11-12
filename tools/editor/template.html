@@ -85,9 +85,8 @@
     writing-mode: vertical-rl; font-family: Cinzel, Georgia, serif; font-weight: 700; letter-spacing: .06em; }
   .edit-map .fe-app.pv-closed .fe-pvtab:hover { background: var(--panel2); }
 }
-@media (min-width: 1001px) and (max-width: 1400px) {
-  .edit-map .fe-app.pv-closed { grid-template-columns: 64px minmax(0, 1fr) 36px; }
-}
+/* a sub-section scrolled to (a link, the address) stops under the bar */
+.edit-map .fe-area [id^="fe-"] { scroll-margin-top: calc(var(--top) + var(--bar) + .6em); }
 
 /* the bar */
 .edit-map .fe-title { display: flex; align-items: baseline; gap: .55em; min-width: 0; }
@@ -118,6 +117,8 @@
   padding: 0 .45em; min-width: 1.3em; text-align: center; }
 .edit-map .fe-nav .n.warn { background: var(--warn); color: var(--accent-fg); }
 .edit-map .fe-nav-sep { border-top: 1px solid var(--line); margin: .4em .9em; }
+.edit-map .fe-nav-sep.named { border: 0; margin: .7em .9em .1em; font-size: .7em; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--faint); }
 
 /* controls */
 .edit-map .fe-btn { display: inline-flex; align-items: center; justify-content: center; gap: .4em;
@@ -190,6 +191,11 @@
   background: var(--chip-on); }
 .edit-map .fe-option b { font-family: Cinzel, Georgia, serif; color: var(--accent); }
 .edit-map .fe-option small { color: var(--muted); font-size: .84em; line-height: 1.35; }
+.edit-map .fe-goals { display: grid; gap: .6em; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+.edit-map .fe-goals .fe-option b { font-size: .95em; }
+.edit-map .fe-option small.fe-goal-area { color: var(--accent); margin-top: auto; }
+.edit-map .fe-intro { border-left: 3px solid var(--accent); }
+.edit-map .fe-intro p { margin: .2em 0; }
 .edit-map .fe-steps { counter-reset: st; list-style: none; margin: .3em 0; padding: 0; }
 .edit-map .fe-steps li { counter-increment: st; position: relative; padding: .25em 0 .25em 2.1em; margin: .2em 0; }
 .edit-map .fe-steps li::before { content: counter(st); position: absolute; left: 0; top: .2em; width: 1.5em;
@@ -241,7 +247,10 @@
   overflow: auto; }
 .edit-map .fe-pv-picks button { display: flex; width: 100%; justify-content: space-between; gap: .8em; border: 0;
   background: none; padding: .35em .55em; border-radius: 6px; cursor: pointer; color: var(--fg); text-align: left; }
-.edit-map .fe-pv-picks button:hover, .edit-map .fe-pv-picks button:focus-visible { background: var(--panel2); }
+.edit-map .fe-pv-picks button:hover, .edit-map .fe-pv-picks button:focus-visible,
+.edit-map .fe-pv-picks button[aria-selected="true"] { background: var(--panel2); }
+.edit-map .fe-pv-picks button[aria-selected="true"] { box-shadow: inset 3px 0 0 var(--accent); }
+.edit-map input.fe-pv-search.has-value::placeholder { color: var(--fg); opacity: 1; }
 .edit-map .fe-pv-picks small { color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .edit-map .fe-pv-item { display: flex; flex-direction: column; gap: .45em; padding: .5em .6em; border: 1px solid var(--line);
   border-radius: 9px; background: var(--panel2); margin-bottom: .7em; }
@@ -386,6 +395,7 @@
 .edit-map .fe-chipbtn { min-width: 1.9em; height: 1.9em; border: 1px solid var(--line2); background: #0d0c0b; color: #fefefe;
   border-radius: 5px; cursor: pointer; font-family: Cinzel, Georgia, serif; font-weight: 700; padding: 0 .3em; }
 .edit-map .fe-chipbtn:hover { border-color: var(--accent); }
+.edit-map .fe-chipbtn[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
 .edit-map .fe-lookgrid { display: grid; gap: .8em; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); }
 .edit-map .fe-lookcard { border: 1px solid var(--line); border-radius: 9px; padding: .6em .7em; background: var(--panel2); }
 .edit-map .fe-looktitle { font-weight: 700; margin-bottom: .4em; }
@@ -394,6 +404,9 @@
   margin-bottom: .5em; overflow-x: auto; }
 .edit-map .fe-aliasrow { display: grid; gap: .25em; margin-top: .45em; }
 .edit-map .fe-aliasrow input { width: 100%; font-size: .85em; }
+.edit-map textarea.fe-lookfield { width: 100%; font-size: .85em; resize: vertical; field-sizing: content;
+  min-height: 2.1em; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.4; }
+.edit-map .fe-looknote { margin: 0; color: var(--warn); }
 .edit-map .fe-aliasname { font-size: .72em; color: var(--muted); background: none; border: 0; padding: 0; }
 
 /* minimap icons and the palette */
@@ -512,6 +525,15 @@
 .edit-map .fe-bd-chip.is-on { border-color: var(--accent); }
 .edit-map .fe-linkbtn { border: 0; background: none; color: inherit; padding: 0; font: inherit; cursor: pointer; }
 .edit-map .fe-linkbtn:hover { color: var(--accent); text-decoration: underline; }
+.edit-map .fe-trace-where .fe-linkbtn, .edit-map .fe-ch-ref { color: var(--accent); text-decoration: underline dotted; }
+.edit-map td.fe-it-new { box-shadow: inset 0 0 0 2px var(--accent); }
+/* Quick Edits: the levels a switch changes, under it */
+.edit-map .fe-optlevels { display: block; margin: .05em 0 .35em 3.1em; font-size: .78em; }
+.edit-map .fe-radio .fe-optlevels { margin: 0 0 0 .5em; display: inline; }
+.edit-map .fe-optlevels.is-none { color: var(--warn); }
+/* the character and place an area's answers are for, beside them */
+.edit-map .fe-ctxline { gap: .35em; margin: .35em 0 .55em; align-items: center; }
+.edit-map .fe-ctxline select { max-width: 11em; }
 .edit-map .fe-bd-search { flex: 1 1 18em; min-width: 12em; margin: 0; }
 .edit-map .fe-bd-stat select { max-width: 22em; }
 .edit-map .fe-bd-result { border-top: 1px solid var(--line); margin-top: .6em; padding-top: .75em; display: flex;
@@ -561,6 +583,13 @@
 .edit-map .fe-rb-words { overflow: hidden; text-overflow: ellipsis; color: var(--muted); min-width: 0; }
 .edit-map .fe-rb-draw { display: flex; align-items: center; gap: .5em; min-width: 0; overflow: hidden; height: 24px; }
 .edit-map .fe-rb-draw .fe-label { font-size: 11.5px; flex: none; max-width: 100%; overflow: hidden; }
+/* the hover-box lines a rule writes: the game's description, black box, lines centred */
+.edit-map .fe-minidesc { display: inline-block; background: rgba(0,0,0,.82); border: 1px solid #3a342c; color: #7b7bfe;
+  border-radius: 3px; padding: .15em .55em; font-family: Cinzel, Georgia, serif; font-size: .8em; line-height: 1.35;
+  text-align: center; max-width: 100%; overflow-wrap: anywhere; }
+.edit-map .fe-rb-draw .fe-minidesc { max-height: 1.6em; overflow: hidden; white-space: nowrap; flex: 0 1 auto;
+  min-width: 0; text-overflow: ellipsis; font-size: 10.5px; }
+.edit-map .fe-ed-rule .fe-minidesc { flex-basis: auto; }
 .edit-map .fe-rb-text { flex-direction: row; justify-content: flex-start; align-items: center; gap: .6em; }
 .edit-map .fe-rb-comment { font-family: var(--mono); font-size: .8em; color: var(--faint); white-space: pre;
   overflow: hidden; text-overflow: ellipsis; }
@@ -572,16 +601,29 @@
 .edit-map .fe-rb-op.bad { border-color: var(--bad); }
 .edit-map code.fe-rb-optext { display: block; white-space: pre-wrap; overflow-wrap: anywhere; font-size: .8em; }
 
-/* narrower screens: the sidebar shrinks to its icons, then the preview becomes a drawer */
+/* narrower screens: the sidebar shrinks to its icons, each with its name under it (touch screens have no hover), then
+   the preview becomes a drawer; with the preview closed on a laptop, the sidebar keeps its full names */
 @media (max-width: 1400px) {
-  .edit-map .fe-app { grid-template-columns: 64px minmax(0, 1fr) var(--pw, 420px); }
-  .edit-map .fe-nav .lbl { display: none; }
-  .edit-map .fe-nav button { justify-content: center; padding: .55em .2em; position: relative; }
+  .edit-map .fe-app { grid-template-columns: 80px minmax(0, 1fr) var(--pw, 420px); }
+  .edit-map .fe-nav button { flex-direction: column; justify-content: center; gap: .1em; padding: .45em .15em;
+    position: relative; text-align: center; }
+  .edit-map .fe-nav .lbl { flex: none; white-space: normal; overflow: visible; font-size: .64em; line-height: 1.15; }
   .edit-map .fe-nav .n { position: absolute; top: .15em; right: .3em; font-size: .66em; padding: 0 .3em; }
   .edit-map .fe-nav-sep { margin: .4em .5em; }
+  .edit-map .fe-nav-sep.named { margin: .6em .2em .1em; font-size: .58em; text-align: center; }
+}
+@media (min-width: 1001px) and (max-width: 1400px) {
+  .edit-map .fe-app.pv-closed { grid-template-columns: 200px minmax(0, 1fr) 36px; }
+  .edit-map .fe-app.pv-closed .fe-nav button { flex-direction: row; justify-content: flex-start; gap: .55em;
+    padding: .48em .9em; text-align: left; }
+  .edit-map .fe-app.pv-closed .fe-nav .lbl { flex: 1; font-size: 1em; white-space: nowrap; overflow: hidden;
+    text-overflow: ellipsis; line-height: inherit; }
+  .edit-map .fe-app.pv-closed .fe-nav .n { position: static; font-size: .74em; padding: 0 .45em; }
+  .edit-map .fe-app.pv-closed .fe-nav-sep { margin: .4em .9em; }
+  .edit-map .fe-app.pv-closed .fe-nav-sep.named { margin: .7em .9em .1em; font-size: .7em; text-align: left; }
 }
 @media (max-width: 1000px) {
-  .edit-map .fe-app { grid-template-columns: 64px minmax(0, 1fr); grid-template-areas: "bar bar" "side area"; }
+  .edit-map .fe-app { grid-template-columns: 80px minmax(0, 1fr); grid-template-areas: "bar bar" "side area"; }
   .edit-map .fe-preview { position: fixed; top: calc(var(--top) + var(--bar)); right: 0; bottom: 0; height: auto;
     width: min(560px, 100vw); z-index: 30; box-shadow: var(--shadow); transform: translateX(105%);
     transition: transform .2s; }
@@ -593,9 +635,10 @@
   .edit-map .fe-side { position: fixed; top: calc(var(--top) + var(--bar)); left: 0; bottom: 0; max-height: none;
     width: min(18em, 85vw); z-index: 31; transform: translateX(-105%); transition: transform .2s; box-shadow: var(--shadow); }
   .edit-map .fe-app.nav-open .fe-side { transform: none; }
-  .edit-map .fe-nav .lbl { display: inline; }
-  .edit-map .fe-nav button { justify-content: flex-start; padding: .6em .9em; }
+  .edit-map .fe-nav .lbl { display: inline; flex: 1; font-size: 1em; white-space: nowrap; text-align: left; }
+  .edit-map .fe-nav button { flex-direction: row; justify-content: flex-start; gap: .55em; padding: .6em .9em; }
   .edit-map .fe-nav .n { position: static; }
+  .edit-map .fe-nav-sep.named { text-align: left; font-size: .7em; margin: .7em .9em .1em; }
   .edit-map .fe-preview { width: 100vw; }
   .edit-map .fe-area { padding: .8em .8em 3em; }
   .edit-map .fe-search { order: 9; flex-basis: 100%; max-width: none; }

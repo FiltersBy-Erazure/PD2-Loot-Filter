@@ -39,6 +39,57 @@ EZ.areas = EZ.areas || [];
     return out;
   }
 
+  /* The filter levels an option changes its items on (the author's audit, 2026-11-12: a switch whose samples show no
+     change read as broken): each of its sample items with the option's lines alone after Erazure's aliases, against
+     Erazure's filter, at levels 1-12. Worked out a group at a time after the area is drawn, kept per version. */
+  const levelCache = {key: null, map: new Map(), aliasLines: null};
+  function changedLevels(app, o, lines, aliases, z) {
+    if (levelCache.key !== lines) {
+      levelCache.key = lines;
+      levelCache.map = new Map();
+      levelCache.aliasLines = lines.filter((l) => /^(Alias|Formula)\[/.test(l));
+    }
+    if (levelCache.map.has(o.id)) return levelCache.map.get(o.id);
+    const P = EZ.preview, cat = EZ.items.catalog();
+    const own = o.lines.map((i) => EZ.edits.groundOnly(lines[i].replace(/^\s*\/\/+\s*/, "")));
+    const mini = levelCache.aliasLines.concat(own, ["ItemDisplay[]:%NAME%{%NAME%}"]);
+    const F = EZ.engine.compile(mini, {statMax: cat.statMax, skillMax: cat.skillMax, soundCount: app.data.soundCount});
+    const first = levelCache.aliasLines.length, last = first + own.length;  // the option's lines in mini
+    const samples = [];
+    for (const i of o.lines) {
+      const r = EZ.filter.rule(lines[i].replace(/^\s*\/\/+\s*/, ""));
+      let s = null;
+      try { s = r ? EZ.overrides.sampleOf(r.cond, {aliases}) : null; } catch (e) { s = null; }
+      if (s) samples.push(s);
+    }
+    const out = [];
+    for (let lv = 1; lv <= 12; lv++) {
+      const hit = samples.some((s) => {
+        const ctx = Object.assign(P.ctx(lv), s.cls !== undefined ? {cls: s.cls} : {},
+          s.clvl !== undefined ? {clvl: s.clvl, charstats: {12: s.clvl}} : {}, {mapid: 2});
+        const it = EZ.items.make(Object.assign({place: "GROUND"}, s.spec));
+        if (!it) return false;
+        const mine = EZ.engine.run(F, it, ctx, P.state.opts);
+        if (mine.stop === null || mine.stop < first || mine.stop >= last) return false;  // the option doesn't decide it
+        const a = EZ.engine.run(z.F, it, ctx, P.state.opts);
+        return a.hidden !== mine.hidden || (!mine.hidden && EZ.render.plain(a.name) !== EZ.render.plain(mine.name));
+      });
+      if (hit) out.push(lv);
+    }
+    levelCache.map.set(o.id, out);
+    return out;
+  }
+  const runs = (list) => {
+    const parts = [];
+    for (let k = 0; k < list.length; k++) {
+      let j = k;
+      while (j + 1 < list.length && list[j + 1] === list[j] + 1) j++;
+      parts.push(j > k ? list[k] + "-" + list[j] : String(list[k]));
+      k = j;
+    }
+    return parts.join(", ");
+  };
+
   /* A sample's words: "Rare ethereal Blood Spirit, item level 85". */
   function describe(s) {
     const b = EZ.items.base(s.spec.code);
@@ -52,7 +103,7 @@ EZ.areas = EZ.areas || [];
   }
 
   EZ.areas.push({
-    id: "quick", title: "Quick Edits", icon: "⚡", order: 20, group: "b",
+    id: "quick", title: "Quick Edits", icon: "⚡︎", order: 20, group: "b",
     count: (e) => EZ.edits.countArea("options", e),
     render(box, app) {
       const {h, toggle} = EZ.ui;
@@ -92,6 +143,12 @@ EZ.areas = EZ.areas || [];
         for (const id of o.choice) delete ed.options[id];
         if (on) ed.options[o.id] = true;
       }, {label: o.label});
+      const pending = [];  // [option, its "changes levels" note], filled once the area is drawn
+      const levelsNote = (o) => {
+        const span = h("small.fe-sub.fe-optlevels", "…");
+        pending.push([o, span]);
+        return span;
+      };
       const optionRows = groups.map((g) => {
         const seen = new Set(), rows = [];
         for (const o of g.options) {
@@ -105,10 +162,11 @@ EZ.areas = EZ.areas || [];
               h("input", {type: "radio", name, checked, onchange: onpick}), h("span", label), extra || null);
             rows.push(h("fieldset.fe-choiceset", h("legend.fe-sub", "Pick one"),
               radio("Erazure's default", !chosen, () => setOption(set[0], false)),
-              set.map((x) => radio(x.label, chosen === x, () => setOption(x, true)))));
+              set.map((x) => radio(x.label, chosen === x, () => setOption(x, true), levelsNote(x)))));
           } else {
             seen.add(o.id);
-            rows.push(toggle(o.label, !!(e.options && e.options[o.id]), (on) => setOption(o, on)));
+            rows.push(h("div", toggle(o.label, !!(e.options && e.options[o.id]), (on) => setOption(o, on)),
+              levelsNote(o)));
           }
         }
         const rulesShown = h("details.fe-rules", h("summary", "The rules these switch on"),
@@ -173,18 +231,39 @@ EZ.areas = EZ.areas || [];
         h("section.fe-card", {id: "fe-options"},
           h("div.fe-row", h("h3", {style: {margin: 0}}, "Show or hide kinds of items"), h("span.fe-bar-gap"),
             h("label.fe-row.fe-small", h("span.fe-sub", "Items drawn at filter level"), levelPick)),
+          P && P.context ? P.context(() => app.drawArea(), {lead: "The items are drawn on the ground outside town for " +
+            "a level"}) : null,
           h("p.fe-sub", "Erazure's own choices for potions, quivers, class items and more. Where two of them cover the " +
-            "same item, the one higher in this list wins. Every hide is for the ground outside town: in town, your " +
-            "inventory and stash the items look as always."),
+            "same item, the one higher in this list wins. Every hide is for the ground outside town, and takes the " +
+            "items' minimap icons, chat lines and sounds away too: in town, your inventory and stash the items look " +
+            "as always. Under each switch: the filter levels it changes (on the others Erazure already does it)."),
           groups.length ? h("div.fe-optrows", optionRows) : h("p.fe-empty", "This version has no options.")),
         h("section.fe-card", {id: "fe-levels"},
           h("h3", "Filter levels"),
           h("p.fe-sub", "Rename a level, or make it behave like another level: then tune it on its own (Items, Alerts) " +
-            "and keep Erazure's levels as they are. BH reads 12 levels; level 0 always shows everything."),
+            "and keep Erazure's levels as they are. The game reads 12 levels; level 0 always shows everything."),
           h("div.fe-levelrows", levelRows)));
       if (sub) {
         const el = box.querySelector("#fe-" + sub);
         if (el) el.scrollIntoView();
+      }
+      // the levels each switch changes: a few at a time, so the area shows at once
+      if (z && pending.length) {
+        let k = 0;
+        const step = () => {
+          const end = Math.min(pending.length, k + 4);
+          for (; k < end; k++) {
+            const [o, span] = pending[k];
+            if (!span.isConnected) return;  // the area was drawn again
+            let lv = [];
+            try { lv = changedLevels(app, o, lines, aliases, z); } catch (err) { span.textContent = ""; continue; }
+            span.textContent = lv.length === 12 ? "changes every level (1-12)" : lv.length ? "changes level" +
+              (lv.length > 1 ? "s " : " ") + runs(lv) : "changes no level for these items (Erazure already does it)";
+            if (!lv.length) span.classList.add("is-none");
+          }
+          if (k < pending.length) setTimeout(step, 0);
+        };
+        setTimeout(step, 0);
       }
     },
   });

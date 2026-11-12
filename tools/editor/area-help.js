@@ -9,7 +9,8 @@ EZ.areas = EZ.areas || [];
     ["How does the editor work?", [
       "You pick one of Erazure's versions and change what you like. The editor keeps your changes, never a copy of " +
       "the filter: each time you save, it builds the newest Erazure with your changes on top.",
-      "With no changes, the file it saves is exactly the launcher's."]],
+      "With no changes, the file it saves is exactly the launcher's: then keep the launcher's Erazure, which updates " +
+      "by itself."]],
     ["How do I get my filter into the game?", [
       "Save to game (Chrome and Edge) writes it straight into Diablo II\\ProjectD2\\filters\\local; other browsers " +
       "download it, and you put it there yourself.",
@@ -38,10 +39,14 @@ EZ.areas = EZ.areas || [];
       "rule that builds an item's label. The game's own options can hide items too: Hide Healing / Mana Potions, " +
       "and Force Show Undiscovered shows unique and set items you haven't found yet whatever the filter says."]],
     ["What are rules, %CONTINUE% and alerts?", [
-      "BH reads the rules from the top; the first one that matches without %CONTINUE% decides the label, and one " +
-      "with %CONTINUE% passes its text on to the next. Minimap icons, sounds and chat lines are decided apart: the " +
-      "first matching rule with one decides the sound and the chat line, and icons add up until a rule without " +
-      "%CONTINUE%. My rules has a rule builder and checks every line you write."]],
+      "The game reads the rules from the top; the first one that matches without %CONTINUE% (the word that says " +
+      "\"keep going\") decides the label, and one with %CONTINUE% passes its text on to the next. Minimap icons, sounds " +
+      "and chat lines are decided apart: the first matching rule with one decides the sound and the chat line, and " +
+      "icons add up until a rule without %CONTINUE%. My rules has a rule builder and checks every line you write."]],
+    ["What is BH?", [
+      "BH is the part of the game (it comes with Project Diablo 2) that reads the loot filter: My rules and Erazure's " +
+      "rules name it where they explain how a rule is read. You don't install anything: the game has it.",
+      "Most changes never need rules: Items, Quick Edits, Looks and Alerts write them for you."]],
     ["Can I share my changes?", [
       "Copy a share link or save the changes to a file (the menu next to Save to game). Anyone who opens the link or " +
       "imports the file gets your changes on their own copy of Erazure."]],

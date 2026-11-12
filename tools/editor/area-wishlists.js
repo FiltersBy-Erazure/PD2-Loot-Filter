@@ -37,14 +37,12 @@ EZ.areas = EZ.areas || [];
     list.forEach((s, k) => {
       const kind = h("select", {"aria-label": "Kind of stat", onchange: (e) => set(() => {
         list[k] = {kind: e.target.value, word: "", n: "", op: s.op || "min", a: s.a, b: s.b};
-      })}, RA.STAT_KINDS.map(([v, t]) => h("option", {value: v, selected: s.kind === v}, t)));
+      })}, RA.STAT_KINDS.map(([v, t]) => h("option", {value: v, selected: RA.kindOf(s) === v}, t)));
       let what;
-      if (s.kind === "word") {
-        what = h("select", {"aria-label": "Stat", onchange: (e) => set(() => { s.word = e.target.value; }, true)},
-          h("option", {value: ""}, "Pick a stat"), RA.STAT_WORDS.map(([v, t]) => h("option", {value: v, selected: s.word === v}, t)));
-      } else if (s.kind === "STAT") {
-        what = h("input.fe-pv-num", {type: "number", min: 0, value: s.n, placeholder: "id", "aria-label": "Stat number",
-          onchange: (e) => set(() => { s.n = e.target.value; }, true)});
+      if (s.kind === "word" || s.kind === "STAT") {
+        what = RA.statPicker(s, (v) => set(() => {
+          list[k] = {kind: v.kind, word: v.word || "", n: v.n || "", op: s.op || "min", a: s.a, b: s.b};
+        }));
       } else if (s.kind === "CLSK") {
         what = h("select", {"aria-label": "Class", onchange: (e) => set(() => { s.n = e.target.value; }, true)},
           h("option", {value: ""}, "Pick a class"), RA.CLASS_NAMES.map((c, i) => h("option", {value: String(i),
@@ -79,16 +77,25 @@ EZ.areas = EZ.areas || [];
     const set = (fn, quiet) => { fn(d); if (quiet) drawResult(); else redraw(); };
     const flip = (arr, v) => { const i = arr.indexOf(v); if (i >= 0) arr.splice(i, 1); else arr.push(v); };
     const result = h("div.fe-bd-result");
+    const cancel = () => { draft = null; app.drawArea(); };
+    /* a sample of what it draws: the label with its tag, the line in the hover box, in their colors */
+    const sample = (r) => {
+      const R = EZ.render, color = R.WORDS[EZ.wishlists.COLORS.indexOf(d.color) >= 0 ? d.color : "GREEN"];
+      const first = d.codes.length ? EZ.items.base(d.codes[0]) : null;
+      const q = d.quals.length === 1 ? d.quals[0] : d.quals.indexOf("RARE") >= 0 ? "RARE" : d.quals[0];
+      const name = first ? R.plain(first.name).split(" / ")[0] : "Item";
+      const tag = (d.tag || "").replace(/[{}]/g, "").trim();
+      const text = (d.line || d.name || "Highlight").replace(/[{}]/g, "").trim();
+      return h("div.fe-bd-show",
+        h("div.fe-ground.fe-bd-ground", R.label((tag ? "ÿc" + color + tag + " " : "") + "ÿc" +
+          (R.QUALITY[q] || "0") + name)),
+        h("div.fe-minidesc", {title: "Its line in the hover box (over Erazure's lines there)"},
+          R.coded("ÿc" + color + text, "3")));
+    };
     const drawResult = () => {
       const r = EZ.wishlists.rule(d);
-      if (!r) { fill(result, h("p.fe-sub", "Pick a kind of item or a stat: a highlight with neither would tag every item.")); return; }
-      const ls = r.line.split("\n");
-      const ctx = EZ.lint.context(app.src, app.versionLines(), {top: ls, bottom: []}, {soundCount: app.data.soundCount});
-      const findings = EZ.lint.lines(ls, Object.assign(ctx, {block: "top"})).filter((f) => f.level !== "info");
-      fill(result, ls.map((l) => h("code.fe-bd-line", l)),
-        findings.length ? h("ul.fe-ed-lint", findings.map((f) => h("li.fe-ed-finding." + f.level, pill(f.level === "error" ?
-          "error" : "check", f.level === "error" ? "bad" : "warn"), h("span", f.text)))) : null,
-        h("div.fe-row", h("button.fe-btn.primary", {type: "button", onclick: () => {
+      const buttons = h("div.fe-row",
+        r ? h("button.fe-btn.primary", {type: "button", onclick: () => {
           const w = JSON.parse(JSON.stringify(d));
           w.id = w.id || "w" + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
           draft = null;
@@ -96,17 +103,36 @@ EZ.areas = EZ.areas || [];
             ed.wishlists = (ed.wishlists || []).filter((x) => x.id !== w.id);
             ed.wishlists.push(w);
           }, {label: "wishlists"});
-        }}, d.id ? "Keep the highlight" : "Add the highlight"),
-          h("button.fe-btn.ghost", {type: "button", onclick: () => { draft = null; app.drawArea(); }}, "Cancel")));
+        }}, d.id ? "Keep the highlight" : "Add the highlight") : null,
+        h("button.fe-btn.ghost", {type: "button", onclick: cancel}, "Cancel"));
+      if (!r) {
+        fill(result, h("p.fe-sub", "Pick a kind of item or a stat: a highlight with neither would tag every item."),
+          buttons);
+        return;
+      }
+      const ls = r.line.split("\n");
+      const ctx = EZ.lint.context(app.src, app.versionLines(), {top: ls, bottom: []}, {soundCount: app.data.soundCount});
+      const findings = EZ.lint.lines(ls, Object.assign(ctx, {block: "top"})).filter((f) => f.level !== "info");
+      fill(result,
+        h("p", h("b", "Tags: "), EZ.wishlists.describe(d), "."),
+        sample(r),
+        h("details.fe-rules", h("summary", "Show the rule"), ls.map((l) => h("code.fe-bd-line", l))),
+        findings.length ? h("ul.fe-ed-lint", findings.map((f) => h("li.fe-ed-finding." + f.level, pill(f.level === "error" ?
+          "error" : "check", f.level === "error" ? "bad" : "warn"), h("span", f.text)))) : null,
+        buttons);
     };
     const palette = app.data.palette || [];
     const layers = d.alert.icon || {};
     const combo = EZ.rules.LAYERS.filter((k) => layers[k]).map((k) => k + "-" + layers[k]).join(" ");
+    const lineInput = h("input", {type: "text", value: d.line, placeholder: d.name || "Highlight",
+      oninput: (e) => set(() => { d.line = e.target.value; }, true)});
     fill(box,
-      h("h3", d.id ? "Change the highlight" : "A new highlight"),
+      h("div.fe-row", h("h3", {style: {margin: 0}}, d.id ? "Change the highlight" : "A new highlight"),
+        h("span.fe-bar-gap"), h("button.fe-btn.ghost.small", {type: "button", "aria-label": "Close without keeping it",
+          title: "Close without keeping it", onclick: cancel}, "✕")),
       h("fieldset.fe-bd-set", h("legend", "Which items"),
         h("label.fe-bd-field.wide", h("span.fe-bd-label", "Its name (for you)"), h("input", {type: "text", value: d.name,
-          oninput: (e) => set(() => { d.name = e.target.value; }, true)})),
+          oninput: (e) => set(() => { d.name = e.target.value; lineInput.placeholder = d.name || "Highlight"; }, true)})),
         h("div.fe-bd-field.wide", h("span.fe-bd-label", "Kinds of items (any of these)"), h("div.fe-row.fe-small",
           JEWELRY.map(([c, t]) => h("button.fe-chiptog", {type: "button", "aria-pressed": String(d.codes.indexOf(c) >= 0),
             onclick: () => set(() => flip(d.codes, c))}, t)),
@@ -122,11 +148,12 @@ EZ.areas = EZ.areas || [];
         d.pool.length ? h("div.fe-bd-field", h("span.fe-bd-label", "How many of them"), h("input.fe-pv-num", {type: "number",
           min: 1, max: d.pool.length, value: d.n, "aria-label": "How many of them", onchange: (e) => set(() => { d.n = e.target.value; }, true)})) : null),
       h("fieldset.fe-bd-set", h("legend", "What it gets"),
-        h("label.fe-bd-field", h("span.fe-bd-label", "A line in its description"), h("input", {type: "text", value: d.line,
-          placeholder: d.name || "Highlight", oninput: (e) => set(() => { d.line = e.target.value; }, true)})),
-        h("div.fe-bd-field", h("span.fe-bd-label", "Its color"), h("select", {"aria-label": "Its color", onchange: (e) =>
-          set(() => { d.color = e.target.value; })}, EZ.wishlists.COLORS.map((c) => h("option", {value: c, selected: d.color === c},
-          c.charAt(0) + c.slice(1).toLowerCase().replace("_", " "))))),
+        h("label.fe-bd-field", h("span.fe-bd-label", "A line in its description"), lineInput),
+        h("div.fe-bd-field", h("span.fe-bd-label", "Its color"), h("div.fe-row.fe-small",
+          EZ.wishlists.COLORS.map((c) => h("button.fe-chipbtn", {type: "button", "aria-pressed": String(d.color === c),
+            title: c.charAt(0) + c.slice(1).toLowerCase().replace("_", " "), "aria-label": c.toLowerCase().replace("_", " "),
+            style: {color: EZ.render.rgb(EZ.render.WORDS[c]) || "inherit"}, onclick: () => set(() => { d.color = c; })},
+            "■")))),
         h("label.fe-bd-field", h("span.fe-bd-label", "A tag before its name (optional)"), h("input", {type: "text",
           value: d.tag || "", placeholder: "e.g. WL", oninput: (e) => set(() => { d.tag = e.target.value; }, true)})),
         h("div.fe-bd-field.wide", h("span.fe-bd-label", "An icon and a sound (optional)"), h("div.fe-row.fe-small",
@@ -180,8 +207,7 @@ EZ.areas = EZ.areas || [];
               ed.wishlists = (ed.wishlists || []).filter((x) => x.id !== w.id);
               if (!ed.wishlists.length) delete ed.wishlists;
             }, {label: "wishlists"})}, "Remove")),
-            r ? h("p.fe-sub.fe-small", EZ.words.cond(r.cond.replace(/\$f\([^\s]*\)/g, "").trim()) +
-              ((w.pool || []).length ? `, and ${w.n || 1} of ${(w.pool || []).length} more stats` : "")) : null);
+            r ? h("p.fe-sub.fe-small", EZ.wishlists.describe(w) + ".") : null);
         })) : null]);
     },
   });

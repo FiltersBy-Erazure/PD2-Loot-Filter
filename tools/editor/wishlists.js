@@ -96,7 +96,7 @@ EZ.wishlists = (function () {
     if (!items.length && !stats) return null;
     const color = COLORS.indexOf(w.color) >= 0 ? w.color : "GREEN";
     const text = clean(w.line) || clean(w.name) || "Highlight";
-    const cond = conds.join(" "), note = w.name ? " // " + clean(w.name) : "";
+    const cond = conds.join(" "), note = "// Your highlight: " + (clean(w.name) || text);
     const alert = EZ.overrides.alertText(w.alert), tag = clean(w.tag);
     const top = tag || alert ? "ItemDisplay[" + cond + "]:" + (tag ? "%" + color + "%" + tag + "%CS%" : "") +
       "%NAME%{%NAME%}" + alert + "%CONTINUE%" + note : null;
@@ -106,9 +106,114 @@ EZ.wishlists = (function () {
 
   const valid = (w) => w && typeof w === "object" && !Array.isArray(w);
 
+  /* A highlight in words: "identified rare or crafted amulets with FCR 10+, and 2 of: life 40+, strength 15+". */
+  const QUAL_WORD = {MAG: "magic", RARE: "rare", CRAFT: "crafted", UNI: "unique", SET: "set"};
+  function describe(w) {
+    const r = rule(w);
+    if (!r) return "";
+    const q = (w.quals || []).filter((x) => QUAL_WORD[x]).map((x) => QUAL_WORD[x]);
+    const kinds = [];
+    for (const c of w.codes || []) {
+      const b = EZ.items.base && EZ.items.base(c);
+      kinds.push(b ? EZ.render.plain(b.name).split(" / ")[0] + "s" : c);
+    }
+    for (const g of w.groups || []) kinds.push(EZ.words.PLAIN[g] ? EZ.words.PLAIN[g] + "s" : g.toLowerCase());
+    const say = (s) => { const t = wordsOf(s); return t ? EZ.words.cond(t) : ""; };
+    const need = (w.need || []).map(say).filter(Boolean);
+    const pool = (w.pool || []).map((s) => say(withSkill(s))).filter(Boolean);
+    const n = Math.max(1, Math.min(pool.length, int(w.n) || 1));
+    let s = "Identified " + (q.length ? q.join(" or ") + " " : "") + (kinds.length ? kinds.join(", ") : "items");
+    if (need.length) s += " with " + need.join(", ");
+    if (pool.length) s += (need.length ? ", and " : " with ") + (pool.length > 1 ? n + " of: " : "") + pool.join(", ");
+    return s;
+  }
+
+  /* Erazure's stopping rules an identified item can meet ("!ID" rules can't): [{i, r, tree}], their conditions read
+     as BH reads them (cached by line while Erazure's aliases stay the same). Hide rules (no text) are left out. */
+  let treeCache = {sig: null, map: new Map()};
+  function stoppers(lines) {
+    const aliases = EZ.core.bhAliases(EZ.core.bhEntries(lines));
+    const sig = aliases.length + "\n" + aliases.map((a) => a.name + "=" + a.value).join("\n");
+    if (treeCache.sig !== sig) treeCache = {sig, map: new Map()};
+    const out = [], todo = [];
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      if (!line.startsWith("ItemDisplay[")) continue;
+      const r = EZ.filter.rule(line);
+      if (!r || /%CONTINUE%/i.test(r.out) || /(^|[\s(])!ID\b/.test(r.cond)) continue;
+      const text = r.out.replace(/\{[^}]*\}?/, "").replace(/%(BORDER|MAP|DOT|PX|LINE|NOTIFY)-[0-9a-f]{1,4}%|%SOUNDID-\d{1,4}%|%TIER-\d%/gi, "");
+      if (!text.trim()) continue;
+      if (!treeCache.map.has(line)) todo.push({line, cond: r.cond});
+      out.push({i, r, line});
+    }
+    if (todo.length) {
+      const subs = EZ.core.substitute([todo.map((t) => t.cond), todo.map(() => "")], aliases)[0];
+      const F = {formulas: Object.create(null), formulaText: Object.create(null), statMax: 1023, skillMax: 1023,
+                 soundCount: 10000};
+      const namer = EZ.engine.islandNamer();
+      todo.forEach((t, k) => {
+        let tree = null;
+        try { tree = EZ.engine.condition(EZ.engine.islandsOf(subs[k], "", "", F, namer), F); } catch (e) { tree = null; }
+        treeCache.map.set(t.line, tree);
+      });
+    }
+    return out.map((x) => Object.assign(x, {tree: treeCache.map.get(x.line)})).filter((x) => x.tree);
+  }
+
+  /* The highlight's line in a stopping rule's output: its description gets the line (over its own lines, as the
+     highlight's own rule writes it), or is the line where the rule had none. */
+  function withLine(out, color, text) {
+    const l = out.indexOf("{"), r = out.indexOf("}", l + 1);
+    const add = "%" + color + "%" + text;
+    if (l >= 0 && r > l) return out.slice(0, r) + (out.slice(l + 1, r).trim() ? "%CL%" : "") + add + out.slice(r);
+    return out + "{" + add + "}";
+  }
+
+  /* Twins of Erazure's stopping rules for a highlight's items: charms, jewels, quivers and other items Erazure ends
+     early never reach the highlight's own line before the last rule, so each such rule gets a twin right above it
+     (the highlight's condition and its own, its output with the line added). Exact: the twin matches only items both
+     match. [[line index, twin]]. */
+  function twins(lines, list) {
+    const out = [];
+    const cat = EZ.items.catalog && EZ.items.catalog();
+    if (!cat || !cat.bases || !cat.bases.size || !EZ.overrides) return out;
+    const stops = stoppers(lines);
+    for (const {w, r} of list) {
+      const t = EZ.overrides.treeOf(r.cond, {});
+      if (!t) continue;
+      const quals = (w.quals || []).filter((q) => QUALS.indexOf(q) >= 0);
+      const cands = [];
+      for (const code of EZ.overrides.codesOf(t.tree, t.F).slice(0, 200)) {
+        const b = cat.bases.get(code);
+        for (const quality of quals.length ? quals : QUALS) cands.push({code, base: b, quality, id: true});
+      }
+      if (!cands.length) continue;
+      const F0 = {formulas: Object.create(null), statMax: 1023, skillMax: 1023, soundCount: 10000};
+      const color = COLORS.indexOf(w.color) >= 0 ? w.color : "GREEN";
+      const text = clean(w.line) || clean(w.name) || "Highlight";
+      for (const s of stops) {
+        if (!cands.some((it) => EZ.engine.evalCondition(s.tree, it, {}, F0) !== 0 &&
+                                EZ.engine.evalCondition(t.tree, it, {}, t.F) !== 0)) continue;
+        const top = EZ.overrides.topWords(s.r.cond);
+        const sc = top && top.some((x) => x === "OR" || x === "||") ? "(" + s.r.cond.trim() + ")" : s.r.cond.trim();
+        out.push([s.i, "ItemDisplay[" + r.cond + " " + sc + "]:" + withLine(s.r.out, color, text) +
+          "// Your highlight: " + (clean(w.name) || text)]);
+      }
+    }
+    return out;
+  }
+
   function apply(ctx) {
-    const list = (ctx.edits.wishlists || []).filter(valid).map(rule).filter(Boolean);
-    if (!list.length) return;
+    const pairs = (ctx.edits.wishlists || []).filter(valid).map((w) => ({w, r: rule(w)})).filter((x) => x.r);
+    if (!pairs.length) return;
+    const list = pairs.map((x) => x.r);
+    // the twins first (their places are lines of Erazure's), from the bottom up so the places stay
+    const byLine = new Map();
+    for (const [i, line] of twins(ctx.lines, pairs)) {
+      if (!byLine.has(i)) byLine.set(i, []);
+      byLine.get(i).push(line);
+    }
+    for (const i of [...byLine.keys()].sort((a, b) => b - a)) ctx.lines.splice(i, 0, ...byLine.get(i));
     for (const which of ["top", "bottom"]) {
       const lines = list.map((r) => r[which]).filter(Boolean);
       if (!lines.length) continue;
@@ -119,7 +224,7 @@ EZ.wishlists = (function () {
     }
   }
 
-  return {rule, apply, formulaOf, wordsOf, valid, COLORS, QUALS, MARKS};
+  return {rule, apply, describe, twins, formulaOf, wordsOf, valid, COLORS, QUALS, MARKS};
 })();
 
 if (EZ.edits) {

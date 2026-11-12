@@ -26,6 +26,11 @@ EZ.lint = (function () {
   const NAME_MAX = 56, SHOP_MAX = 512, COPY_MAX = 127, DESC_MAX = 500;
   const SHOP_RE = /(^|[^!\w])SHOP\b/;
   const WORD_RE = /[A-Za-z0-9_]+/g;
+  /* Words about where the player is and when, not about the item (Erazure's TOWN written in is MAPID tests). */
+  const CONTEXT_RE = new RegExp("^(GROUND|TOWN|INVENTORY|STASH|CUBE|SHOP|EQUIPPED|MERC|COMPENDIUM|PREVIEW|GUILDVAULT|" +
+    "TROPHYCASE|AMAZON|SORCERESS|NECROMANCER|PALADIN|BARBARIAN|DRUID|ASSASSIN|AND|OR|&&|\\|\\||" +
+    "(FILTLVL|CLVL|DIFF|MAPID|CHARSTAT\\d+)[<>=~].*)$");
+  const namesItems = (cond) => cond.split(/[\s()!]+/).filter(Boolean).some((t) => !CONTEXT_RE.test(t));
 
   function balanced(text) {
     let d = 0;
@@ -87,6 +92,7 @@ EZ.lint = (function () {
 
   const cache = new WeakMap();
   const alertCache = new WeakMap();  // Erazure's compiled filter -> condition -> its alerting rules a hide leaves
+  const decidedCache = {};  // the key of the bottom rules' cache (condition -> the Erazure rule that decides first)
 
   /* What the lint needs of the player's filter: the aliases in the order BH reads them (Erazure's before 050, the
      top block's, Erazure's after it, the bottom block's), the named formulas, the game's item codes, Erazure's alias
@@ -287,13 +293,24 @@ EZ.lint = (function () {
     const act = EZ.engine.action(EZ.engine.islandsOf(outText, "%", "%", {formulas: condF.formulas, formulaText: {}},
                                                      namer), condF);
     const hides = !act.cont && !act.text.length;
+    const mine = env.block === "top" || env.block === "bottom";
     if (a.never) {
       say(n, "error", "BH can't build this condition (an AND, OR or ! without what it joins): the rule never matches.");
     } else if (a.always) {
-      const stopTop = env.block === "top" && !act.cont;
-      say(n, stopTop || cond.trim() ? "warning" : "info", (cond.trim() ? "No condition is left once BH drops what it " +
-        "can't read: " : "No condition: ") + "the rule matches every item" + (stopTop ? ", and above Erazure's rules it " +
-        "decides every item's look (Erazure's own rules never run)." : "."));
+      const stopTop = env.block === "top" && (!act.cont || act.notifies);
+      say(n, stopTop ? "error" : cond.trim() ? "warning" : "info", (cond.trim() ? "No condition is left once BH drops " +
+        "what it can't read: " : "No condition: ") + "the rule matches every item" + (stopTop ? (hides ? " and hides " +
+        "them all." : act.cont ? ", and above Erazure's rules its alert takes over every drop's (Erazure's drop sounds " +
+        "and chat lines stop)." : ", and above Erazure's rules it decides every item's look (Erazure's own rules never " +
+        "run).") + " Pick the items it is for." : "."));
+    } else if (mine && !namesItems(cond)) {
+      // only where and when (GROUND !TOWN, levels, a class): every item there
+      const loud = env.block === "top" && (hides || !act.cont || act.notifies);
+      say(n, loud ? "error" : "warning", "This rule names no items, only where or when: it is for every item" +
+        (/\bGROUND\b/.test(cond) ? " on the ground" : "") + ". " + (hides ? "It hides them all." : !act.cont &&
+        env.block === "top" ? "Above Erazure's rules it decides every item's look (Erazure's own rules never run)." :
+        act.notifies ? "Every drop gets its alert, and Erazure's drop sounds and chat lines stop." : "") +
+        " Pick the items it is for.");
     }
     if (env.codes) {
       for (const code of a.codes) {
@@ -357,30 +374,71 @@ EZ.lint = (function () {
                act.name.some((p) => typeof p !== "string" || p.replace(/ÿc./g, "").trim())) {
       say(n, "info", "This %CONTINUE% rule's text has no %NAME%: every later rule (Erazure's too) gets your text " +
         "instead of the item's name.");
+    } else if (mine && act.cont && act.text.trim() === "%NAME%" && !act.notifies && out0.indexOf("{") >= 0 &&
+               act.descText.trim() === "%NAME%") {
+      say(n, "warning", "This rule changes nothing: it keeps the name and the description and lets the next rules " +
+        "decide. To show items Erazure hides, make it an item change (Items: Show it).", null,
+        env.block === "top" ? {kind: "items", label: "Make it an item change"} : null);
     }
-    if (env.block === "top" && !act.cont && !a.never && !a.always && EZ.overrides && EZ.overrides.alertsMeeting) {
+    // Erazure's alerting rules these items can meet (cached per condition): a hide above leaves them, an alert above
+    // takes their sound
+    const meeting = () => {
+      if (!env.erazureF || !EZ.overrides || !EZ.overrides.alertsMeeting) return [];
+      let seen = alertCache.get(env.erazureF);
+      if (!seen) { seen = new Map(); alertCache.set(env.erazureF, seen); }
+      let found = seen.get(cond);
+      if (!found) {
+        const tree = EZ.engine.condition(isl, condF);
+        found = tree ? EZ.overrides.alertsMeeting(tree, condF, env.erazureF, 6) : [];
+        if (seen.size > 500) seen.clear();
+        seen.set(cond, found);
+      }
+      return found;
+    };
+    const whereOf = (i) => env.where ? env.where(i) : "line " + (i + 1);
+    if (env.block === "top" && !a.never && !a.always && namesItems(cond) && EZ.overrides && EZ.overrides.alertsMeeting) {
       const fix = {kind: "items", label: "Make it an item change"};
-      if (hides && env.erazureF) {
-        let seen = alertCache.get(env.erazureF);
-        if (!seen) { seen = new Map(); alertCache.set(env.erazureF, seen); }
-        let found = seen.get(cond);
-        if (!found) {
-          const tree = EZ.engine.condition(isl, condF);
-          found = tree ? EZ.overrides.alertsMeeting(tree, condF, env.erazureF, 3) : [];
-          if (seen.size > 500) seen.clear();
-          seen.set(cond, found);
-        }
+      if (!act.cont && hides) {
+        const found = meeting().slice(0, 3);
         if (found.length) {
           say(n, "warning", "Erazure gives some of these items a minimap icon, chat line or sound (" +
-            found.map((i) => env.where ? env.where(i) : "line " + (i + 1)).join(", ") + "): BH works out alerts in a " +
-            "pass of its own, so a hide here leaves them. As an item change (Items) the hide takes them away too.",
-            null, fix);
+            found.map(whereOf).join(", ") + "): BH works out alerts in a pass of its own, so a hide here leaves them. " +
+            "As an item change (Items) the hide takes them away too.", null, fix);
         }
-      } else if (!hides && act.text.length) {
+      } else if (!act.cont && act.text.length) {
         say(n, "info", "Above Erazure's rules this decides the look: Erazure's own looks and tags never reach these " +
           "items" + (/\bGROUND\b/.test(cond) ? "" : ", in your stash and inventory too") + ". To show items Erazure " +
           "hides with Erazure's look (or with a look of your own on top of Erazure's tags), make it an item change.",
           null, fix);
+      }
+      if (act.notifies && !act.sound) {
+        const loud = meeting().filter((i) => {
+          const r = env.erazureF && env.erazureF.byLine.get(i);
+          return r && r.act.sound;
+        });
+        if (loud.length) {
+          say(n, "warning", "Erazure plays a drop sound for some of these items (" + loud.slice(0, 3).map(whereOf)
+            .join(", ") + "), but the first rule with an icon or a sound decides an item's alert: with only an icon, " +
+            "yours leaves them silent. Pick a drop sound too, or leave the icon off.");
+        }
+      }
+    }
+    if (env.block === "bottom" && !a.never && !a.always && (hides || act.text.length) && env.erazureF &&
+        EZ.overrides && EZ.overrides.decidedFirst) {
+      let seen = alertCache.get(decidedCache);
+      if (!seen) { seen = new Map(); alertCache.set(decidedCache, seen); }
+      const key = cond + "|" + env.erazureF.rules.length;
+      let first = seen.get(key);
+      if (first === undefined) {
+        const tree = EZ.engine.condition(isl, condF);
+        first = tree ? EZ.overrides.decidedFirst(tree, condF, env.erazureF) : null;
+        if (seen.size > 500) seen.clear();
+        seen.set(key, first);
+      }
+      if (first) {
+        say(n, "warning", `Erazure decides these items before your rules below (${first.name}: ${whereOf(first.line)}` +
+          "), so this rule changes nothing for them. Add it above Erazure's rules, or make it an item change (Items).",
+          null, {kind: "items", label: "Make it an item change"});
       }
     }
     if (out0.indexOf("{") < 0 && out0.trim()) {

@@ -258,9 +258,9 @@ EZ.items = (function () {
   /* BH's Ctrl+C text -> {spec, notes}; throws on text that isn't an item BH copied. */
   function fromGame(text) {
     let o;
-    try { o = JSON.parse(String(text).trim()); } catch (e) { throw new Error("that isn't what BH copies (Ctrl+C in game)"); }
+    try { o = JSON.parse(String(text).trim()); } catch (e) { throw new Error("that isn't what the game copies (Ctrl+C in game)"); }
     if (Array.isArray(o)) o = o[0];
-    if (!o || typeof o !== "object" || typeof o.type !== "string") throw new Error("that isn't an item BH copied");
+    if (!o || typeof o !== "object" || typeof o.type !== "string") throw new Error("that isn't an item the game copied");
     const cands = [...C.bases.values()].filter((b) => plainName(b.name) === plainName(o.type));
     if (!cands.length) throw new Error(`no base is called "${o.type}"`);
     const b = cands.find((x) => x.spawnable) || cands[0];
@@ -294,7 +294,7 @@ EZ.items = (function () {
           if (Array.isArray(s)) spec.sockStats.push(s);
         }
       }
-      if (plain) notes.push(`${plain} socketed rune${plain > 1 ? "s or gems" : " or gem"}: BH's copy leaves out what they add`);
+      if (plain) notes.push(`${plain} socketed rune${plain > 1 ? "s or gems" : " or gem"}: the game's copy leaves out what they add`);
     }
     return {spec, notes};
   }
@@ -439,6 +439,18 @@ EZ.items = (function () {
     return out;
   }
 
+  /* A stat's name as the game words it on an item, its value as X ("+X to Vitality", "X% Deadly Strike", "Cannot Be
+     Frozen"), or "" for a stat the game shows no line for, or one about a skill (the skill kinds of the pickers). */
+  const SKILL_FUNCS = new Set([13, 14, 15, 16, 24, 27, 28]);
+  function statTitle(sid) {
+    const st = C && C.stats.get(sid);
+    if (!st || !st.text || SKILL_FUNCS.has(st.func) || HIDDEN_STATS.has(sid)) return "";
+    if (!st.func) return /%/.test(st.text) ? "" : st.text;
+    const t = describeStat(st.func, st.val, st.text, st.str2, 7777);
+    if (/%[+0-9]*[a-z]/i.test(t)) return "";  // a form the pickers can't word
+    return t.replace(/7777/g, "X");
+  }
+
   /* Whether a base drops in more than one quality (weapons, armor, rings, amulets, charms, jewels, maps, arrows and
      bolts): everything else (gems, runes, potions, keys, PD2 items, quest items...) is always a normal item. */
   function qualities(b) {
@@ -446,8 +458,8 @@ EZ.items = (function () {
                    b.groups.indexOf("JEWELRY") >= 0 || b.groups.indexOf("QUIVER") >= 0);
   }
 
-  return {init, base, unique, make, describe, picks, search, statChoices, statLabel, statLine, statLines, gameName,
-          fromGame, hoverText, qualities,
+  return {init, base, unique, make, describe, picks, search, statChoices, statLabel, statLine, statLines, statTitle,
+          gameName, fromGame, hoverText, qualities,
           QUALITY_TINT, QUALITY_NAMES,
           catalog: () => C};
 })();

@@ -30,7 +30,9 @@
 var EZ = typeof EZ !== "undefined" ? EZ : {};
 EZ.overrides = (function () {
   "use strict";
-  const ACTIONS = ["show", "hide", "mute", "sound", "icon", "iconOnly", "notify", "look", "replace", "hunt"];
+  /* unalert: the alerts of items a Quick Edits hide hides (the option's line hides them; this takes their icon, chat
+     line and sound away): made by the edit step for options, never offered on Items. */
+  const ACTIONS = ["show", "hide", "mute", "sound", "icon", "iconOnly", "notify", "look", "replace", "hunt", "unalert"];
   /* A hunted item: shown wherever Erazure hides it, a loud look where Erazure decides its look, and an alert of its
      own instead of Erazure's (the player can change each). */
   const HUNT = {text: "%PURPLE%>>> %NAME% %PURPLE%<<<", alert: {icon: {BORDER: "9B", MAP: "9B", DOT: "20"}, sound: 4728,
@@ -348,6 +350,15 @@ EZ.overrides = (function () {
   function one(lines, o) {
     const X = cond(o.scope, o.except);
     if (!X) return {lines, top: [], bottom: []};
+    // the lines of the player's own carry the change's id in their comment, so the editor names them ("your item
+    // change: Hide it · Shako"); the game ignores it
+    const tag = "// Your item change [" + String(o.id || o.tag || "").replace(/[\]\r\n]/g, "") + "]";
+    const res = oneLines(lines, o, X);
+    return {lines: res.lines, top: res.top.map((l) => l + tag), bottom: res.bottom.map((l) => l + tag)};
+  }
+
+  function oneLines(lines, o, X) {
+    const tag = "// Your item change [" + String(o.id || o.tag || "").replace(/[\]\r\n]/g, "") + "]";
     const N = o.action === "show" ? int(o.asLevel) : null;
     if (N !== null) lines = asLevel(lines, o, X);
     const {rules, F} = read(lines);
@@ -366,6 +377,9 @@ EZ.overrides = (function () {
     } else if (o.action === "hide") {
       const hidden = "(" + g + " GROUND !TOWN FILTLVL>0)";
       top.push("ItemDisplay[" + g + " GROUND !TOWN FILTLVL>0]:");
+      for (const x of rules) if (x.act.notifies && can(x)) add.set(x.i, "!" + hidden);
+    } else if (o.action === "unalert") {  // the option's own line hides them (and never on level 0)
+      const hidden = "(" + g + " FILTLVL>0)";
       for (const x of rules) if (x.act.notifies && can(x)) add.set(x.i, "!" + hidden);
     } else if (["mute", "sound", "icon", "iconOnly"].indexOf(o.action) >= 0) {
       for (const x of rules) {
@@ -416,10 +430,14 @@ EZ.overrides = (function () {
       if (add.has(i)) out.push(withCond(lines[i], add.get(i)));
       else if (split.has(i)) {
         out.push(withCond(lines[i], "!" + g));
-        for (const [c, o2] of split.get(i)) out.push(withOut(withCond(lines[i], c), o2));
+        for (const [c, o2] of split.get(i)) out.push(withComment(withOut(withCond(lines[i], c), o2), tag));
       } else out.push(lines[i]);
     }
     return {lines: out, top, bottom};
+  }
+  function withComment(line, comment) {
+    const r = EZ.filter.rule(line);
+    return r.off + "ItemDisplay[" + r.cond + "]:" + r.out + comment;
   }
 
   /* What an override does, as the overrides the steps apply: a hunt is a show, a look and an alert instead of
@@ -514,6 +532,41 @@ EZ.overrides = (function () {
       if (hit) { found.push(r.i); if (found.length >= (limit || 3)) break; }
     }
     return found;
+  }
+
+  /* Does Erazure decide every item a condition matches before the player's rules below Erazure's (the catch-all's
+     place)? For each base, quality and filter level the condition can match, one of Erazure's stopping rules (not
+     the catch-all) must match for sure (a rule that only may match doesn't count). -> {line, name} of the first such
+     rule for the first item, or null when some item can reach the bottom. Fz: Erazure's compiled filter. */
+  const stoppers = new WeakMap();
+  function decidedFirst(tree, F, Fz) {
+    const cat = EZ.items.catalog();
+    if (!Fz || !Fz.rules || !Fz.rules.length) return null;
+    let stops = stoppers.get(Fz);
+    if (!stops) {
+      const last = Fz.rules[Fz.rules.length - 1];
+      stops = Fz.rules.filter((r) => r !== last && r.tree && !r.act.cont);
+      stoppers.set(Fz, stops);
+    }
+    const L = Array.from({length: 13}, (_, k) => ({filtlvl: k}));
+    const codes = codesOf(tree, F);
+    if (codes.length > 120) return null;  // a whole kind of items: some reach the bottom
+    let example = null, any = false;
+    for (const code of codes) {
+      const b = cat.bases.get(code);
+      for (const quality of EZ.items.qualities(b) ? QUALS : ["NORM"]) {
+        const it = {code, base: b, quality};
+        for (const c of L) {
+          if (EZ.engine.evalCondition(tree, it, c, F) === 0) continue;
+          any = true;
+          const r = stops.find((x) => (!x.codes || x.codes.has(code)) && (!x.quals || x.quals.has(quality)) &&
+            EZ.engine.evalCondition(x.tree, it, c, Fz) === 1);
+          if (!r) return null;
+          if (!example) example = {line: r.i, name: EZ.render.plain(b.name).split("\n")[0]};
+        }
+      }
+    }
+    return any ? example : null;
   }
 
   /* A condition's words at its top level (a bracketed group is one word); null if its brackets don't close. */
@@ -659,7 +712,7 @@ EZ.overrides = (function () {
     if (!d.stops) return {why: "A %CONTINUE% rule adds a layer to Erazure's: only a rule that decides what the item " +
       "shows can become an item change."};
     const t = treeOf(d.cond, opts);
-    if (!t) return {why: "BH can't read this rule's condition."};
+    if (!t) return {why: "The loot filter can't read this rule's condition."};
     const codes = codesOf(t.tree, t.F);
     if (!codes.length) return {why: "This rule matches no item."};
     if (codes.length > 400) return {why: `This rule is for ${codes.length} kinds of items: name the items (or a kind ` +
@@ -687,11 +740,31 @@ EZ.overrides = (function () {
 
   return {apply, one, cond, partials, contexts, read, alertText, valid, narrowness, overlap, beats, expand, qualsOf,
           socketsOf, edOf, ilvlOf, qualityWords, colorCases, colored, fromRule, scopeOf, topWords, treeOf, codesOf, alertsMeeting,
-          sampleOf,
+          decidedFirst, sampleOf,
           ACTIONS, MARKS, HUNT, QUALS, WHITE, generators};
 })();
 
 if (EZ.edits) {
   EZ.edits.step(500, (ctx) => EZ.overrides.apply(ctx));
   EZ.edits.counter("items", (e) => (e.items || []).filter(EZ.overrides.valid).length);
+}
+
+/* Quick Edits' hides (edits.js's options step leaves them in ctx.optionHides): the items an option's line hides lose
+   their minimap icons, chat lines and sounds too, as with an Items hide. */
+if (EZ.overrides) {
+  EZ.overrides.generators.push((edits, ctx) => {
+    const list = ctx && ctx.optionHides;
+    if (!list || !list.length) return [];
+    const aliases = EZ.core.bhAliases(EZ.core.bhEntries(ctx.lines));
+    const out = [];
+    for (const x of list) {
+      const t = EZ.overrides.treeOf(x.cond, {aliases});
+      if (!t) continue;
+      const codes = EZ.overrides.codesOf(t.tree, t.F);
+      if (!codes.length) continue;
+      out.push({action: "unalert", tag: "options",
+                scope: {codes, extra: "(" + x.cond + ")" + x.above.map((a) => " !(" + a + ")").join("")}});
+    }
+    return out;
+  });
 }

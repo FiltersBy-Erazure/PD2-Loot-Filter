@@ -563,6 +563,20 @@
         if (at(F2, plain, 1, "INVENTORY").hidden) bad.push(hide.id + " on: it is hidden in the inventory too");
       }
     }
+    // a hide takes the items' alerts away too (the author's audit, 2026-11-12: "hide" meant two things on one page)
+    const quivers = EZ.filter.options(src, lines).find((g) => g.title === "Arrows and Bolts");
+    const hideQ = quivers && quivers.options.find((o) => /^Hide rare quivers/i.test(o.label));
+    if (!hideQ) bad.push("no Hide rare quivers option");
+    else {
+      const FQ = build({[hideQ.id]: true}), Fz = E.compile(lines, opts);
+      const qs = EZ.overrides.sampleOf(EZ.filter.rule(lines[hideQ.lines[0]].replace(/^\s*\/\/+\s*/, "")).cond, {aliases});
+      const q = qs.spec;
+      const was = at(Fz, q, 1), now = at(FQ, q, 1), lv0 = at(FQ, q, 0);
+      if (!was.icons.length) bad.push("Erazure gives a rare quiver no icon on level 1 (the test expects one)");
+      if (!now.invisible || now.icons.length || now.sound) bad.push(hideQ.id + " on: a rare quiver keeps an alert");
+      if (lv0.hidden || lv0.icons.length !== was.icons.length) bad.push(hideQ.id + " on: level 0 changed");
+      if (at(FQ, q, 1, "INVENTORY").hidden) bad.push(hideQ.id + " on: a rare quiver is hidden in the inventory");
+    }
     return {fail: bad.length ? bad.join("\n  ") : null, samples: n, without, ms: Math.round(performance.now() - t0)};
   });
 
@@ -597,7 +611,65 @@
       if (want && (r.sound !== 4728 || !r.icons.some((x) => x.map === 10))) bad.push(`${what}: no alert`);
     }
     if (tagged(run("RARE", undefined, false))) bad.push("an unidentified amulet is tagged");
-    return {fail: bad.length ? bad.join("\n  ") : null, cases: cases.length + 1};
+    // charms, jewels and quivers: Erazure ends them with a rule of its own before the highlight's line, which then
+    // comes as a twin of that rule (the author's audit, 2026-11-12: the line never showed there)
+    const kinds = [
+      ["a magic Grand Charm, +1 lightning skills and 35 life", {codes: ["cm3"], quals: ["MAG"], need: [
+        {kind: "TABSK", n: "9", op: "min", a: "1"}, {kind: "word", word: "LIFE", op: "min", a: "35"}]},
+       {code: "cm3", quality: "MAG", stats: [[188, 9, 1], [7, 0, 35]]}, {code: "cm3", quality: "MAG", stats: [[7, 0, 35]]}],
+      ["a rare jewel, 15 IAS", {codes: ["jew"], quals: ["RARE", "MAG"], need: [{kind: "word", word: "IAS", op: "min",
+        a: "15"}]}, {code: "jew", quality: "RARE", stats: [[93, 0, 15], [0, 0, 9]]}, {code: "jew", quality: "RARE",
+        stats: [[0, 0, 9]]}],
+      ["a magic quiver, 5 dexterity", {groups: ["QUIVER"], quals: ["MAG", "RARE"], need: [{kind: "word", word: "DEX",
+        op: "min", a: "5"}]}, {code: "aqv", quality: "MAG", stats: [[2, 0, 5]]}, {code: "aqv", quality: "MAG", stats: []}],
+    ];
+    for (const [what, wl, yes, no] of kinds) {
+      const hw = Object.assign({id: "k", name: "Wanted", line: "Wanted one", color: "GREEN"}, wl);
+      const pk = EZ.store.normalize({name: "t", edits: {base: {style: "erazure"}, wishlists: [hw]}});
+      const Fk = E.compile(EZ.edits.apply(src, pk, C.variantLines(src, main)).lines, opts);
+      // in the inventory: Erazure hides identified quivers with few useful stats on the ground
+      const runK = (spec) => E.run(Fk, EZ.items.make(Object.assign({id: true, place: "INVENTORY"}, spec)), c, {});
+      const a = runK(yes), b = runK(no);
+      if (a.desc.indexOf("Wanted one") < 0) bad.push(`${what}: no highlight line (${show([a.name, a.desc])})`);
+      if (b.desc.indexOf("Wanted one") >= 0) bad.push(`${what}: the line on one without the stats`);
+    }
+    return {fail: bad.length ? bad.join("\n  ") : null, cases: cases.length + 1 + kinds.length * 2};
+  });
+
+  /* How loud each kind of drop is (volume.js): a tier's sound lines (the %SOUNDID% line above its look) go with the
+     tier, so "Sounds only for High value uniques and sets, and runes" keeps Griffon's Eye, Annihilus and Immortal
+     King's sound and silences a Medium value unique's (the author's audit, 2026-11-12). */
+  test("volume", () => {
+    EZ.items.init({catalog: EXPECT.catalog});
+    const main = src.variants.find((v) => v.name === src.main);
+    const lines = C.variantLines(src, main);
+    const opts = {statMax: EXPECT.catalog.statMax, skillMax: EXPECT.catalog.skillMax, soundCount: EXPECT.soundCount};
+    const build = (volume) => E.compile(EZ.edits.apply(src, EZ.store.normalize({name: "t", edits: {base: {style:
+      "erazure"}, volume}}), lines).lines, opts);
+    const c = {filtlvl: 1, clvl: 90, cls: 1, diff: 2, mapid: 2, charstats: {12: 90}};
+    const at = (F, spec) => E.run(F, EZ.items.make(Object.assign({place: "GROUND", id: false}, spec)), c, {});
+    const griffon = {code: "ci3", quality: "UNI"}, anni = {code: "cm1", quality: "UNI"};
+    const ik = {code: "uar", quality: "SET"}, medium = {code: "7xf", quality: "UNI"};
+    const z = E.compile(lines, opts), bad = [];
+    for (const [what, s] of [["Griffon's Eye", griffon], ["Annihilus", anni], ["Immortal King's Soul Cage", ik],
+                             ["a Medium value unique (War Fist)", medium]]) {
+      if (!at(z, s).sound) bad.push(`Erazure plays no sound for ${what} (the test expects one)`);
+    }
+    const fewer = build(EZ.volume.fewer(src, lines, {}));
+    for (const [what, s] of [["Griffon's Eye", griffon], ["Annihilus", anni], ["Immortal King's Soul Cage", ik]]) {
+      const r = at(fewer, s);
+      if (!r.sound || !r.icons.length) bad.push(`Fewer sounds: ${what} lost its sound or icon`);
+    }
+    if (at(fewer, medium).sound) bad.push("Fewer sounds: a Medium value unique still plays its sound");
+    if (at(build({"uni-high": "mute"}), griffon).sound) bad.push("High value uniques muted: Griffon's Eye still plays");
+    if (!at(build({"uni-high": "mute"}), medium).sound) bad.push("High value uniques muted: a Medium one went quiet");
+    if (at(build({"uni-medium": "mute"}), medium).sound) bad.push("Medium value uniques muted: War Fist still plays");
+    // no alerts: the tier's own rules give none (a later rule's icon can still come: BH's alert pass goes on)
+    const none = at(build({"set-high": "none"}), ik);
+    if (none.sound || none.icons.some((x) => x.i === at(z, ik).icons[0].i)) {
+      bad.push("High value sets with no alerts: IK keeps its sound or its tier's icon");
+    }
+    return {fail: bad.length ? bad.join("\n  ") : null, cases: 13};
   });
 
   /* Map warnings and hides (tools/editor/maps.js): a warning line on identified maps with the mod, a hide of

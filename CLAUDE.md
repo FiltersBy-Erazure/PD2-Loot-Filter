@@ -863,7 +863,29 @@
   Erazure's rules leaves Erazure's icons, chat lines or sounds (BH's separate alert pass, `alertsMeeting`) and when
   a rule there replaces Erazure's look, and "Make it an item change" turns the line into item changes
   (`fromRule`, its words taken apart into the Items form's fields by `scopeOf`). `--decode FILE` prints the changes
-  saved in a player's file. A new
+  saved in a player's file.
+  The first-time player's audit (2026-11-12, the author: "start on the blockers and majors"; the review page
+  https://claude.ai/artifact/F421RpDUxDiGMbN4hgQBhn, db `decisions` / `answers`; its 5 blockers and 45 majors done):
+  a second open tab takes the other's saves (the storage event; a toast says so); every new, copied or imported
+  profile saves to a file of its own named from it (`freeFile` / `fileFrom`; Rename offers the file too, a shared
+  file is a save check); Clear, History's Restore and Import over keep a History copy first (`keepCopy`), and a
+  change that replaces the player's own choices (style presets, the Alerts button, the builder's templates and Clear)
+  toasts with Undo (`undoToast`); dialogs with typed lines ask before closing (`guard`); one keyboard search box
+  everywhere (`EZ.ui.combo`). Player text says "the game" (BH only in My rules and Erazure's rules, explained there
+  and in Help); answers name the character and place they are for, editable on the spot (`EZ.preview.context`).
+  A Quick Edits hide also takes its items' icons, chat lines and sounds away (`ctx.optionHides`, override action
+  `unalert`, not for the items an option above it decides; fixture `options-hide`), and each switch says the levels
+  it changes. How loud each kind is: a unique or set sound line (`%NAME%%SOUNDID%%CONTINUE%`) takes the tier of the
+  look after it (Rainbow Facets High value; the Grail looks one kind), so Fewer sounds keeps Griffon's Eye and
+  Annihilus (`fewer`, the selftest's `volume`). A highlight's line also comes as a twin of each of Erazure's stopping
+  rules its items can meet (charms, jewels, quivers end early). The editor's own lines say whose they are in their
+  comment (`// Your item change [id]`, `// Your highlight: name`), and every rule named in Changes and the preview is
+  Erazure's rules' numbering (`EZ.diff.origin` pairs a narrowed line with Erazure's) or the player's change by name,
+  a link (`app.lineRef`). Lint: a player's rule that names no items (only where or when) is an error above Erazure's
+  rules, an icon without a sound above Erazure's says it silences Erazure's sound, a rule below Erazure's that Erazure
+  decides first says it changes nothing (`decidedFirst`). Look cards no rule uses are left out (`used`), looks write
+  `//` with the color between (`slashes`), the map mods' names keep the game's words with X (`maps.name`), 145's
+  feature takes only its description lines (`descOnly`), and 050's one-space option labels are options too. A new
   module goes into `MODULES` (and the selftest's list when it holds logic); a new edit field into
   `store.normalize` and `edits.js`'s order, with a fixture.
 - The website's **Resources** tab (2026-11-02, the author: reference pages players can look things up in, more to

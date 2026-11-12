@@ -52,9 +52,12 @@ EZ.areas = EZ.areas || [];
     ["CRAFTALVL", "Affix level if crafted"], ["QLVL", "The base's quality level"], ["LVLREQ", "Required level"],
     ["MAXSOCKETS", "Most sockets the item can get"], ["QTY", "Quantity (a stack)"], ["GOLD", "Gold (a pile)"],
     ["RUNE", "Rune number (El 1 ... Zod 33)"], ["PRICE", "Sell price"]];
-  const STAT_KINDS = [["word", "A stat"], ["STAT", "A stat by its number (STAT…)"], ["SK", "+ to one skill"],
+  /* The kinds of stat a form asks; "A stat" picks from Erazure's words and every stat of the game as the game words it
+     (a game stat is kept as STAT<n>). */
+  const STAT_KINDS = [["word", "A stat"], ["SK", "+ to one skill"],
     ["SKTOTAL", "+ to one skill, counting + all, class and tab skills"], ["CLSK", "+ to a class's skills"],
     ["TABSK", "+ to a skill tab"], ["OS", "+ to a skill of any class (oskill)"], ["CHSK", "Charges of a skill"]];
+  const kindOf = (s) => s.kind === "STAT" ? "word" : s.kind;
   const OPS = [["min", "at least"], ["max", "at most"], ["exactly", "exactly"], ["between", "between"]];
   const SAMPLE_COLOR = {UNI: "GOLD", SET: "GREEN", RARE: "YELLOW", MAG: "BLUE", CRAFT: "ORANGE"};
 
@@ -77,18 +80,20 @@ EZ.areas = EZ.areas || [];
     try { localStorage.setItem(STORE, JSON.stringify(B)); } catch (e) { /* not kept */ }
   }, 400);
 
+  /* What a template sets: only "What it does" (the items, levels and places picked stay). */
   const TEMPLATES = [
-    ["Hide something", "Hide items on the ground outside town (your inventory, stash and shops still name them).",
-      {show: "hide"}],
-    ["Make it stand out", "A bright label, a minimap icon and its own drop sound.",
-      {text: "%ORANGE%*** %NAME% %ORANGE%***", icon: {BORDER: "60", DOT: "0A"}, sound: 0}],
+    ["Hide something", "Hide the items you pick on the ground outside town (your inventory, stash and shops still " +
+      "name them).", {show: "hide"}],
+    ["Make it stand out", "A bright label, a minimap icon and a drop sound for the items you pick.",
+      {text: "%ORANGE%*** %NAME% %ORANGE%***", icon: {BORDER: "60", DOT: "0A"}, sound: 2585}],
     ["Add a tag", "A short tag before the name, and Erazure's rules still run after it.",
       {text: "%GOLD%Tag %NAME%", cont: true}],
     ["Show the item level", "The item level after the name of the items you pick (bases, charms, jewels...).",
       {text: "%NAME% %GRAY%(%ILVL%)", cont: true}],
-    ["Add a description line", "A line under the item's name in its hover box; the label stays Erazure's.",
+    ["Add a description line", "A line in the hover box of the items you pick; the label stays Erazure's.",
       {desc: {how: "below", text: "%GREEN%My note"}, cont: true}],
   ];
+  const WHAT_FIELDS = ["show", "text", "desc", "icon", "sound", "chat", "tier", "cont"];
 
   /* The form as EZ.rules.build reads it. */
   function specOf(b) {
@@ -151,6 +156,48 @@ EZ.areas = EZ.areas || [];
       .replace(/%(CONTINUE|(BORDER|MAP|DOT|PX|LINE|NOTIFY)-[0-9a-f]{1,4}|SOUNDID-\d{1,4}|TIER-\d)%/gi, "");
     if (!text.trim()) return h("span.fe-pv-hidden", "hidden");
     return EZ.render.label(EZ.looks.fill(text, vals, sample || "%WHITE%Item"));
+  }
+
+  /* The hover-box lines a rule writes, drawn as the game's description (null when it writes none of its own). */
+  function miniDesc(out, vals) {
+    const t = EZ.render.descOf(out, vals);
+    return t ? h("div.fe-minidesc", {title: "Its lines in the hover box"}, EZ.render.coded(t, "3")) : null;
+  }
+
+  /* A stat picker: Erazure's words first, then every stat of the game as the game words it ("+X to Vitality",
+     "X% Chance of Crushing Blow"), searchable. onpick({kind: "word", word} or {kind: "STAT", n}). */
+  let statChoiceList = null;
+  function statList() {
+    if (statChoiceList) return statChoiceList;
+    const out = STAT_WORDS.map(([w, t]) => ({label: t, sub: w, value: {kind: "word", word: w}}));
+    const seen = new Set(out.map((x) => x.label.toLowerCase()));
+    const cat = EZ.items.catalog();
+    for (const id of [...cat.stats.keys()].sort((a, b) => a - b)) {
+      const t = EZ.items.statTitle(id);
+      if (!t || seen.has(t.toLowerCase())) continue;
+      seen.add(t.toLowerCase());
+      out.push({label: t, sub: "stat " + id, value: {kind: "STAT", n: String(id)}});
+    }
+    return (statChoiceList = out);
+  }
+  function statName(s) {
+    if (s.kind === "word" && s.word) return (STAT_WORDS.find(([w]) => w === s.word) || [s.word, s.word])[1];
+    if (s.kind === "STAT" && s.n !== "" && s.n !== undefined) return EZ.items.statTitle(+s.n) || "stat " + s.n;
+    return "";
+  }
+  function statPicker(s, onpick) {
+    const cur = statName(s);
+    const c = EZ.ui.combo({placeholder: cur || "Pick a stat: life, vitality, crushing blow…", label: "Stat", all: true,
+      find: (q) => {
+        const qq = q.toLowerCase();
+        return statList().filter((x) => !qq || x.label.toLowerCase().indexOf(qq) >= 0 || x.sub.toLowerCase() === qq)
+          .slice(0, 120).map((x) => ({label: x.label, sub: x.value.kind === "word" ? "" : x.sub,
+            pick: () => onpick(x.value)}));
+      },
+      empty: (q) => `No stat matches "${q}".`});
+    if (cur) c.input.classList.add("has-value");
+    c.box.classList.add("fe-statpick");
+    return c.box;
   }
 
   function alertsOf(out, app) {
@@ -228,6 +275,13 @@ EZ.areas = EZ.areas || [];
     } else out.push(h("span.c-txt", code));
     if (cmt) out.push(h("span.c-cmt", cmt));
     return out;
+  }
+
+  /* "Now an item change", with a button to see it on Items. */
+  function itemsToast(app, n) {
+    const done = EZ.ui.toast((n === 1 ? "Now an item change" : `Now ${n} item changes`) + " (edit it on Items like " +
+      "any other).", "good", {ms: 9000, action: h("button.fe-btn.small", {type: "button", style: {marginLeft: ".6em"},
+        onclick: () => { done(); app.go("items"); }}, "Show it in Items")});
   }
 
   /* ---------------------------------------------------------------- a block: the code editor and its lists */
@@ -323,8 +377,7 @@ EZ.areas = EZ.areas || [];
           if (!Object.keys(ed.rules).length) delete ed.rules;
         }
       }, {label: "my rules to items"});
-      EZ.ui.toast((r.list.length === 1 ? "Now an item change" : `Now ${r.list.length} item changes`) +
-        ": see Items (edit it there like any other).", "good");
+      itemsToast(app, r.list.length);
     };
 
     const drawLint = () => {
@@ -352,7 +405,8 @@ EZ.areas = EZ.areas || [];
         items.push(h("button.fe-ed-rule", {type: "button", onclick: () => selectLine(n), title: "Go to line " + (n + 1)},
           h("span.fe-num", String(n + 1)), pill(kind[0], kind[1]),
           d.kind === "rule" ? h("span.fe-ed-rulelabel", miniLabel(d.out, vals)) : h("code.fe-small", d.name || ""),
-          d.kind === "rule" && d.notifies ? h("span.fe-row.fe-small", alertsOf(d.out, app)) : null));
+          d.kind === "rule" && d.notifies ? h("span.fe-row.fe-small", alertsOf(d.out, app)) : null,
+          d.kind === "rule" ? miniDesc(d.out, vals) : null));
       });
       fill(list, items.length ? items : h("p.fe-sub.fe-small", "No rules yet."));
     };
@@ -466,24 +520,13 @@ EZ.areas = EZ.areas || [];
       {value: "no", text: "No"}], B[key], (v) => set((b) => { b[key] = v; }, true), {label}));
 
     function itemsField() {
-      const input = h("input.fe-pv-search", {type: "search", placeholder: "Search an item: Shako, Ber Rune, Small Charm…",
-        "aria-label": "Search an item"});
-      const picks = h("div.fe-pv-picks", {hidden: true, role: "listbox"});
-      const show = () => {
-        const found = EZ.items.search(input.value, 12);
-        fill(picks, found.map((p) => h("button", {type: "button", role: "option", onclick: () => {
-          input.value = "";
-          picks.hidden = true;
+      const search = EZ.ui.combo({placeholder: "Search an item: Shako, Ber Rune, Small Charm…", label: "Search an item",
+        find: (q) => EZ.items.search(q, 12).map((p) => ({label: p.label, sub: p.sub + " · " + p.spec.code, pick: () =>
           set((b) => {
             if (b.codes.indexOf(p.spec.code) < 0) b.codes.push(p.spec.code);
             if (p.spec.quality && b.quals.indexOf(p.spec.quality) < 0) b.quals.push(p.spec.quality);
-          }, true);
-        }}, h("span", p.label), h("small", p.sub + " · " + p.spec.code))));
-        picks.hidden = !found.length;
-      };
-      input.addEventListener("input", show);
-      input.addEventListener("keydown", (e) => { if (e.key === "Escape") picks.hidden = true; });
-      input.addEventListener("blur", () => setTimeout(() => { picks.hidden = true; }, 150));
+          }, true)})),
+        empty: (q) => `No item matches "${q}".`});
       const group = h("select", {"aria-label": "Add a kind of item", onchange: (e) => {
         const v = e.target.value;
         e.target.value = "";
@@ -503,16 +546,17 @@ EZ.areas = EZ.areas || [];
               title: "Add its other tiers: " + missing.map((c) => plainName((cat.bases.get(c) || {}).name || c)).join(", "),
               onclick: () => set((b) => { for (const c of missing) if (b.codes.indexOf(c) < 0) b.codes.push(c); }, true)},
               "+ tiers") : null,
-            shared > 1 ? h("span.fe-sub", {title: "Unidentified, BH can't tell them apart: they share this base"},
-              ` (${shared} share it)`) : null,
+            shared > 1 ? h("span.fe-sub", {title: "Unidentified, the loot filter can't tell them apart: they share " +
+              "this base"}, ` (${shared} share it)`) : null,
             h("button.fe-x", {type: "button", "aria-label": "Remove " + code, onclick: () =>
               set((b) => { b.codes = b.codes.filter((c) => c !== code); }, true)}, "✕"));
         }),
         B.groups.map((g) => h("span.fe-bd-chip", GROUP_NAME.get(g) || g, " ", h("code.fe-small", g),
           h("button.fe-x", {type: "button", "aria-label": "Remove " + g, onclick: () =>
             set((b) => { b.groups = b.groups.filter((x) => x !== g); }, true)}, "✕"))));
+      search.box.classList.add("fe-bd-search");
       return h("div.fe-bd-field.wide", h("span.fe-bd-label", "Items (any of these; none: every item)"),
-        h("div.fe-row", h("div.fe-pv-pick.fe-bd-search", input, picks), group), chipsRow);
+        h("div.fe-row", search.box, group), chipsRow);
     }
 
     function statsField() {
@@ -522,14 +566,13 @@ EZ.areas = EZ.areas || [];
       B.stats.forEach((s, k) => {
         const kind = h("select", {"aria-label": "Kind of stat", onchange: (e) => set((b) => {
           b.stats[k] = {kind: e.target.value, word: "", n: "", op: s.op || "min", a: s.a, b: s.b};
-        }, true)}, STAT_KINDS.map(([v, t]) => h("option", {value: v, selected: s.kind === v}, t)));
+        }, true)}, STAT_KINDS.map(([v, t]) => h("option", {value: v, selected: kindOf(s) === v}, t)));
         let what = null;
-        if (s.kind === "word") {
-          what = h("select", {"aria-label": "Stat", onchange: (e) => set((b) => { b.stats[k].word = e.target.value; })},
-            h("option", {value: ""}, "Pick a stat"),
-            STAT_WORDS.map(([v, t]) => h("option", {value: v, selected: s.word === v}, t)));
-        } else if (s.kind === "STAT") {
-          what = numIn(s.n, (b, v) => { b.stats[k].n = v; }, "Stat number", {placeholder: "id", min: 0});
+        if (s.kind === "word" || s.kind === "STAT") {
+          what = statPicker(s, (v) => set((b) => {
+            b.stats[k] = Object.assign({kind: v.kind, word: v.word || "", n: v.n || ""},
+              {op: b.stats[k].op || "min", a: b.stats[k].a, b: b.stats[k].b});
+          }, true));
         } else if (s.kind === "CLSK") {
           what = h("select", {"aria-label": "Class", onchange: (e) => set((b) => { b.stats[k].n = e.target.value; })},
             h("option", {value: ""}, "Pick a class"),
@@ -590,20 +633,59 @@ EZ.areas = EZ.areas || [];
         try { await navigator.clipboard.writeText(r.line); EZ.ui.toast("Copied the rule."); } catch (e) {
           EZ.ui.toast("Your browser didn't let the page copy: select the rule and press Ctrl+C.", "bad"); }
       };
+      // the notes that matter here: errors and checks, and a note that comes with a fix (an item change does it
+      // better); a form that picks no items can't be added
+      const shown = findings.filter((f) => f.level !== "info" || f.fix);
+      const noItems = !(B.codes.length || B.groups.length || B.quals.length || B.tiers.length || B.stats.length ||
+        B.extra.trim() || B.eth !== "any" || B.id !== "any" || B.rw !== "any" || B.sock.op !== "any" || B.ilvl[0] ||
+        B.ilvl[1] || B.hands || B.disc !== "any");
+      const toItems = () => {
+        const ctx = lintContext(app);
+        const c = EZ.overrides.fromRule(r.line, {aliases: ctx.aliases, F: ctx.F});
+        if (c.why) { EZ.ui.toast(c.why, "bad"); return; }
+        EZ.store.change((ed) => { ed.items = (ed.items || []).concat(c.list); }, {label: "my rules to items"});
+        itemsToast(app, c.list.length);
+      };
       fill(result,
         h("div.fe-bd-show",
           h("div.fe-ground.fe-bd-ground", miniLabel(r.out, vals, sample)),
-          h("div.fe-row.fe-small", alertsOf(r.out, app))),
-        h("code.fe-bd-line", r.line),
-        findings.filter((f) => f.level !== "info").length ? h("ul.fe-ed-lint", findings.filter((f) => f.level !== "info")
-          .map((f) => h("li.fe-ed-finding." + f.level, pill(f.level === "error" ? "error" : "check",
-            f.level === "error" ? "bad" : "warn"), h("span", f.text)))) : null,
+          h("div.fe-row.fe-small", alertsOf(r.out, app)),
+          miniDesc(r.out, vals)),
+        h("details.fe-rules", h("summary", "Show the rule"), h("code.fe-bd-line", r.line),
+          h("div.fe-row.fe-small", h("button.fe-btn.ghost.small", {type: "button", onclick: copy}, "Copy it"))),
+        shown.length ? h("ul.fe-ed-lint", shown.map((f) => h("li.fe-ed-finding." + f.level,
+          pill(f.level === "error" ? "error" : f.level === "warning" ? "check" : "note",
+            f.level === "error" ? "bad" : f.level === "warning" ? "warn" : "info"), h("span", f.text),
+          f.fix ? h("button.fe-btn.small", {type: "button", onclick: toItems}, f.fix.label) : null))) : null,
+        noItems ? h("p.fe-note.warn", "Pick the items it is for first (Which items): with none, the rule is for every " +
+          "item.") : null,
         h("div.fe-row",
-          h("button.fe-btn.primary", {type: "button", onclick: () => add("top", r.line)}, "Add above Erazure's rules"),
-          h("button.fe-btn", {type: "button", onclick: () => add("bottom", r.line)}, "Add below Erazure's rules"),
-          h("button.fe-btn.ghost", {type: "button", onclick: copy}, "Copy"),
-          h("button.fe-btn.ghost", {type: "button", onclick: () => set((b) => { Object.assign(b, blank()); }, true)},
-            "Clear the form")));
+          h("button.fe-btn.primary", {type: "button", disabled: noItems, onclick: () => add("top", r.line)},
+            "Add above Erazure's rules"),
+          h("button.fe-btn", {type: "button", disabled: noItems, onclick: () => add("bottom", r.line)},
+            "Add below Erazure's rules"),
+          h("button.fe-btn.ghost", {type: "button", onclick: () => resetForm(blank(), "Cleared the form.")},
+            "Clear the form")),
+        h("p.fe-sub.fe-small", "Above: your rule comes before Erazure's, so it changes items Erazure styles too. " +
+          "Below: it comes after them, for the few items Erazure leaves to its last rule (most items never get there)."));
+    }
+
+    /* Change the whole form, with a way back (the form isn't in the page's Undo). */
+    function resetForm(next, said) {
+      const before = JSON.stringify(B);
+      for (const k of Object.keys(B)) delete B[k];
+      Object.assign(B, next);
+      keepForm();
+      draw();
+      const done = EZ.ui.toast(said, null, {ms: 9000, action: h("button.fe-btn.small", {type: "button",
+        style: {marginLeft: ".6em"}, onclick: () => {
+          done();
+          const old = JSON.parse(before);
+          for (const k of Object.keys(B)) delete B[k];
+          Object.assign(B, old);
+          keepForm();
+          draw();
+        }}, "Undo")});
     }
 
     function draw() {
@@ -613,9 +695,13 @@ EZ.areas = EZ.areas || [];
         h("h3", "Build a rule"),
         h("p.fe-sub", "Pick what the rule matches and what it does; the rule is written below as BH reads it. Add it " +
           "to your rules, then change it there if you like."),
-        h("div.fe-row.fe-small.fe-bd-templates", h("span.fe-sub", "Start from:"),
-          TEMPLATES.map(([title, sub, over]) => h("button.fe-btn.small", {type: "button", title: sub, onclick: () =>
-            set((b) => { Object.assign(b, blank(), JSON.parse(JSON.stringify(over))); }, true)}, title))),
+        h("div.fe-row.fe-small.fe-bd-templates", h("span.fe-sub", "What it does, from:"),
+          TEMPLATES.map(([title, sub, over]) => h("button.fe-btn.small", {type: "button", title: sub, onclick: () => {
+            const next = JSON.parse(JSON.stringify(B)), fresh = blank();
+            for (const k of WHAT_FIELDS) next[k] = fresh[k];
+            Object.assign(next, JSON.parse(JSON.stringify(over)));
+            resetForm(next, `"${title}": What it does is set; the items, levels and places you picked stay.`);
+          }}, title))),
         h("fieldset.fe-bd-set", h("legend", "Which items"),
           itemsField(),
           field("Quality (any of these)", chips(QUALS, B.quals, (b, v) => flip(b.quals, v))),
@@ -661,6 +747,9 @@ EZ.areas = EZ.areas || [];
           field("The item", seg([{value: "show", text: "Show it"}, {value: "hide", text: "Hide it"}], B.show,
             (v) => set((b) => { b.show = v; }, true), {label: "Show or hide"})),
           hide ? h("p.fe-sub.fe-small", "A hidden item keeps its minimap icon or sound if you give it one.") : [
+            h("p.fe-sub.fe-small", "Above Erazure's rules, a rule that doesn't keep going decides these items' label: " +
+              "Erazure's look and tags stop for them. To show items Erazure hides, with Erazure's look, use ",
+              h("a", {href: "#items", onclick: (ev) => { ev.preventDefault(); app.go("items"); }}, "Items"), "."),
             h("label.fe-bd-field.wide", h("span.fe-bd-label", "Its label (%NAME% is the name so far)"),
               h("input", {type: "text", value: B.text, spellcheck: "false", class: "fe-mono", "data-fe-text": "",
                 oninput: (e) => set((b) => { b.text = e.target.value; })})),
@@ -734,14 +823,14 @@ EZ.areas = EZ.areas || [];
   if (EZ.app && EZ.app.checks) {
     EZ.app.checks.push((app) => {
       const n = errorLines(app);
-      return n ? {text: `My rules: ${n} line${n === 1 ? "" : "s"} BH can't read as written (it drops or ignores ` +
-        "what they say).", area: "rules"} : null;
+      return n ? {text: `My rules: ${n} line${n === 1 ? "" : "s"} the game can't read as written, or that would ` +
+        "change every item (see the red notes there).", area: "rules"} : null;
     });
   }
 
   /* For the rules browser: the highlighter and a rule's label and alerts. */
-  EZ.rulesArea = {lineTokens, miniLabel, alertsOf, aliasValues, STAT_KINDS, STAT_WORDS, OPS, CLASS_INDEX,
-                  CLASS_NAMES, TABS, GROUPS, GROUP_NAME};
+  EZ.rulesArea = {lineTokens, miniLabel, miniDesc, alertsOf, aliasValues, statPicker, statName, kindOf, STAT_KINDS,
+                  STAT_WORDS, OPS, CLASS_INDEX, CLASS_NAMES, TABS, GROUPS, GROUP_NAME};
 
   EZ.areas.push({
     id: "rules", title: "My rules", icon: "⊕", order: 80, group: "c",
@@ -771,9 +860,11 @@ EZ.areas = EZ.areas || [];
             "These come first. A rule here that decides the look (no %CONTINUE%) is the item's label, and Erazure's " +
             "own rules never see the item; a %CONTINUE% rule adds a layer that Erazure's rules build on, where they " +
             "use %NAME% (many of Erazure's looks write the whole name, runes and gems among them: check the item in " +
-            "the preview). Erazure's minimap icons and sounds still come unless your rule has its own." :
+            "the preview). If your rule has an icon or a sound, it decides these items' alert: Erazure's chat line " +
+            "and sound don't come (yours do, if you picked a sound)." :
             "These come after Erazure's rules, for the items Erazure leaves to its very last rule (most items Erazure " +
-            "styles never get here). Alerts here only count where Erazure has none."),
+            "styles never get here: the check says when a rule changes nothing). Alerts here only count where " +
+            "Erazure has none."),
           ed.box);
       };
       const help = h("section.fe-card.flat",
@@ -794,14 +885,11 @@ EZ.areas = EZ.areas || [];
             " to ", h("code", "FILTLVL=12"), "."),
           h("li", "Every word BH knows is on the ", h("a", {href: "https://wiki.projectdiablo2.com/wiki/Item_Filtering",
             target: "_blank", rel: "noopener"}, "PD2 wiki's Item Filtering page"), ".")));
-      const e = EZ.store.current().edits;
-      const any = EZ.rules.count(e) > 0;
       EZ.ui.add(box, [
-        h("div.fe-area-head", h("div", h("h2", "My rules"),
+        h("div.fe-area-head", h("div", h("h2", "My rules ", pill("Advanced", "info")),
           h("p.fe-sub", "Your own rules in BH's filter language, above or below Erazure's. Build one with the form, or " +
             "write them yourself: every line is checked as BH will read it."))),
-        any ? null : h("p.fe-note", "Most changes don't need rules of your own: Quick Edits, Features, Looks and Alerts change " +
-          "Erazure's own rules, and they follow every Erazure update."),
+        app.advancedNote(),
         builder(app, add), blockCard("top"), blockCard("bottom"), help]);
       if (app.sub && box.querySelector("#fe-" + app.sub)) box.querySelector("#fe-" + app.sub).scrollIntoView();
     },

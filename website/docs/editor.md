@@ -15,5 +15,10 @@ hide:
 
 # Filter Editor
 
+Make Erazure your own: this page keeps your changes, and each save builds Erazure's newest version with them into a
+filter file of your own, which the launcher loads as a Local Filter. A local filter doesn't update by itself, so come
+back and save again when Erazure updates (your changes carry over). With no changes, keep the launcher's Erazure: it
+updates by itself.
+
 <!-- the editor (website/hooks.py puts it here, from Erazure-Filter-Editor.html) -->
 <div id="edit-map-here"></div>

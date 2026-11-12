@@ -72,9 +72,10 @@ EZ.areas.push({
         toggle("No drop sounds", !!a.noSounds, (v) => set("noSounds", v),
           {sub: "Every drop is silent; chat lines and icons stay."}),
         toggle("Icons only: no chat lines or sounds", !!a.iconsOnly, (v) => set("iconsOnly", v),
-          {sub: "In BH the chat line and the sound come together: this keeps only the minimap icons."}),
+          {sub: "In the game the chat line and the sound come together: this keeps only the minimap icons."}),
         toggle("No minimap icons", !!a.noIcons, (v) => set("noIcons", v),
-          {sub: "An item that only had an icon also loses its chat line (BH needs an icon or a sound to notify)."}),
+          {sub: "An item that only had an icon also loses its chat line (the game sends a chat line only with an " +
+                "icon or a sound)."}),
         h("div.fe-row", h("span", "Icon size"), seg([{value: "", text: "Erazure's default"}, {value: "smaller", text: "Smaller"},
           {value: "bigger", text: "Bigger"}], a.iconSize || "", (v) => set("iconSize", v), {label: "Icon size"}))));
 
@@ -86,46 +87,78 @@ EZ.areas.push({
       if (v) ed.volume[id] = v; else delete ed.volume[id];
       if (!Object.keys(ed.volume).length) delete ed.volume;
     }, {label: "how loud"});
-    const LOUD = ["uni-high", "set-high", "runes"];
+    const own = Object.keys(vol).filter((k) => EZ.volume.MODES.indexOf(vol[k]) >= 0).length;
+    /* a kind's rules said as the items they are for: "Lem Rune, Pul Rune" (the words of its first rules) */
+    const examples = (k) => {
+      const out = [];
+      for (const i of k.lines) {
+        const r = F.rule(lines[i]);
+        const c = r.comment.replace(/^\/\/\s*/, "").trim();
+        const w = EZ.words.forWhat(r.cond, c, 2);
+        if (w && out.indexOf(w) < 0) out.push(w);
+        if (out.length >= 3) break;
+      }
+      return out;
+    };
     const volumeCard = h("section.fe-card", {id: "fe-volume"},
       h("h3", "How loud each kind of drop is"),
-      h("p.fe-sub", "Every rule of Erazure's that alerts belongs to one kind: the unique and set tiers by their look, " +
-        "the rest by what the rule is for. Quieten a kind and every drop whose alert it decides follows."),
+      h("p.fe-sub", "Every alert of Erazure's belongs to one kind: unique and set items by their value tier, the rest " +
+        "by what they are. Quieten a kind and every drop of that kind follows."),
       h("div.fe-row.fe-small", {style: {marginBottom: ".5em"}},
-        h("button.fe-btn.small", {type: "button", onclick: () => EZ.store.change((ed) => {
-          ed.volume = {};
-          for (const k of kinds) if (LOUD.indexOf(k.id) < 0) ed.volume[k.id] = "mute";
-        }, {label: "how loud"})}, "Sounds only for High value uniques and sets, and runes"),
-        Object.keys(vol).length ? h("button.fe-btn.ghost.small", {type: "button", onclick: () => EZ.store.change((ed) => {
-          delete ed.volume;
-        }, {label: "how loud"})}, "↺ Erazure's for every kind") : null),
-      h("div.fe-tablewrap", h("table.fe-levels", h("tbody", kinds.map((k) => h("tr" + (vol[k.id] ? ".is-changed" : ""),
-        h("td", k.title, h("span.fe-sub", ` · ${k.rules} rule${k.rules === 1 ? "" : "s"}`)),
-        h("td", h("select", {"aria-label": k.title, onchange: (ev) => setVol(k.id, ev.target.value)},
-          [["", "Erazure's default"], ["mute", "No sound"], ["iconOnly", "Icon only (no chat line, no sound)"],
-           ["none", "No alerts"]].map(([v, t]) => h("option", {value: v, selected: (vol[k.id] || "") === v}, t))))))))));
+        h("button.fe-btn.small", {type: "button", onclick: () => {
+          const changed = EZ.store.change((ed) => {
+            ed.volume = EZ.volume.fewer(app.src, lines, ed.volume);
+          }, {label: "how loud"});
+          if (changed) {
+            EZ.ui.undoToast("Every kind but High value uniques and sets, and runes, has no sound now (your own " +
+              "choices stayed).");
+          }
+        }}, "Sounds only for High value uniques and sets, and runes"),
+        own ? h("button.fe-btn.ghost.small", {type: "button", onclick: () => {
+          EZ.store.change((ed) => { delete ed.volume; }, {label: "how loud"});
+          EZ.ui.undoToast(`Every kind is as Erazure has it again (${own} choice${own === 1 ? "" : "s"} of yours went).`);
+        }}, "↺ Erazure's for every kind") : null),
+      h("div.fe-tablewrap", h("table.fe-levels", h("tbody", kinds.map((k) => {
+        const ex = examples(k);
+        return h("tr" + (vol[k.id] ? ".is-changed" : ""),
+          h("td", h("div", k.title), k.sub || ex.length ? h("div.fe-sub.fe-small", k.sub ? k.sub :
+            "such as " + ex.join("; ")) : null),
+          h("td", h("select", {"aria-label": k.title, onchange: (ev) => setVol(k.id, ev.target.value)},
+            [["", "Erazure's default"], ["mute", "No sound"], ["iconOnly", "Icon only (no chat line, no sound)"],
+             ["none", "No alerts"]].map(([v, t]) => h("option", {value: v, selected: (vol[k.id] || "") === v}, t)))));
+      })))));
 
     const swaps = e.sounds || {};
     const used = Object.keys(notes.sounds).map((k) => +k).sort((x, y) => notes.sounds[y].length - notes.sounds[x].length);
+    /* Does a rule play in the player's version? Its POE_SOUNDS test against the version's Path of Exile sounds. */
+    const poeOn = !!(e.base.poe || e.base.style === "corrlorized");
+    const playsHere = (i) => {
+      const c = F.rule(lines[i]).cond;
+      if (/!POE_SOUNDS\b/.test(c)) return !poeOn;
+      if (/(^|[\s(])POE_SOUNDS\b/.test(c)) return poeOn;
+      return true;
+    };
     const soundRow = (id) => {
-      const ruleIdx = notes.sounds[id];
-      const poe = ruleIdx.filter((i) => /(^|[\s(])POE_SOUNDS\b/.test(F.rule(lines[i]).cond)).length;
-      const where = ruleIdx.slice(0, 3).map((i) => {
+      const ruleIdx = notes.sounds[id].filter(playsHere).concat(notes.sounds[id].filter((i) => !playsHere(i)));
+      const where = [];
+      for (const i of ruleIdx) {
         const r = F.rule(lines[i]);
-        return r.comment.replace(/^\/\/\s*/, "").trim() || r.cond.replace(/!?POE_SOUNDS\s*/, "").slice(0, 50);
-      }).filter(Boolean);
+        const c = r.comment.replace(/^\/\/\s*/, "").trim();
+        const w = EZ.words.forWhat(r.cond, c, 2);
+        if (w && where.indexOf(w) < 0) where.push(w);
+        if (where.length >= 3) break;
+      }
       const to = id in swaps ? +swaps[id] : id;
       const btn = h("button.fe-btn.small", {type: "button", onclick: () => S.pick(app, used, to, (picked) =>
         EZ.store.change((ed) => {
           ed.sounds = ed.sounds || {};
           if (picked === id) delete ed.sounds[id]; else ed.sounds[id] = picked;
         }, {label: "sound"}))}, "Change");
+      const more = notes.sounds[id].length - where.length;
       return h("div.fe-soundrow" + (id in swaps ? ".is-changed" : ""),
         h("div.fe-soundmain",
           h("div", h("b", S.name(app.data, id)), h("span.fe-sub", " #" + id), " ", S.play(app.data, id)),
-          h("div.fe-sub", `${ruleIdx.length} rule${ruleIdx.length === 1 ? "" : "s"}` +
-            (poe === ruleIdx.length ? " · PoE versions" : poe ? "" : " · non-PoE versions") +
-            (where.length ? " · " + where.join(" · ") : ""))),
+          h("div.fe-sub", where.length ? "For " + where.join("; ") + (more > 0 ? "; and more" : "") : "")),
         id in swaps ? h("div.fe-soundto", "→ ", to ? h("b", S.name(app.data, to)) : h("b", "no sound"),
           to ? S.play(app.data, to) : null) : null,
         h("div.fe-row.fe-small", btn,
@@ -134,11 +167,16 @@ EZ.areas.push({
           })}, "↺ Erazure's") : h("button.fe-btn.ghost.small", {type: "button", onclick: () =>
             EZ.store.change((ed) => { ed.sounds = ed.sounds || {}; ed.sounds[id] = 0; })}, "Silence")));
     };
+    const here = used.filter((id) => notes.sounds[id].some(playsHere));
+    const elsewhere = used.filter((id) => !notes.sounds[id].some(playsHere));
     const soundsCard = h("section.fe-card", {id: "fe-sounds"},
       h("h3", "Drop sounds"),
-      h("p.fe-sub", "Every sound Erazure plays, most used first. The PoE versions play their own picks: switch your " +
-        "version's Path of Exile sounds on Start to hear those."),
-      h("div.fe-soundlist", used.map(soundRow)));
+      h("p.fe-sub", "Every sound your version plays, most used first" + (poeOn ? " (with Path of Exile sounds)." :
+        " (without Path of Exile sounds: switch them on in Your version on Start to hear those).")),
+      h("div.fe-soundlist", here.map(soundRow)),
+      elsewhere.length ? h("details.fe-rules", h("summary", `Sounds your version doesn't play (${elsewhere.length}: ` +
+        (poeOn ? "the versions without" : "the versions with") + " Path of Exile sounds)"),
+        h("div.fe-soundlist", elsewhere.map(soundRow))) : null);
 
     box.append(
       h("div.fe-area-head", h("div", h("h2", "Alerts"),

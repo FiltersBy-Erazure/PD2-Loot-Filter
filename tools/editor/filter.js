@@ -134,7 +134,7 @@ EZ.filter = (function () {
         }
         continue;
       }
-      const l = /^\/\/\s{2,}(\S.*?)\s*$/.exec(line);
+      const l = /^\/\/\s+(\S.*?)\s*$/.exec(line);  // one space or more (050's charm options have one)
       if (l && !l[1].startsWith("=")) {
         opt = {id: group.title + " / " + l[1], label: l[1], group: group.title, lines: [], conds: []};
         group.options.push(opt);
@@ -170,6 +170,16 @@ EZ.filter = (function () {
   ];
   const keyOf = (name) => name.replace(/_(LEFT|RIGHT)$/, "");
   const OFF_TOGGLES = ["BIG_GG", "POE_SOUNDS", "REVEALED"];
+  /* Cards named for what they are (the Alerts area's kinds by the same words), where 040's own comment says less. */
+  const CARD_TITLES = {
+    UNI_HIGH_VALUE: "Unique items: High value", UNI_MEDIUM_VALUE: "Unique items: Medium value",
+    UNI_MINIMAL_VALUE: "Unique items: Minimal value",
+    UNI_MINIMAL_GRAIL: "Unique items you haven't discovered: Minimal value ones",
+    UNI_GRAIL: "Unique items you haven't discovered: the others",
+    UNI_NORMAL: "Other unique items (levels 0-7)",
+    SET_HIGH_VALUE: "Set items: High value", SET_MEDIUM_VALUE: "Set items: Medium value",
+    SET_GRAIL: "Set items you haven't discovered",
+  };
 
   function lookAliases(src, lines) {
     const secs = sections(src, lines), out = [];
@@ -240,14 +250,16 @@ EZ.filter = (function () {
       }
       found.sort((x, y) => x.stack - y.stack);
       let tpls = found.slice(0, 3).map((f) => ({tpl: f.tpl, at: f.at}));
+      let used = found.length > 0;  // a card no rule uses changes nothing in game (040 keeps some on purpose)
       if (!tpls.length) {
         const fallback = rules.find((i) => gnames.every((n) => lines[i].indexOf("%" + n + "%") >= 0));
+        used = fallback !== undefined;
         tpls = [fallback !== undefined ? {tpl: template(gnames, lines[fallback]), at: fallback}
                                        : {tpl: "%" + gnames[0] + "%  %NAME%  " + gnames.slice(1).map((n) => "%" + n + "%").join(""),
                                           at: null}];
       }
       const g = GROUPS.find((gr) => gr[3](a.name));
-      cards.push({key, title: a.title, group: g ? g[0] : "pd2", aliases: group, tpls});
+      cards.push({key, title: CARD_TITLES[key] || a.title, group: g ? g[0] : "pd2", aliases: group, tpls, used});
     }
     return cards;
   }

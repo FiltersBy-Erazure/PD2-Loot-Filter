@@ -111,6 +111,36 @@ EZ.preview = (function () {
     return cache.yours;
   }
 
+  /* A filter with these edits (the Items form's change before it is added): one kept at a time. */
+  const trial = {key: null, val: null};
+  function withEdits(edits) {
+    if (!app) app = EZ.app;
+    const key = (app.variant() || {}).name + "|" + JSON.stringify(edits);
+    if (trial.key !== key) {
+      const lines = EZ.edits.apply(app.src, {edits}, app.versionLines()).lines;
+      trial.val = {F: EZ.engine.compile(lines, compileOpts()), lines};
+      trial.key = key;
+    }
+    return trial.val;
+  }
+
+  /* The character and place an area's answers are worked out for, as controls the area shows beside them (the
+     preview's own settings: a change here changes the preview too). onchange: the area draws again. */
+  function context(onchange, opts) {
+    if (!app) app = EZ.app;
+    const re = (fn) => { fn(); save(); if (box) redraw(); if (onchange) onchange(); };
+    const clvl = h("input.fe-pv-num", {type: "number", min: 1, max: 99, value: state.clvl, "aria-label": "Character level",
+      onchange: (e) => re(() => { state.clvl = Math.max(1, Math.min(99, +e.target.value || 1)); })});
+    const cls = select(CLASSES.map((c, i) => ({value: i, text: c})), state.cls, (v) => re(() => { state.cls = +v; }),
+      "Class");
+    const diff = select(DIFFS.map((c, i) => ({value: i, text: c})), state.diff, (v) => re(() => { state.diff = +v; }),
+      "Difficulty");
+    const where = opts && opts.ground ? null : select(WHERE, state.where, (v) => re(() => { state.where = v; }),
+      "Where you are");
+    return h("div.fe-row.fe-small.fe-ctxline", h("span.fe-sub", (opts && opts.lead) || "For a level"), clvl, cls, diff,
+      where || h("span.fe-sub", "outside town"));
+  }
+
   function ctx(level) {
     const w = WHERE.find((x) => x.value === state.where) || WHERE[0];
     return {clvl: state.clvl, cls: state.cls, diff: state.diff, mapid: w.mapid,
@@ -128,7 +158,10 @@ EZ.preview = (function () {
   /* What a drop looks like, to tell Erazure's from the player's (an icon's colors, not the line that drew it: the
      player's own rules move Erazure's lines). */
   const boxes = (r) => r.icons.map((x) => [x.border, x.map, x.dot, x.px]);
-  const outcome = (r) => JSON.stringify([r.name, boxes(r), r.sound, r.chat, r.invisible, r.desc]);
+  /* the Horadric Cube's "- Custom (n changes)" mark is in every changed filter: no change to the item itself */
+  const CUSTOM_RE = / - Custom \(\d+ changes?\)/;
+  const outcome = (r) => JSON.stringify([r.name, boxes(r), r.sound, r.chat, r.invisible,
+    String(r.desc || "").replace(CUSTOM_RE, "")]);
 
   function iconCanvas(layers, scale) {
     scale = scale || 4;
@@ -214,7 +247,7 @@ EZ.preview = (function () {
     else ground.appendChild(h("span.fe-pv-hidden", r.invisible ? "(nothing)" : "(no label)"));
     card.appendChild(ground);
     const pills = h("div.fe-row.fe-small", stateLine(r));
-    if (r.cut.name) pills.appendChild(EZ.ui.pill(`BH cuts ${r.cut.name} letter${r.cut.name > 1 ? "s" : ""} (56 at most)`, "warn"));
+    if (r.cut.name) pills.appendChild(EZ.ui.pill(`The game cuts ${r.cut.name} letter${r.cut.name > 1 ? "s" : ""} (56 at most)`, "warn"));
     if (r.cut.copy) pills.appendChild(EZ.ui.pill(`The game copies 127 characters: ${r.cut.copy} more cut`, "warn"));
     if (r.maybe) pills.appendChild(EZ.ui.pill("Some rules ask what this preview leaves open", "info"));
     if (pills.childNodes.length) card.appendChild(pills);
@@ -324,7 +357,7 @@ EZ.preview = (function () {
       if (e.key === "Enter") { const first = list.querySelector("button"); if (first) { e.preventDefault(); first.click(); } }
       if (e.key === "Escape") { list.hidden = true; }
     });
-    const paste = h("button.fe-btn.small", {type: "button", title: "An item BH copied in the game (Ctrl+C)",
+    const paste = h("button.fe-btn.small", {type: "button", title: "An item copied in the game (Ctrl+C)",
       onclick: pasteDialog}, "Paste from the game");
     return h("div.fe-pv-pick", h("div.fe-row", {style: {flexWrap: "nowrap"}}, input, paste), list);
   }
@@ -332,17 +365,21 @@ EZ.preview = (function () {
   /* An item BH copied in the game: point at it, Ctrl+C, paste here. */
   function pasteDialog() {
     const ta = h("textarea", {rows: 9, placeholder: "{\n  \"type\": \"Shako\",\n  \"quality\": \"Unique\", …\n}",
-      "aria-label": "The item BH copied"});
+      "aria-label": "The item copied in the game"});
     const msg = h("p.fe-sub", {role: "status"});
     EZ.ui.dialog({title: "Paste an item from the game", body: [
       h("p", "In game, point at an item and press ", h("kbd", "Ctrl"), " + ", h("kbd", "C"),
-        ": BH copies it and the chat says “Copied item to clipboard”. Paste it here (", h("kbd", "Ctrl"), " + ",
-        h("kbd", "V"), ")."),
+        ": the game copies it and the chat says “Copied item to clipboard”. Paste it here (", h("kbd", "Ctrl"), " + ",
+        h("kbd", "V"), "). The preview shows it as it drops: on the ground, unidentified."),
       ta, msg],
       buttons: [{text: "Cancel"}, {text: "Use this item", primary: true, onclick: () => {
         try {
           const r = EZ.items.fromGame(ta.value);
-          set(() => { state.spec = r.spec; state.notes = r.notes; state.mode = "item"; });
+          // shown as it dropped: on the ground and unidentified (hides only work there); Where and Identified change it
+          const spec = Object.assign({}, r.spec), was = {place: spec.place, id: spec.id};
+          spec.place = "GROUND";
+          if (["MAG", "RARE", "CRAFT", "UNI", "SET"].indexOf(spec.quality) >= 0) spec.id = false;
+          set(() => { state.spec = spec; state.notes = r.notes; state.pasted = was; state.mode = "item"; });
           return false;
         } catch (e) {
           msg.textContent = e.message + ".";
@@ -398,8 +435,16 @@ EZ.preview = (function () {
         placeholder: "?", title: "The gold a vendor pays (Malah): rules about sell value ask it",
         onchange: (e) => change((s) => { s.sell = e.target.value === "" ? undefined : Math.max(0, +e.target.value); })}))));
     rows.push(statsEditor());
-    const notes = spec.noProps && state.notes && state.notes.length ? h("p.fe-note.fe-small",
-      "From the game. Not read from BH's copy: " + state.notes.join("; ") + ".") : null;
+    const PLACE_NAME = {INVENTORY: "your inventory", STASH: "your stash", CUBE: "the Cube", EQUIPPED: "equipped",
+                        GROUND: "on the ground"};
+    const was = spec.noProps && state.pasted;
+    const notes = spec.noProps ? h("div",
+      was ? h("p.fe-note.fe-small", "Pasted from the game and shown as it drops: on the ground" +
+        (spec.id === false && was.id ? " and unidentified" : "") + " (it was copied " + (PLACE_NAME[was.place] ?
+        (was.place === "EQUIPPED" ? "equipped" : "in " + PLACE_NAME[was.place]) : "in your inventory") +
+        (was.id ? ", identified" : "") + "). Where and Identified below change it.") : null,
+      state.notes && state.notes.length ? h("p.fe-note.fe-small", "From the game. Not in the game's copy: " +
+        state.notes.join("; ") + ".") : null) : null;
     return h("div.fe-pv-item", h("div.fe-pv-itemname", EZ.items.describe(spec),
       spec.noProps ? h("span.fe-pill.info", {style: {marginLeft: ".5em"}}, "from the game") : null), notes, rows);
   }
@@ -437,13 +482,7 @@ EZ.preview = (function () {
 
   function traceView(f, r) {
     if (!r) return null;
-    const secs = EZ.filter.sections(app.src, f.lines);
-    const where = (i) => {
-      const own = EZ.rules && EZ.rules.locate(f.lines, i);
-      if (own) return (own.block === "top" ? "yours, above:" : "yours, below:") + own.n;
-      const name = EZ.filter.sectionOf(secs, i);
-      return name ? name.replace(/\.filter$/, "") + ":" + (i - secs[name][0] + 1) : "line " + (i + 1);
-    };
+    const where = (i) => app.lineLink(f.lines, i);  // Erazure's lines as Erazure's rules numbers them, yours by name
     const rows = r.trace.filter((t) => t.kind !== "maybe" || state.open.maybe).map((t) => {
       const rule = f.F.byLine.get(t.i);
       const kind = t.kind === "stop" ? "stops" : t.kind === "continue" ? "adds" : t.kind === "maybe" ? "maybe" : "";
@@ -612,6 +651,6 @@ EZ.preview = (function () {
   return {
     render(b, a) { box = b; app = a; draw(); },
     changed(ev, a) { app = a; redraw(); },
-    state, run, erazure, yours, ctx, iconCanvas, SAMPLES,
+    state, run, erazure, yours, withEdits, context, ctx, iconCanvas, SAMPLES,
   };
 })();

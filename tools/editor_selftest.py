@@ -163,7 +163,8 @@ test("edits", async () => {
     const decoded = header.length ? await EZ.edits.fromFile(header.join("\\n")) : null;
     out[name] = {variant: variant.name, count: r.report.count, unplaced: r.report.unplaced, crcs: crcs(lines),
                  header: header.length, decoded, ops: r.report.ops || [],
-                 aliasLines: fx.edits.items || fx.edits.wishlists || fx.edits.maps ? r.lines : undefined};
+                 aliasLines: fx.edits.items || fx.edits.wishlists || fx.edits.maps || fx.edits.options ? r.lines :
+                   undefined};
   }
   return {results: out};
 });
@@ -259,8 +260,21 @@ def features():
             al = json.loads(a.group(1)) if a.group(1).startswith("[") else re.compile(a.group(1)[1:-1])
         so = re.search(r'switchOn: \{section: "([^"]+)", match: "([^"]+)"\}', body)
         on = not re.search(r"\bon: false\b", body)
-        out.append((m.group(1), on, secs, al, (so.group(1), so.group(2)) if so else None))
+        out.append((m.group(1), on, secs, al, (so.group(1), so.group(2)) if so else None,
+                    bool(re.search(r"\bdescOnly: true\b", body))))
     return out
+
+
+LOOK_COLOR_RE = re.compile(r"%(WHITE|RED|GREEN|BLUE|GOLD|GRAY|BLACK|TAN|ORANGE|YELLOW|PURPLE|DARK_GREEN|CORAL|SAGE|"
+                           r"TEAL|LIGHT_GRAY)%")
+
+
+def slashes(v):
+    """edits.js's slashes: two slashes in a row in a look get the color in effect between them, else one stays."""
+    def fix(m):
+        before = LOOK_COLOR_RE.findall(v[:m.start()])
+        return ("%" + before[-1] + "%").join(m.group(0)) if before else "/"
+    return re.sub(r"/{2,}", fix, v)
 
 
 def rule(line):
@@ -344,6 +358,19 @@ def ground_only(line):
     return r["off"] + "ItemDisplay[" + cond + "]:" + r["out"] + r["comment"]
 
 
+def hides_option(src, edits, lines):
+    """Does the edit set switch on one of 050's hides? Its items' alerts go through overrides.js ("unalert"), which has
+    no Python port: such a set is checked by what the page writes, as item changes are."""
+    opts = options050(src, lines)
+    for oid, on in (edits.get("options") or {}).items():
+        for i in (opts.get(oid) or []) if on else []:
+            r = rule(re.sub(r"^\s*//+\s*", "", lines[i], count=1))
+            if r and not re.search(r"%CONTINUE%", r["out"], re.I) and \
+                    not HIDE_KEYS.sub("", re.sub(r"\{[^}]*\}?", "", r["out"], count=1)).strip():
+                return True
+    return False
+
+
 def options050(src, lines):
     rng = sections(src, lines).get("050-customization.filter")
     out, group, opt = {}, None, None
@@ -363,7 +390,7 @@ def options050(src, lines):
             if opt is not None:
                 out[opt].append(i)
             continue
-        lab = re.match(r"^//\s{2,}(\S.*?)\s*$", line)
+        lab = re.match(r"^//\s+(\S.*?)\s*$", line)
         if lab and not lab.group(1).startswith("="):
             opt = f"{group} / {lab.group(1)}"
             out.setdefault(opt, [])
@@ -436,14 +463,41 @@ def active_rules(block):
 
 
 OP_KINDS = ("off", "on", "change", "before", "after")
-ITEM_ACTIONS = ("show", "hide", "mute", "sound", "icon", "iconOnly", "notify", "look", "replace", "hunt")
+ITEM_ACTIONS = ("show", "hide", "mute", "sound", "icon", "iconOnly", "notify", "look", "replace", "hunt", "unalert")
 
 # how loud each kind of drop is (volume.js): the unique and set tiers by their look, the rest by section
 VOLUME_MODES = ("mute", "iconOnly", "none")
-VOLUME_TIERS = [("uni-high", r"%UNI_HIGH_VALUE_LEFT%"), ("uni-medium", r"%UNI_MEDIUM_VALUE_LEFT%"),
-                ("uni-minimal", r"%UNI_MINIMAL_(?:VALUE|GRAIL)_LEFT%"), ("uni-grail", r"%UNI_GRAIL_LEFT%"),
+VOLUME_TIERS = [("uni-high", r"%UNI_HIGH_VALUE_LEFT%|%FACET_LEFT%"), ("uni-medium", r"%UNI_MEDIUM_VALUE_LEFT%"),
+                ("uni-minimal", r"%UNI_MINIMAL_VALUE_LEFT%"), ("uni-grail", r"%UNI_(?:MINIMAL_)?GRAIL_LEFT%"),
                 ("set-high", r"%SET_HIGH_VALUE_LEFT%"), ("set-medium", r"%SET_MEDIUM_VALUE_LEFT%"),
                 ("set-grail", r"%SET_GRAIL_LEFT%")]
+VOLUME_CODE_RE = re.compile(r"^[a-z0-9]{3,4}$")
+
+
+def volume_codes(cond):
+    return [w for w in re.split(r"[\s()!]+", cond) if VOLUME_CODE_RE.match(w) and not w.isdigit()]
+
+
+def volume_sound_line_tier(lines, i, end, r):
+    """volume.js's soundLineTier: a %NAME%%SOUNDID-n%%CONTINUE% line takes the tier of the first tier look after it in
+    its section that names every item it names."""
+    if "%CONTINUE%" not in r["out"]:
+        return None
+    if NOTIFY_ALL_RE.sub("", r["out"]).replace("%CONTINUE%", "").strip() != "%NAME%":
+        return None
+    codes = volume_codes(r["cond"])
+    if not codes:
+        return None
+    for j in range(i + 1, end):
+        if not lines[j].startswith("ItemDisplay["):
+            continue
+        q = rule(lines[j])
+        kind = q and next((k for k, rx in VOLUME_TIERS if re.search(rx, q["out"])), None)
+        if kind and set(codes) <= set(volume_codes(q["cond"])):
+            return kind
+    return None
+
+
 VOLUME_SECTIONS = {"060": "Gold, potions and tomes", "070": "Keys", "080": "Quest items", "090": "Gems",
                    "100": "PD2 items", "110": "Runes", "120": "PD2 items", "130": "Maps", "140": "Maps", "145": "Maps",
                    "146": "Maps", "147": "Maps", "150": "Unique items: other", "160": "Unique items: other",
@@ -475,7 +529,8 @@ def apply_volume(src, want, lines):
             r = rule(line)
             if not r or not NOTIFY_RE.search(r["out"]):
                 continue
-            kind = next((k for k, rx in VOLUME_TIERS if re.search(rx, r["out"])), None)
+            kind = next((k for k, rx in VOLUME_TIERS if re.search(rx, r["out"])), None) or \
+                volume_sound_line_tier(lines, i, b, r)
             if kind is None:
                 kind = ("runes" if re.search(r"(^|[\s(!])r\d\d\b|RUNE[<>=~]", r["cond"]) else
                         "maps" if "MAPTIER" in r["cond"] else fallback)
@@ -591,7 +646,7 @@ def reference(src, edits, lines, feats):
                 lines[i] = ground_only(re.sub(r"^\s*//+\s*", "", lines[i], count=1))
     # features
     want = edits.get("features") or {}
-    for fid, on_default, secs, al, so in feats:
+    for fid, on_default, secs, al, so, desc_only in feats:
         if fid not in want or bool(want[fid]) == on_default:
             continue
         on = bool(want[fid])
@@ -601,7 +656,9 @@ def reference(src, edits, lines, feats):
                 for i in range(*rngs[s]):
                     if lines[i].startswith("ItemDisplay["):
                         r = rule(lines[i])
-                        if r and "%CONTINUE%" in r["out"] and not NOTIFY_RE.search(r["out"]):
+                        if r and "%CONTINUE%" in r["out"] and not NOTIFY_RE.search(r["out"]) and (
+                                not desc_only or re.sub(r"\{[^}]*\}?", "", r["out"], count=1)
+                                .replace("%CONTINUE%", "").strip() == "%NAME%"):
                             lines[i] = "//" + lines[i]
         elif al is not None and not on:
             names = al if isinstance(al, list) else [n for n in aliases(lines) if al.search(n)]
@@ -616,7 +673,7 @@ def reference(src, edits, lines, feats):
     # looks
     for name, value in (edits.get("looks") or {}).items():
         if isinstance(value, str):
-            set_alias(lines, name, value)
+            set_alias(lines, name, slashes(value))
     # color remap
     m = edits.get("remap") or {}
     keys = [k for k in m if k in COLORS and m[k] in COLORS and m[k] != k]
@@ -786,7 +843,8 @@ def check_edits(src, detail, fixtures):
             continue
         toggle, style = fixture_variant(src, fx["edits"])
         variant = next(v for v in src["variants"] if v["toggle"] == toggle and v["style"] == style)
-        if fx["edits"].get("items") or fx["edits"].get("wishlists") or fx["edits"].get("maps"):
+        if fx["edits"].get("items") or fx["edits"].get("wishlists") or fx["edits"].get("maps") or \
+                hides_option(src, fx["edits"], variant_lines(src, variant)):
             # item overrides (overrides.js) have no Python port: build.py writes the page's lines out with its
             # --check verification (BH reads every rule of the written file as the alias form), the same bytes
             try:
@@ -986,8 +1044,11 @@ LINT_CASES = [
     ("ItemDisplay[r30 OR r31 GROUND !TOWN]:", "top", [("warning", "AND after OR")]),
     ("ItemDisplay[(r30 OR r31]:%NAME%{%NAME%}", "top", [("error", "Unbalanced")]),
     ("ItemDisplay[r30 OR]:%NAME%{%NAME%}", "top", [("error", "never matches")]),
-    ("ItemDisplay[]:%NAME%{%NAME%}", "top", [("warning", "decides every item's look")]),
+    ("ItemDisplay[]:%NAME%{%NAME%}", "top", [("error", "decides every item's look")]),
     ("ItemDisplay[]:%NAME%{%NAME%}", "bottom", []),
+    ("ItemDisplay[GROUND !TOWN]:", "top", [("error", "names no items")]),
+    ("ItemDisplay[FILTLVL>4 GROUND !TOWN]:%NAME%%MAP-0A%{%NAME%}%CONTINUE%", "top", [("error", "names no items")]),
+    ("ItemDisplay[r30]:%NAME%{%NAME%}%CONTINUE%", "top", [("warning", "changes nothing")]),
     ("ItemDisplay[qqq]:%NAME%{%NAME%}", "top", [("warning", "'qqq' is no item code")]),
     ("ItemDisplay[r30]:%NAME%%BORDER%{%NAME%}", "top", [("error", "%BORDER% is no keyword")]),
     ("ItemDisplay[r30]:%NAME%%FOO%{%NAME%}", "top", [("error", "%FOO% is no keyword")]),

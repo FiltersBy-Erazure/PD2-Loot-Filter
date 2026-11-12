@@ -28,13 +28,18 @@ EZ.maps = (function () {
   const levelsOf = (list) => [...new Set((Array.isArray(list) ? list : []).map((x) => parseInt(x, 10))
     .filter((n) => n >= 1 && n <= 12))].sort((a, b) => a - b);
 
-  /* A mod's name for the warning line: the stat's own text without its numbers. */
+  /* A mod's name as the game words it on a map, its rolled value as X ("Monsters have X% of Physical Damage as Extra
+     Poison Damage over 5 Seconds", "Players have -X Drain Life"): the stat's own text with a stand-in value of the
+     roll's sign, so fixed numbers and the minus sign stay. */
   function name(sid) {
-    const line = EZ.items.catalog() ? EZ.items.statLine(sid, 0, samples.get(sid) || 1) : "";
-    const plain = String(line || "").replace(/ÿc./g, "").replace(/-\d+%?\s*/g, "less ")
-      .replace(/\+?\d+%?\s*(?:to |of )?/g, "").replace(/\s+/g, " ").replace(/:\s*$/, "").trim();
+    const roll = samples.get(sid) || 1;
+    const line = EZ.items.catalog() ? EZ.items.statLine(sid, 0, roll < 0 ? -7777 : 7777) : "";
+    const plain = String(line || "").replace(/ÿc./g, "").replace(/7777/g, "X").replace(/\s+/g, " ")
+      .replace(/:\s*$/, "").trim();
     return plain || "stat " + sid;
   }
+  /* The warning line's words (in game, under the map's own line with the value): the name without its X. */
+  const lineName = (sid) => name(sid).replace(/[+-]?X%?\s*(?:to |of )?/g, "").replace(/\s+/g, " ").trim();
 
   /* The map item codes (the catalog's map bases) and those with an experience multiplier (146's MXR aliases). */
   function codes(lines) {
@@ -60,11 +65,11 @@ EZ.maps = (function () {
     const hide = ids(m.hide);
     if (hide.length) {
       const c = codes(ctx.lines);
-      for (const sid of hide) out.push({action: "hide", scope: {codes: c.all, id: "yes", extra: "!STAT" + sid + "=0"}});
+      for (const sid of hide) out.push({action: "hide", tag: "maps", scope: {codes: c.all, id: "yes", extra: "!STAT" + sid + "=0"}});
     }
     const cat = EZ.items.catalog();
     const skip = mapCodes(m.hideMaps).filter((c) => { const b = cat.bases.get(c); return b && b.map; });
-    if (skip.length) out.push({action: "hide", scope: {codes: skip, quals: WHITE, levels: levelsOf(m.hideMapsLevels)}});
+    if (skip.length) out.push({action: "hide", tag: "maps", scope: {codes: skip, quals: WHITE, levels: levelsOf(m.hideMapsLevels)}});
     return out;
   }
 
@@ -76,7 +81,7 @@ EZ.maps = (function () {
     const range = secs[SECTION];
     if (!range) { ctx.unplaced("maps", "Map warnings", "Erazure no longer has " + SECTION); return; }
     const lines = warn.map((sid) => "ItemDisplay[ID " + MAPS + " !STAT" + sid + "=0]:%NAME%{%NAME%%CL%%RED%! " +
-      name(sid).replace(/[{}]/g, "").replace(/\/\/+/g, "/") + "}%CONTINUE%");
+      lineName(sid).replace(/[{}]/g, "").replace(/\/\/+/g, "/") + "}%CONTINUE%");
     ctx.lines.splice(range[0], 0, MARKS[0], ...lines, MARKS[1]);
   }
 

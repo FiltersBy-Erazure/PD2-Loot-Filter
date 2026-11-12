@@ -68,19 +68,31 @@ EZ.ui = (function () {
     return done;
   }
 
-  /* A modal dialog: dialog({title, body: [nodes], buttons: [{text, primary, danger, onclick: () => keepOpen?}]}) */
+  /* A modal dialog: dialog({title, body: [nodes], buttons: [{text, primary, danger, onclick: () => keepOpen?}],
+     guard: () => message or null}). With a guard, Escape, a click outside and a button with no action of its own
+     ask first while the guard has a message (lines typed and not kept yet). Dialogs stack: keys go to the top one. */
+  const open = [];
   function dialog(opts) {
     const before = document.activeElement;
     const box = h("div.fe-dialog", {role: "dialog", "aria-modal": "true"});
     const back = h("div.fe-dialog-back", box);
     const close = () => {
       back.remove();
+      const k = open.indexOf(box);
+      if (k >= 0) open.splice(k, 1);
       document.removeEventListener("keydown", onkey, true);
       if (before && before.focus) before.focus();
       if (opts.onclose) opts.onclose();
     };
+    const ask = () => {
+      const msg = opts.guard && opts.guard();
+      if (!msg) { close(); return; }
+      dialog({title: "Discard what you typed?", body: [h("p", msg)],
+        buttons: [{text: "Keep editing"}, {text: "Discard", danger: true, onclick: () => { close(); }}]});
+    };
     const onkey = (e) => {
-      if (e.key === "Escape") { e.preventDefault(); close(); }
+      if (open[open.length - 1] !== box) return;
+      if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); ask(); }
       else if (e.key === "Tab") trapTab(e, box);
     };
     const title = h("h3", {id: "fe-dlg-" + Math.random().toString(36).slice(2)}, opts.title);
@@ -88,15 +100,26 @@ EZ.ui = (function () {
     const foot = h("div.fe-dialog-foot");
     for (const b of opts.buttons || [{text: "Close"}]) {
       foot.appendChild(h("button.fe-btn" + (b.primary ? ".primary" : "") + (b.danger ? ".danger" : ""),
-        {type: "button", onclick: () => { if (!(b.onclick && b.onclick(close) === true)) close(); }}, b.text));
+        {type: "button", onclick: () => {
+          if (!b.onclick) { ask(); return; }
+          if (b.onclick(close) !== true) close();
+        }}, b.text));
     }
     add(box, [title, opts.body || [], foot]);
-    back.addEventListener("mousedown", (e) => { if (e.target === back && !opts.modal) close(); });
+    back.addEventListener("mousedown", (e) => { if (e.target === back && !opts.modal) ask(); });
     document.addEventListener("keydown", onkey, true);
+    open.push(box);
     (host || document.body).appendChild(back);
     const first = box.querySelector("input, select, textarea, button.primary, button");
     if (first) first.focus();
     return close;
+  }
+
+  /* A toast for a change that replaced the player's own choices: it says what happened, with Undo. */
+  function undoToast(text) {
+    const done = toast(text, "good", {ms: 9000, action: h("button.fe-btn.small", {type: "button", style: {marginLeft: ".6em"},
+      onclick: () => { if (EZ.store && EZ.store.undoStep()) done(); }}, "Undo")});
+    return done;
   }
 
   function trapTab(e, box) {
@@ -157,6 +180,76 @@ EZ.ui = (function () {
     return close;
   }
 
+  /* A search box with its results under it, the same everywhere (items, bases, stats): the arrows move through the
+     results, Enter picks the highlighted one (the first at first), Escape closes them, and they stay while the focus
+     is in the box. combo({placeholder, label, find: (q) -> [{label, sub, pick}], empty: (q) -> text, all: show the
+     whole list for an empty box, onfocus too}) -> {box, input, close}. */
+  let comboN = 0;
+  function combo(opts) {
+    const id = "fe-combo-" + (++comboN);
+    const input = h("input.fe-pv-search", {type: "search", placeholder: opts.placeholder || "", "aria-label": opts.label,
+      role: "combobox", "aria-expanded": "false", "aria-autocomplete": "list", "aria-controls": id, autocomplete: "off",
+      spellcheck: "false"});
+    const list = h("div.fe-pv-picks", {hidden: true, role: "listbox", id});
+    let found = [], at = -1;
+    const close = () => {
+      list.hidden = true;
+      input.setAttribute("aria-expanded", "false");
+      input.removeAttribute("aria-activedescendant");
+      at = -1;
+    };
+    const mark = () => {
+      [...list.querySelectorAll("[role=option]")].forEach((el, k) => {
+        el.setAttribute("aria-selected", String(k === at));
+        if (k === at) {
+          input.setAttribute("aria-activedescendant", el.id);
+          if (el.scrollIntoView) el.scrollIntoView({block: "nearest"});
+        }
+      });
+    };
+    const pick = (k) => {
+      const f = found[k];
+      if (!f) return;
+      close();
+      input.value = "";
+      f.pick();
+    };
+    const show = () => {
+      const q = input.value.trim();
+      found = q || opts.all ? opts.find(q) : [];
+      at = found.length && q ? 0 : -1;
+      fill(list, found.length ? found.map((f, k) => h("button", {type: "button", role: "option", id: id + "-" + k,
+        tabindex: "-1", onmousedown: (e) => e.preventDefault(), onclick: () => pick(k)},
+        h("span", f.label), f.sub ? h("small", f.sub) : null))
+        : q ? h("p.fe-sub.fe-small", {style: {margin: ".45em .7em"}}, opts.empty ? opts.empty(q) : `Nothing matches "${q}".`)
+        : null);
+      const open = !!(q || (opts.all && found.length));
+      list.hidden = !open;
+      input.setAttribute("aria-expanded", String(open));
+      mark();
+    };
+    input.addEventListener("input", show);
+    if (opts.all) input.addEventListener("focus", show);
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+        if (list.hidden) show();
+        if (!found.length) return;
+        e.preventDefault();
+        at = at < 0 ? (e.key === "ArrowDown" ? 0 : found.length - 1)
+          : (at + (e.key === "ArrowDown" ? 1 : found.length - 1)) % found.length;
+        mark();
+      } else if (e.key === "Enter") {
+        if (!list.hidden && found.length) { e.preventDefault(); pick(at < 0 ? 0 : at); }
+      } else if (e.key === "Escape") {
+        if (!list.hidden) { e.preventDefault(); e.stopPropagation(); close(); }
+      }
+    });
+    input.addEventListener("blur", () => setTimeout(() => {
+      if (document.activeElement !== input && !list.contains(document.activeElement)) close();
+    }, 150));
+    return {box: h("div.fe-pv-pick", input, list), input, list, close, show};
+  }
+
   /* A segmented choice: seg([{value, text, title}], current, onchange, {label}) */
   function seg(options, current, onchange, opts) {
     const box = h("div.fe-seg", {role: "group", "aria-label": opts && opts.label || null});
@@ -212,6 +305,6 @@ EZ.ui = (function () {
     return `${n.toLocaleString()} ${n === 1 ? one : (many || one + "s")}`;
   }
 
-  return {h, add, clear, fill, setHost, toast, dialog, confirmBox, menu, seg, toggle, option, pill, debounce, ago,
-          plural};
+  return {h, add, clear, fill, setHost, toast, undoToast, dialog, confirmBox, menu, combo, seg, toggle, option, pill,
+          debounce, ago, plural};
 })();
