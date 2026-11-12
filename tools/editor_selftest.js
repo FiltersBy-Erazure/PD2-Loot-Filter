@@ -742,6 +742,63 @@
     return {fail: bad.length ? bad.join("\n  ") : null, cases: 400};
   });
 
+  /* The alias loop the page runs (each text on its own, through the aliases its words can hold, kept per alias table)
+     against BH's loop over every rule (substituteAll, build.py's bh_substitute): every version as the engine reads it,
+     again from what it kept, after an edit and as the write-out reads it; then made-up tables whose values write
+     keys, hold keys in keys and names a word can't hold, and the case where one rule decides how every rule goes. */
+  test("substitute", () => {
+    const bad = [];
+    let cases = 0;
+    const same = (a, b) => a.length === b.length && a.every((x, i) => x === b[i]);
+    // (all: BH's loop's result when the caller has it already: it takes most of a second on a version)
+    const both = (texts, aliases, what, all) => {
+      cases++;
+      let fast = null, ef = null, ea = null;
+      try { fast = C.substitute([texts[0].slice(), texts[1].slice()], aliases); } catch (e) { ef = String(e.message); }
+      if (!all) {
+        try { all = C.substituteAll([texts[0].slice(), texts[1].slice()], aliases); } catch (e) { ea = String(e.message); }
+      }
+      if (ef || ea) {
+        if (ef !== ea) bad.push(`${what}: ${ef || "no error"}, BH's loop ${ea || "no error"}`);
+        return null;
+      }
+      for (let k = 0; k < 2; k++) {
+        if (same(fast[k], all[k])) continue;
+        const i = fast[k].findIndex((x, j) => x !== all[k][j]);
+        bad.push(`${what}, ${k ? "output" : "condition"} ${i}: ${show(fast[k][i])}, BH's loop ${show(all[k][i])}`);
+      }
+      return all;
+    };
+    // a few versions (the others' written files are compared byte for byte by "versions"): Main first
+    const keep = new Set(src.keep);
+    src.variants.filter((v, i) => i % 6 === 0).forEach((v, n) => {
+      const lines = C.variantLines(src, v), entries = C.bhEntries(lines);
+      const aliases = C.bhAliases(entries), rules = C.ruleEntries(lines, entries);
+      const texts = [rules.map((r) => r.cond), rules.map((r) => r.out)];
+      const all = both(texts, aliases, v.name);
+      if (all) both(texts, aliases, v.name + " (kept)", all);
+      if (!n) {
+        both([texts[0].map((c, i) => i % 97 ? c : c + " FILTLVL>3"), texts[1].map((o, i) => i % 89 ? o : "x" + o)],
+             aliases, v.name + " (edited)");
+      }
+      both(texts, aliases.filter((a) => !keep.has(a.name)), v.name + " (written out)");
+    });
+    let seed = 11;
+    const rnd = (m) => { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return (seed >>> 16) % m; };
+    const word = (len, abc) => Array.from({length: len}, () => abc[rnd(abc.length)]).join("");
+    for (let t = 0; t < 400 && bad.length <= 5; t++) {
+      const aliases = Array.from({length: 1 + rnd(5)}, () => ({name: word(1 + rnd(3), t % 7 ? "ab_" : "ab-%"),
+                                                              value: word(rnd(5), "xb% _")}));
+      const texts = [Array.from({length: 6}, () => word(rnd(14), "ab_% x-")),
+                     Array.from({length: 6}, () => word(rnd(14), "AB_%x ab"))];
+      both(texts, aliases, `made-up ${show(aliases)} on ${show(texts)}`);
+    }
+    // "aaaaa" leaves the key behind, so BH's loop takes every rule leftmost first: "aaaaaa" -> xxaa, not xaxa
+    both([["aaaaaa", "aaaaa"], [""]], [{name: "aaa", value: "xa"}], "leftmost first");
+    both([["aaaaaa"], [""]], [{name: "aaa", value: "xa"}], "all at once");
+    return {fail: bad.length ? bad.join("\n  ") : null, cases};
+  });
+
   test("rules", () => {
     EZ.items.init({catalog: EXPECT.catalog});
     const bad = [];

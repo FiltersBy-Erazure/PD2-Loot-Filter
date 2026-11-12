@@ -959,6 +959,15 @@
   Key's hover box outside town, the area's layout and where its exits, dungeons and bosses are.
   T1-T4 maps are always identified in the editor (`EZ.items.alwaysId`; the author, 2026-11-12: non-unique maps drop
   white, a magic or rare one is made from one): no Identified switch for them, white / magic / rare in the preview.
+  Speed (2026-11-12, the author: edits took a few seconds): BH's alias loop over every rule took ~0.8 s of each
+  build, so `core.substitute` takes each text on its own, through the aliases its words can hold, and keeps what it
+  wrote per alias table (`substituteAll` is BH's loop, which a text where an alias leaves its key behind falls back
+  to; the selftest's `substitute` compares the two); a list of aliases is read once, so never change one after
+  passing it. `engine.compile` keeps what each rule reads as, by its text (never change a compiled rule's tree or
+  act), the look cards are kept per version's lines (they took 6-10 s per Looks drawing), `edits.applied` keeps the
+  last build, and Changes' every-item table keeps Erazure's runs and gives an item whose rules read alike in both
+  filters Erazure's run (`preview.pairs`, `engine.sameRules`). An edit then took 0.1-0.2 s on the author's PC
+  instead of 1-1.5 s.
 - The website's **Resources** tab (2026-11-02, the author: reference pages players can look things up in, more to
   come): `website/docs/resources/index.md` lists them, a grid card each (mkdocs.yml has `navigation.indexes`, so it is
   the tab's own page). A resource is a page written by hand, `website/resources/<Name>.html` (its data, styles and

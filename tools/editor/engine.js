@@ -1212,6 +1212,22 @@ EZ.engine = (function () {
     return out;
   }
 
+  /* What a rule's condition and output read as ({tree, act, codes, quals}), kept by their text (aliases written in)
+     for the same game and the same named formulas: an edit changes a few rules, so the next filter only reads those.
+     A rule with a $f(...) island (or a word naming one) is read every time: islands are named in file order. */
+  const parsed = new Map();  // context (maxima and named formulas) -> Map(text -> rule as read)
+  const PARSED_KEPT = 3;
+  function parsedFor(F) {
+    let sig = F.statMax + "|" + F.skillMax + "|" + F.soundCount;
+    for (const k of Object.keys(F.formulas)) sig += "\u0001" + k + "=" + F.formulaText[k];
+    let m = parsed.get(sig);
+    if (m) parsed.delete(sig);
+    else m = new Map();
+    parsed.set(sig, m);  // the most recently used last
+    while (parsed.size > PARSED_KEPT) parsed.delete(parsed.keys().next().value);
+    return m;
+  }
+
   /* A version's lines (alias form, toggles as they are) as BH reads them. opts: {statMax, skillMax, soundCount}.
      -> {rules: [{i, n, cond, out, tree, act}], mapRules, byLine, formulas}. */
   function compile(lines, opts) {
@@ -1232,15 +1248,23 @@ EZ.engine = (function () {
       F.formulas[ref] = node;
       F.formulaText[ref] = e.value;
     }
-    const next = islandNamer();
+    const next = islandNamer(), kept = parsedFor(F);
     for (let n = 0; n < rules.length; n++) {
-      const cond = islands(texts[0][n], "", "", F, next);
-      const out = islands(texts[1][n], "%", "%", F, next);
-      const conds = [], st = {last: null};
-      for (const tok of cond.split(/[ \t\n\r\v\f]+/)) if (tok) buildConditions(tok, conds, st, F);
-      const t = tree(conds);
-      const r = {i: rules[n].i, n, cond: texts[0][n], out: texts[1][n], tree: t, act: action(out, F),
-                 codes: needs(t, "codes"), quals: needs(t, "quals")};
+      const ct = texts[0][n], ot = texts[1][n];
+      const plain = ct.indexOf("$f(") < 0 && ot.indexOf("$f(") < 0 && ct.indexOf("ISLAND_") < 0 &&
+                    ot.indexOf("ISLAND_") < 0;
+      const key = plain ? ct + "\u0000" + ot : null;
+      let p = plain ? kept.get(key) : undefined;
+      if (!p) {
+        const cond = islands(ct, "", "", F, next);
+        const out = islands(ot, "%", "%", F, next);
+        const conds = [], st = {last: null};
+        for (const tok of cond.split(/[ \t\n\r\v\f]+/)) if (tok) buildConditions(tok, conds, st, F);
+        const t = tree(conds);
+        p = {tree: t, act: action(out, F), codes: needs(t, "codes"), quals: needs(t, "quals")};
+        if (plain) kept.set(key, p);
+      }
+      const r = {i: rules[n].i, n, cond: ct, out: ot, tree: p.tree, act: p.act, codes: p.codes, quals: p.quals};
       F.rules.push(r);
       F.byLine.set(r.i, r);
       if (r.act.notifies) F.mapRules.push(r);
@@ -1271,6 +1295,20 @@ EZ.engine = (function () {
     if (it.rw) return "4";
     if (NMAG[it.quality] && (it.eth || (unitStat(it, 194, 0) || 0) > 0)) return "5";
     return QUALITY_COLOR[it.quality] || "0";
+  }
+
+  /* Whether two compiled filters hold an item's rules alike: both passes' rules for its code and quality, in order,
+     with the same text (aliases written in). With the same named formulas and the same character, place and game
+     options, run() then draws the item alike in both (the lines' numbers aside). */
+  function sameRules(Fa, Fb, it) {
+    const a = rulesFor(Fa, it), b = rulesFor(Fb, it);
+    const alike = (x, y) => x.length === y.length && x.every((r, k) => r.cond === y[k].cond && r.out === y[k].out);
+    return alike(a.rules, b.rules) && alike(a.mapRules, b.mapRules);
+  }
+  /* The named formulas of a compiled filter (not its $f islands, which its rules' texts hold), as one text. */
+  function namedFormulas(F) {
+    return Object.keys(F.formulas).filter((k) => !k.startsWith("ISLAND_")).sort()
+      .map((k) => k + "=" + F.formulaText[k]).join("\n");
   }
 
   function match(r, it, c, F) { return r.tree ? evalTree(r.tree, it, c, F) : 0; }
@@ -1391,7 +1429,8 @@ EZ.engine = (function () {
     return tree(conds);
   }
 
-  return {compile, run, canMatch, match, action, compileFormula, runFormula, formatNumber, trim, copyName, chatLine,
+  return {compile, run, sameRules, namedFormulas, canMatch, match, action, compileFormula, runFormula, formatNumber,
+          trim, copyName, chatLine,
           affixLevel, gameColor, condition, analyze, islandsOf: islands, islandNamer, replacements, MAYBE,
           QUALITY_COLOR, CLASS_ID, PLACES, VARS, WORDS,
           evalCondition: (t, it, c, F) => t ? evalTree(t, it, c, F || {formulas: dict()}) : 0};

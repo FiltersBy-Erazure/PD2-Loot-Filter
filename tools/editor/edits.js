@@ -548,6 +548,19 @@ EZ.edits = (function () {
     return {lines: ctx.lines, report: ctx.report};
   }
 
+  /* apply(), kept for the last version and edit set asked for: the preview and Changes ask for the same one after
+     every change (callers read what it gives, never change it). */
+  const lastApplied = {lines: null, key: null, val: null};
+  function applied(src, profile, lines) {
+    const key = JSON.stringify(profile.edits);
+    if (lastApplied.lines !== lines || lastApplied.key !== key) {
+      lastApplied.val = apply(src, profile, lines);
+      lastApplied.lines = lines;
+      lastApplied.key = key;
+    }
+    return lastApplied.val;
+  }
+
   /* ---------------------------------------------------------------- the header */
 
   function b64url(bytes) {
@@ -628,7 +641,8 @@ EZ.edits = (function () {
     return data && data.app === "erazure-filter-editor" ? data : null;
   }
 
-  return {apply, step, count, countArea, counter, headerLines, fromFile, pack, unpack, copyLevels, groundOnly, COLORS,
+  return {apply, applied, step, count, countArea, counter, headerLines, fromFile, pack, unpack, copyLevels, groundOnly,
+          COLORS,
           featureParts, partsOff, featureChanges,
           featureDefault, resized, slashes, SITE};
 })();

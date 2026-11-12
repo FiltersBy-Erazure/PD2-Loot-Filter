@@ -76,8 +76,14 @@ EZ.core = (function () {
   /* BH's alias loop over every rule (build.py's bh_substitute): texts = [conditions[], outputs[]], changed in place.
      For each alias in order: in conditions the name, in outputs %NAME% (ASCII upper case), every occurrence replaced,
      searching again from the start until none is left. As build.py: all at once, unless that leaves the key in some
-     rule's text; then every rule goes BH's way, leftmost first. */
-  function substitute(texts, aliases) {
+     rule's text; then every rule goes BH's way, leftmost first.
+
+     This loop tries every alias on every rule (about 8 million searches for a version: most of a second). So
+     substitute() below takes each text on its own, only through the aliases its words can hold, and keeps what it
+     wrote per alias table: after an edit only the lines it changed are new. That is the same result as long as no
+     alias leaves its own key behind (then the rules aren't independent: every rule goes leftmost first); a text where
+     one does sends the whole call here. */
+  function substituteAll(texts, aliases) {
     for (const a of aliases) {
       if (!a.name) continue;
       const keys = [a.name, "%" + upperAscii(a.name) + "%"];
@@ -101,6 +107,132 @@ EZ.core = (function () {
         }
       }
     }
+    return texts;
+  }
+
+  /* An alias table as substitute() reads it, kept for the last few tables (a look edited makes a new one):
+     keys[0] the names (conditions), keys[1] the %NAME% keys (outputs); the names by text, their lengths; the aliases
+     whose names a word can't hold (odd: searched for in every text); per text what it became (null: it left an
+     alias's key behind). A list of aliases is read once (callers pass the list bhAliases made and never change it):
+     the item changes and lint call substitute() once per rule with the same list. */
+  const WORD_NAME = /^[A-Za-z0-9_]+$/;
+  const tables = new Map(), byList = new WeakMap();
+  const TABLES_KEPT = 6;
+  const keepRecent = (t) => {
+    tables.delete(t.sig);
+    tables.set(t.sig, t);  // the most recently used last
+    while (tables.size > TABLES_KEPT) tables.delete(tables.keys().next().value);
+    return t;
+  };
+  function tableOf(aliases) {
+    let t = byList.get(aliases);
+    if (t) return keepRecent(t);  // (the same string: its hash is kept)
+    let sig = "";
+    for (const a of aliases) sig += a.name + "\u0000" + a.value + "\u0001";
+    t = tables.get(sig);
+    if (t) {
+      byList.set(aliases, t);
+      return keepRecent(t);
+    }
+    t = {sig, aliases, keys: [[], []], names: new Map(), outNames: new Map(), lens: [], odd: [[], []], runs: new Map(),
+         memo: [new Map(), new Map()]};
+    const lens = new Set();
+    aliases.forEach((a, k) => {
+      if (!a.name) { t.keys[0].push(null); t.keys[1].push(null); return; }
+      const up = upperAscii(a.name);
+      t.keys[0].push(a.name);
+      t.keys[1].push("%" + up + "%");
+      if (WORD_NAME.test(a.name)) {
+        if (!t.names.has(a.name)) t.names.set(a.name, []);
+        t.names.get(a.name).push(k);
+        lens.add(a.name.length);
+      } else t.odd[0].push(k);
+      if (up.indexOf("%") < 0) {
+        if (!t.outNames.has(up)) t.outNames.set(up, []);
+        t.outNames.get(up).push(k);
+      } else t.odd[1].push(k);
+    });
+    t.lens = [...lens].sort((x, y) => x - y);
+    byList.set(aliases, t);
+    return keepRecent(t);
+  }
+
+  const isWordCode = (c) => (c >= 48 && c <= 57) || (c >= 65 && c <= 90) || (c >= 97 && c <= 122) || c === 95;
+
+  /* The aliases whose key a text holds (some may be listed twice): in a condition a name lies inside one run of
+     letters, digits and _, so each run is looked up (and kept) once; in an output %NAME% lies between two '%' in a
+     row (a name has none). The odd ones are searched for. */
+  function keysIn(t, s, k) {
+    const out = [];
+    if (k === 0) {
+      for (let i = 0, n = s.length; i < n;) {
+        while (i < n && !isWordCode(s.charCodeAt(i))) i++;
+        let j = i;
+        while (j < n && isWordCode(s.charCodeAt(j))) j++;
+        if (j > i) {
+          const run = s.slice(i, j);
+          let c = t.runs.get(run);
+          if (c === undefined) {
+            c = [];
+            for (let p = 0; p < run.length; p++) {
+              for (const len of t.lens) {
+                if (p + len > run.length) break;
+                const ks = t.names.get(run.substr(p, len));
+                if (ks) for (const x of ks) c.push(x);
+              }
+            }
+            t.runs.set(run, c);
+          }
+          for (const x of c) out.push(x);
+        }
+        i = j;
+      }
+    } else {
+      for (let p = s.indexOf("%"); p >= 0;) {
+        const q = s.indexOf("%", p + 1);
+        if (q < 0) break;
+        const ks = t.outNames.get(s.slice(p + 1, q));
+        if (ks) for (const x of ks) out.push(x);
+        p = q;
+      }
+    }
+    for (const x of t.odd[k]) if (s.indexOf(t.keys[k][x]) >= 0) out.push(x);
+    return out;
+  }
+
+  /* One text through the alias loop on its own: the aliases it holds, in order, each all at once; null when one
+     leaves its key behind. */
+  function oneText(t, s, k) {
+    let last = -1;
+    for (;;) {
+      let next = Infinity;
+      for (const x of keysIn(t, s, k)) if (x > last && x < next) next = x;
+      if (next === Infinity) return s;
+      const key = t.keys[k][next];
+      const n = s.split(key).join(t.aliases[next].value);
+      if (n.indexOf(key) >= 0) return null;
+      s = n;
+      last = next;
+    }
+  }
+
+  function substitute(texts, aliases) {
+    const t = tableOf(aliases);
+    const done = [];
+    for (let k = 0; k < 2; k++) {
+      const list = texts[k], memo = t.memo[k], out = new Array(list.length);
+      for (let r = 0; r < list.length; r++) {
+        let n = memo.get(list[r]);
+        if (n === undefined) {
+          n = oneText(t, list[r], k);
+          memo.set(list[r], n);
+        }
+        if (n === null) return substituteAll(texts, aliases);
+        out[r] = n;
+      }
+      done.push(out);
+    }
+    for (let k = 0; k < 2; k++) for (let r = 0; r < done[k].length; r++) texts[k][r] = done[k][r];
     return texts;
   }
 
@@ -248,6 +380,6 @@ EZ.core = (function () {
     return {lines: lines, bytes: encode(lines)};
   }
 
-  return {bhTrim, bhEntries, bhAliases, substitute, ruleEntries, writeOut, render, applyStyleLines, applyPatch,
-          variantLines, written, encode, crc32, buildVariant, ALIAS_DEF_RE, SWITCHED_OFF_RULE};
+  return {bhTrim, bhEntries, bhAliases, substitute, substituteAll, ruleEntries, writeOut, render, applyStyleLines,
+          applyPatch, variantLines, written, encode, crc32, buildVariant, ALIAS_DEF_RE, SWITCHED_OFF_RULE};
 })();

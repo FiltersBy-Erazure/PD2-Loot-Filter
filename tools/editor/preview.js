@@ -106,7 +106,7 @@ EZ.preview = (function () {
     if (!app.changes().count) return null;
     const key = (app.variant() || {}).name + "|" + JSON.stringify(p.edits);
     if (cache.yoursKey !== key) {
-      const lines = EZ.edits.apply(app.src, p, app.versionLines()).lines;
+      const lines = EZ.edits.applied(app.src, p, app.versionLines()).lines;
       cache.yours = {F: EZ.engine.compile(lines, compileOpts()), lines};
       cache.yoursKey = key;
     }
@@ -153,6 +153,44 @@ EZ.preview = (function () {
     const item = EZ.items.make(spec);
     if (!item || !f) return null;
     return EZ.engine.run(f.F, item, ctx(level), state.opts);
+  }
+
+  /* Erazure's run and the player's of the same items at one filter level, for a long list (Changes' every item):
+     Erazure's runs are kept (they don't change for a version and these settings: the last few settings), and an item
+     whose rules the player's filter holds as Erazure's does takes Erazure's run for the player's too (its lines'
+     numbers are Erazure's: for what the item looks like only). -> (spec) => [Erazure's run, the player's] or null. */
+  const baseRuns = new WeakMap();  // Erazure's compiled filter -> Map(settings -> Map(item -> run))
+  function pairs(base, mine, level) {
+    if (!base) return () => null;
+    const c = ctx(level), o = state.opts;
+    const key = JSON.stringify([level, c, o]);
+    let kept = baseRuns.get(base.F);
+    if (!kept) baseRuns.set(base.F, kept = new Map());
+    let runs = kept.get(key);
+    if (runs) kept.delete(key);
+    else runs = new Map();
+    kept.set(key, runs);
+    while (kept.size > 3) kept.delete(kept.keys().next().value);
+    const formulasAlike = !!mine && EZ.engine.namedFormulas(base.F) === EZ.engine.namedFormulas(mine.F);
+    const alike = new Map();  // code and quality -> the player's rules are Erazure's
+    return (spec) => {
+      const item = EZ.items.make(spec);
+      if (!item) return null;
+      const k = JSON.stringify(spec);
+      let a = runs.get(k);
+      if (!a) {
+        a = EZ.engine.run(base.F, item, c, o);
+        runs.set(k, a);
+      }
+      if (!mine) return [a, null];
+      const cls = item.code + "|" + item.quality;
+      let same = alike.get(cls);
+      if (same === undefined) {
+        same = formulasAlike && EZ.engine.sameRules(base.F, mine.F, item);
+        alike.set(cls, same);
+      }
+      return [a, same ? a : EZ.engine.run(mine.F, EZ.items.make(spec), c, o)];
+    };
   }
 
   /* ---------------------------------------------------------------- drawing results */
@@ -718,7 +756,7 @@ EZ.preview = (function () {
   return {
     render(b, a) { box = b; app = a; draw(); },
     changed(ev, a) { app = a; redraw(); },
-    state, run, erazure, yours, withEdits, context, ctx, iconCanvas, SAMPLES, levelNames,
+    state, run, pairs, erazure, yours, withEdits, context, ctx, iconCanvas, SAMPLES, levelNames,
     saveState: () => save(),
   };
 })();

@@ -275,12 +275,33 @@ EZ.filter = (function () {
 
   /* The look cards: [{key, title, group, aliases: [{name, i, value}], tpls: [{tpl, at}]}] (alias_editor.page_data,
      its looks(): the different labels the card's aliases decide, at most 3, one item before a stack). */
+  const cardCache = new WeakMap();  // a version's lines (app.versionLines keeps them) -> its cards
   function lookCards(src, lines) {
+    if (cardCache.has(lines)) return cardCache.get(lines);
     const list = lookAliases(src, lines);
     const names = new Set(list.map((a) => a.name));
     const order = new Map(list.map((a, k) => [a.name, k]));
     const rules = [];
     for (let i = 0; i < lines.length; i++) if (lines[i].startsWith("ItemDisplay[")) rules.push(i);
+    /* Each rule once: the card alias it uses last (a card's rules are those whose last one is the card's). A %NAME%
+       lies between two '%' in a row (a name has none). */
+    const lastOf = [];
+    for (const i of rules) {
+      const line = lines[i];
+      const r = rule(line);
+      if (!r) continue;
+      const words = r.cond.replace(/[()]/g, " ").split(/\s+/);
+      if (OFF_TOGGLES.some((t) => words.indexOf(t) >= 0)) continue;
+      let last = null;
+      for (let p = line.indexOf("%"); p >= 0;) {
+        const q = line.indexOf("%", p + 1);
+        if (q < 0) break;
+        const n = line.slice(p + 1, q);
+        if (names.has(n) && (last === null || order.get(n) > order.get(last))) last = n;
+        p = q;
+      }
+      if (last !== null) lastOf.push([i, last]);
+    }
     const cards = [], seen = new Set();
     for (const a of list) {
       if (seen.has(a.name)) continue;
@@ -289,16 +310,10 @@ EZ.filter = (function () {
       for (const b of group) seen.add(b.name);
       const gnames = group.map((b) => b.name);
       const found = [];
-      for (const i of rules) {
+      for (const [i, last] of lastOf) {
+        if (gnames.indexOf(last) < 0) continue;
         const line = lines[i];
         const r = rule(line);
-        if (!r) continue;
-        const words = r.cond.replace(/[()]/g, " ").split(/\s+/);
-        if (OFF_TOGGLES.some((t) => words.indexOf(t) >= 0)) continue;
-        const used = [...names].filter((n) => line.indexOf("%" + n + "%") >= 0);
-        if (!used.length) continue;
-        const last = used.reduce((x, y) => (order.get(x) > order.get(y) ? x : y));
-        if (gnames.indexOf(last) < 0) continue;
         const tpl = template(gnames, line);
         const same = (t) => t.replace(/(%[A-Z_]+%)+(?=%NAME%)/g, "");
         if (!found.some((f) => same(f.tpl) === same(tpl))) found.push({tpl, at: i, stack: r.cond.indexOf("QTY>") >= 0});
@@ -318,6 +333,7 @@ EZ.filter = (function () {
       cards.push({key, title: CARD_TITLES[key] || a.title, note: note ? note[0].toUpperCase() + note.slice(1) : "",
                   group: g ? g[0] : "pd2", aliases: group, tpls, used});
     }
+    cardCache.set(lines, cards);
     return cards;
   }
 

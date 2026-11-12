@@ -221,9 +221,10 @@ EZ.overrides = (function () {
 
   const memo = new Map();
   let memoKey = null;
+  const formulaMemo = new Map();  // a named formula's text -> what it compiles to (null: it doesn't)
 
   /* Every active rule of the lines: [{i, r (EZ.filter.rule), tree, act}], conditions and outputs with the aliases
-     written in (kept by line text while the aliases stay the same). */
+     written in (kept by line text while the aliases stay the same; every item change reads the lines again). */
   function read(lines) {
     const entries = EZ.core.bhEntries(lines);
     const aliases = EZ.core.bhAliases(entries);
@@ -236,7 +237,12 @@ EZ.overrides = (function () {
     for (const e of entries) {
       const m = /^Formula\[(.*)\]$/.exec(e.key);
       if (!m) continue;
-      const node = EZ.engine.compileFormula(e.value);
+      let node = formulaMemo.get(e.value);
+      if (node === undefined) {
+        node = EZ.engine.compileFormula(e.value) || null;
+        if (formulaMemo.size > 500) formulaMemo.clear();
+        formulaMemo.set(e.value, node);
+      }
       if (node) F.formulas["FORMULA" + m[1].replace(/[a-z]/g, (x) => x.toUpperCase())] = node;
     }
     const namer = EZ.engine.islandNamer();
@@ -244,16 +250,17 @@ EZ.overrides = (function () {
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
       if (!line.startsWith("ItemDisplay[")) continue;
-      const r = EZ.filter.rule(line);
-      if (!r) continue;
       let m = memo.get(line);
       if (!m) {
+        const r = EZ.filter.rule(line);
+        if (!r) continue;
         const t = EZ.core.substitute([[r.cond], [EZ.core.bhTrim(r.out)]], aliases);
         const isl = EZ.engine.islandsOf(t[0][0], "", "", F, namer);
-        m = {tree: EZ.engine.condition(isl, F), act: EZ.engine.action(EZ.engine.islandsOf(t[1][0], "%", "%", F, namer), F)};
+        m = {r, tree: EZ.engine.condition(isl, F),
+             act: EZ.engine.action(EZ.engine.islandsOf(t[1][0], "%", "%", F, namer), F)};
         memo.set(line, m);
       }
-      out.push({i, r, tree: m.tree, act: m.act});
+      out.push({i, r: m.r, tree: m.tree, act: m.act});
     }
     return {rules: out, F, aliases};
   }

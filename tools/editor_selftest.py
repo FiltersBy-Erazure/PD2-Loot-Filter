@@ -35,6 +35,10 @@ Tests:
              error or warning it shouldn't) and on every rule of Erazure's versions (none may be an error).
   rules      the rule builder (tools/editor/rules.js): forms and the rule lines they must make, each read by the
              engine without a word BH drops.
+  substitute the page's alias loop (each text on its own, kept per alias table) against BH's loop over every rule
+             (core.substituteAll, build.py's bh_substitute): every version as the engine and the write-out read it,
+             again from what it kept and after an edit, made-up tables whose values write keys, and the case where
+             one rule sends every rule leftmost first.
 
 The page under test is served over http from a temporary folder; the browser writes the results as JSON into the
 page, which --dump-dom prints.

@@ -141,6 +141,7 @@ EZ.areas = EZ.areas || [];
       EZ.ui.clear(table);
       if (!mine) { status.textContent = "No changes yet: every item is Erazure's."; return; }
       const list = specs(), q = view.q.trim().toLowerCase();
+      const both = P.pairs(base, mine, view.level);
       const seen = new Set();  // two changes' items that read and draw alike: one row
       let k = 0, shown = 0, changed = 0;
       const step = () => {
@@ -152,8 +153,9 @@ EZ.areas = EZ.areas || [];
           const label = EZ.items.describe(spec) + (ed ? `, ${ed[2]}% enhanced ${ed[0] === 16 ? "defense" : "damage"}` : "") +
             (spec.ilvl ? ", item level " + spec.ilvl : "");
           if (q && label.toLowerCase().indexOf(q) < 0) continue;
-          const a = P.run(base, spec, view.level), b = P.run(mine, spec, view.level);
-          if (!a || !b) continue;
+          const ab = both(spec);
+          if (!ab || !ab[0] || !ab[1]) continue;
+          const [a, b] = ab;
           const key = label + "|" + outcome(a) + "|" + outcome(b);
           if (seen.has(key)) continue;
           seen.add(key);
@@ -208,7 +210,7 @@ EZ.areas = EZ.areas || [];
     const go = () => {
       const p = EZ.store.current();
       const before = app.versionLines();
-      const after = EZ.edits.apply(app.src, p, before).lines;
+      const after = EZ.edits.applied(app.src, p, before).lines;
       const edits = EZ.diff.lines(before, after);
       if (!edits) { fill(out, h("p.fe-note.warn", "Too many differences to show here.")); return; }
       const hunks = EZ.diff.hunks(edits, 2);
@@ -336,7 +338,7 @@ EZ.areas = EZ.areas || [];
     const p = EZ.store.current();
     let report = null, lines = null;
     try {
-      const r = EZ.edits.apply(app.src, p, app.versionLines());
+      const r = EZ.edits.applied(app.src, p, app.versionLines());
       report = r.report;
       lines = r.lines;
     } catch (e) { report = {unplaced: [{area: "?", what: "", why: e.message}]}; }

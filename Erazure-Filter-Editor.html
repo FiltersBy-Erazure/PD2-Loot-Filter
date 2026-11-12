@@ -888,8 +888,14 @@ EZ.core = (function () {
   /* BH's alias loop over every rule (build.py's bh_substitute): texts = [conditions[], outputs[]], changed in place.
      For each alias in order: in conditions the name, in outputs %NAME% (ASCII upper case), every occurrence replaced,
      searching again from the start until none is left. As build.py: all at once, unless that leaves the key in some
-     rule's text; then every rule goes BH's way, leftmost first. */
-  function substitute(texts, aliases) {
+     rule's text; then every rule goes BH's way, leftmost first.
+
+     This loop tries every alias on every rule (about 8 million searches for a version: most of a second). So
+     substitute() below takes each text on its own, only through the aliases its words can hold, and keeps what it
+     wrote per alias table: after an edit only the lines it changed are new. That is the same result as long as no
+     alias leaves its own key behind (then the rules aren't independent: every rule goes leftmost first); a text where
+     one does sends the whole call here. */
+  function substituteAll(texts, aliases) {
     for (const a of aliases) {
       if (!a.name) continue;
       const keys = [a.name, "%" + upperAscii(a.name) + "%"];
@@ -913,6 +919,132 @@ EZ.core = (function () {
         }
       }
     }
+    return texts;
+  }
+
+  /* An alias table as substitute() reads it, kept for the last few tables (a look edited makes a new one):
+     keys[0] the names (conditions), keys[1] the %NAME% keys (outputs); the names by text, their lengths; the aliases
+     whose names a word can't hold (odd: searched for in every text); per text what it became (null: it left an
+     alias's key behind). A list of aliases is read once (callers pass the list bhAliases made and never change it):
+     the item changes and lint call substitute() once per rule with the same list. */
+  const WORD_NAME = /^[A-Za-z0-9_]+$/;
+  const tables = new Map(), byList = new WeakMap();
+  const TABLES_KEPT = 6;
+  const keepRecent = (t) => {
+    tables.delete(t.sig);
+    tables.set(t.sig, t);  // the most recently used last
+    while (tables.size > TABLES_KEPT) tables.delete(tables.keys().next().value);
+    return t;
+  };
+  function tableOf(aliases) {
+    let t = byList.get(aliases);
+    if (t) return keepRecent(t);  // (the same string: its hash is kept)
+    let sig = "";
+    for (const a of aliases) sig += a.name + "\u0000" + a.value + "\u0001";
+    t = tables.get(sig);
+    if (t) {
+      byList.set(aliases, t);
+      return keepRecent(t);
+    }
+    t = {sig, aliases, keys: [[], []], names: new Map(), outNames: new Map(), lens: [], odd: [[], []], runs: new Map(),
+         memo: [new Map(), new Map()]};
+    const lens = new Set();
+    aliases.forEach((a, k) => {
+      if (!a.name) { t.keys[0].push(null); t.keys[1].push(null); return; }
+      const up = upperAscii(a.name);
+      t.keys[0].push(a.name);
+      t.keys[1].push("%" + up + "%");
+      if (WORD_NAME.test(a.name)) {
+        if (!t.names.has(a.name)) t.names.set(a.name, []);
+        t.names.get(a.name).push(k);
+        lens.add(a.name.length);
+      } else t.odd[0].push(k);
+      if (up.indexOf("%") < 0) {
+        if (!t.outNames.has(up)) t.outNames.set(up, []);
+        t.outNames.get(up).push(k);
+      } else t.odd[1].push(k);
+    });
+    t.lens = [...lens].sort((x, y) => x - y);
+    byList.set(aliases, t);
+    return keepRecent(t);
+  }
+
+  const isWordCode = (c) => (c >= 48 && c <= 57) || (c >= 65 && c <= 90) || (c >= 97 && c <= 122) || c === 95;
+
+  /* The aliases whose key a text holds (some may be listed twice): in a condition a name lies inside one run of
+     letters, digits and _, so each run is looked up (and kept) once; in an output %NAME% lies between two '%' in a
+     row (a name has none). The odd ones are searched for. */
+  function keysIn(t, s, k) {
+    const out = [];
+    if (k === 0) {
+      for (let i = 0, n = s.length; i < n;) {
+        while (i < n && !isWordCode(s.charCodeAt(i))) i++;
+        let j = i;
+        while (j < n && isWordCode(s.charCodeAt(j))) j++;
+        if (j > i) {
+          const run = s.slice(i, j);
+          let c = t.runs.get(run);
+          if (c === undefined) {
+            c = [];
+            for (let p = 0; p < run.length; p++) {
+              for (const len of t.lens) {
+                if (p + len > run.length) break;
+                const ks = t.names.get(run.substr(p, len));
+                if (ks) for (const x of ks) c.push(x);
+              }
+            }
+            t.runs.set(run, c);
+          }
+          for (const x of c) out.push(x);
+        }
+        i = j;
+      }
+    } else {
+      for (let p = s.indexOf("%"); p >= 0;) {
+        const q = s.indexOf("%", p + 1);
+        if (q < 0) break;
+        const ks = t.outNames.get(s.slice(p + 1, q));
+        if (ks) for (const x of ks) out.push(x);
+        p = q;
+      }
+    }
+    for (const x of t.odd[k]) if (s.indexOf(t.keys[k][x]) >= 0) out.push(x);
+    return out;
+  }
+
+  /* One text through the alias loop on its own: the aliases it holds, in order, each all at once; null when one
+     leaves its key behind. */
+  function oneText(t, s, k) {
+    let last = -1;
+    for (;;) {
+      let next = Infinity;
+      for (const x of keysIn(t, s, k)) if (x > last && x < next) next = x;
+      if (next === Infinity) return s;
+      const key = t.keys[k][next];
+      const n = s.split(key).join(t.aliases[next].value);
+      if (n.indexOf(key) >= 0) return null;
+      s = n;
+      last = next;
+    }
+  }
+
+  function substitute(texts, aliases) {
+    const t = tableOf(aliases);
+    const done = [];
+    for (let k = 0; k < 2; k++) {
+      const list = texts[k], memo = t.memo[k], out = new Array(list.length);
+      for (let r = 0; r < list.length; r++) {
+        let n = memo.get(list[r]);
+        if (n === undefined) {
+          n = oneText(t, list[r], k);
+          memo.set(list[r], n);
+        }
+        if (n === null) return substituteAll(texts, aliases);
+        out[r] = n;
+      }
+      done.push(out);
+    }
+    for (let k = 0; k < 2; k++) for (let r = 0; r < done[k].length; r++) texts[k][r] = done[k][r];
     return texts;
   }
 
@@ -1060,8 +1192,8 @@ EZ.core = (function () {
     return {lines: lines, bytes: encode(lines)};
   }
 
-  return {bhTrim, bhEntries, bhAliases, substitute, ruleEntries, writeOut, render, applyStyleLines, applyPatch,
-          variantLines, written, encode, crc32, buildVariant, ALIAS_DEF_RE, SWITCHED_OFF_RULE};
+  return {bhTrim, bhEntries, bhAliases, substitute, substituteAll, ruleEntries, writeOut, render, applyStyleLines,
+          applyPatch, variantLines, written, encode, crc32, buildVariant, ALIAS_DEF_RE, SWITCHED_OFF_RULE};
 })();
 
 /* ---- tools/editor/ui.js ---- */
@@ -1966,12 +2098,33 @@ EZ.filter = (function () {
 
   /* The look cards: [{key, title, group, aliases: [{name, i, value}], tpls: [{tpl, at}]}] (alias_editor.page_data,
      its looks(): the different labels the card's aliases decide, at most 3, one item before a stack). */
+  const cardCache = new WeakMap();  // a version's lines (app.versionLines keeps them) -> its cards
   function lookCards(src, lines) {
+    if (cardCache.has(lines)) return cardCache.get(lines);
     const list = lookAliases(src, lines);
     const names = new Set(list.map((a) => a.name));
     const order = new Map(list.map((a, k) => [a.name, k]));
     const rules = [];
     for (let i = 0; i < lines.length; i++) if (lines[i].startsWith("ItemDisplay[")) rules.push(i);
+    /* Each rule once: the card alias it uses last (a card's rules are those whose last one is the card's). A %NAME%
+       lies between two '%' in a row (a name has none). */
+    const lastOf = [];
+    for (const i of rules) {
+      const line = lines[i];
+      const r = rule(line);
+      if (!r) continue;
+      const words = r.cond.replace(/[()]/g, " ").split(/\s+/);
+      if (OFF_TOGGLES.some((t) => words.indexOf(t) >= 0)) continue;
+      let last = null;
+      for (let p = line.indexOf("%"); p >= 0;) {
+        const q = line.indexOf("%", p + 1);
+        if (q < 0) break;
+        const n = line.slice(p + 1, q);
+        if (names.has(n) && (last === null || order.get(n) > order.get(last))) last = n;
+        p = q;
+      }
+      if (last !== null) lastOf.push([i, last]);
+    }
     const cards = [], seen = new Set();
     for (const a of list) {
       if (seen.has(a.name)) continue;
@@ -1980,16 +2133,10 @@ EZ.filter = (function () {
       for (const b of group) seen.add(b.name);
       const gnames = group.map((b) => b.name);
       const found = [];
-      for (const i of rules) {
+      for (const [i, last] of lastOf) {
+        if (gnames.indexOf(last) < 0) continue;
         const line = lines[i];
         const r = rule(line);
-        if (!r) continue;
-        const words = r.cond.replace(/[()]/g, " ").split(/\s+/);
-        if (OFF_TOGGLES.some((t) => words.indexOf(t) >= 0)) continue;
-        const used = [...names].filter((n) => line.indexOf("%" + n + "%") >= 0);
-        if (!used.length) continue;
-        const last = used.reduce((x, y) => (order.get(x) > order.get(y) ? x : y));
-        if (gnames.indexOf(last) < 0) continue;
         const tpl = template(gnames, line);
         const same = (t) => t.replace(/(%[A-Z_]+%)+(?=%NAME%)/g, "");
         if (!found.some((f) => same(f.tpl) === same(tpl))) found.push({tpl, at: i, stack: r.cond.indexOf("QTY>") >= 0});
@@ -2009,6 +2156,7 @@ EZ.filter = (function () {
       cards.push({key, title: CARD_TITLES[key] || a.title, note: note ? note[0].toUpperCase() + note.slice(1) : "",
                   group: g ? g[0] : "pd2", aliases: group, tpls, used});
     }
+    cardCache.set(lines, cards);
     return cards;
   }
 
@@ -2690,6 +2838,19 @@ EZ.edits = (function () {
     return {lines: ctx.lines, report: ctx.report};
   }
 
+  /* apply(), kept for the last version and edit set asked for: the preview and Changes ask for the same one after
+     every change (callers read what it gives, never change it). */
+  const lastApplied = {lines: null, key: null, val: null};
+  function applied(src, profile, lines) {
+    const key = JSON.stringify(profile.edits);
+    if (lastApplied.lines !== lines || lastApplied.key !== key) {
+      lastApplied.val = apply(src, profile, lines);
+      lastApplied.lines = lines;
+      lastApplied.key = key;
+    }
+    return lastApplied.val;
+  }
+
   /* ---------------------------------------------------------------- the header */
 
   function b64url(bytes) {
@@ -2770,7 +2931,8 @@ EZ.edits = (function () {
     return data && data.app === "erazure-filter-editor" ? data : null;
   }
 
-  return {apply, step, count, countArea, counter, headerLines, fromFile, pack, unpack, copyLevels, groundOnly, COLORS,
+  return {apply, applied, step, count, countArea, counter, headerLines, fromFile, pack, unpack, copyLevels, groundOnly,
+          COLORS,
           featureParts, partsOff, featureChanges,
           featureDefault, resized, slashes, SITE};
 })();
@@ -3602,9 +3764,10 @@ EZ.overrides = (function () {
 
   const memo = new Map();
   let memoKey = null;
+  const formulaMemo = new Map();  // a named formula's text -> what it compiles to (null: it doesn't)
 
   /* Every active rule of the lines: [{i, r (EZ.filter.rule), tree, act}], conditions and outputs with the aliases
-     written in (kept by line text while the aliases stay the same). */
+     written in (kept by line text while the aliases stay the same; every item change reads the lines again). */
   function read(lines) {
     const entries = EZ.core.bhEntries(lines);
     const aliases = EZ.core.bhAliases(entries);
@@ -3617,7 +3780,12 @@ EZ.overrides = (function () {
     for (const e of entries) {
       const m = /^Formula\[(.*)\]$/.exec(e.key);
       if (!m) continue;
-      const node = EZ.engine.compileFormula(e.value);
+      let node = formulaMemo.get(e.value);
+      if (node === undefined) {
+        node = EZ.engine.compileFormula(e.value) || null;
+        if (formulaMemo.size > 500) formulaMemo.clear();
+        formulaMemo.set(e.value, node);
+      }
       if (node) F.formulas["FORMULA" + m[1].replace(/[a-z]/g, (x) => x.toUpperCase())] = node;
     }
     const namer = EZ.engine.islandNamer();
@@ -3625,16 +3793,17 @@ EZ.overrides = (function () {
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
       if (!line.startsWith("ItemDisplay[")) continue;
-      const r = EZ.filter.rule(line);
-      if (!r) continue;
       let m = memo.get(line);
       if (!m) {
+        const r = EZ.filter.rule(line);
+        if (!r) continue;
         const t = EZ.core.substitute([[r.cond], [EZ.core.bhTrim(r.out)]], aliases);
         const isl = EZ.engine.islandsOf(t[0][0], "", "", F, namer);
-        m = {tree: EZ.engine.condition(isl, F), act: EZ.engine.action(EZ.engine.islandsOf(t[1][0], "%", "%", F, namer), F)};
+        m = {r, tree: EZ.engine.condition(isl, F),
+             act: EZ.engine.action(EZ.engine.islandsOf(t[1][0], "%", "%", F, namer), F)};
         memo.set(line, m);
       }
-      out.push({i, r, tree: m.tree, act: m.act});
+      out.push({i, r: m.r, tree: m.tree, act: m.act});
     }
     return {rules: out, F, aliases};
   }
@@ -6617,6 +6786,22 @@ EZ.engine = (function () {
     return out;
   }
 
+  /* What a rule's condition and output read as ({tree, act, codes, quals}), kept by their text (aliases written in)
+     for the same game and the same named formulas: an edit changes a few rules, so the next filter only reads those.
+     A rule with a $f(...) island (or a word naming one) is read every time: islands are named in file order. */
+  const parsed = new Map();  // context (maxima and named formulas) -> Map(text -> rule as read)
+  const PARSED_KEPT = 3;
+  function parsedFor(F) {
+    let sig = F.statMax + "|" + F.skillMax + "|" + F.soundCount;
+    for (const k of Object.keys(F.formulas)) sig += "\u0001" + k + "=" + F.formulaText[k];
+    let m = parsed.get(sig);
+    if (m) parsed.delete(sig);
+    else m = new Map();
+    parsed.set(sig, m);  // the most recently used last
+    while (parsed.size > PARSED_KEPT) parsed.delete(parsed.keys().next().value);
+    return m;
+  }
+
   /* A version's lines (alias form, toggles as they are) as BH reads them. opts: {statMax, skillMax, soundCount}.
      -> {rules: [{i, n, cond, out, tree, act}], mapRules, byLine, formulas}. */
   function compile(lines, opts) {
@@ -6637,15 +6822,23 @@ EZ.engine = (function () {
       F.formulas[ref] = node;
       F.formulaText[ref] = e.value;
     }
-    const next = islandNamer();
+    const next = islandNamer(), kept = parsedFor(F);
     for (let n = 0; n < rules.length; n++) {
-      const cond = islands(texts[0][n], "", "", F, next);
-      const out = islands(texts[1][n], "%", "%", F, next);
-      const conds = [], st = {last: null};
-      for (const tok of cond.split(/[ \t\n\r\v\f]+/)) if (tok) buildConditions(tok, conds, st, F);
-      const t = tree(conds);
-      const r = {i: rules[n].i, n, cond: texts[0][n], out: texts[1][n], tree: t, act: action(out, F),
-                 codes: needs(t, "codes"), quals: needs(t, "quals")};
+      const ct = texts[0][n], ot = texts[1][n];
+      const plain = ct.indexOf("$f(") < 0 && ot.indexOf("$f(") < 0 && ct.indexOf("ISLAND_") < 0 &&
+                    ot.indexOf("ISLAND_") < 0;
+      const key = plain ? ct + "\u0000" + ot : null;
+      let p = plain ? kept.get(key) : undefined;
+      if (!p) {
+        const cond = islands(ct, "", "", F, next);
+        const out = islands(ot, "%", "%", F, next);
+        const conds = [], st = {last: null};
+        for (const tok of cond.split(/[ \t\n\r\v\f]+/)) if (tok) buildConditions(tok, conds, st, F);
+        const t = tree(conds);
+        p = {tree: t, act: action(out, F), codes: needs(t, "codes"), quals: needs(t, "quals")};
+        if (plain) kept.set(key, p);
+      }
+      const r = {i: rules[n].i, n, cond: ct, out: ot, tree: p.tree, act: p.act, codes: p.codes, quals: p.quals};
       F.rules.push(r);
       F.byLine.set(r.i, r);
       if (r.act.notifies) F.mapRules.push(r);
@@ -6676,6 +6869,20 @@ EZ.engine = (function () {
     if (it.rw) return "4";
     if (NMAG[it.quality] && (it.eth || (unitStat(it, 194, 0) || 0) > 0)) return "5";
     return QUALITY_COLOR[it.quality] || "0";
+  }
+
+  /* Whether two compiled filters hold an item's rules alike: both passes' rules for its code and quality, in order,
+     with the same text (aliases written in). With the same named formulas and the same character, place and game
+     options, run() then draws the item alike in both (the lines' numbers aside). */
+  function sameRules(Fa, Fb, it) {
+    const a = rulesFor(Fa, it), b = rulesFor(Fb, it);
+    const alike = (x, y) => x.length === y.length && x.every((r, k) => r.cond === y[k].cond && r.out === y[k].out);
+    return alike(a.rules, b.rules) && alike(a.mapRules, b.mapRules);
+  }
+  /* The named formulas of a compiled filter (not its $f islands, which its rules' texts hold), as one text. */
+  function namedFormulas(F) {
+    return Object.keys(F.formulas).filter((k) => !k.startsWith("ISLAND_")).sort()
+      .map((k) => k + "=" + F.formulaText[k]).join("\n");
   }
 
   function match(r, it, c, F) { return r.tree ? evalTree(r.tree, it, c, F) : 0; }
@@ -6796,7 +7003,8 @@ EZ.engine = (function () {
     return tree(conds);
   }
 
-  return {compile, run, canMatch, match, action, compileFormula, runFormula, formatNumber, trim, copyName, chatLine,
+  return {compile, run, sameRules, namedFormulas, canMatch, match, action, compileFormula, runFormula, formatNumber,
+          trim, copyName, chatLine,
           affixLevel, gameColor, condition, analyze, islandsOf: islands, islandNamer, replacements, MAYBE,
           QUALITY_COLOR, CLASS_ID, PLACES, VARS, WORDS,
           evalCondition: (t, it, c, F) => t ? evalTree(t, it, c, F || {formulas: dict()}) : 0};
@@ -13562,6 +13770,7 @@ EZ.areas = EZ.areas || [];
       EZ.ui.clear(table);
       if (!mine) { status.textContent = "No changes yet: every item is Erazure's."; return; }
       const list = specs(), q = view.q.trim().toLowerCase();
+      const both = P.pairs(base, mine, view.level);
       const seen = new Set();  // two changes' items that read and draw alike: one row
       let k = 0, shown = 0, changed = 0;
       const step = () => {
@@ -13573,8 +13782,9 @@ EZ.areas = EZ.areas || [];
           const label = EZ.items.describe(spec) + (ed ? `, ${ed[2]}% enhanced ${ed[0] === 16 ? "defense" : "damage"}` : "") +
             (spec.ilvl ? ", item level " + spec.ilvl : "");
           if (q && label.toLowerCase().indexOf(q) < 0) continue;
-          const a = P.run(base, spec, view.level), b = P.run(mine, spec, view.level);
-          if (!a || !b) continue;
+          const ab = both(spec);
+          if (!ab || !ab[0] || !ab[1]) continue;
+          const [a, b] = ab;
           const key = label + "|" + outcome(a) + "|" + outcome(b);
           if (seen.has(key)) continue;
           seen.add(key);
@@ -13629,7 +13839,7 @@ EZ.areas = EZ.areas || [];
     const go = () => {
       const p = EZ.store.current();
       const before = app.versionLines();
-      const after = EZ.edits.apply(app.src, p, before).lines;
+      const after = EZ.edits.applied(app.src, p, before).lines;
       const edits = EZ.diff.lines(before, after);
       if (!edits) { fill(out, h("p.fe-note.warn", "Too many differences to show here.")); return; }
       const hunks = EZ.diff.hunks(edits, 2);
@@ -13757,7 +13967,7 @@ EZ.areas = EZ.areas || [];
     const p = EZ.store.current();
     let report = null, lines = null;
     try {
-      const r = EZ.edits.apply(app.src, p, app.versionLines());
+      const r = EZ.edits.applied(app.src, p, app.versionLines());
       report = r.report;
       lines = r.lines;
     } catch (e) { report = {unplaced: [{area: "?", what: "", why: e.message}]}; }
@@ -14094,7 +14304,7 @@ EZ.preview = (function () {
     if (!app.changes().count) return null;
     const key = (app.variant() || {}).name + "|" + JSON.stringify(p.edits);
     if (cache.yoursKey !== key) {
-      const lines = EZ.edits.apply(app.src, p, app.versionLines()).lines;
+      const lines = EZ.edits.applied(app.src, p, app.versionLines()).lines;
       cache.yours = {F: EZ.engine.compile(lines, compileOpts()), lines};
       cache.yoursKey = key;
     }
@@ -14141,6 +14351,44 @@ EZ.preview = (function () {
     const item = EZ.items.make(spec);
     if (!item || !f) return null;
     return EZ.engine.run(f.F, item, ctx(level), state.opts);
+  }
+
+  /* Erazure's run and the player's of the same items at one filter level, for a long list (Changes' every item):
+     Erazure's runs are kept (they don't change for a version and these settings: the last few settings), and an item
+     whose rules the player's filter holds as Erazure's does takes Erazure's run for the player's too (its lines'
+     numbers are Erazure's: for what the item looks like only). -> (spec) => [Erazure's run, the player's] or null. */
+  const baseRuns = new WeakMap();  // Erazure's compiled filter -> Map(settings -> Map(item -> run))
+  function pairs(base, mine, level) {
+    if (!base) return () => null;
+    const c = ctx(level), o = state.opts;
+    const key = JSON.stringify([level, c, o]);
+    let kept = baseRuns.get(base.F);
+    if (!kept) baseRuns.set(base.F, kept = new Map());
+    let runs = kept.get(key);
+    if (runs) kept.delete(key);
+    else runs = new Map();
+    kept.set(key, runs);
+    while (kept.size > 3) kept.delete(kept.keys().next().value);
+    const formulasAlike = !!mine && EZ.engine.namedFormulas(base.F) === EZ.engine.namedFormulas(mine.F);
+    const alike = new Map();  // code and quality -> the player's rules are Erazure's
+    return (spec) => {
+      const item = EZ.items.make(spec);
+      if (!item) return null;
+      const k = JSON.stringify(spec);
+      let a = runs.get(k);
+      if (!a) {
+        a = EZ.engine.run(base.F, item, c, o);
+        runs.set(k, a);
+      }
+      if (!mine) return [a, null];
+      const cls = item.code + "|" + item.quality;
+      let same = alike.get(cls);
+      if (same === undefined) {
+        same = formulasAlike && EZ.engine.sameRules(base.F, mine.F, item);
+        alike.set(cls, same);
+      }
+      return [a, same ? a : EZ.engine.run(mine.F, EZ.items.make(spec), c, o)];
+    };
   }
 
   /* ---------------------------------------------------------------- drawing results */
@@ -14706,7 +14954,7 @@ EZ.preview = (function () {
   return {
     render(b, a) { box = b; app = a; draw(); },
     changed(ev, a) { app = a; redraw(); },
-    state, run, erazure, yours, withEdits, context, ctx, iconCanvas, SAMPLES, levelNames,
+    state, run, pairs, erazure, yours, withEdits, context, ctx, iconCanvas, SAMPLES, levelNames,
     saveState: () => save(),
   };
 })();
