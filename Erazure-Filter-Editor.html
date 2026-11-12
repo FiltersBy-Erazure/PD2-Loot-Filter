@@ -391,6 +391,18 @@
 
 /* profiles and history */
 .edit-map .fe-profiles { display: grid; gap: .6em; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); }
+/* Maps: the maps the player never picks up */
+.edit-map .fe-map-tiers { display: grid; gap: .8em 1.4em; margin-top: .6em;
+  grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr)); }
+.edit-map .fe-map-tier h4 { margin: 0; }
+.md-typeset .edit-map ul.fe-map-list, .edit-map ul.fe-map-list { list-style: none; margin: .35em 0 0; padding: 0;
+  display: flex; flex-direction: column; gap: .1em; }
+.md-typeset .edit-map ul.fe-map-list li, .edit-map ul.fe-map-list li { margin: 0; }
+.edit-map .fe-check { display: flex; align-items: center; gap: .5em; cursor: pointer; padding: .15em .4em;
+  border-radius: 6px; }
+.edit-map .fe-check:hover { background: var(--panel2); }
+.edit-map .fe-check.is-on { color: var(--accent); }
+.edit-map .fe-check code { margin-left: auto; }
 .edit-map ul.fe-histlist { list-style: none; margin: .3em 0 0; padding: 0; }
 .edit-map ul.fe-histlist li { display: flex; align-items: center; justify-content: space-between; gap: .6em;
   border-bottom: 1px solid var(--line); padding: .25em 0; }
@@ -466,6 +478,9 @@
   background: var(--panel2); border-radius: 999px; padding: .1em .2em .1em .65em; }
 .edit-map .fe-x { border: 0; background: none; color: var(--muted); cursor: pointer; padding: 0 .3em; font-size: .9em; }
 .edit-map .fe-x:hover { color: var(--bad); }
+.edit-map .fe-bd-chip.is-on { border-color: var(--accent); }
+.edit-map .fe-linkbtn { border: 0; background: none; color: inherit; padding: 0; font: inherit; cursor: pointer; }
+.edit-map .fe-linkbtn:hover { color: var(--accent); text-decoration: underline; }
 .edit-map .fe-bd-search { flex: 1 1 18em; min-width: 12em; margin: 0; }
 .edit-map .fe-bd-stat select { max-width: 22em; }
 .edit-map .fe-bd-result { border-top: 1px solid var(--line); margin-top: .6em; padding-top: .75em; display: flex;
@@ -1681,6 +1696,21 @@ EZ.edits = (function () {
 
   /* ---------------------------------------------------------------- the steps */
 
+  /* A hide line hides on the ground outside town only, as Erazure's own hide rules do: GROUND and !TOWN added where
+     it has neither (2026-11-12, the author: every hide line the editor writes is for the ground outside town, so an
+     item shows as always in town, the inventory and the stash; 050's options have no GROUND). */
+  function groundOnly(line) {
+    const r = F.rule(line);
+    if (!r || /%CONTINUE%/i.test(r.out)) return line;
+    const label = r.out.replace(/\{[^}]*\}?/, "")
+      .replace(/%(?:(?:BORDER|MAP|DOT|PX|LINE|NOTIFY)-[0-9a-f]{1,4}|SOUNDID-\d{1,4}|TIER-\d)%/gi, "").trim();
+    if (label) return line;
+    const has = (w) => new RegExp("(^|[^A-Za-z0-9_])" + w + "($|[^A-Za-z0-9_])").test(r.cond);
+    const add = (has("GROUND") ? "" : " GROUND") + (has("TOWN") ? "" : " !TOWN");
+    if (!add) return line;
+    return r.off + "ItemDisplay[" + (r.cond.trim() ? r.cond + add : add.trim()) + "]:" + r.out + r.comment;
+  }
+
   function options(ctx) {
     const want = ctx.edits.options || {};
     const ids = Object.keys(want).filter((k) => want[k]);
@@ -1691,7 +1721,7 @@ EZ.edits = (function () {
     for (const id of ids) {
       const o = byId.get(id);
       if (!o) { ctx.unplaced("options", id, "Erazure no longer has this option"); continue; }
-      for (const i of o.lines) ctx.lines[i] = ctx.lines[i].replace(/^\s*\/\/+\s*/, "");
+      for (const i of o.lines) ctx.lines[i] = groundOnly(ctx.lines[i].replace(/^\s*\/\/+\s*/, ""));
     }
   }
 
@@ -2024,7 +2054,7 @@ EZ.edits = (function () {
     return data && data.app === "erazure-filter-editor" ? data : null;
   }
 
-  return {apply, step, count, countArea, counter, headerLines, fromFile, pack, unpack, copyLevels, COLORS,
+  return {apply, step, count, countArea, counter, headerLines, fromFile, pack, unpack, copyLevels, groundOnly, COLORS,
           featureDefault, resized, SITE};
 })();
 
@@ -2631,13 +2661,17 @@ if (EZ.edits) {
 
 /* ---- tools/editor/overrides.js ---- */
 /* Per-item overrides (the Items area): show, hide, mute, another sound or icon, icon only, an alert of the player's,
-   a changed or replaced look, for a set of items (bases or uniques / sets on their base, a quality, ethereal or not,
-   identified or not, filter levels, character levels). Each is exact for BH and keeps Erazure's looks: it changes
-   only the rules that can match its items (the engine's three-valued test on the items with everything else left
-   open), and only for them:
+   a changed or replaced look, for a set of items: bases (or uniques / sets on their base), qualities (several, or
+   non-magical), ethereal or not, identified or not, sockets (several counts), enhanced defense / damage at least,
+   item level, filter levels, character levels. Each is exact for BH and keeps Erazure's looks: it changes only the
+   rules that can match its items (the engine's three-valued test on the items with everything else left open), and
+   only for them:
 
    - show: the hide rules that can match get " !(X)" (one that also alerts is split, its twin for X keeping the alert
-     and passing the item on to the rules after it);
+     and passing the item on to the rules after it). Shown as level N shows it (asLevel): first every FILTLVL test of
+     the rules that can match X, and of the aliases, reads level N for X on its levels ("(FILTLVL=5 OR (X))",
+     "(FILTLVL<9 !(X))"), and a %TIER-n% that N and those levels fall on different sides of gets a twin for X, so X
+     looks and alerts as on level N; then the show. With a look of the player's (look "own"): a show and a look;
    - hide: a rule "(X) GROUND !TOWN FILTLVL>0" hides the item before Erazure's rules, and every alerting rule that can
      match gets " !(that)", so BH draws nothing at all (no label, no icon) where it is hidden;
    - mute, another sound, another icon, icon only: every alerting rule that can match is split into "C !(X)" (as it
@@ -2646,10 +2680,15 @@ if (EZ.edits) {
      first alerting rule that matches); "instead of Erazure's" is a rule before Erazure's rules and Erazure's alerting
      rules split, their twins without alerts;
    - change the look: every rule that decides the look and can match is split, its twin with the player's text (its
-     description and alerts kept); replace the look: a rule before Erazure's rules that decides it.
+     description and alerts kept); replace the look: a rule before Erazure's rules that decides it. keepColor: the
+     name keeps its own color after the player's text (a twin per color: white, gray when ethereal or socketed, gold
+     for runewords, the quality's own).
 
    Overrides go from the widest to the narrowest (each changes the lines the ones before it left), so a narrower one
-   wins where they meet; their rules before Erazure's go narrowest first. */
+   wins where they meet; for two alike the later one. A wider one whose own rules sit outside Erazure's (a hide's
+   line, a replaced look, an alert of the player's) leaves out the items of each narrower one that must win there: a
+   show in a hide, a look in a replaced look, any change of alerts in an alert of the player's. Their rules before
+   Erazure's go narrowest first. */
 var EZ = typeof EZ !== "undefined" ? EZ : {};
 EZ.overrides = (function () {
   "use strict";
@@ -2660,10 +2699,13 @@ EZ.overrides = (function () {
                                                                 chat: "all"}};
   const QUALITY_WORD = {INF: "INF", NORM: "(NMAG !SUP !INF)", SUP: "SUP", NMAG: "NMAG", MAG: "MAG", RARE: "RARE",
                         CRAFT: "CRAFT", SET: "SET", UNI: "UNI"};
+  const QUALS = ["INF", "NORM", "SUP", "MAG", "RARE", "CRAFT", "SET", "UNI"];
+  const WHITE = ["INF", "NORM", "SUP"];
   const NOTIFY_ALL = /%(?:BORDER|MAP|DOT|PX|LINE|NOTIFY)-[0-9a-f]{1,4}%|%SOUNDID-\d{1,4}%|%TIER-\d%/gi;
   const ICONS = /%(?:BORDER|MAP|DOT|PX)-[0-9a-f]{1,4}%/gi;
   const SOUNDS = /%SOUNDID-\d{1,4}%/gi;
   const TIERS = /%TIER-\d%/gi;
+  const FILTLVL_RE = /FILTLVL(=|<|>|~)(\d+)(?:-(\d+))?/g;
   const MARKS = {
     top: ["// ===============  Your item changes (Erazure Filter Editor), before Erazure's rules  ===============",
           "// ===============  End of your item changes before Erazure's rules  ==============="],
@@ -2674,56 +2716,165 @@ EZ.overrides = (function () {
 
   /* ---------------------------------------------------------------- the items an override is for */
 
-  /* Its items as a BH condition (X). */
-  function cond(s) {
+  /* Its qualities, in one order: [] for every quality (scope.quals; an older override's scope.quality; NMAG is low
+     quality, normal and superior). */
+  function qualsOf(s) {
+    const pick = Array.isArray(s.quals) ? s.quals : typeof s.quality === "string" && s.quality ? [s.quality] : [];
+    const set = new Set();
+    for (const q of pick) {
+      if (q === "NMAG") for (const w of WHITE) set.add(w);
+      else if (QUALS.indexOf(q) >= 0) set.add(q);
+    }
+    return set.size === QUALS.length ? [] : QUALS.filter((q) => set.has(q));
+  }
+
+  /* The qualities as BH words: "RARE", "NMAG", "(NMAG OR MAG)". */
+  function qualityWords(quals) {
+    if (!quals.length) return "";
+    const white = WHITE.every((q) => quals.indexOf(q) >= 0);
+    const parts = (white ? ["NMAG"] : []).concat(quals.filter((q) => !white || WHITE.indexOf(q) < 0)
+      .map((q) => QUALITY_WORD[q]));
+    return parts.length === 1 ? parts[0] : "(" + parts.join(" OR ") + ")";
+  }
+
+  /* Its socket counts (0-6): [] for any. */
+  function socketsOf(s) {
+    const set = new Set((Array.isArray(s.sockets) ? s.sockets : []).map(int).filter((n) => n !== null && n >= 0 && n <= 6));
+    return set.size === 7 ? [] : [...set].sort((a, b) => a - b);
+  }
+
+  /* Its enhanced defense / damage at least (null: any). */
+  function edOf(s) { const n = int(s.ed); return n !== null && n > 0 ? Math.min(n, 999) : null; }
+
+  /* Its item level range: [from or null, to or null]. */
+  function ilvlOf(s) {
+    const r = Array.isArray(s.ilvl) ? s.ilvl : [];
+    const a = int(r[0]), b = int(r[1]);
+    return [a !== null && a > 1 ? Math.min(a, 99) : null, b !== null && b < 99 ? Math.max(b, 1) : null];
+  }
+
+  /* Its items as a BH condition (X); except: conditions of narrower overrides to leave out. */
+  function cond(s, except) {
     const parts = [];
     const codes = (s.codes || []).filter((c) => /^[a-z0-9]{2,4}$/.test(c));
     if (codes.length) parts.push(codes.length === 1 ? codes[0] : "(" + codes.join(" OR ") + ")");
-    if (QUALITY_WORD[s.quality]) parts.push(QUALITY_WORD[s.quality]);
+    const q = qualityWords(qualsOf(s));
+    if (q) parts.push(q);
     if (s.eth === "yes") parts.push("ETH"); else if (s.eth === "no") parts.push("!ETH");
     if (s.id === "yes") parts.push("ID"); else if (s.id === "no") parts.push("!ID");
+    const so = socketsOf(s);
+    if (so.length) parts.push(so.length === 1 ? "SOCK=" + so[0] : "(" + so.map((n) => "SOCK=" + n).join(" OR ") + ")");
+    const ed = edOf(s);
+    if (ed) parts.push("ED>" + (ed - 1));
+    const [ia, ib] = ilvlOf(s);
+    if (ia) parts.push("ILVL>" + (ia - 1));
+    if (ib) parts.push("ILVL<" + (ib + 1));
     const lv = EZ.rules.levelWords(s.levels || []);
     if (lv) parts.push(lv);
     const a = int((s.clvl || [])[0]), b = int((s.clvl || [])[1]);
     if (a !== null && a > 1) parts.push("CLVL>" + (a - 1));
     if (b !== null && b < 99) parts.push("CLVL<" + (b + 1));
-    if (typeof s.extra === "string" && s.extra.trim()) {  // more words (the Maps area's stat tests, formulas)
+    if (typeof s.extra === "string" && s.extra.trim()) {  // more words (the Maps area's stat tests, formulas; a rule's)
       parts.push(s.extra.replace(/\/\/+/g, "/").replace(/[\r\n:[\]]/g, " ").trim());
     }
+    for (const e of except || []) parts.push("!(" + e + ")");
     return parts.join(" ");
   }
 
   /* Overrides other areas make from their own settings: fn(edits, ctx) -> [override] (the Maps area's hides). */
   const generators = [];
 
-  /* The items with only what the override fixes known (the engine reads everything else as "maybe"). */
+  /* The items with only what the override fixes known (the engine reads everything else as "maybe"): one per base
+     and quality. */
   function partials(s) {
     const out = [];
+    const quals = qualsOf(s);
+    const eth = s.eth === "yes" ? true : s.eth === "no" ? false : undefined;
+    const id = s.id === "yes" ? true : s.id === "no" ? false : undefined;
     for (const code of s.codes || []) {
       const base = EZ.items.base(code);
       if (!base) continue;
-      out.push({code, base, quality: !EZ.items.qualities(base) ? "NORM" : s.quality && s.quality !== "NMAG" ? s.quality :
-        undefined,
-                eth: s.eth === "yes" ? true : s.eth === "no" ? false : undefined,
-                id: s.id === "yes" ? true : s.id === "no" ? false : undefined});
+      const qs = !EZ.items.qualities(base) ? ["NORM"] : quals.length ? quals : [undefined];
+      for (const quality of qs) out.push({code, base, quality, eth, id});
     }
     return out;
   }
 
-  function contexts(s) {
+  /* The filter levels to test rules at: the override's (with more, such as the level it shows its items as), or
+     every level at once. */
+  function contexts(s, more) {
     const lv = (s.levels || []).map(int).filter((n) => n !== null);
-    return lv.length ? lv.map((n) => ({filtlvl: n})) : [{}];
+    if (!lv.length) return [{}];
+    return [...new Set(lv.concat(more || []))].map((n) => ({filtlvl: n}));
   }
 
   const valid = (o) => o && typeof o === "object" && ACTIONS.indexOf(o.action) >= 0 && o.scope &&
     typeof o.scope === "object" && Array.isArray(o.scope.codes) && o.scope.codes.length > 0;
 
-  /* How narrow an override is (higher: narrower): fewer items, a quality, ethereal, identified, levels. */
+  /* How narrow an override is (higher: narrower): fewer items, a quality, ethereal, identified, sockets, enhanced
+     defense / damage, item level, levels, more words. */
   function narrowness(o) {
-    const s = o.scope;
-    return -Math.min(50, s.codes.length) + (s.quality ? 60 : 0) + (s.eth && s.eth !== "any" ? 10 : 0) +
+    const s = o.scope, q = qualsOf(s).length, so = socketsOf(s).length;
+    return -Math.min(50, s.codes.length) + (q ? 64 - 4 * q : 0) + (s.eth && s.eth !== "any" ? 10 : 0) +
       (s.id && s.id !== "any" ? 10 : 0) + ((s.levels || []).length ? 20 - s.levels.length : 0) +
-      ((s.clvl || []).some((x) => x !== "" && x !== null && x !== undefined) ? 5 : 0);
+      ((s.clvl || []).some((x) => x !== "" && x !== null && x !== undefined) ? 5 : 0) + (so ? 14 - so : 0) +
+      (edOf(s) ? 6 : 0) + (ilvlOf(s).some((x) => x !== null) ? 6 : 0) +
+      (typeof s.extra === "string" && s.extra.trim() ? 4 : 0);
+  }
+
+  /* Can two overrides' items meet? (no: no base in common, or levels, qualities, ethereal or identified apart) */
+  function overlap(a, b) {
+    const codes = new Set(a.codes);
+    if (!b.codes.some((c) => codes.has(c))) return false;
+    const la = (a.levels || []).map(int), lb = (b.levels || []).map(int);
+    if (la.length && lb.length && !la.some((x) => lb.indexOf(x) >= 0)) return false;
+    const qa = qualsOf(a), qb = qualsOf(b);
+    if (qa.length && qb.length && !qa.some((x) => qb.indexOf(x) >= 0)) return false;
+    for (const k of ["eth", "id"]) {
+      if ((a[k] === "yes" && b[k] === "no") || (a[k] === "no" && b[k] === "yes")) return false;
+    }
+    const sa = socketsOf(a), sb = socketsOf(b);
+    if (sa.length && sb.length && !sa.some((x) => sb.indexOf(x) >= 0)) return false;
+    const [a1, a2] = ilvlOf(a), [b1, b2] = ilvlOf(b);
+    if ((a1 || 1) > (b2 || 99) || (b1 || 1) > (a2 || 99)) return false;
+    return true;
+  }
+
+  /* Must narrower n win where the rules of wider w sit outside Erazure's (so w leaves n's items out)? */
+  const ALERTS = {mute: 1, sound: 1, icon: 1, iconOnly: 1, notify: 1, hide: 1};
+  const levelled = (o) => o.action === "show" && int(o.asLevel) !== null;
+  function beats(n, w) {
+    if (w.action === "hide") return n.action === "show";
+    if (w.action === "replace") return n.action === "look" || levelled(n);
+    if (w.action === "notify") return !!ALERTS[n.action] || levelled(n);
+    return false;
+  }
+
+  /* The colors a name can have, as [condition (null: the only one), color]: for "the name keeps its color". */
+  function colorCases(s) {
+    const q = qualsOf(s), all = !q.length, so = socketsOf(s);
+    const out = [];
+    if (all || q.some((x) => WHITE.indexOf(x) >= 0)) {
+      const w = all ? "NMAG" : qualityWords(q.filter((x) => WHITE.indexOf(x) >= 0));
+      const white = s.eth !== "yes" && (!so.length || so.indexOf(0) >= 0);
+      const gray = !(s.eth === "no" && so.length && so.every((n) => n === 0));
+      if (gray) out.push(["RW", "GOLD"]);
+      if (gray && white) out.push([w + " !RW (ETH OR SOCK>0)", "GRAY"], [w + " !RW !ETH !SOCK>0", "WHITE"]);
+      else if (gray) out.push([w + " !RW", "GRAY"]);
+      else out.push([w, "WHITE"]);
+    }
+    for (const [k, col] of [["MAG", "BLUE"], ["RARE", "YELLOW"], ["CRAFT", "ORANGE"], ["SET", "GREEN"], ["UNI", "GOLD"]]) {
+      if (all || q.indexOf(k) >= 0) out.push([k, col]);
+    }
+    return out.length === 1 ? [[null, out[0][1]]] : out;
+  }
+
+  /* The player's look with a color code right before its first %NAME% (outside the description). */
+  function colored(text, col) {
+    if (!col) return text;
+    const at = text.indexOf("%NAME%"), brace = text.indexOf("{");
+    if (at < 0 || (brace >= 0 && brace < at)) return text;
+    return text.slice(0, at) + "%" + col + "%" + text.slice(at);
   }
 
   /* ---------------------------------------------------------------- the rules, read as BH reads them */
@@ -2764,7 +2915,7 @@ EZ.overrides = (function () {
       }
       out.push({i, r, tree: m.tree, act: m.act});
     }
-    return {rules: out, F};
+    return {rules: out, F, aliases};
   }
 
   /* ---------------------------------------------------------------- rewriting lines */
@@ -2799,20 +2950,79 @@ EZ.overrides = (function () {
   /* The player's text for a look (no // and no line breaks; braces only as they wrote them). */
   const clean = (t) => String(t || "").replace(/[\r\n]+/g, " ").replace(/\/\/+/g, "/");
 
+  /* The truth of one FILTLVL comparison at level L. */
+  function compares(op, a, b, L) {
+    if (op === "=") return L === a;
+    if (op === "<") return L < a;
+    if (op === ">") return L > a;
+    return b === undefined ? L === a : L >= a && L <= b;
+  }
+
+  /* Show as level N shows it: X's items on the override's levels read every FILTLVL test (of the rules that can match
+     them, and of the aliases) as level N, and a %TIER-n% between N and those levels gets a twin for them. */
+  function asLevel(lines, o, X) {
+    const N = Math.max(0, Math.min(12, int(o.asLevel)));
+    const scoped = (o.scope.levels || []).map(int).filter((n) => n !== null && n >= 0 && n <= 12);
+    const levels = scoped.length ? scoped : Array.from({length: 13}, (_, k) => k);
+    const g = "(" + X + ")";
+    const rewrite = (text) => text.replace(FILTLVL_RE, (tok, op, x, y) => {
+      const a = +x, b = y === undefined ? undefined : +y;
+      const atN = compares(op, a, b, N);
+      if (levels.every((L) => compares(op, a, b, L) === atN)) return tok;
+      return atN ? "(" + tok + " OR " + g + ")" : "(" + tok + " !" + g + ")";
+    });
+    const out = lines.slice();
+    for (let i = 0; i < out.length; i++) {
+      const m = EZ.filter.ALIAS_RE.exec(out[i]);
+      if (m && m[2].indexOf("FILTLVL") >= 0) {
+        const v = rewrite(m[2]);
+        if (v !== m[2]) out[i] = "Alias[" + m[1] + "]:" + v;
+      }
+    }
+    const {rules, F} = read(lines);
+    const items = partials(o.scope), ctxs = contexts(o.scope, [N]);
+    const can = (x) => x.tree && items.some((it) => ctxs.some((c) => EZ.engine.evalCondition(x.tree, it, c, F) !== 0));
+    const twins = new Map();
+    for (const x of rules) {
+      if (!can(x)) continue;
+      const r = x.r;
+      const c = r.cond.indexOf("FILTLVL") >= 0 ? rewrite(r.cond) : r.cond;
+      const tier = x.act.notifies ? EZ.filter.TIER_RE.exec(r.out) : null;
+      const n = tier ? +tier[1] : null;
+      if (n !== null && levels.some((L) => (n >= L) !== (n >= N))) {
+        out[x.i] = r.off + "ItemDisplay[" + (c ? c + " " : "") + "!" + g + "]:" + r.out + r.comment;
+        twins.set(x.i, r.off + "ItemDisplay[" + (c ? c + " " : "") + g + "]:" +
+          (n >= N ? r.out.replace(TIERS, "") : r.out.replace(TIERS, "%TIER-0%")) + r.comment);
+      } else if (c !== r.cond) {
+        out[x.i] = r.off + "ItemDisplay[" + c + "]:" + r.out + r.comment;
+      }
+    }
+    if (!twins.size) return out;
+    const done = [];
+    for (let i = 0; i < out.length; i++) {
+      done.push(out[i]);
+      if (twins.has(i)) done.push(twins.get(i));
+    }
+    return done;
+  }
+
   /* One override applied to the lines: {lines, top: [lines before Erazure's], bottom: [lines before the end]}. */
   function one(lines, o) {
-    const X = cond(o.scope);
+    const X = cond(o.scope, o.except);
     if (!X) return {lines, top: [], bottom: []};
+    const N = o.action === "show" ? int(o.asLevel) : null;
+    if (N !== null) lines = asLevel(lines, o, X);
     const {rules, F} = read(lines);
-    const items = partials(o.scope), ctxs = contexts(o.scope);
+    const items = partials(o.scope), ctxs = contexts(o.scope, N !== null ? [N] : []);
     const can = (x) => x.tree && items.some((it) => ctxs.some((c) => EZ.engine.evalCondition(x.tree, it, c, F) !== 0));
-    const add = new Map(), split = new Map();  // line -> extra condition; line -> twin output
+    const add = new Map(), split = new Map();  // line -> extra condition; line -> [[twin's condition, its output]]
     const top = [], bottom = [];
     const g = "(" + X + ")";
+    const twin = (i, out) => split.set(i, [[g, out]]);
     if (o.action === "show") {
       for (const x of rules) {
         if (x.act.text.length || !can(x)) continue;
-        if (x.act.notifies && !x.act.cont) split.set(x.i, "%NAME%{%NAME%}" + notifyKeys(x.r.out) + "%CONTINUE%");
+        if (x.act.notifies && !x.act.cont) twin(x.i, "%NAME%{%NAME%}" + notifyKeys(x.r.out) + "%CONTINUE%");
         else add.set(x.i, "!" + g);
       }
     } else if (o.action === "hide") {
@@ -2835,7 +3045,7 @@ EZ.overrides = (function () {
         } else {
           out = out.search(TIERS) >= 0 ? out.replace(TIERS, "%TIER-0%") : out + "%TIER-0%";
         }
-        if (out !== x.r.out) split.set(x.i, out);
+        if (out !== x.r.out) twin(x.i, out);
       }
     } else if (o.action === "notify") {
       const kw = alertText(o.alert);
@@ -2845,17 +3055,22 @@ EZ.overrides = (function () {
         top.push(rule);
         for (const x of rules) {
           if (!x.act.notifies || !can(x)) continue;
-          split.set(x.i, x.r.out.replace(NOTIFY_ALL, ""));
+          twin(x.i, x.r.out.replace(NOTIFY_ALL, ""));
         }
       } else bottom.push(rule);
     } else if (o.action === "look") {
       const text = clean(o.text);
+      const cases = o.keepColor ? colorCases(o.scope) : [[null, null]];
       for (const x of rules) {
         if (x.act.cont || !x.act.text.length || !can(x)) continue;
-        split.set(x.i, text.replace(/[{}]/g, "") + descOf(x.r.out) + notifyKeys(x.r.out));
+        const tail = descOf(x.r.out) + notifyKeys(x.r.out);
+        split.set(x.i, cases.map(([c, col]) => [c ? g + " " + c : g, colored(text, col).replace(/[{}]/g, "") + tail]));
       }
     } else if (o.action === "replace") {
-      top.push("ItemDisplay[" + X + "]:" + clean(o.text));
+      const text = clean(o.text);
+      for (const [c, col] of o.keepColor ? colorCases(o.scope) : [[null, null]]) {
+        top.push("ItemDisplay[" + (c ? g + " " + c : X) + "]:" + colored(text, col));
+      }
     }
     if (!add.size && !split.size) return {lines, top, bottom};
     const out = [];
@@ -2863,25 +3078,45 @@ EZ.overrides = (function () {
       if (add.has(i)) out.push(withCond(lines[i], add.get(i)));
       else if (split.has(i)) {
         out.push(withCond(lines[i], "!" + g));
-        out.push(withOut(withCond(lines[i], g), split.get(i)));
+        for (const [c, o2] of split.get(i)) out.push(withOut(withCond(lines[i], c), o2));
       } else out.push(lines[i]);
     }
     return {lines: out, top, bottom};
   }
 
+  /* What an override does, as the overrides the steps apply: a hunt is a show, a look and an alert instead of
+     Erazure's; a show with a look of the player's is a show and a look. */
+  function expand(o) {
+    if (o.action === "hunt") {
+      return [Object.assign({}, o, {action: "show", asLevel: undefined}),
+        Object.assign({}, o, {action: "look", text: typeof o.text === "string" && o.text ? o.text : HUNT.text}),
+        Object.assign({}, o, {action: "notify", mode: "instead", alert: o.alert || HUNT.alert})];
+    }
+    if (o.action === "show" && o.look === "own" && typeof o.text === "string" && o.text.trim()) {
+      return [Object.assign({}, o, {asLevel: undefined}), Object.assign({}, o, {action: "look", asLevel: undefined})];
+    }
+    if (o.action === "show" && o.look !== "level") return [Object.assign({}, o, {asLevel: undefined})];
+    return [o];
+  }
+
   /* The edit step (after the level copies, before the player's own rules). */
   function apply(ctx) {
     const made = generators.flatMap((g) => { try { return g(ctx.edits, ctx) || []; } catch (e) { return []; } });
-    const list = (ctx.edits.items || []).concat(made).filter(valid).flatMap((o) => o.action !== "hunt" ? [o] : [
-      Object.assign({}, o, {action: "show"}),
-      Object.assign({}, o, {action: "look", text: typeof o.text === "string" && o.text ? o.text : HUNT.text}),
-      Object.assign({}, o, {action: "notify", mode: "instead", alert: o.alert || HUNT.alert})]);
+    const list = (ctx.edits.items || []).concat(made).filter(valid).flatMap(expand);
     if (!list.length) return;
     const sorted = list.map((o, k) => ({o, k, n: narrowness(o)})).sort((a, b) => a.n - b.n || a.k - b.k);
+    for (let p = 0; p < sorted.length; p++) {
+      const w = sorted[p].o, except = [];
+      for (let q = p + 1; q < sorted.length; q++) {
+        const nn = sorted[q].o;
+        if (beats(nn, w) && overlap(nn.scope, w.scope)) except.push(cond(nn.scope));
+      }
+      sorted[p].except = except;
+    }
     const tops = [], bottoms = [];
     let lines = ctx.lines;
-    for (const {o, n} of sorted) {
-      const r = one(lines, o);
+    for (const {o, n, except} of sorted) {
+      const r = one(lines, except.length ? Object.assign({}, o, {except}) : o);
       lines = r.lines;
       if (r.top.length) tops.push({n, lines: r.top});
       if (r.bottom.length) bottoms.push({n, lines: r.bottom});
@@ -2899,7 +3134,177 @@ EZ.overrides = (function () {
     put("bottom", bottoms, EZ.rules.PLACE.bottom);
   }
 
-  return {apply, one, cond, partials, contexts, read, alertText, valid, narrowness, ACTIONS, MARKS, HUNT, generators};
+  /* ---------------------------------------------------------------- a rule of the player's as item changes */
+
+  /* The bases a condition can match (with everything else open): [codes]. F: the formulas it may ask. */
+  function codesOf(tree, F) {
+    const out = [];
+    for (const b of EZ.items.catalog().bases.values()) {
+      if (EZ.engine.evalCondition(tree, {code: b.code, base: b}, {}, F) !== 0) out.push(b.code);
+    }
+    return out;
+  }
+
+  /* The condition of a line of the player's, as BH reads it: {tree, F} or null. opts: {aliases, F}. */
+  function treeOf(cond, opts) {
+    const F = opts.F || {formulas: Object.create(null), statMax: 1023, skillMax: 1023, soundCount: 10000};
+    const sub = opts.aliases && opts.aliases.length ? EZ.core.substitute([[cond], [""]], opts.aliases)[0][0] : cond;
+    const isl = EZ.engine.islandsOf(sub, "", "", {formulas: F.formulas, formulaText: {}}, EZ.engine.islandNamer());
+    const tree = EZ.engine.condition(isl, F);
+    return tree ? {tree, F} : null;
+  }
+
+  /* Erazure's alerting rules (icon, chat line, sound) that can meet the items a condition matches, at the same filter
+     level: [line index] (at most limit). Fz: Erazure's compiled filter. */
+  function alertsMeeting(tree, F, Fz, limit) {
+    const cat = EZ.items.catalog(), found = [];
+    if (!Fz || !Fz.mapRules) return found;
+    const L = Array.from({length: 13}, (_, k) => ({filtlvl: k}));
+    const cands = [];  // the items the condition can match (base and quality) and at which levels
+    for (const code of codesOf(tree, F).slice(0, 80)) {
+      const b = cat.bases.get(code);
+      for (const quality of EZ.items.qualities(b) ? QUALS : ["NORM"]) {
+        const it = {code, base: b, quality};
+        const at = L.filter((c) => EZ.engine.evalCondition(tree, it, c, F) !== 0);
+        if (at.length) cands.push({it, at});
+      }
+    }
+    for (const r of Fz.mapRules) {
+      if (!r.tree) continue;
+      const hit = cands.some(({it, at}) => (!r.codes || r.codes.has(it.code)) && (!r.quals || r.quals.has(it.quality)) &&
+        at.some((c) => EZ.engine.evalCondition(r.tree, it, c, Fz) !== 0));
+      if (hit) { found.push(r.i); if (found.length >= (limit || 3)) break; }
+    }
+    return found;
+  }
+
+  /* A condition's words at its top level (a bracketed group is one word); null if its brackets don't close. */
+  function topWords(cond) {
+    const out = [];
+    let depth = 0, cur = "";
+    for (const ch of cond.trim()) {
+      if (ch === "(") depth++;
+      else if (ch === ")" && --depth < 0) return null;
+      if (/\s/.test(ch) && depth === 0) { if (cur) out.push(cur); cur = ""; } else cur += ch;
+    }
+    if (depth) return null;
+    if (cur) out.push(cur);
+    return out;
+  }
+
+  /* A condition taken apart into an override's scope where its words fit the Items form: {codes, quals, eth, id,
+     sockets, ed, ilvl, levels, clvl, extra (the words left)}. A word about the base alone (an item code, an item
+     group, a tier: true or false for each base, never "maybe") is in the codes; GROUND !TOWN of a hide go (the hide
+     has them). With an OR at the top (BH reads AND and OR left to right) the condition stays whole in extra. */
+  function scopeOf(cond, codes, opts, hides) {
+    const scope = {codes, quals: [], eth: "any", id: "any", sockets: [], ed: "", ilvl: ["", ""], levels: [],
+                   clvl: ["", ""], extra: ""};
+    const words = topWords(cond);
+    if (!words || words.some((w) => w.toUpperCase() === "OR")) {
+      scope.extra = (hides ? cond.replace(/(^|\s+)GROUND(\s+!TOWN)?\s*$/, "") : cond).trim();
+      return scope;
+    }
+    const cat = EZ.items.catalog(), bases = [...cat.bases.values()];
+    let levels = null, quals = null, socks = null, ilo = 1, ihi = 99, clo = 1, chi = 99, ed = 0;
+    const rest = [];
+    const range = (op, a, b, lo, hi) => {
+      const out = new Set();
+      for (let L = lo; L <= hi; L++) if (compares(op, a, b, L)) out.add(L);
+      return out;
+    };
+    const meet = (a, b) => a === null ? b : new Set([...a].filter((x) => b.has(x)));
+    const parts = (w) => {
+      const m = /^\((.*)\)$/.exec(w);
+      if (!m) return [w];
+      const inner = topWords(m[1]);
+      if (!inner || inner.length < 3 || inner.filter((x, k) => k % 2 === 1).some((x) => x.toUpperCase() !== "OR")) return null;
+      return inner.filter((x, k) => k % 2 === 0);
+    };
+    const QWORD = {NMAG: WHITE, MAG: ["MAG"], RARE: ["RARE"], CRAFT: ["CRAFT"], SET: ["SET"], UNI: ["UNI"], SUP: ["SUP"],
+                   INF: ["INF"]};
+    for (const w of words) {
+      if (hides && (w === "GROUND" || w === "!TOWN")) continue;
+      const alts = parts(w);
+      let m;
+      if (alts && alts.every((x) => /^FILTLVL(=|<|>|~)(\d+)(?:-(\d+))?$/.test(x))) {
+        const set = new Set();
+        for (const x of alts) {
+          const g = /^FILTLVL(=|<|>|~)(\d+)(?:-(\d+))?$/.exec(x);
+          for (const L of range(g[1], +g[2], g[3] === undefined ? undefined : +g[3], 0, 12)) set.add(L);
+        }
+        levels = meet(levels, set);
+      } else if (alts && alts.every((x) => QWORD[x])) {
+        quals = meet(quals, new Set(alts.flatMap((x) => QWORD[x])));
+      } else if (alts && alts.every((x) => /^SOCK=\d$/.test(x))) {
+        socks = meet(socks, new Set(alts.map((x) => +x.slice(5))));
+      } else if (w === "ETH" || w === "!ETH") scope.eth = w === "ETH" ? "yes" : "no";
+      else if (w === "ID" || w === "!ID") scope.id = w === "ID" ? "yes" : "no";
+      else if ((m = /^ILVL(>|<)(\d+)$/.exec(w))) { if (m[1] === ">") ilo = Math.max(ilo, +m[2] + 1); else ihi = Math.min(ihi, +m[2] - 1); }
+      else if ((m = /^CLVL(>|<)(\d+)$/.exec(w))) { if (m[1] === ">") clo = Math.max(clo, +m[2] + 1); else chi = Math.min(chi, +m[2] - 1); }
+      else if ((m = /^ED>(\d+)$/.exec(w)) && !ed) ed = +m[1] + 1;
+      else {
+        const t = treeOf(w, opts);
+        const baseOnly = t && bases.every((b) => {
+          const v = EZ.engine.evalCondition(t.tree, {code: b.code, base: b}, {}, t.F);
+          return v === 0 || v === 1;
+        });
+        if (!baseOnly) rest.push(w);
+      }
+    }
+    if (levels !== null) {
+      const list = [...levels].filter((L) => L >= 1).sort((a, b) => a - b);
+      if (!list.length) return null;  // no level left: the rule never shows its items
+      scope.levels = list.length === 12 ? [] : list;
+    }
+    if (quals !== null) scope.quals = QUALS.filter((q) => quals.has(q));
+    if (socks !== null) scope.sockets = [...socks].sort((a, b) => a - b);
+    if (ed) scope.ed = String(ed);
+    if (ilo > 1 || ihi < 99) scope.ilvl = [ilo > 1 ? String(ilo) : "", ihi < 99 ? String(ihi) : ""];
+    if (clo > 1 || chi < 99) scope.clvl = [clo > 1 ? String(clo) : "", chi < 99 ? String(chi) : ""];
+    scope.extra = rest.join(" ");
+    return scope;
+  }
+
+  /* A rule of the player's own (My rules, above Erazure's) as item changes: {list: [override]} or {why}. A hide
+     becomes a hide (which takes Erazure's icons, chat lines and sounds too); a rule that decides the look becomes a
+     show, with its text as the player's look unless it is just the name, and its alerts as alerts instead of
+     Erazure's. opts: {aliases (as BH reads them where the rule sits), F (its formulas)}. */
+  function fromRule(line, opts) {
+    opts = opts || {};
+    const d = EZ.rules.describe(line);
+    if (d.kind !== "rule") return {why: "Only a rule (ItemDisplay[...]) can become an item change."};
+    if (!d.stops) return {why: "A %CONTINUE% rule adds a layer to Erazure's: only a rule that decides what the item " +
+      "shows can become an item change."};
+    const t = treeOf(d.cond, opts);
+    if (!t) return {why: "BH can't read this rule's condition."};
+    const codes = codesOf(t.tree, t.F);
+    if (!codes.length) return {why: "This rule matches no item."};
+    if (codes.length > 400) return {why: `This rule is for ${codes.length} kinds of items: name the items (or a kind ` +
+      "of item) in it first."};
+    const id = () => "i" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    const scope = scopeOf(d.cond, codes, opts, d.hides);
+    if (!scope) return {why: "This rule is for no filter level from 1 to 12."};
+    if (d.hides) return {list: [{id: id(), action: "hide", scope}]};
+    const label = d.out.replace(/\{[^}]*\}?/, "").replace(NOTIFY_ALL, "").replace(/%CONTINUE%/g, "").trim();
+    const list = [label === "%NAME%" ? {id: id(), action: "show", scope} :
+      {id: id(), action: "show", look: "own", text: label, keepColor: false, scope}];
+    if (d.notifies) {
+      const alert = {icon: {}, sound: 0, chat: "all", tier: 4};
+      let m;
+      const re = /%(BORDER|MAP|DOT|PX)-([0-9a-f]{1,2})%/gi;
+      while ((m = re.exec(d.out))) if (!alert.icon[m[1].toUpperCase()]) alert.icon[m[1].toUpperCase()] = m[2].toUpperCase();
+      const s = /%SOUNDID-(\d{1,4})%/i.exec(d.out);
+      if (s) alert.sound = +s[1];
+      const tier = /%TIER-(\d)%/i.exec(d.out);
+      if (tier) { alert.chat = +tier[1] === 0 ? "none" : "tier"; alert.tier = +tier[1]; }
+      list.push({id: id(), action: "notify", mode: "instead", alert, scope: JSON.parse(JSON.stringify(scope))});
+    }
+    return {list};
+  }
+
+  return {apply, one, cond, partials, contexts, read, alertText, valid, narrowness, overlap, beats, expand, qualsOf,
+          socketsOf, edOf, ilvlOf, qualityWords, colorCases, colored, fromRule, scopeOf, topWords, treeOf, codesOf, alertsMeeting,
+          ACTIONS, MARKS, HUNT, QUALS, WHITE, generators};
 })();
 
 if (EZ.edits) {
@@ -3009,7 +3414,7 @@ if (EZ.edits) {
 }
 
 /* ---- tools/editor/wishlists.js ---- */
-/* Wishlists (the Wishlists area): identified items with the stats the player wants get a line in their description
+/* Wishlists (the Highlights area): identified items with the stats the player wants get a line in their description
    (and, if the player likes, an icon and a sound): kinds of items, qualities, the stats each must have, and "N of
    these" from a pool of others (BH's COUNT formula: each stat's test is true or false, the count against N). Each
    wishlist is %CONTINUE% rules, so Erazure's looks and tags still come: its label tag and alert before Erazure's rules,
@@ -3019,10 +3424,10 @@ var EZ = typeof EZ !== "undefined" ? EZ : {};
 EZ.wishlists = (function () {
   "use strict";
   const MARKS = {
-    top: ["// ===============  Your wishlists (Erazure Filter Editor): tags and alerts  ===============",
-          "// ===============  End of your wishlists' tags and alerts  ==============="],
-    bottom: ["// ===============  Your wishlists (Erazure Filter Editor): description lines  ===============",
-             "// ===============  End of your wishlists' description lines  ==============="],
+    top: ["// ===============  Your highlights (Erazure Filter Editor): tags and alerts  ===============",
+          "// ===============  End of your highlights' tags and alerts  ==============="],
+    bottom: ["// ===============  Your highlights (Erazure Filter Editor): description lines  ===============",
+             "// ===============  End of your highlights' description lines  ==============="],
   };
   const QUALS = ["MAG", "RARE", "CRAFT", "UNI", "SET"];
   const COLORS = ["GREEN", "GOLD", "ORANGE", "RED", "BLUE", "PURPLE", "WHITE", "TAN", "YELLOW", "TEAL", "CORAL", "SAGE"];
@@ -3106,7 +3511,7 @@ EZ.wishlists = (function () {
     if (pool.length) { conds.push("$f(COUNT(" + pool.join(",") + ")>=" + n + ")"); stats++; }
     if (!items.length && !stats) return null;
     const color = COLORS.indexOf(w.color) >= 0 ? w.color : "GREEN";
-    const text = clean(w.line) || clean(w.name) || "Wishlist";
+    const text = clean(w.line) || clean(w.name) || "Highlight";
     const cond = conds.join(" "), note = w.name ? " // " + clean(w.name) : "";
     const alert = EZ.overrides.alertText(w.alert), tag = clean(w.tag);
     const top = tag || alert ? "ItemDisplay[" + cond + "]:" + (tag ? "%" + color + "%" + tag + "%CS%" : "") +
@@ -3125,7 +3530,7 @@ EZ.wishlists = (function () {
       if (!lines.length) continue;
       const secs = EZ.filter.sections(ctx.src, ctx.lines);
       const range = secs[EZ.rules.PLACE[which]];
-      if (!range) { ctx.unplaced("wishlists", "Your wishlists", "Erazure no longer has " + EZ.rules.PLACE[which]); continue; }
+      if (!range) { ctx.unplaced("highlights", "Your highlights", "Erazure no longer has " + EZ.rules.PLACE[which]); continue; }
       ctx.lines.splice(range[0], 0, MARKS[which][0], ...lines, MARKS[which][1]);
     }
   }
@@ -3140,10 +3545,12 @@ if (EZ.edits) {
 
 /* ---- tools/editor/maps.js ---- */
 /* Maps (the Maps area): a red warning line on identified maps that roll the mods the player picks (right before
-   Erazure's last map rules, 147, so it sits with the map's other lines), and identified maps hidden on the ground
-   when they roll a mod the player won't run or promise less experience than the player asks for (146's MXR_<code>:
-   the map's rolls' experience multiplier). The hides are item overrides (EZ.overrides), so BH draws nothing for such
-   a map, not even its icon. */
+   Erazure's last map rules, 147, so it sits with the map's other lines), identified maps hidden on the ground when
+   they roll a mod the player won't run, and the T1-T3 maps the player never picks up: their non-magical ones (what
+   monsters drop) hidden on the ground outside town, on the filter levels the player picks (2026-11-12, the author:
+   instead of hiding maps below an experience multiplier; T4 dungeons come from rare T3 maps in the cube, always
+   identified and rare, so they are never in the list). The hides are item overrides (EZ.overrides), so BH draws
+   nothing for such a map, not even its icon, and the map looks as always in town, the inventory and the stash. */
 var EZ = typeof EZ !== "undefined" ? EZ : {};
 EZ.maps = (function () {
   "use strict";
@@ -3151,6 +3558,7 @@ EZ.maps = (function () {
                  "// ===============  End of your map warnings  ==============="];
   const SECTION = "147-map-display-end.filter";
   const MAPS = "(MAPTIER>0 OR UNIQUE_MAPS)";
+  const WHITE = ["INF", "NORM", "SUP"];
 
   /* A roll of each map stat (the page's data: the affixes' highest), so a stat's text reads as on a map ("-38% Fire
      Resist" is "less Fire Resist"). */
@@ -3160,7 +3568,11 @@ EZ.maps = (function () {
   }
 
   const ids = (list) => [...new Set((Array.isArray(list) ? list : []).map((x) => parseInt(x, 10)).filter((n) => n > 0 && n < 4096))];
-  const minXp = (m) => { const v = parseFloat(m && m.minXp); return isFinite(v) && v > 0 && v < 20 ? Math.round(v * 100) / 100 : null; };
+  /* The map codes the player hides (item codes, as the edit set keeps them). */
+  const mapCodes = (list) => [...new Set((Array.isArray(list) ? list : []).filter((c) => typeof c === "string" &&
+    /^[a-z0-9]{2,4}$/.test(c)))];
+  const levelsOf = (list) => [...new Set((Array.isArray(list) ? list : []).map((x) => parseInt(x, 10))
+    .filter((n) => n >= 1 && n <= 12))].sort((a, b) => a - b);
 
   /* A mod's name for the warning line: the stat's own text without its numbers. */
   function name(sid) {
@@ -3178,19 +3590,27 @@ EZ.maps = (function () {
     return {all, xp: all.filter((c) => mxr.has(c))};
   }
 
+  /* The maps a player can choose to hide: T1, T2 and T3 maps that drop, by tier: [{tier, maps: [{code, name}]}]. */
+  function choices() {
+    const cat = EZ.items.catalog();
+    return [1, 2, 3].map((tier) => ({tier, maps: [...cat.bases.values()]
+      .filter((b) => b.map && b.maptier === tier && b.spawnable)
+      .map((b) => ({code: b.code, name: String(b.name).replace(/ÿc./g, "").replace(/\s+Map$/, "")}))
+      .sort((a, b) => a.name.localeCompare(b.name))}));
+  }
+
   function hides(edits, ctx) {
     const m = edits.maps;
     if (!m || typeof m !== "object" || !ctx) return [];
     const out = [];
-    const hide = ids(m.hide), x = minXp(m);
-    if (!hide.length && x === null) return out;
-    const c = codes(ctx.lines);
-    for (const sid of hide) out.push({action: "hide", scope: {codes: c.all, id: "yes", extra: "!STAT" + sid + "=0"}});
-    if (x !== null) {
-      for (const code of c.xp) {
-        out.push({action: "hide", scope: {codes: [code], id: "yes", extra: "$f((MXR_" + code.toUpperCase() + ")<" + x + ")"}});
-      }
+    const hide = ids(m.hide);
+    if (hide.length) {
+      const c = codes(ctx.lines);
+      for (const sid of hide) out.push({action: "hide", scope: {codes: c.all, id: "yes", extra: "!STAT" + sid + "=0"}});
     }
+    const cat = EZ.items.catalog();
+    const skip = mapCodes(m.hideMaps).filter((c) => { const b = cat.bases.get(c); return b && b.map; });
+    if (skip.length) out.push({action: "hide", scope: {codes: skip, quals: WHITE, levels: levelsOf(m.hideMapsLevels)}});
     return out;
   }
 
@@ -3209,10 +3629,10 @@ EZ.maps = (function () {
   function count(e) {
     const m = e.maps;
     if (!m || typeof m !== "object") return 0;
-    return ids(m.warn).length + ids(m.hide).length + (minXp(m) !== null ? 1 : 0);
+    return ids(m.warn).length + ids(m.hide).length + mapCodes(m.hideMaps).length;
   }
 
-  return {init, apply, hides, count, name, codes, ids, minXp, MAPS, SECTION};
+  return {init, apply, hides, count, name, codes, choices, ids, mapCodes, levelsOf, MAPS, SECTION};
 })();
 
 if (EZ.edits) {
@@ -5405,10 +5825,12 @@ EZ.lint = (function () {
   /* ---------------------------------------------------------------- the context */
 
   const cache = new WeakMap();
+  const alertCache = new WeakMap();  // Erazure's compiled filter -> condition -> its alerting rules a hide leaves
 
   /* What the lint needs of the player's filter: the aliases in the order BH reads them (Erazure's before 050, the
      top block's, Erazure's after it, the bottom block's), the named formulas, the game's item codes, Erazure's alias
-     and formula names and the words of its conditions. blocks: {top: [lines], bottom: [lines]}. */
+     and formula names and the words of its conditions, where a line of Erazure's is (where(i): "200-magic:42") and
+     Erazure's compiled filter (opts.erazureF, for its alerts). blocks: {top: [lines], bottom: [lines]}. */
   function context(src, versionLines, blocks, opts) {
     opts = opts || {};
     let base = cache.get(versionLines);
@@ -5424,7 +5846,11 @@ EZ.lint = (function () {
         if (e.key.startsWith("ItemDisplay[")) for (const w of e.key.match(WORD_RE) || []) words.add(w);
       }
       for (const a of aliases) for (const w of a.value.match(WORD_RE) || []) words.add(w);
-      base = {aliases, formulas, words, top: (secs[EZ.rules.PLACE.top] || [0])[0],
+      const where = (i) => {
+        const nm = EZ.filter.sectionOf(secs, i);
+        return nm ? nm.replace(/\.filter$/, "") + ":" + (i - secs[nm][0] + 1) : "line " + (i + 1);
+      };
+      base = {aliases, formulas, words, where, top: (secs[EZ.rules.PLACE.top] || [0])[0],
               bottom: (secs[EZ.rules.PLACE.bottom] || [versionLines.length])[0]};
       cache.set(versionLines, base);
     }
@@ -5451,7 +5877,8 @@ EZ.lint = (function () {
     }
     return {aliases, F, codes: cat && cat.bases && cat.bases.size ? new Set(cat.bases.keys()) : null,
             erazureAliases: new Set(base.aliases.map((a) => a.name)),
-            erazureFormulas: new Set(base.formulas.map((f) => f.name.toUpperCase())), words: base.words, own};
+            erazureFormulas: new Set(base.formulas.map((f) => f.name.toUpperCase())), words: base.words, own,
+            where: base.where, erazureF: opts.erazureF || null};
   }
 
   /* ---------------------------------------------------------------- the checks */
@@ -5490,12 +5917,13 @@ EZ.lint = (function () {
     return out;
   }
 
-  /* Lint the lines of one block: [{line, level (error / warning / info), text, word}]. env: context()'s, with block
-     ("top" / "bottom") for the messages that depend on where the lines go. */
+  /* Lint the lines of one block: [{line, level (error / warning / info), text, word, fix}]. env: context()'s, with
+     block ("top" / "bottom") for the messages that depend on where the lines go. fix: {kind: "items", label} where
+     the line can become an item change (EZ.overrides.fromRule). */
   function lines(list, env) {
     env = env || {};
     const out = [];
-    const say = (line, level, text, word) => out.push({line, level, text, word: word || null});
+    const say = (line, level, text, word, fix) => out.push({line, level, text, word: word || null, fix: fix || null});
     const F = env.F || {formulas: Object.create(null), statMax: 1023, skillMax: 1023, soundCount: 10000};
     const fs = fonts();
     list.forEach((raw, n) => {
@@ -5668,6 +6096,31 @@ EZ.lint = (function () {
                act.name.some((p) => typeof p !== "string" || p.replace(/ÿc./g, "").trim())) {
       say(n, "info", "This %CONTINUE% rule's text has no %NAME%: every later rule (Erazure's too) gets your text " +
         "instead of the item's name.");
+    }
+    if (env.block === "top" && !act.cont && !a.never && !a.always && EZ.overrides && EZ.overrides.alertsMeeting) {
+      const fix = {kind: "items", label: "Make it an item change"};
+      if (hides && env.erazureF) {
+        let seen = alertCache.get(env.erazureF);
+        if (!seen) { seen = new Map(); alertCache.set(env.erazureF, seen); }
+        let found = seen.get(cond);
+        if (!found) {
+          const tree = EZ.engine.condition(isl, condF);
+          found = tree ? EZ.overrides.alertsMeeting(tree, condF, env.erazureF, 3) : [];
+          if (seen.size > 500) seen.clear();
+          seen.set(cond, found);
+        }
+        if (found.length) {
+          say(n, "warning", "Erazure gives some of these items a minimap icon, chat line or sound (" +
+            found.map((i) => env.where ? env.where(i) : "line " + (i + 1)).join(", ") + "): BH works out alerts in a " +
+            "pass of its own, so a hide here leaves them. As an item change (Items) the hide takes them away too.",
+            null, fix);
+        }
+      } else if (!hides && act.text.length) {
+        say(n, "info", "Above Erazure's rules this decides the look: Erazure's own looks and tags never reach these " +
+          "items" + (/\bGROUND\b/.test(cond) ? "" : ", in your stash and inventory too") + ". To show items Erazure " +
+          "hides with Erazure's look (or with a look of your own on top of Erazure's tags), make it an item change.",
+          null, fix);
+      }
     }
     if (out0.indexOf("{") < 0 && out0.trim()) {
       say(n, "info", "Without { } this rule empties the description earlier rules wrote. Write {%NAME%} to keep it.");
@@ -6844,6 +7297,7 @@ EZ.app = (function () {
 
   function fromHash() {
     const m = /^#([a-z-]+)(?:\/(.*))?$/.exec(location.hash || "");
+    if (m && m[1] === "wishlists") m[1] = "highlights";  // the area's name until 2026-11-12
     if (m && EZ.areas.some((a) => a.id === m[1])) {
       app.area = m[1];
       app.sub = m[2] ? decodeURIComponent(m[2]) : "";
@@ -7330,20 +7784,25 @@ EZ.areas.push({
 });
 
 /* ---- tools/editor/area-items.js ---- */
-/* Items: change single items (EZ.overrides): find an item, see what Erazure and the player's filter do with it at
-   every filter level, pick which of them (quality, ethereal, identified, levels, character levels) and what to do:
-   show, hide, mute, another sound or icon, icon only, an alert, a changed or replaced look. */
+/* Items: change single items or many at once (EZ.overrides): find an item or a kind of item, see what Erazure and the
+   player's filter do with it at every filter level, pick which of them (bases, qualities, ethereal, identified,
+   sockets, enhanced defense / damage, item level, filter levels, character levels) and what to do: show (with
+   Erazure's look, the look of another level, or the player's own), hide, mute, another sound or icon, icon only, an
+   alert, a changed or replaced look. */
 var EZ = typeof EZ !== "undefined" ? EZ : {};
 EZ.areas = EZ.areas || [];
 (function () {
   "use strict";
   const {h, fill, seg, pill} = EZ.ui;
-  const QUALS = [["", "Any"], ["NORM", "Normal"], ["SUP", "Superior"], ["INF", "Low quality"], ["MAG", "Magic"],
-                 ["RARE", "Rare"], ["CRAFT", "Crafted"], ["SET", "Set"], ["UNI", "Unique"]];
+  const QUALS = [["NORM", "Normal"], ["SUP", "Superior"], ["INF", "Low quality"], ["MAG", "Magic"], ["RARE", "Rare"],
+                 ["CRAFT", "Crafted"], ["SET", "Set"], ["UNI", "Unique"]];
+  const QUAL_NAME = Object.fromEntries(QUALS);
+  const WHITE = ["NORM", "SUP", "INF"];
   const ACTIONS = [
     ["hunt", "Hunt it", "Shown wherever Erazure hides it, with a loud look, a big minimap icon and a sound of its " +
       "own instead of Erazure's."],
-    ["show", "Show it", "Where Erazure hides it, it shows with the look Erazure's other rules give it."],
+    ["show", "Show it", "Where Erazure hides it, it shows: with the look Erazure gives it on these levels, the look it " +
+      "has on another level, or a look of your own."],
     ["hide", "Hide it", "On the ground outside town: no label, no icon, no sound. Your inventory, stash and shops " +
       "still name it."],
     ["mute", "Mute it", "No drop sound; the label, icon and chat line stay."],
@@ -7355,11 +7814,52 @@ EZ.areas = EZ.areas || [];
     ["replace", "Replace its look", "Your look, decided before any of Erazure's rules."],
   ];
   const ACTION_NAME = Object.fromEntries(ACTIONS.map(([k, t]) => [k, t]));
-  let draft = null;  // {id (when editing), spec (the picked item), scope, action, ...}
+  /* Looks to start from besides Erazure's own (the name keeps its color: the editor puts it back after the text). */
+  const PRESETS = [["Red dots: •  Item  •", "%RED%•  %NAME%  %RED%•"], ["Tan dots: •  Item  •", "%TAN%•  %NAME%  %TAN%•"],
+    ["Gold stars: *  Item  *", "%GOLD%*  %NAME%  %GOLD%*"], ["Purple arrows: >>>  Item  <<<", "%PURPLE%>>>  %NAME%  %PURPLE%<<<"]];
+  const SAMPLE_COLOR = {MAG: "BLUE", RARE: "YELLOW", CRAFT: "ORANGE", SET: "GREEN", UNI: "GOLD"};
+  let draft = null;  // {id (when editing), spec (the item the strip shows), scope, action, ...}
 
   const plain = (s) => String(s || "").replace(/ÿc./g, "").split("\n")[0].trim();
+  const O = () => EZ.overrides;
 
-  /* Kinds of items, for changing many at once (their codes from the catalog: gems by grade, runes by number). */
+  /* ---------------------------------------------------------------- bases and kinds */
+
+  /* A base's tiers (normal, exceptional, elite), its own code among them. */
+  function famOf(code) {
+    const cat = EZ.items.catalog();
+    const rev = new Map();
+    for (const b of cat.bases.values()) if (b.up) rev.set(b.up.code, b.code);
+    let root = code;
+    for (let n = 0; n < 4 && rev.has(root); n++) root = rev.get(root);
+    const out = [root];
+    let b = cat.bases.get(root);
+    for (let n = 0; n < 4 && b && b.up; n++) { out.push(b.up.code); b = cat.bases.get(b.up.code); }
+    return out.filter((c) => cat.bases.has(c));
+  }
+
+  /* Kinds of items by type (BH's item groups, as the rule builder offers them): [{id, title, group, codes}]. */
+  function typeKinds() {
+    const cat = EZ.items.catalog(), bases = [...cat.bases.values()].filter((b) => b.spawnable && !b.quest);
+    const groups = (EZ.rulesArea && EZ.rulesArea.GROUPS) || [];
+    const out = [];
+    const of = (f) => bases.filter(f).map((b) => b.code);
+    for (const [title, list] of groups) {
+      for (const [g, label] of list) {
+        const gear = title !== "Other";
+        out.push({id: "g-" + g, title: label, group: title, codes: of((b) => b.groups.indexOf(g) >= 0 && (!gear || b.armor ||
+          (b.weapon && (b.types || []).indexOf("tpot") < 0)))});  // throwing potions are weapons to the game
+      }
+    }
+    out.push({id: "g-HELM-noclass", title: "Helms (not class helms)", group: "Armor",
+              codes: of((b) => b.groups.indexOf("HELM") >= 0 && b.groups.indexOf("CLASS") < 0)},
+             {id: "g-SHIELD-noclass", title: "Shields (not class shields)", group: "Armor",
+              codes: of((b) => b.groups.indexOf("SHIELD") >= 0 && b.groups.indexOf("CLASS") < 0)});
+    return out.filter((k) => k.codes.length);
+  }
+
+  /* Kinds of items, for changing many at once (their codes from the catalog: gems by grade, runes by number), then
+     the kinds by type. */
   function kinds() {
     const cat = EZ.items.catalog(), bases = [...cat.bases.values()];
     const by = (f) => bases.filter(f).map((b) => b.code);
@@ -7385,55 +7885,151 @@ EZ.areas = EZ.areas || [];
       {id: "jewels-rare", title: "Rare jewels", codes: list(["jew"]), quality: "RARE"},
       {id: "jewelry-mag", title: "Magic rings and amulets", codes: list(["rin", "amu"]), quality: "MAG"},
       {id: "jewelry-rare", title: "Rare rings and amulets", codes: list(["rin", "amu"]), quality: "RARE"});
-    return out.filter((k) => k.codes.length);
+    return out.filter((k) => k.codes.length).map((k) => Object.assign(k, {group: "Kinds"})).concat(typeKinds());
   }
+
+  /* A select of kinds, grouped (onPick(kind)). */
+  function kindSelect(placeholder, onPick) {
+    const list = kinds();
+    const groups = [...new Set(list.map((k) => k.group))];
+    return h("select", {"aria-label": placeholder, onchange: (ev) => {
+      const k = list.find((x) => x.id === ev.target.value);
+      ev.target.value = "";
+      if (k) onPick(k);
+    }}, h("option", {value: ""}, placeholder), groups.map((g) => h("optgroup", {label: g},
+      list.filter((k) => k.group === g).map((k) => h("option", {value: k.id}, k.title + " (" + k.codes.length + ")")))));
+  }
+
+  /* A search box for items: onPick(pick) with the picked item (EZ.items.search's). */
+  function searchBox(placeholder, onPick) {
+    const input = h("input.fe-pv-search", {type: "search", placeholder, "aria-label": placeholder});
+    const picks = h("div.fe-pv-picks", {hidden: true, role: "listbox"});
+    const show = () => {
+      const found = EZ.items.search(input.value, 14);
+      fill(picks, found.map((p) => h("button", {type: "button", role: "option", onclick: () => {
+        picks.hidden = true;
+        input.value = "";
+        onPick(p);
+      }}, h("span", p.label), h("small", p.sub + " · " + p.spec.code))));
+      picks.hidden = !found.length;
+    };
+    input.addEventListener("input", show);
+    input.addEventListener("keydown", (ev) => { if (ev.key === "Escape") picks.hidden = true; });
+    input.addEventListener("blur", () => setTimeout(() => { picks.hidden = true; }, 150));
+    return h("div.fe-pv-pick.fe-bd-search", input, picks);
+  }
+
+  /* ---------------------------------------------------------------- the draft */
 
   function newDraft(pick) {
     const q = pick.spec.quality || "";
     return {spec: Object.assign({}, pick.spec), label: pick.label,
-            scope: {codes: (pick.codes || [pick.spec.code]).slice(), quality: q, eth: "any", id: "any", levels: [],
-                    clvl: ["", ""]},
+            scope: {codes: (pick.codes || [pick.spec.code]).slice(), quals: q ? [q] : [], eth: "any", id: "any",
+                    sockets: [], ed: "", ilvl: ["", ""], levels: [], clvl: ["", ""], extra: ""},
             action: "hide", sound: 0, icon: "", alert: {icon: {}, sound: 0, chat: "all", tier: 4}, mode: "add",
-            text: "%NAME%"};
+            text: "%NAME%", look: "erazure", asLevel: null, keepColor: true, unknown: []};
+  }
+
+  /* The draft's scope as an override keeps it (empty fields left out). */
+  function scopeOf(s) {
+    const out = {codes: s.codes.slice(), eth: s.eth, id: s.id, levels: s.levels.slice(), clvl: s.clvl.slice()};
+    const q = O().qualsOf(s);
+    if (q.length) out.quals = q;
+    const so = O().socketsOf(s);
+    if (so.length) out.sockets = so;
+    if (O().edOf(s)) out.ed = String(O().edOf(s));
+    const [a, b] = O().ilvlOf(s);
+    if (a || b) out.ilvl = [a ? String(a) : "", b ? String(b) : ""];
+    if (typeof s.extra === "string" && s.extra.trim()) out.extra = s.extra.trim();
+    return out;
+  }
+
+  /* The item the strip and the preview show: the draft's picked base, made to fit the scope. */
+  function sample(d) {
+    const s = d.scope, cat = EZ.items.catalog();
+    const code = s.codes.indexOf(d.spec.code) >= 0 ? d.spec.code : s.codes[0];
+    const b = cat.bases.get(code);
+    const spec = Object.assign({}, d.spec, {code});
+    const q = O().qualsOf(s);
+    if (b && !EZ.items.qualities(b)) delete spec.quality;
+    else if (q.length && q.indexOf(spec.quality || "NORM") < 0) spec.quality = q[0];
+    if (spec.quality !== "UNI" && spec.quality !== "SET") delete spec.uni;
+    const so = O().socketsOf(s);
+    if (so.length && so.indexOf(spec.sockets || 0) < 0) spec.sockets = so[0];
+    if (s.eth === "yes") spec.eth = true; else if (s.eth === "no") spec.eth = false;
+    if (s.id === "yes") spec.id = true; else if (s.id === "no") spec.id = false;
+    const ed = O().edOf(s);
+    if (ed && b && (b.armor || b.weapon)) {
+      if ((!spec.quality || spec.quality === "NORM" || spec.quality === "INF") && (!q.length || q.indexOf("SUP") >= 0)) {
+        spec.quality = "SUP";
+      }
+      spec.stats = [[b.armor ? 16 : 17, 0, ed]];
+    }
+    const [ia, ib] = O().ilvlOf(s);
+    if (ia || ib) spec.ilvl = ia || ib;
+    return spec;
   }
 
   function summary(o) {
     const s = o.scope, cat = EZ.items.catalog();
     const names = s.codes.map((c) => { const b = cat.bases.get(c); return b ? plain(b.name) : c; });
-    const q = QUALS.find(([k]) => k === (s.quality || ""));
-    const bits = [(s.quality ? q[1] + " " : "") + names.slice(0, 3).join(", ") + (names.length > 3 ? ` +${names.length - 3}` : "")];
+    const q = O().qualsOf(s);
+    const white = WHITE.every((x) => q.indexOf(x) >= 0);
+    const qn = (white ? ["Non-magical"] : []).concat(q.filter((x) => !white || WHITE.indexOf(x) < 0).map((x) => QUAL_NAME[x]));
+    const bits = [(qn.length ? qn.join(" or ") + " " : "") + names.slice(0, 3).join(", ") +
+      (names.length > 3 ? ` +${names.length - 3}` : "")];
     if (s.eth === "yes") bits.push("ethereal"); else if (s.eth === "no") bits.push("not ethereal");
     if (s.id === "yes") bits.push("identified"); else if (s.id === "no") bits.push("unidentified");
+    const so = O().socketsOf(s);
+    if (so.length) bits.push(so.join(" or ") + (so.length === 1 && so[0] === 1 ? " socket" : " sockets"));
+    if (O().edOf(s)) bits.push(O().edOf(s) + "%+ enhanced defense / damage");
+    const [ia, ib] = O().ilvlOf(s);
+    if (ia || ib) bits.push("item level " + (ia && ib ? ia + "-" + ib : ia ? ia + "+" : "up to " + ib));
     if ((s.levels || []).length) bits.push("levels " + s.levels.slice().sort((a, b) => a - b).join(", "));
     const [a, b] = s.clvl || [];
     if (a || b) bits.push("character level " + (a || 1) + "-" + (b || 99));
+    if (typeof s.extra === "string" && s.extra.trim()) bits.push("and " + s.extra.trim().slice(0, 40));
+    if (o.action === "show" && o.look === "level" && o.asLevel !== null && o.asLevel !== undefined) {
+      bits.push("as level " + o.asLevel + " shows it");
+    } else if (o.action === "show" && o.look === "own") bits.push("your look");
     return bits.join(" · ");
   }
 
   /* The picked item at each filter level, Erazure's and the player's (the preview's character and place). */
-  function strip(app, spec) {
+  function levelsOf(app, spec) {
     const P = EZ.preview;
     if (!P || !P.erazure) return null;
     const base = P.erazure(), mine = P.yours();
     if (!base) return null;
     const names = ["Show All Items"].concat(EZ.filter.levels(base.lines).map((l) => plain(l.text)));
-    const rows = [];
+    const out = [];
     for (let lv = 0; lv < names.length; lv++) {
-      const a = P.run(base, spec, lv), b = mine ? P.run(mine, spec, lv) : a;
+      const a = P.run(base, spec, lv);
       if (!a) continue;
-      const cell = (r) => r.invisible || r.hidden ? h("span.fe-pv-hidden", r.invisible ? "nothing" : "no label") :
-        EZ.render.label(r.name, {start: r.start});
-      const changed = mine && JSON.stringify([a.name, a.sound, a.chat, a.invisible, a.icons.map((x) => [x.border,
-        x.map, x.dot, x.px])]) !== JSON.stringify([b.name, b.sound, b.chat, b.invisible, b.icons.map((x) => [x.border,
-        x.map, x.dot, x.px])]);
-      rows.push(h("tr" + (changed ? ".is-changed" : ""), h("td.fe-num", String(lv)), h("td.fe-sub.fe-small", names[lv]),
-        h("td", cell(a), a.sound ? h("span.fe-pv-snd", " ♪") : null),
-        mine ? h("td", cell(b), b.sound ? h("span.fe-pv-snd", " ♪") : null) : null));
+      out.push({lv, name: names[lv], a, b: mine ? P.run(mine, spec, lv) : null});
     }
+    return {rows: out, mine: !!mine};
+  }
+
+  function strip(app, spec) {
+    const got = levelsOf(app, spec);
+    if (!got) return null;
+    const cell = (r) => r.invisible || r.hidden ? h("span.fe-pv-hidden", r.invisible ? "nothing" : "no label") :
+      EZ.render.label(r.name, {start: r.start});
+    const key = (r) => JSON.stringify([r.name, r.sound, r.chat, r.invisible, r.icons.map((x) => [x.border, x.map, x.dot,
+      x.px])]);
+    const rows = got.rows.map(({lv, name, a, b}) => {
+      const changed = b && key(a) !== key(b);
+      return h("tr" + (changed ? ".is-changed" : ""), h("td.fe-num", String(lv)), h("td.fe-sub.fe-small", name),
+        h("td", cell(a), a.sound ? h("span.fe-pv-snd", " ♪") : null),
+        got.mine ? h("td", cell(b || a), (b || a).sound ? h("span.fe-pv-snd", " ♪") : null) : null);
+    });
     return h("div.fe-tablewrap", h("table.fe-it-strip",
-      h("thead", h("tr", h("th", "Lv"), h("th", "Level"), h("th", "Erazure"), mine ? h("th", "Yours") : null)),
+      h("thead", h("tr", h("th", "Lv"), h("th", "Level"), h("th", "Erazure"), got.mine ? h("th", "Yours") : null)),
       h("tbody", rows)));
   }
+
+  /* ---------------------------------------------------------------- the form */
 
   function editor(app, box) {
     const d = draft, cat = EZ.items.catalog();
@@ -7442,20 +8038,85 @@ EZ.areas = EZ.areas || [];
     const set = (fn) => { fn(d); redraw(); };
     const flip = (arr, v) => { const i = arr.indexOf(v); if (i >= 0) arr.splice(i, 1); else arr.push(v); };
     const levelNames = EZ.filter.levels(app.versionLines()).map((l) => plain(l.text));
-    const base = cat.bases.get(d.spec.code);
-    // the base's tiers (normal / exceptional / elite)
-    const fam = (() => {
-      const rev = new Map();
-      for (const b of cat.bases.values()) if (b.up) rev.set(b.up.code, b.code);
-      let root = d.spec.code;
-      for (let n = 0; n < 4 && rev.has(root); n++) root = rev.get(root);
-      const out = [root];
-      let b = cat.bases.get(root);
-      for (let n = 0; n < 4 && b && b.up; n++) { out.push(b.up.code); b = cat.bases.get(b.up.code); }
-      return out.filter((c) => cat.bases.has(c));
-    })();
-    const shared = (s.quality === "UNI" || s.quality === "SET") ?
-      cat.uniques.filter((u) => s.codes.indexOf(u.code) >= 0 && u.kind === s.quality).map((u) => u.name) : [];
+    const spec = sample(d);
+    const base = cat.bases.get(spec.code);
+    const bases = s.codes.map((c) => cat.bases.get(c)).filter(Boolean);
+    const quals = O().qualsOf(s);
+    const addCodes = (codes) => set((x) => { for (const c of codes) if (cat.bases.has(c) && x.scope.codes.indexOf(c) < 0) x.scope.codes.push(c); });
+
+    /* which of them */
+    const missingTiers = [...new Set(s.codes.flatMap(famOf))].filter((c) => s.codes.indexOf(c) < 0);
+    const typed = h("input.fe-mono", {type: "text", placeholder: "Codes: bhm, xh9, uh9", spellcheck: "false",
+      "aria-label": "Item codes to add", style: {width: "12em"}});
+    const addTyped = () => {
+      const words = typed.value.toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
+      const known = words.filter((w) => cat.bases.has(w)), unknown = words.filter((w) => !cat.bases.has(w));
+      set((x) => {
+        for (const c of known) if (x.scope.codes.indexOf(c) < 0) x.scope.codes.push(c);
+        x.unknown = unknown;
+      });
+    };
+    typed.addEventListener("keydown", (ev) => { if (ev.key === "Enter") { ev.preventDefault(); addTyped(); } });
+    const basesField = h("div.fe-bd-field.wide", h("span.fe-bd-label", `Bases (${s.codes.length})`),
+      h("div.fe-row.fe-small", s.codes.map((c) => h("span.fe-bd-chip" + (c === spec.code ? ".is-on" : ""),
+        h("button.fe-linkbtn", {type: "button", title: "Show this one in the table below", onclick: () =>
+          set((x) => { x.spec.code = c; })}, plain((cat.bases.get(c) || {}).name || c)), " ", h("code.fe-small", c),
+        s.codes.length > 1 ? h("button.fe-x", {type: "button", "aria-label": "Leave out " + c, onclick: () =>
+          set((x) => { x.scope.codes = x.scope.codes.filter((k) => k !== c); })}, "✕") : null)),
+        missingTiers.length ? h("button.fe-btn.ghost.small", {type: "button", onclick: () => addCodes(missingTiers)},
+          s.codes.length > 1 ? "+ their other tiers" : "+ its other tiers") : null),
+      h("div.fe-row.fe-small", {style: {marginTop: ".35em"}},
+        searchBox("+ Add a base…", (p) => addCodes([p.spec.code])),
+        kindSelect("+ Add a kind…", (k) => addCodes(k.codes)),
+        typed, h("button.fe-btn.small", {type: "button", onclick: addTyped}, "Add")),
+      (d.unknown || []).length ? h("p.fe-note.warn.fe-small", d.unknown.join(", ") + (d.unknown.length === 1 ?
+        " isn't an item code." : " aren't item codes.") + " Find the item by its name in Add a base.") : null);
+    const shared = quals.filter((q) => q === "UNI" || q === "SET").flatMap((q) =>
+      cat.uniques.filter((u) => s.codes.indexOf(u.code) >= 0 && u.kind === q).map((u) => u.name));
+    const white = WHITE.every((x) => quals.indexOf(x) >= 0);
+    const qualityField = h("div.fe-bd-field.wide", h("span.fe-bd-label", "Quality (none picked: every quality)"),
+      h("div.fe-row.fe-small",
+        h("button.fe-chiptog", {type: "button", "aria-pressed": String(white), title: "Normal, Superior and Low quality",
+          onclick: () => set((x) => {
+            const now = O().qualsOf(x.scope);
+            x.scope.quals = white ? now.filter((q) => WHITE.indexOf(q) < 0) : [...new Set(now.concat(WHITE))];
+            delete x.scope.quality;
+          })}, "Non-magical"),
+        QUALS.map(([v, t]) => h("button.fe-chiptog", {type: "button", "aria-pressed": String(quals.indexOf(v) >= 0),
+          onclick: () => set((x) => {
+            const now = O().qualsOf(x.scope);
+            flip(now, v);
+            x.scope.quals = now;
+            delete x.scope.quality;
+          })}, t))));
+    const maxSock = Math.max(0, ...bases.map((b) => b.sockets || 0));
+    const so = O().socketsOf(s);
+    const socketsField = maxSock ? h("div.fe-bd-field", h("span.fe-bd-label", "Sockets (none picked: any)"),
+      h("div.fe-row.fe-small", Array.from({length: maxSock + 1}, (_, n) => h("button.fe-chiptog", {type: "button",
+        "aria-pressed": String(so.indexOf(n) >= 0), onclick: () => set((x) => {
+          const now = O().socketsOf(x.scope);
+          flip(now, n);
+          x.scope.sockets = now.sort((a, b) => a - b);
+        })}, String(n))))) : null;
+    const gear = bases.some((b) => b.armor || b.weapon);
+    const edField = gear ? h("div.fe-bd-field", h("span.fe-bd-label", "Enhanced defense / damage at least"),
+      h("div.fe-row.fe-small", h("input.fe-pv-num", {type: "number", min: 1, max: 999, value: s.ed || "",
+        placeholder: "%", "aria-label": "Enhanced defense or damage at least",
+        onchange: (e) => set((x) => { x.scope.ed = e.target.value; })}),
+        h("span.fe-sub", "% (superior items, or any item's total)"))) : null;
+    const ilvl = s.ilvl || ["", ""];
+    const ilvlField = h("div.fe-bd-field", h("span.fe-bd-label", "Item level"), h("div.fe-row.fe-small",
+      h("input.fe-pv-num", {type: "number", min: 1, max: 99, value: ilvl[0], placeholder: "from",
+        "aria-label": "From item level", onchange: (e) => set((x) => { x.scope.ilvl = [e.target.value, (x.scope.ilvl || [])[1] || ""]; })}),
+      h("span", "to"), h("input.fe-pv-num", {type: "number", min: 1, max: 99, value: ilvl[1], placeholder: "to",
+        "aria-label": "To item level", onchange: (e) => set((x) => { x.scope.ilvl = [(x.scope.ilvl || [])[0] || "", e.target.value]; })})));
+    const extraField = h("details.fe-bd-field.wide", s.extra ? {open: true} : {},
+      h("summary.fe-sub.fe-small", "More conditions (BH's words)"),
+      h("input.fe-mono", {type: "text", value: s.extra || "", spellcheck: "false", placeholder: "e.g. SORCERESS or RES>29",
+        "aria-label": "More conditions", style: {width: "100%"}, onchange: (e) => set((x) => { x.scope.extra = e.target.value; })}),
+      h("p.fe-sub.fe-small", "Added to the rest as they are (an OR needs its brackets). Lint them on My rules first."));
+
+    /* what to do */
     const extra = [];
     if (d.action === "sound") {
       extra.push(h("div.fe-row", h("button.fe-btn.small", {type: "button", onclick: () => EZ.sounds.pick(app,
@@ -7495,34 +8156,66 @@ EZ.areas = EZ.areas || [];
         d.action === "notify" ? seg([{value: "add", text: "Only where Erazure has none"}, {value: "instead",
           text: "Instead of Erazure's"}], d.mode, (v) => set((x) => { x.mode = v; }), {label: "Erazure's alerts"}) : null);
     }
-    if (d.action === "look" || d.action === "replace" || d.action === "hunt") {
-      const cards = EZ.filter.lookCards(app.src, app.versionLines());
-      extra.push(h("select", {"aria-label": "Start from one of Erazure's looks", onchange: (e) => {
-        if (e.target.value) set((x) => { x.text = e.target.value.replace(/\s+$/, ""); });
-      }}, h("option", {value: ""}, "Start from one of Erazure's looks…"),
-        EZ.filter.GROUPS.map((g) => h("optgroup", {label: g.title}, cards.filter((c) => c.group === g.id &&
-          c.tpls[0] && c.tpls[0].tpl.indexOf("%NAME%") >= 0).map((c) => h("option", {value: c.tpls[0].tpl}, c.title))))));
+    if (d.action === "show") {
+      extra.push(h("div.fe-row.fe-small", h("span.fe-bd-label", "Its look"), seg([
+        {value: "erazure", text: "Erazure's on these levels"}, {value: "level", text: "As another level shows it"},
+        {value: "own", text: "Your own"}], d.look || "erazure", (v) => set((x) => {
+          x.look = v;
+          if (v === "own" && x.text === "%NAME%") x.text = PRESETS[0][1];
+        }), {label: "Its look"})));
+      if (d.look === "level") {
+        const got = levelsOf(app, spec);
+        const own = (s.levels || []).map(Number);
+        const opts = got ? got.rows.filter((r) => own.indexOf(r.lv) < 0).map((r) => h("option", {value: r.lv,
+          selected: d.asLevel === r.lv}, `${r.lv} · ${r.name}: ${r.a.hidden ? "hidden" : plain(r.a.name) || "(no name)"}`)) : [];
+        extra.push(h("div.fe-stack", h("select", {"aria-label": "The level whose look it takes", onchange: (e) =>
+          set((x) => { x.asLevel = e.target.value === "" ? null : +e.target.value; })},
+          h("option", {value: "", selected: d.asLevel === null}, "Pick the level…"), opts),
+          h("p.fe-sub.fe-small", "On your levels it looks, alerts and shows as Erazure has it on that level (for " +
+            (own.length ? "levels " + own.join(", ") : "every level") + "). The list shows the item above as each " +
+            "level draws it.")));
+      }
     }
-    if (d.action === "look" || d.action === "replace" || d.action === "hunt") {
+    if (d.action === "look" || d.action === "replace" || d.action === "hunt" || (d.action === "show" && d.look === "own")) {
+      const cards = EZ.filter.lookCards(app.src, app.versionLines());
+      extra.push(h("select", {"aria-label": "Start from a look", onchange: (e) => {
+        if (e.target.value) set((x) => { x.text = e.target.value.replace(/\s+$/, ""); });
+      }}, h("option", {value: ""}, "Start from a look…"),
+        h("optgroup", {label: "Simple"}, PRESETS.map(([t, v]) => h("option", {value: v}, t))),
+        EZ.filter.GROUPS.map((g) => h("optgroup", {label: "Erazure: " + g.title}, cards.filter((c) => c.group === g.id &&
+          c.tpls[0] && c.tpls[0].tpl.indexOf("%NAME%") >= 0).map((c) => h("option", {value: c.tpls[0].tpl}, c.title))))));
       const input = h("input.fe-mono", {type: "text", value: d.text, spellcheck: "false", "aria-label": "The look",
         oninput: (e) => { d.text = e.target.value; prev(); }});
       const prevBox = h("span.fe-ed-rulelabel");
-      const prev = () => fill(prevBox, EZ.render.label(EZ.looks.fill(d.text.replace(/\{[^}]*\}?/, ""),
-        EZ.looks.values(app.versionLines()), "%" + ({UNI: "GOLD", SET: "GREEN", RARE: "YELLOW", MAG: "BLUE",
-          CRAFT: "ORANGE"}[s.quality] || "WHITE") + "%" + plain(base ? base.name : "Item"))));
+      const q0 = spec.quality || "NORM";
+      const col = SAMPLE_COLOR[q0] || (spec.eth || (spec.sockets || 0) > 0 ? "GRAY" : "WHITE");
+      const prev = () => fill(prevBox, EZ.render.label(EZ.looks.fill((d.keepColor ? O().colored(d.text, col) : d.text)
+        .replace(/\{[^}]*\}?/, ""), EZ.looks.values(app.versionLines()), "%" + col + "%" + plain(base ? base.name : "Item"))));
       prev();
-      extra.push(h("div.fe-stack", input, h("div.fe-row.fe-small", prevBox, h("span.fe-sub", d.action === "look" ?
-        "%NAME% is the name with Erazure's tags so far." : "%NAME% is the game's name (and Erazure's base names)."))));
+      extra.push(h("div.fe-stack", input,
+        EZ.ui.toggle("The name keeps its own color", d.keepColor, (on) => set((x) => { x.keepColor = on; }),
+          {sub: "After your text's colors the name goes back to white, gray (ethereal or socketed), blue, yellow… as " +
+                "the game draws it."}),
+        h("div.fe-row.fe-small", prevBox, h("span.fe-sub", d.action === "replace" ?
+          "%NAME% is the game's name (and Erazure's base names)." : "%NAME% is the name with Erazure's tags so far."))));
     }
     const add = () => {
       const o = {id: d.id || "i" + Date.now().toString(36) + Math.random().toString(36).slice(2, 5), action: d.action,
-                 scope: JSON.parse(JSON.stringify(s))};
-      if (!o.scope.quality) delete o.scope.quality;
+                 scope: scopeOf(s)};
       if (d.action === "sound") o.sound = d.sound;
       if (d.action === "icon") o.icon = d.icon;
       if (d.action === "notify") { o.alert = JSON.parse(JSON.stringify(d.alert)); o.mode = d.mode; }
       if (d.action === "hunt") o.alert = JSON.parse(JSON.stringify(d.alert));
-      if (d.action === "look" || d.action === "replace" || d.action === "hunt") o.text = d.text;
+      if (d.action === "show" && d.look === "level") {
+        if (d.asLevel === null || d.asLevel === undefined) { EZ.ui.toast("Pick the level whose look it takes.", "bad"); return; }
+        o.look = "level";
+        o.asLevel = d.asLevel;
+      }
+      if (d.action === "look" || d.action === "replace" || d.action === "hunt" || (d.action === "show" && d.look === "own")) {
+        o.text = d.text;
+        o.keepColor = !!d.keepColor;
+        if (d.action === "show") o.look = "own";
+      }
       draft = null;  // before the change: the area is drawn again without the form
       EZ.store.change((ed) => {
         ed.items = (ed.items || []).filter((x) => x.id !== o.id);
@@ -7532,28 +8225,23 @@ EZ.areas = EZ.areas || [];
     };
     fill(box,
       h("div.fe-row", h("h3", {style: {margin: 0}}, d.label), h("span.fe-sub", (base ? plain(base.name) : "") + " · " +
-        d.spec.code), h("span.fe-bar-gap"), h("button.fe-btn.ghost.small", {type: "button", onclick: () => {
+        spec.code), h("span.fe-bar-gap"), h("button.fe-btn.ghost.small", {type: "button", onclick: () => {
           draft = null; app.drawArea(); }}, "✕")),
-      strip(app, d.spec),
-      h("p.fe-sub.fe-small", "The item as the preview shows it (its character, place and the game's options); open it " +
-        "in the preview's Item view to change those."),
+      strip(app, spec),
+      h("p.fe-sub.fe-small", "The item as the preview shows it (its character, place and the game's options), made to " +
+        "fit what you pick below; click a base to see that one."),
       h("fieldset.fe-bd-set", h("legend", "Which of them"),
-        h("div.fe-bd-field.wide", h("span.fe-bd-label", "Bases"), h("div.fe-row.fe-small",
-          s.codes.map((c) => h("span.fe-bd-chip", plain((cat.bases.get(c) || {}).name || c), " ", h("code.fe-small", c),
-            s.codes.length > 1 ? h("button.fe-x", {type: "button", "aria-label": "Remove " + c, onclick: () =>
-              set((x) => { x.scope.codes = x.scope.codes.filter((k) => k !== c); })}, "✕") : null)),
-          fam.length > 1 && fam.some((c) => s.codes.indexOf(c) < 0) ? h("button.fe-btn.ghost.small", {type: "button",
-            onclick: () => set((x) => { for (const c of fam) if (x.scope.codes.indexOf(c) < 0) x.scope.codes.push(c); })},
-            "+ its other tiers") : null)),
-        shared.length > 1 ? h("p.fe-note.warn.fe-bd-field.wide", `${shared.length} ${s.quality === "SET" ? "set items" :
-          "uniques"} share this base (${shared.slice(0, 6).join(", ")}${shared.length > 6 ? "…" : ""}): until it's ` +
-          "identified BH can't tell them apart, so the change is for all of them.") : null,
-        h("div.fe-bd-field.wide", h("span.fe-bd-label", "Quality"), seg(QUALS.map(([v, t]) => ({value: v, text: t})),
-          s.quality || "", (v) => set((x) => { x.scope.quality = v; }), {label: "Quality"})),
+        basesField,
+        shared.length > 1 ? h("p.fe-note.warn.fe-bd-field.wide", `${shared.length} ${quals.indexOf("SET") >= 0 &&
+          quals.indexOf("UNI") < 0 ? "set items" : "uniques and set items"} share these bases (${shared.slice(0, 6).join(", ")}` +
+          `${shared.length > 6 ? "…" : ""}): until it's identified BH can't tell them apart, so the change is for all of ` +
+          "them.") : null,
+        qualityField,
         h("div.fe-bd-field", h("span.fe-bd-label", "Ethereal"), seg([{value: "any", text: "Either"}, {value: "yes",
           text: "Yes"}, {value: "no", text: "No"}], s.eth, (v) => set((x) => { x.scope.eth = v; }), {label: "Ethereal"})),
         h("div.fe-bd-field", h("span.fe-bd-label", "Identified"), seg([{value: "any", text: "Either"}, {value: "yes",
           text: "Yes"}, {value: "no", text: "No"}], s.id, (v) => set((x) => { x.scope.id = v; }), {label: "Identified"})),
+        socketsField, edField, ilvlField,
         h("div.fe-bd-field.wide", h("span.fe-bd-label", "Filter levels (none picked: every level)"),
           h("div.fe-row.fe-small", levelNames.map((n, i) => h("button.fe-chiptog", {type: "button", title: `${i + 1}: ${n}`,
             "aria-pressed": String(s.levels.indexOf(i + 1) >= 0), onclick: () => set((x) => flip(x.scope.levels, i + 1))},
@@ -7562,7 +8250,8 @@ EZ.areas = EZ.areas || [];
           h("input.fe-pv-num", {type: "number", min: 1, max: 99, value: s.clvl[0], placeholder: "from",
             "aria-label": "From character level", onchange: (e) => set((x) => { x.scope.clvl[0] = e.target.value; })}),
           h("span", "to"), h("input.fe-pv-num", {type: "number", min: 1, max: 99, value: s.clvl[1], placeholder: "to",
-            "aria-label": "To character level", onchange: (e) => set((x) => { x.scope.clvl[1] = e.target.value; })})))),
+            "aria-label": "To character level", onchange: (e) => set((x) => { x.scope.clvl[1] = e.target.value; })}))),
+        extraField),
       h("fieldset.fe-bd-set", h("legend", "What to do"),
         h("div.fe-bd-field.wide", h("div.fe-choice", ACTIONS.map(([k, t, sub]) => EZ.ui.option(t, sub, d.action === k,
           () => set((x) => {
@@ -7570,11 +8259,30 @@ EZ.areas = EZ.areas || [];
             if (k === "hunt" && x.text === "%NAME%") {  // the hunt's own look and alert to start from
               x.text = EZ.overrides.HUNT.text;
               x.alert = JSON.parse(JSON.stringify(EZ.overrides.HUNT.alert));
+              x.keepColor = false;
             }
           }))))),
         extra.length ? h("div.fe-bd-field.wide", extra) : null),
       h("div.fe-row", h("button.fe-btn.primary", {type: "button", onclick: add}, d.id ? "Keep the change" : "Add this change"),
-        h("span.fe-sub.fe-small", ACTION_NAME[d.action] + " · " + summary({scope: s}))));
+        h("span.fe-sub.fe-small", ACTION_NAME[d.action] + " · " + summary({action: d.action, look: d.look,
+          asLevel: d.asLevel, scope: s}))));
+  }
+
+  /* An override back into the form. */
+  function draftOf(o) {
+    const cat = EZ.items.catalog(), b = cat.bases.get(o.scope.codes[0]);
+    const q = EZ.overrides.qualsOf(o.scope);
+    const d = Object.assign(newDraft({spec: {code: o.scope.codes[0], quality: q.length === 1 ? q[0] : undefined},
+      label: b ? plain(b.name) : o.scope.codes[0]}), JSON.parse(JSON.stringify({id: o.id, action: o.action,
+      sound: o.sound || 0, icon: o.icon || "", alert: o.alert || {icon: {}, sound: 0, chat: "all", tier: 4},
+      mode: o.mode || "add", text: o.text || "%NAME%", look: o.look || "erazure",
+      asLevel: o.asLevel === undefined ? null : o.asLevel, keepColor: o.keepColor === undefined ? o.action !== "hunt" &&
+        o.action !== "look" && o.action !== "replace" : !!o.keepColor})));
+    const sc = JSON.parse(JSON.stringify(o.scope));
+    d.scope = Object.assign({quals: [], eth: "any", id: "any", sockets: [], ed: "", ilvl: ["", ""], levels: [],
+                             clvl: ["", ""], extra: ""}, sc, {quals: q});
+    delete d.scope.quality;
+    return d;
   }
 
   EZ.areas.push({
@@ -7582,61 +8290,43 @@ EZ.areas = EZ.areas || [];
     count: (e) => EZ.edits.countArea("items", e),
     render(box, app) {
       const e = EZ.store.current().edits;
-      const input = h("input.fe-pv-search", {type: "search", placeholder: "Find an item: Shako, Ber Rune, Small Charm, " +
-        "Thresher…", "aria-label": "Find an item"});
-      const picks = h("div.fe-pv-picks", {hidden: true, role: "listbox"});
-      const show = () => {
-        const found = EZ.items.search(input.value, 14);
-        fill(picks, found.map((p) => h("button", {type: "button", role: "option", onclick: () => {
-          picks.hidden = true;
-          draft = newDraft(p);
-          app.drawArea();
-          if (EZ.preview && EZ.preview.state) {  // the preview follows the item
-            EZ.preview.state.spec = Object.assign({}, p.spec);
-            EZ.preview.state.mode = "item";
-            EZ.preview.changed({}, app);
-          }
-        }}, h("span", p.label), h("small", p.sub + " · " + p.spec.code))));
-        picks.hidden = !found.length;
-      };
-      input.addEventListener("input", show);
-      input.addEventListener("keydown", (ev) => { if (ev.key === "Escape") picks.hidden = true; });
-      input.addEventListener("blur", () => setTimeout(() => { picks.hidden = true; }, 150));
-      const kindList = kinds();
-      const kindSel = h("select", {"aria-label": "Or a kind of item", onchange: (ev) => {
-        const k = kindList.find((x) => x.id === ev.target.value);
-        if (!k) return;
+      const pick = searchBox("Find an item: Shako, Ber Rune, Small Charm, Thresher…", (p) => {
+        draft = newDraft(p);
+        app.drawArea();
+        if (EZ.preview && EZ.preview.state) {  // the preview follows the item
+          EZ.preview.state.spec = Object.assign({}, p.spec);
+          EZ.preview.state.mode = "item";
+          EZ.preview.changed({}, app);
+        }
+      });
+      const kindSel = kindSelect("…or a kind of item", (k) => {
         draft = newDraft({spec: {code: k.codes[0], quality: k.quality}, codes: k.codes, label: k.title});
         app.drawArea();
-      }}, h("option", {value: ""}, "…or a kind of item"), kindList.map((k) => h("option", {value: k.id}, k.title)));
+      });
       const card = h("section.fe-card", {id: "fe-item-edit"});
       if (draft) editor(app, card);
       const list = (e.items || []).filter(EZ.overrides.valid);
       const yours = list.length ? h("section.fe-card", {id: "fe-items-list"}, h("h3", "Your item changes"),
+        h("p.fe-sub.fe-small", "Where two of them meet, the narrower one wins (fewer bases, a quality, sockets, levels…); " +
+          "for two alike, the later one."),
         list.map((o) => h("div.fe-rb-op", h("div.fe-row.fe-small", pill(ACTION_NAME[o.action] || o.action, "accent"),
           h("span", summary(o)), o.action === "notify" ? pill(o.mode === "instead" ? "instead of Erazure's" :
             "where Erazure has none", "info") : null, h("span.fe-bar-gap"),
-          h("button.fe-btn.ghost.small", {type: "button", onclick: () => {
-            const cat = EZ.items.catalog(), b = cat.bases.get(o.scope.codes[0]);
-            draft = Object.assign(newDraft({spec: {code: o.scope.codes[0], quality: o.scope.quality || undefined},
-              label: b ? plain(b.name) : o.scope.codes[0]}), JSON.parse(JSON.stringify({id: o.id, action: o.action,
-              sound: o.sound || 0, icon: o.icon || "", alert: o.alert || {icon: {}, sound: 0, chat: "all", tier: 4},
-              mode: o.mode || "add", text: o.text || "%NAME%"})));
-            draft.scope = Object.assign({quality: "", eth: "any", id: "any", levels: [], clvl: ["", ""]},
-              JSON.parse(JSON.stringify(o.scope)));
-            app.drawArea();
-          }}, "Edit"),
+          h("button.fe-btn.ghost.small", {type: "button", onclick: () => { draft = draftOf(o); app.drawArea(); }}, "Edit"),
           h("button.fe-btn.ghost.small", {type: "button", onclick: () => EZ.store.change((ed) => {
             ed.items = (ed.items || []).filter((x) => x.id !== o.id);
             if (!ed.items.length) delete ed.items;
           }, {label: "items"})}, "Remove"))))) : null;
       EZ.ui.add(box, [
         h("div.fe-area-head", h("div", h("h2", "Items"),
-          h("p.fe-sub", "Change single items: show or hide them, change their alerts or their look. Only the rules " +
-            "for these items change, so everything else stays Erazure's, and it follows Erazure's updates."))),
-        h("section.fe-card", h("div.fe-row", h("div.fe-pv-pick.fe-bd-search", input, picks), kindSel),
-          draft ? null : h("p.fe-sub.fe-small", {style: {marginTop: ".5em"}}, "Unique and set items are told apart only " +
-            "once identified: unidentified, a change is for every unique (or set item) on that base.")),
+          h("p.fe-sub", "Change single items or many at once: show or hide them, change their alerts or their look. " +
+            "Only the rules for these items change, so everything else stays Erazure's, and it follows Erazure's " +
+            "updates."))),
+        h("section.fe-card", h("div.fe-row", pick, kindSel),
+          draft ? null : h("p.fe-sub.fe-small", {style: {marginTop: ".5em"}}, "Pick one item or a kind (throwing " +
+            "weapons, paladin shields, helms…), then add more bases, leave some out, and narrow it down by quality, " +
+            "sockets, enhanced defense, item level and filter level. Unique and set items are told apart only once " +
+            "identified: unidentified, a change is for every unique (or set item) on that base.")),
         draft ? card : null, yours]);
       if (draft) requestAnimationFrame(() => { const el = box.querySelector("#fe-item-edit"); if (el) el.scrollIntoView({block: "nearest"}); });
     },
@@ -7644,9 +8334,9 @@ EZ.areas = EZ.areas || [];
 })();
 
 /* ---- tools/editor/area-wishlists.js ---- */
-/* Wishlists: the identified items a player wants, by kind, quality and stats (each one must have, and "N of these"),
-   tagged with a description line (and a label tag, an icon and a sound if the player likes). EZ.wishlists writes
-   the rules. */
+/* Highlights (the area's name since 2026-11-12, the author; its code and the edit set still say wishlists): the
+   identified items a player wants, by kind, quality and stats (each one must have, and "N of these"), tagged with a
+   description line (and a label tag, an icon and a sound if the player likes). EZ.wishlists writes the rules. */
 var EZ = typeof EZ !== "undefined" ? EZ : {};
 EZ.areas = EZ.areas || [];
 (function () {
@@ -7727,7 +8417,7 @@ EZ.areas = EZ.areas || [];
     const result = h("div.fe-bd-result");
     const drawResult = () => {
       const r = EZ.wishlists.rule(d);
-      if (!r) { fill(result, h("p.fe-sub", "Pick a kind of item or a stat: a wishlist with neither would tag every item.")); return; }
+      if (!r) { fill(result, h("p.fe-sub", "Pick a kind of item or a stat: a highlight with neither would tag every item.")); return; }
       const ls = r.line.split("\n");
       const ctx = EZ.lint.context(app.src, app.versionLines(), {top: ls, bottom: []}, {soundCount: app.data.soundCount});
       const findings = EZ.lint.lines(ls, Object.assign(ctx, {block: "top"})).filter((f) => f.level !== "info");
@@ -7742,14 +8432,14 @@ EZ.areas = EZ.areas || [];
             ed.wishlists = (ed.wishlists || []).filter((x) => x.id !== w.id);
             ed.wishlists.push(w);
           }, {label: "wishlists"});
-        }}, d.id ? "Keep the wishlist" : "Add the wishlist"),
+        }}, d.id ? "Keep the highlight" : "Add the highlight"),
           h("button.fe-btn.ghost", {type: "button", onclick: () => { draft = null; app.drawArea(); }}, "Cancel")));
     };
     const palette = app.data.palette || [];
     const layers = d.alert.icon || {};
     const combo = EZ.rules.LAYERS.filter((k) => layers[k]).map((k) => k + "-" + layers[k]).join(" ");
     fill(box,
-      h("h3", d.id ? "Change the wishlist" : "A new wishlist"),
+      h("h3", d.id ? "Change the highlight" : "A new highlight"),
       h("fieldset.fe-bd-set", h("legend", "Which items"),
         h("label.fe-bd-field.wide", h("span.fe-bd-label", "Its name (for you)"), h("input", {type: "text", value: d.name,
           oninput: (e) => set(() => { d.name = e.target.value; }, true)})),
@@ -7769,7 +8459,7 @@ EZ.areas = EZ.areas || [];
           min: 1, max: d.pool.length, value: d.n, "aria-label": "How many of them", onchange: (e) => set(() => { d.n = e.target.value; }, true)})) : null),
       h("fieldset.fe-bd-set", h("legend", "What it gets"),
         h("label.fe-bd-field", h("span.fe-bd-label", "A line in its description"), h("input", {type: "text", value: d.line,
-          placeholder: d.name || "Wishlist", oninput: (e) => set(() => { d.line = e.target.value; }, true)})),
+          placeholder: d.name || "Highlight", oninput: (e) => set(() => { d.line = e.target.value; }, true)})),
         h("div.fe-bd-field", h("span.fe-bd-label", "Its color"), h("select", {"aria-label": "Its color", onchange: (e) =>
           set(() => { d.color = e.target.value; })}, EZ.wishlists.COLORS.map((c) => h("option", {value: c, selected: d.color === c},
           c.charAt(0) + c.slice(1).toLowerCase().replace("_", " "))))),
@@ -7795,7 +8485,7 @@ EZ.areas = EZ.areas || [];
   }
 
   EZ.areas.push({
-    id: "wishlists", title: "Wishlists", icon: "★", order: 60, group: "b",
+    id: "highlights", title: "Highlights", icon: "★", order: 60, group: "b",
     count: (e) => EZ.edits.countArea("wishlists", e),
     render(box, app) {
       const e = EZ.store.current().edits;
@@ -7803,20 +8493,20 @@ EZ.areas = EZ.areas || [];
       const card = h("section.fe-card", {id: "fe-wish-edit"});
       if (draft) editor(app, card);
       EZ.ui.add(box, [
-        h("div.fe-area-head", h("div", h("h2", "Wishlists"),
-          h("p.fe-sub", "The identified items you want: by kind, quality and stats. Each gets a line in its description " +
+        h("div.fe-area-head", h("div", h("h2", "Highlights"),
+          h("p.fe-sub", "Highlight the identified items you want, by kind, quality and stats: each gets a line in its description " +
             "(and a tag, an icon or a sound if you like) wherever it is: on the ground, in your inventory, stash or a " +
             "shop. Erazure's looks and tags stay."))),
         draft ? card : h("section.fe-card", h("div.fe-row",
-          h("button.fe-btn.primary", {type: "button", onclick: () => { draft = blank(); app.drawArea(); }}, "+ A new wishlist"),
+          h("button.fe-btn.primary", {type: "button", onclick: () => { draft = blank(); app.drawArea(); }}, "+ A new highlight"),
           h("span.fe-sub", "or start from:"),
           EXAMPLES.map(([t, w]) => h("button.fe-btn.small", {type: "button", onclick: () => {
             draft = Object.assign(blank(), JSON.parse(JSON.stringify(w)));
             app.drawArea();
           }}, t)))),
-        list.length ? h("section.fe-card", h("h3", "Your wishlists"), list.map((w) => {
+        list.length ? h("section.fe-card", h("h3", "Your highlights"), list.map((w) => {
           const r = EZ.wishlists.rule(w);
-          return h("div.fe-rb-op", h("div.fe-row.fe-small", h("b", w.name || w.line || "Wishlist"),
+          return h("div.fe-rb-op", h("div.fe-row.fe-small", h("b", w.name || w.line || "Highlight"),
             r ? null : pill("tags nothing yet", "warn"), h("span.fe-bar-gap"),
             h("button.fe-btn.ghost.small", {type: "button", onclick: () => {
               draft = Object.assign(blank(), JSON.parse(JSON.stringify(w)));
@@ -7834,9 +8524,8 @@ EZ.areas = EZ.areas || [];
 })();
 
 /* ---- tools/editor/area-maps.js ---- */
-/* Maps: Erazure's map lines on or off, a red warning on identified maps with the mods the player picks, and hiding
-   identified maps with a mod the player won't run or a lower experience multiplier than the player asks for
-   (EZ.maps). */
+/* Maps: Erazure's map lines on or off, a red warning on identified maps with the mods the player picks, hiding
+   identified maps with a mod the player won't run, and the T1-T3 maps the player never picks up (EZ.maps). */
 var EZ = typeof EZ !== "undefined" ? EZ : {};
 EZ.areas = EZ.areas || [];
 (function () {
@@ -7856,9 +8545,10 @@ EZ.areas = EZ.areas || [];
         fn(ed.maps);
         ed.maps.warn = EZ.maps.ids(ed.maps.warn);
         ed.maps.hide = EZ.maps.ids(ed.maps.hide);
-        if (!ed.maps.warn.length) delete ed.maps.warn;
-        if (!ed.maps.hide.length) delete ed.maps.hide;
-        if (EZ.maps.minXp(ed.maps) === null) delete ed.maps.minXp;
+        ed.maps.hideMaps = EZ.maps.mapCodes(ed.maps.hideMaps);
+        ed.maps.hideMapsLevels = EZ.maps.levelsOf(ed.maps.hideMapsLevels);
+        delete ed.maps.minXp;  // the experience hide, until 2026-11-12
+        for (const k of ["warn", "hide", "hideMaps", "hideMapsLevels"]) if (!ed.maps[k].length) delete ed.maps[k];
         if (!Object.keys(ed.maps).length) delete ed.maps;
       }, {label: "maps"});
       const flip = (key, sid, on) => change((x) => {
@@ -7894,24 +8584,45 @@ EZ.areas = EZ.areas || [];
             h("td", h("input", {type: "checkbox", checked: hide.has(s.sid), "aria-label": "Hide: " + s.name,
               onchange: (ev) => flip("hide", s.sid, ev.target.checked)}))))))))));
 
-      // experience
-      const x = EZ.maps.minXp(m);
-      const input = h("input.fe-pv-num.wide", {type: "number", min: 0, max: 10, step: 0.1, value: x === null ? "" : x,
-        placeholder: "e.g. 1.5", "aria-label": "Lowest experience multiplier",
-        onchange: (ev) => change((mm) => { mm.minXp = ev.target.value; })});
-      const site = "https://filtersby-erazure.github.io/PD2-Loot-Filter/resources/map-experience/";
-      const xp = h("section.fe-card", {id: "fe-map-xp"}, h("h3", "Experience"),
-        h("p.fe-sub", "Erazure tags identified T1-T4 maps with how much more experience their rolls give (", h("a",
-          {href: site, target: "_blank", rel: "noopener"}, "Map Experience"), "). Hide the ones below:"),
-        h("div.fe-row", h("span", "Hide identified maps below"), input, h("span", "× experience"),
-          x !== null ? h("button.fe-btn.ghost.small", {type: "button", onclick: () => change((mm) => { delete mm.minXp; })},
-            "Show them all") : null),
-        h("p.fe-sub.fe-small", "Unique maps and maps that aren't identified are never hidden by this."));
+      // the maps the player never picks up: their non-magical ones, on the ground outside town
+      const skip = new Set(EZ.maps.mapCodes(m.hideMaps)), lv = EZ.maps.levelsOf(m.hideMapsLevels);
+      const levelNames = EZ.filter.levels(app.versionLines()).map((l) => String(l.text).replace(/ÿc./g, "").trim());
+      const tiers = EZ.maps.choices();
+      const setMaps = (codes, on) => change((mm) => {
+        const now = new Set(EZ.maps.mapCodes(mm.hideMaps));
+        for (const c of codes) if (on) now.add(c); else now.delete(c);
+        mm.hideMaps = [...now];
+      });
+      const skipCard = h("section.fe-card", {id: "fe-map-skip"}, h("h3", "Maps you don't pick up"),
+        h("p.fe-sub", "Tick the maps you have no use for. Their non-magical maps (the ones monsters drop) are hidden on " +
+          "the ground outside town: no label, no icon, no sound. In town, your inventory and your stash they show as " +
+          "always. Magic, rare and unique maps are never hidden by this, nor T4 dungeons (made from rare T3 maps in " +
+          "the cube, always identified and rare)."),
+        h("div.fe-map-tiers", tiers.map(({tier, maps}) => {
+          const all = maps.every((x) => skip.has(x.code));
+          return h("div.fe-map-tier", h("div.fe-row", h("h4", {style: {margin: 0}}, "T" + tier + " maps"),
+            h("span.fe-bar-gap"), h("button.fe-btn.ghost.small", {type: "button", onclick: () =>
+              setMaps(maps.map((x) => x.code), !all)}, all ? "Untick all" : "Tick all")),
+          h("ul.fe-map-list", maps.map((x) => h("li", h("label.fe-check" + (skip.has(x.code) ? ".is-on" : ""),
+            h("input", {type: "checkbox", checked: skip.has(x.code), "aria-label": "Hide non-magical " + x.name + " maps",
+              onchange: (ev) => setMaps([x.code], ev.target.checked)}),
+            h("span", x.name), h("code.fe-small.fe-sub", x.code))))));
+        })),
+        h("div.fe-bd-field", {style: {marginTop: ".6em"}}, h("span.fe-bd-label", "On filter levels (none picked: every level)"),
+          h("div.fe-row.fe-small", levelNames.map((n, i) => h("button.fe-chiptog", {type: "button", title: `${i + 1}: ${n}`,
+            "aria-pressed": String(lv.indexOf(i + 1) >= 0), onclick: () => change((mm) => {
+              const now = EZ.maps.levelsOf(mm.hideMapsLevels);
+              const k = now.indexOf(i + 1);
+              if (k >= 0) now.splice(k, 1); else now.push(i + 1);
+              mm.hideMapsLevels = now;
+            })}, String(i + 1))))),
+        skip.size ? h("p.fe-sub.fe-small", `${skip.size} map${skip.size === 1 ? "" : "s"} hidden` + (lv.length ?
+          " on level" + (lv.length === 1 ? " " : "s ") + lv.join(", ") : " on every level") + ".") : null);
 
       EZ.ui.add(box, [
         h("div.fe-area-head", h("div", h("h2", "Maps"),
           h("p.fe-sub", "Erazure's map lines, warnings for the mods you avoid, and maps you'd rather not see."))),
-        lines, mods, xp]);
+        lines, skipCard, mods]);
       if (app.sub && box.querySelector("#fe-" + app.sub)) box.querySelector("#fe-" + app.sub).scrollIntoView();
     },
   });
@@ -8463,8 +9174,10 @@ EZ.areas = EZ.areas || [];
   const textOf = (which) => live[which] !== null ? live[which] : blockOf(which);
 
   function lintContext(app) {
+    let erazureF = null;  // Erazure's compiled filter (the preview's): which of its rules alert
+    try { const z = EZ.preview && EZ.preview.erazure ? EZ.preview.erazure() : null; erazureF = z ? z.F : null; } catch (e) { /* none */ }
     return EZ.lint.context(app.src, app.versionLines(), {top: EZ.rules.lines(textOf("top")),
-      bottom: EZ.rules.lines(textOf("bottom"))}, {soundCount: app.data.soundCount});
+      bottom: EZ.rules.lines(textOf("bottom"))}, {soundCount: app.data.soundCount, erazureF});
   }
 
   function lintBlock(app, which, list) {
@@ -8643,14 +9356,40 @@ EZ.areas = EZ.areas || [];
       if (onLint) onLint(findings);
     };
 
+    /* A line of the block as item changes (Items): the line goes, its overrides come. */
+    const convert = (n) => {
+      save.flush();
+      const ls = EZ.rules.lines(ta.value);
+      if (n >= ls.length) return;
+      const ctx = lintContext(app);
+      const r = EZ.overrides.fromRule(ls[n], {aliases: ctx.aliases, F: ctx.F});
+      if (r.why) { EZ.ui.toast(r.why, "bad"); return; }
+      ls.splice(n, 1);
+      const text = ls.join("\n");
+      live[which] = null;
+      EZ.store.change((ed) => {
+        ed.items = (ed.items || []).concat(r.list);
+        if (text.trim()) {
+          ed.rules = ed.rules || {};
+          ed.rules[which] = text;
+        } else if (ed.rules) {
+          delete ed.rules[which];
+          if (!Object.keys(ed.rules).length) delete ed.rules;
+        }
+      }, {label: "my rules to items"});
+      EZ.ui.toast((r.list.length === 1 ? "Now an item change" : `Now ${r.list.length} item changes`) +
+        ": see Items (edit it there like any other).", "good");
+    };
+
     const drawLint = () => {
-      const shown = findings.filter((f) => f.level !== "info" || findings.length < 12);
+      const shown = findings.filter((f) => f.level !== "info" || f.fix || findings.length < 12);
       fill(lintBox, shown.slice(0, 60).map((f) => h("li.fe-ed-finding." + f.level,
         h("button.fe-btn.ghost.small", {type: "button", onclick: () => selectLine(f.line),
           title: "Go to line " + (f.line + 1)}, "Line " + (f.line + 1)),
         pill(f.level === "error" ? "error" : f.level === "warning" ? "check" : "note",
              f.level === "error" ? "bad" : f.level === "warning" ? "warn" : "info"),
-        h("span", f.text))));
+        h("span", f.text),
+        f.fix ? h("button.fe-btn.small", {type: "button", onclick: () => convert(f.line)}, f.fix.label) : null)));
       if (shown.length > 60) lintBox.appendChild(h("li.fe-sub", `… and ${shown.length - 60} more.`));
     };
 

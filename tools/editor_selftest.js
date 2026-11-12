@@ -298,7 +298,78 @@
         const r = run(F, {code: "r30"}, ground(1)), b = run(base, {code: "r30"}, ground(1));
         return r.sound === b.sound && r.chatRule !== null ? null : "Ber Rune's own alert changed";
       }],
+      // the scope's sockets, enhanced defense, item level and several qualities (non-magical)
+      ["show non-magical non-eth Full Plate Mails with 0 or 3 sockets on level 12", [{action: "show",
+        scope: {codes: ["ful"], quals: ["NMAG"], eth: "no", sockets: [0, 3], levels: [12]}}], (F) => {
+        for (const [spec, want] of [[{code: "ful", sockets: 0}, true], [{code: "ful", sockets: 3}, true],
+          [{code: "ful", quality: "SUP", sockets: 3, stats: [[16, 0, 12]]}, true], [{code: "ful", sockets: 1}, false],
+          [{code: "ful", sockets: 3, eth: true}, false], [{code: "ful", quality: "MAG", sockets: 0}, "same"]]) {
+          const a = run(F, spec, ground(12));
+          if (want === "same") { if (!same(a, run(base, spec, ground(12)))) return "a magic one changed"; continue; }
+          if (a.hidden === want) return show(spec) + (want ? " still hidden" : " shown");
+        }
+        return same(run(F, {code: "ful", sockets: 0}, ground(11)), run(base, {code: "ful", sockets: 0}, ground(11))) ?
+          null : "level 11 changed";
+      }],
+      ["hide rare amulets below item level 90 on level 12", [{action: "hide",
+        scope: {codes: ["amu"], quals: ["RARE"], ilvl: ["", "89"], levels: [12]}}], (F) => {
+        const a = run(F, {code: "amu", quality: "RARE", ilvl: 80}, ground(12));
+        if (!a.invisible || a.icons.length) return "item level 80: " + show([a.name, boxes(a)]);
+        return same(run(F, {code: "amu", quality: "RARE", ilvl: 90}, ground(12)),
+          run(base, {code: "amu", quality: "RARE", ilvl: 90}, ground(12))) ? null : "item level 90 changed";
+      }],
+      ["show superior Caps with 10%+ enhanced defense on level 12", [{action: "show",
+        scope: {codes: ["cap"], quals: ["SUP"], ed: "10", levels: [12]}}], (F) => {
+        if (run(F, {code: "cap", quality: "SUP", stats: [[16, 0, 12]]}, ground(12)).hidden) return "12% still hidden";
+        return run(F, {code: "cap", quality: "SUP", stats: [[16, 0, 5]]}, ground(12)).hidden ? null : "5% shown";
+      }],
+      ["a narrower show wins over a wider hide of the player's", [
+        {action: "hide", scope: {codes: ["bhm", "xh9", "uh9", "cap", "skp"], quals: ["RARE"], levels: [11]}},
+        {action: "show", scope: {codes: ["bhm", "xh9", "uh9"], quals: ["RARE"], levels: [11]}}], (F) => {
+        const a = run(F, {code: "bhm", quality: "RARE"}, ground(11)), b = run(F, {code: "cap", quality: "RARE"}, ground(11));
+        if (a.hidden) return "the Bone Helm stays hidden";
+        if (!b.hidden || b.icons.length) return "the Cap isn't hidden";
+        return same(a, run(F, {code: "bhm", quality: "RARE"}, ground(5))) ? null : "the Bone Helm doesn't look as on level 5";
+      }],
+      ["show magic eth Glaives on level 12 as level 11 shows them", [{action: "show", look: "level", asLevel: 11,
+        scope: {codes: ["glv", "9gl", "7gl"], quals: ["MAG"], eth: "yes", levels: [12]}}], (F) => {
+        const spec = {code: "glv", quality: "MAG", eth: true};
+        if (!same(run(F, spec, ground(12)), run(base, spec, ground(11)))) return "not as on level 11: " + show(run(F, spec, ground(12)).name);
+        for (const lv of [0, 5, 10, 11]) if (!same(run(F, spec, ground(lv)), run(base, spec, ground(lv)))) return `level ${lv} changed`;
+        return same(run(F, {code: "jav", quality: "MAG", eth: true}, ground(12)), run(base, {code: "jav", quality: "MAG",
+          eth: true}, ground(12))) ? null : "a Javelin changed";
+      }],
+      ["show white Diadems with red dots, the name in its own color", [{action: "show", look: "own",
+        text: "%RED%•  %NAME%  %RED%•", keepColor: true, scope: {codes: ["ci3"], quals: ["NMAG"], levels: [12]}}], (F) => {
+        const a = run(F, {code: "ci3", sockets: 0}, ground(12)), b = run(F, {code: "ci3", sockets: 2}, ground(12));
+        if (!/^ÿc1•  ÿc0/.test(a.name) || !/ÿc1•$/.test(a.name)) return "0 sockets: " + show(a.name);
+        if (!/^ÿc1•  ÿc5/.test(b.name)) return "2 sockets: " + show(b.name);
+        return same(run(F, {code: "ci3", sockets: 0}, ground(11)), run(base, {code: "ci3", sockets: 0}, ground(11))) ?
+          null : "level 11 changed";
+      }],
     ];
+    // a rule of My rules made an item change: its hide takes Erazure's icon too
+    {
+      const line = "ItemDisplay[FILTLVL=12 amu RARE ILVL<90 GROUND !TOWN]:";
+      const Fz = base, aliases = C.bhAliases(C.bhEntries(lines));
+      const tr = EZ.overrides.treeOf(line.slice(12, line.indexOf("]:")), {aliases});
+      const meets = tr ? EZ.overrides.alertsMeeting(tr.tree, tr.F, Fz, 3) : [];
+      if (!meets.length) bad.push("My rules: no Erazure alert found for a hide of rare amulets on level 12");
+      const r = EZ.overrides.fromRule(line, {aliases});
+      if (r.why) bad.push("My rules to Items: " + r.why);
+      else if (show((({codes, quals, levels, ilvl, extra}) => [codes, quals, levels, ilvl, extra])(r.list[0].scope)) !==
+               show([["amu"], ["RARE"], [12], ["", "89"], ""])) bad.push("My rules to Items: its scope " + show(r.list[0].scope));
+      if (!r.why) cases.push(["My rules' hide of rare amulets below 90, as an item change", r.list, (F) => {
+        const a = run(F, {code: "amu", quality: "RARE", ilvl: 80}, ground(12));
+        if (!a.invisible || a.icons.length) return "item level 80: " + show([a.name, boxes(a)]);
+        return same(run(F, {code: "amu", quality: "RARE", ilvl: 95}, ground(12)), run(base, {code: "amu", quality: "RARE",
+          ilvl: 95}, ground(12))) ? null : "item level 95 changed";
+      }]);
+      const s = EZ.overrides.fromRule("ItemDisplay[FILTLVL=12 ful NMAG !ETH (SOCK=0 OR SOCK=3)]:%RED%* %NAME%{%NAME%}%DOT-0A%", {aliases});
+      if (s.why || s.list.length !== 2 || s.list[0].look !== "own" || s.list[1].action !== "notify") {
+        bad.push("My rules to Items: a look with an icon became " + show(s.why || s.list.map((o) => o.action)));
+      }
+    }
     let n = 0;
     for (const [what, items, check] of cases) {
       if (what.indexOf("undefined") >= 0) { bad.push(what + ": no item to test it on"); continue; }
@@ -315,6 +386,140 @@
       if (!r.hidden) bad.push("together: the narrower hide of Ber Runes lost to the wider show");
     } catch (e) { bad.push("together: " + e.message); }
     return {fail: bad.length ? bad.join("\n  ") : null, cases: n, ms: Math.round(performance.now() - t0)};
+  });
+
+  /* A player's own level 12 (2026-11-12): his 19 asks as item changes, each as he meant it, Erazure's own looks kept,
+     a hide that takes the icon too, and levels 0-11 as Erazure's. */
+  test("level12", () => {
+    EZ.items.init({catalog: EXPECT.catalog});
+    const main = src.variants.find((v) => v.name === src.main);
+    const lines = C.variantLines(src, main);
+    const opts = {statMax: EXPECT.catalog.statMax, skillMax: EXPECT.catalog.skillMax, soundCount: EXPECT.soundCount};
+    const t0 = performance.now(), bad = [];
+    const cat = EZ.items.catalog(), has = (c) => cat.bases.has(c);
+    const group = (g, f) => [...cat.bases.values()].filter((b) => b.groups.indexOf(g) >= 0 && b.spawnable &&
+      !b.quest && (!f || f(b))).map((b) => b.code);
+    const THROW = group("THROWING", (b) => b.weapon && b.types.indexOf("tpot") < 0);
+    const JAVS = ["glv", "jav", "ssp", "9s9", "9gl", "9ja", "7s7", "7gl", "7ja"];
+    const BARB = ["ba4", "ba5", "ba9", "baa", "bae", "baf"], AJAV = ["am5", "ama", "amf"], BONE = ["bhm", "xh9", "uh9"];
+    const HELMS = group("HELM", (b) => b.groups.indexOf("CLASS") < 0).filter((c) => BONE.indexOf(c) < 0);
+    const PALS = group("DIN", (b) => b.armor).filter((c) => c !== "paf" && c !== "paa");
+    if (THROW.length !== 30 || PALS.length !== 13 || HELMS.length !== 21) bad.push(`kinds: ${THROW.length} throwing ` +
+      `weapons (30), ${PALS.length} paladin shields (13), ${HELMS.length} helms (21)`);
+    const DOTS = {look: "own", text: "%RED%•  %NAME%  %RED%•", keepColor: true};
+    let k = 0;
+    const o = (action, codes, scope, more) => Object.assign({id: "p" + (k++), action, scope: Object.assign({codes,
+      levels: [12]}, scope)}, more || {});
+    const items = [
+      o("show", ["ful"], {quals: ["NMAG"], eth: "no", sockets: [0, 3]}, DOTS),
+      o("show", BONE, {quals: ["RARE"]}),
+      o("show", BARB, {quals: ["NMAG"], sockets: [0, 3]}, DOTS),
+      o("show", AJAV, {quals: ["NMAG"], sockets: [0]}, DOTS),
+      o("show", AJAV, {quals: ["MAG", "RARE"]}),
+      o("show", ["flb", "9fb", "7fb"], {quals: ["RARE"]}),
+      o("show", ["ci3"], {quals: ["NMAG"], sockets: [0]}, DOTS),
+      o("hide", ["gpb", "gpy", "gpv"], {}),
+      o("show", ["cm2"], {quals: ["MAG"], ilvl: ["90", ""]}, {look: "level", asLevel: 10}),
+      o("hide", ["cm1", "cm2", "cm3"], {quals: ["MAG"], ilvl: ["", "89"]}),
+      o("show", BARB, {quals: ["MAG", "RARE"]}),
+      o("show", JAVS, {quals: ["NMAG"], eth: "yes", sockets: [0]}, DOTS),
+      o("show", JAVS, {quals: ["MAG"], eth: "yes"}),
+      o("show", THROW, {quals: ["RARE"]}),
+      o("show", HELMS, {quals: ["NMAG"], sockets: [0, 3], ed: "10"}, DOTS),
+      o("show", BONE, {quals: ["NMAG"], sockets: [0, 3]}, DOTS),
+      o("hide", PALS, {quals: ["NMAG"]}),
+      o("hide", ["amu"], {quals: ["RARE"], ilvl: ["", "89"]}),
+    ];
+    const p = EZ.store.normalize({name: "t", edits: {base: {style: "erazure"}, items}});
+    const F = E.compile(EZ.edits.apply(src, p, lines).lines, opts), F0 = E.compile(lines, opts);
+    const ctx = (lv, cls) => ({filtlvl: lv, clvl: 90, cls: cls === undefined ? 1 : cls, diff: 2, mapid: 2, charstats: {12: 90}});
+    const make = (spec) => EZ.items.make(Object.assign({place: "GROUND", ilvl: 85}, spec));
+    const state = (r) => !r.hidden ? "show" : (r.icons.length || r.sound) ? "icon" : "hide";
+    const ED = (armor, v) => [[armor ? 16 : 17, 0, v]], RES = (v) => [[39, 0, v], [41, 0, v], [43, 0, v], [45, 0, v]];
+    const cases = [];
+    const want = (what, spec, w, cls, dots) => cases.push({what, spec, w, cls, dots});
+    for (const s of [0, 3]) want("ful " + s, {code: "ful", sockets: s}, "show", 1, true);
+    for (const s of [1, 2, 4]) want("ful " + s, {code: "ful", sockets: s}, "hide");
+    want("ful eth 3", {code: "ful", sockets: 3, eth: true}, "hide");
+    for (const c of BONE) want("rare " + c, {code: c, quality: "RARE"}, "show");
+    for (const c of ["cap", "skp", "uap", "usk"]) want("rare " + c, {code: c, quality: "RARE"}, "hide");
+    for (const c of BARB) {
+      for (const [s, eth] of [[0, false], [3, false], [0, true], [3, true]]) want(`${c} ${s}${eth ? " eth" : ""}`, {code: c, sockets: s, eth}, "show", 1, true);
+      for (const q of ["MAG", "RARE"]) want(q + " " + c, {code: c, quality: q}, "show");
+    }
+    for (const c of AJAV) {
+      want(c + " 0", {code: c, sockets: 0}, "show", 1, true);
+      want(c + " 2", {code: c, sockets: 2}, "hide");
+      for (const [q, cls] of [["MAG", 1], ["RARE", 1], ["MAG", 0]]) want(`${q} ${c} class ${cls}`, {code: c, quality: q}, "show", cls);
+    }
+    for (const c of ["flb", "9fb", "7fb"]) want("rare " + c, {code: c, quality: "RARE"}, "show");
+    for (const c of ["ci0", "ci1", "ci2", "ci3"]) want("rare " + c, {code: c, quality: "RARE"}, "show");
+    want("ci3 0", {code: "ci3", sockets: 0}, "show", 1, true);
+    want("ci3 2", {code: "ci3", sockets: 2}, "hide");
+    for (const c of ["skl", "gpw", "gpg", "skz", "gpr"].filter(has)) want(c, {code: c}, "show");
+    for (const c of ["gpb", "gpy", "gpv", "glw", "glr", "gsw", "gfw", "sku"].filter(has)) want(c, {code: c}, "hide");
+    for (const c of ["cm1", "cm2", "cm3"]) {
+      want(c + " 85", {code: c, quality: "MAG", ilvl: 85}, "hide");
+      want(c + " 91", {code: c, quality: "MAG", ilvl: 91}, "show");
+    }
+    for (const c of JAVS) {
+      want(c + " eth 0", {code: c, eth: true, sockets: 0}, "show", 1, true);
+      want(c + " eth 1", {code: c, eth: true, sockets: 1}, "hide");
+      want("magic " + c + " eth", {code: c, quality: "MAG", eth: true}, "show");
+    }
+    for (const c of THROW) want("rare " + c, {code: c, quality: "RARE"}, "show");
+    for (const c of ["aar", "ful", "gth", "fld", "xul", "xth", "xar", "uar", "uul", "utu", "uld", "xld"]) want("rare " + c, {code: c, quality: "RARE"}, "show");
+    for (const c of HELMS) {
+      want(c + " sup 0 12ed", {code: c, quality: "SUP", sockets: 0, stats: ED(true, 12)}, "show", 1, true);
+      want(c + " sup eth 0 12ed", {code: c, quality: "SUP", eth: true, sockets: 0, stats: ED(true, 12)}, "show", 1, true);
+      want(c + " sup 0 5ed", {code: c, quality: "SUP", sockets: 0, stats: ED(true, 5)}, "hide");
+      want(c + " 0", {code: c, sockets: 0}, "hide");
+      want(c + " sup 1 12ed", {code: c, quality: "SUP", sockets: 1, stats: ED(true, 12)}, "hide");
+    }
+    for (const c of ["usk", "ghm", "xhm", "uhm"].filter((x) => HELMS.indexOf(x) >= 0)) {
+      want(c + " sup 3 12ed", {code: c, quality: "SUP", sockets: 3, stats: ED(true, 12)}, "show", 1, true);
+    }
+    for (const c of BONE) {
+      want(c + " 0", {code: c, sockets: 0}, "show", 1, true);
+      want(c + " 1", {code: c, sockets: 1}, "hide");
+    }
+    want("uh9 3", {code: "uh9", sockets: 3}, "show", 1, true);
+    for (const [c, eth, s, r] of [["pa8", true, 4, 30], ["pa9", true, 0, 30], ["pad", false, 4, 35], ["pac", true, 4, 25],
+      ["pab", true, 4, 25], ["pae", false, 4, 35]]) want(`${c} ${s} ${r}res`, {code: c, eth, sockets: s, stats: RES(r)}, "hide");
+    for (const [c, eth] of [["paf", false], ["paa", true]]) want(`${c} as Erazure`, {code: c, eth, sockets: 4, stats: RES(35)}, "same");
+    for (const [c, many] of [["7gd", 6], ["7fb", 5]]) {
+      for (const s of [0, many]) want(`${c} sup ${s} 15ed`, {code: c, quality: "SUP", sockets: s, ilvl: 87, stats: ED(false, 15)}, "show");
+      want(c + " 0", {code: c, sockets: 0, ilvl: 87}, "hide");
+    }
+    for (const [il, w] of [[80, "hide"], [89, "hide"], [90, "show"], [95, "show"]]) want("rare amu " + il, {code: "amu", quality: "RARE", ilvl: il}, w);
+    let n = 0;
+    for (const c of cases) {
+      const it = make(c.spec);
+      if (!it) { bad.push(c.what + ": no such item"); continue; }
+      n++;
+      const r = E.run(F, it, ctx(12, c.cls), {});
+      if (c.w === "same") {
+        const b = E.run(F0, it, ctx(12, c.cls), {});
+        if (r.name !== b.name || state(r) !== state(b)) bad.push(c.what + ": not Erazure's");
+      } else if (state(r) !== c.w) bad.push(`${c.what}: ${state(r)}, not ${c.w}`);
+      else if (c.dots) {
+        const col = it.quality === "MAG" ? "3" : E.gameColor(it);
+        if (r.name.indexOf("ÿc1•  ÿc" + col) !== 0 || !/ÿc1•$/.test(r.name)) bad.push(c.what + ": no red dots " + JSON.stringify(r.name));
+      }
+      for (const lv of [1, 5, 8, 11]) {
+        const a = E.run(F0, it, ctx(lv, c.cls), {}), b = E.run(F, it, ctx(lv, c.cls), {});
+        if (a.name !== b.name || a.hidden !== b.hidden || a.icons.length !== b.icons.length || a.sound !== b.sound) {
+          bad.push(`${c.what}: level ${lv} changed`);
+          break;
+        }
+      }
+    }
+    // the Large Charm takes level 10's look
+    const lc = E.run(F, make({code: "cm2", quality: "MAG", ilvl: 91}), ctx(12), {});
+    const lc10 = E.run(F0, make({code: "cm2", quality: "MAG", ilvl: 91}), ctx(10), {});
+    if (lc.name !== lc10.name) bad.push("Large Charm 91: " + JSON.stringify(lc.name) + ", level 10 " + JSON.stringify(lc10.name));
+    return {fail: bad.length ? bad.slice(0, 20).join("\n  ") + (bad.length > 20 ? `\n  … ${bad.length - 20} more` : "") : null,
+            items: items.length, cases: n, ms: Math.round(performance.now() - t0)};
   });
 
   /* Wishlists tag the identified items that have the stats, and only them (tools/editor/wishlists.js). */
@@ -372,13 +577,22 @@
     if (!at(F, {id: true, stats: [[440, 0, 391]]}).invisible) bad.push("a map with Hell Bovines isn't hidden");
     if (at(F, {id: true, stats: [[442, 0, 1111]]}).hidden) bad.push("a map without Hell Bovines is hidden");
     if (at(F, {id: true, stats: [[440, 0, 391]]}, 1).hidden) bad.push("a map with Hell Bovines is hidden in town");
-    F = build({minXp: "1.5"});
-    if (!at(F, {id: true, stats: []}).hidden) bad.push("a map with no rolls isn't hidden below 1.5x");
-    if (at(F, {id: false}).hidden) bad.push("an unidentified map is hidden");
-    if (at(F, {id: true, stats: [[372, 0, 60], [373, 0, 24], [375, 0, 90], [370, 0, 110]]}).hidden) {
-      bad.push("a map with density, experience and rarity rolls is hidden below 1.5x");
-    }
-    return {fail: bad.length ? bad.join("\n  ") : null, map: code, cases: 8};
+    // a map the player never picks up: its non-magical ones hidden on the ground outside town, on the levels picked
+    const skip = EZ.maps.choices()[0].maps[0].code;
+    F = build({hideMaps: [skip], hideMapsLevels: [11, 12]});
+    const run = (spec, lv, mapid) => E.run(F, EZ.items.make(Object.assign({code: skip, place: "GROUND"}, spec)),
+      {filtlvl: lv, clvl: 90, cls: 1, diff: 2, mapid: mapid || 2, charstats: {12: 90}}, {});
+    const w12 = run({quality: "NORM"}, 12);
+    if (!w12.invisible || w12.icons.length) bad.push("a non-magical " + skip + " isn't hidden on level 12");
+    if (run({quality: "NORM"}, 12, 1).hidden) bad.push("a non-magical " + skip + " is hidden in town");
+    if (run({quality: "NORM", place: "INVENTORY"}, 12).hidden) bad.push("a non-magical " + skip + " is hidden in the inventory");
+    if (run({quality: "NORM"}, 9).hidden) bad.push("a non-magical " + skip + " is hidden on level 9");
+    const base12 = E.run(E.compile(lines, opts), EZ.items.make({code: skip, quality: "MAG", place: "GROUND"}),
+      {filtlvl: 12, clvl: 90, cls: 1, diff: 2, mapid: 2, charstats: {12: 90}}, {});
+    if (run({quality: "MAG"}, 12).hidden !== base12.hidden) bad.push("a magic " + skip + " changed");
+    if (EZ.maps.choices().some((t) => t.maps.some((x) => EZ.items.base(x.code).maptier !== t.tier)) ||
+        EZ.maps.choices().reduce((n, t) => n + t.maps.length, 0) < 25) bad.push("the T1-T3 map list is off");
+    return {fail: bad.length ? bad.join("\n  ") : null, map: code, hidden: skip, cases: 11};
   });
 
   /* The Changes area's line diff (tools/editor/diff.js): it rebuilds both sides, pairs only equal lines and is as

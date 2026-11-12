@@ -120,8 +120,10 @@ EZ.areas = EZ.areas || [];
   const textOf = (which) => live[which] !== null ? live[which] : blockOf(which);
 
   function lintContext(app) {
+    let erazureF = null;  // Erazure's compiled filter (the preview's): which of its rules alert
+    try { const z = EZ.preview && EZ.preview.erazure ? EZ.preview.erazure() : null; erazureF = z ? z.F : null; } catch (e) { /* none */ }
     return EZ.lint.context(app.src, app.versionLines(), {top: EZ.rules.lines(textOf("top")),
-      bottom: EZ.rules.lines(textOf("bottom"))}, {soundCount: app.data.soundCount});
+      bottom: EZ.rules.lines(textOf("bottom"))}, {soundCount: app.data.soundCount, erazureF});
   }
 
   function lintBlock(app, which, list) {
@@ -300,14 +302,40 @@ EZ.areas = EZ.areas || [];
       if (onLint) onLint(findings);
     };
 
+    /* A line of the block as item changes (Items): the line goes, its overrides come. */
+    const convert = (n) => {
+      save.flush();
+      const ls = EZ.rules.lines(ta.value);
+      if (n >= ls.length) return;
+      const ctx = lintContext(app);
+      const r = EZ.overrides.fromRule(ls[n], {aliases: ctx.aliases, F: ctx.F});
+      if (r.why) { EZ.ui.toast(r.why, "bad"); return; }
+      ls.splice(n, 1);
+      const text = ls.join("\n");
+      live[which] = null;
+      EZ.store.change((ed) => {
+        ed.items = (ed.items || []).concat(r.list);
+        if (text.trim()) {
+          ed.rules = ed.rules || {};
+          ed.rules[which] = text;
+        } else if (ed.rules) {
+          delete ed.rules[which];
+          if (!Object.keys(ed.rules).length) delete ed.rules;
+        }
+      }, {label: "my rules to items"});
+      EZ.ui.toast((r.list.length === 1 ? "Now an item change" : `Now ${r.list.length} item changes`) +
+        ": see Items (edit it there like any other).", "good");
+    };
+
     const drawLint = () => {
-      const shown = findings.filter((f) => f.level !== "info" || findings.length < 12);
+      const shown = findings.filter((f) => f.level !== "info" || f.fix || findings.length < 12);
       fill(lintBox, shown.slice(0, 60).map((f) => h("li.fe-ed-finding." + f.level,
         h("button.fe-btn.ghost.small", {type: "button", onclick: () => selectLine(f.line),
           title: "Go to line " + (f.line + 1)}, "Line " + (f.line + 1)),
         pill(f.level === "error" ? "error" : f.level === "warning" ? "check" : "note",
              f.level === "error" ? "bad" : f.level === "warning" ? "warn" : "info"),
-        h("span", f.text))));
+        h("span", f.text),
+        f.fix ? h("button.fe-btn.small", {type: "button", onclick: () => convert(f.line)}, f.fix.label) : null)));
       if (shown.length > 60) lintBox.appendChild(h("li.fe-sub", `… and ${shown.length - 60} more.`));
     };
 

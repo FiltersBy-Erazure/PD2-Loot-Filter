@@ -268,6 +268,7 @@ EZ.app = (function () {
 
   function fromHash() {
     const m = /^#([a-z-]+)(?:\/(.*))?$/.exec(location.hash || "");
+    if (m && m[1] === "wishlists") m[1] = "highlights";  // the area's name until 2026-11-12
     if (m && EZ.areas.some((a) => a.id === m[1])) {
       app.area = m[1];
       app.sub = m[2] ? decodeURIComponent(m[2]) : "";

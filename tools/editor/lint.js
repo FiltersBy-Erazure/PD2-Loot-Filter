@@ -86,10 +86,12 @@ EZ.lint = (function () {
   /* ---------------------------------------------------------------- the context */
 
   const cache = new WeakMap();
+  const alertCache = new WeakMap();  // Erazure's compiled filter -> condition -> its alerting rules a hide leaves
 
   /* What the lint needs of the player's filter: the aliases in the order BH reads them (Erazure's before 050, the
      top block's, Erazure's after it, the bottom block's), the named formulas, the game's item codes, Erazure's alias
-     and formula names and the words of its conditions. blocks: {top: [lines], bottom: [lines]}. */
+     and formula names and the words of its conditions, where a line of Erazure's is (where(i): "200-magic:42") and
+     Erazure's compiled filter (opts.erazureF, for its alerts). blocks: {top: [lines], bottom: [lines]}. */
   function context(src, versionLines, blocks, opts) {
     opts = opts || {};
     let base = cache.get(versionLines);
@@ -105,7 +107,11 @@ EZ.lint = (function () {
         if (e.key.startsWith("ItemDisplay[")) for (const w of e.key.match(WORD_RE) || []) words.add(w);
       }
       for (const a of aliases) for (const w of a.value.match(WORD_RE) || []) words.add(w);
-      base = {aliases, formulas, words, top: (secs[EZ.rules.PLACE.top] || [0])[0],
+      const where = (i) => {
+        const nm = EZ.filter.sectionOf(secs, i);
+        return nm ? nm.replace(/\.filter$/, "") + ":" + (i - secs[nm][0] + 1) : "line " + (i + 1);
+      };
+      base = {aliases, formulas, words, where, top: (secs[EZ.rules.PLACE.top] || [0])[0],
               bottom: (secs[EZ.rules.PLACE.bottom] || [versionLines.length])[0]};
       cache.set(versionLines, base);
     }
@@ -132,7 +138,8 @@ EZ.lint = (function () {
     }
     return {aliases, F, codes: cat && cat.bases && cat.bases.size ? new Set(cat.bases.keys()) : null,
             erazureAliases: new Set(base.aliases.map((a) => a.name)),
-            erazureFormulas: new Set(base.formulas.map((f) => f.name.toUpperCase())), words: base.words, own};
+            erazureFormulas: new Set(base.formulas.map((f) => f.name.toUpperCase())), words: base.words, own,
+            where: base.where, erazureF: opts.erazureF || null};
   }
 
   /* ---------------------------------------------------------------- the checks */
@@ -171,12 +178,13 @@ EZ.lint = (function () {
     return out;
   }
 
-  /* Lint the lines of one block: [{line, level (error / warning / info), text, word}]. env: context()'s, with block
-     ("top" / "bottom") for the messages that depend on where the lines go. */
+  /* Lint the lines of one block: [{line, level (error / warning / info), text, word, fix}]. env: context()'s, with
+     block ("top" / "bottom") for the messages that depend on where the lines go. fix: {kind: "items", label} where
+     the line can become an item change (EZ.overrides.fromRule). */
   function lines(list, env) {
     env = env || {};
     const out = [];
-    const say = (line, level, text, word) => out.push({line, level, text, word: word || null});
+    const say = (line, level, text, word, fix) => out.push({line, level, text, word: word || null, fix: fix || null});
     const F = env.F || {formulas: Object.create(null), statMax: 1023, skillMax: 1023, soundCount: 10000};
     const fs = fonts();
     list.forEach((raw, n) => {
@@ -349,6 +357,31 @@ EZ.lint = (function () {
                act.name.some((p) => typeof p !== "string" || p.replace(/ÿc./g, "").trim())) {
       say(n, "info", "This %CONTINUE% rule's text has no %NAME%: every later rule (Erazure's too) gets your text " +
         "instead of the item's name.");
+    }
+    if (env.block === "top" && !act.cont && !a.never && !a.always && EZ.overrides && EZ.overrides.alertsMeeting) {
+      const fix = {kind: "items", label: "Make it an item change"};
+      if (hides && env.erazureF) {
+        let seen = alertCache.get(env.erazureF);
+        if (!seen) { seen = new Map(); alertCache.set(env.erazureF, seen); }
+        let found = seen.get(cond);
+        if (!found) {
+          const tree = EZ.engine.condition(isl, condF);
+          found = tree ? EZ.overrides.alertsMeeting(tree, condF, env.erazureF, 3) : [];
+          if (seen.size > 500) seen.clear();
+          seen.set(cond, found);
+        }
+        if (found.length) {
+          say(n, "warning", "Erazure gives some of these items a minimap icon, chat line or sound (" +
+            found.map((i) => env.where ? env.where(i) : "line " + (i + 1)).join(", ") + "): BH works out alerts in a " +
+            "pass of its own, so a hide here leaves them. As an item change (Items) the hide takes them away too.",
+            null, fix);
+        }
+      } else if (!hides && act.text.length) {
+        say(n, "info", "Above Erazure's rules this decides the look: Erazure's own looks and tags never reach these " +
+          "items" + (/\bGROUND\b/.test(cond) ? "" : ", in your stash and inventory too") + ". To show items Erazure " +
+          "hides with Erazure's look (or with a look of your own on top of Erazure's tags), make it an item change.",
+          null, fix);
+      }
     }
     if (out0.indexOf("{") < 0 && out0.trim()) {
       say(n, "info", "Without { } this rule empties the description earlier rules wrote. Write {%NAME%} to keep it.");

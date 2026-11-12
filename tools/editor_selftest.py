@@ -326,6 +326,24 @@ def set_alias(lines, name, value):
     return False
 
 
+HIDE_KEYS = re.compile(r"%(?:(?:BORDER|MAP|DOT|PX|LINE|NOTIFY)-[0-9a-f]{1,4}|SOUNDID-\d{1,4}|TIER-\d)%", re.I)
+
+
+def ground_only(line):
+    """edits.js's groundOnly: a hide line gets GROUND and !TOWN where it has neither."""
+    r = rule(line)
+    if not r or re.search(r"%CONTINUE%", r["out"], re.I):
+        return line
+    if HIDE_KEYS.sub("", re.sub(r"\{[^}]*\}?", "", r["out"], count=1)).strip():
+        return line
+    has = lambda w: re.search(r"(^|[^A-Za-z0-9_])" + w + r"($|[^A-Za-z0-9_])", r["cond"]) is not None  # noqa: E731
+    add = ("" if has("GROUND") else " GROUND") + ("" if has("TOWN") else " !TOWN")
+    if not add:
+        return line
+    cond = r["cond"] + add if r["cond"].strip() else add.strip()
+    return r["off"] + "ItemDisplay[" + cond + "]:" + r["out"] + r["comment"]
+
+
 def options050(src, lines):
     rng = sections(src, lines).get("050-customization.filter")
     out, group, opt = {}, None, None
@@ -542,11 +560,9 @@ def count(e, feats):
     n += sum(1 for v in (e.get("volume") or {}).values() if v in VOLUME_MODES)
     mp = e.get("maps") if isinstance(e.get("maps"), dict) else {}
     ids = lambda xs: {int(x) for x in (xs if isinstance(xs, list) else []) if str(x).isdigit() and 0 < int(x) < 4096}  # noqa: E731
-    try:
-        xp = float(mp.get("minXp"))
-    except (TypeError, ValueError):
-        xp = None
-    n += len(ids(mp.get("warn"))) + len(ids(mp.get("hide"))) + (1 if xp is not None and 0 < xp < 20 else 0)
+    skip = {c for c in (mp.get("hideMaps") if isinstance(mp.get("hideMaps"), list) else [])
+            if isinstance(c, str) and re.fullmatch(r"[a-z0-9]{2,4}", c)}
+    n += len(ids(mp.get("warn"))) + len(ids(mp.get("hide"))) + len(skip)
     n += sum(1 for w in (e.get("wishlists") or []) if isinstance(w, dict) and (w.get("codes") or w.get("groups")
                                                                                 or w.get("need") or w.get("pool")))
     n += sum(1 for o in (e.get("items") or []) if isinstance(o, dict) and o.get("action") in ITEM_ACTIONS
@@ -572,7 +588,7 @@ def reference(src, edits, lines, feats):
     for oid, on in (edits.get("options") or {}).items():
         if on and oid in opts:
             for i in opts[oid]:
-                lines[i] = re.sub(r"^\s*//+\s*", "", lines[i], count=1)
+                lines[i] = ground_only(re.sub(r"^\s*//+\s*", "", lines[i], count=1))
     # features
     want = edits.get("features") or {}
     for fid, on_default, secs, al, so in feats:

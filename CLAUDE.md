@@ -821,11 +821,17 @@
   folder>"`: D2GL's fonts, floors, ground pictures, the drop sounds, each atlas's code points, each class skill's
   tab; rerun after a PD2 patch that changes them or a new drop sound). The page stores edits, never a filter: every
   save builds the newest Erazure with them (`edits.js`, in this order: changes to Erazure's own rules `ops.js`
-  (found again by `style_edits.Filter.find`'s stages, merged with `merge3`), 050's options, features, looks, color
+  (found again by `style_edits.Filter.find`'s stages, merged with `merge3`), 050's options (an option's hide line
+  gets GROUND and !TOWN where it has neither, `groundOnly`: 2026-11-12, the author, every hide line the editor
+  writes is for the ground outside town, so items show as always in town, the inventory and the stash), features, looks, color
   remap, sounds, icons, alert switches, level names and copies, how loud each kind is `volume.js`, item overrides
   `overrides.js` (show / hide / mute / sound / icon / icon only / alert / look / replace / hunt, exact for BH: only
-  the rules the engine says can match the items change), wishlists `wishlists.js`, map warnings and hides
-  `maps.js`, the player's own rules `rules.js`, the Cube's "Custom (n changes)" mark), then the aliases written out
+  the rules the engine says can match the items change), wishlists `wishlists.js` (the area is called Highlights
+  since 2026-11-12, the author; its code and the edit set keep "wishlists"), map warnings and hides
+  `maps.js` (a red line or a hide for identified maps with a mod; and since 2026-11-12, the author, instead of hiding
+  maps below an experience multiplier: the T1-T3 maps a player never picks up, ticked from the full list, their
+  non-magical maps hidden on the ground outside town on the levels picked; T4 dungeons come from rare T3 maps in the
+  cube, so they are not in it), the player's own rules `rules.js`, the Cube's "Custom (n changes)" mark), then the aliases written out
   as `build.py` does; with no edits the file is the launcher's byte for byte. `engine.js` is BH's reading ported
   (conditions, formulas, both passes, the cuts, invisibility, the game's loot options), `lint.js` checks the
   player's lines as BH reads them. `python tools/editor_map.py --check` (CI) and `python tools/editor_selftest.py`
@@ -833,7 +839,24 @@
   cases and `tier_map.py` (39,702 cases), the golden edit sets of `tools/editor_fixtures/` against a Python
   reference (built on `build.py`'s own functions and `style_edits.py`; item overrides, wishlists and maps are
   checked by what they do and by `build.py`'s write-out verification), lint over every Erazure rule (no error),
-  the rule builder, wishlists, maps, the diff. `--decode FILE` prints the changes saved in a player's file. A new
+  the rule builder, wishlists, maps, the diff, and `level12`: a player's own level 12 (2026-11-12, the author: his 19
+  asks, from showing white bases with 0 or 3 sockets for Worldstone Shard corruption to hiding rare amulets under
+  item level 90) as 18 item changes, 313 items as he meant them, levels 0-11 as Erazure's. An item change picks
+  bases (one, a kind of the rule builder's groups, typed codes, then left out one by one), qualities (several, or
+  Non-magical: low quality, normal, superior; the older single `quality` still reads), ethereal, identified,
+  sockets (several counts), enhanced defense / damage at least, item level, filter and character levels, and more
+  BH words (`extra`). Where two meet, the narrower wins (`narrowness`; for two alike, the later one): a wider one
+  whose rules sit outside Erazure's (a hide's line, a replaced look, an alert of the player's) leaves out the items
+  of a narrower one that must win there (`beats`, `overlap`). A show takes Erazure's look on its levels, the look of
+  another level (`look: "level"`, `asLevel`: every FILTLVL test of the rules that can match, and of the aliases,
+  reads that level for its items, a %TIER-n% between them gets a twin), or the player's own (`look: "own"`, a show
+  and a look). `keepColor`: after the player's text the name gets its own color back (a twin per color: white,
+  gray when ethereal or socketed, gold for runewords, the quality's; the author, 2026-11-12: white bases kept for
+  corruption with a red dot on each side, `%RED%•  %NAME%  %RED%•`). In My rules, lint says when a hide above
+  Erazure's rules leaves Erazure's icons, chat lines or sounds (BH's separate alert pass, `alertsMeeting`) and when
+  a rule there replaces Erazure's look, and "Make it an item change" turns the line into item changes
+  (`fromRule`, its words taken apart into the Items form's fields by `scopeOf`). `--decode FILE` prints the changes
+  saved in a player's file. A new
   module goes into `MODULES` (and the selftest's list when it holds logic); a new edit field into
   `store.normalize` and `edits.js`'s order, with a fixture.
 - The website's **Resources** tab (2026-11-02, the author: reference pages players can look things up in, more to

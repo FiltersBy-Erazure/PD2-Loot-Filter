@@ -49,6 +49,21 @@ EZ.edits = (function () {
 
   /* ---------------------------------------------------------------- the steps */
 
+  /* A hide line hides on the ground outside town only, as Erazure's own hide rules do: GROUND and !TOWN added where
+     it has neither (2026-11-12, the author: every hide line the editor writes is for the ground outside town, so an
+     item shows as always in town, the inventory and the stash; 050's options have no GROUND). */
+  function groundOnly(line) {
+    const r = F.rule(line);
+    if (!r || /%CONTINUE%/i.test(r.out)) return line;
+    const label = r.out.replace(/\{[^}]*\}?/, "")
+      .replace(/%(?:(?:BORDER|MAP|DOT|PX|LINE|NOTIFY)-[0-9a-f]{1,4}|SOUNDID-\d{1,4}|TIER-\d)%/gi, "").trim();
+    if (label) return line;
+    const has = (w) => new RegExp("(^|[^A-Za-z0-9_])" + w + "($|[^A-Za-z0-9_])").test(r.cond);
+    const add = (has("GROUND") ? "" : " GROUND") + (has("TOWN") ? "" : " !TOWN");
+    if (!add) return line;
+    return r.off + "ItemDisplay[" + (r.cond.trim() ? r.cond + add : add.trim()) + "]:" + r.out + r.comment;
+  }
+
   function options(ctx) {
     const want = ctx.edits.options || {};
     const ids = Object.keys(want).filter((k) => want[k]);
@@ -59,7 +74,7 @@ EZ.edits = (function () {
     for (const id of ids) {
       const o = byId.get(id);
       if (!o) { ctx.unplaced("options", id, "Erazure no longer has this option"); continue; }
-      for (const i of o.lines) ctx.lines[i] = ctx.lines[i].replace(/^\s*\/\/+\s*/, "");
+      for (const i of o.lines) ctx.lines[i] = groundOnly(ctx.lines[i].replace(/^\s*\/\/+\s*/, ""));
     }
   }
 
@@ -392,6 +407,6 @@ EZ.edits = (function () {
     return data && data.app === "erazure-filter-editor" ? data : null;
   }
 
-  return {apply, step, count, countArea, counter, headerLines, fromFile, pack, unpack, copyLevels, COLORS,
+  return {apply, step, count, countArea, counter, headerLines, fromFile, pack, unpack, copyLevels, groundOnly, COLORS,
           featureDefault, resized, SITE};
 })();

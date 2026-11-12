@@ -1,8 +1,10 @@
 /* Maps (the Maps area): a red warning line on identified maps that roll the mods the player picks (right before
-   Erazure's last map rules, 147, so it sits with the map's other lines), and identified maps hidden on the ground
-   when they roll a mod the player won't run or promise less experience than the player asks for (146's MXR_<code>:
-   the map's rolls' experience multiplier). The hides are item overrides (EZ.overrides), so BH draws nothing for such
-   a map, not even its icon. */
+   Erazure's last map rules, 147, so it sits with the map's other lines), identified maps hidden on the ground when
+   they roll a mod the player won't run, and the T1-T3 maps the player never picks up: their non-magical ones (what
+   monsters drop) hidden on the ground outside town, on the filter levels the player picks (2026-11-12, the author:
+   instead of hiding maps below an experience multiplier; T4 dungeons come from rare T3 maps in the cube, always
+   identified and rare, so they are never in the list). The hides are item overrides (EZ.overrides), so BH draws
+   nothing for such a map, not even its icon, and the map looks as always in town, the inventory and the stash. */
 var EZ = typeof EZ !== "undefined" ? EZ : {};
 EZ.maps = (function () {
   "use strict";
@@ -10,6 +12,7 @@ EZ.maps = (function () {
                  "// ===============  End of your map warnings  ==============="];
   const SECTION = "147-map-display-end.filter";
   const MAPS = "(MAPTIER>0 OR UNIQUE_MAPS)";
+  const WHITE = ["INF", "NORM", "SUP"];
 
   /* A roll of each map stat (the page's data: the affixes' highest), so a stat's text reads as on a map ("-38% Fire
      Resist" is "less Fire Resist"). */
@@ -19,7 +22,11 @@ EZ.maps = (function () {
   }
 
   const ids = (list) => [...new Set((Array.isArray(list) ? list : []).map((x) => parseInt(x, 10)).filter((n) => n > 0 && n < 4096))];
-  const minXp = (m) => { const v = parseFloat(m && m.minXp); return isFinite(v) && v > 0 && v < 20 ? Math.round(v * 100) / 100 : null; };
+  /* The map codes the player hides (item codes, as the edit set keeps them). */
+  const mapCodes = (list) => [...new Set((Array.isArray(list) ? list : []).filter((c) => typeof c === "string" &&
+    /^[a-z0-9]{2,4}$/.test(c)))];
+  const levelsOf = (list) => [...new Set((Array.isArray(list) ? list : []).map((x) => parseInt(x, 10))
+    .filter((n) => n >= 1 && n <= 12))].sort((a, b) => a - b);
 
   /* A mod's name for the warning line: the stat's own text without its numbers. */
   function name(sid) {
@@ -37,19 +44,27 @@ EZ.maps = (function () {
     return {all, xp: all.filter((c) => mxr.has(c))};
   }
 
+  /* The maps a player can choose to hide: T1, T2 and T3 maps that drop, by tier: [{tier, maps: [{code, name}]}]. */
+  function choices() {
+    const cat = EZ.items.catalog();
+    return [1, 2, 3].map((tier) => ({tier, maps: [...cat.bases.values()]
+      .filter((b) => b.map && b.maptier === tier && b.spawnable)
+      .map((b) => ({code: b.code, name: String(b.name).replace(/ÿc./g, "").replace(/\s+Map$/, "")}))
+      .sort((a, b) => a.name.localeCompare(b.name))}));
+  }
+
   function hides(edits, ctx) {
     const m = edits.maps;
     if (!m || typeof m !== "object" || !ctx) return [];
     const out = [];
-    const hide = ids(m.hide), x = minXp(m);
-    if (!hide.length && x === null) return out;
-    const c = codes(ctx.lines);
-    for (const sid of hide) out.push({action: "hide", scope: {codes: c.all, id: "yes", extra: "!STAT" + sid + "=0"}});
-    if (x !== null) {
-      for (const code of c.xp) {
-        out.push({action: "hide", scope: {codes: [code], id: "yes", extra: "$f((MXR_" + code.toUpperCase() + ")<" + x + ")"}});
-      }
+    const hide = ids(m.hide);
+    if (hide.length) {
+      const c = codes(ctx.lines);
+      for (const sid of hide) out.push({action: "hide", scope: {codes: c.all, id: "yes", extra: "!STAT" + sid + "=0"}});
     }
+    const cat = EZ.items.catalog();
+    const skip = mapCodes(m.hideMaps).filter((c) => { const b = cat.bases.get(c); return b && b.map; });
+    if (skip.length) out.push({action: "hide", scope: {codes: skip, quals: WHITE, levels: levelsOf(m.hideMapsLevels)}});
     return out;
   }
 
@@ -68,10 +83,10 @@ EZ.maps = (function () {
   function count(e) {
     const m = e.maps;
     if (!m || typeof m !== "object") return 0;
-    return ids(m.warn).length + ids(m.hide).length + (minXp(m) !== null ? 1 : 0);
+    return ids(m.warn).length + ids(m.hide).length + mapCodes(m.hideMaps).length;
   }
 
-  return {init, apply, hides, count, name, codes, ids, minXp, MAPS, SECTION};
+  return {init, apply, hides, count, name, codes, choices, ids, mapCodes, levelsOf, MAPS, SECTION};
 })();
 
 if (EZ.edits) {

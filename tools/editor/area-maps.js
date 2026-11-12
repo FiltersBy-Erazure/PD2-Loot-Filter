@@ -1,6 +1,5 @@
-/* Maps: Erazure's map lines on or off, a red warning on identified maps with the mods the player picks, and hiding
-   identified maps with a mod the player won't run or a lower experience multiplier than the player asks for
-   (EZ.maps). */
+/* Maps: Erazure's map lines on or off, a red warning on identified maps with the mods the player picks, hiding
+   identified maps with a mod the player won't run, and the T1-T3 maps the player never picks up (EZ.maps). */
 var EZ = typeof EZ !== "undefined" ? EZ : {};
 EZ.areas = EZ.areas || [];
 (function () {
@@ -20,9 +19,10 @@ EZ.areas = EZ.areas || [];
         fn(ed.maps);
         ed.maps.warn = EZ.maps.ids(ed.maps.warn);
         ed.maps.hide = EZ.maps.ids(ed.maps.hide);
-        if (!ed.maps.warn.length) delete ed.maps.warn;
-        if (!ed.maps.hide.length) delete ed.maps.hide;
-        if (EZ.maps.minXp(ed.maps) === null) delete ed.maps.minXp;
+        ed.maps.hideMaps = EZ.maps.mapCodes(ed.maps.hideMaps);
+        ed.maps.hideMapsLevels = EZ.maps.levelsOf(ed.maps.hideMapsLevels);
+        delete ed.maps.minXp;  // the experience hide, until 2026-11-12
+        for (const k of ["warn", "hide", "hideMaps", "hideMapsLevels"]) if (!ed.maps[k].length) delete ed.maps[k];
         if (!Object.keys(ed.maps).length) delete ed.maps;
       }, {label: "maps"});
       const flip = (key, sid, on) => change((x) => {
@@ -58,24 +58,45 @@ EZ.areas = EZ.areas || [];
             h("td", h("input", {type: "checkbox", checked: hide.has(s.sid), "aria-label": "Hide: " + s.name,
               onchange: (ev) => flip("hide", s.sid, ev.target.checked)}))))))))));
 
-      // experience
-      const x = EZ.maps.minXp(m);
-      const input = h("input.fe-pv-num.wide", {type: "number", min: 0, max: 10, step: 0.1, value: x === null ? "" : x,
-        placeholder: "e.g. 1.5", "aria-label": "Lowest experience multiplier",
-        onchange: (ev) => change((mm) => { mm.minXp = ev.target.value; })});
-      const site = "https://filtersby-erazure.github.io/PD2-Loot-Filter/resources/map-experience/";
-      const xp = h("section.fe-card", {id: "fe-map-xp"}, h("h3", "Experience"),
-        h("p.fe-sub", "Erazure tags identified T1-T4 maps with how much more experience their rolls give (", h("a",
-          {href: site, target: "_blank", rel: "noopener"}, "Map Experience"), "). Hide the ones below:"),
-        h("div.fe-row", h("span", "Hide identified maps below"), input, h("span", "× experience"),
-          x !== null ? h("button.fe-btn.ghost.small", {type: "button", onclick: () => change((mm) => { delete mm.minXp; })},
-            "Show them all") : null),
-        h("p.fe-sub.fe-small", "Unique maps and maps that aren't identified are never hidden by this."));
+      // the maps the player never picks up: their non-magical ones, on the ground outside town
+      const skip = new Set(EZ.maps.mapCodes(m.hideMaps)), lv = EZ.maps.levelsOf(m.hideMapsLevels);
+      const levelNames = EZ.filter.levels(app.versionLines()).map((l) => String(l.text).replace(/ÿc./g, "").trim());
+      const tiers = EZ.maps.choices();
+      const setMaps = (codes, on) => change((mm) => {
+        const now = new Set(EZ.maps.mapCodes(mm.hideMaps));
+        for (const c of codes) if (on) now.add(c); else now.delete(c);
+        mm.hideMaps = [...now];
+      });
+      const skipCard = h("section.fe-card", {id: "fe-map-skip"}, h("h3", "Maps you don't pick up"),
+        h("p.fe-sub", "Tick the maps you have no use for. Their non-magical maps (the ones monsters drop) are hidden on " +
+          "the ground outside town: no label, no icon, no sound. In town, your inventory and your stash they show as " +
+          "always. Magic, rare and unique maps are never hidden by this, nor T4 dungeons (made from rare T3 maps in " +
+          "the cube, always identified and rare)."),
+        h("div.fe-map-tiers", tiers.map(({tier, maps}) => {
+          const all = maps.every((x) => skip.has(x.code));
+          return h("div.fe-map-tier", h("div.fe-row", h("h4", {style: {margin: 0}}, "T" + tier + " maps"),
+            h("span.fe-bar-gap"), h("button.fe-btn.ghost.small", {type: "button", onclick: () =>
+              setMaps(maps.map((x) => x.code), !all)}, all ? "Untick all" : "Tick all")),
+          h("ul.fe-map-list", maps.map((x) => h("li", h("label.fe-check" + (skip.has(x.code) ? ".is-on" : ""),
+            h("input", {type: "checkbox", checked: skip.has(x.code), "aria-label": "Hide non-magical " + x.name + " maps",
+              onchange: (ev) => setMaps([x.code], ev.target.checked)}),
+            h("span", x.name), h("code.fe-small.fe-sub", x.code))))));
+        })),
+        h("div.fe-bd-field", {style: {marginTop: ".6em"}}, h("span.fe-bd-label", "On filter levels (none picked: every level)"),
+          h("div.fe-row.fe-small", levelNames.map((n, i) => h("button.fe-chiptog", {type: "button", title: `${i + 1}: ${n}`,
+            "aria-pressed": String(lv.indexOf(i + 1) >= 0), onclick: () => change((mm) => {
+              const now = EZ.maps.levelsOf(mm.hideMapsLevels);
+              const k = now.indexOf(i + 1);
+              if (k >= 0) now.splice(k, 1); else now.push(i + 1);
+              mm.hideMapsLevels = now;
+            })}, String(i + 1))))),
+        skip.size ? h("p.fe-sub.fe-small", `${skip.size} map${skip.size === 1 ? "" : "s"} hidden` + (lv.length ?
+          " on level" + (lv.length === 1 ? " " : "s ") + lv.join(", ") : " on every level") + ".") : null);
 
       EZ.ui.add(box, [
         h("div.fe-area-head", h("div", h("h2", "Maps"),
           h("p.fe-sub", "Erazure's map lines, warnings for the mods you avoid, and maps you'd rather not see."))),
-        lines, mods, xp]);
+        lines, skipCard, mods]);
       if (app.sub && box.querySelector("#fe-" + app.sub)) box.querySelector("#fe-" + app.sub).scrollIntoView();
     },
   });

@@ -1,6 +1,6 @@
-/* Wishlists: the identified items a player wants, by kind, quality and stats (each one must have, and "N of these"),
-   tagged with a description line (and a label tag, an icon and a sound if the player likes). EZ.wishlists writes
-   the rules. */
+/* Highlights (the area's name since 2026-11-12, the author; its code and the edit set still say wishlists): the
+   identified items a player wants, by kind, quality and stats (each one must have, and "N of these"), tagged with a
+   description line (and a label tag, an icon and a sound if the player likes). EZ.wishlists writes the rules. */
 var EZ = typeof EZ !== "undefined" ? EZ : {};
 EZ.areas = EZ.areas || [];
 (function () {
@@ -81,7 +81,7 @@ EZ.areas = EZ.areas || [];
     const result = h("div.fe-bd-result");
     const drawResult = () => {
       const r = EZ.wishlists.rule(d);
-      if (!r) { fill(result, h("p.fe-sub", "Pick a kind of item or a stat: a wishlist with neither would tag every item.")); return; }
+      if (!r) { fill(result, h("p.fe-sub", "Pick a kind of item or a stat: a highlight with neither would tag every item.")); return; }
       const ls = r.line.split("\n");
       const ctx = EZ.lint.context(app.src, app.versionLines(), {top: ls, bottom: []}, {soundCount: app.data.soundCount});
       const findings = EZ.lint.lines(ls, Object.assign(ctx, {block: "top"})).filter((f) => f.level !== "info");
@@ -96,14 +96,14 @@ EZ.areas = EZ.areas || [];
             ed.wishlists = (ed.wishlists || []).filter((x) => x.id !== w.id);
             ed.wishlists.push(w);
           }, {label: "wishlists"});
-        }}, d.id ? "Keep the wishlist" : "Add the wishlist"),
+        }}, d.id ? "Keep the highlight" : "Add the highlight"),
           h("button.fe-btn.ghost", {type: "button", onclick: () => { draft = null; app.drawArea(); }}, "Cancel")));
     };
     const palette = app.data.palette || [];
     const layers = d.alert.icon || {};
     const combo = EZ.rules.LAYERS.filter((k) => layers[k]).map((k) => k + "-" + layers[k]).join(" ");
     fill(box,
-      h("h3", d.id ? "Change the wishlist" : "A new wishlist"),
+      h("h3", d.id ? "Change the highlight" : "A new highlight"),
       h("fieldset.fe-bd-set", h("legend", "Which items"),
         h("label.fe-bd-field.wide", h("span.fe-bd-label", "Its name (for you)"), h("input", {type: "text", value: d.name,
           oninput: (e) => set(() => { d.name = e.target.value; }, true)})),
@@ -123,7 +123,7 @@ EZ.areas = EZ.areas || [];
           min: 1, max: d.pool.length, value: d.n, "aria-label": "How many of them", onchange: (e) => set(() => { d.n = e.target.value; }, true)})) : null),
       h("fieldset.fe-bd-set", h("legend", "What it gets"),
         h("label.fe-bd-field", h("span.fe-bd-label", "A line in its description"), h("input", {type: "text", value: d.line,
-          placeholder: d.name || "Wishlist", oninput: (e) => set(() => { d.line = e.target.value; }, true)})),
+          placeholder: d.name || "Highlight", oninput: (e) => set(() => { d.line = e.target.value; }, true)})),
         h("div.fe-bd-field", h("span.fe-bd-label", "Its color"), h("select", {"aria-label": "Its color", onchange: (e) =>
           set(() => { d.color = e.target.value; })}, EZ.wishlists.COLORS.map((c) => h("option", {value: c, selected: d.color === c},
           c.charAt(0) + c.slice(1).toLowerCase().replace("_", " "))))),
@@ -149,7 +149,7 @@ EZ.areas = EZ.areas || [];
   }
 
   EZ.areas.push({
-    id: "wishlists", title: "Wishlists", icon: "★", order: 60, group: "b",
+    id: "highlights", title: "Highlights", icon: "★", order: 60, group: "b",
     count: (e) => EZ.edits.countArea("wishlists", e),
     render(box, app) {
       const e = EZ.store.current().edits;
@@ -157,20 +157,20 @@ EZ.areas = EZ.areas || [];
       const card = h("section.fe-card", {id: "fe-wish-edit"});
       if (draft) editor(app, card);
       EZ.ui.add(box, [
-        h("div.fe-area-head", h("div", h("h2", "Wishlists"),
-          h("p.fe-sub", "The identified items you want: by kind, quality and stats. Each gets a line in its description " +
+        h("div.fe-area-head", h("div", h("h2", "Highlights"),
+          h("p.fe-sub", "Highlight the identified items you want, by kind, quality and stats: each gets a line in its description " +
             "(and a tag, an icon or a sound if you like) wherever it is: on the ground, in your inventory, stash or a " +
             "shop. Erazure's looks and tags stay."))),
         draft ? card : h("section.fe-card", h("div.fe-row",
-          h("button.fe-btn.primary", {type: "button", onclick: () => { draft = blank(); app.drawArea(); }}, "+ A new wishlist"),
+          h("button.fe-btn.primary", {type: "button", onclick: () => { draft = blank(); app.drawArea(); }}, "+ A new highlight"),
           h("span.fe-sub", "or start from:"),
           EXAMPLES.map(([t, w]) => h("button.fe-btn.small", {type: "button", onclick: () => {
             draft = Object.assign(blank(), JSON.parse(JSON.stringify(w)));
             app.drawArea();
           }}, t)))),
-        list.length ? h("section.fe-card", h("h3", "Your wishlists"), list.map((w) => {
+        list.length ? h("section.fe-card", h("h3", "Your highlights"), list.map((w) => {
           const r = EZ.wishlists.rule(w);
-          return h("div.fe-rb-op", h("div.fe-row.fe-small", h("b", w.name || w.line || "Wishlist"),
+          return h("div.fe-rb-op", h("div.fe-row.fe-small", h("b", w.name || w.line || "Highlight"),
             r ? null : pill("tags nothing yet", "warn"), h("span.fe-bar-gap"),
             h("button.fe-btn.ghost.small", {type: "button", onclick: () => {
               draft = Object.assign(blank(), JSON.parse(JSON.stringify(w)));

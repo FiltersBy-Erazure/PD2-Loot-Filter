@@ -1,4 +1,4 @@
-/* Wishlists (the Wishlists area): identified items with the stats the player wants get a line in their description
+/* Wishlists (the Highlights area): identified items with the stats the player wants get a line in their description
    (and, if the player likes, an icon and a sound): kinds of items, qualities, the stats each must have, and "N of
    these" from a pool of others (BH's COUNT formula: each stat's test is true or false, the count against N). Each
    wishlist is %CONTINUE% rules, so Erazure's looks and tags still come: its label tag and alert before Erazure's rules,
@@ -8,10 +8,10 @@ var EZ = typeof EZ !== "undefined" ? EZ : {};
 EZ.wishlists = (function () {
   "use strict";
   const MARKS = {
-    top: ["// ===============  Your wishlists (Erazure Filter Editor): tags and alerts  ===============",
-          "// ===============  End of your wishlists' tags and alerts  ==============="],
-    bottom: ["// ===============  Your wishlists (Erazure Filter Editor): description lines  ===============",
-             "// ===============  End of your wishlists' description lines  ==============="],
+    top: ["// ===============  Your highlights (Erazure Filter Editor): tags and alerts  ===============",
+          "// ===============  End of your highlights' tags and alerts  ==============="],
+    bottom: ["// ===============  Your highlights (Erazure Filter Editor): description lines  ===============",
+             "// ===============  End of your highlights' description lines  ==============="],
   };
   const QUALS = ["MAG", "RARE", "CRAFT", "UNI", "SET"];
   const COLORS = ["GREEN", "GOLD", "ORANGE", "RED", "BLUE", "PURPLE", "WHITE", "TAN", "YELLOW", "TEAL", "CORAL", "SAGE"];
@@ -95,7 +95,7 @@ EZ.wishlists = (function () {
     if (pool.length) { conds.push("$f(COUNT(" + pool.join(",") + ")>=" + n + ")"); stats++; }
     if (!items.length && !stats) return null;
     const color = COLORS.indexOf(w.color) >= 0 ? w.color : "GREEN";
-    const text = clean(w.line) || clean(w.name) || "Wishlist";
+    const text = clean(w.line) || clean(w.name) || "Highlight";
     const cond = conds.join(" "), note = w.name ? " // " + clean(w.name) : "";
     const alert = EZ.overrides.alertText(w.alert), tag = clean(w.tag);
     const top = tag || alert ? "ItemDisplay[" + cond + "]:" + (tag ? "%" + color + "%" + tag + "%CS%" : "") +
@@ -114,7 +114,7 @@ EZ.wishlists = (function () {
       if (!lines.length) continue;
       const secs = EZ.filter.sections(ctx.src, ctx.lines);
       const range = secs[EZ.rules.PLACE[which]];
-      if (!range) { ctx.unplaced("wishlists", "Your wishlists", "Erazure no longer has " + EZ.rules.PLACE[which]); continue; }
+      if (!range) { ctx.unplaced("highlights", "Your highlights", "Erazure no longer has " + EZ.rules.PLACE[which]); continue; }
       ctx.lines.splice(range[0], 0, MARKS[which][0], ...lines, MARKS[which][1]);
     }
   }
