@@ -826,7 +826,9 @@
   writes is for the ground outside town, so items show as always in town, the inventory and the stash; the area is
   Quick Edits since 2026-11-12, the author, until then Options: each group of options beside sample items drawn as
   the game will draw them with the player's choices, `sampleOf`, at a filter level the player picks; Erazure's
-  features have their own area, Features), features, looks, color
+  features have their own area, Features; a choice that keeps Erazure's says "Erazure's default"; the preview
+  column closes, the Preview button in the bar or its own Hide, closed at first below 1,400 px, the choice kept in
+  the browser, so the area gets its room), features, looks, color
   remap, sounds, icons, alert switches, level names and copies, how loud each kind is `volume.js`, item overrides
   `overrides.js` (show / hide / mute / sound / icon / icon only / alert / look / replace / hunt, exact for BH: only
   the rules the engine says can match the items change), wishlists `wishlists.js` (the area is called Highlights

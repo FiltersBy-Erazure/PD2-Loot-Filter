@@ -313,8 +313,8 @@ EZ.app = (function () {
         title: "Undo (Ctrl+Z)"}, "↶"),
       h("button.fe-btn.ghost", {type: "button", onclick: () => EZ.store.redoStep(), disabled: !EZ.store.canRedo(),
         title: "Redo (Ctrl+Y)"}, "↷"),
-      h("button.fe-btn.fe-only-narrow", {type: "button", onclick: togglePreview, "aria-expanded":
-        String(app.els.root.classList.contains("pv-open"))}, "Preview"),
+      h("button.fe-btn", {type: "button", onclick: togglePreview, "aria-pressed": String(previewShown()),
+        title: previewShown() ? "Hide the preview (more room for the area)" : "Show the preview"}, "Preview"),
       h("span.fe-row", {style: {gap: "0"}}, saveBtn, more));
   }
 
@@ -356,8 +356,21 @@ EZ.app = (function () {
     }
   }
 
+  /* The preview column: a drawer on narrow screens (pv-open), a column that closes on wide ones (pv-closed; the
+     choice kept in this browser; closed at first below 1400 px, where the area needs the room). */
+  const narrow = () => window.matchMedia("(max-width: 1000px)").matches;
+  function previewShown() {
+    const root = app.els.root;
+    return !!root && (narrow() ? root.classList.contains("pv-open") : !root.classList.contains("pv-closed"));
+  }
   function togglePreview() {
-    app.els.root.classList.toggle("pv-open");
+    const root = app.els.root;
+    if (narrow()) root.classList.toggle("pv-open");
+    else {
+      const closed = root.classList.toggle("pv-closed");
+      try { localStorage.setItem("erazure-filter-editor-pv", closed ? "closed" : "open"); } catch (e) { /* this visit */ }
+    }
+    if (previewShown() && EZ.preview && EZ.preview.changed) EZ.preview.changed({}, app);  // catch up
     drawBar();
   }
 
@@ -375,8 +388,15 @@ EZ.app = (function () {
     const grip = h("div.fe-grip", {title: "Drag to make the preview wider or narrower", "aria-hidden": "true"});
     fill(root, bar, side, area, preview);
     preview.appendChild(grip);
+    preview.appendChild(h("button.fe-btn.ghost.small.fe-pvclose", {type: "button", onclick: togglePreview,
+      title: "Hide the preview (more room for the area)"}, "Hide ▸"));
+    preview.appendChild(h("button.fe-pvtab", {type: "button", onclick: togglePreview, title: "Show the preview"},
+      "◂ Preview"));
     const inner = h("div.fe-preview-inner");
     preview.appendChild(inner);
+    let pv = null;
+    try { pv = localStorage.getItem("erazure-filter-editor-pv"); } catch (e) { /* the default */ }
+    if (pv === "closed" || (pv === null && window.innerWidth < 1400)) root.classList.add("pv-closed");
     Object.assign(app.els, {root, bar, side, area, preview: inner, grip});
     grip.addEventListener("pointerdown", (e) => {
       e.preventDefault();
@@ -439,7 +459,7 @@ EZ.app = (function () {
     EZ.store.on((ev) => {
       if (ev.what === "switch" || ev.undo) redraw();
       else { drawBar(); drawSide(); if (!ev.quiet) drawArea(); }
-      if (EZ.preview && EZ.preview.changed) EZ.preview.changed(ev, app);
+      if (EZ.preview && EZ.preview.changed && previewShown()) EZ.preview.changed(ev, app);
     });
   }
 

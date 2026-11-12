@@ -135,7 +135,7 @@ EZ.areas.push({
         h("p.fe-sub", "Two questions to start from; every answer is an ordinary change you can see and undo later."),
         h("h4", "How many alerts do you want?"),
         h("div.fe-choice",
-          option("Erazure's", "Icons, chat lines and sounds as Erazure gives them.", true, () => {}),
+          option("Erazure's default", "Icons, chat lines and sounds as Erazure gives them.", true, () => {}),
           option("Fewer sounds", "Sounds only for High value uniques and sets, and for runes; icons and chat lines stay.",
             false, () => EZ.store.change((e) => {
               e.volume = {};

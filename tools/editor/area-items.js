@@ -372,7 +372,7 @@ EZ.areas = EZ.areas || [];
     }
     if (d.action === "show") {
       extra.push(h("div.fe-row.fe-small", h("span.fe-bd-label", "Its look"), seg([
-        {value: "erazure", text: "Erazure's on these levels"}, {value: "level", text: "As another level shows it"},
+        {value: "erazure", text: "Erazure's default"}, {value: "level", text: "As another level shows it"},
         {value: "own", text: "Your own"}], d.look || "erazure", (v) => set((x) => {
           x.look = v;
           if (v === "own" && x.text === "%NAME%") x.text = PRESETS[0][1];

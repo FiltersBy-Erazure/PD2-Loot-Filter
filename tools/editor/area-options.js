@@ -55,7 +55,7 @@ EZ.areas = EZ.areas || [];
     id: "quick", title: "Quick Edits", icon: "⚡", order: 20, group: "b",
     count: (e) => EZ.edits.countArea("options", e),
     render(box, app) {
-      const {h, toggle, pill} = EZ.ui;
+      const {h, toggle} = EZ.ui;
       const F = EZ.filter, R = EZ.render, P = EZ.preview;
       const e = EZ.store.current().edits;
       const lines = app.versionLines();
@@ -81,7 +81,7 @@ EZ.areas = EZ.areas || [];
         return h("div.fe-optsample" + (changed ? ".is-changed" : ""),
           h("div.fe-optsample-label", drawn(b), b.icons.length && !b.invisible ? P.iconCanvas(b.icons, 2) : null),
           h("div.fe-sub.fe-small", describe(s) + (lv !== sampleLevel ? ` (level ${lv})` : "")),
-          changed ? h("div.fe-sub.fe-small.fe-optsample-was", "Erazure's own: ", a.hidden ? (a.invisible ? "hidden" :
+          changed ? h("div.fe-sub.fe-small.fe-optsample-was", "Erazure's default: ", a.hidden ? (a.invisible ? "hidden" :
             "icon only") : R.label(a.name, {start: a.start})) : null);
       };
 
@@ -104,7 +104,7 @@ EZ.areas = EZ.areas || [];
             const radio = (label, checked, onpick, extra) => h("label.fe-radio",
               h("input", {type: "radio", name, checked, onchange: onpick}), h("span", label), extra || null);
             rows.push(h("fieldset.fe-choiceset", h("legend.fe-sub", "Pick one"),
-              radio("Erazure's own", !chosen, () => setOption(set[0], false), pill("default")),
+              radio("Erazure's default", !chosen, () => setOption(set[0], false)),
               set.map((x) => radio(x.label, chosen === x, () => setOption(x, true)))));
           } else {
             seen.add(o.id);
@@ -134,8 +134,7 @@ EZ.areas = EZ.areas || [];
         const name = lv.names && lv.names[n] !== undefined ? lv.names[n] : l.text;
         const plainName = R.plain(name);
         const own = /^ÿc(.)/.exec(name);
-        const input = h("input", {type: "text", value: plainName, "aria-label": `Level ${n}'s name`,
-          style: {width: "100%"}});
+        const input = h("input", {type: "text", value: plainName, "aria-label": `Level ${n}'s name`});
         const color = h("select", {"aria-label": `Level ${n}'s color`},
           colorChoices.map(([c, t]) => h("option", {value: c, selected: lv.names && lv.names[n] !== undefined &&
             own && own[1] === c && /^ÿc.[^ÿ]*$/.test(name)}, t)));
@@ -156,11 +155,15 @@ EZ.areas = EZ.areas || [];
         }, {label: `level ${n}`})},
           found.map((x, kk) => h("option", {value: kk + 1, selected: (lv.copies && lv.copies[n] ? lv.copies[n] : n) === kk + 1},
             kk + 1 === n ? "itself" : `level ${kk + 1}: ${R.plain(x.text)}`)));
-        return h("tr",
-          h("td.fe-num", String(n)),
-          h("td", R.levelName(name), lv.names && lv.names[n] !== undefined ? h("div.fe-sub", "Erazure: ", R.levelName(l.text)) : null),
-          h("td", h("div.fe-row", {style: {flexWrap: "nowrap"}}, input, color)),
-          h("td", like));
+        const renamed = lv.names && lv.names[n] !== undefined, copied = lv.copies && lv.copies[n];
+        return h("div.fe-levelrow" + (renamed || copied ? ".is-changed" : ""),
+          h("span.fe-num", String(n)),
+          h("div.fe-levelrow-body",
+            h("div", R.levelName(name), renamed ? h("div.fe-sub.fe-small", "Erazure: ", R.levelName(l.text)) : null),
+            h("div.fe-levelrow-fields",
+              h("label.fe-levelrow-name", h("span.fe-bd-label", "Name"), input),
+              h("label", h("span.fe-bd-label", "Color"), color),
+              h("label.fe-levelrow-like", h("span.fe-bd-label", "Behaves like"), like))));
       });
 
       box.append(
@@ -178,9 +181,7 @@ EZ.areas = EZ.areas || [];
           h("h3", "Filter levels"),
           h("p.fe-sub", "Rename a level, or make it behave like another level: then tune it on its own (Items, Alerts) " +
             "and keep Erazure's levels as they are. BH reads 12 levels; level 0 always shows everything."),
-          h("div.fe-tablewrap", h("table.fe-levels",
-            h("thead", h("tr", h("th", "#"), h("th", "Shows as"), h("th", "Name and color"), h("th", "Behaves like"))),
-            h("tbody", levelRows)))));
+          h("div.fe-levelrows", levelRows)));
       if (sub) {
         const el = box.querySelector("#fe-" + sub);
         if (el) el.scrollIntoView();

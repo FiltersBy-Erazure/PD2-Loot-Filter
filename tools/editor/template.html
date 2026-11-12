@@ -74,6 +74,20 @@
 .edit-map .fe-grip { position: absolute; left: -4px; top: 0; bottom: 0; width: 8px; cursor: col-resize; z-index: 3; }
 .edit-map .fe-preview { position: sticky; }
 .edit-map .fe-preview-inner { position: relative; min-height: 100%; }
+.edit-map .fe-pvclose { position: absolute; top: .55em; right: .6em; z-index: 4; }
+.edit-map .fe-pvtab { display: none; }
+@media (min-width: 1001px) {
+  .edit-map .fe-app.pv-closed { grid-template-columns: 200px minmax(0, 1fr) 36px; }
+  .edit-map .fe-app.pv-closed .fe-preview-inner, .edit-map .fe-app.pv-closed .fe-grip,
+  .edit-map .fe-app.pv-closed .fe-pvclose { display: none; }
+  .edit-map .fe-app.pv-closed .fe-pvtab { display: flex; align-items: center; justify-content: center; gap: .5em;
+    width: 100%; min-height: 12em; padding: .9em 0; border: 0; background: none; color: var(--accent); cursor: pointer;
+    writing-mode: vertical-rl; font-family: Cinzel, Georgia, serif; font-weight: 700; letter-spacing: .06em; }
+  .edit-map .fe-app.pv-closed .fe-pvtab:hover { background: var(--panel2); }
+}
+@media (min-width: 1001px) and (max-width: 1400px) {
+  .edit-map .fe-app.pv-closed { grid-template-columns: 64px minmax(0, 1fr) 36px; }
+}
 
 /* the bar */
 .edit-map .fe-title { display: flex; align-items: baseline; gap: .55em; min-width: 0; }
@@ -332,6 +346,19 @@
 .edit-map .fe-feature { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between;
   gap: .3em 1em; padding: .25em .4em; border-radius: 6px; }
 .edit-map table.fe-levels td { vertical-align: middle; }
+/* Quick Edits' filter levels: the level as it shows, its fields under it (they wrap where the area is narrow) */
+.edit-map .fe-levelrows { display: flex; flex-direction: column; margin-top: .4em; }
+.edit-map .fe-levelrow { display: grid; grid-template-columns: 2em minmax(0, 1fr); gap: .3em .6em; padding: .65em .3em;
+  border-top: 1px solid var(--line); border-radius: 6px; }
+.edit-map .fe-levelrow.is-changed { background: var(--panel2); }
+.edit-map .fe-levelrow > .fe-num { padding-top: .2em; }
+.edit-map .fe-levelrow-body { display: flex; flex-direction: column; gap: .45em; min-width: 0; }
+.edit-map .fe-levelrow .fe-levelname { white-space: normal; display: inline-block; }
+.edit-map .fe-levelrow-fields { display: flex; flex-wrap: wrap; gap: .4em .7em; align-items: flex-end; }
+.edit-map .fe-levelrow-fields label { display: flex; flex-direction: column; gap: .15em; min-width: 0; }
+.edit-map .fe-levelrow-fields label.fe-levelrow-name { flex: 2 1 16em; }
+.edit-map .fe-levelrow-fields label.fe-levelrow-like { flex: 1 1 14em; }
+.edit-map .fe-levelrow-fields input, .edit-map .fe-levelrow-fields select { width: 100%; max-width: none; }
 .edit-map table.fe-levels select { max-width: 16em; }
 .edit-map .fe-levelname { font-family: Cinzel, Georgia, serif; font-weight: 600; background: #0d0c0b;
   padding: .1em .45em; border-radius: 4px; white-space: nowrap; }

@@ -24,9 +24,9 @@ EZ.areas.push({
           ed.features = ed.features || {};
           ed.features[f.id] = v;
         }, {label: f.title}), {sub: f.sub}),
-        pinned ? h("button.fe-btn.ghost.small", {type: "button", title: "Follow Erazure again (its own choice, today " +
-          (def ? "on" : "off") + ")", onclick: () => EZ.store.change((ed) => { delete ed.features[f.id]; })},
-          "↺ Follow Erazure") : null);
+        pinned ? h("button.fe-btn.ghost.small", {type: "button", title: "Back to Erazure's default (today " +
+          (def ? "on" : "off") + "), which follows Erazure's updates", onclick: () => EZ.store.change((ed) => {
+          delete ed.features[f.id]; })}, "↺ Erazure's default") : null);
     };
     box.append(
       h("div.fe-area-head", h("div", h("h2", "Erazure's features"),

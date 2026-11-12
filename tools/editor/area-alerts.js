@@ -75,7 +75,7 @@ EZ.areas.push({
           {sub: "In BH the chat line and the sound come together: this keeps only the minimap icons."}),
         toggle("No minimap icons", !!a.noIcons, (v) => set("noIcons", v),
           {sub: "An item that only had an icon also loses its chat line (BH needs an icon or a sound to notify)."}),
-        h("div.fe-row", h("span", "Icon size"), seg([{value: "", text: "Erazure's"}, {value: "smaller", text: "Smaller"},
+        h("div.fe-row", h("span", "Icon size"), seg([{value: "", text: "Erazure's default"}, {value: "smaller", text: "Smaller"},
           {value: "bigger", text: "Bigger"}], a.iconSize || "", (v) => set("iconSize", v), {label: "Icon size"}))));
 
     /* ---- how loud each kind of drop is (EZ.volume) */
@@ -102,7 +102,7 @@ EZ.areas.push({
       h("div.fe-tablewrap", h("table.fe-levels", h("tbody", kinds.map((k) => h("tr" + (vol[k.id] ? ".is-changed" : ""),
         h("td", k.title, h("span.fe-sub", ` · ${k.rules} rule${k.rules === 1 ? "" : "s"}`)),
         h("td", h("select", {"aria-label": k.title, onchange: (ev) => setVol(k.id, ev.target.value)},
-          [["", "Erazure's"], ["mute", "No sound"], ["iconOnly", "Icon only (no chat line, no sound)"],
+          [["", "Erazure's default"], ["mute", "No sound"], ["iconOnly", "Icon only (no chat line, no sound)"],
            ["none", "No alerts"]].map(([v, t]) => h("option", {value: v, selected: (vol[k.id] || "") === v}, t))))))))));
 
     const swaps = e.sounds || {};

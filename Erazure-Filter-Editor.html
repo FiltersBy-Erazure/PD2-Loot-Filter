@@ -80,6 +80,20 @@
 .edit-map .fe-grip { position: absolute; left: -4px; top: 0; bottom: 0; width: 8px; cursor: col-resize; z-index: 3; }
 .edit-map .fe-preview { position: sticky; }
 .edit-map .fe-preview-inner { position: relative; min-height: 100%; }
+.edit-map .fe-pvclose { position: absolute; top: .55em; right: .6em; z-index: 4; }
+.edit-map .fe-pvtab { display: none; }
+@media (min-width: 1001px) {
+  .edit-map .fe-app.pv-closed { grid-template-columns: 200px minmax(0, 1fr) 36px; }
+  .edit-map .fe-app.pv-closed .fe-preview-inner, .edit-map .fe-app.pv-closed .fe-grip,
+  .edit-map .fe-app.pv-closed .fe-pvclose { display: none; }
+  .edit-map .fe-app.pv-closed .fe-pvtab { display: flex; align-items: center; justify-content: center; gap: .5em;
+    width: 100%; min-height: 12em; padding: .9em 0; border: 0; background: none; color: var(--accent); cursor: pointer;
+    writing-mode: vertical-rl; font-family: Cinzel, Georgia, serif; font-weight: 700; letter-spacing: .06em; }
+  .edit-map .fe-app.pv-closed .fe-pvtab:hover { background: var(--panel2); }
+}
+@media (min-width: 1001px) and (max-width: 1400px) {
+  .edit-map .fe-app.pv-closed { grid-template-columns: 64px minmax(0, 1fr) 36px; }
+}
 
 /* the bar */
 .edit-map .fe-title { display: flex; align-items: baseline; gap: .55em; min-width: 0; }
@@ -338,6 +352,19 @@
 .edit-map .fe-feature { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between;
   gap: .3em 1em; padding: .25em .4em; border-radius: 6px; }
 .edit-map table.fe-levels td { vertical-align: middle; }
+/* Quick Edits' filter levels: the level as it shows, its fields under it (they wrap where the area is narrow) */
+.edit-map .fe-levelrows { display: flex; flex-direction: column; margin-top: .4em; }
+.edit-map .fe-levelrow { display: grid; grid-template-columns: 2em minmax(0, 1fr); gap: .3em .6em; padding: .65em .3em;
+  border-top: 1px solid var(--line); border-radius: 6px; }
+.edit-map .fe-levelrow.is-changed { background: var(--panel2); }
+.edit-map .fe-levelrow > .fe-num { padding-top: .2em; }
+.edit-map .fe-levelrow-body { display: flex; flex-direction: column; gap: .45em; min-width: 0; }
+.edit-map .fe-levelrow .fe-levelname { white-space: normal; display: inline-block; }
+.edit-map .fe-levelrow-fields { display: flex; flex-wrap: wrap; gap: .4em .7em; align-items: flex-end; }
+.edit-map .fe-levelrow-fields label { display: flex; flex-direction: column; gap: .15em; min-width: 0; }
+.edit-map .fe-levelrow-fields label.fe-levelrow-name { flex: 2 1 16em; }
+.edit-map .fe-levelrow-fields label.fe-levelrow-like { flex: 1 1 14em; }
+.edit-map .fe-levelrow-fields input, .edit-map .fe-levelrow-fields select { width: 100%; max-width: none; }
 .edit-map table.fe-levels select { max-width: 16em; }
 .edit-map .fe-levelname { font-family: Cinzel, Georgia, serif; font-weight: 600; background: #0d0c0b;
   padding: .1em .45em; border-radius: 4px; white-space: nowrap; }
@@ -7398,8 +7425,8 @@ EZ.app = (function () {
         title: "Undo (Ctrl+Z)"}, "↶"),
       h("button.fe-btn.ghost", {type: "button", onclick: () => EZ.store.redoStep(), disabled: !EZ.store.canRedo(),
         title: "Redo (Ctrl+Y)"}, "↷"),
-      h("button.fe-btn.fe-only-narrow", {type: "button", onclick: togglePreview, "aria-expanded":
-        String(app.els.root.classList.contains("pv-open"))}, "Preview"),
+      h("button.fe-btn", {type: "button", onclick: togglePreview, "aria-pressed": String(previewShown()),
+        title: previewShown() ? "Hide the preview (more room for the area)" : "Show the preview"}, "Preview"),
       h("span.fe-row", {style: {gap: "0"}}, saveBtn, more));
   }
 
@@ -7441,8 +7468,21 @@ EZ.app = (function () {
     }
   }
 
+  /* The preview column: a drawer on narrow screens (pv-open), a column that closes on wide ones (pv-closed; the
+     choice kept in this browser; closed at first below 1400 px, where the area needs the room). */
+  const narrow = () => window.matchMedia("(max-width: 1000px)").matches;
+  function previewShown() {
+    const root = app.els.root;
+    return !!root && (narrow() ? root.classList.contains("pv-open") : !root.classList.contains("pv-closed"));
+  }
   function togglePreview() {
-    app.els.root.classList.toggle("pv-open");
+    const root = app.els.root;
+    if (narrow()) root.classList.toggle("pv-open");
+    else {
+      const closed = root.classList.toggle("pv-closed");
+      try { localStorage.setItem("erazure-filter-editor-pv", closed ? "closed" : "open"); } catch (e) { /* this visit */ }
+    }
+    if (previewShown() && EZ.preview && EZ.preview.changed) EZ.preview.changed({}, app);  // catch up
     drawBar();
   }
 
@@ -7460,8 +7500,15 @@ EZ.app = (function () {
     const grip = h("div.fe-grip", {title: "Drag to make the preview wider or narrower", "aria-hidden": "true"});
     fill(root, bar, side, area, preview);
     preview.appendChild(grip);
+    preview.appendChild(h("button.fe-btn.ghost.small.fe-pvclose", {type: "button", onclick: togglePreview,
+      title: "Hide the preview (more room for the area)"}, "Hide ▸"));
+    preview.appendChild(h("button.fe-pvtab", {type: "button", onclick: togglePreview, title: "Show the preview"},
+      "◂ Preview"));
     const inner = h("div.fe-preview-inner");
     preview.appendChild(inner);
+    let pv = null;
+    try { pv = localStorage.getItem("erazure-filter-editor-pv"); } catch (e) { /* the default */ }
+    if (pv === "closed" || (pv === null && window.innerWidth < 1400)) root.classList.add("pv-closed");
     Object.assign(app.els, {root, bar, side, area, preview: inner, grip});
     grip.addEventListener("pointerdown", (e) => {
       e.preventDefault();
@@ -7524,7 +7571,7 @@ EZ.app = (function () {
     EZ.store.on((ev) => {
       if (ev.what === "switch" || ev.undo) redraw();
       else { drawBar(); drawSide(); if (!ev.quiet) drawArea(); }
-      if (EZ.preview && EZ.preview.changed) EZ.preview.changed(ev, app);
+      if (EZ.preview && EZ.preview.changed && previewShown()) EZ.preview.changed(ev, app);
     });
   }
 
@@ -7673,7 +7720,7 @@ EZ.areas.push({
         h("p.fe-sub", "Two questions to start from; every answer is an ordinary change you can see and undo later."),
         h("h4", "How many alerts do you want?"),
         h("div.fe-choice",
-          option("Erazure's", "Icons, chat lines and sounds as Erazure gives them.", true, () => {}),
+          option("Erazure's default", "Icons, chat lines and sounds as Erazure gives them.", true, () => {}),
           option("Fewer sounds", "Sounds only for High value uniques and sets, and for runes; icons and chat lines stay.",
             false, () => EZ.store.change((e) => {
               e.volume = {};
@@ -7765,7 +7812,7 @@ EZ.areas = EZ.areas || [];
     id: "quick", title: "Quick Edits", icon: "⚡", order: 20, group: "b",
     count: (e) => EZ.edits.countArea("options", e),
     render(box, app) {
-      const {h, toggle, pill} = EZ.ui;
+      const {h, toggle} = EZ.ui;
       const F = EZ.filter, R = EZ.render, P = EZ.preview;
       const e = EZ.store.current().edits;
       const lines = app.versionLines();
@@ -7791,7 +7838,7 @@ EZ.areas = EZ.areas || [];
         return h("div.fe-optsample" + (changed ? ".is-changed" : ""),
           h("div.fe-optsample-label", drawn(b), b.icons.length && !b.invisible ? P.iconCanvas(b.icons, 2) : null),
           h("div.fe-sub.fe-small", describe(s) + (lv !== sampleLevel ? ` (level ${lv})` : "")),
-          changed ? h("div.fe-sub.fe-small.fe-optsample-was", "Erazure's own: ", a.hidden ? (a.invisible ? "hidden" :
+          changed ? h("div.fe-sub.fe-small.fe-optsample-was", "Erazure's default: ", a.hidden ? (a.invisible ? "hidden" :
             "icon only") : R.label(a.name, {start: a.start})) : null);
       };
 
@@ -7814,7 +7861,7 @@ EZ.areas = EZ.areas || [];
             const radio = (label, checked, onpick, extra) => h("label.fe-radio",
               h("input", {type: "radio", name, checked, onchange: onpick}), h("span", label), extra || null);
             rows.push(h("fieldset.fe-choiceset", h("legend.fe-sub", "Pick one"),
-              radio("Erazure's own", !chosen, () => setOption(set[0], false), pill("default")),
+              radio("Erazure's default", !chosen, () => setOption(set[0], false)),
               set.map((x) => radio(x.label, chosen === x, () => setOption(x, true)))));
           } else {
             seen.add(o.id);
@@ -7844,8 +7891,7 @@ EZ.areas = EZ.areas || [];
         const name = lv.names && lv.names[n] !== undefined ? lv.names[n] : l.text;
         const plainName = R.plain(name);
         const own = /^ÿc(.)/.exec(name);
-        const input = h("input", {type: "text", value: plainName, "aria-label": `Level ${n}'s name`,
-          style: {width: "100%"}});
+        const input = h("input", {type: "text", value: plainName, "aria-label": `Level ${n}'s name`});
         const color = h("select", {"aria-label": `Level ${n}'s color`},
           colorChoices.map(([c, t]) => h("option", {value: c, selected: lv.names && lv.names[n] !== undefined &&
             own && own[1] === c && /^ÿc.[^ÿ]*$/.test(name)}, t)));
@@ -7866,11 +7912,15 @@ EZ.areas = EZ.areas || [];
         }, {label: `level ${n}`})},
           found.map((x, kk) => h("option", {value: kk + 1, selected: (lv.copies && lv.copies[n] ? lv.copies[n] : n) === kk + 1},
             kk + 1 === n ? "itself" : `level ${kk + 1}: ${R.plain(x.text)}`)));
-        return h("tr",
-          h("td.fe-num", String(n)),
-          h("td", R.levelName(name), lv.names && lv.names[n] !== undefined ? h("div.fe-sub", "Erazure: ", R.levelName(l.text)) : null),
-          h("td", h("div.fe-row", {style: {flexWrap: "nowrap"}}, input, color)),
-          h("td", like));
+        const renamed = lv.names && lv.names[n] !== undefined, copied = lv.copies && lv.copies[n];
+        return h("div.fe-levelrow" + (renamed || copied ? ".is-changed" : ""),
+          h("span.fe-num", String(n)),
+          h("div.fe-levelrow-body",
+            h("div", R.levelName(name), renamed ? h("div.fe-sub.fe-small", "Erazure: ", R.levelName(l.text)) : null),
+            h("div.fe-levelrow-fields",
+              h("label.fe-levelrow-name", h("span.fe-bd-label", "Name"), input),
+              h("label", h("span.fe-bd-label", "Color"), color),
+              h("label.fe-levelrow-like", h("span.fe-bd-label", "Behaves like"), like))));
       });
 
       box.append(
@@ -7888,9 +7938,7 @@ EZ.areas = EZ.areas || [];
           h("h3", "Filter levels"),
           h("p.fe-sub", "Rename a level, or make it behave like another level: then tune it on its own (Items, Alerts) " +
             "and keep Erazure's levels as they are. BH reads 12 levels; level 0 always shows everything."),
-          h("div.fe-tablewrap", h("table.fe-levels",
-            h("thead", h("tr", h("th", "#"), h("th", "Shows as"), h("th", "Name and color"), h("th", "Behaves like"))),
-            h("tbody", levelRows)))));
+          h("div.fe-levelrows", levelRows)));
       if (sub) {
         const el = box.querySelector("#fe-" + sub);
         if (el) el.scrollIntoView();
@@ -7926,9 +7974,9 @@ EZ.areas.push({
           ed.features = ed.features || {};
           ed.features[f.id] = v;
         }, {label: f.title}), {sub: f.sub}),
-        pinned ? h("button.fe-btn.ghost.small", {type: "button", title: "Follow Erazure again (its own choice, today " +
-          (def ? "on" : "off") + ")", onclick: () => EZ.store.change((ed) => { delete ed.features[f.id]; })},
-          "↺ Follow Erazure") : null);
+        pinned ? h("button.fe-btn.ghost.small", {type: "button", title: "Back to Erazure's default (today " +
+          (def ? "on" : "off") + "), which follows Erazure's updates", onclick: () => EZ.store.change((ed) => {
+          delete ed.features[f.id]; })}, "↺ Erazure's default") : null);
     };
     box.append(
       h("div.fe-area-head", h("div", h("h2", "Erazure's features"),
@@ -8318,7 +8366,7 @@ EZ.areas = EZ.areas || [];
     }
     if (d.action === "show") {
       extra.push(h("div.fe-row.fe-small", h("span.fe-bd-label", "Its look"), seg([
-        {value: "erazure", text: "Erazure's on these levels"}, {value: "level", text: "As another level shows it"},
+        {value: "erazure", text: "Erazure's default"}, {value: "level", text: "As another level shows it"},
         {value: "own", text: "Your own"}], d.look || "erazure", (v) => set((x) => {
           x.look = v;
           if (v === "own" && x.text === "%NAME%") x.text = PRESETS[0][1];
@@ -9141,7 +9189,7 @@ EZ.areas.push({
           {sub: "In BH the chat line and the sound come together: this keeps only the minimap icons."}),
         toggle("No minimap icons", !!a.noIcons, (v) => set("noIcons", v),
           {sub: "An item that only had an icon also loses its chat line (BH needs an icon or a sound to notify)."}),
-        h("div.fe-row", h("span", "Icon size"), seg([{value: "", text: "Erazure's"}, {value: "smaller", text: "Smaller"},
+        h("div.fe-row", h("span", "Icon size"), seg([{value: "", text: "Erazure's default"}, {value: "smaller", text: "Smaller"},
           {value: "bigger", text: "Bigger"}], a.iconSize || "", (v) => set("iconSize", v), {label: "Icon size"}))));
 
     /* ---- how loud each kind of drop is (EZ.volume) */
@@ -9168,7 +9216,7 @@ EZ.areas.push({
       h("div.fe-tablewrap", h("table.fe-levels", h("tbody", kinds.map((k) => h("tr" + (vol[k.id] ? ".is-changed" : ""),
         h("td", k.title, h("span.fe-sub", ` · ${k.rules} rule${k.rules === 1 ? "" : "s"}`)),
         h("td", h("select", {"aria-label": k.title, onchange: (ev) => setVol(k.id, ev.target.value)},
-          [["", "Erazure's"], ["mute", "No sound"], ["iconOnly", "Icon only (no chat line, no sound)"],
+          [["", "Erazure's default"], ["mute", "No sound"], ["iconOnly", "Icon only (no chat line, no sound)"],
            ["none", "No alerts"]].map(([v, t]) => h("option", {value: v, selected: (vol[k.id] || "") === v}, t))))))))));
 
     const swaps = e.sounds || {};
