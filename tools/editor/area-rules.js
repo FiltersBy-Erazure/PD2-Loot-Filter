@@ -111,7 +111,8 @@ EZ.areas = EZ.areas || [];
       }
       return Object.assign(base, {word: s.kind + s.n});
     }).filter(Boolean);
-    return Object.assign({}, b, {place: b.place === "auto" ? undefined : b.place, stats});
+    const hide = b.show === "hide" ? {icon: {}, sound: 0, chat: "all", cont: false} : {};
+    return Object.assign({}, b, {place: b.place === "auto" ? undefined : b.place, stats}, hide);
   }
 
   /* ---------------------------------------------------------------- helpers */
@@ -646,11 +647,18 @@ EZ.areas = EZ.areas || [];
       const noItems = !(B.codes.length || B.groups.length || B.quals.length || B.tiers.length || B.stats.length ||
         B.extra.trim() || B.eth !== "any" || B.id !== "any" || B.rw !== "any" || B.sock.op !== "any" || B.ilvl[0] ||
         B.ilvl[1] || B.hands || B.disc !== "any");
+      // Show it / Hide it is an item change (the author, 2026-11-12): only these items' rules change, a hide takes
+      // Erazure's icons, chat lines and sounds with it, and it follows Erazure's updates. A rule that keeps going
+      // (or one an item change can't hold) is added as a rule.
+      const ctx0 = lintContext(app);
+      const asItems = noItems ? null : B.show !== "hide" && !B.cont && B.desc && B.desc.how !== "keep" ?
+        {why: "Its description line can only be written by a rule (an item change keeps Erazure's hover box)."} :
+        EZ.overrides.fromRule(r.line, {aliases: ctx0.aliases, F: ctx0.F});
+      const itemsOk = !!(asItems && !asItems.why);
       const toItems = () => {
-        const ctx = lintContext(app);
-        const c = EZ.overrides.fromRule(r.line, {aliases: ctx.aliases, F: ctx.F});
+        const c = asItems && !asItems.why ? asItems : EZ.overrides.fromRule(r.line, {aliases: ctx0.aliases, F: ctx0.F});
         if (c.why) { EZ.ui.toast(c.why, "bad"); return; }
-        EZ.store.change((ed) => { ed.items = (ed.items || []).concat(c.list); }, {label: "my rules to items"});
+        EZ.store.change((ed) => { ed.items = (ed.items || []).concat(c.list); }, {label: "an item change"});
         itemsToast(app, c.list.length);
       };
       fill(result,
@@ -661,21 +669,32 @@ EZ.areas = EZ.areas || [];
           miniDesc(r.out, vals)),
         h("details.fe-rules", h("summary", "Show the rule"), h("code.fe-bd-line", r.line),
           h("div.fe-row.fe-small", h("button.fe-btn.ghost.small", {type: "button", onclick: copy}, "Copy it"))),
-        shown.length ? h("ul.fe-ed-lint", shown.map((f) => h("li.fe-ed-finding." + f.level,
+        // (a rule's notes about being a rule don't matter for an item change)
+        (itemsOk ? shown.filter((f) => !f.fix) : shown).length ? h("ul.fe-ed-lint", (itemsOk ? shown.filter((f) =>
+          !f.fix) : shown).map((f) => h("li.fe-ed-finding." + f.level,
           pill(f.level === "error" ? "error" : f.level === "warning" ? "warning" : "note",
             f.level === "error" ? "bad" : f.level === "warning" ? "warn" : "info"), h("span", f.text),
           f.fix ? h("button.fe-btn.small", {type: "button", onclick: toItems}, f.fix.label) : null))) : null,
         noItems ? h("p.fe-note.warn", "Pick the items it is for first (Which items): with none, the rule is for every " +
           "item.") : null,
-        h("div.fe-row",
-          h("button.fe-btn.primary", {type: "button", disabled: noItems, onclick: () => add("top", r.line)},
-            "Add above Erazure's rules"),
-          h("button.fe-btn", {type: "button", disabled: noItems, onclick: () => add("bottom", r.line)},
-            "Add below Erazure's rules"),
+        itemsOk ? h("div.fe-row",
+          h("button.fe-btn.primary", {type: "button", onclick: toItems}, "Add it as an item change"),
           h("button.fe-btn.ghost", {type: "button", onclick: () => resetForm(blank(), "Cleared the form.")},
-            "Clear the form")),
-        h("p.fe-sub.fe-small", "Above: your rule comes before Erazure's, so it changes items Erazure styles too. " +
-          "Below: it comes after them, for the few items Erazure leaves to its last rule (most items never get there)."));
+            "Clear the form")) : null,
+        itemsOk ? h("p.fe-sub.fe-small", "It goes to Items, where you can change it like any other: only these items' " +
+          "rules change, and it follows Erazure's updates.") : null,
+        asItems && asItems.why && !B.cont ? h("p.fe-note.fe-small", "It can't be an item change: " + asItems.why) : null,
+        h(itemsOk ? "details.fe-rules" : "div", itemsOk ? h("summary", "Or add it as a rule (for filter writers)") : null,
+          h("div.fe-row",
+            h("button.fe-btn" + (itemsOk ? "" : ".primary"), {type: "button", disabled: noItems, onclick: () =>
+              add("top", r.line)}, "Add above Erazure's rules"),
+            h("button.fe-btn", {type: "button", disabled: noItems, onclick: () => add("bottom", r.line)},
+              "Add below Erazure's rules"),
+            itemsOk ? null : h("button.fe-btn.ghost", {type: "button", onclick: () => resetForm(blank(),
+              "Cleared the form.")}, "Clear the form")),
+          h("p.fe-sub.fe-small", "Above: your rule comes before Erazure's, so it changes items Erazure styles too" +
+            (B.show === "hide" ? " (a hide there leaves Erazure's icons and sounds). " : ". ") + "Below: it comes after " +
+            "them, for the few items Erazure leaves to its last rule (most items never get there).")));
     }
 
     /* Change the whole form, with a way back (the form isn't in the page's Undo). */
@@ -701,8 +720,9 @@ EZ.areas = EZ.areas || [];
       const alerting = Object.keys(B.icon).length || B.sound;
       fill(card,
         h("h3", "Build a rule"),
-        h("p.fe-sub", "Pick what the rule matches and what it does; the rule is written below as BH reads it. Add it " +
-          "to your rules, then change it there if you like."),
+        h("p.fe-sub", "Pick the items and what to do with them; the rule is written below as BH reads it. Show it and " +
+          "Hide it are added as an item change (on Items), a rule that keeps going (or one an item change can't hold) " +
+          "to your rules, where you can change it."),
         h("div.fe-bd-templates", h("span.fe-sub.fe-small", "What it does, from:"),
           h("div.fe-row.fe-small", {style: {alignItems: "stretch"}}, TEMPLATES.map(([title, sub, over]) =>
             h("button.fe-btn.small.fe-bd-template", {type: "button", onclick: () => {
@@ -760,10 +780,11 @@ EZ.areas = EZ.areas || [];
         h("fieldset.fe-bd-set", h("legend", "What it does"),
           field("The item", seg([{value: "show", text: "Show it"}, {value: "hide", text: "Hide it"}], B.show,
             (v) => set((b) => { b.show = v; }, true), {label: "Show or hide"})),
-          hide ? h("p.fe-sub.fe-small", "A hidden item keeps its minimap icon or sound if you give it one.") : [
-            h("p.fe-sub.fe-small", "Above Erazure's rules, a rule that doesn't keep going decides these items' label: " +
-              "Erazure's look and tags stop for them. To show items Erazure hides, with Erazure's look, use ",
-              h("a", {href: "#items", onclick: (ev) => { ev.preventDefault(); app.go("items"); }}, "Items"), "."),
+          hide ? h("p.fe-sub.fe-small", "On the ground outside town, with no minimap icon, chat line or sound " +
+            "(Erazure's go too): in town, your inventory, stash and shops the items look as Erazure has them.") : [
+            h("p.fe-sub.fe-small", "As an item change: with the label left as %NAME%, these items show with Erazure's " +
+              "look where Erazure hides them; with a label of your own, theirs is replaced (Erazure's tags and the rest " +
+              "stay for every other item). With Keep going it can only be a rule, which adds to Erazure's label."),
             h("label.fe-bd-field.wide", h("span.fe-bd-label", "Its label (%NAME% is the item's name, with what " +
               "earlier rules wrote)"),
               h("input", {type: "text", value: B.text, spellcheck: "false", class: "fe-mono", "data-fe-text": "",
@@ -785,13 +806,13 @@ EZ.areas = EZ.areas || [];
             field("Keep going", h("label.fe-switch", h("input", {type: "checkbox", checked: !!B.cont,
               onchange: (e) => set((b) => { b.cont = e.target.checked; }, true)}), h("span.track"),
               h("span", "Let later rules (Erazure's too) build on this one (%CONTINUE%)")))],
-          iconField(),
-          field("Drop sound", h("button.fe-btn.small", {type: "button", onclick: () => EZ.sounds.pick(app, used, B.sound,
+          hide ? null : iconField(),
+          hide ? null : field("Drop sound", h("button.fe-btn.small", {type: "button", onclick: () => EZ.sounds.pick(app, used, B.sound,
             (id) => set((b) => { b.sound = id; }, true))}, B.sound ? "♪ " + EZ.sounds.name(app.data, B.sound) : "Pick a sound"),
             B.sound ? EZ.sounds.play(app.data, B.sound) : null,
             B.sound ? h("button.fe-btn.ghost.small", {type: "button", onclick: () => set((b) => { b.sound = 0; }, true)},
               "No sound") : null),
-          alerting ? field("Chat line and sound", h("select", {"aria-label": "Chat line and sound", onchange: (e) =>
+          alerting && !hide ? field("Chat line and sound", h("select", {"aria-label": "Chat line and sound", onchange: (e) =>
             set((b) => { b.chat = e.target.value; }, true)},
             [["all", "On every filter level"], ["tier", "Only on filter levels 0 to …"],
              ["none", "None (icon only, no sound)"]]

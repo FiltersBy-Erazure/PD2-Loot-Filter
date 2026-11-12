@@ -1,5 +1,5 @@
 /* Erazure's rules (advanced): every line of the player's version as BH reads it, by section, searchable, each rule in
-   words with what it draws; the rules the preview's item can match. A rule can be switched off or on, changed, or
+   words with what it draws; at first only the rules the preview's item can match. A rule can be switched off or on, changed, or
    get the player's own lines before or after it (EZ.ops keeps each change by what its line says, so it follows
    Erazure's updates; the list of changes says where one moved or can't be found). Generated sections (rebuilt from
    data on every update) and the twins their tools write take only a switch-off. */
@@ -12,7 +12,9 @@ EZ.areas = EZ.areas || [];
   const GENERATED = new Set(["045-unique-set-rolls.filter", "047-runeword-base-names.filter",
     "146-map-experience.filter", "270-boss-gear-tags.filter", "290-low-level-rare-tags.filter",
     "305-runeword-rolls.filter", "312-tag-count.filter"]);
-  const view = {section: "", q: "", what: "rules", match: false, mine: false, top: 0};  // for this visit
+  // for this visit; the list starts with the rules the preview's item can match (the author, 2026-11-12: not all
+  // ~5,500 rules of the version), the switch beside it shows them all
+  const view = {section: "", q: "", what: "rules", match: true, mine: false, top: 0};
   const OFF_RE = /^\s*\/\/+\s*(?=ItemDisplay\[)/;
 
   /* ---------------------------------------------------------------- the version's lines, read once */

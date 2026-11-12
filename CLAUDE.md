@@ -930,6 +930,12 @@
   a style-patched version's sections by each section's first line that appears once in the source (until then by
   its first line, often the same row of dashes as the next section's, so Corrlorized's sections were off; the
   selftest's `features` checks every version's starts).
+  From the audit's answers (2026-11-12, the author): My rules' builder adds Show it / Hide it as an item change
+  (`overrides.fromRule`; "Or add it as a rule (for filter writers)" is folded under it), a rule that keeps going, one
+  that writes a description, or one an item change can't hold stays a rule; a hide offers no icon, sound or chat line
+  (every hide leaves no alert: an Items hide takes Erazure's too; BH's %NOTIFY-DEAD% does nothing in today's BH).
+  Erazure's rules open on the rules the preview's item can match (`view.match`). An item change on a unique or set
+  item picked by name covers every one of its base, identified or not, and says so (q12: no fingerprints).
 - The website's **Resources** tab (2026-11-02, the author: reference pages players can look things up in, more to
   come): `website/docs/resources/index.md` lists them, a grid card each (mkdocs.yml has `navigation.indexes`, so it is
   the tab's own page). A resource is a page written by hand, `website/resources/<Name>.html` (its data, styles and
