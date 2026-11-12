@@ -483,7 +483,7 @@ EZ.overrides = (function () {
       if (!groups.length) return;
       const secs = EZ.filter.sections(ctx.src, ctx.lines);
       const range = secs[section];
-      if (!range) { ctx.unplaced("items", which, "Erazure no longer has " + section); return; }
+      if (!range) { ctx.unplaced("items", "Your item changes", "Erazure moved the place they go"); return; }
       ctx.lines.splice(range[0], 0, MARKS[which][0], ...groups.flatMap((g) => g.lines), MARKS[which][1]);
     };
     put("top", tops, EZ.rules.PLACE.top);

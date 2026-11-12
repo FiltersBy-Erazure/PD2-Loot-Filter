@@ -25,7 +25,7 @@ EZ.words = (function () {
     ANYOWNED: "partly owned", ALLOWNED: "owned",
     // Erazure's aliases the editor can name
     TOWN: "in town", GRAIL_NEW: "an undiscovered unique or set", BIG_GG: "the BIG GG versions",
-    POE_SOUNDS: "the PoE sound versions", REVEALED: "the Revealed versions",
+    POE_SOUNDS: "the Path of Exile sound versions", REVEALED: "the Revealed versions",
   };
   const NUMBER = {
     FILTLVL: "filter level", CLVL: "character level", ILVL: "item level", ALVL: "affix level", QLVL: "quality level",
@@ -42,9 +42,49 @@ EZ.words = (function () {
   };
   const DIFFS = ["Normal", "Nightmare", "Hell"];
 
+  /* Erazure's aliases that hold conditions, by what they are (their families: a roll's tag, a low-level rare's tag, a
+     runeword base...), where the editor can say it; null for any other name. */
+  const nice = (s) => s.toLowerCase().replace(/_/g, " ");
+  const ALIAS_WORDS = [
+    [/^ROLL_(.+)_TAG$/, (m) => `a unique or set item that shows its ${nice(m[1])} roll`],
+    [/^RW_(.+)_TAG$/, (m) => `a runeword that shows its ${nice(m[1])} roll`],
+    [/^LOWLVL_(.+)_TAG$/, (m) => `a rare below affix level 60 that tags its ${nice(m[1])}`],
+    [/^LOWLVL_(.+)_OFF$/, (m) => `a rare whose ${nice(m[1])} tag is off from affix level 60`],
+    [/^RWB_(.+)$/, (m) => `a ${nice(m[1]).replace(/^(\w)/, (c) => c.toUpperCase())} runeword base`],
+    [/^RESTAG_(.+)$/, (m) => `the resistances of the ${nice(m[1])} tag`],
+    [/^BOSSTAG_/, () => "a boss gear tag's stats"],
+    [/^SMALL_SELL_/, () => "a small non-magical item that sells for gold"],
+    [/^LOWEST_SOCKETED_BASE$/, () => "a socketed base on level 1"],
+    [/^RARE_SELECT_WEAPONS$/, () => "a select weapon (level 8)"],
+    [/^RENAMED_BASES$/, () => "a renamed base"],
+    [/^SELL_TAG_CROWDED$/, () => "a label with many tags"],
+    [/^(UNI|SET)_[A-Z_]+_VALUE$/, (m) => `a ${m[1] === "UNI" ? "unique" : "set"} item of that value tier`],
+  ];
+  function aliasWord(w) {
+    for (const [re, f] of ALIAS_WORDS) { const m = re.exec(w); if (m) return f(m); }
+    return null;
+  }
+
+  /* A game stat by its own words, the value in place of its X: STAT0>9 "+10 or more to Strength". */
+  function statText(id, op, a, b) {
+    if (id === 360) {  // the corruption: 0 none, any other number the corruption's outcome
+      if (op === ">" && a === 0) return "corrupted";
+      if (op === "=" && a === 0) return "not corrupted";
+      if (op === "<" && a === 1) return "not corrupted";
+      return op === "=" ? "corruption outcome " + a : "corruption outcome " + cmpText(op, a);
+    }
+    const title = EZ.items && EZ.items.statTitle ? EZ.items.statTitle(id) : "";
+    if (!title || title.indexOf("X") < 0) return null;
+    const v = op === ">" ? String(a + 1) : op === "<" ? String(a - 1) : op === "~" ? `${a}-${b}` : String(a);
+    const tail = op === ">" ? " or more" : op === "<" ? " or less" : "";
+    // "+X to Strength" -> "+10 or more to Strength"; "X% Faster Cast Rate" -> "10% or more Faster Cast Rate"
+    return title.replace(/X(%?)/, (m, pct) => v + pct + tail);
+  }
+
   /* One word (a token without its ! and brackets) in words. */
   function word(w, opts) {
     if (PLAIN[w]) return PLAIN[w];
+    if (/^[A-Z][A-Z0-9_]*$/.test(w)) { const al = aliasWord(w); if (al) return al; }
     if (w.startsWith("$f(")) return "a formula";
     const sum = /^([A-Z_0-9,+]+\+[A-Z_0-9,]+)([<=>~])(-?\d+)$/.exec(w);
     if (sum) {  // BH adds the stats up: MULTI107,54+MULTI188,9+MULTI83,1+STAT127>2
@@ -79,7 +119,8 @@ EZ.words = (function () {
       if (key === "DIFF" && op === "=" && DIFFS[a]) return DIFFS[a];
       if (key === "RUNE" && op !== "~") return "rune " + cmpText(op, a);
       if (key === "FILTLVL") return levelText(op, a, b === undefined ? undefined : +b, opts);
-      return name + " " + (op === "~" ? `${a}-${b}` : cmpText(op, a));
+      if (key === "STAT" && id) { const st = statText(+id, op, a, b === undefined ? undefined : +b); if (st) return st; }
+      return name + " " + (op === "~" ? `${a}-${b}` : op === "=" && key === "STAT" ? "is " + a : cmpText(op, a));
     }
     if (/^[a-z0-9]{3}/.test(w) && !/^\d+$/.test(w)) {
       const base = EZ.items && EZ.items.base && EZ.items.base(w.slice(0, 4));
@@ -160,6 +201,7 @@ EZ.words = (function () {
     if (n.k === "group") return text(n.x, opts, inside);
     if (n.k === "not") {
       const x = n.x.k === "group" ? n.x.x : n.x;
+      if (x.k === "w" && x.w === "ID") return "unidentified";
       const t = text(x, opts, x.k !== "OR");
       return x.k === "w" || x.k === "not" ? "not " + t : "not (" + t + ")";
     }
@@ -230,5 +272,22 @@ EZ.words = (function () {
     return items(cond, max);
   }
 
-  return {cond, word, tokens, parse, items, forWhat, PLAIN};
+  /* Whether a condition can hold when some of its words have a known value ({REVEALED: false, BIG_GG: true}): false
+     when it never can (another version's rule), else true. AND and OR as BH reads them; other words unknown. */
+  function canHold(c, known) {
+    const t = c && c.trim() ? parse(tokens(c)) : null;
+    if (!t) return true;
+    const ev = (n) => {
+      if (!n) return null;
+      if (n.k === "w") return Object.prototype.hasOwnProperty.call(known, n.w) ? !!known[n.w] : null;
+      if (n.k === "group") return ev(n.x);
+      if (n.k === "not") { const v = ev(n.x); return v === null ? null : !v; }
+      const a = ev(n.a), b = ev(n.b);
+      if (n.k === "AND") return a === false || b === false ? false : a === true && b === true ? true : null;
+      return a === true || b === true ? true : a === false && b === false ? false : null;
+    };
+    return ev(t) !== false;
+  }
+
+  return {cond, word, tokens, parse, items, forWhat, canHold, PLAIN};
 })();

@@ -888,6 +888,33 @@
   feature takes only its description lines (`descOnly`), and 050's one-space option labels are options too. A new
   module goes into `MODULES` (and the selftest's list when it holds logic); a new edit field into
   `store.normalize` and `edits.js`'s order, with a fixture.
+  Its 63 minors and 22 polish items (2026-11-12, the author: "work on the minor and polish items"), done: the first
+  save (of a profile, or under a new file name) opens a box of next steps that stays (the launcher step, the reload
+  key, the Cube's "Custom (N changes)" to check), and the bar's Save button gets a dot while the game's file is
+  behind (`saved.edits`, a CRC of the edits at the save); the bar's chips are buttons (changes to Changes, an update
+  to Start's save card), the profile name a button to Profiles, its height measured (`--bar`, and `--fe-bar` for
+  the website's Back to top); drawers have `aria-expanded`, are `inert` when closed, close on Escape (the areas menu on
+  a tap beside it too), and on phones the bar keeps one line (☰ names the area; Undo / Redo in the menu beside Save,
+  whose groups are Save, Back up and share, Help). Every redraw of an area gives the focus back to the control in use
+  (`focusKey` / `refocus` in `app.drawArea`), and `go()` puts it on the area's heading. One wording for hidden items
+  everywhere (`EZ.render.hiddenWords`: Hidden, Hidden, icon only), "alert" in How it's built, which also lists the
+  rules that may match (dimmed). Quick Edits: a switch another one above it outdoes says "No effect while … is on"
+  (`shadowed`), group legends, the steps for a level of your own; Items: fields a base can't have are left out (and
+  "matches no item" said), a unique picked by name is shown unidentified, a change keeps its name (`o.name`) and its
+  place when edited, its cells draw the icon, sound and chat; Looks: card titles say what they draw (`CARD_TITLES`, a
+  note from 040's comment), jump links and a filter box, the cards draw with the color swaps, the palette works from
+  the keyboard; Alerts: icon sizes explained (a center pixel alone stays on Smaller, `resized`), silent sounds marked
+  (`silentSounds` from the page data); Maps: bonuses take a gold line only (`maps.mark`), no Rolls for mods that show
+  no number; My rules: a hide for every level writes `FILTLVL>0` (level 0 shows everything), the templates show what
+  they do, blocks come first once there are rules; Erazure's rules: another version's rules (`words.canHold` on the
+  version's toggles) are out of the default view and dimmed, the rule dialog opens on its title, a rule the player
+  switched off offers "Switch it back on", a merged line after an Erazure update is shown with the player's words in
+  gold and a clash said, rows are list items; Changes: with no changes it says where to start, "No longer apply" names
+  each change and its area, "I didn't see my item" ends with the checks players miss and Copy a report for Discord
+  (the share link in it); Help links its places and answers going back to plain Erazure, a hide that still shows,
+  the preview and where to ask (erazure on Discord, as README says). 050's labels on main (653e109): Super Healing and
+  Mana Potions, 3-Square / 2-Square orbs, Hide Magic / Rare Quivers, and Show Ethereal Non-Magical Throwing Weapons
+  without `!ID`; the launcher's menu is Item Filter Profiles (its button image says so).
 - The website's **Resources** tab (2026-11-02, the author: reference pages players can look things up in, more to
   come): `website/docs/resources/index.md` lists them, a grid card each (mkdocs.yml has `navigation.indexes`, so it is
   the tab's own page). A resource is a page written by hand, `website/resources/<Name>.html` (its data, styles and

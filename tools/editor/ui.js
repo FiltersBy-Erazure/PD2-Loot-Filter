@@ -110,7 +110,14 @@ EZ.ui = (function () {
     document.addEventListener("keydown", onkey, true);
     open.push(box);
     (host || document.body).appendChild(back);
-    const first = box.querySelector("input, select, textarea, button.primary, button");
+    // the focus: what the dialog names (opts.focus: "title", or an element), else the first field, else its main
+    // button (Enter does what the dialog is for), else the first button
+    let first = null;
+    if (opts.focus === "title") { title.tabIndex = -1; first = title; }
+    else if (opts.focus === "first") first = foot.querySelector("button");  // a question whose main button undoes
+    else if (opts.focus && opts.focus.focus) first = opts.focus;
+    else first = box.querySelector("input:not([type=checkbox]):not([type=radio]), select, textarea") ||
+      foot.querySelector("button.primary") || box.querySelector("button");
     if (first) first.focus();
     return close;
   }
@@ -132,21 +139,30 @@ EZ.ui = (function () {
   }
 
   function confirmBox(title, text, yes, onyes) {
-    dialog({title, body: [h("p", text)], buttons: [{text: "Cancel"}, {text: yes, primary: true, onclick: onyes}]});
+    // Enter means Cancel here: the main button deletes, clears or replaces something
+    dialog({title, body: [h("p", text)], buttons: [{text: "Cancel"}, {text: yes, primary: true, onclick: onyes}],
+      focus: "first"});
   }
 
-  /* A menu under an anchor: menu(anchor, [{text, sub, onclick, disabled}]) */
+  /* A menu under an anchor: menu(anchor, [{text, sub, onclick, disabled} or {heading}]) */
   let openMenu = null;
   function menu(anchor, items) {
     if (openMenu) openMenu();
     const box = h("div.fe-menu", {role: "menu"});
+    let n = 0;
     for (const it of items) {
       if (!it) continue;
+      if (it.heading) {
+        box.appendChild(h("div.fe-menu-h" + (n ? "" : ".first"), {role: "presentation"}, it.heading));
+        continue;
+      }
+      n++;
       box.appendChild(h("button", {type: "button", role: "menuitem", disabled: !!it.disabled, onclick: () => {
         close();
         it.onclick();
       }}, h("span", h("span", it.text), it.sub ? h("small", it.sub) : null)));
     }
+    anchor.setAttribute("aria-expanded", "true");
     const root = host || document.body;
     root.appendChild(box);
     const r = anchor.getBoundingClientRect(), rr = root.getBoundingClientRect();
@@ -157,7 +173,7 @@ EZ.ui = (function () {
     box.style.top = (r.bottom - rr.top + 4) + "px";
     const away = (e) => { if (!box.contains(e.target) && e.target !== anchor) close(); };
     const key = (e) => {
-      if (e.key === "Escape") { close(); anchor.focus(); }
+      if (e.key === "Escape") { e.preventDefault(); close(); anchor.focus(); }
       else if (e.key === "ArrowDown" || e.key === "ArrowUp") {
         const bs = [...box.querySelectorAll("button:not(:disabled)")];
         const i = bs.indexOf(document.activeElement);
@@ -170,6 +186,7 @@ EZ.ui = (function () {
       box.remove();
       document.removeEventListener("mousedown", away, true);
       document.removeEventListener("keydown", key, true);
+      if (anchor.isConnected) anchor.setAttribute("aria-expanded", "false");
       openMenu = null;
     }
     document.addEventListener("mousedown", away, true);

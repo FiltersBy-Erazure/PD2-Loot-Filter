@@ -74,7 +74,7 @@ EZ.edits = (function () {
     const on = [];
     for (const id of ids) {
       const o = byId.get(id);
-      if (!o) { ctx.unplaced("options", id, "Erazure no longer has this option"); continue; }
+      if (!o) { ctx.unplaced("quick", id, "Erazure no longer has this switch"); continue; }
       for (const i of o.lines) {
         ctx.lines[i] = groundOnly(ctx.lines[i].replace(/^\s*\/\/+\s*/, ""));
         on.push(i);
@@ -104,7 +104,7 @@ EZ.edits = (function () {
         const secs = F.sections(ctx.src, ctx.lines);
         for (const name of f.sections) {
           const range = secs[name];
-          if (!range) { ctx.unplaced("options", f.title, `Erazure no longer has ${name}`); continue; }
+          if (!range) { ctx.unplaced("features", f.title, "Erazure moved the lines this switch turns off"); continue; }
           for (let i = range[0]; i < range[1]; i++) {
             const line = ctx.lines[i];
             if (!line.startsWith("ItemDisplay[")) continue;
@@ -117,11 +117,11 @@ EZ.edits = (function () {
       } else if (f.aliases && !on) {
         const names = Array.isArray(f.aliases) ? f.aliases
           : Object.keys(F.aliases(ctx.lines)).filter((n) => f.aliases.test(n));
-        if (!names.length) ctx.unplaced("options", f.title, "Erazure no longer has these aliases");
-        for (const n of names) if (!setAlias(ctx.lines, n, "FALSE")) ctx.unplaced("options", f.title, `no Alias[${n}]`);
+        if (!names.length) ctx.unplaced("features", f.title, "Erazure changed what this switch turns off");
+        for (const n of names) if (!setAlias(ctx.lines, n, "FALSE")) ctx.unplaced("features", f.title, "Erazure changed what this switch turns off");
       } else if (f.switchOn && on) {
         const range = F.sections(ctx.src, ctx.lines)[f.switchOn.section];
-        if (!range) { ctx.unplaced("options", f.title, `Erazure no longer has ${f.switchOn.section}`); continue; }
+        if (!range) { ctx.unplaced("features", f.title, "Erazure moved the lines this switch turns on"); continue; }
         let n = 0;
         for (let i = range[0]; i < range[1]; i++) {
           const r = F.rule(ctx.lines[i]);
@@ -130,7 +130,7 @@ EZ.edits = (function () {
             n++;
           }
         }
-        if (!n) ctx.unplaced("options", f.title, "Erazure no longer has these lines");
+        if (!n) ctx.unplaced("features", f.title, "Erazure no longer has the lines this switch turns on");
       }
     }
   }
@@ -186,11 +186,15 @@ EZ.edits = (function () {
   const keywords = (combo) => combo ? combo.split(" ").map((k) => "%" + k + "%").join("") : "";
   const SIZES = ["BORDER", "MAP", "DOT", "PX"];
 
+  /* An icon one size in (smaller: each box moves in, the center pixel goes; an icon that is the center pixel alone
+     stays, or it would go) or with the outer box added (bigger: in its biggest box's color; an icon that has the outer
+     box is already the biggest the game draws). */
   function resized(combo, how) {
     const parts = combo.split(" ").filter(Boolean).map((k) => k.split("-"));
     if (how === "smaller") {
-      return parts.map(([l, c]) => [SIZES[SIZES.indexOf(l.toUpperCase()) + 1], c]).filter(([l]) => l)
+      const out = parts.map(([l, c]) => [SIZES[SIZES.indexOf(l.toUpperCase()) + 1], c]).filter(([l]) => l)
         .map(([l, c]) => l + "-" + c).join(" ");
+      return out || combo;
     }
     if (how === "bigger" && parts.length && !parts.some(([l]) => l.toUpperCase() === "BORDER")) {
       const outer = parts.find(([l]) => l.toUpperCase() === "MAP") || parts[0];
@@ -263,7 +267,7 @@ EZ.edits = (function () {
     const found = F.levels(ctx.lines);
     for (const k of Object.keys(names)) {
       const n = +k, at = found[n - 1];
-      if (!at || typeof names[k] !== "string") { ctx.unplaced("options", "Level " + k + " name", "no such level"); continue; }
+      if (!at || typeof names[k] !== "string") { ctx.unplaced("quick", "The name of filter level " + k, "Erazure has no filter level " + k + " now"); continue; }
       const line = ctx.lines[at.i];
       const colon = line.indexOf(":") + 1, c = line.indexOf("//", colon);
       ctx.lines[at.i] = line.slice(0, colon) + names[k].replace(/\/\//g, "/") + (c < 0 ? "" : line.slice(c));
@@ -328,7 +332,9 @@ EZ.edits = (function () {
   const counters = {
     options: (e) => Object.keys(e.options || {}).filter((k) => e.options[k]).length +
       Object.keys((e.levels || {}).names || {}).length + Object.keys((e.levels || {}).copies || {}).length,
-    features: (e) => EZ.features.filter((f) => e.features && f.id in e.features && !!e.features[f.id] !== featureDefault(f)).length,
+    // (the map lines' switches count on Maps, where they are too: maps.js)
+    features: (e) => EZ.features.filter((f) => f.group !== "Maps" && e.features && f.id in e.features &&
+      !!e.features[f.id] !== featureDefault(f)).length,
     looks: (e) => Object.keys(e.looks || {}).length + Object.keys(e.remap || {}).length + Object.keys(e.icons || {}).length,
     alerts: (e) => Object.keys(e.sounds || {}).length +
       ["noSounds", "noIcons", "iconsOnly"].filter((k) => e.alerts && e.alerts[k]).length +

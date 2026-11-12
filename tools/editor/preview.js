@@ -32,25 +32,27 @@ EZ.preview = (function () {
   ];
 
   // the drop scenes: a floor, the area BH reads (MAPID) and a pile of typical drops (the settings give the rest)
+  // (place: where the scene is, as the settings' "You are" says it; the scene's own, whatever that setting says)
   const SCENES = [
-    {id: "baal", title: "Baal's Throne", floor: "baal", mapid: 131, items: [
+    {id: "baal", title: "Baal's Throne", floor: "baal", mapid: 131, place: "outside town", items: [
       {code: "r30"}, {code: "uap", quality: "UNI"}, {code: "uar", quality: "SUP", sockets: 4},
       {code: "cm3", quality: "MAG"}, {code: "gpv"}, {code: "gld", gold: 2400}, {code: "rin", quality: "RARE"},
       {code: "amu", quality: "MAG"}, {code: "7s8", eth: true, sockets: 4}, {code: "gcr"}, {code: "rvl"},
       {code: "hp5"}, {code: "jew", quality: "RARE"}, {code: "cm1", quality: "MAG"}, {code: "ci3", quality: "RARE"},
       {code: "pk1"}, {code: "r22"}, {code: "xvg", quality: "RARE"}]},
-    {id: "chaos", title: "Chaos Sanctuary", floor: "chaos", mapid: 108, items: [
+    {id: "chaos", title: "Chaos Sanctuary", floor: "chaos", mapid: 108, place: "outside town", items: [
       {code: "r26"}, {code: "obf", quality: "UNI"}, {code: "utp", quality: "SET"}, {code: "cm2", quality: "MAG"},
       {code: "gpw"}, {code: "gld", gold: 1800}, {code: "amu", quality: "RARE"}, {code: "6lw", sockets: 4},
       {code: "mbt", quality: "MAG"}, {code: "skz"}, {code: "rvs"}, {code: "mp5"}]},
-    {id: "map", title: "A T3 map", floor: "barracks", mapid: 143, items: [
+    {id: "map", title: "A T3 map", floor: "barracks", mapid: 143, place: "in a map", items: [
       {code: "t31", quality: "RARE"}, {code: "r24"}, {code: "wss"}, {code: "uap", quality: "UNI"},
       {code: "cm3", quality: "MAG"}, {code: "jew", quality: "MAG"}, {code: "rin", quality: "MAG"},
       {code: "gld", gold: 3100}, {code: "gpr"}, {code: "pa9", quality: "MAG"}, {code: "rvl"}, {code: "key", qty: 6}]},
-    {id: "runes", title: "Runes", floor: "lut", mapid: 40, items: [
+    // (the desert floor; the Rocky Waste outside Lut Gholein as the area, so the filter hides what it hides there)
+    {id: "runes", title: "Runes", floor: "lut", mapid: 41, place: "outside town", items: [
       {code: "r01"}, {code: "r08"}, {code: "r10"}, {code: "r12"}, {code: "r15"}, {code: "r18"}, {code: "r20"},
       {code: "r22"}, {code: "r24"}, {code: "r26"}, {code: "r28"}, {code: "r30"}, {code: "r31"}, {code: "r33"}]},
-    {id: "town", title: "Harrogath", floor: "harrogath", mapid: 109, items: [
+    {id: "town", title: "Harrogath", floor: "harrogath", mapid: 109, place: "in town", items: [
       {code: "isc"}, {code: "tsc"}, {code: "hp5"}, {code: "mp5"}, {code: "rvs"}, {code: "key", qty: 12},
       {code: "gld", gold: 9000}, {code: "uap", quality: "UNI"}, {code: "cm1", quality: "MAG"}]},
   ];
@@ -227,8 +229,8 @@ EZ.preview = (function () {
   function stateLine(r) {
     if (!r) return null;
     if (r.byOption) return EZ.ui.pill("Hidden by the game's Hide Potions option", "warn");
-    if (r.invisible) return EZ.ui.pill("Hidden: nothing shows, not even its picture", "warn");
-    if (r.hidden) return EZ.ui.pill("No label; the item still shows", "warn");
+    const w = EZ.render.hiddenWords(r);
+    if (w) return EZ.ui.pill(w + ": " + EZ.render.HIDDEN_LONG[w].replace(/^./, (c) => c.toLowerCase()), "warn");
     if (r.forced) return EZ.ui.pill("Shown by Force Show (the game's option)", "info");
     return null;
   }
@@ -243,13 +245,14 @@ EZ.preview = (function () {
       card.appendChild(ground);
       return card;
     }
-    if (r.name && !r.invisible) ground.appendChild(labelNode(r.name, r.start, 1.5));
-    else ground.appendChild(h("span.fe-pv-hidden", r.invisible ? "(nothing)" : "(no label)"));
+    if (r.name && !r.invisible && !r.hidden) ground.appendChild(labelNode(r.name, r.start, 1.5));
+    else ground.appendChild(EZ.render.hiddenNode(r) || h("span.fe-pv-hidden", "No label"));
     card.appendChild(ground);
     const pills = h("div.fe-row.fe-small", stateLine(r));
     if (r.cut.name) pills.appendChild(EZ.ui.pill(`The game cuts ${r.cut.name} letter${r.cut.name > 1 ? "s" : ""} (56 at most)`, "warn"));
     if (r.cut.copy) pills.appendChild(EZ.ui.pill(`The game copies 127 characters: ${r.cut.copy} more cut`, "warn"));
-    if (r.maybe) pills.appendChild(EZ.ui.pill("Some rules ask what this preview leaves open", "info"));
+    if (r.maybe) pills.appendChild(EZ.ui.pill("Some rules ask what this preview leaves open (How it's built lists " +
+      "them)", "info"));
     if (pills.childNodes.length) card.appendChild(pills);
     const dl = h("dl.fe-kv.fe-pvkv");
     const diff = (k) => other && JSON.stringify(k === "icons" ? boxes(other) : other[k]) !==
@@ -260,18 +263,27 @@ EZ.preview = (function () {
     dl.appendChild(h("dd", {class: diff("chat")}, r.chat === null ? h("span.fe-sub", "no chat line") :
       r.chat === "" ? h("span.fe-sub", "an empty line") : chatNode(r.chat, r.start)));
     dl.appendChild(h("dt", "Sound"));
+    // the clip when the editor has it; the game's chat command to hear it either way, once, with what it is
+    const clip = r.sound && EZ.sound.has(r.sound);
     dl.appendChild(h("dd", {class: diff("sound")}, r.sound ? h("span", "♪ " + soundName(r.sound) + " ",
-      EZ.sound.button(r.sound, soundName(r.sound)), " ", h("small.fe-sub", "(.playsound " + r.sound + ")")) :
-      h("span.fe-sub", "none")));
-    if (r.desc) {
-      dl.appendChild(h("dt", "Hover"));
-      dl.appendChild(h("dd", {class: diff("desc")}, h("div.fe-pvdesc", codedText(r.desc, "3"))));
-    }
+      clip ? EZ.sound.button(r.sound, soundName(r.sound)) : null, " ", h("small.fe-sub", {title: "Type it in the " +
+        "game's chat to hear the sound in game"}, (clip ? "in game: " : "to hear it, type in the game's chat: ") +
+        ".playsound " + r.sound)) : h("span.fe-sub", "none")));
+    let hoverDrawn = false;
     if (item) {
       const text = EZ.items.hoverText(item, r, ctx());
       const c = EZ.glyphs && EZ.glyphs.hover(text, {zoom: 1.2, tint: EZ.items.QUALITY_TINT[item.quality]});
-      if (c) card.appendChild(h("div.fe-pvhover", c));
+      if (c) { card.appendChild(h("div.fe-pvhover", c)); hoverDrawn = true; }
       else if (EZ.glyphs && EZ.glyphs.available()) EZ.glyphs.want("hover", redraw);
+    }
+    // the hover box's filter lines: drawn above in the game's font; here only when that can't be drawn, or to say
+    // that they differ from Erazure's
+    if (r.desc && !hoverDrawn) {
+      dl.appendChild(h("dt", "Hover"));
+      dl.appendChild(h("dd", {class: diff("desc")}, h("div.fe-pvdesc", codedText(r.desc, "3"))));
+    } else if (hoverDrawn && diff("desc")) {
+      dl.appendChild(h("dt", "Hover"));
+      dl.appendChild(h("dd", {class: "is-changed"}, h("span.fe-sub", "Its hover box lines differ from Erazure's.")));
     }
     card.appendChild(dl);
     return card;
@@ -296,6 +308,8 @@ EZ.preview = (function () {
     fn();
     save();
     draw();
+    // the areas that show what the preview's item does (Erazure's rules) follow it
+    try { document.dispatchEvent(new CustomEvent("fe-preview-item")); } catch (e) { /* an old browser */ }
   }
 
   function settings(f) {
@@ -323,43 +337,45 @@ EZ.preview = (function () {
         opt("Force Show Unowned", "forceUnowned"),
         opt("Hide Healing Potions", "hideHealing"),
         opt("Hide Mana Potions", "hideMana")));
-    return h("div.fe-pvctx",
+    // where the character is (the item's own place is in The item); a scene has its own
+    const sc = state.mode === "scene" ? SCENES.find((x) => x.id === state.scene) || SCENES[0] : null;
+    const youAre = sc ? h("div.fe-pvfield", h("span", "You are"), h("span.fe-sub", {style: {padding: ".38em 0"}},
+      sc.place[0].toUpperCase() + sc.place.slice(1) + " (the scene's own)")) : h("label.fe-pvfield", h("span", "You are"), where);
+    const box = h("div.fe-pvctx",
       h("label.fe-pvfield.wide", h("span", "Filter level"), lv),
       h("label.fe-pvfield", h("span", "Character"), h("span.fe-row", clvl, cls)),
       h("label.fe-pvfield", h("span", "Difficulty"), diff),
-      h("label.fe-pvfield", h("span", "Where"), where),
+      youAre,
       options);
+    // on a phone the settings fold (one line), so the preview itself has the room
+    if (EZ.app.isPhone && EZ.app.isPhone()) {
+      const summary = `${state.filtlvl} · ${names[state.filtlvl] || ""}, level ${state.clvl} ${CLASSES[state.cls]}, ` +
+        DIFFS[state.diff];
+      return h("details.fe-pv-fold", {open: state.open.settings || null,
+        ontoggle: (e) => { state.open.settings = e.target.open; save(); }},
+        h("summary", "Settings: " + summary), box);
+    }
+    return box;
   }
 
   /* ---------------------------------------------------------------- the item */
 
+  /* The item to look at (to change one, Items has its own search): the keyboard's combo box. */
   function picker() {
-    const input = h("input.fe-search.fe-pv-search", {type: "search", placeholder: "Find an item: Ber, Shako, Thresher…",
-      "aria-label": "Find an item", autocomplete: "off"});
-    const list = h("div.fe-pv-picks", {role: "listbox", hidden: true});
     const choose = (p) => set(() => {
       state.spec = Object.assign({}, p.spec);
       state.notes = [];
       const b = EZ.items.base(p.spec.code);
       if (b && !b.misc && !p.spec.quality) state.spec.quality = "NORM";
-      input.value = "";
-      list.hidden = true;
     });
-    const show = () => {
-      const found = EZ.items.search(input.value, 14);
-      fill(list, found.map((p) => h("button", {type: "button", role: "option", onclick: () => choose(p)},
-        h("b", p.label), h("small", p.sub))));
-      if (!found.length && input.value.trim()) list.appendChild(h("div.fe-sub", "Nothing by that name"));
-      list.hidden = !input.value.trim();
-    };
-    input.addEventListener("input", debounce(show, 120));
-    input.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") { const first = list.querySelector("button"); if (first) { e.preventDefault(); first.click(); } }
-      if (e.key === "Escape") { list.hidden = true; }
-    });
+    const search = EZ.ui.combo({placeholder: "Look at an item: Ber, Shako, Thresher…", label: "Look at an item",
+      find: (q) => EZ.items.search(q, 14).map((p) => ({label: p.label, sub: p.sub, pick: () => choose(p)})),
+      empty: () => "Nothing by that name"});
+    search.box.style.flex = "1 1 auto";
+    search.box.style.marginBottom = "0";
     const paste = h("button.fe-btn.small", {type: "button", title: "An item copied in the game (Ctrl+C)",
       onclick: pasteDialog}, "Paste from the game");
-    return h("div.fe-pv-pick", h("div.fe-row", {style: {flexWrap: "nowrap"}}, input, paste), list);
+    return h("div.fe-row.fe-pv-pickrow", {style: {flexWrap: "nowrap", marginBottom: ".6em"}}, search.box, paste);
   }
 
   /* An item BH copied in the game: point at it, Ctrl+C, paste here. */
@@ -375,7 +391,8 @@ EZ.preview = (function () {
       buttons: [{text: "Cancel"}, {text: "Use this item", primary: true, onclick: () => {
         try {
           const r = EZ.items.fromGame(ta.value);
-          // shown as it dropped: on the ground and unidentified (hides only work there); Where and Identified change it
+          // shown as it dropped: on the ground and unidentified (hides only work there); The item is and Identified
+          // change it
           const spec = Object.assign({}, r.spec), was = {place: spec.place, id: spec.id};
           spec.place = "GROUND";
           if (["MAG", "RARE", "CRAFT", "UNI", "SET"].indexOf(spec.quality) >= 0) spec.id = false;
@@ -429,7 +446,7 @@ EZ.preview = (function () {
         onchange: (e) => change((s) => { s.roll = +e.target.value / 100; })})));
     }
     if (nums.childNodes.length) rows.push(nums);
-    rows.push(h("div.fe-row.fe-small", h("label.fe-row", "Where ", select(PLACES, spec.place || "GROUND",
+    rows.push(h("div.fe-row.fe-small", h("label.fe-row", "The item is ", select(PLACES, spec.place || "GROUND",
       (v) => change((s) => { s.place = v; }), "Where the item is")),
       h("label.fe-row", "Sells for ", h("input.fe-pv-num.wide", {type: "number", min: 0, value: spec.sell === undefined ? "" : spec.sell,
         placeholder: "?", title: "The gold a vendor pays (Malah): rules about sell value ask it",
@@ -442,7 +459,7 @@ EZ.preview = (function () {
       was ? h("p.fe-note.fe-small", "Pasted from the game and shown as it drops: on the ground" +
         (spec.id === false && was.id ? " and unidentified" : "") + " (it was copied " + (PLACE_NAME[was.place] ?
         (was.place === "EQUIPPED" ? "equipped" : "in " + PLACE_NAME[was.place]) : "in your inventory") +
-        (was.id ? ", identified" : "") + "). Where and Identified below change it.") : null,
+        (was.id ? ", identified" : "") + "). The item is and Identified below change it.") : null,
       state.notes && state.notes.length ? h("p.fe-note.fe-small", "From the game. Not in the game's copy: " +
         state.notes.join("; ") + ".") : null) : null;
     return h("div.fe-pv-item", h("div.fe-pv-itemname", EZ.items.describe(spec),
@@ -483,40 +500,60 @@ EZ.preview = (function () {
   function traceView(f, r) {
     if (!r) return null;
     const where = (i) => app.lineLink(f.lines, i);  // Erazure's lines as Erazure's rules numbers them, yours by name
-    const rows = r.trace.filter((t) => t.kind !== "maybe" || state.open.maybe).map((t) => {
+    // the rules that ask what this preview leaves open (a stat, its sell price…) show too, dimmed: they may match
+    const KIND = {stop: ["decides", "This rule decides the label: the rules after it don't change it"],
+                  continue: ["adds to it", "This rule adds to the label (its tags, its colors), and the rules after it go on"],
+                  maybe: ["may match", "This rule asks something the preview leaves open: add it under The item to know"],
+                  notify: ["alert", "This rule gives an alert: a minimap icon, a chat line or a sound"]};
+    const done = r.trace.filter((t) => t.kind !== "maybe").length, maybes = r.trace.length - done;
+    const rows = r.trace.map((t) => {
       const rule = f.F.byLine.get(t.i);
-      const kind = t.kind === "stop" ? "stops" : t.kind === "continue" ? "adds" : t.kind === "maybe" ? "maybe" : "";
+      const [kind, tip] = KIND[t.kind] || KIND.notify;
       const tags = [];
       if (t.notify || t.kind === "notify") tags.push(r.chatRule === t.i ? "chat" : null, r.soundRule === t.i ? "sound" : null,
         r.icons.some((x) => x.i === t.i) ? "icon" : null);
       return h("li.fe-trace-row" + (t.kind === "maybe" ? ".maybe" : ""),
-        h("span.fe-trace-where", where(t.i)), h("span.fe-pill", kind || "notifies"),
+        h("span.fe-trace-where", where(t.i)), h("span.fe-pill", {title: tip}, kind),
         tags.filter(Boolean).map((x) => h("span.fe-pill.info", x)),
         h("code.fe-trace-text", rule ? (rule.cond.length > 90 ? rule.cond.slice(0, 88) + "…" : rule.cond) : ""));
     });
     return h("details.fe-pv-trace", {open: state.open.trace || null,
       ontoggle: (e) => { state.open.trace = e.target.open; save(); }},
-      h("summary", "How it's built (" + rows.length + " rules)"),
+      h("summary", "How it's built (" + done + " rule" + (done === 1 ? "" : "s") + (maybes ? ", " + maybes + " may match" : "") +
+        ")"),
+      maybes ? h("p.fe-sub.fe-small", "The dimmed rules ask what this preview leaves open, such as a stat or the price a " +
+        "vendor pays: add it under The item (Stats, Sells for) to see whether they match.") : null,
       h("ol.fe-trace", rows.length ? rows : h("li.fe-sub", "No rule matched: the game's own name.")));
   }
 
-  function levelsView(f) {
+  /* The item at every filter level: a row per level with its name and the label at the size it reads (a long one
+     scrolls in its row rather than shrinking), a gold edge where the player's filter differs from Erazure's. */
+  function levelsView(base, mine) {
+    const f = mine || base;
     const names = levelNames(f);
-    const strip = h("div.fe-pv-strip");
+    const strip = h("div.fe-pv-levelrows");
+    let changedN = 0;
     for (let lv = 0; lv < names.length; lv++) {
       const r = run(f, state.spec, lv);
-      const cell = h("button.fe-pv-cell" + (lv === state.filtlvl ? ".on" : ""), {type: "button", title: lv + " · " + names[lv],
-        onclick: () => set(() => { state.filtlvl = lv; })},
-        h("span.fe-pv-lv", String(lv)),
-        r && r.name && !r.invisible ? labelNode(r.name, r.start, 1) :
-          h("span.fe-pv-hidden", r && r.invisible ? "hidden" : "no label"),
-        r && r.icons.length ? iconCanvas(r.icons, 2) : null,
-        r && r.sound ? h("span.fe-pv-snd", {title: soundName(r.sound)}, "♪") : null);
-      strip.appendChild(cell);
+      const rb = mine ? run(base, state.spec, lv) : null;
+      const changed = !!(mine && r && rb && outcome(r) !== outcome(rb));
+      if (changed) changedN++;
+      const shown = r && r.name && !r.invisible && !r.hidden;
+      strip.appendChild(h("button.fe-pv-levelrow" + (lv === state.filtlvl ? ".on" : "") + (changed ? ".is-changed" : ""),
+        {type: "button", title: "Show the item at " + lv + " · " + names[lv], "aria-pressed": String(lv === state.filtlvl),
+          onclick: () => set(() => { state.filtlvl = lv; })},
+        h("span.fe-pv-lv", h("b", String(lv)), " " + names[lv]),
+        h("span.fe-pv-levellabel", shown ? labelNode(r.name, r.start, 1) : (EZ.render.hiddenNode(r) ||
+          h("span.fe-pv-hidden", "No label"))),
+        h("span.fe-row.fe-small.fe-pv-levelalerts", r && r.icons.length ? iconCanvas(r.icons, 2) : null,
+          r && r.sound ? h("span.fe-pv-snd", {title: soundName(r.sound)}, "♪") : null,
+          changed ? h("span.fe-pill.accent", {title: "Your filter differs from Erazure's here"}, "changed") : null)));
     }
     return h("details.fe-pv-levels", {open: state.open.levels || null,
       ontoggle: (e) => { state.open.levels = e.target.open; save(); }},
-      h("summary", "At every filter level"), strip);
+      h("summary", "At every filter level" + (mine ? changedN ? ` (yours differs on ${changedN} level${changedN === 1 ? "" :
+        "s"})` : " (as Erazure's)" : "")),
+      strip);
   }
 
   /* ---------------------------------------------------------------- views */
@@ -529,7 +566,7 @@ EZ.preview = (function () {
     const f = mine || base;
     return [picker(), h("details.fe-pv-editor", {open: state.open.item || null,
       ontoggle: (e) => { state.open.item = e.target.open; save(); }}, h("summary", "The item"), itemEditor()),
-      res, traceView(f, mine ? rm : rb), levelsView(f)];
+      res, traceView(f, mine ? rm : rb), levelsView(base, mine)];
   }
 
   /* The drop scene: the pile of a scene on its floor, in the player's filter (or Erazure's), the alerts below. */
@@ -544,6 +581,11 @@ EZ.preview = (function () {
       {label: "Whose filter"}) : null;
     const head = h("div.fe-row.fe-small", pick, which,
       toggle("Show hidden", !!state.showHidden, (on) => set(() => { state.showHidden = on; })));
+    // whose filter, at which level and where: first, under the scene's tabs
+    const lvName = levelNames(side)[state.filtlvl] || "";
+    const note = h("p.fe-sub.fe-small.fe-scene-note", (mine ? side === mine ? "Your filter" : "Erazure's filter" :
+      "Erazure's filter (you have no changes yet)") + ` at ${state.filtlvl} · ${lvName}, ${sc.place}` +
+      (mine && side === mine ? "; your changes have a gold edge" : "") + ". Click a drop to look at it.");
     if (!EZ.scene.available() || !EZ.glyphs.available()) {
       return [head, h("p.fe-note", "The scene needs the game's pictures and font (Erazure-Filter-Editor-Assets); " +
         "they aren't with this page. The Item and Samples views work without them.")];
@@ -584,16 +626,21 @@ EZ.preview = (function () {
         if (hit) set(() => { state.spec = Object.assign({}, hit.item.spec); state.mode = "item"; });
       });
       out.canvas.title = "Click an item to look at it";
+      out.canvas.setAttribute("role", "img");
+      out.canvas.setAttribute("aria-label", "The drops on the floor: " + items.filter((x) => !x.invisible)
+        .map((x) => EZ.items.describe(x.spec)).join(", "));
       fill(holder, out.canvas);
     });
+    // the alerts, each a button to the item (the scene's picture needs a mouse; this list doesn't)
+    const open = (spec) => set(() => { state.spec = Object.assign({}, spec); state.mode = "item"; });
     const alerts = h("ul.fe-scene-log", log.map(({spec, r, changed}) => h("li" + (changed ? ".is-changed" : ""),
-      r.icons.length ? iconCanvas(r.icons, 2) : h("span.fe-scene-noicon"),
-      r.chat !== null ? chatNode(r.chat || EZ.items.describe(spec), r.start) : h("span.fe-sub", EZ.items.describe(spec)),
+      h("button.fe-linkbtn.fe-scene-open", {type: "button", title: "Look at it in the Item view",
+        "aria-label": "Look at " + EZ.items.describe(spec), onclick: () => open(spec)},
+        r.icons.length ? iconCanvas(r.icons, 2) : h("span.fe-scene-noicon"),
+        r.chat !== null ? chatNode(r.chat || EZ.items.describe(spec), r.start) : h("span.fe-sub", EZ.items.describe(spec))),
       r.sound ? h("span.fe-small", "♪ " + soundName(r.sound), " ", EZ.sound.button(r.sound, soundName(r.sound))) :
         null)));
-    return [head, holder, log.length ? h("h4.fe-scene-h", "Alerts, in drop order") : null, alerts,
-      h("p.fe-sub.fe-small", mine ? (side === mine ? "Your filter; your changes have a gold edge." : "Erazure's filter.") :
-        "Erazure's filter (you have no changes yet).")];
+    return [head, note, holder, log.length ? h("h4.fe-scene-h", "Alerts, in drop order") : null, alerts];
   }
 
   function samplesView(base, mine) {
@@ -602,17 +649,23 @@ EZ.preview = (function () {
       if (!EZ.items.base(spec.code)) continue;
       const rb = run(base, spec), rm = mine ? run(mine, spec) : rb;
       const changed = mine && outcome(rb) !== outcome(rm);
-      grid.appendChild(h("button.fe-pv-sample" + (changed ? ".is-changed" : ""), {type: "button",
-        title: "Open in the item view", onclick: () => set(() => { state.spec = Object.assign({}, spec); state.mode = "item"; })},
+      const shown = rm.name && !rm.invisible && !rm.hidden;
+      // a long label takes two columns, so it reads at its size
+      const longest = shown ? Math.max(...EZ.render.plain(rm.name).split("\n").map((x) => x.length)) : 0;
+      grid.appendChild(h("button.fe-pv-sample" + (changed ? ".is-changed" : "") + (longest > 22 ? ".wide" : ""),
+        {type: "button", title: "Open in the item view",
+          onclick: () => set(() => { state.spec = Object.assign({}, spec); state.mode = "item"; })},
         h("small.fe-sub", EZ.items.describe(spec)),
-        h("span.fe-pv-sample-label", rm.name && !rm.invisible ? labelNode(rm.name, rm.start, 1) :
-          h("span.fe-pv-hidden", rm.invisible ? "hidden" : "no label")),
+        h("span.fe-pv-sample-label", shown ? labelNode(rm.name, rm.start, 1) : EZ.render.hiddenNode(rm) ||
+          h("span.fe-pv-hidden", "No label")),
         h("span.fe-row.fe-small", rm.icons.length ? iconCanvas(rm.icons, 2) : null,
           rm.sound ? h("span", {title: soundName(rm.sound)}, "♪") : null,
-          changed ? EZ.ui.pill("changed", "warn") : null)));
+          changed ? EZ.ui.pill("changed", "accent") : null)));
     }
-    return [h("p.fe-sub.fe-small", mine ? "Your filter; what your changes change has a gold edge." :
-      "Erazure's filter (you have no changes yet)."), grid];
+    const lvName = levelNames(mine || base)[state.filtlvl] || "";
+    return [h("p.fe-sub.fe-small", (mine ? "How these drops look with your filter" : "How these drops look with " +
+      "Erazure's filter (you have no changes yet)") + ` at ${state.filtlvl} · ${lvName}` +
+      (mine ? "; what your changes change has a gold edge." : ".") + " Click one to look at it."), grid];
   }
 
   function draw() {
@@ -651,6 +704,7 @@ EZ.preview = (function () {
   return {
     render(b, a) { box = b; app = a; draw(); },
     changed(ev, a) { app = a; redraw(); },
-    state, run, erazure, yours, withEdits, context, ctx, iconCanvas, SAMPLES,
+    state, run, erazure, yours, withEdits, context, ctx, iconCanvas, SAMPLES, levelNames,
+    saveState: () => save(),
   };
 })();

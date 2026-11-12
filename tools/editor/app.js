@@ -122,6 +122,7 @@ EZ.app = (function () {
         done();
         return;
       }
+      done();  // built: what follows (a folder dialog, the browser's own prompt, the write) shows itself
       try {
         await fn(built);
       } catch (e) {
@@ -154,16 +155,26 @@ EZ.app = (function () {
     saved(built, "download");
   }
 
+  /* A browser that already has the file in its downloads saves the new one as "Erazure-Custom (1).filter": the
+     launcher would keep loading the old one. */
+  const renamedNote = (name) => "If your browser added a number to the name, such as " +
+    name.replace(/\.filter$/, " (1).filter") + ", rename it back to " + name + ".";
+
   function saved(built, how, folder) {
+    const before = EZ.store.current().saved;
+    // the first save of this profile, or the first under a new file name: the launcher needs picking (once)
+    const first = !before || before.file !== built.name;
+    const changesN = built.report && built.report.count || 0;
     EZ.store.changeProfile((p) => {
       p.saved = {version: app.src.version, build: app.src.build, at: Date.now(), crc: built.crc, how, folder: folder || "",
-                 file: built.name};
+                 file: built.name, edits: editsKey(p)};
     });
     EZ.store.remember(EZ.store.current(), how === "download" ? "downloaded" : "saved to the game");
-    if (how === "download") {
-      toast(h("span", "Downloaded ", h("b", built.name), ". Put it in Diablo II\\ProjectD2\\filters\\local (replace " +
-              "the one there) and pick it in the launcher once (Local Filter, then Save Filter); then press " + RELOAD + "."),
-            "good", {ms: 11000});
+    if (first) {
+      nextSteps(built, how, changesN);
+    } else if (how === "download") {
+      toast(h("span", "Downloaded ", h("b", built.name), ". Replace the one in Diablo II\\ProjectD2\\filters\\local " +
+              "with it, then press " + RELOAD + ". " + renamedNote(built.name)), "good", {ms: 12000});
     } else {
       toast(h("span", "Saved ", h("b", built.name), " in ", h("b", folder), ". Press " + RELOAD + "."),
             "good", {ms: 8000});
@@ -171,10 +182,37 @@ EZ.app = (function () {
     redraw();
   }
 
+  /* After the first save (of a profile, or under a new file name): what's left to do, in a box that stays until it is
+     closed, and how to tell in game that the file is the one loaded (the Cube's version line). */
+  function nextSteps(built, how, changesN) {
+    const steps = [];
+    if (how === "download") {
+      steps.push(h("li", "Move ", h("b", built.name), " from your downloads into ",
+        h("code", "Diablo II\\ProjectD2\\filters\\local"), " (replace the one there). " + renamedNote(built.name)));
+    }
+    steps.push(h("li", "In the launcher open ", h("b", "Item Filter Profiles"), ", click ", h("b", "Local Filter"),
+      ", pick ", h("b", built.name), " and click ", h("b", "Save Filter"), ". Only this once: the launcher keeps it."));
+    steps.push(h("li", "In game, press " + RELOAD + " (or start the game)."));
+    steps.push(h("li", "To check it's yours: hover the Horadric Cube in your inventory. Its version line ends with ",
+      h("b", changesN ? `Custom (${changesN} change${changesN === 1 ? "" : "s"})` : "Custom (… changes)"), "."));
+    let close = null;
+    close = dialog({title: how === "download" ? "Downloaded: put it in your game" : "Saved: one step in the launcher",
+      body: [h("ol.fe-steps", steps),
+        h("p.fe-sub", "Next time, saving here is all it takes, then the reload key. Doesn't show? See ",
+          h("a", {href: "#changes/ch-help", onclick: (ev) => {
+            ev.preventDefault();
+            if (close) close();
+            go("changes", "ch-help");
+          }}, "If nothing you change shows in game"), ".")],
+      buttons: [{text: "Got it", primary: true, onclick: () => {}}]});
+  }
+
   const canSaveInPlace = () => window.isSecureContext && "showDirectoryPicker" in window;
 
-  async function folderHandle(ask) {
-    let dir = await EZ.store.kvGet("dir");
+  /* The game folder: the one kept from last time (asking the browser again if it must), or one the player picks
+     (ask; another: never the kept one). */
+  async function folderHandle(ask, another) {
+    let dir = another ? null : await EZ.store.kvGet("dir");
     if (dir && dir.queryPermission) {
       let state = await dir.queryPermission({mode: "readwrite"});
       if (state === "prompt") state = await dir.requestPermission({mode: "readwrite"});
@@ -245,7 +283,8 @@ EZ.app = (function () {
               h("b", built.name), " there, keeps the one it replaces as ", h("code", built.name + ".bak"),
               " and remembers the folder for next time."),
             h("ol.fe-steps",
-              h("li", "Pick the ", h("b", "local"), " folder (inside ProjectD2\\filters)."),
+              h("li", "Pick the ", h("b", "local"), " folder (inside ProjectD2\\filters). Your browser then asks to " +
+                "let this page edit files in that folder: allow it."),
               h("li", "Once: in the launcher open Item Filter Profiles, click ", h("b", "Local Filter"), ", pick ",
                 h("b", built.name), " and click ", h("b", "Save Filter"), "."),
               h("li", "After every save here, press " + RELOAD + ".")),
@@ -260,14 +299,20 @@ EZ.app = (function () {
         if (ok !== "pick") return;
         dir = await folderHandle(true);
       }
-      if (dir.name !== "local" && !(await new Promise((resolve) => dialog({
-        title: "Is this the right folder?",
-        body: [h("p", "The folder you picked is ", h("b", dir.name), ". The launcher's local filters live in ",
-                 h("code", "Diablo II\\ProjectD2\\filters\\local"), ". Save here anyway?")],
-        buttons: [{text: "Pick another", onclick: async () => { await EZ.store.kvSet("dir", undefined); resolve(false); }},
-                  {text: "Save here", primary: true, onclick: () => resolve(true)}],
-        onclose: () => resolve(false),
-      })))) return;
+      // a folder that isn't "local": save there anyway, or pick another (the click opens the folder picker again)
+      while (dir.name !== "local") {
+        const ans = await new Promise((resolve) => dialog({
+          title: "Is this the right folder?",
+          body: [h("p", "The folder you picked is ", h("b", dir.name), ". The launcher's local filters live in ",
+                   h("code", "Diablo II\\ProjectD2\\filters\\local"), ". Save here anyway?")],
+          buttons: [{text: "Pick another", onclick: () => resolve("again")},
+                    {text: "Save here", primary: true, onclick: () => resolve("here")}],
+          onclose: () => resolve(null),
+        }));
+        if (ans === "here") break;
+        if (ans !== "again") return;
+        dir = await folderHandle(true, true);  // straight from the click: the browser opens its picker only then
+      }
       await writeInPlace(built, dir);
       saved(built, "folder", dir.name);
     });
@@ -288,12 +333,22 @@ EZ.app = (function () {
     if (location.hash !== hash) {
       try { history[opts && opts.replace ? "replaceState" : "pushState"](null, "", hash); } catch (e) { /* file: */ }
     }
+    const navWasOpen = app.els.root.classList.contains("nav-open");
     app.els.root.classList.remove("nav-open");
     drawArea();
     drawSide();
+    drawBar();
+    syncDrawers();
     if (!(opts && opts.keepScroll) && !sub) {  // with a sub-section, the area has scrolled to it
       const top = app.els.root.getBoundingClientRect().top + window.scrollY - topOffset();
       if (window.scrollY > top) window.scrollTo({top});
+    }
+    // keyboard and screen reader users land on the area (or the part linked to): its heading takes the focus
+    const target = sub && app.els.area.querySelector("#fe-" + sub) || app.els.area;
+    const head = target.querySelector("h2, h3") || app.els.area.querySelector("h2");
+    if (head && (navWasOpen || !(opts && opts.noFocus))) {
+      head.tabIndex = -1;
+      try { head.focus({preventScroll: true}); } catch (e) { head.focus(); }
     }
   }
 
@@ -313,46 +368,85 @@ EZ.app = (function () {
     }
   }
 
+  const isPhone = () => window.matchMedia("(max-width: 640px)").matches;
+
+  /* The menu beside Save: saving, then backing up and sharing, then help; on a phone with no folder to save into,
+     taking the changes to a PC comes first (they live in this phone's browser). */
+  function saveMenuItems() {
+    const toPc = !canSaveInPlace() && isPhone();
+    const share = {text: "Copy a share link", sub: toPc ? "open it on your PC to get your changes there"
+      : "anyone opening it can load your changes", onclick: () => EZ.share.copyLink()};
+    const extra = (EZ.app.saveMenu || []).map((f) => f(app));
+    return [
+      toPc ? {heading: "Your changes stay on this phone"} : null,
+      toPc ? share : null,
+      {heading: "Save"},
+      {text: "Download the filter (.filter)", sub: "to put in filters\\local yourself", onclick: () => checked(() =>
+        withBuild("Building your filter", download))},
+      canSaveInPlace() ? {text: "Forget the game folder", sub: "the next save asks for it again", onclick: forgetFolder} : null,
+      {heading: "Back up and share"},
+      {text: "Back up my changes (.json)", sub: "a file of your changes, to keep or move (not for the game)",
+        onclick: () => EZ.share.exportFile(app)},
+      toPc ? null : share,
+      {text: "Import changes", sub: "a backup, a share link, or a filter this editor saved",
+        onclick: () => EZ.share.importFile()},
+      isPhone() ? {heading: "This page"} : null,
+      isPhone() ? {text: "Undo", sub: "the last change", disabled: !EZ.store.canUndo(), onclick: () => EZ.store.undoStep()} : null,
+      isPhone() ? {text: "Redo", disabled: !EZ.store.canRedo(), onclick: () => EZ.store.redoStep()} : null,
+      extra.length ? {heading: "Help"} : null,
+      ...extra,
+    ];
+  }
+
   function drawBar() {
     const p = EZ.store.current(), v = variant(), ch = changes();
     const bar = app.els.bar;
     const stale = p.saved && p.saved.version !== app.src.version;
-    const saveBtn = h("button.fe-btn.primary", {type: "button", onclick: saveToGame,
-      title: canSaveInPlace() ? "Save your filter into the game's filters\\local folder" : "Download your filter"},
-      canSaveInPlace() ? "Save to game" : "Download");
-    const more = h("button.fe-btn", {type: "button", "aria-label": "More ways to save", "aria-haspopup": "menu"}, "▾");
-    more.addEventListener("click", () => menu(more, [
-      {text: "Download the file", sub: "to put in filters\\local yourself", onclick: () => checked(() =>
-        withBuild("Building your filter", download))},
-      canSaveInPlace() ? {text: "Forget the game folder", sub: "the next save asks for it again", onclick: forgetFolder} : null,
-      {text: "Save changes to a file", sub: "to keep or move them (import it here)", onclick: () => EZ.share.exportFile(app)},
-      {text: "Copy a share link", sub: "anyone opening it can load your changes", onclick: () => EZ.share.copyLink()},
-      {text: "Import changes", sub: "a changes file, or a filter this editor saved", onclick: () => EZ.share.importFile()},
-      ...(EZ.app.saveMenu || []).map((f) => f(app)),
-    ]));
+    // changes made since the last save: the game's file doesn't have them yet
+    const behind = !!(p.saved && p.saved.edits !== undefined && p.saved.edits !== editsKey(p));
+    const saveBtn = h("button.fe-btn.primary" + (behind ? ".is-behind" : ""), {type: "button", onclick: saveToGame,
+      title: (canSaveInPlace() ? "Save your filter into the game's filters\\local folder" : "Download your filter") +
+        (behind ? ": your file in the game doesn't have your latest changes yet" : "")},
+      canSaveInPlace() ? "Save to game" : "Download",
+      behind ? [h("span.fe-dot", {"aria-hidden": "true"}), h("span.fe-sr", " (your latest changes aren't saved yet)")] : null);
+    const more = h("button.fe-btn", {type: "button", "aria-label": "More ways to save and share", "aria-haspopup": "menu",
+      "aria-expanded": "false"}, "▾");
+    more.addEventListener("click", () => menu(more, saveMenuItems()));
+    const areaNow = EZ.areas.find((a) => a.id === app.area) || EZ.areas[0];
+    const navOpen = app.els.root.classList.contains("nav-open");
     fill(bar,
-      h("button.fe-btn.ghost.fe-only-phone", {type: "button", "aria-label": "Areas", onclick: () => {
-        app.els.root.classList.toggle("nav-open");
-      }}, "☰"),
-      h("div.fe-title", h("b", p.name)),
-      h("button.fe-chip", {type: "button", title: "Your version: change it on Start", onclick: () => go("start")},
-        v ? v.launcher : "?"),
-      h("span.fe-chip" + (ch.count ? ".good" : ""), {title: "Your changes to Erazure"},
+      h("button.fe-btn.fe-only-phone.fe-navbtn", {type: "button", "aria-expanded": String(navOpen),
+        "aria-controls": "fe-side", "aria-label": "Areas (now " + areaNow.title + ")", onclick: () => toggleNav()},
+        h("span", {"aria-hidden": "true"}, "☰"), " " + areaNow.title),
+      h("button.fe-title", {type: "button", title: "Your profile: switch, rename or add one on Start",
+        onclick: () => go("start", "profiles")}, h("small", "Profile"), h("b", p.name)),
+      h("button.fe-chip.fe-hide-phone", {type: "button", title: "Your version: change it on Start",
+        onclick: () => go("start", "version")}, v ? v.launcher : "?"),
+      h("button.fe-chip.fe-hide-phone" + (ch.count ? ".good" : ""), {type: "button",
+        title: ch.count ? "See what your changes do (Changes)" : "Nothing changed yet: see where to start",
+        onclick: () => go(ch.count ? "changes" : "start", ch.count ? "" : "goals")},
         ch.count ? EZ.ui.plural(ch.count, "change") : "No changes"),
       ch.warn ? h("button.fe-chip.warn", {type: "button", title: "Changes that need a look",
         onclick: () => go("changes")}, "⚠ " + ch.warn) : null,
-      h("span.fe-chip" + (stale ? ".warn" : ""), {title: stale ? "Erazure has changed since you last saved: save " +
-        "again to get the new version with your changes" : "The Erazure version this page builds"},
-        stale ? "Update: " + app.src.version : app.src.version),
+      stale ? h("button.fe-chip.warn", {type: "button", title: "Erazure has changed since you last saved: save again " +
+        "to get the new version with your changes", onclick: () => go("start", "save")}, "Update: " + app.src.version)
+        : h("span.fe-chip.plain.fe-hide-phone", {title: "The Erazure version this page builds"}, app.src.version),
       app.els.search || null,
       h("span.fe-bar-gap"),
-      h("button.fe-btn.ghost", {type: "button", onclick: () => EZ.store.undoStep(), disabled: !EZ.store.canUndo(),
-        title: "Undo (Ctrl+Z)"}, "↶"),
-      h("button.fe-btn.ghost", {type: "button", onclick: () => EZ.store.redoStep(), disabled: !EZ.store.canRedo(),
-        title: "Redo (Ctrl+Y)"}, "↷"),
-      h("button.fe-btn", {type: "button", onclick: togglePreview, "aria-pressed": String(previewShown()),
-        title: previewShown() ? "Hide the preview (more room for the area)" : "Show the preview"}, "Preview"),
+      h("button.fe-btn.ghost.fe-hide-phone", {type: "button", onclick: () => EZ.store.undoStep(),
+        disabled: !EZ.store.canUndo(), "aria-label": "Undo", title: "Undo (Ctrl+Z)"}, "↶"),
+      h("button.fe-btn.ghost.fe-hide-phone", {type: "button", onclick: () => EZ.store.redoStep(),
+        disabled: !EZ.store.canRedo(), "aria-label": "Redo", title: "Redo (Ctrl+Y)"}, "↷"),
+      h("button.fe-btn.fe-pvbtn", {type: "button", onclick: togglePreview, "aria-pressed": String(previewShown()),
+        "aria-controls": "fe-preview",
+        title: previewShown() ? "Close the preview (more room for the area)" : "Show the preview"}, "Preview"),
       h("span.fe-row", {style: {gap: "0"}}, saveBtn, more));
+  }
+
+  /* A short fingerprint of a profile's changes: the last save keeps it, so the bar can tell that the game's file is
+     behind (a change since), and an undo back to the saved changes clears that again. */
+  function editsKey(p) {
+    return EZ.core.crc32(new TextEncoder().encode(JSON.stringify(p.edits)));
   }
 
   function drawSide() {
@@ -367,19 +461,59 @@ EZ.app = (function () {
       }
       group = a.group;
       const c = ch.byArea[a.id] || {n: 0, w: 0};
+      const said = a.title + (c.w ? `, ${c.w} need${c.w === 1 ? "s" : ""} a look` : c.n ? ", " + EZ.ui.plural(c.n, "change") : "");
       list.appendChild(h("li", h("button", {type: "button", "aria-current": a.id === app.area ? "page" : null,
-        title: a.title, onclick: () => go(a.id)},
+        title: a.title, "aria-label": said, onclick: () => go(a.id)},
         h("span.ic", {"aria-hidden": "true"}, a.icon), h("span.lbl", a.title),
-        c.w ? h("span.n.warn", {title: `${c.w} need a look`}, "⚠" + c.w) : c.n ? h("span.n", String(c.n)) : null)));
+        c.w ? h("span.n.warn", {"aria-hidden": "true"}, "⚠" + c.w) : c.n ? h("span.n", {"aria-hidden": "true"}, String(c.n)) : null)));
     }
+    // on a phone the areas menu is the way around: the preview opens from it too
+    list.appendChild(h("li.fe-only-phone", h("button", {type: "button", onclick: () => {
+      app.els.root.classList.remove("nav-open");
+      togglePreview(true);
+    }}, h("span.ic", {"aria-hidden": "true"}, "◧"), h("span.lbl", "Preview"))));
     fill(app.els.side, h("nav", {"aria-label": "Editor areas"}, list));
   }
 
+  /* The control that had the focus, said so it can be found again after the area is drawn again (every change draws
+     it anew): its kind, its words and its place among the controls with the same. */
+  function focusKey(root) {
+    const el = document.activeElement;
+    if (!el || el === root || !root.contains(el)) return null;
+    const sigOf = (x) => {
+      const t = x.tagName, label = x.closest("label");
+      const own = label ? [...label.childNodes].filter((n) => n !== x && !(n.contains && n.contains(x)))
+        .map((n) => n.textContent).join(" ") : "";
+      const words = x.getAttribute("aria-label") || (t === "BUTTON" || t === "SUMMARY" || t === "A" ? x.textContent : "") ||
+        x.getAttribute("placeholder") || own || x.getAttribute("title") || "";
+      return t + "|" + (x.type || "") + "|" + (x.name || "") + "|" + (t === "INPUT" && /radio|checkbox/.test(x.type) ?
+        x.value : "") + "|" + words.replace(/\s+/g, " ").trim().slice(0, 80);
+    };
+    const sig = sigOf(el);
+    const same = [...root.querySelectorAll(el.tagName)].filter((x) => sigOf(x) === sig);
+    const at = {sig, n: same.indexOf(el), tag: el.tagName, sigOf};
+    if (typeof el.selectionStart === "number" && /text|search|number|textarea/i.test(el.type || el.tagName)) {
+      try { at.sel = [el.selectionStart, el.selectionEnd]; } catch (e) { /* a number field */ }
+    }
+    return at;
+  }
+  function refocus(root, at) {
+    if (!at) return;
+    const same = [...root.querySelectorAll(at.tag)].filter((x) => at.sigOf(x) === at.sig);
+    const el = same[Math.min(at.n, same.length - 1)];
+    if (!el) return;
+    try { el.focus({preventScroll: true}); } catch (e) { el.focus(); }
+    if (at.sel) { try { el.setSelectionRange(at.sel[0], at.sel[1]); } catch (e) { /* a number field */ } }
+  }
+
   /* Draw the chosen area. A sub-section (app.sub: a link such as Alerts' "change them on Looks", or the address)
-     is scrolled to by the area on this drawing only: later redraws (every change) leave the page where it is. */
+     is scrolled to by the area on this drawing only: later redraws (every change) leave the page where it is, and
+     the control in use keeps the focus. */
   function drawArea() {
     const a = EZ.areas.find((x) => x.id === app.area) || EZ.areas[0];
     const box = app.els.area;
+    const again = app.drawn === a.id;
+    const at = again ? focusKey(box) : null;
     fill(box);
     try {
       a.render(box, app);
@@ -387,7 +521,9 @@ EZ.app = (function () {
       fill(box, h("p.fe-note.bad", "This area failed to draw: " + (e && e.message || e)));
       if (window.console) console.error(e);
     }
+    app.drawn = a.id;
     app.sub = "";
+    if (at) refocus(box, at);
   }
 
   function drawPreview() {
@@ -407,15 +543,48 @@ EZ.app = (function () {
     const root = app.els.root;
     return !!root && (narrow() ? root.classList.contains("pv-open") : !root.classList.contains("pv-closed"));
   }
-  function togglePreview() {
+  /* Open or close the preview (show: true opens it, false closes it, nothing switches it). */
+  function togglePreview(show) {
     const root = app.els.root;
-    if (narrow()) root.classList.toggle("pv-open");
+    const want = typeof show === "boolean" ? show : !previewShown();
+    if (want === previewShown()) { if (want) focusPreview(); return; }
+    if (narrow()) root.classList.toggle("pv-open", want);
     else {
-      const closed = root.classList.toggle("pv-closed");
-      try { localStorage.setItem("erazure-filter-editor-pv", closed ? "closed" : "open"); } catch (e) { /* this visit */ }
+      root.classList.toggle("pv-closed", !want);
+      try { localStorage.setItem("erazure-filter-editor-pv", want ? "open" : "closed"); } catch (e) { /* this visit */ }
     }
     if (previewShown() && EZ.preview && EZ.preview.changed) EZ.preview.changed({}, app);  // catch up
     drawBar();
+    syncDrawers();
+    if (want && narrow()) focusPreview();
+    else if (!want && narrow()) { const b = app.els.bar.querySelector(".fe-pvbtn"); if (b) b.focus(); }
+  }
+  function focusPreview() {
+    const b = app.els.previewBox && app.els.previewBox.querySelector(".fe-pvclose");
+    if (b && narrow()) b.focus({preventScroll: true});
+  }
+
+  /* The areas menu (a drawer on phones). */
+  function toggleNav(open) {
+    const root = app.els.root;
+    const want = typeof open === "boolean" ? open : !root.classList.contains("nav-open");
+    root.classList.toggle("nav-open", want);
+    syncDrawers();
+    const btn = app.els.bar.querySelector(".fe-navbtn");
+    if (btn) btn.setAttribute("aria-expanded", String(want));
+    if (want) {
+      const first = app.els.side.querySelector("button[aria-current]") || app.els.side.querySelector("button");
+      if (first) first.focus();
+    } else if (btn) btn.focus();
+  }
+
+  /* A drawer that is closed is out of reach of the Tab key and of screen readers (inert); one that is open shows. */
+  function syncDrawers() {
+    const root = app.els.root;
+    if (!root || !app.els.side) return;
+    const phone = isPhone(), nar = narrow();
+    app.els.side.inert = phone && !root.classList.contains("nav-open");
+    if (app.els.previewBox) app.els.previewBox.inert = nar && !root.classList.contains("pv-open");
   }
 
   function redraw() {
@@ -426,22 +595,45 @@ EZ.app = (function () {
 
   function frame(root) {
     const bar = h("header.fe-bar");
-    const side = h("aside.fe-side");
-    const area = h("main.fe-area", {tabindex: "-1"});
-    const preview = h("aside.fe-preview", {"aria-label": "Preview"});
+    const side = h("aside.fe-side", {id: "fe-side"});
+    // the editor's own part of the page: a region (on the website the page around it has its own main)
+    const area = h("section.fe-area", {tabindex: "-1", role: "region", "aria-label": "Editor"});
+    const preview = h("aside.fe-preview", {id: "fe-preview", "aria-label": "Preview"});
     const grip = h("div.fe-grip", {title: "Drag to make the preview wider or narrower", "aria-hidden": "true"});
     fill(root, bar, side, area, preview);
     preview.appendChild(grip);
-    preview.appendChild(h("button.fe-btn.ghost.small.fe-pvclose", {type: "button", onclick: togglePreview,
-      title: "Hide the preview (more room for the area)"}, "Hide ▸"));
-    preview.appendChild(h("button.fe-pvtab", {type: "button", onclick: togglePreview, title: "Show the preview"},
+    // the close button stays in view while the preview scrolls (a phone's drawer has no other way out)
+    preview.appendChild(h("div.fe-pvclose-at", h("button.fe-btn.small.fe-pvclose", {type: "button",
+      onclick: () => togglePreview(false), title: "Close the preview (more room for the area)"}, "Close preview ✕")));
+    preview.appendChild(h("button.fe-pvtab", {type: "button", onclick: () => togglePreview(true), title: "Show the preview"},
       "◂ Preview"));
     const inner = h("div.fe-preview-inner");
     preview.appendChild(inner);
     let pv = null;
     try { pv = localStorage.getItem("erazure-filter-editor-pv"); } catch (e) { /* the default */ }
     if (pv === "closed" || (pv === null && window.innerWidth < 1400)) root.classList.add("pv-closed");
-    Object.assign(app.els, {root, bar, side, area, preview: inner, grip});
+    Object.assign(app.els, {root, bar, side, area, preview: inner, previewBox: preview, grip});
+    // the bar's own height (it wraps on narrow screens): the sidebar, the drawers and the sticky parts sit under it
+    if (window.ResizeObserver) {
+      new ResizeObserver(() => {
+        const px = Math.round(bar.getBoundingClientRect().height) + "px";
+        root.style.setProperty("--bar", px);
+        // the website's own "Back to top" button sits under it (website/docs/editor.md)
+        document.documentElement.style.setProperty("--fe-bar", px);
+      }).observe(bar);
+    }
+    for (const q of ["(max-width: 640px)", "(max-width: 1000px)"]) {
+      const m = window.matchMedia(q);
+      const on = () => { syncDrawers(); drawBar(); };
+      if (m.addEventListener) m.addEventListener("change", on); else if (m.addListener) m.addListener(on);
+    }
+    // a tap beside the open areas menu closes it
+    document.addEventListener("pointerdown", (e) => {
+      if (!root.classList.contains("nav-open") || side.contains(e.target)) return;
+      const btn = bar.querySelector(".fe-navbtn");
+      if (btn && btn.contains(e.target)) return;
+      toggleNav(false);
+    });
     grip.addEventListener("pointerdown", (e) => {
       e.preventDefault();
       const x0 = e.clientX, w0 = preview.getBoundingClientRect().width;
@@ -465,6 +657,11 @@ EZ.app = (function () {
 
   function keys(e) {
     if (e.defaultPrevented) return;
+    if (e.key === "Escape" && !document.querySelector(".edit-map .fe-dialog-back, .edit-map .fe-menu")) {
+      const root = app.els.root;
+      if (root.classList.contains("nav-open")) { e.preventDefault(); toggleNav(false); return; }
+      if (narrow() && root.classList.contains("pv-open")) { e.preventDefault(); togglePreview(false); return; }
+    }
     const t = e.target, typing = t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable);
     if ((e.ctrlKey || e.metaKey) && !e.altKey && !typing) {
       const k = e.key.toLowerCase();
@@ -497,6 +694,7 @@ EZ.app = (function () {
     fromHash();
     redraw();
     drawPreview();
+    syncDrawers();
     window.addEventListener("popstate", () => { fromHash(); drawArea(); drawSide(); });
     EZ.share.fromLocation();
     document.addEventListener("keydown", keys);
@@ -577,9 +775,22 @@ EZ.app = (function () {
       "changes. Work in one tab at a time.", null, {ms: 10000});
   }
 
+  /* Show an item in the preview (Changes' rows, a scene's alerts): the preview opens at any width, at the filter level
+     given (the table's). */
+  function showInPreview(spec, level) {
+    const P = EZ.preview;
+    if (!P || !P.state) return;
+    P.state.spec = Object.assign({}, spec);
+    P.state.mode = "item";
+    if (typeof level === "number") P.state.filtlvl = level;
+    if (P.saveState) P.saveState();
+    if (previewShown()) P.changed({}, app);
+    else togglePreview(true);
+  }
+
   Object.assign(app, {start, go, redraw, drawBar, drawSide, drawArea, drawPreview, variant, variantFor, toggleName,
-                      versionLines, advancedNote, lineRef, lineLink,
-                      changes, build, withBuild, download, saveToGame, canSaveInPlace, forgetFolder, fileName,
-                      STYLE_NAMES, saveMenu: [], checks: []});
+                      versionLines, advancedNote, lineRef, lineLink, togglePreview, previewShown, showInPreview,
+                      changes, build, withBuild, download, saveToGame, checked, canSaveInPlace, forgetFolder, fileName,
+                      renamedNote, isPhone, STYLE_NAMES, saveMenu: [], checks: []});
   return app;
 })();

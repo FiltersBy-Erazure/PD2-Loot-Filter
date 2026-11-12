@@ -141,5 +141,25 @@ EZ.render = (function () {
       .map((x) => x.replace(/%NAME%/g, "…")).join("\n");
   }
 
-  return {CODES, WORDS, QUALITY, codes, rgb, lines, label, plain, levelName, coded, descOf};
+  /* What a hidden item shows, in the same words everywhere (an engine result: invisible, hidden, icons): "Hidden"
+     (nothing on the ground: no label, no picture, no alert) or "Hidden, icon only" (no label; the item lies there
+     with its minimap icon); null while it shows. hiddenNode: those words in the hidden style, with the long form
+     as its tooltip. */
+  function hiddenWords(r) {
+    if (!r || !(r.hidden || r.invisible)) return null;
+    if (r.invisible) return "Hidden";
+    return r.icons && r.icons.length ? "Hidden, icon only" : "Hidden, alert only";
+  }
+  const HIDDEN_LONG = {
+    "Hidden": "Nothing on the ground: no label, no picture, no minimap icon, no chat line, no sound.",
+    "Hidden, icon only": "No label, but the item lies on the ground and its minimap icon shows (and its alert, if it has one).",
+    "Hidden, alert only": "No label and no minimap icon, but the item lies on the ground and its chat line or sound comes.",
+  };
+  function hiddenNode(r) {
+    const w = hiddenWords(r);
+    return w ? h("span.fe-pv-hidden", {title: HIDDEN_LONG[w]}, w) : null;
+  }
+
+  return {CODES, WORDS, QUALITY, codes, rgb, lines, label, plain, levelName, coded, descOf, hiddenWords, hiddenNode,
+          HIDDEN_LONG};
 })();

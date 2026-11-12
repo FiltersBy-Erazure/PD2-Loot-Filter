@@ -24,15 +24,21 @@ EZ.sounds = (function () {
       style: {width: "100%"}});
     const list = h("div.fe-soundlist", {role: "listbox"});
     const all = Object.keys(data.sounds || {}).map((k) => +k);
+    const silent = new Set(data.silentSounds || []);
     const row = (id, close) => h("div.fe-soundrow" + (id === current ? ".on" : ""),
-      h("button.fe-btn.small", {type: "button", onclick: () => { close(); onpick(id); }}, "Pick"),
-      h("span", h("b", name(data, id)), h("span.fe-sub", " #" + id)), play(data, id));
+      h("button.fe-btn.small", {type: "button", "aria-label": "Pick " + name(data, id), onclick: () => { close(); onpick(id); }},
+        "Pick"),
+      h("span", h("b", name(data, id)), h("span.fe-sub", " #" + id),
+        silent.has(id) ? h("span.fe-pill.warn", {style: {marginLeft: ".4em"}}, "silent: no sound file") : null),
+      silent.has(id) ? null : play(data, id));
     let closeIt = null;
     const draw = () => {
       const q = search.value.trim().toLowerCase();
       EZ.ui.clear(list);
+      const poe = data.poeSounds || [];
       const groups = q ? [["Matches", all.filter((id) => String(id) === q || name(data, id).toLowerCase().indexOf(q) >= 0)
-        .slice(0, 300)]] : [["Erazure's drop sounds", used], ["PD2's Path of Exile drop sounds", data.poeSounds || []]];
+        .slice(0, 300)]] : [["Erazure's drop sounds", used.filter((id) => poe.indexOf(id) < 0)],
+                            ["PD2's Path of Exile drop sounds", poe]];
       for (const [title, ids] of groups) {
         if (!ids.length) continue;
         list.appendChild(h("h4", title));
@@ -42,7 +48,8 @@ EZ.sounds = (function () {
     };
     search.addEventListener("input", draw);
     closeIt = dialog({title: "Pick a drop sound", body: [
-      h("p.fe-sub", "Some of the game's sounds never play as drop sounds (looping ones and music)."),
+      h("p.fe-sub", "Some of the game's sounds never play as drop sounds: looping ones and music, and the ones marked " +
+        "silent (they have no sound file)."),
       search, list],
       buttons: [{text: "No sound", onclick: () => onpick(0)}, {text: "Cancel"}]});
     draw();
@@ -76,8 +83,14 @@ EZ.areas.push({
         toggle("No minimap icons", !!a.noIcons, (v) => set("noIcons", v),
           {sub: "An item that only had an icon also loses its chat line (the game sends a chat line only with an " +
                 "icon or a sound)."}),
-        h("div.fe-row", h("span", "Icon size"), seg([{value: "", text: "Erazure's default"}, {value: "smaller", text: "Smaller"},
-          {value: "bigger", text: "Bigger"}], a.iconSize || "", (v) => set("iconSize", v), {label: "Icon size"}))));
+        h("div", h("div.fe-row", h("span", "Icon size"), seg([{value: "", text: "Erazure's default"},
+          {value: "smaller", text: "Smaller"}, {value: "bigger", text: "Bigger"}], a.iconSize || "",
+          (v) => set("iconSize", v), {label: "Icon size"})),
+          h("p.fe-sub.fe-small", {style: {margin: ".3em 0 0"}}, a.iconSize === "smaller" ? "Smaller: every box of an " +
+            "icon moves one size in (an icon of the center pixel alone stays as it is)." : a.iconSize === "bigger" ?
+            "Bigger: an icon without the outer box gets one in its own color; the biggest icons (High value drops) " +
+            "already have it." : "Smaller moves every box of an icon one size in; Bigger gives the icons without " +
+            "one the outer box. Looks draws the icons at the size picked here."))));
 
     /* ---- how loud each kind of drop is (EZ.volume) */
     const vol = e.volume || {};
@@ -117,7 +130,7 @@ EZ.areas.push({
         own ? h("button.fe-btn.ghost.small", {type: "button", onclick: () => {
           EZ.store.change((ed) => { delete ed.volume; }, {label: "how loud"});
           EZ.ui.undoToast(`Every kind is as Erazure has it again (${own} choice${own === 1 ? "" : "s"} of yours went).`);
-        }}, "↺ Erazure's for every kind") : null),
+        }}, "↺ Erazure's default for every kind") : null),
       h("div.fe-tablewrap", h("table.fe-levels", h("tbody", kinds.map((k) => {
         const ex = examples(k);
         return h("tr" + (vol[k.id] ? ".is-changed" : ""),
@@ -149,7 +162,8 @@ EZ.areas.push({
         if (where.length >= 3) break;
       }
       const to = id in swaps ? +swaps[id] : id;
-      const btn = h("button.fe-btn.small", {type: "button", onclick: () => S.pick(app, used, to, (picked) =>
+      const btn = h("button.fe-btn.small", {type: "button", "aria-label": "Change the sound " + S.name(app.data, id),
+        onclick: () => S.pick(app, used, to, (picked) =>
         EZ.store.change((ed) => {
           ed.sounds = ed.sounds || {};
           if (picked === id) delete ed.sounds[id]; else ed.sounds[id] = picked;
@@ -162,9 +176,11 @@ EZ.areas.push({
         id in swaps ? h("div.fe-soundto", "→ ", to ? h("b", S.name(app.data, to)) : h("b", "no sound"),
           to ? S.play(app.data, to) : null) : null,
         h("div.fe-row.fe-small", btn,
-          id in swaps ? h("button.fe-btn.ghost.small", {type: "button", onclick: () => EZ.store.change((ed) => {
+          id in swaps ? h("button.fe-btn.ghost.small", {type: "button", "aria-label": "Erazure's default for the sound " +
+            S.name(app.data, id), onclick: () => EZ.store.change((ed) => {
             delete ed.sounds[id];
-          })}, "↺ Erazure's") : h("button.fe-btn.ghost.small", {type: "button", onclick: () =>
+          })}, "↺ Erazure's default") : h("button.fe-btn.ghost.small", {type: "button", "aria-label": "Silence the " +
+            "sound " + S.name(app.data, id), onclick: () =>
             EZ.store.change((ed) => { ed.sounds = ed.sounds || {}; ed.sounds[id] = 0; })}, "Silence")));
     };
     const here = used.filter((id) => notes.sounds[id].some(playsHere));
@@ -172,7 +188,8 @@ EZ.areas.push({
     const soundsCard = h("section.fe-card", {id: "fe-sounds"},
       h("h3", "Drop sounds"),
       h("p.fe-sub", "Every sound your version plays, most used first" + (poeOn ? " (with Path of Exile sounds)." :
-        " (without Path of Exile sounds: switch them on in Your version on Start to hear those).")),
+        " (without Path of Exile sounds: switch them on in Your version on Start to hear those).") + " ▶ plays one " +
+        "here; in game, type .playsound and its number (#) in the chat to hear it."),
       h("div.fe-soundlist", here.map(soundRow)),
       elsewhere.length ? h("details.fe-rules", h("summary", `Sounds your version doesn't play (${elsewhere.length}: ` +
         (poeOn ? "the versions without" : "the versions with") + " Path of Exile sounds)"),
@@ -180,12 +197,12 @@ EZ.areas.push({
 
     box.append(
       h("div.fe-area-head", h("div", h("h2", "Alerts"),
-        h("p.fe-sub", "What a drop does besides its label: its chat line, its sound and its minimap icon."))),
-      globals, volumeCard, soundsCard,
-      h("p.fe-note", "Minimap icons: change them on ", h("a", {href: "#looks/icons", onclick: (ev) => {
-        ev.preventDefault(); app.go("looks", "icons");
-      }}, "Looks"), ". A single item's alerts: on ", h("a", {href: "#items", onclick: (ev) => {
-        ev.preventDefault(); app.go("items");
-      }}, "Items"), "."));
+        h("p.fe-sub", "What a drop does besides its label: its chat line, its sound and its minimap icon."),
+        h("p.fe-sub.fe-small", "The minimap icons' colors: on ", h("a", {href: "#looks/icons", onclick: (ev) => {
+          ev.preventDefault(); app.go("looks", "icons");
+        }}, "Looks"), ". A single item's alerts: on ", h("a", {href: "#items", onclick: (ev) => {
+          ev.preventDefault(); app.go("items");
+        }}, "Items"), "."))),
+      globals, volumeCard, soundsCard);
   },
 });

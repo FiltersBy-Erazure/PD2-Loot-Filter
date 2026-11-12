@@ -8,9 +8,16 @@ EZ.areas = EZ.areas || [];
 (function () {
   "use strict";
   let sampleLevel = null;  // the filter level the samples are drawn at (the preview's at first)
-  const QUAL_WORD = {NORM: "Non-magical", SUP: "Superior", INF: "Low quality", MAG: "Magic", RARE: "Rare",
+  // the quality words of every form (a normal-quality item is "Normal"; "Non-magical" names Low quality, Normal and
+  // Superior together)
+  const QUAL_WORD = {NORM: "Normal", SUP: "Superior", INF: "Low quality", MAG: "Magic", RARE: "Rare",
                      CRAFT: "Crafted", SET: "Set", UNI: "Unique"};
   const CLASS_NAME = ["Amazon", "Sorceress", "Necromancer", "Paladin", "Barbarian", "Druid", "Assassin"];
+  // a group's own note, where its switches do less than a player may think
+  const GROUP_NOTES = {
+    Potions: "The healing and mana switches change Super Healing and Super Mana Potions only. To hide every size, " +
+      "use the game's own Hide Healing Potions and Hide Mana Potions (Options, Loot Filter).",
+  };
   const cache = {key: null, samples: new Map()};
 
   /* The sample items of an option group: [{spec, levels, cls, clvl}] (at most 6, one per kind of item its rules are
@@ -90,6 +97,48 @@ EZ.areas = EZ.areas || [];
     return parts.join(", ");
   };
 
+  /* The switches that are on but do nothing, because one higher in the list that is on decides all their items first
+     ("Hide Magic Quivers" above "Show Magic Arrows"): {option id: the option that decides them}. Erazure's option lines
+     test no filter level, so one level tells. */
+  function shadowed(app, groups, onIds, lines, aliases) {
+    const out = {};
+    if (onIds.length < 2) return out;
+    const all = [];
+    for (const g of groups) for (const o of g.options) if (onIds.indexOf(o.id) >= 0 && !all.includes(o)) all.push(o);
+    if (all.length < 2) return out;
+    const P = EZ.preview, cat = EZ.items.catalog();
+    const aliasLines = lines.filter((l) => /^(Alias|Formula)\[/.test(l));
+    const own = [], owner = [];  // the mini filter's option lines, and which option each is
+    const sorted = all.map((o) => o.lines.map((i) => [i, o])).flat().sort((a, b) => a[0] - b[0]);
+    for (const [i, o] of sorted) {
+      own.push(EZ.edits.groundOnly(lines[i].replace(/^\s*\/\/+\s*/, "")));
+      owner.push(o);
+    }
+    const F = EZ.engine.compile(aliasLines.concat(own, ["ItemDisplay[]:%NAME%{%NAME%}"]),
+      {statMax: cat.statMax, skillMax: cat.skillMax, soundCount: app.data.soundCount});
+    const first = aliasLines.length;
+    for (const o of all) {
+      let reached = false, by = null;
+      for (const i of o.lines) {
+        const r = EZ.filter.rule(lines[i].replace(/^\s*\/\/+\s*/, ""));
+        let s = null;
+        try { s = r ? EZ.overrides.sampleOf(r.cond, {aliases}) : null; } catch (e) { s = null; }
+        if (!s) { reached = true; break; }  // a line the samples can't tell: don't say it does nothing
+        const ctx = Object.assign(P.ctx(1), s.cls !== undefined ? {cls: s.cls} : {},
+          s.clvl !== undefined ? {clvl: s.clvl, charstats: {12: s.clvl}} : {}, {mapid: 2});
+        const it = EZ.items.make(Object.assign({place: "GROUND"}, s.spec));
+        if (!it) { reached = true; break; }
+        const res = EZ.engine.run(F, it, ctx, P.state.opts);
+        const k = res.stop === null ? -1 : res.stop - first;
+        const who = k >= 0 && k < owner.length ? owner[k] : null;
+        if (!who || who === o) { reached = true; break; }
+        by = by || who;
+      }
+      if (!reached && by) out[o.id] = by;
+    }
+    return out;
+  }
+
   /* A sample's words: "Rare ethereal Blood Spirit, item level 85". */
   function describe(s) {
     const b = EZ.items.base(s.spec.code);
@@ -118,8 +167,7 @@ EZ.areas = EZ.areas || [];
 
       /* ---- one sample item, drawn with the player's choices (and what Erazure's own does, where it differs) */
       const outcome = (r) => JSON.stringify([r.name, r.hidden, r.icons.map((x) => [x.border, x.map, x.dot, x.px]), r.sound]);
-      const drawn = (r) => r.hidden ? h("span.fe-pv-hidden", r.invisible ? "hidden: nothing shows" : "hidden: icon only") :
-        R.label(r.name, {start: r.start});
+      const drawn = (r) => r.hidden || r.invisible ? R.hiddenNode(r) : R.label(r.name, {start: r.start});
       const sampleBox = (s) => {
         if (!z) return null;
         const lv = s.levels.length && s.levels.indexOf(sampleLevel) < 0 ? s.levels[s.levels.length - 1] : sampleLevel;
@@ -132,8 +180,8 @@ EZ.areas = EZ.areas || [];
         return h("div.fe-optsample" + (changed ? ".is-changed" : ""),
           h("div.fe-optsample-label", drawn(b), b.icons.length && !b.invisible ? P.iconCanvas(b.icons, 2) : null),
           h("div.fe-sub.fe-small", describe(s) + (lv !== sampleLevel ? ` (level ${lv})` : "")),
-          changed ? h("div.fe-sub.fe-small.fe-optsample-was", "Erazure's default: ", a.hidden ? (a.invisible ? "hidden" :
-            "icon only") : R.label(a.name, {start: a.start})) : null);
+          changed ? h("div.fe-sub.fe-small.fe-optsample-was", "Erazure's default: ", a.hidden || a.invisible ?
+            R.hiddenWords(a) : R.label(a.name, {start: a.start})) : null);
       };
 
       /* ---- Erazure's options (050) */
@@ -144,7 +192,15 @@ EZ.areas = EZ.areas || [];
         if (on) ed.options[o.id] = true;
       }, {label: o.label});
       const pending = [];  // [option, its "changes levels" note], filled once the area is drawn
+      const onIds = Object.keys(e.options || {}).filter((k) => e.options[k]);
+      let shadow = {};
+      try { if (z) shadow = shadowed(app, groups, onIds, lines, aliases); } catch (err) { shadow = {}; }
       const levelsNote = (o) => {
+        // a switch that is on but does nothing: one higher in the list decides its items first
+        if (shadow[o.id]) {
+          return h("small.fe-sub.fe-optlevels.is-none", `No effect while “${shadow[o.id].label}” is on: it is higher in ` +
+            "the list and decides the same items.");
+        }
         const span = h("small.fe-sub.fe-optlevels", "…");
         pending.push([o, span]);
         return span;
@@ -160,7 +216,7 @@ EZ.areas = EZ.areas || [];
             const chosen = set.find((x) => e.options && e.options[x.id]);
             const radio = (label, checked, onpick, extra) => h("label.fe-radio",
               h("input", {type: "radio", name, checked, onchange: onpick}), h("span", label), extra || null);
-            rows.push(h("fieldset.fe-choiceset", h("legend.fe-sub", "Pick one"),
+            rows.push(h("fieldset.fe-choiceset", h("legend.fe-sub", "Pick one", h("span.fe-sr", ": " + g.title)),
               radio("Erazure's default", !chosen, () => setOption(set[0], false)),
               set.map((x) => radio(x.label, chosen === x, () => setOption(x, true), levelsNote(x)))));
           } else {
@@ -169,15 +225,16 @@ EZ.areas = EZ.areas || [];
               levelsNote(o)));
           }
         }
-        const rulesShown = h("details.fe-rules", h("summary", "The rules these switch on"),
+        const rulesShown = h("details.fe-rules", h("summary", "Show the filter lines (for filter writers)"),
           h("pre.fe-code", g.options.map((o) => o.lines.map((i) => lines[i].replace(/^\/\/+/, "")).join("\n")).join("\n")));
         const samples = samplesOf(g, lines, aliases).map(sampleBox).filter(Boolean);
         return h("div.fe-optrow",
-          h("div.fe-optgroup", h("h4", g.title), h("div.fe-stack", rows), rulesShown),
+          h("div.fe-optgroup", h("h4", g.title), GROUP_NOTES[g.title] ? h("p.fe-sub.fe-small", GROUP_NOTES[g.title]) : null,
+            h("div.fe-stack", rows), rulesShown),
           h("div.fe-optsamples", {"aria-label": g.title + ": how the items look"},
             samples.length ? samples : h("p.fe-sub.fe-small", "No sample item for these.")));
       });
-      const levelPick = h("select", {"aria-label": "Draw the samples at filter level", onchange: (ev) => {
+      const levelPick = h("select", {"aria-label": "Items drawn at filter level", onchange: (ev) => {
         sampleLevel = +ev.target.value;
         app.drawArea();
       }}, levelNames.map((n, k) => h("option", {value: k + 1, selected: sampleLevel === k + 1}, `${k + 1} · ${n}`)));
@@ -214,34 +271,61 @@ EZ.areas = EZ.areas || [];
           found.map((x, kk) => h("option", {value: kk + 1, selected: (lv.copies && lv.copies[n] ? lv.copies[n] : n) === kk + 1},
             kk + 1 === n ? "itself" : `level ${kk + 1}: ${R.plain(x.text)}`)));
         const renamed = lv.names && lv.names[n] !== undefined, copied = lv.copies && lv.copies[n];
+        const reset = renamed || copied ? h("button.fe-btn.ghost.small", {type: "button",
+          "aria-label": `Level ${n}: back to Erazure's`, onclick: () => EZ.store.change((ed) => {
+            if (ed.levels && ed.levels.names) delete ed.levels.names[n];
+            if (ed.levels && ed.levels.copies) delete ed.levels.copies[n];
+          }, {label: `level ${n}`})}, "Erazure's default") : null;
         return h("div.fe-levelrow" + (renamed || copied ? ".is-changed" : ""),
           h("span.fe-num", String(n)),
           h("div.fe-levelrow-body",
-            h("div", R.levelName(name), renamed ? h("div.fe-sub.fe-small", "Erazure: ", R.levelName(l.text)) : null),
+            h("div.fe-row", {style: {gap: ".5em"}}, R.levelName(name), reset,
+              renamed ? h("div.fe-sub.fe-small", {style: {flexBasis: "100%"}}, "Erazure: ", R.levelName(l.text)) : null),
+            // a level made to behave like another keeps Erazure's name until it gets one of its own
+            copied && !renamed ? h("p.fe-note.warn.fe-small", {style: {margin: 0}}, `It behaves like level ${copied} ` +
+              `now, but still shows Erazure's name for level ${n}: give it a name of your own.`) : null,
             h("div.fe-levelrow-fields",
               h("label.fe-levelrow-name", h("span.fe-bd-label", "Name"), input),
               h("label", h("span.fe-bd-label", "Color"), color),
               h("label.fe-levelrow-like", h("span.fe-bd-label", "Behaves like"), like))));
       });
+      const jump = (id, text) => h("a", {href: "#quick/" + id, onclick: (ev) => {
+        ev.preventDefault();
+        const el = box.querySelector("#fe-" + id);
+        if (el) el.scrollIntoView({behavior: "smooth"});
+      }}, text);
 
       box.append(
         h("div.fe-area-head", h("div", h("h2", "Quick Edits"),
           h("p.fe-sub", "Simple switches for whole kinds of items: show or hide them in one click, each beside an item " +
-            "drawn as the game will show it. And your filter levels' names."))),
+            "drawn as the game will show it. And your filter levels."),
+          h("p.fe-small", "Jump to: ", jump("options", "Show or hide kinds of items"), " · ",
+            jump("levels", "Filter levels: names, and a level of your own")))),
         h("section.fe-card", {id: "fe-options"},
           h("div.fe-row", h("h3", {style: {margin: 0}}, "Show or hide kinds of items"), h("span.fe-bar-gap"),
             h("label.fe-row.fe-small", h("span.fe-sub", "Items drawn at filter level"), levelPick)),
           P && P.context ? P.context(() => app.drawArea(), {lead: "The items are drawn on the ground outside town for " +
             "a level"}) : null,
-          h("p.fe-sub", "Erazure's own choices for potions, quivers, class items and more. Where two of them cover the " +
-            "same item, the one higher in this list wins. Every hide is for the ground outside town, and takes the " +
-            "items' minimap icons, chat lines and sounds away too: in town, your inventory and stash the items look " +
-            "as always. Under each switch: the filter levels it changes (on the others Erazure already does it)."),
+          h("p.fe-sub", "Erazure's own choices for potions, quivers, class items and more. Each switch works on every " +
+            "filter level: under it, the levels where that changes something (on the others Erazure already does it). " +
+            "For a change on some filter levels only, use ", h("a", {href: "#items", onclick: (ev) => {
+              ev.preventDefault();
+              app.go("items");
+            }}, "Items"), ". Where two switches cover the same item, the one higher in this list wins. Every hide is " +
+            "for the ground outside town, and takes the items' minimap icons, chat lines and sounds away too: in " +
+            "town, your inventory and stash the items look as always."),
           groups.length ? h("div.fe-optrows", optionRows) : h("p.fe-empty", "This version has no options.")),
         h("section.fe-card", {id: "fe-levels"},
           h("h3", "Filter levels"),
-          h("p.fe-sub", "Rename a level, or make it behave like another level: then tune it on its own (Items, Alerts) " +
-            "and keep Erazure's levels as they are. The game reads 12 levels; level 0 always shows everything."),
+          h("p.fe-sub", "Rename a level, or make a level of your own: a level that behaves like another, which you then " +
+            "change on its own. The game reads 12 levels; level 0 always shows everything."),
+          h("ol.fe-steps.fe-small",
+            h("li", "Pick a level you don't play on, such as 11."),
+            h("li", "Set its Behaves like to the level closest to what you want, such as 8: it replaces Erazure's " +
+              "level 11 in your file."),
+            h("li", "Give it a name of your own, so you know it in game."),
+            h("li", "Change it on its own in ", h("a", {href: "#items", onclick: (ev) => { ev.preventDefault(); app.go("items"); }},
+              "Items"), ": pick its filter level in a change there.")),
           h("div.fe-levelrows", levelRows)));
       if (sub) {
         const el = box.querySelector("#fe-" + sub);

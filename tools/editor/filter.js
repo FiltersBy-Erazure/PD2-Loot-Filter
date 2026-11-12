@@ -170,27 +170,64 @@ EZ.filter = (function () {
   ];
   const keyOf = (name) => name.replace(/_(LEFT|RIGHT)$/, "");
   const OFF_TOGGLES = ["BIG_GG", "POE_SOUNDS", "REVEALED"];
-  /* Cards named for what they are (the Alerts area's kinds by the same words), where 040's own comment says less. */
+  /* Cards named for what they draw (the Alerts area's kinds by the same words), where 040's own comment is a short
+     name, or names several cards alike (two looks per rune group: a few and a stack). */
+  const RUNES = (from, to, n) => `Runes ${from} to ${to}: ${n}`;
+  const INFUSION = "Craft Infusion: ";
   const CARD_TITLES = {
     UNI_HIGH_VALUE: "Unique items: High value", UNI_MEDIUM_VALUE: "Unique items: Medium value",
     UNI_MINIMAL_VALUE: "Unique items: Minimal value",
     UNI_MINIMAL_GRAIL: "Unique items you haven't discovered: Minimal value ones",
     UNI_GRAIL: "Unique items you haven't discovered: the others",
     UNI_NORMAL: "Other unique items (levels 0-7)",
+    UNI_LLD: "Unique items for low-level dueling", UNI_DCLONE_RATHMA: "Unique items from Diablo Clone and Rathma",
     SET_HIGH_VALUE: "Set items: High value", SET_MEDIUM_VALUE: "Set items: Medium value",
-    SET_GRAIL: "Set items you haven't discovered",
+    SET_GRAIL: "Set items you haven't discovered", SET_LLD: "Set items for low-level dueling", SET: "Set items",
+    SET_NORMAL: "Normal set items",
+    RARE_HIGH_VALUE: "Rare items: High value", RARE_MEDIUM_VALUE: "Rare items: Medium value",
+    RARE_LOW_VALUE: "Rare items: Low value", RARE_ETH_CRAFT: "Ethereal rare crafting bases",
+    MAGIC_ETH_CRAFT: "Ethereal magic crafting bases",
+    LOWEST_RUNE_LOW_QTY: RUNES("El", "Tal", "fewer than 10"), LOWEST_RUNE_HIGH_QTY: RUNES("El", "Tal", "a stack of 10 or more"),
+    LOW_RUNE_LOW_QTY: RUNES("Ral", "Io", "fewer than 10"), LOW_RUNE_HIGH_QTY: RUNES("Ral", "Io", "a stack of 10 or more"),
+    MID_RUNE_LOW_QTY: RUNES("Lum", "Fal", "fewer than 10"), MID_RUNE_HIGH_QTY: RUNES("Lum", "Fal", "a stack of 10 or more"),
+    LEM_RUNE_LOW_QTY: "Lem Rune: one", PUL_RUNE_LOW_QTY: "Pul Rune: one",
+    LEM_PUL_RUNE_HIGH_QTY: "Lem and Pul Runes: a stack of 2 or more", UM_RUNE: "Um Rune", MAL_RUNE: "Mal Rune",
+    IST_GUL_RUNE: "Ist and Gul Runes", VEX_OHM_LO_RUNE: "Vex, Ohm and Lo Runes",
+    SUR_BER_JAH_CHAM_ZOD_BIG_GG: "Runes Sur to Zod",
+    WORLDSTONE_LOW_QTY: "Worldstone Shards: fewer than 10", WORLDSTONE_HIGH_QTY: "Worldstone Shards: a stack of 10 or more",
+    INFUSION_BLOOD: INFUSION + "Blood", INFUSION_CASTER: INFUSION + "Caster", INFUSION_SAFETY: INFUSION + "Safety",
+    INFUSION_HITPOWER: INFUSION + "Hitpower", INFUSION_VAMPIRIC: INFUSION + "Vampiric",
+    INFUSION_BOUNTIFUL: INFUSION + "Bountiful", INFUSION_BRILLIANT: INFUSION + "Brilliant",
+    FACET_NAME: "Rainbow Facet: its name", HIGHLIGHT_1: "Highlights: blue and teal",
+    HIGHLIGHT_2: "Highlights: blue, purple, red and orange",
   };
+  /* What a card is for, in a line under its title: 040's comment after its first colon, without its codes. */
+  const CARD_NOTES = {
+    INFUSION_BLOOD: "In a stack, in town and in the inventory: one look for both sides of the name.",
+  };
+  const noteOf = (comment) => comment.replace(/\s*\((?:[A-Z][A-Z0-9_]*(?:,\s*)?)+(?:\s*\d+)?\)/g, "")
+    .replace(/\s*\([^()]*'s [A-Z_]+ [a-z]+\)/g, "")  // "(150's REVEALED rename)": where Erazure does it
+    .replace(/%NAME%/g, "the name").replace(/\s+/g, " ").trim()
+    .replace(/(^|[.:] )([a-z])/g, (m, a, b) => a + b.toUpperCase());
 
   function lookAliases(src, lines) {
     const secs = sections(src, lines), out = [];
     const [a0, a1] = secs[SYMBOLS_SECTION] || [0, 0];
-    let title = "", inComment = false;
+    let title = "", note = "", raw = "", inComment = false;
     for (let i = a0; i < a1; i++) {
       const line = lines[i];
-      if (line.startsWith("// ") && !inComment) title = line.slice(3).split(":")[0].trim();
+      if (line.startsWith("// ") && !inComment) {
+        const text = line.slice(3), colon = text.indexOf(":");
+        title = (colon >= 0 ? text.slice(0, colon) : text).trim();
+        raw = colon >= 0 ? text.slice(colon + 1) : "";
+        note = noteOf(raw);
+      } else if (line.startsWith("// ") && inComment && raw) {  // the comment goes on: the note too
+        raw += " " + line.slice(3);
+        note = noteOf(raw);
+      }
       inComment = line.startsWith("//");
       const m = ALIAS_RE.exec(line);
-      if (m && m[2].indexOf("%") >= 0 && !m[2].startsWith("(")) out.push({name: m[1], i, value: m[2], title});
+      if (m && m[2].indexOf("%") >= 0 && !m[2].startsWith("(")) out.push({name: m[1], i, value: m[2], title, note});
     }
     const [c0, c1] = secs[CUBE_SECTION] || [0, 0];
     for (let i = c0; i < c1; i++) {
@@ -259,7 +296,9 @@ EZ.filter = (function () {
                                           at: null}];
       }
       const g = GROUPS.find((gr) => gr[3](a.name));
-      cards.push({key, title: CARD_TITLES[key] || a.title, group: g ? g[0] : "pd2", aliases: group, tpls, used});
+      const note = CARD_NOTES[key] || (/^INFUSION_/.test(key) ? CARD_NOTES.INFUSION_BLOOD : a.note || "");
+      cards.push({key, title: CARD_TITLES[key] || a.title, note: note ? note[0].toUpperCase() + note.slice(1) : "",
+                  group: g ? g[0] : "pd2", aliases: group, tpls, used});
     }
     return cards;
   }

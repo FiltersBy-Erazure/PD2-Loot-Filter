@@ -104,8 +104,8 @@ EZ.store = (function () {
       okToSave = false;
       if (!warned) {
         warned = true;
-        EZ.ui.toast("This browser won't keep your changes (a private window or blocked storage). Use Save changes " +
-                    "to a file before you leave.", "bad", {sticky: true});
+        EZ.ui.toast("This browser won't keep your changes (a private window or blocked storage). Use Back up my " +
+                    "changes (Start, or the menu beside Save) before you leave.", "bad", {sticky: true});
       }
       return false;
     }

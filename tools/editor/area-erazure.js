@@ -56,7 +56,12 @@ EZ.areas = EZ.areas || [];
         }
       }
     }
-    cache = {lines, order, rules, twins, kids, secs};
+    // the version's switches (030's toggles): a rule whose condition can't hold with them is another version's
+    const al = EZ.filter.aliases(lines), known = {};
+    for (const k of ["BIG_GG", "POE_SOUNDS", "REVEALED"]) if (al[k]) known[k] = String(al[k].value).trim() === "TRUE";
+    const other = new Set();
+    for (const [i, r] of rules) if (!EZ.words.canHold(r.cond, known)) other.add(i);
+    cache = {lines, order, rules, twins, kids, secs, other};
     return cache;
   }
 
@@ -169,7 +174,14 @@ EZ.areas = EZ.areas || [];
   function findingsList(list) {
     const shown = list.filter((f) => f.level !== "info");
     return shown.length ? h("ul.fe-ed-lint", shown.map((f) => h("li.fe-ed-finding." + f.level,
-      pill(f.level === "error" ? "error" : "check", f.level === "error" ? "bad" : "warn"), h("span", f.text)))) : null;
+      pill(f.level === "error" ? "error" : "warning", f.level === "error" ? "bad" : "warn"), h("span", f.text)))) : null;
+  }
+
+  /* A rule by what it is for, then its place: "Ber Rune · 110-runes:132". */
+  function title(m, i) {
+    const r = m.rules.get(i);
+    const what = r ? EZ.words.forWhat(r.cond, r.comment, 2) : "";
+    return (what ? what + " · " : "") + where(m, i);
   }
 
   function open(app, i) {
@@ -179,6 +191,7 @@ EZ.areas = EZ.areas || [];
     for (const n of [...names]) names.add(n.toUpperCase());
     const mine = placed(app).byLine.get(i) || [];
     const claim = mine.find((p) => ["off", "on", "change"].indexOf(p.op.kind) >= 0);
+    const offByYou = !!(claim && claim.op.kind === "off");
     const isLocked = locked(m, i);
     const body = h("div.fe-stack");
     const code = (text) => h("pre.fe-rb-code", RA.lineTokens(text, new Set(), names));
@@ -186,10 +199,17 @@ EZ.areas = EZ.areas || [];
     if (r) {
       body.appendChild(h("p", h("b", "Matches: "), EZ.words.cond(r.cond.trim(), {levels: EZ.filter.levels(m.lines).length})));
       const d = EZ.rules.describe(r.off ? line.replace(OFF_RE, "") : line);
-      body.appendChild(h("div.fe-row", h("b", "Draws: "), r.off ? pill("switched off", "warn") : null,
+      if (m.other.has(i)) {
+        body.appendChild(h("p.fe-note.warn", "Not in your version: this rule is for " + ((r.cond.match(
+          /\b(BIG_GG|REVEALED|POE_SOUNDS)\b/g) || []).map((w) => EZ.words.word(w)).join(", ") || "another version") +
+          ", so it never " +
+          "matches here. Switching it off or changing it does nothing."));
+      }
+      body.appendChild(h("div.fe-row", h("b", "Draws: "), r.off || offByYou ? pill(offByYou ? "switched off by you" :
+        "switched off", "warn") : null,
         d.kind === "rule" ? h("span.fe-ed-rulelabel", RA.miniLabel(d.out, vals, sample(r.cond))) : null,
         d.kind === "rule" && d.notifies ? RA.alertsOf(d.out, app) : null,
-        d.kind === "rule" ? pill(d.hides ? "hides" : d.stops ? "decides the look" : "adds a layer",
+        d.kind === "rule" ? pill(d.hides ? "hides" : d.stops ? "decides the label" : "adds to the label",
           d.hides ? "bad" : d.stops ? "accent" : "info") : null));
       const desc = d.kind === "rule" ? RA.miniDesc(d.out, vals) : null;
       if (desc) body.appendChild(h("div.fe-row", h("b", "In the hover box: "), desc));
@@ -213,14 +233,16 @@ EZ.areas = EZ.areas || [];
         "Erazure update: you can switch a rule off, but not change it or add lines here."));
     }
     for (const p of mine) {
+      if (p.op.kind === "off") continue;  // said by the Switch it back on button
       body.appendChild(h("div.fe-note.warn", h("b", "Your change: "), opText(p.op), " ",
         h("button.fe-btn.ghost.small", {type: "button", onclick: () => { close(); dropOp(p.op.id); }}, "Undo it")));
     }
     const editBox = h("div");
     let typing = null;  // the open text box: {ta, initial}, for the dialog's "Discard what you typed?"
     const editor = (initial, kind) => {
-      const ta = h("textarea", {rows: kind === "change" ? 3 : 4, spellcheck: "false", "aria-label": kind === "change" ?
-        "The rule" : "Your lines"});
+      const ta = h("textarea", {rows: kind === "change" ? 5 : 6, spellcheck: "false", "aria-label": kind === "change" ?
+        "The rule" : "Your lines", placeholder: kind === "change" ? "" : "One rule per line, such as\n" +
+          "ItemDisplay[r30 GROUND !TOWN]:%RED%%NAME%{%NAME%}%CONTINUE%"});
       ta.value = initial;
       typing = {ta, initial};
       const out = h("div.fe-stack");
@@ -248,7 +270,10 @@ EZ.areas = EZ.areas || [];
         } else if (ls.some((l) => l.trim())) { close(); addLines(app, i, kind, ls); }
       };
       fill(editBox, h("div.fe-stack", h("h4", kind === "change" ? "Change the rule" : kind === "before" ?
-        "Your lines before it" : "Your lines after it"), ta, out,
+        "Your lines before it" : "Your lines after it"), ta,
+        kind === "change" ? null : h("p.fe-sub.fe-small", "Not sure how to write one? Build it with the form on ",
+          h("a", {href: "#rules", onclick: (ev) => { ev.preventDefault(); typing = null; close(); app.go("rules"); }},
+            "My rules"), " (Show the rule, Copy it), then paste it here."), out,
         h("div.fe-row", h("button.fe-btn.primary", {type: "button", onclick: () => {
           const errors = findingsOf().filter((f) => f.level === "error");
           if (!errors.length) { keep(); return; }
@@ -262,10 +287,17 @@ EZ.areas = EZ.areas || [];
       ta.focus();
     };
     const buttons = h("div.fe-row");
-    if (r && !r.off) {
+    if (offByYou) {
+      buttons.appendChild(h("button.fe-btn", {type: "button", onclick: () => {
+        close();
+        setClaim(app, [i].concat(m.kids.get(i) || []), null);
+        EZ.ui.undoToast("Switched back on: " + title(m, i) + ".");
+      }}, "Switch it back on"));
+    } else if (r && !r.off) {
       buttons.appendChild(h("button.fe-btn", {type: "button", onclick: () => {
         close();
         setClaim(app, [i].concat(m.kids.get(i) || []), "off");
+        EZ.ui.undoToast("Switched off: " + title(m, i) + ".");
       }}, "Switch it off"));
     }
     if (r && r.off && !(claim && claim.op.kind === "off")) {
@@ -282,7 +314,8 @@ EZ.areas = EZ.areas || [];
     }
     body.appendChild(buttons);
     body.appendChild(editBox);
-    const close = dialog({title: where(m, i), body: [body], buttons: [{text: "Close"}],
+    // the dialog starts on its title (Enter doesn't switch a rule off by accident)
+    const close = dialog({title: title(m, i), body: [body], buttons: [{text: "Close"}], focus: "title",
       guard: () => typing && typing.ta.value.trim() !== typing.initial.trim() ?
         "Your lines aren't kept yet: Keep it keeps them. Close without them?" : null});
   }
@@ -304,6 +337,8 @@ EZ.areas = EZ.areas || [];
       const errs = opErrors(app, op);
       const status = p.i === null ? pill("needs attention", "bad") : p.how === "exact" ? pill("in place", "good") :
         pill("Erazure changed this rule", "warn");
+      const merged = p.i !== null && p.how !== "exact" && op.kind === "change" ?
+        EZ.ops.merge3(op.at.text, op.line || "", p.now) : null;
       return h("div.fe-rb-op" + (p.i === null || errs.length ? ".bad" : p.how !== "exact" ? ".warn" : ""),
         errs.length ? h("p.fe-sub.fe-small", pill("error", "bad"), " The game can't read it as written: " +
           errs.slice(0, 2).map((f) => f.text).join(" ")) : null,
@@ -311,18 +346,35 @@ EZ.areas = EZ.areas || [];
           op.kind === "on" ? "Switched on" : op.kind === "before" ? "Lines before" : "Lines after"),
           p.i !== null ? h("button.fe-btn.ghost.small", {type: "button", onclick: () => open(app, p.i)}, where(m, p.i)) :
             h("span.fe-sub", "was " + (op.at.file || "").replace(/\.filter$/, "") + ":" + (op.at.line || "?"))),
+        merged ? h("p.fe-sub.fe-small", "Erazure's line now:") : null,
         h("code.fe-rb-optext", (p.i !== null ? p.now : op.at.text).slice(0, 240)),
+        merged ? [h("p.fe-sub.fe-small", "What your filter gets (your words in gold):"),
+          h("code.fe-rb-optext", mark(merged[0], p.now))] : null,
+        merged && merged[1] ? h("p.fe-note.warn.fe-small", "Erazure changed the same words as you did; yours were kept. " +
+          "Check that Erazure's fix isn't lost, and change your line if it is.") : null,
         p.i === null ? h("p.fe-sub.fe-small", "Erazure no longer has this rule, so your change does nothing. Find the " +
           "rule it became in the list below and make the change again, or drop it.") :
           p.how !== "exact" ? h("p.fe-sub.fe-small", "Erazure has changed this rule since you changed it; your change " +
-            "still applies to it" + (op.kind === "change" ? ", merged into Erazure's new line." : ".")) : null,
+            "still applies to it" + (op.kind === "change" ? ", merged into Erazure's new line (above)." : ".")) : null,
         h("div.fe-row.fe-small",
-          p.i !== null && p.how !== "exact" ? h("button.fe-btn.small", {type: "button", onclick: () => reanchor(app, p)},
-            "Keep it on this line") : null,
+          p.i !== null && p.how !== "exact" ? h("button.fe-btn.small", {type: "button", title: "Keep your change on " +
+            "Erazure's new line, as it is shown here", onclick: () => reanchor(app, p)}, "Looks right") : null,
           h("button.fe-btn.ghost.small", {type: "button", onclick: () => dropOp(op.id)}, p.i === null ? "Drop it" :
             "Undo it")));
     });
     return h("section.fe-card", {id: "fe-rb-changes"}, h("h3", "Your changes to Erazure's rules"), rows);
+  }
+
+  /* A merged line with the player's words marked: the words Erazure's new line doesn't have. */
+  function mark(text, theirs) {
+    const have = new Map();
+    for (const w of String(theirs || "").split(/(\s+)/)) have.set(w, (have.get(w) || 0) + 1);
+    return String(text).slice(0, 400).split(/(\s+)/).map((w) => {
+      if (/^\s*$/.test(w)) return w;
+      const n = have.get(w) || 0;
+      if (n) { have.set(w, n - 1); return w; }
+      return h("span.fe-mine", w);
+    });
   }
 
   /* ---------------------------------------------------------------- the browser */
@@ -363,7 +415,7 @@ EZ.areas = EZ.areas || [];
         const list = [];
         for (let i = s.a; i < s.b; i++) {
           const line = m.lines[i], r = m.rules.get(i);
-          if (view.what === "rules" && !(r && !r.off)) continue;
+          if (view.what === "rules" && !(r && !r.off && !m.other.has(i))) continue;
           if (view.what === "rules+off" && !r) continue;
           if (view.mine && !mineBy.has(i)) continue;
           if (q && line.toLowerCase().indexOf(q) < 0 && !(codeRe && r && codeRe.test(r.cond))) continue;
@@ -376,34 +428,52 @@ EZ.areas = EZ.areas || [];
       }
       inner.style.height = rows.length * ROW + "px";
       const n = rows.filter((x) => x.i !== undefined).length;
-      count.textContent = n.toLocaleString() + (n === 1 ? " line" : " lines");
+      const word = view.what === "all" ? ["line", "lines"] : ["rule", "rules"];
+      count.textContent = n.toLocaleString() + " " + (n === 1 ? word[0] : word[1]);
+      // nothing to list: say why
+      empty.hidden = n > 0;
+      empty.textContent = view.mine && !mineBy.size ? "You haven't changed a rule yet: open one to switch it off, " +
+        "change it or add lines around it." : q ? `No rule matches "${view.q.trim()}"` + (view.section ? " in this " +
+        "section." : ".") + (view.match ? " (Only rules the item can match is on.)" : "") :
+        "No rule here matches what's picked above.";
+      itemLine.textContent = view.match ? "The item: " + EZ.items.describe(EZ.preview.state.spec) + ". Pick another " +
+        "in the preview's Item view; its filter level, character and place count too." : "";
+      itemLine.hidden = !view.match;
+      matchWords.textContent = "Only rules that can match " + (EZ.preview && EZ.preview.state ?
+        EZ.items.describe(EZ.preview.state.spec) : "the preview's item");
       paint(true);
     };
 
     const rowNode = (x, k) => {
       const style = {top: k * ROW + "px"};
+      // each row a list item (the list draws only the rows in view: the item holds the place, its button fills it)
+      const item = (kids) => h("div.fe-rb-li", {style, role: "listitem"}, kids);
       if (x.sec) {
-        return h("div.fe-rb-row.fe-rb-sec", {style, role: "listitem"}, h("b", x.sec.name.replace(/\.filter$/, "")),
-          h("span.fe-sub", " · " + x.n.toLocaleString()), GENERATED.has(x.sec.name) ? pill("generated", "info") : null);
+        return item(h("div.fe-rb-row.fe-rb-sec", h("b", x.sec.name.replace(/\.filter$/, "")),
+          h("span.fe-sub", " · " + x.n.toLocaleString()), GENERATED.has(x.sec.name) ? pill("generated", "info") : null));
       }
       const i = x.i, line = m.lines[i], r = m.rules.get(i);
       const mine = mineBy.get(i);
       if (!r) {
-        return h("button.fe-rb-row.fe-rb-text" + (mine ? ".is-changed" : ""), {type: "button", style, role: "listitem",
-          onclick: () => open(app, i)}, h("span.fe-rb-where", where(m, i)), h("span.fe-rb-comment", line || " "));
+        return item(h("button.fe-rb-row.fe-rb-text" + (mine ? ".is-changed" : ""), {type: "button",
+          onclick: () => open(app, i)}, h("span.fe-rb-where", where(m, i)), h("span.fe-rb-comment", line || " ")));
       }
       if (!words.has(i)) words.set(i, EZ.words.cond(r.cond.trim(), {levels}));
       const d = EZ.rules.describe(r.off ? line.replace(OFF_RE, "") : line);
-      const kind = r.off ? ["off", ""] : d.hides ? ["hides", "bad"] : d.stops ? ["look", "accent"] : ["layer", "info"];
-      return h("button.fe-rb-row" + (mine ? ".is-changed" : "") + (r.off ? ".off" : ""), {type: "button", style,
-        role: "listitem", onclick: () => open(app, i), title: line.slice(0, 400)},
+      const offByYou = !!(mine && mine.some((p) => p.op.kind === "off"));
+      const other = m.other.has(i);
+      const kind = r.off || offByYou ? ["off", ""] : d.hides ? ["hides", "bad"] : d.stops ? ["decides", "accent"] :
+        ["adds", "info"];
+      return item(h("button.fe-rb-row" + (mine ? ".is-changed" : "") + (r.off || offByYou || other ? ".off" : ""),
+        {type: "button", onclick: () => open(app, i), title: line.slice(0, 400)},
         h("span.fe-rb-top", h("span.fe-rb-where", where(m, i)), pill(kind[0], kind[1]),
-          m.twins.has(i) ? pill("twin", "") : null,
-          mine ? pill(mine.map((p) => p.op.kind === "change" ? "changed" : p.op.kind).join(", "), "warn") : null,
+          m.twins.has(i) ? pill("twin", "") : null, other ? pill("not in your version", "") : null,
+          mine ? pill(mine.map((p) => p.op.kind === "change" ? "changed" : p.op.kind === "off" ? "off: yours" :
+            p.op.kind).join(", "), "warn") : null,
           h("span.fe-rb-words", words.get(i))),
         h("span.fe-rb-draw", d.kind === "rule" ? EZ.rulesArea.miniLabel(d.out, vals, sample(r.cond)) : null,
           d.kind === "rule" && d.notifies ? h("span.fe-row.fe-small", EZ.rulesArea.alertsOf(d.out, app)) : null,
-          d.kind === "rule" ? EZ.rulesArea.miniDesc(d.out, vals) : null));
+          d.kind === "rule" ? EZ.rulesArea.miniDesc(d.out, vals) : null)));
     };
 
     let painted = [-1, -1];
@@ -430,20 +500,40 @@ EZ.areas = EZ.areas || [];
       "aria-label": "Search Erazure's rules"});
     search.addEventListener("input", debounce(() => { view.q = search.value; listBox.scrollTop = 0; build(); }, 200));
     const whatSel = h("select", {"aria-label": "Which lines", onchange: (e) => { view.what = e.target.value; build(); }},
-      [["rules", "Rules"], ["rules+off", "Rules, switched-off ones too"], ["all", "Every line (notes too)"]].map(([v, t]) =>
-        h("option", {value: v, selected: view.what === v}, t)));
+      [["rules", "Rules of your version"], ["rules+off", "Rules, switched-off ones and other versions' too"],
+       ["all", "Every line (notes too)"]].map(([v, t]) => h("option", {value: v, selected: view.what === v}, t)));
+    const matchWords = h("span", "Only rules that can match the preview's item");
     const matchT = h("label.fe-switch", h("input", {type: "checkbox", checked: view.match, onchange: (e) => {
-      view.match = e.target.checked; listBox.scrollTop = 0; build(); }}), h("span.track"),
-      h("span", "Only rules the preview's item can match"));
+      view.match = e.target.checked; listBox.scrollTop = 0; build(); }}), h("span.track"), matchWords);
+    const itemLine = h("p.fe-sub.fe-small", {hidden: true});
+    const empty = h("p.fe-empty.fe-rb-empty", {hidden: true});
+    // the preview's item changed (a pick there): the list follows while it shows that item's rules
+    const follow = () => {
+      if (!listBox.isConnected) { document.removeEventListener("fe-preview-item", follow); return; }
+      if (view.match) build(); else matchWords.textContent = "Only rules that can match " +
+        EZ.items.describe(EZ.preview.state.spec);
+    };
+    document.addEventListener("fe-preview-item", follow);
     const mineT = h("label.fe-switch", h("input", {type: "checkbox", checked: view.mine, onchange: (e) => {
       view.mine = e.target.checked; listBox.scrollTop = 0; build(); }}), h("span.track"), h("span", "Only my changes"));
 
+    const pickItem = h("button.fe-btn.ghost.small", {type: "button", onclick: () => {
+      EZ.preview.state.mode = "item";
+      app.togglePreview(true);
+      if (EZ.preview.changed) EZ.preview.changed({}, app);
+      setTimeout(() => {
+        const s = document.querySelector(".edit-map .fe-preview input.fe-pv-search");
+        if (s) s.focus();
+      }, 350);
+    }}, "Pick another item");
     const card = h("section.fe-card.fe-rb",
       h("div.fe-row.fe-rb-tools", search, sectionSel, whatSel),
-      h("div.fe-row.fe-small", matchT, mineT, h("span.fe-bar-gap"), count),
-      view.match ? h("p.fe-sub.fe-small", "The item: ", EZ.items.describe(EZ.preview.state.spec), " (pick another in " +
-        "the preview's Item view; its filter level, character and place count too).") : null,
-      listBox);
+      h("div.fe-row.fe-small", matchT, pickItem, mineT, h("span.fe-bar-gap"), count),
+      itemLine,
+      h("p.fe-sub.fe-small.fe-rb-legend", "decides: the rule that gives the label (the rules after it don't change " +
+        "it) · adds: it adds to the label and the rules after it go on · hides · twin: written by Erazure's tools " +
+        "beside another rule, the two go together · generated: a section rebuilt from game data on every update"),
+      empty, listBox);
     requestAnimationFrame(() => { build(); if (view.top) { listBox.scrollTop = view.top; paint(true); } });
     return card;
   }

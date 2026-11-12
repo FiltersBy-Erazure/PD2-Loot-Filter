@@ -219,7 +219,7 @@ EZ.wishlists = (function () {
       if (!lines.length) continue;
       const secs = EZ.filter.sections(ctx.src, ctx.lines);
       const range = secs[EZ.rules.PLACE[which]];
-      if (!range) { ctx.unplaced("highlights", "Your highlights", "Erazure no longer has " + EZ.rules.PLACE[which]); continue; }
+      if (!range) { ctx.unplaced("highlights", "Your highlights", "Erazure moved the place they go"); continue; }
       ctx.lines.splice(range[0], 0, MARKS[which][0], ...lines, MARKS[which][1]);
     }
   }

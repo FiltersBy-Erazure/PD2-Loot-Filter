@@ -108,8 +108,7 @@ EZ.areas = EZ.areas || [];
   function cell(r, desc) {
     if (!r) return h("span.fe-sub", "?");
     const parts = [];
-    if (r.invisible) parts.push(h("span.fe-pv-hidden", "nothing (hidden, no alert)"));
-    else if (r.hidden) parts.push(h("span.fe-pv-hidden", "no label"));
+    if (r.invisible || r.hidden) parts.push(EZ.render.hiddenNode(r));
     else parts.push(EZ.render.label(r.name, {start: r.start}));
     if (r.icons.length && EZ.preview.iconCanvas) parts.push(EZ.preview.iconCanvas(r.icons, 2));
     if (r.sound) parts.push(h("span.fe-pv-snd", "♪ " + EZ.sounds.name(EZ.app.data || {}, r.sound)));
@@ -165,16 +164,13 @@ EZ.areas = EZ.areas || [];
           shown++;
           const descOnly = diff && looks(a) === looks(b);  // only the hover box differs: show it
           table.appendChild(h("tr" + (diff ? ".is-changed" : ""), h("td.fe-small", h("button.fe-btn.ghost.small",
-            {type: "button", title: "Open in the preview", onclick: () => {
-              P.state.spec = Object.assign({}, spec);
-              P.state.mode = "item";
-              P.changed({}, app);
-              if (!app.els.root.classList.contains("pv-open") && window.innerWidth <= 1000) app.els.root.classList.add("pv-open");
-            }}, label), descOnly ? h("div.fe-sub.fe-small", "its hover box differs") : null),
+            {type: "button", title: "Open it in the preview, at this filter level",
+              onclick: () => app.showInPreview(spec, view.level)}, label),
+            descOnly ? h("div.fe-sub.fe-small", "its hover box differs") : null),
             h("td", cell(a, descOnly)), h("td", cell(b, descOnly))));
         }
-        status.textContent = `${changed.toLocaleString()} of ${k.toLocaleString()} kinds of drop change` +
-          (k < list.length ? "…" : "") + (shown >= 400 ? " (the first 400 shown)" : "");
+        status.textContent = `Your changes change ${changed.toLocaleString()} of ${k.toLocaleString()} drops at this ` +
+          "level" + (k < list.length ? "…" : ".") + (shown >= 400 ? " (The first 400 are shown.)" : "");
         if (k < list.length) setTimeout(step, 0);
       };
       step();
@@ -272,9 +268,15 @@ EZ.areas = EZ.areas || [];
       if (r.chatRule !== null && !r.sound) lines.push([o.dropSounds === false ? "No sound: Drop Sounds is off in the game's " +
         "options." : "No drop sound: the rule that gives its alert has none."]);
       fill(answer,
-        h("p", h("b", EZ.items.describe(spec)), ", on the ground outside town at level " + view.troubleLevel + ":"),
+        h("p", h("b", EZ.items.describe(spec)), ", on the ground outside town at filter level " + view.troubleLevel + ":"),
         h("ul", lines.map((t) => h("li", t))),
         h("p.fe-sub.fe-small", "In the preview's Item view, How it's built lists every rule that builds its label."));
+    };
+    const safeDraw = () => {
+      try { draw(); } catch (e) {  // an item the editor's list no longer has (after an update): ask again
+        view.trouble = null;
+        fill(answer, h("p.fe-sub", "Name the item above, and the filter level you play on."));
+      }
     };
     const search = EZ.ui.combo({placeholder: view.trouble ? EZ.items.describe(view.trouble) :
       "Which item? Shako, Ber Rune, Grand Charm…", label: "Which item?",
@@ -284,29 +286,46 @@ EZ.areas = EZ.areas || [];
         if (b && EZ.items.qualities(b) && !view.trouble.quality) view.trouble.quality = "NORM";
         search.input.placeholder = EZ.items.describe(view.trouble);
         search.input.classList.add("has-value");
-        draw();
+        safeDraw();
       }})), empty: (q) => `No item matches "${q}".`});
     if (view.trouble) search.input.classList.add("has-value");
     search.box.style.flex = "1 1 18em";
     const lvSel = h("select", {"aria-label": "The filter level you play on", onchange: (e) => {
       view.troubleLevel = +e.target.value;
-      draw();
+      safeDraw();
     }}, levels.map((n, i) => h("option", {value: String(i), selected: i === view.troubleLevel}, i + " · " + n)));
     card.appendChild(h("div.fe-row", search.box, lvSel));
-    if (P && P.context) card.appendChild(P.context(draw, {ground: true, lead: "Your character: level"}));
+    if (P && P.context) card.appendChild(P.context(safeDraw, {ground: true, lead: "Your character: level"}));
     card.appendChild(answer);
-    draw();
+    safeDraw();
+    const go = (area, sub, text) => h("a", {href: "#" + area + (sub ? "/" + sub : ""), onclick: (e) => {
+      e.preventDefault();
+      app.go(area, sub);
+    }}, text);
     card.appendChild(h("h4", "If nothing you change shows in game"));
     card.appendChild(h("ol.fe-steps",
       h("li", "The file is in ", h("code", "Diablo II\\ProjectD2\\filters\\local"), " and ends in ", h("code", ".filter"),
-        " (not ", h("code", ".filter.txt"), ": Windows can hide that end)."),
-      h("li", "In the launcher: Item Filter Profiles, ", h("b", "Local Filter"), ", your file, ", h("b", "Save Filter"), "."),
-      h("li", "After every change here: save to game again (or download again and replace the file), then press the " +
-        "reload filter key in game (", h("kbd", "Numpad 0"), " unless you changed it in Configure Controls)."),
+        " (not ", h("code", ".filter.txt"), ", an end Windows can hide), with no number your browser added to its " +
+        "name, such as (1)."),
+      h("li", "In the launcher: Item Filter Profiles, ", h("b", "Local Filter"), ", your file, ", h("b", "Save Filter"),
+        ". Each profile saves to its own file: the launcher loads the one picked there (", go("start", "profiles",
+          "your profiles and their files"), ")."),
+      h("li", "After every change here: ", h("b", "Save to game"), " again (or download again and replace the file), " +
+        "then press the reload filter key in game (", h("kbd", "Numpad 0"), " unless you changed it in Configure " +
+        "Controls). The Horadric Cube's version line then ends with Custom and your number of changes."),
       h("li", "Options, Loot Filter: ", h("b", "Enable Loot Filter"), " is on, and the filter level is the one you " +
         "expect. Level 0 shows everything."),
+      h("li", "Hiding works on the ground outside town only: an item dropped in town, or in your inventory and stash, " +
+        "still shows (test it outside town)."),
+      h("li", "A unique or set item you haven't discovered yet shows even where you hide it: the game's ",
+        h("b", "Force Show Undiscovered"), " option, on by default."),
       h("li", "No sound: the game's ", h("b", "Drop Sounds"), " option; no chat line: ", h("b", "Detailed Notifications"),
         "; potions gone: the ", h("b", "Hide Healing / Mana Potions"), " options.")));
+    // still stuck: a report to paste where people can help
+    card.appendChild(h("h4", "Still stuck?"));
+    card.appendChild(h("p.fe-sub", "Copy a report (your version, your changes as a share link, and this item with " +
+      "the rules that decide it) and paste it in a message to ", h("b", "erazure"), " on Discord, with your question."));
+    card.appendChild(h("button.fe-btn", {type: "button", onclick: () => copyReport(app)}, "Copy a report for Discord"));
     return card;
   }
 
@@ -323,63 +342,104 @@ EZ.areas = EZ.areas || [];
     } catch (e) { report = {unplaced: [{area: "?", what: "", why: e.message}]}; }
     const rulesOf = (ls) => ls.filter((l) => l.startsWith("ItemDisplay[")).length;
     const before = rulesOf(app.versionLines()), after = lines ? rulesOf(lines) : before;
+    const link = (id, text) => h("a", {href: "#" + id, onclick: (e) => { e.preventDefault(); app.go(id); }}, text);
     const rows = EZ.areas.filter((a) => (ch.byArea[a.id] || {}).n || (ch.byArea[a.id] || {}).w).map((a) => {
       const c = ch.byArea[a.id];
-      return h("li", h("a", {href: "#" + a.id, onclick: (e) => { e.preventDefault(); app.go(a.id); }}, a.title), ": ",
+      return h("li", link(a.id, a.title), ": ",
         EZ.ui.plural(c.n, "change"), c.w ? h("span", " · ", pill("⚠ " + c.w + " need a look", "warn")) : null);
     });
+    if (!ch.count) {
+      return h("section.fe-card", {id: "fe-ch-summary"},
+        h("h3", "Your changes"),
+        h("p", "None yet: your filter is the launcher's " + ((app.variant() || {}).launcher || "Erazure") + "."),
+        h("p.fe-sub", "Make a change in ", link("quick", "Quick Edits"), ", ", link("items", "Items"), " or ",
+          link("alerts", "Alerts"), " (or pick a goal on ", link("start", "Start"), "), and what it does shows here, " +
+          "item by item."));
+    }
+    // a change an Erazure update left with nowhere to go: named as its area lists it, with that area's link
+    const unplaced = report && report.unplaced || [];
+    const areaOf = (id) => EZ.areas.find((a) => a.id === id);
     return h("section.fe-card", {id: "fe-ch-summary"},
       h("h3", "Your changes"),
-      ch.count ? h("ul", rows) : h("p.fe-sub", "None yet: your filter is Erazure's own " + ((app.variant() || {}).launcher || "") + "."),
-      report && report.unplaced && report.unplaced.length ? h("div.fe-note.warn", h("b", "Not placed: "),
-        h("ul", report.unplaced.map((u) => h("li", (u.what ? u.what + ": " : "") + u.why)))) : null,
+      h("ul", rows),
+      unplaced.length ? h("div.fe-note.warn", h("b", "No longer apply: "),
+        h("ul", unplaced.map((u) => {
+          const a = areaOf(u.area);
+          const what = u.area === "erazure" ? "your change to Erazure's rule " + JSON.stringify(u.what) : u.what;
+          return h("li", (what ? what + ": " : "") + u.why + ". ", a ? h("span", "Edit or remove it in ",
+            link(a.id, a.title), ".") : null);
+        })),
+        h("p.fe-sub.fe-small", "Erazure changed since you made these, so they do nothing now; your other changes work.")) : null,
       h("p.fe-sub.fe-small", `${after.toLocaleString()} rules (Erazure's version: ${before.toLocaleString()}` +
         (after !== before ? `, ${after > before ? "+" : ""}${(after - before).toLocaleString()}` : "") + "). More rules " +
         "take the game a little longer to load when the game starts or you reload the filter."));
   }
 
-  /* A short report to paste in Discord when asking for help: the version, the changes by area, and the preview's
-     item with what Erazure's filter and the player's do with it (the lines that decide it). */
-  function report(app) {
+  const PLACE_WORDS = {field: "outside town", town: "in town", map: "in a T1-T3 map", uber: "in the Pandemonium Fortress"};
+
+  /* A short report to paste in Discord when asking for help: the version, the changes by area (and a share link that
+     loads them, when it fits), and the item asked about ("I didn't see my item"'s, else the preview's) with what
+     Erazure's filter and the player's do with it (the lines that decide it). */
+  async function report(app) {
     const P = EZ.preview, ch = app.changes(), v = app.variant() || {};
     const out = ["Erazure Filter Editor: " + (v.launcher || "?") + ", Erazure " + app.src.version];
     const areas = EZ.areas.filter((a) => (ch.byArea[a.id] || {}).n).map((a) => a.title + " " + ch.byArea[a.id].n);
     out.push("Changes: " + (ch.count ? ch.count + " (" + areas.join(", ") + ")" : "none") +
       (ch.warn ? ", " + ch.warn + " need a look" : ""));
     if (P && P.state && P.erazure && P.erazure()) {
-      const s = P.state, spec = s.spec;
+      const s = P.state;
+      const asked = view.trouble && EZ.items.base(view.trouble.code);
+      const spec = asked ? Object.assign({}, view.trouble, {place: "GROUND"}) : s.spec;
+      const level = asked ? view.troubleLevel : s.filtlvl;
       const cls = ["Amazon", "Sorceress", "Necromancer", "Paladin", "Barbarian", "Druid", "Assassin"][s.cls] || "?";
-      out.push("Item: " + EZ.items.describe(spec) + " at filter level " + s.filtlvl + ", level " + s.clvl + " " + cls +
-        ", " + ["Normal", "Nightmare", "Hell"][s.diff] + ", " + s.where);
+      out.push("Item: " + EZ.items.describe(spec) + " at filter level " + level + ", character level " + s.clvl + " " +
+        cls + ", " + ["Normal", "Nightmare", "Hell"][s.diff] + ", " + (asked ? "outside town" :
+          PLACE_WORDS[s.where] || s.where));
       for (const [who, f] of [["Erazure", P.erazure()], ["Yours", P.yours()]]) {
         if (!f) continue;
-        const r = P.run(f, spec);
+        let r = null;
+        try { r = P.run(f, spec, level); } catch (e) { r = null; }
         if (!r) continue;
         const at = (i) => i === null || i === undefined ? "none" : app.lineRef(f.lines, i).text;
-        out.push(who + ": " + (r.invisible ? "nothing (hidden, no alert)" : r.hidden ? "no label" :
-          EZ.render.plain(r.name)) + " | decided by " + at(r.stop) + (r.sound ? " | sound " + r.sound + " (" + at(r.soundRule) + ")" : "") +
+        out.push(who + ": " + (EZ.render.hiddenWords(r) || EZ.render.plain(r.name)) + " | decided by " + at(r.stop) +
+          (r.sound ? " | sound " + r.sound + " (" + at(r.soundRule) + ")" : "") +
           (r.icons.length ? " | icon" : "") + (r.chat !== null ? " | chat" : ""));
       }
     }
-    return out.join("\n").slice(0, 1900);
+    if (ch.count) {
+      let url = "";
+      try { url = await EZ.share.link(); } catch (e) { url = ""; }
+      const room = 1900 - out.join("\n").length - 30;
+      out.push(url && url.length <= room ? "My changes: " + url
+        : "My changes: too many for a link; I can send the backup file (Back up my changes).");
+    }
+    return out.join("\n").slice(0, 1990);
+  }
+
+  async function copyReport(app) {
+    const text = await report(app);
+    try {
+      await navigator.clipboard.writeText(text);
+      EZ.ui.toast("Copied. Paste it in a message to erazure on Discord, with your question.", "good", {ms: 8000});
+    } catch (e) {
+      EZ.ui.dialog({title: "Your report", body: [h("p.fe-sub", "Copy it, and paste it in a message to erazure on " +
+        "Discord with your question."), h("textarea", {rows: 9, readonly: true, text})]});
+    }
   }
 
   if (EZ.app && EZ.app.saveMenu) {
-    EZ.app.saveMenu.push((app) => ({text: "Copy a report for Discord", sub: "your version, changes and the preview's item",
-      onclick: async () => {
-        const text = report(app);
-        try { await navigator.clipboard.writeText(text); EZ.ui.toast("Copied: paste it in Discord with your question.", "good"); }
-        catch (e) { EZ.ui.dialog({title: "Your report", body: [h("textarea", {rows: 8, readonly: true, text})]}); }
-      }}));
+    EZ.app.saveMenu.push((app) => ({text: "Copy a report for Discord", sub: "for help: your version, your changes and an item",
+      onclick: () => copyReport(app)}));
   }
 
   EZ.areas.push({
     id: "changes", title: "Changes", icon: "⇄", order: 100, group: "d",
     render(box, app) {
+      const any = app.changes().count > 0;  // with no changes, nothing to compare: the summary says where to start
       EZ.ui.add(box, [
         h("div.fe-area-head", h("div", h("h2", "Changes"),
           h("p.fe-sub", "What your changes do, item by item, and what to check when something doesn't show."))),
-        summary(app), everyItem(app), diffCard(app), trouble(app)]);
+        summary(app), any ? everyItem(app) : null, any ? diffCard(app) : null, trouble(app)]);
       if (app.sub && box.querySelector("#fe-" + app.sub)) box.querySelector("#fe-" + app.sub).scrollIntoView();
     },
   });

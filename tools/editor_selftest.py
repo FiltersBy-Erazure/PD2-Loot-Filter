@@ -405,7 +405,7 @@ def resized(combo, how):
             k = SIZES.index(lay.upper()) + 1
             if k < len(SIZES):
                 moved.append(f"{SIZES[k]}-{col}")
-        return " ".join(moved)
+        return " ".join(moved) or combo  # a center pixel alone stays
     if how == "bigger" and parts and not any(lay.upper() == "BORDER" for lay, _ in parts):
         outer = next((p for p in parts if p[0].upper() == "MAP"), parts[0])
         return " ".join([f"BORDER-{outer[1]}"] + [f"{lay}-{col}" for lay, col in parts])
@@ -617,7 +617,7 @@ def count(e, feats):
     ids = lambda xs: {int(x) for x in (xs if isinstance(xs, list) else []) if str(x).isdigit() and 0 < int(x) < 4096}  # noqa: E731
     skip = {c for c in (mp.get("hideMaps") if isinstance(mp.get("hideMaps"), list) else [])
             if isinstance(c, str) and re.fullmatch(r"[a-z0-9]{2,4}", c)}
-    n += len(ids(mp.get("warn"))) + len(ids(mp.get("hide"))) + len(skip)
+    n += len(ids(mp.get("warn"))) + len(ids(mp.get("hide"))) + len(ids(mp.get("mark"))) + len(skip)
     n += sum(1 for w in (e.get("wishlists") or []) if isinstance(w, dict) and (w.get("codes") or w.get("groups")
                                                                                 or w.get("need") or w.get("pool")))
     n += sum(1 for o in (e.get("items") or []) if isinstance(o, dict) and o.get("action") in ITEM_ACTIONS
@@ -1078,7 +1078,8 @@ LINT_CASES = [
 
 # conditions in words (tools/editor/words.js): BH's reading, AND and OR left to right
 WORDS_CASES = [
-    ("UNI !ID uap", "unique, not identified, Shako"),
+    ("UNI !ID uap", "unique, unidentified, Shako"),
+    ("STAT360>0 SOCK=2", "corrupted, sockets 2"),
     ("(r30 OR r31) FILTLVL>4", "(Ber Rune or Jah Rune), filter levels 5-12"),
     ("r30 OR r31 FILTLVL>4", "(Ber Rune or Jah Rune), filter levels 5-12"),
     ("CLVL>79 DIFF=2 GROUND !TOWN", "character level 80+, Hell, on the ground, not in town"),
@@ -1091,8 +1092,9 @@ WORDS_CASES = [
 # the rule builder: (its form, the rule line it must make)
 BUILD_CASES = [
     ({}, "ItemDisplay[]:%NAME%{%NAME%}"),
-    ({"codes": ["r30"], "show": "hide"}, "ItemDisplay[r30 GROUND !TOWN]:"),
-    ({"codes": ["r30"], "show": "hide", "place": "any"}, "ItemDisplay[r30]:"),
+    ({"codes": ["r30"], "show": "hide"}, "ItemDisplay[r30 FILTLVL>0 GROUND !TOWN]:"),
+    ({"codes": ["r30"], "show": "hide", "place": "any"}, "ItemDisplay[r30 FILTLVL>0]:"),
+    ({"codes": ["r30"], "show": "hide", "levels": [3, 4]}, "ItemDisplay[r30 FILTLVL~3-4 GROUND !TOWN]:"),
     ({"codes": ["uap"], "quals": ["UNI"], "text": "%GOLD%*%NAME%", "icon": {"MAP": "0a"}, "sound": 4728,
       "chat": "tier", "tier": 4}, "ItemDisplay[uap UNI]:%GOLD%*%NAME%{%NAME%}%MAP-0A%%SOUNDID-4728%%TIER-4%"),
     ({"groups": ["HELM", "CIRC"], "tiers": ["ELT"], "quals": ["RARE", "CRAFT"], "eth": "no", "id": "yes",

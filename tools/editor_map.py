@@ -192,6 +192,8 @@ def page_data():
         "sounds": {str(i): s["name"] for i, s in sorted(sounds.items())},
         "soundCount": max(sounds) + 1,
         "poeSounds": [i for i in POE_SOUNDS if i in sounds],
+        # the sounds with no file of their own (none.wav): silent, wherever a rule plays them
+        "silentSounds": [i for i, s in sorted(sounds.items()) if s["file"].lower() == "none.wav"],
         "looks": {"sample": style_map.SAMPLE, "nameColor": style_map.NAME_COLOR},
         "catalog": catalog(),
         "mapStats": map_stats(),

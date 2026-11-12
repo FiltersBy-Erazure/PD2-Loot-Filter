@@ -11,6 +11,9 @@ hide:
   .md-grid { max-width: none; }
   .md-content__inner { margin-bottom: 0; padding-bottom: 0; }
   .md-content__inner > h1 { margin-bottom: .6rem; }
+  /* Material's "Back to top" button: under the editor's bar, which stays at the top too (the editor sets --fe-bar;
+     Material's script puts the header's height in the button's own style, hence !important) */
+  .md-top { top: calc(2.4rem + var(--fe-bar, 0px) + .6rem) !important; }
 </style>
 
 # Filter Editor

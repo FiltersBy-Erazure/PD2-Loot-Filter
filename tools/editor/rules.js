@@ -46,7 +46,7 @@ EZ.rules = (function () {
       const secs = EZ.filter.sections(ctx.src, ctx.lines);
       const range = secs[PLACE[which]];
       if (!range) { ctx.unplaced("rules", which === "top" ? "Your rules above Erazure's" : "Your rules below Erazure's",
-                                 "Erazure no longer has " + PLACE[which]); continue; }
+                                 "Erazure moved the place they go"); continue; }
       ctx.lines.splice(range[0], 0, MARKS[which][0], ...list, MARKS[which][1]);
     }
   }
@@ -177,7 +177,9 @@ EZ.rules = (function () {
     };
     range("ILVL", spec.ilvl, 1, 99);
     const lv = levelWords(spec.levels);
+    // a hide for every level is for levels 1-12: level 0 (Show All Items) shows everything, as an item change's hide
     if (lv) conds.push(lv);
+    else if (spec.show === "hide") conds.push("FILTLVL>0");
     range("CLVL", spec.clvl, 1, 99);
     const cls = (spec.classes || []).filter((c) => CLASS_WORDS.indexOf(c) >= 0);
     if (cls.length && cls.length < 7) conds.push(anyOf(cls));

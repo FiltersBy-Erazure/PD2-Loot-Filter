@@ -24,9 +24,21 @@ EZ.looks = (function () {
       .replace(/%(?:CL|CS)%/g, " ");
   }
 
+  /* The name a card's labels are drawn with: the style page's samples, then the editor's own (every card a name of
+     its own, never "Item"). */
+  const MORE_SAMPLES = {SKELETON_KEY: "Skeleton Key", ALMANAC: "Horadric Almanac", NAVIGATOR: "Horadric Navigator",
+    VIAL: "Vial of Lightsong", MIRROR: "Lilith's Mirror", DKEY: "Key of Destruction", HKEY: "Key of Hate",
+    TKEY: "Key of Terror", TOKEN_OF_ABSOLUTION: "Token of Absolution", PANDEMONIUM_TALISMAN: "Pandemonium Talisman",
+    UBER_ORGAN: "Baal's Eye", RELIC: "Relic of the Ancients", SIGIL_MADAWC: "Sigil of Madawc",
+    SIGIL_TALIC: "Sigil of Talic", SIGIL_KORLIC: "Sigil of Korlic", VISION_OF_TERROR: "Vision of Terror",
+    TERROR_PART: "Black Soulstone", VOIDSTONE: "Voidstone", VOID_PART: "Hellfire Ashes", JAWBONE: "Trang-Oul's Jawbone",
+    TAINTED_SHARD: "Tainted Worldstone Shard", SHADOW_OF_HATRED: "Shadow of Hatred", DEMONIC_INSIGNIA: "Demonic Insignia",
+    HATRED_PART: "Flesh of Malic", MAGIC_CHARM: "Grand Charm", MAGIC_JEWEL_NAME: "Jewel", RARE_LOW_VALUE: "Gauntlets",
+    UNI_NORMAL: "Sacred Armor"};
   function sampleFor(key, data) {
     const nc = (data.looks && data.looks.nameColor || []).find(([p]) => key.startsWith(p));
-    const name = (data.looks && data.looks.sample && data.looks.sample[key]) || "Item";
+    const name = (data.looks && data.looks.sample && data.looks.sample[key]) || MORE_SAMPLES[key] ||
+      (/^INFUSION_/.test(key) ? "Craft Infusion" : "Item");
     return (nc ? "%" + nc[1] + "%" : "%WHITE%") + name;
   }
 
@@ -68,28 +80,69 @@ EZ.looks = (function () {
     return c;
   }
 
-  /* A palette picker under an anchor: onpick("0A") or onpick(null) for none. */
+  /* The four nested boxes of a minimap icon, outer to inner, in words (the game's own names in the tooltip). */
+  const LAYER_WORDS = {BORDER: ["Outer", "the outer 8-pixel box (BORDER)"], MAP: ["Big", "the 6-pixel box (MAP)"],
+                       DOT: ["Small", "the 4-pixel box (DOT)"], PX: ["Center", "the 2-pixel center (PX)"]};
+  /* A button for one box of an icon: its color and its name; a click opens the palette. */
+  function layerButton(l, color, palette, onpick) {
+    const w = LAYER_WORDS[l] || [l, l];
+    const b = h("button.fe-layer", {type: "button", title: "The color of " + w[1] + " (or none)",
+      "aria-label": w[0] + " box: " + (color ? "color " + color : "none"), "aria-haspopup": "dialog"},
+      h("span.fe-layerbox", {style: {background: color ? palette[parseInt(color, 16)] : "transparent"}}), w[0]);
+    b.addEventListener("click", () => palettePicker(b, palette, color, onpick, true));
+    return b;
+  }
+
+  /* A palette picker under an anchor: onpick("0A") or onpick(null) for none. It takes the focus (its color, or
+     None), the arrows move through the colors, Escape closes it and gives the focus back. */
   function palettePicker(anchor, palette, current, onpick, allowNone) {
     const grid = h("div.fe-palette", {role: "listbox", "aria-label": "Minimap colors"});
-    const close = () => { wrap.remove(); document.removeEventListener("mousedown", away, true); };
+    const close = (stay) => {
+      if (!wrap.isConnected) return;
+      wrap.remove();
+      document.removeEventListener("mousedown", away, true);
+      document.removeEventListener("keydown", key, true);
+      if (!stay && anchor.isConnected) anchor.focus();
+    };
     const away = (ev) => { if (!wrap.contains(ev.target)) close(); };
+    const key = (ev) => {
+      if (ev.key === "Escape") { ev.preventDefault(); ev.stopPropagation(); close(); return; }
+      const sw = [...grid.children], i = sw.indexOf(document.activeElement);
+      if (i < 0) return;
+      const step = {ArrowRight: 1, ArrowLeft: -1, ArrowDown: 16, ArrowUp: -16}[ev.key];
+      if (step) {
+        ev.preventDefault();
+        const n = sw[Math.max(0, Math.min(sw.length - 1, i + step))];
+        if (n) n.focus();
+      }
+    };
+    let on = null;
     for (let i = 0; i < 256; i++) {
       const hex = i.toString(16).toUpperCase().padStart(2, "0");
-      grid.appendChild(h("button.fe-swatch" + (hex === current ? ".on" : ""), {type: "button", title: hex,
-        "aria-label": "color " + hex, style: {background: palette[i]}, onclick: () => { close(); onpick(hex); }}));
+      const b = h("button.fe-swatch" + (hex === current ? ".on" : ""), {type: "button", title: hex, role: "option",
+        "aria-selected": String(hex === current), "aria-label": "color " + hex, style: {background: palette[i]},
+        onclick: () => { close(); onpick(hex); }});
+      if (hex === current) on = b;
+      grid.appendChild(b);
     }
-    const wrap = h("div.fe-menu.fe-palette-menu",
-      allowNone ? h("button.fe-btn.small", {type: "button", onclick: () => { close(); onpick(null); }}, "None") : null,
-      grid);
+    const none = allowNone ? h("button.fe-btn.small", {type: "button", onclick: () => { close(); onpick(null); }}, "None")
+      : null;
+    const wrap = h("div.fe-menu.fe-palette-menu", {role: "dialog", "aria-label": "Pick a minimap color"},
+      none, h("span.fe-sub.fe-small", {style: {marginLeft: ".5em"}}, "Arrows move, Enter picks, Escape closes"), grid);
+    // in the editor's root, right after the anchor's card in Tab order would be best; the root keeps it on screen
     const root = anchor.closest(".edit-map") || document.body;
     root.appendChild(wrap);
     const r = anchor.getBoundingClientRect(), rr = root.getBoundingClientRect();
     wrap.style.left = Math.max(4, Math.min(r.left - rr.left, rr.width - wrap.offsetWidth - 4)) + "px";
     wrap.style.top = (r.bottom - rr.top + 4) + "px";
     setTimeout(() => document.addEventListener("mousedown", away, true));
+    document.addEventListener("keydown", key, true);
+    // Tab out of it closes it (the focus goes on where it went)
+    wrap.addEventListener("focusout", (ev) => { if (ev.relatedTarget && !wrap.contains(ev.relatedTarget)) close(true); });
+    (on || none || grid.firstChild).focus();
   }
 
-  return {values, fill, sampleFor, styleValues, icon, palettePicker};
+  return {values, fill, sampleFor, styleValues, icon, palettePicker, layerButton, LAYER_WORDS};
 })();
 
 EZ.areas.push({
@@ -115,6 +168,15 @@ EZ.areas.push({
     // a style's looks, the Horadric Cube's version names aside (they name the version the file is)
     const names = cards.filter((c) => c.group !== "cube").flatMap((c) => c.aliases.map((a) => a.name));
     const own = Object.keys(e.looks || {}).length;
+    const nice = (c) => c.charAt(0) + c.slice(1).toLowerCase().replace(/_/g, " ");
+    const yourVersion = app.STYLE_NAMES[e.base.style] || "Erazure";
+
+    /* ---- the color swap, as the game draws it: a label's color codes swapped (the cards draw with it) */
+    const remap = e.remap || {};
+    const codeSwap = {};
+    for (const k of Object.keys(remap)) if (R.WORDS[k] && R.WORDS[remap[k]]) codeSwap[R.WORDS[k]] = R.WORDS[remap[k]];
+    const swapped = (text) => Object.keys(codeSwap).length ? text.replace(/ÿc(.)/g, (m, ch) =>
+      codeSwap[ch] !== undefined ? "ÿc" + codeSwap[ch] : m) : text;
 
     /* ---- presets (they replace the player's own looks: a toast with Undo says so) */
     const preset = (style) => {
@@ -135,7 +197,7 @@ EZ.areas.push({
           "s"} went).` : "."));
       }
     };
-    const presets = h("section.fe-card",
+    const presets = h("section.fe-card", {id: "fe-looks-styles"},
       h("h3", "Start from a style"),
       h("p.fe-sub", "Put the looks below to a style's own, then change what you like" + (own ? ": this replaces your " +
         own + " own look" + (own === 1 ? "" : "s") + " (Undo brings them back)" : "") + ". Your version (Start) stays " +
@@ -146,63 +208,79 @@ EZ.areas.push({
         "Corrlorized's looks here are the few he sets by name (magic charms, the Vial and the Mirror)."),
       own ? h("p.fe-sub", {style: {marginTop: ".5rem"}},
         `${own} look${own === 1 ? " is" : "s are"} your own.`, " ",
-        h("button.fe-btn.ghost.small", {type: "button", onclick: () => {
-          EZ.store.change((ed) => { delete ed.looks; }, {label: "looks"});
-          EZ.ui.undoToast("Your version's looks are back.");
-        }}, "Use your version's looks again")) : null);
+        h("button.fe-btn.small", {type: "button", title: "Your version (" + yourVersion + ") draws them again",
+          onclick: () => {
+            EZ.store.change((ed) => { delete ed.looks; }, {label: "looks"});
+            EZ.ui.undoToast("Erazure's default looks are back.");
+          }}, "Back to Erazure's default looks")) : null);
 
     /* ---- color remap */
-    const remap = e.remap || {};
+    const swatch = (c) => h("span.fe-swatchbox", {"aria-hidden": "true", style: {background: R.rgb(R.WORDS[c]) || "#000"}});
     const colorRow = (c) => {
-      const code = R.WORDS[c];
-      const sel = h("select", {"aria-label": `${c} becomes`, onchange: (ev) => EZ.store.change((ed) => {
+      const sel = h("select", {"aria-label": `${nice(c)} becomes`, onchange: (ev) => EZ.store.change((ed) => {
         ed.remap = ed.remap || {};
         if (ev.target.value === c) delete ed.remap[c]; else ed.remap[c] = ev.target.value;
       }, {label: "color " + c})},
-        EZ.edits.COLORS.map((x) => h("option", {value: x, selected: (remap[c] || c) === x}, x === c ? "itself" : nice(x))));
+        // black text on the label's dark box can't be read: never a color to swap to
+        EZ.edits.COLORS.filter((x) => x !== "BLACK").map((x) => h("option", {value: x, selected: (remap[c] || c) === x},
+          x === c ? "No change" : nice(x))));
       return h("div.fe-remap" + (remap[c] ? ".is-changed" : ""),
-        h("span.fe-swatch-text", {style: {color: R.rgb(code) || "inherit"}}, "■ " + nice(c)), h("span.fe-sub", "→"), sel,
-        remap[c] ? h("span.fe-swatch-text", {style: {color: R.rgb(R.WORDS[remap[c]])}}, "■") : null);
+        h("span.fe-swatch-name", swatch(c), " " + nice(c)), h("span.fe-sub", {"aria-hidden": "true"}, "→"), sel,
+        remap[c] ? swatch(remap[c]) : null);
     };
     const recolor = h("section.fe-card", {id: "fe-recolor"},
       h("h3", "Swap a color everywhere"),
       h("p.fe-sub", "Every label and description line Erazure draws in one color, in another. Handy when two colors " +
-        "look alike to you (red and green, yellow and gold). Item names the game colors itself keep their colors."),
+        "look alike to you (red and green, yellow and gold). Item names follow where Erazure writes their color: " +
+        "unique names follow Gold, set names Green. The colors the game gives a name itself stay (a rune's orange, " +
+        "where no rule colors it). The cards below draw with your swaps."),
       h("div.fe-remaps", EZ.edits.COLORS.filter((c) => c !== "BLACK").map(colorRow)));
 
     /* ---- look cards */
     let editing = null;
+    const tools = h("div.fe-looktools.is-idle");
     const insertAt = (text) => {
-      if (!editing || !editing.isConnected) return;
+      if (!editing || !editing.isConnected) {
+        EZ.ui.toast("Click into a look field first, then pick a color or symbol here.");
+        return;
+      }
       const s = editing.selectionStart || editing.value.length, t = editing.selectionEnd || s;
       editing.value = editing.value.slice(0, s) + text + editing.value.slice(t);
       editing.focus();
       editing.setSelectionRange(s + text.length, s + text.length);
       editing.dispatchEvent(new Event("input"));
     };
-    const tools = h("div.fe-looktools",
-      h("span.fe-sub", "Insert into the look you're editing: "),
+    const hint = h("span.fe-sub.fe-looktools-hint", "Click into a look field, then pick a color or symbol to put in it:");
+    const chips = h("div.fe-looktools-chips",
       EZ.edits.COLORS.map((c) => h("button.fe-chipbtn", {type: "button", title: nice(c) + " (%" + c + "%)",
-        "aria-label": nice(c), style: {color: R.rgb(R.WORDS[c]) || "inherit"}, onmousedown: (ev) => ev.preventDefault(),
-        onclick: () => insertAt("%" + c + "%")}, "■")),
+        "aria-label": "Insert " + nice(c).toLowerCase(), onmousedown: (ev) => ev.preventDefault(),
+        onclick: () => insertAt("%" + c + "%")}, h("span.fe-chipsw", {style: {background: R.rgb(R.WORDS[c]) || "#000"}}))),
       ["•", "·", "*", "x", "X", "o", "O", "\\", "/", ">", "<", "|", "-", "=", "~", "+", "#", "$", "(", ")", "[", "]"]
-        .map((s) => h("button.fe-chipbtn", {type: "button", onmousedown: (ev) => ev.preventDefault(),
-          onclick: () => insertAt(s)}, s)));
+        .map((s) => h("button.fe-chipbtn", {type: "button", "aria-label": "Insert " + s,
+          onmousedown: (ev) => ev.preventDefault(), onclick: () => insertAt(s)}, s)));
+    // on a phone the chips fold away (they take several rows), until opened
+    if (app.isPhone && app.isPhone()) {
+      tools.appendChild(h("details.fe-looktools-fold", h("summary", "Colors and symbols to insert"), hint, chips));
+    } else {
+      tools.append(hint, chips);
+    }
     const howTo = h("p.fe-note.fe-small", "A look is text around the item's name: its left part, the name, its right " +
-      "part. A color word (", h("code", "%RED%"), ", the colored squares above) colors everything after it. Two " +
+      "part. A color word (", h("code", "%RED%"), ", the colored squares below) colors everything after it. Two " +
       "slashes in a row would end the line in game, so the editor puts the color between them.");
     const caption = (n) => /_LEFT$/.test(n) ? "Left of the name" : /_RIGHT$/.test(n) ? "Right of the name" :
       /VERSION_NAME$/.test(n) ? "The version's name in the Cube" : /_NAME$/.test(n) ? "The name" : "The look";
-    const SAMPLE = {UNI_NORMAL: "%GOLD%Sacred Armor"};  // the look of every other unique, elite bases too
+    const query = h("input", {type: "search", placeholder: "Find a look: rune, key, charm, set…", "aria-label": "Find a look",
+      style: {flex: "1 1 16em", maxWidth: "24em"}});
+    const cardEls = [];
     const groupBoxes = F.GROUPS.map((g) => {
       const mine = cards.filter((c) => c.group === g.id);
       if (!mine.length) return null;
-      return h("section.fe-card", {id: "fe-looks-" + g.id}, h("h3", g.title), h("p.fe-sub", g.note),
+      return h("section.fe-card.fe-lookgroup", {id: "fe-looks-" + g.id}, h("h3", g.title), h("p.fe-sub", g.note),
         h("div.fe-lookgrid", mine.map((c) => {
-          const sample = SAMPLE[c.key] || L.sampleFor(c.key, app.data);
+          const sample = L.sampleFor(c.key, app.data);
           const preview = h("div.fe-lookprev");
           const draw = (v) => {
-            EZ.ui.fill(preview, c.tpls.map((t) => R.label(L.fill(t.tpl, v, sample))));
+            EZ.ui.fill(preview, c.tpls.map((t) => R.label(swapped(L.fill(t.tpl, v, sample)))));
           };
           draw(shown(vals));
           const rows = c.aliases.map((a) => {
@@ -217,7 +295,7 @@ EZ.areas.push({
               note.textContent = "Two slashes in a row end the line in game, and no color comes before them here: one " +
                 "slash stays (put a color before them to keep them).";
             };
-            input.addEventListener("focus", () => { editing = input; });
+            input.addEventListener("focus", () => { editing = input; tools.classList.remove("is-idle"); });
             input.addEventListener("keydown", (ev) => { if (ev.key === "Enter") { ev.preventDefault(); input.blur(); } });
             input.addEventListener("input", () => {
               if (/[\r\n]/.test(input.value)) input.value = input.value.replace(/[\r\n]+/g, "");
@@ -232,27 +310,39 @@ EZ.areas.push({
             check();
             const from = (style, label) => {
               const v = styles[style][a.name];
-              return v !== undefined && v !== vals[a.name] ? h("button.fe-btn.ghost.small", {type: "button",
+              return v !== undefined && v !== vals[a.name] ? h("button.fe-btn.small", {type: "button",
+                title: `Put ${app.STYLE_NAMES[style]}'s look in this field`,
                 onclick: () => EZ.store.change((ed) => {
                   ed.looks = ed.looks || {};
                   if (v === base[a.name]) delete ed.looks[a.name]; else ed.looks[a.name] = v;
                 })}, label) : null;
             };
             return h("div.fe-aliasrow", h("span.fe-bd-label", {title: a.name}, caption(a.name)), input, note,
-              h("div.fe-row.fe-small", from("erazure", "Erazure's"), from("minimal", "Minimal's"),
-                from("corrlorized", "Corrlorized's"),
-                mineToo ? h("button.fe-btn.ghost.small", {type: "button", onclick: () => EZ.store.change((ed) => {
-                  delete ed.looks[a.name];
-                })}, "↺ Your version's") : null));
+              h("div.fe-row.fe-small", from("erazure", "Use Erazure's"), from("minimal", "Use Minimal's"),
+                from("corrlorized", "Use Corrlorized's"),
+                mineToo ? h("button.fe-btn.small", {type: "button", title: `Back to your version's (${yourVersion}) look`,
+                  onclick: () => EZ.store.change((ed) => { delete ed.looks[a.name]; })}, "↺ Erazure's default") : null));
           });
-          return h("div.fe-lookcard" + (c.aliases.some((a) => e.looks && a.name in e.looks) ? ".is-changed" : ""),
-            h("div.fe-looktitle", c.title), preview, rows);
+          const el = h("div.fe-lookcard" + (c.aliases.some((a) => e.looks && a.name in e.looks) ? ".is-changed" : ""),
+            h("div.fe-looktitle", c.title), c.note ? h("div.fe-sub.fe-small.fe-looknote2", c.note) : null, preview, rows);
+          cardEls.push({el, words: (c.title + " " + c.note + " " + g.title + " " + sample).toLowerCase()});
+          return el;
         })));
     });
+    // the filter box: only the cards whose words have every word typed
+    query.addEventListener("input", EZ.ui.debounce(() => {
+      const words = query.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
+      for (const x of cardEls) x.el.hidden = !words.every((w) => x.words.indexOf(w) >= 0);
+      for (const g of box.querySelectorAll(".fe-lookgroup")) {
+        g.hidden = !!words.length && ![...g.querySelectorAll(".fe-lookcard")].some((c) => !c.hidden);
+      }
+    }, 150));
 
-    /* ---- minimap icons */
+    /* ---- minimap icons (drawn at the icon size Alerts picks) */
     const notes = F.notifications(lines);
     const swaps = e.icons || {};
+    const size = e.alerts && (e.alerts.iconSize === "smaller" || e.alerts.iconSize === "bigger") ? e.alerts.iconSize : null;
+    const sized = (combo) => size ? EZ.edits.resized(combo, size) : combo;
     const combos = Object.keys(notes.icons).sort((a, b) => notes.icons[b].length - notes.icons[a].length);
     const iconRow = (combo) => {
       const to = combo in swaps ? swaps[combo] : combo;
@@ -275,40 +365,49 @@ EZ.areas.push({
         if (where.length >= 3) break;
       }
       const more = notes.icons[combo].length > where.length;
+      // rules with this icon and no sound give their chat line through the icon alone: without it, none
+      const quiet = notes.icons[combo].filter((i) => { const r = F.rule(lines[i]); return r && !F.sounds(r.out).length; }).length;
       return h("div.fe-iconrow" + (combo in swaps ? ".is-changed" : ""),
-        L.icon(combo, palette, 3), h("span.fe-sub", "→"), L.icon(to, palette, 3),
+        L.icon(sized(combo), palette, 3), h("span.fe-sub", {"aria-hidden": "true"}, "→"), L.icon(sized(to), palette, 3),
         h("div.fe-iconinfo",
           h("div.fe-sub", where.length ? "For " + where.join("; ") + (more ? "; and more" : "") : ""),
-          h("div.fe-row.fe-small", ["BORDER", "MAP", "DOT", "PX"].map((l) => {
-            const b = h("button.fe-layer", {type: "button", title: `${l}: ${layers[l] || "none"}`},
-              h("span.fe-layerbox", {style: {background: layers[l] ? palette[parseInt(layers[l], 16)] : "transparent"}}),
-              l === "BORDER" ? "Border" : l === "MAP" ? "Map" : l === "DOT" ? "Dot" : "Pixel");
-            b.addEventListener("click", () => L.palettePicker(b, palette, layers[l], (col) => set(l, col), true));
-            return b;
-          }),
-          h("button.fe-btn.ghost.small", {type: "button", onclick: () => EZ.store.change((ed) => {
-            ed.icons = ed.icons || {};
-            ed.icons[combo] = "";
-          })}, "No icon"),
+          h("div.fe-row.fe-small", ["BORDER", "MAP", "DOT", "PX"].map((l) => L.layerButton(l, layers[l], palette,
+            (col) => set(l, col))),
+          h("button.fe-btn.ghost.small", {type: "button", title: quiet ? `${quiet} of its rules have no sound: they lose ` +
+            "their chat line too (the game needs an icon or a sound for one)" : "No minimap icon for these items",
+            onclick: () => {
+              EZ.store.change((ed) => { ed.icons = ed.icons || {}; ed.icons[combo] = ""; });
+              if (quiet) EZ.ui.undoToast(`No icon: ${quiet} of its rules have no sound, so those items lose their chat ` +
+                "line too.");
+            }}, "No icon"),
           combo in swaps ? h("button.fe-btn.ghost.small", {type: "button", onclick: () => EZ.store.change((ed) => {
             delete ed.icons[combo];
-          })}, "↺ Erazure's") : null)));
+          })}, "↺ Erazure's default") : null),
+          to === "" && quiet ? h("p.fe-note.warn.fe-small", {style: {margin: ".3em 0 0"}}, `${quiet} of its rules ` +
+            "have no sound: with no icon, those items get no chat line either.") : null));
     };
     const iconsCard = h("section.fe-card", {id: "fe-icons"},
       h("h3", "Minimap icons"),
       h("p.fe-sub", "Every icon Erazure draws on the minimap, most used first. An icon is up to four nested boxes " +
-        "(border, map, dot, pixel). Change one here and it changes everywhere Erazure uses it."),
+        "(outer, big, small and the center pixel), each in a color. Change one here and it changes everywhere Erazure " +
+        "uses it." + (size ? ` Drawn ${size}, as your icon size on Alerts makes them.` : "")),
       h("div.fe-iconlist", combos.map(iconRow)));
 
+    const jumps = h("p.fe-small.fe-row", {style: {gap: ".35em .6em"}}, h("span.fe-sub", "Jump to:"),
+      [["looks-styles", "Styles"], ["recolor", "Color swaps"]].concat(F.GROUPS.filter((g) => cards.some((c) => c.group === g.id))
+        .map((g) => ["looks-" + g.id, g.title])).concat([["icons", "Minimap icons"]]).map(([id, t]) =>
+        h("a", {href: "#looks/" + id.replace(/^looks-/, ""), onclick: (ev) => {
+          ev.preventDefault();
+          const el = box.querySelector("#fe-" + id);
+          if (el) el.scrollIntoView({behavior: "smooth"});
+        }}, t)));
     EZ.ui.add(box, [
       h("div.fe-area-head", h("div", h("h2", "Looks"),
-        h("p.fe-sub", "The symbols and colors around item names, and the minimap icons."))),
-      presets, recolor, howTo, tools, groupBoxes, iconsCard]);
+        h("p.fe-sub", "The symbols and colors around item names, and the minimap icons."), jumps)),
+      presets, recolor, howTo, h("div.fe-row", {style: {marginBottom: ".6em"}}, query), tools, groupBoxes, iconsCard]);
     if (app.sub) {
-      const el = box.querySelector("#fe-" + app.sub);
+      const el = box.querySelector("#fe-" + app.sub) || box.querySelector("#fe-looks-" + app.sub);
       if (el) el.scrollIntoView();
     }
-
-    function nice(c) { return c.charAt(0) + c.slice(1).toLowerCase().replace(/_/g, " "); }
   },
 });

@@ -258,11 +258,11 @@ EZ.items = (function () {
   /* BH's Ctrl+C text -> {spec, notes}; throws on text that isn't an item BH copied. */
   function fromGame(text) {
     let o;
-    try { o = JSON.parse(String(text).trim()); } catch (e) { throw new Error("that isn't what the game copies (Ctrl+C in game)"); }
+    try { o = JSON.parse(String(text).trim()); } catch (e) { throw new Error("That isn't what the game copies (Ctrl+C in game)"); }
     if (Array.isArray(o)) o = o[0];
-    if (!o || typeof o !== "object" || typeof o.type !== "string") throw new Error("that isn't an item the game copied");
+    if (!o || typeof o !== "object" || typeof o.type !== "string") throw new Error("That isn't an item the game copied");
     const cands = [...C.bases.values()].filter((b) => plainName(b.name) === plainName(o.type));
-    if (!cands.length) throw new Error(`no base is called "${o.type}"`);
+    if (!cands.length) throw new Error(`No base is called "${o.type}"`);
     const b = cands.find((x) => x.spawnable) || cands[0];
     const quality = o.isGem || o.isRune ? "NORM" : QUALITY_WORDS[o.quality] || "NORM";
     const spec = {code: b.code, quality, ilvl: +o.iLevel || 1, eth: !!o.isEthereal, id: !o.unidentified,

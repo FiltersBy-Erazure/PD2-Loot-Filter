@@ -1,5 +1,6 @@
-/* Maps: Erazure's map lines on or off, a red warning on identified maps with the mods the player picks, hiding
-   identified maps with a mod the player won't run, and the T1-T3 maps the player never picks up (EZ.maps). */
+/* Maps: Erazure's map lines on or off, the T1-T3 maps the player never picks up (EZ.maps), a red warning on identified
+   maps with the mods the player picks, hiding identified maps with a mod the player won't run, and a gold line for the
+   bonuses the player looks for. */
 var EZ = typeof EZ !== "undefined" ? EZ : {};
 EZ.areas = EZ.areas || [];
 (function () {
@@ -13,16 +14,17 @@ EZ.areas = EZ.areas || [];
     render(box, app) {
       const e = EZ.store.current().edits;
       const m = e.maps || {};
-      const warn = new Set(EZ.maps.ids(m.warn)), hide = new Set(EZ.maps.ids(m.hide));
+      const warn = new Set(EZ.maps.ids(m.warn)), hide = new Set(EZ.maps.ids(m.hide)), mark = new Set(EZ.maps.ids(m.mark));
       const change = (fn) => EZ.store.change((ed) => {
-        ed.maps = Object.assign({warn: [], hide: []}, ed.maps || {});
+        ed.maps = Object.assign({warn: [], hide: [], mark: []}, ed.maps || {});
         fn(ed.maps);
         ed.maps.warn = EZ.maps.ids(ed.maps.warn);
         ed.maps.hide = EZ.maps.ids(ed.maps.hide);
+        ed.maps.mark = EZ.maps.ids(ed.maps.mark);
         ed.maps.hideMaps = EZ.maps.mapCodes(ed.maps.hideMaps);
         ed.maps.hideMapsLevels = EZ.maps.levelsOf(ed.maps.hideMapsLevels);
         delete ed.maps.minXp;  // the experience hide, until 2026-11-12
-        for (const k of ["warn", "hide", "hideMaps", "hideMapsLevels"]) if (!ed.maps[k].length) delete ed.maps[k];
+        for (const k of ["warn", "hide", "mark", "hideMaps", "hideMapsLevels"]) if (!ed.maps[k].length) delete ed.maps[k];
         if (!Object.keys(ed.maps).length) delete ed.maps;
       }, {label: "maps"});
       const flip = (key, sid, on) => change((x) => {
@@ -30,33 +32,53 @@ EZ.areas = EZ.areas || [];
         if (on) x[key].push(sid);
       });
 
-      // Erazure's map lines: the features of the Maps group (the same switches as on Features)
+      // Erazure's map lines: the features of the Maps group (the same switches as on Features, handled alike: a
+      // switch put back to Erazure's default follows Erazure again)
       const feats = EZ.features.filter((f) => f.group === "Maps");
-      const lines = h("section.fe-card", h("h3", "Erazure's map lines"),
+      const lines = h("section.fe-card", {id: "fe-map-lines"}, h("h3", "Erazure's map lines"),
         h("p.fe-sub", "The lines Erazure writes under an identified map's name. The same switches are on Features."),
         h("div.fe-stack", feats.map((f) => {
-          const on = e.features && f.id in e.features ? !!e.features[f.id] : EZ.edits.featureDefault(f);
-          return toggle(f.title, on, (v) => EZ.store.change((ed) => {
+          const def = EZ.edits.featureDefault(f);
+          const pinned = e.features && f.id in e.features;
+          const on = pinned ? !!e.features[f.id] : def;
+          return h("div.fe-feature" + (on !== def ? ".is-changed" : ""), toggle(f.title, on, (v) => EZ.store.change((ed) => {
             ed.features = ed.features || {};
-            if (v === EZ.edits.featureDefault(f)) delete ed.features[f.id]; else ed.features[f.id] = v;
-          }, {label: f.title}), {sub: f.sub});
+            if (v === def) delete ed.features[f.id]; else ed.features[f.id] = v;
+            if (!Object.keys(ed.features).length) delete ed.features;
+          }, {label: f.title}), {sub: f.sub}),
+          pinned ? h("button.fe-btn.ghost.small", {type: "button", title: "Back to Erazure's default (today " +
+            (def ? "on" : "off") + "), which follows Erazure's updates", onclick: () => EZ.store.change((ed) => {
+            delete ed.features[f.id];
+            if (!Object.keys(ed.features).length) delete ed.features;
+          })}, "↺ Erazure's default") : null);
         })));
 
-      // the mods
+      // the mods: the bonuses (good for the player, and most maps roll one) take a gold line only; every other mod a
+      // red warning line or a hide. One table layout for all, so the columns line up from group to group.
       const stats = (app.data.mapStats || []).map(([sid, prop, lo, hi]) => ({sid, prop, lo, hi, name: EZ.maps.name(sid)}));
-      const groups = GROUPS.map(([pre, title]) => [title, stats.filter((s) => (pre ? s.prop.startsWith(pre) :
+      const bonus = stats.filter((s) => EZ.maps.BONUS.has(s.sid)), rest = stats.filter((s) => !EZ.maps.BONUS.has(s.sid));
+      const groups = GROUPS.map(([pre, title]) => [title, rest.filter((s) => (pre ? s.prop.startsWith(pre) :
         !GROUPS.some(([p]) => p && s.prop.startsWith(p))))]).filter(([, list]) => list.length);
+      const rolls = (s) => !EZ.maps.hasValue(s.sid) ? "" : s.lo === s.hi ? String(Math.abs(s.lo)) :
+        Math.min(Math.abs(s.lo), Math.abs(s.hi)) + " to " + Math.max(Math.abs(s.lo), Math.abs(s.hi));
+      // a check box filling its cell (the whole cell takes the click)
+      const box2 = (key, s, set, label) => h("td.fe-mapcheck", h("label", h("input", {type: "checkbox", checked: set.has(s.sid),
+        "aria-label": label + ": " + s.name, onchange: (ev) => flip(key, s.sid, ev.target.checked)})));
+      const table = (list, cols) => h("div.fe-tablewrap", h("table.fe-levels.fe-maptable",
+        h("colgroup", h("col"), h("col.fe-mapcol-rolls"), cols.map(() => h("col.fe-mapcol-box"))),
+        h("thead", h("tr", h("th", "Mod"), h("th", "Rolls"), cols.map(([, t]) => h("th", t)))),
+        h("tbody", list.map((s) => h("tr" + (cols.some(([k]) => (k === "warn" ? warn : k === "hide" ? hide : mark).has(s.sid)) ?
+          ".is-changed" : ""), h("td", s.name), h("td.fe-sub.fe-small", rolls(s)),
+          cols.map(([k, t]) => box2(k, s, k === "warn" ? warn : k === "hide" ? hide : mark, t)))))));
       const mods = h("section.fe-card", {id: "fe-map-mods"}, h("h3", "Map mods"),
-        h("p.fe-sub", "Warn: a red line on identified maps that roll it. Hide: identified maps that roll it are hidden " +
-          "on the ground outside town (no label, no icon); your inventory and stash still show them."),
-        groups.map(([title, list]) => h("div", h("h4", title), h("div.fe-tablewrap", h("table.fe-levels",
-          h("thead", h("tr", h("th", "Mod"), h("th", "Rolls"), h("th", "Warn"), h("th", "Hide"))),
-          h("tbody", list.map((s) => h("tr" + (warn.has(s.sid) || hide.has(s.sid) ? ".is-changed" : ""),
-            h("td", s.name), h("td.fe-sub.fe-small", s.lo === s.hi ? String(s.lo) : s.lo + " to " + s.hi),
-            h("td", h("input", {type: "checkbox", checked: warn.has(s.sid), "aria-label": "Warn: " + s.name,
-              onchange: (ev) => flip("warn", s.sid, ev.target.checked)})),
-            h("td", h("input", {type: "checkbox", checked: hide.has(s.sid), "aria-label": "Hide: " + s.name,
-              onchange: (ev) => flip("hide", s.sid, ev.target.checked)}))))))))));
+        h("p.fe-sub", "Warn: a red line under the map's name when you hover over an identified map that rolls it. " +
+          "Hide: identified maps that roll it are hidden on the ground outside town (no label, no icon); your " +
+          "inventory and stash still show them."),
+        groups.map(([title, list]) => h("div", h("h4", title), table(list, [["warn", "Warn"], ["hide", "Hide"]]))),
+        bonus.length ? h("div", h("h4", "Bonuses"),
+          h("p.fe-sub.fe-small", "Good for you, and most maps roll one of them, so they take no warning or hide. Mark: a " +
+            "gold line under the map's name, to spot the ones you look for."),
+          table(bonus, [["mark", "Mark"]])) : null);
 
       // the maps the player never picks up: their non-magical ones, on the ground outside town
       const skip = new Set(EZ.maps.mapCodes(m.hideMaps)), lv = EZ.maps.levelsOf(m.hideMapsLevels);
@@ -76,26 +98,30 @@ EZ.areas = EZ.areas || [];
           const all = maps.every((x) => skip.has(x.code));
           return h("div.fe-map-tier", h("div.fe-row", h("h4", {style: {margin: 0}}, "T" + tier + " maps"),
             h("span.fe-bar-gap"), h("button.fe-btn.ghost.small", {type: "button", onclick: () =>
-              setMaps(maps.map((x) => x.code), !all)}, all ? "Untick all" : "Tick all")),
+              setMaps(maps.map((x) => x.code), !all)}, all ? "Clear T" + tier : "Select all T" + tier)),
           h("ul.fe-map-list", maps.map((x) => h("li", h("label.fe-check" + (skip.has(x.code) ? ".is-on" : ""),
+            {title: "Item code " + x.code},
             h("input", {type: "checkbox", checked: skip.has(x.code), "aria-label": "Hide non-magical " + x.name + " maps",
               onchange: (ev) => setMaps([x.code], ev.target.checked)}),
-            h("span", x.name), h("code.fe-small.fe-sub", x.code))))));
+            h("span", x.name))))));
         })),
         h("div.fe-bd-field", {style: {marginTop: ".6em"}}, h("span.fe-bd-label", "On filter levels (none picked: every level)"),
-          h("div.fe-row.fe-small", levelNames.map((n, i) => h("button.fe-chiptog", {type: "button", title: `${i + 1}: ${n}`,
-            "aria-pressed": String(lv.indexOf(i + 1) >= 0), onclick: () => change((mm) => {
-              const now = EZ.maps.levelsOf(mm.hideMapsLevels);
-              const k = now.indexOf(i + 1);
-              if (k >= 0) now.splice(k, 1); else now.push(i + 1);
-              mm.hideMapsLevels = now;
-            })}, String(i + 1))))),
+          h("div.fe-row.fe-small", {role: "group", "aria-label": "Filter levels"}, levelNames.map((n, i) =>
+            h("button.fe-chiptog", {type: "button", title: `${i + 1}: ${n}`, "aria-label": `Filter level ${i + 1}: ${n}`,
+              "aria-pressed": String(lv.indexOf(i + 1) >= 0), onclick: () => change((mm) => {
+                const now = EZ.maps.levelsOf(mm.hideMapsLevels);
+                const k = now.indexOf(i + 1);
+                if (k >= 0) now.splice(k, 1); else now.push(i + 1);
+                mm.hideMapsLevels = now;
+              })}, String(i + 1)))),
+          h("span.fe-sub.fe-small", lv.length ? "Picked: " + lv.map((n) => n + " · " + (levelNames[n - 1] || "")).join("; ")
+            : "Every filter level (0 always shows everything).")),
         skip.size ? h("p.fe-sub.fe-small", `${skip.size} map${skip.size === 1 ? "" : "s"} hidden` + (lv.length ?
-          " on level" + (lv.length === 1 ? " " : "s ") + lv.join(", ") : " on every level") + ".") : null);
+          " on filter level" + (lv.length === 1 ? " " : "s ") + lv.join(", ") : " on every filter level") + ".") : null);
 
       EZ.ui.add(box, [
         h("div.fe-area-head", h("div", h("h2", "Maps"),
-          h("p.fe-sub", "Erazure's map lines, warnings for the mods you avoid, and maps you'd rather not see."))),
+          h("p.fe-sub", "Erazure's map lines, maps you'd rather not see, and lines for the mods you avoid or look for."))),
         lines, skipCard, mods]);
       if (app.sub && box.querySelector("#fe-" + app.sub)) box.querySelector("#fe-" + app.sub).scrollIntoView();
     },

@@ -113,9 +113,13 @@ EZ.lint = (function () {
         if (e.key.startsWith("ItemDisplay[")) for (const w of e.key.match(WORD_RE) || []) words.add(w);
       }
       for (const a of aliases) for (const w of a.value.match(WORD_RE) || []) words.add(w);
+      // Erazure's rule by what it is for, its place (as Erazure's rules numbers it) after: "Ber Rune (110-runes:132)"
       const where = (i) => {
         const nm = EZ.filter.sectionOf(secs, i);
-        return nm ? nm.replace(/\.filter$/, "") + ":" + (i - secs[nm][0] + 1) : "line " + (i + 1);
+        const at = nm ? nm.replace(/\.filter$/, "") + ":" + (i - secs[nm][0] + 1) : "line " + (i + 1);
+        const r = EZ.filter.rule(versionLines[i] || "");
+        const what = r && EZ.words ? EZ.words.forWhat(r.cond, r.comment, 2) : "";
+        return what ? `the rule for ${what} (${at})` : at;
       };
       base = {aliases, formulas, words, where, top: (secs[EZ.rules.PLACE.top] || [0])[0],
               bottom: (secs[EZ.rules.PLACE.bottom] || [versionLines.length])[0]};

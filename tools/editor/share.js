@@ -21,7 +21,8 @@ EZ.share = (function () {
     a.click();
     a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 30000);
-    toast("Saved your changes as a file. Import it on this page (any browser) to get them back.", "good");
+    toast("Backed up your changes as a file. It isn't a filter: import it on this page (any browser) to get them back.",
+      "good", {ms: 8000});
   }
 
   async function link() {
@@ -39,7 +40,7 @@ EZ.share = (function () {
                     : "Copy this link. Anyone who opens it can load your changes into their editor."),
       h("textarea", {readonly: true, rows: 4, onfocus: (e) => e.target.select()}, url),
       long ? h("p.fe-note.warn", `The link is ${url.length.toLocaleString()} characters: too long for one Discord ` +
-        "message (2,000). Share your changes as a file instead (Save changes to a file).") : null,
+        "message (2,000). Share your changes as a file instead (Back up my changes).") : null,
     ]});
   }
 
@@ -48,7 +49,7 @@ EZ.share = (function () {
   async function read(text) {
     text = String(text || "").trim();
     if (!text) throw new Error("There's nothing to import.");
-    if (text.length > 8 << 20) throw new Error("That's too big to be a filter or a changes file.");
+    if (text.length > 8 << 20) throw new Error("That's too big to be a filter or a backup of your changes.");
     let data = null;
     const at = text.indexOf("#" + LINK_KEY);
     if (at >= 0 || /^[jz][A-Za-z0-9_-]+$/.test(text)) {
@@ -113,7 +114,7 @@ EZ.share = (function () {
       const f = input.files && input.files[0];
       input.remove();
       if (!f) return;
-      if (f.size > 8 << 20) { toast("That file is too big to be a filter or a changes file.", "bad"); return; }
+      if (f.size > 8 << 20) { toast("That file is too big to be a filter or a backup of your changes.", "bad"); return; }
       importText(await f.text(), "from " + f.name);
     });
     document.body.appendChild(input);
@@ -121,8 +122,8 @@ EZ.share = (function () {
   }
 
   function importPaste() {
-    const area = h("textarea", {rows: 6, placeholder: "Paste a share link, or a changes file's text"});
-    dialog({title: "Import changes", body: [h("p.fe-sub", "Paste a share link or the text of a changes file."), area],
+    const area = h("textarea", {rows: 6, placeholder: "Paste a share link, or the text of a backup"});
+    dialog({title: "Import changes", body: [h("p.fe-sub", "Paste a share link, or the text of a backup of your changes (its .json file)."), area],
       buttons: [{text: "Cancel"}, {text: "Import", primary: true, onclick: () => { importText(area.value, "pasted"); }}]});
   }
 

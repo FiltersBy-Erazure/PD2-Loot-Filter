@@ -73,25 +73,38 @@ EZ.maps = (function () {
     return out;
   }
 
+  /* The player's lines under an identified map's name: a red "!" line for a mod to avoid (warn), a gold "+" line for
+     a bonus to look for (mark). */
   function apply(ctx) {
     const m = ctx.edits.maps;
-    const warn = ids(m && m.warn);
-    if (!warn.length) return;
+    const warn = ids(m && m.warn), mark = ids(m && m.mark);
+    if (!warn.length && !mark.length) return;
     const secs = EZ.filter.sections(ctx.src, ctx.lines);
     const range = secs[SECTION];
-    if (!range) { ctx.unplaced("maps", "Map warnings", "Erazure no longer has " + SECTION); return; }
-    const lines = warn.map((sid) => "ItemDisplay[ID " + MAPS + " !STAT" + sid + "=0]:%NAME%{%NAME%%CL%%RED%! " +
-      lineName(sid).replace(/[{}]/g, "").replace(/\/\/+/g, "/") + "}%CONTINUE%");
+    if (!range) { ctx.unplaced("maps", "Map warnings", "Erazure moved its map lines"); return; }
+    const line = (sid, look) => "ItemDisplay[ID " + MAPS + " !STAT" + sid + "=0]:%NAME%{%NAME%%CL%" + look +
+      lineName(sid).replace(/[{}]/g, "").replace(/\/\/+/g, "/") + "}%CONTINUE%";
+    const lines = warn.map((sid) => line(sid, "%RED%! ")).concat(mark.map((sid) => line(sid, "%GOLD%+ ")));
     ctx.lines.splice(range[0], 0, MARKS[0], ...lines, MARKS[1]);
   }
 
+  /* The Maps area's changes: its warnings and hides, and Erazure's map lines switched (Features lists them too, and
+     counts them here). */
   function count(e) {
+    const lines = EZ.features.filter((f) => f.group === "Maps" && e.features && f.id in e.features &&
+      !!e.features[f.id] !== EZ.edits.featureDefault(f)).length;
     const m = e.maps;
-    if (!m || typeof m !== "object") return 0;
-    return ids(m.warn).length + ids(m.hide).length + mapCodes(m.hideMaps).length;
+    if (!m || typeof m !== "object") return lines;
+    return lines + ids(m.warn).length + ids(m.hide).length + ids(m.mark).length + mapCodes(m.hideMaps).length;
   }
 
-  return {init, apply, hides, count, name, codes, choices, ids, mapCodes, levelsOf, MAPS, SECTION};
+  /* The bonuses a map rolls (more magic find, gold, experience, density, rarity, an area level, more drops, an extra
+     boss): good for the player, and most maps roll one, so the Maps area offers them a gold line only. */
+  const BONUS = new Set([370, 371, 372, 373, 374, 375, 494, 495, 496, 497, 498]);
+  /* Whether a mod's text shows its value (a guest monster or splash damage shows none: no roll to read). */
+  const hasValue = (sid) => /X/.test(name(sid));
+
+  return {init, apply, hides, count, name, codes, choices, ids, mapCodes, levelsOf, hasValue, BONUS, MAPS, SECTION};
 })();
 
 if (EZ.edits) {

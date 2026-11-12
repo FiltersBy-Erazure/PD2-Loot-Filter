@@ -44,7 +44,9 @@ EZ.areas.push({
                 "pick them up."}),
         toggle("Path of Exile sounds", base.poe || corr, (on) => set((b) => { b.poe = on; }),
           {disabled: corr, sub: corr ? "Corrlorized always has them." : "Path of Exile sound effects on valuable drops."})),
-      v ? h("p.fe-note", "This is the launcher's ", h("b", v.launcher), ". ", v.description || "") : null);
+      v ? h("p.fe-note", "This is the launcher's ", h("b", v.launcher), ". The ",
+        h("a", {href: EZ.edits.SITE.replace(/editor\/$/, "versions/"), target: "_blank", rel: "noopener"},
+          "Versions page"), " shows how each one looks.") : null);
 
     /* ---- what do you want to change? (each goal and the area for it) */
     const goals = [
@@ -76,6 +78,9 @@ EZ.areas.push({
     });
     const shared = EZ.store.sharedFiles();
     const mine = shared.find((list) => list.some((x) => x.id === p.id));
+    // a new file name on a profile saved before: the next save makes a new file, which the launcher needs picking
+    const renamed = s && s.file && s.file !== app.fileName(p);
+    const onPhone = !app.canSaveInPlace() && app.isPhone();
     const save = h("section.fe-card", {id: "fe-save"},
       h("h3", "Save it to your game"),
       h("div.fe-row",
@@ -83,11 +88,17 @@ EZ.areas.push({
           h("span.fe-sub", ".filter")))),
       mine ? h("p.fe-note.warn", "Your profiles ", mine.map((x) => x.name).join(" and "), " save to the same file: " +
         "saving one replaces the other's filter in your game folder. Give this one a name of its own.") : null,
+      renamed ? h("p.fe-note.warn", "A new file name: your next save makes ", h("b", app.fileName(p)), ", and the " +
+        "launcher keeps loading ", h("b", s.file), " until you pick the new one there once (Item Filter Profiles, " +
+        "Local Filter, Save Filter).") : null,
+      onPhone ? h("p.fe-note", "Your changes stay on this phone, in this browser. To use them on your PC, ",
+        h("button.fe-linkbtn", {type: "button", style: {color: "var(--accent)", textDecoration: "underline"},
+          onclick: () => EZ.share.copyLink()}, "copy a share link"), " and open it there.") : null,
       h("div.fe-row", {style: {marginTop: ".8em"}},
         h("button.fe-btn.primary", {type: "button", onclick: () => app.saveToGame()},
           app.canSaveInPlace() ? "Save to game" : "Download"),
         app.canSaveInPlace() ? h("button.fe-btn", {type: "button", onclick: () =>
-          app.withBuild("Building your filter", app.download)}, "Download") : null),
+          app.checked(() => app.withBuild("Building your filter", app.download))}, "Download instead") : null),
       s ? h("p.fe-sub", {style: {marginTop: ".6em"}},
         `Last ${s.how === "folder" ? "saved to the game" : "downloaded"} ${ago(s.at)}: ${s.file || ""}, Erazure ${s.version}.`)
         : null,
@@ -97,7 +108,8 @@ EZ.areas.push({
       h("ol.fe-steps",
         h("li", app.canSaveInPlace()
           ? ["Save to game, and pick the folder ", h("code", "Diablo II\\ProjectD2\\filters\\local"), " the first time."]
-          : ["Download, and put the file in ", h("code", "Diablo II\\ProjectD2\\filters\\local"), "."]),
+          : ["Download, and put the file in ", h("code", "Diablo II\\ProjectD2\\filters\\local"), ". " +
+             app.renamedNote(app.fileName(p))]),
         h("li", "Once: in the launcher open ", h("b", "Item Filter Profiles"), ", click ", h("b", "Local Filter"),
           ", pick your file and click ", h("b", "Save Filter"), "."),
         h("li", "In game: Options, Loot Filter, turn on ", h("b", "Enable Loot Filter"), " and pick a filter level. " +
@@ -107,7 +119,10 @@ EZ.areas.push({
              "filter key in game (", h("kbd", "Numpad 0"), " unless you changed it in Configure Controls)."]
           : ["A change here doesn't reach your file by itself: after a change, ", h("b", "Download"), " again and " +
              "replace the file in ", h("code", "filters\\local"), " (keep its name), then press the reload filter key " +
-             "in game (", h("kbd", "Numpad 0"), " unless you changed it in Configure Controls)."])));
+             "in game (", h("kbd", "Numpad 0"), " unless you changed it in Configure Controls)."]),
+        h("li", "To check it's yours: hover the Horadric Cube in your inventory. Its version line ends with ",
+          h("b", "Custom"), " and your number of changes.")),
+      h("p.fe-sub.fe-small", "Your changes don't show in game? ", link("changes", "Check these", "ch-help"), "."));
 
     /* ---- profiles: each its own name and file (EZ.store gives a new one a file of its own) */
     const profiles = EZ.store.profiles();
@@ -171,10 +186,11 @@ EZ.areas.push({
     }).catch(() => EZ.ui.fill(historyBox, h("p.fe-sub", "This browser keeps no history (blocked storage).")));
     const moveCard = h("section.fe-card", {id: "fe-share"},
       h("h3", "Keep, share and bring in changes"),
-      h("p.fe-sub", "Your changes live in this browser. Keep a copy as a file, share them with a link, or bring in " +
-        "changes from a file, a link, or a filter this editor saved (its changes are in it)."),
+      h("p.fe-sub", "Your changes live in this browser. Back them up as a file (it holds your changes, not a filter: " +
+        "the game can't read it), share them with a link, or bring in changes from a backup, a link, or a filter this " +
+        "editor saved (its changes are in it)."),
       h("div.fe-row",
-        h("button.fe-btn", {type: "button", onclick: () => EZ.share.exportFile(app)}, "Save changes to a file"),
+        h("button.fe-btn", {type: "button", onclick: () => EZ.share.exportFile(app)}, "Back up my changes (.json)"),
         h("button.fe-btn", {type: "button", onclick: () => EZ.share.copyLink()}, "Copy a share link"),
         h("button.fe-btn", {type: "button", onclick: () => EZ.share.importFile()}, "Import a file"),
         h("button.fe-btn", {type: "button", onclick: () => EZ.share.importPaste()}, "Paste a link"),
@@ -186,7 +202,7 @@ EZ.areas.push({
               {label: "clear"});
           })}, "Clear all changes")),
       !EZ.store.storageOk() ? h("p.fe-note.bad", "This browser doesn't keep your changes (a private window or blocked " +
-        "storage): save them to a file before you leave.") : null,
+        "storage): back them up (Back up my changes) before you leave.") : null,
       h("h4", {style: {marginTop: "1em"}}, "History"), historyBox);
 
     /* ---- the quick setup: two questions, kept on screen until both are answered or it is put away (the answers are
@@ -252,7 +268,8 @@ EZ.areas.push({
 
     box.append(
       h("div.fe-area-head", h("div", h("h2", "Start"),
-        h("p.fe-sub", "Pick your version, change what you like, and save it straight into your game."))),
+        h("p.fe-sub", app.canSaveInPlace() ? "Pick your version, change what you like, and save it straight into your game."
+          : "Pick your version, change what you like, and download it for your game."))),
       intro, quick || "", goalsCard, version, save, profilesCard, moveCard);
     if (app.sub) {
       const el = box.querySelector("#fe-" + app.sub);
