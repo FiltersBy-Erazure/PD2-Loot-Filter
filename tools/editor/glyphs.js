@@ -284,5 +284,45 @@ EZ.glyphs = (function () {
     return c;
   }
 
-  return {init, available, load, ready, want, label, chat, lines, info: () => info};
+  /* The hover box (D2GL: font 14, no shadow, padding 10 x 5, the lines centred, a 0.8 fill tinted at the top by the
+     item's quality, a fine inner edge). text: one string, bottom line first. */
+  function hover(text, opts) {
+    opts = opts || {};
+    if (!ready("hover")) return null;
+    return cached(["h", text, opts.start, opts.zoom, opts.tint, window.devicePixelRatio].join("|"), () => drawHover(text, opts));
+  }
+
+  function drawHover(text, opts) {
+    const font = info.fonts.hover;
+    const ls = lines(text, opts.start || "3");
+    const widths = ls.map((segs) => lineWidth(font, segs));
+    const padX = 10, padY = 5, pitch = font.size * font.lineHeight;
+    const w = Math.max(...widths, 40) + 2 * padX, h = (ls.length - 1) * pitch + font.size + 2 * padY + 2;
+    const zoom = opts.zoom || 1.3;
+    const k = zoom * (window.devicePixelRatio || 1);
+    const buf = new Buffer(Math.ceil(w * k), Math.ceil(h * k));
+    const tint = opts.tint ? [parseInt(opts.tint.slice(0, 2), 16), parseInt(opts.tint.slice(2, 4), 16),
+                              parseInt(opts.tint.slice(4, 6), 16)] : [34, 34, 34];
+    for (let py = 0; py < buf.h; py++) {
+      const f = Math.max(0, 1 - py / (buf.h * 0.6));
+      for (let px = 0; px < buf.w; px++) {
+        buf.blend(px, py, 0, 0, 0, 0.8);
+        buf.blend(px, py, tint[0], tint[1], tint[2], 0.8 * f);
+        const edge = px < k || py < k || px >= buf.w - k || py >= buf.h - k;
+        if (edge) buf.blend(px, py, 90, 84, 74, 0.6);
+      }
+    }
+    const base = padY + font.size + font.size * font.offY;
+    ls.forEach((segs, n) => {
+      const x = (w - widths[n]) / 2;
+      drawLine(buf, font, segs, x * k, (base + n * pitch) * k, font.size * k, k, 0);
+    });
+    const c = buf.toCanvas(w * zoom, h * zoom);
+    c.className = "fe-ghover";
+    c.setAttribute("role", "img");
+    c.setAttribute("aria-label", EZ.render.plain(text));
+    return c;
+  }
+
+  return {init, available, load, ready, want, label, chat, hover, lines, info: () => info};
 })();

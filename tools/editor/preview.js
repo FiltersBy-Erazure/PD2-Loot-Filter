@@ -194,7 +194,7 @@ EZ.preview = (function () {
   }
 
   /* One result: label, state, icon, chat, sound, description. */
-  function resultCard(r, title, other) {
+  function resultCard(r, title, other, item) {
     const card = h("div.fe-pvres-col");
     if (title) card.appendChild(h("div.fe-pvres-title", title));
     const ground = h("div.fe-ground.fe-pvground");
@@ -224,6 +224,12 @@ EZ.preview = (function () {
     if (r.desc) {
       dl.appendChild(h("dt", "Hover"));
       dl.appendChild(h("dd", {class: diff("desc")}, h("div.fe-pvdesc", codedText(r.desc, "3"))));
+    }
+    if (item) {
+      const text = EZ.items.hoverText(item, r, ctx());
+      const c = EZ.glyphs && EZ.glyphs.hover(text, {zoom: 1.2, tint: EZ.items.QUALITY_TINT[item.quality]});
+      if (c) card.appendChild(h("div.fe-pvhover", c));
+      else if (EZ.glyphs && EZ.glyphs.available()) EZ.glyphs.want("hover", redraw);
     }
     card.appendChild(dl);
     return card;
@@ -468,8 +474,8 @@ EZ.preview = (function () {
   function itemView(base, mine) {
     const rb = run(base, state.spec), rm = mine ? run(mine, state.spec) : null;
     const res = h("div.fe-pvres" + (mine ? ".two" : ""),
-      resultCard(rb, mine ? "Erazure" : null, null),
-      mine ? resultCard(rm, "Yours", rb) : null);
+      resultCard(rb, mine ? "Erazure" : null, null, EZ.items.make(state.spec)),
+      mine ? resultCard(rm, "Yours", rb, EZ.items.make(state.spec)) : null);
     const f = mine || base;
     return [picker(), h("details.fe-pv-editor", {open: state.open.item || null,
       ontoggle: (e) => { state.open.item = e.target.open; save(); }}, h("summary", "The item"), itemEditor()),

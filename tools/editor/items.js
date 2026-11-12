@@ -35,6 +35,7 @@ EZ.items = (function () {
                         nodur: !!(fl & FL.nodur), misc: o.groups.indexOf("MISC") >= 0,
                         armor: o.groups.indexOf("ARMOR") >= 0, weapon: o.groups.indexOf("WEAPON") >= 0});
       if (o.dmg) [o.mindam, o.maxdam, o.min2, o.max2, o.minmis, o.maxmis] = o.dmg;
+      o.hand = o.hand || 1;
       bases.set(o.code, o);
     }
     for (const b of bases.values()) {
@@ -43,10 +44,12 @@ EZ.items = (function () {
     }
     const uniques = cat.uniques.map(([kind, name, code, lvlreq, eth, props, set], index) =>
       ({index, kind: kind ? "SET" : "UNI", name, code, lvlreq, eth: !!eth, props, set}));
-    const stats = new Map(cat.stats.map(([id, name, shift, pri, text]) => [id, {id, name, shift, pri, text}]));
+    const stats = new Map(cat.stats.map(([id, name, shift, pri, text, neg, str2, func, val, dgrp, gfunc, gval, gpos, op,
+                                          opParam]) =>
+      [id, {id, name, shift, pri, text, neg, str2, func, val, dgrp, gfunc, gval, gpos, op, opParam}]));
     const skills = new Map(cat.skills.map(([id, name, cls]) => [id, {id, name, cls}]));
     C = {bases, uniques, stats, skills, cats: cat.cats, statMax: cat.statMax || 1023, skillMax: cat.skillMax || 1023,
-         townIds: cat.townIds || [1, 40, 75, 103, 109]};
+         townIds: cat.townIds || [1, 40, 75, 103, 109], strings: cat.strings || {}};
     return C;
   }
 
@@ -295,6 +298,70 @@ EZ.items = (function () {
     return {spec, notes};
   }
 
+  /* ItemStatCost's descfunc forms (shop_map.describe): the value before (descval 1) or after (2) the string. */
+  function describeStat(func, val, pos, s2, v) {
+    const plus = v >= 0 ? "+" : "";
+    if (pos.indexOf("%d") >= 0) return pos.replace("%d", String(v)).replace(/%%/g, "%");
+    const forms = {1: plus + v, 2: v + "%", 3: String(v), 4: plus + v + "%", 5: v + "%", 6: plus + v, 7: v + "%",
+                   8: plus + v + "%", 9: String(v), 12: plus + v, 19: String(v), 20: "-" + v + "%"};
+    const n = forms[func] !== undefined ? forms[func] : String(v);
+    let text = val === 0 ? pos : val === 2 ? pos + " " + n : n + " " + pos;
+    if (func >= 6 && func <= 9 && s2) text += " " + s2;
+    return text;
+  }
+
+  /* A stat's line as the game words it (shop_map.stat_text): v as shown; clvl for the per-level stats. */
+  function statLine(sid, p, v, clvl) {
+    const st = C.stats.get(sid);
+    if (!st || !st.func) return statLabel(sid, p, v);
+    if (st.op === 2 && clvl) v = Math.floor(v * clvl / (1 << st.opParam));  // per level, at the character's level
+    const S = (k) => C.strings[k] || "";
+    const plus = v >= 0 ? "+" : "";
+    const sk = (id) => { const s = C.skills.get(id); return s ? s.name : String(id); };
+    switch (st.func) {
+      case 13: return plus + v + " " + S("class:" + p + ":StrAllSkills");
+      case 14: {
+        const cls = p >> 3, tab = p & 7;
+        return S("class:" + cls + ":StrSkillTab" + (tab + 1)).replace("%d", String(v)) + " " + S("class:" + cls + ":StrClassOnly");
+      }
+      case 27: {
+        const s = C.skills.get(p), cls = s ? CLASS_CODES.indexOf(s.cls) : -1;
+        return plus + v + " to " + sk(p) + (cls >= 0 ? " " + S("class:" + cls + ":StrClassOnly") : "");
+      }
+      case 28: return plus + v + " to " + sk(p);
+      case 24: return "Level " + (p & 63) + " " + sk(p >> 6) + " " + st.text.replace("%d", String(v)).replace("%d", String(v));
+      case 15: return st.text.replace("%d%%", v + "%").replace("%d", String(p & 63)).replace("%s", sk(p >> 6));
+      case 16: return st.text.replace("%d", String(v)).replace("%s", sk(p));
+    }
+    if (sid === 17) return "+" + v + "% Enhanced Damage";
+    return describeStat(st.func, st.val, sid === 7 || sid === 9 || v >= 0 ? st.text : st.neg, st.str2, v);
+  }
+  const CLASS_CODES = ["ama", "sor", "nec", "pal", "bar", "dru", "ass"];
+
+  /* The affix lines of an item, top first (highest descpriority first; a group of equal values as its one line). */
+  function statLines(it, clvl) {
+    const own = Object.keys(it.own).map((k) => { const [s, p] = k.split(","); return [+s, +(p || 0), it.own[k]]; })
+      .filter(([s, , v]) => v && !HIDDEN_STATS.has(s) && C.stats.get(s));
+    const shown = (s, v) => Math.trunc(v / (1 << ((C.stats.get(s) || {}).shift || 0)));
+    const groups = {};
+    for (const [s, , v] of own) { const g = C.stats.get(s).dgrp; if (g) (groups[g] = groups[g] || []).push([s, v]); }
+    const members = {};
+    for (const st of C.stats.values()) if (st.dgrp) (members[st.dgrp] = members[st.dgrp] || []).push(st.id);
+    own.sort((x, y) => (C.stats.get(y[0]).pri - C.stats.get(x[0]).pri) || (y[0] - x[0]) || (y[1] - x[1]));
+    const out = [], done = new Set();
+    for (const [s, p, v] of own) {
+      if (done.has(s + "," + p)) continue;
+      const st = C.stats.get(s), g = st.dgrp;
+      if (g && groups[g].length === members[g].length && new Set(groups[g].map((x) => x[1])).size === 1) {
+        for (const m of members[g]) done.add(m + ",0");
+        out.push(describeStat(st.gfunc, st.gval, st.gpos, "", shown(s, v)));
+        continue;
+      }
+      out.push(statLine(s, p, shown(s, v), clvl));
+    }
+    return out;
+  }
+
   /* A stat in words: "+1 to Lightning Skills (Sorceress)", "+40 to Life", "+3 to Nova". */
   function statLabel(sid, p, v) {
     const sk = (id) => { const s = C.skills.get(id); return s ? s.name : "skill " + id; };
@@ -310,6 +377,57 @@ EZ.items = (function () {
     return `${plus} ${text}${p ? " (" + p + ")" : ""}`;
   }
 
+  /* ---------------------------------------------------------------- the hover box
+
+     The game's hover box as one string drawn bottom up (shop_map.tooltip's order): the sockets line, the affix lines
+     (blue), the filter's description (its first line lowest), the item and affix level, the base lines, the name, the
+     Cost in a shop; a color carries on to the line above. */
+  const QUALITY_TINT = {UNI: "2B2215", SET: "1C3418", RARE: "31311E", CRAFT: "2F2102", MAG: "1D1D31"};
+  const CLASS_ONLY = [10917, 10918, 10919, 10920, 10921, 10922, 10923];
+  const HIDDEN_STATS = new Set([14, 16, 17, 18, 21, 22, 23, 24, 31, 70, 72, 73, 92, 159, 160, 194, 356, 360]);
+
+  function hoverText(it, r, ctx, opts) {
+    opts = opts || {};
+    const b = it.base, S = (id) => C.strings[id] || "";
+    const W = "\u00ffc0", BLUE = "\u00ffc3", RED = "\u00ffc1", GRAY = "\u00ffc5";
+    const v = (sid, p) => it.stats[p ? sid + "," + p : String(sid)] || 0;
+    const shown = (sid, p) => {
+      const s = C.stats.get(sid);
+      return Math.trunc(v(sid, p) / (1 << (s ? s.shift : 0)));
+    };
+    const up = [];  // bottom first
+    if (v(360)) up.push(RED + "Corrupted");
+    if (it.eth) up.push(BLUE + S(22745));
+    if (v(194)) up.push(BLUE + S(3453) + " (" + v(194) + ")");
+    if (it.id) {
+      const ed = it.base.armor ? shown(16, 0) : shown(17, 0);
+      const lines = statLines(it, ctx && ctx.clvl).map((l) => BLUE + l);
+      if (ed) lines.unshift(BLUE + "+" + ed + "% Enhanced " + (it.base.armor ? "Defense" : "Damage"));
+      for (const l of lines.reverse()) up.push(l);
+    }
+    if (r && r.desc) for (const l of r.desc.split("\n")) up.push(l);
+    if (opts.itemLevel) up.push(W + "Item Level: " + it.ilvl);
+    const base = [];  // top first
+    if (b.armor && v(31)) base.push(W + S(3461) + " " + (it.own["16"] || it.own["31"] ? BLUE : W) + v(31));
+    if (b.groups.indexOf("SHIELD") >= 0 && b.block) base.push(W + S(11018) + W + b.block + "%");
+    if (b.weapon && b.dmg) {
+      const ed = it.own["17"] || 0, col = ed || it.own["21"] || it.own["22"] ? BLUE : W;
+      const dmg = (lo, hi) => [Math.floor(lo * (100 + ed) / 100) + (it.own["21"] || 0),
+                               Math.floor(hi * (100 + ed) / 100) + (it.own["22"] || 0)];
+      if ((b.min2 || b.max2) && b.hand & 2) { const [lo, hi] = dmg(b.min2, b.max2); base.push(W + S(3466) + " " + col + lo + " " + S(3464) + " " + hi); }
+      if ((b.mindam || b.maxdam) && b.hand & 1) { const [lo, hi] = dmg(b.mindam, b.maxdam); base.push(W + S(3465) + " " + col + lo + " " + S(3464) + " " + hi); }
+      if (b.throw && (b.minmis || b.maxmis)) base.push(W + S(3467) + " " + b.minmis + " " + S(3464) + " " + b.maxmis);
+    }
+    if (b.dur && !b.nodur) base.push(W + S(3457) + " " + b.dur + " " + S(3463) + " " + b.dur);
+    if (b.cls >= 0) base.push((ctx && ctx.cls === b.cls ? W : RED) + S(CLASS_ONLY[b.cls]));
+    if (b.reqdex) base.push(W + S(3459) + " " + b.reqdex);
+    if (b.reqstr) base.push(W + S(3458) + " " + b.reqstr);
+    if (it.lvlreq > 1) base.push((ctx && ctx.clvl >= it.lvlreq ? W : RED) + S(3469) + " " + it.lvlreq);
+    for (const l of base.reverse()) up.push(l);
+    for (const l of (r && r.name ? r.name : it.gameName || "").split("\n")) up.push(l);
+    return up.join("\n");
+  }
+
   /* The stats a player can add, by name: [{id, name}] (the game's own wording where it has one). */
   function statChoices() {
     const out = [];
@@ -320,6 +438,8 @@ EZ.items = (function () {
     return out;
   }
 
-  return {init, base, unique, make, describe, picks, search, statChoices, statLabel, gameName, fromGame, QUALITY_NAMES,
+  return {init, base, unique, make, describe, picks, search, statChoices, statLabel, statLine, statLines, gameName,
+          fromGame, hoverText,
+          QUALITY_TINT, QUALITY_NAMES,
           catalog: () => C};
 })();

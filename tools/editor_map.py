@@ -50,7 +50,7 @@ MAP_TIERS = {"t1m": 1, "t2m": 2, "t3m": 3, "t4m": 4, "t5m": 5}  # BH maptiers: t
 # the base table's fields, in the order the page reads them (EZ.items)
 BASE_FIELDS = ["code", "name", "groups", "cat", "qlvl", "mlvl", "w", "h", "maxsock", "sockets", "flags", "autoprefix",
                "gem", "rune", "maptier", "reqstr", "reqdex", "lvlreq", "minac", "maxac", "block", "dmg", "speed",
-               "range", "up", "dur", "invfile", "invtrans", "cost", "types"]
+               "range", "up", "dur", "invfile", "invtrans", "cost", "types", "cls", "hand", "throw"]
 FLAGS = {"eth": 1, "staffmod": 2, "quest": 4, "map": 8, "stack": 16, "spawnable": 32, "nodur": 64}
 # a property's filter code -> the stats it sets (the unique / set table's ED is +% defense; a damage roll sets the
 # one-handed, two-handed and throwing stat alike)
@@ -132,7 +132,8 @@ def catalog():
             num(r.get("reqstr")), num(r.get("reqdex")), num(r.get("levelreq")), num(r.get("minac")), b["maxac"],
             b["block"], dmg if any(dmg) else 0, num(r.get("speed")), num(r.get("rangeadder")), up,
             num(r.get("durability")), r.get("invfile", ""), num(r.get("InvTrans")), num(r.get("cost")),
-            ",".join(b["types"])])
+            ",".join(b["types"]), num(r.get("class"), -1) if r.get("class", "") != "" else -1,
+            (2 if num(r.get("2handed")) else 1) | (2 if num(r.get("1or2handed")) else 0), num(r.get("throwable"))])
     data = S.Data()
     shift = {i: s["ValShift"] for i, s in data.stats.items() if s["ValShift"]}
     sets = {}
@@ -150,12 +151,15 @@ def catalog():
                     props.append([sid, param, lo * factor, hi * factor])
         uniques.append([0 if it["kind"] == "UNI" else 1, game_text(it["name"]), it["code"], it["lvlreq"], int(bool(it["eth"])),
                         props, sets.get(it["name"], "") if it["kind"] == "SET" else ""])
-    stats = [[i, s["stat"], s["ValShift"] or 0, s["descpriority"] or 0, s.get("descstrpos") or ""]
+    stats = [[i, s["stat"], s["ValShift"] or 0, s["descpriority"] or 0, s.get("descstrpos") or "",
+              s.get("descstrneg") or "", s.get("descstr2") or "", s["descfunc"] or 0, s["descval"] or 0, s["dgrp"] or 0,
+              s["dgrpfunc"] or 0, s["dgrpval"] or 0, s.get("dgrpstrpos") or "", num(s.get("op")), num(s.get("op param"))]
              for i, s in sorted(data.stats.items())]
     skills = [[i, s["name"], s["class"]] for i, s in sorted(data.skills.items())]
+    strings = {k: v for k, v in data.strings.items() if k.isdigit() or k.startswith("class:")}
     return {"baseFields": BASE_FIELDS, "flags": FLAGS, "cats": cats, "bases": out_bases, "uniques": uniques,
             "stats": stats, "skills": skills, "statMax": max(data.stats) + 1, "skillMax": max(data.skills) + 1,
-            "townIds": sorted(T.TOWN_IDS)}
+            "townIds": sorted(T.TOWN_IDS), "strings": strings}
 
 
 def page_data():
