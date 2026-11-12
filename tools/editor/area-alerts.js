@@ -11,16 +11,9 @@ EZ.sounds = (function () {
     return n ? n : "sound " + id;
   }
 
-  /* A play button when the editor has the sound's clip (the assets), else the game's own test command. */
+  /* A play button when the editor has the sound's clip (the assets: EZ.sound), else the game's own test command. */
   function play(data, id) {
-    const clips = data.assets && data.assets.sounds || {};
-    if (clips[id] && EZ.assets && EZ.assets.url) {
-      return h("button.fe-btn.ghost.small", {type: "button", title: "Play", "aria-label": "Play " + name(data, id),
-        onclick: () => {
-          const a = new Audio(EZ.assets.url(clips[id]));
-          a.play().catch(() => EZ.ui.toast("The browser didn't play the sound."));
-        }}, "▶");
-    }
+    if (EZ.sound) return EZ.sound.button(id, name(data, id));
     return h("span.fe-sub", {title: "Type this in the game's chat to hear it"}, `.playsound ${id}`);
   }
 

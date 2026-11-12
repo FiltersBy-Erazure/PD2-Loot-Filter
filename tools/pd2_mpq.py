@@ -2,7 +2,8 @@
 """
 Read one file out of a PD2 MPQ archive (e.g. ProjectD2\\pd2data.mpq), standard library only.
 
-MPQ format 1 (hash and block tables, encrypted files, zlib / bzip2 / PKWARE DCL "implode" sectors), enough
+MPQ format 1 (hash and block tables, encrypted files, zlib / bzip2 / PKWARE DCL "implode" sectors, and the sounds'
+Huffman + ADPCM sectors through tools/mpq_audio.py), enough
 for pd2data.mpq. The explode decoder is a port of zlib's contrib/blast/blast.c (Mark Adler).
 
     python tools/pd2_mpq.py <archive.mpq> --list
@@ -201,6 +202,15 @@ class MPQ:
             return bz2.decompress(body)
         if method == 0x08:
             return explode(body)
+        if method & ~0xC1 == 0 and method & 0xC1:  # a sound: Huffman, then ADPCM (StormLib's order), tools/mpq_audio.py
+            import mpq_audio
+            if method & 0x01:
+                body = mpq_audio.huffman(body, want)
+            if method & 0x80:
+                body = mpq_audio.adpcm(body, want, 2)
+            elif method & 0x40:
+                body = mpq_audio.adpcm(body, want, 1)
+            return body
         raise ValueError(f"unsupported MPQ compression 0x{method:02x}")
 
 

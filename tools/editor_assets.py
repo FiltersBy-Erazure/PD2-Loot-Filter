@@ -14,10 +14,16 @@ tools/grail_map.py and tools/example_shots.py read it, so neither the build nor 
   dungeon as tools/example_shots.py does.
 - ground pictures: every item's picture on the ground (the last frame of its flippy DC6, Weapons / Armor / Misc.txt),
   one sheet.
+- sounds: every sound the filter and its styles play, and the PoE versions' tinks (Sounds.txt's file, out of
+  ProjectD2's MPQs, d2sfx.mpq, d2speech.mpq or d2xtalk.mpq: tools/mpq_audio.py decodes the game's own compression),
+  as 4-bit IMA ADPCM (sounds/<id>.adpcm: its sample rate, length, first sample and step index, then two samples a
+  byte); the page decodes one when it's played (EZ.sound).
 
-Standard library only. Rerun it after a PD2 patch that changes d2gl.mpq's fonts.
+Standard library only. Rerun it after a PD2 patch that changes the fonts, the floors, the items' pictures or the
+sounds, and after a filter change that plays a sound it didn't before (the page then offers ".playsound <id>").
 """
 import json
+import re
 import struct
 import sys
 import zlib
@@ -239,12 +245,111 @@ def ground(game, info):
     print(f"ground.png: {len(place)} pictures, {width}x{height}, {(OUT / 'ground.png').stat().st_size // 1024} KB")
 
 
+# IMA ADPCM's tables (the standard: 89 step sizes, the step index's change per code)
+IMA_STEPS = [7, 8, 9, 10, 11, 12, 13, 14, 16, 17, 19, 21, 23, 25, 28, 31, 34, 37, 41, 45, 50, 55, 60, 66, 73, 80, 88,
+             97, 107, 118, 130, 143, 157, 173, 190, 209, 230, 253, 279, 307, 337, 371, 408, 449, 494, 544, 598, 658,
+             724, 796, 876, 963, 1060, 1166, 1282, 1411, 1552, 1707, 1878, 2066, 2272, 2499, 2749, 3024, 3327, 3660,
+             4026, 4428, 4871, 5358, 5894, 6484, 7132, 7845, 8630, 9493, 10442, 11487, 12635, 13899, 15289, 16818,
+             18500, 20350, 22385, 24623, 27086, 29794, 32767]
+IMA_INDEX = [-1, -1, -1, -1, 2, 4, 6, 8, -1, -1, -1, -1, 2, 4, 6, 8]
+
+
+def ima_encode(pcm):
+    """16-bit samples -> (first sample, first step index, the codes, two a byte, low nibble first); the decoder's own
+    prediction is tracked, so the error doesn't build up."""
+    d0 = abs(pcm[1] - pcm[0]) if len(pcm) > 1 else 0  # the first step near the first change: no slow start
+    pred, index, codes = pcm[0] if pcm else 0, min(range(89), key=lambda i: abs(IMA_STEPS[i] - d0)), []
+    start = index
+    for x in pcm[1:]:
+        step = IMA_STEPS[index]
+        diff, code = x - pred, 0
+        if diff < 0:
+            code, diff = 8, -diff
+        delta = step >> 3
+        if diff >= step:
+            code |= 4; diff -= step; delta += step
+        step >>= 1
+        if diff >= step:
+            code |= 2; diff -= step; delta += step
+        step >>= 1
+        if diff >= step:
+            code |= 1; delta += step
+        pred = max(-32768, min(32767, pred - delta if code & 8 else pred + delta))
+        index = max(0, min(88, index + IMA_INDEX[code]))
+        codes.append(code)
+    if len(codes) % 2:
+        codes.append(0)
+    return (pcm[0] if pcm else 0), start, bytes(codes[i] | (codes[i + 1] << 4) for i in range(0, len(codes), 2))
+
+
+def wav_pcm(data):
+    """(rate, channels, 16-bit samples, the first channel) of a PCM WAV."""
+    pos, fmt, pcm = 12, None, None
+    while pos + 8 <= len(data):
+        cid, n = data[pos:pos + 4], struct.unpack_from("<I", data, pos + 4)[0]
+        if cid == b"fmt ":
+            tag, ch, rate = struct.unpack_from("<HHI", data, pos + 8)
+            bits = struct.unpack_from("<H", data, pos + 22)[0]
+            fmt = (tag, ch, rate, bits)
+        elif cid == b"data":
+            pcm = data[pos + 8:pos + 8 + n]
+        pos += 8 + n + (n & 1)
+    if not fmt or pcm is None or fmt[0] != 1 or fmt[3] not in (8, 16):
+        raise ValueError(f"not a PCM WAV: {fmt}")
+    tag, ch, rate, bits = fmt
+    if bits == 8:
+        samples = [(b - 128) << 8 for b in pcm]
+    else:
+        samples = list(struct.unpack(f"<{len(pcm) // 2}h", pcm[:len(pcm) // 2 * 2]))
+    return rate, samples[::ch]
+
+
+def sounds(folder, game, info):
+    import pd2_mpq
+    import tier_map as T
+    d = Path(folder)
+    archives = [d / "ProjectD2" / n for n in ("pd2assets.mpq", "pd2data.mpq", "patch_d2.mpq")]
+    archives += [d / n for n in ("d2exp.mpq", "d2sfx.mpq", "d2speech.mpq", "d2xtalk.mpq", "d2data.mpq")]
+    mpqs = [pd2_mpq.MPQ(str(a)) for a in archives if a.exists()]
+    ids = set(range(4714, 4730))
+    for f in sorted((ROOT / "sections").glob("*.filter")) + sorted((ROOT / "styles").glob("*")):
+        ids |= {int(x) for x in re.findall(r"%SOUNDID-(\d{1,4})%", f.read_text(encoding="utf-8"), re.I)}
+    table = T.load_sounds()
+    (OUT / "sounds").mkdir(exist_ok=True)
+    info["sounds"], total = {}, 0
+    for sid in sorted(ids):
+        s = table.get(sid)
+        if not s or not s["file"]:
+            continue
+        data = None
+        for path in ("data\\global\\sfx\\" + s["file"], "data\\local\\sfx\\" + s["file"]):  # speech: data\local
+            for m in mpqs:
+                try:
+                    data = m.read(path)
+                    break
+                except KeyError:
+                    continue
+            if data is not None:
+                break
+        if data is None:
+            print(f"sound {sid}: no {path}")
+            continue
+        rate, pcm = wav_pcm(data)
+        first, index, codes = ima_encode(pcm)
+        file = f"sounds/{sid}.adpcm"
+        (OUT / file).write_bytes(struct.pack("<IIhH", rate, len(pcm), first, index) + codes)
+        info["sounds"][str(sid)] = {"file": file, "rate": rate, "n": len(pcm)}
+        total += (OUT / file).stat().st_size
+    print(f"sounds/: {len(info['sounds'])} sounds, {total // 1024} KB")
+
+
 def write(folder):
     game = X.Game(folder)
     info = {"v": 1}
     fonts(game, info)
     floors(game, info)
     ground(game, info)
+    sounds(folder, game, info)
     INFO.write_text(json.dumps(info, separators=(",", ":"), ensure_ascii=False) + "\n", encoding="utf-8")
     print(f"wrote {INFO.relative_to(ROOT)} ({INFO.stat().st_size // 1024} KB)")
 

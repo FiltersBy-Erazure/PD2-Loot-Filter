@@ -220,7 +220,8 @@ EZ.preview = (function () {
       r.chat === "" ? h("span.fe-sub", "an empty line") : chatNode(r.chat, r.start)));
     dl.appendChild(h("dt", "Sound"));
     dl.appendChild(h("dd", {class: diff("sound")}, r.sound ? h("span", "♪ " + soundName(r.sound) + " ",
-      h("small.fe-sub", "(.playsound " + r.sound + ")")) : h("span.fe-sub", "none")));
+      EZ.sound.button(r.sound, soundName(r.sound)), " ", h("small.fe-sub", "(.playsound " + r.sound + ")")) :
+      h("span.fe-sub", "none")));
     if (r.desc) {
       dl.appendChild(h("dt", "Hover"));
       dl.appendChild(h("dd", {class: diff("desc")}, h("div.fe-pvdesc", codedText(r.desc, "3"))));
@@ -540,7 +541,8 @@ EZ.preview = (function () {
     const alerts = h("ul.fe-scene-log", log.map(({spec, r, changed}) => h("li" + (changed ? ".is-changed" : ""),
       r.icons.length ? iconCanvas(r.icons, 2) : h("span.fe-scene-noicon"),
       r.chat !== null ? chatNode(r.chat || EZ.items.describe(spec), r.start) : h("span.fe-sub", EZ.items.describe(spec)),
-      r.sound ? h("span.fe-small", "♪ " + soundName(r.sound)) : null)));
+      r.sound ? h("span.fe-small", "♪ " + soundName(r.sound), " ", EZ.sound.button(r.sound, soundName(r.sound))) :
+        null)));
     return [head, holder, log.length ? h("h4.fe-scene-h", "Alerts, in drop order") : null, alerts,
       h("p.fe-sub.fe-small", mine ? (side === mine ? "Your filter; your changes have a gold edge." : "Erazure's filter.") :
         "Erazure's filter (you have no changes yet).")];

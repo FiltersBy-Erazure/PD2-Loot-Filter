@@ -23,6 +23,8 @@ Tests:
              notifications and %TIER-n%, hiding and invisibility, Force Show, named formulas and $f islands).
   paste      items BH copies in the game (Ctrl+C: its JSON) read into the preview's items: base, quality, flags,
              the unique or set item, its stats as the game holds them, the socket fillers.
+  sound      the drop sounds' codec: a test tone as tools/editor_assets.py writes a clip, decoded by the page
+             (tools/editor/sound.js) sample for sample as this file decodes it.
   tiers      the engine on Erazure - Main against tools/tier_map.py's model (the Unique / Set Tiers page): every
              unique and set base, unidentified on the ground, in every scenario the page has (filter level,
              character level, class, ethereal, place, discovered): its label, chat line, drop sound and minimap icon.
@@ -53,7 +55,8 @@ ROOT = Path(__file__).resolve().parent.parent
 EDITOR = ROOT / "tools" / "editor"
 SOURCE = ROOT / "Erazure-Filter-Editor-Source.js"
 FIXTURES = ROOT / "tools" / "editor_fixtures"
-MODULES = ["core.js", "ui.js", "store.js", "filter.js", "features.js", "edits.js", "engine.js", "items.js"]  # in order
+MODULES = ["core.js", "ui.js", "store.js", "filter.js", "features.js", "edits.js", "engine.js", "items.js",
+           "sound.js"]  # in order
 TESTS_JS = ROOT / "tools" / "editor_selftest.js"  # the engine tests' code
 BROWSERS = [
     r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
@@ -751,6 +754,33 @@ PASTE_CASES = [
 ]
 
 
+def sound_case():
+    """A test tone through tools/editor_assets.py's IMA ADPCM writer: (the clip, base64; its samples decoded here)."""
+    import math
+    import struct
+    import editor_assets as A
+    pcm = [int(12000 * math.sin(i / 7.3) * math.exp(-i / 3000) + 3000 * math.sin(i / 1.9)) for i in range(4001)]
+    first, index, codes = A.ima_encode(pcm)
+    clip = struct.pack("<IIhH", 22050, len(pcm), first, index) + codes
+    pred, out = first, [first]
+    for i in range(1, len(pcm)):
+        b = codes[(i - 1) >> 1]
+        code = b >> 4 if (i - 1) & 1 else b & 15
+        step = A.IMA_STEPS[index]
+        delta = step >> 3
+        if code & 4:
+            delta += step
+        if code & 2:
+            delta += step >> 1
+        if code & 1:
+            delta += step >> 2
+        pred = max(-32768, pred - delta) if code & 8 else min(32767, pred + delta)
+        index = max(0, min(88, index + A.IMA_INDEX[code]))
+        out.append(pred)
+    err = max(abs(a - b) for a, b in zip(out, pcm))
+    return {"clip": base64.b64encode(clip).decode(), "samples": out, "maxError": err}
+
+
 def tier_cases():
     """tools/tier_map.py's outcomes on Erazure - Main for every unique and set base, unidentified on the ground, in
     every scenario of the page: [[kind, code, eth, class, clvl, place, grail, level, chat, sound, icons, label, look]]."""
@@ -789,7 +819,7 @@ def expectations(src, only=""):
            "engine": {"formulas": ENGINE_FORMULAS, "conditions": ENGINE_CONDITIONS, "rules": ENGINE_RULES}}
     import editor_map
     data = editor_map.page_data()
-    out.update(catalog=data["catalog"], soundCount=data["soundCount"], paste=PASTE_CASES)
+    out.update(catalog=data["catalog"], soundCount=data["soundCount"], paste=PASTE_CASES, sound=sound_case())
     if not only or "tiers".startswith(only[:5]) or only.startswith("tiers"):
         out["tiers"] = tier_cases()
     return out

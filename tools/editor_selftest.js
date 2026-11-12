@@ -43,6 +43,18 @@
             conditions: EXPECT.engine.conditions.length, rules: EXPECT.engine.rules.length};
   });
 
+  test("sound", () => {
+    const raw = atob(EXPECT.sound.clip), buf = new ArrayBuffer(raw.length), u8 = new Uint8Array(buf);
+    for (let i = 0; i < raw.length; i++) u8[i] = raw.charCodeAt(i);
+    const pcm = EZ.sound.decode(buf), want = EXPECT.sound.samples, bad = [];
+    if (pcm.rate !== 22050) bad.push("rate " + pcm.rate);
+    if (pcm.samples.length !== want.length) bad.push(`${pcm.samples.length} samples, want ${want.length}`);
+    for (let i = 0; i < want.length && bad.length < 5; i++) {
+      if (Math.round(pcm.samples[i] * 32768) !== want[i]) bad.push(`sample ${i}: ${Math.round(pcm.samples[i] * 32768)}, want ${want[i]}`);
+    }
+    return {fail: bad.length ? bad.join("; ") : null, samples: want.length, codecMaxError: EXPECT.sound.maxError};
+  });
+
   test("paste", () => {
     EZ.items.init({catalog: EXPECT.catalog});
     const bad = [];

@@ -398,6 +398,7 @@ EZ.app = (function () {
     EZ.ui.setHost(root.parentElement || root);
     if (EZ.glyphs) EZ.glyphs.init(app.data.assets, assetBase(scriptSrc));
     if (EZ.scene) EZ.scene.init(app.data.assets, assetBase(scriptSrc));
+    if (EZ.sound) EZ.sound.init(app.data.assets, assetBase(scriptSrc));
     if (EZ.items) EZ.items.init(app.data);
     EZ.store.load();
     EZ.areas.sort((a, b) => a.order - b.order);

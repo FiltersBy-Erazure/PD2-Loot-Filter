@@ -34,7 +34,7 @@ PAGE = ROOT / "Erazure-Filter-Editor.html"
 ASSET_INFO = ROOT / "tools" / "editor_assets.json"
 # the modules, in the order the page runs them (each adds itself to the EZ namespace)
 MODULES = ["core.js", "ui.js", "store.js", "filter.js", "features.js", "edits.js", "render.js", "glyphs.js",
-           "scene.js", "engine.js", "items.js", "share.js", "app.js", "area-start.js", "area-options.js", "area-looks.js",
+           "scene.js", "sound.js", "engine.js", "items.js", "share.js", "app.js", "area-start.js", "area-options.js", "area-looks.js",
            "area-alerts.js", "preview.js", "area-todo.js"]
 ASSETS = ROOT / "Erazure-Filter-Editor-Assets"
 # PD2's own drop sounds (pd2\dropsounds\tinkNN.wav), the PoE versions' picks
@@ -177,6 +177,7 @@ def page_data():
         assets = json.loads(ASSET_INFO.read_text(encoding="utf-8"))
         files = list(assets.get("atlases", {}).values()) + list(assets.get("floors", {}).values())
         files += [assets["ground"]] if "ground" in assets else []
+        files += list(assets.get("sounds", {}).values())
         for a in files:  # each file's CRC: a changed file is fetched again
             f = ASSETS / a["file"]
             if f.exists():
