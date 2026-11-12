@@ -955,6 +955,28 @@
   page and comparing each card's today rows with the documents at every level, character level and ethereal state
   (they matched exactly). A plain-name or hide rule doesn't stop a later rule's minimap icon (BH's notification
   pass), so the icon rules around one must leave its cases out (`kit (FILTLVL<5 OR (CLVL<60 FILTLVL~5-7))`).
+- Potion editor (2026-11-12, the author: change how potions show per filter level and character level, a page like the
+  alias editor): https://claude.ai/artifact/XMfaWSpMM3ghboKyyxXgQY (`python tools/potion_editor.py` writes
+  `tools/potion_editor.html`, gitignored, from `tools/potion_editor_template.html`; republish it to that URL after a
+  060 change, since its Today grids are what it compares choices with). One card per potion of 060 (healing, mana,
+  Dueling Mana, rejuvenation, stamina, antidote, thawing, the 12 throwing potions): today's display per filter level
+  and run of character levels (the rules run as `explain_item.py` runs them, Main, on the ground outside town in
+  Hell: label, minimap icon layers, the notifying rule's %TIER%), beside a grid the author paints; the card's looks
+  (label, BORDER / MAP / DOT / PX codes, chat line or icon only) are editable brushes, and new ones can be added.
+  Parts: each case today's rules treat otherwise gets a grid of its own (Normal difficulty for H3-H5 / M3-M5, the
+  rejuvenations' Rathma / Lucion / Diablo Clone areas, the antidote's Sorceresses by energy and Rathma's areas; cases
+  with the same grid joined), and any card can split off Normal difficulty or maps; a town look (where hidden on the
+  ground) per card; town, shop and stash today read only. Its db: collection `cards`, one document per changed
+  potion code (`{parts: {<id>: {apart, cuts, rows: {"<from level>": [13 display ids]}}}, displays: {<id>: {label,
+  icons, tier}}, town, note, savedAt}`; a part that isn't `apart` follows `main`), `meta/note`. Apply only when the
+  author says: write 060's potion rules by hand (hide rules keep `GROUND !TOWN` and their `TOWN` twin with the card's
+  town look; shop and stash rules stay), save the documents as `{code: document}` and run `--check FILE` until it
+  lists nothing, then delete the applied documents and republish. `--dump CODE` prints a potion's grids today.
+  First applied 2026-11-12 (12 cards): level 0 shows the healing / mana potions' labels without icons (on the ground
+  outside town, where levels 1-12 hide them or H5 / M5 show IOI, without the number: `- H -`); H5 / M5 show their
+  label in town (`TOWN`: stash and inventory in town too) to tell them from the lesser potions' town looks (Corr's
+  versions keep his `+ HP +` / `+ MP +`); the Dueling Mana Potion `i( M )i`; the Full Rejuvenation Potion `i( Full )i`
+  on levels 1-3 and 5, without its icon from character level 80.
 
 ## Variants (all 20 built from the same sections)
 | display_name | File | BIG_GG | POE_SOUNDS | REVEALED |
@@ -1156,6 +1178,7 @@ before), and so are throwing and stamina potions (hidden Fulminating / Chilling 
 `tools/plain_highlights.py` (280: the +N to one skill highlights' plain twins for corrupted items) ·
 `tools/sell_label_twins.py` (210 / 220 / 310: the sell tag twins of the hide rules marked `!SMALL_SELL_BASE`) ·
 `tools/market_tiers.py` + `tools/market_tiers_template.html` (the tier price review page) ·
+`tools/potion_editor.py` + `tools/potion_editor_template.html` (the potion editor page, section 060's potions) ·
 `tools/alias_editor.py` + `tools/alias_editor_template.html` (the alias editor page) ·
 `tools/tier_map.py` + `tools/tier_map_template.html` + `Erazure-Unique-Set-Tiers.html` ·
 `sections/205-white-runeword-bases.filter` + `tools/base_map.py` + `tools/base_map_template.html` +

@@ -1393,12 +1393,18 @@ ItemDisplay[GOLD<25000 CLVL>94 FILTLVL>11 GROUND !(MAPID=1 OR MAPID=40 OR MAPID=
 
 // ================================  Health Potions  =================================
 
-// Display for Healing Potions on filter level 0
-ItemDisplay[hp1 FILTLVL=0]:%GRAY%I%RED%O%GRAY%I%WHITE%{%WHITE% Minor Healing Potion }//
-ItemDisplay[hp2 FILTLVL=0]:%GRAY%iI%RED%O%GRAY%Ii%WHITE%{%WHITE% Light Healing Potion }//
-ItemDisplay[hp3 FILTLVL=0]:%GRAY%iI%RED%O%GRAY%Ii%WHITE%{%WHITE% Mid Healing Potion }//
-ItemDisplay[hp4 FILTLVL=0]:%GRAY%i%RED%IOI%GRAY%i%WHITE%{%WHITE% Greater Healing Potion }//
-ItemDisplay[hp5 FILTLVL=0]:%CORAL%i%RED%IOI%CORAL%i%WHITE%{%WHITE% Super Healing Potion }//
+// Display for Healing Potions on filter level 0: the label of levels 1-12 without the minimap icon; on the ground
+// outside town where levels 1-12 hide the potion (Super: show IOI), the label without its number
+ItemDisplay[hp1 FILTLVL=0 CLVL>14 GROUND !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109 OR MAPID~202-206)]:%RED%- %WHITE%H %RED%-%WHITE%{%WHITE% Minor Healing Potion }//
+ItemDisplay[hp1 FILTLVL=0]:%RED%- %WHITE%H1 %RED%-%WHITE%{%WHITE% Minor Healing Potion }//
+ItemDisplay[hp2 FILTLVL=0 CLVL>19 GROUND !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109 OR MAPID~202-206)]:%RED%• %WHITE%H %RED%•%WHITE%{%WHITE% Light Healing Potion }//
+ItemDisplay[hp2 FILTLVL=0]:%RED%• %WHITE%H2 %RED%•%WHITE%{%WHITE% Light Healing Potion }//
+ItemDisplay[hp3 FILTLVL=0 CLVL>23 !DIFF=0 GROUND !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109 OR MAPID~202-206)]:%RED%+ %WHITE%H %RED%+%WHITE%{%WHITE% Mid Healing Potion }//
+ItemDisplay[hp3 FILTLVL=0]:%RED%+ %WHITE%H3 %RED%+%WHITE%{%WHITE% Mid Healing Potion }//
+ItemDisplay[hp4 FILTLVL=0 CLVL>49 !DIFF=0 GROUND !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109 OR MAPID~202-206)]:%GRAY%i%RED%( %WHITE%H %RED%)%GRAY%i%WHITE%{%WHITE% Greater Healing Potion }//
+ItemDisplay[hp4 FILTLVL=0]:%GRAY%i%RED%( %WHITE%H4 %RED%)%GRAY%i%WHITE%{%WHITE% Greater Healing Potion }//
+ItemDisplay[hp5 FILTLVL=0 CLVL>49 !DIFF=0 GROUND !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109 OR MAPID~202-206)]:%CORAL%i%RED%( %WHITE%H %RED%)%CORAL%i%WHITE%{%WHITE% Super Healing Potion }//
+ItemDisplay[hp5 FILTLVL=0]:%CORAL%i%RED%( %WHITE%H5 %RED%)%CORAL%i%WHITE%{%WHITE% Super Healing Potion }//
 
 // Display for Healing Potions during levels 1-25
 ItemDisplay[hp1 !FILTLVL=0 (CLVL<15 OR SHOP)]:%RED%- %WHITE%H1 %RED%-%WHITE%%PX-50%%TIER-0%{%WHITE% Minor Healing Potion }//
@@ -1418,17 +1424,25 @@ ItemDisplay[hp2 !SHOP CLVL>19 (MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR M
 ItemDisplay[hp3 !SHOP CLVL>23 (MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109 OR MAPID~202-206)]:%RED%+ %WHITE%H3 %RED%+%WHITE%{%WHITE% Healing Potion }//
 ItemDisplay[hp4 !SHOP (CLVL>49 OR FILTLVL>2) (MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109 OR MAPID~202-206)]:%GRAY%i%RED%( %WHITE%H4 %RED%)%GRAY%i%WHITE%{%WHITE% Greater Healing Potion }//
 
-// Super Healing Potion: never hidden (the game's Hide Healing Potions option decides)
+// Super Healing Potion: never hidden (the game's Hide Healing Potions option decides); in town its label, as the
+// lesser potions' town looks have theirs
+ItemDisplay[hp5 CLVL>49 (MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109 OR MAPID~202-206)]:%BLACK%+%GRAY% HP %BLACK%+%WHITE%{%WHITE% Super Healing Potion }//
 ItemDisplay[hp5 CLVL>49]:%BLACK%+%GRAY% HP %BLACK%+%WHITE%{%WHITE% Super Healing Potion }//
 
 // ==================================  Mana Potions  ====================================
 
-// Display for Mana Potions on filter level 0
-ItemDisplay[mp1 FILTLVL=0]:%GRAY%I%BLUE%O%GRAY%I%WHITE%{%WHITE% Minor Mana Potion }//
-ItemDisplay[mp2 FILTLVL=0]:%GRAY%iI%BLUE%O%GRAY%Ii%WHITE%{%WHITE% Light Mana Potion }//
-ItemDisplay[mp3 FILTLVL=0]:%GRAY%iI%BLUE%O%GRAY%Ii%WHITE%{%WHITE% Mana Potion }//
-ItemDisplay[mp4 FILTLVL=0]:%GRAY%i%BLUE%IOI%GRAY%i%WHITE%{%WHITE% Greater Mana Potion }//
-ItemDisplay[mp5 FILTLVL=0]:%TEAL%i%BLUE%IOI%TEAL%i%WHITE%{%WHITE% Super Mana Potion }//
+// Display for Mana Potions on filter level 0: the label of levels 1-12 without the minimap icon; on the ground
+// outside town where levels 1-12 hide the potion (Super: show IOI), the label without its number
+ItemDisplay[mp1 FILTLVL=0 CLVL>14 GROUND !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109 OR MAPID~202-206)]:%BLUE%- %WHITE%M %BLUE%-%WHITE%{%WHITE% Minor Mana Potion }//
+ItemDisplay[mp1 FILTLVL=0]:%BLUE%- %WHITE%M1 %BLUE%-%WHITE%{%WHITE% Minor Mana Potion }//
+ItemDisplay[mp2 FILTLVL=0 CLVL>22 GROUND !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109 OR MAPID~202-206)]:%BLUE%• %WHITE%M %BLUE%•%WHITE%{%WHITE% Light Mana Potion }//
+ItemDisplay[mp2 FILTLVL=0]:%BLUE%• %WHITE%M2 %BLUE%•%WHITE%{%WHITE% Light Mana Potion }//
+ItemDisplay[mp3 FILTLVL=0 CLVL>28 !DIFF=0 GROUND !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109 OR MAPID~202-206)]:%BLUE%+ %WHITE%M %BLUE%+%WHITE%{%WHITE% Mana Potion }//
+ItemDisplay[mp3 FILTLVL=0]:%BLUE%+ %WHITE%M3 %BLUE%+%WHITE%{%WHITE% Mana Potion }//
+ItemDisplay[mp4 FILTLVL=0 CLVL>49 !DIFF=0 GROUND !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109 OR MAPID~202-206)]:%GRAY%i%BLUE%( %WHITE%M %BLUE%)%GRAY%i%WHITE%{%WHITE% Greater Mana Potion }//
+ItemDisplay[mp4 FILTLVL=0]:%GRAY%i%BLUE%( %WHITE%M4 %BLUE%)%GRAY%i%WHITE%{%WHITE% Greater Mana Potion }//
+ItemDisplay[mp5 FILTLVL=0 CLVL>49 !DIFF=0 GROUND !(MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109 OR MAPID~202-206)]:%TEAL%i%BLUE%( %WHITE%M %BLUE%)%TEAL%i%WHITE%{%WHITE% Super Mana Potion }//
+ItemDisplay[mp5 FILTLVL=0]:%TEAL%i%BLUE%( %WHITE%M5 %BLUE%)%TEAL%i%WHITE%{%WHITE% Super Mana Potion }//
 
 // Display for Mana Potions during levels 1-25
 ItemDisplay[mp1 !FILTLVL=0 (CLVL<15 OR SHOP)]:%BLUE%- %WHITE%M1 %BLUE%-%WHITE%%PX-97%%TIER-0%{%WHITE% Minor Mana Potion }//
@@ -1448,11 +1462,13 @@ ItemDisplay[mp2 !SHOP CLVL>22 (MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR M
 ItemDisplay[mp3 !SHOP CLVL>28 (MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109 OR MAPID~202-206)]:%BLUE%+ %WHITE%M3 %BLUE%+%WHITE%{%WHITE% Mana Potion }//
 ItemDisplay[mp4 !SHOP (CLVL>49 OR FILTLVL>2) (MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109 OR MAPID~202-206)]:%GRAY%i%BLUE%( %WHITE%M4 %BLUE%)%GRAY%i%WHITE%{%WHITE% Greater Mana Potion }//
 
-// Super Mana Potion: never hidden (the game's Hide Mana Potions option decides)
+// Super Mana Potion: never hidden (the game's Hide Mana Potions option decides); in town its label, as the lesser
+// potions' town looks have theirs
+ItemDisplay[mp5 CLVL>49 (MAPID=1 OR MAPID=40 OR MAPID=75 OR MAPID=103 OR MAPID=109 OR MAPID~202-206)]:%BLACK%+%DARK_GREEN% MP %BLACK%+%WHITE%{%WHITE% Super Mana Potion }//
 ItemDisplay[mp5 CLVL>49]:%BLACK%+%DARK_GREEN% MP %BLACK%+%WHITE%{%WHITE% Super Mana Potion }//
 
 // Dueling Mana Potion
-ItemDisplay[pvpp]:%BLUE% %WHITE%M%BLUE%+ %WHITE%{%WHITE% Dueling Mana Potion }//
+ItemDisplay[pvpp]:%TEAL%i%BLUE%( %WHITE%M %BLUE%)%TEAL%i%WHITE%{%WHITE% Dueling Mana Potion }//
 
 // ==================================  Rejuvenation Potions  ================================
 
@@ -1472,9 +1488,9 @@ ItemDisplay[rvs !(MAPID~161-163 OR MAPID=137 OR MAPID~188-189) (FILTLVL~1-3 OR F
 ItemDisplay[rvs !(MAPID~161-163 OR MAPID=137 OR MAPID~188-189) (FILTLVL~1-3 OR FILTLVL=5) CLVL>49]:%WHITE%+%PURPLE%35%%WHITE%+{%WHITE% Rejuvenation Potion }//
 
 
-// Lower Levels with minimap icon
-ItemDisplay[rvl !(MAPID~161-163 OR MAPID=137 OR MAPID~188-189) (FILTLVL~1-3 OR FILTLVL=5) CLVL<50]:%GRAY%i%PURPLE% (O) %GRAY%i%WHITE%{%WHITE% Full Rejuvenation Potion }%DOT-9B%%PX-20%%TIER-0%//
-ItemDisplay[rvl !(MAPID~161-163 OR MAPID=137 OR MAPID~188-189) (FILTLVL~1-3 OR FILTLVL=5) CLVL>49]:%GRAY%i%PURPLE% (O) %GRAY%i%WHITE%{%WHITE% Full Rejuvenation Potion }%DOT-9B%%PX-20%%TIER-0%//
+// Lower Levels: minimap icon below character level 80
+ItemDisplay[rvl !(MAPID~161-163 OR MAPID=137 OR MAPID~188-189) (FILTLVL~1-3 OR FILTLVL=5) CLVL<80]:%GRAY%i%PURPLE% (O) %GRAY%i%WHITE%{%WHITE% Full Rejuvenation Potion }%DOT-9B%%PX-20%%TIER-0%//
+ItemDisplay[rvl !(MAPID~161-163 OR MAPID=137 OR MAPID~188-189) (FILTLVL~1-3 OR FILTLVL=5) CLVL>79]:%GRAY%i%PURPLE% (O) %GRAY%i%WHITE%{%WHITE% Full Rejuvenation Potion }//
 
 // Higher Levels
 ItemDisplay[rvl !(MAPID~161-163 OR MAPID=137 OR MAPID~188-189) (FILTLVL=4 OR FILTLVL>5) CLVL<80]:%GRAY%i%PURPLE% (O) %GRAY%i%WHITE%{%WHITE% Full Rejuvenation Potion }%DOT-9B%%PX-20%%TIER-0%//
