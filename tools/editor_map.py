@@ -33,11 +33,11 @@ TEMPLATE = EDITOR / "template.html"
 PAGE = ROOT / "Erazure-Filter-Editor.html"
 ASSET_INFO = ROOT / "tools" / "editor_assets.json"
 # the modules, in the order the page runs them (each adds itself to the EZ namespace)
-MODULES = ["core.js", "ui.js", "store.js", "filter.js", "features.js", "edits.js", "rules.js", "ops.js", "overrides.js", "volume.js", "wishlists.js", "render.js", "glyphs.js",
-           "scene.js", "sound.js", "engine.js", "lint.js", "words.js", "diff.js", "items.js", "share.js", "app.js", "area-start.js",
-           "area-options.js", "area-items.js", "area-wishlists.js", "area-looks.js", "area-alerts.js", "area-rules.js", "area-erazure.js", "area-changes.js",
-           "area-help.js", "preview.js",
-           "area-todo.js"]
+MODULES = ["core.js", "ui.js", "store.js", "filter.js", "features.js", "edits.js", "rules.js", "ops.js",
+           "overrides.js", "volume.js", "wishlists.js", "maps.js", "render.js", "glyphs.js", "scene.js", "sound.js",
+           "engine.js", "lint.js", "words.js", "diff.js", "items.js", "share.js", "app.js", "area-start.js",
+           "area-options.js", "area-items.js", "area-wishlists.js", "area-maps.js", "area-looks.js", "area-alerts.js",
+           "area-rules.js", "area-erazure.js", "area-changes.js", "area-help.js", "preview.js"]
 ASSETS = ROOT / "Erazure-Filter-Editor-Assets"
 # PD2's own drop sounds (pd2\dropsounds\tinkNN.wav), the PoE versions' picks
 POE_SOUNDS = range(4714, 4730)
@@ -153,17 +153,35 @@ def catalog():
                     props.append([sid, param, lo * factor, hi * factor])
         uniques.append([0 if it["kind"] == "UNI" else 1, game_text(it["name"]), it["code"], it["lvlreq"], int(bool(it["eth"])),
                         props, sets.get(it["name"], "") if it["kind"] == "SET" else ""])
-    stats = [[i, s["stat"], s["ValShift"] or 0, s["descpriority"] or 0, s.get("descstrpos") or "",
-              s.get("descstrneg") or "", s.get("descstr2") or "", s["descfunc"] or 0, s["descval"] or 0, s["dgrp"] or 0,
-              s["dgrpfunc"] or 0, s["dgrpval"] or 0, s.get("dgrpstrpos") or "", num(s.get("op")), num(s.get("op param"))]
+    stats = [[i, s["stat"], s["ValShift"] or 0, s["descpriority"] or 0, game_text(s.get("descstrpos") or ""),
+              game_text(s.get("descstrneg") or ""), game_text(s.get("descstr2") or ""), s["descfunc"] or 0,
+              s["descval"] or 0, s["dgrp"] or 0, s["dgrpfunc"] or 0, s["dgrpval"] or 0,
+              game_text(s.get("dgrpstrpos") or ""), num(s.get("op")), num(s.get("op param"))]
              for i, s in sorted(data.stats.items())]
     # a class skill's tab (TABSK number) from the assets' index (tools/editor_assets.py reads it from the game)
     tabs = json.loads(ASSET_INFO.read_text(encoding="utf-8")).get("skillTabs", {}) if ASSET_INFO.exists() else {}
     skills = [[i, s["name"], s["class"], tabs.get(str(i), -1)] for i, s in sorted(data.skills.items())]
-    strings = {k: v for k, v in data.strings.items() if k.isdigit() or k.startswith("class:")}
+    strings = {k: game_text(v) for k, v in data.strings.items() if k.isdigit() or k.startswith("class:")}
     return {"baseFields": BASE_FIELDS, "flags": FLAGS, "cats": cats, "bases": out_bases, "uniques": uniques,
             "stats": stats, "skills": skills, "statMax": max(data.stats) + 1, "skillMax": max(data.skills) + 1,
             "townIds": sorted(T.TOWN_IDS), "strings": strings}
+
+
+def map_stats():
+    """[[stat, property code, lowest, highest]] of every stat a map's affixes roll (docs/pd2-magic-affixes.tsv: the
+    affixes whose item types are maps): the Maps area's mods."""
+    path = ROOT / "docs" / "pd2-magic-affixes.tsv"
+    rows = [line.split("	") for line in path.read_text(encoding="utf-8").splitlines() if line and not line.startswith("#")]
+    head, out = rows[0], {}
+    types, mods = head.index("itypes"), head.index("mods")
+    for r in rows[1:]:
+        if len(r) <= mods or not any(t in ("t1m", "t2m", "t3m", "t4m") for t in r[types].split(",")):
+            continue
+        for prop in json.loads(r[mods]):
+            for sid, _p, lo, hi in prop[5]:
+                cur = out.setdefault(sid, [sid, prop[0], lo, hi])
+                cur[2], cur[3] = min(cur[2], lo), max(cur[3], hi)
+    return [out[k] for k in sorted(out)]
 
 
 def page_data():
@@ -176,6 +194,7 @@ def page_data():
         "poeSounds": [i for i in POE_SOUNDS if i in sounds],
         "looks": {"sample": style_map.SAMPLE, "nameColor": style_map.NAME_COLOR},
         "catalog": catalog(),
+        "mapStats": map_stats(),
     }
     if ASSET_INFO.exists():
         assets = json.loads(ASSET_INFO.read_text(encoding="utf-8"))

@@ -351,6 +351,36 @@
     return {fail: bad.length ? bad.join("\n  ") : null, cases: cases.length + 1};
   });
 
+  /* Map warnings and hides (tools/editor/maps.js): a warning line on identified maps with the mod, a hide of
+     identified maps with a mod or a low experience multiplier, nothing else changed. */
+  test("maps", () => {
+    EZ.items.init({catalog: EXPECT.catalog});
+    const main = src.variants.find((v) => v.name === src.main);
+    const lines = C.variantLines(src, main);
+    const opts = {statMax: EXPECT.catalog.statMax, skillMax: EXPECT.catalog.skillMax, soundCount: EXPECT.soundCount};
+    const code = EZ.maps.codes(lines).xp[0];
+    if (!code) return {fail: "no map with an experience multiplier"};
+    const build = (maps) => E.compile(EZ.edits.apply(src, EZ.store.normalize({name: "t", edits: {base: {style: "erazure"},
+      maps}}), lines).lines, opts);
+    const at = (F, spec, mapid) => E.run(F, EZ.items.make(Object.assign({code, quality: "RARE", place: "GROUND"}, spec)),
+      {filtlvl: 1, clvl: 90, cls: 1, diff: 2, mapid: mapid || 2, charstats: {12: 90}}, {});
+    const bad = [];
+    let F = build({warn: [442]});
+    if (at(F, {id: true, stats: [[442, 0, 1111]]}).desc.indexOf("ÿc1! ") < 0) bad.push("no warning on a map with Ghosts");
+    if (at(F, {id: true, stats: [[440, 0, 391]]}).desc.indexOf("ÿc1! ") >= 0) bad.push("a warning on a map without Ghosts");
+    F = build({hide: [440]});
+    if (!at(F, {id: true, stats: [[440, 0, 391]]}).invisible) bad.push("a map with Hell Bovines isn't hidden");
+    if (at(F, {id: true, stats: [[442, 0, 1111]]}).hidden) bad.push("a map without Hell Bovines is hidden");
+    if (at(F, {id: true, stats: [[440, 0, 391]]}, 1).hidden) bad.push("a map with Hell Bovines is hidden in town");
+    F = build({minXp: "1.5"});
+    if (!at(F, {id: true, stats: []}).hidden) bad.push("a map with no rolls isn't hidden below 1.5x");
+    if (at(F, {id: false}).hidden) bad.push("an unidentified map is hidden");
+    if (at(F, {id: true, stats: [[372, 0, 60], [373, 0, 24], [375, 0, 90], [370, 0, 110]]}).hidden) {
+      bad.push("a map with density, experience and rarity rolls is hidden below 1.5x");
+    }
+    return {fail: bad.length ? bad.join("\n  ") : null, map: code, cases: 8};
+  });
+
   /* The Changes area's line diff (tools/editor/diff.js): it rebuilds both sides, pairs only equal lines and is as
      short as a diff can be (the longest common subsequence's), on random short texts. */
   test("diff", () => {

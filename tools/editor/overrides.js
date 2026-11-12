@@ -55,8 +55,14 @@ EZ.overrides = (function () {
     const a = int((s.clvl || [])[0]), b = int((s.clvl || [])[1]);
     if (a !== null && a > 1) parts.push("CLVL>" + (a - 1));
     if (b !== null && b < 99) parts.push("CLVL<" + (b + 1));
+    if (typeof s.extra === "string" && s.extra.trim()) {  // more words (the Maps area's stat tests, formulas)
+      parts.push(s.extra.replace(/\/\/+/g, "/").replace(/[\r\n:[\]]/g, " ").trim());
+    }
     return parts.join(" ");
   }
+
+  /* Overrides other areas make from their own settings: fn(edits, ctx) -> [override] (the Maps area's hides). */
+  const generators = [];
 
   /* The items with only what the override fixes known (the engine reads everything else as "maybe"). */
   function partials(s) {
@@ -233,7 +239,8 @@ EZ.overrides = (function () {
 
   /* The edit step (after the level copies, before the player's own rules). */
   function apply(ctx) {
-    const list = (ctx.edits.items || []).filter(valid).flatMap((o) => o.action !== "hunt" ? [o] : [
+    const made = generators.flatMap((g) => { try { return g(ctx.edits, ctx) || []; } catch (e) { return []; } });
+    const list = (ctx.edits.items || []).concat(made).filter(valid).flatMap((o) => o.action !== "hunt" ? [o] : [
       Object.assign({}, o, {action: "show"}),
       Object.assign({}, o, {action: "look", text: typeof o.text === "string" && o.text ? o.text : HUNT.text}),
       Object.assign({}, o, {action: "notify", mode: "instead", alert: o.alert || HUNT.alert})]);
@@ -260,7 +267,7 @@ EZ.overrides = (function () {
     put("bottom", bottoms, EZ.rules.PLACE.bottom);
   }
 
-  return {apply, one, cond, partials, contexts, read, alertText, valid, narrowness, ACTIONS, MARKS, HUNT};
+  return {apply, one, cond, partials, contexts, read, alertText, valid, narrowness, ACTIONS, MARKS, HUNT, generators};
 })();
 
 if (EZ.edits) {

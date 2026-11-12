@@ -416,6 +416,7 @@ EZ.app = (function () {
     if (EZ.scene) EZ.scene.init(app.data.assets, assetBase(scriptSrc));
     if (EZ.sound) EZ.sound.init(app.data.assets, assetBase(scriptSrc));
     if (EZ.items) EZ.items.init(app.data);
+    if (EZ.maps) EZ.maps.init(app.data);
     EZ.store.load();
     EZ.areas.sort((a, b) => a.order - b.order);
     try {

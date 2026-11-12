@@ -63,7 +63,7 @@ EDITOR = ROOT / "tools" / "editor"
 SOURCE = ROOT / "Erazure-Filter-Editor-Source.js"
 FIXTURES = ROOT / "tools" / "editor_fixtures"
 MODULES = ["core.js", "ui.js", "store.js", "filter.js", "features.js", "edits.js", "rules.js", "ops.js",
-           "overrides.js", "volume.js", "wishlists.js", "engine.js", "lint.js", "words.js", "diff.js", "items.js", "sound.js", "glyphs.js"]  # in order
+           "overrides.js", "volume.js", "wishlists.js", "maps.js", "engine.js", "lint.js", "words.js", "diff.js", "items.js", "sound.js", "glyphs.js"]  # in order
 TESTS_JS = ROOT / "tools" / "editor_selftest.js"  # the engine tests' code
 BROWSERS = [
     r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
@@ -150,6 +150,8 @@ test("features", () => {
 });
 
 test("edits", async () => {
+  EZ.items.init({catalog: EXPECT.catalog});
+  EZ.maps.init({mapStats: EXPECT.mapStats});
   const out = {};
   for (const name of Object.keys(EXPECT.fixtures)) {
     const fx = EXPECT.fixtures[name];
@@ -161,7 +163,7 @@ test("edits", async () => {
     const decoded = header.length ? await EZ.edits.fromFile(header.join("\\n")) : null;
     out[name] = {variant: variant.name, count: r.report.count, unplaced: r.report.unplaced, crcs: crcs(lines),
                  header: header.length, decoded, ops: r.report.ops || [],
-                 aliasLines: fx.edits.items || fx.edits.wishlists ? r.lines : undefined};
+                 aliasLines: fx.edits.items || fx.edits.wishlists || fx.edits.maps ? r.lines : undefined};
   }
   return {results: out};
 });
@@ -538,6 +540,13 @@ def count(e, feats):
     n = sum(1 for v in (e.get("options") or {}).values() if v)
     n += sum(1 for o in (e.get("ops") or []) if valid_op(o))
     n += sum(1 for v in (e.get("volume") or {}).values() if v in VOLUME_MODES)
+    mp = e.get("maps") if isinstance(e.get("maps"), dict) else {}
+    ids = lambda xs: {int(x) for x in (xs if isinstance(xs, list) else []) if str(x).isdigit() and 0 < int(x) < 4096}  # noqa: E731
+    try:
+        xp = float(mp.get("minXp"))
+    except (TypeError, ValueError):
+        xp = None
+    n += len(ids(mp.get("warn"))) + len(ids(mp.get("hide"))) + (1 if xp is not None and 0 < xp < 20 else 0)
     n += sum(1 for w in (e.get("wishlists") or []) if isinstance(w, dict) and (w.get("codes") or w.get("groups")
                                                                                 or w.get("need") or w.get("pool")))
     n += sum(1 for o in (e.get("items") or []) if isinstance(o, dict) and o.get("action") in ITEM_ACTIONS
@@ -761,7 +770,7 @@ def check_edits(src, detail, fixtures):
             continue
         toggle, style = fixture_variant(src, fx["edits"])
         variant = next(v for v in src["variants"] if v["toggle"] == toggle and v["style"] == style)
-        if fx["edits"].get("items") or fx["edits"].get("wishlists"):
+        if fx["edits"].get("items") or fx["edits"].get("wishlists") or fx["edits"].get("maps"):
             # item overrides (overrides.js) have no Python port: build.py writes the page's lines out with its
             # --check verification (BH reads every rule of the written file as the alias form), the same bytes
             try:
@@ -1104,7 +1113,8 @@ def expectations(src, only=""):
     import editor_map
     data = editor_map.page_data()
     out.update(catalog=data["catalog"], soundCount=data["soundCount"], paste=PASTE_CASES, sound=sound_case(),
-               lint=LINT_CASES, build=BUILD_CASES, words=WORDS_CASES, assets=data.get("assets"))
+               lint=LINT_CASES, build=BUILD_CASES, words=WORDS_CASES, assets=data.get("assets"),
+               mapStats=data.get("mapStats"))
     if not only or "tiers".startswith(only[:5]) or only.startswith("tiers"):
         out["tiers"] = tier_cases()
     return out
