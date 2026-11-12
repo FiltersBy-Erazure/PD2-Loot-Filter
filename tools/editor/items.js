@@ -56,6 +56,9 @@ EZ.items = (function () {
 
   const base = (code) => C && C.bases.get(code);
   const unique = (i) => C && C.uniques[i];
+  /* Whether an item of this base and quality is always identified: a non-magical one, and a T1-T4 map (those drop
+     white; a magic or rare one is made from one in the cube: the author, 2026-11-12). */
+  const alwaysId = (b, q) => !!NMAG[q || "NORM"] || !!(b && b.maptier >= 1 && b.maptier <= 4);
 
   /* The game's name for the item (its string's first line is drawn at the bottom: base first, then the item's own
      name). */
@@ -79,7 +82,7 @@ EZ.items = (function () {
     if (!b) return null;
     const q = spec.quality || "NORM";
     const u = (q === "UNI" || q === "SET") && spec.uni != null ? unique(spec.uni) : null;
-    const id = NMAG[q] ? true : spec.id !== undefined ? !!spec.id : false;
+    const id = alwaysId(b, q) ? true : spec.id !== undefined ? !!spec.id : false;
     const own = {}, list = {}, stats = {};
     const add = (map, sid, p, v) => { const k = key(sid, p); map[k] = (map[k] || 0) + v; };
     const roll = spec.roll === undefined ? 1 : spec.roll;
@@ -156,7 +159,7 @@ EZ.items = (function () {
     let s = parts.filter(Boolean).join(" ");
     if (spec.sockets) s += ", " + spec.sockets + " socket" + (spec.sockets > 1 ? "s" : "");
     if (spec.rw) s += ", " + spec.rw;
-    if (!NMAG[q] && !spec.id && (q !== "NORM")) s += ", unidentified";
+    if (!alwaysId(b, q) && !spec.id) s += ", unidentified";
     return s;
   }
 
@@ -485,7 +488,7 @@ EZ.items = (function () {
   }
 
   return {init, base, unique, make, describe, picks, search, statChoices, statLabel, statLine, statLines, statTitle,
-          gameName, fromGame, hoverText, qualities,
+          gameName, fromGame, hoverText, qualities, alwaysId,
           QUALITY_TINT, QUALITY_NAMES,
           catalog: () => C};
 })();

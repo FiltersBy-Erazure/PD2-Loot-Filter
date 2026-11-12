@@ -392,7 +392,9 @@ EZ.areas = EZ.areas || [];
     // (bases that can be), identified (magical qualities)
     const anyQual = bases.some((b) => EZ.items.qualities(b));
     const anyEth = bases.some((b) => b.canEth);
-    const magicalPicked = !quals.length || quals.some((q) => WHITE.indexOf(q) < 0);
+    // (T1-T4 maps are always identified: white when they drop, magic or rare only when made from one)
+    const magicalPicked = (!quals.length || quals.some((q) => WHITE.indexOf(q) < 0)) &&
+      bases.some((b) => !EZ.items.alwaysId(b, "MAG"));
     const white = WHITE.every((x) => quals.indexOf(x) >= 0);
     const chip = (v, t) => h("button.fe-chiptog", {type: "button", "aria-pressed": String(quals.indexOf(v) >= 0),
       onclick: () => set((x) => {

@@ -395,7 +395,7 @@ EZ.preview = (function () {
           // change it
           const spec = Object.assign({}, r.spec), was = {place: spec.place, id: spec.id};
           spec.place = "GROUND";
-          if (["MAG", "RARE", "CRAFT", "UNI", "SET"].indexOf(spec.quality) >= 0) spec.id = false;
+          if (!EZ.items.alwaysId(EZ.items.base(spec.code), spec.quality)) spec.id = false;
           set(() => { state.spec = spec; state.notes = r.notes; state.pasted = was; state.mode = "item"; });
           return false;
         } catch (e) {
@@ -418,14 +418,16 @@ EZ.preview = (function () {
     const nmag = q === "NORM" || q === "SUP" || q === "INF";
     const change = (fn) => set(() => fn(state.spec));
     const rows = [];
-    const qualities = u ? [u.kind] : b.misc ? (b.groups.some((g) => ["JEWELRY", "CHARM", "QUIVER"].includes(g)) ||
-      b.code === "jew" || b.map ? ["NORM", "MAG", "RARE", "CRAFT", "UNI", "SET"] : ["NORM"]) : QUALITIES;
+    // a T1-T4 map is white, magic or rare (a unique map is a base of its own)
+    const qualities = u ? [u.kind] : b.maptier >= 1 && b.maptier <= 4 ? ["NORM", "MAG", "RARE"] : b.misc ?
+      (b.groups.some((g) => ["JEWELRY", "CHARM", "QUIVER"].includes(g)) || b.code === "jew" || b.map ?
+        ["NORM", "MAG", "RARE", "CRAFT", "UNI", "SET"] : ["NORM"]) : QUALITIES;
     if (qualities.length > 1) {
       rows.push(h("label.fe-pvfield", h("span", "Quality"), select(qualities.map((x) => ({value: x,
         text: EZ.items.QUALITY_NAMES[x]})), q, (v) => change((s) => { s.quality = v; delete s.uni; }), "Quality")));
     }
     const flags = h("div.fe-row.fe-small");
-    if (!nmag) flags.appendChild(toggle("Identified", !!spec.id, (on) => change((s) => { s.id = on; })));
+    if (!EZ.items.alwaysId(b, q)) flags.appendChild(toggle("Identified", !!spec.id, (on) => change((s) => { s.id = on; })));
     if (b.canEth && !(u && u.eth)) flags.appendChild(toggle("Ethereal", !!spec.eth, (on) => change((s) => { s.eth = on; })));
     if (q === "UNI" || q === "SET") {
       flags.appendChild(toggle("Discovered", spec.discovered !== false, (on) => change((s) => { s.discovered = on; })));
@@ -471,7 +473,7 @@ EZ.preview = (function () {
     const spec = state.spec;
     const wrap = h("div.fe-pv-stats");
     const list = spec.stats || [];
-    const magical = ["MAG", "RARE", "CRAFT", "UNI", "SET"].indexOf(spec.quality) >= 0;
+    const magical = !EZ.items.alwaysId(EZ.items.base(spec.code), spec.quality);
     if (magical && !spec.id && list.length) {
       wrap.appendChild(h("p.fe-note.warn.fe-small", "Unidentified: the game shows the loot filter none of its stats, " +
         "so these count only once it is identified (switch Identified on above)."));
