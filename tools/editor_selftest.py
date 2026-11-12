@@ -28,6 +28,10 @@ Tests:
   tiers      the engine on Erazure - Main against tools/tier_map.py's model (the Unique / Set Tiers page): every
              unique and set base, unidentified on the ground, in every scenario the page has (filter level,
              character level, class, ethereal, place, discovered): its label, chat line, drop sound and minimap icon.
+  lint       My rules' lint (tools/editor/lint.js) on lines with known mistakes (each must get its finding, and no
+             error or warning it shouldn't) and on every rule of Erazure's versions (none may be an error).
+  rules      the rule builder (tools/editor/rules.js): forms and the rule lines they must make, each read by the
+             engine without a word BH drops.
 
 The page under test is served over http from a temporary folder; the browser writes the results as JSON into the
 page, which --dump-dom prints.
@@ -55,8 +59,8 @@ ROOT = Path(__file__).resolve().parent.parent
 EDITOR = ROOT / "tools" / "editor"
 SOURCE = ROOT / "Erazure-Filter-Editor-Source.js"
 FIXTURES = ROOT / "tools" / "editor_fixtures"
-MODULES = ["core.js", "ui.js", "store.js", "filter.js", "features.js", "edits.js", "engine.js", "items.js",
-           "sound.js"]  # in order
+MODULES = ["core.js", "ui.js", "store.js", "filter.js", "features.js", "edits.js", "rules.js", "engine.js",
+           "lint.js", "items.js", "sound.js", "glyphs.js"]  # in order
 TESTS_JS = ROOT / "tools" / "editor_selftest.js"  # the engine tests' code
 BROWSERS = [
     r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
@@ -383,6 +387,30 @@ def copy_levels(cond, copies):
     return FILTLVL_RE.sub(sub, cond)
 
 
+# My rules (tools/editor/rules.js): each block's lines go in between its markers, before these sections
+RULE_MARKS = {
+    "top": ("// ===============  Your own rules (Erazure Filter Editor), above Erazure's rules  ===============",
+            "// ===============  End of your own rules above Erazure's  ==============="),
+    "bottom": ("// ===============  Your own rules (Erazure Filter Editor), below Erazure's rules  ===============",
+               "// ===============  End of your own rules below Erazure's  ==============="),
+}
+RULE_PLACES = {"top": "050-customization.filter", "bottom": "370-catch-all.filter"}
+
+
+def rule_block(text):
+    """rules.js's lines(): any line breaks, no blank lines at the end."""
+    if not isinstance(text, str) or not text:
+        return []
+    out = text.replace("\r\n", "\n").replace("\r", "\n").split("\n")
+    while out and not out[-1].strip():
+        out.pop()
+    return out
+
+
+def active_rules(block):
+    return [x for x in block if x.strip() and not re.match(r"^\s*//", x)]
+
+
 def count(e, feats):
     n = sum(1 for v in (e.get("options") or {}).values() if v)
     n += sum(1 for fid, on, *_ in feats if fid in (e.get("features") or {}) and bool(e["features"][fid]) != on)
@@ -392,6 +420,7 @@ def count(e, feats):
     a = e.get("alerts") or {}
     n += len(e.get("sounds") or {}) + sum(1 for k in ("noSounds", "noIcons", "iconsOnly") if a.get(k))
     n += 1 if a.get("iconSize") in ("smaller", "bigger") else 0
+    n += sum(len(active_rules(rule_block((e.get("rules") or {}).get(b)))) for b in RULE_MARKS)
     return n
 
 
@@ -524,6 +553,12 @@ def reference(src, edits, lines, feats):
                 out.append(rebuilt(cond + " (" + " OR ".join(f"FILTLVL={x}" for x in off) + ")",
                                    TIER_RE.sub("%TIER-0%", r["out"], count=1)))
         lines = out
+    # My rules: each block with a line BH reads, between its markers (after every other edit)
+    for which, (start, end) in RULE_MARKS.items():
+        block = rule_block((edits.get("rules") or {}).get(which))
+        if active_rules(block):
+            at = sections(src, lines)[RULE_PLACES[which]][0]
+            lines[at:at] = [start] + block + [end]
     # the Cube's Custom mark
     n = count(edits, feats)
     if n:
@@ -754,6 +789,82 @@ PASTE_CASES = [
 ]
 
 
+# My rules' lint: (a line, its block, [(level, words its message has)]); every error and warning must be listed
+LINT_CASES = [
+    ("ItemDisplay[r30]:%NAME%{%NAME%}", "top", []),
+    ("ItemDisplay[r30 GROUND !TOWN]:", "top", []),
+    ("ItemDisplay[r30 FILTLVL>4 CLVL>79 GROUND !TOWN]:%NAME%%MAP-0A%%TIER-4%{%NAME%}", "top", []),
+    ("ItemDisplay[(uap OR xap) UNI !GRAIL_NEW]:%UNI_HIGH_VALUE_LEFT%%NAME%%UNI_HIGH_VALUE_RIGHT%{%NAME%}", "top", []),
+    ("ItemDisplay[r30 FOO]:%NAME%{%NAME%}", "top", [("error", "BH drops 'FOO'")]),
+    ("ItemDisplay[r30 SOCK>x]:%NAME%{%NAME%}", "top", [("error", "BH drops 'SOCK>x'")]),
+    ("ItemDisplay[r30 OR r31 GROUND !TOWN]:", "top", [("warning", "AND after OR")]),
+    ("ItemDisplay[(r30 OR r31]:%NAME%{%NAME%}", "top", [("error", "Unbalanced")]),
+    ("ItemDisplay[r30 OR]:%NAME%{%NAME%}", "top", [("error", "never matches")]),
+    ("ItemDisplay[]:%NAME%{%NAME%}", "top", [("warning", "decides every item's look")]),
+    ("ItemDisplay[]:%NAME%{%NAME%}", "bottom", []),
+    ("ItemDisplay[qqq]:%NAME%{%NAME%}", "top", [("warning", "'qqq' is no item code")]),
+    ("ItemDisplay[r30]:%NAME%%BORDER%{%NAME%}", "top", [("error", "%BORDER% is no keyword")]),
+    ("ItemDisplay[r30]:%NAME%%FOO%{%NAME%}", "top", [("error", "%FOO% is no keyword")]),
+    ("ItemDisplay[r30]:%NAME%%MAP-0A%%TIER-10%{%NAME%}", "top", [("error", "%TIER-10% shows as text")]),
+    ("ItemDisplay[r30]:%NAME%%MAP-0A%%MAP-0B%{%NAME%}", "top", [("error", "BH takes only the first")]),
+    ("ItemDisplay[r30]:%NAME%%SOUNDID-9999%{%NAME%}", "top", [("warning", "past the game's sounds")]),
+    ("ItemDisplay[r30]:%NAME%{%NAME%%CONTINUE%}", "top", [("error", "%CONTINUE% inside { }")]),
+    ("ItemDisplay[r30]:%NAME%{a}{b}", "top", [("error", "More than one {")]),
+    ("ItemDisplay[r30]:", "top", [("warning", "everywhere BH names it")]),
+    ("ItemDisplay[r30 GROUND]:", "top", []),
+    ("ItemDisplay[r30]:%CONTINUE%", "top", [("warning", "empties the name")]),
+    ("ItemDisplay[r30]:%RED%Mine%CONTINUE%{%NAME%}", "top", [("info", "has no %NAME%")]),
+    ("ItemDisplay[NMAG SHOP r30]:%NAME% " + "x" * 80 + "{%NAME%}", "top", []),
+    ("ItemDisplay[r30]:%NAME% %RED%" + "x" * 60 + "{%NAME%}", "top", [("warning", "BH shows 56")]),
+    ("ItemDisplay[r30]:%NAME% $f(STAT0+){%NAME%}", "top", [("error", "can't read the formula")]),
+    ("ItemDisplay[r30]:%NAME% \u4e2d{%NAME%}", "top", [("warning", "has no letter")]),
+    ("Alias[AR]:(r30)", "top", [("warning", "inside other words")]),
+    ("Alias[LOOP]:(LOOP OR r30)", "top", [("error", "contains its own name")]),
+    ("Alias[TOWN]:(MAPID=1)", "top", [("warning", "Erazure already has Alias[TOWN]")]),
+    ("Formula[BAD]: STAT31 +", "top", [("error", "can't read this formula")]),
+    ("ItemDisplayFilterName[]:My level", "top", [("warning", "12 filter level names")]),
+    ("Hello there", "top", [("error", "BH ignores this line")]),
+    ("ItemDisplay[r30 // cut]:%NAME%", "top", [("error", "The // cuts the rule")]),
+    ("ItemDisplay[r30:x]:%NAME%{%NAME%}", "top", [("error", "A ':' inside the [ ]")]),
+    ("ItemDisplay[r30]", "top", [("error", "No ':'")]),
+]
+
+# the rule builder: (its form, the rule line it must make)
+BUILD_CASES = [
+    ({}, "ItemDisplay[]:%NAME%{%NAME%}"),
+    ({"codes": ["r30"], "show": "hide"}, "ItemDisplay[r30 GROUND !TOWN]:"),
+    ({"codes": ["r30"], "show": "hide", "place": "any"}, "ItemDisplay[r30]:"),
+    ({"codes": ["uap"], "quals": ["UNI"], "text": "%GOLD%*%NAME%", "icon": {"MAP": "0a"}, "sound": 4728,
+      "chat": "tier", "tier": 4}, "ItemDisplay[uap UNI]:%GOLD%*%NAME%{%NAME%}%MAP-0A%%SOUNDID-4728%%TIER-4%"),
+    ({"groups": ["HELM", "CIRC"], "tiers": ["ELT"], "quals": ["RARE", "CRAFT"], "eth": "no", "id": "yes",
+      "sock": {"op": "min", "a": 2}, "levels": [5, 6, 7], "clvl": [80, ""], "classes": ["SORCERESS"], "diffs": [2],
+      "stats": [{"word": "FCR", "op": "min", "a": 20},
+                {"skill": 54, "total": True, "tab": 9, "cls": 1, "op": "min", "a": 3}],
+      "cont": True, "text": "%NAME% %GREEN%[20fcr]"},
+     "ItemDisplay[(HELM OR CIRC) ELT (RARE OR CRAFT) !ETH ID SOCK>1 FILTLVL~5-7 CLVL>79 SORCERESS DIFF=2 FCR>19 "
+     "MULTI107,54+MULTI188,9+MULTI83,1+STAT127>2]:%NAME% %GREEN%[20fcr]{%NAME%}%CONTINUE%"),
+    ({"levels": [8, 9, 10, 11, 12]}, "ItemDisplay[FILTLVL>7]:%NAME%{%NAME%}"),
+    ({"levels": [1, 2, 3, 4]}, "ItemDisplay[FILTLVL~1-4]:%NAME%{%NAME%}"),
+    ({"levels": [3, 1]}, "ItemDisplay[(FILTLVL=1 OR FILTLVL=3)]:%NAME%{%NAME%}"),
+    ({"levels": list(range(1, 13))}, "ItemDisplay[]:%NAME%{%NAME%}"),
+    ({"quals": ["NORM", "MAG"]}, "ItemDisplay[((NMAG !SUP !INF) OR MAG)]:%NAME%{%NAME%}"),
+    ({"stats": [{"word": "ED", "op": "between", "a": 200, "b": 150}]}, "ItemDisplay[ED~150-200]:%NAME%{%NAME%}"),
+    ({"stats": [{"skill": 54, "total": True, "tab": 9, "cls": 1, "op": "between", "a": 3, "b": 5}]},
+     "ItemDisplay[MULTI107,54+MULTI188,9+MULTI83,1+STAT127>2 MULTI107,54+MULTI188,9+MULTI83,1+STAT127<6]:%NAME%{%NAME%}"),
+    ({"stats": [{"stat": 360, "op": "exactly", "a": 0}, {"word": "TABSK9", "op": "max", "a": 2}]},
+     "ItemDisplay[STAT360=0 TABSK9<3]:%NAME%{%NAME%}"),
+    ({"desc": {"how": "below", "text": "%GREEN%Note // x {y}"}},
+     "ItemDisplay[]:%NAME%{%GREEN%Note / x y%CL%%NAME%}"),
+    ({"desc": {"how": "above", "text": "Over"}, "comment": "my // note"},
+     "ItemDisplay[]:%NAME%{%NAME%%CL%Over} // my / note"),
+    ({"desc": {"how": "clear"}, "hands": "2H", "groups": ["SWORD"]}, "ItemDisplay[SWORD 2H]:%NAME%{}"),
+    ({"codes": ["r33"], "icon": {"BORDER": "62", "PX": "0"}, "chat": "none"},
+     "ItemDisplay[r33]:%NAME%{%NAME%}%BORDER-62%%PX-00%%TIER-0%"),
+    ({"place": "shop", "disc": "new", "rw": "no", "ilvl": ["85", "99"], "extra": "!GRAIL_NEW: [MAPTIER>2]"},
+     "ItemDisplay[!RW ILVL>84 SHOP !ALLDISCOVERED !GRAIL_NEW   MAPTIER>2]:%NAME%{%NAME%}"),
+]
+
+
 def sound_case():
     """A test tone through tools/editor_assets.py's IMA ADPCM writer: (the clip, base64; its samples decoded here)."""
     import math
@@ -819,7 +930,8 @@ def expectations(src, only=""):
            "engine": {"formulas": ENGINE_FORMULAS, "conditions": ENGINE_CONDITIONS, "rules": ENGINE_RULES}}
     import editor_map
     data = editor_map.page_data()
-    out.update(catalog=data["catalog"], soundCount=data["soundCount"], paste=PASTE_CASES, sound=sound_case())
+    out.update(catalog=data["catalog"], soundCount=data["soundCount"], paste=PASTE_CASES, sound=sound_case(),
+               lint=LINT_CASES, build=BUILD_CASES, assets=data.get("assets"))
     if not only or "tiers".startswith(only[:5]) or only.startswith("tiers"):
         out["tiers"] = tier_cases()
     return out

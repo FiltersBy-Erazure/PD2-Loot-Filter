@@ -161,4 +161,76 @@
     return {fail, cases: n, compared: show(seen), compileMs, runMsPerCase: +(ms / Math.max(1, n)).toFixed(3),
             examples: fail ? examples : undefined};
   });
+
+  test("lint", () => {
+    EZ.items.init({catalog: EXPECT.catalog});
+    if (EZ.glyphs && EXPECT.assets) EZ.glyphs.init(EXPECT.assets, "");
+    const bad = [];
+    const main = src.variants.find((v) => v.name === src.main);
+    const mainLines = C.variantLines(src, main);
+    for (const [line, block, want] of EXPECT.lint) {
+      const ctx = Object.assign(EZ.lint.context(src, mainLines, {top: block === "top" ? [line] : [],
+        bottom: block === "bottom" ? [line] : []}, {soundCount: EXPECT.soundCount}), {block});
+      const got = EZ.lint.lines([line], ctx);
+      const says = got.map((f) => f.level + ": " + f.text).join(" | ");
+      for (const [level, words] of want) {
+        if (!got.some((f) => f.level === level && f.text.indexOf(words) >= 0)) {
+          bad.push(`${line}: no ${level} saying "${words}" (it says: ${says || "nothing"})`);
+        }
+      }
+      for (const f of got) {
+        if (f.level !== "info" && !want.some(([level, words]) => level === f.level && f.text.indexOf(words) >= 0)) {
+          bad.push(`${line}: an unexpected ${f.level}: ${f.text}`);
+        }
+      }
+    }
+    // every rule of Erazure's versions as a player's line: none may be an error
+    const kinds = {};
+    let rules = 0;
+    const t0 = performance.now();
+    for (const name of [src.main, "Minimal", "Corrlorized - Main - PoE"]) {
+      const v = src.variants.find((x) => x.name === name);
+      if (!v) { bad.push(`no version ${name}`); continue; }
+      const lines = C.variantLines(src, v);
+      const ctx = Object.assign(EZ.lint.context(src, lines, {top: [], bottom: []}, {soundCount: EXPECT.soundCount}),
+                                {block: "erazure"});
+      const list = lines.filter((l) => l.startsWith("ItemDisplay["));
+      rules += list.length;
+      for (const f of EZ.lint.lines(list, ctx)) {
+        if (f.level === "error") {
+          if (bad.length < 25) bad.push(`${name}: ${list[f.line].slice(0, 160)}: ${f.text}`);
+        } else if (f.level === "warning") {
+          const k = f.text.slice(0, 48);
+          kinds[k] = (kinds[k] || 0) + 1;
+        }
+      }
+    }
+    return {fail: bad.length ? bad.join("\n  ") : null, cases: EXPECT.lint.length, erazureRules: rules,
+            ms: Math.round(performance.now() - t0), erazureWarnings: show(kinds)};
+  });
+
+  test("rules", () => {
+    EZ.items.init({catalog: EXPECT.catalog});
+    const bad = [];
+    const main = src.variants.find((v) => v.name === src.main);
+    const aliases = C.bhAliases(C.bhEntries(C.variantLines(src, main)));
+    for (const [spec, want] of EXPECT.build) {
+      const r = EZ.rules.build(spec);
+      if (r.line !== want) bad.push(`${show(spec)}: ${r.line}, want ${want}`);
+      const cond = C.substitute([[r.cond], [""]], aliases)[0][0];
+      const a = EZ.engine.analyze(cond);
+      if (a.dropped.length || a.never) {
+        bad.push(`${r.line}: BH drops ${a.dropped.map((d) => d.token).join(", ")}${a.never ? " (it never matches)" : ""}`);
+      }
+    }
+    // the blocks go in between their markers, and the preview finds a rule's line in them
+    const p = EZ.store.normalize({name: "t", edits: {base: {style: "erazure"}, rules: {top: "// note\nItemDisplay[r30]:%NAME%{%NAME%}\n\n", bottom: " \n// only a note\n"}}});
+    const built = EZ.edits.apply(src, p, C.variantLines(src, main));
+    const at = built.lines.indexOf("ItemDisplay[r30]:%NAME%{%NAME%}");
+    const where = EZ.rules.locate(built.lines, at);
+    if (!where || where.block !== "top" || where.n !== 2) bad.push(`locate: ${show(where)}`);
+    if (built.lines.indexOf(EZ.rules.MARKS.bottom[0]) >= 0) bad.push("a block of notes only went into the file");
+    if (built.report.count !== 1) bad.push(`count ${built.report.count}, want 1`);
+    return {fail: bad.length ? bad.join("\n  ") : null, cases: EXPECT.build.length};
+  });
 })();

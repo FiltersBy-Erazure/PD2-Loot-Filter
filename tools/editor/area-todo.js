@@ -8,7 +8,6 @@ EZ.areas = EZ.areas || [];
     ["items", "Items", "◈", 30, "b", "Show, hide, mute or restyle single items; your hunt list; unique and set tiers."],
     ["wishlists", "Wishlists", "★", 60, "b", "Rares, shop items, runeword and crafting bases, charms and jewels you want."],
     ["maps", "Maps", "⌖", 70, "b", "Map lines, mod warnings and hides, minimum experience."],
-    ["rules", "My rules", "⊕", 80, "c", "Your own rules: the rule builder and the code editor."],
     ["erazure", "Erazure's rules", "≡", 90, "c", "Every rule of Erazure: browse, switch off or change them."],
     ["changes", "Changes", "⇄", 100, "d", "What your changes do, item by item; every item; compare; troubleshooting."],
     ["help", "Help", "?", 110, "d", "How the editor works, updates, and answers to common questions."],

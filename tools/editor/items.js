@@ -47,7 +47,8 @@ EZ.items = (function () {
     const stats = new Map(cat.stats.map(([id, name, shift, pri, text, neg, str2, func, val, dgrp, gfunc, gval, gpos, op,
                                           opParam]) =>
       [id, {id, name, shift, pri, text, neg, str2, func, val, dgrp, gfunc, gval, gpos, op, opParam}]));
-    const skills = new Map(cat.skills.map(([id, name, cls]) => [id, {id, name, cls}]));
+    const skills = new Map(cat.skills.map(([id, name, cls, tab]) => [id, {id, name, cls,
+      tab: tab === undefined || tab < 0 ? null : tab}]));
     C = {bases, uniques, stats, skills, cats: cat.cats, statMax: cat.statMax || 1023, skillMax: cat.skillMax || 1023,
          townIds: cat.townIds || [1, 40, 75, 103, 109], strings: cat.strings || {}};
     return C;

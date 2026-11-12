@@ -18,6 +18,8 @@ tools/grail_map.py and tools/example_shots.py read it, so neither the build nor 
   ProjectD2's MPQs, d2sfx.mpq, d2speech.mpq or d2xtalk.mpq: tools/mpq_audio.py decodes the game's own compression),
   as 4-bit IMA ADPCM (sounds/<id>.adpcm: its sample rate, length, first sample and step index, then two samples a
   byte); the page decodes one when it's played (EZ.sound).
+- skill tabs: each class skill's tab (SkillDesc's SkillPage: the class's first tab is its TABSK class x 8), so the rule
+  builder can add a skill's tab to a +N to the skill total.
 
 Standard library only. Rerun it after a PD2 patch that changes the fonts, the floors, the items' pictures or the
 sounds, and after a filter change that plays a sound it didn't before (the page then offers ".playsound <id>").
@@ -128,6 +130,18 @@ def pack(atlas, cps, width=512):
     return width, height, px, out
 
 
+def runs(cps):
+    """Every code point an atlas has, as [first, last] runs (lint: a letter no font of the game has draws ☹; the
+    sheets hold only the letters the page needs)."""
+    out = []
+    for cp in sorted(cps):
+        if out and out[-1][1] == cp - 1:
+            out[-1][1] = cp
+        else:
+            out.append([cp, cp])
+    return out
+
+
 def fonts(game, info):
     rows = {}
     for line in game.d2gl.read("data/assets/atlases/default.txt").decode().splitlines():
@@ -155,7 +169,8 @@ def fonts(game, info):
         w, h, px, glyphs = pack(a, cps)
         png_rgba(OUT / file, w, h, px)
         info["atlases"][name] = {"file": file, "w": w, "h": h, "em": 32,
-                                 "glyphs": {str(cp): g for cp, g in sorted(glyphs.items())}}
+                                 "glyphs": {str(cp): g for cp, g in sorted(glyphs.items())},
+                                 "has": runs(a.glyphs)}
         print(f"{file}: {len(glyphs)} glyphs, {w}x{h}, {(OUT / file).stat().st_size // 1024} KB")
 
 
@@ -343,6 +358,27 @@ def sounds(folder, game, info):
     print(f"sounds/: {len(info['sounds'])} sounds, {total // 1024} KB")
 
 
+CLASSES = {"ama": 0, "sor": 1, "nec": 2, "pal": 3, "bar": 4, "dru": 5, "ass": 6}
+
+
+def skill_tabs(folder, info):
+    """{skill id: its TABSK number}: the class's number x 8 + its SkillDesc page - 1 (Sorceress fire 8, lightning 9,
+    cold 10)."""
+    import pd2_data
+    import pd2_mpq
+    pd2 = pd2_mpq.MPQ(Path(folder) / "ProjectD2" / "pd2data.mpq")
+    excel = lambda name: pd2_data.read_table(  # noqa: E731
+        pd2.read(chr(92).join(["data", "global", "excel", name])).decode("latin-1"))
+    pages = {r["skilldesc"]: r.get("SkillPage", "") for r in excel("SkillDesc.txt") if r.get("skilldesc")}
+    tabs = {}
+    for r in excel("Skills.txt"):
+        cls, page = CLASSES.get(r.get("charclass", "").strip()), pages.get(r.get("skilldesc", ""), "")
+        if r["Id"].strip().isdigit() and cls is not None and page.strip().isdigit() and 1 <= int(page) <= 3:
+            tabs.setdefault(r["Id"].strip(), cls * 8 + int(page) - 1)
+    info["skillTabs"] = tabs
+    print(f"skill tabs: {len(tabs)} class skills")
+
+
 def write(folder):
     game = X.Game(folder)
     info = {"v": 1}
@@ -350,6 +386,7 @@ def write(folder):
     floors(game, info)
     ground(game, info)
     sounds(folder, game, info)
+    skill_tabs(folder, info)
     INFO.write_text(json.dumps(info, separators=(",", ":"), ensure_ascii=False) + "\n", encoding="utf-8")
     print(f"wrote {INFO.relative_to(ROOT)} ({INFO.stat().st_size // 1024} KB)")
 

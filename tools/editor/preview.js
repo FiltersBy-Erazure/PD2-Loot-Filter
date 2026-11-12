@@ -123,6 +123,11 @@ EZ.preview = (function () {
 
   /* ---------------------------------------------------------------- drawing results */
 
+  /* What a drop looks like, to tell Erazure's from the player's (an icon's colors, not the line that drew it: the
+     player's own rules move Erazure's lines). */
+  const boxes = (r) => r.icons.map((x) => [x.border, x.map, x.dot, x.px]);
+  const outcome = (r) => JSON.stringify([r.name, boxes(r), r.sound, r.chat, r.invisible, r.desc]);
+
   function iconCanvas(layers, scale) {
     scale = scale || 4;
     const size = 8 * scale + 6;
@@ -212,7 +217,8 @@ EZ.preview = (function () {
     if (r.maybe) pills.appendChild(EZ.ui.pill("Some rules ask what this preview leaves open", "info"));
     if (pills.childNodes.length) card.appendChild(pills);
     const dl = h("dl.fe-kv.fe-pvkv");
-    const diff = (k) => other && JSON.stringify(other[k]) !== JSON.stringify(r[k]) ? "is-changed" : null;
+    const diff = (k) => other && JSON.stringify(k === "icons" ? boxes(other) : other[k]) !==
+      JSON.stringify(k === "icons" ? boxes(r) : r[k]) ? "is-changed" : null;
     dl.appendChild(h("dt", "Minimap"));
     dl.appendChild(h("dd", {class: diff("icons")}, r.icons.length ? iconCanvas(r.icons) : h("span.fe-sub", "no icon")));
     dl.appendChild(h("dt", "Chat"));
@@ -431,6 +437,8 @@ EZ.preview = (function () {
     if (!r) return null;
     const secs = EZ.filter.sections(app.src, f.lines);
     const where = (i) => {
+      const own = EZ.rules && EZ.rules.locate(f.lines, i);
+      if (own) return (own.block === "top" ? "yours, above:" : "yours, below:") + own.n;
       const name = EZ.filter.sectionOf(secs, i);
       return name ? name.replace(/\.filter$/, "") + ":" + (i - secs[name][0] + 1) : "line " + (i + 1);
     };
@@ -512,8 +520,7 @@ EZ.preview = (function () {
       let changed = false;
       if (mine && side === mine) {
         const rb = EZ.engine.run(base.F, it, c, state.opts);
-        changed = JSON.stringify([rb.name, rb.icons, rb.sound, rb.chat, rb.invisible]) !==
-                  JSON.stringify([r.name, r.icons, r.sound, r.chat, r.invisible]);
+        changed = outcome(rb) !== outcome(r);
       }
       const label = r.name && !r.invisible ? EZ.glyphs.label(r.name, {start: r.start, zoom}) : null;
       items.push({label, zoom, code: spec.code, hidden: r.hidden, invisible: r.invisible, spec, r, changed});
@@ -553,8 +560,7 @@ EZ.preview = (function () {
     for (const spec of SAMPLES) {
       if (!EZ.items.base(spec.code)) continue;
       const rb = run(base, spec), rm = mine ? run(mine, spec) : rb;
-      const changed = mine && JSON.stringify([rb.name, rb.icons, rb.sound, rb.chat, rb.invisible]) !==
-        JSON.stringify([rm.name, rm.icons, rm.sound, rm.chat, rm.invisible]);
+      const changed = mine && outcome(rb) !== outcome(rm);
       grid.appendChild(h("button.fe-pv-sample" + (changed ? ".is-changed" : ""), {type: "button",
         title: "Open in the item view", onclick: () => set(() => { state.spec = Object.assign({}, spec); state.mode = "item"; })},
         h("small.fe-sub", EZ.items.describe(spec)),

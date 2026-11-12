@@ -33,9 +33,9 @@ TEMPLATE = EDITOR / "template.html"
 PAGE = ROOT / "Erazure-Filter-Editor.html"
 ASSET_INFO = ROOT / "tools" / "editor_assets.json"
 # the modules, in the order the page runs them (each adds itself to the EZ namespace)
-MODULES = ["core.js", "ui.js", "store.js", "filter.js", "features.js", "edits.js", "render.js", "glyphs.js",
-           "scene.js", "sound.js", "engine.js", "items.js", "share.js", "app.js", "area-start.js", "area-options.js", "area-looks.js",
-           "area-alerts.js", "preview.js", "area-todo.js"]
+MODULES = ["core.js", "ui.js", "store.js", "filter.js", "features.js", "edits.js", "rules.js", "render.js", "glyphs.js",
+           "scene.js", "sound.js", "engine.js", "lint.js", "items.js", "share.js", "app.js", "area-start.js",
+           "area-options.js", "area-looks.js", "area-alerts.js", "area-rules.js", "preview.js", "area-todo.js"]
 ASSETS = ROOT / "Erazure-Filter-Editor-Assets"
 # PD2's own drop sounds (pd2\dropsounds\tinkNN.wav), the PoE versions' picks
 POE_SOUNDS = range(4714, 4730)
@@ -155,7 +155,9 @@ def catalog():
               s.get("descstrneg") or "", s.get("descstr2") or "", s["descfunc"] or 0, s["descval"] or 0, s["dgrp"] or 0,
               s["dgrpfunc"] or 0, s["dgrpval"] or 0, s.get("dgrpstrpos") or "", num(s.get("op")), num(s.get("op param"))]
              for i, s in sorted(data.stats.items())]
-    skills = [[i, s["name"], s["class"]] for i, s in sorted(data.skills.items())]
+    # a class skill's tab (TABSK number) from the assets' index (tools/editor_assets.py reads it from the game)
+    tabs = json.loads(ASSET_INFO.read_text(encoding="utf-8")).get("skillTabs", {}) if ASSET_INFO.exists() else {}
+    skills = [[i, s["name"], s["class"], tabs.get(str(i), -1)] for i, s in sorted(data.skills.items())]
     strings = {k: v for k, v in data.strings.items() if k.isdigit() or k.startswith("class:")}
     return {"baseFields": BASE_FIELDS, "flags": FLAGS, "cats": cats, "bases": out_bases, "uniques": uniques,
             "stats": stats, "skills": skills, "statMax": max(data.stats) + 1, "skillMax": max(data.skills) + 1,
@@ -175,7 +177,8 @@ def page_data():
     }
     if ASSET_INFO.exists():
         assets = json.loads(ASSET_INFO.read_text(encoding="utf-8"))
-        files = list(assets.get("atlases", {}).values()) + list(assets.get("floors", {}).values())
+        assets.pop("skillTabs", None)  # in the catalog's skills
+        files =list(assets.get("atlases", {}).values()) + list(assets.get("floors", {}).values())
         files += [assets["ground"]] if "ground" in assets else []
         files += list(assets.get("sounds", {}).values())
         for a in files:  # each file's CRC: a changed file is fetched again

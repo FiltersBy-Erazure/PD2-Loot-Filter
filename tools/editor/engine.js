@@ -732,7 +732,7 @@ EZ.engine = (function () {
   const SYM = {"!": "not", "(": "(", ")": ")"};
 
   /* Condition::BuildConditions for one token, onto out (with the implicit ANDs; st.last: the last kind added). */
-  function buildConditions(token, out, st, F) {
+  function buildConditions(token, out, st, F, rec) {
     const nonOperand = (k) => {
       if ((k === "not" || k === "(") && (st.last === "v" || st.last === ")")) out.push({k: "and"});
       out.push({k});
@@ -755,11 +755,17 @@ EZ.engine = (function () {
         const r = op === "~" ? vs.indexOf("-") : -1;
         if (r >= 0) {
           const x = readInt(vs.slice(0, r)), y = readInt(vs.slice(r + 1));
-          if (x === null || y === null) return;  // BH returns: the token and its trailing operators are dropped
+          if (x === null || y === null) {  // BH returns: the token and its trailing operators are dropped
+            if (rec) rec.push({token, why: "its range doesn't read as two numbers"});
+            return;
+          }
           a = x; b = y;
         } else {
           const x = readInt(vs);
-          if (x === null) return;
+          if (x === null) {
+            if (rec) rec.push({token, why: "its number doesn't read"});
+            return;
+          }
           a = x;
         }
       }
@@ -814,6 +820,10 @@ EZ.engine = (function () {
           return op ? cmp(r.v, op, a, b) : (r.v !== 0 ? 1 : 0);
         };
       }
+    }
+    if (!f && rec && kind !== "AND" && kind !== "OR" && key) {
+      rec.push({token, why: WORDS[key] ? "a word that needs a comparison" : /^(SK|OS|CHSK|CLSK|TABSK|STAT|CHARSTAT)/.test(key) ?
+        "its number is out of range or missing" : "BH doesn't know this word"});
     }
     if (f) {
       if (st.last === "v" || st.last === ")") out.push({k: "and"});
@@ -1362,6 +1372,17 @@ EZ.engine = (function () {
     return r ? match(r, it, c, F) : 0;
   }
 
+  /* What BH makes of a condition (lint): {dropped: [{token, why}], never (no tree: it never matches), always (no
+     condition left: it always matches), codes (the item codes it names)}. F: a compiled filter (its formulas). */
+  function analyze(text, F) {
+    F = F || {formulas: dict(), statMax: 1023, skillMax: 1023, soundCount: 10000};
+    const conds = [], st = {last: null}, rec = [];
+    for (const tok of text.split(/[ \t\n\r\v\f]+/)) if (tok) buildConditions(tok, conds, st, F, rec);
+    const t = tree(conds);
+    return {dropped: rec, never: !t, always: t && t.k === "always", codes: conds.filter((c) => c.only && c.only.codes)
+      .map((c) => c.only.codes[0])};
+  }
+
   /* One condition's tree from its text (the tests; lint), and its value for an item. */
   function condition(text, F) {
     F = F || {formulas: dict(), statMax: 1023, skillMax: 1023, soundCount: 10000};
@@ -1371,6 +1392,7 @@ EZ.engine = (function () {
   }
 
   return {compile, run, canMatch, match, action, compileFormula, runFormula, formatNumber, trim, copyName, chatLine,
-          affixLevel, gameColor, condition, MAYBE, QUALITY_COLOR, CLASS_ID, PLACES, VARS, WORDS,
+          affixLevel, gameColor, condition, analyze, islandsOf: islands, islandNamer, replacements, MAYBE,
+          QUALITY_COLOR, CLASS_ID, PLACES, VARS, WORDS,
           evalCondition: (t, it, c, F) => t ? evalTree(t, it, c, F || {formulas: dict()}) : 0};
 })();

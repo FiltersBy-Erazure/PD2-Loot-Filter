@@ -183,7 +183,22 @@ EZ.app = (function () {
     await w.close();
   }
 
-  function saveToGame() {
+  /* What a module wants the player to know before saving (EZ.app.checks: fn(app) -> {text, area} or null): a
+     dialog lists them, with Save anyway or Fix them (the first one's area). */
+  function checked(then) {
+    const issues = app.checks.map((f) => { try { return f(app); } catch (e) { return null; } }).filter(Boolean);
+    if (!issues.length) { then(); return; }
+    dialog({title: "Before you save", body: [
+      h("p", "BH will trip over some of your changes:"),
+      h("ul", issues.map((x) => h("li", x.text))),
+      h("p.fe-sub", "Save anyway, or fix them first.")],
+      buttons: [{text: "Fix them", onclick: () => { const at = issues.find((x) => x.area); if (at) go(at.area); }},
+                {text: "Save anyway", primary: true, onclick: () => { then(); }}]});
+  }
+
+  function saveToGame() { checked(saveNow); }
+
+  function saveNow() {
     if (!canSaveInPlace()) { withBuild("Building your filter", download); return; }
     withBuild("Saving your filter", async (built) => {
       let dir = await folderHandle(false);
@@ -268,7 +283,8 @@ EZ.app = (function () {
       canSaveInPlace() ? "Save to game" : "Download");
     const more = h("button.fe-btn", {type: "button", "aria-label": "More ways to save", "aria-haspopup": "menu"}, "▾");
     more.addEventListener("click", () => menu(more, [
-      {text: "Download the file", sub: "to put in filters\\local yourself", onclick: () => withBuild("Building your filter", download)},
+      {text: "Download the file", sub: "to put in filters\\local yourself", onclick: () => checked(() =>
+        withBuild("Building your filter", download))},
       canSaveInPlace() ? {text: "Forget the game folder", sub: "the next save asks for it again", onclick: forgetFolder} : null,
       {text: "Save changes to a file", sub: "to keep or move them (import it here)", onclick: () => EZ.share.exportFile(app)},
       {text: "Copy a share link", sub: "anyone opening it can load your changes", onclick: () => EZ.share.copyLink()},
@@ -427,6 +443,6 @@ EZ.app = (function () {
   Object.assign(app, {start, go, redraw, drawBar, drawSide, drawArea, drawPreview, variant, variantFor, toggleName,
                       versionLines,
                       changes, build, withBuild, download, saveToGame, canSaveInPlace, forgetFolder, fileName,
-                      STYLE_NAMES, saveMenu: []});
+                      STYLE_NAMES, saveMenu: [], checks: []});
   return app;
 })();
