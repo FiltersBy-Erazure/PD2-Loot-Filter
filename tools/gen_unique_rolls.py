@@ -718,7 +718,7 @@ class Item:
         self.lack_alts = {}  # a rival's such code the fingerprint says the item lacks -> its codes (build_fingerprints)
 
     def add_roll(self, key, code, lo, hi, line):
-        if any(r["key"] == key for r in self.all_rolls):
+        if any(r["key"] == key for r in self.all_rolls) or code == "SOCK":  # sockets: beside the name (SOCK_TOP_ALIAS)
             return
         tagged = (key in TAGS or key == "ver") and self.covers(key)
         self.all_rolls.append({"key": key, "code": code, "lo": lo, "hi": hi, "line": line, "tagged": tagged})
@@ -1330,6 +1330,31 @@ def cut_off(it, key, cuts):
     return " OR ".join(term(c) for c in conds) if conds else None
 
 
+SOCK_TOP_ALIAS = "ROLL_SOCK_MAX{}"
+
+
+def sock_tops(items):
+    """{top roll: {"UNI": [fingerprints], "SET": [...]}} of the items whose sockets roll in a range (UniqueItems /
+    SetItems `sock` with min < max), for every top an item has or a section asks (FALSE if none has it now). Stops when
+    an item's top has no rule in the sections: 210-nonmagic-armor needs one per top."""
+    used = set()
+    for f in sorted((ROOT / "sections").glob("*.filter")):
+        if f.name != OUT.name:
+            used.update(int(n) for n in re.findall(r"\bROLL_SOCK_MAX(\d+)\b", f.read_text(encoding="utf-8")))
+    tops = {}
+    for it in sorted(items, key=lambda x: x.name):
+        s = it.stats.get("SOCK")
+        if s and s[0] != s[1] and not it.unresolved:
+            tops.setdefault(s[1], {"UNI": [], "SET": []})[it.kind].append(fingerprint_text(it))
+    missing = sorted(set(tops) - used)
+    if missing:
+        sys.exit("no rule shows the top socket roll " + ", ".join(SOCK_TOP_ALIAS.format(n) for n in missing) +
+                 ": add one to sections/210-nonmagic-armor.filter beside the others (" +
+                 ", ".join(f"{it.kind} {it.name}" for it in items if (s := it.stats.get("SOCK")) and s[0] != s[1]
+                           and s[1] in missing) + ")")
+    return {n: tops.get(n, {}) for n in sorted(set(tops) | used)}
+
+
 def alias_value(parts):
     clauses = [f"({kind} ID ({' OR '.join(dict.fromkeys(fps))}))" for kind, fps in parts.items() if fps]
     return "(" + " OR ".join(clauses) + ")" if clauses else "FALSE"
@@ -1377,6 +1402,11 @@ def render_section(items, picks, cuts=None):
     lines.append("// The cut rules' own tags: short skill tab labels (tabs), two skill tags as one (slash: 3/3)")
     for alias, parts in special.items():
         lines.append(f"Alias[{alias}]:{alias_value(parts)}")
+    lines += ["", "// Sockets that roll in a range (Hellrack 3-5), per top roll: the identified uniques and sets that have one.",
+              "// 210-nonmagic-armor shows the top after the socket count of an uncorrupted one: Hellrack 4/5 (the author,",
+              "// 2026-11-12)."]
+    for top, parts in sock_tops(items).items():
+        lines.append(f"Alias[{SOCK_TOP_ALIAS.format(top)}]:{alias_value(parts)}")
     lines += ["", "// Base names (BASE_RENAMES in the generator): the name every item of the base shows where BH can name it",
               "// again: unidentified and non-magical items (210-nonmagic-armor's Superior/Inferior trim skips them:",
               "// !RENAMED_BASES), identified uniques and sets (their own name above it), runewords (047). Identified magic,",

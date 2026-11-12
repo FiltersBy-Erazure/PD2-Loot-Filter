@@ -56,7 +56,7 @@ ItemDisplay[BIG_GG !POE_SOUNDS !REVEALED box]:%NAME%{%NAME%%CL%%TEAL%Corrlorized
 ItemDisplay[BIG_GG !POE_SOUNDS REVEALED box]:%NAME%{%NAME%%CL%%TEAL%Corrlorized - Revealed - Big GG}%CONTINUE%//
 ItemDisplay[BIG_GG POE_SOUNDS !REVEALED box]:%NAME%{%NAME%%CL%%TEAL%Corrlorized - Big GG - PoE}%CONTINUE%//
 ItemDisplay[BIG_GG POE_SOUNDS REVEALED box]:%NAME%{%NAME%%CL%%TEAL%Corrlorized - Revealed - Big GG - PoE}%CONTINUE%//
-ItemDisplay[box]:%NAME%{%NAME%%CL%%WHITE%Season 14 - November 10th - v2}//
+ItemDisplay[box]:%NAME%{%NAME%%CL%%WHITE%Season 14 - November 12th - v1}//
 
 // =====================================  Toggles  ==================================
 
@@ -1023,6 +1023,14 @@ Alias[REVEALED]:FALSE
 // The cut rules' own tags: short skill tab labels (tabs), two skill tags as one (slash: 3/3)
 // written into the rules: Alias[ROLL_TABSKS_TAG]:((UNI ID ((nef TABSK16>1 ((ETH STAT360>0 !STAT360=32 !STAT360=43 !STAT360=45) OR (STAT360=48 OR STAT360=73) OR (ETH SOCK>0 (STAT360=43 OR STAT360=45)))))))
 // written into the rules: Alias[ROLL_SLASH_SK89_SK70_TAG]:((UNI ID (((9bw OR 7bw) SK69>1 ((STAT360=22 OR STAT360=26) OR (ETH (STAT360=17 OR STAT360=23 OR STAT360=24 OR STAT360=25 OR STAT360=28 OR STAT360=29 OR STAT360=30 OR STAT360=31)) OR (ETH SOCK>0 STAT360>0 !STAT360=2 !STAT360=4 !STAT360=7 !STAT360=8 !STAT360=9 !STAT360=19 !STAT360=21 !STAT360=27 !STAT360=32) OR (SOCK>0 (STAT360=23 OR STAT360=25 OR STAT360=28 OR STAT360=29 OR STAT360=30 OR STAT360=31)))))))
+
+// Sockets that roll in a range (Hellrack 3-5), per top roll: the identified uniques and sets that have one.
+// 210-nonmagic-armor shows the top after the socket count of an uncorrupted one: Hellrack 4/5 (the author,
+// 2026-11-12).
+// written into the rules: Alias[ROLL_SOCK_MAX2]:((UNI ID (((ne6 OR neb)))))
+// written into the rules: Alias[ROLL_SOCK_MAX3]:((UNI ID (((9b8 OR 7b8) SK147>1) OR ((9fc OR 7fc) DEX>4 STAT54<1) OR (urn STAT109>49 CRES>19) OR (drc SK233>1) OR (7sm MULTI151,100>5) OR (ush (MULTI198,28315>0 OR MULTI198,28319>0)) OR (7sc CLSK3>1 STAT136>32 IAS>19))) OR (SET ID (((9mt OR 7mt)) OR ((xar OR uar) CLSK3>0) OR (paf) OR (urn STAT91<-39 MFIND>29) OR (ucl TABSK49>1))))
+// written into the rules: Alias[ROLL_SOCK_MAX4]:((UNI ID (((xul OR uul) STAT118>0 STAT121>184) OR (7o7 (MULTI198,5398>0 OR MULTI198,5401>0)) OR ((8s8 OR 6s7) (MULTI198,28315>0 OR MULTI198,28319>0)))))
+// written into the rules: Alias[ROLL_SOCK_MAX5]:((UNI ID ((6hx MULTI126,1>3) OR (72a STAT153>0 STAT44>4) OR (7pa CRES>29 IAS>59))) OR (SET ID ((7ws STAT122>199 IAS>39))))
 
 // Base names (BASE_RENAMES in the generator): the name every item of the base shows where BH can name it
 // again: unidentified and non-magical items (210-nonmagic-armor's Superior/Inferior trim skips them:
@@ -6259,6 +6267,11 @@ ItemDisplay[(ARMOR OR WEAPON OR QUIVER) NMAG (SOCK>0 OR ETH)]:%GRAY%%NAME%{%NAME
 
 // Regular Sockets
 ItemDisplay[(MAG OR RARE OR SET OR UNI OR CRAFT) ID !STAT360=32 SOCK>0]:%NAME% %WHITE%%SOCKETS%{%NAME%}%CONTINUE%//
+// Uncorrupted uniques and sets whose sockets roll in a range: the most they roll (045's ROLL_SOCK_MAX aliases), Hellrack 4/5
+ItemDisplay[((UNI ID (((ne6 OR neb))))) !STAT360>0]:%NAME%%LIGHT_GRAY%/%GRAY%2{%NAME%}%CONTINUE%//
+ItemDisplay[((UNI ID (((9b8 OR 7b8) SK147>1) OR ((9fc OR 7fc) DEX>4 STAT54<1) OR (urn STAT109>49 CRES>19) OR (drc SK233>1) OR (7sm MULTI151,100>5) OR (ush (MULTI198,28315>0 OR MULTI198,28319>0)) OR (7sc CLSK3>1 STAT136>32 IAS>19))) OR (SET ID (((9mt OR 7mt)) OR ((xar OR uar) CLSK3>0) OR (paf) OR (urn STAT91<-39 MFIND>29) OR (ucl TABSK49>1)))) !STAT360>0]:%NAME%%LIGHT_GRAY%/%GRAY%3{%NAME%}%CONTINUE%//
+ItemDisplay[((UNI ID (((xul OR uul) STAT118>0 STAT121>184) OR (7o7 (MULTI198,5398>0 OR MULTI198,5401>0)) OR ((8s8 OR 6s7) (MULTI198,28315>0 OR MULTI198,28319>0))))) !STAT360>0]:%NAME%%LIGHT_GRAY%/%GRAY%4{%NAME%}%CONTINUE%//
+ItemDisplay[((UNI ID ((6hx MULTI126,1>3) OR (72a STAT153>0 STAT44>4) OR (7pa CRES>29 IAS>59))) OR (SET ID ((7ws STAT122>199 IAS>39)))) !STAT360>0]:%NAME%%LIGHT_GRAY%/%GRAY%5{%NAME%}%CONTINUE%//
 ItemDisplay[NMAG !RW !STAT360=32 SOCK>0]:%NAME% %WHITE%%SOCKETS%%GRAY%{%NAME%}%CONTINUE%//
 // Sockets from Corruption
 ItemDisplay[(MAG OR RARE OR SET OR UNI OR CRAFT) ID STAT360=32 SOCK>0]:%NAME% %WHITE%%SOCKETS%%RED%*{%NAME%}%CONTINUE%//
