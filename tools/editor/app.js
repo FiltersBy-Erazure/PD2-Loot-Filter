@@ -22,6 +22,14 @@ EZ.app = (function () {
     return SOURCE_FILE + q;
   }
 
+  /* The game art's folder (Erazure-Filter-Editor-Assets): beside the source file. */
+  function assetBase(scriptSrc) {
+    if (scriptSrc) {
+      try { return new URL("../../Erazure-Filter-Editor-Assets/", scriptSrc).href; } catch (e) { /* beside the page */ }
+    }
+    return "Erazure-Filter-Editor-Assets/";
+  }
+
   function loadSource(url) {
     return new Promise((resolve, reject) => {
       if (window.ERAZURE_EDITOR_SOURCE) { resolve(window.ERAZURE_EDITOR_SOURCE); return; }
@@ -388,6 +396,9 @@ EZ.app = (function () {
   async function start(root, data, scriptSrc, sourceV) {
     app.data = data || {};
     EZ.ui.setHost(root.parentElement || root);
+    if (EZ.glyphs) EZ.glyphs.init(app.data.assets, assetBase(scriptSrc));
+    if (EZ.scene) EZ.scene.init(app.data.assets, assetBase(scriptSrc));
+    if (EZ.items) EZ.items.init(app.data);
     EZ.store.load();
     EZ.areas.sort((a, b) => a.order - b.order);
     try {

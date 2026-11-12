@@ -17,6 +17,7 @@ import argparse
 import json
 import re
 import sys
+import zlib
 from pathlib import Path
 
 sys.dont_write_bytecode = True
@@ -32,9 +33,10 @@ TEMPLATE = EDITOR / "template.html"
 PAGE = ROOT / "Erazure-Filter-Editor.html"
 ASSET_INFO = ROOT / "tools" / "editor_assets.json"
 # the modules, in the order the page runs them (each adds itself to the EZ namespace)
-MODULES = ["core.js", "ui.js", "store.js", "filter.js", "features.js", "edits.js", "render.js", "engine.js",
-           "items.js", "share.js", "app.js", "area-start.js", "area-options.js", "area-looks.js", "area-alerts.js",
-           "preview.js", "area-todo.js"]
+MODULES = ["core.js", "ui.js", "store.js", "filter.js", "features.js", "edits.js", "render.js", "glyphs.js",
+           "scene.js", "engine.js", "items.js", "share.js", "app.js", "area-start.js", "area-options.js", "area-looks.js",
+           "area-alerts.js", "preview.js", "area-todo.js"]
+ASSETS = ROOT / "Erazure-Filter-Editor-Assets"
 # PD2's own drop sounds (pd2\dropsounds\tinkNN.wav), the PoE versions' picks
 POE_SOUNDS = range(4714, 4730)
 
@@ -168,7 +170,14 @@ def page_data():
         "catalog": catalog(),
     }
     if ASSET_INFO.exists():
-        data["assets"] = json.loads(ASSET_INFO.read_text(encoding="utf-8"))
+        assets = json.loads(ASSET_INFO.read_text(encoding="utf-8"))
+        files = list(assets.get("atlases", {}).values()) + list(assets.get("floors", {}).values())
+        files += [assets["ground"]] if "ground" in assets else []
+        for a in files:  # each file's CRC: a changed file is fetched again
+            f = ASSETS / a["file"]
+            if f.exists():
+                a["v"] = format(zlib.crc32(f.read_bytes()) & 0xffffffff, "x")
+        data["assets"] = assets
     return data
 
 

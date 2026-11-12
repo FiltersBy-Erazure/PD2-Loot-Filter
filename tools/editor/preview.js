@@ -31,12 +31,37 @@ EZ.preview = (function () {
     {code: "utp", quality: "SET"}, {code: "mbt", quality: "MAG"},
   ];
 
+  // the drop scenes: a floor, the area BH reads (MAPID) and a pile of typical drops (the settings give the rest)
+  const SCENES = [
+    {id: "baal", title: "Baal's Throne", floor: "baal", mapid: 131, items: [
+      {code: "r30"}, {code: "uap", quality: "UNI"}, {code: "uar", quality: "SUP", sockets: 4},
+      {code: "cm3", quality: "MAG"}, {code: "gpv"}, {code: "gld", gold: 2400}, {code: "rin", quality: "RARE"},
+      {code: "amu", quality: "MAG"}, {code: "7s8", eth: true, sockets: 4}, {code: "gcr"}, {code: "rvl"},
+      {code: "hp5"}, {code: "jew", quality: "RARE"}, {code: "cm1", quality: "MAG"}, {code: "ci3", quality: "RARE"},
+      {code: "pk1"}, {code: "r22"}, {code: "xvg", quality: "RARE"}]},
+    {id: "chaos", title: "Chaos Sanctuary", floor: "chaos", mapid: 108, items: [
+      {code: "r26"}, {code: "obf", quality: "UNI"}, {code: "utp", quality: "SET"}, {code: "cm2", quality: "MAG"},
+      {code: "gpw"}, {code: "gld", gold: 1800}, {code: "amu", quality: "RARE"}, {code: "6lw", sockets: 4},
+      {code: "mbt", quality: "MAG"}, {code: "skz"}, {code: "rvs"}, {code: "mp5"}]},
+    {id: "map", title: "A T3 map", floor: "barracks", mapid: 143, items: [
+      {code: "t31", quality: "RARE"}, {code: "r24"}, {code: "wss"}, {code: "uap", quality: "UNI"},
+      {code: "cm3", quality: "MAG"}, {code: "jew", quality: "MAG"}, {code: "rin", quality: "MAG"},
+      {code: "gld", gold: 3100}, {code: "gpr"}, {code: "pa9", quality: "MAG"}, {code: "rvl"}, {code: "key", qty: 6}]},
+    {id: "runes", title: "Runes", floor: "lut", mapid: 40, items: [
+      {code: "r01"}, {code: "r08"}, {code: "r10"}, {code: "r12"}, {code: "r15"}, {code: "r18"}, {code: "r20"},
+      {code: "r22"}, {code: "r24"}, {code: "r26"}, {code: "r28"}, {code: "r30"}, {code: "r31"}, {code: "r33"}]},
+    {id: "town", title: "Harrogath", floor: "harrogath", mapid: 109, items: [
+      {code: "isc"}, {code: "tsc"}, {code: "hp5"}, {code: "mp5"}, {code: "rvs"}, {code: "key", qty: 12},
+      {code: "gld", gold: 9000}, {code: "uap", quality: "UNI"}, {code: "cm1", quality: "MAG"}]},
+  ];
+
   let app = null, box = null;
   const cache = {base: null, baseName: null, yours: null, yoursKey: null};
   const state = defaults();
 
   function defaults() {
-    const d = {mode: "item", spec: {code: "r30"}, notes: [], clvl: 90, cls: 1, diff: 2, where: "field", filtlvl: 1,
+    const d = {mode: "scene", scene: "baal", sceneSide: "yours", showHidden: false, spec: {code: "r30"}, notes: [],
+               clvl: 90, cls: 1, diff: 2, where: "field", filtlvl: 1,
                opts: {detailed: 1, dropSounds: true, forceUndiscovered: true, forceUnowned: false, hideHealing: false,
                       hideMana: false}, open: {item: true, trace: false, levels: true, options: false}};
     try {
@@ -128,6 +153,21 @@ EZ.preview = (function () {
     return n ? n : "sound " + id;
   }
 
+  /* A label in the game's own font (EZ.glyphs) once its atlas is there, the HTML label until then. */
+  function labelNode(text, start, zoom) {
+    const c = EZ.glyphs && EZ.glyphs.label(text, {start, zoom: zoom || 1.5});
+    if (c) return c;
+    if (EZ.glyphs && EZ.glyphs.available()) EZ.glyphs.want("label", redraw);
+    return EZ.render.label(text, {start});
+  }
+
+  function chatNode(text, start) {
+    const c = EZ.glyphs && EZ.glyphs.chat(text, {start, zoom: 1.3});
+    if (c) return c;
+    if (EZ.glyphs && EZ.glyphs.available()) EZ.glyphs.want("chat", redraw);
+    return codedText(text, start, "fe-chatline");
+  }
+
   /* Text with color codes as spans (the chat line, the description), lines in the game's order. */
   function codedText(text, start, cls) {
     const out = h("span." + (cls || "fe-coded"));
@@ -163,7 +203,7 @@ EZ.preview = (function () {
       card.appendChild(ground);
       return card;
     }
-    if (r.name && !r.invisible) ground.appendChild(EZ.render.label(r.name, {start: r.start}));
+    if (r.name && !r.invisible) ground.appendChild(labelNode(r.name, r.start, 1.5));
     else ground.appendChild(h("span.fe-pv-hidden", r.invisible ? "(nothing)" : "(no label)"));
     card.appendChild(ground);
     const pills = h("div.fe-row.fe-small", stateLine(r));
@@ -177,7 +217,7 @@ EZ.preview = (function () {
     dl.appendChild(h("dd", {class: diff("icons")}, r.icons.length ? iconCanvas(r.icons) : h("span.fe-sub", "no icon")));
     dl.appendChild(h("dt", "Chat"));
     dl.appendChild(h("dd", {class: diff("chat")}, r.chat === null ? h("span.fe-sub", "no chat line") :
-      r.chat === "" ? h("span.fe-sub", "an empty line") : codedText(r.chat, r.start, "fe-chatline")));
+      r.chat === "" ? h("span.fe-sub", "an empty line") : chatNode(r.chat, r.start)));
     dl.appendChild(h("dt", "Sound"));
     dl.appendChild(h("dd", {class: diff("sound")}, r.sound ? h("span", "♪ " + soundName(r.sound) + " ",
       h("small.fe-sub", "(.playsound " + r.sound + ")")) : h("span.fe-sub", "none")));
@@ -412,7 +452,7 @@ EZ.preview = (function () {
       const cell = h("button.fe-pv-cell" + (lv === state.filtlvl ? ".on" : ""), {type: "button", title: lv + " · " + names[lv],
         onclick: () => set(() => { state.filtlvl = lv; })},
         h("span.fe-pv-lv", String(lv)),
-        r && r.name && !r.invisible ? EZ.render.label(r.name, {start: r.start}) :
+        r && r.name && !r.invisible ? labelNode(r.name, r.start, 1) :
           h("span.fe-pv-hidden", r && r.invisible ? "hidden" : "no label"),
         r && r.icons.length ? iconCanvas(r.icons, 2) : null,
         r && r.sound ? h("span.fe-pv-snd", {title: soundName(r.sound)}, "♪") : null);
@@ -436,6 +476,70 @@ EZ.preview = (function () {
       res, traceView(f, mine ? rm : rb), levelsView(f)];
   }
 
+  /* The drop scene: the pile of a scene on its floor, in the player's filter (or Erazure's), the alerts below. */
+  function sceneView(base, mine) {
+    const sc = SCENES.find((x) => x.id === state.scene) || SCENES[0];
+    const side = mine && state.sceneSide !== "erazure" ? mine : base;
+    const zoom = 1.5;
+    const pick = seg(SCENES.map((x) => ({value: x.id, text: x.title})), sc.id,
+      (v) => set(() => { state.scene = v; }), {label: "Scene"});
+    const which = mine ? seg([{value: "yours", text: "Yours"}, {value: "erazure", text: "Erazure"}],
+      state.sceneSide === "erazure" ? "erazure" : "yours", (v) => set(() => { state.sceneSide = v; }),
+      {label: "Whose filter"}) : null;
+    const head = h("div.fe-row.fe-small", pick, which,
+      toggle("Show hidden", !!state.showHidden, (on) => set(() => { state.showHidden = on; })));
+    if (!EZ.scene.available() || !EZ.glyphs.available()) {
+      return [head, h("p.fe-note", "The scene needs the game's pictures and font (Erazure-Filter-Editor-Assets); " +
+        "they aren't with this page. The Item and Samples views work without them.")];
+    }
+    if (!EZ.glyphs.ready("label")) {
+      EZ.glyphs.want("label", redraw);
+      return [head, h("p.fe-sub", h("span.fe-spin"), " Loading the game's font…")];
+    }
+    const items = [], log = [];
+    const c = Object.assign(ctx(), {mapid: sc.mapid});
+    for (const spec of sc.items) {
+      const it = EZ.items.make(spec);
+      if (!it) continue;
+      const r = EZ.engine.run(side.F, it, c, state.opts);
+      let changed = false;
+      if (mine && side === mine) {
+        const rb = EZ.engine.run(base.F, it, c, state.opts);
+        changed = JSON.stringify([rb.name, rb.icons, rb.sound, rb.chat, rb.invisible]) !==
+                  JSON.stringify([r.name, r.icons, r.sound, r.chat, r.invisible]);
+      }
+      const label = r.name && !r.invisible ? EZ.glyphs.label(r.name, {start: r.start, zoom}) : null;
+      items.push({label, zoom, code: spec.code, hidden: r.hidden, invisible: r.invisible, spec, r, changed});
+      if (r.chat !== null || r.sound || r.icons.length) log.push({spec, r, changed});
+    }
+    const holder = h("div.fe-scene", h("p.fe-sub", h("span.fe-spin"), " Drawing…"));
+    EZ.scene.load(sc.floor).then((pics) => {
+      const avail = Math.max(240, (holder.clientWidth || 480) / zoom);
+      const out = EZ.scene.draw(pics, items, {zoom, seed: sc.id, showHidden: state.showHidden, fit: avail});
+      const g = out.canvas.getContext("2d"), k = zoom * (window.devicePixelRatio || 1);
+      g.strokeStyle = "#d8b45e";
+      g.lineWidth = Math.max(1, k);
+      for (const p of out.where) {
+        if (p.item.changed) g.strokeRect(p.x * k - 2, p.y * k - 2, p.w * k + 4, (p.h - 30) * k + 4);
+      }
+      out.canvas.addEventListener("click", (e) => {
+        const r = out.canvas.getBoundingClientRect(), sx = (e.clientX - r.left) / r.width * out.w,
+              sy = (e.clientY - r.top) / r.height * out.h;
+        const hit = out.where.find((p) => sx >= p.x && sx <= p.x + p.w && sy >= p.y && sy <= p.y + p.h);
+        if (hit) set(() => { state.spec = Object.assign({}, hit.item.spec); state.mode = "item"; });
+      });
+      out.canvas.title = "Click an item to look at it";
+      fill(holder, out.canvas);
+    });
+    const alerts = h("ul.fe-scene-log", log.map(({spec, r, changed}) => h("li" + (changed ? ".is-changed" : ""),
+      r.icons.length ? iconCanvas(r.icons, 2) : h("span.fe-scene-noicon"),
+      r.chat !== null ? chatNode(r.chat || EZ.items.describe(spec), r.start) : h("span.fe-sub", EZ.items.describe(spec)),
+      r.sound ? h("span.fe-small", "♪ " + soundName(r.sound)) : null)));
+    return [head, holder, log.length ? h("h4.fe-scene-h", "Alerts, in drop order") : null, alerts,
+      h("p.fe-sub.fe-small", mine ? (side === mine ? "Your filter; your changes have a gold edge." : "Erazure's filter.") :
+        "Erazure's filter (you have no changes yet).")];
+  }
+
   function samplesView(base, mine) {
     const grid = h("div.fe-pv-samples");
     for (const spec of SAMPLES) {
@@ -446,7 +550,7 @@ EZ.preview = (function () {
       grid.appendChild(h("button.fe-pv-sample" + (changed ? ".is-changed" : ""), {type: "button",
         title: "Open in the item view", onclick: () => set(() => { state.spec = Object.assign({}, spec); state.mode = "item"; })},
         h("small.fe-sub", EZ.items.describe(spec)),
-        h("span.fe-pv-sample-label", rm.name && !rm.invisible ? EZ.render.label(rm.name, {start: rm.start}) :
+        h("span.fe-pv-sample-label", rm.name && !rm.invisible ? labelNode(rm.name, rm.start, 1) :
           h("span.fe-pv-hidden", rm.invisible ? "hidden" : "no label")),
         h("span.fe-row.fe-small", rm.icons.length ? iconCanvas(rm.icons, 2) : null,
           rm.sound ? h("span", {title: soundName(rm.sound)}, "♪") : null,
@@ -472,12 +576,14 @@ EZ.preview = (function () {
     if (!base) { fill(box, h("div.fe-pv-head", h("h3", "Preview"))); return; }
     const head = h("div.fe-pv-head",
       h("div.fe-row", h("h3", {style: {margin: 0}}, "Preview"),
-        seg([{value: "item", text: "Item"}, {value: "samples", text: "Samples"}], state.mode,
+        seg([{value: "scene", text: "Scene"}, {value: "item", text: "Item"}, {value: "samples", text: "Samples"}],
+          state.mode,
           (v) => set(() => { state.mode = v; }), {label: "Preview view"})),
       settings(mine || base));
     let body;
     try {
-      body = state.mode === "samples" ? samplesView(base, mine) : itemView(base, mine);
+      body = state.mode === "samples" ? samplesView(base, mine) : state.mode === "scene" ? sceneView(base, mine) :
+        itemView(base, mine);
     } catch (e) {
       body = [h("p.fe-note.bad", "The preview failed: " + (e && e.message || e))];
       if (window.console) console.error(e);
