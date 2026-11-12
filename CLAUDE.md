@@ -947,6 +947,8 @@
   without the game's color codes; an unidentified magical item's own stats are left out (the game doesn't send them),
   and adding one identifies it. Features' "Key notes" are "Area notes on Keys": 070 writes, in a Key's or Skeleton
   Key's hover box outside town, the area's layout and where its exits, dungeons and bosses are.
+  T1-T4 maps are always identified in the editor (`EZ.items.alwaysId`; the author, 2026-11-12: non-unique maps drop
+  white, a magic or rare one is made from one): no Identified switch for them, white / magic / rare in the preview.
 - The website's **Resources** tab (2026-11-02, the author: reference pages players can look things up in, more to
   come): `website/docs/resources/index.md` lists them, a grid card each (mkdocs.yml has `navigation.indexes`, so it is
   the tab's own page). A resource is a page written by hand, `website/resources/<Name>.html` (its data, styles and
