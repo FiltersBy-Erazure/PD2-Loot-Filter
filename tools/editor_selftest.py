@@ -63,7 +63,7 @@ EDITOR = ROOT / "tools" / "editor"
 SOURCE = ROOT / "Erazure-Filter-Editor-Source.js"
 FIXTURES = ROOT / "tools" / "editor_fixtures"
 MODULES = ["core.js", "ui.js", "store.js", "filter.js", "features.js", "edits.js", "rules.js", "ops.js",
-           "overrides.js", "engine.js", "lint.js", "words.js", "items.js", "sound.js", "glyphs.js"]  # in order
+           "overrides.js", "volume.js", "engine.js", "lint.js", "words.js", "items.js", "sound.js", "glyphs.js"]  # in order
 TESTS_JS = ROOT / "tools" / "editor_selftest.js"  # the engine tests' code
 BROWSERS = [
     r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
@@ -416,7 +416,59 @@ def active_rules(block):
 
 
 OP_KINDS = ("off", "on", "change", "before", "after")
-ITEM_ACTIONS = ("show", "hide", "mute", "sound", "icon", "iconOnly", "notify", "look", "replace")
+ITEM_ACTIONS = ("show", "hide", "mute", "sound", "icon", "iconOnly", "notify", "look", "replace", "hunt")
+
+# how loud each kind of drop is (volume.js): the unique and set tiers by their look, the rest by section
+VOLUME_MODES = ("mute", "iconOnly", "none")
+VOLUME_TIERS = [("uni-high", r"%UNI_HIGH_VALUE_LEFT%"), ("uni-medium", r"%UNI_MEDIUM_VALUE_LEFT%"),
+                ("uni-minimal", r"%UNI_MINIMAL_(?:VALUE|GRAIL)_LEFT%"), ("uni-grail", r"%UNI_GRAIL_LEFT%"),
+                ("set-high", r"%SET_HIGH_VALUE_LEFT%"), ("set-medium", r"%SET_MEDIUM_VALUE_LEFT%"),
+                ("set-grail", r"%SET_GRAIL_LEFT%")]
+VOLUME_SECTIONS = {"060": "Gold, potions and tomes", "070": "Keys", "080": "Quest items", "090": "Gems",
+                   "100": "PD2 items", "110": "Runes", "120": "PD2 items", "130": "Maps", "140": "Maps", "145": "Maps",
+                   "146": "Maps", "147": "Maps", "150": "Unique items: other", "160": "Unique items: other",
+                   "170": "Set items: other", "180": "Crafted items", "190": "Rare items", "200": "Magic items",
+                   "205": "Non-magical bases", "210": "Non-magical bases", "220": "Non-magical bases",
+                   "240": "Charms", "250": "Jewels", "260": "Arrows and bolts", "280": "Skill and shop highlights",
+                   "310": "Staffmods"}
+NOTIFY_ALL_RE = re.compile(r"%(?:BORDER|MAP|DOT|PX|LINE|NOTIFY)-[0-9a-f]{1,4}%|%SOUNDID-\d{1,4}%|%TIER-\d%", re.I)
+
+
+def volume_kind(name):
+    n = name[:3]
+    if n in VOLUME_SECTIONS:
+        return re.sub(r"[^a-z0-9]+", "-", VOLUME_SECTIONS[n].lower())
+    return "sec-" + n
+
+
+def apply_volume(src, want, lines):
+    """volume.js's apply: every alerting rule of a kind the player quietened."""
+    want = {k: v for k, v in (want or {}).items() if v in VOLUME_MODES}
+    if not want:
+        return lines
+    for name, (a, b) in sections(src, lines).items():
+        fallback = volume_kind(name)
+        for i in range(a, b):
+            line = lines[i]
+            if not line.startswith("ItemDisplay["):
+                continue
+            r = rule(line)
+            if not r or not NOTIFY_RE.search(r["out"]):
+                continue
+            kind = next((k for k, rx in VOLUME_TIERS if re.search(rx, r["out"])), None)
+            if kind is None:
+                kind = ("runes" if re.search(r"(^|[\s(!])r\d\d\b|RUNE[<>=~]", r["cond"]) else
+                        "maps" if "MAPTIER" in r["cond"] else fallback)
+            mode, out = want.get(kind), r["out"]
+            if mode == "mute":
+                out = SOUND_RE.sub("", out)
+            elif mode == "none":
+                out = NOTIFY_ALL_RE.sub("", out)
+            elif mode == "iconOnly":
+                out = TIER_RE.sub("%TIER-0%", out) if TIER_RE.search(out) else out + "%TIER-0%"
+            if out != r["out"]:
+                lines[i] = r["head"] + out + r["comment"]
+    return lines
 OFF_RE = re.compile(r"^\s*//+\s*(?=ItemDisplay\[)")
 
 
@@ -485,6 +537,7 @@ def apply_ops(src, ops, lines):
 def count(e, feats):
     n = sum(1 for v in (e.get("options") or {}).values() if v)
     n += sum(1 for o in (e.get("ops") or []) if valid_op(o))
+    n += sum(1 for v in (e.get("volume") or {}).values() if v in VOLUME_MODES)
     n += sum(1 for o in (e.get("items") or []) if isinstance(o, dict) and o.get("action") in ITEM_ACTIONS
              and isinstance(o.get("scope"), dict) and isinstance(o["scope"].get("codes"), list) and o["scope"]["codes"])
     n += sum(1 for fid, on, *_ in feats if fid in (e.get("features") or {}) and bool(e["features"][fid]) != on)
@@ -629,6 +682,8 @@ def reference(src, edits, lines, feats):
                 out.append(rebuilt(cond + " (" + " OR ".join(f"FILTLVL={x}" for x in off) + ")",
                                    TIER_RE.sub("%TIER-0%", r["out"], count=1)))
         lines = out
+    # how loud each kind of drop is (volume.js, after the level copies)
+    lines = apply_volume(src, edits.get("volume"), lines)
     # My rules: each block with a line BH reads, between its markers (after every other edit)
     for which, (start, end) in RULE_MARKS.items():
         block = rule_block((edits.get("rules") or {}).get(which))

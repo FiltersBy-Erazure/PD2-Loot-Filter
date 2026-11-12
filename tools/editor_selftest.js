@@ -280,6 +280,16 @@
         if (!a.name.startsWith("ÿc4B ")) return "name " + show(a.name);
         return show(boxes(a)) === show(boxes(b)) && a.sound === b.sound ? null : "the alerts changed";
       }],
+      ["hunt " + hiddenCode, [{action: "hunt", scope: {codes: [hiddenCode]}}], (F) => {
+        for (const lv of [1, 12]) {
+          const a = run(F, {code: hiddenCode}, ground(lv));
+          if (a.hidden) return `hidden at level ${lv}`;
+          if (a.name.indexOf(">>> ") < 0) return `no hunt look at level ${lv}: ${show(a.name)}`;
+          if (a.sound !== 4728 || !a.icons.length || a.icons[0].border !== 0x9B) return `not its alert at level ${lv}: ` +
+            show([boxes(a), a.sound]);
+        }
+        return same(run(F, {code: "r30"}, ground(12)), run(base, {code: "r30"}, ground(12))) ? null : "Ber Rune changed";
+      }],
       ["an alert for " + quietCode + " where Erazure has none", [
         {action: "notify", alert: {icon: {MAP: "0A"}, sound: 4728}, scope: {codes: [quietCode]}},
         {action: "notify", alert: {icon: {MAP: "0A"}, sound: 4728}, scope: {codes: ["r30"]}}], (F) => {

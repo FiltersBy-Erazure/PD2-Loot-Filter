@@ -9,6 +9,8 @@ EZ.areas = EZ.areas || [];
   const QUALS = [["", "Any"], ["NORM", "Normal"], ["SUP", "Superior"], ["INF", "Low quality"], ["MAG", "Magic"],
                  ["RARE", "Rare"], ["CRAFT", "Crafted"], ["SET", "Set"], ["UNI", "Unique"]];
   const ACTIONS = [
+    ["hunt", "Hunt it", "Shown wherever Erazure hides it, with a loud look, a big minimap icon and a sound of its " +
+      "own instead of Erazure's."],
     ["show", "Show it", "Where Erazure hides it, it shows with the look Erazure's other rules give it."],
     ["hide", "Hide it", "On the ground outside town: no label, no icon, no sound. Your inventory, stash and shops " +
       "still name it."],
@@ -99,7 +101,7 @@ EZ.areas = EZ.areas || [];
         (id) => set((x) => { x.sound = id; }))}, d.sound ? "♪ " + EZ.sounds.name(app.data, d.sound) : "Pick a sound"),
         d.sound ? EZ.sounds.play(app.data, d.sound) : h("span.fe-sub", "(no sound: the same as Mute)")));
     }
-    if (d.action === "icon" || d.action === "notify") {
+    if (d.action === "icon" || d.action === "notify" || d.action === "hunt") {
       const palette = app.data.palette || [];
       const layers = d.action === "icon" ? Object.fromEntries((d.icon || "").split(" ").filter(Boolean).map((k) => k.split("-")))
         : d.alert.icon;
@@ -118,7 +120,7 @@ EZ.areas = EZ.areas || [];
         return b;
       }), d.action === "icon" && !combo ? h("span.fe-sub", "(no icon)") : null));
     }
-    if (d.action === "notify") {
+    if (d.action === "notify" || d.action === "hunt") {
       extra.push(h("div.fe-row.fe-small", h("button.fe-btn.small", {type: "button", onclick: () => EZ.sounds.pick(app,
         Object.keys(EZ.filter.notifications(app.versionLines()).sounds).map(Number), d.alert.sound,
         (id) => set((x) => { x.alert.sound = id; }))}, d.alert.sound ? "♪ " + EZ.sounds.name(app.data, d.alert.sound) :
@@ -128,10 +130,18 @@ EZ.areas = EZ.areas || [];
             .map(([v, t]) => h("option", {value: v, selected: d.alert.chat === v}, t))),
         d.alert.chat === "tier" ? h("input.fe-pv-num", {type: "number", min: 0, max: 9, value: d.alert.tier,
           "aria-label": "Up to level", onchange: (e) => set((x) => { x.alert.tier = e.target.value; })}) : null),
-        seg([{value: "add", text: "Only where Erazure has none"}, {value: "instead", text: "Instead of Erazure's"}],
-          d.mode, (v) => set((x) => { x.mode = v; }), {label: "Erazure's alerts"}));
+        d.action === "notify" ? seg([{value: "add", text: "Only where Erazure has none"}, {value: "instead",
+          text: "Instead of Erazure's"}], d.mode, (v) => set((x) => { x.mode = v; }), {label: "Erazure's alerts"}) : null);
     }
-    if (d.action === "look" || d.action === "replace") {
+    if (d.action === "look" || d.action === "replace" || d.action === "hunt") {
+      const cards = EZ.filter.lookCards(app.src, app.versionLines());
+      extra.push(h("select", {"aria-label": "Start from one of Erazure's looks", onchange: (e) => {
+        if (e.target.value) set((x) => { x.text = e.target.value.replace(/\s+$/, ""); });
+      }}, h("option", {value: ""}, "Start from one of Erazure's looks…"),
+        EZ.filter.GROUPS.map((g) => h("optgroup", {label: g.title}, cards.filter((c) => c.group === g.id &&
+          c.tpls[0] && c.tpls[0].tpl.indexOf("%NAME%") >= 0).map((c) => h("option", {value: c.tpls[0].tpl}, c.title))))));
+    }
+    if (d.action === "look" || d.action === "replace" || d.action === "hunt") {
       const input = h("input.fe-mono", {type: "text", value: d.text, spellcheck: "false", "aria-label": "The look",
         oninput: (e) => { d.text = e.target.value; prev(); }});
       const prevBox = h("span.fe-ed-rulelabel");
@@ -149,7 +159,8 @@ EZ.areas = EZ.areas || [];
       if (d.action === "sound") o.sound = d.sound;
       if (d.action === "icon") o.icon = d.icon;
       if (d.action === "notify") { o.alert = JSON.parse(JSON.stringify(d.alert)); o.mode = d.mode; }
-      if (d.action === "look" || d.action === "replace") o.text = d.text;
+      if (d.action === "hunt") o.alert = JSON.parse(JSON.stringify(d.alert));
+      if (d.action === "look" || d.action === "replace" || d.action === "hunt") o.text = d.text;
       draft = null;  // before the change: the area is drawn again without the form
       EZ.store.change((ed) => {
         ed.items = (ed.items || []).filter((x) => x.id !== o.id);
@@ -192,7 +203,13 @@ EZ.areas = EZ.areas || [];
             "aria-label": "To character level", onchange: (e) => set((x) => { x.scope.clvl[1] = e.target.value; })})))),
       h("fieldset.fe-bd-set", h("legend", "What to do"),
         h("div.fe-bd-field.wide", h("div.fe-choice", ACTIONS.map(([k, t, sub]) => EZ.ui.option(t, sub, d.action === k,
-          () => set((x) => { x.action = k; }))))),
+          () => set((x) => {
+            x.action = k;
+            if (k === "hunt" && x.text === "%NAME%") {  // the hunt's own look and alert to start from
+              x.text = EZ.overrides.HUNT.text;
+              x.alert = JSON.parse(JSON.stringify(EZ.overrides.HUNT.alert));
+            }
+          }))))),
         extra.length ? h("div.fe-bd-field.wide", extra) : null),
       h("div.fe-row", h("button.fe-btn.primary", {type: "button", onclick: add}, d.id ? "Keep the change" : "Add this change"),
         h("span.fe-sub.fe-small", ACTION_NAME[d.action] + " · " + summary({scope: s}))));

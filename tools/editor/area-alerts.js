@@ -53,7 +53,7 @@ EZ.sounds = (function () {
 
 EZ.areas.push({
   id: "alerts", title: "Alerts", icon: "♪", order: 50, group: "b",
-  count: (e) => EZ.edits.countArea("alerts", e),
+  count: (e) => EZ.edits.countArea("alerts", e) + EZ.edits.countArea("volume", e),
   render(box, app) {
     const {h, toggle, seg} = EZ.ui;
     const F = EZ.filter, S = EZ.sounds;
@@ -77,6 +77,33 @@ EZ.areas.push({
           {sub: "An item that only had an icon also loses its chat line (BH needs an icon or a sound to notify)."}),
         h("div.fe-row", h("span", "Icon size"), seg([{value: "", text: "Erazure's"}, {value: "smaller", text: "Smaller"},
           {value: "bigger", text: "Bigger"}], a.iconSize || "", (v) => set("iconSize", v), {label: "Icon size"}))));
+
+    /* ---- how loud each kind of drop is (EZ.volume) */
+    const vol = e.volume || {};
+    const kinds = EZ.volume.kinds(app.src, lines);
+    const setVol = (id, v) => EZ.store.change((ed) => {
+      ed.volume = ed.volume || {};
+      if (v) ed.volume[id] = v; else delete ed.volume[id];
+      if (!Object.keys(ed.volume).length) delete ed.volume;
+    }, {label: "how loud"});
+    const LOUD = ["uni-high", "set-high", "runes"];
+    const volumeCard = h("section.fe-card", {id: "fe-volume"},
+      h("h3", "How loud each kind of drop is"),
+      h("p.fe-sub", "Every rule of Erazure's that alerts belongs to one kind: the unique and set tiers by their look, " +
+        "the rest by what the rule is for. Quieten a kind and every drop whose alert it decides follows."),
+      h("div.fe-row.fe-small", {style: {marginBottom: ".5em"}},
+        h("button.fe-btn.small", {type: "button", onclick: () => EZ.store.change((ed) => {
+          ed.volume = {};
+          for (const k of kinds) if (LOUD.indexOf(k.id) < 0) ed.volume[k.id] = "mute";
+        }, {label: "how loud"})}, "Sounds only for High value uniques and sets, and runes"),
+        Object.keys(vol).length ? h("button.fe-btn.ghost.small", {type: "button", onclick: () => EZ.store.change((ed) => {
+          delete ed.volume;
+        }, {label: "how loud"})}, "↺ Erazure's for every kind") : null),
+      h("div.fe-tablewrap", h("table.fe-levels", h("tbody", kinds.map((k) => h("tr" + (vol[k.id] ? ".is-changed" : ""),
+        h("td", k.title, h("span.fe-sub", ` · ${k.rules} rule${k.rules === 1 ? "" : "s"}`)),
+        h("td", h("select", {"aria-label": k.title, onchange: (ev) => setVol(k.id, ev.target.value)},
+          [["", "Erazure's"], ["mute", "No sound"], ["iconOnly", "Icon only (no chat line, no sound)"],
+           ["none", "No alerts"]].map(([v, t]) => h("option", {value: v, selected: (vol[k.id] || "") === v}, t))))))))));
 
     const swaps = e.sounds || {};
     const used = Object.keys(notes.sounds).map((k) => +k).sort((x, y) => notes.sounds[y].length - notes.sounds[x].length);
@@ -116,9 +143,11 @@ EZ.areas.push({
     box.append(
       h("div.fe-area-head", h("div", h("h2", "Alerts"),
         h("p.fe-sub", "What a drop does besides its label: its chat line, its sound and its minimap icon."))),
-      globals, soundsCard,
+      globals, volumeCard, soundsCard,
       h("p.fe-note", "Minimap icons: change them on ", h("a", {href: "#looks/icons", onclick: (ev) => {
         ev.preventDefault(); app.go("looks", "icons");
-      }}, "Looks"), ". How loud each kind of drop is (by tier) comes with the item categories."));
+      }}, "Looks"), ". A single item's alerts: on ", h("a", {href: "#items", onclick: (ev) => {
+        ev.preventDefault(); app.go("items");
+      }}, "Items"), "."));
   },
 });

@@ -2624,7 +2624,11 @@ if (EZ.edits) {
 var EZ = typeof EZ !== "undefined" ? EZ : {};
 EZ.overrides = (function () {
   "use strict";
-  const ACTIONS = ["show", "hide", "mute", "sound", "icon", "iconOnly", "notify", "look", "replace"];
+  const ACTIONS = ["show", "hide", "mute", "sound", "icon", "iconOnly", "notify", "look", "replace", "hunt"];
+  /* A hunted item: shown wherever Erazure hides it, a loud look where Erazure decides its look, and an alert of its
+     own instead of Erazure's (the player can change each). */
+  const HUNT = {text: "%PURPLE%>>> %NAME% %PURPLE%<<<", alert: {icon: {BORDER: "9B", MAP: "9B", DOT: "20"}, sound: 4728,
+                                                                chat: "all"}};
   const QUALITY_WORD = {INF: "INF", NORM: "(NMAG !SUP !INF)", SUP: "SUP", NMAG: "NMAG", MAG: "MAG", RARE: "RARE",
                         CRAFT: "CRAFT", SET: "SET", UNI: "UNI"};
   const NOTIFY_ALL = /%(?:BORDER|MAP|DOT|PX|LINE|NOTIFY)-[0-9a-f]{1,4}%|%SOUNDID-\d{1,4}%|%TIER-\d%/gi;
@@ -2831,7 +2835,10 @@ EZ.overrides = (function () {
 
   /* The edit step (after the level copies, before the player's own rules). */
   function apply(ctx) {
-    const list = (ctx.edits.items || []).filter(valid);
+    const list = (ctx.edits.items || []).filter(valid).flatMap((o) => o.action !== "hunt" ? [o] : [
+      Object.assign({}, o, {action: "show"}),
+      Object.assign({}, o, {action: "look", text: typeof o.text === "string" && o.text ? o.text : HUNT.text}),
+      Object.assign({}, o, {action: "notify", mode: "instead", alert: o.alert || HUNT.alert})]);
     if (!list.length) return;
     const sorted = list.map((o, k) => ({o, k, n: narrowness(o)})).sort((a, b) => a.n - b.n || a.k - b.k);
     const tops = [], bottoms = [];
@@ -2855,12 +2862,113 @@ EZ.overrides = (function () {
     put("bottom", bottoms, EZ.rules.PLACE.bottom);
   }
 
-  return {apply, one, cond, partials, contexts, read, alertText, valid, narrowness, ACTIONS, MARKS};
+  return {apply, one, cond, partials, contexts, read, alertText, valid, narrowness, ACTIONS, MARKS, HUNT};
 })();
 
 if (EZ.edits) {
   EZ.edits.step(500, (ctx) => EZ.overrides.apply(ctx));
   EZ.edits.counter("items", (e) => (e.items || []).filter(EZ.overrides.valid).length);
+}
+
+/* ---- tools/editor/volume.js ---- */
+/* How loud each kind of drop is (the Alerts area): every rule of Erazure's that alerts (an icon, a sound, a chat
+   line) belongs to one kind: the unique and set tiers by the look they draw (040's tier aliases), everything else
+   by its section. Per kind the player keeps Erazure's alerts, takes the sound away, keeps only the icon (no chat
+   line, no sound: BH gives them together) or takes every alert away. A whole-rule change, so exact: an item whose
+   alert a muted rule decides is silent. Runs after the level copies, before the item overrides. */
+var EZ = typeof EZ !== "undefined" ? EZ : {};
+EZ.volume = (function () {
+  "use strict";
+  const MODES = ["mute", "iconOnly", "none"];
+  const TIERS = [
+    ["uni-high", "Unique items: High value", /%UNI_HIGH_VALUE_LEFT%/],
+    ["uni-medium", "Unique items: Medium value", /%UNI_MEDIUM_VALUE_LEFT%/],
+    ["uni-minimal", "Unique items: Minimal value", /%UNI_MINIMAL_(?:VALUE|GRAIL)_LEFT%/],
+    ["uni-grail", "Unique items not discovered yet", /%UNI_GRAIL_LEFT%/],
+    ["set-high", "Set items: High value", /%SET_HIGH_VALUE_LEFT%/],
+    ["set-medium", "Set items: Medium value", /%SET_MEDIUM_VALUE_LEFT%/],
+    ["set-grail", "Set items not discovered yet", /%SET_GRAIL_LEFT%/],
+  ];
+  const SECTIONS = {"060": "Gold, potions and tomes", "070": "Keys", "080": "Quest items", "090": "Gems",
+    "100": "PD2 items", "110": "Runes", "120": "PD2 items", "130": "Maps", "140": "Maps", "145": "Maps", "146": "Maps",
+    "147": "Maps", "150": "Unique items: other", "160": "Unique items: other", "170": "Set items: other",
+    "180": "Crafted items", "190": "Rare items", "200": "Magic items", "205": "Non-magical bases",
+    "210": "Non-magical bases", "220": "Non-magical bases", "240": "Charms", "250": "Jewels",
+    "260": "Arrows and bolts", "280": "Skill and shop highlights", "310": "Staffmods"};
+  const RUNE_RE = /(^|[\s(!])r\d\d\b|RUNE[<>=~]/;  // a rune rule anywhere is a rune alert
+  const ALL = /%(?:BORDER|MAP|DOT|PX|LINE|NOTIFY)-[0-9a-f]{1,4}%|%SOUNDID-\d{1,4}%|%TIER-\d%/gi;
+  const SOUNDS = /%SOUNDID-\d{1,4}%/gi;
+  const TIER = /%TIER-\d%/gi;
+
+  /* A section's kind: its number's name, else the file's own name ("230-item-description-notes" -> "Item
+     description notes"). */
+  function sectionKind(name) {
+    const n = name.slice(0, 3);
+    if (SECTIONS[n]) return [SECTIONS[n].toLowerCase().replace(/[^a-z0-9]+/g, "-"), SECTIONS[n]];
+    const words = name.replace(/\.filter$/, "").slice(4).replace(/-/g, " ");
+    return ["sec-" + n, words.charAt(0).toUpperCase() + words.slice(1)];
+  }
+
+  /* The kind of each alerting rule: Map(line -> [id, title]). */
+  function classify(src, lines) {
+    const secs = EZ.filter.sections(src, lines);
+    const out = new Map();
+    for (const name of Object.keys(secs)) {
+      const [a, b] = secs[name];
+      const fallback = sectionKind(name);
+      for (let i = a; i < b; i++) {
+        const line = lines[i];
+        if (!line.startsWith("ItemDisplay[")) continue;
+        const r = EZ.filter.rule(line);
+        if (!r || !EZ.filter.notifies(r.out)) continue;
+        const t = TIERS.find(([, , re]) => re.test(r.out));
+        out.set(i, t ? [t[0], t[1]] : RUNE_RE.test(r.cond) ? ["runes", "Runes"] : /MAPTIER/.test(r.cond) ?
+          ["maps", "Maps"] : fallback);
+      }
+    }
+    return out;
+  }
+
+  /* The kinds of a version: [{id, title, rules (how many alerting rules)}], tiers first, then the sections' order. */
+  function kinds(src, lines) {
+    const seen = new Map();
+    for (const [, [id, title]] of classify(src, lines)) {
+      if (!seen.has(id)) seen.set(id, {id, title, rules: 0});
+      seen.get(id).rules++;
+    }
+    const tierIds = TIERS.map((t) => t[0]);
+    return [...seen.values()].sort((x, y) => {
+      const a = tierIds.indexOf(x.id), b = tierIds.indexOf(y.id);
+      if (a >= 0 || b >= 0) return (a < 0 ? 99 : a) - (b < 0 ? 99 : b);
+      return 0;
+    });
+  }
+
+  function quieter(out, mode) {
+    if (mode === "mute") return out.replace(SOUNDS, "");
+    if (mode === "none") return out.replace(ALL, "");
+    if (mode === "iconOnly") return out.search(TIER) >= 0 ? out.replace(TIER, "%TIER-0%") : out + "%TIER-0%";
+    return out;
+  }
+
+  function apply(ctx) {
+    const want = ctx.edits.volume || {};
+    const ids = Object.keys(want).filter((k) => MODES.indexOf(want[k]) >= 0);
+    if (!ids.length) return;
+    for (const [i, [id]] of classify(ctx.src, ctx.lines)) {
+      if (MODES.indexOf(want[id]) < 0) continue;
+      const r = EZ.filter.rule(ctx.lines[i]);
+      const out = quieter(r.out, want[id]);
+      if (out !== r.out) ctx.lines[i] = r.head + out + r.comment;
+    }
+  }
+
+  return {kinds, classify, apply, quieter, MODES, TIERS};
+})();
+
+if (EZ.edits) {
+  EZ.edits.step(50, (ctx) => EZ.volume.apply(ctx));
+  EZ.edits.counter("volume", (e) => Object.keys(e.volume || {}).filter((k) => EZ.volume.MODES.indexOf(e.volume[k]) >= 0).length);
 }
 
 /* ---- tools/editor/render.js ---- */
@@ -6853,6 +6961,8 @@ EZ.areas = EZ.areas || [];
   const QUALS = [["", "Any"], ["NORM", "Normal"], ["SUP", "Superior"], ["INF", "Low quality"], ["MAG", "Magic"],
                  ["RARE", "Rare"], ["CRAFT", "Crafted"], ["SET", "Set"], ["UNI", "Unique"]];
   const ACTIONS = [
+    ["hunt", "Hunt it", "Shown wherever Erazure hides it, with a loud look, a big minimap icon and a sound of its " +
+      "own instead of Erazure's."],
     ["show", "Show it", "Where Erazure hides it, it shows with the look Erazure's other rules give it."],
     ["hide", "Hide it", "On the ground outside town: no label, no icon, no sound. Your inventory, stash and shops " +
       "still name it."],
@@ -6943,7 +7053,7 @@ EZ.areas = EZ.areas || [];
         (id) => set((x) => { x.sound = id; }))}, d.sound ? "♪ " + EZ.sounds.name(app.data, d.sound) : "Pick a sound"),
         d.sound ? EZ.sounds.play(app.data, d.sound) : h("span.fe-sub", "(no sound: the same as Mute)")));
     }
-    if (d.action === "icon" || d.action === "notify") {
+    if (d.action === "icon" || d.action === "notify" || d.action === "hunt") {
       const palette = app.data.palette || [];
       const layers = d.action === "icon" ? Object.fromEntries((d.icon || "").split(" ").filter(Boolean).map((k) => k.split("-")))
         : d.alert.icon;
@@ -6962,7 +7072,7 @@ EZ.areas = EZ.areas || [];
         return b;
       }), d.action === "icon" && !combo ? h("span.fe-sub", "(no icon)") : null));
     }
-    if (d.action === "notify") {
+    if (d.action === "notify" || d.action === "hunt") {
       extra.push(h("div.fe-row.fe-small", h("button.fe-btn.small", {type: "button", onclick: () => EZ.sounds.pick(app,
         Object.keys(EZ.filter.notifications(app.versionLines()).sounds).map(Number), d.alert.sound,
         (id) => set((x) => { x.alert.sound = id; }))}, d.alert.sound ? "♪ " + EZ.sounds.name(app.data, d.alert.sound) :
@@ -6972,10 +7082,18 @@ EZ.areas = EZ.areas || [];
             .map(([v, t]) => h("option", {value: v, selected: d.alert.chat === v}, t))),
         d.alert.chat === "tier" ? h("input.fe-pv-num", {type: "number", min: 0, max: 9, value: d.alert.tier,
           "aria-label": "Up to level", onchange: (e) => set((x) => { x.alert.tier = e.target.value; })}) : null),
-        seg([{value: "add", text: "Only where Erazure has none"}, {value: "instead", text: "Instead of Erazure's"}],
-          d.mode, (v) => set((x) => { x.mode = v; }), {label: "Erazure's alerts"}));
+        d.action === "notify" ? seg([{value: "add", text: "Only where Erazure has none"}, {value: "instead",
+          text: "Instead of Erazure's"}], d.mode, (v) => set((x) => { x.mode = v; }), {label: "Erazure's alerts"}) : null);
     }
-    if (d.action === "look" || d.action === "replace") {
+    if (d.action === "look" || d.action === "replace" || d.action === "hunt") {
+      const cards = EZ.filter.lookCards(app.src, app.versionLines());
+      extra.push(h("select", {"aria-label": "Start from one of Erazure's looks", onchange: (e) => {
+        if (e.target.value) set((x) => { x.text = e.target.value.replace(/\s+$/, ""); });
+      }}, h("option", {value: ""}, "Start from one of Erazure's looks…"),
+        EZ.filter.GROUPS.map((g) => h("optgroup", {label: g.title}, cards.filter((c) => c.group === g.id &&
+          c.tpls[0] && c.tpls[0].tpl.indexOf("%NAME%") >= 0).map((c) => h("option", {value: c.tpls[0].tpl}, c.title))))));
+    }
+    if (d.action === "look" || d.action === "replace" || d.action === "hunt") {
       const input = h("input.fe-mono", {type: "text", value: d.text, spellcheck: "false", "aria-label": "The look",
         oninput: (e) => { d.text = e.target.value; prev(); }});
       const prevBox = h("span.fe-ed-rulelabel");
@@ -6993,7 +7111,8 @@ EZ.areas = EZ.areas || [];
       if (d.action === "sound") o.sound = d.sound;
       if (d.action === "icon") o.icon = d.icon;
       if (d.action === "notify") { o.alert = JSON.parse(JSON.stringify(d.alert)); o.mode = d.mode; }
-      if (d.action === "look" || d.action === "replace") o.text = d.text;
+      if (d.action === "hunt") o.alert = JSON.parse(JSON.stringify(d.alert));
+      if (d.action === "look" || d.action === "replace" || d.action === "hunt") o.text = d.text;
       draft = null;  // before the change: the area is drawn again without the form
       EZ.store.change((ed) => {
         ed.items = (ed.items || []).filter((x) => x.id !== o.id);
@@ -7036,7 +7155,13 @@ EZ.areas = EZ.areas || [];
             "aria-label": "To character level", onchange: (e) => set((x) => { x.scope.clvl[1] = e.target.value; })})))),
       h("fieldset.fe-bd-set", h("legend", "What to do"),
         h("div.fe-bd-field.wide", h("div.fe-choice", ACTIONS.map(([k, t, sub]) => EZ.ui.option(t, sub, d.action === k,
-          () => set((x) => { x.action = k; }))))),
+          () => set((x) => {
+            x.action = k;
+            if (k === "hunt" && x.text === "%NAME%") {  // the hunt's own look and alert to start from
+              x.text = EZ.overrides.HUNT.text;
+              x.alert = JSON.parse(JSON.stringify(EZ.overrides.HUNT.alert));
+            }
+          }))))),
         extra.length ? h("div.fe-bd-field.wide", extra) : null),
       h("div.fe-row", h("button.fe-btn.primary", {type: "button", onclick: add}, d.id ? "Keep the change" : "Add this change"),
         h("span.fe-sub.fe-small", ACTION_NAME[d.action] + " · " + summary({scope: s}))));
@@ -7425,7 +7550,7 @@ EZ.sounds = (function () {
 
 EZ.areas.push({
   id: "alerts", title: "Alerts", icon: "♪", order: 50, group: "b",
-  count: (e) => EZ.edits.countArea("alerts", e),
+  count: (e) => EZ.edits.countArea("alerts", e) + EZ.edits.countArea("volume", e),
   render(box, app) {
     const {h, toggle, seg} = EZ.ui;
     const F = EZ.filter, S = EZ.sounds;
@@ -7449,6 +7574,33 @@ EZ.areas.push({
           {sub: "An item that only had an icon also loses its chat line (BH needs an icon or a sound to notify)."}),
         h("div.fe-row", h("span", "Icon size"), seg([{value: "", text: "Erazure's"}, {value: "smaller", text: "Smaller"},
           {value: "bigger", text: "Bigger"}], a.iconSize || "", (v) => set("iconSize", v), {label: "Icon size"}))));
+
+    /* ---- how loud each kind of drop is (EZ.volume) */
+    const vol = e.volume || {};
+    const kinds = EZ.volume.kinds(app.src, lines);
+    const setVol = (id, v) => EZ.store.change((ed) => {
+      ed.volume = ed.volume || {};
+      if (v) ed.volume[id] = v; else delete ed.volume[id];
+      if (!Object.keys(ed.volume).length) delete ed.volume;
+    }, {label: "how loud"});
+    const LOUD = ["uni-high", "set-high", "runes"];
+    const volumeCard = h("section.fe-card", {id: "fe-volume"},
+      h("h3", "How loud each kind of drop is"),
+      h("p.fe-sub", "Every rule of Erazure's that alerts belongs to one kind: the unique and set tiers by their look, " +
+        "the rest by what the rule is for. Quieten a kind and every drop whose alert it decides follows."),
+      h("div.fe-row.fe-small", {style: {marginBottom: ".5em"}},
+        h("button.fe-btn.small", {type: "button", onclick: () => EZ.store.change((ed) => {
+          ed.volume = {};
+          for (const k of kinds) if (LOUD.indexOf(k.id) < 0) ed.volume[k.id] = "mute";
+        }, {label: "how loud"})}, "Sounds only for High value uniques and sets, and runes"),
+        Object.keys(vol).length ? h("button.fe-btn.ghost.small", {type: "button", onclick: () => EZ.store.change((ed) => {
+          delete ed.volume;
+        }, {label: "how loud"})}, "↺ Erazure's for every kind") : null),
+      h("div.fe-tablewrap", h("table.fe-levels", h("tbody", kinds.map((k) => h("tr" + (vol[k.id] ? ".is-changed" : ""),
+        h("td", k.title, h("span.fe-sub", ` · ${k.rules} rule${k.rules === 1 ? "" : "s"}`)),
+        h("td", h("select", {"aria-label": k.title, onchange: (ev) => setVol(k.id, ev.target.value)},
+          [["", "Erazure's"], ["mute", "No sound"], ["iconOnly", "Icon only (no chat line, no sound)"],
+           ["none", "No alerts"]].map(([v, t]) => h("option", {value: v, selected: (vol[k.id] || "") === v}, t))))))))));
 
     const swaps = e.sounds || {};
     const used = Object.keys(notes.sounds).map((k) => +k).sort((x, y) => notes.sounds[y].length - notes.sounds[x].length);
@@ -7488,10 +7640,12 @@ EZ.areas.push({
     box.append(
       h("div.fe-area-head", h("div", h("h2", "Alerts"),
         h("p.fe-sub", "What a drop does besides its label: its chat line, its sound and its minimap icon."))),
-      globals, soundsCard,
+      globals, volumeCard, soundsCard,
       h("p.fe-note", "Minimap icons: change them on ", h("a", {href: "#looks/icons", onclick: (ev) => {
         ev.preventDefault(); app.go("looks", "icons");
-      }}, "Looks"), ". How loud each kind of drop is (by tier) comes with the item categories."));
+      }}, "Looks"), ". A single item's alerts: on ", h("a", {href: "#items", onclick: (ev) => {
+        ev.preventDefault(); app.go("items");
+      }}, "Items"), "."));
   },
 });
 

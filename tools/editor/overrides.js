@@ -21,7 +21,11 @@
 var EZ = typeof EZ !== "undefined" ? EZ : {};
 EZ.overrides = (function () {
   "use strict";
-  const ACTIONS = ["show", "hide", "mute", "sound", "icon", "iconOnly", "notify", "look", "replace"];
+  const ACTIONS = ["show", "hide", "mute", "sound", "icon", "iconOnly", "notify", "look", "replace", "hunt"];
+  /* A hunted item: shown wherever Erazure hides it, a loud look where Erazure decides its look, and an alert of its
+     own instead of Erazure's (the player can change each). */
+  const HUNT = {text: "%PURPLE%>>> %NAME% %PURPLE%<<<", alert: {icon: {BORDER: "9B", MAP: "9B", DOT: "20"}, sound: 4728,
+                                                                chat: "all"}};
   const QUALITY_WORD = {INF: "INF", NORM: "(NMAG !SUP !INF)", SUP: "SUP", NMAG: "NMAG", MAG: "MAG", RARE: "RARE",
                         CRAFT: "CRAFT", SET: "SET", UNI: "UNI"};
   const NOTIFY_ALL = /%(?:BORDER|MAP|DOT|PX|LINE|NOTIFY)-[0-9a-f]{1,4}%|%SOUNDID-\d{1,4}%|%TIER-\d%/gi;
@@ -228,7 +232,10 @@ EZ.overrides = (function () {
 
   /* The edit step (after the level copies, before the player's own rules). */
   function apply(ctx) {
-    const list = (ctx.edits.items || []).filter(valid);
+    const list = (ctx.edits.items || []).filter(valid).flatMap((o) => o.action !== "hunt" ? [o] : [
+      Object.assign({}, o, {action: "show"}),
+      Object.assign({}, o, {action: "look", text: typeof o.text === "string" && o.text ? o.text : HUNT.text}),
+      Object.assign({}, o, {action: "notify", mode: "instead", alert: o.alert || HUNT.alert})]);
     if (!list.length) return;
     const sorted = list.map((o, k) => ({o, k, n: narrowness(o)})).sort((a, b) => a.n - b.n || a.k - b.k);
     const tops = [], bottoms = [];
@@ -252,7 +259,7 @@ EZ.overrides = (function () {
     put("bottom", bottoms, EZ.rules.PLACE.bottom);
   }
 
-  return {apply, one, cond, partials, contexts, read, alertText, valid, narrowness, ACTIONS, MARKS};
+  return {apply, one, cond, partials, contexts, read, alertText, valid, narrowness, ACTIONS, MARKS, HUNT};
 })();
 
 if (EZ.edits) {
