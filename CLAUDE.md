@@ -1156,7 +1156,15 @@
   as you move; each burns 60 frames) draws (the page: one every other game frame), and the burst on cast: PD2 replaces
   srvdo 23 (Blaze: the vanilla state plus a path collision change) and nothing found creates its srvmissile
   blaze2ignite, so the race shows none. The race is 50 yards by default (the author) and plays on 3.2 s after the
-  last one finishes.
+  last one finishes, everyone standing at the finish line; "Run it again" shows from the moment the last one finishes
+  (2026-11-13, the author). A first visit (nothing kept in `erazure-run-speed`) gets the author's four setups
+  (2026-11-13, `example()`): Frenzy Barbarian (30 FRW, Increased Speed 10, Frenzy 20, 5 stacks), Feral Rage Druid
+  (40 FRW, Feral Rage 20, 5 charges), Blaze Sorceress (0 FRW, Blaze 10), Burst of Speed Assassin (40 FRW, Burst of
+  Speed 20). The page keeps a player's setups only while they differ from those (until then every redraw kept them,
+  so every visitor kept the first-visit setups of the day), so a change of `example()` reaches everyone who never
+  changed theirs; the earlier first-visit setups (`oldExample()`, the two Barbarians) read as nothing kept. "Reset to
+  the default setups" (beside Add a setup, 2026-11-13, the author) brings those four back, names too; it turns into
+  "Undo reset" until the next change, and is greyed out while the setups are the defaults.
 - The **IAS Calculator** (Resources, 2026-11-12, the author: "all the functionality of" RoofooEvazan's
   hiimpd2.com/ias-calculator, credited on the page; plan `C:\Users\Erik\.claude\plans\i-want-to-create-compiled-lake.md`):
   `website/resources/IAS-Calculator.html` (`ias-map`, by hand), four tabs (underlined, as the Grail Planner's).

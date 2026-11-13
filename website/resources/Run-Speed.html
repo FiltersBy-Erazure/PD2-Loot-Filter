@@ -168,6 +168,7 @@
   <section class="panel" aria-labelledby="fr-builds-h">
     <div class="bar">
       <h2 id="fr-builds-h" style="flex:1">Setups</h2>
+      <button type="button" id="fr-reset">Reset to the default setups</button>
       <button type="button" id="fr-add">Add a setup</button>
     </div>
     <div class="builds" id="fr-builds"></div>
@@ -344,11 +345,35 @@
   const DEFAULT = () => ({ name: "", cls: "bar", frw: 60, s: { inc: 0, frenzy: 0, stacks: 5, bos: 0, evade: 0, blaze: 0, feral: 0, charges: 0, hunger: 0, joust: 0, charge: false, vigor: 0, vigorHard: 0, shrine: false, other: 0 } });
   let builds = [];
   function example() {
+    const a = DEFAULT(); a.name = "Frenzy Barbarian"; a.frw = 30; a.s.inc = 10; a.s.frenzy = 20; a.s.stacks = 5;
+    const b = DEFAULT(); b.name = "Feral Rage Druid"; b.cls = "dru"; b.frw = 40; b.s.feral = 20; b.s.charges = 5;
+    const c = DEFAULT(); c.name = "Blaze Sorceress"; c.cls = "sor"; c.frw = 0; c.s.blaze = 10;
+    const d = DEFAULT(); d.name = "Burst of Speed Assassin"; d.cls = "ass"; d.frw = 40; d.s.bos = 20;
+    return [a, b, c, d];
+  }
+  /* the first-visit setups until 2026-11-13, which every visit kept then (each redraw saved them): read as no choice */
+  function oldExample() {
     const a = DEFAULT(); a.name = "300 FRW, Increased Speed 10"; a.frw = 300; a.s.inc = 10;
     const b = DEFAULT(); b.name = "60 FRW, Increased Speed 10, Frenzy 26"; b.frw = 60; b.s.inc = 10; b.s.frenzy = 26;
     return [a, b];
   }
-  function save() { try { localStorage.setItem(STORE, JSON.stringify(builds)); } catch (e) { /* storage blocked */ } }
+  const isExample = () => JSON.stringify(builds) === JSON.stringify(example());
+  /* kept only once they differ from the first-visit setups, so a later change of those reaches everyone who never
+     changed them */
+  function save() {
+    try {
+      if (isExample()) localStorage.removeItem(STORE); else localStorage.setItem(STORE, JSON.stringify(builds));
+    } catch (e) { /* storage blocked */ }
+  }
+  /* Reset to the default setups: the setups it replaced, while its button offers Undo (until the next change) */
+  let undoReset = null;
+  function resetButton() {
+    const same = isExample();
+    if (undoReset && !same) undoReset = null;
+    const btn = $("fr-reset");
+    btn.textContent = undoReset ? "Undo reset" : "Reset to the default setups";
+    btn.disabled = !undoReset && same;
+  }
   function load() { try { return JSON.parse(localStorage.getItem(STORE) || "null"); } catch (e) { return null; } }
   const num = (v, lo, hi) => { const n = Math.round(+v); return Number.isFinite(n) ? clamp(n, lo, hi) : lo; };
   function el(tag, attrs, parent, text) {
@@ -448,6 +473,7 @@
     raceUpdate();
     renderDock();
     save();
+    resetButton();
   }
   /* the strip: each setup's running speed and, once the race is set up, its time over the race's distance */
   function renderDock() {
@@ -529,7 +555,7 @@
   const FPS = 25, PX_YD = 1.5 * 16 * Math.SQRT2, HUMAN_RATE = { RN: 101, WL: 213 };
   const LANE = 60, TOP = 104, BOTTOM = 30, LEFT = 50, RIGHT = 86, HOLD = 80;  // game pixels; frames the end plays on
   const RC = { sp: null, img: null, floor: null, pattern: null, state: "idle", mode: "RN", dist: 50, slow: 1,
-               t: 0, playing: false, last: 0, runners: [], seen: false, want: false, done: false, cam: 0 };
+               t: 0, playing: false, over: false, last: 0, runners: [], seen: false, want: false, done: false, cam: 0 };
   const reducedMotion = () => !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
   function rng(seed) { return () => { seed = (seed + 0x6d2b79f5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
   function raceLoad() {
@@ -620,7 +646,7 @@
   /* after a change to the setups (render() calls it after every redraw, so it checks what changed) */
   function raceUpdate() {
     if (RC.state !== "ready" || raceKey() === RC.key) return;
-    if (RC.playing) { RC.playing = false; raceButtons(); }
+    if (RC.playing) { RC.playing = false; RC.over = false; raceButtons(); }
     raceSetup(); raceSoon();
   }
   // a redraw on the next frame (from a resize: resizing the picture inside the browser's resize callback starts a loop)
@@ -642,18 +668,21 @@
       R.map(r => `${r.b.name || "Setup " + LETTERS[r.i]} ${nf2.format(r.T / FPS)} seconds`).join(", "));
     renderDock();
   }
-  function raceButtons() { $("fr-play").textContent = RC.playing ? "Stop" : RC.done ? "Run it again" : "Run the race"; }
+  /* RC.over: everyone has finished and the end plays on (standing at the finish line): the race can be run again */
+  function raceButtons() { $("fr-play").textContent = RC.playing && !RC.over ? "Stop" : RC.done || RC.over ? "Run it again" : "Run the race"; }
   function racePlay() {
     if (RC.state !== "ready") { RC.want = true; raceLoad(); return; }
-    RC.want = false; RC.t = 0; RC.playing = true; RC.done = false; RC.last = performance.now();
+    const running = RC.playing;  // run again while the end plays on: the frame loop already runs
+    RC.want = false; RC.t = 0; RC.playing = true; RC.over = false; RC.done = false; RC.last = performance.now();
     raceButtons();
-    requestAnimationFrame(raceTick);
+    if (!running) requestAnimationFrame(raceTick);
   }
   function raceTick(now) {
     if (!RC.playing) return;
     RC.t += Math.min(0.1, Math.max(0, now - RC.last) / 1000) * RC.slow * FPS; RC.last = now;
-    const end = Math.max(...RC.runners.map(r => r.T)) + HOLD;
-    if (RC.t >= end) { RC.t = end; RC.playing = false; RC.done = true; raceButtons(); }
+    const last = Math.max(...RC.runners.map(r => r.T)), end = last + HOLD;
+    if (!RC.over && RC.t >= last) { RC.over = true; raceButtons(); }
+    if (RC.t >= end) { RC.t = end; RC.playing = false; RC.over = false; RC.done = true; raceButtons(); }
     raceDraw();
     if (RC.playing) requestAnimationFrame(raceTick);
   }
@@ -738,8 +767,8 @@
     $("fr-walk").addEventListener("click", () => setMode("WL"));
     $("fr-dist").addEventListener("change", e => { RC.dist = +e.target.value || 30; RC.done = false; raceUpdate(); raceButtons(); });
     $("fr-slow").addEventListener("change", e => { RC.slow = +e.target.value || 1; if (!RC.playing) raceDraw(); });
-    $("fr-play").addEventListener("click", () => { if (RC.playing) { RC.playing = false; RC.done = true; raceButtons(); } else racePlay(); });
-    $("fr-canvas").addEventListener("click", () => { if (!RC.playing) racePlay(); });
+    $("fr-play").addEventListener("click", () => { if (RC.playing && !RC.over) { RC.playing = false; RC.done = true; raceButtons(); } else racePlay(); });
+    $("fr-canvas").addEventListener("click", () => { if (!RC.playing || RC.over) racePlay(); });
     if (window.IntersectionObserver) {
       new IntersectionObserver(es => { if (es.some(e => e.isIntersecting)) raceLoad(); }, { rootMargin: "400px 0px" }).observe(stage);
       new IntersectionObserver(es => {
@@ -753,7 +782,12 @@
 
   // ================================================================== start
   const saved = load();
-  builds = Array.isArray(saved) && saved.length ? saved.slice(0, 4).map(x => { const d = DEFAULT(); return Object.assign(d, x, { s: Object.assign(d.s, x.s || {}) }); }) : example();
+  const kept = Array.isArray(saved) && saved.length ? saved.slice(0, 4).map(x => { const d = DEFAULT(); return Object.assign(d, x, { s: Object.assign(d.s, x.s || {}) }); }) : null;
+  builds = kept && JSON.stringify(kept) !== JSON.stringify(oldExample()) ? kept : example();
+  $("fr-reset").addEventListener("click", () => {
+    if (undoReset) { builds = undoReset; undoReset = null; } else { undoReset = builds; builds = example(); }
+    renderBuilds();
+  });
   $("fr-add").addEventListener("click", () => { if (builds.length < 4) { const c = JSON.parse(JSON.stringify(builds[builds.length - 1])); c.name = ""; builds.push(c); renderBuilds(); } });
   let lastW = 0;
   // redrawn on the next frame: redrawing inside the browser's resize callback resizes what it watches (a loop)
