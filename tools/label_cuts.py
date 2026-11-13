@@ -406,7 +406,7 @@ def values_for(it, code, eth, nsock, c360, c206, outcomes):
         v[group] = min(vals) if all(vals) else 0
     v["PLUSDEF"] = v.get("DEF", 0)  # BH: the item's own +defense (affixes, sockets), no base, no ED%
     base_def = b["maxac"] + (1 if v.get("EDEF", 0) > 0 else 0)
-    base_def = base_def * 3 // 2 if eth else base_def
+    base_def = base_def * 5 // 4 if eth else base_def  # ethereal: +25% (PD2, 2026-09-27: "reduced from 50% to 25%")
     v["DEF"] = v["STAT31"] = base_def * (100 + v.get("EDEF", 0)) // 100 + v.get("DEF", 0) if b["maxac"] else v["DEF"]
     v.update({"SOCK": nsock, "STAT360": c360, "STAT206": c206, "ID": 1, "ETH": eth, "ILVL": 99, "QLVL": b["qlvl"],
               "CRAFTALVL": 0, "QTY": 0, "MAPID": T.FIELD_ID, "CLVL": 90, "DIFF": 2, "ALLDISCOVERED": 1,

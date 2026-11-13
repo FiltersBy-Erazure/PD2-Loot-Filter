@@ -8074,11 +8074,12 @@ EZ.items = (function () {
     else if (b.armor && b.maxac) {
       const ed = own["16"] || 0, flat = own["31"] || 0;
       let d = b.maxac + (ed > 0 ? 1 : 0);
-      if (eth) d = Math.floor(d * 3 / 2);
+      // ethereal: +25% (PD2's patch of 2026-09-27: "reduced from 50% to 25%"), defense and weapon damage alike
+      if (eth) d = Math.floor(d * 5 / 4);
       stats["31"] = Math.floor(d * (100 + ed) / 100) + flat;
     }
     if (b.weapon && b.dmg) {
-      const ethd = (x) => eth ? Math.floor(x * 3 / 2) : x;
+      const ethd = (x) => eth ? Math.floor(x * 5 / 4) : x;
       if (b.mindam || b.maxdam) { stats["21"] = ethd(b.mindam) + (own["21"] || 0); stats["22"] = ethd(b.maxdam) + (own["22"] || 0); }
       if (b.min2 || b.max2) { stats["23"] = ethd(b.min2) + (own["23"] || 0); stats["24"] = ethd(b.max2) + (own["24"] || 0); }
       if (b.minmis || b.maxmis) { stats["159"] = ethd(b.minmis) + (own["159"] || 0); stats["160"] = ethd(b.maxmis) + (own["160"] || 0); }
