@@ -1057,7 +1057,23 @@
   auras' bonus; the sheet's running subtotals) and each card with its totals; a strip with every build's damage per
   second and kill time stays at the bottom of the screen while the builds are on it (`position: sticky`); "How they
   compare" splits each build's difference from build A exactly into per hit x crit / deadly strike x the monster's
-  resistance x hits per second; fields that differ from build A are gold; "Try a change" copies build A. The monster can
+  resistance x hits per second; fields that differ from build A are gold; "Try a change" copies build A. The layout
+  review (2026-11-13, the author took all ten): the monster on top (one line of fields), the strip names it ("Against
+  Baal: ...", a Change button) and shows each build's four parts of How they compare; the cards are one grid (subgrid:
+  8 rows, a "Second weapon" row on every card while any build can hold two), so a section starts level in every card,
+  and its fields come in lines whose inputs stay level (each field a label / input / hint subgrid); opening a section
+  opens it on every card; gold marks only on builds of A's class, the dot left of the label; "Start from…" on each card
+  (`PRESETS`: Zeal, Frenzy, Whirlwind, Fury, Jab, Strafe, Dragon Claw, plausible endgame numbers of Claude's, for the
+  author to check; Undo until the next change); "Copy A, change one thing" is the main button; the card's damage per
+  hit says the character screen shows it; under How they compare, tabs (Side by Side with the best of a row green,
+  Breakpoints as a ladder per build with each frame count's damage per second, Stat Trade-offs, Damage Profile, How
+  It's Worked Out; `#tab-<name>` or a heading's id opens one); tables as wide as their numbers. Fixed the same day: the
+  breakpoints' shared column (sorted by frames per hit, labelled per round: 13, 12, 11, 16, 10, 9), Whirlwind's 8
+  frames in the text, Charge's damage per second is strikes only (said), a class's masteries only (a build switched
+  from a Barbarian kept One Handed Weapon Mastery's damage), Dragon Claw reads Claw Mastery's level, Penetrate asked
+  once (Strafe's synergy and its pierce), a two-handed sword is held in both hands but by a Barbarian (any class could
+  pick "One hand"), two weapons as the engine allows them (`IAS.dual`), a share link leaves the address once loaded
+  (reloads went back to it), the focus stays on a select that redraws its card. The monster can
   be a boss (`TARGETS` in calc_data.py): its life in Hell at its own level, +70% for each player after the first (PD2's
   table), at most 8,388,607; Diablo Clone, Rathma, Mendeln and Lucion x 1.5 at tier 0, x 4 x (1 + tier / 5) at tiers 1-2
   (their fight sets it); the crushing blow divisor from PD2's map boss lists (`MAP_BOSS_CLASSES`: The Tainted Hive,

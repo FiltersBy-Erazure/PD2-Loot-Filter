@@ -22,8 +22,8 @@
      worked out. Dark by default; light when the website (Material) is switched to light. */
   .dmg-map {
     --bg: #151412; --panel: #1f1d1a; --panel2: #191815; --fg: #ece7de; --fg2: #cfc8bb; --muted: #a59e91; --line: #36322c;
-    --grid: #2e2b27; --axis: #4a463f; --accent: #d8b45e; --accent-wash: rgba(216, 180, 94, 0.12); --good: #4cc38a;
-    --bad: #f0866a; --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500;
+    --grid: #2e2b27; --axis: #4a463f; --accent: #d8b45e; --accent-wash: rgba(216, 180, 94, 0.12); --good: #38a283;
+    --bad: #cc7b38; --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #bb33aa;
     --display: "Cinzel", "Trajan Pro", Georgia, serif;
     --body: "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     color-scheme: dark;
@@ -31,8 +31,8 @@
   }
   [data-md-color-scheme="default"] .dmg-map {
     --bg: #f3f1ec; --panel: #fffdf8; --panel2: #f8f5ee; --fg: #23211c; --fg2: #4a463e; --muted: #6b655a; --line: #ded7c9;
-    --grid: #e7e2d8; --axis: #c3bcae; --accent: #8a6d1f; --accent-wash: rgba(138, 109, 31, 0.10); --good: #12804f;
-    --bad: #b8431f; --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #b98200;
+    --grid: #e7e2d8; --axis: #c3bcae; --accent: #8a6d1f; --accent-wash: rgba(138, 109, 31, 0.10); --good: #11805c;
+    --bad: #b65a17; --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #a8329b;
     color-scheme: light;
   }
   .dmg-map *, .dmg-map *::before, .dmg-map *::after { box-sizing: border-box; }
@@ -61,10 +61,16 @@
   .dmg-map button.primary { border-color: var(--accent); background: var(--accent-wash); font-weight: 700; }
   .dmg-map button:disabled { opacity: .5; cursor: default; }
 
-  /* builds */
-  .dmg-map .builds { display: grid; gap: 14px; grid-template-columns: repeat(var(--n, 2), minmax(0, 1fr)); align-items: start; }
+  .dmg-map .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+                      margin: 0; padding: 0; }
+  .dmg-map .target-panel { scroll-margin-top: 80px; }
+
+  /* builds: every card is a column of the same 8 rows (head, the six sections, totals) of one grid (subgrid), so a
+     section starts level in every card */
+  .dmg-map .builds { display: grid; column-gap: 14px; row-gap: 0; grid-template-columns: repeat(var(--n, 2), minmax(0, 1fr));
+                     grid-template-rows: repeat(8, auto); }
   .dmg-map .build { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; border-top: 3px solid var(--key);
-                    display: grid; gap: 0; min-width: 0; }
+                    display: grid; grid-row: span 8; grid-template-rows: subgrid; gap: 0; min-width: 0; }
   .dmg-map .build-head { display: flex; align-items: center; gap: 8px; padding: 10px 12px 8px; flex-wrap: wrap; }
   .dmg-map .build-head h3 { flex: 1 1 140px; min-width: 0; display: flex; align-items: center; gap: 8px; }
   .dmg-map .build-head select { width: auto; flex: none; font-size: 12.5px; padding: 3px 6px; }
@@ -84,22 +90,36 @@
   .dmg-map details.sec > summary::after { content: "\25B8"; transition: transform .15s; position: static; width: auto; height: auto;
                                           background: none; -webkit-mask-image: none; mask-image: none; transform: none; }
   .dmg-map details.sec[open] > summary::after { transform: rotate(90deg); }
-  .dmg-map details.sec > summary .sum { text-transform: none; letter-spacing: 0; font-weight: 600; color: var(--fg2); font-size: 12.5px;
-                                       white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-left: auto; }
-  .dmg-map .fields { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 8px 10px; padding: 2px 12px 12px; }
-  .dmg-map .field { display: grid; gap: 3px; min-width: 0; align-content: start; }
+  .dmg-map details.sec > summary .ttl, .dmg-map .sec-none > span:first-child { white-space: nowrap; flex: none; }
+  .dmg-map details.sec > summary .sum, .dmg-map .sec-none .sum { text-transform: none; letter-spacing: 0; font-weight: 600; color: var(--fg2);
+                                       font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-left: auto; }
+  /* the second weapon's row in a card whose class holds one weapon, while another card's class can hold two */
+  .dmg-map .sec-none { border-top: 1px solid var(--line); padding: 8px 12px; font-size: 12px; letter-spacing: .08em; text-transform: uppercase;
+                       color: var(--muted); font-weight: 700; display: flex; justify-content: space-between; align-items: start; gap: 8px; }
+  .dmg-map .sec-none .sum { color: var(--muted); font-weight: 400; }
+  /* a section: lines of fields, then notes and what they make. A field is three rows of its line's grid (label,
+     input, hint: subgrid), so the inputs of a line stay level whatever their labels wrap to. */
+  .dmg-map .sec-body { padding-bottom: 6px; }
+  .dmg-map .fields { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); column-gap: 10px; row-gap: 0;
+                     padding: 2px 12px 0; }
+  .dmg-map .field { display: grid; grid-row: span 3; grid-template-rows: subgrid; row-gap: 0; min-width: 0; align-content: start;
+                    position: relative; }
   .dmg-map .field.wide { grid-column: span 2; }
   .dmg-map .field.full { grid-column: 1 / -1; }
-  .dmg-map .field label, .dmg-map .field .lab { font-size: 12.5px; font-weight: 600; color: var(--fg2); }
-  .dmg-map .field small { font-size: 11.5px; color: var(--muted); line-height: 1.3; }
+  .dmg-map .field > label:not(.check), .dmg-map .field > .lab { font-size: 12.5px; font-weight: 600; color: var(--fg2); padding-bottom: 3px;
+                                                               align-self: end; line-height: 1.3; }
+  .dmg-map .field > small { font-size: 12.5px; color: var(--muted); line-height: 1.3; padding: 3px 0 9px; }
+  .dmg-map .field > small:empty { padding: 0 0 9px; }
+  .dmg-map .sec-body > .note { padding: 0 12px 8px; }
   .dmg-map input, .dmg-map select { font: inherit; color: var(--fg); }
   .dmg-map select, .dmg-map input[type="number"], .dmg-map input[type="text"] { background: var(--bg); border: 1px solid var(--axis);
-      border-radius: 6px; padding: 4px 7px; min-width: 0; width: 100%; font-size: 14px; }
+      border-radius: 6px; padding: 4px 7px; min-width: 0; width: 100%; font-size: 14px; height: 31px; line-height: 21px; }
   .dmg-map input[type="number"] { font-variant-numeric: tabular-nums; }
-  .dmg-map .check { display: flex; gap: 7px; align-items: center; font-size: 13.5px; color: var(--fg2); min-height: 30px; }
-  .dmg-map .check input { accent-color: var(--accent); width: 15px; height: 15px; }
+  .dmg-map .check { display: flex; gap: 7px; align-items: center; font-size: 13.5px; color: var(--fg2); min-height: 31px; line-height: 1.25; }
+  .dmg-map .check input { accent-color: var(--accent); width: 15px; height: 15px; flex: none; }
+  .dmg-map .check:has(input:disabled) { color: var(--muted); }
   /* under each section, what its fields make; at the card's bottom, the build's totals (the sheet's running subtotals) */
-  .dmg-map .field.subtotal { display: block; margin: 2px 0 0; padding: 7px 10px; background: var(--panel2); border-left: 2px solid var(--key);
+  .dmg-map .subtotal { display: block; margin: 0 12px 6px; padding: 7px 10px; background: var(--panel2); border-left: 2px solid var(--key);
                        border-radius: 0 6px 6px 0; font-size: 13px; line-height: 1.5; color: var(--fg2); font-variant-numeric: tabular-nums; }
   .dmg-map .subtotal b { color: var(--fg); }
   .dmg-map .build-foot { border-top: 1px solid var(--line); padding: 10px 12px 12px; display: grid; gap: 3px; font-variant-numeric: tabular-nums; }
@@ -109,24 +129,33 @@
   .dmg-map .build-foot small { flex-basis: 100%; text-align: right; color: var(--muted); font-size: 12.5px; }
   .dmg-map .build-foot .big { padding-top: 3px; }
   .dmg-map .build-foot .big b { font-size: 21px; }
-  /* fields that differ from build A */
+  /* fields that differ from build A (the mark sits in the gap left of the label, so the label never wraps for it) */
   .dmg-map .gold { color: var(--accent); font-weight: 700; }
   .dmg-map .field.diff > label, .dmg-map .field.diff > .lab, .dmg-map .field.diff .check { color: var(--accent); }
-  .dmg-map .field.diff > label::after, .dmg-map .field.diff > .lab::after { content: " \25CF"; font-size: 9px; vertical-align: 2px; }
+  .dmg-map .field.diff > label:not(.check)::before, .dmg-map .field.diff > .lab::before { content: "\25CF"; position: absolute; left: -9px;
+                                                                                         font-size: 8px; margin-top: 4px; }
   .dmg-map .field.diff select, .dmg-map .field.diff input[type="number"] { border-color: var(--accent); }
   .dmg-map details.sec.diff > summary .ttl { color: var(--accent); }
   .dmg-map details.sec.diff > summary .ttl::after { content: " \25CF"; }
   /* the strip of totals that stays at the bottom of the screen while the builds are on it */
-  .dmg-map .dock { position: sticky; bottom: 0; z-index: 4; display: grid; grid-template-columns: repeat(var(--n, 2), minmax(0, 1fr));
+  .dmg-map .dock { position: sticky; bottom: 0; z-index: 3; display: grid; grid-template-columns: repeat(var(--n, 2), minmax(0, 1fr));
                    gap: 6px 10px; padding: 8px 10px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
                    box-shadow: 0 -8px 24px rgba(0, 0, 0, .4); }
   [data-md-color-scheme="default"] .dmg-map .dock { box-shadow: 0 -6px 18px rgba(0, 0, 0, .12); }
+  /* its first line: the monster the kill times are for */
+  .dmg-map .dk-head { grid-column: 1 / -1; display: flex; align-items: center; gap: 4px 10px; min-width: 0; font-size: 13px; color: var(--fg2);
+                      padding-bottom: 5px; border-bottom: 1px solid var(--line); }
+  .dmg-map .dk-head span { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .dmg-map .dk-head b { color: var(--fg); }
+  .dmg-map .dk-head button { flex: none; padding: 1px 9px; font-size: 12.5px; }
   .dmg-map .dk { border-left: 3px solid var(--key); padding: 1px 10px; display: grid; min-width: 0; }
-  .dmg-map .dk-name { font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 700;
+  .dmg-map .dk-name { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 700;
                       white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .dmg-map .dk-val { font-size: 22px; font-weight: 700; line-height: 1.2; font-variant-numeric: tabular-nums; }
   .dmg-map .dk-val small { font-size: 12.5px; font-weight: 600; color: var(--fg2); }
   .dmg-map .dk-sub { font-size: 12.5px; color: var(--fg2); font-variant-numeric: tabular-nums; }
+  /* why it differs from build A: the four parts of How they compare */
+  .dmg-map .dk-why { font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
   /* how each build compares with build A */
   .dmg-map .verdict { display: grid; gap: 8px; max-width: 96ch; }
   .dmg-map .verdict p { color: var(--fg2); font-size: 15px; }
@@ -136,8 +165,10 @@
   .dmg-map .pair.three { grid-template-columns: 1fr 1fr 1fr; }
 
   /* results */
-  .dmg-map .scroll { overflow-x: auto; min-width: 0; }
-  .dmg-map table.dm-table { border-collapse: collapse; width: 100%; font-size: 13.5px; margin: 0; display: table; }
+  /* relative: the screen reader notes in its cells (position: absolute) stay inside it, or the page scrolls sideways */
+  .dmg-map .scroll { overflow-x: auto; min-width: 0; position: relative; }
+  /* tables as wide as their numbers, not the page: the label beside its values */
+  .dmg-map table.dm-table { border-collapse: collapse; width: auto; min-width: min(100%, 520px); font-size: 13.5px; margin: 0; display: table; }
   .dmg-map .dm-table th, .dmg-map .dm-table td { padding: 6px 10px; text-align: right; border: 0; border-bottom: 1px solid var(--line);
                                                  white-space: nowrap; background: none; }
   .dmg-map .dm-table th { font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: .03em; vertical-align: bottom; }
@@ -145,22 +176,42 @@
   .dmg-map .dm-table td { font-variant-numeric: tabular-nums; color: var(--fg); }
   .dmg-map .dm-table tbody tr:hover td { background: var(--accent-wash); }
   .dmg-map .dm-table tr.strong td { font-weight: 700; }
-  .dmg-map .dm-table tr.group td { color: var(--muted); font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; font-weight: 700;
+  .dmg-map .dm-table td:first-child { padding-right: 28px; }
+  .dmg-map .dm-table th:not(:first-child), .dmg-map .dm-table td:not(:first-child) { min-width: 150px; }
+  .dmg-map .dm-table tr.group td { color: var(--muted); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; font-weight: 700;
                                    padding-top: 12px; }
-  .dmg-map .dm-table td small { display: block; color: var(--muted); font-size: 11.5px; font-weight: 400; }
+  .dmg-map .dm-table td small { display: block; color: var(--muted); font-size: 12.5px; font-weight: 400; }
   .dmg-map .dm-table th .key { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; }
   .dmg-map .dm-table td.cur { color: var(--accent); font-weight: 700; }
+  .dmg-map .dm-table td.best, .dmg-map .best-key { color: var(--good); font-weight: 700; }
+  /* the best of a row is marked with a diamond as well (before the number, so the column's digits stay right-aligned) */
+  .dmg-map .dm-table td.best::before, .dmg-map .best-key::before { content: "C6"; font-size: 9px; margin-right: 5px; vertical-align: 1px; }
+  .dmg-map .dm-table tr.cur td { color: var(--accent); font-weight: 700; background: var(--accent-wash); }
+  .dmg-map .dm-table tr.past td { color: var(--muted); }
+
+  /* breakpoints: one ladder per build */
+  .dmg-map .bp-grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); align-items: start; }
+  .dmg-map .bp-card { border: 1px solid var(--line); border-top: 3px solid var(--key); border-radius: 8px; background: var(--panel2);
+                      padding: 10px 12px; display: grid; gap: 8px; min-width: 0; }
+  .dmg-map .bp-card h3 small { display: block; font-weight: 400; color: var(--muted); font-size: 13px; }
+  .dmg-map .bp-card table.dm-table { width: 100%; min-width: 0; }
+  .dmg-map .bp-card .dm-table td:first-child { padding-right: 10px; }
+  .dmg-map .bp-card .dm-table th:not(:first-child), .dmg-map .bp-card .dm-table td:not(:first-child) { min-width: 0; }
+  /* stat trade-offs: "+ [40] % [stat]" */
+  .dmg-map .par-amt { display: inline-flex; align-items: center; gap: 3px; font-weight: 700; color: var(--fg); }
+  .dmg-map .par-amt input[type="number"] { width: 78px; }
   .dmg-map .good { color: var(--good); }
   .dmg-map .bad { color: var(--bad); }
 
   /* chart */
   .dmg-map .plot { position: relative; min-width: 0; }
   .dmg-map .plot svg { display: block; width: 100%; height: auto; overflow: visible; }
-  .dmg-map .tick { fill: var(--muted); font-size: 11.5px; font-family: var(--body); font-variant-numeric: tabular-nums; }
+  .dmg-map .tick { fill: var(--muted); font-size: 12px; font-family: var(--body); font-variant-numeric: tabular-nums; }
   .dmg-map .axis-title { fill: var(--muted); font-size: 12px; font-family: var(--body); }
   .dmg-map ul.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; padding: 0; margin: 0; list-style: none; }
   .dmg-map .legend li { display: flex; align-items: center; gap: 7px; font-size: 13.5px; margin: 0; }
-  .dmg-map .legend .key { width: 16px; height: 3px; border-radius: 2px; }
+  .dmg-map .legend .key { width: 26px; height: 8px; flex: none; overflow: visible; }
+  .dmg-map .end-label { fill: var(--fg2); font-size: 12px; font-family: var(--body); }
   .dmg-map .tip { position: absolute; z-index: 5; pointer-events: none; background: var(--panel); border: 1px solid var(--line);
                   border-radius: 8px; box-shadow: 0 6px 24px rgba(0,0,0,.25); padding: 7px 10px; font-size: 12.5px; min-width: 180px; }
   .dmg-map .tip b { font-variant-numeric: tabular-nums; }
@@ -169,10 +220,19 @@
   .dmg-map .method li { margin: 0; }
   .dmg-map .method li strong { color: var(--fg); }
   .dmg-map .credit { color: var(--muted); font-size: 13px; }
-  .dmg-map .credit a, .dmg-map .method a { color: var(--accent); }
+  .dmg-map .credit a, .dmg-map .method a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
   .dmg-map .tabs { display: none; gap: 6px; flex-wrap: wrap; }
   .dmg-map .tabs button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-wash); font-weight: 700; }
+  /* the details under the builds: a tab each (the ARIA tab pattern) */
+  .dmg-map .dm-tabbar { display: flex; flex-wrap: wrap; gap: 6px; border-bottom: 1px solid var(--line); padding-bottom: 10px; }
+  .dmg-map .dm-tabbar button { padding: 7px 14px; font: 600 14px/1.2 var(--body); color: var(--fg2); }
+  .dmg-map .dm-tabbar button[aria-selected="true"] { border-color: var(--accent); background: var(--accent-wash); color: var(--fg);
+    box-shadow: inset 0 -3px 0 var(--accent); }
+  .dmg-map .dm-tabpanel { display: grid; gap: 12px; min-width: 0; position: relative; }
 
+  @media (max-width: 700px) {
+    .dmg-map .dk-why { display: none; }
+  }
   @media (max-width: 900px) {
     .dmg-map .builds { grid-template-columns: 1fr; }
     .dmg-map .builds .build:not(.shown) { display: none; }
@@ -183,7 +243,17 @@
     .dmg-map .panel { padding: 14px 12px 12px; }
     .dmg-map .dock { padding: 6px 8px; gap: 4px 8px; }
     .dmg-map .dk-val { font-size: 18px; }
-    .dmg-map .dk-sub { font-size: 11.5px; }
+    .dmg-map .dk-sub { font-size: 12px; }
+    .dmg-map .dk-head { font-size: 12.5px; }
+  }
+  /* short windows (200% zoom on a laptop): a smaller strip, and below 420px none (it would cover a third of the screen) */
+  @media (max-height: 500px) {
+    .dmg-map .dk-why { display: none; }
+    .dmg-map .dock { padding-block: 6px; gap: 4px 12px; }
+    .dmg-map .dk-val { font-size: 18px; }
+  }
+  @media (max-height: 420px) {
+    .dmg-map .dock { position: static; }
   }
 </style>
 </head>
@@ -194,26 +264,27 @@
 <div class="wrap dm-main">
   <header class="dm-head">
     <p class="eyebrow">Season 14 &middot; Physical damage &middot; Attack speed</p>
-    <p class="lede">Put up to four builds side by side: the weapon and what is on it, your Strength and Dexterity, the attack skill and its level, your auras and buffs, critical and deadly strike, crushing blow. Under each part of a build you see what it makes, and at the bottom of the screen each build&rsquo;s damage per second while you edit. Pick a boss, or set your own monster: the page works out the kill time the way the game does, and says by how much and why one build beats another.</p>
+    <p class="lede">Compare up to four physical builds against any monster: damage per second, kill time, attack speed breakpoints and what each stat is worth.</p>
   </header>
+
+  <section class="panel target-panel" id="dm-target-panel" aria-labelledby="dm-target-h">
+    <h2 id="dm-target-h">The monster</h2>
+    <div class="fields" style="padding:0" id="dm-target"></div>
+    <p class="note" id="dm-target-note"></p>
+  </section>
 
   <section class="panel" aria-labelledby="dm-builds-h">
     <div class="bar">
       <h2 id="dm-builds-h" style="flex:1">Builds</h2>
-      <button type="button" id="dm-try" title="Copy build A into a new build, then change one thing">Try a change</button>
+      <button type="button" id="dm-try" class="primary" title="A copy of build A beside it: change one thing and see what it is worth">Copy A, change one thing</button>
       <button type="button" id="dm-add">Add a build</button>
       <button type="button" id="dm-share">Copy a link to these builds</button>
       <span class="note" id="dm-share-note" aria-live="polite"></span>
     </div>
-    <p class="note" id="dm-diff-note" hidden>Fields marked <span class="gold">&#9679; gold</span> differ from build A. Under each part of a build, what it makes; at the bottom, the build&rsquo;s totals.</p>
+    <p class="note">Pick an example in <b>Start from&hellip;</b> on a card, then put in your own numbers. Under each part of a build, what it makes; at the bottom of the screen, every build&rsquo;s damage per second.</p>
+    <p class="note" id="dm-diff-note" hidden>Fields marked <span class="gold">&#9679; gold</span> differ from build A (on builds of A&rsquo;s class).</p>
     <div class="tabs" id="dm-tabs" role="group" aria-label="Show build"></div>
     <div class="builds" id="dm-builds"></div>
-  </section>
-
-  <section class="panel" aria-labelledby="dm-target-h">
-    <h2 id="dm-target-h">The monster</h2>
-    <div class="fields" style="padding:0" id="dm-target"></div>
-    <p class="note" id="dm-target-note"></p>
   </section>
 
   <section class="dock" id="dm-dock" aria-label="Each build&rsquo;s damage per second and kill time"></section>
@@ -223,38 +294,48 @@
     <div class="verdict" id="dm-verdict" aria-live="polite"></div>
   </section>
 
-  <section class="panel" aria-labelledby="dm-res-h">
-    <h2 id="dm-res-h">Side by side</h2>
-    <div class="scroll"><table class="dm-table" id="dm-results"></table></div>
-    <p class="note">Average hit: the damage a hit does on average, with critical and deadly strikes counted at their chance. Damage per second counts every hit an attack makes; crushing blow is in the kill time only, since it takes a share of the monster&rsquo;s life left.</p>
-  </section>
-
-  <section class="panel" aria-labelledby="dm-prof-h">
-    <h2 id="dm-prof-h">Damage profile</h2>
-    <p class="sub">Every hit&rsquo;s damage against the monster, sorted: the left end is the weakest hit, the right end the strongest. Deadly and critical strikes make the steps on the right.</p>
-    <ul class="legend" id="dm-legend"></ul>
-    <div class="plot" id="dm-plot"></div>
-  </section>
-
-  <section class="panel" aria-labelledby="dm-bp-h">
-    <h2 id="dm-bp-h">Attack speed breakpoints</h2>
-    <p class="sub" id="dm-bp-sub">Increased attack speed on items each build needs for each frame count of its attack (its other speed sources counted).</p>
-    <div class="scroll"><table class="dm-table" id="dm-bp"></table></div>
-  </section>
-
-  <section class="panel" aria-labelledby="dm-par-h">
-    <h2 id="dm-par-h">What else gives the same</h2>
-    <div class="bar">
-      <span class="sub">Each row is how much of that stat raises the build&rsquo;s average hit as much as</span>
-      <select id="dm-par-stat" aria-label="Compared with"></select>
-      <input type="number" id="dm-par-amt" min="1" max="1000" value="40" style="width:80px" aria-label="Amount">
+  <section class="panel more" aria-label="Details">
+    <div class="dm-tabbar" role="tablist" aria-label="Details">
+      <button type="button" role="tab" id="dm-tab-side" data-tab="side" aria-controls="dm-p-side" aria-selected="true">Side by Side</button>
+      <button type="button" role="tab" id="dm-tab-bp" data-tab="bp" aria-controls="dm-p-bp" aria-selected="false" tabindex="-1">Breakpoints</button>
+      <button type="button" role="tab" id="dm-tab-par" data-tab="par" aria-controls="dm-p-par" aria-selected="false" tabindex="-1">Stat Trade-offs</button>
+      <button type="button" role="tab" id="dm-tab-prof" data-tab="prof" aria-controls="dm-p-prof" aria-selected="false" tabindex="-1">Damage Profile</button>
+      <button type="button" role="tab" id="dm-tab-how" data-tab="how" aria-controls="dm-p-how" aria-selected="false" tabindex="-1">How It&rsquo;s Worked Out</button>
     </div>
-    <div class="scroll"><table class="dm-table" id="dm-parity"></table></div>
-    <p class="note">Flat damage counts the same number added to minimum and to maximum damage. A stat a build can&rsquo;t gain this way shows a dash (critical and deadly strike stop at their caps).</p>
-  </section>
 
-  <section class="panel method" aria-labelledby="dm-how-h">
-    <h2 id="dm-how-h">How it&rsquo;s worked out</h2>
+    <div class="dm-tabpanel" id="dm-p-side" role="tabpanel" aria-labelledby="dm-tab-side">
+      <h2 id="dm-res-h" class="sr-only">Side by side</h2>
+      <p class="sub">Every number behind each build&rsquo;s damage per second. The best of a row is <span class="best-key">marked</span>.</p>
+      <div class="scroll"><table class="dm-table" id="dm-results"></table></div>
+      <p class="note">Average hit: the damage a hit does on average, with critical and deadly strikes counted at their chance. Damage per second counts every hit an attack makes; crushing blow is in the kill time only, since it takes a share of the monster&rsquo;s life left.</p>
+    </div>
+
+    <div class="dm-tabpanel" id="dm-p-bp" role="tabpanel" aria-labelledby="dm-tab-bp" hidden>
+      <h2 id="dm-bp-h" class="sr-only">Attack speed breakpoints</h2>
+      <p class="sub">The increased attack speed each build needs on its other gear for each frame count of its attack (its weapon&rsquo;s IAS as set; its skills&rsquo; attack speed and its weapon&rsquo;s speed counted), and its damage per second there.</p>
+      <div class="bp-grid" id="dm-bp"></div>
+    </div>
+
+    <div class="dm-tabpanel" id="dm-p-par" role="tabpanel" aria-labelledby="dm-tab-par" hidden>
+      <h2 id="dm-par-h" class="sr-only">Stat trade-offs</h2>
+      <div class="bar">
+        <label class="sub" for="dm-par-amt">Each row gives a build as much average hit as</label>
+        <span class="par-amt">+<input type="number" id="dm-par-amt" min="1" max="1000" value="40"><span id="dm-par-unit">%</span></span>
+        <select id="dm-par-stat" aria-label="Stat to compare with"></select>
+      </div>
+      <div class="scroll"><table class="dm-table" id="dm-parity"></table></div>
+      <p class="note">Flat damage counts the same number added to minimum and to maximum damage. A stat a build can&rsquo;t gain this way shows a dash (critical and deadly strike stop at their caps).</p>
+    </div>
+
+    <div class="dm-tabpanel" id="dm-p-prof" role="tabpanel" aria-labelledby="dm-tab-prof" hidden>
+      <h2 id="dm-prof-h" class="sr-only">Damage profile</h2>
+      <p class="sub">Every hit&rsquo;s damage against the monster, sorted: the left end is the weakest hit, the right end the strongest. Deadly and critical strikes make the steps on the right.</p>
+      <ul class="legend" id="dm-legend"></ul>
+      <div class="plot" id="dm-plot"></div>
+    </div>
+
+    <div class="dm-tabpanel method" id="dm-p-how" role="tabpanel" aria-labelledby="dm-tab-how" hidden>
+    <h2 id="dm-how-h" class="sr-only">How it&rsquo;s worked out</h2>
     <ul>
       <li><strong>The weapon:</strong> an ethereal weapon has 5/4 of its base damage, rounded down. Enhanced damage on the weapon (its own, a superior base&rsquo;s, its sockets&rsquo;) raises only the base damage: base + base &times; enhanced damage / 100, rounded down; then its flat minimum and maximum damage are added.</li>
       <li><strong>The attack:</strong> the weapon&rsquo;s damage plus flat damage from other gear, times (100 + the attack skill&rsquo;s damage + your auras&rsquo; and buffs&rsquo; damage + Strength &times; the weapon&rsquo;s Strength bonus / 100 + Dexterity &times; its Dexterity bonus / 100 + your weapon mastery + enhanced damage from other gear) / 100. A minimum below 1 becomes 1 and a maximum at or below the minimum becomes the minimum + 1, before the percentages. The game keeps it in 256ths of a point; a hit is any damage from the minimum to the maximum alike. A skill that deals part of the weapon&rsquo;s damage (Stun, Guided Arrow, Blade Fury) takes that part.</li>
@@ -262,13 +343,15 @@
       <li><strong>Critical strike</strong> comes first: chance (Amazon&rsquo;s Critical Strike, items, a mastery) at most 75%, double damage plus the critical strike multiplier. Only a hit that isn&rsquo;t critical can be a <strong>deadly strike</strong>: chance at most 75% plus maximum deadly strike, 1.5 times damage plus the deadly strike multiplier.</li>
       <li><strong>Physical resistance:</strong> the monster&rsquo;s resistance plus Amplify Damage or Decrepify (one curse at a time) and Battle Cry. Against a monster whose own resistance is 100% or more, curses and Battle Cry count half. Physical pierce lowers what is left below 100%, and below 0% it counts half. Damage is lowered by the resistance (raised at negative resistance, at most double).</li>
       <li><strong>Crushing blow</strong> takes a share of the life the monster has left, whatever its life: 1/8 for a monster (champions and uniques too), 1/30 for a map boss, 1/10 for a player or a pet, and 1/70 for another boss at full life, less as it loses life (1/(70 + 10 for every 1% it is missing)). Each player after the first adds 1.4 to the 8, 30 or 70 (their 70% more life, / 50). A ranged attack divides by 1.5 times as much; crushing blow efficiency multiplies the share by (1 + efficiency / 100). The monster&rsquo;s physical resistance lowers it (none at 100% or more; pierce doesn&rsquo;t count). More chance and more efficiency are always better; the kill time shows how much, beside the time without it.</li>
-      <li><strong>Frames per attack</strong> come from the <a href="https://filtersby-erazure.github.io/PD2-Loot-Filter/resources/ias-calculator/">IAS Calculator</a>, which has the whole model and plays each attack frame by frame: speed = 100 + the skills&rsquo; speed (Fanaticism, Frenzy by its charges, Burst of Speed, Werewolf, the attack&rsquo;s own) &minus; the weapon&rsquo;s speed modifier + effective IAS (120 &times; IAS / (120 + IAS)), 30 less for a sequence, kept between 15 and 175; an animation of N frames takes N &times; 256 / (its speed &times; speed / 100) frames, rounded up, minus 1, held. A normal attack is attack 1 or attack 2, half the time each, so it counts both, and it hits with the first weapon only. Two weapons: only the faster one&rsquo;s speed counts. Zeal, Fend, Fury, Strafe and Dragon Talon rewind their animation between hits (Strafe: its fewest arrows, at one monster); Whirlwind and Blade Dance hit every 8 frames (unslowed), with each weapon, whatever the attack speed; Charge&rsquo;s strike runs at a speed the game sets when it connects. A druid&rsquo;s wereform attacks run at a speed set by the weapon&rsquo;s attack speed in human form.</li>
+      <li><strong>Frames per attack</strong> come from the <a href="https://filtersby-erazure.github.io/PD2-Loot-Filter/resources/ias-calculator/">IAS Calculator</a>, which has the whole model and plays each attack frame by frame: speed = 100 + the skills&rsquo; speed (Fanaticism, Frenzy by its charges, Burst of Speed, Werewolf, the attack&rsquo;s own) &minus; the weapon&rsquo;s speed modifier + effective IAS (120 &times; IAS / (120 + IAS)), 30 less for a sequence, kept between 15 and 175; an animation of N frames takes N &times; 256 / (its speed &times; speed / 100) frames, rounded up, minus 1, held. A normal attack is attack 1 or attack 2, half the time each, so it counts both, and it hits with the first weapon only. Two weapons: only the faster one&rsquo;s speed counts. Zeal, Fend, Fury, Strafe and Dragon Talon rewind their animation between hits (Strafe: its fewest arrows, at one monster); Whirlwind and Blade Dance hit every 6 frames, with each weapon, whatever the attack speed, slows or Frenzy&rsquo;s charges; Charge&rsquo;s strike runs at a speed the game sets when it connects, and its damage per second and kill time count the strikes back to back (the run before each strike isn&rsquo;t counted). A druid&rsquo;s wereform attacks run at a speed set by the weapon&rsquo;s attack speed in human form.</li>
       <li><strong>Next breakpoint:</strong> the increased attack speed a build still needs on its other gear (its weapon&rsquo;s IAS as set) for fewer frames, and what that is worth in damage per second. A build at the most its attack counts shows none.</li>
       <li><strong>The bosses</strong> have their life and physical resistance in Hell: the life of the boss&rsquo;s own level, +70% for each player after the first (at most 8,388,607). Diablo Clone, Rathma, Mendeln and Lucion have 1.5 times that at tier 0, 4.8 times at tier 1 and 5.6 times at tier 2; their phases, immunity, healing and helpers aren&rsquo;t counted. The map and dungeon bosses on the game&rsquo;s map boss lists take crushing blow as map bosses (1/30 of their life); The Tainted Hive, Na-Krul, the two Djinns and Zoltun Kulle aren&rsquo;t on them and take it as other bosses do. Map modifiers aren&rsquo;t counted.</li>
-      <li><strong>How they compare:</strong> damage per second is the average hit &times; what critical and deadly strikes add &times; what the monster&rsquo;s resistance lets through &times; hits per second, so a build&rsquo;s difference from build A splits exactly into those four. Fields that differ from build A are marked gold.</li>
+      <li><strong>How they compare:</strong> damage per second is the average hit &times; what critical and deadly strikes add &times; what the monster&rsquo;s resistance lets through &times; hits per second, so a build&rsquo;s difference from build A splits exactly into those four. On a build of build A&rsquo;s class, the fields that differ from build A are marked gold (across classes nearly every field would be).</li>
+      <li><strong>Skills that read another skill&rsquo;s level:</strong> Dragon Claw&rsquo;s damage counts the level of Claw and Dagger Mastery as its tooltip does; Penetrate&rsquo;s base points are both Strafe&rsquo;s synergy and its pierce.</li>
       <li><strong>Not counted:</strong> elemental, poison and magic damage, open wounds, life leech, the monster&rsquo;s defense (chance to hit) and its blocking, splash damage to other monsters, mercenaries and summons.</li>
     </ul>
     <p class="credit">Inspired by HarryPe&rsquo;s <a href="https://docs.google.com/spreadsheets/d/1HAxtlOHB7pY6nyNICU13cEb1hHC7ohuUe-2zIJ6EHG8/edit" rel="noopener">Physical damage calculator</a>.</p>
+    </div>
   </section>
 </div>
 <!-- dmg-map:end -->
@@ -686,6 +769,8 @@
   const $ = id => document.getElementById(id);
   const STORE = "erazure-damage-calc";
   const KEYS = ["var(--s1)", "var(--s2)", "var(--s3)", "var(--s4)"];
+  // each build's own line in the damage profile too: A solid, B dashed, C dotted, D dash-dot (told apart without colour)
+  const DASHES = ["none", "8 4", "2 3", "11 3 2 3"];
   const LETTERS = ["A", "B", "C", "D"];
   const nf0 = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
   const nf1 = new Intl.NumberFormat("en-US", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
@@ -852,7 +937,14 @@
   const ethD = d => Math.floor(d * 5 / 4);
   const MAX_LVL = 60;
   const DUAL = { bar: true, ass: true };
-  const dual = b => DUAL[b.cls] && b.o && b.o.on && W[b.o.code] && W[b.w.code] && !(W[b.w.code].d2 && !W[b.w.code].d1) && !(W[b.o.code].d2 && !W[b.o.code].d1);
+  /* two weapons as the IAS Calculator's engine allows them: an Assassin two claws, a Barbarian two weapons that aren't
+     claws, bows or crossbows, each one-handed or a sword made for one or two hands (until 2026-11-13 an Assassin's two
+     swords counted as two weapons here while the frames were one weapon's) */
+  const dual = b => !!(DUAL[b.cls] && b.o && b.o.on && W[b.o.code] && W[b.w.code]) && IAS.dual({ cls: b.cls, oh: "weapon", w: b.w.code, w2: b.o.code });
+  /* a weapon held in both hands: a two-handed one, but a Barbarian's sword made for one or two hands held in one (with
+     a shield, or as one of two weapons). Until 2026-11-13 any class could hold such a sword "in one hand" here, with
+     its one-hand damage. */
+  const heldInTwo = (b, x) => { const w = W[x.code]; return !!(w && w.d2) && (!w.d1 || b.cls !== "bar" || (x.hand === "d2" && !dual(b))); };
   const isWolf = (b, a) => a && (a.form === "40");
   const isBear = (b, a) => a && (a.form === "TG");
 
@@ -861,7 +953,7 @@
   function iasSetup(b, attack, gear) {
     const w = IAS.BASE[b.w.code] ? b.w.code : "", two = dual(b), base = IAS.BASE[w];
     // a Barbarian holds a sword made for one or two hands in one hand while the other hand holds something
-    const oh = two ? "weapon" : base && (base.f & 1) && (base.f & 2) && b.w.hand !== "d2" ? "shield" : "none";
+    const oh = two ? "weapon" : base && (base.f & 1) && (base.f & 2) && !heldInTwo(b, b.w) ? "shield" : "none";
     return {
       // one monster in range: Strafe fires its fewest arrows, all at it
       cls: b.cls, form: FORMS[attack.form] || "human", atk: attack.id || 0, lvl: clamp(+b.s.lvl || 1, 1, MAX_LVL), tg: 1,
@@ -898,17 +990,35 @@
   }
   /* the frames as the game's breakpoints show them: attack 1 / attack 2 */
   const frLabel = fr => (fr.alt ? fr.per.join(" / ") : String(fr.frames));
+  /* the masteries the Skill section asks for, by class; only the build's class's count (a build switched from a
+     Barbarian kept One Handed Weapon Mastery's damage, unseen, until 2026-11-13) */
+  const MAST = { bar: [128, 134, 135], ass: [252], ama: [19, 9, 23] };
+  const MAST_BASE = { 23: true };   // asked as base points (Penetrate: pierce, and Strafe's synergy)
+  function mOf(b) {
+    const out = {};
+    for (const id of MAST[b.cls] || []) if (+(b.m || {})[id] > 0) out[id] = +b.m[id];
+    return out;
+  }
+  /* what a skill formula reads of the build: synergies' base points (blvl), and skills' levels (lvl): a mastery's
+     (Dragon Claw's damage reads Claw Mastery's level) and the attack's own */
   function ctxOf(b, attack) {
-    const blvl = {};
+    const blvl = {}, lvl = {};
+    for (const [id, v] of Object.entries(mOf(b))) {
+      const k = SK[id] ? SK[id].skill.toLowerCase() : "";
+      if (!k) continue;
+      lvl[k] = v;
+      if (MAST_BASE[id]) blvl[k] = v;
+    }
     for (const [k, v] of Object.entries(b.s.syn || {})) blvl[k.toLowerCase()] = +v || 0;
-    return { blvl, self_blvl: b.s.lvl };
+    if (attack && attack.id && SK[attack.id]) lvl[SK[attack.id].skill.toLowerCase()] = +b.s.lvl || 0;
+    return { blvl, lvl, self_blvl: b.s.lvl };
   }
 
   /* one weapon's damage range (whole points) */
-  function weaponRange(x, attack) {
+  function weaponRange(x, attack, b) {
     const w = W[x.code];
     if (!w) return { min: 1, max: 2 };
-    let d = attack.throw && w.dt ? w.dt : (x.hand === "d2" && w.d2 ? w.d2 : (w.d1 || w.d2 || w.dt));
+    let d = attack.throw && w.dt ? w.dt : heldInTwo(b, x) ? w.d2 : (w.d1 || w.dt);
     if (x.eth && w.eth) d = d.map(ethD);
     const ed = +x.ed || 0;
     return { min: d[0] + Math.trunc(d[0] * ed / 100) + (+x.min || 0), max: d[1] + Math.trunc(d[1] * ed / 100) + (+x.max || 0), base: d };
@@ -938,20 +1048,21 @@
   function mastery(b, attack, x) {
     const w = W[x.code]; const out = { dmg: 0, crit: 0, cb: 0, cbe: 0, cmult: 0, names: [] };
     if (!w) return out;
-    const m = b.m || {};
+    const m = mOf(b);
     const sk = attack.itype || "";
     const types = DATA.types;
     const isA = (t, set) => types[set].includes(t);
     const meleeSkill = !sk || (isA(sk, "weap") && !isA(sk, "miss") && !isA(sk, "thro"));
     const throwing = !!attack.throw;
-    const otherHand = dual(b) || !!x.shield;
-    // One Handed (1han, or a two-hander a barbarian holds in one hand) / Two Handed (2han held in both hands)
-    if (m[128] > 0 && (has(w, "1han") || (b.cls === "bar" && has(w, "2han") && has(w, "mele"))) && !(has(w, "2han") && !otherHand) && !attack.missile) {
+    // One Handed (1han, or a two-hander a barbarian holds in one hand) / Two Handed (2han held in both hands); until
+    // 2026-11-13 a sword held in one hand beside a shield counted as held in both
+    const two = heldInTwo(b, x);
+    if (m[128] > 0 && !two && (has(w, "1han") || (b.cls === "bar" && has(w, "2han") && has(w, "mele"))) && !attack.missile) {
       if (!throwing) out.dmg += Calc.value(128, "passivecalc2", m[128]);
       if (meleeSkill) out.crit += Calc.value(128, "passivecalc3", m[128]);
       out.names.push("One Handed Weapon Mastery");
     }
-    if (m[134] > 0 && has(w, "2han") && !otherHand && !attack.missile) {
+    if (m[134] > 0 && has(w, "2han") && two && !attack.missile) {
       if (!throwing) out.dmg += Calc.value(134, "passivecalc2", m[134]);
       out.cb += Calc.value(134, "passivecalc3", m[134]);
       out.cbe += Calc.value(134, "passivecalc4", m[134]);
@@ -1009,7 +1120,7 @@
     // per weapon: damage range after the pool
     const per = weaponsUsed.map(x => {
       const w = W[x.code];
-      const wr = weaponRange(x, attack);
+      const wr = weaponRange(x, attack, b);
       const ms = mastery(b, attack, x);
       const strB = w ? Math.floor((+b.c.str || 0) * w.sb / 100) : 0;
       const dexB = w ? Math.floor((+b.c.dex || 0) * w.db / 100) : 0;
@@ -1126,6 +1237,7 @@
   });
   const DEFAULT_TARGET = () => ({ preset: "", tier: 0, kind: "monster", life: 50000, res: 0, curse: "none", amp: 0, curmas: 0, decrep: 0, bc: 0, players: 1 });
   let builds = [], target = DEFAULT_TARGET(), shown = 0;
+  let undo = null;   // { i, b }: the build a "Start from…" replaced, while its card offers Undo
 
   function exampleBuilds() {
     const a = DEFAULT_BUILD();
@@ -1143,13 +1255,69 @@
     return [a, b];
   }
 
+  /* builds to start from ("Start from…" on each card): common physical builds with plausible endgame numbers, there
+     to be changed to the player's own */
+  const PRESETS = [
+    ["zeal", "Zeal Paladin, Phase Blade", () => Object.assign(DEFAULT_BUILD(), { name: "Zeal" })],
+    ["frenzy", "Frenzy Barbarian, two swords", () => exampleBuilds()[1]],
+    ["ww", "Whirlwind Barbarian, two swords", () => {
+      const b = exampleBuilds()[1];
+      b.name = "Whirlwind";
+      b.s = { k: "whirlwind", lvl: 30, syn: {} };
+      b.buf.frenzy = 0;
+      return b;
+    }],
+    ["fury", "Fury Druid, Phase Blade", () => {
+      const b = Object.assign(DEFAULT_BUILD(), { name: "Fury", cls: "dru" });
+      b.c = { str: 120, dex: 136 };
+      b.s = { k: "fury", lvl: 30, syn: { "Feral Rage": 20 } };
+      Object.assign(b.buf, { fana: 0, were: 25 });
+      return b;
+    }],
+    ["jab", "Jab Amazon, ethereal Matriarchal Spear", () => {
+      const b = Object.assign(DEFAULT_BUILD(), { name: "Jab", cls: "ama" });
+      b.c = { str: 150, dex: 150 };
+      b.w = { cat: "aspe", code: "amd", eth: true, hand: "d1", ed: 300, min: 0, max: 0, ias: 0 };
+      b.s = { k: "jab", lvl: 30, syn: { Fend: 20 } };
+      b.m = { 19: 25, 9: 20 };
+      b.buf.fana = 0;
+      return b;
+    }],
+    ["strafe", "Strafe Amazon, Grand Matron Bow", () => {
+      const b = Object.assign(DEFAULT_BUILD(), { name: "Strafe", cls: "ama" });
+      b.c = { str: 110, dex: 250 };
+      b.w = { cat: "abow", code: "amc", eth: false, hand: "d1", ed: 250, min: 0, max: 0, ias: 20 };
+      b.s = { k: "strafe", lvl: 30, syn: {} };
+      b.m = { 9: 20, 23: 20 };
+      b.buf.fana = 0;
+      b.g.ds = 0;
+      return b;
+    }],
+    ["dclaw", "Dragon Claw Assassin, two claws", () => {
+      const b = Object.assign(DEFAULT_BUILD(), { name: "Dragon Claw", cls: "ass" });
+      b.c = { str: 150, dex: 150 };
+      b.w = { cat: "claw", code: "7tw", eth: false, hand: "d1", ed: 250, min: 0, max: 0, ias: 30 };
+      b.o = Object.assign({}, b.w, { on: true });
+      b.s = { k: "dragonclaw", lvl: 30, syn: { "Weapon Block": 20 } };
+      b.m = { 252: 25 };
+      Object.assign(b.buf, { fana: 0, bos: 20, bosHard: 10 });
+      return b;
+    }],
+  ];
+
   function save() {
     try { localStorage.setItem(STORE, JSON.stringify({ builds, target })); } catch (e) { /* storage blocked */ }
   }
   function load() {
     const fromHash = /[#&]v=([^&]+)/.exec(location.hash || "");
     if (fromHash) {
-      try { return JSON.parse(decodeURIComponent(escape(atob(fromHash[1])))); } catch (e) { /* a broken link */ }
+      try {
+        const v = JSON.parse(decodeURIComponent(escape(atob(fromHash[1]))));
+        /* from here on the builds are kept in this browser, so the link's builds leave the address: a reload keeps
+           the changes made since (until 2026-11-13 every reload went back to the link's builds) */
+        try { history.replaceState(null, "", location.pathname + location.search); } catch (e) { /* no history */ }
+        return v;
+      } catch (e) { /* a broken link */ }
     }
     try { return JSON.parse(localStorage.getItem(STORE) || "null"); } catch (e) { return null; }
   }
@@ -1159,6 +1327,8 @@
     const b = merge(d, x || {});
     b.m = Object.assign({}, (x && x.m) || {});
     b.s.syn = Object.assign({}, (x && x.s && x.s.syn) || {});
+    // Penetrate's base points are one field, the Amazon's (Strafe asked them twice, as a synergy too)
+    if (b.s.syn.Penetrate !== undefined) { if (!(+b.m[23] > 0)) b.m[23] = +b.s.syn.Penetrate || 0; delete b.s.syn.Penetrate; }
     if (!CLS[b.cls]) b.cls = "pal";
     if (!W[b.w.code]) b.w.code = "7cr";
     if (!W[b.o.code]) b.o.code = "7cr";
@@ -1177,6 +1347,8 @@
     if (parent) parent.appendChild(e);
     return e;
   }
+  /* a field is a label, its input and a hint (empty or not): three rows of its line's grid, so a line's inputs stay
+     level whatever their labels wrap to */
   let uid = 0;
   function numField(parent, label, get, set, lo, hi, opts) {
     const f = el("div", { class: "field" + (opts && opts.wide ? " wide" : ""), "data-path": opts && opts.path }, parent);
@@ -1185,7 +1357,7 @@
     const i = el("input", { type: "number", id, min: lo, max: hi, step: 1 }, f);
     i.value = get();
     i.addEventListener("input", () => { set(num(i.value, lo, hi)); update(); });
-    if (opts && opts.hint) el("small", {}, f, opts.hint);
+    el("small", {}, f, (opts && opts.hint) || "");
     return i;
   }
   function selField(parent, label, options, get, set, opts) {
@@ -1199,17 +1371,20 @@
     }
     s.value = get();
     s.addEventListener("change", () => { set(s.value); update(true); });
-    if (opts && opts.hint) el("small", {}, f, opts.hint);
+    el("small", {}, f, (opts && opts.hint) || "");
     return s;
   }
   function checkField(parent, label, get, set, opts) {
     const f = el("div", { class: "field" + (opts && opts.wide ? " wide" : ""), "data-path": opts && opts.path }, parent);
-    if (opts && opts.title) el("span", { class: "lab" }, f, opts.title);
+    const title = (opts && opts.title) || "";
+    el("span", { class: "lab", "aria-hidden": "true" }, f, title);
     const l = el("label", { class: "check" }, f);
-    const c = el("input", { type: "checkbox" }, l);
-    c.checked = !!get();
+    const off = !!(opts && opts.disabled);
+    const c = el("input", { type: "checkbox", disabled: off, "aria-label": title ? `${title}: ${label}` : undefined }, l);
+    c.checked = !off && !!get();
     l.append(" " + label);
     c.addEventListener("change", () => { set(c.checked); update(true); });
+    el("small", {}, f, (opts && opts.hint) || "");
     return c;
   }
   function weaponOptions(cat) {
@@ -1228,43 +1403,72 @@
   }
   const SECTIONS_OPEN = { char: true, weapon: true, off: false, gear: false, skill: true, aura: false };
 
-  function weaponFields(parent, b, x, isOff) {
+  /* a weapon's fields, in the same lines on every card: what it is; ethereal and the hands; what is on it */
+  function weaponFields(body, b, x, isOff) {
     const p = isOff ? "o." : "w.";
-    selField(parent, "Kind", catOptions(b.cls), () => x.cat, v => { x.cat = v; const first = DATA.weapons.filter(w => w.cat === v && w.tier === "E")[0] || DATA.weapons.find(w => w.cat === v); x.code = first.code; x.hand = "d1"; renderBuilds(); }, { wide: true, path: p + "cat" });
-    selField(parent, "Base", weaponOptions(x.cat), () => x.code, v => { x.code = v; renderBuilds(); }, { wide: true, path: p + "code" });
+    const l1 = line(body);
+    selField(l1, "Kind", catOptions(b.cls), () => x.cat, v => { x.cat = v; const first = DATA.weapons.filter(w => w.cat === v && w.tier === "E")[0] || DATA.weapons.find(w => w.cat === v); x.code = first.code; x.hand = "d1"; renderBuilds(); }, { wide: true, path: p + "cat" });
+    selField(l1, "Base", weaponOptions(x.cat), () => x.code, v => { x.code = v; renderBuilds(); }, { wide: true, path: p + "code" });
     const w = W[x.code];
-    if (w && w.eth) checkField(parent, "Ethereal", () => x.eth, v => { x.eth = v; }, { path: p + "eth" });
-    if (w && w.d1 && w.d2 && !isOff) selField(parent, "Held in", [{ value: "d1", label: `One hand ${w.d1[0]}–${w.d1[1]}` }, { value: "d2", label: `Two hands ${w.d2[0]}–${w.d2[1]}` }], () => x.hand, v => { x.hand = v; }, { path: p + "hand" });
-    numField(parent, "Enhanced damage %", () => x.ed, v => { x.ed = v; }, 0, 2000, { hint: "On the weapon: its own, superior, sockets", path: p + "ed" });
-    numField(parent, "+ Min damage", () => x.min, v => { x.min = v; }, 0, 999, { path: p + "min" });
-    numField(parent, "+ Max damage", () => x.max, v => { x.max = v; }, 0, 999, { path: p + "max" });
-    numField(parent, "IAS on it", () => x.ias, v => { x.ias = v; }, 0, 200, { path: p + "ias" });
+    const l2 = line(body);
+    checkField(l2, w && w.eth ? "5/4 base damage" : "Can’t be ethereal", () => x.eth, v => { x.eth = v; }, { title: "Ethereal", path: p + "eth", disabled: !(w && w.eth) });
+    if (w && w.d1 && w.d2 && !isOff && b.cls === "bar") selField(l2, "Held in", [{ value: "d1", label: `One hand ${w.d1[0]}–${w.d1[1]}` }, { value: "d2", label: `Two hands ${w.d2[0]}–${w.d2[1]}` }], () => x.hand, v => { x.hand = v; }, { path: p + "hand" });
+    const l3 = line(body);
+    numField(l3, "Enhanced damage %", () => x.ed, v => { x.ed = v; }, 0, 2000, { hint: "Its own, superior, sockets", path: p + "ed" });
+    numField(l3, "+ Min damage", () => x.min, v => { x.min = v; }, 0, 999, { path: p + "min" });
+    numField(l3, "+ Max damage", () => x.max, v => { x.max = v; }, 0, 999, { path: p + "max" });
+    numField(l3, "IAS on it", () => x.ias, v => { x.ias = v; }, 0, 200, { path: p + "ias" });
     const facts = [];
     if (w && w.wsm) facts.push(`Weapon speed ${w.wsm > 0 ? "+" + w.wsm : w.wsm}`);
     if (w && w.sb) facts.push(`Strength bonus ${w.sb / 100} per point`);
     if (w && w.db) facts.push(`Dexterity bonus ${w.db / 100} per point`);
-    if (facts.length) el("p", { class: "note field full" }, parent, facts.join(", "));
+    if (facts.length) el("p", { class: "note" }, body, facts.join(", "));
   }
-  /* a card's section: its summary line (the inputs, then what they make) and its fields; refs keeps both for fillCards */
+  /* a card's section: its summary line (the inputs, then what they make) and its body; refs keeps both for fillCards.
+     Opening or closing it does the same in every card, so the cards' rows stay level. */
   function section(card, key, title, refs) {
-    const d = el("details", { class: "sec" }, card);
+    const d = el("details", { class: "sec", "data-sec": key }, card);
     d.open = SECTIONS_OPEN[key];
-    d.addEventListener("toggle", () => { SECTIONS_OPEN[key] = d.open; });
+    d.addEventListener("toggle", () => {
+      SECTIONS_OPEN[key] = d.open;
+      $("dm-builds").querySelectorAll(`details.sec[data-sec="${key}"]`).forEach(x => { if (x.open !== d.open) x.open = d.open; });
+    });
     const s = el("summary", {}, d);
     el("span", { class: "ttl" }, s, title);
     refs.sum[key] = el("span", { class: "sum" }, s);
     refs.sec[key] = d;
-    return el("div", { class: "fields" }, d);
+    return el("div", { class: "sec-body" }, d);
   }
+  /* a line of fields: a new line starts a new row on every card */
+  const line = body => el("div", { class: "fields" }, body);
   /* the line under a section's fields that says what they make (the sheet's "Weapon damage" under the weapon) */
-  const subtotal = (fields, refs, key) => { refs.sub[key] = el("p", { class: "subtotal field full", "aria-live": "polite" }, fields); };
+  const subtotal = (body, refs, key) => { refs.sub[key] = el("p", { class: "subtotal", "aria-live": "polite" }, body); };
+
+  /* the control that had the focus before the cards are drawn again (a select that changes a card's fields), to
+     give it back */
+  function focusKey() {
+    const a = document.activeElement, box = $("dm-builds");
+    if (!a || !box.contains(a)) return null;
+    const card = a.closest(".build"), host = a.closest("[data-path], [data-focus]");
+    if (!card || !host) return null;
+    const sel = host.dataset.path !== undefined ? `[data-path="${CSS.escape(host.dataset.path)}"]` : `[data-focus="${host.dataset.focus}"]`;
+    return { i: [...box.children].indexOf(card), sel };
+  }
+  function refocus(k) {
+    if (!k) return;
+    const card = $("dm-builds").children[k.i];
+    const host = card && (card.querySelector(k.sel) || card.querySelector('[data-focus="start"]'));
+    const c = host && (host.matches("input, select, button") ? host : host.querySelector("input, select, button"));
+    if (c) c.focus();
+  }
 
   let cardRefs = [];
   function renderBuilds() {
-    const box = $("dm-builds");
+    const box = $("dm-builds"), fk = focusKey();
     box.innerHTML = "";
     cardRefs = [];
     root.style.setProperty("--n", builds.length);
+    const anyDual = builds.some(x => DUAL[x.cls]);
     builds.forEach((b, i) => {
       const refs = { sum: {}, sub: {}, sec: {} };
       cardRefs.push(refs);
@@ -1274,10 +1478,24 @@
       const head = el("div", { class: "build-head" }, card);
       const h = el("h3", {}, head);
       el("span", { class: "key" }, h);
-      const nm = el("input", { type: "text", class: "bname", "aria-label": `Name of build ${LETTERS[i]}`, maxlength: 30 }, h);
+      const nm = el("input", { type: "text", class: "bname", "aria-label": `Name of build ${LETTERS[i]}`, maxlength: 30, "data-focus": "name" }, h);
       nm.value = b.name || `Build ${LETTERS[i]}`;
       nm.addEventListener("input", () => { b.name = nm.value; update(); });
-      const copy = el("select", { "aria-label": "Copy this build" }, head);
+      const start = el("select", { "aria-label": `Start build ${LETTERS[i]} from an example`, "data-focus": "start" }, head);
+      el("option", { value: "" }, start, "Start from…");
+      for (const [k, label] of PRESETS) el("option", { value: k }, start, label);
+      start.addEventListener("change", () => {
+        const p = PRESETS.find(x => x[0] === start.value);
+        if (!p) return;
+        undo = { i, b: JSON.parse(JSON.stringify(b)) };
+        builds[i] = sanitize(p[2]());
+        renderBuilds();
+      });
+      if (undo && undo.i === i) {
+        const u = el("button", { type: "button", "data-focus": "undo", title: "Back to this build as it was before Start from" }, head, "Undo");
+        u.addEventListener("click", () => { builds[i] = undo.b; undo = null; renderBuilds(); });
+      }
+      const copy = el("select", { "aria-label": "Copy this build", "data-focus": "copy" }, head);
       el("option", { value: "" }, copy, "Copy to…");
       builds.forEach((_, j) => { if (j !== i) el("option", { value: j }, copy, `Build ${LETTERS[j]}`); });
       if (builds.length < 4) el("option", { value: "new" }, copy, "A new build");
@@ -1285,88 +1503,106 @@
         const c = JSON.parse(JSON.stringify(b));
         if (copy.value === "new") { c.name = ""; builds.push(c); shown = builds.length - 1; }
         else if (copy.value !== "") { c.name = builds[+copy.value].name; builds[+copy.value] = c; }
+        undo = null;
         renderAll();
       });
       if (builds.length > 1) {
         const rm = el("button", { type: "button", "aria-label": `Remove build ${LETTERS[i]}` }, head, "Remove");
-        rm.addEventListener("click", () => { builds.splice(i, 1); shown = Math.min(shown, builds.length - 1); renderAll(); });
+        rm.addEventListener("click", () => { builds.splice(i, 1); shown = Math.min(shown, builds.length - 1); undo = null; renderAll(); });
       }
       // character
-      const c = section(card, "char", "Character", refs);
-      selField(c, "Class", DATA.classes.map(x => ({ value: x.code, label: x.name })), () => b.cls, v => { b.cls = v; if (!attacksFor(v).some(a => a.k === b.s.k)) b.s.k = "attack"; renderBuilds(); }, { wide: true, path: "cls" });
-      numField(c, "Strength", () => b.c.str, v => { b.c.str = v; }, 0, 2000, { path: "c.str" });
-      numField(c, "Dexterity", () => b.c.dex, v => { b.c.dex = v; }, 0, 2000, { path: "c.dex" });
-      subtotal(c, refs, "char");
+      const cb = section(card, "char", "Character", refs);
+      const c1 = line(cb);
+      selField(c1, "Class", DATA.classes.map(x => ({ value: x.code, label: x.name })), () => b.cls, v => { b.cls = v; if (!attacksFor(v).some(a => a.k === b.s.k)) b.s.k = "attack"; renderBuilds(); }, { wide: true, path: "cls" });
+      numField(c1, "Strength", () => b.c.str, v => { b.c.str = v; }, 0, 2000, { path: "c.str" });
+      numField(c1, "Dexterity", () => b.c.dex, v => { b.c.dex = v; }, 0, 2000, { path: "c.dex" });
+      subtotal(cb, refs, "char");
       // weapon
-      const wf = section(card, "weapon", "Weapon", refs);
-      weaponFields(wf, b, b.w, false);
-      subtotal(wf, refs, "weapon");
-      // off-hand weapon
+      const wb = section(card, "weapon", "Weapon", refs);
+      weaponFields(wb, b, b.w, false);
+      subtotal(wb, refs, "weapon");
+      // second weapon: a row on every card while any build's class can hold two, so the rows stay level
       if (DUAL[b.cls]) {
-        const of = section(card, "off", "Second weapon", refs);
-        checkField(of, "Dual wield", () => b.o.on, v => { b.o.on = v; renderBuilds(); }, { wide: true, path: "o.on" });
-        if (b.o.on) weaponFields(of, b, b.o, true);
-        subtotal(of, refs, "off");
-      }
-      // gear
-      const g = section(card, "gear", "Other gear", refs);
-      numField(g, "IAS (other gear)", () => b.g.ias, v => { b.g.ias = v; }, 0, 400, { path: "g.ias" });
-      numField(g, "Enhanced damage %", () => b.g.ed, v => { b.g.ed = v; }, 0, 2000, { hint: "Off the weapon", path: "g.ed" });
-      numField(g, "+ Min damage", () => b.g.min, v => { b.g.min = v; }, 0, 999, { hint: "Rings, charms, jewels in armor", path: "g.min" });
-      numField(g, "+ Max damage", () => b.g.max, v => { b.g.max = v; }, 0, 999, { path: "g.max" });
-      numField(g, "Critical strike %", () => b.g.crit, v => { b.g.crit = v; }, 0, 100, { path: "g.crit" });
-      numField(g, "Crit multiplier %", () => b.g.cmult, v => { b.g.cmult = v; }, 0, 500, { path: "g.cmult" });
-      numField(g, "Deadly strike %", () => b.g.ds, v => { b.g.ds = v; }, 0, 200, { path: "g.ds" });
-      numField(g, "Max deadly strike %", () => b.g.maxds, v => { b.g.maxds = v; }, 0, 50, { path: "g.maxds" });
-      numField(g, "DS multiplier %", () => b.g.dsmult, v => { b.g.dsmult = v; }, 0, 500, { path: "g.dsmult" });
-      numField(g, "Crushing blow %", () => b.g.cb, v => { b.g.cb = v; }, 0, 100, { path: "g.cb" });
-      numField(g, "CB efficiency %", () => b.g.cbe, v => { b.g.cbe = v; }, 0, 500, { path: "g.cbe" });
-      numField(g, "Physical pierce %", () => b.g.pierce, v => { b.g.pierce = v; }, 0, 100, { hint: "“to Enemy Physical Resistance”", path: "g.pierce" });
-      subtotal(g, refs, "gear");
+        const ob = section(card, "off", "Second weapon", refs);
+        checkField(line(ob), "A weapon in each hand", () => b.o.on, v => { b.o.on = v; renderBuilds(); }, { title: "Dual wield", wide: true, path: "o.on" });
+        if (b.o.on) weaponFields(ob, b, b.o, true);
+        subtotal(ob, refs, "off");
+      } else if (anyDual) {
+        const ph = el("div", { class: "sec-none" }, card);
+        el("span", {}, ph, "Second weapon");
+        el("span", { class: "sum" }, ph, "Barbarians and Assassins only");
+      } else el("div", { class: "sec-gap", "aria-hidden": "true" }, card);
+      // other gear
+      const gb = section(card, "gear", "Other gear", refs);
+      const g1 = line(gb);
+      numField(g1, "IAS", () => b.g.ias, v => { b.g.ias = v; }, 0, 400, { path: "g.ias" });
+      numField(g1, "Enhanced damage %", () => b.g.ed, v => { b.g.ed = v; }, 0, 2000, { hint: "Off the weapon", path: "g.ed" });
+      numField(g1, "+ Min damage", () => b.g.min, v => { b.g.min = v; }, 0, 999, { hint: "Rings, charms, jewels in armor", path: "g.min" });
+      numField(g1, "+ Max damage", () => b.g.max, v => { b.g.max = v; }, 0, 999, { path: "g.max" });
+      const g2 = line(gb);
+      numField(g2, "Critical strike %", () => b.g.crit, v => { b.g.crit = v; }, 0, 100, { path: "g.crit" });
+      numField(g2, "Crit multiplier %", () => b.g.cmult, v => { b.g.cmult = v; }, 0, 500, { path: "g.cmult" });
+      numField(g2, "Deadly strike %", () => b.g.ds, v => { b.g.ds = v; }, 0, 200, { path: "g.ds" });
+      numField(g2, "Max deadly strike %", () => b.g.maxds, v => { b.g.maxds = v; }, 0, 50, { path: "g.maxds" });
+      numField(g2, "DS multiplier %", () => b.g.dsmult, v => { b.g.dsmult = v; }, 0, 500, { path: "g.dsmult" });
+      const g3 = line(gb);
+      numField(g3, "Crushing blow %", () => b.g.cb, v => { b.g.cb = v; }, 0, 100, { path: "g.cb" });
+      numField(g3, "CB efficiency %", () => b.g.cbe, v => { b.g.cbe = v; }, 0, 500, { path: "g.cbe" });
+      numField(g3, "Physical pierce %", () => b.g.pierce, v => { b.g.pierce = v; }, 0, 100, { hint: "“to Enemy Physical Resistance”", path: "g.pierce" });
+      subtotal(gb, refs, "gear");
       // skill
       const att = ATT[b.s.k] || ATT.attack;
-      const sk = section(card, "skill", "Skill", refs);
-      selField(sk, "Attack", attacksFor(b.cls).map(a => ({ value: a.k, label: a.label + (a.frames_only ? " (speed only)" : "") })), () => b.s.k, v => { b.s.k = v; renderBuilds(); }, { wide: true, path: "s.k" });
-      if (att.id && (att.dmg || att.hits || att.k === "berserk")) numField(sk, "Skill level", () => b.s.lvl, v => { b.s.lvl = v; }, 1, MAX_LVL, { hint: "With + skills", path: "s.lvl" });
-      for (const col of [att.dmg, att.hits].filter(Boolean)) {
-        for (const name of Calc.synergies(att.id, col)) {
-          numField(sk, `${name} (synergy)`, () => b.s.syn[name] || 0, v => { b.s.syn[name] = v; }, 0, 20, { hint: "Base points", path: "s.syn." + name });
+      const sb = section(card, "skill", "Skill", refs);
+      const s1 = line(sb);
+      selField(s1, "Attack", attacksFor(b.cls).map(a => ({ value: a.k, label: a.label + (a.frames_only ? " (speed only)" : "") })), () => b.s.k, v => { b.s.k = v; renderBuilds(); }, { wide: true, path: "s.k" });
+      if (att.id && (att.dmg || att.hits || att.k === "berserk")) numField(s1, "Skill level", () => b.s.lvl, v => { b.s.lvl = v; }, 1, MAX_LVL, { hint: "With + skills", path: "s.lvl" });
+      // its synergies, but a class mastery asked below (Penetrate: Strafe's synergy and the Amazon's pierce)
+      const mast = MAST[b.cls] || [], mastNames = new Set(mast.map(id => SK[id] && SK[id].skill));
+      const syns = new Set();
+      for (const col of [att.dmg, att.hits].filter(Boolean)) for (const name of Calc.synergies(att.id, col)) if (!mastNames.has(name)) syns.add(name);
+      for (const name of syns) numField(s1, `${name} (synergy)`, () => b.s.syn[name] || 0, v => { b.s.syn[name] = v; }, 0, 20, { hint: "Base points", path: "s.syn." + name });
+      if (mast.length) {
+        const s2 = line(sb);
+        for (const id of mast) {
+          const hint = id === 23 ? (att.k === "strafe" ? "Base points: pierce, Strafe’s synergy" : "Base points (pierce)") : "Level";
+          numField(s2, Calc.name(id), () => b.m[id] || 0, v => { b.m[id] = v; }, 0, MAX_LVL, { hint, path: "m." + id });
         }
       }
-      // masteries by class
-      const MAST = { bar: [128, 134, 135], ass: [252], ama: [19, 9, 23] };
-      for (const id of MAST[b.cls] || []) {
-        numField(sk, Calc.name(id), () => b.m[id] || 0, v => { b.m[id] = v; }, 0, MAX_LVL, { hint: id === 23 ? "Base points (pierce)" : "Level", path: "m." + id });
-      }
-      if (att.frames_only) el("p", { class: "note field full" }, sk, "Its frames per attack are shown; its damage isn't worked out yet.");
-      subtotal(sk, refs, "skill");
+      if (att.frames_only) el("p", { class: "note" }, sb, "Its frames per attack are shown; its damage isn’t worked out yet.");
+      if (att.k === "charge") el("p", { class: "note" }, sb, "Damage per second and kill time count Charge’s strikes back to back: the run before each strike isn’t counted.");
+      subtotal(sb, refs, "skill");
       // auras and buffs
-      const a = section(card, "aura", "Auras and buffs", refs);
-      numField(a, "Might", () => b.aur.might, v => { b.aur.might = v; }, 0, MAX_LVL, { path: "aur.might" });
-      checkField(a, "Your own", () => b.aur.mightSelf, v => { b.aur.mightSelf = v; }, { title: "Might from", path: "aur.mightSelf" });
-      numField(a, "Concentration", () => b.aur.conc, v => { b.aur.conc = v; }, 0, MAX_LVL, { path: "aur.conc" });
-      checkField(a, "Your own", () => b.aur.concSelf, v => { b.aur.concSelf = v; }, { title: "Concentration from", path: "aur.concSelf" });
-      numField(a, "Fanaticism", () => b.buf.fana, v => { b.buf.fana = v; }, 0, MAX_LVL, { hint: "Also its attack speed", path: "buf.fana" });
-      checkField(a, "Your own", () => b.buf.fanaSelf, v => { b.buf.fanaSelf = v; }, { title: "Fanaticism from", path: "buf.fanaSelf" });
-      numField(a, "Blessed Aim", () => b.aur.ba, v => { b.aur.ba = v; }, 0, MAX_LVL, { hint: "Deadly strike", path: "aur.ba" });
-      numField(a, "Battle Command", () => b.aur.bc, v => { b.aur.bc = v; }, 0, MAX_LVL, { path: "aur.bc" });
-      numField(a, "Grim Ward", () => b.aur.grim, v => { b.aur.grim = v; }, 0, MAX_LVL, { path: "aur.grim" });
-      numField(a, "Heart of Wolverine", () => b.aur.wolv, v => { b.aur.wolv = v; }, 0, MAX_LVL, { path: "aur.wolv" });
-      if (b.cls === "bar") {
-        numField(a, "Frenzy (its buff)", () => b.buf.frenzy, v => { b.buf.frenzy = v; }, 0, MAX_LVL, { hint: "Attack speed while it lasts", path: "buf.frenzy" });
-        numField(a, "Frenzy stacks", () => b.buf.stacks, v => { b.buf.stacks = v; }, 0, 5, { path: "buf.stacks" });
-        numField(a, "Increased Speed", () => b.buf.incHard, v => { b.buf.incHard = v; }, 0, 20, { hint: "Base points: +2% IAS each", path: "buf.incHard" });
+      const ab = section(card, "aura", "Auras and buffs", refs);
+      const a1 = line(ab);
+      numField(a1, "Might", () => b.aur.might, v => { b.aur.might = v; }, 0, MAX_LVL, { path: "aur.might" });
+      checkField(a1, "Your own", () => b.aur.mightSelf, v => { b.aur.mightSelf = v; }, { title: "Might from", path: "aur.mightSelf" });
+      numField(a1, "Concentration", () => b.aur.conc, v => { b.aur.conc = v; }, 0, MAX_LVL, { path: "aur.conc" });
+      checkField(a1, "Your own", () => b.aur.concSelf, v => { b.aur.concSelf = v; }, { title: "Concentration from", path: "aur.concSelf" });
+      numField(a1, "Fanaticism", () => b.buf.fana, v => { b.buf.fana = v; }, 0, MAX_LVL, { hint: "Also its attack speed", path: "buf.fana" });
+      checkField(a1, "Your own", () => b.buf.fanaSelf, v => { b.buf.fanaSelf = v; }, { title: "Fanaticism from", path: "buf.fanaSelf" });
+      const a2 = line(ab);
+      numField(a2, "Blessed Aim", () => b.aur.ba, v => { b.aur.ba = v; }, 0, MAX_LVL, { hint: "Deadly strike", path: "aur.ba" });
+      numField(a2, "Battle Command", () => b.aur.bc, v => { b.aur.bc = v; }, 0, MAX_LVL, { path: "aur.bc" });
+      numField(a2, "Grim Ward", () => b.aur.grim, v => { b.aur.grim = v; }, 0, MAX_LVL, { path: "aur.grim" });
+      numField(a2, "Heart of Wolverine", () => b.aur.wolv, v => { b.aur.wolv = v; }, 0, MAX_LVL, { path: "aur.wolv" });
+      if (b.cls === "bar" || b.cls === "ass" || b.cls === "dru") {
+        const a3 = line(ab);
+        if (b.cls === "bar") {
+          numField(a3, "Frenzy (its buff)", () => b.buf.frenzy, v => { b.buf.frenzy = v; }, 0, MAX_LVL, { hint: "Attack speed while it lasts", path: "buf.frenzy" });
+          numField(a3, "Frenzy stacks", () => b.buf.stacks, v => { b.buf.stacks = v; }, 0, 5, { path: "buf.stacks" });
+          numField(a3, "Increased Speed", () => b.buf.incHard, v => { b.buf.incHard = v; }, 0, 20, { hint: "Base points: +2% IAS each", path: "buf.incHard" });
+        }
+        if (b.cls === "ass") {
+          numField(a3, "Burst of Speed", () => b.buf.bos, v => { b.buf.bos = v; }, 0, MAX_LVL, { path: "buf.bos" });
+          numField(a3, "Its base points", () => b.buf.bosHard, v => { b.buf.bosHard = v; }, 0, 20, { hint: "Its attack speed comes from these", path: "buf.bosHard" });
+        }
+        if (b.cls === "dru") {
+          numField(a3, "Werewolf", () => b.buf.were, v => { b.buf.were = v; }, 0, MAX_LVL, { hint: "Wolf attacks", path: "buf.were" });
+          numField(a3, "Werebear", () => b.buf.bear, v => { b.buf.bear = v; }, 0, MAX_LVL, { hint: "Bear attacks", path: "buf.bear" });
+          numField(a3, "Maul charges", () => b.buf.maul, v => { b.buf.maul = v; }, 0, 20, { hint: "Bear attacks", path: "buf.maul" });
+        }
       }
-      if (b.cls === "ass") {
-        numField(a, "Burst of Speed", () => b.buf.bos, v => { b.buf.bos = v; }, 0, MAX_LVL, { path: "buf.bos" });
-        numField(a, "Its base points", () => b.buf.bosHard, v => { b.buf.bosHard = v; }, 0, 20, { hint: "Its attack speed comes from these", path: "buf.bosHard" });
-      }
-      if (b.cls === "dru") {
-        numField(a, "Werewolf", () => b.buf.were, v => { b.buf.were = v; }, 0, MAX_LVL, { hint: "Wolf attacks", path: "buf.were" });
-        numField(a, "Werebear", () => b.buf.bear, v => { b.buf.bear = v; }, 0, MAX_LVL, { hint: "Bear attacks", path: "buf.bear" });
-        numField(a, "Maul charges", () => b.buf.maul, v => { b.buf.maul = v; }, 0, 20, { hint: "Bear attacks", path: "buf.maul" });
-      }
-      subtotal(a, refs, "aura");
+      subtotal(ab, refs, "aura");
       // the card's totals: what everything above makes
       refs.foot = el("div", { class: "build-foot", "aria-live": "polite" }, card);
     });
@@ -1378,8 +1614,8 @@
     });
     $("dm-add").disabled = builds.length >= 4;
     $("dm-try").disabled = builds.length >= 4;
-    $("dm-diff-note").hidden = builds.length < 2;
-    update();
+    refocus(fk);
+    update(true);
   }
   function auraSummary(b) {
     const p = [];
@@ -1413,7 +1649,9 @@
     target.kind = m.kind; target.res = m.res; target.life = presetLife(m, target);
   }
   function renderTarget() {
-    const box = $("dm-target");
+    const box = $("dm-target"), a = document.activeElement;
+    // the field that had the focus (a select that redraws the fields), by its label
+    const was = a && box.contains(a) && a.closest(".field") ? a.closest(".field").querySelector("label").textContent : null;
     box.innerHTML = "";
     const T = target, m = MON[T.preset];
     const groups = [];
@@ -1435,16 +1673,32 @@
     if (T.curse === "decrep") numField(box, "Decrepify level", () => T.decrep, v => { T.decrep = v; }, 0, MAX_LVL);
     numField(box, "Battle Cry level", () => T.bc, v => { T.bc = v; }, 0, MAX_LVL);
     numField(box, "Players in the game", () => T.players, v => { T.players = v; if (MON[T.preset]) { T.life = presetLife(MON[T.preset], T); lifeIn.value = T.life; } }, 1, 8, { hint: "Its life and crushing blow" });
+    if (was) {
+      const f = [...box.querySelectorAll(".field")].find(x => x.querySelector("label").textContent === was);
+      const c = f && f.querySelector("input, select");
+      if (c) c.focus();
+    }
   }
+  const nfd = new Intl.NumberFormat("en-US", { maximumFractionDigits: 1 });
   function targetNote() {
     const T = target, m = MON[T.preset], R0 = results[0] ? results[0].R : null, out = [];
     if (m) {
       out.push(`${m.n}: level ${m.lvl}, ${nf0.format(T.life)} life in Hell with ${T.players} player${+T.players > 1 ? "s" : ""}${m.tier ? ` at tier ${T.tier || 0}` : ""}, physical resistance ${m.res}%.`);
-      out.push(m.kind === "mapboss" ? "A crushing blow takes about 1/30 of its life left." : "A crushing blow takes about 1/70 of its life left at full life, less as it loses life.");
+      // the crushing blow share with the players in the game (each after the first adds 1.4 to the divisor)
+      const div = cbDivisor(T, 1, 1, false), ranged = `a ranged attack’s 1/${nfd.format(div * 1.5)}`;
+      out.push(m.kind === "mapboss" ? `A crushing blow takes 1/${nfd.format(div)} of its life left (${ranged}).` : `A crushing blow takes 1/${nfd.format(div)} of its life left at full life (${ranged}), less as it loses life.`);
       if (m.tier) out.push("Its phases, immunity, healing and helpers aren’t counted.");
     }
     if (R0) out.push(`Its physical resistance after curses and Battle Cry: ${R0.cbRes}%${T.res >= 100 ? " (immune: curses count half)" : ""}; each build’s pierce lowers it further.`);
     return out.join(" ");
+  }
+  /* the monster in a line, for the strip at the bottom */
+  function targetShort() {
+    const T = target, m = MON[T.preset], R0 = results[0] ? results[0].R : null;
+    const who = m ? `<b>${esc(m.n)}</b>${m.tier ? ` (tier ${T.tier || 0})` : ""}` : "<b>your monster</b>";
+    const bits = [`${nf0.format(T.life)} life`, `${R0 ? R0.cbRes : T.res}% physical resistance`];
+    if (+T.players > 1) bits.push(`${T.players} players`);
+    return `Against ${who}: ${bits.join(", ")}`;
   }
 
   // ================================================================== output
@@ -1462,44 +1716,74 @@
     renderDock();
     renderVerdict();
     fillCards();
-    // side by side table
+    $("dm-target-note").textContent = targetNote();
+    renderTab(currentTab);
+    save();
+  }
+  /* the tab on show; the others are drawn when they show */
+  function renderTab(tab) {
+    if (tab === "side") renderSide();
+    else if (tab === "bp") renderBreakpoints();
+    else if (tab === "par") renderParity();
+    else if (tab === "prof") drawProfile();
+  }
+  /* every number behind each build's damage per second; the best of a row green, bold and marked with a diamond */
+  function renderSide() {
     const tb = $("dm-results");
     let h = "<thead><tr><th></th>" + results.map((r, i) => `<th><span class="key" style="background:${KEYS[i]}"></span>${esc(bname(i))}</th>`).join("") + "</tr></thead><tbody>";
-    const row = (label, f, cls) => { h += `<tr class="${cls || ""}"><td>${label}</td>` + results.map(r => `<td>${f(r)}</td>`).join("") + "</tr>"; };
+    const near = (a, b) => Math.abs(a - b) <= 1e-9 * Math.max(1, Math.abs(a), Math.abs(b));
+    const row = (label, f, cls, best) => {
+      let top = null;
+      if (best && results.length > 1) {
+        const vals = results.map(r => { const v = best.v(r); return v === null || v === undefined || !Number.isFinite(v) ? null : v; });
+        const ok = vals.filter(v => v !== null);
+        if (ok.length > 1) {
+          const t = best.low ? Math.min(...ok) : Math.max(...ok), u = best.low ? Math.max(...ok) : Math.min(...ok);
+          if (!near(t, u)) top = vals.map(v => v !== null && near(v, t));
+        }
+      }
+      h += `<tr class="${cls || ""}"><td>${label}</td>` + results.map((r, k) => (top && top[k] ? `<td class="best">${f(r)}<span class="sr-only"> (best)</span></td>` : `<td>${f(r)}</td>`)).join("") + "</tr>";
+    };
     const group = label => { h += `<tr class="group"><td colspan="${results.length + 1}">${label}</td></tr>`; };
+    const dmg = get => r => (r.attack.frames_only ? null : get(r));
+    const secs = k => (k && !k.never ? k.secs : null);
     group("Damage");
     row("Weapon damage", r => r.per.map(p => `${p.wr.min}–${p.wr.max}`).join(" / "));
     row("Damage bonus", r => `+${r.per[0].pct + r.per[0].off}%<small>${pctParts(r)}</small>`);
     row("Damage per hit", r => r.per.map(p => `${fmt(p.mn256 / 256)}–${fmt(p.mx256 / 256)}`).join(" / ") + `<small>character screen, before crit</small>`);
     row("Critical / deadly strike", r => `${fmt(r.crit.pc * 100, nf1)}% / ${fmt(r.crit.pd * 100, nf1)}%<small>&times;${nf2.format(r.crit.cm)} / &times;${nf2.format(r.crit.dm)}, +${fmt((r.mean - 1) * 100, nf1)}% on average</small>`);
-    row("Average hit", r => fmt(r.eff));
+    row("Average hit", r => fmt(r.eff), "", { v: dmg(r => r.eff) });
     row("Monster&rsquo;s physical resistance", r => `${r.R.res}%`);
-    row("Average hit on it", r => fmt(r.final), "strong");
+    row("Average hit on the monster", r => fmt(r.final), "strong", { v: dmg(r => r.final) });
     row("Crushing blow", r => r.cb.ch ? `${fmt(r.cb.ch * 100)}% of hits<small>${r.cb.share > 0 ? `each takes ${pct(r.cb.share)} of the life left${target.kind === "boss" ? " (at full life)" : ""}` : "none: immune"}${r.cb.cbe ? `, efficiency +${r.cb.cbe}%` : ""}</small>` : "—");
     group("Speed");
     row("Frames per attack", r => r.fr ? `${frLabel(r.fr)}${r.fr.alt ? "<small>attack 1 / attack 2</small>" : r.fr.hits > 1 ? `<small>${r.fr.hits} hits${r.fr.per.length === r.fr.hits ? `: ${r.fr.per.join(" + ")}` : ""}</small>` : ""}` : "N/A");
     row("Total attack speed", r => tasCell(r));
     row("Next breakpoint", r => (!r.next ? "—" : r.next.capped ? "—<small>more IAS makes it no faster</small>" : `+${r.next.add}% IAS<small>on other gear: ${frLabel(r.next.fr)} frames, ${signed(r.next.gain)} damage per second</small>`));
-    row("Hits per second", r => r.fr ? fmt(r.hps, nf2) : "—");
+    row("Hits per second", r => r.fr ? fmt(r.hps, nf2) : "—", "", { v: r => (r.fr ? r.hps : null) });
     group("Result");
-    row("Damage per second", r => r.fr && !r.attack.frames_only ? fmt(r.dps) : "—", "strong");
+    row("Damage per second", r => r.fr && !r.attack.frames_only ? fmt(r.dps) : "—", "strong", { v: dmg(r => (r.fr ? r.dps : null)) });
     const killCell = k => (k ? (k.never ? "Never" : `${nf1.format(k.secs)} s<small>${nf1.format(k.hits)} hits</small>`) : "—");
-    row("Kill time", r => killCell(r.kill), "strong");
-    if (results.some(r => r.killNoCb)) row("Without crushing blow", r => (r.killNoCb ? killCell(r.killNoCb) : r.kill ? "the same" : "—"));
+    row("Kill time", r => killCell(r.kill), "strong", { v: r => secs(r.kill), low: true });
+    if (results.some(r => r.killNoCb)) row("Without crushing blow", r => (r.killNoCb ? killCell(r.killNoCb) : r.kill ? "the same" : "—"), "", { v: r => secs(r.killNoCb || r.kill), low: true });
     if (results.length > 1) row(`Damage per second against ${esc(bname(0))}`, r => (r === results[0] ? "—" : r.dps && results[0].dps ? signed(r.dps / results[0].dps - 1) : "—"));
     h += "</tbody>";
     tb.innerHTML = h;
-    $("dm-target-note").textContent = targetNote();
-    drawProfile();
-    renderBreakpoints();
-    renderParity();
-    save();
   }
-  /* the strip that stays at the bottom of the screen while the builds are being edited */
+  /* the strip at the bottom of the screen while the builds are being edited: the monster, then each build's damage
+     per second, kill time and why it differs from build A */
   function renderDock() {
     const dock = $("dm-dock");
     dock.innerHTML = "";
     const A = results[0];
+    const head = el("div", { class: "dk-head" }, dock);
+    el("span", { html: targetShort() }, head);
+    const ch = el("button", { type: "button", "aria-label": "Change the monster" }, head, "Change");
+    ch.addEventListener("click", () => {
+      $("dm-target-panel").scrollIntoView({ block: "start", behavior: "smooth" });
+      const s = $("dm-target").querySelector("select");
+      if (s) s.focus({ preventScroll: true });
+    });
     results.forEach((r, i) => {
       const t = el("div", { class: "dk" }, dock);
       t.style.setProperty("--key", KEYS[i]);
@@ -1508,20 +1792,39 @@
       if (r.attack.frames_only || !r.fr) v.textContent = r.fr ? `${frLabel(r.fr)} frames` : "—";
       else v.innerHTML = `${nf0.format(r.dps)}<small> per second</small>`;
       const sub = [];
-      if (r.kill) sub.push(r.kill.never ? "can’t kill it" : `kills in ${nf1.format(r.kill.secs)} s`);
+      if (r.kill) sub.push(r.kill.never ? "can’t kill it" : `kills in ${nf1.format(r.kill.secs)} s${r.attack.k === "charge" ? " (strikes only)" : ""}`);
       if (i > 0 && r.dps && A.dps) {
         const x = r.dps / A.dps - 1;
         sub.push(`<span class="${x < -0.0005 ? "bad" : x > 0.0005 ? "good" : ""}">${signed(x)} vs ${esc(bname(0))}</span>`);
       }
       el("span", { class: "dk-sub", html: sub.join(" · ") }, t);
+      if (i > 0 && r.dps && A.dps && !r.attack.frames_only && !A.attack.frames_only) {
+        const f = factors(r, A, true);
+        if (f.length) el("span", { class: "dk-why" }, t, f.join(" · "));
+      }
     });
   }
-  /* each build against build A, in a sentence: damage per second = average hit x critical and deadly strikes x the
-     monster's resistance x hits per second, so the difference splits exactly into those four */
+  /* damage per second = average hit x critical and deadly strikes x the monster's resistance x hits per second, so a
+     build's difference from build A splits exactly into those four */
+  const FACTORS = [
+    [r => r.hit, "more per hit", "less per hit", "per hit"],
+    [r => r.mean, "more from critical and deadly strikes", "less from critical and deadly strikes", "crit and deadly strike"],
+    [r => r.R.mult, "more through the monster’s resistance", "less through the monster’s resistance", "through resistance"],
+    [r => r.hps, "more hits per second", "fewer hits per second", "hits per second"],
+  ];
+  function factors(r, A, short) {
+    const out = [];
+    for (const [get, more, less, word] of FACTORS) {
+      const y = get(r) / get(A) - 1;
+      if (!Number.isFinite(y) || Math.abs(y) < 0.0005) continue;
+      out.push(short ? `${signed(y)} ${word}` : `${nf1.format(Math.abs(y) * 100)}% ${y > 0 ? more : less}`);
+    }
+    return out;
+  }
   function renderVerdict() {
     const box = $("dm-verdict"), A = results[0], an = esc(bname(0));
     if (results.length < 2) {
-      box.innerHTML = `<p>Add a build, or press <b>Try a change</b> to copy ${an} and change one thing: this says how much more or less damage the other builds do than ${an}, and why.</p>`;
+      box.innerHTML = `<p>Add a build, or press <b>Copy A, change one thing</b> to put a copy of ${an} beside it and change one thing: this says how much more or less damage the other builds do than ${an}, and why.</p>`;
       return;
     }
     box.innerHTML = results.slice(1).map((r, k) => {
@@ -1532,12 +1835,7 @@
       }
       const x = r.dps / A.dps - 1;
       const head = Math.abs(x) < 0.0005 ? `does the same damage per second as ${an}` : `does <b>${nf1.format(Math.abs(x) * 100)}% ${x > 0 ? "more" : "less"}</b> damage per second than ${an}`;
-      const f = [];
-      const add = (ratio, more, less) => { const y = ratio - 1; if (Math.abs(y) >= 0.0005) f.push(`${nf1.format(Math.abs(y) * 100)}% ${y > 0 ? more : less}`); };
-      add(r.hit / A.hit, "more per hit", "less per hit");
-      add(r.mean / A.mean, "more from critical and deadly strikes", "less from critical and deadly strikes");
-      add(r.R.mult / A.R.mult, "more through the monster’s resistance", "less through the monster’s resistance");
-      add(r.hps / A.hps, "more hits per second", "fewer hits per second");
+      const f = factors(r, A, false);
       let s = `<p>${bn} ${head}${f.length ? ": " + f.join(", ") : ""}.`;
       if (r.kill && A.kill && !r.kill.never && !A.kill.never) {
         const cbx = c => (c.ch ? `${fmt(c.ch * 100)}% of hits${c.cbe ? ` (+${c.cbe}% efficiency)` : ""}` : "none");
@@ -1561,6 +1859,7 @@
     return `Next breakpoint: <b>+${nb.add}% IAS</b> on other gear → ${frLabel(nb.fr)} frames (${signed(nb.gain)} damage per second)`;
   }
   function fillCards() {
+    const A = builds[0];
     results.forEach((r, i) => {
       const refs = cardRefs[i];
       if (!refs) return;
@@ -1595,20 +1894,25 @@
       al.push(r.aur.p ? `Damage <b>+${r.aur.p}%</b> (${r.aur.parts.map(x => `${x[0]} ${x[1]}`).join(", ")})` : "No damage bonus");
       if (sIAS) al.push(`Attack speed <b>+${sIAS}</b>`);
       U.aura.innerHTML = al.join("<br>");
-      // the card's totals
+      // the card's totals; damage per hit as the character screen shows it, to check the numbers put in
       const ft = [];
       if (att.frames_only) ft.push(`<div class="big"><span>${esc(att.label)}</span><b>${r.fr ? `${frLabel(r.fr)} frames` : "—"}</b><small>its damage isn’t worked out yet</small></div>`);
       else {
-        ft.push(`<div><span>Damage per hit</span><b>${r.per.map(p => `${fmt(p.mn256 / 256)}–${fmt(p.mx256 / 256)}`).join(" / ")}</b></div>`);
+        const screen = r.per.length === 1 ? `<small>Your character screen shows this with ${esc(att.label)} on a mouse button</small>` : "";
+        ft.push(`<div><span>Damage per hit</span><b>${r.per.map(p => `${fmt(p.mn256 / 256)}–${fmt(p.mx256 / 256)}`).join(" / ")}</b>${screen}</div>`);
         ft.push(`<div><span>Average hit, with crit and deadly strike</span><b>${fmt(r.eff)}</b></div>`);
         if (r.R.mult !== 1) ft.push(`<div><span>On the monster</span><b>${fmt(r.final)}</b></div>`);
-        ft.push(`<div class="big"><span>Damage per second</span><b>${r.fr ? fmt(r.dps) : "—"}</b>${r.kill ? `<small>${r.kill.never ? "can’t kill it" : `kills in ${nf1.format(r.kill.secs)} s`}</small>` : ""}</div>`);
+        ft.push(`<div class="big"><span>Damage per second</span><b>${r.fr ? fmt(r.dps) : "—"}</b>${r.kill ? `<small>${r.kill.never ? "can’t kill it" : `kills in ${nf1.format(r.kill.secs)} s${att.k === "charge" ? " (strikes only)" : ""}`}</small>` : ""}</div>`);
       }
       refs.foot.innerHTML = ft.join("");
-      // what differs from build A
-      refs.card.querySelectorAll("[data-path]").forEach(f => { f.classList.toggle("diff", i > 0 && !same(getPath(builds[0], f.dataset.path), getPath(b, f.dataset.path))); });
-      for (const d of Object.values(refs.sec)) d.classList.toggle("diff", i > 0 && !!d.querySelector(".field.diff"));
+      // what differs from build A, on a build of A's class (across classes nearly every field would)
+      const mark = i > 0 && b.cls === A.cls;
+      refs.card.querySelectorAll(".field[data-path]").forEach(f => { f.classList.toggle("diff", mark && !same(getPath(A, f.dataset.path), getPath(b, f.dataset.path))); });
+      for (const d of Object.values(refs.sec)) d.classList.toggle("diff", mark && !!d.querySelector(".field.diff"));
+      const tab = $("dm-tabs").children[i];
+      if (tab) tab.textContent = bname(i);
     });
+    $("dm-diff-note").hidden = !builds.some((x, k) => k > 0 && x.cls === builds[0].cls);
   }
   /* the IAS on other gear a build still needs for fewer frames, and what that is worth */
   function nextBreakpoint(r) {
@@ -1675,26 +1979,42 @@
   }
   function drawProfile() {
     const box = $("dm-plot");
-    const width = Math.max(300, box.clientWidth || 800), narrow = width < 560, height = narrow ? 240 : 290;
-    const M = { l: narrow ? 46 : 60, r: 12, t: 10, b: 36 };
+    if ($("dm-p-prof").hidden) return;   // drawn when its tab shows
+    const width = Math.max(300, box.clientWidth || 800), narrow = width < 560, height = narrow ? 200 : 230;
     const series = results.map((r, i) => (r.attack.frames_only ? null : { i, pts: quantiles(r) })).filter(Boolean);
     box.innerHTML = "";
     const leg = $("dm-legend"); leg.innerHTML = "";
     if (!series.length) return;
-    series.forEach(s => { const li = el("li", {}, leg); const k = el("span", { class: "key" }, li); k.style.background = KEYS[s.i]; li.append(builds[s.i].name || `Build ${LETTERS[s.i]}`); });
+    series.forEach(s => {
+      const li = el("li", {}, leg), k = mk("svg", { class: "key", viewBox: "0 0 26 8", "aria-hidden": "true" }, li);
+      mk("line", { x1: 1, x2: 25, y1: 4, y2: 4, stroke: KEYS[s.i], "stroke-width": 2.5, "stroke-dasharray": DASHES[s.i] }, k);
+      li.append(bname(s.i));
+    });
+    // each line named at its right end too (wide enough only), so no build is told apart by its colour alone
+    const short = t => (t.length > 12 ? t.slice(0, 11) + "…" : t);
+    const ends = narrow || series.length < 2 ? [] : series.map(s => ({ s, t: short(bname(s.i)) }));
+    const M = { l: narrow ? 60 : 76, r: ends.length ? 16 + 7 * Math.max(...ends.map(e => e.t.length)) : 12, t: 10, b: 36 };
     const ymax = Math.max(...series.flatMap(s => s.pts.map(p => p[1]))) * 1.05 || 1;
     const svg = mk("svg", { viewBox: `0 0 ${width} ${height}`, role: "img", "aria-label": "Damage per hit, sorted from weakest to strongest" }, box);
     const x = v => M.l + (width - M.l - M.r) * v / 100, y = v => height - M.b - (height - M.t - M.b) * v / ymax;
-    for (const t of niceTicks(0, ymax, narrow ? 4 : 6)) {
+    for (const t of niceTicks(0, ymax, narrow ? 4 : 5)) {
       mk("line", { x1: M.l, x2: width - M.r, y1: y(t), y2: y(t), stroke: "var(--grid)" }, svg);
       const tx = mk("text", { x: M.l - 6, y: y(t) + 4, "text-anchor": "end", class: "tick" }, svg); tx.textContent = nf0.format(t);
     }
     for (const t of [0, 25, 50, 75, 100]) { const tx = mk("text", { x: x(t), y: height - M.b + 16, "text-anchor": "middle", class: "tick" }, svg); tx.textContent = t + "%"; }
     const at = mk("text", { x: (M.l + width - M.r) / 2, y: height - 4, "text-anchor": "middle", class: "axis-title" }, svg); at.textContent = "Share of hits, weakest to strongest";
+    const yt = mk("text", { transform: `translate(13 ${(M.t + height - M.b) / 2}) rotate(-90)`, "text-anchor": "middle", class: "axis-title" }, svg); yt.textContent = "Damage per hit";
     mk("line", { x1: M.l, x2: M.l, y1: M.t, y2: height - M.b, stroke: "var(--axis)" }, svg);
     for (const s of series) {
       const d = s.pts.map((p, k) => `${k ? "L" : "M"}${x(p[0]).toFixed(1)},${y(p[1]).toFixed(1)}`).join("");
-      mk("path", { d, fill: "none", stroke: KEYS[s.i], "stroke-width": 2.5, "stroke-linejoin": "round" }, svg);
+      mk("path", { d, fill: "none", stroke: KEYS[s.i], "stroke-width": 2.5, "stroke-linejoin": "round", "stroke-dasharray": DASHES[s.i] }, svg);
+    }
+    if (ends.length) {   // labels at the lines' ends, pushed apart where the ends meet
+      ends.forEach(e => { e.y = y(e.s.pts[e.s.pts.length - 1][1]) + 4; });
+      ends.sort((a, b) => a.y - b.y);
+      for (let k = 1; k < ends.length; k++) ends[k].y = Math.max(ends[k].y, ends[k - 1].y + 13);
+      for (let k = ends.length - 1; k >= 0; k--) ends[k].y = Math.min(ends[k].y, k < ends.length - 1 ? ends[k + 1].y - 13 : height - M.b + 4);
+      for (const e of ends) { const t = mk("text", { x: width - M.r + 6, y: e.y, class: "end-label" }, svg); t.textContent = e.t; }
     }
     // hover
     const tip = el("div", { class: "tip", hidden: true }, box);
@@ -1704,43 +2024,43 @@
       const q = clamp((px - M.l) / (width - M.l - M.r) * 100, 0, 100);
       cross.setAttribute("x1", x(q)); cross.setAttribute("x2", x(q)); cross.setAttribute("visibility", "visible");
       tip.hidden = false;
-      tip.innerHTML = `<div>${nf0.format(q)}% of hits do less than</div>` + series.map(s => `<div><span style="color:${KEYS[s.i]}">&#9632;</span> ${esc(builds[s.i].name || "Build " + LETTERS[s.i])}: <b>${nf0.format(s.pts[Math.round(q * 2)][1])}</b></div>`).join("");
+      tip.innerHTML = `<div>${nf0.format(q)}% of hits do less than</div>` + series.map(s => `<div><span style="color:${KEYS[s.i]}">&#9632;</span> ${esc(bname(s.i))}: <b>${nf0.format(s.pts[Math.round(q * 2)][1])}</b></div>`).join("");
       tip.style.left = Math.min(rect.width - 190, (e.clientX - rect.left) + 12) + "px"; tip.style.top = "8px";
     });
     svg.addEventListener("pointerleave", () => { tip.hidden = true; cross.setAttribute("visibility", "hidden"); });
   }
 
-  // ---------- breakpoints
+  // ---------- breakpoints: a ladder per build (its own frame counts; until 2026-11-13 one column mixed every build's
+  // frame counts, sorted by frames per hit but labelled by frames per round: 13, 12, 11, 16, 10, 9)
   function renderBreakpoints() {
-    const tb = $("dm-bp");
-    let h = "<thead><tr><th>Frames</th>" + results.map((r, i) => `<th><span class="key" style="background:${KEYS[i]}"></span>${esc(builds[i].name || "Build " + LETTERS[i])}</th>`).join("") + "</tr></thead><tbody>";
-    const cols = results.map(r => {
-      const map = new Map(), own = +r.b.g.ias || 0;
-      if (!r.fr || r.fr.note === "fixed") return { map, own, fixed: r.fr };
-      IAS.breakpoints(iasSetup(r.b, r.attack)).rows.forEach(row => {
-        const f = roundOf(row.r);
-        map.set(frLabel(f), { gear: row.gear, per: f.frames / f.hits });
-      });
-      return { map, own };
-    });
-    const per = new Map();
-    cols.forEach(c => c.map.forEach((v, k) => per.set(k, v.per)));
-    const all = [...per.keys()].sort((a, b) => per.get(b) - per.get(a));
-    for (const f of all) {
-      h += `<tr><td>${f}</td>` + cols.map((c, i) => {
-        if (!c.map.has(f)) return "<td></td>";
-        const cur = results[i].fr && frLabel(results[i].fr) === f;
-        return `<td class="${cur ? "cur" : ""}">${c.map.get(f).gear}%${cur ? " &#9664; you" : ""}</td>`;
-      }).join("") + "</tr>";
-    }
-    h += `<tr><td>Your IAS on other gear</td>` + cols.map(c => `<td>${c.own}%</td>`).join("") + "</tr>";
-    const fixed = cols.map((c, i) => c.fixed ? `${esc(builds[i].name || "Build " + LETTERS[i])}: ${results[i].attack.label} hits every ${c.fixed.frames} frames whatever the attack speed.` : "").filter(Boolean);
-    h += "</tbody>";
-    tb.innerHTML = h;
-    $("dm-bp-sub").textContent = "Increased attack speed on other gear each build needs for each frame count of its attack, with its weapon's IAS as set; its skills' attack speed and its weapon's speed are counted. " + fixed.join(" ");
+    $("dm-bp").innerHTML = results.map((r, i) => {
+      const b = r.b, own = +b.g.ias || 0, att = esc(r.attack.label);
+      let body;
+      if (!r.fr) body = `<p class="note">${att} has no animation with this weapon.</p>`;
+      else if (r.fr.note === "fixed") body = `<p class="note">${att} hits every ${r.fr.frames} frames whatever the attack speed: it has no breakpoints.</p>`;
+      else {
+        const rows = IAS.breakpoints(iasSetup(b, r.attack)).rows;
+        const dmg = !r.attack.frames_only && r.final > 0;
+        let cur = -1;
+        rows.forEach((row, k) => { if (row.gear <= own) cur = k; });
+        let t = `<table class="dm-table"><thead><tr><th>Frames</th><th>IAS on other gear</th>${dmg ? "<th>Damage per second</th>" : ""}</tr></thead><tbody>`;
+        rows.forEach((row, k) => {
+          const f = roundOf(row.r), dps = dmg ? r.final * 25 * f.hits / f.frames : 0;
+          const hits = !f.alt && f.hits > 1 ? `<small>${f.hits} hits</small>` : f.alt ? "<small>attack 1 / attack 2</small>" : "";
+          const you = k === cur ? `<small>you: ${own}%</small>` : "";
+          const gain = dmg && k > cur && r.dps ? `<small>${signed(dps / r.dps - 1)}</small>` : "";
+          t += `<tr class="${k === cur ? "cur" : k < cur ? "past" : ""}"><td>${frLabel(f)}${hits}</td><td>${row.gear}%${you}</td>${dmg ? `<td>${nf0.format(dps)}${gain}</td>` : ""}</tr>`;
+        });
+        t += "</tbody></table>";
+        const nb = r.next;
+        const foot = !nb ? "" : nb.capped ? "More IAS makes this attack no faster." : `Next: <b>+${nb.add}% IAS</b> on other gear for ${frLabel(nb.fr)} frames (${signed(nb.gain)} damage per second).`;
+        body = t + (foot ? `<p class="note">${foot}</p>` : "");
+      }
+      return `<div class="bp-card" style="--key:${KEYS[i]}"><h3>${esc(bname(i))}<small>${att}, ${own}% IAS on other gear</small></h3>${body}</div>`;
+    }).join("");
   }
 
-  // ---------- parity
+  // ---------- stat trade-offs
   const PARITY = [
     { k: "offed", label: "Enhanced damage off the weapon", unit: "%", get: b => b.g.ed, set: (b, v) => { b.g.ed = v; }, max: 3000 },
     { k: "oned", label: "Enhanced damage on the weapon", unit: "%", get: b => b.w.ed, set: (b, v) => { b.w.ed = v; }, max: 5000 },
@@ -1762,9 +2082,10 @@
       $("dm-par-amt").addEventListener("input", renderParity);
     }
     const ref = PARITY.find(p => p.k === sel.value) || PARITY[0];
+    $("dm-par-unit").textContent = ref.unit;
     const amt = num($("dm-par-amt").value, 1, 5000);
     const tb = $("dm-parity");
-    let h = "<thead><tr><th>Stat</th>" + results.map((r, i) => `<th><span class="key" style="background:${KEYS[i]}"></span>${esc(builds[i].name || "Build " + LETTERS[i])}</th>`).join("") + "</tr></thead><tbody>";
+    let h = "<thead><tr><th>Stat</th>" + results.map((r, i) => `<th><span class="key" style="background:${KEYS[i]}"></span>${esc(bname(i))}</th>`).join("") + "</tr></thead><tbody>";
     const goals = builds.map((b, i) => {
       if (results[i].attack.frames_only) return null;
       const c = JSON.parse(JSON.stringify(b));
@@ -1772,9 +2093,9 @@
       const r = evaluate(c, target, { kill: false });
       return { base: results[i].final, goal: r.final };
     });
-    h += `<tr class="strong"><td>Average hit on it</td>` + goals.map(g => g ? `<td>${nf0.format(g.base)} &rarr; ${nf0.format(g.goal)}<small>${signed(g.goal / g.base - 1)}</small></td>` : "<td>—</td>").join("") + "</tr>";
+    h += `<tr class="strong"><td>Average hit on the monster</td>` + goals.map(g => g ? `<td>${nf0.format(g.base)} &rarr; ${nf0.format(g.goal)}<small>${signed(g.goal / g.base - 1)}</small></td>` : "<td>—</td>").join("") + "</tr>";
     for (const p of PARITY) {
-      h += `<tr><td>${p.label}</td>` + builds.map((b, i) => {
+      h += `<tr><td>${p.label}${p.k === ref.k ? " <small>(picked above)</small>" : ""}</td>` + builds.map((b, i) => {
         const g = goals[i];
         if (!g || g.goal <= g.base) return "<td>—</td>";
         const at = v => { const c = JSON.parse(JSON.stringify(b)); p.set(c, p.get(b) + v, b); return evaluate(c, target, { kill: false }).final; };
@@ -1787,6 +2108,37 @@
     h += "</tbody>";
     tb.innerHTML = h;
   }
+
+  // ================================================================== the details' tabs (the ARIA tab pattern)
+  const TABS = [...root.querySelectorAll(".dm-tabbar [role=tab]")];
+  let currentTab = "side";
+  function showTab(tab, focus) {
+    currentTab = tab;
+    TABS.forEach(t => {
+      const on = t.dataset.tab === tab;
+      t.setAttribute("aria-selected", String(on));
+      t.tabIndex = on ? 0 : -1;
+      $(t.getAttribute("aria-controls")).hidden = !on;
+      if (on && focus) t.focus();
+    });
+    if (results.length) renderTab(tab);
+  }
+  TABS.forEach(t => t.addEventListener("click", () => showTab(t.dataset.tab)));
+  root.querySelector(".dm-tabbar").addEventListener("keydown", e => {
+    const k = TABS.indexOf(document.activeElement), to = { ArrowRight: k + 1, ArrowLeft: k - 1, Home: 0, End: TABS.length - 1 }[e.key];
+    if (k < 0 || to === undefined) return;
+    e.preventDefault();
+    showTab(TABS[(to + TABS.length) % TABS.length].dataset.tab, true);
+  });
+  /* #tab-<name>, or a link to a heading inside a tab (the website's search), opens that tab */
+  function tabFromHash() {
+    const h = decodeURIComponent((location.hash || "").slice(1));
+    if (!h || h.includes("=")) return;
+    let tab = /^tab-(\w+)$/.exec(h) ? h.slice(4) : null;
+    if (!tab) { const e = document.getElementById(h), p = e && e.closest(".dm-tabpanel"); if (p) tab = (TABS.find(t => t.getAttribute("aria-controls") === p.id) || {}).dataset.tab; }
+    if (tab && TABS.some(t => t.dataset.tab === tab)) showTab(tab);
+  }
+  addEventListener("hashchange", tabFromHash);
 
   // ================================================================== start
   function renderAll() { renderBuilds(); renderTarget(); }
@@ -1801,13 +2153,13 @@
   $("dm-add").addEventListener("click", () => {
     if (builds.length >= 4) return;
     const c = JSON.parse(JSON.stringify(builds[builds.length - 1])); c.name = "";
-    builds.push(c); shown = builds.length - 1; renderAll();
+    builds.push(c); shown = builds.length - 1; undo = null; renderAll();
   });
   $("dm-try").addEventListener("click", () => {
     if (builds.length >= 4) return;
     const c = JSON.parse(JSON.stringify(builds[0]));
     c.name = `${(builds[0].name || "Build A").slice(0, 20)} + change`;
-    builds.push(c); shown = builds.length - 1; renderAll();
+    builds.push(c); shown = builds.length - 1; undo = null; renderAll();
   });
   $("dm-share").addEventListener("click", () => {
     const link = location.href.split("#")[0] + "#v=" + btoa(unescape(encodeURIComponent(JSON.stringify({ builds, target }))));
@@ -1815,8 +2167,9 @@
     if (navigator.clipboard) navigator.clipboard.writeText(link).then(() => done(true), () => done(false)); else done(false);
   });
   let lastW = 0;
-  if (window.ResizeObserver) new ResizeObserver(() => { const w = $("dm-plot").clientWidth; if (Math.abs(w - lastW) > 4) { lastW = w; drawProfile(); } }).observe($("dm-plot"));
+  if (window.ResizeObserver) new ResizeObserver(() => { const w = $("dm-plot").clientWidth; if (Math.abs(w - lastW) > 4) { lastW = w; requestAnimationFrame(drawProfile); } }).observe($("dm-plot"));
   renderAll();
+  tabFromHash();
 })();
 </script>
 </body>
