@@ -13,12 +13,23 @@ bits, or a step from the last colour in 4-bit pieces); then every pixel of a new
 
 COF: a header (layers, frames, directions, the animation's box), one record per layer (its body part, shadow,
 transparency and weapon class), the frames' event bytes, then for each direction and frame the layers' drawing
-order.
+order. The two files number the directions differently: a DCC keeps them in the game's file order (the 8 main ones
+first: 0 south-west, 1 north-west, 2 north-east, 3 south-east, 4 south, 5 west, 6 north, 7 east, then the ones
+between), a COF's drawing orders go round the compass from the south. cof_row() turns one into the other (drawing a
+south-east frame with the COF's row 3 put the right arm behind the body).
 """
 import struct
 
 BITS = [0, 1, 2, 4, 6, 8, 10, 12, 14, 16, 20, 24, 26, 28, 30, 32]
 COMPONENTS = ["HD", "TR", "LG", "RA", "LA", "RH", "LH", "SH", "S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8"]
+# COF row r draws the DCC's direction FILE_ORDER[n][r] (n directions; with 1 or 4 they are the same)
+FILE_ORDER = {8: [4, 0, 5, 1, 6, 2, 7, 3], 16: [4, 8, 0, 9, 5, 10, 1, 11, 6, 12, 2, 13, 7, 14, 3, 15]}
+
+
+def cof_row(direction, directions):
+    """The COF drawing-order row of a DCC direction (south-east, DCC 3: row 7 of 8, row 14 of 16)."""
+    order = FILE_ORDER.get(directions)
+    return order.index(direction) if order else direction
 
 
 class Bits:

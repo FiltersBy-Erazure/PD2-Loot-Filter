@@ -1053,8 +1053,10 @@
   be a boss (`TARGETS` in calc_data.py): its life in Hell at its own level, +70% for each player after the first (PD2's
   table), at most 8,388,607; Diablo Clone, Rathma, Mendeln and Lucion x 1.5 at tier 0, x 4 x (1 + tier / 5) at tiers 1-2
   (their fight sets it); the crushing blow divisor from PD2's map boss lists (`MAP_BOSS_CLASSES`: The Tainted Hive,
-  Na-Krul, the Djinns and Zoltun Kulle are on none). Attack speed: the IAS Calculator
-  page owns the model; the damage page's own frame engine is interim, to be replaced by it. Run speed: speed points =
+  Na-Krul, the Djinns and Zoltun Kulle are on none). Attack speed: the IAS Calculator's engine and data (2026-11-12,
+  copied by `tools/ias_data.py --sync`), a build as its setup (`iasSetup`: Strafe at one target, Frenzy's charges);
+  a normal attack's round is attack 1 + attack 2, and an attack hits with the weapons the game picks for it
+  (`weaponsFor`: a normal attack the first weapon only). Run speed: speed points =
   6 x (100, +50 running, + FRW diminished at 150, + movement %) / 100, at least 25; a point moves a character 1/16 of a
   subtile a frame, and a yard (the skill descriptions') is 2/3 of a subtile: 25/24 of a yard a second, running 9.375
   with nothing (HarryPe's sheet reads the points as yards: 9). Vigor's +1% FRW per base point applies with any aura;
@@ -1072,30 +1074,58 @@
   a short implementation, the data tables). The setup lives in the address (`#tab-calc&c=bar&w=7gd...`, Copy a link)
   and in localStorage `erazure-ias-calculator`. The author's layout choices (2026-11-12) differ from hiimpd2's on
   purpose: answer first, breakpoints from you, the bases table, the trimmed grid, the site's own look, tabs kept, no
-  side-by-side builds. This page owns the attack speed model (the author): the damage calculator is to reuse it.
-  - Data: `python tools/ias_data.py "<Diablo II folder>" [--check|--selftest]` writes the DATA line between the
-    page's calc-data markers: PD2's AnimData.d2 (pd2assets.mpq), Weapons / ItemTypes / Skills (pd2_data.Game), the
-    speed skills per level 1-60, the items that grant another class's attack skill, the weapon IAS caps and
-    `docs/pd2-attack-sequences.json` (each sequence's steps per weapon class; PD2 runs its own Jab, Inferno, Arctic
-    Blast and Blade Fury sequences, shorter than the original game's, which hiimpd2 still uses). It needs the game
-    files, so build.bat, the hook and CI don't run it: rerun it after a PD2 patch. The sequences file is rewritten by
-    the tracing script kept out of the repo (memory `pd2-attack-speed-rules`) after a patch that changes skills.
+  side-by-side builds. This page owns the attack speed model (the author): the Damage Calculator runs its engine.
+  Mercenaries (2026-11-12, the author's open items): the Class list's Mercenaries group, the Act 1 Rogue Scout, the Act 2
+  Desert Mercenary and the Act 5 Barbarian (the Act 3 and Act 4 ones only cast); their attacks from Hireling.txt
+  (Strafe and the Act 5 Whirlwind aren't worked out for them yet), their weapon kinds (`MERCS` in ias_data.py: bows and
+  crossbows; spears and polearms; axes, swords, maces, hammers; never class or throwing weapons).
+  - Data: after a PD2 patch, `python tools/ias_data.py "<Diablo II folder>"` writes the IAS_DATA line between the
+    page's calc-data markers, copies the engine and the part of the data it reads into the Damage Calculator (its
+    ias-engine and ias-data markers; `--sync` alone after an engine edit, no game files) and redraws the attack
+    previews whose game files or weapon graphics changed (tools/ias_sprites.py; `tools/ias_sprites.json` is their
+    manifest: a fingerprint of what they show and of every game file they read, one per animation); `--check` checks
+    all three, `--selftest` known values first. Its data: PD2's AnimData.d2 (pd2assets.mpq), Weapons / ItemTypes /
+    Skills (pd2_data.Game), the speed skills per level 1-60, the items that grant another class's attack skill, the
+    weapon IAS caps, `docs/pd2-attack-sequences.json` (each sequence's steps per weapon class; PD2 runs its own Jab,
+    Inferno, Arctic Blast and Blade Fury sequences, shorter than the original game's, which hiimpd2 still uses), and the
+    mercenaries (Hireling.txt, MonStats / MonStats2: token, BaseW, looks; MonSeq.txt). It needs the game files, so
+    build.bat, the hook and CI don't run it. The sequences file is rewritten by the tracing script kept out of the repo
+    (memory `pd2-attack-speed-rules`) after a patch that changes skills.
   - Engine (between the page's `ias-engine` markers, traced in the game and in BH's own breakpoint calculator): speed
     = 100 + skill speed - WSM + EIAS (120 x IAS / (120 + IAS), rounded toward zero), 30 less for a sequence, kept at
     15-175; rate = base speed x speed / 100; a held attack lasts ceil((frames - start) x 256 / rate) - 1; Amazons and
     Sorceresses start A1 / A2 at frame 1 (no weapon) or 2 (melee, staff); two weapons count only the one with the
     larger -WSM + its own IAS (a tie: the second), the Barbarian's 1ss / 1js / 1jt / 1st and the Assassin's ht2;
-    rollback skills hit by hit (BH's GetRollbackSkillFrames); Whirlwind and Blade Dance a hit every Param3 frames, one
-    more with two weapons; Charge's last 8 frames at base 100 + Param6; werewolf / werebear base speed = standing
-    frames x 256 / H, H from the class's own A1 with the weapon's one-handed weapon class, its WSM and its own IAS
-    undiminished (19 with no weapon). `python tools/ias_selftest.py` (CI, headless Chrome; `--setup` prints one setup)
-    runs the engine with the page's DATA on `tools/ias_cases.json` (hand-checked cases) and invariants on random setups.
-  - Sprites: `python tools/ias_sprites.py "<Diablo II folder>"` (by hand, not CI) draws every attack animation (and
-    the modes a sequence steps through) from the game's own sprites with `tools/d2_sprites.py` (DCC and COF), facing
-    south-east, light armor, every base's weapon graphic and a shield: `website/resources/IAS-Calculator-Sprites/` (per
-    animation an atlas PNG and a layout script, so the page works opened as a file; a zombie that takes the hits; a
-    Rogue Encampment floor; about 12 MB). website/hooks.py copies the folder beside the page's own copy (BESIDE_FOLDERS
-    through own_copy). Rerun it after `ias_data.py` changes the weapon bases or a patch changes the animations.
+    rollback skills hit by hit (BH's GetRollbackSkillFrames; Strafe's arrows clamp(targets, min(calc3, calc1),
+    calc1)); werewolf / werebear base speed = standing frames x 256 / H, H from the class's own A1 with the weapon's
+    one-handed weapon class, its WSM and its own IAS undiminished (19 with no weapon). Traced 2026-11-12 (private
+    notes `private/ias-trace-*-2026-11-12.md`): a normal attack is A1 or A2, the client's roll, half each, the server
+    always A1 and its hit at A1's hit frame; held, each lasts the drawn one, so (A1 + A2) / 2 (an A2 ending before A1's
+    hit loses it); always A1 with a bow, a crossbow or no weapon (and against small monsters, A2 against flying ones);
+    a dual-wield normal attack hits with the first weapon only (weapsel 0; 3: first then the other; 2: both). Which
+    rate draws an attack: A1, A2, TH, KK the attack rate; S1-S4 and sequences only with Skills.txt's UseAttackRate,
+    else the other animation rate (100, slows, Frenzy's charges: Inferno, Arctic Blast, Leap Attack "fx", IAS changes
+    nothing); a sequence whose seqtrans is SC the cast rate (left out). Blade Fury is IAS with the -30. Frenzy's speed
+    trunc(dm56 x charges / 5) (`fst`, 0-5). Double Swing, Dragon Tail, Split Throw: their speed buff counts for their
+    own animation. Whirlwind / Blade Dance (other animation rate): the hit timer (Param3) is checked only on the
+    sequence's hit steps, every ceil(1024 / rate) frames, so a hit every 8 frames unslowed (BH and the S14 notes say
+    6; not yet counted in game), two weapons: a hit with each, no +1. Charge's strike: steps 8-14 at a rate PD2 sets,
+    min(speed + Param6, 256) with no base speed, ceil(1792 / rate) frames (BH: ceil(2048 / rate) - 1). Mercenaries:
+    speed 100 - WSM + EIAS(weapon + gear IAS) + auras, no -30, no start frame, rate from token + mode + BaseW (never
+    the weapon held); attack to attack max(2, ceil(F x 256 / rate)) + 1, a monster sequence ceil(N x 256 / rate) + 2
+    (2 / 3 more than BH's screen, same breakpoints); the Act 5 animations hit twice a swing. `python
+    tools/ias_selftest.py` (CI, headless Chrome; `--setup` prints one setup) runs the engine with the page's data on
+    `tools/ias_cases.json` (hand-checked cases) and invariants on random setups (mercenaries too), and checks the
+    Damage Calculator's copy and the previews' manifest against the page's data.
+  - Sprites: `python tools/ias_sprites.py "<Diablo II folder>" [--check]` (ias_data.py runs it) draws every attack
+    animation (and the modes a sequence steps through) from the game's own sprites with `tools/d2_sprites.py` (DCC and
+    COF), facing south-east, light armor (armor never changes attack speed), every base's weapon graphic and a shield,
+    a mercenary in its MonStats2 looks: `website/resources/IAS-Calculator-Sprites/` (per animation an atlas PNG and a
+    layout script, so the page works opened as a file; a zombie that takes the hits; a Rogue Encampment floor; about
+    13 MB). A COF's drawing orders go round the compass from the south, a DCC keeps its directions in the game's file
+    order: `d2_sprites.cof_row` (south-east, DCC 3: COF row 7 of 8, 14 of 16; until 2026-11-12 row 3, which put the
+    Sorceress's bow arm behind her). website/hooks.py copies the folder beside the page's own copy (BESIDE_FOLDERS
+    through own_copy).
 - The Examples page's pictures (`website/docs/img/examples/*.png`, committed; README's examples show them too) are
   drawn by `python tools/example_shots.py "<Diablo II folder>" [--only NAME]` (2026-10-20; not run by build.bat, the
   hook or CI: it needs the game files): per scene of `SCENES` a floor of the area's own DT1 tiles, each item's
@@ -1431,7 +1461,8 @@ before), and so are throwing and stamina potions (hidden Fulminating / Chilling 
 `Erazure-Filter-Levels.html` · `tools/shop_map.py` + `tools/shop_map_template.html` + `tools/inv/` +
 `Erazure-Skill-Shop-Highlights.html` · `tools/grail_map.py` + `tools/grail_farm.py` + `tools/grail_map_template.html` +
 `Erazure-Grail-Planner.html` · `website/resources/IAS-Calculator.html` + `tools/ias_data.py` + `tools/ias_selftest.py` +
-`tools/ias_cases.json` + `tools/ias_sprites.py` + `tools/d2_sprites.py` + `docs/pd2-attack-sequences.json` (the IAS
+`tools/ias_cases.json` + `tools/ias_sprites.py` + `tools/ias_sprites.json` + `tools/d2_sprites.py` +
+`docs/pd2-attack-sequences.json` (the IAS
 Calculator) · `styles/minimal.filter` + `tools/style_map.py` + `tools/style_map_template.html` +
 `Erazure-Minimal-Style.html` · `styles/corrlorized.edits` + `tools/style_edits.py` + `Corrlorized-*.filter` ·
 `website/` + `site_preview.bat` + `.github/workflows/pages.yml` ·

@@ -5,13 +5,16 @@ The IAS Calculator's attack previews: every attack animation the page can show, 
 of every base that uses the animation, a shield, a floor and a monster to hit.
 
     python tools/ias_sprites.py "C:\\Users\\<you>\\Diablo II"            write website/resources/IAS-Calculator-Sprites/
+    python tools/ias_sprites.py "C:\\Users\\<you>\\Diablo II" --check    exit 1 if they are out of date
     python tools/ias_sprites.py "C:\\Users\\<you>\\Diablo II" --stats    count and size them, write nothing
     python tools/ias_sprites.py "C:\\Users\\<you>\\Diablo II" --only BAA11HS
 
-It reads the page's DATA line (written by tools/ias_data.py: the animations, the weapon bases and their graphics) and
-the game's d2exp.mpq / d2char.mpq (the characters' animations; PD2's own archives hold none of them), d2data.mpq
-(the palette, the floor). Rerun it after a PD2 patch that changes the characters' animations or adds weapon
-graphics; not run by build.bat, the edit hook or CI (it needs the game files).
+It reads the page's IAS_DATA line (written by tools/ias_data.py: the animations, the weapon bases and their
+graphics) and the game's d2exp.mpq / d2char.mpq (the characters' animations; PD2's own archives hold none of them
+today, but are read first), d2data.mpq (the palette, the floor). tools/ias_data.py runs it after a PD2 patch when
+what the previews show changed (stale()): tools/ias_sprites.json keeps a fingerprint of the page data they were drawn
+from (what to draw: the animations, each one's weapon graphics) and of every game file they read. CI
+(tools/ias_selftest.py) checks the first against the page's data, and that every drawn animation's files are there.
 
 Each animation is two files: <ANIM>.png, an indexed atlas of every layer's frames (body parts, each weapon graphic,
 the shield), and <ANIM>.js, which hands the page its layout: window.IAS_SPRITES[anim] = {f: frames, o: the layers'
@@ -20,9 +23,9 @@ page also works opened as a file. Parts: the body part's code (TR...), or code:g
 (RH:CRS).
 """
 import argparse
+import hashlib
 import json
 import random
-import re
 import sys
 from pathlib import Path
 
@@ -36,6 +39,8 @@ import ias_data  # noqa: E402
 import pd2_mpq  # noqa: E402
 
 OUT = ROOT / "website" / "resources" / "IAS-Calculator-Sprites"
+MANIFEST = TOOLS / "ias_sprites.json"
+VERSION = 2  # of how they are drawn: a change here redraws them all (2: the COF row of the DCC direction)
 DIRECTION = 3  # south-east: the same in the 16- and 8-direction animations
 BODY = ("HD", "TR", "LG", "RA", "LA", "S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8")
 WEAPON = ("RH", "LH")
@@ -71,6 +76,14 @@ class Archives:
         self.cache[name] = None
         raise KeyError(name)
 
+    def digest(self):
+        """A fingerprint of every file read so far (and of the ones looked for but missing)."""
+        h = hashlib.sha1()
+        for name in sorted(self.cache):
+            data = self.cache[name]
+            h.update(name.encode() + b"\0" + (hashlib.sha1(data).digest() if data is not None else b"-"))
+        return h.hexdigest()
+
     def has(self, name):
         try:
             self.read(name)
@@ -80,14 +93,19 @@ class Archives:
 
 
 def page_data():
-    text = ias_data.PAGE.read_text(encoding="utf-8")
-    i, j = text.index(ias_data.START) + len(ias_data.START), text.index(ias_data.END)
-    body = text[i:j].strip()
-    return json.loads(body[len("const DATA = "):body.rindex(";")].replace("<\\/", "</"))
+    return ias_data.page_json(ias_data.PAGE.read_text(encoding="utf-8"))
+
+
+PLAYER_TOKENS = ("AM", "SO", "NE", "PA", "BA", "DZ", "AI")
 
 
 def folder(tok):
-    return "monsters" if tok in ("40", "TG") else "chars"
+    """The characters' animations are under chars, the forms' and the mercenaries' (monsters) under monsters."""
+    return "chars" if tok in PLAYER_TOKENS else "monsters"
+
+
+def merc_of(data, tok):
+    return next((m for m in data.get("mercs", []) if m["tok"] == tok), None)
 
 
 def wanted(data):
@@ -104,6 +122,10 @@ def wanted(data):
             for mode in {st[0] for st in steps}:
                 for t in ([tok] if tok else []) + [t for t in by_cls.values() if any(o[0] == s["id"] for o in data["os"])]:
                     out.add(t + mode + wc.upper())
+    for m in data.get("mercs", []):  # a mercenary's attacks: its own animations and the steps of its sequences
+        modes = {"A1"} | {a["m"] for a in m["atk"] if a["m"] != "SQ"}
+        modes |= {st[0] for a in m["atk"] if a.get("q") for st in data["msq"].get(a["q"], [])}
+        out |= {m["tok"] + mode + m["bw"].upper() for mode in modes}
     return sorted(k for k in out if len(k) == 7)
 
 
@@ -122,19 +144,23 @@ def graphics(data, tok, wc):
     return {"RH": gs, "LH": gs}
 
 
-def decode_anim(arch, data, key, stats):
+def layers(arch, data, key, stats):
+    """The COF of an animation and the DCC files it draws: (cof, direction, [(part, path)]); None without a COF."""
     tok, mode, wc = key[:2], key[2:4], key[4:]
     try:
         cof = d2_sprites.cof(arch.read(f"data/global/{folder(tok)}/{tok}/cof/{key}.cof"))
     except KeyError:
         return None
     d = DIRECTION if DIRECTION < cof["directions"] else 0
-    gfx = graphics(data, tok, wc)
-    parts = {}
+    merc = merc_of(data, tok)
+    gfx = graphics(data, tok, wc) if not merc else {}
+    files = []
     for layer in cof["layers"]:
         comp = layer["comp"]
         lwc = layer["wc"] or wc
-        if comp in BODY:
+        if merc:  # a mercenary always looks the same (MonStats2's first look of each part)
+            looks = [("", merc["lk"][comp])] if comp in merc["lk"] else []
+        elif comp in BODY:
             looks = [("", "LIT")]
         elif comp in WEAPON:
             looks = [(g, g) for g in gfx[comp]]
@@ -145,15 +171,91 @@ def decode_anim(arch, data, key, stats):
             looks = []
         for name, look in looks:
             path = f"data/global/{folder(tok)}/{tok}/{comp}/{tok}{comp}{look}{mode}{lwc}.dcc"
-            try:
-                frames = d2_sprites.dcc(arch.read(path), d)
-            except KeyError:
+            if arch.has(path):
+                files.append((comp + (":" + name if name else ""), path))
+            else:
                 stats["missing"] = stats.get("missing", 0) + 1
-                continue
-            parts[comp + (":" + name if name else "")] = frames
+    return cof, d, files
+
+
+def decode_anim(arch, data, key, stats):
+    found = layers(arch, data, key, stats)
+    if not found:
+        return None
+    cof, d, files = found
+    parts = {part: d2_sprites.dcc(arch.read(path), d) for part, path in files}
     if not parts:
         return None
-    return {"f": cof["frames"], "o": cof["order"][d], "parts": parts, "events": cof["events"]}
+    return {"f": cof["frames"], "o": cof["order"][d2_sprites.cof_row(d, cof["directions"])], "parts": parts,
+            "events": cof["events"]}
+
+
+def key_digest(arch, key, files):
+    """A fingerprint of what one animation's preview is drawn from (its COF, each part's DCC, how they are drawn)."""
+    tok = key[:2]
+    h = hashlib.sha1(f"{VERSION}|{key}|{DIRECTION}".encode())
+    for part, path in [("cof", f"data/global/{folder(tok)}/{tok}/cof/{key}.cof")] + list(files):
+        h.update(part.encode() + b"|" + path.encode() + hashlib.sha1(arch.read(path)).digest())
+    return h.hexdigest()
+
+
+def fingerprint(data):
+    """What the previews show, from the page's data alone: every animation to draw and its weapon graphics."""
+    keys = wanted(data)
+    what = {"v": VERSION, "target": TARGET, "floor": FLOOR, "keys": keys,
+            "gfx": {k: graphics(data, k[:2], k[4:]) for k in keys}}
+    return hashlib.sha1(json.dumps(what, sort_keys=True).encode()).hexdigest()
+
+
+def target_files(arch):
+    tok, modes, d = TARGET
+    out = {}
+    for mode in modes:
+        key = f"{tok}{mode}HTH"
+        cof = d2_sprites.cof(arch.read(f"data/global/monsters/{tok}/cof/{key}.cof"))
+        paths = []
+        for layer in cof["layers"]:
+            path = f"data/global/monsters/{tok}/{layer['comp']}/{tok}{layer['comp']}LIT{mode}{layer['wc'] or 'HTH'}.dcc"
+            if arch.has(path):
+                paths.append((layer["comp"], path))
+        out[mode] = (cof, d if d < cof["directions"] else 0, paths)
+    return out
+
+
+def sources(arch, data):
+    """Reads every game file the previews are drawn from (without drawing them); the archive's digest() then
+    fingerprints them."""
+    stats = {}
+    for key in wanted(data):
+        found = layers(arch, data, key, stats)
+        for _, path in (found[2] if found else []):
+            arch.read(path)
+    target_files(arch)
+    palette(arch)
+    import example_shots as X
+    X.draw_floor(arch, FLOOR, 8, 8, random.Random(14))  # reads the floor's tiles
+
+
+def manifest():
+    try:
+        return json.loads(MANIFEST.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+
+
+def stale(game_dir, data):
+    """Why the previews are out of date ("" if they aren't): what they show, a game file they read, a file missing."""
+    m = manifest()
+    if m.get("data") != fingerprint(data):
+        return "what they show changed"
+    missing = [k for k in m.get("keys", []) if not (OUT / f"{k}.png").exists() or not (OUT / f"{k}.js").exists()]
+    if missing:
+        return f"{len(missing)} missing, e.g. {missing[0]}"
+    arch = Archives(game_dir)
+    sources(arch, data)
+    if m.get("files") != arch.digest():
+        return "their game files changed"
+    return ""
 
 
 def pack(parts):
@@ -215,27 +317,34 @@ def write_stage(arch, out):
     editor_assets.png_rgba(out / "stage.png", w, h, px)
 
 
-def main():
-    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
-    ap = argparse.ArgumentParser(description="The IAS Calculator's attack previews from the game's sprites.")
-    ap.add_argument("game_dir")
-    ap.add_argument("--stats", action="store_true", help="count and size them, write nothing")
-    ap.add_argument("--only", help="one animation, e.g. BAA11HS")
-    args = ap.parse_args()
-    arch, data = Archives(args.game_dir), page_data()
-    keys = [args.only] if args.only else wanted(data)
+def draw(game_dir, data, only=None, stats_only=False):
+    """Draws the previews (only: one animation, and the manifest is left as it was). An animation whose files are
+    there and whose game files and weapon graphics are the ones the manifest says isn't drawn again."""
+    arch = Archives(game_dir)
+    keys = [only] if only else wanted(data)
     pal = palette(arch)
-    stats, total, made = {}, 0, []
-    if not args.stats:
+    stats, total, made = {}, 0, {}
+    before = manifest().get("keys", {})
+    before = before if isinstance(before, dict) else {}
+    if not stats_only:
         OUT.mkdir(parents=True, exist_ok=True)
     for key in keys:
+        found = layers(arch, data, key, stats)
+        if not found:
+            stats["no cof"] = stats.get("no cof", 0) + 1
+            continue
+        digest = key_digest(arch, key, found[2])
+        if not (only or stats_only) and before.get(key) == digest and (OUT / f"{key}.png").exists() and (OUT / f"{key}.js").exists():
+            made[key] = digest
+            stats["kept"] = stats.get("kept", 0) + 1
+            continue
         anim = decode_anim(arch, data, key, stats)
         if not anim:
-            stats["no cof"] = stats.get("no cof", 0) + 1
+            stats["no parts"] = stats.get("no parts", 0) + 1
             continue
         w, h, px, layout = pack(anim["parts"])
         geo = {"f": anim["f"], "o": anim["o"], "p": layout}
-        if args.stats:
+        if stats_only:
             import tempfile
             tmp = Path(tempfile.gettempdir()) / "ias-sprite-size.png"
             png_indexed(tmp, w, h, px, pal)
@@ -247,34 +356,58 @@ def main():
             (OUT / f"{key}.js").write_text(js, encoding="utf-8", newline="\n")
             size = (OUT / f"{key}.png").stat().st_size + len(js)
         total += size
-        made.append(key)
+        made[key] = digest
         print(f"{key}: {len(layout)} parts, {w}x{h}, {size // 1024} KB")
-    tok, modes, d = TARGET
     target = {}
-    for mode in modes:
-        key = f"{tok}{mode}HTH"
-        cof = d2_sprites.cof(arch.read(f"data/global/monsters/{tok}/cof/{key}.cof"))
-        parts = {}
-        for layer in cof["layers"]:
-            path = f"data/global/monsters/{tok}/{layer['comp']}/{tok}{layer['comp']}LIT{mode}{layer['wc'] or 'HTH'}.dcc"
-            try:
-                parts[layer["comp"]] = d2_sprites.dcc(arch.read(path), d if d < cof["directions"] else 0)
-            except KeyError:
-                pass
+    for mode, (cof, d, paths) in target_files(arch).items():
+        parts = {comp: d2_sprites.dcc(arch.read(path), d) for comp, path in paths}
         w, h, px, layout = pack(parts)
-        target[mode] = {"f": cof["frames"], "o": cof["order"][d if d < cof["directions"] else 0], "p": layout}
-        if not args.stats:
+        target[mode] = {"f": cof["frames"], "o": cof["order"][d2_sprites.cof_row(d, cof["directions"])], "p": layout}
+        if not stats_only:
             png_indexed(OUT / f"target-{mode}.png", w, h, px, pal)
-    if not args.stats:
+    if not stats_only:
         (OUT / "target.js").write_text("window.IAS_TARGET = " + json.dumps(target, separators=(",", ":")) + ";\n",
                                        encoding="utf-8", newline="\n")
         write_stage(arch, OUT)
-        stale = [p for p in OUT.glob("*.png") if p.stem not in made and not p.stem.startswith(("target", "stage"))] + \
-            [p for p in OUT.glob("*.js") if p.stem not in made and p.stem != "target"]
-        if not args.only:
-            for p in stale:
+        if not only:
+            old = [p for p in OUT.glob("*.png") if p.stem not in made and not p.stem.startswith(("target", "stage"))] + \
+                [p for p in OUT.glob("*.js") if p.stem not in made and p.stem != "target"]
+            for p in old:
                 p.unlink()
+            MANIFEST.write_text(json.dumps({"data": fingerprint(data), "files": arch.digest(), "keys": dict(sorted(made.items()))},
+                                           indent=0) + "\n", encoding="utf-8", newline="\n")
     print(f"{len(made)} animations, {total // 1024} KB; {stats}")
+    return made
+
+
+def check_files(data):
+    """Without the game files (CI): the previews were drawn from this data, and each drawn one's files are there."""
+    m, bad = manifest(), []
+    if m.get("data") != fingerprint(data):
+        bad.append("the attack previews weren't drawn from the page's data: run python tools/ias_data.py \"<Diablo II folder>\"")
+    keys = set(m.get("keys", []))
+    for k in sorted(keys):
+        if not (OUT / f"{k}.png").exists() or not (OUT / f"{k}.js").exists():
+            bad.append(f"the attack preview {k} is missing")
+    extra = {p.stem for p in OUT.glob("*.*") if p.suffix in (".png", ".js")} - keys - {"target", "target-NU", "target-GH", "stage"}
+    bad += [f"the attack preview {k} isn't one the page shows" for k in sorted(extra)]
+    return bad
+
+
+def main():
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    ap = argparse.ArgumentParser(description="The IAS Calculator's attack previews from the game's sprites.")
+    ap.add_argument("game_dir")
+    ap.add_argument("--check", action="store_true", help="exit 1 if they are out of date")
+    ap.add_argument("--stats", action="store_true", help="count and size them, write nothing")
+    ap.add_argument("--only", help="one animation, e.g. BAA11HS")
+    args = ap.parse_args()
+    data = page_data()
+    if args.check:
+        why = stale(args.game_dir, data)
+        print(f"ias_sprites: {'out of date: ' + why if why else 'up to date'}")
+        sys.exit(1 if why else 0)
+    draw(args.game_dir, data, args.only, args.stats)
 
 
 if __name__ == "__main__":

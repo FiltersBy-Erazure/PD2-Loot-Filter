@@ -1,18 +1,26 @@
 #!/usr/bin/env python3
 """
 The game numbers of the website's IAS Calculator (Resources: website/resources/IAS-Calculator.html): the page is
-written by hand; this writes only its DATA line between the calc-data markers, from PD2's own files, so a patch that
-changes animations, weapons or skills reaches the page on the next run.
+written by hand; this writes only its IAS_DATA line between the calc-data markers, from PD2's own files, so a patch
+that changes animations, weapons or skills reaches the page on the next run. The page owns the attack speed model
+(its engine, between the ias-engine markers): this also copies the engine and the part of the data it reads into the
+Damage Calculator (website/resources/Damage-Calculator.html, between its ias-engine and ias-data markers), and
+redraws the attack previews (tools/ias_sprites.py) when what they show changed.
 
-    python tools/ias_data.py "C:\\Users\\<you>\\Diablo II"             write the page's DATA line
-    python tools/ias_data.py "C:\\Users\\<you>\\Diablo II" --check     change nothing; exit 1 if the page is out of date
+    python tools/ias_data.py "C:\\Users\\<you>\\Diablo II"             after a PD2 patch: the data, the Damage
+                                                                      Calculator's copy and the previews
+    python tools/ias_data.py "C:\\Users\\<you>\\Diablo II" --check     change nothing; exit 1 if any of them is out of
+                                                                      date (the previews: also their game files)
     python tools/ias_data.py "C:\\Users\\<you>\\Diablo II" --selftest  check known values, then --check
+    python tools/ias_data.py --sync [--check]                         after an edit of the engine: copy it (and the
+                                                                      data) into the Damage Calculator; no game files
 
 It reads ProjectD2\\pd2assets.mpq (AnimData.d2: every animation's frames, speed and attack frames), pd2data.mpq
 (Weapons, ItemTypes, Skills and the strings, through tools/pd2_data.py's Game), docs/pd2-attack-sequences.json (the
 sequence skills' steps), docs/pd2-unique-set-items.tsv and docs/pd2-runewords.tsv (items that grant another class's
 attack skill). Like tools/calc_data.py it needs the game files, so build.bat, the edit hook and CI don't run it: rerun
-it after a PD2 patch, after pd2_data.py --extract. CI checks the page's engine with tools/ias_selftest.py.
+it after a PD2 patch, after pd2_data.py --extract. CI runs tools/ias_selftest.py: the engine, the Damage
+Calculator's copy and the previews against the page's data.
 
 How the game turns IAS into frames (the page says it in its own words):
 - Speed = 100 + skill speed (auras and skills that set attack rate) - the weapon's speed modifier (WSM) + effective
@@ -45,6 +53,13 @@ import pd2_mpq  # noqa: E402
 BS = chr(92)
 PAGE = ROOT / "website" / "resources" / "IAS-Calculator.html"
 START, END = "/* calc-data:start */", "/* calc-data:end */"
+DATA_NAME = "IAS_DATA"
+# The Damage Calculator runs the same engine on the part of the data it reads
+DMG_PAGE = ROOT / "website" / "resources" / "Damage-Calculator.html"
+ENGINE = ("/* ias-engine:start */", "/* ias-engine:end */")
+SHARED = ("/* ias-data:start */", "/* ias-data:end */")
+ENGINE_KEYS = ("v", "cls", "fb", "a", "types", "tcls", "b", "sk", "sq", "sp", "mercs", "msq")
+ENGINE_BASE = ("c", "w", "wc", "wc2", "f", "ty")  # of each weapon base
 SEQUENCES = ROOT / "docs" / "pd2-attack-sequences.json"
 UNIQUES = ROOT / "docs" / "pd2-unique-set-items.tsv"
 RUNEWORDS = ROOT / "docs" / "pd2-runewords.tsv"
@@ -71,6 +86,12 @@ KINDS = [("abow", "Amazon bows"), ("aspe", "Amazon spears"), ("ajav", "Amazon ja
 ROLLBACK = {26: "Param6", 30: "Param2", 106: "Param2", 248: "Param2", 255: 100}
 FIXED_FRAMES = (151, 380)  # Whirlwind and Blade Dance: one hit every Param3 frames, whatever the IAS
 CHARGE = 107
+GENERIC = (2,)  # Throw: every class's, with a throwing weapon
+# The mercenaries whose attacks take attack speed (key, Hireling.txt Class, the weapon kinds of the Type list they
+# take; never a class's own weapons, nor throwing ones). The Act 3 Iron Wolves and the Act 4 Ascendants only cast.
+MERCS = [("m1", 271, ["bow", "xbow"]), ("m2", 338, ["spea", "pole"]), ("m5", 561, ["axe", "swor", "mace", "hamm"])]
+MERC_MODES = {"4": "A1", "5": "A2", "14": "SQ"}  # Hireling.txt's skill modes that attack
+MERC_UNMODELLED = ("Strafe", "MonWhirlwind")  # their timing isn't worked out for mercenaries yet
 LEVELS = 60
 
 
@@ -354,18 +375,21 @@ def skill_name(game, sid):
 
 
 def attack_skills(game, wanted):
-    """The attack skills the page lists: every class's skills drawn with an attack animation (casting sequences
-    aside), and the ones items grant to every class (wanted)."""
+    """The attack skills the page lists: every class's skills drawn with an attack animation, and the ones items
+    grant to every class (wanted). Which speed draws them (the game's animation rate): attack 1 and 2, throws and
+    kicks always IAS; special animations and sequences IAS only with Skills.txt's UseAttackRate, else the other
+    animation rate (no IAS, no weapon speed: "fx"); a sequence whose seqtrans is SC the cast rate (left out)."""
     seqs = json.loads(SEQUENCES.read_text(encoding="utf-8"))
     keys = {k for k, _, _ in CLASSES}
     desc = pd2_data.read_table(game.pd2.read(BS.join(["data", "global", "excel", "SkillDesc.txt"])).decode("latin-1"))
-    page = {r["skilldesc"]: r.get("SkillPage", "").strip() for r in desc if r.get("skilldesc")}
+    # the game links the tables by name whatever the case (Skills.txt's "blade dance", SkillDesc's "Blade Dance")
+    page = {r["skilldesc"].lower(): r.get("SkillPage", "").strip() for r in desc if r.get("skilldesc")}
     out, used_seqs = [], set()
     for sid, r in sorted(game.skill_rows.items()):
         cls = r.get("charclass", "").strip()
         mode = r.get("anim", "").strip()
-        on_tree = page.get(r.get("skilldesc", "").strip(), "") not in ("", "0")
-        if not (cls in keys and on_tree) and sid not in wanted:
+        on_tree = page.get(r.get("skilldesc", "").strip().lower(), "") not in ("", "0")
+        if not (cls in keys and on_tree) and sid not in wanted and sid not in GENERIC:
             continue  # not a class's skill (365 Shattering Arrow: on no skill tree, Freezing Arrow's helper)
         if mode not in ATTACK_MODES + ("SQ",) or not r.get("skilldesc", "").strip():
             continue
@@ -374,12 +398,15 @@ def attack_skills(game, wanted):
         if r.get("range", "").strip() == "none" and not r.get("SrcDam", "").strip() and not r.get("EType", "").strip():
             continue  # no damage: a movement (Leap)
         seq = r.get("seqnum", "").strip() if mode == "SQ" else ""
+        if mode == "SQ" and r.get("seqtrans", "").strip() == "SC":
+            continue  # cast speed (Chain Lightning, Frozen Orb), not attack speed
         if seq:
-            steps = seqs.get(seq, {})
-            if not steps or all(s[0][0] == "SC" for s in steps.values()):
-                continue  # drawn with the casting animation: cast speed, not attack speed
+            if not seqs.get(seq):
+                continue
             used_seqs.add(seq)
         s = {"id": sid, "n": skill_name(game, sid), "c": cls, "m": mode, "q": int(seq) if seq else 0}
+        if mode not in ("A1", "A2", "TH", "KK") and r.get("UseAttackRate", "").strip() != "1" and sid not in FIXED_FRAMES + (CHARGE,):
+            s["fx"] = 1  # the other animation rate (Inferno, Arctic Blast, Leap Attack): IAS changes nothing
         for side in ("a", "b"):
             s["i" + side] = [r[f"itype{side}{i}"].strip() for i in (1, 2, 3) if r.get(f"itype{side}{i}", "").strip()]
             s["e" + side] = [r[f"etype{side}{i}"].strip() for i in (1, 2) if r.get(f"etype{side}{i}", "").strip()]
@@ -402,6 +429,58 @@ def attack_skills(game, wanted):
             s["ar"] = calc(r, ar, 1)  # Double Swing, Dragon Tail, Split Throw: for their own attack
         out.append(s)
     return out, {k: v for k, v in seqs.items() if k in used_seqs}
+
+
+def excel(game, name):
+    return pd2_data.read_table(game.pd2.read(BS.join(["data", "global", "excel", name])).decode("latin-1"))
+
+
+def mercs(game, anims):
+    """The mercenaries: [{k, n, act, tok, bw, kinds, atk: [{id, n, m, q}], skip, lk}] and their monster sequences
+    {name: [[mode, frame, event]]}. tok + mode + bw names the animation (the weapon class the monster always shows,
+    whatever it holds); lk: the look of each body part and weapon the preview draws (MonStats2's first)."""
+    hire = [r for r in excel(game, "Hireling.txt") if r.get("Version") == "100"]
+    stats = {r.get("hcIdx"): r for r in excel(game, "MonStats.txt") if r.get("hcIdx")}
+    ex = {r.get("Id"): r for r in excel(game, "MonStats2.txt") if r.get("Id")}
+    seq_rows = excel(game, "MonSeq.txt")
+    by_name = {r["skill"]: sid for sid, r in game.skill_rows.items()}
+    out, used = [], {}
+    for key, cls, kinds in MERCS:
+        rows = [r for r in hire if r.get("Class") == str(cls)]
+        ms = stats[str(cls)]
+        m2 = ex[ms["MonStatsEx"]]
+        tok, bw = ms["Code"].strip(), m2["BaseW"].strip().lower()
+        # a sequence skill's monster sequence: the MonStats skill slot that names it
+        seq_of = {ms.get(f"Skill{i}", "").strip(): ms.get(f"Sk{i}mode", "").strip() for i in range(1, 9)}
+        atk, skip, seen = [], [], set()
+        for r in rows:
+            for i in range(1, 7):
+                name, mode = r.get(f"Skill{i}", "").strip(), MERC_MODES.get(r.get(f"Mode{i}", "").strip())
+                if not name or not mode or name in seen:
+                    continue
+                seen.add(name)
+                sid = by_name.get(name)
+                row = game.skill_rows.get(sid, {})
+                if not row.get("SrcDam", "").strip() and not row.get("EType", "").strip():
+                    continue  # no damage: a warcry (Battle Cry, Battle Orders)
+                if name in MERC_UNMODELLED:
+                    skip.append(skill_name(game, sid))
+                    continue
+                a = {"id": sid, "n": skill_name(game, sid), "m": mode}
+                if mode == "SQ":
+                    a["q"] = seq_of[name]
+                    used[a["q"]] = [[s["mode"].strip(), int(s["frame"] or 0), int(s["event"] or 0)]
+                                    for s in seq_rows if s.get("sequence") == a["q"]]
+                atk.append(a)
+        looks = {}
+        for comp, col in (("HD", "HDv"), ("TR", "TRv"), ("LG", "LGv"), ("RA", "Rav"), ("LA", "Lav"), ("RH", "RHv"),
+                          ("LH", "LHv"), ("SH", "SHv")) + tuple((f"S{i}", f"S{i}v") for i in range(1, 9)):
+            v = (m2.get(col) or "").strip().strip('"')
+            if v:
+                looks[comp] = v.split(",")[0].strip().upper()
+        out.append({"k": key, "n": rows[0]["Hireling"], "act": int(rows[0]["Act"]), "tok": tok, "bw": bw, "kinds": kinds,
+                    "atk": atk, "skip": skip, "lk": looks})
+    return out, used
 
 
 def speed_skills(game):
@@ -461,17 +540,70 @@ def page_data(game, arch):
     skills, seqs = attack_skills(game, {o[0] for o in os_})
     listed = {s["id"] for s in skills}
     os_ = [o for o in os_ if o[0] in listed]
+    merc_list, merc_seqs = mercs(game, anims)
+    for m in merc_list:  # the mercenaries' attack animations
+        for mode in ("A1", "A2"):
+            name = m["tok"].upper() + mode + m["bw"].upper()
+            if name in anims:
+                a[name] = list(anims[name])
     return {"v": datetime.date.today().isoformat(),
             "cls": [list(c) for c in CLASSES], "wcs": WCLASSES, "fb": START_FRAMES,
             "a": a, "types": tree, "tcls": tcls, "kinds": [list(k) for k in KINDS], "b": bases,
             "sk": skills, "sq": seqs, "sp": speed_skills(game), "os": os_,
-            "forms": {f: {"t": t, "skill": sid} for f, (t, sid) in FORMS.items()}}
+            "forms": {f: {"t": t, "skill": sid} for f, (t, sid) in FORMS.items()},
+            "mercs": merc_list, "msq": merc_seqs}
+
+
+def js_line(name, data):
+    return f"\n  const {name} = " + json.dumps(data, separators=(",", ":"), ensure_ascii=False).replace("</", "<\\/") + ";\n  "
+
+
+def block(text, marks):
+    return text[text.index(marks[0]) + len(marks[0]):text.index(marks[1])]
+
+
+def with_block(text, marks, body):
+    i, j = text.index(marks[0]) + len(marks[0]), text.index(marks[1])
+    return text[:i] + body + text[j:]
 
 
 def written(text, data):
-    i, j = text.index(START) + len(START), text.index(END)
-    js = json.dumps(data, separators=(",", ":"), ensure_ascii=False).replace("</", "<\\/")
-    return text[:i] + "\n  const DATA = " + js + ";\n  " + text[j:]
+    return with_block(text, (START, END), js_line(DATA_NAME, data))
+
+
+def page_json(text):
+    """The data of the IAS Calculator page's calc-data block."""
+    body = block(text, (START, END)).strip()
+    return json.loads(body[len(f"const {DATA_NAME} = "):body.rindex(";")].replace("<\\/", "</"))
+
+
+def engine_data(data):
+    """The part of the data the engine reads (the Damage Calculator's copy)."""
+    out = {k: data[k] for k in ENGINE_KEYS if k in data}
+    out["b"] = [{f: b[f] for f in ENGINE_BASE if f in b} for b in data["b"]]
+    return out
+
+
+def synced(dmg_text, ias_text):
+    """The Damage Calculator with the IAS Calculator's engine and the part of its data the engine reads."""
+    text = with_block(dmg_text, ENGINE, block(ias_text, ENGINE))
+    return with_block(text, SHARED, js_line(DATA_NAME, engine_data(page_json(ias_text))))
+
+
+def sync(check):
+    """Copy the engine and its data into the Damage Calculator; True if it was (or is) up to date."""
+    ias_text, dmg_text = PAGE.read_text(encoding="utf-8"), DMG_PAGE.read_text(encoding="utf-8")
+    new = synced(dmg_text, ias_text)
+    if new == dmg_text:
+        print(f"ias_data: {DMG_PAGE.relative_to(ROOT)} has the IAS Calculator's engine and data")
+        return True
+    if check:
+        print(f"ias_data: {DMG_PAGE.relative_to(ROOT)} doesn't have the IAS Calculator's engine and data: "
+              "run python tools/ias_data.py --sync")
+        return False
+    DMG_PAGE.write_bytes(new.encode("utf-8"))
+    print(f"ias_data: copied the engine and its data into {DMG_PAGE.relative_to(ROOT)}")
+    return True
 
 
 def selftest(data):
@@ -487,7 +619,15 @@ def selftest(data):
     expect("werewolf attack", a.get("40A1HTH"), [13, 256, [7]])
     expect("werewolf standing", a.get("40NUHTH", [0])[0], 9)
     expect("werebear standing", a.get("TGNUHTH", [0])[0], 10)
-    expect("attack animations", sum(1 for k in a if k[2:4] in ATTACK_MODES), 292)
+    players = {t for _, _, t in CLASSES} | {"40", "TG"}
+    expect("attack animations", sum(1 for k in a if k[2:4] in ATTACK_MODES and k[:2] in players), 292)
+    m = {x["k"]: x for x in data["mercs"]}
+    expect("mercenaries", sorted(m), ["m1", "m2", "m5"])
+    expect("mercenary animations", sorted(k for k in a if k[:2] not in players), ["0AA12HS", "0AA22HS", "GUA1HTH", "RGA1HTH"])
+    expect("Act 2 Jab: its monster sequence", len(data["msq"].get(next((x["q"] for x in m["m2"]["atk"] if x.get("q")), ""), [])), 14)
+    expect("Act 5 Bash: attack 2", [x["m"] for x in m["m5"]["atk"] if x["n"] == "Bash"], ["A2"])
+    expect("fixed-speed skills", sorted(s["n"] for s in data["sk"] if s.get("fx")), ["Arctic Blast", "Inferno", "Leap Attack"])
+    expect("Blade Fury (attack speed)", [s["n"] for s in data["sk"] if s["id"] == 266], ["Blade Fury"])
     b = {w["c"]: w for w in data["b"]}
     expect("Colossus Blade", [b["7gd"][k] for k in ("w", "wc", "wc2", "f")], [5, "1hs", "2hs", 3])
     expect("Phase Blade", [b["7cr"][k] for k in ("w", "wc")], [-30, "1hs"])
@@ -505,6 +645,8 @@ def selftest(data):
     expect("Zeal hits", sk[106]["hits"][:3], [3, 3, 3])
     expect("Strafe hits at 1 / 4", [sk[26]["hits"][0], sk[26]["hits"][3]], [2, 5])
     expect("Whirlwind frames", sk[151].get("ff"), 6)
+    expect("Blade Dance frames (SkillDesc names it Blade Dance)", sk.get(380, {}).get("ff"), 6)
+    expect("Throw (every class, throwing weapons)", [sk.get(2, {}).get(k) for k in ("c", "m", "ia")], ["", "TH", ["thro"]])
     expect("Double Swing speed", sk[133].get("ar"), 50)
     expect("Dragon Tail speed", sk[270].get("ar"), -20)
     expect("Zeal from items", sorted(o[1] for o in data["os"] if o[0] == 106)[:1], ["Boneslayer Blade"])
@@ -514,10 +656,17 @@ def selftest(data):
 def main():
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     ap = argparse.ArgumentParser(description="The IAS Calculator page's game numbers.")
-    ap.add_argument("game_dir", help="the Diablo II folder (with ProjectD2)")
-    ap.add_argument("--check", action="store_true", help="change nothing; exit 1 if the page is out of date")
+    ap.add_argument("game_dir", nargs="?", help="the Diablo II folder (with ProjectD2)")
+    ap.add_argument("--check", action="store_true", help="change nothing; exit 1 if anything is out of date")
     ap.add_argument("--selftest", action="store_true", help="check known values, then --check")
+    ap.add_argument("--sync", action="store_true", help="only copy the engine and its data into the Damage Calculator")
+    ap.add_argument("--no-sprites", action="store_true", help="leave the attack previews as they are")
     args = ap.parse_args()
+    check = args.check or args.selftest
+    if args.sync or not args.game_dir:
+        if not args.sync:
+            ap.error("the Diablo II folder is needed (or --sync)")
+        sys.exit(0 if sync(check) else 1)
     game = pd2_data.Game(args.game_dir)
     data = page_data(game, Archives(args.game_dir))
     if args.selftest:
@@ -535,14 +684,29 @@ def main():
         if written(text, data) != text:
             data["v"] = datetime.date.today().isoformat()
     new = written(text, data)
+    ok = True
     if new == text:
         print("ias_data: the page is up to date")
-        return
-    if args.check or args.selftest:
+    elif check:
         print(f"ias_data: {PAGE.relative_to(ROOT)} is out of date: run python tools/ias_data.py \"<Diablo II folder>\"")
-        sys.exit(1)
-    PAGE.write_bytes(new.encode("utf-8"))
-    print(f"ias_data: wrote {PAGE.relative_to(ROOT)} ({len(new) // 1024} KB)")
+        ok = False
+    else:
+        PAGE.write_bytes(new.encode("utf-8"))
+        print(f"ias_data: wrote {PAGE.relative_to(ROOT)} ({len(new) // 1024} KB)")
+    if ok:
+        ok = sync(check)
+    if not args.no_sprites:
+        import ias_sprites  # the attack previews: redrawn when what they show or their game files changed
+        why = ias_sprites.stale(args.game_dir, data)
+        if not why:
+            print("ias_data: the attack previews are up to date")
+        elif check:
+            print(f"ias_data: the attack previews are out of date ({why}): run python tools/ias_data.py \"<Diablo II folder>\"")
+            ok = False
+        else:
+            print(f"ias_data: redrawing the attack previews ({why})")
+            ias_sprites.draw(args.game_dir, data)
+    sys.exit(0 if ok else 1)
 
 
 if __name__ == "__main__":
