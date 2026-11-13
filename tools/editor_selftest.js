@@ -743,6 +743,7 @@
       "Monster Rarity: +15-20%");
     has({code: "amu", quality: "RARE"}, "51: All Resistances +7-10");
     has({code: "uap", quality: "UNI", sockets: 1}, "50: +1 to All Skills");
+    has({code: "rin", quality: "RARE"}, "68: +7-10 to Strength");  // (rings' rows name the base, "rin")
     if (names({code: "cm1", quality: "MAG"}).length) bad.push("a charm has corruptions");
     const own = (spec) => I.make(spec).own;
     const g = own({code: "xvg", quality: "RARE", id: true, corrupt: 33});
@@ -751,7 +752,7 @@
     if (u["16"] !== undefined || u["360"] !== 33) bad.push("unidentified, its stats show: " + JSON.stringify(u));
     const a = own({code: "amu", quality: "RARE", id: true, corrupt: 50, desecrate: 51});
     if (a["127"] !== 1 || a["206"] !== 51 || a["39"] !== 10) bad.push("a corrupted, desecrated amulet: " + JSON.stringify(a));
-    return {fail: bad.length ? bad.join("\n  ") : null, cases: 11};
+    return {fail: bad.length ? bad.join("\n  ") : null, cases: 12};
   });
 
   /* The Changes area's line diff (tools/editor/diff.js): it rebuilds both sides, pairs only equal lines and is as

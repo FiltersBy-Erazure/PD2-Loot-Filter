@@ -48,7 +48,8 @@ EZ.maps = (function () {
   }
   /* The warning line's words (in game, under the map's own line with the value): the name without its X (a mixed
      stat's red warning shows only when it rolls lower, its gold mark only when higher). */
-  const lineName = (sid) => name(sid).replace(/[+-]?X%?\s*(?:to |of )?/g, "").replace(/\s+/g, " ").trim();
+  const lineName = (sid) => name(sid).replace(/[+-]?X%?\s*(?:to |of )?/g, "").replace(/\s+/g, " ").trim()
+    .replace(/:$/, "");  // ("Monster Rarity: +X%" is "Monster Rarity")
 
   /* The map item codes (the catalog's map bases) and those with an experience multiplier (146's MXR aliases). */
   function codes(lines) {

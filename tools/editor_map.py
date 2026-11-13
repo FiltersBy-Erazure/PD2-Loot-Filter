@@ -193,39 +193,52 @@ def corruption_rows(shift):
 
 
 def stat_pools(bases, shift):
-    """{a base's item types (its types column, as the catalog has it): [the stats the game can give an item of them]}:
-    its magic and rare affixes and automagic (docs/pd2-magic-affixes.tsv: an affix one of whose item types the base
-    has and none of whose excluded ones), its corruptions (docs/pd2-corruptions.tsv) and crafts (docs/pd2-crafts.tsv).
-    The preview's stat picker offers these (and a unique's or set item's own); a stat outside them is a click away."""
+    """{a base's item types (its types column, as the catalog has it): [[stat, lowest, highest], ...]}: the stats the
+    game can give an item of them, each with its rolls there as an item shows them (life 10, not 2560): its magic and
+    rare affixes and automagic (docs/pd2-magic-affixes.tsv: an affix one of whose item types the base has and none of
+    whose excluded ones), its corruptions (docs/pd2-corruptions.tsv, a map's docs/pd2-map-corruptions.tsv) and crafts
+    (docs/pd2-crafts.tsv). The preview's stat picker lists these (and a unique's or set item's own), a picked one
+    taking its highest roll; a stat outside them is a click away."""
     def tsv(name):
         lines = [ln.rstrip("\n").split("\t") for ln in (ROOT / "docs" / name).read_text(encoding="utf-8").splitlines()
                  if ln.strip() and not ln.startswith("#")]
         return [dict(zip(lines[0], r)) for r in lines[1:]]
-    sources = []  # (item types it rolls on, item types it never rolls on, stat ids)
+
+    def rolls(pairs):  # [(stat, low, high)] -> {stat: (lowest, highest)}
+        out = {}
+        for sid, lo, hi in pairs:
+            a, z = min(lo, hi), max(lo, hi)
+            old = out.get(sid)
+            out[sid] = (min(a, old[0]), max(z, old[1])) if old else (a, z)
+        return out
+
+    def coded(props):  # an item's properties as filter codes [[code, low, high]] -> its stats, as shown
+        return [(sid, lo, hi) for prop in props for code, lo, hi in prop for sid, _p, _f in code_stats(code, shift)]
+    sources = []  # (item types it rolls on, item types it never rolls on, {stat: (lowest, highest)})
     for a in tsv("pd2-magic-affixes.tsv"):
         if a.get("spawnable") != "1" and a.get("kind") != "automagic":
             continue
-        ids = {st[0] for mod in json.loads(a.get("mods") or "[]") for st in mod[5]}
         sources.append((set(filter(None, (a.get("itypes") or "").split(","))),
-                        set(filter(None, (a.get("etypes") or "").split(","))), ids))
+                        set(filter(None, (a.get("etypes") or "").split(","))),
+                        rolls((st[0], st[2], st[3]) for mod in json.loads(a.get("mods") or "[]") for st in mod[5])))
     for c in tsv("pd2-corruptions.tsv"):
-        ids = {sid for prop in json.loads(c.get("props") or "[]") for code, _lo, _hi in prop
-               for sid, _p, _f in code_stats(code, shift)}
-        sources.append(({(c.get("input") or "").split(",")[0]}, set(), ids | {360}))
+        sources.append(({(c.get("input") or "").split(",")[0]}, set(), rolls(coded(json.loads(c.get("props") or "[]")))))
     for c in tsv("pd2-crafts.tsv"):
-        ids = {sid for prop in json.loads(c.get("props") or "[]") for code, _lo, _hi in prop
-               for sid, _p, _f in code_stats(code, shift)}
-        sources.append(({c.get("type") or ""}, set(), ids))
+        sources.append(({c.get("type") or ""}, set(), rolls(coded(json.loads(c.get("props") or "[]")))))
     for c in map_corruptions():  # a map's corruptions (t2me: the item type every T2 map has)
-        sources.append(({c["input"]}, set(), {st[0] for mod in c["mods"] for st in mod[5]} | {360}))
-    out = {}
-    for b in bases.values():
-        key = ",".join(b["types"])
-        if key in out:
-            continue
-        chain = set(b["types"])
-        out[key] = sorted({sid for inc, exc, ids in sources if inc & chain and not exc & chain for sid in ids})
-    return {k: v for k, v in out.items() if v}
+        sources.append(({c["input"]}, set(), rolls((st[0], st[2], st[3]) for mod in c["mods"] for st in mod[5])))
+    pools = {}
+    for code, b in bases.items():
+        # a cube input names an item type or a base (rings' corruptions are "rin", amulets' "amul"): the pool of a
+        # types key holds what every base with those types gets
+        chain = set(b["types"]) | {code}
+        pool = pools.setdefault(",".join(b["types"]), {})
+        for inc, exc, got in sources:
+            if inc & chain and not exc & chain:
+                for sid, (a, z) in got.items():
+                    old = pool.get(sid)
+                    pool[sid] = (min(a, old[0]), max(z, old[1])) if old else (a, z)
+    return {k: [[sid, a, z] for sid, (a, z) in sorted(pool.items())] for k, pool in pools.items() if pool}
 
 
 def map_corruptions():

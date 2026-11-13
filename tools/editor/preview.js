@@ -551,45 +551,66 @@ EZ.preview = (function () {
         h("button.fe-btn.ghost.small", {type: "button", "aria-label": "Remove",
         onclick: () => set(() => { spec.stats.splice(i, 1); })}, "✕")));
     });
-    const statChoices = EZ.items.statChoices(spec, everyStat);
-    const dlId = "fe-pv-statlist";
-    const input = h("input.fe-pv-statname", {type: "text", list: dlId, placeholder: "Add a stat: strength, faster cast…",
-      "aria-label": "Add a stat"});
-    const val = h("input.fe-pv-num", {type: "number", value: 10, "aria-label": "Its value"});
-    const param = h("input.fe-pv-num", {type: "number", value: 0, title: "Its parameter (a skill, class or tab number)",
-      "aria-label": "Its parameter"});
-    // the stat the box names: its name in the list, a stat number, else the first name that starts or holds the words
-    const named = () => {
-      const q = input.value.trim().toLowerCase();
-      if (!q) return undefined;
-      const exact = statChoices.find((c) => c.name.toLowerCase() === q);
-      if (exact) return exact.id;
-      const m = /\(stat (\d+)\)\s*$/.exec(input.value) || /^\s*(\d+)\s*$/.exec(input.value);
-      if (m) return +m[1];
-      return (statChoices.find((c) => c.name.toLowerCase().startsWith(q)) ||
-              statChoices.find((c) => c.name.toLowerCase().indexOf(q) >= 0) || {}).id;
+    /* Adding one: a list that opens with one click (or as you type, every word found), each stat with its rolls on
+       this kind of item; the stat picked shows under it with its value (its highest roll to start with) and, for a
+       skill, class or tab, its parameter, then Add (or Enter). */
+    const choices = EZ.items.statChoices(spec, everyStat);
+    // (a stat whose line shows no number, "Map contains Ghosts", has no rolls to tell: its value is a monster's number)
+    const rolls = (c) => !c.range || !/X/.test(c.name) ? "" : c.range[0] === c.range[1] ? "rolls " + c.range[0]
+      : "rolls " + c.range[0] + " to " + c.range[1];
+    const best = (c) => {
+      if (c.range) return Math.abs(c.range[0]) > Math.abs(c.range[1]) ? c.range[0] : c.range[1];
+      const roll = EZ.maps && EZ.maps.rollOf ? EZ.maps.rollOf(c.id) : undefined;
+      return roll !== undefined ? roll : /X/.test(c.name) ? 10 : 1;
     };
-    // a map mod picked from the list takes the value a map rolls (a monster's number for "Map contains ...")
-    input.addEventListener("input", () => {
-      const q = input.value.trim().toLowerCase();
-      const c = statChoices.find((x) => x.name.toLowerCase() === q);
-      const roll = c && EZ.maps && EZ.maps.rollOf ? EZ.maps.rollOf(c.id) : undefined;
-      if (roll !== undefined) val.value = roll;
-    });
-    const addBtn = h("button.fe-btn.small", {type: "button", onclick: () => {
-      const hit = named();
-      if (hit === undefined) { EZ.ui.toast("Pick a stat from the list."); return; }
+    let chosen = null;
+    const val = h("input.fe-pv-num", {type: "number", value: 10, "aria-label": "Its value"});
+    const param = h("input.fe-pv-num", {type: "number", value: 0, "aria-label": "Its parameter (a skill, class or tab number)"});
+    const paramBox = h("label.fe-row", "Parameter ", param);
+    const chosenName = h("b"), chosenRolls = h("span.fe-sub");
+    const addIt = () => {
+      if (!chosen) return;
+      const c = chosen;
       set(() => {
-        (spec.stats = spec.stats || []).push([hit, +param.value || 0, +val.value || 0]);
+        (spec.stats = spec.stats || []).push([c.id, c.param ? +param.value || 0 : 0, +val.value || 0]);
         // stats are what an identified item shows: a magical item with one is identified
         if (magical && !spec.id) { spec.id = true; EZ.ui.toast("Identified, so the loot filter can read its stats."); }
       });
-    }}, "Add");
-    const dl = h("datalist", {id: dlId}, statChoices.map((c) => h("option", {value: c.name})));
+    };
+    const chosenRow = h("div.fe-pv-statchosen", {hidden: true},
+      h("div.fe-row.fe-small", chosenName, chosenRolls),
+      h("div.fe-row.fe-small", h("label.fe-row", "Value ", val), paramBox,
+        h("button.fe-btn.small.primary", {type: "button", onclick: addIt}, "Add"),
+        h("button.fe-btn.ghost.small", {type: "button", onclick: () => { chosen = null; chosenRow.hidden = true; }},
+          "Cancel")));
+    for (const box of [val, param]) {
+      box.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") { e.preventDefault(); addIt(); }
+        else if (e.key === "Escape") { e.preventDefault(); chosen = null; chosenRow.hidden = true; }
+      });
+    }
+    const choose = (c) => {
+      chosen = c;
+      chosenName.textContent = c.name;
+      chosenRolls.textContent = rolls(c) ? "(" + rolls(c) + " on this kind of item)" : "";
+      val.value = best(c);
+      param.value = 0;
+      paramBox.hidden = !c.param;
+      chosenRow.hidden = false;
+      setTimeout(() => { val.focus(); val.select(); }, 0);
+    };
+    const pick = EZ.ui.combo({placeholder: "Pick a stat to add: click here, or type to search", label: "Pick a stat to add",
+      all: true,
+      find: (q) => {
+        const words = q.toLowerCase().split(/\s+/).filter(Boolean);
+        return choices.filter((c) => words.every((w) => c.name.toLowerCase().indexOf(w) >= 0))
+          .map((c) => ({label: c.name, sub: rolls(c), pick: () => choose(c)}));
+      },
+      empty: (q) => `No stat matches "${q}"` + (everyStat ? "." : ": tick “List every stat” below to look further.")});
     const every = h("label.fe-row.fe-small", h("input", {type: "checkbox", checked: everyStat, onchange: (ev) => {
       everyStat = ev.target.checked; redraw(); }}), h("span.fe-sub", "List every stat (not only the ones this kind of " +
       "item can have)"));
-    add(wrap, [h("div.fe-row.fe-small", input, val, param, addBtn), dl, every]);
+    add(wrap, [h("div.fe-pv-statpick", pick.box), chosenRow, every]);
     return h("details.fe-pv-statsbox", {open: list.length ? true : null}, h("summary", "Stats" +
       (list.length ? " (" + list.length + ")" : "")), wrap);
   }

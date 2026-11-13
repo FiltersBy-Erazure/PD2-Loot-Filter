@@ -510,7 +510,8 @@ EZ.items = (function () {
     if (!C || !b) return [];
     const types = new Set(b.types), q = spec.quality || "NORM", sock = (spec.sockets || 0) > 0;
     const u = (q === "UNI" || q === "SET") && spec.uni != null ? unique(spec.uni) : null;
-    const fits = C.corruptions.filter((r) => (types.has(r.type) || (u && r.type === u.name)) &&
+    // (a cube input names an item type or a base: rings' rows are "rin", amulets' "amul"; Annihilus its unique)
+    const fits = C.corruptions.filter((r) => (types.has(r.type) || r.type === b.code || (u && r.type === u.name)) &&
       !(r.words.has("nos") && sock) && !(r.words.has("sock") && !sock));
     const named = (r) => [...r.words].some((w) => QWORDS.has(w));
     const own = fits.filter((r) => r.words.has(QWORD[q]));
@@ -533,7 +534,7 @@ EZ.items = (function () {
      changed since: sockets added, say). */
   function outcomeStats(spec, b, n) {
     const r = rowsFor(spec, b).find((x) => x.n === n) ||
-      C.corruptions.find((x) => x.n === n && b.types.indexOf(x.type) >= 0);
+      C.corruptions.find((x) => x.n === n && (b.types.indexOf(x.type) >= 0 || x.type === b.code));
     return r ? r.stats : [];
   }
   /* An outcome in the game's words, each stat's roll as a range ("+5-8% to all Resistances", "+1 to Area Level,
@@ -577,23 +578,32 @@ EZ.items = (function () {
     })).join(", ");
   }
 
-  /* The stats to pick from, as {id, name} by name: the ones an item of this kind can have (its affixes, automagic,
-     corruptions, crafts, and a unique's or set item's own: statPools), or every stat (all, or no item given). Two
-     that read the same get their stat number. */
+  /* The stats to pick from, as {id, name, range: [lowest, highest] as an item shows them, or null; param: it asks a
+     skill, class or tab} by name: the ones an item of this kind can have, with their rolls on it (its affixes,
+     automagic, corruptions, crafts, and a unique's or set item's own: statPools), or every stat (all, or no item
+     given; the rolls where the item can have it). Two that read the same get their stat number. */
   function statChoices(spec, all) {
     const b = spec && base(spec.code);
-    let pool = null;
-    if (b && !all) {
-      pool = new Set(C.statPools[b.types.join(",")] || []);
+    const ranges = new Map();
+    const widen = (sid, a, z) => {
+      const old = ranges.get(sid);
+      ranges.set(sid, old ? [Math.min(old[0], a, z), Math.max(old[1], a, z)] : [Math.min(a, z), Math.max(a, z)]);
+    };
+    if (b) {
+      for (const [sid, a, z] of C.statPools[b.types.join(",")] || []) widen(sid, a, z);
       const u = (spec.quality === "UNI" || spec.quality === "SET") && spec.uni != null ? unique(spec.uni) : null;
       for (const ps of u ? [u.props] : C.uniques.filter((x) => x.code === b.code).map((x) => x.props)) {
-        for (const [sid] of ps) pool.add(sid);
+        for (const [sid, , lo, hi] of ps) {
+          const sh = (C.stats.get(sid) || {}).shift || 0;  // (a unique's rolls are the game's values)
+          widen(sid, Math.trunc(lo / (1 << sh)), Math.trunc(hi / (1 << sh)));
+        }
       }
     }
     const out = [];
     for (const s of C.stats.values()) {
-      if (pool && !pool.has(s.id)) continue;
-      out.push({id: s.id, name: choiceName(s)});
+      if (b && !all && !ranges.has(s.id)) continue;
+      out.push({id: s.id, name: choiceName(s), range: ranges.get(s.id) || null,
+                param: SKILL_FUNCS.has(s.func) || SKILL_STATS.has(s.id)});
     }
     const n = new Map();
     for (const c of out) n.set(c.name.toLowerCase(), (n.get(c.name.toLowerCase()) || 0) + 1);

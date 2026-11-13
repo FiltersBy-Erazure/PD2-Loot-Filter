@@ -974,7 +974,10 @@
   `--tier-data` / `--extract` write it too; `docs/pd2-corruptions.tsv` leaves maps out). Players' attack and cast
   speed roll lower on one corruption and higher on another: a line each, warned of below 0 (`STAT451<0`), marked
   above (`EZ.maps.mixed`). The stat picker words every stat as the game does, X for the value
-  (`EZ.items.statText`). The preview's item has a Corruption field (2026-11-12, the author), and an amulet a
+  (`EZ.items.statText`), in a list that opens with one click (2026-11-12, the author: the browser's own list took a
+  double click), each stat with its rolls on that kind of item (`statPools`: [stat, lowest, highest] as an item shows
+  them; a cube input that names a base, rings' "rin", counts too); a picked one shows under it with its highest roll
+  as the value, a parameter box only for a stat about a skill, class or tab, then Add. The preview's item has a Corruption field (2026-11-12, the author), and an amulet a
   Desecration one once corrupted (stat 206): the outcomes the cube gives it as it is (`EZ.items.corruptionsFor`: the
   rows of its item type that fit its sockets; where some name its quality, those alone, so a non-magical item gets
   only sockets), named in the game's words with each roll's range; a picked one sets stat 360 / 206 and, identified,
@@ -1021,6 +1024,19 @@
   the Grail Planner template's `EVRUNS` (between its `evrun-summary` markers: the grail hours at those defaults, read off
   the page's grail card in headless Edge), so rerun `tools/grail_map.py` after it. The tab bar wraps onto
   a second line where the 13 tabs don't fit (`erazure.css`; until then Examples was cut off from about 1920 px down).
+  Calculators (2026-11-12, the author: like HarryPe's "Physical damage calculator PD2" sheet and HiimPD2's damage-calc,
+  three separate pages, a full attack speed model, up to four builds side by side, one credit line to HarryPe's sheet;
+  plan `C:\Users\Erik\.claude\plans\floating-strolling-wreath.md`): **Ohm vs Jewel** (`ohm-map`,
+  `website/resources/Ohm-vs-Jewel.html`) first, then the Damage Calculator (`dmg-map`) and Run Speed (`frw-map`). Their
+  text and script are by hand; their game numbers (weapon bases with 1H / 2H / throw damage, WSM, Str / Dex bonus, the
+  jewel damage affixes, Ohm's enhanced damage; skills and animations to come) are the `DATA` line between each page's
+  `calc-data` markers, written by `python tools/calc_data.py "<Diablo II folder>"` (`--check`, `--selftest`: known
+  values such as the sheet's ethereal Ogre Maul at 600%, 840-1155). It reads the game files, so build.bat, the hook and
+  CI don't run it: rerun it after a PD2 patch (after `pd2_data.py --extract`). The rules the pages state are traced in
+  the game (not the wiki): an ethereal weapon has 5/4 of its base damage, rounded down; on-weapon enhanced damage
+  (sockets too) raises only the base damage, base + base x ED / 100 rounded down, flat damage added after; everything
+  else multiplies weapon damage and flat damage from other gear alike, in 1/256ths of a point; a maximum at or below
+  the minimum becomes the minimum + 1.
 - The Examples page's pictures (`website/docs/img/examples/*.png`, committed; README's examples show them too) are
   drawn by `python tools/example_shots.py "<Diablo II folder>" [--only NAME]` (2026-10-20; not run by build.bat, the
   hook or CI: it needs the game files): per scene of `SCENES` a floor of the area's own DT1 tiles, each item's

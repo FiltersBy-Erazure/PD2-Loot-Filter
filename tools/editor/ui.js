@@ -246,7 +246,11 @@ EZ.ui = (function () {
       mark();
     };
     input.addEventListener("input", show);
-    if (opts.all) input.addEventListener("focus", show);
+    if (opts.all) {
+      input.addEventListener("focus", show);
+      // a click on the box while it has the focus (the list closed after a pick or Escape) opens it again
+      input.addEventListener("click", () => { if (list.hidden) show(); });
+    }
     input.addEventListener("keydown", (e) => {
       if (e.key === "ArrowDown" || e.key === "ArrowUp") {
         if (list.hidden) show();
