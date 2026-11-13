@@ -833,6 +833,9 @@
   Overview, the Grail Planner, the Resources pages). Under the tabs a row of the current section's pages
   (`website/overrides/partials/tabs.html`, styled in `erazure.css`), which on desktop replaces Material's sidebar
   (hidden from 76.25em; narrower screens hide the tabs and keep the sidebar as the ☰ menu, opened at the section).
+  The header, both tab rows and the footer keep Material's 61rem on every page (the author, 2026-11-13: the header
+  jumped going to the Filter Editor): a page's own `.md-grid` width (84rem, 72rem, the editor's none) widens only its
+  content. The pages' row is a little tighter than the sections' so Resources' fits that width on one line.
   A page's address stays its file's whatever its section. A new page goes into its section in the nav and in the
   home page's On this site list. Four Resources pages were renamed the same day (the author), and their addresses
   with them: Infinity Merc Bases is **Infinity Base Comparison** (`resources/infinity-base-comparison/`), Event and

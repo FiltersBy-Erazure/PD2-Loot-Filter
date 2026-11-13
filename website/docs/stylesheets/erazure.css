@@ -55,12 +55,27 @@
   background-color: rgba(255, 255, 255, .05);
   border-top: 1px solid rgba(255, 255, 255, .08);
 }
+/* a little closer together than the sections, so the longest row (Resources) fits Material's width on one line; the
+   list's margin keeps the first page's name under the first section's */
+.ez-pages .md-tabs__list {
+  margin-left: .4rem;
+}
 .ez-pages .md-tabs__item {
   height: 2rem;
+  padding-left: .4rem;
+  padding-right: .4rem;
 }
 .ez-pages .md-tabs__link {
   margin-top: .6rem;
-  font-size: .7rem;
+  font-size: .68rem;
+}
+/* the header, the tab rows and the footer keep Material's width on every page. A page that widens its content (its
+   own .md-grid rule: the item pages 84rem, the Filter Editor the whole window) widens only its content, so going
+   from page to page never moves the header or the tabs. */
+.md-header .md-grid,
+.md-tabs .md-grid,
+.md-footer .md-grid {
+  max-width: 61rem;
 }
 .ez-pages .md-tabs__item--active .md-tabs__link {
   text-underline-offset: 4px;
