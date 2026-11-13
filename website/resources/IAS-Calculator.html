@@ -663,8 +663,9 @@
         if (!steps) { p.why = `${sk.n} can't be used with this weapon.`; return p; }
         p.seq = {num: sk.q, steps, frames: steps.length, hits: steps.filter(x => x[2] === 1).length};
         if (sk.chg !== undefined) p.charge = sk.chg;
-        // a channel (Blade Fury): held, the game starts it again on reaching step `at`; a hit at most every `timer` frames
-        if (sk.ch) p.channel = {at: sk.ch, timer: sk.ct || 0};
+        // a channel (Blade Fury): held, the game starts it again on reaching step `at`; with a timer of its own
+        // (Blade Fury's 4 frames between blades) a blade every timer + 1 frames whatever the IAS, as counted in game
+        if (sk.ch) { p.channel = {at: sk.ch, timer: sk.ct || 0}; p.paced = !!sk.ct; }
         // Whirlwind, Blade Dance: a hit at most every Param3 frames by the game's timer, with each weapon when there
         // are two; their sequence runs at the other animation rate
         if (sk.ff) { p.fixed = sk.ff; p.fixedHits = p.dual ? 2 : 1; p.fx = true; }
@@ -790,9 +791,9 @@
         if (p.channel) {
           // held: a loop of steps 0 to `at` (its event made the frame after), the timer letting a hit through on the
           // first loop at least `timer` frames after the last one
-          const at = p.channel.at, loop = cdiv(at * 256, rate) + 1, every = p.channel.timer ? loop * cdiv(p.channel.timer, loop) : loop;
+          const at = p.channel.at, loop = cdiv(at * 256, rate) + 1, every = p.channel.timer ? p.channel.timer + 1 : loop;
           Object.assign(t, {loop, first: Math.floor(at * 256 / rate) + 1, len: at});
-          t.parts.push({label: `Each ${p.sk.n === "Blade Fury" ? "blade" : "hit"}, held`, frames: every, hits: 1, channel: true});
+          t.parts.push({label: `Each ${p.sk.n === "Blade Fury" ? "blade" : "hit"}, held`, frames: every, hits: 1, channel: true, fixed: p.paced});
           return t;
         }
         t.parts.push({label: "One " + p.sk.n, frames: held(len, 0, rate), hits: p.seq.hits});
@@ -1157,7 +1158,7 @@
   function update() {
     syncForm();
     R = E.evaluate(S);
-    BP = R.why || R.p.fixed || R.p.fx ? null : E.breakpoints(S);
+    BP = R.why || R.p.fixed || R.p.fx || R.p.paced ? null : E.breakpoints(S);
     renderTiles(); renderVerdict(); renderFacts(); renderBreakpoints(); renderBases(); renderGrid(); resetPreview();
     if (S.tab === "how") renderHow();
     save();
@@ -1173,6 +1174,7 @@
   function renderVerdict() {
     let html;
     if (R.why) html = `<b>Not possible:</b> ${esc(R.why)}`;
+    else if (R.p.paced) html = `<b>${R.t.parts[0].frames} frames</b> a blade while held (${aps(R.t.parts[0].frames)} a second), whatever the IAS.`;
     else if (R.p.fixed) html = `<b>${R.t.parts[0].frames} frames</b> a hit${R.t.parts[0].hits > 1 ? " with each weapon" : ""} (${aps(R.t.parts[0].frames)} a second), whatever the IAS.`;
     else if (R.p.fx) html = `<b>${partText(R.t.parts[0])} frames</b>: ${esc(R.p.sk.n)} runs at a fixed speed, whatever the IAS.`;
     else {
@@ -1199,7 +1201,7 @@
     prob.hidden = !R.why;
     if (R.why) { prob.innerHTML = `<p><strong>Not possible:</strong> ${esc(R.why)}</p>`; box.innerHTML = ""; return; }
     box.innerHTML = R.t.parts.map(part => {
-      if (part.fixed) return tile(part.label, part.frames, `frames, whatever the IAS &middot; ${part.hits > 1 ? `${part.hits} hits (one with each weapon) &middot; ${perSecond(part)}` : aps(part.frames)} hits/s`);
+      if (part.fixed) return tile(part.label, part.frames, `frames, whatever the IAS &middot; ${part.hits > 1 ? `${part.hits} hits (one with each weapon) &middot; ${perSecond(part)}` : aps(part.frames)} ${part.channel && /blade/.test(part.label) ? "blades" : "hits"}/s`);
       if (part.swings) return tile(`${part.label}, ${part.hits} hits`, part.swings.join("/"), `${part.frames} frames in all &middot; ${perSecond(part)} hits/s`);
       if (part.hits > 1) return tile(part.label, part.frames, `frames &middot; ${part.hits} hits &middot; ${perSecond(part)} hits/s`);
       if (part.channel) return tile(part.label, part.frames, `frames &middot; ${aps(part.frames)} ${/blade/.test(part.label) ? "blades" : "hits"}/s`);
@@ -1253,8 +1255,7 @@
     if (p.rollback) n.push(`${p.sk.n} rolls its swing back ${p.rollback.pct}% after each hit: the lengths are hit by hit.`);
     if (p.channel) {
       const tm = p.channel.timer;
-      n.push(`${p.sk.n} is channelled: held, the game starts it again each time it reaches step ${p.channel.at}, a loop of <b>${t.loop} frames</b> at this speed${tm ? `, and throws a blade at most every ${tm} game frames (its own timer, which IAS doesn't change): a blade every ${t.parts[0].frames} frames` : ""}. The first comes ${t.first} frames in.`);
-      if (tm) n.push(`So it's fastest with a loop of exactly ${tm} frames; once the loop is shorter, blades come every other loop and more IAS makes it slower.`);
+      n.push(`${p.sk.n} is channelled: held, the game casts it again each time it reaches step ${p.channel.at}${tm ? `, and its own timer lets a blade through every ${t.parts[0].frames} game frames, about ${aps(t.parts[0].frames)} a second, whatever the IAS (counted in game: 24, 25 and 27 blades in 5 seconds at 0, 50 and 150 IAS)` : ""}. IAS only shortens the wind-up: the first blade comes about ${t.first} frames in.`);
     }
     if (p.fixed) n.push(`${p.sk.n}'s timer allows a hit every ${p.fixed} frames, but the game checks it only every ${t.check} frames (every 4 steps of its sequence, which runs at the other animation rate): a hit every <b>${t.parts[0].frames} frames</b>${p.dual ? ", one with each weapon" : ""}. IAS changes nothing; slows and Frenzy's charges change the check.`);
     if (p.fx && !p.fixed) n.push(`${p.sk.n} is drawn at the game's other animation rate (100, changed by slows and Frenzy's charges): IAS, the weapon's speed and the skills' speed don't count.`);
@@ -1286,7 +1287,7 @@
   // which base of this type is fastest for you
   function renderBases() {
     const tbl = $("ia-bases"), sec = tbl.closest("section"), w = E.BASE[S.w];
-    if (!w || R.why || R.p.fixed || R.p.fx || R.p.merc) { sec.hidden = true; return; }
+    if (!w || R.why || R.p.fixed || R.p.fx || R.p.paced || R.p.merc) { sec.hidden = true; return; }
     sec.hidden = false;
     const rows = basesOf(S.cls, w.k, false).map(b => {
       const s = Object.assign({}, S, {w: b.c});
@@ -1329,7 +1330,7 @@
   function renderGrid() {
     const tbl = $("ia-grid"), key = $("ia-grid-key"), sub = $("ia-grid-sub");
     const sec = tbl.closest("section");
-    if (R.why || R.p.fixed || R.p.fx) { sec.hidden = true; GRID = null; return; }
+    if (R.why || R.p.fixed || R.p.fx || R.p.paced) { sec.hidden = true; GRID = null; return; }
     sec.hidden = false;
     sub.innerHTML = (R.p.formBase ? "In a form the weapon&rsquo;s IAS also sets the base speed, so rows and columns don&rsquo;t trade one for one. " :
       "In human form both kinds of IAS go into the same total, so rows and columns trade one for one. ") +
@@ -1773,8 +1774,8 @@
     }
     if (p.channel) {
       st.push(["Rate per frame", `<span class="formula">${t.base} &times; ${sp.speed} &divide; 100</span> = <b>${t.rate}</b> (one step is 256).`]);
-      st.push(["The channel's loop", `Held, the game starts ${esc(p.sk.n)} again each time it reaches step ${p.channel.at}: <span class="formula">&lceil;${p.channel.at} &times; 256 &divide; ${t.rate}&rceil; + 1</span> = <b>${t.loop} frames</b> a loop.`]);
-      if (p.channel.timer) st.push(["Count the frames", `A blade at most every ${p.channel.timer} game frames, on the first loop that allows it: <span class="formula">${t.loop} &times; &lceil;${p.channel.timer} &divide; ${t.loop}&rceil;</span> = <b>${part.frames} frames</b> a blade, ${aps(part.frames)} a second.`]);
+      st.push(["The wind-up", `Held, the game casts ${esc(p.sk.n)} again each time it reaches step ${p.channel.at}, about <span class="formula">&lceil;${p.channel.at} &times; 256 &divide; ${t.rate}&rceil; + 1</span> = <b>${t.loop} frames</b> at this speed.`]);
+      if (p.channel.timer) st.push(["Count the frames", `Its own timer then lets a blade through every <b>${part.frames} game frames</b>, ${aps(part.frames)} a second, whatever the IAS (counted in game). IAS only shortens the wind-up to the first blade.`]);
       return st;
     }
     if (p.charge !== undefined) {

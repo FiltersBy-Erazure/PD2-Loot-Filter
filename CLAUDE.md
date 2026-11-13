@@ -1128,9 +1128,11 @@
     else the other animation rate (100, slows, Frenzy's charges; IAS changes nothing, so Inferno, Arctic Blast and Leap
     Attack aren't listed, the author: Arctic Blast and Inferno are channels); a sequence whose seqtrans is SC the cast
     rate (left out). Channels (Skills.txt repeat + seqinput 3: Inferno, Arctic Blast, Blade Fury): held, every
-    re-cast restarts the sequence once step 3 is reached, a loop of ceil(3 x 256 / rate) + 1 frames; Blade Fury (IAS)
-    throws a blade at most every Param4 (4) game frames, so loop x ceil(4 / loop): 5 at speed 90, 4 at 100-149, 6 from
-    150 (more IAS slower; the +1 not yet counted in game; data `ch` / `ct`, the verdict says when less IAS is faster). Blade Fury is IAS with the -30. Frenzy's speed
+    re-cast restarts the sequence once step 3 is reached (the wind-up, ceil(3 x 256 / rate) + 1 frames, shortened by
+    IAS). Blade Fury held: a blade every Param4 + 1 = 5 game frames whatever the IAS, as the author counted in game
+    (2026-11-12: 24, 25 and 27 blades in 5 s at 0, 50 and 150 IAS with -20 WSM claws; the code reading's loop model,
+    4 frames at speed 100-149 and 6 from 150, was wrong, so its timer must be checked more often than once a loop;
+    data `ch` / `ct`, engine `p.paced`: no breakpoints). Whirlwind's 8 frames rest on the same kind of reading. Blade Fury is IAS with the -30. Frenzy's speed
     trunc(dm56 x charges / 5) (`fst`, 0-5). Double Swing, Dragon Tail, Split Throw: their speed buff counts for their
     own animation. Whirlwind / Blade Dance (other animation rate): the hit timer (Param3) is checked only on the
     sequence's hit steps, every ceil(1024 / rate) frames, so a hit every 8 frames unslowed (BH and the S14 notes say
