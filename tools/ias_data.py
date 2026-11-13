@@ -383,7 +383,8 @@ def attack_skills(game, wanted):
     """The attack skills the page lists: every class's skills drawn with an attack animation, and the ones items
     grant to every class (wanted). Which speed draws them (the game's animation rate): attack 1 and 2, throws and
     kicks always IAS; special animations and sequences IAS only with Skills.txt's UseAttackRate, else the other
-    animation rate (no IAS, no weapon speed: "fx"); a sequence whose seqtrans is SC the cast rate (left out)."""
+    animation rate (no IAS, no weapon speed: left out, but Whirlwind and Blade Dance, their hits timed by the
+    game, and Charge, whose strike PD2 times by IAS); a sequence whose seqtrans is SC the cast rate (left out)."""
     seqs = json.loads(SEQUENCES.read_text(encoding="utf-8"))
     keys = {k for k, _, _ in CLASSES}
     desc = pd2_data.read_table(game.pd2.read(BS.join(["data", "global", "excel", "SkillDesc.txt"])).decode("latin-1"))
@@ -405,13 +406,13 @@ def attack_skills(game, wanted):
         seq = r.get("seqnum", "").strip() if mode == "SQ" else ""
         if mode == "SQ" and r.get("seqtrans", "").strip() == "SC":
             continue  # cast speed (Chain Lightning, Frozen Orb), not attack speed
+        if mode not in ("A1", "A2", "TH", "KK") and r.get("UseAttackRate", "").strip() != "1" and                 sid not in FIXED_FRAMES + (CHARGE,):
+            continue  # drawn at the other animation rate (Inferno, Arctic Blast, Leap Attack): IAS changes nothing
         if seq:
             if not seqs.get(seq):
                 continue
             used_seqs.add(seq)
         s = {"id": sid, "n": skill_name(game, sid), "c": cls, "m": mode, "q": int(seq) if seq else 0}
-        if mode not in ("A1", "A2", "TH", "KK") and r.get("UseAttackRate", "").strip() != "1" and sid not in FIXED_FRAMES + (CHARGE,):
-            s["fx"] = 1  # the other animation rate (Inferno, Arctic Blast, Leap Attack): IAS changes nothing
         for side in ("a", "b"):
             s["i" + side] = [r[f"itype{side}{i}"].strip() for i in (1, 2, 3) if r.get(f"itype{side}{i}", "").strip()]
             s["e" + side] = [r[f"etype{side}{i}"].strip() for i in (1, 2) if r.get(f"etype{side}{i}", "").strip()]
@@ -680,7 +681,7 @@ def selftest(data):
     expect("mercenary animations", sorted(k for k in a if k[:2] not in players), ["0AA12HS", "0AA22HS", "GUA1HTH", "RGA1HTH"])
     expect("Act 2 Jab: its monster sequence", len(data["msq"].get(next((x["q"] for x in m["m2"]["atk"] if x.get("q")), ""), [])), 14)
     expect("Act 5 Bash: attack 2", [x["m"] for x in m["m5"]["atk"] if x["n"] == "Bash"], ["A2"])
-    expect("fixed-speed skills", sorted(s["n"] for s in data["sk"] if s.get("fx")), ["Arctic Blast", "Inferno", "Leap Attack"])
+    expect("drawn at a fixed speed: left out", [s["n"] for s in data["sk"] if s["id"] in (41, 143, 230)], [])
     expect("Blade Fury (attack speed)", [s["n"] for s in data["sk"] if s["id"] == 266], ["Blade Fury"])
     b = {w["c"]: w for w in data["b"]}
     expect("Colossus Blade", [b["7gd"][k] for k in ("w", "wc", "wc2", "f")], [5, "1hs", "2hs", 3])

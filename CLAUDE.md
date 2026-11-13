@@ -1104,8 +1104,9 @@
     hit loses it); always A1 with a bow, a crossbow or no weapon (and against small monsters, A2 against flying ones);
     a dual-wield normal attack hits with the first weapon only (weapsel 0; 3: first then the other; 2: both). Which
     rate draws an attack: A1, A2, TH, KK the attack rate; S1-S4 and sequences only with Skills.txt's UseAttackRate,
-    else the other animation rate (100, slows, Frenzy's charges: Inferno, Arctic Blast, Leap Attack "fx", IAS changes
-    nothing); a sequence whose seqtrans is SC the cast rate (left out). Blade Fury is IAS with the -30. Frenzy's speed
+    else the other animation rate (100, slows, Frenzy's charges; IAS changes nothing, so Inferno, Arctic Blast and Leap
+    Attack aren't listed, the author: Arctic Blast and Inferno are channels); a sequence whose seqtrans is SC the cast
+    rate (left out). Repeating skills (Skills.txt repeat, seqinput: Inferno, Arctic Blast, Blade Fury) loop while held. Blade Fury is IAS with the -30. Frenzy's speed
     trunc(dm56 x charges / 5) (`fst`, 0-5). Double Swing, Dragon Tail, Split Throw: their speed buff counts for their
     own animation. Whirlwind / Blade Dance (other animation rate): the hit timer (Param3) is checked only on the
     sequence's hit steps, every ceil(1024 / rate) frames, so a hit every 8 frames unslowed (BH and the S14 notes say
