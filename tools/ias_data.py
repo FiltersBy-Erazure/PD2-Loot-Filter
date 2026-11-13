@@ -87,6 +87,9 @@ ROLLBACK = {26: "Param6", 30: "Param2", 106: "Param2", 248: "Param2", 255: 100}
 FIXED_FRAMES = (151, 380)  # Whirlwind and Blade Dance: one hit every Param3 frames, whatever the IAS
 CHARGE = 107
 GENERIC = (2,)  # Throw: every class's, with a throwing weapon
+# Channels with IAS (Skills.txt repeat, seqinput): held, the game starts the sequence again on reaching step seqinput;
+# a skill's own timer between its hits (Blade Fury: a blade at most every Param4 game frames)
+CHANNEL_TIMER = {266: "Param4"}
 MULTIPLE_SHOT = 12
 DOUBLE_THROW = 140
 # The mercenaries whose attacks take attack speed (key, Hireling.txt Class, the weapon kinds of the Type list they
@@ -433,6 +436,10 @@ def attack_skills(game, wanted):
             s["ff"] = int(r["Param3"] or 0)
         if sid == CHARGE:
             s["chg"] = int(r["Param6"] or 0)
+        if r.get("repeat", "").strip() == "1" and r.get("seqinput", "").strip():
+            s["ch"] = int(r["seqinput"])
+            if sid in CHANNEL_TIMER:
+                s["ct"] = int(r[CHANNEL_TIMER[sid]] or 0)
         msl = [r.get(c, "").strip() for c in ("srvmissile", "srvmissilea", "srvmissileb", "srvmissilec")]
         if any(msl):
             s["msl"] = msl
@@ -705,7 +712,8 @@ def selftest(data):
     expect("drawn at a fixed speed: left out", [s["n"] for s in data["sk"] if s["id"] in (41, 143, 230)], [])
     expect("targets: zombie, small Fallen, flying Carrion Bird", [(x["k"], x["tok"], x["h"]) for x in data["targets"]],
            [("zombie", "ZM", 3), ("fallen", "FA", 1), ("bird", "VD", 2)])
-    expect("Blade Fury (attack speed)", [s["n"] for s in data["sk"] if s["id"] == 266], ["Blade Fury"])
+    expect("Blade Fury (attack speed): a channel to step 3, a blade at most every 4 frames",
+           [(s["n"], s.get("ch"), s.get("ct")) for s in data["sk"] if s["id"] == 266], [("Blade Fury", 3, 4)])
     b = {w["c"]: w for w in data["b"]}
     expect("Colossus Blade", [b["7gd"][k] for k in ("w", "wc", "wc2", "f")], [5, "1hs", "2hs", 3])
     expect("Phase Blade", [b["7cr"][k] for k in ("w", "wc")], [-30, "1hs"])

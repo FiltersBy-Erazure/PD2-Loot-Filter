@@ -84,7 +84,8 @@ for (let i = 0; i < 1500; i++) {
   r.t.parts.forEach(p => { if (!Number.isInteger(p.frames) || p.frames < 1) bad("random " + name, "frames " + p.frames); });
   // more IAS on gear: never more frames
   const more = IAS.evaluate(Object.assign({}, s, {gear: s.gear + 1 + rnd(40)}));
-  r.t.parts.forEach((p, k) => { if (more.t.parts[k].frames > p.frames) bad("random " + name, "more IAS, more frames"); });
+  // more IAS never means more frames, but in a channel with a timer (Blade Fury: a loop shorter than its timer)
+  if (!r.p.channel) r.t.parts.forEach((p, k) => { if (more.t.parts[k].frames > p.frames) bad("random " + name, "more IAS, more frames"); });
   if (r.t.avg && r.t.avg.frames !== (r.t.parts[0].frames + r.t.parts[1].frames) / 2) bad("random " + name, "the average isn't attack 1 and 2's");
   if (r.p.fx && more.t.parts[0].frames !== r.t.parts[0].frames) bad("random " + name, "a fixed speed changed with IAS");
   // breakpoints: each row is the engine at its gear IAS, frames never go up
@@ -94,7 +95,7 @@ for (let i = 0; i < 1500; i++) {
     bp.rows.forEach(row => {
       const again = IAS.evaluate(Object.assign({}, s, {gear: row.gear}));
       if (again.t.parts[0].frames !== row.r.t.parts[0].frames) bad("breakpoints " + name, "row at " + row.gear + " differs");
-      if (row.r.t.parts[0].frames > prev) bad("breakpoints " + name, "frames go up at " + row.gear);
+      if (row.r.t.parts[0].frames > prev && !r.p.channel) bad("breakpoints " + name, "frames go up at " + row.gear);
       prev = row.r.t.parts[0].frames;
       if (row.gear > 0) {
         const less = IAS.evaluate(Object.assign({}, s, {gear: row.gear - 1}));
