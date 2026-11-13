@@ -705,7 +705,8 @@ EZ.preview = (function () {
     const lvName = levelNames(side)[state.filtlvl] || "";
     const note = h("p.fe-sub.fe-small.fe-scene-note", (mine ? side === mine ? "Your filter" : "Erazure's filter" :
       "Erazure's filter (you have no changes yet)") + ` at ${state.filtlvl} · ${lvName}, ${sc.place}` +
-      (mine && side === mine ? "; your changes have a gold edge" : "") + ". Click a drop to look at it.");
+      (mine && side === mine ? "; what your changes change is outlined, and marked \"changed\" among the alerts" : "") +
+      ". Click a drop to look at it.");
     if (!EZ.scene.available() || !EZ.glyphs.available()) {
       return [head, h("p.fe-note", "The scene needs the game's pictures and font (Erazure-Filter-Editor-Assets); " +
         "they aren't with this page. The Item and Samples views work without them.")];
@@ -759,7 +760,7 @@ EZ.preview = (function () {
         r.icons.length ? iconCanvas(r.icons, 2) : h("span.fe-scene-noicon"),
         r.chat !== null ? chatNode(r.chat || EZ.items.describe(spec), r.start) : h("span.fe-sub", EZ.items.describe(spec))),
       r.sound ? h("span.fe-small", "♪ " + soundName(r.sound), " ", EZ.sound.button(r.sound, soundName(r.sound))) :
-        null)));
+        null, changed ? EZ.ui.pill("changed", "accent") : null)));
     return [head, note, holder, log.length ? h("h4.fe-scene-h", "Alerts, in drop order") : null, alerts];
   }
 
@@ -785,7 +786,7 @@ EZ.preview = (function () {
     const lvName = levelNames(mine || base)[state.filtlvl] || "";
     return [h("p.fe-sub.fe-small", (mine ? "How these drops look with your filter" : "How these drops look with " +
       "Erazure's filter (you have no changes yet)") + ` at ${state.filtlvl} · ${lvName}` +
-      (mine ? "; what your changes change has a gold edge." : ".") + " Click one to look at it."), grid];
+      (mine ? "; what your changes change is outlined and marked \"changed\"." : ".") + " Click one to look at it."), grid];
   }
 
   function draw() {

@@ -26,8 +26,8 @@
     --bg: #15130f; --panel: #1f1c16; --sunk: #191612; --line: #39322a; --line-soft: #2c2822;
     --fg: #e9e1cf; --fg2: #cfc5ae; --muted: #a59a84; --gold: #d6b468; --on-gold: #1f1c16; --focus: #d6b468;
     --chip: #2a251e; --chip-on: #5a4721;
-    --ahead: #86c39b; --ahead-bg: #1d3226; --ahead-track: #3e7d56; --ahead-fill: rgba(70, 190, 120, .17);
-    --behind: #f07a6f; --behind-bg: #3a1d1a; --behind-track: #93453d; --behind-fill: rgba(235, 90, 80, .15);
+    --ahead: #86c39b; --ahead-bg: #1d3226; --ahead-track: #38a283; --ahead-fill: rgba(56, 162, 131, .17);
+    --behind: #f07a6f; --behind-bg: #3a1d1a; --behind-track: #cc7b38; --behind-fill: rgba(204, 123, 56, .15); --stripe: rgba(0, 0, 0, .45); --behind-stripe: rgba(204, 123, 56, .45);
     --c-over: #3987e5; --c-tele: #d95926; --c-event: #199e70; --c-boss: #c98500; --c-clear: #d55181;
     --on-fill: #ffffff; --on-light-fill: #0b0b0b;
     --grid: #2c2822; --axis: #4a4236; --tip-bg: #e9e1cf; --tip-fg: #15130f;
@@ -42,8 +42,8 @@
     --bg: #f2f0eb; --panel: #ffffff; --sunk: #f7f5f0; --line: #dcd5c7; --line-soft: #ebe5d9;
     --fg: #24211b; --fg2: #4a4337; --muted: #6c6455; --gold: #7d621b; --on-gold: #ffffff; --focus: #7d621b;
     --chip: #ece7dc; --chip-on: #e7d6ae;
-    --ahead: #2f6b45; --ahead-bg: #e2f0e6; --ahead-track: #8fc8a0; --ahead-fill: rgba(12, 163, 12, .13);
-    --behind: #b3261e; --behind-bg: #f8e3e0; --behind-track: #eba39b; --behind-fill: rgba(208, 59, 59, .12);
+    --ahead: #2f6b45; --ahead-bg: #e2f0e6; --ahead-track: #11805c; --ahead-fill: rgba(17, 128, 92, .13);
+    --behind: #b3261e; --behind-bg: #f8e3e0; --behind-track: #b65a17; --behind-fill: rgba(182, 90, 23, .12); --stripe: rgba(255, 255, 255, .55); --behind-stripe: rgba(182, 90, 23, .4);
     --c-over: #2a78d6; --c-tele: #eb6834; --c-event: #1baf7a; --c-boss: #eda100; --c-clear: #e87ba4;
     --grid: #ebe5d9; --axis: #c9c0ae; --tip-bg: #24211b; --tip-fg: #f2f0eb;
     color-scheme: light;
@@ -51,7 +51,7 @@
   .md-content .evrun-map { --top: 2.4rem; }  /* on the website: under its header, which stays at the top */
   .evrun-map * { box-sizing: border-box; }
   .evrun-map { color: var(--fg);  font-family: var(--body);  font-size: 15px;  line-height: 1.45;  margin: 0 }
-  .evrun-map a { color: var(--gold); }
+  .evrun-map a { color: var(--gold); text-decoration: underline; text-underline-offset: 2px; }
   .evrun-map a:focus-visible, .evrun-map button:focus-visible, .evrun-map select:focus-visible, .evrun-map input:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
   .evrun-map .wrap { max-width: 1320px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
   .evrun-map .strip { position: sticky; top: var(--top); z-index: 3; background: var(--panel); border-bottom: 1px solid var(--line); }
@@ -85,7 +85,7 @@
   .evrun-map .f-label { font-weight: 600; flex: 1 1 auto; min-width: 0; }
   .evrun-map .f-input { display: inline-flex; align-items: center; gap: 5px; flex: none; }
   .evrun-map .num { width: 5.6em; font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 14px; text-align: right; padding: 4px 6px; border: 1px solid var(--line); border-radius: 6px; background: var(--sunk); color: var(--fg); }
-  .evrun-map .num[aria-invalid="true"] { border-color: var(--behind); }
+  .evrun-map .num[aria-invalid="true"] { border-color: var(--behind); border-style: dashed; }
   .evrun-map .unit { color: var(--muted); font-size: 13px; width: 4.6em; }
   .evrun-map .f-note { color: var(--muted); font-size: 13px; }
   .evrun-map .f-val, .evrun-map .f-total { color: var(--fg2); white-space: nowrap; }
@@ -117,9 +117,9 @@
   .evrun-map .g-tools { margin-top: 8px; }
   .evrun-map .tbl td.best { font-weight: 700; color: var(--fg); }
   .evrun-map .derived .f-row { padding-top: 2px; }
-  .evrun-map .slider { -webkit-appearance: none; appearance: none; width: 100%; height: 22px; margin: 2px 0 0; background: transparent; cursor: pointer; --lc: var(--ahead-track); --rc: var(--ahead-track); --tk: var(--ahead-track); --s1: 50%; --s2: 50%; }
-  .evrun-map .slider::-webkit-slider-runnable-track { height: 8px; border-radius: 4px; background: linear-gradient(to right, var(--lc) 0 var(--s1), var(--tk) var(--s1) var(--s2), var(--rc) var(--s2) 100%); }
-  .evrun-map .slider::-moz-range-track { height: 8px; border-radius: 4px; border: 0; background: linear-gradient(to right, var(--lc) 0 var(--s1), var(--tk) var(--s1) var(--s2), var(--rc) var(--s2) 100%); }
+  .evrun-map .slider { -webkit-appearance: none; appearance: none; width: 100%; height: 22px; margin: 2px 0 0; background: transparent; cursor: pointer; --lc: var(--ahead-track); --rc: var(--ahead-track); --tk: var(--ahead-track); --s1: 50%; --s2: 50%; --bw: 0%; --bp: 0%; --stripes: repeating-linear-gradient(-45deg, transparent 0 3px, var(--stripe, rgba(0, 0, 0, .4)) 3px 5px) var(--bp) 0 / var(--bw) 100% no-repeat; }
+  .evrun-map .slider::-webkit-slider-runnable-track { height: 8px; border-radius: 4px; background: var(--stripes), linear-gradient(to right, var(--lc) 0 var(--s1), var(--tk) var(--s1) var(--s2), var(--rc) var(--s2) 100%); }
+  .evrun-map .slider::-moz-range-track { height: 8px; border-radius: 4px; border: 0; background: var(--stripes), linear-gradient(to right, var(--lc) 0 var(--s1), var(--tk) var(--s1) var(--s2), var(--rc) var(--s2) 100%); }
   .evrun-map .slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 18px; height: 18px; border-radius: 50%; margin-top: -5px; background: var(--panel); border: 2px solid var(--fg); }
   .evrun-map .slider::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: var(--panel); border: 2px solid var(--fg); }
   .evrun-map .settings { display: grid; gap: 10px; padding-block: 8px 2px; }
@@ -150,13 +150,14 @@
   .evrun-map .seg > div:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
   .evrun-map .legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 13px; color: var(--fg2); margin-top: 2px; }
   .evrun-map .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .evrun-map .legend[hidden] { display: none; }
   .evrun-map .sw { width: 10px; height: 10px; border-radius: 3px; flex: none; }
   .evrun-map .chart { position: relative; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
   .evrun-map .chart svg { display: block; }
   .evrun-map .chart text { font-family: var(--body); }
   .evrun-map .tick { fill: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
   .evrun-map .ax-title { fill: var(--muted); font-size: 12.5px; }
-  .evrun-map .reg-label { fill: var(--fg2); font-size: 13px; font-weight: 700; }
+  .evrun-map .reg-label { fill: var(--fg2); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--panel); stroke-width: 3px; stroke-linejoin: round; }
   .evrun-map .ref-label { fill: var(--muted); font-size: 12px; }
   .evrun-map .you-label { fill: var(--fg); font-size: 12.5px; font-weight: 700; }
   .evrun-map .tip { position: absolute; pointer-events: none; background: var(--tip-bg); color: var(--tip-fg); font-size: 12.5px; line-height: 1.35; padding: 6px 9px; border-radius: 6px; white-space: nowrap; transform: translate(-50%, calc(-100% - 12px)); z-index: 2; }
@@ -234,8 +235,9 @@
   <p class="eyebrow">Season 14 &middot; Maps &middot; Erazure's loot filter</p>
   <p class="lede">A character that teleports can run rare T1-T3 maps without clearing them: scout the whole map for its map
   event, do the event, kill the map boss and open the next map. This page compares those runs with full clears, an hour of
-  each, at your own times: type them in or drag the sliders. Each slider is green where the runs come out ahead and red where
-  full clears do, with every other time as it is. Tick Skip on an event you'd rather not do: when it shows, you head for the
+  each, at your own times: type them in or drag the sliders. The line under each slider says where the runs come out ahead
+  and where full clears do, with every other time as it is; on the slider, the striped side is where full clears are
+  ahead. Tick Skip on an event you'd rather not do: when it shows, you head for the
   boss. The fields start at estimated times. And when you get a unique map whose bosses drop extra uniques, rush
   them: <a href="#unique-maps">Unique maps: rush the bosses</a> works out what a rush is worth for your grail.</p>
 </header>
@@ -990,9 +992,15 @@ const EventRunModel = function (D) {
       if (p <= 0) { left = right; p = null; } else if (p >= 1) { right = left; p = null; }
     }
     s.style.setProperty('--lc', left); s.style.setProperty('--rc', right);
-    if (p == null) { s.style.setProperty('--tk', left); s.style.setProperty('--s1', '50%'); s.style.setProperty('--s2', '50%'); return; }
+    // the side where full clears are ahead is striped as well, so it doesn't rest on its color: bx, bw in % of the track
+    const stripes = (bx, bw) => {
+      s.style.setProperty('--bw', bw + '%');
+      s.style.setProperty('--bp', bw <= 0 || bw >= 100 ? '0%' : bx / (100 - bw) * 100 + '%');
+    };
+    if (p == null) { stripes(0, left === B ? 100 : 0); s.style.setProperty('--tk', left); s.style.setProperty('--s1', '50%'); s.style.setProperty('--s2', '50%'); return; }
     const w = s.clientWidth || 300, thumb = 18;
     const px = thumb / 2 + p * (w - thumb), pc = px / w * 100;
+    if (left === B) stripes(0, pc); else stripes(pc, 100 - pc);
     s.style.setProperty('--tk', 'var(--fg)');
     s.style.setProperty('--s1', 'calc(' + pc + '% - 1px)'); s.style.setProperty('--s2', 'calc(' + pc + '% + 1px)');
   }
@@ -1116,19 +1124,22 @@ const EventRunModel = function (D) {
     measureCtx.font = '700 12.5px "Source Sans 3", "Segoe UI", system-ui, sans-serif';
     return measureCtx.measureText(s).width;
   }
+  // a bar's segments are labeled with their name and time where that fits; where one doesn't, the bar's own legend (in
+  // the bar's order) shows under it, so no part is told by its color alone
   function segBar(title, total, parts, perHour) {
-    const sum = parts.reduce((s, p) => s + p.v, 0) || 1;
-    return '<div><div class="tb-head"><b>' + title + ': ' + (total >= 600 ? mmss(total) : nf(total, 0) + ' s') + '</b><span>' + perHour + '</span></div>' +
+    const sum = parts.reduce((s, p) => s + p.v, 0) || 1, shown = parts.filter(p => p.v > 0.05);
+    return '<div class="tb-bar"><div class="tb-head"><b>' + title + ': ' + (total >= 600 ? mmss(total) : nf(total, 0) + ' s') + '</b><span>' + perHour + '</span></div>' +
       '<div class="seg" role="img" aria-label="' + esc(title + ': ' + parts.map(p => p.name + ' ' + nf(p.v, 0) + ' s').join(', ')) + '">' +
-      parts.filter(p => p.v > 0.05).map(p => '<div tabindex="0" style="flex:' + (p.v / sum) + ' 1 0;background:var(' + p.c + ');color:var(' + (p.light ? '--on-light-fill' : '--on-fill') + ')" data-tip="' +
-        esc('<b>' + p.name + '</b><br>' + nf(p.v, 1) + ' s, ' + nf(p.v / sum * 100, 0) + '%') + '" data-label="' + esc(nf(p.v, 0) + ' s') + '"></div>').join('') +
-      '</div></div>';
+      shown.map(p => '<div tabindex="0" style="flex:' + (p.v / sum) + ' 1 0;background:var(' + p.c + ');color:var(' + (p.light ? '--on-light-fill' : '--on-fill') + ')" data-tip="' +
+        esc('<b>' + p.name + '</b><br>' + nf(p.v, 1) + ' s, ' + nf(p.v / sum * 100, 0) + '%') + '" data-label="' + esc((p.short || p.name) + ' ' + nf(p.v, 0) + ' s') +
+        '" data-time="' + esc(nf(p.v, 0) + ' s') + '"></div>').join('') +
+      '</div><div class="legend" hidden>' + shown.map(p => '<span><i class="sw" style="background:var(' + p.c + ')"></i>' + (p.short || p.name) + '</span>').join('') + '</div></div>';
   }
   function renderTimes(a) {
     const st = a.st;
     const run = [
       { name: 'Overhead', v: st.O * a.cO, c: '--c-over' },
-      { name: 'Teleports (' + nf(a.tel, 0) + ' a run)', v: a.tel * st.tel, c: '--c-tele' },
+      { name: 'Teleports (' + nf(a.tel, 0) + ' a run)', short: 'Teleports', v: a.tel * st.tel, c: '--c-tele' },
       { name: 'Events', v: a.tEv, c: '--c-event' },
       { name: 'Map boss', v: st.B * a.cB, c: '--c-boss', light: true },
     ];
@@ -1137,12 +1148,15 @@ const EventRunModel = function (D) {
       { name: 'Clearing', v: a.TC - st.O, c: '--c-clear' },
     ];
     const box = $('time-bars');
-    box.innerHTML = segBar('A run', a.TS, run, nf(3600 / a.TS, 1) + ' an hour') + segBar('A full clear', a.TC, clear, nf(3600 / a.TC, 1) + ' an hour') +
-      '<div class="legend">' + [['Overhead', '--c-over'], ['Teleports', '--c-tele'], ['Events', '--c-event'], ['Map boss', '--c-boss'], ['Clearing', '--c-clear']]
-        .map(([n, c]) => '<span><i class="sw" style="background:var(' + c + ')"></i>' + n + '</span>').join('') + '</div>';
-    box.querySelectorAll('.seg > div').forEach(d => {
-      const lab = d.dataset.label;
-      if (d.clientWidth >= textW(lab) + 14) d.textContent = lab;
+    box.innerHTML = segBar('A run', a.TS, run, nf(3600 / a.TS, 1) + ' an hour') + segBar('A full clear', a.TC, clear, nf(3600 / a.TC, 1) + ' an hour');
+    box.querySelectorAll('.tb-bar').forEach(bar => {
+      let named = true;
+      bar.querySelectorAll('.seg > div').forEach(d => {
+        const lab = d.dataset.label, time = d.dataset.time, w = d.clientWidth;
+        if (w >= textW(lab) + 14) d.textContent = lab;
+        else { named = false; if (w >= textW(time) + 14) d.textContent = time; }
+      });
+      bar.querySelector('.legend').hidden = named;
     });
   }
   // tooltips for segments
@@ -1180,7 +1194,11 @@ const EventRunModel = function (D) {
     const bx = ys.map(X => { const m = breakM(st, X); return [Math.min(x1, Math.max(x0, Number.isFinite(m) ? m : x1)), X, m]; });
     const pts = bx.map(([m, X]) => sx(m).toFixed(1) + ',' + sy(X).toFixed(1));
     let s = '<svg width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Where runs or full clears come out ahead, by full clear time and scout teleports">';
-    s += '<rect x="' + mg.l + '" y="' + mg.t + '" width="' + pw + '" height="' + ph + '" fill="var(--behind-fill)"/>';
+    // where full clears are ahead: its tint, striped (the runs' side is a plain tint)
+    s += '<defs><pattern id="behind-stripes" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">' +
+      '<line x1="1" y1="0" x2="1" y2="6" stroke="var(--behind-stripe)" stroke-width="1.5"/></pattern></defs>';
+    const behindPts = pts.join(' ') + ' ' + sx(x0) + ',' + sy(yMax) + ' ' + sx(x0) + ',' + sy(0);
+    s += '<polygon points="' + behindPts + '" fill="var(--behind-fill)"/><polygon points="' + behindPts + '" fill="url(#behind-stripes)"/>';
     s += '<polygon points="' + pts.join(' ') + ' ' + sx(x1) + ',' + sy(yMax) + ' ' + sx(x1) + ',' + sy(0) + '" fill="var(--ahead-fill)"/>';
     const xstep = (x1 - x0) > 20 ? 4 : 2, ystep = yMax > 600 ? 100 : 50;
     for (let v = Math.ceil(x0 / xstep) * xstep; v <= x1; v += xstep) {
@@ -1202,11 +1220,20 @@ const EventRunModel = function (D) {
     });
     // the break-even line
     s += '<polyline points="' + pts.join(' ') + '" fill="none" stroke="var(--fg)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>';
-    // region labels where there is room
+    // both region labels, always: in their corners where there is room, else on the row where that side is widest;
+    // a chart that is all one side says so
     const mAt = X => breakM(st, X);
     const lowX = yMax * 0.06, highX = yMax * 0.94;
-    if (mAt(lowX) < x1 - (x1 - x0) * 0.32) s += '<text class="reg-label" x="' + (sx(x1) - 10) + '" y="' + (sy(lowX) - 2) + '" text-anchor="end">Runs ahead</text>';
-    if (mAt(highX) > x0 + (x1 - x0) * 0.36) s += '<text class="reg-label" x="' + (sx(x0) + 10) + '" y="' + (sy(highX) + 12) + '">Full clears ahead</text>';
+    const widest = (runs, list) => list.reduce((b, [m, X]) => { const w = runs ? sx(x1) - sx(m) : sx(m) - sx(x0); return w > b.w ? { w, X } : b; }, { w: 0, X: 0 });
+    const inner = bx.filter(([, X]) => X >= yMax * 0.04 && X <= yMax * 0.96);
+    const lab = (x, y, anchor, t) => '<text class="reg-label" x="' + x + '" y="' + y + '" text-anchor="' + anchor + '">' + t + '</text>';
+    if (widest(true, bx).w < 0.5) s += lab(sx(x0) + 10, sy(highX) + 12, 'start', 'Full clears ahead everywhere here');
+    else if (widest(false, bx).w < 0.5) s += lab(sx(x1) - 10, sy(lowX) - 2, 'end', 'Runs ahead everywhere here');
+    else {
+      const wa = widest(true, inner), wb = widest(false, inner);
+      s += mAt(lowX) < x1 - (x1 - x0) * 0.32 || !wa.w ? lab(sx(x1) - 10, sy(lowX) - 2, 'end', 'Runs ahead') : lab(sx(x1) - 6, sy(wa.X) + 4, 'end', 'Runs ahead');
+      s += mAt(highX) > x0 + (x1 - x0) * 0.36 || !wb.w ? lab(sx(x0) + 10, sy(highX) + 12, 'start', 'Full clears ahead') : lab(sx(x0) + 6, sy(wb.X) + 4, 'start', 'Full clears ahead');
+    }
     // you
     const ux = sx(Math.min(x1, Math.max(x0, st.M))), uy = sy(Math.min(yMax, st.X));
     s += '<circle cx="' + ux + '" cy="' + uy + '" r="6" fill="var(--fg)" stroke="var(--panel)" stroke-width="2"/>';

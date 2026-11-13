@@ -44,7 +44,7 @@ EZ.areas = EZ.areas || [];
     ["What does the preview show?", [
       "Drops as the game draws them with your filter (or Erazure's, before you change anything): a Scene of drops on " +
       "the floor, one Item at every filter level with the rules that build it, or Samples of typical drops. What your " +
-      "changes change has a gold edge.",
+      "changes change is marked \"changed\" (in the scene, the drop is outlined).",
       "Its settings at the top (filter level, character, difficulty, where you are) count everywhere the editor works " +
       "out what an item looks like."]],
     ["How do filter levels work?", [

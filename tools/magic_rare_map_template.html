@@ -47,6 +47,7 @@
                          color: var(--fg); text-wrap: balance; }
   .__MAP__ .bar { position: sticky; top: var(--top); z-index: 3; background: var(--panel);
                   border-block: 1px solid var(--line); padding-block: 8px; margin-block: 12px 0; }
+  @media (max-height: 420px) { .__MAP__ .bar { position: static; } }  /* a short window (zoomed in): it scrolls away */
   .__MAP__ .bar .wrap { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
   .md-content .__MAP__ .bar .wrap { padding-inline: 10px; }
   .__MAP__ .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; min-width: 0; max-width: 100%; }
@@ -109,13 +110,20 @@
   .__MAP__ table.gl tr.r td.on, .__MAP__ table.gl thead th.on {  /* the bar's level (sub-rows too) */
     background: color-mix(in srgb, var(--accent) 13%, transparent); }
   .__MAP__ table.gl thead th.on { box-shadow: inset 0 -2px 0 var(--accent); }
+  .__MAP__ table.gl thead th.on .lv::before { content: "▸"; content: "▸" / ""; margin-right: 4px; }  /* not only a tint */
   .__MAP__ table.gl td.c { cursor: pointer; }
   .__MAP__ table.gl tr.r td.c:hover { background: var(--soft); }
   .__MAP__ table.gl td.c .t { display: block; }
   .__MAP__ table.gl .muted { color: var(--muted); }
-  .__MAP__ .strip { display: flex; height: 4px; margin-top: 5px; border-radius: 2px; overflow: hidden; gap: 1px; }
+  .__MAP__ .strip { display: flex; height: 6px; margin-top: 5px; border-radius: 2px; overflow: hidden; gap: 1px; }
   .__MAP__ .strip + .strip { margin-top: 2px; }
-  .__MAP__ .strip span { background: var(--sc); opacity: .85; }
+  /* the strip's runs and the legend's swatches: hiding states hatched, so they don't depend on the color */
+  .__MAP__ .strip span, .__MAP__ .sw { background: var(--sc); opacity: .85; }
+  .__MAP__ .strip span.s-hidden, .__MAP__ .sw.s-hidden {
+    background: repeating-linear-gradient(135deg, var(--sc) 0 2px, transparent 2px 4px); }
+  .__MAP__ .strip span.s-some, .__MAP__ .sw.s-some {
+    background: repeating-linear-gradient(135deg, var(--sc) 0 2px, transparent 2px 7px); }
+  .__MAP__ .sw { display: inline-block; width: 22px; height: 6px; border-radius: 2px; flex: none; }
   /* the item column stays while the table scrolls sideways */
   .__MAP__ table.gl thead th:first-child, .__MAP__ table.gl tr.r th { position: sticky; left: 0; z-index: 1;
                                                                      background: var(--bg); }
@@ -248,7 +256,8 @@
 <div class="wrap">
   <h2 class="part" id="glance">At a glance</h2>
   <p class="gx">What each kind of __QUALITY__ item does at each filter level. Filter levels that treat them the same
-    share a column. <b>from 80</b> means from character level 80; the strip under a cell shows character levels 1 to 99.
+    share a column. <b>from 80</b> means from character level 80; the strip under a cell shows character levels 1 to 99,
+    hatched where items hide.
     Click a cell to see its bases at that filter level below.</p>
   <div class="legend" id="glance-legend"></div>
   <div class="tw"><table class="gl" id="glance-table"></table></div>
@@ -361,10 +370,10 @@ function textEl(text) {  // long conditions: two lines, then "more"
   const t = el("div", {class: "text", text});
   if (text.length <= 170) return t;
   t.classList.add("clamp");
-  const b = el("button", {class: "more", type: "button", "aria-expanded": "false", text: "more"});
+  const b = el("button", {class: "more", type: "button", "aria-expanded": "false", text: "more ▾"});
   b.addEventListener("click", () => {
     const closed = t.classList.toggle("clamp");
-    b.textContent = closed ? "more" : "less";
+    b.textContent = closed ? "more ▾" : "less ▴";
     b.setAttribute("aria-expanded", String(!closed));
   });
   return el("div", {}, t, b);
@@ -468,6 +477,21 @@ function state(kind, text) {
 }
 const colLabel = (c) => c.levels.length > 1 ? `${c.levels[0]}–${c.levels[c.levels.length - 1]}` : String(c.levels[0]);
 const levelsText = (c) => (c.levels.length > 1 ? "Levels " : "Level ") + colLabel(c);
+const lvSpan = (lo, hi) => lo === hi ? String(lo) : `${lo}–${hi}`;
+function levelRuns(lv) {  // [3, 5, 6, 7]: "Levels 3, 5–7"
+  const runs = [];
+  for (const v of lv) {
+    const last = runs[runs.length - 1];
+    if (last && v === last[1] + 1) last[1] = v; else runs.push([v, v]);
+  }
+  return (lv.length > 1 ? "Levels " : "Level ") + runs.map(([a, b]) => lvSpan(a, b)).join(", ");
+}
+function stripWords(cell) {  // the strip in words, for screen readers: ". Character levels 1–14: Notifies; 15–99: Hidden"
+  const parts = cell.g.filter(([, rs]) => rs.length > 1).map(([lv, rs]) =>
+    (cell.g.length > 1 ? `${levelRuns(lv)}, character levels ` : "Character levels ") +
+    rs.map(([lo, hi, , w]) => `${lvSpan(lo, hi)}: ${w}`).join("; "));
+  return parts.length ? ". " + parts.join(". ") : "";
+}
 function glanceCell(cell) {
   const out = [];
   if (cell.gt) {  // levels that differ: a line each
@@ -477,9 +501,11 @@ function glanceCell(cell) {
   } else {
     out.push(state(cell.k, cell.t));
   }
-  for (const [, runs] of cell.g) {
+  for (const [, runs] of cell.g) {  // aria-hidden: the cell's aria-label says it (stripWords)
     const strip = el("span", {class: "strip", "aria-hidden": "true"});
-    for (const [lo, hi, k] of runs) strip.append(el("span", {class: `s-${k}`, style: `flex:${hi - lo + 1}`}));
+    for (const [lo, hi, k, w] of runs) {
+      strip.append(el("span", {class: `s-${k}`, style: `flex:${hi - lo + 1}`, title: `${lvSpan(lo, hi)}: ${w}`}));
+    }
     out.push(strip);
   }
   return out;
@@ -502,7 +528,9 @@ function drill(x, ci) {  // a glance cell: its filter level in the bar, then its
 }
 function glance() {
   const G = DATA.glance;
-  for (const k of Object.keys(GLYPH)) $("glance-legend").append(state(k, WORDS[k]));
+  for (const k of Object.keys(GLYPH)) {
+    $("glance-legend").append(el("span", {}, el("span", {class: `sw s-${k}`, "aria-hidden": "true"}), state(k, WORDS[k])));
+  }
   const head = el("tr", {}, el("th", {scope: "col", text: "Item"}));
   G.cols.forEach((c) => {
     const th = el("th", {scope: "col", title: c.levels.map((l) => `${l}: ${DATA.levels[l]}`).join("\n")},
@@ -520,7 +548,7 @@ function glance() {
     x.cells.forEach((cell, ci) => {
       const c = G.cols[ci], go = () => drill(x, ci);
       const td = el("td", {class: "c", tabindex: "0", role: "button", title: `Show these bases at filter level ${c.levels[0]}`,
-        "aria-label": `${x.name}, ${levelsText(c)}: ${cell.t}. Show these bases at filter level ${c.levels[0]}`},
+        "aria-label": `${x.name}, ${levelsText(c)}: ${cell.t}${stripWords(cell)}. Show these bases at filter level ${c.levels[0]}`},
         ...glanceCell(cell));
       td.addEventListener("click", go);
       td.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } });
@@ -552,6 +580,7 @@ function markGlance() {  // the column of the bar's filter level
   glanceCols.forEach((cells, ci) => {
     const on = view.level !== "" && DATA.glance.cols[ci].levels.includes(+view.level);
     for (const x of cells) x.classList.toggle("on", on);
+    if (on) cells[0].setAttribute("aria-current", "true"); else cells[0].removeAttribute("aria-current");
   });
 }
 function init() {
@@ -572,9 +601,10 @@ function init() {
   render();
   // the bar's height: a jump lands below it
   const root = document.querySelector(".__MAP__");
-  const setBar = () => root.style.setProperty("--bar", $("bar").offsetHeight + "px");
+  const setBar = () => root.style.setProperty("--bar",  // 0 while it doesn't stick (a short window)
+    (getComputedStyle($("bar")).position === "sticky" ? $("bar").offsetHeight : 0) + "px");
   if (window.ResizeObserver) new ResizeObserver(setBar).observe($("bar"));
-  else window.addEventListener("resize", setBar);
+  window.addEventListener("resize", setBar);  // a height change sticks or unsticks it
   setBar();
 }
 init();

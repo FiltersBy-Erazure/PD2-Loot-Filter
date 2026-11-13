@@ -46,6 +46,8 @@
                           color: var(--fg); text-wrap: balance; }
   .base-map .bar { position: sticky; top: var(--top); z-index: 3; background: var(--panel);
                    border-block: 1px solid var(--line); padding-block: 8px; margin-block: 12px 0; }
+  /* a short window (200% zoom on a laptop): the bar scrolls away, or it would cover most of the page */
+  @media (max-height: 420px) { .base-map .bar { position: static; } }
   .base-map .bar .wrap { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
   .md-content .base-map .bar .wrap { padding-inline: 10px; }
   .base-map .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; min-width: 0; max-width: 100%; }
@@ -310,10 +312,10 @@ function textEl(text) {  // long conditions: two lines, then "more"
   const t = el("div", {class: "text", text});
   if (text.length <= 170) return t;
   t.classList.add("clamp");
-  const b = el("button", {class: "more", type: "button", "aria-expanded": "false", text: "more"});
+  const b = el("button", {class: "more", type: "button", "aria-expanded": "false", text: "more ▾"});
   b.addEventListener("click", () => {
     const closed = t.classList.toggle("clamp");
-    b.textContent = closed ? "more" : "less";
+    b.textContent = closed ? "more ▾" : "less ▴";
     b.setAttribute("aria-expanded", String(!closed));
   });
   return el("div", {}, t, b);

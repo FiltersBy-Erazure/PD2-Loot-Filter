@@ -65,7 +65,9 @@
   .grail-map .best { font-weight: 700; }
   .grail-map .ratio { color: var(--muted); font-size: 12.5px; }
   .grail-map .sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 7px; vertical-align: -1px; }
-  .grail-map .q { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; }
+  .grail-map .legend svg.lk { display: inline-block; width: 24px; height: 10px; margin-right: 7px; vertical-align: 0; }  /* a line's key: its own dash */
+  /* a unique or set item: a shape each (● unique, ◆ set), in its quality's color */
+  .grail-map .q { display: inline-block; width: 1em; margin-right: 5px; font-size: 11px; line-height: 1; text-align: center; vertical-align: 1px; }
   .grail-map .bar { position: sticky; top: var(--top); z-index: 3; background: var(--panel); border-block: 1px solid var(--line); padding-block: 8px; }
   .grail-map .bar .wrap { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; }
   .md-content .grail-map .bar .wrap { padding-inline: 10px; }
@@ -74,6 +76,7 @@
   .grail-map .bar.idle .sets { opacity: .5; }
   .grail-map .bar.idle .sets::after { content: "These settings don't change this tab"; font-size: 12px; color: var(--muted); }
   .grail-map #gm-t-grid tr.now td { background: var(--accent-wash); }
+  .grail-map #gm-t-grid tr.now td:first-child::after { content: " (your settings)"; color: var(--muted); }
   .grail-map .bar .tabrow { flex-wrap: nowrap; gap: 12px; align-items: stretch; margin-bottom: 8px; border-bottom: 1px solid var(--line); }
   .grail-map .bar .tabs { display: flex; position: relative; flex: 1 1 auto; min-width: 0; flex-wrap: nowrap; gap: 2px; overflow-x: auto; scrollbar-width: none; }
   .grail-map .bar .tabs::-webkit-scrollbar { display: none; }
@@ -141,6 +144,7 @@
   .grail-map .ear .btn { justify-self: start; }
   .grail-map svg { display: block; width: 100%; height: auto; overflow: visible; }
   .grail-map svg text { font-family: var(--body); fill: var(--muted); }
+  .grail-map svg text.dl { paint-order: stroke; stroke: var(--panel); stroke-width: 3px; stroke-linejoin: round; }  /* a chart's label on its line: a halo keeps it legible */
   .grail-map .legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; color: var(--muted); }
   .grail-map .tools { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
   .grail-map input[type=search], .grail-map select { font: inherit; font-size: 14.5px; color: var(--fg); background: var(--bg);
@@ -148,7 +152,7 @@
   .grail-map input[type=search] { flex: 1 1 220px; max-width: 340px; }
   .grail-map textarea { width: 100%; min-height: 120px; font: 13px/1.4 ui-monospace, "Cascadia Mono", Consolas, monospace;
     color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 8px; }
-  .grail-map .btn { font: 600 13.5px var(--body); color: var(--fg); background: var(--chip); border: 1px solid var(--line); border-radius: 6px; padding: 5px 12px; cursor: pointer; margin: 0; }
+  .grail-map .btn { font: 600 13.5px var(--body); color: var(--fg); background: var(--chip); border: 1px solid var(--line); border-radius: 6px; padding: 5px 12px; cursor: pointer; margin: 0; text-decoration: none; }
   .grail-map .btn:hover { background: var(--accent-wash); }
   .grail-map .btn:disabled { opacity: .45; cursor: default; background: var(--chip); }
   .grail-map details > summary { cursor: pointer; color: var(--fg); }
@@ -161,7 +165,9 @@
   .grail-map #gm-items td.base { text-align: left; white-space: normal; min-width: 120px; color: var(--muted); }
   @font-face { font-family: "AvQest"; src: local("AvQest"); }  /* the D2-style font, if the viewer has it installed */
   .grail-map .ver { color: var(--muted); font-size: 12.5px; }
-  .grail-map a { color: var(--accent); }
+  /* links underlined, not only gold (the website's theme takes the underline off); the button-like links (.btn, .hbtn,
+     .way, .grp a, .gm-prog) say none in their own rules */
+  .grail-map a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
   .grail-map .count { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 13px; }
   @media (max-width: 700px) { .grail-map .opt { display: none; } }  /* phones: the item table's optional columns */
   @media (max-width: 1150px) { .grail-map #gm-items .opt { display: none; } }  /* tablets too: Every Item's farm column stays in view */
@@ -357,9 +363,9 @@
   .grail-map .comp .steps { flex: 1; display: flex; flex-direction: column; justify-content: space-evenly; }
   .grail-map .comp .rows { flex: 1; display: grid; grid-auto-rows: minmax(21px, 1fr); align-content: stretch; }
   .grail-map .comp.lay-mid .rows { grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); grid-auto-rows: 28px; column-gap: 24px; }
-  .grail-map .comp .row { display: grid; grid-template-columns: 24px minmax(0, 1fr) 64px 46px; gap: 8px; align-items: center; margin: 0 -6px;
+  .grail-map .comp .row { display: grid; grid-template-columns: 24px minmax(0, 1fr) 64px 58px; gap: 8px; align-items: center; margin: 0 -6px;
     padding: 0 6px; border-radius: 5px; font: 400 13px var(--body); color: var(--muted); text-align: left; cursor: pointer; }
-  .grail-map .comp .row.noic { grid-template-columns: minmax(0, 1fr) 64px 46px; }
+  .grail-map .comp .row.noic { grid-template-columns: minmax(0, 1fr) 64px 58px; }
   .grail-map .comp .row:hover, .grail-map .comp .row:focus-visible { background: var(--chip); color: var(--fg); }
   .grail-map .comp .row > span:nth-last-child(3) { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .grail-map .comp .row .pbar { height: 5px; }
@@ -512,7 +518,7 @@
     border: 1px solid var(--axis); border-radius: 8px; box-shadow: 0 14px 40px rgba(0, 0, 0, .4); max-height: 320px; overflow: auto; }
   .grail-map .sugg[hidden] { display: none; }
   .grail-map .sugg li { margin: 0; padding: 7px 10px; border-radius: 6px; cursor: pointer; display: flex; justify-content: space-between; gap: 10px; }
-  .grail-map .sugg li[aria-selected="true"] { background: var(--accent-wash); }
+  .grail-map .sugg li[aria-selected="true"] { background: var(--accent-wash); outline: 2px solid var(--accent); outline-offset: -2px; }
   .grail-map .sugg li small { color: var(--muted); }
   .grail-map .chips { display: flex; flex-wrap: wrap; gap: 6px; }
   .grail-map .chips button { border: 1px solid var(--line); background: var(--chip); border-radius: 999px; padding: 4px 11px; font: 600 13px var(--body);
@@ -523,6 +529,7 @@
   .grail-map .inv { position: relative; border: 1px solid var(--axis); background-color: #0b0a09;
     background-image: linear-gradient(#24211d 1px, transparent 1px), linear-gradient(90deg, #24211d 1px, transparent 1px); background-size: 56px 56px; }
   .grail-map .answer .nm { font: 700 25px/1.15 var(--display); }
+  .grail-map .answer .nm .q { font-size: 21px; margin-right: 8px; vertical-align: 1px; }
   .grail-map .answer .bs { color: var(--muted); }
   .grail-map .facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 12px; }
   .grail-map .fact { background: var(--chip); border-radius: 10px; padding: 9px 12px; display: grid; gap: 2px; align-content: start; }
@@ -767,6 +774,7 @@
   <div class="helpcards gm-vlist" id="gm-help">
     <div class="hcard"><h3>Reading the table</h3>
       <dl class="gloss">
+        <dt><span class="q" style="color:var(--q-unique)">●</span>/ <span class="q" style="color:var(--q-set)">◆</span></dt><dd>before an item's name: ● a unique item, ◆ a set item (in their quality's gold and green)</dd>
         <dt>Drop level</dt><dd>the lowest monster level that can drop it (not the level to wear it)</dd>
         <dt>No ear</dt><dd>one in so many full map clears drops it, without a Corrupted Ear</dd>
         <dt>Any other ear</dt><dd>with an ear whose pool doesn't have its base: the extra drop chance and extra elite packs every ear gives</dd>
@@ -1411,9 +1419,11 @@ function renderLevers() {
 let SPEED_W = 0;
 function renderSpeed() {
   const {idx, rows, rot, rr} = SUM, tot = idx.length, ears = rows.slice(1), b90 = ears.reduce((a, b) => b.m90 < a.m90 ? b : a);
-  $("gm-leg").innerHTML = `<span><span class="sw" style="background:var(--s1)"></span>${b90.n} ear on every map (the fewest maps to 90%)</span>` +
-    `<span><span class="sw" style="background:var(--band)"></span>Any one ear, best to worst</span><span><span class="sw" style="background:var(--s0)"></span>No ear</span>` +
-    `<span><span class="sw" style="background:var(--s2)"></span>Switching ears</span>`;
+  // the key: each line drawn with its own dash (solid, dotted, dashed), so the lines don't take their color alone
+  const key = (col, w, dash) => `<svg class="lk" viewBox="0 0 24 10" aria-hidden="true"><line x1="1" x2="23" y1="5" y2="5" stroke="${col}" stroke-width="${w}" stroke-dasharray="${dash}"/></svg>`;
+  $("gm-leg").innerHTML = `<span>${key("var(--s1)", 2.5, "none")}${b90.n} ear on every map (the fewest maps to 90%)</span>` +
+    `<span><span class="sw" style="background:var(--band)"></span>Any one ear, best to worst</span><span>${key("var(--s0)", 2, "2 3")}No ear</span>` +
+    `<span>${key("var(--s2)", 2, "5 4")}Switching ears</span>`;
   const host = $("gm-curve"); SPEED_W = host.clientWidth; host.innerHTML = "";
   const W = Math.max(300, SPEED_W || 680), narrow = W < 520, H = narrow ? 250 : 290, L = 42, R = narrow ? 40 : 56, T = 12, B = 32, x0 = 1, x1 = 4;
   const sx = m => L + (Math.log10(Math.max(10, m)) - x0) / (x1 - x0) * (W - L - R), sy = f => T + (1 - f / tot) * (H - T - B);
@@ -1431,12 +1441,45 @@ function renderSpeed() {
   el("path", {d: "M" + ms.map((m, k) => sx(m) + "," + sy(hiF[k])).join("L") + "L" + ms.map((m, k) => [m, k]).reverse().map(([m, k]) => sx(m) + "," + sy(loF[k])).join("L") + "Z", fill: "var(--band)", stroke: "none"}, svg);
   const line = (vals, color, w, dash) => el("polyline", {points: ms.map((m, k) => sx(m) + "," + sy(vals[k])).join(" "), fill: "none", stroke: color, "stroke-width": w, "stroke-linejoin": "round", "stroke-dasharray": dash || "none"}, svg);
   const rotAt = m => { const k = Math.floor(m), f = m - k, n = rot.length - 1; return k >= n ? rot[n] : rot[k] + (rot[k + 1] - rot[k]) * f; };
-  line(ms.map(m => found(rows[0].r, idx, m)), "var(--s0)", 2);
-  line(ms.map(rotAt), "var(--s2)", 2, "5 4");
-  line(ms.map(m => found(b90.r, idx, m)), "var(--s1)", 2.5);
-  for (const [m, col, dy, end] of [[b90.m90, "var(--s1)", -9, true], [rows[0].m90, "var(--s0)", 18, false]]) if (m >= 10 && m <= 10000) {
-    el("circle", {cx: sx(m), cy: sy(.9 * tot), r: 4.5, fill: col, stroke: "var(--panel)", "stroke-width": 2}, svg);
-    el("text", {x: sx(m) + (end ? -7 : 7), y: sy(.9 * tot) + dy, "text-anchor": end ? "end" : "start", "font-size": 12, style: `fill:${col}`}, svg).textContent = fmtN(m); }
+  const noE = ms.map(m => found(rows[0].r, idx, m)), swv = ms.map(rotAt), bev = ms.map(m => found(b90.r, idx, m));
+  line(noE, "var(--s0)", 2, "2 3");
+  line(swv, "var(--s2)", 2, "5 4");
+  line(bev, "var(--s1)", 2.5);
+  // the labels' boxes ([x0, y0, x1, y1]): a label keeps clear of the dots, the other labels, the half and 90% lines and
+  // every curve; its width measured as the page's 12-pixel text (a little spare for the fallback font)
+  const MT = document.createElement("canvas").getContext("2d"); MT.font = '12px "Source Sans 3", system-ui, sans-serif';
+  const tw = s => MT.measureText(s).width + 4, taken = [];
+  const free = b => taken.every(o => b[2] + 1 < o[0] || o[2] + 1 < b[0] || b[3] + 1 < o[1] || o[3] + 1 < b[1]);
+  // the 90% marks name their line: "No ear: 269"
+  const named = new Set();
+  for (const [m, col, dy, end, name, v] of [[b90.m90, "var(--s1)", -9, true, `${b90.n} ear`, bev], [rows[0].m90, "var(--s0)", 18, false, "No ear", noE]]) if (m >= 10 && m <= 10000) {
+    const cx = sx(m), cy = sy(.9 * tot), s = `${name}: ${fmtN(m)}`, x = cx + (end ? -7 : 7), w = tw(s); named.add(v);
+    el("circle", {cx, cy, r: 4.5, fill: col, stroke: "var(--panel)", "stroke-width": 2}, svg);
+    el("text", {x, y: cy + dy, "text-anchor": end ? "end" : "start", "font-size": 12, class: "dl", style: `fill:${col}`}, svg).textContent = s;
+    taken.push([cx - 6, cy - 6, cx + 6, cy + 6], end ? [x - w, cy + dy - 10, x, cy + dy + 3] : [x, cy + dy - 10, x + w, cy + dy + 3]); }
+  // the name of each line its 90% mark doesn't name, beside it (switching ears over the top line, the others under
+  // theirs), as near its end as there's room: where it stands apart from the other lines (12 pixels, else the most it
+  // does, at least 3) and the label clears everything above; labels are 13 pixels tall, so two that meet sit 13 apart.
+  // None where nothing fits (the key and the pointer's numbers still name it).
+  const xk = k => L + k / 120 * (W - L - R), refs = [sy(.5 * tot), sy(.9 * tot)], curves = [noE, swv, bev];
+  const yAt = (v, x) => { const t = Math.min(120, Math.max(0, (x - L) / (W - L - R) * 120)), k = Math.min(119, Math.floor(t)); return sy(v[k] + (v[k + 1] - v[k]) * (t - k)); };
+  const clear = b => curves.every(v => { for (let x = b[0]; x <= b[2] + 1; x += 2) { const y = yAt(v, Math.min(x, b[2])); if (y > b[1] - 1.5 && y < b[3] + 1.5) return false; } return true; });
+  for (const [v, name, side] of [[swv, "Switching ears", -1], [bev, `${b90.n} ear`, 1], [noE, "No ear", 1]]) {
+    if (named.has(v)) continue;
+    const w = tw(name); let pick = null, room = 0;
+    for (let k = 118; k >= 2; k--) {
+      const x = xk(k), y = sy(v[k]), by = side > 0 ? y + 15 : y - 7, ax = side > 0 ? x + 5 : x - 5;
+      const b = side > 0 ? [ax, by - 10, ax + w, by + 3] : [ax - w, by - 10, ax, by + 3];
+      if (b[0] < L + 2 || b[2] > W - R - 2 || b[1] < T || b[3] > H - B - 2) continue;
+      const sep = Math.min(12, ...curves.filter(o => o !== v).map(o => Math.abs(sy(o[k]) - y)));
+      if (sep < 3 || sep <= room || refs.some(r => r > b[1] - 1 && r < b[3] + 1) || !free(b) || !clear(b)) continue;
+      pick = [b, ax, by]; room = sep;
+      if (sep >= 12) break;
+    }
+    if (!pick) continue;
+    el("text", {x: pick[1], y: pick[2], "text-anchor": side > 0 ? "start" : "end", "font-size": 12, class: "dl"}, svg).textContent = name;
+    taken.push(pick[0]);
+  }
   const cross = el("line", {x1: 0, x2: 0, y1: T, y2: H - B, stroke: "var(--muted)", visibility: "hidden"}, svg);
   const hit = el("rect", {x: L, y: T, width: W - L - R, height: H - T - B, fill: "transparent"}, svg);
   hit.addEventListener("pointermove", e => {
@@ -1598,8 +1641,8 @@ function renderLooks() {
   const L = DATA.looks, lv = Object.keys(L.levels);
   $("gm-filter-list").innerHTML = [
     `<b>Never hidden until you've found it:</b> a unique or set item you haven't discovered yet (the game's Discovery Progress) is never hidden, on any filter level, and always gets a minimap icon, a chat line and a drop sound when it drops.`,
-    `<b>The Grail look:</b> wherever an item has no value tier, it shows orange stars around its name (four a side) and a Grail minimap icon: orange for uniques, the set icon with an orange centre for set items, set rings and amulets too. An item that is High or Medium value only on some filter levels gets the Grail look on the others.`,
-    `<b>Minimal value has a Grail look of its own:</b> its slashes in the Grail colors, orange outside, with a star by the name, and the Grail icon, until you've found it.`,
+    `<b>The Grail look:</b> wherever an item has no value tier, it shows four stars a side around its name, the outermost orange, and a Grail minimap icon: for uniques bright orange (a found one's is dark), for set items the set icon with its centre dot in orange, set rings and amulets too. An item that is High or Medium value only on some filter levels gets the Grail look on the others.`,
+    `<b>Minimal value has a Grail look of its own:</b> a star by the name and four slashes a side in the Grail colors, the outermost orange, and the Grail icon, until you've found it (then a dot by the name and three slashes).`,
     `<b>High and Medium value look the same either way:</b> a High or Medium value item, or one with its own look, shows its tier's look and notifies whether you've found it or not.`,
     `<b>Unidentified items:</b> the filter sees the base, not the item, so an unidentified one counts as found only when you've discovered every unique (or set item) of that base. An identified one gets no Grail look. Identify a new unique or set item in the game it dropped in, or it won't count for your Discovery Progress (finds count for your party).`,
     `<b>The game's own options:</b> Force Show Undiscovered (on by default) shows an undiscovered unique or set item the filter would hide, with the game's plain name; this filter never hides one, so its looks stay. Force Show Unowned (off by default) does the same for items you've discovered but don't keep in the stash's Compendium.`
@@ -1656,7 +1699,7 @@ function renderLooks() {
   fit();
   if (window.ResizeObserver) new ResizeObserver(() => requestAnimationFrame(() => { if (box.clientWidth !== width) fit(); })).observe(box);  // after the frame: no loop
   if (document.fonts) document.fonts.load(font).then(fit, () => {});
-  $("gm-looks-note").innerHTML = `What to look for: four marks a side with orange outermost mean you haven't found the item yet (on a Minimal value item, orange outer slashes); a found one has three on the lowest level and is hidden on the strictest. A High or Medium value look doesn't change. As Erazure - Main draws them, unidentified on the ground outside town, for a character of level 99 (found set rings and amulets look different below 80 and 90). The Minimal versions draw the Grail looks with stars only (the <a href="https://filtersby-erazure.github.io/PD2-Loot-Filter/minimal/">Minimal Version</a> page). The <a href="https://filtersby-erazure.github.io/PD2-Loot-Filter/tiers/">Unique &amp; Set Tiers</a> page shows every unique and set item's look on every filter level and version.`;
+  $("gm-looks-note").innerHTML = `What to look for: four marks a side, the outermost orange, mean you haven't found the item yet (on a Minimal value item, four slashes and a star by the name); a found one has three on the lowest level and is hidden on the strictest. A High or Medium value look doesn't change. As Erazure - Main draws them, unidentified on the ground outside town, for a character of level 99 (found set rings and amulets look different below 80 and 90). The Minimal versions draw the Grail looks with stars only (the <a href="https://filtersby-erazure.github.io/PD2-Loot-Filter/minimal/">Minimal Version</a> page). The <a href="https://filtersby-erazure.github.io/PD2-Loot-Filter/tiers/">Unique &amp; Set Tiers</a> page shows every unique and set item's look on every filter level and version.`;
 }
 
 // ---------------------------------------------------------------- each ear
@@ -1740,6 +1783,9 @@ const nMaps = v => `${times(v)} map${times(v) === "1" ? "" : "s"}`;  // "1 map",
 const earName = e => e ? `the ${e} ear` : "any Corrupted Ear";
 const inText = name => name.replace(/^The /, "the ");  // a monster's name inside a sentence: "target farm the Cow King"
 const BET_TAG = ` <span class="bet">beats maps</span>`, BET_CLOSE = ` <span class="bet">close</span>`;
+// a unique or set item's mark before its name: a shape each (● unique, ◆ set), so it doesn't take the color alone
+const qMark = kind => kind === "SET" ? `<span class="q" style="color:var(--q-set)" role="img" aria-label="Set item">◆</span>`
+  : `<span class="q" style="color:var(--q-unique)" role="img" aria-label="Unique">●</span>`;
 // Cow King's Leathers drops only from Hell Bovines: in maps the Bovine guest's and the Dark Wanderer's Cow King
 const COW = new Set(ITEMS.filter(it => it.set === "Cow King's Leathers").map(it => it.i));
 const noMaps = () => "map monsters never drop it";
@@ -1958,7 +2004,7 @@ function renderItems() {
     ITEM_MORE = null; watchMore(); tickUI(); return; }
   const row = it => { const i = it.i, o = inf.get(it), f = FOUND.has(it.key), b = bf.get(it);
     return `<tr class="it${f ? " found" : ""}" data-i="${i}" aria-expanded="${OPEN.has(i)}"><td class="have"><input type="checkbox" data-k="${it.key.replace(/"/g, "&quot;")}" ${f ? "checked" : ""} aria-label="Discovered: ${it.label.replace(/"/g, "")}"></td>` +
-        `<td class="name"><span class="q" style="background:var(${it.kind === "SET" ? "--q-set" : "--q-unique"})"></span>${it.name}${it.set ? ` <span class="ver">· ${it.set}</span>` : ""}${it.nv ? ` <span class="ver">· ${it.nv} versions, one grail item</span>` : ""}</td>` +
+        `<td class="name">${qMark(it.kind)}${it.name}${it.set ? ` <span class="ver">· ${it.set}</span>` : ""}${it.nv ? ` <span class="ver">· ${it.nv} versions, one grail item</span>` : ""}</td>` +
         `<td class="base opt">${it.base}${it.tier ? ` <span class="ver">${it.tier} base</span>` : ""}</td><td class="opt">${it.lvl}</td>` +
         `<td>${oneIn(R.none[i])}</td><td class="opt">${oneIn(R.any[i])}</td><td class="l">${!(R.none[i] > 0) ? "–" : o.be ? `${o.be}: ${oneIn(o.bv)}` : ear ? `${ear}: ${oneIn(o.bv)}<br><span class="ratio">not in its pool</span>` : `<span class="ratio">same for every ear</span>`}` +
         (ear ? "" : earRank(R, i).slice(1, 3).map(([e, v]) => `<br><span class="ratio">${e}: ${oneIn(v)}</span>`).join("")) + `</td>` +
@@ -2212,8 +2258,8 @@ function howCard() {
   const step = (fig, txt) => `<div class="step"><div class="fig">${fig}</div><div class="txt">${txt}</div></div>`;
   return `<h3>How it works</h3><div class="steps">` +
     step(cap(crop("card", 30, 24, 32, 20, 2), "not yet") + cap(crop("cardFound", 30, 24, 32, 20, 2), "discovered"),
-      matchMedia("(hover: hover)").matches ? `<b>Click a card</b> to mark it discovered (the red diamond) or undiscovered.` :
-        `<b>Tap a card</b> for its name, and again to mark it discovered (the red diamond) or undiscovered.`) +
+      matchMedia("(hover: hover)").matches ? `<b>Click a card</b> to mark it discovered (a diamond appears under its name, red) or undiscovered.` :
+        `<b>Tap a card</b> for its name, and again to mark it discovered (a diamond appears under its name, red) or undiscovered.`) +
     step(["all", "discovered", "undiscovered"].map((m, k) => cap(crop("disc" + k, 0, 0, 22, 22, 1.5), m)).join(""),
       `<b>Discovery Progress</b> shows all items, the discovered or the undiscovered ones; the pages and their count stay, as in the game.`) +
     step(crop("prev", 0, 0, 32, 22, 1.4) + crop("next", 0, 0, 32, 22, 1.4),
@@ -2227,7 +2273,7 @@ function progressCard() {
   const bar = (n, all) => `<span class="pbar"><i style="width:${(100 * n / all).toFixed(1)}%"></i></span>`;
   const tot = (name, [n, all]) => `<div class="tot"><span>${name}</span>${bar(n, all)}<span class="n">${n} / ${all}</span></div>`;
   const row = (attr, ic, name, [n, all]) => `<button type="button" class="row${ic ? "" : " noic"}${n === all ? " done" : ""}" ${attr} aria-label="${esc(`${name}: ${n} of ${all} discovered; show them`)}">${ic}` +
-    `<span>${esc(name)}</span>${bar(n, all)}<span class="n">${n}/${all}</span></button>`;
+    `<span>${esc(name)}</span>${bar(n, all)}<span class="n">${n === all ? "✓ " : ""}${n}/${all}</span></button>`;
   const uni = CP.u.filter(c => c[0] >= 0), w = CP.words;
   let h = `<h3>Your progress</h3>` + tot(w.StashCategoryUniques, of(uni)) + tot(w.StashCategorySets, of(CP.s));
   if (CV.tab === "u") {
@@ -2238,7 +2284,7 @@ function progressCard() {
     h += `<h4>Sets</h4><div class="rows">` + CP.sets.map((name, s) =>
       row(`data-set="${s}" data-f="s${s}"`, "", name, of(CP.s.filter(c => c[6] === s)))).join("") + `</div>`;
   }
-  return h + `<p class="foot">Click a ${CV.tab === "u" ? "kind" : "set"} to open it. Green: all discovered.</p>`;
+  return h + `<p class="foot">Click a ${CV.tab === "u" ? "kind" : "set"} to open it. ✓: all discovered.</p>`;
 }
 // The game's hover texts: a button's name over its button; Discovery Progress's title, text and ways to show (the
 // picked one between arrows); a card's item name and base in its quality's color (here with what a click does)
@@ -2555,11 +2601,11 @@ function renderLucion() {
       `. So open the vaults your keys allow, at the highest tier you can take on, but don't hunt the keys for the grail.`
   ].map(x => `<li>${x}</li>`).join("");
   $("gm-lucion-note").textContent = `The table lists ${fresh ? "every grail item they drop" : "your missing items they drop"} (${rows.length}), the ones Lucion's chests raise most over maps first: how often a whole vault finds it at tier 0 and tier 2 ` +
-    `and the ${LUC.bd} chests of a Bitter Depths run do, and how often a ${mapsWord()} map with its best ear does (${setting()}). "A tier-2 vault =" is the maps one vault is worth for it. The dot: gold a unique, green a set item.`;
+    `and the ${LUC.bd} chests of a Bitter Depths run do, and how often a ${mapsWord()} map with its best ear does (${setting()}). "A tier-2 vault =" is the maps one vault is worth for it. Before each name: ● a unique, ◆ a set item.`;
   const shown = LMORE ? rows : rows.slice(0, 15), last = LV.length - 1;
   $("gm-t-lucion").innerHTML = !rows.length ? `<tbody><tr><td>None of your missing items comes from Lucion's chests.</td></tr></tbody>` :
     `<thead><tr><th class="l">Item</th><th class="l opt">Base</th><th>Vault, tier 0</th><th>Vault, tier ${last}</th><th>Bitter Depths run</th><th>${mapsWord()} map, best ear</th><th>A tier-${last} vault =</th></tr></thead><tbody>` +
-    shown.map(o => `<tr><td><span class="q" style="background:var(${ITEMS[o.i].kind === "SET" ? "--q-set" : "--q-unique"})"></span>${ITEMS[o.i].label}</td><td class="l opt">${ITEMS[o.i].base}</td>` +
+    shown.map(o => `<tr><td>${qMark(ITEMS[o.i].kind)}${ITEMS[o.i].label}</td><td class="l opt">${ITEMS[o.i].base}</td>` +
       `<td>${perCell(o.v[0], "vault")}</td><td>${perCell(o.v[last], "vault")}</td><td>${perCell(o.bd, "run")}</td><td>${perCell(o.map, "map")}<br><span class="ratio">${o.ear ? `${o.ear} ear` : "any ear"}</span></td>` +
       `<td>${isFinite(o.x) ? `${nMaps(o.x)}` : "maps never drop it"}</td></tr>`).join("") + `</tbody>`;
   $("gm-lmore").hidden = rows.length <= 15;
@@ -2622,7 +2668,7 @@ if (window.ResizeObserver) new ResizeObserver(() => requestAnimationFrame(() => 
   const t = $("gm-t-gamble").parentElement, w = t.clientWidth; if (w > 0) t.style.setProperty("--vis", w - 28 + "px"); })).observe($("gm-t-gamble").parentElement);
 function gambleDetail(o) {  // every item a base's gamble can find, uniques and sets apart, each with its chance a gamble
   const col = (kind, h) => { const its = o.items.filter(([i]) => ITEMS[i].kind === kind); if (!its.length) return "";
-    return `<div><h4>${h} (${its.length})</h4>${its.map(([i, r]) => `<div class="fs"><div class="fs-n"><span class="q" style="background:var(${kind === "SET" ? "--q-set" : "--q-unique"})"></span>${ITEMS[i].label}</div>` +
+    return `<div><h4>${h} (${its.length})</h4>${its.map(([i, r]) => `<div class="fs"><div class="fs-n">${qMark(kind)}${ITEMS[i].label}</div>` +
       `<div class="fs-v">${oneIn(r)} gambles</div></div>`).join("")}</div>`; };
   return `<div class="fdetail"><div class="fgrid">${col("UNI", "Unique items")}${col("SET", "Set items")}</div></div>`;
 }
@@ -2796,7 +2842,7 @@ function renderLookup() {
   const [ear, er] = bestEar(R, i), earTxt = ear ? `with the ${ear} ear` : "with any Corrupted Ear", f = bestFarm(i);
   const facts = R.none[i] > 0 ? [[oneInMaps(R.none[i]), "maps, no ear"], [oneInMaps(er), `maps ${earTxt}`], [fmtN(Math.log(10) / er), `maps for a 90% chance ${earTxt}`]]
     : [["Never", "in maps"], ["–", "no ear helps"], ["–", "see its source below"]];
-  $("gm-lans").innerHTML = inv + `<div><div class="nm" style="color:var(${it.kind === "SET" ? "--q-set" : "--q-unique"})">${esc(it.label)}</div>` +
+  $("gm-lans").innerHTML = inv + `<div><div class="nm" style="color:var(${it.kind === "SET" ? "--q-set" : "--q-unique"})">${qMark(it.kind)}${esc(it.label)}</div>` +
     `<div class="bs">${esc(it.base)}${it.set ? ` · ${esc(it.set)}` : ""}${on ? " · <b>found</b>" : ""}</div>` +
     `<div class="facts">${facts.map(([v, k]) => `<div class="fact"><span class="v">${v}</span><span class="k">${k}</span></div>`).join("")}</div>` +
     `<div class="betl">${betLine(R, i)}</div>` +

@@ -734,7 +734,50 @@ def state_text(st):
 
 def runs_text(runs):
     """(a cell's text, the state it names) from its runs [lo, hi, state] by character level: its state, or when that
-    changes."""
+    changes. Every change of state the strip shows is named (the author, 2026-11-13: no meaning by colour alone):
+    'Notifies below 15; hidden from 30', not 'Hidden from 30'."""
+    text, kind = short_runs_text(runs)
+    segs = []  # [start, kind, its runs' states]: the strip's runs of one kind (one color)
+    for lo, _, st in runs:
+        if segs and segs[-1][1] == st[0]:
+            segs[-1][2].append(st)
+        else:
+            segs.append([lo, st[0], [st]])
+    kinds = [s[1] for s in segs]
+    looks = any(st[4] for _, _, st in runs)
+    if len(segs) == 1 or (kinds in (["shown", "some", "hidden"], ["some", "hidden"]) or (
+            len(kinds) == 2 and "shown" in kinds and (not looks or kinds[kinds.index("shown") - 1] in HIDING))):
+        return text, kind  # the short words already name every change
+    parts, skip = [], set()
+    for i, (start, k, sts) in enumerate(segs):
+        if i in skip:
+            continue
+        nxt = segs[i + 1] if i + 1 < len(segs) else None
+        if i == 0:
+            if k == "shown" and not looks:
+                continue  # a cell is shown unless it says otherwise
+            words = state_text(sts[0]) if len({state_text(s) for s in sts}) == 1 else STATE_TEXT[k]
+            if nxt[1] == "shown" and not looks:
+                parts.append(f"{words} below {nxt[0]}")
+                skip.add(1)
+            elif k == "some" and nxt[1] == "hidden":
+                parts.append(f"{words}, all from {nxt[0]}")
+                skip.add(1)
+            else:
+                parts.append(words)
+            continue
+        if k == "some" and nxt and nxt[1] == "hidden":
+            parts.append(f"some hidden from {start}, all from {nxt[0]}")
+            skip.add(i + 1)
+        elif k == "shown":
+            parts.append(f"{'shown' if segs[i - 1][1] in HIDING else 'no notification'} from {start}")
+        else:
+            parts.append(f"{STATE_TEXT[k].lower()} from {start}")
+    return cap("; ".join(parts)), kind
+
+
+def short_runs_text(runs):
+    """runs_text's short words: the state, or its main change."""
     if len(runs) == 1:
         return state_text(runs[0][2]), runs[0][2][0]
     kinds = [r[2][0] for r in runs]

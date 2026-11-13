@@ -138,6 +138,9 @@
   .level-map table.mt tr.chg th, .level-map table.mt tr.chg td {
     background: color-mix(in srgb, var(--accent) 16%, transparent); }
   .level-map table.mt tr.chg td:not(.was) { font-weight: 600; }
+  .level-map table.mt tr.chg th { box-shadow: inset 3px 0 0 var(--accent); }  /* a changed row: a bar, not only a tint */
+  .level-map .sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden;
+                   clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
   .level-map .k-hidden { color: var(--s-hidden); } .level-map .k-some { color: var(--s-some); }
   .level-map .k-chat { color: var(--s-chat); } .level-map .k-icon { color: var(--s-icon); }
   .level-map .k-mixed { color: var(--s-mixed); } .level-map .k-shown { color: var(--s-shown); }
@@ -156,9 +159,15 @@
   .level-map td.c:hover { background: var(--soft); }
   .level-map td.c.on { background: var(--soft); box-shadow: inset 0 -2px 0 var(--accent); }
   .level-map td.c .t { display: block; }
-  .level-map .strip { display: flex; height: 4px; margin-top: 5px; border-radius: 2px; overflow: hidden; gap: 1px; }
+  .level-map .strip { display: flex; height: 6px; margin-top: 5px; border-radius: 2px; overflow: hidden; gap: 1px; }
   .level-map .strip + .strip { margin-top: 2px; }
-  .level-map .strip span { background: var(--sc); opacity: .85; }
+  /* the strip's runs and the legend's swatches: hiding states hatched, so they don't depend on the color */
+  .level-map .strip span, .level-map .sw { background: var(--sc); opacity: .85; }
+  .level-map .strip span.s-hidden, .level-map .sw.s-hidden {
+    background: repeating-linear-gradient(135deg, var(--sc) 0 2px, transparent 2px 4px); }
+  .level-map .strip span.s-some, .level-map .sw.s-some {
+    background: repeating-linear-gradient(135deg, var(--sc) 0 2px, transparent 2px 7px); }
+  .level-map .sw { display: inline-block; width: 22px; height: 6px; border-radius: 2px; flex: none; }
   .level-map .muted { color: var(--muted); }
 
   /* what changes */
@@ -215,6 +224,13 @@
     .level-map .bar .hint { display: none; }
     .level-map .jump { flex-wrap: nowrap; overflow-x: auto; width: 100%; white-space: nowrap; padding-bottom: 2px; }
   }
+  /* a short window (zoomed in): the sticky headings and headers scroll away, then the bar too, so the page keeps
+     room to read (the script measures --bar as 0 while the bar doesn't stick) */
+  @media (max-height: 520px) {
+    .level-map section.sec > h3.sn, .md-typeset .level-map details.card > summary, .level-map details.card > summary,
+    .level-map .card .grp > h4 { position: static; }
+  }
+  @media (max-height: 420px) { .level-map .bar { position: static; } }
   @media (prefers-reduced-motion: reduce) { .level-map * { transition: none !important; } }
 </style>
 
@@ -232,8 +248,8 @@
       <li>Each column is a group of filter levels that behave the same; levels that only hide different potions share
         one (Super Healing H5, Super Mana M5, Rejuvenation 35%).</li>
       <li>Many items hide only once your character reaches a level: <b>from 80</b> means from character level 80.
-        The strip under a cell shows character levels 1 to 99. Type your character level in the bar to see your
-        own.</li>
+        The strip under a cell shows character levels 1 to 99, hatched where items hide. Type your character level
+        in the bar to see your own.</li>
       <li>Click a cell for its details: which items, when, and what changes in Normal difficulty and special areas.
         The rows link to the pages with every base and item.</li>
       <li><b>Hidden items still show in town</b>, and unique and set items still show until you've discovered them
@@ -300,8 +316,28 @@ function link(key) {
 function levelsText(lv) {
   return lv.length === 1 ? "Level " + lv[0] : "Levels " + lv[0] + "–" + lv[lv.length - 1];
 }
+const lvSpan = (lo, hi) => lo === hi ? String(lo) : lo + "–" + hi;
+function levelRuns(lv) {  // [3, 5, 6, 7]: "Levels 3, 5–7"
+  const runs = [];
+  for (const v of lv) {
+    const last = runs[runs.length - 1];
+    if (last && v === last[1] + 1) last[1] = v; else runs.push([v, v]);
+  }
+  return (lv.length > 1 ? "Levels " : "Level ") + runs.map(([a, b]) => lvSpan(a, b)).join(", ");
+}
+function stripWords(cell) {  // the strip in words, for screen readers: ". Character levels 1–14: Notifies; 15–99: Hidden"
+  const parts = cell.g.filter(([, rs]) => rs.length > 1).map(([lv, rs]) =>
+    (cell.g.length > 1 ? levelRuns(lv) + ", character levels " : "Character levels ") +
+    rs.map(([lo, hi, , w]) => lvSpan(lo, hi) + ": " + w).join("; "));
+  return parts.length ? ". " + parts.join(". ") : "";
+}
 // the legend and the filter levels
-for (const k of ["chat", "icon", "mixed", "shown", "some", "hidden"]) $("legend").append(state(k, WORDS[k]));
+for (const k of ["chat", "icon", "mixed", "shown", "some", "hidden"]) {
+  const item = el("span"), sw = el("span", "sw s-" + k);
+  sw.setAttribute("aria-hidden", "true");
+  item.append(sw, state(k, WORDS[k]));
+  $("legend").append(item);
+}
 DATA.levels.forEach((name, i) => {
   const li = el("li");
   const col = DATA.cols.findIndex((c) => c.levels.includes(i));
@@ -361,12 +397,13 @@ function drawCell(td, cell) {
     }
     for (const [, rs] of cell.g) {
       const strip = el("span", "strip");
-      for (const [lo, hi, k] of rs) {
+      for (const [lo, hi, k, w] of rs) {
         const seg = el("span", "s-" + k);
         seg.style.flex = String(hi - lo + 1);
+        seg.title = lvSpan(lo, hi) + ": " + w;
         strip.append(seg);
       }
-      strip.setAttribute("aria-hidden", "true");
+      strip.setAttribute("aria-hidden", "true");  // the cell's aria-label says it (stripWords)
       td.append(strip);
     }
   } else {
@@ -395,7 +432,7 @@ function addRow(tbody, panel, row, cells, name, cls, count) {
     const td = el("td", "c");
     td.tabIndex = 0;
     td.setAttribute("role", "button");
-    td.setAttribute("aria-label", name + ", " + levelsText(DATA.cols[ci].levels) + ": " + cell.t);
+    td.setAttribute("aria-label", name + ", " + levelsText(DATA.cols[ci].levels) + ": " + cell.t + stripWords(cell));
     drawCell(td, cell);
     cellViews.push([td, cell]);
     const open = () => showDetails(panel, td, cell, ci, name, row);
@@ -537,7 +574,9 @@ function blockEl(b, cols, was) {
   const tb = el("tbody");
   for (const r of b.r) {
     const tr = el("tr", r[2] ? "chg" : "");
-    tr.append(el("th", null, T(r[0])));
+    const th = el("th", null, T(r[0]));
+    if (r[2]) th.append(el("span", "sr", " (changed)"));
+    tr.append(th);
     r[1].forEach((ci, i) => {
       const td = el("td", i < was ? "was" : "");
       td.append(outcomeEl(T(ci)));
@@ -637,18 +676,19 @@ redraw();
 // the bar's height: the cards' headers stay right under it while scrolling, and jumps land below it; each card's
 // header height: its sections' headings stay right under that
 const root = document.querySelector(".level-map");
-const setBar = () => root.style.setProperty("--bar", $("bar").offsetHeight + "px");
+const sticks = (e) => getComputedStyle(e).position === "sticky";  // not in a short window (the max-height rules)
+const setBar = () => root.style.setProperty("--bar", (sticks($("bar")) ? $("bar").offsetHeight : 0) + "px");
 const cards = [...document.querySelectorAll(".level-map details.card")];
 const setHeads = () => cards.forEach((c) => {
-  c.style.setProperty("--head", c.querySelector("summary").offsetHeight + "px");
+  const s = c.querySelector("summary");
+  c.style.setProperty("--head", (sticks(s) ? s.offsetHeight : 0) + "px");
 });
 if (window.ResizeObserver) {
   new ResizeObserver(setBar).observe($("bar"));
   const ro = new ResizeObserver(setHeads);
   cards.forEach((c) => ro.observe(c.querySelector("summary")));
-} else {
-  window.addEventListener("resize", () => { setBar(); setHeads(); });
 }
+window.addEventListener("resize", () => { setBar(); setHeads(); });  // a height change sticks or unsticks them
 setBar();
 setHeads();
 })();

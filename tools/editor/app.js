@@ -741,7 +741,7 @@ EZ.app = (function () {
   /* lineRef as a link (a button) or as text. */
   function lineLink(lines, i) {
     const r = lineRef(lines, i);
-    return r.open ? h("button.fe-linkbtn", {type: "button", title: "Open it", onclick: r.open}, r.text) : r.text;
+    return r.open ? h("button.fe-linkbtn.fe-ch-ref", {type: "button", title: "Open it", onclick: r.open}, r.text) : r.text;
   }
 
   /* My rules and Erazure's rules open with this (it folds, and stays folded in this browser): they are for the loot

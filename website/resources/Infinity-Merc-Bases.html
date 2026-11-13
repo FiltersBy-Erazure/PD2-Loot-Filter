@@ -95,7 +95,7 @@
   .merc-map .chart-head { display: grid; gap: 4px; }
   .merc-map ul.mm-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; padding: 0; margin: 0; list-style: none; }
   .merc-map .mm-legend li { display: flex; align-items: baseline; gap: 7px; font-size: 13.5px; cursor: default; min-width: 0; margin: 0; }
-  .merc-map .mm-legend .key { width: 16px; height: 3px; border-radius: 2px; flex: none; transform: translateY(-3px); }
+  .merc-map .mm-legend .key { width: 26px; height: 4px; flex: none; transform: translateY(-3px); }
   .merc-map .mm-legend .spd { color: var(--muted); font-size: 12.5px; font-variant-numeric: tabular-nums; }
   .merc-map .plot { position: relative; min-width: 0; }
   .merc-map .plot svg { display: block; width: 100%; max-width: 100%; height: auto; overflow: visible; touch-action: pan-y; }
@@ -103,12 +103,15 @@
   .merc-map .tick { fill: var(--muted); font-size: 11.5px; font-family: var(--body); font-variant-numeric: tabular-nums; }
   .merc-map .axis-title { fill: var(--muted); font-size: 12px; font-family: var(--body); }
   .merc-map .marker-label { fill: var(--fg2); font-size: 11.5px; font-weight: 700; font-family: var(--body); }
+  .merc-map .end-label { fill: var(--muted); font-size: 12px; font-weight: 700; font-family: var(--body); font-variant-numeric: tabular-nums; }
+  /* a speed group's key: a short line with its color and dash (after .plot svg, which the tooltip's keys sit in) */
+  .merc-map svg.key { display: inline-block; overflow: visible; }
   .merc-map .mm-tip { position: absolute; z-index: 5; pointer-events: none; background: var(--panel); border: 1px solid var(--line);
                       border-radius: 8px; box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25); padding: 8px 10px; font-size: 12.5px;
                       min-width: 210px; max-width: 300px; }
   .merc-map .mm-tip-head { font-weight: 700; margin-bottom: 4px; color: var(--fg); }
-  .merc-map .mm-tip-row { display: grid; grid-template-columns: 14px auto 1fr; gap: 0 7px; align-items: baseline; padding: 1px 0; }
-  .merc-map .mm-tip-row .key { width: 14px; height: 2px; border-radius: 1px; transform: translateY(-3px); }
+  .merc-map .mm-tip-row { display: grid; grid-template-columns: 22px auto 1fr; gap: 0 7px; align-items: baseline; padding: 1px 0; }
+  .merc-map .mm-tip-row .key { width: 22px; height: 4px; transform: translateY(-3px); }
   .merc-map .mm-tip-row b { font-variant-numeric: tabular-nums; color: var(--fg); }
   .merc-map .mm-tip-row span:last-child { color: var(--fg2); overflow-wrap: anywhere; }
   .merc-map .mm-tip-foot { margin-top: 5px; color: var(--muted); font-size: 11.5px; }
@@ -129,7 +132,7 @@
   .merc-map .mm-table tbody tr:hover td { background: var(--accent-wash); }
   .merc-map .mm-table td.name { font-weight: 600; }
   .merc-map .mm-table td.name small { display: block; font-weight: 400; color: var(--muted); font-size: 12px; }
-  .merc-map .mm-table td .key { display: inline-block; width: 12px; height: 3px; border-radius: 2px; margin-right: 7px; transform: translateY(-3px); }
+  .merc-map .mm-table td .key { display: inline-block; width: 20px; height: 4px; margin-right: 7px; transform: translateY(-3px); }
   .merc-map .mm-table td.best { font-weight: 700; }
   .merc-map .mm-table td.best::after { content: "\25C6"; margin-left: 5px; font-size: 9px; color: var(--accent); vertical-align: 1px; }
   .merc-map .mm-table td.low { color: var(--warn); font-weight: 600; }
@@ -477,11 +480,13 @@
   const ELITE = BASES.filter(b => b.tier === "E");
 
   const SLOTS = ["--s1", "--s2", "--s3", "--s4", "--s5"];
+  // each speed group's own dash too, so its line doesn't rely on its color alone
+  const DASHES = ["none", "8 4", "2 3", "11 3 2 3", "6 2 1 2"];
   const GROUPS = [-20, -10, 0, 10, 20].map((wsm, k) => {
     const bases = ELITE.filter(b => b.wsm === wsm).sort((a, b) => b.avg - a.avg || a.name.localeCompare(b.name));
     const lead = bases[0];
     const tied = bases.filter(b => b.avg === lead.avg);
-    return { k, wsm, color: `var(${SLOTS[k]})`, bases, lead, label: bases.map(b => b.name).join(", "), short: tied.map(b => b.name).join(" · ") };
+    return { k, wsm, color: `var(${SLOTS[k]})`, dash: DASHES[k], bases, lead, label: bases.map(b => b.name).join(", "), short: tied.map(b => b.name).join(" · ") };
   });
   const groupOf = b => GROUPS.find(g => g.wsm === b.wsm);
 
@@ -654,6 +659,12 @@
   }
   const SVGNS = "http://www.w3.org/2000/svg";
   const mk = (tag, attrs, parent) => { const n = document.createElementNS(SVGNS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); if (parent) parent.appendChild(n); return n; };
+  // a speed group's key: a short line in its color and dash (its size comes from the styles)
+  const keyOf = g => {
+    const s = mk("svg", { class: "key", "aria-hidden": "true", focusable: "false" });
+    mk("line", { x1: 0, x2: "100%", y1: "50%", y2: "50%", stroke: g.color, "stroke-width": 2, "stroke-dasharray": g.dash }, s);
+    return s;
+  };
 
   const iasChart = (card, better, fmt, tick, metric) => ({
     card, better, fmt, tick, xMax: MAX_IAS, xTitle: "Item IAS (%)", pick: true, fromZero: false,
@@ -689,7 +700,7 @@
       GROUPS.forEach(g => {
         const li = document.createElement("li");
         li.tabIndex = 0;
-        const k = document.createElement("span"); k.className = "key"; k.style.background = g.color;
+        const k = keyOf(g);
         const t = document.createElement("span"); t.textContent = g.label;
         const s = document.createElement("span"); s.className = "spd"; s.textContent = "speed " + signed(g.wsm);
         li.append(k, t, s);
@@ -725,7 +736,7 @@
     const W = Math.max(280, Math.round(plot.clientWidth || 600));
     const narrow = W < 560;
     const H = narrow ? 250 : 290;
-    const m = { l: narrow ? 46 : 58, r: 14, t: 24, b: 42 };
+    const m = { l: narrow ? 46 : 58, r: 36, t: 24, b: 42 };
     const iw = W - m.l - m.r, ih = H - m.t - m.b;
     const xMax = C.xMax;
     const vals = GROUPS.map(g => C.values(g));
@@ -776,8 +787,14 @@
       let d = `M${X(0).toFixed(1)},${Y(v[0]).toFixed(1)}`;
       for (let i = 1; i <= xMax; i++) if (v[i] !== v[i - 1]) d += `H${X(i).toFixed(1)}V${Y(v[i]).toFixed(1)}`;
       d += `H${X(xMax).toFixed(1)}`;
-      mk("path", { d, fill: "none", stroke: g.color, "stroke-width": 2, "stroke-linejoin": "round", "stroke-linecap": "round", class: "series", "data-k": g.k }, svg);
+      mk("path", { d, fill: "none", stroke: g.color, "stroke-width": 2, "stroke-dasharray": g.dash, "stroke-linejoin": "round",
+        "stroke-linecap": g.dash === "none" ? "round" : "butt", class: "series", "data-k": g.k }, svg);
     });
+    // direct labels at the right end (the group's speed), kept 13px apart and above the x axis
+    const ends = GROUPS.map((g, n) => ({ g, y: Y(vals[n][xMax]) })).sort((a, b) => a.y - b.y || a.g.k - b.g.k);
+    for (let i = 1; i < ends.length; i++) ends[i].y = Math.max(ends[i].y, ends[i - 1].y + 13);
+    for (let i = ends.length - 1; i >= 0; i--) ends[i].y = Math.min(ends[i].y, i === ends.length - 1 ? m.t + ih : ends[i + 1].y - 13);
+    ends.forEach(e => { const t = mk("text", { x: W - m.r + 6, y: e.y + 4, class: "end-label" }, svg); t.textContent = signed(e.g.wsm); });
 
     // hover layer
     const cross = mk("line", { y1: m.t, y2: m.t + ih, stroke: "var(--fg2)", "stroke-width": 1, opacity: 0, "shape-rendering": "crispEdges" }, svg);
@@ -795,7 +812,7 @@
       const head = document.createElement("div"); head.className = "mm-tip-head"; head.textContent = C.head(i); tip.appendChild(head);
       order.forEach(({ g, v }) => {
         const row = document.createElement("div"); row.className = "mm-tip-row";
-        const k = document.createElement("span"); k.className = "key"; k.style.background = g.color;
+        const k = keyOf(g);
         const b = document.createElement("b"); b.textContent = C.fmt(v);
         const s = document.createElement("span"); s.textContent = `${g.short} · ${C.extra(g, i)}`;
         row.append(k, b, s); tip.appendChild(row);
@@ -859,7 +876,7 @@
   function addCell(tr, text, cls) { const c = document.createElement("td"); c.textContent = text; if (cls) c.className = cls; tr.appendChild(c); return c; }
   function nameCell(tr, b) {
     const n = addCell(tr, "", "name"), g = groupOf(b);
-    const key = document.createElement("span"); key.className = "key"; key.style.background = g.color; n.appendChild(key);
+    n.appendChild(keyOf(g));
     n.appendChild(document.createTextNode(b.name));
     if (b.tier !== "E") { const s = document.createElement("small"); s.textContent = TIER[b.tier]; n.appendChild(s); }
   }
@@ -946,7 +963,7 @@
       GROUPS.forEach((g, n) => {
         const tr = document.createElement("tr");
         const c0 = document.createElement("td");
-        const key = document.createElement("span"); key.className = "key"; key.style.background = g.color; c0.appendChild(key);
+        c0.appendChild(keyOf(g));
         c0.appendChild(document.createTextNode(`${signed(g.wsm)}: ${g.label}`));
         tr.appendChild(c0);
         for (let f = hiF; f >= loF; f--) {

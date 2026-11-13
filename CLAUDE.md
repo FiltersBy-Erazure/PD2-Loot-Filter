@@ -820,6 +820,25 @@
   (double-click) previews it at http://127.0.0.1:8000/PD2-Loot-Filter/ with MkDocs Material 9.7.7 in
   `tools/.cache/mkdocs-venv`. CI builds it with `--strict`. On `main`, `.github/workflows/pages.yml` builds and
   deploys it on every push (Pages source: GitHub Actions).
+- Colour and zoom on the players' pages (2026-11-13, the author: the calculators' green / coral pair, then "check
+  every players' page for meaning shown by colour alone, and add a sign, word or mark where it is" and "do a 200%
+  zoom pass"; no settings panel: the site's light / dark switch and the browser's zoom already exist). Colour never
+  carries a meaning alone; the game's own colours (labels, minimap icons, the Compendium's art) are exempt, but page
+  text that explains them names the shape first. Better / worse: #38a283 / #cc7b38 dark, #11805c / #b65a17 light (Ohm vs
+  Jewel, Damage Calculator, IAS Calculator, Run Speed, the event runs' sliders and chart); the old #4cc38a / #f0866a
+  were the same tan to deuteranopes. Chart series: each its own dash (`none`, `8 4`, `2 3`, `11 3 2 3`), the legend's
+  key a short line with that dash, and a label at the line's end or by its dot, pushed 13 px apart where they meet;
+  four builds or setups are blue, orange, green and purple (#bb33aa / #a8329b: the old yellow 4th was orange's twin
+  even with full colour vision; checked with the dataviz skill's validator, all pairs). A picked, current, done or
+  changed state also gets a glyph (✓ ▸ ◆ ● ✕ ⚠), a word, bold, an inset bar or an outline; links in running text are
+  underlined (Material's reset removes underlines; `erazure.css` for the site's own pages, each page's scoped rule for
+  its own); the Filter Levels / Magic / Rare strips are hatched where items hide and their cells' words name every
+  change. 200% zoom is a 960 x 470 CSS viewport on a 1920 x 1080 screen and 683 x 315 on 1366 x 768: a bar that
+  sticks to the top is static below `max-height: 420px` (tiers, bases, magic, rare, levels; Filter Levels' card and
+  section headings below 520px), the Damage Calculator's strip is smaller below 500px and static below 420px; a page's
+  own sticky or fixed element keeps a z-index under Material's header (4), or it slides over the header as its
+  section scrolls away; an `overflow-x: auto` wrapper holding a screen-reader note (`position: absolute`) needs
+  `position: relative`, or the page scrolls sideways (the Damage Calculator did, 137 px at 683 wide).
 - The website's **Filter Editor** tab (2026-11-11, the author: players make their own changes to Erazure, "as
   comprehensive as possible"; plan `C:\Users\Erik\.claude\plans\i-want-to-create-serialized-stardust.md`, built on
   the branch `filter-editor` and merged into main 2026-11-12 for players to try, 738e522; its work goes on on main):

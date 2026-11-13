@@ -299,8 +299,9 @@ EZ.areas = EZ.areas || [];
         h("thead", h("tr", h("th", "Lv"), h("th", "Level"), h("th", "Erazure"), got.mine ? h("th", {title: "With your " +
           "changes so far"}, "Yours now") : null, trial ? h("th", {title: "With this change"}, "New") : null)),
         h("tbody", rows))),
-        h("p.fe-sub.fe-small", {style: {margin: ".3em 0 0"}}, (got.mine ? "A gold bar: your filter differs from " +
-          "Erazure's there now. " : "") + (trial ? "New: with this change; a gold box where it changes something. " : "") +
+        h("p.fe-sub.fe-small", {style: {margin: ".3em 0 0"}}, (got.mine ? "A bar at a row's left edge: your filter " +
+          "differs from Erazure's there now. " : "") + (trial ? "New: with this change; a box around the cell where it " +
+          "changes something. " : "") +
           "♪ a drop sound, chat a chat line; hover a level for its name."),
         trials && same === groups.length ? h("p.fe-note.warn.fe-small", "This change changes nothing for this item " +
           "at these settings: Erazure (or your other changes) already does it.") : null);
@@ -396,8 +397,8 @@ EZ.areas = EZ.areas || [];
         // the remove button first: removing many, the next one comes to the same place
         s.codes.length > 1 ? h("button.fe-x", {type: "button", "aria-label": "Leave out " + nameOf(c), onclick: () =>
           set((x) => { x.scope.codes = x.scope.codes.filter((k) => k !== c); })}, "✕") : null,
-        h("button.fe-linkbtn", {type: "button", title: "Show this one in the result", onclick: () =>
-          set((x) => { x.spec.code = c; })}, nameOf(c)))),
+        h("button.fe-linkbtn", {type: "button", title: "Show this one in the result", "aria-pressed": String(c === spec.code),
+          onclick: () => set((x) => { x.spec.code = c; })}, nameOf(c)))),
         shownCodes.length < s.codes.length ? h("button.fe-btn.ghost.small", {type: "button", onclick: () =>
           set((x) => { x.allBases = true; })}, `+ ${s.codes.length - shownCodes.length} more · show`) : null,
         missingTiers.length ? h("button.fe-btn.ghost.small", {type: "button", onclick: () => addCodes(missingTiers)},

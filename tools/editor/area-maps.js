@@ -81,13 +81,14 @@ EZ.areas = EZ.areas || [];
           ".is-changed" : ""), h("td", s.name), h("td.fe-sub.fe-small", rolls(s)),
           cols.map(([k, t]) => box2(k, s, k === "warn" ? warn : k === "hide" ? hide : mark, t)))))));
       const mods = h("section.fe-card", {id: "fe-map-mods"}, h("h3", "Map mods"),
-        h("p.fe-sub", "Warn: a red line under the map's name when you hover over an identified map that rolls it. " +
+        h("p.fe-sub", "Warn: a line starting with ! (in red) under the map's name when you hover over an identified " +
+          "map that rolls it. " +
           "Hide: identified maps that roll it are hidden on the ground outside town (no label, no icon); your " +
           "inventory and stash still show them."),
         groups.map(([title, list]) => h("div", h("h4", title), table(list, [["warn", "Warn"], ["hide", "Hide"]]))),
         bonus.length ? h("div", h("h4", "Bonuses"),
           h("p.fe-sub.fe-small", "Good for you, and most maps roll one of them, so they take no warning or hide. Mark: a " +
-            "gold line under the map's name, to spot the ones you look for."),
+            "line starting with + (in gold) under the map's name, to spot the ones you look for."),
           table(bonus, [["mark", "Mark"]])) : null);
 
       // the maps the player never picks up: their non-magical ones, on the ground outside town

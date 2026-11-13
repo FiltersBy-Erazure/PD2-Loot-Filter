@@ -29,7 +29,8 @@ EZ.sounds = (function () {
       h("button.fe-btn.small", {type: "button", "aria-label": "Pick " + name(data, id), onclick: () => { close(); onpick(id); }},
         "Pick"),
       h("span", h("b", name(data, id)), h("span.fe-sub", " #" + id),
-        silent.has(id) ? h("span.fe-pill.warn", {style: {marginLeft: ".4em"}}, "silent: no sound file") : null),
+        id === current ? h("span.fe-pill.accent", {style: {marginLeft: ".4em"}}, "now") : null,
+        silent.has(id) ?h("span.fe-pill.warn", {style: {marginLeft: ".4em"}}, "silent: no sound file") : null),
       silent.has(id) ? null : play(data, id));
     let closeIt = null;
     const draw = () => {

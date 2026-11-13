@@ -162,7 +162,8 @@ EZ.areas = EZ.areas || [];
             "don't count)") : null) : null),
       h("fieldset.fe-bd-set", h("legend", "What it gets"),
         h("label.fe-bd-field", h("span.fe-bd-label", "A line in its description"), lineInput),
-        h("div.fe-bd-field", h("span.fe-bd-label", "Its color"), h("div.fe-row.fe-small",
+        h("div.fe-bd-field", h("span.fe-bd-label", "Its color: " + (d.color || "GREEN").charAt(0) +
+          (d.color || "GREEN").slice(1).toLowerCase().replace("_", " ")), h("div.fe-row.fe-small",
           EZ.wishlists.COLORS.map((c) => h("button.fe-chipbtn", {type: "button", "aria-pressed": String(d.color === c),
             title: c.charAt(0) + c.slice(1).toLowerCase().replace("_", " "), "aria-label": "Color: " +
               c.toLowerCase().replace("_", " "), onclick: () => set(() => { d.color = c; })},

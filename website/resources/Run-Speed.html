@@ -22,8 +22,8 @@
      default; light when the website (Material) is switched to light. */
   .frw-map {
     --bg: #151412; --panel: #1f1d1a; --fg: #ece7de; --fg2: #cfc8bb; --muted: #a59e91; --line: #36322c;
-    --grid: #2e2b27; --axis: #4a463f; --accent: #d8b45e; --accent-wash: rgba(216, 180, 94, 0.12); --good: #4cc38a;
-    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --base: #8f897e;
+    --grid: #2e2b27; --axis: #4a463f; --accent: #d8b45e; --accent-wash: rgba(216, 180, 94, 0.12); --good: #38a283;
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #bb33aa; --base: #8f897e;
     --display: "Cinzel", "Trajan Pro", Georgia, serif;
     --body: "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     color-scheme: dark;
@@ -31,8 +31,8 @@
   }
   [data-md-color-scheme="default"] .frw-map {
     --bg: #f3f1ec; --panel: #fffdf8; --fg: #23211c; --fg2: #4a463e; --muted: #6b655a; --line: #ded7c9;
-    --grid: #e7e2d8; --axis: #c3bcae; --accent: #8a6d1f; --accent-wash: rgba(138, 109, 31, 0.10); --good: #12804f;
-    --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #b98200; --base: #9a9385;
+    --grid: #e7e2d8; --axis: #c3bcae; --accent: #8a6d1f; --accent-wash: rgba(138, 109, 31, 0.10); --good: #11805c;
+    --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #a8329b; --base: #9a9385;
     color-scheme: light;
   }
   .frw-map *, .frw-map *::before, .frw-map *::after { box-sizing: border-box; }
@@ -61,7 +61,10 @@
   .frw-map .builds { display: grid; gap: 14px; grid-template-columns: repeat(var(--n, 2), minmax(0, 1fr)); align-items: start; }
   .frw-map .build { background: var(--panel); border: 1px solid var(--line); border-top: 3px solid var(--key); border-radius: 8px; min-width: 0; }
   .frw-map .build-head { display: flex; align-items: center; gap: 8px; padding: 10px 12px 6px; }
-  .frw-map .build-head .key { width: 12px; height: 12px; border-radius: 3px; background: var(--key); flex: none; }
+  /* a setup's key: its color with its letter (the race's lanes say A-D too), so the color is never the only link */
+  .frw-map .key { display: inline-grid; place-items: center; flex: none; width: 16px; height: 16px; border-radius: 3px;
+                  font: 700 11px/1 var(--body); letter-spacing: 0; text-transform: none; vertical-align: -3px; }
+  .frw-map .build-head .key { background: var(--key); }
   .frw-map .build-head input { flex: 1; background: transparent; border: 1px solid transparent; font-weight: 700; padding: 2px 4px; min-width: 0; }
   .frw-map .build-head input:hover, .frw-map .build-head input:focus { border-color: var(--axis); }
   .frw-map .build-head button { padding: 3px 8px; font-size: 12.5px; }
@@ -91,7 +94,7 @@
   .frw-map .fr-table td { font-variant-numeric: tabular-nums; }
   .frw-map .fr-table tr.strong td { font-weight: 700; }
   .frw-map .fr-table td small { display: block; color: var(--muted); font-size: 11.5px; font-weight: 400; }
-  .frw-map .fr-table th .key { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; }
+  .frw-map .fr-table th .key, .frw-map .tile-label .key { margin-right: 6px; }
   .frw-map .plot { position: relative; min-width: 0; }
   .frw-map .plot svg { display: block; width: 100%; height: auto; overflow: visible; }
   .frw-map .tick { fill: var(--muted); font-size: 11.5px; font-family: var(--body); font-variant-numeric: tabular-nums; }
@@ -99,13 +102,13 @@
   .frw-map .mark { font-size: 11.5px; font-weight: 700; font-family: var(--body); }
   .frw-map ul.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; padding: 0; margin: 0; list-style: none; }
   .frw-map .legend li { display: flex; align-items: center; gap: 7px; font-size: 13.5px; margin: 0; }
-  .frw-map .legend .key { width: 16px; height: 3px; border-radius: 2px; }
+  .frw-map .legend svg.line { flex: none; }  /* a short line with the series' own dash */
   .frw-map .tip { position: absolute; z-index: 5; pointer-events: none; background: var(--panel); border: 1px solid var(--line);
                   border-radius: 8px; box-shadow: 0 6px 24px rgba(0,0,0,.25); padding: 7px 10px; font-size: 12.5px; min-width: 170px; }
   .frw-map .method ul { margin: 0; padding-left: 20px; display: grid; gap: 7px; max-width: 96ch; color: var(--fg2); list-style: disc; }
   .frw-map .method li strong { color: var(--fg); }
   .frw-map .credit { color: var(--muted); font-size: 13px; }
-  .frw-map .credit a { color: var(--accent); }
+  .frw-map .credit a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
   /* the race: the game's own pictures on the game's ground (the scene keeps its own colors in light mode too) */
   .frw-map .race-bar { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
   .frw-map .race-bar .seg { display: inline-flex; border: 1px solid var(--axis); border-radius: 6px; overflow: hidden; }
@@ -122,7 +125,7 @@
   .frw-map ol.race-res { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
   .frw-map .race-res li { display: flex; flex-wrap: wrap; gap: 2px 10px; align-items: baseline; font-size: 13.5px; margin: 0; color: var(--fg2); }
   .frw-map .race-res .who { display: inline-flex; align-items: baseline; gap: 7px; color: var(--fg); font-weight: 600; }
-  .frw-map .race-res .key { display: inline-block; width: 10px; height: 10px; border-radius: 2px; align-self: center; }
+  .frw-map .race-res .key { align-self: center; }
   .frw-map .race-res b { font-variant-numeric: tabular-nums; color: var(--fg); }
   .frw-map .race-res small { color: var(--muted); font-size: 12.5px; }
   @media (max-width: 860px) {
@@ -175,7 +178,7 @@
 
   <section class="panel" aria-labelledby="fr-chart-h">
     <h2 id="fr-chart-h">Running speed and FRW on gear</h2>
-    <p class="sub">Each line is a setup&rsquo;s running speed as its FRW on gear goes from 0 to 300%, its skills as they are; the dot is where it is now. The gray line is a character with no movement skills.</p>
+    <p class="sub">Each line is a setup&rsquo;s running speed as its FRW on gear goes from 0 to 300%, its skills as they are; the dot, with the setup&rsquo;s letter, is where it is now. The dashed gray line is a character with no movement skills.</p>
     <ul class="legend" id="fr-legend"></ul>
     <div class="plot" id="fr-plot"></div>
   </section>
@@ -211,6 +214,9 @@
   const STORE = "erazure-run-speed";
   const KEYS = ["var(--s1)", "var(--s2)", "var(--s3)", "var(--s4)"];
   const LETTERS = ["A", "B", "C", "D"];
+  const INK = ["#111", "#111", "#111", "#fff"];  // each key's letter, the darker or lighter as reads best on its color
+  const DASHES = ["", "8 4", "2 3", "11 3 2 3"];  // each setup's line in the chart (the line with no skills: 4 3)
+  const keyHTML = i => `<span class="key" aria-hidden="true" style="background:${KEYS[i]};color:${INK[i]}">${LETTERS[i]}</span>`;
   const nf0 = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
   const nf2 = new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const nf1 = new Intl.NumberFormat("en-US", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
@@ -329,6 +335,7 @@
     if (parent) parent.appendChild(e);
     return e;
   }
+  const keyEl = (i, parent) => { const k = el("span", { class: "key", "aria-hidden": "true" }, parent, LETTERS[i]); k.style.background = KEYS[i]; k.style.color = INK[i]; return k; };
   let uid = 0;
   function numField(p, label, get, set, lo, hi, hint) {
     const f = el("div", { class: "field" }, p); const id = "fr-f" + (++uid);
@@ -350,7 +357,7 @@
       const card = el("article", { class: "build", "aria-label": `Setup ${LETTERS[i]}` }, box);
       card.style.setProperty("--key", KEYS[i]);
       const head = el("div", { class: "build-head" }, card);
-      el("span", { class: "key" }, head);
+      keyEl(i, head);
       const nm = el("input", { type: "text", "aria-label": `Name of setup ${LETTERS[i]}`, maxlength: 40 }, head);
       nm.value = b.name || `Setup ${LETTERS[i]}`;
       nm.addEventListener("input", () => { b.name = nm.value; render(); });
@@ -396,13 +403,13 @@
     const tiles = $("fr-tiles"); tiles.innerHTML = "";
     R.forEach((r, i) => {
       const t = el("div", { class: "tile" }, tiles); t.style.setProperty("--key", KEYS[i]);
-      el("span", { class: "tile-label" }, t, builds[i].name || `Setup ${LETTERS[i]}`);
+      const lab = el("span", { class: "tile-label" }, t); keyEl(i, lab); lab.append(builds[i].name || `Setup ${LETTERS[i]}`);
       const v = el("span", { class: "tile-value" }, t); v.innerHTML = `${nf2.format(r.run)}<span>yards a second, running</span>`;
       el("span", { class: "tile-sub" }, t, `Effective FRW ${r.e}%, movement from skills ${r.sk.vel >= 0 ? "+" : ""}${r.sk.vel}%`);
       el("span", { class: "tile-sub" }, t, `${nf0.format((r.run / r.base - 1) * 100)}% faster than running with nothing`);
       if (r.charge) el("span", { class: "tile-sub" }, t, `Charging: ${nf2.format(r.charge)} yards a second`);
     });
-    let h = "<thead><tr><th></th>" + R.map((r, i) => `<th><span class="key" style="background:${KEYS[i]}"></span>${esc(builds[i].name || "Setup " + LETTERS[i])}</th>`).join("") + "</tr></thead><tbody>";
+    let h = "<thead><tr><th></th>" + R.map((r, i) => `<th>${keyHTML(i)}${esc(builds[i].name || "Setup " + LETTERS[i])}</th>`).join("") + "</tr></thead><tbody>";
     const row = (l, f, c) => { h += `<tr class="${c || ""}"><td>${l}</td>` + R.map(f).join("") + "</tr>"; };
     row("FRW on gear", r => `<td>${r.frw}%${r.sk.itemFrw ? `<small>with Vigor&rsquo;s +${r.sk.itemFrw}</small>` : ""}</td>`);
     row("Effective FRW", r => `<td>${r.e}%</td>`);
@@ -425,8 +432,9 @@
     const width = Math.max(300, box.clientWidth || 800), narrow = width < 560, height = narrow ? 240 : 300;
     const M = { l: 44, r: 14, t: 12, b: 38 };
     const leg = $("fr-legend"); leg.innerHTML = "";
-    builds.forEach((b, i) => { const li = el("li", {}, leg); const k = el("span", { class: "key" }, li); k.style.background = KEYS[i]; li.append(b.name || `Setup ${LETTERS[i]}`); });
-    const li0 = el("li", {}, leg); const k0 = el("span", { class: "key" }, li0); k0.style.background = "var(--base)"; li0.append("No movement skills");
+    const sample = (li, color, w, dash) => { const s = mk("svg", { class: "line", width: 30, height: 8, "aria-hidden": "true" }, li); mk("line", { x1: 0, x2: 30, y1: 4, y2: 4, stroke: color, "stroke-width": w, "stroke-dasharray": dash }, s); };
+    builds.forEach((b, i) => { const li = el("li", {}, leg); sample(li, KEYS[i], 2.5, DASHES[i]); keyEl(i, li); li.append(b.name || `Setup ${LETTERS[i]}`); });
+    const li0 = el("li", {}, leg); sample(li0, "var(--base)", 2, "4 3"); li0.append("No movement skills");
     const lines = builds.map((b, i) => ({ i, pts: Array.from({ length: 61 }, (_, k) => [k * 5, speeds(b, k * 5).run]) }));
     const basePts = Array.from({ length: 61 }, (_, k) => [k * 5, 6 * (150 + efrw(k * 5)) / 100 * YARDS]);
     const all = lines.flatMap(l => l.pts.map(p => p[1])).concat(basePts.map(p => p[1]));
@@ -439,19 +447,33 @@
     const yt = mk("text", { x: 12, y: M.t + 2, class: "axis-title" }, svg); yt.textContent = "yd/s";
     const path = (pts, color, w, dash) => mk("path", { d: pts.map((p, k) => `${k ? "L" : "M"}${x(p[0]).toFixed(1)},${y(p[1]).toFixed(1)}`).join(""), fill: "none", stroke: color, "stroke-width": w, "stroke-dasharray": dash || "" }, svg);
     path(basePts, "var(--base)", 2, "4 3");
-    for (const l of lines) path(l.pts, KEYS[l.i], 2.5);
-    R.forEach((r, i) => {
-      const fx = Math.min(300, +builds[i].frw || 0);
-      mk("circle", { cx: x(fx), cy: y(speeds(builds[i], fx).run), r: 5, fill: KEYS[i], stroke: "var(--panel)", "stroke-width": 2 }, svg);
-      const t = mk("text", { x: x(fx) + (fx > 250 ? -8 : 8), y: y(speeds(builds[i], fx).run) - 8, "text-anchor": fx > 250 ? "end" : "start", class: "mark", fill: KEYS[i] }, svg);
-      t.textContent = nf2.format(r.run);
+    for (const l of lines) path(l.pts, KEYS[l.i], 2.5, DASHES[l.i]);
+    const marks = R.map((r, i) => {
+      const fx = Math.min(300, +builds[i].frw || 0), cy = y(speeds(builds[i], fx).run), end = fx > 250;
+      mk("circle", { cx: x(fx), cy, r: 5, fill: KEYS[i], stroke: "var(--panel)", "stroke-width": 2 }, svg);
+      const text = `${LETTERS[i]} ${nf2.format(r.run)}`, lx = x(fx) + (end ? -8 : 8), w = text.length * 7;
+      return { i, text, lx, y: cy - 8, end, lo: end ? lx - w : lx, hi: end ? lx : lx + w };
     });
+    // labels that would overlap pushed 13px apart (as the Damage Calculator's line ends): sorted by y, pushed down,
+    // then pulled back up from the bottom edge, so setups with the same speed stay readable
+    const meet = (a, b) => a.lo < b.hi + 4 && b.lo < a.hi + 4;
+    marks.sort((a, b) => a.y - b.y);
+    marks.forEach((m, k) => { for (let j = 0; j < k; j++) if (meet(m, marks[j])) m.y = Math.max(m.y, marks[j].y + 13); });
+    for (let k = marks.length - 1; k >= 0; k--) {
+      let lim = height - M.b - 2;
+      for (let j = k + 1; j < marks.length; j++) if (meet(marks[k], marks[j])) lim = Math.min(lim, marks[j].y - 13);
+      marks[k].y = Math.min(marks[k].y, lim);
+    }
+    for (const m of marks) {
+      const t = mk("text", { x: m.lx, y: m.y, "text-anchor": m.end ? "end" : "start", class: "mark", fill: KEYS[m.i] }, svg);
+      t.textContent = m.text;
+    }
     const tip = el("div", { class: "tip", hidden: true }, box);
     svg.addEventListener("pointermove", e => {
       const rect = svg.getBoundingClientRect(); const px = (e.clientX - rect.left) * width / rect.width;
       const v = clamp(Math.round((px - M.l) / (width - M.l - M.r) * 300), 0, 300);
       tip.hidden = false;
-      tip.innerHTML = `<div>${v}% FRW on gear (${efrw(v)}% effective)</div>` + builds.map((b, i) => `<div><span style="color:${KEYS[i]}">&#9632;</span> ${esc(b.name || "Setup " + LETTERS[i])}: <b>${nf2.format(speeds(b, v).run)}</b> yd/s</div>`).join("");
+      tip.innerHTML = `<div>${v}% FRW on gear (${efrw(v)}% effective)</div>` + builds.map((b, i) => `<div>${keyHTML(i)} ${esc(b.name || "Setup " + LETTERS[i])}: <b>${nf2.format(speeds(b, v).run)}</b> yd/s</div>`).join("");
       tip.style.left = Math.min(rect.width - 190, e.clientX - rect.left + 12) + "px"; tip.style.top = "8px";
     });
     svg.addEventListener("pointerleave", () => { tip.hidden = true; });
@@ -570,7 +592,7 @@
     ol.innerHTML = "";
     R.forEach((r, n) => {
       const li = el("li", {}, ol), who = el("span", { class: "who" }, li);
-      const k = el("span", { class: "key" }, who); k.style.background = KEYS[r.i];
+      keyEl(r.i, who);
       who.append(`${n + 1}. ${r.b.name || "Setup " + LETTERS[r.i]}`);
       const t = el("span", {}, li); t.innerHTML = `<b>${nf2.format(r.T / FPS)} s</b>${n ? ` (+${nf2.format((r.T - best) / FPS)} s)` : ""}`;
       const notes = r.charging ? ["charging"] : [];
@@ -660,7 +682,7 @@
       ctx.font = font(12); ctx.lineWidth = Math.max(2, 3 * dpr); ctx.strokeStyle = "rgba(0,0,0,0.75)"; ctx.lineJoin = "round";
       ctx.fillStyle = color(r.i);
       ctx.beginPath(); ctx.arc(X(LEFT - 26), Y(gy - 8), 8.5 * k, 0, 2 * Math.PI); ctx.fill();
-      ctx.textAlign = "center"; ctx.fillStyle = "#111"; ctx.fillText(LETTERS[r.i], X(LEFT - 26), Y(gy - 4));
+      ctx.textAlign = "center"; ctx.fillStyle = INK[r.i]; ctx.fillText(LETTERS[r.i], X(LEFT - 26), Y(gy - 4));
       if (!moving) {
         const tx = `${nf2.format(r.T / FPS)} s`;
         ctx.textAlign = "left"; ctx.strokeText(tx, X(gx + 24), Y(gy - 22)); ctx.fillStyle = color(r.i); ctx.fillText(tx, X(gx + 24), Y(gy - 22));

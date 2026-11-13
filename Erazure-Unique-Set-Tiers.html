@@ -49,6 +49,8 @@
                           color: var(--fg); text-wrap: balance; }
   .tier-map .bar { position: sticky; top: var(--top); z-index: 3; background: var(--panel);
                    border-block: 1px solid var(--line); padding-block: 8px; margin-block: 12px 0; }
+  /* a short window (200% zoom on a laptop): the bar scrolls away, or it would cover most of the page */
+  @media (max-height: 420px) { .tier-map .bar { position: static; } }
   .tier-map .bar .wrap { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
   .md-content .tier-map .bar .wrap { padding-inline: 10px; }
   .tier-map .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
@@ -60,7 +62,11 @@
   .tier-map .chipbtn { font: inherit; font-size: 13px; padding: 2px 10px; border-radius: 999px; border: 1px solid var(--line);
                        background: var(--chip); color: var(--fg); cursor: pointer; display: inline-flex; gap: 6px;
                        align-items: center; margin: 0; }
-  .tier-map .chipbtn[aria-pressed=false] { opacity: .5; }
+  /* on: a check before the dot; off: dimmed and struck through (not by colour alone). The check's room is kept when
+     off, so the chips after it don't move. */
+  .tier-map .chipbtn::before { content: ""; width: .8em; margin-right: -2px; text-align: center; }
+  .tier-map .chipbtn[aria-pressed=true]::before { content: "\2713"; content: "\2713" / ""; }
+  .tier-map .chipbtn[aria-pressed=false] { opacity: .5; text-decoration: line-through; }
   .tier-map .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--tc); flex: none; }
   .tier-map .muted { color: var(--muted); }
   .tier-map button:focus-visible, .tier-map select:focus-visible, .tier-map input:focus-visible,

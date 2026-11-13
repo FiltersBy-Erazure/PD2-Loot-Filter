@@ -34,7 +34,9 @@
 .edit-map h4 { font-size: .92em; color: var(--fg); }
 .edit-map p { margin: 0 0 .6em; }
 .edit-map a { color: var(--accent); }
-.edit-map ul, .edit-map ol { margin: .2em 0 .7em 1.3em; padding: 0; }
+/* links in the text: underlined (the website's theme takes a link's underline away, and gold alone doesn't tell) */
+.edit-map a:not(.fe-btn) { text-decoration: underline; text-underline-offset: 2px; }
+.edit-map ul,.edit-map ol { margin: .2em 0 .7em 1.3em; padding: 0; }
 .edit-map li { margin: .15em 0; }
 .edit-map code, .edit-map kbd { font-family: var(--mono); font-size: .86em; background: var(--panel3);
   border: 1px solid var(--line); border-radius: 4px; padding: .05em .35em; color: var(--fg); }
@@ -196,6 +198,10 @@
   border-radius: 0 8px 8px 0; margin: .6em 0; font-size: .92em; }
 .edit-map .fe-note.warn { border-left-color: var(--warn); }
 .edit-map .fe-note.bad { border-left-color: var(--bad); }
+/* a warning or a problem says so with a sign too (its edge's color alone doesn't tell it from a plain note) */
+.edit-map .fe-note.warn::before { content: "⚠ "; color: var(--warn); font-weight: 700; }
+.edit-map .fe-note.bad::before { content: "✕ "; color: var(--bad); font-weight: 700; }
+.edit-map .fe-note.fe-bd-field { display: block; }
 .edit-map .fe-empty { text-align: center; color: var(--muted); padding: 2em 1em; border: 1px dashed var(--line2);
   border-radius: 10px; }
 .edit-map .fe-choice { display: grid; gap: .7em; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); }
@@ -205,6 +211,7 @@
 .edit-map .fe-option[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent);
   background: var(--chip-on); }
 .edit-map .fe-option b { font-family: Cinzel, Georgia, serif; color: var(--accent); }
+.edit-map .fe-option[aria-pressed="true"] > b::before { content: "✓ "; }
 .edit-map .fe-option small { color: var(--muted); font-size: .84em; line-height: 1.35; }
 .edit-map .fe-goals { display: grid; gap: .6em; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
 .edit-map .fe-goals .fe-option b { font-size: .95em; }
@@ -303,13 +310,15 @@
 .edit-map .fe-pv-strip { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: .35em; }
 .edit-map .fe-pv-levelrows { display: flex; flex-direction: column; gap: .25em; }
 .edit-map .fe-pv-levelrow { display: grid; grid-template-columns: minmax(6.5em, 10em) minmax(0, 1fr) auto; gap: .5em;
-  align-items: center; border: 1px solid var(--line); background: #13110f; border-radius: 7px; padding: .3em .45em;
+  align-items: center; border: 1px solid #3b362e; background: #13110f; border-radius: 7px; padding: .3em .45em;
   cursor: pointer; color: #ece7de; text-align: left; font: inherit; width: 100%; }
 .edit-map .fe-pv-levelrow.on { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
 .edit-map .fe-pv-levelrow.is-changed { box-shadow: inset 3px 0 0 var(--accent); }
 .edit-map .fe-pv-levelrow.on.is-changed { box-shadow: inset 3px 0 0 var(--accent), 0 0 0 1px var(--accent); }
 .edit-map .fe-pv-levelrow .fe-pv-lv { font-size: .78em; color: #a59d8e; line-height: 1.25; }
 .edit-map .fe-pv-levelrow .fe-pv-lv b { color: #ece7de; margin-right: .15em; }
+/* the level shown above: a sign before its number (its gold edge alone doesn't tell) */
+.edit-map .fe-pv-levelrow.on .fe-pv-lv b::before { content: "▸ "; color: #d8b45e; }
 .edit-map .fe-pv-levellabel { overflow-x: auto; min-width: 0; display: flex; justify-content: center; }
 .edit-map .fe-pv-levellabel canvas.fe-glabel { max-width: none; }
 .edit-map .fe-pv-levelalerts { flex-wrap: nowrap; }
@@ -317,14 +326,14 @@
 .edit-map details.fe-pv-fold[open] > summary { margin-bottom: .45em; }
 .edit-map .fe-scene-open { display: inline-flex; align-items: center; gap: .5em; text-align: left; }
 .edit-map .fe-scene-note { margin: .35em 0 0; }
-.edit-map .fe-pv-cell { display: flex; flex-direction: column; align-items: center; gap: .25em; border: 1px solid var(--line);
+.edit-map .fe-pv-cell { display: flex; flex-direction: column; align-items: center; gap: .25em; border: 1px solid #3b362e;
   background: #13110f; border-radius: 7px; padding: .3em .25em .4em; cursor: pointer; min-width: 0; overflow: hidden; }
 .edit-map .fe-pv-cell.on { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
 .edit-map .fe-pv-cell .fe-label { font-size: 11px; max-width: 100%; overflow: hidden; }
 .edit-map .fe-pv-lv { font-size: .72em; color: #a59d8e; align-self: flex-start; }
 .edit-map .fe-pv-snd { color: var(--accent); font-size: .8em; }
 .edit-map .fe-pv-samples { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: .45em; }
-.edit-map .fe-pv-sample { display: flex; flex-direction: column; align-items: center; gap: .3em; border: 1px solid var(--line);
+.edit-map .fe-pv-sample { display: flex; flex-direction: column; align-items: center; gap: .3em; border: 1px solid #3b362e;
   background: #13110f; color: #ece7de; border-radius: 8px; padding: .4em .3em .5em; cursor: pointer; min-width: 0;
   overflow: hidden; text-align: center; }
 .edit-map .fe-pv-sample.is-changed { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
@@ -339,6 +348,9 @@
   border-radius: 8px; padding: .6em .8em; box-shadow: var(--shadow); display: flex; gap: .6em; align-items: start; }
 .edit-map .fe-toast.bad { border-left-color: var(--bad); }
 .edit-map .fe-toast.good { border-left-color: var(--good); }
+/* a toast's kind as a sign too: done, or a problem */
+.edit-map .fe-toast.good > div:first-child::before { content: "✓ "; color: var(--good); font-weight: 700; }
+.edit-map .fe-toast.bad > div:first-child::before { content: "⚠ "; color: var(--bad); font-weight: 700; }
 .edit-map .fe-toast .x { margin-left: auto; }
 .edit-map .fe-menu { position: absolute; z-index: 40; background: var(--panel); border: 1px solid var(--line2);
   border-radius: 9px; box-shadow: var(--shadow); padding: .3em; min-width: 15em; }
@@ -558,10 +570,14 @@
 .edit-map .fe-ed-body { display: flex; align-items: stretch; }
 .edit-map pre.fe-ed-gutter { margin: 0; padding: 8px 6px 8px 8px; font: 13px/20px var(--mono); color: var(--faint);
   text-align: right; overflow: hidden; background: var(--panel2); border: 0; border-right: 1px solid var(--line);
-  border-radius: 0; user-select: none; min-width: 3.2em; flex: none; white-space: pre; }
-.edit-map .fe-ed-num { display: block; height: 20px; }
+  border-radius: 0; user-select: none; min-width: 4.4em; flex: none; white-space: pre; }
+.edit-map .fe-ed-num { display: block; height: 20px; position: relative; }
 .edit-map .fe-ed-num.err { color: var(--bad); }
 .edit-map .fe-ed-num.warn { color: var(--warn); }
+/* a line with an error or a warning: a sign at the gutter's left (its color alone doesn't tell the two apart) */
+.edit-map .fe-ed-num.err::before, .edit-map .fe-ed-num.warn::before { position: absolute; left: 0; font-weight: 700; }
+.edit-map .fe-ed-num.err::before { content: "✕"; }
+.edit-map .fe-ed-num.warn::before { content: "!"; }
 .edit-map .fe-ed-wrap { position: relative; flex: 1; min-width: 0; }
 .edit-map pre.fe-ed-hl, .edit-map textarea.fe-ed-ta { margin: 0; padding: 8px 10px; font: 13px/20px var(--mono);
   tab-size: 4; white-space: pre; letter-spacing: 0; word-spacing: 0; font-variant-ligatures: none; }
@@ -641,10 +657,12 @@
 }
 .edit-map .fe-x { border: 0; background: none; color: var(--muted); cursor: pointer; padding: 0 .3em; font-size: .9em; }
 .edit-map .fe-x:hover { color: var(--bad); }
-.edit-map .fe-bd-chip.is-on { border-color: var(--accent); }
+.edit-map .fe-bd-chip.is-on { border-color: var(--accent); background: var(--chip-on); }
+.edit-map .fe-bd-chip.is-on .fe-linkbtn { font-weight: 700; }
 .edit-map .fe-linkbtn { border: 0; background: none; color: inherit; padding: 0; font: inherit; cursor: pointer; }
 .edit-map .fe-linkbtn:hover { color: var(--accent); text-decoration: underline; }
-.edit-map .fe-trace-where .fe-linkbtn, .edit-map .fe-ch-ref { color: var(--accent); text-decoration: underline dotted; }
+.edit-map .fe-trace-where .fe-linkbtn, .edit-map .fe-ch-ref { color: var(--accent); text-decoration: underline dotted;
+  text-underline-offset: 2px; }
 .edit-map td.fe-it-new { box-shadow: inset 0 0 0 2px var(--accent); }
 /* Quick Edits: the levels a switch changes, under it */
 .edit-map .fe-optlevels { display: block; margin: .05em 0 .35em 3.1em; font-size: .78em; }
@@ -706,7 +724,7 @@
 .edit-map .fe-rb-row.off { opacity: .55; }
 .edit-map .fe-rb-legend { margin: .2em 0 0; color: var(--faint); }
 .edit-map .fe-rb-empty { margin: .6em 0 0; }
-.edit-map .fe-mine { color: var(--accent); font-weight: 700; }
+.edit-map .fe-mine { color: var(--accent); font-weight: 700; text-decoration: underline; text-underline-offset: 2px; }
 .edit-map .fe-rb-sec { background: var(--panel2); cursor: default; flex-direction: row; justify-content: flex-start;
   align-items: center; gap: .5em; font-family: Cinzel, Georgia, serif; color: var(--accent); }
 .edit-map .fe-rb-top { display: flex; align-items: center; gap: .45em; min-width: 0; white-space: nowrap;

@@ -350,7 +350,7 @@ EZ.areas = EZ.areas || [];
             h("span.fe-sub", "was " + (op.at.file || "").replace(/\.filter$/, "") + ":" + (op.at.line || "?"))),
         merged ? h("p.fe-sub.fe-small", "Erazure's line now:") : null,
         h("code.fe-rb-optext", (p.i !== null ? p.now : op.at.text).slice(0, 240)),
-        merged ? [h("p.fe-sub.fe-small", "What your filter gets (your words in gold):"),
+        merged ? [h("p.fe-sub.fe-small", "What your filter gets (your words underlined, in bold gold):"),
           h("code.fe-rb-optext", mark(merged[0], p.now))] : null,
         merged && merged[1] ? h("p.fe-note.warn.fe-small", "Erazure changed the same words as you did; yours were kept. " +
           "Check that Erazure's fix isn't lost, and change your line if it is.") : null,
@@ -564,7 +564,7 @@ EZ.areas = EZ.areas || [];
       needLook(app);
       const n = warnCache.bad;
       return n ? {text: `Erazure's rules: ${n} of your changed or added lines the game can't read as written (see ` +
-        "their red notes there).", area: "erazure"} : null;
+        "their error notes there).", area: "erazure"} : null;
     });
   }
 

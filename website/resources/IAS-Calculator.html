@@ -23,7 +23,7 @@
      how it's worked out, the reference. Dark by default; light when the website (Material) is switched to light. */
   .ias-map {
     --bg: #151412; --panel: #1f1d1a; --fg: #ece7de; --fg2: #cfc8bb; --muted: #a59e91; --line: #36322c;
-    --axis: #4a463f; --accent: #d8b45e; --accent-wash: rgba(216, 180, 94, 0.12); --good: #4cc38a; --bad: #f0866a;
+    --axis: #4a463f; --accent: #d8b45e; --accent-wash: rgba(216, 180, 94, 0.12); --good: #38a283; --bad: #cc7b38;
     --hit: #e0533d; --cell-lo: #2a2722; --cell-hi: #b9a77c; --cell-fg: #ece7de; --cell-fg-hi: #1b1915;
     --display: "Cinzel", "Trajan Pro", Georgia, serif;
     --body: "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -32,7 +32,7 @@
   }
   [data-md-color-scheme="default"] .ias-map {
     --bg: #f3f1ec; --panel: #fffdf8; --fg: #23211c; --fg2: #4a463e; --muted: #6b655a; --line: #ded7c9;
-    --axis: #c3bcae; --accent: #8a6d1f; --accent-wash: rgba(138, 109, 31, 0.10); --good: #12804f; --bad: #b8431f;
+    --axis: #c3bcae; --accent: #8a6d1f; --accent-wash: rgba(138, 109, 31, 0.10); --good: #11805c; --bad: #b65a17;
     --hit: #c2361f; --cell-lo: #ece6da; --cell-hi: #8a6d1f; --cell-fg: #23211c; --cell-fg-hi: #fffdf8;
     color-scheme: light;
   }
@@ -55,7 +55,7 @@
   .ias-map .sub { color: var(--fg2); font-size: 14px; max-width: 86ch; }
   .ias-map .note { color: var(--muted); font-size: 13px; max-width: 96ch; }
   .ias-map .credit { color: var(--muted); font-size: 13px; }
-  .ias-map .credit a, .ias-map .method a, .ias-map .sub a, .ias-map .note a { color: var(--accent); }
+  .ias-map .credit a, .ias-map .method a, .ias-map .sub a, .ias-map .note a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
   .ias-map [hidden] { display: none !important; }
   .ias-map .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   .ias-map code { font-size: 12.5px; background: var(--bg); border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; }
@@ -78,7 +78,7 @@
   .ias-map .lab-row .info { margin-left: 0; }
   .ias-map .info:hover, .ias-map .info[aria-expanded="true"] { border-color: var(--accent); color: var(--accent); }
   .ias-map .field small.info-pop, .ias-map .info-pop {
-    position: absolute; z-index: 6; top: calc(100% + 6px); left: 0; width: max-content; max-width: min(360px, 86vw);
+    position: absolute; z-index: 3; top: calc(100% + 6px); left: 0; width: max-content; max-width: min(360px, 86vw);
     background: var(--panel); border: 1px solid var(--accent); border-radius: 8px; padding: 8px 11px; display: block;
     font: 400 13.5px/1.45 var(--body); color: var(--fg2); letter-spacing: 0; text-transform: none; text-align: left;
     box-shadow: 0 8px 18px rgba(0, 0, 0, .45); white-space: normal; }
@@ -125,7 +125,7 @@
   .ias-map .ia-answer-tools { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; justify-content: flex-end; max-width: 100%; }
   .ias-map .ia-answer-tools .note { overflow-wrap: anywhere; }
   /* the bar takes no room of its own (it shows over the page as it scrolls by), so nothing moves when it appears */
-  .ias-map .ia-bar-wrap { position: sticky; top: var(--stick); z-index: 4; height: 0; margin-bottom: -18px; }
+  .ias-map .ia-bar-wrap { position: sticky; top: var(--stick); z-index: 3; height: 0; margin-bottom: -18px; }  /* under the site's header (4) */
   .ias-map .ia-verdict-bar { position: absolute; inset: 0 0 auto; margin: 0; font-size: 14.5px; font-variant-numeric: tabular-nums;
                              background: linear-gradient(var(--accent-wash), var(--accent-wash)), var(--panel); border: 1px solid var(--accent);
                              border-radius: 8px; padding: 8px 12px; box-shadow: 0 8px 12px -6px rgba(0, 0, 0, .55);
@@ -200,7 +200,7 @@
   .ias-map .ia-table tbody tr:hover td { background: var(--accent-wash); }
   .ias-map .ia-table tr.you td { background: var(--accent-wash); color: var(--accent); font-weight: 700; }
   .ias-map .ia-table td.left, .ias-map .ia-table th.left { text-align: left; white-space: normal; }
-  .ias-map .ia-table td a { color: var(--accent); }
+  .ias-map .ia-table td a { color: var(--accent); text-decoration: underline dotted; text-underline-offset: 3px; }
   /* the frames come first and stand out; EIAS and speed only when asked for */
   .ias-map .ia-table td.fr, .ias-map .ia-table th.fr { text-align: left; }
   .ias-map .ia-table td.fr { font-weight: 700; font-size: 15px; }
@@ -211,7 +211,7 @@
   .ias-map .ia-table td.dim { color: var(--muted); }
   /* every base of the type: bases that behave the same share a row */
   .ias-map .ia-bases td.names { white-space: normal; text-align: left; line-height: 1.7; }
-  .ias-map .ia-bases td.names a { color: var(--accent); text-decoration: none; margin-right: 10px; white-space: nowrap; }
+  .ias-map .ia-bases td.names a { color: var(--accent); text-decoration: underline dotted; text-underline-offset: 3px; margin-right: 10px; white-space: nowrap; }
   .ias-map .ia-bases td.names a:hover { text-decoration: underline; }
   .ias-map .ia-bases td.names a.mine { font-weight: 700; text-decoration: underline; }
   .ias-map .ia-bases tr.you td.names a:not(.mine) { font-weight: 500; }
@@ -225,14 +225,18 @@
   .ias-map table.ia-grid { border-collapse: separate; border-spacing: 3px; font-size: 13px; margin: 0; display: table; }
   .ias-map .ia-grid th { font-weight: 600; color: var(--muted); padding: 2px 4px; text-align: right; white-space: nowrap; background: none; border: 0; }
   .ias-map .ia-grid thead th { text-align: center; }
-  .ias-map .ia-grid th.you { color: var(--accent); }
+  .ias-map .ia-grid th.you { color: var(--accent); font-weight: 800; text-decoration: underline; text-underline-offset: 3px; }
   .ias-map .ia-grid td { width: 46px; min-width: 40px; height: 34px; text-align: center; border-radius: 4px; position: relative; font-size: 14px;
                          font-weight: 600; font-variant-numeric: tabular-nums; padding: 0; border: 0; cursor: default; }
-  .ias-map .ia-grid td.you { outline: 2px solid var(--good); outline-offset: 0; z-index: 1; }
+  /* your box: a two-tone ring (the outline outside, the panel's color inside), so it shows on light and dark boxes alike */
+  .ias-map .ia-grid td.you { outline: 2px solid var(--good); outline-offset: 0; z-index: 1; box-shadow: inset 0 0 0 2px var(--panel); }
   /* where the frame count changes: a line on the box's right and bottom edges */
   .ias-map .ia-grid td.er { box-shadow: inset -3px 0 0 var(--bp-line); }
   .ias-map .ia-grid td.eb { box-shadow: inset 0 -3px 0 var(--bp-line); }
   .ias-map .ia-grid td.er.eb { box-shadow: inset -3px 0 0 var(--bp-line), inset 0 -3px 0 var(--bp-line); }
+  .ias-map .ia-grid td.you.er { box-shadow: inset 0 0 0 2px var(--panel), inset -5px 0 0 var(--bp-line); }
+  .ias-map .ia-grid td.you.eb { box-shadow: inset 0 0 0 2px var(--panel), inset 0 -5px 0 var(--bp-line); }
+  .ias-map .ia-grid td.you.er.eb { box-shadow: inset 0 0 0 2px var(--panel), inset -5px 0 0 var(--bp-line), inset 0 -5px 0 var(--bp-line); }
   .ias-map { --bp-line: #f1d48a; }
   [data-md-color-scheme="default"] .ias-map { --bp-line: #6b4e0a; }
   /* speed at its cap: stripes (more IAS there is wasted) */
@@ -243,7 +247,8 @@
   .ias-map .grid-key .sws { display: inline-flex; gap: 3px; align-items: center; }
   .ias-map .grid-key .sw { min-width: 26px; height: 22px; padding: 0 4px; border-radius: 4px; display: inline-grid; place-items: center;
                            font-size: 12.5px; font-weight: 600; font-variant-numeric: tabular-nums; }
-  .ias-map .grid-key .box { width: 14px; height: 14px; border: 2px solid var(--good); border-radius: 3px; display: inline-block; vertical-align: -2px; }
+  .ias-map .grid-key .box { width: 18px; height: 18px; border: 2px solid var(--good); border-radius: 3px; display: inline-block; vertical-align: -4px;
+                            background: var(--cell-mid); box-shadow: inset 0 0 0 2px var(--panel); }
   .ias-map .grid-key .line { width: 14px; height: 14px; display: inline-block; box-shadow: inset -3px 0 0 var(--bp-line); vertical-align: -2px; }
   .ias-map .grid-tip { font-size: 13.5px; color: var(--fg2); min-height: 1.5em; font-variant-numeric: tabular-nums; }
 
@@ -1500,7 +1505,7 @@
     sub.innerHTML = (form ?
       `What each frame count needs from other gear, with your ${R.sp.weaponIAS} IAS on the weapon (in a form it also sets the base speed, so it stays as set). ` :
       `What each frame count needs. IAS adds up, so &ldquo;Other gear&rdquo; is beside your ${R.sp.weaponIAS} on the weapon${R.sp.inc ? ` and Increased Speed&rsquo;s ${R.sp.inc}` : ""}${neg ? " (&ndash;: the weapon alone gets there)" : ""}. `) +
-      `&ldquo;More&rdquo; is what you still need; your row is lit.` +
+      `&ldquo;More&rdquo; is what you still need; your row says &ldquo;now&rdquo;.` +
       (R.t.avg && !same ? " Attacks a second: held, attack 1 and attack 2 half the time each." : "");
     const head = `<thead><tr>${cols.map(c => `<th class="fr">${esc(c.label)}</th>`).join("")}<th>${parts.some(p => p.hits > 1) ? "Hits/s" : "Attacks/s"}</th>` +
       `<th>More</th><th>Other gear</th><th class="tot">Total IAS</th><th class="math">EIAS</th><th class="math">Speed</th></tr></thead>`;
@@ -1517,6 +1522,7 @@
   $("ia-math").addEventListener("click", () => {
     MATH = !MATH;
     $("ia-math").setAttribute("aria-pressed", String(MATH));
+    $("ia-math").textContent = MATH ? "Hide EIAS and speed" : "Show EIAS and speed";
     $("ia-bp").classList.toggle("show-math", MATH);
   });
   // which base of this type is fastest for you: bases that behave the same (the same frames now, the same IAS for the
@@ -1889,7 +1895,7 @@
       (R.p.seq ? "A sequence plays the steps of its own animations; the strip shows where each hit lands." :
       (R.t.avg ? (twin(R) ? "Attack 1, then attack 2: the game draws either at random, and here both take as long. " :
         "Attack 1, then attack 2: the game draws either, half the time each, and makes the hit at attack 1's hit frame both times. ") : "") +
-      (PV.tl.some(x => x.shot) ? "The shot leaves on the red frame and flies at its own speed, moved smoothly between the game's frames as D2GL draws it. " : "") +
+      (PV.tl.some(x => x.shot) ? "The shot leaves on the filled frame and flies at its own speed, moved smoothly between the game's frames as D2GL draws it. " : "") +
       "Each box is one game frame of the attack, held as if you keep the button down. The figure holds your weapon; its light armor is only how it's drawn, as armor never changes attack speed.");
     const info = document.querySelector('.ias-map .info[aria-controls="ia-prev-note"]');
     if (info) info.hidden = !$("ia-prev-note").textContent;

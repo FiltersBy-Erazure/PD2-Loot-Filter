@@ -11,6 +11,12 @@
   --erazure-gold: #d8b45e;
   --md-typeset-a-color: var(--erazure-gold);
 }
+/* links in the pages' own text are underlined, not told apart by their color alone (the maps and resources bring
+   their own link styles: they sit in a div of their own, never right under the page's paragraphs and lists) */
+.md-content__inner > :is(p, ul, ol) a:not(.md-button) {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
 /* a primary button on light gold: dark text */
 [data-md-color-scheme="slate"] .md-typeset .md-button--primary {
   color: #1b160b;
@@ -24,6 +30,13 @@
 .md-tabs__item--active .md-tabs__link,
 .md-tabs__link:hover {
   color: #d8b45e;
+}
+/* the current page's tab also underlined (the gold is about as light as the other tabs' gray); an underline takes
+   no room, so the tab row doesn't move */
+.md-tabs__item--active .md-tabs__link {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 5px;
 }
 
 /* the tabs wrap onto a second line where they don't fit, instead of hiding the last ones (Examples, Resources)

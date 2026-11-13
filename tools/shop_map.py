@@ -1240,7 +1240,8 @@ SECTIONS = [  # (id, title, intro)
     ("shop", "Leveling: what to buy in shops", "These look only at items in a shop, and some only up to a "
      "character level."),
     ("casters", "Leveling: caster weapons", "For leveling: a staff, wand or scepter with the class's best "
-     "skills. The yellow ones also have Faster Cast Rate."),
+     "skills. The ones with the longer star border, 9 stars a side instead of 7, also have Faster Cast Rate (the "
+     "cards \"... with cast rate\")."),
     ("utility", "Charges and party skills", ""),
 ]
 
