@@ -87,6 +87,8 @@ ROLLBACK = {26: "Param6", 30: "Param2", 106: "Param2", 248: "Param2", 255: 100}
 FIXED_FRAMES = (151, 380)  # Whirlwind and Blade Dance: one hit every Param3 frames, whatever the IAS
 CHARGE = 107
 GENERIC = (2,)  # Throw: every class's, with a throwing weapon
+MULTIPLE_SHOT = 12
+DOUBLE_THROW = 140
 # The mercenaries whose attacks take attack speed (key, Hireling.txt Class, the weapon kinds of the Type list they
 # take; never a class's own weapons, nor throwing ones). The Act 3 Iron Wolves and the Act 4 Ascendants only cast.
 MERCS = [("m1", 271, ["bow", "xbow"]), ("m2", 338, ["spea", "pole"]), ("m5", 561, ["axe", "swor", "mace", "hamm"])]
@@ -117,7 +119,8 @@ class Archives:
 
 
 def animdata(arch):
-    """{name: (frames, speed, [frames with an attack or missile event])} from AnimData.d2."""
+    """{name: (frames, speed, [frames with an attack or missile event], whether one shoots a missile)} from
+    AnimData.d2 (event 1: a hit, 2: a missile)."""
     b = arch.read("data", "global", "AnimData.d2")
     out, off = {}, 0
     for _ in range(256):
@@ -127,7 +130,7 @@ def animdata(arch):
             name = b[off:off + 8].split(b"\0")[0].decode("latin-1").upper()
             frames, speed = struct.unpack_from("<II", b, off + 8)
             ev = b[off + 16:off + 16 + min(frames, 144)]
-            out[name] = (frames, speed, [i for i, e in enumerate(ev) if e in (1, 2)])
+            out[name] = (frames, speed, [i for i, e in enumerate(ev) if e in (1, 2)], 2 in ev)
             off += 160
     if off != len(b):
         raise SystemExit(f"ias_data: AnimData.d2 read {off} of {len(b)} bytes: its layout changed")
@@ -298,6 +301,8 @@ def weapons(game):
                     "w": int(r.get("speed") or 0), "wc": r["wclass"].strip(), "wc2": r["2handedwclass"].strip(),
                     "f": flags, "ty": [x for x in (r.get("type"), r.get("type2")) if x],
                     "g": r.get("alternateGfx", "").strip().upper(), "lv": int(r.get("levelreq") or 0)})
+        if r["wclass"].strip() in ("bow", "xbw") or flags & 4:
+            out[-1]["mt"] = int(r.get("missiletype") or 0)  # page_data turns it into the missile's name
     names = {}
     for w in out:
         names.setdefault(w["n"], []).append(w)
@@ -424,11 +429,28 @@ def attack_skills(game, wanted):
             s["ff"] = int(r["Param3"] or 0)
         if sid == CHARGE:
             s["chg"] = int(r["Param6"] or 0)
+        msl = [r.get(c, "").strip() for c in ("srvmissile", "srvmissilea", "srvmissileb", "srvmissilec")]
+        if any(msl):
+            s["msl"] = msl
+        if sid == MULTIPLE_SHOT:  # its arrows per level, fanned out
+            s["mc"] = [calc(r, r["calc1"], lvl) for lvl in range(1, LEVELS + 1)]
         ar = stat_calc(r, "attackrate", ("aurastat",))
         if ar and r.get("aurastate", "").strip() == "temp_skill_buff":
             s["ar"] = calc(r, ar, 1)  # Double Swing, Dragon Tail, Split Throw: for their own attack
         out.append(s)
     return out, {k: v for k, v in seqs.items() if k in used_seqs}
+
+
+def pick_missile(msl, kind):
+    """A skill's shot with a weapon kind: its own missile, else by the ammunition (the page does the same)."""
+    own, a, b, c = msl
+    if own:
+        return own
+    if kind in ("xbow", "tkni"):
+        return b or a
+    if kind in ("jave", "ajav"):
+        return c or a
+    return a
 
 
 def excel(game, name):
@@ -467,6 +489,9 @@ def mercs(game, anims):
                     skip.append(skill_name(game, sid))
                     continue
                 a = {"id": sid, "n": skill_name(game, sid), "m": mode}
+                msl = [row.get(c, "").strip() for c in ("srvmissile", "srvmissilea", "srvmissileb", "srvmissilec")]
+                if any(msl):
+                    a["msl"] = msl
                 if mode == "SQ":
                     a["q"] = seq_of[name]
                     used[a["q"]] = [[s["mode"].strip(), int(s["frame"] or 0), int(s["event"] or 0)]
@@ -525,7 +550,7 @@ def page_data(game, arch):
     anims = animdata(arch)
     tokens = [t for _, _, t in CLASSES]
     a = {}
-    for name, (frames, speed, hits) in sorted(anims.items()):
+    for name, (frames, speed, hits, _) in sorted(anims.items()):
         tok, mode = name[:2], name[2:4]
         if (tok in tokens or tok in ("40", "TG")) and mode in ATTACK_MODES or \
                 tok in ("40", "TG") and mode in FORM_MODES or tok in tokens and mode == "RN":
@@ -545,13 +570,42 @@ def page_data(game, arch):
         for mode in ("A1", "A2"):
             name = m["tok"].upper() + mode + m["bw"].upper()
             if name in anims:
-                a[name] = list(anims[name])
+                a[name] = list(anims[name][:3])
+    # the missiles they shoot: {name: [sprite file, speed]}, the shots of bows, crossbows and throws only (a skill's
+    # other missiles are its effects); pick_missile is the page's choice by the weapon (a missile with no sprite of
+    # its own is left out)
+    rows = excel(game, "Missiles.txt")
+    by_name = {r["Missile"].strip(): r for r in rows if r.get("Missile", "").strip()}
+    by_id = {r["Id"].strip(): r["Missile"].strip() for r in rows if r.get("Id", "").strip() and r.get("Missile", "").strip()}
+    mis = {}
+
+    def missile(name):
+        r = by_name.get(name)
+        if not r or (r.get("CelFile") or "").strip().lower() in ("", "null"):
+            return ""
+        mis[name] = [r["CelFile"].strip(), int(r.get("Vel") or 0)]
+        return name
+    for b in bases:
+        if "mt" in b:
+            b["ms"] = missile("bolt" if b["wc"] == "xbw" else by_id.get(str(b["mt"]), ""))
+            b.pop("mt")
+    shooters = [s for s in skills if s.get("msl") and ("miss" in s["ia"] or s["m"] == "TH" or s["id"] == DOUBLE_THROW)]
+    shooters += [x for m in merc_list if "bow" in m["kinds"] for x in m["atk"] if x.get("msl")]
+    for s in skills + [x for m in merc_list for x in m["atk"]]:
+        if s.get("msl") and s not in shooters:
+            del s["msl"]
+    for s in shooters:  # only what pick_missile can choose, with a sprite
+        picked = {pick_missile(s["msl"], k) for k in ("bow", "xbow", "taxe", "tkni", "jave", "ajav")}
+        s["msl"] = [n if n in picked and missile(n) else "" for n in s["msl"]]
+        if not any(s["msl"]):
+            del s["msl"]
+    shots = sorted(k for k in a if anims.get(k, (0, 0, [], False))[3])
     return {"v": datetime.date.today().isoformat(),
             "cls": [list(c) for c in CLASSES], "wcs": WCLASSES, "fb": START_FRAMES,
             "a": a, "types": tree, "tcls": tcls, "kinds": [list(k) for k in KINDS], "b": bases,
             "sk": skills, "sq": seqs, "sp": speed_skills(game), "os": os_,
             "forms": {f: {"t": t, "skill": sid} for f, (t, sid) in FORMS.items()},
-            "mercs": merc_list, "msq": merc_seqs}
+            "mercs": merc_list, "msq": merc_seqs, "mis": mis, "shots": shots}
 
 
 def js_line(name, data):

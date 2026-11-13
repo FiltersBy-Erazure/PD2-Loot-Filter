@@ -1124,8 +1124,14 @@
     layout script, so the page works opened as a file; a zombie that takes the hits; a Rogue Encampment floor; about
     13 MB). A COF's drawing orders go round the compass from the south, a DCC keeps its directions in the game's file
     order: `d2_sprites.cof_row` (south-east, DCC 3: COF row 7 of 8, 14 of 16; until 2026-11-12 row 3, which put the
-    Sorceress's bow arm behind her). website/hooks.py copies the folder beside the page's own copy (BESIDE_FOLDERS
-    through own_copy).
+    Sorceress's bow arm behind her). Shots (2026-11-12, the author): a bow's, crossbow's or throw's missile
+    (Missiles.txt CelFile, DCC direction 3, `MS-<file>`; data `mis`, `shots` = the animations whose event is a missile,
+    a skill's `msl` picked by the ammunition as `ias_data.pick_missile`) leaves on the animation's missile frame and
+    flies at its speed (Vel, read as sixteenths of a subtile a frame) to the target, which is hit when it arrives;
+    Multiple Shot fans its arrows. The shot moves smoothly between game frames, as D2GL's motion prediction draws
+    missiles; D2GL never adds in-between animation frames (its motion_prediction.cpp only offsets where units,
+    missiles and weather are drawn), so the figures' poses change only on game frames, as in the game.
+    website/hooks.py copies the folder beside the page's own copy (BESIDE_FOLDERS through own_copy).
 - The Examples page's pictures (`website/docs/img/examples/*.png`, committed; README's examples show them too) are
   drawn by `python tools/example_shots.py "<Diablo II folder>" [--only NAME]` (2026-10-20; not run by build.bat, the
   hook or CI: it needs the game files): per scene of `SCENES` a floor of the area's own DT1 tiles, each item's

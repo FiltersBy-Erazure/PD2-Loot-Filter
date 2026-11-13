@@ -129,6 +129,15 @@ def wanted(data):
     return sorted(k for k in out if len(k) == 7)
 
 
+def missiles(data):
+    """The shots the preview flies: {key: the missile's sprite file}, key MS-<file>."""
+    return {"MS-" + cel.replace(BS, "_").replace("/", "_"): cel for cel, _ in data.get("mis", {}).values()}
+
+
+def missile_path(cel):
+    return f"data/global/missiles/{cel}.dcc"
+
+
 def graphics(data, tok, wc):
     """The weapon graphics of the bases a class holds in this animation: {hand: [graphic]}."""
     cls = next((c for c, _, t in data["cls"] if t == tok), None)
@@ -200,10 +209,12 @@ def key_digest(arch, key, files):
 
 
 def fingerprint(data):
-    """What the previews show, from the page's data alone: every animation to draw and its weapon graphics."""
+    """What the previews show, from the page's data alone: every animation to draw and its weapon graphics, the
+    mercenaries' looks and the missiles."""
     keys = wanted(data)
     what = {"v": VERSION, "target": TARGET, "floor": FLOOR, "keys": keys,
-            "gfx": {k: graphics(data, k[:2], k[4:]) for k in keys}}
+            "gfx": {k: graphics(data, k[:2], k[4:]) for k in keys}, "mercs": [m["lk"] for m in data.get("mercs", [])],
+            "missiles": missiles(data)}
     return hashlib.sha1(json.dumps(what, sort_keys=True).encode()).hexdigest()
 
 
@@ -231,6 +242,8 @@ def sources(arch, data):
         for _, path in (found[2] if found else []):
             arch.read(path)
     target_files(arch)
+    for cel in missiles(data).values():
+        arch.has(missile_path(cel))
     palette(arch)
     import example_shots as X
     X.draw_floor(arch, FLOOR, 8, 8, random.Random(14))  # reads the floor's tiles
@@ -358,6 +371,25 @@ def draw(game_dir, data, only=None, stats_only=False):
         total += size
         made[key] = digest
         print(f"{key}: {len(layout)} parts, {w}x{h}, {size // 1024} KB")
+    for key, cel in ([] if only else sorted(missiles(data).items())):  # the shots: one direction, every frame
+        try:
+            raw = arch.read(missile_path(cel))
+        except KeyError:
+            stats["no missile"] = stats.get("no missile", 0) + 1
+            continue
+        digest = hashlib.sha1(f"{VERSION}|{key}|{DIRECTION}".encode() + hashlib.sha1(raw).digest()).hexdigest()
+        if not stats_only and before.get(key) == digest and (OUT / f"{key}.png").exists() and (OUT / f"{key}.js").exists():
+            made[key] = digest
+            continue
+        frames = d2_sprites.dcc(raw, DIRECTION if d2_sprites.dcc_directions(raw) > DIRECTION else 0)
+        w, h, px, layout = pack({"M": frames})
+        geo = {"f": len(frames), "o": [["M"]] * len(frames), "p": layout}
+        if not stats_only:
+            png_indexed(OUT / f"{key}.png", w, h, px, pal)
+            (OUT / f"{key}.js").write_text("(window.IAS_SPRITES = window.IAS_SPRITES || {})[" + json.dumps(key) + "] = " +
+                                           json.dumps(geo, separators=(",", ":")) + ";\n", encoding="utf-8", newline="\n")
+        made[key] = digest
+        print(f"{key}: {len(frames)} frames, {w}x{h}")
     target = {}
     for mode, (cof, d, paths) in target_files(arch).items():
         parts = {comp: d2_sprites.dcc(arch.read(path), d) for comp, path in paths}
