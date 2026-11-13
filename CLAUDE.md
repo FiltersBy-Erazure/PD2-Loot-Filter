@@ -1081,7 +1081,7 @@
   picks (the page: charges 1-5 as sizes A-E), how many flames a Blaze trail missile (SrvMissileA blaze2trail, put down
   as you move; each burns 60 frames) draws (the page: one every other game frame), and the burst on cast: PD2 replaces
   srvdo 23 (Blaze: the vanilla state plus a path collision change) and nothing found creates its srvmissile
-  blaze2ignite, so the race shows none.
+  blaze2ignite, so the race shows none. The race is 50 yards by default (the author).
 - The **IAS Calculator** (Resources, 2026-11-12, the author: "all the functionality of" RoofooEvazan's
   hiimpd2.com/ias-calculator, credited on the page; plan `C:\Users\Erik\.claude\plans\i-want-to-create-compiled-lake.md`):
   `website/resources/IAS-Calculator.html` (`ias-map`, by hand), four tabs. IAS Calculator: the setup beside an answer
