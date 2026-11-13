@@ -316,7 +316,7 @@
           <div class="field">
             <label for="ia-gear">IAS from other gear</label>
             <input type="number" id="ia-gear" min="0" max="500" step="1" value="20">
-            <small>Gloves, armor, rings, jewels, a shield&hellip;</small>
+            <small>Gloves, armor, rings, jewels, a shield or quiver&hellip;</small>
           </div>
           <div class="field">
             <label for="ia-fana">Fanaticism</label>
@@ -482,34 +482,55 @@
       <ul>
         <li><strong>Numbers are whole numbers.</strong> Every division drops the fraction (toward zero), as the game does.</li>
         <li><strong>Effective IAS</strong>: <span class="formula">EIAS = 120 &times; IAS &divide; (120 + IAS)</span>. All IAS adds up
-          first: the weapon&rsquo;s, the rest of your gear&rsquo;s and Increased Speed&rsquo;s (which counts as IAS).</li>
+          first: the weapon&rsquo;s, the rest of your gear&rsquo;s (arrows and bolts too) and Increased Speed&rsquo;s (which
+          counts as IAS).</li>
         <li><strong>Speed</strong>: <span class="formula">100 + skill speed &minus; WSM + EIAS</span>, 30 less for a sequence skill
-          (Jab, Frenzy, Double Swing, Berserk, Whirlwind, Leap Attack, Double Throw, Dragon Claw, Arctic Blast), then kept
-          between 15 and 175. Skill speed is what auras and skills add: Fanaticism, Frenzy, Burst of Speed, the Werewolf skill,
-          Double Swing&rsquo;s +50, Dragon Tail&rsquo;s &minus;20, Split Throw&rsquo;s +10.</li>
+          (Jab, Double Swing, Double Throw, Frenzy, Berserk, Dragon Claw, Blade Fury), then kept between 15 and 175. Skill
+          speed is what auras and skills add: Fanaticism, Frenzy (a fifth of it per charge), Burst of Speed, the Werewolf
+          skill, Double Swing&rsquo;s +50, Dragon Tail&rsquo;s &minus;20, Split Throw&rsquo;s +10.</li>
         <li><strong>Rate</strong>: <span class="formula">base speed &times; speed &divide; 100</span> per game frame, where one
           animation frame is 256. Most animations have a base speed of 256; crossbows 294 (Amazon, Assassin, Barbarian) or 282;
           some Assassin claw attacks 208; sequences 256.</li>
         <li><strong>Frames per attack, held</strong>: <span class="formula">&lceil;(frames &minus; start) &times; 256 &divide; rate&rceil; &minus; 1</span>.
           Amazons and Sorceresses start their normal attack a frame in with no weapon and two frames in with a melee
           weapon or a staff (start 1 or 2), not with a bow, crossbow or claw.</li>
+        <li><strong>Attack 1 or attack 2</strong>: the game draws a normal attack (no skill) as attack 1 or attack 2, at random,
+          half the time each. Held, it lasts as long as the one drawn, so the average counts, and the hit comes at attack 1&rsquo;s
+          hit frame (an attack 2 that ends before it loses its hit). It is always attack 1 with a bow, a crossbow or no
+          weapon and against small monsters (Fallen, Quill Rats, spiders&hellip;), always attack 2 against flying ones (birds,
+          bats, wisps&hellip;). The two take as long for every class and weapon but an Assassin&rsquo;s claws (attack 2 is 12
+          frames to attack 1&rsquo;s 11) and a Paladin&rsquo;s two-handed swords (19 to 18): only there does it change your
+          frames.</li>
         <li><strong>Dual wielding</strong>: only one weapon counts, the one with the larger <span class="formula">&minus;WSM + its own IAS</span>
           (on a tie the second weapon): its speed modifier and its IAS. The other weapon&rsquo;s IAS counts nowhere. A
-          Barbarian with two weapons swings the dual-wield animations: one-handed swing + swing (1ss), swing + thrust (1js),
-          thrust + thrust (1jt), thrust + swing (1st), by the first weapon&rsquo;s kind and the second&rsquo;s. An Assassin with
-          two claws uses the two-claw animations.</li>
+          normal attack hits with the first weapon only. A Barbarian with two weapons swings the dual-wield animations:
+          one-handed swing + swing (1ss), swing + thrust (1js), thrust + thrust (1jt), thrust + swing (1st), by the first
+          weapon&rsquo;s kind and the second&rsquo;s. An Assassin with two claws uses the two-claw animations.</li>
         <li><strong>Two-handed swords</strong> use the two-handed animations, but for a Barbarian holding a shield or a second
           weapon with one.</li>
         <li><strong>Attacks that repeat in one swing</strong> (Zeal, Fury, Fend, Strafe, Dragon Talon): after each hit the
           animation rolls back by a share (Zeal, Fury and Dragon Talon all the way, Fend 60%, Strafe 50%) and runs to the
           hit again; the swing lengths are shown hit by hit (4/4/8). Strafe shoots at least as many arrows as its minimum,
           one per target in range up to its maximum.</li>
-        <li><strong>Whirlwind and Blade Dance</strong> hit every 6 frames whatever your IAS, 7 with a weapon in each hand.</li>
-        <li><strong>Charge</strong> counts only its last 8 frames, at a base speed of 100 with its own +65 speed, up to 256.</li>
+        <li><strong>Whirlwind and Blade Dance</strong> aren&rsquo;t drawn at attack speed but at the game&rsquo;s other animation
+          rate (100, raised by Frenzy&rsquo;s charges, lowered by slows). Their timer allows a hit every 6 frames, but the game
+          checks it only every 4 frames at that rate: a hit every 8 frames whatever your IAS, with each weapon when you hold
+          two.</li>
+        <li><strong>Charge</strong>: its run doesn&rsquo;t depend on IAS. When it connects, the game sets the strike&rsquo;s speed
+          itself, <span class="formula">100 &minus; WSM + skill speed + EIAS + 65</span>, at most 256, with no base speed: the
+          strike, the last 7 steps of its sequence, lasts <span class="formula">&lceil;1792 &divide; speed&rceil;</span> frames.</li>
         <li><strong>PD2&rsquo;s own sequences</strong>: Jab is faster than in the original game (one-handed 16 frames, two-handed 18),
-          and so are Arctic Blast and Blade Fury.</li>
-        <li><strong>Not on this page</strong>: casting skills (they follow faster cast rate), mercenaries, and slows on you,
-          which you can type as Other speed.</li>
+          and so is Blade Fury, a channel: held, the game casts it again every
+          <span class="formula">&lceil;768 &divide; rate&rceil; + 1</span> frames, and its own timer lets a blade through at most
+          every 5 frames, so from speed 75 up it throws a blade every 5 frames (counted in game).</li>
+        <li><strong>Mercenaries</strong>: <span class="formula">100 &minus; WSM + EIAS + auras</span>, IAS from the weapon and other
+          gear together, no sequence penalty, no start frame. Each shows its own animation whatever it holds. From one attack
+          to the next: <span class="formula">&lceil;frames &times; 256 &divide; rate&rceil; + 1</span> frames (+ 2 after a
+          sequence), which the game&rsquo;s breakpoint screen shows 2 or 3 frames shorter, at the same breakpoints. The Act 5
+          Barbarian hits twice a swing.</li>
+        <li><strong>Not on this page</strong>: casting skills (they follow faster cast rate); Inferno, Arctic Blast and Leap
+          Attack, drawn at the other animation rate, which IAS doesn&rsquo;t change; the mercenaries&rsquo; Strafe and
+          Whirlwind. Slows on you go in Other speed.</li>
       </ul>
     </div>
     <div class="panel">
@@ -999,8 +1020,7 @@
    "gw", "gws", "gg", "ggs"].forEach(k => { el[k] = $("ia-" + k); });
   const opt = (v, t, sel) => `<option value="${esc(v)}"${sel ? " selected" : ""}>${esc(t)}</option>`;
   D.cls.forEach(([k, n]) => { el.cls.insertAdjacentHTML("beforeend", opt(k, n)); });
-  const SIZE_NAME = {1: "small: always attack 1", 2: "flying: always attack 2"};
-  (D.targets || []).forEach(x => el.mon.insertAdjacentHTML("beforeend", opt(x.k, `${x.n} (${SIZE_NAME[x.h] || "attack 1 or 2"})`)));
+  (D.targets || []).forEach(x => el.mon.insertAdjacentHTML("beforeend", opt(x.k, x.n)));
   if (D.mercs && D.mercs.length) {
     el.cls.insertAdjacentHTML("beforeend", `<optgroup label="Mercenaries">` + D.mercs.map(m => opt(m.k, `${m.n} (Act ${m.act})`)).join("") + "</optgroup>");
   }
@@ -1068,7 +1088,6 @@
     $("ia-tg-field").hidden = !(sk && sk.hmin);
     put(el.lvl, S.lvl); put(el.tg, S.tg);
     el.mon.value = S.mon;
-    $("ia-mon-note").textContent = merc ? "A mercenary's attack doesn't change with the target." : "Against small monsters the game always draws a normal attack's attack 1, against flying ones attack 2.";
     // the weapon
     const kinds = kindsOf(S.cls, false);
     let curKind = S.w && E.BASE[S.w] ? E.BASE[S.w].k : "";
@@ -1088,13 +1107,16 @@
     const shieldOK = !two && !(w && (w.wc === "bow" || w.wc === "xbw")) && !(S.cls === "ass" && w && w.wc === "ht1" && false);
     if (S.oh === "weapon" && !canDual) S.oh = "none";
     if (S.oh === "shield" && !shieldOK) S.oh = "none";
+    const ammo = w && w.wc === "bow" ? "Arrows" : w && w.wc === "xbw" ? "Bolts" : "";
     document.querySelectorAll("#ia-oh button").forEach(b => {
       const v = b.dataset.v;
+      if (v === "none") b.textContent = ammo || "Nothing";
       b.disabled = v === "shield" ? !shieldOK : v === "weapon" ? !canDual : false;
       b.hidden = v === "weapon" && !E.dualClass(S.cls);
       b.setAttribute("aria-pressed", String(v === S.oh));
     });
-    $("ia-oh-note").textContent = two ? "A two-handed weapon leaves the other hand empty." :
+    $("ia-oh-note").textContent = ammo ? `A ${w.wc === "bow" ? "bow" : "crossbow"} shoots the ${ammo.toLowerCase()} in the other hand. IAS on them counts with your other gear.` :
+      two ? "A two-handed weapon leaves the other hand empty." :
       w && w.f & 1 && w.f & 2 && S.cls === "bar" ? "A Barbarian can hold this two-handed sword in one hand." : "";
     const second = S.oh === "weapon";
     ["kind2", "base2", "wi2"].forEach(k => { $("ia-" + k + "-field").hidden = !second; });
@@ -1154,10 +1176,33 @@
   document.querySelectorAll("#ia-oh button").forEach(b => b.addEventListener("click", () => { if (!b.disabled) { S.oh = b.dataset.v; update(); } }));
 
   // ---------------------------------------------------------------- the results
-  let R = null, BP = null;
+  let R = null, BP = null, DIFF = null;
+  // a normal attack's attack 1 and attack 2 when they aren't as long (an Assassin's claws, a Paladin's two-handed
+  // sword): {l1, l2}, their lengths; else null, and the page shows one result (the target only changes the picture)
+  function lengths(r) {
+    if (r.why || r.p.merc || r.p.sk) return null;
+    const both = E.evaluate(Object.assign({}, S, {mon: ""}));  // no target: the game draws either
+    const a = !both.why && both.p.anims;
+    if (!a || a.length !== 2) return null;
+    const l1 = a[0].frames - a[0].start, l2 = a[1].frames - a[1].start;
+    return l1 !== l2 || a[0].speed !== a[1].speed ? {l1, l2} : null;
+  }
+  // this setup's attack 1 and attack 2, both drawn, take as long: one number
+  const twin = r => !!(r.t.avg && r.t.parts.length === 2 && r.t.parts[0].frames === r.t.parts[1].frames && !r.t.parts[1].lost);
+  function renderTarget() {
+    let note = "The monster in the preview: it doesn't change this attack's speed.";
+    if (E.MERC[S.cls]) note = "The monster in the preview: a mercenary's attack doesn't change with it.";
+    else if (DIFF) {
+      const by = Math.abs(DIFF.l2 - DIFF.l1), longer = DIFF.l2 > DIFF.l1 ? 2 : 1;
+      note = `It matters here: with this weapon attack ${longer}'s animation is ${by === 1 ? "a frame" : by + " frames"} longer, and the game always draws attack 1 against small monsters (Fallen, Quill Rats, spiders\u2026), attack 2 against flying ones (birds, bats, wisps\u2026).`;
+    }
+    $("ia-mon-note").textContent = note;
+  }
   function update() {
     syncForm();
     R = E.evaluate(S);
+    DIFF = lengths(R);
+    renderTarget();
     BP = R.why || R.p.fixed || R.p.fx || R.p.paced ? null : E.breakpoints(S);
     renderTiles(); renderVerdict(); renderFacts(); renderBreakpoints(); renderBases(); renderGrid(); resetPreview();
     if (S.tab === "how") renderHow();
@@ -1167,7 +1212,7 @@
   const perSecond = p => (p.hits > 1 ? (25 * p.hits / p.frames).toFixed(2) : aps(p.frames));
   // an attack's frames as the page shows them (a normal attack: attack 1 / attack 2) and attacks (hits) a second, held:
   // a normal attack lasts attack 1 or attack 2, half the time each
-  const framesOf = r => (r.t.avg ? r.t.parts.map(p => fmt(p.frames)).join(" / ") : partText(r.t.parts[0]));
+  const framesOf = r => (r.t.avg && !twin(r) ? r.t.parts.map(p => fmt(p.frames)).join(" / ") : partText(r.t.parts[0]));
   const heldRate = r => (r.t.avg ? (25 / r.t.avg.frames).toFixed(2) : perSecond(r.t.parts[0]));
   const avgText = v => (Number.isInteger(v) ? String(v) : v.toFixed(1));
   // the answer in one line: frames now, what the next breakpoint costs, the fastest
@@ -1200,13 +1245,16 @@
     const box = $("ia-tiles"), prob = $("ia-problem");
     prob.hidden = !R.why;
     if (R.why) { prob.innerHTML = `<p><strong>Not possible:</strong> ${esc(R.why)}</p>`; box.innerHTML = ""; return; }
-    box.innerHTML = R.t.parts.map(part => {
+    // where attack 1 and attack 2 take as long, one "Attack" (also when the target makes the game draw attack 2)
+    const same = twin(R) || (!DIFF && R.t.parts.length === 1 && R.t.parts[0].label === "Attack 2");
+    const parts = same ? [Object.assign({}, R.t.parts[0], {label: "Attack"})] : R.t.parts;
+    box.innerHTML = parts.map(part => {
       if (part.fixed) return tile(part.label, part.frames, `frames, whatever the IAS &middot; ${part.hits > 1 ? `${part.hits} hits (one with each weapon) &middot; ${perSecond(part)}` : aps(part.frames)} ${part.channel && /blade/.test(part.label) ? "blades" : "hits"}/s`);
       if (part.swings) return tile(`${part.label}, ${part.hits} hits`, part.swings.join("/"), `${part.frames} frames in all &middot; ${perSecond(part)} hits/s`);
       if (part.hits > 1) return tile(part.label, part.frames, `frames &middot; ${part.hits} hits &middot; ${perSecond(part)} hits/s`);
       if (part.channel) return tile(part.label, part.frames, `frames &middot; ${aps(part.frames)} ${/blade/.test(part.label) ? "blades" : "hits"}/s`);
       return tile(part.label, part.frames, `frames &middot; ${aps(part.frames)} attacks/s${part.lost ? " &middot; its hit is lost" : ""}`);
-    }).join("") + (R.t.avg ? tile("Held, on average", avgText(R.t.avg.frames), `frames &middot; ${heldRate(R)} attacks/s: the game draws either, half the time each`) : "");
+    }).join("") + (R.t.avg && !same ? tile("Held, on average", avgText(R.t.avg.frames), `frames &middot; ${heldRate(R)} attacks/s: the game draws either, half the time each`) : "");
   }
   const tile = (label, value, sub) => `<div class="tile"><span class="tile-label">${esc(label)}</span><span class="tile-value">${esc(fmt(value))}</span><span class="tile-sub">${sub}</span></div>`;
   function animTitle() {
@@ -1236,14 +1284,13 @@
       n.push(`Frames here are attack to attack: the animation, then ${p.seq ? "two frames" : "a frame"} before its AI picks the next attack, ${p.seq ? 3 : 2} more than the game's breakpoint screen shows (the breakpoints are the same). Now and then its AI waits 10 frames instead.`);
       if (t.parts[0].hits > 1 && !p.seq) n.push(`This animation hits ${t.parts[0].hits} times a swing.`);
     }
-    if (!p.merc && !p.sk && p.anims && p.anims.length > 1) {
-      n.push("A normal attack: the game draws attack 1 or attack 2, half the time each, and a held attack lasts as long as the one drawn, so the average counts. Attack 2 only is drawn against flying monsters, attack 1 only against small ones (Fallen, Quill Rats, spiders...).");
+    if (!p.merc && !p.sk && p.anims && p.anims.length > 1 && DIFF) {
+      n.push(`A normal attack: the game draws attack 1 or attack 2, half the time each, and a held attack lasts as long as the one drawn, so the average counts. With this weapon they aren't as long (${DIFF.l1} and ${DIFF.l2} animation frames); small monsters (Fallen, Quill Rats, spiders...) always get attack 1, flying ones (birds, bats, wisps...) attack 2.`);
       if (t.parts[1].lost) n.push("Attack 2 ends before attack 1's hit frame, where the game makes the hit: an attack drawn as attack 2 loses its hit.");
     }
-    if (!p.merc && !p.sk && p.anims && p.anims.length === 1) {
-      const w = E.BASE[S.w], size = (E.TGT[S.mon] || {h: 3}).h;
-      if (!w || w.wc === "bow" || w.wc === "xbw") n.push("A normal attack with a bow, a crossbow or no weapon is always attack 1, whatever the target.");
-      else if (size === 1) n.push(`Against a small monster (the ${esc(E.TGT[S.mon].n)}, Quill Rats, spiders...) the game always draws attack 1.`);
+    if (!p.merc && !p.sk && p.anims && p.anims.length === 1 && DIFF) {
+      const size = (E.TGT[S.mon] || {h: 3}).h;
+      if (size === 1) n.push(`Against a small monster (the ${esc(E.TGT[S.mon].n)}, Quill Rats, spiders...) the game always draws attack 1.`);
       else if (size === 2) n.push(`Against a flying monster (the ${esc(E.TGT[S.mon].n)}, bats, wisps...) the game always draws attack 2, and a held attack lasts as long as it; the hit still comes at attack 1's hit frame${t.parts[0].lost ? ", which attack 2 ends before: it loses its hit" : ""}.`);
     }
     if (p.dual) n.push(sp.which === "first" ? "Two weapons: the first one counts (its speed modifier and its IAS); the second one's IAS counts nowhere." :
@@ -1272,9 +1319,9 @@
     const parts = BP.r0.t.parts;
     // one frames column when attack 1 and attack 2 agree on every row
     const same = parts.length > 1 && BP.rows.every(row => row.r.t.parts.every(p => partText(p) === partText(row.r.t.parts[0])));
-    const cols = same ? [{label: "Frames (both attacks)", i: 0}] : parts.map((p, i) => ({label: parts.length > 1 ? p.label : "Frames", i}));
+    const cols = same ? [{label: "Frames", i: 0}] : parts.map((p, i) => ({label: parts.length > 1 ? p.label : "Frames", i}));
     sub.innerHTML = `What each frame count needs from other gear, with ${R.sp.weaponIAS} IAS on the weapon${R.sp.inc ? ` and Increased Speed&rsquo;s ${R.sp.inc}` : ""}. &ldquo;More&rdquo; is what you still need beyond your ${S.gear}; your row is lit.` +
-      (R.t.avg ? " Attacks a second: held, attack 1 and attack 2 half the time each." : "");
+      (R.t.avg && !same ? " Attacks a second: held, attack 1 and attack 2 half the time each." : "");
     const head = `<thead><tr><th class="left">More</th><th>Other gear IAS</th><th>Total IAS</th><th>EIAS</th><th>Speed</th>${cols.map(c => `<th>${esc(c.label)}</th>`).join("")}<th>${parts.some(p => p.hits > 1) ? "Hits/s" : "Attacks/s"}</th></tr></thead>`;
     const rows = BP.rows.map((row, i) => {
       const r = row.r, more = row.gear - S.gear;
@@ -1299,7 +1346,7 @@
     const parts = R.t.parts;
     // one frames column when attack 1 and attack 2 agree for every base
     const same = parts.length > 1 && rows.every(x => x.r.t.parts.every(p => partText(p) === partText(x.r.t.parts[0])));
-    const cols = same ? [{label: "Frames (both attacks)", i: 0}] : parts.map((p, i) => ({label: parts.length > 1 ? p.label : "Frames", i}));
+    const cols = same ? [{label: "Frames", i: 0}] : parts.map((p, i) => ({label: parts.length > 1 ? p.label : "Frames", i}));
     $("ia-bases-sub").innerHTML = `Every base of the type <b>${esc(KIND_NAME[w.k])}</b> with your setup and the same IAS on the weapon, fastest first. Pick one to try it.`;
     tbl.innerHTML = `<thead><tr><th class="left">Base</th><th>WSM</th>${cols.map(c => `<th>${esc(c.label)}</th>`).join("")}<th>${parts.some(p => p.hits > 1) ? "Hits/s" : "Attacks/s"}</th></tr></thead><tbody>` +
       rows.map(x => `<tr${x.b.c === S.w ? ' class="you"' : ""}><td class="left"><a href="#" data-base="${esc(x.b.c)}">${esc(x.b.n)}</a> <small>${tierName[x.b.t]}</small></td><td>${x.b.w > 0 ? "+" : ""}${x.b.w}</td>` +
@@ -1335,7 +1382,7 @@
     sub.innerHTML = (R.p.formBase ? "In a form the weapon&rsquo;s IAS also sets the base speed, so rows and columns don&rsquo;t trade one for one. " :
       "In human form both kinds of IAS go into the same total, so rows and columns trade one for one. ") +
       "Each box is the calculator again with another split of IAS; everything else stays as you set it above." +
-      (R.t.avg ? " A normal attack shows the average of attack 1 and attack 2." : "");
+      (R.t.avg && DIFF ? " A normal attack shows the average of attack 1 and attack 2." : "");
     if (!GRID_OPEN.v) { GRID = null; return; }
     const cap = capIAS();
     const gw = S.gw || cap, gg = S.gg || cap, gws = S.gws || stepFor(gw), ggs = S.ggs || stepFor(gg);
@@ -1625,7 +1672,8 @@
     drawSprite();
     $("ia-prev-note").textContent = R.why ? "" : R.p.merc ? "A mercenary always looks the same, whatever it holds. Each box is one game frame, from one attack to the next." :
       (R.p.seq ? "A sequence plays the steps of its own animations; the strip shows where each hit lands." :
-      (R.t.avg ? "Attack 1, then attack 2: the game draws either, half the time each, and makes the hit at attack 1's hit frame both times. " : "") +
+      (R.t.avg ? (twin(R) ? "Attack 1, then attack 2: the game draws either at random, and here both take as long. " :
+        "Attack 1, then attack 2: the game draws either, half the time each, and makes the hit at attack 1's hit frame both times. ") : "") +
       (PV.tl.some(x => x.shot) ? "The shot leaves on the red frame and flies at its own speed, moved smoothly between the game's frames as D2GL draws it. " : "") +
       "Each box is one game frame of the attack, held as if you keep the button down. The figure holds your weapon; its light armor is only how it's drawn, as armor never changes attack speed.");
   }
@@ -1697,7 +1745,8 @@
     $("ia-ff-assume").innerHTML = [
       "Human form: the IAS shown is your total from every source (the weapon, other gear, Increased Speed), since it all adds up.",
       "Werewolf and werebear: the weapon&rsquo;s own IAS also sets the form&rsquo;s base speed, so each row says how much IAS the weapon needs and how much other gear. The weapon&rsquo;s IAS goes up to what its base can carry: a crafted weapon with its best IAS affix, or its best unique or set item, with Shael runes in the sockets Larzuk&rsquo;s Puzzlebox gives it and the attack speed corruption (or Shael in a corruption&rsquo;s sockets instead), or its best runeword. Point at a weapon IAS for its base&rsquo;s most and how. In a form the &ldquo;own attack&rdquo; is your class&rsquo;s normal attack with the weapon, which sets the form&rsquo;s base speed.",
-      "Class-only bases (Amazon bows, spears and javelins, Assassin claws, Sorceress orbs, the Paladin&rsquo;s two-handed Phase Blade) show only for their class. Two weapons: the Barbarian&rsquo;s and the Assassin&rsquo;s pairs, counted at their faster weapon."
+      "Class-only bases (Amazon bows, spears and javelins, Assassin claws, Sorceress orbs, the Paladin&rsquo;s two-handed Phase Blade) show only for their class. Two weapons: the Barbarian&rsquo;s and the Assassin&rsquo;s pairs, counted at their faster weapon.",
+      "The frames are attack 1&rsquo;s. Attack 2 takes as long but with an Assassin&rsquo;s claws and a Paladin&rsquo;s two-handed swords, where it can take a frame longer (against small monsters the game draws only attack 1)."
     ].map(x => `<li>${x}</li>`).join("");
     const out = $("ia-ff");
     out.innerHTML = D.cls.map(([k, n]) => `<div class="ff" data-cls="${k}"><button type="button" class="ff-head" aria-expanded="false" aria-controls="ia-ff-${k}">${esc(n)} <small></small></button>` +
@@ -1797,7 +1846,8 @@
       const len = p.seq ? t.len : a.frames - a.start;
       st.push(["Count the frames", `<span class="formula">&lceil;${len} &times; 256 &divide; ${t.rate}&rceil; &minus; 1</span> = <b>${part.frames} frames</b> per attack, ${aps(part.frames)} a second (25 frames a second).`]);
     }
-    if (t.avg) {
+    if (t.avg && twin(r)) st.push(["Attack 2", `The game draws attack 1 or attack 2 at random; attack 2, <code>${esc(t.parts[1].anim.code)}</code>, takes as long here, ${t.parts[1].frames} frames.`]);
+    else if (t.avg) {
       const b = t.parts[1];
       st.push(["Attack 2 and the average", `Attack 2, <code>${esc(b.anim.code)}</code>: <span class="formula">&lceil;${b.anim.frames - b.anim.start} &times; 256 &divide; ${b.rate}&rceil; &minus; 1</span> = <b>${b.frames}</b> frames. The game draws either, half the time each, so held: <span class="formula">(${part.frames} + ${b.frames}) &divide; 2</span> = <b>${avgText(t.avg.frames)} frames</b> an attack, ${(25 / t.avg.frames).toFixed(2)} a second.${b.lost ? " Attack 2 ends before attack 1's hit frame: an attack drawn as attack 2 loses its hit." : ""}`]);
     }

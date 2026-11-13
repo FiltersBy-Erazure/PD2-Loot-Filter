@@ -872,10 +872,11 @@
   }
   /* one round of the attack: { frames, hits, per: each part's frames, alt: attack 1 and attack 2, note, r: the
      engine's result }. A held normal attack lasts attack 1 or attack 2, half the time each: a round is one of each,
-     and attack 2 loses its hit when it ends before attack 1's hit frame (the game hits at attack 1's). */
+     and attack 2 loses its hit when it ends before attack 1's hit frame (the game hits at attack 1's). Where both take
+     as long (every weapon but an Assassin's claws and a Paladin's two-handed sword) it is one attack. */
   function roundOf(r) {
     const parts = r.t.parts, p = parts[0];
-    if (parts.length > 1) return { frames: parts.reduce((x, q) => x + q.frames, 0), hits: parts.reduce((x, q) => x + (q.lost ? 0 : q.hits), 0), per: parts.map(q => q.frames), alt: true, r };
+    if (parts.length > 1 && (parts[1].frames !== p.frames || parts.some(q => q.lost))) return { frames: parts.reduce((x, q) => x + q.frames, 0), hits: parts.reduce((x, q) => x + (q.lost ? 0 : q.hits), 0), per: parts.map(q => q.frames), alt: true, r };
     if (p.swings) return { frames: p.frames, hits: p.hits, per: p.swings, r };
     return { frames: p.frames, hits: p.hits, per: [p.frames], note: p.fixed ? "fixed" : "", r };
   }

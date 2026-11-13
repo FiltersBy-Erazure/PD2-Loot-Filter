@@ -1122,7 +1122,14 @@
     always A1 and its hit at A1's hit frame; held, each lasts the drawn one, so (A1 + A2) / 2 (an A2 ending before A1's
     hit loses it); always A1 with a bow, a crossbow or no weapon, else by the target's MonStats2 Height: small (1)
     A1, flying (2) A2 (the page's Target field, `mon`, 2026-11-12, the author: a Zombie, a Fallen or a Carrion Bird,
-    drawn in the preview from `targets` in the data, files target-<key>.js / target-<key>-NU|GH.png);
+    drawn in the preview from `targets` in the data, files target-<key>.js / target-<key>-NU|GH.png). A1 and A2 take
+    as long for every class and weapon but an Assassin's claws (11 / 12 frames, base 208) and a Paladin's two-handed
+    swords (18 / 19), so the page shows them apart only there (`lengths`, `twin`): elsewhere one result, and the
+    Target's note says the monster only changes the picture (the author, 2026-11-12: "why is attack 1 vs attack 2 even
+    relevant?"). A bow's or crossbow's other hand is Arrows / Bolts (the author, 2026-11-12): quivers carry IAS (of
+    Readiness 10, of Alacrity 20, the +10 corruption, Aetherwing 40, Ramfodder 10, Abyssal Ward -20, jewels in a
+    corruption's sockets), counted with other gear: they are `misl`, not `weap`, and the game's dual-wield check (and
+    PD2's rule behind it) needs a weapon in each hand;
     a dual-wield normal attack hits with the first weapon only (weapsel 0; 3: first then the other; 2: both). Which
     rate draws an attack: A1, A2, TH, KK the attack rate; S1-S4 and sequences only with Skills.txt's UseAttackRate,
     else the other animation rate (100, slows, Frenzy's charges; IAS changes nothing, so Inferno, Arctic Blast and Leap
