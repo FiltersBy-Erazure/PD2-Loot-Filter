@@ -25,6 +25,8 @@ The Resources tab's pages are written by hand, in website/resources/ (each with 
 - Damage-Calculator.html, shown on the Damage Calculator page (docs/resources/damage-calculator.md), and
   Run-Speed.html, shown on the Run Speed page (docs/resources/run-speed.md); their game numbers are written by
   tools/calc_data.py too
+- IAS-Calculator.html, shown on the IAS Calculator page (docs/resources/ias-calculator.md); its game numbers are
+  written by tools/ias_data.py, its engine checked by tools/ias_selftest.py
 Each goes into the site as a file of its own (a Resources page under resources/), so its address keeps working.
 Its site page shows the same map with no frame, so its filter bar can stay under the site's header while
 scrolling: this hook takes the styles, the
@@ -55,6 +57,7 @@ MAPS = [  # (the page, from the repo root; the tool that writes it, or "by hand"
     ("website/resources/Ohm-vs-Jewel.html", "by hand", "resources/ohm-vs-jewel.md", "ohm-map"),
     ("website/resources/Damage-Calculator.html", "by hand", "resources/damage-calculator.md", "dmg-map"),
     ("website/resources/Run-Speed.html", "by hand", "resources/run-speed.md", "frw-map"),
+    ("website/resources/IAS-Calculator.html", "by hand", "resources/ias-calculator.md", "ias-map"),
 ]
 FONTS = ('<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700'
          '&family=Source+Sans+3:wght@400;600;700&display=swap">')
@@ -64,7 +67,9 @@ FONTS = ('<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=
 BESIDE = ["Erazure-Grail-Planner-Compendium.png", "Erazure-Grail-Planner-Glyphs.png", "Erazure-Filter-Editor-Source.js"]
 # Folders copied beside the pages the same way, file by file: the Filter Editor's game art (tools/editor_map.py
 # --assets; until it's written the editor draws with a web font and no pictures)
-BESIDE_FOLDERS = ["Erazure-Filter-Editor-Assets"]
+BESIDE_FOLDERS = ["Erazure-Filter-Editor-Assets",
+                  # the IAS Calculator's attack previews (tools/ias_sprites.py), beside its own copy in resources/
+                  "website/resources/IAS-Calculator-Sprites"]
 # The Filter Editor's script names its source with the source's CRC, so a new filter is a new address for browsers
 EDITOR_SOURCE, SOURCE_V = "Erazure-Filter-Editor-Source.js", "__SOURCE_V__"
 
@@ -117,7 +122,7 @@ def on_files(files, config):
     for folder in BESIDE_FOLDERS:
         for path in sorted((ROOT / folder).rglob("*")) if (ROOT / folder).is_dir() else []:
             if path.is_file():
-                rel = path.relative_to(ROOT).as_posix()
+                rel = own_copy(path.relative_to(ROOT).as_posix())  # a Resources page's folder goes to resources/
                 files.append(File.generated(config, rel, abs_src_path=str(path)))
     return files
 

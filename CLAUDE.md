@@ -1059,6 +1059,43 @@
   subtile a frame, and a yard (the skill descriptions') is 2/3 of a subtile: 25/24 of a yard a second, running 9.375
   with nothing (HarryPe's sheet reads the points as yards: 9). Vigor's +1% FRW per base point applies with any aura;
   Whirlwind's and Blade Dance's movement isn't modelled (not found).
+- The **IAS Calculator** (Resources, 2026-11-12, the author: "all the functionality of" RoofooEvazan's
+  hiimpd2.com/ias-calculator, credited on the page; plan `C:\Users\Erik\.claude\plans\i-want-to-create-compiled-lake.md`):
+  `website/resources/IAS-Calculator.html` (`ias-map`, by hand), four tabs. IAS Calculator: the setup beside an answer
+  that stays in view (a one-line bar on phones: "16 frames now; +8 IAS on other gear gives 15, +143 the fastest,
+  10"), the attack preview, the animation's numbers, breakpoints measured from your setup (a "More" column), every
+  base of the weapon's type at your IAS, the frame grid sized to the speed cap with a line where the frames change
+  (folded on phones). Fastest Frames (as hiimpd2: every setup's own fastest count, the two fastest per class and form;
+  in a form the weapon's IAS only up to what its base carries, DATA's `m` / `mh`: a crafted weapon or its best unique /
+  set item with Shael in Larzuk's Puzzlebox sockets and the attack speed corruption, or Shael in a corruption's
+  sockets, or its best runeword). How It's Worked Out (your setup step by step, worked examples). Reference (the rules,
+  a short implementation, the data tables). The setup lives in the address (`#tab-calc&c=bar&w=7gd...`, Copy a link)
+  and in localStorage `erazure-ias-calculator`. The author's layout choices (2026-11-12) differ from hiimpd2's on
+  purpose: answer first, breakpoints from you, the bases table, the trimmed grid, the site's own look, tabs kept, no
+  side-by-side builds. This page owns the attack speed model (the author): the damage calculator is to reuse it.
+  - Data: `python tools/ias_data.py "<Diablo II folder>" [--check|--selftest]` writes the DATA line between the
+    page's calc-data markers: PD2's AnimData.d2 (pd2assets.mpq), Weapons / ItemTypes / Skills (pd2_data.Game), the
+    speed skills per level 1-60, the items that grant another class's attack skill, the weapon IAS caps and
+    `docs/pd2-attack-sequences.json` (each sequence's steps per weapon class; PD2 runs its own Jab, Inferno, Arctic
+    Blast and Blade Fury sequences, shorter than the original game's, which hiimpd2 still uses). It needs the game
+    files, so build.bat, the hook and CI don't run it: rerun it after a PD2 patch. The sequences file is rewritten by
+    the tracing script kept out of the repo (memory `pd2-attack-speed-rules`) after a patch that changes skills.
+  - Engine (between the page's `ias-engine` markers, traced in the game and in BH's own breakpoint calculator): speed
+    = 100 + skill speed - WSM + EIAS (120 x IAS / (120 + IAS), rounded toward zero), 30 less for a sequence, kept at
+    15-175; rate = base speed x speed / 100; a held attack lasts ceil((frames - start) x 256 / rate) - 1; Amazons and
+    Sorceresses start A1 / A2 at frame 1 (no weapon) or 2 (melee, staff); two weapons count only the one with the
+    larger -WSM + its own IAS (a tie: the second), the Barbarian's 1ss / 1js / 1jt / 1st and the Assassin's ht2;
+    rollback skills hit by hit (BH's GetRollbackSkillFrames); Whirlwind and Blade Dance a hit every Param3 frames, one
+    more with two weapons; Charge's last 8 frames at base 100 + Param6; werewolf / werebear base speed = standing
+    frames x 256 / H, H from the class's own A1 with the weapon's one-handed weapon class, its WSM and its own IAS
+    undiminished (19 with no weapon). `python tools/ias_selftest.py` (CI, headless Chrome; `--setup` prints one setup)
+    runs the engine with the page's DATA on `tools/ias_cases.json` (hand-checked cases) and invariants on random setups.
+  - Sprites: `python tools/ias_sprites.py "<Diablo II folder>"` (by hand, not CI) draws every attack animation (and
+    the modes a sequence steps through) from the game's own sprites with `tools/d2_sprites.py` (DCC and COF), facing
+    south-east, light armor, every base's weapon graphic and a shield: `website/resources/IAS-Calculator-Sprites/` (per
+    animation an atlas PNG and a layout script, so the page works opened as a file; a zombie that takes the hits; a
+    Rogue Encampment floor; about 12 MB). website/hooks.py copies the folder beside the page's own copy (BESIDE_FOLDERS
+    through own_copy). Rerun it after `ias_data.py` changes the weapon bases or a patch changes the animations.
 - The Examples page's pictures (`website/docs/img/examples/*.png`, committed; README's examples show them too) are
   drawn by `python tools/example_shots.py "<Diablo II folder>" [--only NAME]` (2026-10-20; not run by build.bat, the
   hook or CI: it needs the game files): per scene of `SCENES` a floor of the area's own DT1 tiles, each item's
@@ -1393,7 +1430,9 @@ before), and so are throwing and stamina potions (hidden Fulminating / Chilling 
 `Erazure-Magic-Items.html` + `Erazure-Rare-Items.html` · `tools/level_map.py` + `tools/level_map_template.html` +
 `Erazure-Filter-Levels.html` · `tools/shop_map.py` + `tools/shop_map_template.html` + `tools/inv/` +
 `Erazure-Skill-Shop-Highlights.html` · `tools/grail_map.py` + `tools/grail_farm.py` + `tools/grail_map_template.html` +
-`Erazure-Grail-Planner.html` · `styles/minimal.filter` + `tools/style_map.py` + `tools/style_map_template.html` +
+`Erazure-Grail-Planner.html` · `website/resources/IAS-Calculator.html` + `tools/ias_data.py` + `tools/ias_selftest.py` +
+`tools/ias_cases.json` + `tools/ias_sprites.py` + `tools/d2_sprites.py` + `docs/pd2-attack-sequences.json` (the IAS
+Calculator) · `styles/minimal.filter` + `tools/style_map.py` + `tools/style_map_template.html` +
 `Erazure-Minimal-Style.html` · `styles/corrlorized.edits` + `tools/style_edits.py` + `Corrlorized-*.filter` ·
 `website/` + `site_preview.bat` + `.github/workflows/pages.yml` ·
 `tools/example_shots.py` + `website/docs/img/examples/` · `tools/icon_preview.py` + `tools/icon_preview.html` +

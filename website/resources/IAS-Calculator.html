@@ -1,0 +1,1566 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IAS Calculator</title>
+<!-- A Resources page of the website, written by hand, but its game numbers (the DATA line between the calc-data
+     markers: every attack animation, weapon base, attack skill, sequence and speed skill) are written by
+     tools/ias_data.py, and its engine (between the ias-engine markers) is checked by tools/ias_selftest.py.
+     website/hooks.py puts it on the site's IAS Calculator page (docs/resources/ias-calculator.md): it takes the
+     styles after the ias-map:css marker, the markup between the ias-map:start / :end markers and the script out of
+     this file, so keep those markers. Every rule is scoped to .ias-map. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+  /* this file on its own only (the website has its own page around it) */
+  body { margin: 0; background: #151412; }
+</style>
+<!-- ias-map:css -->
+<style>
+  /* Tabs: the calculator (setup beside the results, then the breakpoints and the frame grid), the fastest setups,
+     how it's worked out, the reference. Dark by default; light when the website (Material) is switched to light. */
+  .ias-map {
+    --bg: #151412; --panel: #1f1d1a; --fg: #ece7de; --fg2: #cfc8bb; --muted: #a59e91; --line: #36322c;
+    --axis: #4a463f; --accent: #d8b45e; --accent-wash: rgba(216, 180, 94, 0.12); --good: #4cc38a; --bad: #f0866a;
+    --hit: #e0533d; --cell-lo: #2a2722; --cell-hi: #b9a77c; --cell-fg: #ece7de; --cell-fg-hi: #1b1915;
+    --display: "Cinzel", "Trajan Pro", Georgia, serif;
+    --body: "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    color-scheme: dark;
+    color: var(--fg); font: 15px/1.5 var(--body);
+  }
+  [data-md-color-scheme="default"] .ias-map {
+    --bg: #f3f1ec; --panel: #fffdf8; --fg: #23211c; --fg2: #4a463e; --muted: #6b655a; --line: #ded7c9;
+    --axis: #c3bcae; --accent: #8a6d1f; --accent-wash: rgba(138, 109, 31, 0.10); --good: #12804f; --bad: #b8431f;
+    --hit: #c2361f; --cell-lo: #ece6da; --cell-hi: #8a6d1f; --cell-fg: #23211c; --cell-fg-hi: #fffdf8;
+    color-scheme: light;
+  }
+  .ias-map *, .ias-map *::before, .ias-map *::after { box-sizing: border-box; }
+  .ias-map .wrap { max-width: 1240px; margin: 0 auto; padding-inline: 16px; }
+  .md-content .ias-map .wrap { padding-inline: 0; max-width: none; }
+  .ias-map .ia-main { display: grid; gap: 18px; padding-block: 4px 48px; }
+  .ias-map .ia-main > * { min-width: 0; }
+  .ias-map h1.ia-title { font: 700 30px/1.15 var(--display); letter-spacing: .02em; margin: 0; padding-block: 24px 6px; color: var(--fg); }
+  .ias-map h2, .ias-map h3 { margin: 0; color: var(--fg); text-wrap: balance; letter-spacing: 0; }
+  .ias-map h2 { font: 700 19px/1.25 var(--body); }
+  .ias-map h3 { font: 700 16px/1.3 var(--body); }
+  .ias-map p { margin: 0; }
+  .ias-map :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .ias-map .ia-head { display: grid; gap: 8px; }
+  .ias-map .eyebrow { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+  .ias-map .lede { max-width: 80ch; color: var(--fg2); font-size: 16px; }
+  .ias-map .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px 18px 14px;
+                    display: grid; gap: 12px; align-content: start; min-width: 0; }
+  .ias-map .sub { color: var(--fg2); font-size: 14px; max-width: 86ch; }
+  .ias-map .note { color: var(--muted); font-size: 13px; max-width: 96ch; }
+  .ias-map .credit { color: var(--muted); font-size: 13px; }
+  .ias-map .credit a, .ias-map .method a, .ias-map .sub a, .ias-map .note a { color: var(--accent); }
+  .ias-map [hidden] { display: none !important; }
+  .ias-map .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .ias-map code { font-size: 12.5px; background: var(--bg); border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; }
+
+  /* tabs (the ARIA tab pattern) */
+  .ias-map .ia-tabs { display: flex; flex-wrap: wrap; gap: 6px; border-bottom: 1px solid var(--line); padding-bottom: 8px; }
+  .ias-map .ia-tabs button { background: var(--bg); border: 1px solid var(--axis); border-radius: 6px; padding: 7px 14px;
+                             cursor: pointer; font: 600 14px/1.2 var(--body); color: var(--fg2); }
+  .ias-map .ia-tabs button[aria-selected="true"] { border-color: var(--accent); background: var(--accent-wash); color: var(--fg); }
+  .ias-map .ia-panel { display: grid; gap: 18px; min-width: 0; }
+
+  /* setup */
+  .ias-map .ia-cols { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 18px; align-items: start; min-width: 0; }
+  .ias-map .ia-setup { gap: 16px; }
+  .ias-map fieldset { border: 0; margin: 0; padding: 0; min-width: 0; display: grid;
+                      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px 14px; align-content: start; }
+  .ias-map legend { grid-column: 1 / -1; float: left; width: 100%; padding: 0 0 6px; font-size: 11.5px; letter-spacing: .1em;
+                    text-transform: uppercase; color: var(--muted); font-weight: 700; border-bottom: 1px solid var(--line); margin-bottom: 4px; }
+  .ias-map .field { display: grid; gap: 4px; min-width: 0; align-content: start; }
+  .ias-map .field.wide { grid-column: span 2; }
+  .ias-map .field.full { grid-column: 1 / -1; }
+  .ias-map .field label, .ias-map .field .lab { font-size: 13px; font-weight: 600; color: var(--fg2); }
+  .ias-map .field small { font-size: 12px; color: var(--muted); line-height: 1.35; }
+  .ias-map input, .ias-map select, .ias-map button { font: inherit; color: var(--fg); }
+  .ias-map select, .ias-map input[type="number"] { background: var(--bg); border: 1px solid var(--axis); border-radius: 6px;
+                                                    padding: 5px 8px; min-width: 0; width: 100%; }
+  .ias-map input[type="number"] { font-variant-numeric: tabular-nums; }
+  .ias-map .check { display: flex; gap: 8px; align-items: center; font-size: 14px; color: var(--fg2); min-height: 34px; }
+  .ias-map .check input { accent-color: var(--accent); width: 16px; height: 16px; }
+  .ias-map .seg { display: flex; flex-wrap: wrap; gap: 6px; }
+  .ias-map .seg button { background: var(--bg); border: 1px solid var(--axis); border-radius: 6px; padding: 5px 10px; cursor: pointer;
+                         font-size: 13.5px; }
+  .ias-map .seg button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-wash); color: var(--fg); font-weight: 700; }
+  .ias-map .seg button:disabled { opacity: .45; cursor: not-allowed; }
+  .ias-map .btn { background: var(--bg); border: 1px solid var(--axis); border-radius: 6px; padding: 6px 12px; cursor: pointer;
+                  font-size: 13.5px; font-weight: 600; color: var(--fg2); }
+  .ias-map .btn:hover { border-color: var(--accent); color: var(--fg); }
+
+  /* results: the answer stays in view beside the setup while you change it (on a phone, a one-line bar above it) */
+  .ias-map { --stick: 8px; }
+  .md-content .ias-map { --stick: calc(2.4rem + 8px); }  /* under the website's header */
+  .ias-map .ia-out { display: grid; gap: 14px; min-width: 0; align-content: start; }
+  .ias-map .ia-answer { position: sticky; top: var(--stick); z-index: 2; display: grid; gap: 10px; background: var(--bg);
+                        padding-bottom: 6px; box-shadow: 0 6px 8px -6px rgba(0, 0, 0, .35); }
+  .ias-map .ia-verdict { font-size: 15px; color: var(--fg); background: var(--accent-wash); border: 1px solid var(--accent);
+                         border-radius: 8px; padding: 9px 12px; font-variant-numeric: tabular-nums; }
+  .ias-map .ia-verdict b, .ias-map .ia-verdict-bar b { color: var(--accent); }
+  .ias-map .ia-verdict-bar { display: none; }
+  .ias-map .ia-answer-tools { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .ias-map .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
+  .ias-map .tile { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px 16px;
+                   display: grid; gap: 2px; align-content: start; }
+  .ias-map .tile-label { font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+  .ias-map .tile-value { font-size: 30px; font-weight: 700; line-height: 1.15; font-variant-numeric: tabular-nums; color: var(--accent); }
+  .ias-map .tile-value span { font-size: 15px; font-weight: 600; color: var(--fg2); margin-left: 4px; }
+  .ias-map .tile-sub { font-size: 13.5px; color: var(--fg2); font-variant-numeric: tabular-nums; }
+  .ias-map .ia-problem { border-color: var(--bad); color: var(--fg); }
+  .ias-map .ia-problem strong { color: var(--bad); }
+  .ias-map .facts { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 8px 14px; margin: 0; }
+  .ias-map .facts div { display: grid; gap: 0; min-width: 0; }
+  .ias-map .facts dt { font-size: 12px; color: var(--muted); }
+  .ias-map .facts dd { margin: 0; font-size: 18px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .ias-map .anim-name { font-size: 16px; font-weight: 600; }
+  .ias-map .anim-name code { margin-left: 6px; }
+  .ias-map .notes { margin: 0; padding-left: 18px; display: grid; gap: 5px; color: var(--fg2); font-size: 14px; }
+
+  /* the frame strip and the preview */
+  .ias-map .strip { display: flex; flex-wrap: wrap; gap: 3px; }
+  .ias-map .strip span { min-width: 26px; height: 24px; padding: 0 3px; display: inline-grid; place-items: center; font-size: 12px;
+                         border: 1px solid var(--axis); border-radius: 4px; color: var(--fg2); font-variant-numeric: tabular-nums; }
+  .ias-map .strip span.hit { background: var(--hit); border-color: var(--hit); color: #fff; font-weight: 700; }
+  .ias-map .strip span.now { outline: 2px solid var(--accent); outline-offset: 1px; color: var(--fg); }
+  .ias-map .strip-row { display: grid; gap: 4px; }
+  .ias-map .strip-row .lab { font-size: 12.5px; color: var(--muted); }
+  .ias-map .stage { width: 100%; background: radial-gradient(ellipse at 50% 85%, #3a3226 0%, #1a1814 70%); border: 1px solid var(--line);
+                    border-radius: 6px; display: block; image-rendering: pixelated; }
+  [data-md-color-scheme="default"] .ias-map .stage { background: radial-gradient(ellipse at 50% 85%, #d9cfbb 0%, #b9ad97 75%); }
+  .ias-map .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .ias-map .controls select { width: auto; }
+  .ias-map .legend-key { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); }
+  .ias-map .legend-key i { width: 12px; height: 12px; border-radius: 3px; background: var(--hit); display: inline-block; }
+
+  /* tables */
+  .ias-map .scroll { overflow-x: auto; min-width: 0; }
+  .ias-map table.ia-table { border-collapse: collapse; width: 100%; font-size: 13.5px; margin: 0; display: table; }
+  .ias-map .ia-table th, .ias-map .ia-table td { padding: 6px 10px; text-align: right; border: 0; border-bottom: 1px solid var(--line);
+                                                 white-space: nowrap; background: none; }
+  .ias-map .ia-table th { font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: .03em; vertical-align: bottom; }
+  .ias-map .ia-table th:first-child, .ias-map .ia-table td:first-child { text-align: left; }
+  .ias-map .ia-table td { font-variant-numeric: tabular-nums; color: var(--fg); }
+  .ias-map .ia-table tbody tr:hover td { background: var(--accent-wash); }
+  .ias-map .ia-table tr.you td { background: var(--accent-wash); color: var(--accent); font-weight: 700; }
+  .ias-map .ia-table td.left, .ias-map .ia-table th.left { text-align: left; white-space: normal; }
+
+  /* the frame grid */
+  .ias-map .grid-opts { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px 14px; }
+  .ias-map table.ia-grid { border-collapse: separate; border-spacing: 3px; font-size: 13px; margin: 0; display: table; }
+  .ias-map .ia-grid th { font-weight: 600; color: var(--muted); padding: 2px 4px; text-align: right; white-space: nowrap; background: none; border: 0; }
+  .ias-map .ia-grid thead th { text-align: center; }
+  .ias-map .ia-grid th.you { color: var(--accent); }
+  .ias-map .ia-grid td { width: 38px; min-width: 34px; height: 30px; text-align: center; border-radius: 4px; position: relative;
+                         font-variant-numeric: tabular-nums; padding: 0; border: 0; cursor: default; }
+  .ias-map .ia-grid td.you { outline: 2px solid var(--good); outline-offset: 0; z-index: 1; }
+  /* where the frame count changes: a line on the box's right and bottom edges */
+  .ias-map .ia-grid td.er { box-shadow: inset -3px 0 0 var(--bp-line); }
+  .ias-map .ia-grid td.eb { box-shadow: inset 0 -3px 0 var(--bp-line); }
+  .ias-map .ia-grid td.er.eb { box-shadow: inset -3px 0 0 var(--bp-line), inset 0 -3px 0 var(--bp-line); }
+  .ias-map { --bp-line: #f1d48a; }
+  [data-md-color-scheme="default"] .ias-map { --bp-line: #6b4e0a; }
+  .ias-map .ia-grid td.cap::after { content: ""; position: absolute; top: 3px; right: 3px; width: 4px; height: 4px; border-radius: 50%;
+                                    background: currentColor; opacity: .75; }
+  .ias-map .grid-key { display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center; font-size: 13px; color: var(--muted); }
+  .ias-map .grid-key .ramp { width: 110px; height: 10px; border-radius: 3px; background: linear-gradient(90deg, var(--cell-lo), var(--cell-hi)); }
+  .ias-map .grid-key .box { width: 14px; height: 14px; border: 2px solid var(--good); border-radius: 3px; display: inline-block; }
+  .ias-map .grid-tip { font-size: 13.5px; color: var(--fg2); min-height: 1.5em; font-variant-numeric: tabular-nums; }
+
+  /* fastest frames */
+  .ias-map .ff { border: 1px solid var(--line); border-radius: 8px; background: var(--panel); min-width: 0; }
+  .ias-map .ff-head { width: 100%; background: none; border: 0; cursor: pointer; padding: 10px 14px; font-weight: 700; font-size: 15px;
+                      display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; text-align: left; color: var(--fg); }
+  .ias-map .ff-head::before { content: "▸"; color: var(--accent); }
+  .ias-map .ff-head[aria-expanded="true"]::before { content: "▾"; }
+  .ias-map .ff-head small { font-weight: 500; color: var(--fg2); font-size: 13px; }
+  .ias-map .ff-body { padding: 0 14px 12px; display: grid; gap: 12px; min-width: 0; }
+  .ias-map .ff-forms { display: grid; gap: 10px; min-width: 0; }
+  .ias-map .ff-form h3 { font-size: 14px; color: var(--fg2); }
+
+  /* how it's worked out, reference */
+  .ias-map .method ol, .ias-map .method ul { margin: 0; padding-left: 22px; display: grid; gap: 8px; max-width: 96ch; color: var(--fg2); }
+  .ias-map .method li strong { color: var(--fg); }
+  .ias-map .formula { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; color: var(--fg);
+                      background: var(--bg); border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; white-space: nowrap; }
+  .ias-map .steps { display: grid; gap: 10px; counter-reset: st; margin: 0; padding: 0; list-style: none; }
+  .ias-map .steps > li { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 4px 10px; }
+  .ias-map .steps > li::before { counter-increment: st; content: counter(st); grid-row: span 2; width: 26px; height: 26px; border-radius: 50%;
+                                 border: 1px solid var(--accent); color: var(--accent); display: grid; place-items: center; font-weight: 700; font-size: 13px; }
+  .ias-map .steps > li b { color: var(--fg); }
+  .ias-map .steps > li div { color: var(--fg2); font-size: 14px; }
+  .ias-map pre.code { margin: 0; padding: 12px 14px; background: var(--bg); border: 1px solid var(--line); border-radius: 6px; overflow-x: auto;
+                      font: 12.5px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: var(--fg); }
+  .ias-map .ref-filter { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; }
+  .ias-map .ref-filter .field { min-width: 160px; }
+
+  @media (max-width: 980px) {
+    .ias-map .ia-cols { grid-template-columns: minmax(0, 1fr); }
+    .ias-map .ia-answer { position: static; box-shadow: none; }
+    .ias-map .ia-verdict-bar { display: block; position: sticky; top: var(--stick); z-index: 3; margin: 0; font-size: 14px;
+                               background: var(--panel); border: 1px solid var(--accent); border-radius: 8px; padding: 7px 10px;
+                               box-shadow: 0 6px 8px -6px rgba(0, 0, 0, .45); }
+  }
+  @media (max-width: 640px) {
+    .ias-map .panel { padding: 14px 12px 12px; }
+    .ias-map .field.wide { grid-column: 1 / -1; }
+    .ias-map .tile-value { font-size: 26px; }
+    .ias-map .ia-tabs button { padding: 6px 10px; font-size: 13.5px; }
+  }
+</style>
+</head>
+<body>
+<div class="ias-map">
+<div class="wrap"><h1 class="ia-title">IAS Calculator</h1></div>
+<!-- ias-map:start -->
+<div class="wrap ia-main">
+  <header class="ia-head">
+    <p class="eyebrow">Season 14 &middot; Attack speed &middot; Breakpoints</p>
+    <p class="lede">How many frames an attack takes for every class, form, weapon and attack skill, worked out the way the
+      game works out attack speed: the breakpoints of increased attack speed (IAS), a grid of the IAS on your weapon
+      against the IAS on the rest of your gear, the fastest setups, and each attack frame by frame.</p>
+  </header>
+
+  <div class="ia-tabs" role="tablist" aria-label="IAS Calculator">
+    <button type="button" role="tab" id="ia-tab-calc" data-tab="calc" aria-controls="ia-calc" aria-selected="true">IAS Calculator</button>
+    <button type="button" role="tab" id="ia-tab-fast" data-tab="fast" aria-controls="ia-fast" aria-selected="false" tabindex="-1">Fastest Frames</button>
+    <button type="button" role="tab" id="ia-tab-how" data-tab="how" aria-controls="ia-how" aria-selected="false" tabindex="-1">How It&rsquo;s Worked Out</button>
+    <button type="button" role="tab" id="ia-tab-ref" data-tab="ref" aria-controls="ia-ref" aria-selected="false" tabindex="-1">Reference</button>
+  </div>
+
+  <!-- the calculator -->
+  <section class="ia-panel" id="ia-calc" role="tabpanel" aria-labelledby="ia-tab-calc">
+    <p class="ia-verdict-bar" id="ia-verdict-bar" aria-hidden="true"></p>
+    <div class="ia-cols">
+      <div class="panel ia-setup" aria-label="Your setup">
+        <fieldset>
+          <legend>Character</legend>
+          <div class="field">
+            <label for="ia-cls">Class</label>
+            <select id="ia-cls"></select>
+          </div>
+          <div class="field wide">
+            <span class="lab" id="ia-form-label">Form</span>
+            <div class="seg" id="ia-form" role="group" aria-labelledby="ia-form-label">
+              <button type="button" data-v="human">Human</button>
+              <button type="button" data-v="wolf">Werewolf</button>
+              <button type="button" data-v="bear">Werebear</button>
+            </div>
+          </div>
+          <div class="field full">
+            <label for="ia-atk">Attack</label>
+            <select id="ia-atk"></select>
+            <small id="ia-atk-note"></small>
+          </div>
+          <div class="field" id="ia-lvl-field">
+            <label for="ia-lvl">Skill level</label>
+            <input type="number" id="ia-lvl" min="1" max="60" step="1" value="20">
+            <small>With +skills</small>
+          </div>
+          <div class="field" id="ia-tg-field">
+            <label for="ia-tg">Targets in range</label>
+            <input type="number" id="ia-tg" min="1" max="10" step="1" value="5">
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Weapon</legend>
+          <div class="field">
+            <label for="ia-kind">Type</label>
+            <select id="ia-kind"></select>
+          </div>
+          <div class="field wide">
+            <label for="ia-base">Base</label>
+            <select id="ia-base"></select>
+          </div>
+          <div class="field">
+            <label for="ia-wi">IAS on this weapon</label>
+            <input type="number" id="ia-wi" min="0" max="300" step="1" value="0">
+          </div>
+          <div class="field wide">
+            <span class="lab" id="ia-oh-label">Other hand</span>
+            <div class="seg" id="ia-oh" role="group" aria-labelledby="ia-oh-label">
+              <button type="button" data-v="none">Nothing</button>
+              <button type="button" data-v="shield">A shield</button>
+              <button type="button" data-v="weapon">A second weapon</button>
+            </div>
+            <small id="ia-oh-note"></small>
+          </div>
+          <div class="field" id="ia-kind2-field">
+            <label for="ia-kind2">Second weapon&rsquo;s type</label>
+            <select id="ia-kind2"></select>
+          </div>
+          <div class="field" id="ia-base2-field">
+            <label for="ia-base2">Second weapon&rsquo;s base</label>
+            <select id="ia-base2"></select>
+          </div>
+          <div class="field" id="ia-wi2-field">
+            <label for="ia-wi2">IAS on it</label>
+            <input type="number" id="ia-wi2" min="0" max="300" step="1" value="0">
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Attack speed</legend>
+          <div class="field">
+            <label for="ia-gear">IAS from other gear</label>
+            <input type="number" id="ia-gear" min="0" max="500" step="1" value="20">
+            <small>Gloves, armor, rings, jewels, a shield&hellip;</small>
+          </div>
+          <div class="field">
+            <label for="ia-fana">Fanaticism</label>
+            <input type="number" id="ia-fana" min="0" max="60" step="1" value="0">
+            <small>Aura level (0 = none)</small>
+          </div>
+          <div class="field" id="ia-frenzy-field">
+            <label for="ia-frenzy">Frenzy</label>
+            <input type="number" id="ia-frenzy" min="0" max="60" step="1" value="0">
+            <small>Level, frenzied (0 = none)</small>
+          </div>
+          <div class="field" id="ia-inc-field">
+            <label for="ia-inc">Increased Speed</label>
+            <input type="number" id="ia-inc" min="0" max="20" step="1" value="0">
+            <small>Hard points only</small>
+          </div>
+          <div class="field" id="ia-bos-field">
+            <label for="ia-bos">Burst of Speed</label>
+            <input type="number" id="ia-bos" min="0" max="20" step="1" value="0">
+            <small>Hard points only</small>
+          </div>
+          <div class="field" id="ia-ww-field">
+            <label for="ia-ww">Werewolf skill</label>
+            <input type="number" id="ia-ww" min="0" max="60" step="1" value="1">
+            <small>Level, with +skills</small>
+          </div>
+          <div class="field">
+            <label for="ia-other">Other speed &plusmn;</label>
+            <input type="number" id="ia-other" min="-100" max="100" step="1" value="0">
+            <small>A slow as a negative number</small>
+          </div>
+          <div class="field">
+            <span class="lab">Hustle</span>
+            <label class="check"><input type="checkbox" id="ia-hustle"> <span>Hustle armor</span></label>
+          </div>
+        </fieldset>
+        <p class="note">Every speed skill gear can give is here, for any class: Fanaticism from The Beast (a level 8&ndash;10
+          aura) or a party Paladin, the Werewolf skill from Wolfhowl in werewolf form, and the Burst of Speed aura of Hustle
+          armor. Frenzy, Increased Speed and Burst of Speed show for the classes that have them.</p>
+      </div>
+
+      <div class="ia-out">
+        <div class="ia-answer" id="ia-answer" aria-live="polite">
+          <p class="ia-verdict" id="ia-verdict"></p>
+          <div class="tiles" id="ia-tiles"></div>
+          <div class="ia-answer-tools">
+            <button type="button" class="btn" id="ia-copy">Copy a link to this setup</button>
+            <span class="note" id="ia-copied" aria-live="polite"></span>
+          </div>
+        </div>
+        <div class="panel ia-problem" id="ia-problem" hidden></div>
+        <section class="panel" aria-labelledby="ia-prev-h">
+          <h2 id="ia-prev-h">Attack preview</h2>
+          <canvas class="stage" id="ia-stage" width="300" height="176" hidden role="img" aria-label="The attack, played frame by frame"></canvas>
+          <div class="controls">
+            <button type="button" class="btn" id="ia-play">Pause</button>
+            <label class="sr-only" for="ia-speed">Speed</label>
+            <select id="ia-speed" aria-label="Playback speed">
+              <option value="1">Game speed</option>
+              <option value="0.5">&frac12; speed</option>
+              <option value="0.25">&frac14; speed</option>
+              <option value="0.1">1/10 speed</option>
+            </select>
+            <button type="button" class="btn" id="ia-step">+1 frame</button>
+            <span class="legend-key"><i></i> a hit &middot; each box is one game frame (1/25 s)</span>
+          </div>
+          <div id="ia-strips" class="strip-row"></div>
+          <p class="note" id="ia-prev-note"></p>
+        </section>
+        <section class="panel" aria-labelledby="ia-det-h">
+          <h2 id="ia-det-h" class="anim-name">Animation</h2>
+          <dl class="facts" id="ia-facts"></dl>
+          <ul class="notes" id="ia-notes"></ul>
+        </section>
+      </div>
+    </div>
+
+    <section class="panel" aria-labelledby="ia-bp-h">
+      <h2 id="ia-bp-h">Breakpoints</h2>
+      <p class="sub" id="ia-bp-sub"></p>
+      <div class="scroll"><table class="ia-table" id="ia-bp"></table></div>
+      <p><button type="button" class="btn" id="ia-why">How is this worked out?</button></p>
+    </section>
+
+    <section class="panel" aria-labelledby="ia-bases-h">
+      <h2 id="ia-bases-h">Every base of this type, at your IAS</h2>
+      <p class="sub" id="ia-bases-sub"></p>
+      <div class="scroll"><table class="ia-table" id="ia-bases"></table></div>
+    </section>
+
+    <section class="panel" aria-labelledby="ia-grid-h">
+      <h2 id="ia-grid-h">Frame grid: weapon IAS &times; other gear&rsquo;s IAS</h2>
+      <p class="sub" id="ia-grid-sub"></p>
+      <p><button type="button" class="btn" id="ia-grid-toggle" aria-expanded="true" aria-controls="ia-grid-body">Hide the frame grid</button></p>
+      <div id="ia-grid-body" class="ia-panel">
+        <div class="grid-opts">
+          <div class="field"><label for="ia-gw">Weapon IAS up to</label><select id="ia-gw"></select></div>
+          <div class="field"><label for="ia-gws">Row step</label><select id="ia-gws"></select></div>
+          <div class="field"><label for="ia-gg">Other gear IAS up to</label><select id="ia-gg"></select></div>
+          <div class="field"><label for="ia-ggs">Column step</label><select id="ia-ggs"></select></div>
+        </div>
+        <div class="grid-key" id="ia-grid-key"></div>
+        <div class="scroll"><table class="ia-grid" id="ia-grid"></table></div>
+        <p class="grid-tip" id="ia-grid-tip" aria-live="polite">Point at a box (or tap it) for its numbers.</p>
+      </div>
+    </section>
+  </section>
+
+  <!-- the fastest setups -->
+  <section class="ia-panel" id="ia-fast" role="tabpanel" aria-labelledby="ia-tab-fast" hidden>
+    <div class="panel">
+      <h2>Fastest held attacks, per class and form</h2>
+      <p class="sub">The two fastest frame counts of each class&rsquo;s normal attack, held, in each form, with every weapon
+        setup that reaches them and the IAS it needs. No skill speed is counted, so Fanaticism, Frenzy, Burst of Speed or the
+        Werewolf skill lower the IAS needed. Click a setup to open it in the calculator.</p>
+      <div class="controls"><button type="button" class="btn" id="ia-ff-open">Expand all</button>
+        <button type="button" class="btn" id="ia-ff-close">Collapse all</button></div>
+      <ul class="notes" id="ia-ff-assume"></ul>
+    </div>
+    <div id="ia-ff" class="ia-panel"></div>
+  </section>
+
+  <!-- how it's worked out -->
+  <section class="ia-panel method" id="ia-how" role="tabpanel" aria-labelledby="ia-tab-how" hidden>
+    <div class="panel">
+      <h2>How the game turns IAS into frames</h2>
+      <p class="sub" id="ia-how-sub"></p>
+      <ol class="steps" id="ia-how-steps"></ol>
+      <p><button type="button" class="btn" id="ia-how-back">Back to the calculator</button></p>
+    </div>
+    <div class="panel">
+      <h2>Worked examples</h2>
+      <div id="ia-examples" class="ia-panel"></div>
+    </div>
+    <div class="panel">
+      <h2>Werewolf and werebear</h2>
+      <ul>
+        <li><strong>The form takes its speed from your weapon.</strong> The game times your class&rsquo;s own normal attack with
+          the weapon in hand (its frames, and its speed modifier and the IAS on that weapon only, without the diminishing
+          returns), and turns that into the form&rsquo;s base speed: <span class="formula">base = standing frames &times; 256 &divide; that time</span>.
+          With no weapon the time is 19.</li>
+        <li><strong>Then speed works as in human form</strong>: all your IAS, diminished, the weapon&rsquo;s speed modifier and
+          the skill speed (the Werewolf skill adds its own in werewolf form; Werebear adds none).</li>
+        <li><strong>So IAS on the weapon counts twice</strong>, in the form&rsquo;s base speed and in the speed, and is worth more
+          than IAS on other gear in a form.</li>
+        <li><strong>The standing frames</strong> are the length of the animation before the attack: a held attack starts from
+          standing (werewolf 9 frames, werebear 10), the first swing out of a run from the run (8).</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- reference -->
+  <section class="ia-panel method" id="ia-ref" role="tabpanel" aria-labelledby="ia-tab-ref" hidden>
+    <div class="panel">
+      <h2>The rules</h2>
+      <ul>
+        <li><strong>Numbers are whole numbers.</strong> Every division drops the fraction (toward zero), as the game does.</li>
+        <li><strong>Effective IAS</strong>: <span class="formula">EIAS = 120 &times; IAS &divide; (120 + IAS)</span>. All IAS adds up
+          first: the weapon&rsquo;s, the rest of your gear&rsquo;s and Increased Speed&rsquo;s (which counts as IAS).</li>
+        <li><strong>Speed</strong>: <span class="formula">100 + skill speed &minus; WSM + EIAS</span>, 30 less for a sequence skill
+          (Jab, Frenzy, Double Swing, Berserk, Whirlwind, Leap Attack, Double Throw, Dragon Claw, Arctic Blast), then kept
+          between 15 and 175. Skill speed is what auras and skills add: Fanaticism, Frenzy, Burst of Speed, the Werewolf skill,
+          Double Swing&rsquo;s +50, Dragon Tail&rsquo;s &minus;20, Split Throw&rsquo;s +10.</li>
+        <li><strong>Rate</strong>: <span class="formula">base speed &times; speed &divide; 100</span> per game frame, where one
+          animation frame is 256. Most animations have a base speed of 256; crossbows 294 (Amazon, Assassin, Barbarian) or 282;
+          some Assassin claw attacks 208; sequences 256.</li>
+        <li><strong>Frames per attack, held</strong>: <span class="formula">&lceil;(frames &minus; start) &times; 256 &divide; rate&rceil; &minus; 1</span>.
+          Amazons and Sorceresses start their normal attack a frame in with no weapon and two frames in with a melee
+          weapon or a staff (start 1 or 2), not with a bow, crossbow or claw.</li>
+        <li><strong>Dual wielding</strong>: only one weapon counts, the one with the larger <span class="formula">&minus;WSM + its own IAS</span>
+          (on a tie the second weapon): its speed modifier and its IAS. The other weapon&rsquo;s IAS counts nowhere. A
+          Barbarian with two weapons swings the dual-wield animations: one-handed swing + swing (1ss), swing + thrust (1js),
+          thrust + thrust (1jt), thrust + swing (1st), by the first weapon&rsquo;s kind and the second&rsquo;s. An Assassin with
+          two claws uses the two-claw animations.</li>
+        <li><strong>Two-handed swords</strong> use the two-handed animations, but for a Barbarian holding a shield or a second
+          weapon with one.</li>
+        <li><strong>Attacks that repeat in one swing</strong> (Zeal, Fury, Fend, Strafe, Dragon Talon): after each hit the
+          animation rolls back by a share (Zeal, Fury and Dragon Talon all the way, Fend 60%, Strafe 50%) and runs to the
+          hit again; the swing lengths are shown hit by hit (4/4/8). Strafe shoots at least as many arrows as its minimum,
+          one per target in range up to its maximum.</li>
+        <li><strong>Whirlwind and Blade Dance</strong> hit every 6 frames whatever your IAS, 7 with a weapon in each hand.</li>
+        <li><strong>Charge</strong> counts only its last 8 frames, at a base speed of 100 with its own +65 speed, up to 256.</li>
+        <li><strong>PD2&rsquo;s own sequences</strong>: Jab is faster than in the original game (one-handed 16 frames, two-handed 18),
+          and so are Arctic Blast and Blade Fury.</li>
+        <li><strong>Not on this page</strong>: casting skills (they follow faster cast rate), mercenaries, and slows on you,
+          which you can type as Other speed.</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h2>A reference implementation</h2>
+      <p class="sub">The heart of it in a few lines of JavaScript (the page&rsquo;s own engine adds the forms, sequences,
+        dual wielding and repeating attacks).</p>
+      <pre class="code" id="ia-ref-code"></pre>
+    </div>
+    <div class="panel">
+      <h2>The data</h2>
+      <div class="ref-filter">
+        <div class="field"><label for="ia-ref-cls">Animations of</label><select id="ia-ref-cls"></select></div>
+      </div>
+      <div class="scroll"><table class="ia-table" id="ia-ref-anims"></table></div>
+      <h3>Speed skills by level</h3>
+      <div class="scroll"><table class="ia-table" id="ia-ref-skills"></table></div>
+      <h3>Sequences</h3>
+      <div class="scroll"><table class="ia-table" id="ia-ref-seq"></table></div>
+      <h3>Weapon speed modifiers</h3>
+      <div class="scroll"><table class="ia-table" id="ia-ref-wsm"></table></div>
+      <p class="note" id="ia-ref-ver"></p>
+    </div>
+  </section>
+
+  <p class="credit">Inspired by RoofooEvazan&rsquo;s <a href="https://hiimpd2.com/ias-calculator" rel="noopener">IAS calculator</a> on hiimpd2.com.</p>
+</div>
+<!-- ias-map:end -->
+</div>
+<script>
+(function () {
+  "use strict";
+  const SCRIPT_SRC = document.currentScript && document.currentScript.src;
+  /* calc-data:start */
+  const DATA = {"v":"2026-11-12","cls":[["ama","Amazon","AM"],["sor","Sorceress","SO"],["nec","Necromancer","NE"],["pal","Paladin","PA"],["bar","Barbarian","BA"],["dru","Druid","DZ"],["ass","Assassin","AI"]],"wcs":["hth","1ht","2ht","1hs","2hs","bow","xbw","stf","1js","1jt","1ss","1st","ht1","ht2"],"fb":{"ama":{"hth":1,"1hs":2,"1ht":2,"stf":2,"2hs":2,"2ht":2,"bow":0,"xbw":0,"ht1":0},"sor":{"hth":1,"1hs":2,"1ht":2,"stf":2,"2hs":2,"2ht":2,"bow":0,"xbw":0,"ht1":0}},"a":{"40A1HTH":[13,256,[7]],"40A2HTH":[13,256,[7]],"40NUHTH":[9,144,[]],"40RNHTH":[8,104,[]],"40S1HTH":[16,256,[]],"40S3HTH":[10,240,[6]],"40S4HTH":[7,152,[4]],"AIA11HS":[15,256,[7]],"AIA11HT":[15,256,[7]],"AIA12HS":[23,256,[11]],"AIA12HT":[23,256,[10]],"AIA1BOW":[16,256,[7]],"AIA1HT1":[11,208,[6]],"AIA1HT2":[11,208,[6]],"AIA1HTH":[11,256,[6]],"AIA1STF":[19,256,[9]],"AIA1XBW":[21,294,[10]],"AIA21HS":[15,256,[7]],"AIA21HT":[15,256,[7]],"AIA22HS":[23,256,[11]],"AIA22HT":[23,256,[10]],"AIA2HT1":[12,208,[6]],"AIA2HT2":[12,208,[6]],"AIA2HTH":[12,256,[6]],"AIA2STF":[19,256,[9]],"AIKK1HS":[13,256,[4]],"AIKK1HT":[13,256,[4]],"AIKK2HS":[13,256,[4]],"AIKK2HT":[13,256,[4]],"AIKKBOW":[13,256,[4]],"AIKKHT1":[13,256,[4]],"AIKKHT2":[13,256,[4]],"AIKKHTH":[13,256,[4]],"AIKKSTF":[13,256,[4]],"AIKKXBW":[13,256,[4]],"AIRN1HS":[8,256,[]],"AIRN1HT":[8,256,[]],"AIRN2HS":[8,256,[]],"AIRN2HT":[8,256,[]],"AIRNBOW":[8,256,[]],"AIRNHT1":[8,256,[]],"AIRNHT2":[8,256,[]],"AIRNHTH":[8,256,[]],"AIRNSTF":[8,256,[]],"AIRNXBW":[8,256,[]],"AIS11HS":[15,256,[10]],"AIS11HT":[15,256,[10]],"AIS12HS":[15,256,[10]],"AIS12HT":[15,256,[10]],"AIS1BOW":[15,256,[10]],"AIS1HT1":[17,256,[10]],"AIS1HT2":[15,256,[10]],"AIS1HTH":[17,256,[10]],"AIS1STF":[15,256,[10]],"AIS1XBW":[15,256,[10]],"AIS21HS":[8,128,[4]],"AIS21HT":[8,128,[4]],"AIS22HS":[8,128,[4]],"AIS22HT":[8,128,[4]],"AIS2BOW":[8,128,[4]],"AIS2HT1":[8,128,[4]],"AIS2HT2":[8,128,[4]],"AIS2HTH":[8,128,[4]],"AIS2STF":[8,128,[4]],"AIS2XBW":[8,128,[4]],"AIS31HS":[10,256,[]],"AIS31HT":[10,256,[]],"AIS32HS":[10,256,[]],"AIS32HT":[10,256,[]],"AIS3BOW":[10,256,[]],"AIS3HT1":[10,256,[]],"AIS3HT2":[10,256,[]],"AIS3HTH":[10,256,[]],"AIS3STF":[10,256,[]],"AIS3XBW":[10,256,[]],"AIS4HT1":[12,208,[6]],"AIS4HT2":[12,208,[6]],"AITH1HS":[16,256,[7]],"AITH1HT":[16,256,[7]],"AMA11HS":[16,256,[10]],"AMA11HT":[15,256,[9]],"AMA12HS":[20,256,[12]],"AMA12HT":[18,256,[11]],"AMA1BOW":[14,256,[6]],"AMA1HTH":[13,256,[8]],"AMA1STF":[20,256,[12]],"AMA1XBW":[20,294,[9]],"AMA21HS":[16,256,[10]],"AMA21HT":[15,256,[9]],"AMA22HS":[20,256,[12]],"AMA22HT":[18,256,[11]],"AMA2HTH":[13,256,[8]],"AMA2STF":[20,256,[12]],"AMKK1HS":[12,256,[5]],"AMKK1HT":[12,256,[5]],"AMKK2HS":[12,256,[5]],"AMKK2HT":[12,256,[5]],"AMKKBOW":[12,256,[5]],"AMKKHTH":[12,256,[5]],"AMKKSTF":[12,256,[5]],"AMKKXBW":[12,256,[5]],"AMRN1HS":[8,256,[]],"AMRN1HT":[8,256,[]],"AMRN2HS":[8,256,[]],"AMRN2HT":[8,256,[]],"AMRNBOW":[8,256,[]],"AMRNHTH":[8,256,[]],"AMRNSTF":[8,256,[]],"AMRNXBW":[8,256,[]],"AMS11HS":[9,256,[]],"AMS11HT":[9,256,[]],"AMS12HS":[9,256,[2]],"AMS12HT":[9,256,[2]],"AMS1BOW":[9,256,[2]],"AMS1HTH":[9,256,[2]],"AMS1STF":[9,256,[2]],"AMS1XBW":[9,256,[]],"AMTH1HS":[16,256,[9]],"AMTH1HT":[16,256,[9]],"AMTHHTH":[16,256,[9]],"BAA11HS":[16,256,[7]],"BAA11HT":[16,256,[7]],"BAA11JS":[16,256,[7]],"BAA11JT":[16,256,[7]],"BAA11SS":[16,256,[7]],"BAA11ST":[16,256,[7]],"BAA12HS":[18,256,[8]],"BAA12HT":[19,256,[9]],"BAA1BOW":[15,256,[7]],"BAA1HTH":[12,256,[6]],"BAA1STF":[19,256,[9]],"BAA1XBW":[20,294,[10]],"BAA21HS":[16,256,[7]],"BAA21HT":[16,256,[7]],"BAA21JS":[16,256,[8]],"BAA21JT":[16,256,[7]],"BAA21SS":[16,256,[7]],"BAA21ST":[16,256,[7]],"BAA22HS":[18,256,[8]],"BAA22HT":[19,256,[9]],"BAA2STF":[19,256,[9]],"BAKK1HS":[12,256,[4]],"BAKK1HT":[12,256,[4]],"BAKK1JS":[12,256,[4]],"BAKK1JT":[12,256,[4]],"BAKK1SS":[12,256,[4]],"BAKK1ST":[12,256,[4]],"BAKK2HS":[12,256,[4]],"BAKK2HT":[12,256,[4]],"BAKKBOW":[12,256,[4]],"BAKKHTH":[12,256,[4]],"BAKKSTF":[12,256,[4]],"BAKKXBW":[12,256,[4]],"BARN1HS":[8,216,[]],"BARN1HT":[8,216,[]],"BARN1JS":[8,216,[]],"BARN1JT":[8,216,[]],"BARN1SS":[8,216,[]],"BARN1ST":[8,216,[]],"BARN2HS":[8,216,[]],"BARN2HT":[8,216,[]],"BARNBOW":[8,256,[]],"BARNHTH":[8,216,[]],"BARNSTF":[8,216,[]],"BARNXBW":[8,216,[]],"BAS11HS":[15,256,[]],"BAS11HT":[15,256,[]],"BAS11JS":[15,256,[]],"BAS11JT":[15,256,[]],"BAS11SS":[15,256,[]],"BAS11ST":[15,256,[]],"BAS12HS":[15,256,[]],"BAS12HT":[15,256,[]],"BAS1BOW":[15,256,[]],"BAS1HTH":[15,256,[]],"BAS1STF":[15,256,[]],"BAS1XBW":[15,256,[]],"BAS21HT":[14,256,[9]],"BAS31JS":[12,256,[8]],"BAS31JT":[12,256,[8]],"BAS31SS":[12,256,[7]],"BAS31ST":[12,256,[7]],"BAS41JS":[16,256,[8]],"BAS41JT":[16,256,[8]],"BAS41SS":[16,256,[9]],"BAS41ST":[16,256,[9]],"BATH1HS":[16,256,[8]],"BATH1HT":[16,256,[8]],"BATH1JS":[16,256,[8]],"BATH1JT":[16,256,[8]],"BATH1SS":[16,256,[8]],"BATH1ST":[16,256,[8]],"BATHHTH":[16,256,[8]],"DZA11HS":[19,256,[9]],"DZA11HT":[19,256,[8]],"DZA12HS":[21,256,[10]],"DZA12HT":[23,256,[9]],"DZA1BOW":[16,256,[8]],"DZA1HTH":[16,256,[8]],"DZA1STF":[17,256,[9]],"DZA1XBW":[20,282,[10]],"DZA21HS":[19,256,[9]],"DZA21HT":[19,256,[8]],"DZA22HS":[21,256,[10]],"DZA22HT":[23,256,[9]],"DZA2STF":[17,256,[9]],"DZKK1HS":[12,224,[5]],"DZKK1HT":[12,256,[5]],"DZKK2HS":[12,224,[5]],"DZKK2HT":[12,256,[5]],"DZKKBOW":[12,256,[5]],"DZKKHTH":[12,256,[5]],"DZKKSTF":[12,256,[5]],"DZKKXBW":[12,256,[5]],"DZRN1HS":[8,168,[]],"DZRN1HT":[8,168,[]],"DZRN2HS":[8,168,[]],"DZRN2HT":[8,168,[]],"DZRNBOW":[8,168,[]],"DZRNHTH":[8,168,[]],"DZRNSTF":[8,168,[]],"DZRNXBW":[8,168,[]],"DZS11HS":[15,256,[9]],"DZS11HT":[15,256,[8]],"DZS12HS":[15,208,[8]],"DZS12HT":[15,208,[8]],"DZS1BOW":[15,208,[8]],"DZS1HTH":[15,256,[8]],"DZS1STF":[15,208,[8]],"DZS1XBW":[15,256,[8]],"DZTH1HS":[18,256,[8]],"DZTH1HT":[18,256,[8]],"DZTHHTH":[18,256,[9]],"NEA11HS":[19,256,[9]],"NEA11HT":[19,256,[9]],"NEA12HS":[23,256,[11]],"NEA12HT":[24,256,[10]],"NEA1BOW":[18,256,[9]],"NEA1HTH":[15,256,[8]],"NEA1STF":[20,256,[11]],"NEA1XBW":[20,282,[11]],"NEA21HS":[19,256,[9]],"NEA21HT":[19,256,[9]],"NEA22HS":[23,256,[11]],"NEA22HT":[24,256,[10]],"NEA2HTH":[15,256,[8]],"NEA2STF":[20,256,[11]],"NEKK1HS":[12,256,[6]],"NEKK1HT":[12,256,[6]],"NEKK2HS":[12,256,[6]],"NEKK2HT":[12,256,[6]],"NEKKBOW":[12,256,[6]],"NEKKHTH":[12,256,[6]],"NEKKSTF":[12,256,[6]],"NEKKXBW":[12,256,[6]],"NERN1HS":[8,256,[]],"NERN1HT":[8,256,[]],"NERN2HS":[8,256,[]],"NERN2HT":[8,256,[]],"NERNBOW":[8,256,[]],"NERNHTH":[8,256,[]],"NERNSTF":[8,256,[]],"NERNXBW":[8,256,[]],"NES11HS":[16,256,[8]],"NES11HT":[16,256,[8]],"NES12HS":[16,256,[8]],"NES12HT":[16,256,[8]],"NES1BOW":[16,256,[8]],"NES1HTH":[16,256,[8]],"NES1STF":[16,256,[8]],"NES1XBW":[16,256,[8]],"NETH1HS":[20,256,[10]],"NETH1HT":[20,256,[10]],"NETHHTH":[20,256,[10]],"PAA11HS":[15,256,[7]],"PAA11HT":[17,256,[8]],"PAA12HS":[18,256,[8]],"PAA12HT":[20,256,[8]],"PAA1BOW":[16,256,[8]],"PAA1HTH":[14,256,[7]],"PAA1STF":[18,256,[9]],"PAA1XBW":[20,282,[10]],"PAA21HS":[15,256,[7]],"PAA21HT":[17,256,[8]],"PAA22HS":[19,256,[8]],"PAA22HT":[20,256,[9]],"PAA2HTH":[14,256,[7]],"PAA2STF":[18,256,[9]],"PAKK1HS":[12,256,[5]],"PAKK1HT":[12,256,[5]],"PAKK2HS":[12,256,[5]],"PAKK2HT":[12,256,[5]],"PAKKBOW":[12,256,[5]],"PAKKHTH":[12,256,[5]],"PAKKSTF":[12,256,[5]],"PAKKXBW":[12,256,[5]],"PARN1HS":[8,256,[]],"PARN1HT":[8,256,[]],"PARN2HS":[8,184,[]],"PARN2HT":[8,184,[]],"PARNBOW":[8,184,[]],"PARNHTH":[8,256,[]],"PARNSTF":[8,184,[]],"PARNXBW":[8,256,[]],"PAS11HS":[12,256,[7]],"PAS11HT":[12,256,[7]],"PAS1HTH":[12,256,[7]],"PATH1HS":[16,256,[8]],"PATH1HT":[16,256,[8]],"PATHHTH":[12,256,[6]],"SOA11HS":[20,256,[12]],"SOA11HT":[19,256,[11]],"SOA12HS":[24,256,[14]],"SOA12HT":[23,256,[13]],"SOA1BOW":[17,256,[9]],"SOA1HTH":[16,256,[9]],"SOA1STF":[18,256,[11]],"SOA1XBW":[20,282,[11]],"SOA21HS":[20,256,[12]],"SOA21HT":[19,256,[11]],"SOA22HS":[24,256,[14]],"SOA22HT":[23,256,[13]],"SOA2HTH":[16,256,[8]],"SOA2STF":[18,256,[11]],"SOKK1HS":[12,256,[6]],"SOKK1HT":[12,256,[6]],"SOKK2HS":[12,256,[6]],"SOKK2HT":[12,256,[6]],"SOKKBOW":[12,256,[6]],"SOKKHTH":[12,256,[6]],"SOKKSTF":[12,256,[6]],"SOKKXBW":[12,256,[6]],"SORN1HS":[8,256,[]],"SORN1HT":[8,256,[]],"SORN2HS":[8,256,[]],"SORN2HT":[8,256,[]],"SORNBOW":[8,256,[]],"SORNHTH":[8,256,[]],"SORNSTF":[8,256,[]],"SORNXBW":[8,256,[]],"SOS11HS":[14,256,[7]],"SOS11HT":[14,256,[7]],"SOS12HS":[14,256,[7]],"SOS12HT":[14,256,[7]],"SOS1BOW":[14,256,[7]],"SOS1HTH":[14,256,[7]],"SOS1STF":[14,256,[7]],"SOS1XBW":[14,256,[7]],"SOTH1HS":[20,256,[10]],"SOTH1HT":[20,256,[10]],"SOTHHTH":[20,256,[10]],"TGA1HTH":[12,224,[7]],"TGA2HTH":[12,224,[7]],"TGNUHTH":[10,136,[]],"TGRNHTH":[8,120,[]],"TGS1HTH":[16,256,[]],"TGS3HTH":[10,208,[6]],"TGS4HTH":[7,152,[4]]},"types":{"shie":["shld"],"shld":["armo","seco"],"seco":[],"armo":[],"2han":["weap"],"weap":[],"2hcs":["2hsw","pala"],"pala":["clas"],"clas":[],"2hsw":["swor","2han"],"swor":["mgen"],"mgen":["mele","gen"],"gen":[],"mele":["weap"],"1han":["weap"],"ajav":["jave","amaz"],"amaz":["clas"],"jave":["comb","spea"],"spea":["mele","pas"],"pas":[],"comb":["mele","thro"],"thro":["weap","rng"],"rng":[],"aspe":["spea","amaz"],"abow":["bow","amaz"],"bow":["miss","rng"],"miss":["weap","rng"],"orb":["weap","sorc"],"sorc":["clas"],"xbow":["miss","rng"],"staf":["rod"],"rod":["blun"],"blun":["mgen"],"sc9":["pole"],"pole":["mele","pas"],"taxe":["comb","axe"],"axe":["mgen"],"tkni":["comb","knif"],"knif":["mgen","asm"],"asm":[],"crys":["1han"],"hamm":["blun"],"mace":["blun"],"club":["blun"],"scep":["rod","gen"],"wand":["rod"],"h2h2":["h2h"],"h2h":["mele","assn"],"assn":["clas","asm"]},"tcls":{"2hcs":"pal","pala":"pal","ajav":"ama","amaz":"ama","aspe":"ama","abow":"ama","orb":"sor","sorc":"sor","asm":"ass","h2h2":"ass","h2h":"ass","assn":"ass"},"kinds":[["abow","Amazon bows"],["aspe","Amazon spears"],["ajav","Amazon javelins"],["h2h","Claws"],["orb","Orbs"],["tkni","Throwing knives"],["taxe","Throwing axes"],["jave","Javelins"],["knif","Daggers"],["axe","Axes"],["swor","Swords"],["spea","Spears"],["pole","Polearms"],["club","Clubs"],["mace","Maces"],["hamm","Hammers"],["scep","Scepters"],["wand","Wands"],["staf","Staves"],["bow","Bows"],["xbow","Crossbows"]],"b":[{"c":"hax","n":"Hand Axe","t":"N","k":"axe","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["axe","1han"],"g":"HAX","lv":0,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"axe","n":"Axe","t":"N","k":"axe","w":10,"wc":"1hs","wc2":"1hs","f":0,"ty":["axe","1han"],"g":"AXE","lv":0,"m":140,"mh":"crafted (60) + a corruption's 4 sockets, all Shael"},{"c":"2ax","n":"Double Axe","t":"N","k":"axe","w":10,"wc":"1hs","wc2":"1hs","f":0,"ty":["axe","1han"],"g":"AXE","lv":0,"m":140,"mh":"crafted (60) + a corruption's 4 sockets, all Shael"},{"c":"mpi","n":"Military Pick","t":"N","k":"axe","w":-10,"wc":"1hs","wc2":"1hs","f":0,"ty":["axe","1han"],"g":"AXE","lv":0,"m":140,"mh":"crafted (60) + a corruption's 4 sockets, all Shael"},{"c":"wax","n":"War Axe","t":"N","k":"axe","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["axe","1han"],"g":"HAX","lv":0,"m":140,"mh":"crafted (60) + a corruption's 4 sockets, all Shael"},{"c":"lax","n":"Large Axe","t":"N","k":"axe","w":-10,"wc":"stf","wc2":"stf","f":2,"ty":["axe","2han"],"g":"LAX","lv":0,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"bax","n":"Broad Axe","t":"N","k":"axe","w":0,"wc":"stf","wc2":"stf","f":2,"ty":["axe","2han"],"g":"LAX","lv":0,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"btx","n":"Battle Axe","t":"N","k":"axe","w":10,"wc":"stf","wc2":"stf","f":2,"ty":["axe","2han"],"g":"BTX","lv":0,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"gax","n":"Great Axe","t":"N","k":"axe","w":-10,"wc":"stf","wc2":"stf","f":2,"ty":["axe","2han"],"g":"BTX","lv":0,"m":180,"mh":"crafted (60) + a corruption's 6 sockets, all Shael"},{"c":"gix","n":"Giant Axe","t":"N","k":"axe","w":10,"wc":"stf","wc2":"stf","f":2,"ty":["axe","2han"],"g":"GIX","lv":0,"m":180,"mh":"crafted (60) + a corruption's 6 sockets, all Shael"},{"c":"wnd","n":"Wand","t":"N","k":"wand","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["wand","1han"],"g":"WND","lv":0,"m":80,"mh":"crafted (20) + 1 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"ywn","n":"Yew Wand","t":"N","k":"wand","w":10,"wc":"1hs","wc2":"1hs","f":0,"ty":["wand","1han"],"g":"YWN","lv":0,"m":80,"mh":"crafted (20) + 1 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"bwn","n":"Bone Wand","t":"N","k":"wand","w":-20,"wc":"1hs","wc2":"1hs","f":0,"ty":["wand","1han"],"g":"BWN","lv":0,"m":100,"mh":"crafted (20) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"gwn","n":"Grim Wand","t":"N","k":"wand","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["wand","1han"],"g":"BWN","lv":0,"m":100,"mh":"crafted (20) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"clb","n":"Club","t":"N","k":"club","w":-10,"wc":"1hs","wc2":"1hs","f":0,"ty":["club","1han"],"g":"CLB","lv":0,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"scp","n":"Scepter","t":"N","k":"scep","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["scep","1han"],"g":"MAC","lv":0,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"gsc","n":"Grand Scepter","t":"N","k":"scep","w":10,"wc":"1hs","wc2":"1hs","f":0,"ty":["scep","1han"],"g":"MAC","lv":0,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"wsp","n":"War Scepter","t":"N","k":"scep","w":-10,"wc":"1hs","wc2":"1hs","f":0,"ty":["scep","1han"],"g":"WHM","lv":0,"m":140,"mh":"crafted (60) + a corruption's 4 sockets, all Shael"},{"c":"spc","n":"Spiked Club","t":"N","k":"club","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["club","1han"],"g":"CLB","lv":0,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"mac","n":"Mace","t":"N","k":"mace","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["mace","1han"],"g":"MAC","lv":0,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"mst","n":"Morning Star","t":"N","k":"mace","w":10,"wc":"1hs","wc2":"1hs","f":0,"ty":["mace","1han"],"g":"MAC","lv":0,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"fla","n":"Flail","t":"N","k":"mace","w":-10,"wc":"1hs","wc2":"1hs","f":0,"ty":["mace","1han"],"g":"FLA","lv":0,"m":140,"mh":"crafted (60) + a corruption's 4 sockets, all Shael"},{"c":"whm","n":"War Hammer","t":"N","k":"hamm","w":20,"wc":"1hs","wc2":"1hs","f":0,"ty":["hamm","1han"],"g":"WHM","lv":0,"m":140,"mh":"crafted (60) + a corruption's 4 sockets, all Shael"},{"c":"mau","n":"Maul","t":"N","k":"hamm","w":10,"wc":"stf","wc2":"stf","f":2,"ty":["hamm","2han"],"g":"MAU","lv":0,"m":180,"mh":"crafted (60) + a corruption's 6 sockets, all Shael"},{"c":"gma","n":"Great Maul","t":"N","k":"hamm","w":20,"wc":"stf","wc2":"stf","f":2,"ty":["hamm","2han"],"g":"MAU","lv":0,"m":180,"mh":"crafted (60) + a corruption's 6 sockets, all Shael"},{"c":"ssd","n":"Short Sword","t":"N","k":"swor","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["swor","1han"],"g":"SSD","lv":0,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"scm","n":"Scimitar","t":"N","k":"swor","w":-20,"wc":"1hs","wc2":"1hs","f":0,"ty":["swor","1han"],"g":"SCM","lv":0,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"sbr","n":"Sabre","t":"N","k":"swor","w":-10,"wc":"1hs","wc2":"1hs","f":0,"ty":["swor","1han"],"g":"SCM","lv":0,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"flc","n":"Falchion","t":"N","k":"swor","w":20,"wc":"1hs","wc2":"1hs","f":0,"ty":["swor","1han"],"g":"FLC","lv":0,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"crs","n":"Crystal Sword","t":"N","k":"swor","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["swor","crys"],"g":"CRS","lv":0,"m":140,"mh":"crafted (60) + a corruption's 4 sockets, all Shael"},{"c":"bsd","n":"Broad Sword","t":"N","k":"swor","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["swor","1han"],"g":"BSD","lv":0,"m":140,"mh":"crafted (60) + a corruption's 4 sockets, all Shael"},{"c":"lsd","n":"Long Sword","t":"N","k":"swor","w":-10,"wc":"1hs","wc2":"1hs","f":0,"ty":["swor","1han"],"g":"LSD","lv":0,"m":140,"mh":"crafted (60) + a corruption's 4 sockets, all Shael"},{"c":"wsd","n":"War Sword","t":"N","k":"swor","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["swor","1han"],"g":"FLC","lv":0,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"2hs","n":"Two-Handed Sword","t":"N","k":"swor","w":0,"wc":"1hs","wc2":"2hs","f":3,"ty":["swor","2hsw"],"g":"CLM","lv":0,"m":160,"mh":"crafted (60) + 3 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"clm","n":"Claymore","t":"N","k":"swor","w":10,"wc":"1hs","wc2":"2hs","f":3,"ty":["swor","2hsw"],"g":"CLM","lv":0,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"gis","n":"Giant Sword","t":"N","k":"swor","w":0,"wc":"1hs","wc2":"2hs","f":3,"ty":["swor","2hsw"],"g":"GSD","lv":0,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"bsw","n":"Bastard Sword","t":"N","k":"swor","w":10,"wc":"1hs","wc2":"2hs","f":3,"ty":["swor","2hsw"],"g":"CLM","lv":0,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"flb","n":"Flamberge","t":"N","k":"swor","w":-10,"wc":"1hs","wc2":"2hs","f":3,"ty":["swor","2hsw"],"g":"CLM","lv":0,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"gsd","n":"Great Sword","t":"N","k":"swor","w":10,"wc":"1hs","wc2":"2hs","f":3,"ty":["swor","2hsw"],"g":"GSD","lv":0,"m":180,"mh":"crafted (60) + a corruption's 6 sockets, all Shael"},{"c":"dgr","n":"Dagger","t":"N","k":"knif","w":-20,"wc":"1ht","wc2":"1ht","f":0,"ty":["knif","1han"],"g":"DGR","lv":0,"m":120,"mh":"crafted (60) + 1 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"dir","n":"Dirk","t":"N","k":"knif","w":0,"wc":"1ht","wc2":"1ht","f":0,"ty":["knif","1han"],"g":"DIR","lv":0,"m":120,"mh":"crafted (60) + 1 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"kri","n":"Kris","t":"N","k":"knif","w":-20,"wc":"1ht","wc2":"1ht","f":0,"ty":["knif","1han"],"g":"DIR","lv":0,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"bld","n":"Blade","t":"N","k":"knif","w":-10,"wc":"1ht","wc2":"1ht","f":0,"ty":["knif","1han"],"g":"DGR","lv":0,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"tkf","n":"Throwing Knife","t":"N","k":"tkni","w":0,"wc":"1ht","wc2":"1ht","f":4,"ty":["tkni","1han"],"g":"DGR","lv":0,"m":120,"mh":"crafted (60) + 1 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"tax","n":"Throwing Axe","t":"N","k":"taxe","w":10,"wc":"1hs","wc2":"1hs","f":4,"ty":["taxe","1han"],"g":"HAX","lv":0,"m":120,"mh":"crafted (60) + 1 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"bkf","n":"Balanced Knife","t":"N","k":"tkni","w":-20,"wc":"1ht","wc2":"1ht","f":4,"ty":["tkni","1han"],"g":"DGR","lv":0,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"bal","n":"Balanced Axe","t":"N","k":"taxe","w":-10,"wc":"1hs","wc2":"1hs","f":4,"ty":["taxe","1han"],"g":"HAX","lv":0,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"jav","n":"Javelin","t":"N","k":"jave","w":-10,"wc":"1ht","wc2":"1ht","f":4,"ty":["jave","1han"],"g":"JAV","lv":0,"m":120,"mh":"crafted (60) + 1 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"pil","n":"Pilum","t":"N","k":"jave","w":0,"wc":"1ht","wc2":"1ht","f":4,"ty":["jave","1han"],"g":"PIL","lv":0,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"ssp","n":"Short Spear","t":"N","k":"jave","w":10,"wc":"1ht","wc2":"1ht","f":4,"ty":["jave","1han"],"g":"JAV","lv":0,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"glv","n":"Glaive","t":"N","k":"jave","w":20,"wc":"1ht","wc2":"1ht","f":4,"ty":["jave","1han"],"g":"GLV","lv":0,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"tsp","n":"Throwing Spear","t":"N","k":"jave","w":-10,"wc":"1ht","wc2":"1ht","f":4,"ty":["jave","1han"],"g":"PIL","lv":0,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"spr","n":"Spear","t":"N","k":"spea","w":-10,"wc":"2ht","wc2":"2ht","f":2,"ty":["spea","2han"],"g":"SPR","lv":0,"m":160,"mh":"crafted (60) + 3 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"tri","n":"Trident","t":"N","k":"spea","w":0,"wc":"2ht","wc2":"2ht","f":2,"ty":["spea","2han"],"g":"TRI","lv":0,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"brn","n":"Brandistock","t":"N","k":"spea","w":-20,"wc":"2ht","wc2":"2ht","f":2,"ty":["spea","2han"],"g":"BRN","lv":0,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"spt","n":"Spetum","t":"N","k":"spea","w":0,"wc":"2ht","wc2":"2ht","f":2,"ty":["spea","2han"],"g":"TRI","lv":0,"m":180,"mh":"crafted (60) + a corruption's 6 sockets, all Shael"},{"c":"pik","n":"Pike","t":"N","k":"spea","w":20,"wc":"2ht","wc2":"2ht","f":2,"ty":["spea","2han"],"g":"PIK","lv":0,"m":180,"mh":"crafted (60) + a corruption's 6 sockets, all Shael"},{"c":"bar","n":"Bardiche","t":"N","k":"pole","w":10,"wc":"stf","wc2":"stf","f":2,"ty":["pole","2han"],"g":"HAL","lv":0,"m":160,"mh":"crafted (60) + 3 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"vou","n":"Voulge","t":"N","k":"pole","w":0,"wc":"stf","wc2":"stf","f":2,"ty":["pole","2han"],"g":"HAL","lv":0,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"scy","n":"Scythe","t":"N","k":"pole","w":-10,"wc":"stf","wc2":"stf","f":2,"ty":["sc9","2han"],"g":"SCY","lv":0,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"pax","n":"Poleaxe","t":"N","k":"pole","w":10,"wc":"stf","wc2":"stf","f":2,"ty":["pole","2han"],"g":"HAL","lv":0,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"hal","n":"Halberd","t":"N","k":"pole","w":0,"wc":"stf","wc2":"stf","f":2,"ty":["pole","2han"],"g":"PAX","lv":0,"m":180,"mh":"crafted (60) + a corruption's 6 sockets, all Shael"},{"c":"wsc","n":"War Scythe","t":"N","k":"pole","w":-10,"wc":"stf","wc2":"stf","f":2,"ty":["sc9","2han"],"g":"SCY","lv":0,"m":180,"mh":"crafted (60) + a corruption's 6 sockets, all Shael"},{"c":"sst","n":"Short Staff","t":"N","k":"staf","w":-10,"wc":"stf","wc2":"stf","f":2,"ty":["staf","2han"],"g":"BST","lv":0,"m":100,"mh":"its best unique or set item (20) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"lst","n":"Long Staff","t":"N","k":"staf","w":0,"wc":"stf","wc2":"stf","f":2,"ty":["staf","2han"],"g":"SST","lv":0,"m":120,"mh":"crafted (20) + 3 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"cst","n":"Gnarled Staff","t":"N","k":"staf","w":10,"wc":"stf","wc2":"stf","f":2,"ty":["staf","2han"],"g":"CST","lv":0,"m":140,"mh":"crafted (20) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"bst","n":"Battle Staff","t":"N","k":"staf","w":0,"wc":"stf","wc2":"stf","f":2,"ty":["staf","2han"],"g":"SST","lv":0,"m":140,"mh":"crafted (20) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"wst","n":"War Staff","t":"N","k":"staf","w":20,"wc":"stf","wc2":"stf","f":2,"ty":["staf","2han"],"g":"LST","lv":0,"m":140,"mh":"crafted (20) + a corruption's 6 sockets, all Shael"},{"c":"sbw","n":"Short Bow","t":"N","k":"bow","w":5,"wc":"bow","wc2":"bow","f":2,"ty":["bow"],"g":"SBW","lv":0,"m":160,"mh":"crafted (60) + 3 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"hbw","n":"Hunter's Bow","t":"N","k":"bow","w":-10,"wc":"bow","wc2":"bow","f":2,"ty":["bow"],"g":"SBW","lv":0,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"lbw","n":"Long Bow","t":"N","k":"bow","w":0,"wc":"bow","wc2":"bow","f":2,"ty":["bow"],"g":"LBW","lv":0,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"cbw","n":"Composite Bow","t":"N","k":"bow","w":-10,"wc":"bow","wc2":"bow","f":2,"ty":["bow"],"g":"LBW","lv":0,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"sbb","n":"Short Battle Bow","t":"N","k":"bow","w":0,"wc":"bow","wc2":"bow","f":2,"ty":["bow"],"g":"SBB","lv":0,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"lbb","n":"Long Battle Bow","t":"N","k":"bow","w":10,"wc":"bow","wc2":"bow","f":2,"ty":["bow"],"g":"LBB","lv":0,"m":180,"mh":"crafted (60) + a corruption's 6 sockets, all Shael"},{"c":"swb","n":"Short War Bow","t":"N","k":"bow","w":0,"wc":"bow","wc2":"bow","f":2,"ty":["bow"],"g":"SBB","lv":0,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"lwb","n":"Long War Bow","t":"N","k":"bow","w":10,"wc":"bow","wc2":"bow","f":2,"ty":["bow"],"g":"LBB","lv":0,"m":180,"mh":"crafted (60) + a corruption's 6 sockets, all Shael"},{"c":"lxb","n":"Light Crossbow","t":"N","k":"xbow","w":-10,"wc":"xbw","wc2":"xbw","f":2,"ty":["xbow"],"g":"LXB","lv":0,"m":160,"mh":"crafted (60) + 3 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"mxb","n":"Crossbow","t":"N","k":"xbow","w":0,"wc":"xbw","wc2":"xbw","f":2,"ty":["xbow"],"g":"LXB","lv":0,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"hxb","n":"Heavy Crossbow","t":"N","k":"xbow","w":10,"wc":"xbw","wc2":"xbw","f":2,"ty":["xbow"],"g":"HXB","lv":0,"m":180,"mh":"crafted (60) + a corruption's 6 sockets, all Shael"},{"c":"rxb","n":"Repeating Crossbow","t":"N","k":"xbow","w":-40,"wc":"xbw","wc2":"xbw","f":2,"ty":["xbow"],"g":"HXB","lv":0,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"g33","n":"The Gidbinn","t":"N","k":"knif","w":-20,"wc":"1ht","wc2":"1ht","f":0,"ty":["knif","1han"],"g":"DGR","lv":0,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"leg","n":"Wirt's Leg","t":"N","k":"club","w":-10,"wc":"1hs","wc2":"1hs","f":0,"ty":["club","1han"],"g":"CLB","lv":0,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"hdm","n":"Horadric Malus","t":"N","k":"hamm","w":20,"wc":"1hs","wc2":"1hs","f":0,"ty":["hamm","1han"],"g":"WHM","lv":0,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"hfh","n":"Hell Forge Hammer","t":"N","k":"hamm","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["hamm","1han"],"g":"WHM","lv":0,"m":140,"mh":"crafted (60) + a corruption's 4 sockets, all Shael"},{"c":"hst","n":"Horadric Staff","t":"N","k":"staf","w":0,"wc":"stf","wc2":"stf","f":2,"ty":["staf","2han"],"g":"BST","lv":0,"m":170,"mh":"its best unique or set item (50) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"msf","n":"Shaft of the Horadric Staff","t":"N","k":"staf","w":0,"wc":"stf","wc2":"stf","f":2,"ty":["staf","2han"],"g":"BST","lv":0,"m":150,"mh":"its best unique or set item (50) + 3 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"9ha","n":"Hatchet","t":"E","k":"axe","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["axe","1han"],"g":"HAX","lv":19,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"9ax","n":"Cleaver","t":"E","k":"axe","w":10,"wc":"1hs","wc2":"1hs","f":0,"ty":["axe","1han"],"g":"AXE","lv":22,"m":140,"mh":"crafted (60) + a corruption's 4 sockets, all Shael"},{"c":"92a","n":"Twin Axe","t":"E","k":"axe","w":10,"wc":"1hs","wc2":"1hs","f":0,"ty":["axe","1han"],"g":"AXE","lv":25,"m":140,"mh":"crafted (60) + a corruption's 4 sockets, all Shael"},{"c":"9mp","n":"Crowbill","t":"E","k":"axe","w":-10,"wc":"1hs","wc2":"1hs","f":0,"ty":["axe","1han"],"g":"AXE","lv":25,"m":140,"mh":"crafted (60) + a corruption's 4 sockets, all Shael"},{"c":"9wa","n":"Naga","t":"E","k":"axe","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["axe","1han"],"g":"HAX","lv":25,"m":140,"mh":"crafted (60) + a corruption's 4 sockets, all Shael"},{"c":"9la","n":"Military Axe","t":"E","k":"axe","w":-10,"wc":"stf","wc2":"stf","f":2,"ty":["axe","2han"],"g":"LAX","lv":22,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"9ba","n":"Bearded Axe","t":"E","k":"axe","w":0,"wc":"stf","wc2":"stf","f":2,"ty":["axe","2han"],"g":"LAX","lv":25,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"9bt","n":"Tabar","t":"E","k":"axe","w":10,"wc":"stf","wc2":"stf","f":2,"ty":["axe","2han"],"g":"BTX","lv":25,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"9ga","n":"Gothic Axe","t":"E","k":"axe","w":-10,"wc":"stf","wc2":"stf","f":2,"ty":["axe","2han"],"g":"BTX","lv":25,"m":180,"mh":"crafted (60) + a corruption's 6 sockets, all Shael"},{"c":"9gi","n":"Ancient Axe","t":"E","k":"axe","w":10,"wc":"stf","wc2":"stf","f":2,"ty":["axe","2han"],"g":"GIX","lv":25,"m":180,"mh":"crafted (60) + a corruption's 6 sockets, all Shael"},{"c":"9wn","n":"Burnt Wand","t":"E","k":"wand","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["wand","1han"],"g":"WND","lv":19,"m":80,"mh":"crafted (20) + 1 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"9yw","n":"Petrified Wand","t":"E","k":"wand","w":10,"wc":"1hs","wc2":"1hs","f":0,"ty":["wand","1han"],"g":"YWN","lv":25,"m":100,"mh":"crafted (20) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"9bw","n":"Tomb Wand","t":"E","k":"wand","w":-20,"wc":"1hs","wc2":"1hs","f":0,"ty":["wand","1han"],"g":"BWN","lv":25,"m":100,"mh":"crafted (20) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"9gw","n":"Grave Wand","t":"E","k":"wand","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["wand","1han"],"g":"BWN","lv":25,"m":100,"mh":"crafted (20) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"9cl","n":"Cudgel","t":"E","k":"club","w":-10,"wc":"1hs","wc2":"1hs","f":0,"ty":["club","1han"],"g":"CLB","lv":18,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"9sc","n":"Rune Scepter","t":"E","k":"scep","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["scep","1han"],"g":"MAC","lv":19,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"9qs","n":"Holy Water Sprinkler","t":"E","k":"scep","w":10,"wc":"1hs","wc2":"1hs","f":0,"ty":["scep","1han"],"g":"MAC","lv":25,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"9ws","n":"Divine Scepter","t":"E","k":"scep","w":-10,"wc":"1hs","wc2":"1hs","f":0,"ty":["scep","1han"],"g":"WHM","lv":25,"m":140,"mh":"crafted (60) + a corruption's 4 sockets, all Shael"},{"c":"9sp","n":"Barbed Club","t":"E","k":"club","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["club","1han"],"g":"CLB","lv":20,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"9ma","n":"Flanged Mace","t":"E","k":"mace","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["mace","1han"],"g":"MAC","lv":23,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"9mt","n":"Jagged Star","t":"E","k":"mace","w":10,"wc":"1hs","wc2":"1hs","f":0,"ty":["mace","1han"],"g":"MAC","lv":25,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"9fl","n":"Knout","t":"E","k":"mace","w":-10,"wc":"1hs","wc2":"1hs","f":0,"ty":["mace","1han"],"g":"FLA","lv":25,"m":140,"mh":"crafted (60) + a corruption's 4 sockets, all Shael"},{"c":"9wh","n":"Battle Hammer","t":"E","k":"hamm","w":20,"wc":"1hs","wc2":"1hs","f":0,"ty":["hamm","1han"],"g":"WHM","lv":25,"m":140,"mh":"crafted (60) + a corruption's 4 sockets, all Shael"},{"c":"9m9","n":"War Club","t":"E","k":"hamm","w":10,"wc":"stf","wc2":"stf","f":2,"ty":["hamm","2han"],"g":"MAU","lv":25,"m":180,"mh":"crafted (60) + a corruption's 6 sockets, all Shael"},{"c":"9gm","n":"Martel de Fer","t":"E","k":"hamm","w":20,"wc":"stf","wc2":"stf","f":2,"ty":["hamm","2han"],"g":"MAU","lv":25,"m":180,"mh":"crafted (60) + a corruption's 6 sockets, all Shael"},{"c":"9ss","n":"Gladius","t":"E","k":"swor","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["swor","1han"],"g":"SSD","lv":18,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"9sm","n":"Cutlass","t":"E","k":"swor","w":-30,"wc":"1hs","wc2":"1hs","f":0,"ty":["swor","1han"],"g":"SCM","lv":25,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"9sb","n":"Shamshir","t":"E","k":"swor","w":-10,"wc":"1hs","wc2":"1hs","f":0,"ty":["swor","1han"],"g":"SCM","lv":23,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"9fc","n":"Tulwar","t":"E","k":"swor","w":20,"wc":"1hs","wc2":"1hs","f":0,"ty":["swor","1han"],"g":"FLC","lv":25,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"9cr","n":"Dimensional Blade","t":"E","k":"swor","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["swor","crys"],"g":"CRS","lv":25,"m":140,"mh":"crafted (60) + a corruption's 4 sockets, all Shael"},{"c":"9bs","n":"Battle Sword","t":"E","k":"swor","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["swor","1han"],"g":"BSD","lv":25,"m":140,"mh":"crafted (60) + a corruption's 4 sockets, all Shael"},{"c":"9ls","n":"Rune Sword","t":"E","k":"swor","w":-10,"wc":"1hs","wc2":"1hs","f":0,"ty":["swor","1han"],"g":"LSD","lv":25,"m":140,"mh":"crafted (60) + a corruption's 4 sockets, all Shael"},{"c":"9wd","n":"Ancient Sword","t":"E","k":"swor","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["swor","1han"],"g":"FLC","lv":25,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"92h","n":"Espandon","t":"E","k":"swor","w":0,"wc":"1hs","wc2":"2hs","f":3,"ty":["swor","2hsw"],"g":"CLM","lv":25,"m":160,"mh":"crafted (60) + 3 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"9cm","n":"Dacian Falx","t":"E","k":"swor","w":10,"wc":"1hs","wc2":"2hs","f":3,"ty":["swor","2hsw"],"g":"CLM","lv":25,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"9gs","n":"Tusk Sword","t":"E","k":"swor","w":0,"wc":"1hs","wc2":"2hs","f":3,"ty":["swor","2hsw"],"g":"GSD","lv":25,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"9b9","n":"Gothic Sword","t":"E","k":"swor","w":10,"wc":"1hs","wc2":"2hs","f":3,"ty":["swor","2hsw"],"g":"CLM","lv":25,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"9fb","n":"Zweihander","t":"E","k":"swor","w":-10,"wc":"1hs","wc2":"2hs","f":3,"ty":["swor","2hsw"],"g":"CLM","lv":25,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"9gd","n":"Executioner Sword","t":"E","k":"swor","w":10,"wc":"1hs","wc2":"2hs","f":3,"ty":["swor","2hsw"],"g":"GSD","lv":25,"m":180,"mh":"crafted (60) + a corruption's 6 sockets, all Shael"},{"c":"9dg","n":"Poignard","t":"E","k":"knif","w":-20,"wc":"1ht","wc2":"1ht","f":0,"ty":["knif","1han"],"g":"DGR","lv":19,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"9di","n":"Rondel","t":"E","k":"knif","w":0,"wc":"1ht","wc2":"1ht","f":0,"ty":["knif","1han"],"g":"DIR","lv":24,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"9kr","n":"Cinquedeas","t":"E","k":"knif","w":-20,"wc":"1ht","wc2":"1ht","f":0,"ty":["knif","1han"],"g":"DIR","lv":25,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"9bl","n":"Stiletto","t":"E","k":"knif","w":-10,"wc":"1ht","wc2":"1ht","f":0,"ty":["knif","1han"],"g":"DGR","lv":25,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"9tk","n":"Battle Dart","t":"E","k":"tkni","w":0,"wc":"1ht","wc2":"1ht","f":4,"ty":["tkni","1han"],"g":"DGR","lv":19,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"9ta","n":"Francisca","t":"E","k":"taxe","w":10,"wc":"1hs","wc2":"1hs","f":4,"ty":["taxe","1han"],"g":"HAX","lv":22,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"9bk","n":"War Dart","t":"E","k":"tkni","w":-20,"wc":"1ht","wc2":"1ht","f":4,"ty":["tkni","1han"],"g":"DGR","lv":25,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"9b8","n":"Hurlbat","t":"E","k":"taxe","w":-10,"wc":"1hs","wc2":"1hs","f":4,"ty":["taxe","1han"],"g":"HAX","lv":25,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"9ja","n":"War Javelin","t":"E","k":"jave","w":-10,"wc":"1ht","wc2":"1ht","f":4,"ty":["jave","1han"],"g":"JAV","lv":18,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"9pi","n":"Great Pilum","t":"E","k":"jave","w":0,"wc":"1ht","wc2":"1ht","f":4,"ty":["jave","1han"],"g":"PIL","lv":25,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"9s9","n":"Simbilan","t":"E","k":"jave","w":10,"wc":"1ht","wc2":"1ht","f":4,"ty":["jave","1han"],"g":"JAV","lv":25,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"9gl","n":"Spiculum","t":"E","k":"jave","w":20,"wc":"1ht","wc2":"1ht","f":4,"ty":["jave","1han"],"g":"GLV","lv":25,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"9ts","n":"Harpoon","t":"E","k":"jave","w":-10,"wc":"1ht","wc2":"1ht","f":4,"ty":["jave","1han"],"g":"PIL","lv":25,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"9sr","n":"War Spear","t":"E","k":"spea","w":-10,"wc":"2ht","wc2":"2ht","f":2,"ty":["spea","2han"],"g":"SPR","lv":21,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"9tr","n":"Fuscina","t":"E","k":"spea","w":0,"wc":"2ht","wc2":"2ht","f":2,"ty":["spea","2han"],"g":"TRI","lv":24,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"9br","n":"War Fork","t":"E","k":"spea","w":-20,"wc":"2ht","wc2":"2ht","f":2,"ty":["spea","2han"],"g":"BRN","lv":25,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"9st","n":"Yari","t":"E","k":"spea","w":0,"wc":"2ht","wc2":"2ht","f":2,"ty":["spea","2han"],"g":"TRI","lv":25,"m":180,"mh":"crafted (60) + a corruption's 6 sockets, all Shael"},{"c":"9p9","n":"Lance","t":"E","k":"spea","w":20,"wc":"2ht","wc2":"2ht","f":2,"ty":["spea","2han"],"g":"PIK","lv":25,"m":180,"mh":"crafted (60) + a corruption's 6 sockets, all Shael"},{"c":"9b7","n":"Lochaber Axe","t":"E","k":"pole","w":10,"wc":"stf","wc2":"stf","f":2,"ty":["pole","2han"],"g":"HAL","lv":21,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"9vo","n":"Bill","t":"E","k":"pole","w":0,"wc":"stf","wc2":"stf","f":2,"ty":["pole","2han"],"g":"HAL","lv":25,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"9s8","n":"Battle Scythe","t":"E","k":"pole","w":-10,"wc":"stf","wc2":"stf","f":2,"ty":["sc9","2han"],"g":"SCY","lv":25,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"9pa","n":"Partizan","t":"E","k":"pole","w":10,"wc":"stf","wc2":"stf","f":2,"ty":["pole","2han"],"g":"HAL","lv":23,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"9h9","n":"Bec-de-Corbin","t":"E","k":"pole","w":0,"wc":"stf","wc2":"stf","f":2,"ty":["pole","2han"],"g":"PAX","lv":25,"m":180,"mh":"crafted (60) + a corruption's 6 sockets, all Shael"},{"c":"9wc","n":"Grim Scythe","t":"E","k":"pole","w":-10,"wc":"stf","wc2":"stf","f":2,"ty":["sc9","2han"],"g":"SCY","lv":25,"m":180,"mh":"crafted (60) + a corruption's 6 sockets, all Shael"},{"c":"8ss","n":"Jo Staff","t":"E","k":"staf","w":-10,"wc":"stf","wc2":"stf","f":2,"ty":["staf","2han"],"g":"BST","lv":18,"m":120,"mh":"crafted (20) + 3 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"8ls","n":"Quarterstaff","t":"E","k":"staf","w":0,"wc":"stf","wc2":"stf","f":2,"ty":["staf","2han"],"g":"SST","lv":23,"m":150,"mh":"its best unique or set item (50) + 3 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"8cs","n":"Cedar Staff","t":"E","k":"staf","w":10,"wc":"stf","wc2":"stf","f":2,"ty":["staf","2han"],"g":"CST","lv":25,"m":140,"mh":"crafted (20) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"8bs","n":"Gothic Staff","t":"E","k":"staf","w":0,"wc":"stf","wc2":"stf","f":2,"ty":["staf","2han"],"g":"SST","lv":25,"m":140,"mh":"crafted (20) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"8ws","n":"Rune Staff","t":"E","k":"staf","w":20,"wc":"stf","wc2":"stf","f":2,"ty":["staf","2han"],"g":"LST","lv":25,"m":140,"mh":"crafted (20) + a corruption's 6 sockets, all Shael"},{"c":"8sb","n":"Edge Bow","t":"E","k":"bow","w":5,"wc":"bow","wc2":"bow","f":2,"ty":["bow"],"g":"SBW","lv":18,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"8hb","n":"Razor Bow","t":"E","k":"bow","w":-10,"wc":"bow","wc2":"bow","f":2,"ty":["bow"],"g":"SBW","lv":21,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"8lb","n":"Cedar Bow","t":"E","k":"bow","w":0,"wc":"bow","wc2":"bow","f":2,"ty":["bow"],"g":"LBW","lv":23,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"8cb","n":"Double Bow","t":"E","k":"bow","w":-10,"wc":"bow","wc2":"bow","f":2,"ty":["bow"],"g":"LBW","lv":25,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"8s8","n":"Short Siege Bow","t":"E","k":"bow","w":0,"wc":"bow","wc2":"bow","f":2,"ty":["bow"],"g":"SBB","lv":25,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"8l8","n":"Large Siege Bow","t":"E","k":"bow","w":10,"wc":"bow","wc2":"bow","f":2,"ty":["bow"],"g":"LBB","lv":25,"m":200,"mh":"its best unique or set item (80) + a corruption's 6 sockets, all Shael"},{"c":"8sw","n":"Rune Bow","t":"E","k":"bow","w":0,"wc":"bow","wc2":"bow","f":2,"ty":["bow"],"g":"SBB","lv":25,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"8lw","n":"Gothic Bow","t":"E","k":"bow","w":10,"wc":"bow","wc2":"bow","f":2,"ty":["bow"],"g":"LBB","lv":25,"m":180,"mh":"crafted (60) + a corruption's 6 sockets, all Shael"},{"c":"8lx","n":"Arbalest","t":"E","k":"xbow","w":-10,"wc":"xbw","wc2":"xbw","f":2,"ty":["xbow"],"g":"LXB","lv":22,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"8mx","n":"Siege Crossbow","t":"E","k":"xbow","w":0,"wc":"xbw","wc2":"xbw","f":2,"ty":["xbow"],"g":"LXB","lv":25,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"8hx","n":"Ballista","t":"E","k":"xbow","w":10,"wc":"xbw","wc2":"xbw","f":2,"ty":["xbow"],"g":"HXB","lv":25,"m":180,"mh":"its best unique or set item (60) + a corruption's 6 sockets, all Shael"},{"c":"8rx","n":"Chu-Ko-Nu","t":"E","k":"xbow","w":-60,"wc":"xbw","wc2":"xbw","f":2,"ty":["xbow"],"g":"HXB","lv":25,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"qf1","n":"Khalim's Flail","t":"N","k":"mace","w":-10,"wc":"1hs","wc2":"1hs","f":0,"ty":["mace","1han"],"g":"FLA","lv":0,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"qf2","n":"Khalim's Will","t":"N","k":"mace","w":-10,"wc":"1hs","wc2":"1hs","f":0,"ty":["mace","1han"],"g":"FLA","lv":0,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"ktr","n":"Katar","t":"N","k":"h2h","w":-10,"wc":"ht1","wc2":"ht1","f":0,"ty":["h2h","1han"],"g":"KTR","lv":0,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"wrb","n":"Wrist Blade","t":"N","k":"h2h","w":0,"wc":"ht1","wc2":"ht1","f":0,"ty":["h2h","1han"],"g":"KTR","lv":0,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"axf","n":"Hatchet Hands","t":"N","k":"h2h","w":10,"wc":"ht1","wc2":"ht1","f":0,"ty":["h2h","1han"],"g":"AXF","lv":0,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"ces","n":"Cestus","t":"N","k":"h2h","w":0,"wc":"ht1","wc2":"ht1","f":0,"ty":["h2h","1han"],"g":"AXF","lv":0,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"clw","n":"Claws","t":"N","k":"h2h","w":-10,"wc":"ht1","wc2":"ht1","f":0,"ty":["h2h","1han"],"g":"CLW","lv":0,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"btl","n":"Blade Talons","t":"N","k":"h2h","w":-20,"wc":"ht1","wc2":"ht1","f":0,"ty":["h2h","1han"],"g":"CLW","lv":0,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"skr","n":"Scissors Katar","t":"N","k":"h2h","w":-10,"wc":"ht1","wc2":"ht1","f":0,"ty":["h2h","1han"],"g":"SKR","lv":0,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"9ar","n":"Quhab","t":"E","k":"h2h","w":0,"wc":"ht1","wc2":"ht1","f":0,"ty":["h2h","1han"],"g":"KTR","lv":21,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"9wb","n":"Wrist Spike","t":"E","k":"h2h","w":-10,"wc":"ht1","wc2":"ht1","f":0,"ty":["h2h","1han"],"g":"KTR","lv":24,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"9xf","n":"Fascia","t":"E","k":"h2h","w":10,"wc":"ht1","wc2":"ht1","f":0,"ty":["h2h","1han"],"g":"AXF","lv":27,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"9cs","n":"Hand Scythe","t":"E","k":"h2h","w":-10,"wc":"ht1","wc2":"ht1","f":0,"ty":["h2h2","1han"],"g":"AXF","lv":30,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"9lw","n":"Greater Claws","t":"E","k":"h2h","w":-20,"wc":"ht1","wc2":"ht1","f":0,"ty":["h2h2","1han"],"g":"CLW","lv":33,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"9tw","n":"Greater Talons","t":"E","k":"h2h","w":-30,"wc":"ht1","wc2":"ht1","f":0,"ty":["h2h2","1han"],"g":"CLW","lv":37,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"9qr","n":"Scissors Quhab","t":"E","k":"h2h","w":0,"wc":"ht1","wc2":"ht1","f":0,"ty":["h2h2","1han"],"g":"SKR","lv":40,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"7ar","n":"Suwayyah","t":"E","k":"h2h","w":0,"wc":"ht1","wc2":"ht1","f":0,"ty":["h2h2","1han"],"g":"KTR","lv":44,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"7wb","n":"Wrist Sword","t":"E","k":"h2h","w":-10,"wc":"ht1","wc2":"ht1","f":0,"ty":["h2h2","1han"],"g":"KTR","lv":46,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"7xf","n":"War Fist","t":"E","k":"h2h","w":10,"wc":"ht1","wc2":"ht1","f":0,"ty":["h2h2","1han"],"g":"AXF","lv":51,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"7cs","n":"Battle Cestus","t":"E","k":"h2h","w":-10,"wc":"ht1","wc2":"ht1","f":0,"ty":["h2h2","1han"],"g":"AXF","lv":54,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"7lw","n":"Feral Claws","t":"E","k":"h2h","w":-20,"wc":"ht1","wc2":"ht1","f":0,"ty":["h2h2","1han"],"g":"CLW","lv":58,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"7tw","n":"Runic Talons","t":"E","k":"h2h","w":-30,"wc":"ht1","wc2":"ht1","f":0,"ty":["h2h2","1han"],"g":"CLW","lv":60,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"7qr","n":"Scissors Suwayyah","t":"E","k":"h2h","w":0,"wc":"ht1","wc2":"ht1","f":0,"ty":["h2h2","1han"],"g":"SKR","lv":64,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"7ha","n":"Tomahawk","t":"E","k":"axe","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["axe","1han"],"g":"HAX","lv":40,"m":140,"mh":"its best unique or set item (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"7ax","n":"Small Crescent","t":"E","k":"axe","w":10,"wc":"1hs","wc2":"1hs","f":0,"ty":["axe","1han"],"g":"AXE","lv":45,"m":140,"mh":"crafted (60) + a corruption's 4 sockets, all Shael"},{"c":"72a","n":"Ettin Axe","t":"E","k":"axe","w":10,"wc":"1hs","wc2":"1hs","f":0,"ty":["axe","1han"],"g":"AXE","lv":52,"m":140,"mh":"crafted (60) + a corruption's 4 sockets, all Shael"},{"c":"7mp","n":"War Spike","t":"E","k":"axe","w":-10,"wc":"1hs","wc2":"1hs","f":0,"ty":["axe","1han"],"g":"AXE","lv":59,"m":140,"mh":"crafted (60) + a corruption's 4 sockets, all Shael"},{"c":"7wa","n":"Berserker Axe","t":"E","k":"axe","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["axe","1han"],"g":"HAX","lv":64,"m":140,"mh":"crafted (60) + a corruption's 4 sockets, all Shael"},{"c":"7la","n":"Feral Axe","t":"E","k":"axe","w":-15,"wc":"stf","wc2":"stf","f":2,"ty":["axe","2han"],"g":"LAX","lv":42,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"7ba","n":"Silver-edged Axe","t":"E","k":"axe","w":0,"wc":"stf","wc2":"stf","f":2,"ty":["axe","2han"],"g":"LAX","lv":48,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"7bt","n":"Decapitator","t":"E","k":"axe","w":10,"wc":"stf","wc2":"stf","f":2,"ty":["axe","2han"],"g":"BTX","lv":54,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"7ga","n":"Champion Axe","t":"E","k":"axe","w":-10,"wc":"stf","wc2":"stf","f":2,"ty":["axe","2han"],"g":"BTX","lv":61,"m":180,"mh":"crafted (60) + a corruption's 6 sockets, all Shael"},{"c":"7gi","n":"Glorious Axe","t":"E","k":"axe","w":10,"wc":"stf","wc2":"stf","f":2,"ty":["axe","2han"],"g":"GIX","lv":66,"m":180,"mh":"crafted (60) + a corruption's 6 sockets, all Shael"},{"c":"7wn","n":"Polished Wand","t":"E","k":"wand","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["wand","1han"],"g":"WND","lv":41,"m":100,"mh":"crafted (20) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"7yw","n":"Ghost Wand","t":"E","k":"wand","w":10,"wc":"1hs","wc2":"1hs","f":0,"ty":["wand","1han"],"g":"YWN","lv":48,"m":100,"mh":"crafted (20) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"7bw","n":"Lich Wand","t":"E","k":"wand","w":-20,"wc":"1hs","wc2":"1hs","f":0,"ty":["wand","1han"],"g":"BWN","lv":56,"m":100,"mh":"crafted (20) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"7gw","n":"Unearthed Wand","t":"E","k":"wand","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["wand","1han"],"g":"BWN","lv":64,"m":100,"mh":"crafted (20) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"7cl","n":"Truncheon","t":"E","k":"club","w":-10,"wc":"1hs","wc2":"1hs","f":0,"ty":["club","1han"],"g":"CLB","lv":39,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"7sc","n":"Mighty Scepter","t":"E","k":"scep","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["scep","1han"],"g":"MAC","lv":46,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"7qs","n":"Seraph Rod","t":"E","k":"scep","w":10,"wc":"1hs","wc2":"1hs","f":0,"ty":["scep","1han"],"g":"MAC","lv":57,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"7ws","n":"Caduceus","t":"E","k":"scep","w":-10,"wc":"1hs","wc2":"1hs","f":0,"ty":["scep","1han"],"g":"WHM","lv":66,"m":140,"mh":"crafted (60) + a corruption's 4 sockets, all Shael"},{"c":"7sp","n":"Tyrant Club","t":"E","k":"club","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["club","1han"],"g":"CLB","lv":42,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"7ma","n":"Reinforced Mace","t":"E","k":"mace","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["mace","1han"],"g":"MAC","lv":47,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"7mt","n":"Devil Star","t":"E","k":"mace","w":10,"wc":"1hs","wc2":"1hs","f":0,"ty":["mace","1han"],"g":"MAC","lv":52,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"7fl","n":"Scourge","t":"E","k":"mace","w":-10,"wc":"1hs","wc2":"1hs","f":0,"ty":["mace","1han"],"g":"FLA","lv":57,"m":140,"mh":"crafted (60) + a corruption's 4 sockets, all Shael"},{"c":"7wh","n":"Legendary Mallet","t":"E","k":"hamm","w":20,"wc":"1hs","wc2":"1hs","f":0,"ty":["hamm","1han"],"g":"WHM","lv":61,"m":140,"mh":"crafted (60) + a corruption's 4 sockets, all Shael"},{"c":"7m7","n":"Ogre Maul","t":"E","k":"hamm","w":10,"wc":"stf","wc2":"stf","f":2,"ty":["hamm","2han"],"g":"MAU","lv":51,"m":180,"mh":"crafted (60) + a corruption's 6 sockets, all Shael"},{"c":"7gm","n":"Thunder Maul","t":"E","k":"hamm","w":20,"wc":"stf","wc2":"stf","f":2,"ty":["hamm","2han"],"g":"MAU","lv":65,"m":180,"mh":"crafted (60) + a corruption's 6 sockets, all Shael"},{"c":"7ss","n":"Falcata","t":"E","k":"swor","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["swor","1han"],"g":"SSD","lv":42,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"7sm","n":"Ataghan","t":"E","k":"swor","w":-20,"wc":"1hs","wc2":"1hs","f":0,"ty":["swor","1han"],"g":"SCM","lv":45,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"7sb","n":"Elegant Blade","t":"E","k":"swor","w":-10,"wc":"1hs","wc2":"1hs","f":0,"ty":["swor","1han"],"g":"SCM","lv":47,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"7fc","n":"Hydra Edge","t":"E","k":"swor","w":10,"wc":"1hs","wc2":"1hs","f":0,"ty":["swor","1han"],"g":"FLC","lv":51,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"7cr","n":"Phase Blade","t":"E","k":"swor","w":-30,"wc":"1hs","wc2":"1hs","f":0,"ty":["swor","crys"],"g":"CRS","lv":54,"m":140,"mh":"crafted (60) + a corruption's 4 sockets, all Shael"},{"c":"7bs","n":"Conquest Sword","t":"E","k":"swor","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["swor","1han"],"g":"BSD","lv":58,"m":140,"mh":"crafted (60) + a corruption's 4 sockets, all Shael"},{"c":"7ls","n":"Cryptic Sword","t":"E","k":"swor","w":-10,"wc":"1hs","wc2":"1hs","f":0,"ty":["swor","1han"],"g":"LSD","lv":61,"m":140,"mh":"crafted (60) + a corruption's 4 sockets, all Shael"},{"c":"7wd","n":"Mythical Sword","t":"E","k":"swor","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["swor","1han"],"g":"FLC","lv":66,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"72h","n":"Legend Sword","t":"E","k":"swor","w":-15,"wc":"1hs","wc2":"2hs","f":3,"ty":["swor","2hsw"],"g":"CLM","lv":44,"m":160,"mh":"crafted (60) + 3 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"7cm","n":"Highland Blade","t":"E","k":"swor","w":-5,"wc":"1hs","wc2":"2hs","f":3,"ty":["swor","2hsw"],"g":"CLM","lv":49,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"7gs","n":"Balrog Blade","t":"E","k":"swor","w":0,"wc":"1hs","wc2":"2hs","f":3,"ty":["swor","2hsw"],"g":"GSD","lv":53,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"7b7","n":"Champion Sword","t":"E","k":"swor","w":-10,"wc":"1hs","wc2":"2hs","f":3,"ty":["swor","2hsw"],"g":"CLM","lv":57,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"7fb","n":"Colossus Sword","t":"E","k":"swor","w":10,"wc":"1hs","wc2":"2hs","f":3,"ty":["swor","2hsw"],"g":"CLM","lv":60,"m":185,"mh":"its best unique or set item (65) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"7gd","n":"Colossus Blade","t":"E","k":"swor","w":5,"wc":"1hs","wc2":"2hs","f":3,"ty":["swor","2hsw"],"g":"GSD","lv":63,"m":180,"mh":"crafted (60) + a corruption's 6 sockets, all Shael"},{"c":"7dg","n":"Bone Knife","t":"E","k":"knif","w":-20,"wc":"1ht","wc2":"1ht","f":0,"ty":["knif","1han"],"g":"DGR","lv":43,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"7di","n":"Mithril Point","t":"E","k":"knif","w":0,"wc":"1ht","wc2":"1ht","f":0,"ty":["knif","1han"],"g":"DIR","lv":52,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"7kr","n":"Fanged Knife","t":"E","k":"knif","w":-20,"wc":"1ht","wc2":"1ht","f":0,"ty":["knif","1han"],"g":"DIR","lv":62,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"7bl","n":"Legend Spike","t":"E","k":"knif","w":-10,"wc":"1ht","wc2":"1ht","f":0,"ty":["knif","1han"],"g":"DGR","lv":66,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"7tk","n":"Flying Knife","t":"E","k":"tkni","w":0,"wc":"1ht","wc2":"1ht","f":4,"ty":["tkni","1han"],"g":"DGR","lv":48,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"7ta","n":"Flying Axe","t":"E","k":"taxe","w":10,"wc":"1hs","wc2":"1hs","f":4,"ty":["taxe","1han"],"g":"HAX","lv":42,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"7bk","n":"Winged Knife","t":"E","k":"tkni","w":-20,"wc":"1ht","wc2":"1ht","f":4,"ty":["tkni","1han"],"g":"DGR","lv":57,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"7b8","n":"Winged Axe","t":"E","k":"taxe","w":-10,"wc":"1hs","wc2":"1hs","f":4,"ty":["taxe","1han"],"g":"HAX","lv":60,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"7ja","n":"Hyperion Javelin","t":"E","k":"jave","w":-10,"wc":"1ht","wc2":"1ht","f":4,"ty":["jave","1han"],"g":"JAV","lv":40,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"7pi","n":"Stygian Pilum","t":"E","k":"jave","w":0,"wc":"1ht","wc2":"1ht","f":4,"ty":["jave","1han"],"g":"PIL","lv":46,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"7s7","n":"Balrog Spear","t":"E","k":"jave","w":10,"wc":"1ht","wc2":"1ht","f":4,"ty":["jave","1han"],"g":"JAV","lv":53,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"7gl","n":"Ghost Glaive","t":"E","k":"jave","w":20,"wc":"1ht","wc2":"1ht","f":4,"ty":["jave","1han"],"g":"GLV","lv":59,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"7ts","n":"Winged Harpoon","t":"E","k":"jave","w":-10,"wc":"1ht","wc2":"1ht","f":4,"ty":["jave","1han"],"g":"PIL","lv":65,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"7sr","n":"Hyperion Spear","t":"E","k":"spea","w":-10,"wc":"2ht","wc2":"2ht","f":2,"ty":["spea","2han"],"g":"SPR","lv":43,"m":180,"mh":"crafted (60) + a corruption's 6 sockets, all Shael"},{"c":"7tr","n":"Stygian Pike","t":"E","k":"spea","w":0,"wc":"2ht","wc2":"2ht","f":2,"ty":["spea","2han"],"g":"TRI","lv":49,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"7br","n":"Mancatcher","t":"E","k":"spea","w":-20,"wc":"2ht","wc2":"2ht","f":2,"ty":["spea","2han"],"g":"BRN","lv":55,"m":180,"mh":"its best unique or set item (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"7st","n":"Ghost Spear","t":"E","k":"spea","w":0,"wc":"2ht","wc2":"2ht","f":2,"ty":["spea","2han"],"g":"TRI","lv":62,"m":180,"mh":"crafted (60) + a corruption's 6 sockets, all Shael"},{"c":"7p7","n":"War Pike","t":"E","k":"spea","w":20,"wc":"2ht","wc2":"2ht","f":2,"ty":["spea","2han"],"g":"PIK","lv":66,"m":180,"mh":"crafted (60) + a corruption's 6 sockets, all Shael"},{"c":"7o7","n":"Ogre Axe","t":"E","k":"pole","w":0,"wc":"stf","wc2":"stf","f":2,"ty":["pole","2han"],"g":"HAL","lv":45,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"7vo","n":"Colossus Voulge","t":"E","k":"pole","w":10,"wc":"stf","wc2":"stf","f":2,"ty":["pole","2han"],"g":"HAL","lv":48,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"7s8","n":"Thresher","t":"E","k":"pole","w":-10,"wc":"stf","wc2":"stf","f":2,"ty":["sc9","2han"],"g":"SCY","lv":53,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"7pa","n":"Cryptic Axe","t":"E","k":"pole","w":10,"wc":"stf","wc2":"stf","f":2,"ty":["pole","2han"],"g":"HAL","lv":59,"m":180,"mh":"its best unique or set item (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"7h7","n":"Great Poleaxe","t":"E","k":"pole","w":0,"wc":"stf","wc2":"stf","f":2,"ty":["pole","2han"],"g":"PAX","lv":63,"m":180,"mh":"crafted (60) + a corruption's 6 sockets, all Shael"},{"c":"7wc","n":"Giant Thresher","t":"E","k":"pole","w":-10,"wc":"stf","wc2":"stf","f":2,"ty":["sc9","2han"],"g":"SCY","lv":66,"m":180,"mh":"crafted (60) + a corruption's 6 sockets, all Shael"},{"c":"6ss","n":"Walking Stick","t":"E","k":"staf","w":-10,"wc":"stf","wc2":"stf","f":2,"ty":["staf","2han"],"g":"BST","lv":43,"m":120,"mh":"crafted (20) + 3 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"6ls","n":"Stalagmite","t":"E","k":"staf","w":10,"wc":"stf","wc2":"stf","f":2,"ty":["staf","2han"],"g":"SST","lv":49,"m":140,"mh":"crafted (20) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"6cs","n":"Elder Staff","t":"E","k":"staf","w":0,"wc":"stf","wc2":"stf","f":2,"ty":["staf","2han"],"g":"CST","lv":55,"m":140,"mh":"crafted (20) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"6bs","n":"Shillelagh","t":"E","k":"staf","w":0,"wc":"stf","wc2":"stf","f":2,"ty":["staf","2han"],"g":"SST","lv":62,"m":140,"mh":"crafted (20) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"6ws","n":"Archon Staff","t":"E","k":"staf","w":10,"wc":"stf","wc2":"stf","f":2,"ty":["staf","2han"],"g":"LST","lv":66,"m":140,"mh":"crafted (20) + a corruption's 6 sockets, all Shael"},{"c":"6sb","n":"Spider Bow","t":"E","k":"bow","w":5,"wc":"bow","wc2":"bow","f":2,"ty":["bow"],"g":"SBW","lv":41,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"6hb","n":"Blade Bow","t":"E","k":"bow","w":-10,"wc":"bow","wc2":"bow","f":2,"ty":["bow"],"g":"SBW","lv":45,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"6lb","n":"Shadow Bow","t":"E","k":"bow","w":0,"wc":"bow","wc2":"bow","f":2,"ty":["bow"],"g":"LBW","lv":47,"m":180,"mh":"crafted (60) + a corruption's 6 sockets, all Shael"},{"c":"6cb","n":"Great Bow","t":"E","k":"bow","w":-10,"wc":"bow","wc2":"bow","f":2,"ty":["bow"],"g":"LBW","lv":51,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"6s7","n":"Diamond Bow","t":"E","k":"bow","w":0,"wc":"bow","wc2":"bow","f":2,"ty":["bow"],"g":"SBB","lv":54,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"6l7","n":"Crusader Bow","t":"E","k":"bow","w":10,"wc":"bow","wc2":"bow","f":2,"ty":["bow"],"g":"LBB","lv":57,"m":180,"mh":"crafted (60) + a corruption's 6 sockets, all Shael"},{"c":"6sw","n":"Ward Bow","t":"E","k":"bow","w":0,"wc":"bow","wc2":"bow","f":2,"ty":["bow"],"g":"SBB","lv":60,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"6lw","n":"Hydra Bow","t":"E","k":"bow","w":10,"wc":"bow","wc2":"bow","f":2,"ty":["bow"],"g":"LBB","lv":63,"m":180,"mh":"crafted (60) + a corruption's 6 sockets, all Shael"},{"c":"6lx","n":"Pellet Bow","t":"E","k":"xbow","w":-10,"wc":"xbw","wc2":"xbw","f":2,"ty":["xbow"],"g":"LXB","lv":42,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"6mx","n":"Gorgon Crossbow","t":"E","k":"xbow","w":0,"wc":"xbw","wc2":"xbw","f":2,"ty":["xbow"],"g":"LXB","lv":50,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"6hx","n":"Colossus Crossbow","t":"E","k":"xbow","w":10,"wc":"xbw","wc2":"xbw","f":2,"ty":["xbow"],"g":"HXB","lv":56,"m":180,"mh":"its best unique or set item (60) + a corruption's 6 sockets, all Shael"},{"c":"6rx","n":"Demon Crossbow","t":"E","k":"xbow","w":-60,"wc":"xbw","wc2":"xbw","f":2,"ty":["xbow"],"g":"HXB","lv":63,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"ob1","n":"Eagle Orb","t":"N","k":"orb","w":-10,"wc":"1hs","wc2":"1hs","f":0,"ty":["orb"],"g":"OB1","lv":0,"m":100,"mh":"crafted (20) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"ob2","n":"Sacred Globe","t":"N","k":"orb","w":-10,"wc":"1hs","wc2":"1hs","f":0,"ty":["orb"],"g":"OB1","lv":0,"m":100,"mh":"crafted (20) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"ob3","n":"Smoked Sphere","t":"N","k":"orb","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["orb"],"g":"OB3","lv":8,"m":100,"mh":"crafted (20) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"ob4","n":"Clasped Orb","t":"N","k":"orb","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["orb"],"g":"OB4","lv":13,"m":100,"mh":"crafted (20) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"ob5","n":"Jared's Stone","t":"N","k":"orb","w":10,"wc":"1hs","wc2":"1hs","f":0,"ty":["orb"],"g":"OB4","lv":18,"m":100,"mh":"crafted (20) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"am1","n":"Stag Bow","t":"N","k":"abow","w":0,"wc":"bow","wc2":"bow","f":2,"ty":["abow"],"g":"AM1","lv":14,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"am2","n":"Reflex Bow","t":"N","k":"abow","w":10,"wc":"bow","wc2":"bow","f":2,"ty":["abow"],"g":"AM2","lv":20,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"am3","n":"Maiden Spear","t":"N","k":"aspe","w":-10,"wc":"2ht","wc2":"2ht","f":2,"ty":["aspe","2han"],"g":"AM3","lv":14,"m":180,"mh":"crafted (60) + a corruption's 6 sockets, all Shael"},{"c":"am4","n":"Maiden Pike","t":"N","k":"aspe","w":0,"wc":"2ht","wc2":"2ht","f":2,"ty":["aspe","2han"],"g":"PIK","lv":20,"m":180,"mh":"crafted (60) + a corruption's 6 sockets, all Shael"},{"c":"am5","n":"Maiden Javelin","t":"N","k":"ajav","w":-10,"wc":"1ht","wc2":"1ht","f":4,"ty":["ajav","1han"],"g":"PIL","lv":17,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"ob6","n":"Glowing Orb","t":"E","k":"orb","w":-10,"wc":"1hs","wc2":"1hs","f":0,"ty":["orb"],"g":"OB1","lv":24,"m":100,"mh":"crafted (20) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"ob7","n":"Crystalline Globe","t":"E","k":"orb","w":-10,"wc":"1hs","wc2":"1hs","f":0,"ty":["orb"],"g":"OB1","lv":27,"m":100,"mh":"its best unique or set item (20) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"ob8","n":"Cloudy Sphere","t":"E","k":"orb","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["orb"],"g":"OB3","lv":30,"m":100,"mh":"crafted (20) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"ob9","n":"Sparkling Ball","t":"E","k":"orb","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["orb"],"g":"OB4","lv":34,"m":100,"mh":"crafted (20) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"oba","n":"Swirling Crystal","t":"E","k":"orb","w":10,"wc":"1hs","wc2":"1hs","f":0,"ty":["orb"],"g":"OB4","lv":37,"m":100,"mh":"crafted (20) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"am6","n":"Ashwood Bow","t":"E","k":"abow","w":0,"wc":"bow","wc2":"bow","f":2,"ty":["abow"],"g":"AM1","lv":29,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"am7","n":"Ceremonial Bow","t":"E","k":"abow","w":10,"wc":"bow","wc2":"bow","f":2,"ty":["abow"],"g":"AM2","lv":35,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"am8","n":"Ceremonial Spear","t":"E","k":"aspe","w":-10,"wc":"2ht","wc2":"2ht","f":2,"ty":["aspe","2han"],"g":"AM3","lv":32,"m":180,"mh":"crafted (60) + a corruption's 6 sockets, all Shael"},{"c":"am9","n":"Ceremonial Pike","t":"E","k":"aspe","w":10,"wc":"2ht","wc2":"2ht","f":2,"ty":["aspe","2han"],"g":"PIK","lv":38,"m":180,"mh":"crafted (60) + a corruption's 6 sockets, all Shael"},{"c":"ama","n":"Ceremonial Javelin","t":"E","k":"ajav","w":-10,"wc":"1ht","wc2":"1ht","f":4,"ty":["ajav","1han"],"g":"PIL","lv":26,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"obb","n":"Heavenly Stone","t":"E","k":"orb","w":-10,"wc":"1hs","wc2":"1hs","f":0,"ty":["orb"],"g":"OB1","lv":44,"m":100,"mh":"crafted (20) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"obc","n":"Eldritch Orb","t":"E","k":"orb","w":-10,"wc":"1hs","wc2":"1hs","f":0,"ty":["orb"],"g":"OB1","lv":50,"m":100,"mh":"crafted (20) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"obd","n":"Demon Heart","t":"E","k":"orb","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["orb"],"g":"OB3","lv":56,"m":100,"mh":"crafted (20) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"obe","n":"Vortex Orb","t":"E","k":"orb","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["orb"],"g":"OB4","lv":63,"m":100,"mh":"crafted (20) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"obf","n":"Dimensional Shard","t":"E","k":"orb","w":10,"wc":"1hs","wc2":"1hs","f":0,"ty":["orb"],"g":"OB4","lv":66,"m":100,"mh":"crafted (20) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"amb","n":"Matriarchal Bow","t":"E","k":"abow","w":-10,"wc":"bow","wc2":"bow","f":2,"ty":["abow"],"g":"AM1","lv":39,"m":180,"mh":"crafted (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"amc","n":"Grand Matron Bow","t":"E","k":"abow","w":10,"wc":"bow","wc2":"bow","f":2,"ty":["abow"],"g":"AM2","lv":58,"m":180,"mh":"its best unique or set item (60) + 4 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"amd","n":"Matriarchal Spear","t":"E","k":"aspe","w":-10,"wc":"2ht","wc2":"2ht","f":2,"ty":["aspe","2han"],"g":"AM3","lv":45,"m":180,"mh":"crafted (60) + a corruption's 6 sockets, all Shael"},{"c":"ame","n":"Matriarchal Pike","t":"E","k":"aspe","w":10,"wc":"2ht","wc2":"2ht","f":2,"ty":["aspe","2han"],"g":"PIK","lv":60,"m":180,"mh":"crafted (60) + a corruption's 6 sockets, all Shael"},{"c":"amf","n":"Matriarchal Javelin","t":"E","k":"ajav","w":-10,"wc":"1ht","wc2":"1ht","f":4,"ty":["ajav","1han"],"g":"PIL","lv":48,"m":140,"mh":"crafted (60) + 2 Shael in Larzuk's Puzzlebox sockets + corruption 40"},{"c":"7cr2","n":"Phase Blade (two-handed)","t":"E","k":"swor","w":-30,"wc":"2hs","wc2":"2hs","f":2,"ty":["2hcs","2han"],"g":"CRS","lv":54,"m":180,"mh":"crafted (60) + a corruption's 6 sockets, all Shael"}],"sk":[{"id":6,"n":"Magic Arrow","c":"ama","m":"A1","q":0,"ia":["miss"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]},{"id":7,"n":"Fire Arrow","c":"ama","m":"A1","q":0,"ia":["miss"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]},{"id":10,"n":"Jab","c":"ama","m":"SQ","q":1,"ia":["spea"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]},{"id":11,"n":"Cold Arrow","c":"ama","m":"A1","q":0,"ia":["miss"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]},{"id":12,"n":"Multiple Shot","c":"ama","m":"A1","q":0,"ia":["miss"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]},{"id":14,"n":"Power Strike","c":"ama","m":"A1","q":0,"ia":["spea"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]},{"id":15,"n":"Poison Javelin","c":"ama","m":"TH","q":0,"ia":["jave"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]},{"id":16,"n":"Exploding Arrow","c":"ama","m":"A1","q":0,"ia":["miss"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]},{"id":20,"n":"Lightning Bolt","c":"ama","m":"TH","q":0,"ia":["jave"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]},{"id":21,"n":"Ice Arrow","c":"ama","m":"A1","q":0,"ia":["miss"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]},{"id":22,"n":"Guided Arrow","c":"ama","m":"A1","q":0,"ia":["miss"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]},{"id":24,"n":"Charged Strike","c":"ama","m":"A1","q":0,"ia":["spea"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]},{"id":25,"n":"Plague Javelin","c":"ama","m":"TH","q":0,"ia":["jave"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]},{"id":26,"n":"Strafe","c":"ama","m":"A1","q":0,"ia":["miss"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"],"rb":50,"hits":[2,3,4,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5],"hmin":[2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5]},{"id":27,"n":"Immolation Arrow","c":"ama","m":"A1","q":0,"ia":["miss"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]},{"id":30,"n":"Fend","c":"ama","m":"A1","q":0,"ia":["spea"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"],"rb":60,"hits":[3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3]},{"id":31,"n":"Freezing Arrow","c":"ama","m":"A1","q":0,"ia":["miss"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]},{"id":34,"n":"Lightning Strike","c":"ama","m":"A1","q":0,"ia":["spea"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]},{"id":35,"n":"Lightning Fury","c":"ama","m":"TH","q":0,"ia":["jave"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]},{"id":73,"n":"Poison Strike","c":"nec","m":"A1","q":0,"ia":["knif","sc9"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]},{"id":96,"n":"Sacrifice","c":"pal","m":"A1","q":0,"ia":["mele"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]},{"id":97,"n":"Smite","c":"pal","m":"S1","q":0,"ia":["shld"],"ea":[],"ib":[],"eb":[],"ws":4,"fm":["human"]},{"id":106,"n":"Zeal","c":"pal","m":"A1","q":0,"ia":["mele"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"],"rb":100,"hits":[3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3]},{"id":107,"n":"Charge","c":"pal","m":"SQ","q":4,"ia":["mele"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"],"chg":65},{"id":111,"n":"Vengeance","c":"pal","m":"A1","q":0,"ia":["mele"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]},{"id":126,"n":"Bash","c":"bar","m":"A1","q":0,"ia":["mele"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]},{"id":133,"n":"Double Swing","c":"bar","m":"SQ","q":11,"ia":["mele"],"ea":[],"ib":["mele"],"eb":[],"ws":3,"fm":["human"],"ar":50},{"id":139,"n":"Stun","c":"bar","m":"A1","q":0,"ia":["mele"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]},{"id":140,"n":"Double Throw","c":"bar","m":"SQ","q":15,"ia":["comb"],"ea":[],"ib":["comb"],"eb":[],"ws":3,"fm":["human"]},{"id":143,"n":"Leap Attack","c":"bar","m":"SQ","q":13,"ia":["mele"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]},{"id":144,"n":"Concentrate","c":"bar","m":"A1","q":0,"ia":["mele"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]},{"id":147,"n":"Frenzy","c":"bar","m":"SQ","q":11,"ia":["mele"],"ea":[],"ib":["mele"],"eb":[],"ws":3,"fm":["human"]},{"id":151,"n":"Whirlwind","c":"bar","m":"SQ","q":10,"ia":["mele"],"ea":[],"ib":[],"eb":[],"ws":2,"fm":["human"],"ff":6},{"id":152,"n":"Berserk","c":"bar","m":"SQ","q":11,"ia":["mele"],"ea":[],"ib":["mele"],"eb":[],"ws":3,"fm":["human"]},{"id":230,"n":"Arctic Blast","c":"dru","m":"SQ","q":18,"ia":[],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]},{"id":232,"n":"Feral Rage","c":"dru","m":"A1","q":0,"ia":[],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["wolf"]},{"id":233,"n":"Maul","c":"dru","m":"A1","q":0,"ia":[],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["bear"]},{"id":238,"n":"Rabies","c":"dru","m":"S3","q":0,"ia":[],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["wolf"]},{"id":239,"n":"Fire Claws","c":"dru","m":"A1","q":0,"ia":[],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["wolf","bear"]},{"id":242,"n":"Hunger","c":"dru","m":"S3","q":0,"ia":[],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["bear"]},{"id":248,"n":"Fury","c":"dru","m":"A1","q":0,"ia":[],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["wolf"],"rb":100,"hits":[3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3]},{"id":251,"n":"Fire Blast","c":"ass","m":"S2","q":0,"ia":[],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]},{"id":254,"n":"Tiger Strike","c":"ass","m":"A1","q":0,"ia":["asm"],"ea":[],"ib":[],"eb":[],"ws":3,"fm":["human"]},{"id":255,"n":"Dragon Talon","c":"ass","m":"KK","q":0,"ia":[],"ea":[],"ib":[],"eb":[],"ws":4,"fm":["human"],"rb":100,"hits":[1,1,1,1,1,2,2,2,2,2,2,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3]},{"id":256,"n":"Shock Web","c":"ass","m":"S2","q":0,"ia":[],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]},{"id":257,"n":"Blade Sentinel","c":"ass","m":"S2","q":0,"ia":[],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]},{"id":259,"n":"Fists of Fire","c":"ass","m":"A1","q":0,"ia":["asm"],"ea":[],"ib":[],"eb":[],"ws":3,"fm":["human"]},{"id":260,"n":"Dragon Claw","c":"ass","m":"SQ","q":16,"ia":["h2h"],"ea":[],"ib":["h2h"],"eb":[],"ws":3,"fm":["human"]},{"id":261,"n":"Charged Bolt Sentry","c":"ass","m":"S2","q":0,"ia":[],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]},{"id":262,"n":"Wake of Fire","c":"ass","m":"S2","q":0,"ia":[],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]},{"id":265,"n":"Cobra Strike","c":"ass","m":"A1","q":0,"ia":["asm"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]},{"id":269,"n":"Claws of Thunder","c":"ass","m":"A1","q":0,"ia":["asm"],"ea":[],"ib":[],"eb":[],"ws":3,"fm":["human"]},{"id":270,"n":"Dragon Tail","c":"ass","m":"KK","q":0,"ia":[],"ea":[],"ib":[],"eb":[],"ws":4,"fm":["human"],"ar":-20},{"id":271,"n":"Chain Lightning Sentry","c":"ass","m":"S2","q":0,"ia":[],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]},{"id":272,"n":"Wake of Inferno","c":"ass","m":"S2","q":0,"ia":[],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]},{"id":274,"n":"Blades of Ice","c":"ass","m":"A1","q":0,"ia":["asm"],"ea":[],"ib":[],"eb":[],"ws":3,"fm":["human"]},{"id":275,"n":"Dragon Flight","c":"ass","m":"KK","q":0,"ia":[],"ea":[],"ib":[],"eb":[],"ws":4,"fm":["human"]},{"id":276,"n":"Death Sentry","c":"ass","m":"S2","q":0,"ia":[],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]},{"id":280,"n":"Phoenix Strike","c":"ass","m":"A1","q":0,"ia":["asm"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]},{"id":366,"n":"Lightning Sentry","c":"ass","m":"S2","q":0,"ia":[],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]},{"id":375,"n":"Split Throw","c":"bar","m":"TH","q":0,"ia":["comb"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"],"ar":10},{"id":378,"n":"Joust","c":"pal","m":"A1","q":0,"ia":[],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]}],"sq":{"1":{"hth":[["A1",0,0],["A1",1,0],["A1",2,0],["A1",3,0],["A1",4,0],["A1",5,0],["A1",6,0],["A1",7,0],["A1",8,1],["A1",9,0],["A1",10,0],["A1",11,0],["A1",12,0]],"1ht":[["A1",1,0],["A1",2,0],["A1",4,0],["A1",6,3],["A1",8,0],["A1",9,1],["A1",12,0],["A2",6,3],["A2",8,0],["A2",9,1],["A2",12,0],["A1",6,3],["A1",8,0],["A1",9,1],["A1",10,0],["A1",12,0]],"2ht":[["A1",0,0],["A1",1,0],["A1",2,0],["A1",4,0],["A1",7,3],["A1",9,0],["A1",11,1],["A1",14,0],["A2",6,3],["A2",9,0],["A2",10,1],["A2",14,0],["A1",7,3],["A1",9,0],["A1",11,1],["A1",12,0],["A1",14,0],["A1",16,0]]},"4":{"hth":[["RN",0,1],["RN",1,1],["RN",2,1],["RN",3,1],["RN",4,1],["RN",5,1],["RN",6,1],["RN",7,1],["A1",1,0],["A1",4,0],["A1",5,3],["A1",6,1],["A1",8,0],["A1",10,0],["A1",12,0]],"1ht":[["RN",0,1],["RN",1,1],["RN",2,1],["RN",3,1],["RN",4,1],["RN",5,1],["RN",6,1],["RN",7,1],["A1",1,0],["A1",4,0],["A1",5,3],["A1",6,1],["A1",8,0],["A1",10,0],["A1",12,0]],"2ht":[["RN",0,1],["RN",1,1],["RN",2,1],["RN",3,1],["RN",4,1],["RN",5,1],["RN",6,1],["RN",7,1],["A1",1,0],["A1",4,0],["A1",5,3],["A1",6,1],["A1",8,0],["A1",10,0],["A1",12,0]],"1hs":[["RN",0,1],["RN",1,1],["RN",2,1],["RN",3,1],["RN",4,1],["RN",5,1],["RN",6,1],["RN",7,1],["A1",1,0],["A1",4,0],["A1",5,3],["A1",6,1],["A1",8,0],["A1",10,0],["A1",12,0]],"2hs":[["RN",0,1],["RN",1,1],["RN",2,1],["RN",3,1],["RN",4,1],["RN",5,1],["RN",6,1],["RN",7,1],["A1",1,0],["A1",4,0],["A1",5,3],["A1",6,1],["A1",8,0],["A1",10,0],["A1",12,0]],"stf":[["RN",0,1],["RN",1,1],["RN",2,1],["RN",3,1],["RN",4,1],["RN",5,1],["RN",6,1],["RN",7,1],["A1",1,0],["A1",4,0],["A1",5,3],["A1",6,1],["A1",8,0],["A1",10,0],["A1",12,0]]},"10":{"hth":[["A1",0,0],["A1",1,0],["A1",2,0],["A1",3,1],["A1",3,0],["A1",4,0],["A1",5,0],["A1",6,1]],"1ht":[["A1",0,0],["A1",1,0],["A1",2,0],["A1",3,1],["A1",3,0],["A1",4,0],["A1",5,0],["A1",6,1]],"2ht":[["A1",0,0],["A1",1,0],["A1",2,0],["A1",3,1],["A1",3,0],["A1",4,0],["A1",5,0],["A1",6,1]],"1hs":[["A1",0,0],["A1",1,0],["A1",2,0],["A1",3,1],["A1",3,0],["A1",4,0],["A1",5,0],["A1",6,1]],"2hs":[["A1",0,0],["A1",1,0],["A1",2,0],["A1",3,1],["A1",3,0],["A1",4,0],["A1",5,0],["A1",6,1]],"stf":[["A1",0,0],["A1",1,0],["A1",2,0],["A1",3,1],["A1",3,0],["A1",4,0],["A1",5,0],["A1",6,1]],"1js":[["A1",0,0],["A1",1,0],["A1",2,0],["A1",3,1],["A1",3,0],["A1",4,0],["A1",5,0],["A1",6,1]],"1jt":[["A1",0,0],["A1",1,0],["A1",2,0],["A1",3,1],["A1",3,0],["A1",4,0],["A1",5,0],["A1",6,1]],"1ss":[["A1",0,0],["A1",1,0],["A1",2,0],["A1",3,1],["A1",3,0],["A1",4,0],["A1",5,0],["A1",6,1]],"1st":[["A1",0,0],["A1",1,0],["A1",2,0],["A1",3,1],["A1",3,0],["A1",4,0],["A1",5,0],["A1",6,1]],"ht1":[["A1",0,0],["A1",1,0],["A1",2,0],["A1",3,1],["A1",3,0],["A1",4,0],["A1",5,0],["A1",6,1]],"ht2":[["A1",0,0],["A1",1,0],["A1",2,0],["A1",3,1],["A1",3,0],["A1",4,0],["A1",5,0],["A1",6,1]]},"11":{"hth":[["A1",1,0],["A1",2,0],["A1",4,0],["A1",6,0],["A1",7,1],["A1",9,0],["A1",11,0],["A1",13,0],["A1",14,0],["S3",2,1],["S3",4,0],["S3",5,0],["S3",6,0],["S3",8,0],["S3",9,0],["S3",10,0],["S3",11,0]],"1ht":[["A1",1,0],["A1",2,0],["A1",4,0],["A1",6,0],["A1",7,1],["A1",9,0],["A1",11,0],["A1",13,0],["A1",14,0],["S3",2,1],["S3",4,0],["S3",5,0],["S3",6,0],["S3",8,0],["S3",9,0],["S3",10,0],["S3",11,0]],"2ht":[["A1",1,0],["A1",2,0],["A1",4,0],["A1",6,0],["A1",7,1],["A1",9,0],["A1",11,0],["A1",13,0],["A1",14,0],["S3",2,1],["S3",4,0],["S3",5,0],["S3",6,0],["S3",8,0],["S3",9,0],["S3",10,0],["S3",11,0]],"1hs":[["A1",1,0],["A1",2,0],["A1",4,0],["A1",6,0],["A1",7,1],["A1",9,0],["A1",11,0],["A1",13,0],["A1",14,0],["S3",2,1],["S3",4,0],["S3",5,0],["S3",6,0],["S3",8,0],["S3",9,0],["S3",10,0],["S3",11,0]],"2hs":[["A1",1,0],["A1",2,0],["A1",4,0],["A1",6,0],["A1",7,1],["A1",9,0],["A1",11,0],["A1",13,0],["A1",14,0],["S3",2,1],["S3",4,0],["S3",5,0],["S3",6,0],["S3",8,0],["S3",9,0],["S3",10,0],["S3",11,0]],"bow":[["A1",1,0],["A1",2,0],["A1",4,0],["A1",6,0],["A1",7,1],["A1",9,0],["A1",11,0],["A1",13,0],["A1",14,0],["S3",2,1],["S3",4,0],["S3",5,0],["S3",6,0],["S3",8,0],["S3",9,0],["S3",10,0],["S3",11,0]],"xbw":[["A1",1,0],["A1",2,0],["A1",4,0],["A1",6,0],["A1",7,1],["A1",9,0],["A1",11,0],["A1",13,0],["A1",14,0],["S3",2,1],["S3",4,0],["S3",5,0],["S3",6,0],["S3",8,0],["S3",9,0],["S3",10,0],["S3",11,0]],"stf":[["A1",1,0],["A1",2,0],["A1",4,0],["A1",6,0],["A1",7,1],["A1",9,0],["A1",11,0],["A1",13,0],["A1",14,0],["S3",2,1],["S3",4,0],["S3",5,0],["S3",6,0],["S3",8,0],["S3",9,0],["S3",10,0],["S3",11,0]],"1js":[["A1",1,0],["A1",2,0],["A1",4,0],["A1",6,0],["A1",7,1],["A1",9,0],["A1",11,0],["A1",13,0],["A1",14,0],["S3",2,1],["S3",4,0],["S3",5,0],["S3",6,0],["S3",8,0],["S3",9,0],["S3",10,0],["S3",11,0]],"1jt":[["A1",1,0],["A1",2,0],["A1",4,0],["A1",6,0],["A1",7,1],["A1",9,0],["A1",11,0],["A1",13,0],["A1",14,0],["S3",2,1],["S3",4,0],["S3",5,0],["S3",6,0],["S3",8,0],["S3",9,0],["S3",10,0],["S3",11,0]],"1ss":[["A1",1,0],["A1",2,0],["A1",4,0],["A1",6,0],["A1",7,1],["A1",9,0],["A1",11,0],["A1",13,0],["A1",14,0],["S3",2,1],["S3",4,0],["S3",5,0],["S3",6,0],["S3",8,0],["S3",9,0],["S3",10,0],["S3",11,0]],"1st":[["A1",1,0],["A1",2,0],["A1",4,0],["A1",6,0],["A1",7,1],["A1",9,0],["A1",11,0],["A1",13,0],["A1",14,0],["S3",2,1],["S3",4,0],["S3",5,0],["S3",6,0],["S3",8,0],["S3",9,0],["S3",10,0],["S3",11,0]],"ht1":[["A1",1,0],["A1",2,0],["A1",4,0],["A1",6,0],["A1",7,1],["A1",9,0],["A1",11,0],["A1",13,0],["A1",14,0],["S3",2,1],["S3",4,0],["S3",5,0],["S3",6,0],["S3",8,0],["S3",9,0],["S3",10,0],["S3",11,0]],"ht2":[["A1",1,0],["A1",2,0],["A1",4,0],["A1",6,0],["A1",7,1],["A1",9,0],["A1",11,0],["A1",13,0],["A1",14,0],["S3",2,1],["S3",4,0],["S3",5,0],["S3",6,0],["S3",8,0],["S3",9,0],["S3",10,0],["S3",11,0]]},"13":{"hth":[["S1",0,0],["S1",1,0],["S1",2,0],["S1",3,0],["S1",4,0],["S1",5,1],["S1",6,0],["S1",7,0],["S1",8,0],["S1",9,0],["S1",10,0],["S1",11,1],["S1",12,0],["S1",13,0],["S1",14,1]],"1ht":[["S1",0,0],["S1",1,0],["S1",2,0],["S1",3,0],["S1",4,0],["S1",5,1],["S1",6,0],["S1",7,0],["S1",8,0],["S1",9,0],["S1",10,0],["S1",11,1],["S1",12,0],["S1",13,0],["S1",14,1]],"2ht":[["S1",0,0],["S1",1,0],["S1",2,0],["S1",3,0],["S1",4,0],["S1",5,1],["S1",6,0],["S1",7,0],["S1",8,0],["S1",9,0],["S1",10,0],["S1",11,1],["S1",12,0],["S1",13,0],["S1",14,1]],"1hs":[["S1",0,0],["S1",1,0],["S1",2,0],["S1",3,0],["S1",4,0],["S1",5,1],["S1",6,0],["S1",7,0],["S1",8,0],["S1",9,0],["S1",10,0],["S1",11,1],["S1",12,0],["S1",13,0],["S1",14,1]],"2hs":[["S1",0,0],["S1",1,0],["S1",2,0],["S1",3,0],["S1",4,0],["S1",5,1],["S1",6,0],["S1",7,0],["S1",8,0],["S1",9,0],["S1",10,0],["S1",11,1],["S1",12,0],["S1",13,0],["S1",14,1]],"bow":[["S1",0,0],["S1",1,0],["S1",2,0],["S1",3,0],["S1",4,0],["S1",5,1],["S1",6,0],["S1",7,0],["S1",8,0],["S1",9,0],["S1",10,0],["S1",11,1],["S1",12,0],["S1",13,0],["S1",14,1]],"xbw":[["S1",0,0],["S1",1,0],["S1",2,0],["S1",3,0],["S1",4,0],["S1",5,1],["S1",6,0],["S1",7,0],["S1",8,0],["S1",9,0],["S1",10,0],["S1",11,1],["S1",12,0],["S1",13,0],["S1",14,1]],"stf":[["S1",0,0],["S1",1,0],["S1",2,0],["S1",3,0],["S1",4,0],["S1",5,1],["S1",6,0],["S1",7,0],["S1",8,0],["S1",9,0],["S1",10,0],["S1",11,1],["S1",12,0],["S1",13,0],["S1",14,1]],"1js":[["S1",0,0],["S1",1,0],["S1",2,0],["S1",3,0],["S1",4,0],["S1",5,1],["S1",6,0],["S1",7,0],["S1",8,0],["S1",9,0],["S1",10,0],["S1",11,1],["S1",12,0],["S1",13,0],["S1",14,1]],"1jt":[["S1",0,0],["S1",1,0],["S1",2,0],["S1",3,0],["S1",4,0],["S1",5,1],["S1",6,0],["S1",7,0],["S1",8,0],["S1",9,0],["S1",10,0],["S1",11,1],["S1",12,0],["S1",13,0],["S1",14,1]],"1ss":[["S1",0,0],["S1",1,0],["S1",2,0],["S1",3,0],["S1",4,0],["S1",5,1],["S1",6,0],["S1",7,0],["S1",8,0],["S1",9,0],["S1",10,0],["S1",11,1],["S1",12,0],["S1",13,0],["S1",14,1]],"1st":[["S1",0,0],["S1",1,0],["S1",2,0],["S1",3,0],["S1",4,0],["S1",5,1],["S1",6,0],["S1",7,0],["S1",8,0],["S1",9,0],["S1",10,0],["S1",11,1],["S1",12,0],["S1",13,0],["S1",14,1]],"ht1":[["S1",0,0],["S1",1,0],["S1",2,0],["S1",3,0],["S1",4,0],["S1",5,1],["S1",6,0],["S1",7,0],["S1",8,0],["S1",9,0],["S1",10,0],["S1",11,1],["S1",12,0],["S1",13,0],["S1",14,1]],"ht2":[["S1",0,0],["S1",1,0],["S1",2,0],["S1",3,0],["S1",4,0],["S1",5,1],["S1",6,0],["S1",7,0],["S1",8,0],["S1",9,0],["S1",10,0],["S1",11,1],["S1",12,0],["S1",13,0],["S1",14,1]]},"15":{"hth":[["TH",2,0],["TH",3,0],["TH",4,0],["TH",6,0],["TH",7,0],["TH",8,1],["S3",2,0],["S3",4,0],["S3",5,0],["S3",7,1],["S3",8,0],["S3",10,0]],"1ht":[["TH",2,0],["TH",3,0],["TH",4,0],["TH",6,0],["TH",7,0],["TH",8,1],["S3",2,0],["S3",4,0],["S3",5,0],["S3",7,1],["S3",8,0],["S3",10,0]],"2ht":[["TH",2,0],["TH",3,0],["TH",4,0],["TH",6,0],["TH",7,0],["TH",8,1],["S3",2,0],["S3",4,0],["S3",5,0],["S3",7,1],["S3",8,0],["S3",10,0]],"1hs":[["TH",2,0],["TH",3,0],["TH",4,0],["TH",6,0],["TH",7,0],["TH",8,1],["S3",2,0],["S3",4,0],["S3",5,0],["S3",7,1],["S3",8,0],["S3",10,0]],"2hs":[["TH",2,0],["TH",3,0],["TH",4,0],["TH",6,0],["TH",7,0],["TH",8,1],["S3",2,0],["S3",4,0],["S3",5,0],["S3",7,1],["S3",8,0],["S3",10,0]],"bow":[["TH",2,0],["TH",3,0],["TH",4,0],["TH",6,0],["TH",7,0],["TH",8,1],["S3",2,0],["S3",4,0],["S3",5,0],["S3",7,1],["S3",8,0],["S3",10,0]],"xbw":[["TH",2,0],["TH",3,0],["TH",4,0],["TH",6,0],["TH",7,0],["TH",8,1],["S3",2,0],["S3",4,0],["S3",5,0],["S3",7,1],["S3",8,0],["S3",10,0]],"stf":[["TH",2,0],["TH",3,0],["TH",4,0],["TH",6,0],["TH",7,0],["TH",8,1],["S3",2,0],["S3",4,0],["S3",5,0],["S3",7,1],["S3",8,0],["S3",10,0]],"1js":[["TH",2,0],["TH",3,0],["TH",4,0],["TH",6,0],["TH",7,0],["TH",8,1],["S3",2,0],["S3",4,0],["S3",5,0],["S3",7,1],["S3",8,0],["S3",10,0]],"1jt":[["TH",2,0],["TH",3,0],["TH",4,0],["TH",6,0],["TH",7,0],["TH",8,1],["S3",2,0],["S3",4,0],["S3",5,0],["S3",7,1],["S3",8,0],["S3",10,0]],"1ss":[["TH",2,0],["TH",3,0],["TH",4,0],["TH",6,0],["TH",7,0],["TH",8,1],["S3",2,0],["S3",4,0],["S3",5,0],["S3",7,1],["S3",8,0],["S3",10,0]],"1st":[["TH",2,0],["TH",3,0],["TH",4,0],["TH",6,0],["TH",7,0],["TH",8,1],["S3",2,0],["S3",4,0],["S3",5,0],["S3",7,1],["S3",8,0],["S3",10,0]],"ht1":[["TH",2,0],["TH",3,0],["TH",4,0],["TH",6,0],["TH",7,0],["TH",8,1],["S3",2,0],["S3",4,0],["S3",5,0],["S3",7,1],["S3",8,0],["S3",10,0]],"ht2":[["TH",2,0],["TH",3,0],["TH",4,0],["TH",6,0],["TH",7,0],["TH",8,1],["S3",2,0],["S3",4,0],["S3",5,0],["S3",7,1],["S3",8,0],["S3",10,0]]},"16":{"hth":[["A2",0,0],["A2",1,0],["A2",2,0],["A2",3,0],["A2",4,0],["A2",5,0],["A2",6,1],["A2",7,0],["A2",8,0],["A2",9,0],["A2",10,0],["A2",11,0]],"ht1":[["A2",0,0],["A2",1,0],["A2",2,0],["A2",3,0],["A2",4,0],["A2",5,0],["A2",6,1],["A2",7,0],["A2",8,0],["A2",9,0],["A2",10,0],["A2",11,0]],"ht2":[["A2",0,0],["A2",1,0],["A2",2,0],["A2",3,0],["A2",4,0],["A2",5,0],["A2",6,1],["S4",3,0],["S4",4,0],["S4",5,0],["S4",6,1],["S4",7,0],["S4",8,0],["S4",9,0],["S4",10,0],["S4",11,0]]},"18":{"hth":[["S1",1,0],["S1",4,0],["S1",9,0],["S1",9,1],["S1",10,0],["S1",11,0],["S1",12,0],["S1",13,0]],"1ht":[["S1",1,0],["S1",4,0],["S1",9,0],["S1",9,1],["S1",10,0],["S1",11,0],["S1",12,0],["S1",13,0]],"2ht":[["S1",1,0],["S1",4,0],["S1",9,0],["S1",9,1],["S1",10,0],["S1",11,0],["S1",12,0],["S1",13,0]],"1hs":[["S1",1,0],["S1",4,0],["S1",9,0],["S1",9,1],["S1",10,0],["S1",11,0],["S1",12,0],["S1",13,0]],"2hs":[["S1",1,0],["S1",4,0],["S1",9,0],["S1",9,1],["S1",10,0],["S1",11,0],["S1",12,0],["S1",13,0]],"bow":[["S1",1,0],["S1",4,0],["S1",9,0],["S1",9,1],["S1",10,0],["S1",11,0],["S1",12,0],["S1",13,0]],"xbw":[["S1",1,0],["S1",4,0],["S1",9,0],["S1",9,1],["S1",10,0],["S1",11,0],["S1",12,0],["S1",13,0]],"stf":[["S1",1,0],["S1",4,0],["S1",9,0],["S1",9,1],["S1",10,0],["S1",11,0],["S1",12,0],["S1",13,0]],"1js":[["S1",1,0],["S1",4,0],["S1",9,0],["S1",9,1],["S1",10,0],["S1",11,0],["S1",12,0],["S1",13,0]],"1jt":[["S1",1,0],["S1",4,0],["S1",9,0],["S1",9,1],["S1",10,0],["S1",11,0],["S1",12,0],["S1",13,0]],"1ss":[["S1",1,0],["S1",4,0],["S1",9,0],["S1",9,1],["S1",10,0],["S1",11,0],["S1",12,0],["S1",13,0]],"1st":[["S1",1,0],["S1",4,0],["S1",9,0],["S1",9,1],["S1",10,0],["S1",11,0],["S1",12,0],["S1",13,0]],"ht1":[["S1",1,0],["S1",4,0],["S1",9,0],["S1",9,1],["S1",10,0],["S1",11,0],["S1",12,0],["S1",13,0]],"ht2":[["S1",1,0],["S1",4,0],["S1",9,0],["S1",9,1],["S1",10,0],["S1",11,0],["S1",12,0],["S1",13,0]]}},"sp":{"fana":[14,18,20,23,25,26,27,28,29,30,31,31,32,33,33,34,34,34,34,35,35,35,36,36,36,36,37,37,37,37,37,37,37,37,37,38,38,38,38,38,38,38,38,38,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,40],"frenzy":[7,13,18,22,25,27,29,31,33,34,35,36,37,38,39,40,40,41,41,42,42,43,43,44,44,44,45,45,45,45,46,46,46,46,46,47,47,47,47,47,47,48,48,48,48,48,48,48,49,49,49,49,49,49,49,49,49,49,49,50],"wolf":[20,28,35,40,45,48,51,53,56,57,59,61,62,63,64,66,66,67,68,68,69,70,70,71,71,72,73,73,73,73,74,74,75,75,75,75,75,76,76,76,76,77,77,77,77,77,77,77,78,78,78,78,78,79,79,79,79,79,79,80],"bos":[22,27,31,34,37,39,41,43,44,45,47,48,48,49,50,51,51,52,52,53,53,53,54,54,54,55,55,55,56,56,56,56,56,57,57,57,57,57,57,58,58,58,58,58,58,58,58,59,59,59,59,59,59,59,59,59,59,59,59,60],"inc":[2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40,42,44,46,48,50,52,54,56,58,60,62,64,66,68,70,72,74,76,78,80,82,84,86,88,90,92,94,96,98,100,102,104,106,108,110,112,114,116,118,120],"hustle":15},"os":[[11,"Pluckeye","unique",2,3],[16,"Blastbark","unique",2,3],[106,"Boneslayer Blade","unique",10,12],[30,"The Impaler","unique",3,4],[10,"The Impaler","unique",4,6],[26,"Endlesshail","unique",3,5],[22,"Widowmaker","unique",3,5],[12,"Widowmaker","unique",3,5],[232,"Wolfhowl","unique",4,6],[230,"Frostwind","unique",2,2],[378,"Zerae's Resolve","unique",5,5],[73,"Venom","runeword",6,6],[111,"Kingslayer","runeword",10,10],[106,"Passion","runeword",10,10],[144,"Passion","runeword",10,10],[242,"Beast","runeword",6,6],[233,"Beast","runeword",6,6],[375,"Jealousy","runeword",12,12],[106,"Ferocity","runeword",18,18]],"forms":{"wolf":{"t":"40","skill":223},"bear":{"t":"TG","skill":228}}};
+  /* calc-data:end */
+
+  /* ias-engine:start */
+  const IAS = (function (D) {
+    const A = D.a, CLS = {}, BASE = {}, SKILL = {};
+    D.cls.forEach(([key, name, tok]) => { CLS[key] = {key, name, tok}; });
+    D.b.forEach(b => { BASE[b.c] = b; });
+    D.sk.forEach(s => { SKILL[s.id] = s; });
+    const tdiv = (a, b) => Math.trunc(a / b);
+    const cdiv = (a, b) => Math.floor((a + b - 1) / b);  // ceil for a >= 0, b > 0
+    const eias = ias => (ias === -120 ? 0 : tdiv(120 * ias, 120 + ias));
+    // the least IAS whose effective IAS reaches e
+    const needIAS = e => (e <= 0 ? 0 : cdiv(120 * e, 120 - e));
+    const ANC = {};
+    D.b.forEach(b => {
+      const out = new Set(), todo = b.ty.slice();
+      while (todo.length) { const t = todo.pop(); if (!t || out.has(t)) continue; out.add(t); (D.types[t] || []).forEach(p => todo.push(p)); }
+      ANC[b.c] = out;
+    });
+    // a class-only base: its own item type is one class's (Amazon bows, claws, orbs); daggers reach the Assassin's
+    // item types only as one of several parents
+    const classOf = code => { for (const t of (BASE[code] || {ty: []}).ty) if (D.tcls[t]) return D.tcls[t]; return ""; };
+    const canHold = (cls, code) => { const c = classOf(code); return !c || c === cls; };
+    const isA = (code, types) => types.some(t => (ANC[code] || new Set()).has(t));
+    const twoHanded = (cls, b, oh) => !!b && !!(b.f & 2) && !((b.f & 1) && cls === "bar");
+    const dualClass = cls => cls === "bar" || cls === "ass";
+    // what a class can hold in its second hand as a weapon
+    const canSecond = (cls, b) => !!b && canHold(cls, b.c) && (cls === "ass" ? b.wc === "ht1" :
+      cls === "bar" && b.wc !== "ht1" && b.wc !== "bow" && b.wc !== "xbw" && (!(b.f & 2) || (b.f & 1)));
+    function dual(s) {
+      const w = BASE[s.w], w2 = BASE[s.w2];
+      return dualClass(s.cls) && s.oh === "weapon" && !!w && canSecond(s.cls, w2) && canSecond(s.cls, w);
+    }
+    // the weapon class the human animations use
+    function humanWC(s) {
+      const w = BASE[s.w];
+      if (!w) return "hth";
+      if (dual(s)) {
+        const w2 = BASE[s.w2];
+        if (s.cls === "ass") return "ht2";
+        const a = w.wc, b = w2.wc;
+        if (a === "1hs") return b === "1ht" ? "1js" : "1ss";
+        if (a === "1ht") return b === "1ht" ? "1jt" : b === "1hs" ? "1st" : "1ss";
+        return "1ss";
+      }
+      if (w.f & 2) return (w.f & 1) && s.cls === "bar" && s.oh !== "none" ? w.wc : w.wc2;
+      return w.wc;
+    }
+    // the weapon whose speed modifier and IAS count
+    function counted(s, over) {
+      const w = BASE[s.w], wi = over && over.wi !== undefined ? over.wi : s.wi;
+      if (!w) return {wsm: 0, ias: 0, which: ""};
+      if (dual(s)) {
+        const w2 = BASE[s.w2], a1 = -w.w + wi, a2 = -w2.w + s.wi2;
+        return a1 > a2 ? {wsm: w.w, ias: wi, which: "first"} : {wsm: w2.w, ias: s.wi2, which: "second"};
+      }
+      return {wsm: w.w, ias: wi, which: "first"};
+    }
+    const lv = (arr, n) => (n > 0 ? arr[Math.min(n, arr.length) - 1] : 0);
+    function anim(tok, mode, wc) {
+      const code = tok + mode + wc.toUpperCase(), r = A[code];
+      return r ? {code, mode, frames: r[0], speed: r[1], hits: r[2], start: 0} : null;
+    }
+    // can this setup use this attack? (why not, or "")
+    function usable(s, sk) {
+      if (!sk) return "";
+      const form = s.form || "human";
+      if (!sk.fm.includes(form)) return form === "human" ? `${sk.n} is only used in ${sk.fm.map(f => f === "wolf" ? "werewolf" : "werebear").join(" or ")} form.` :
+        `${sk.n} can't be used in ${form === "wolf" ? "werewolf" : "werebear"} form.`;
+      const w = BASE[s.w], w2 = BASE[s.w2];
+      if (sk.ia.includes("shld")) return s.oh === "shield" ? "" : `${sk.n} needs a shield.`;
+      if (sk.ia.length && !sk.ia.includes("asm")) {
+        if (!w || !isA(w.c, sk.ia)) return `${sk.n} needs a weapon of another kind.`;
+      }
+      if (sk.ia.includes("asm") && w && !isA(w.c, sk.ia)) return `${sk.n} needs a claw, a dagger or no weapon.`;
+      if (w && sk.ea.length && isA(w.c, sk.ea)) return `${sk.n} can't be used with this weapon.`;
+      if (sk.ib.length) {
+        if (s.oh !== "weapon" || !w2 || !isA(w2.c, sk.ib) || !dual(s)) return `${sk.n} needs a weapon in each hand.`;
+      }
+      return "";
+    }
+    // everything about a setup that doesn't depend on IAS
+    function plan(s) {
+      const cl = CLS[s.cls], sk = s.atk ? SKILL[s.atk] : null;
+      const form = s.form || "human";
+      const tok = form === "wolf" ? "40" : form === "bear" ? "TG" : cl.tok;
+      const p = {s, cl, sk, form, tok, wcH: humanWC(s), why: usable(s, sk), notes: [], dual: dual(s)};
+      p.wc = form === "human" ? p.wcH : "hth";
+      const w = BASE[s.w];
+      if (p.why) return p;
+      if (sk && sk.m === "SQ") {
+        const steps = (D.sq[sk.q] || {})[p.wc];
+        if (!steps) { p.why = `${sk.n} can't be used with this weapon.`; return p; }
+        p.seq = {num: sk.q, steps, frames: steps.length, hits: steps.filter(x => x[2] === 1).length};
+        if (sk.chg !== undefined) p.charge = sk.chg;
+        if (sk.ff) p.fixed = sk.ff + (p.dual ? 1 : 0);
+      } else {
+        const modes = sk ? [sk.m] : ["A1", "A2"];
+        p.anims = modes.map(m => anim(tok, m, p.wc)).filter(Boolean);
+        if (!p.anims.length) { p.why = sk ? `${sk.n} has no animation with this weapon.` : "No attack animation with this weapon."; return p; }
+        if (form === "human" && D.fb[s.cls]) {
+          const row = w ? w.wc : "hth";
+          p.anims.forEach(a => { if (a.mode === "A1" || a.mode === "A2") a.start = D.fb[s.cls][row] || 0; });
+        }
+        if (sk && sk.rb !== undefined) {
+          const n = Math.max(1, Math.min(60, s.lvl || 1));
+          let hits = sk.hits[n - 1];
+          if (sk.hmin) hits = Math.min(Math.max(s.tg || hits, sk.hmin[n - 1]), hits);
+          p.rollback = {pct: sk.rb, hits, action: p.anims[0].hits.length ? p.anims[0].hits[0] : 0};
+        }
+      }
+      if (form !== "human") p.formBase = formBase(s, p);
+      return p;
+    }
+    // a form's base speed, from the weapon (over: another IAS on the weapon)
+    function formBase(s, p, over) {
+      const w = BASE[s.w], wi = over && over.wi !== undefined ? over.wi : s.wi;
+      let H, h = null;
+      if (!w) H = 19;
+      else {
+        // the class's own attack 1 with the weapon's one-handed weapon class, however it's held
+        h = A[p.cl.tok + "A1" + w.wc.toUpperCase()];
+        if (!h) H = 45;
+        else {
+          const ar = tdiv((100 - w.w + wi) * h[1], 100);
+          H = ar > 0 ? tdiv(h[0] * 256, ar) : 0;
+        }
+      }
+      const stand = A[p.tok + "NUHTH"][0], fallback = A[p.tok + (p.anims && p.anims[0] ? p.anims[0].mode : "A1") + "HTH"];
+      const base = H > 0 ? tdiv(stand * 256, H) : 0;
+      return {H, stand, base: base || (fallback ? fallback[1] : 256), weaponTime: h ? p.cl.tok + "A1" + w.wc.toUpperCase() : "", own: wi};
+    }
+    // the speed (over: other IAS on the weapon, or from other gear)
+    function speed(s, p, over) {
+      const c = counted(s, over), gear = over && over.gear !== undefined ? over.gear : s.gear;
+      const inc = s.cls === "bar" ? lv(D.sp.inc, s.inc) : 0;
+      const ias = c.ias + gear + inc, e = eias(ias);
+      let skill = 0;
+      const parts = [];
+      const add = (v, what) => { if (v) { skill += v; parts.push([what, v]); } };
+      add(lv(D.sp.fana, s.fana), "Fanaticism");
+      if (s.cls === "bar") add(lv(D.sp.frenzy, s.frenzy), "Frenzy");
+      const bos = Math.max(s.hustle ? D.sp.hustle : 0, s.cls === "ass" ? lv(D.sp.bos, s.bos) : 0);
+      add(bos, "Burst of Speed");
+      if (p.form === "wolf") add(lv(D.sp.wolf, s.ww), "Werewolf");
+      add(s.other || 0, "Other speed");
+      if (p.sk && p.sk.ar) add(p.sk.ar, p.sk.n);
+      let raw = 100 + skill - c.wsm + e;
+      const sq = !!p.seq && p.charge === undefined;
+      if (sq) raw -= 30;
+      if (p.charge !== undefined) raw += p.charge;
+      const hi = p.charge !== undefined ? 256 : 175;
+      const v = Math.max(15, Math.min(hi, raw));
+      return {wsm: c.wsm, which: c.which, weaponIAS: c.ias, gear, inc, ias, eias: e, skill, parts, sq, raw, speed: v, capped: raw >= hi, hi};
+    }
+    const rateOf = (base, sp) => Math.max(0, Math.min(32767, tdiv(base * sp, 100)));
+    const held = (frames, start, rate) => (rate > 0 ? cdiv((frames - start) * 256, rate) - 1 : Infinity);
+    // the swing lengths of an attack that rolls back after each hit
+    function rollback(hits, action, total, start, rate, pct) {
+      const af = new Array(hits).fill(0), out = new Array(hits).fill(0);
+      let base = 0, next = 0;
+      af[0] = start * 256 + cdiv((action - start) * 256, rate) * rate;
+      for (let i = 1; i < hits; i++) {
+        base = tdiv((af[i - 1] >> 8) * (100 - pct), 100);
+        next = base * 256 + rate;
+        af[i] = base * 256 + cdiv((action - base) * 256, rate) * rate;
+        out[i] = 1;
+        while (next < af[i]) { next += rate; out[i] += 1; }
+      }
+      af[hits - 1] = base * 256 + cdiv((total - base) * 256, rate) * rate - rate * 2;
+      while (next < af[hits - 1]) { next += rate; out[hits - 1] += 1; }
+      out[0] = cdiv(af[0] - start * 256, rate) + 1;
+      return out;
+    }
+    // the frames of every part of the attack at a speed
+    function timing(p, sp, over) {
+      const t = {parts: []};
+      if (p.seq) {
+        if (p.fixed) { t.parts.push({label: "Each hit", frames: p.fixed, hits: 1, fixed: true}); return t; }
+        const base = p.charge !== undefined ? 100 : 256, rate = rateOf(base, sp.speed);
+        const len = p.charge !== undefined ? 8 : p.seq.frames;
+        t.base = base; t.rate = rate; t.len = len;
+        t.parts.push({label: p.charge !== undefined ? "The charge's swing" : "One " + p.sk.n, frames: held(len, 0, rate), hits: p.seq.hits});
+        return t;
+      }
+      const fb = p.formBase && over && over.wi !== undefined ? formBase(p.s, p, over) : p.formBase;
+      p.anims.forEach((a, i) => {
+        const base = fb ? fb.base : a.speed, rate = rateOf(base, sp.speed);
+        const part = {label: p.anims.length > 1 ? `Attack ${i + 1}` : (p.sk ? p.sk.n : "Attack"), anim: a, base, rate, frames: held(a.frames, a.start, rate), hits: 1};
+        if (p.rollback && i === 0) {
+          part.swings = rollback(p.rollback.hits, p.rollback.action, a.frames, a.start, rate, p.rollback.pct);
+          part.frames = part.swings.reduce((x, y) => x + y, 0);
+          part.hits = p.rollback.hits;
+        }
+        t.parts.push(part);
+      });
+      t.base = t.parts[0].base; t.rate = t.parts[0].rate; t.len = p.anims[0].frames;
+      return t;
+    }
+    function evaluate(s, over) {
+      const p = plan(s);
+      if (p.why) return {p, why: p.why};
+      const sp = speed(s, p, over);
+      return {p, sp, t: timing(p, sp, over)};
+    }
+    // breakpoints over IAS from other gear (the weapon's IAS as set): one row per change in frames
+    function breakpoints(s) {
+      const r0 = evaluate(s);
+      if (r0.why || (r0.p.seq && r0.p.fixed)) return {rows: [], r0};
+      const rows = [], key = r => r.t.parts.map(x => x.swings ? x.swings.join("/") : x.frames).join(",");
+      const own = r0.sp.weaponIAS + r0.sp.inc;  // the IAS that isn't other gear
+      let last = null;
+      for (let e = eias(own); e < 120; e++) {
+        const gear = Math.max(0, needIAS(e) - own);
+        const r = evaluate(s, {gear}), k = key(r);
+        if (k !== last) { rows.push({gear, r}); last = k; }
+        if (r.sp.raw >= r.sp.hi) break;
+      }
+      let you = 0;  // the setup's own row: the last one its gear reaches
+      rows.forEach((row, i) => { if (row.gear <= s.gear) you = i; });
+      return {rows, you, r0};
+    }
+    // frames over weapon IAS (rows) and other gear's IAS (columns)
+    function grid(s, ws, gs) {
+      return ws.map(wi => gs.map(g => { const r = evaluate(s, {wi, gear: g}); return r.why ? null : {f: r.t.parts[0].frames, sp: r.sp, capped: r.sp.raw >= r.sp.hi}; }));
+    }
+    // the fastest held normal attacks of a class in a form (no skill speed): every setup's own fastest frame count,
+    // the two fastest of those, and what each setup needs for it (in a form the weapon's own IAS, up to what
+    // wmaxOf(base) says the weapon can carry, and the rest from other gear: the least in all)
+    function fastest(cls, form, wmaxOf) {
+      const groups = new Map();
+      const bases = D.b.filter(b => canHold(cls, b.c));
+      const setups = [{w: "", oh: "none"}];
+      bases.forEach(b => {
+        setups.push({w: b.c, oh: "none"});
+        if (cls === "bar" && (b.f & 2) && (b.f & 1)) setups.push({w: b.c, oh: "shield"});
+      });
+      if (dualClass(cls) && form === "human") {
+        const firsts = bases.filter(b => canSecond(cls, b));
+        const byKey = new Map();  // one second weapon per (weapon class, WSM): the pair counts its faster weapon
+        firsts.forEach(b => { const k = b.wc + "|" + b.w; if (!byKey.has(k)) byKey.set(k, b); });
+        firsts.forEach(b => byKey.forEach(b2 => setups.push({w: b.c, oh: "weapon", w2: b2.c})));
+      }
+      const empty = {cls, form, atk: 0, lvl: 1, tg: 1, wi: 0, wi2: 0, gear: 0, fana: 0, frenzy: 0, inc: 0, bos: 0, hustle: false, ww: 0, other: 0};
+      setups.forEach(su => {
+        const s = Object.assign({}, empty, su), p = plan(s);
+        if (p.why || !p.anims) return;
+        const a = p.anims[0], w = BASE[s.w], two = dual(s);
+        const wsm = two ? Math.min(w.w, BASE[s.w2].w) : w ? w.w : 0;  // two weapons at no IAS: the faster one counts
+        const cap = form !== "human" && w && wmaxOf ? wmaxOf(s.w) : 0;
+        // a form: what decides the frames is the class's own attack with the weapon, its WSM and the weapon's most IAS
+        const key = form === "human" ? [a.code, a.start, wsm].join("|") : [p.formBase.weaponTime || "-", wsm, cap].join("|");
+        if (!groups.has(key)) groups.set(key, {anim: a, wsm, s, p, cap, names: new Set(), dual: two, weaponTime: p.formBase ? p.formBase.weaponTime : ""});
+        const g = groups.get(key);
+        g.names.add(two ? `${w.n} + ${BASE[s.w2].n}` : w ? (su.oh === "shield" ? `${w.n} with a shield` : w.n) : "No weapon");
+      });
+      // each group's way to each frame count it reaches: human, the least IAS; in a form the least IAS on the weapon
+      // (the scarce part), then the least on other gear
+      const better = (x, y) => !y || x.wi < y.wi || (x.wi === y.wi && x.other < y.other);
+      groups.forEach(g => {
+        const a = g.anim, ways = new Map();
+        const keep = w => { if (better(w, ways.get(w.frames))) ways.set(w.frames, w); };
+        if (form === "human") {
+          for (let e = 0; e < 120; e++) {
+            const v = Math.max(15, Math.min(175, 100 - g.wsm + e));
+            keep({frames: held(a.frames, a.start, rateOf(a.speed, v)), wi: 0, other: needIAS(e), speed: v});
+            if (100 - g.wsm + e >= 175) break;
+          }
+        } else {
+          for (let wi = 0; wi <= g.cap; wi++) {
+            const base = formBase(Object.assign({}, g.s, {wi}), g.p).base;
+            for (let e = eias(wi); e < 120; e++) {
+              const v = Math.max(15, Math.min(175, 100 - g.wsm + e));
+              keep({frames: held(a.frames, 0, rateOf(base, v)), wi, other: Math.max(0, needIAS(e) - wi), speed: v});
+              if (100 - g.wsm + e >= 175) break;
+            }
+          }
+        }
+        g.ways = ways;
+        g.min = Math.min(...ways.keys());
+      });
+      // the two fastest frame counts some setup can't get past, and every setup that gets to each (or faster)
+      const all = [...groups.values()].filter(g => g.ways.size);
+      const counts = [...new Set(all.map(g => g.min))].sort((a, b) => a - b).slice(0, 2);
+      return counts.map(f => ({frames: f, rows: all.filter(g => g.min <= f).map(g => {
+        let w = null;
+        g.ways.forEach(x => { if (x.frames <= f && better(x, w)) w = x; });
+        return Object.assign({ias: w.wi + w.other, g}, w);
+      }).sort((a, b) => a.ias - b.ias || a.wi - b.wi)}));
+    }
+    return {D, A, CLS, BASE, SKILL, eias, needIAS, canHold, canSecond, twoHanded, dualClass, dual, humanWC, counted, plan,
+            speed, timing, evaluate, breakpoints, grid, fastest, rollback, held, rateOf, usable};
+  })(DATA);
+  /* ias-engine:end */
+
+  if (!document.querySelector(".ias-map #ia-cls")) return;  // the self-test page loads the engine alone
+  const $ = id => document.getElementById(id);
+  const esc = t => String(t).replace(/[&<>"]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
+  const D = DATA, E = IAS;
+  const STORE = "erazure-ias-calculator";
+  const KIND_NAME = Object.fromEntries(D.kinds);
+  const FORM_NAME = {human: "Human", wolf: "Werewolf", bear: "Werebear"};
+  const MODE_NAME = {A1: "attack 1", A2: "attack 2", S1: "special attack 1", S2: "trap / sentry", S3: "special attack 3", S4: "special attack 4",
+                     TH: "throw", KK: "kick", SQ: "sequence"};
+  const WC_NAME = {hth: "no weapon", "1hs": "one-handed swing", "1ht": "one-handed thrust", "2hs": "two-handed swing", "2ht": "two-handed thrust",
+                   stf: "staff", bow: "bow", xbw: "crossbow", ht1: "one claw", ht2: "two claws", "1ss": "two weapons, swing + swing",
+                   "1js": "two weapons, swing + thrust", "1jt": "two weapons, thrust + thrust", "1st": "two weapons, thrust + swing"};
+  const fmt = n => (n === Infinity ? "never" : String(n));
+  const aps = f => (f === Infinity || f <= 0 ? "0" : (25 / f).toFixed(2));
+
+  // ---------------------------------------------------------------- the setup
+  const DEFAULT = {tab: "calc", cls: "bar", form: "human", atk: 0, lvl: 20, tg: 5, w: "7gd", wi: 0, oh: "none", w2: "", wi2: 0, gear: 20,
+                   fana: 0, frenzy: 0, inc: 0, bos: 0, hustle: false, ww: 1, other: 0, gw: 0, gws: 0, gg: 0, ggs: 0};
+  const KEYS = {cls: "c", form: "f", atk: "a", lvl: "l", tg: "t", w: "w", wi: "wi", oh: "o", w2: "w2", wi2: "wj", gear: "g", fana: "fa",
+                frenzy: "fr", inc: "in", bos: "bs", hustle: "hu", ww: "ww", other: "ot", gw: "gw", gws: "gws", gg: "gg", ggs: "ggs"};
+  let S = Object.assign({}, DEFAULT);
+  function fromHashText(h) {
+    const out = {};
+    h.split("&").forEach(kv => {
+      const [k, v] = kv.split("=");
+      const key = Object.keys(KEYS).find(x => KEYS[x] === k);
+      if (!key || v === undefined) return;
+      const d = DEFAULT[key];
+      out[key] = typeof d === "number" ? Number(v) || 0 : typeof d === "boolean" ? v === "1" : decodeURIComponent(v);
+    });
+    return out;
+  }
+  function hashText() {
+    return Object.keys(KEYS).filter(k => S[k] !== DEFAULT[k]).map(k => `${KEYS[k]}=${typeof S[k] === "boolean" ? (S[k] ? 1 : 0) : encodeURIComponent(S[k])}`).join("&");
+  }
+  function load() {
+    const h = decodeURIComponent(location.hash.slice(1));
+    const m = h.match(/^tab-(calc|fast|how|ref)(?:&(.*))?$/);
+    if (m) { S = Object.assign({}, DEFAULT, m[2] ? fromHashText(m[2]) : (stored() || {})); S.tab = m[1]; return; }
+    S = Object.assign({}, DEFAULT, stored() || {});
+  }
+  function stored() { try { return JSON.parse(localStorage.getItem(STORE) || "null"); } catch (e) { return null; } }
+  function save() {
+    try { const o = Object.assign({}, S); delete o.tab; localStorage.setItem(STORE, JSON.stringify(o)); } catch (e) { /* private mode */ }
+    const q = hashText();
+    try { history.replaceState(null, "", "#tab-" + S.tab + (q ? "&" + q : "")); } catch (e) { /* file: */ }
+  }
+
+  // ---------------------------------------------------------------- the form
+  const el = {};
+  ["cls", "atk", "lvl", "tg", "kind", "base", "wi", "kind2", "base2", "wi2", "gear", "fana", "frenzy", "inc", "bos", "ww", "other", "hustle",
+   "gw", "gws", "gg", "ggs"].forEach(k => { el[k] = $("ia-" + k); });
+  const opt = (v, t, sel) => `<option value="${esc(v)}"${sel ? " selected" : ""}>${esc(t)}</option>`;
+  D.cls.forEach(([k, n]) => { el.cls.insertAdjacentHTML("beforeend", opt(k, n)); });
+  [[50, 100, 150, 200, 250, 300], [5, 10, 20, 25, 50], [50, 100, 150, 200, 300, 400], [5, 10, 20, 25, 50]].forEach((vals, i) => {
+    const sel = [el.gw, el.gws, el.gg, el.ggs][i];
+    sel.insertAdjacentHTML("beforeend", opt(0, "Auto"));  // up to where speed reaches its cap, about 15 steps
+    vals.forEach(v => sel.insertAdjacentHTML("beforeend", opt(v, v)));
+  });
+  const basesOf = (cls, kind, second) => D.b.filter(b => b.k === kind && E.canHold(cls, b.c) && (!second || E.canSecond(cls, b)));
+  const kindsOf = (cls, second) => D.kinds.filter(([k]) => basesOf(cls, k, second).length);
+  const tierName = {N: "normal", X: "exceptional", E: "elite"};
+  const baseLabel = b => `${b.n} (WSM ${b.w > 0 ? "+" : ""}${b.w})`;
+  function fillBases(sel, cls, kind, second, value) {
+    const list = basesOf(cls, kind, second);
+    let html = "";
+    ["N", "X", "E"].forEach(t => {
+      const of = list.filter(b => b.t === t);
+      if (of.length) html += `<optgroup label="${tierName[t][0].toUpperCase() + tierName[t].slice(1)}">` + of.map(b => opt(b.c, baseLabel(b), b.c === value)).join("") + "</optgroup>";
+    });
+    sel.innerHTML = html;
+    if (!list.some(b => b.c === value) && list.length) sel.value = list[list.length - 1].c;
+    return sel.value;
+  }
+  function attackOptions() {
+    const own = D.sk.filter(s => s.c === S.cls), items = new Map();
+    D.os.forEach(([id, item, kind, lo, hi]) => {
+      const s = E.SKILL[id];
+      if (!s || s.c === S.cls) return;
+      if (!items.has(id)) items.set(id, []);
+      items.get(id).push(`${item} (${kind}, level ${lo === hi ? lo : lo + "-" + hi})`);
+    });
+    const fits = s => s.fm.includes(S.form);
+    let html = opt(0, "Normal attack", S.atk === 0);
+    const mine = own.filter(fits);
+    if (mine.length) html += `<optgroup label="${esc(E.CLS[S.cls].name)} skills">` + mine.map(s => opt(s.id, s.n, s.id === S.atk)).join("") + "</optgroup>";
+    const granted = [...items.keys()].map(id => E.SKILL[id]).filter(fits);
+    if (granted.length) html += `<optgroup label="From items">` + granted.map(s => opt(s.id, `${s.n} (${E.CLS[s.c] ? E.CLS[s.c].name : ""})`, s.id === S.atk)).join("") + "</optgroup>";
+    el.atk.innerHTML = html;
+    if (!el.atk.querySelector(`option[value="${S.atk}"]`)) S.atk = 0;
+    el.atk.value = String(S.atk);
+    const note = S.atk && items.has(S.atk) && E.SKILL[S.atk].c !== S.cls ? "From " + items.get(S.atk).join(", ") : "";
+    $("ia-atk-note").textContent = note;
+  }
+  function syncForm() {
+    el.cls.value = S.cls;
+    document.querySelectorAll("#ia-form button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.v === S.form)));
+    attackOptions();
+    const sk = S.atk ? E.SKILL[S.atk] : null;
+    $("ia-lvl-field").hidden = !(sk && sk.rb !== undefined);
+    $("ia-tg-field").hidden = !(sk && sk.hmin);
+    el.lvl.value = S.lvl; el.tg.value = S.tg;
+    // the weapon
+    const kinds = kindsOf(S.cls, false);
+    const curKind = S.w && E.BASE[S.w] ? E.BASE[S.w].k : "";
+    el.kind.innerHTML = opt("", "No weapon", !S.w) + kinds.map(([k, n]) => opt(k, n, k === curKind)).join("");
+    if (S.w && !kinds.some(([k]) => k === curKind)) S.w = "";
+    el.kind.value = S.w ? curKind : "";
+    $("ia-base").closest(".field").hidden = !S.w;
+    $("ia-wi").closest(".field").hidden = !S.w;
+    if (S.w) S.w = fillBases(el.base, S.cls, curKind, false, S.w);
+    el.wi.value = S.wi;
+    // the other hand
+    const w = E.BASE[S.w], two = E.twoHanded(S.cls, w), canDual = E.dualClass(S.cls) && (!w || E.canSecond(S.cls, w)) && !!w;
+    const shieldOK = !two && !(w && (w.wc === "bow" || w.wc === "xbw")) && !(S.cls === "ass" && w && w.wc === "ht1" && false);
+    if (S.oh === "weapon" && !canDual) S.oh = "none";
+    if (S.oh === "shield" && !shieldOK) S.oh = "none";
+    document.querySelectorAll("#ia-oh button").forEach(b => {
+      const v = b.dataset.v;
+      b.disabled = v === "shield" ? !shieldOK : v === "weapon" ? !canDual : false;
+      b.hidden = v === "weapon" && !E.dualClass(S.cls);
+      b.setAttribute("aria-pressed", String(v === S.oh));
+    });
+    $("ia-oh-note").textContent = two ? "A two-handed weapon leaves the other hand empty." :
+      w && w.f & 1 && w.f & 2 && S.cls === "bar" ? "A Barbarian can hold this two-handed sword in one hand." : "";
+    const second = S.oh === "weapon";
+    ["kind2", "base2", "wi2"].forEach(k => { $("ia-" + k + "-field").hidden = !second; });
+    if (second) {
+      const k2 = kindsOf(S.cls, true);
+      let cur2 = S.w2 && E.BASE[S.w2] ? E.BASE[S.w2].k : (k2.find(([k]) => k === curKind) || k2[0] || [""])[0];
+      if (!k2.some(([k]) => k === cur2)) cur2 = (k2[0] || [""])[0];
+      el.kind2.innerHTML = k2.map(([k, n]) => opt(k, n, k === cur2)).join("");
+      S.w2 = fillBases(el.base2, S.cls, cur2, true, S.w2 || S.w);
+      el.wi2.value = S.wi2;
+    }
+    // speed skills
+    $("ia-frenzy-field").hidden = S.cls !== "bar";
+    $("ia-inc-field").hidden = S.cls !== "bar";
+    $("ia-bos-field").hidden = S.cls !== "ass";
+    $("ia-ww-field").hidden = S.form !== "wolf";
+    ["gear", "fana", "frenzy", "inc", "bos", "ww", "other"].forEach(k => { el[k].value = S[k]; });
+    el.hustle.checked = !!S.hustle;
+    el.gw.value = S.gw; el.gws.value = S.gws; el.gg.value = S.gg; el.ggs.value = S.ggs;
+  }
+  const num = (v, lo, hi) => { const n = Math.round(Number(v)); return Number.isFinite(n) ? Math.max(lo, Math.min(hi, n)) : lo; };
+  function onInput() {
+    S.cls = el.cls.value;
+    S.atk = Number(el.atk.value) || 0;
+    S.lvl = num(el.lvl.value, 1, 60); S.tg = num(el.tg.value, 1, 10);
+    S.wi = num(el.wi.value, -100, 400); S.wi2 = num(el.wi2.value, -100, 400);
+    S.gear = num(el.gear.value, 0, 800);
+    S.fana = num(el.fana.value, 0, 60); S.frenzy = num(el.frenzy.value, 0, 60); S.inc = num(el.inc.value, 0, 20);
+    S.bos = num(el.bos.value, 0, 20); S.ww = num(el.ww.value, 0, 60); S.other = num(el.other.value, -100, 100);
+    S.hustle = el.hustle.checked;
+    S.gw = Number(el.gw.value); S.gws = Number(el.gws.value); S.gg = Number(el.gg.value); S.ggs = Number(el.ggs.value);
+    update();
+  }
+  el.cls.addEventListener("change", () => { S.cls = el.cls.value; S.atk = 0; update(); });
+  el.kind.addEventListener("change", () => {
+    const list = el.kind.value ? basesOf(S.cls, el.kind.value, false) : [];
+    S.w = list.length ? list[list.length - 1].c : "";
+    update();
+  });
+  el.base.addEventListener("change", () => { S.w = el.base.value; update(); });
+  el.kind2.addEventListener("change", () => { const l = basesOf(S.cls, el.kind2.value, true); S.w2 = l.length ? l[l.length - 1].c : ""; update(); });
+  el.base2.addEventListener("change", () => { S.w2 = el.base2.value; update(); });
+  ["atk", "lvl", "tg", "wi", "wi2", "gear", "fana", "frenzy", "inc", "bos", "ww", "other", "hustle", "gw", "gws", "gg", "ggs"].forEach(k => {
+    el[k].addEventListener(el[k].tagName === "SELECT" || el[k].type === "checkbox" ? "change" : "input", onInput);
+  });
+  document.querySelectorAll("#ia-form button").forEach(b => b.addEventListener("click", () => { S.form = b.dataset.v; update(); }));
+  document.querySelectorAll("#ia-oh button").forEach(b => b.addEventListener("click", () => { if (!b.disabled) { S.oh = b.dataset.v; update(); } }));
+
+  // ---------------------------------------------------------------- the results
+  let R = null, BP = null;
+  function update() {
+    syncForm();
+    R = E.evaluate(S);
+    BP = R.why || R.p.fixed ? null : E.breakpoints(S);
+    renderTiles(); renderVerdict(); renderFacts(); renderBreakpoints(); renderBases(); renderGrid(); resetPreview();
+    if (S.tab === "how") renderHow();
+    save();
+  }
+  const partText = p => (p.swings ? p.swings.join("/") : fmt(p.frames));
+  const perSecond = p => (p.hits > 1 ? (25 * p.hits / p.frames).toFixed(2) : aps(p.frames));
+  // the answer in one line: frames now, what the next breakpoint costs, the fastest
+  function renderVerdict() {
+    let html;
+    if (R.why) html = `<b>Not possible:</b> ${esc(R.why)}`;
+    else if (R.p.fixed) html = `<b>${R.p.fixed} frames</b> a hit (${aps(R.p.fixed)} hits a second), whatever the IAS.`;
+    else {
+      const rows = BP.rows, next = rows[BP.you + 1], last = rows[rows.length - 1], p0 = R.t.parts[0];
+      html = `<b>${partText(p0)} frames</b> now`;
+      if (next) {
+        html += `; <b>+${next.gear - S.gear} IAS</b> on other gear gives ${partText(next.r.t.parts[0])}`;
+        if (last !== next) html += `, <b>+${last.gear - S.gear}</b> the fastest, ${partText(last.r.t.parts[0])}`;
+        html += ".";
+      } else {
+        html += R.sp.capped ? ": speed is at its cap, more IAS changes nothing." : ": the fastest this setup gets.";
+      }
+    }
+    $("ia-verdict").innerHTML = html;
+    $("ia-verdict-bar").innerHTML = html;
+  }
+  function renderTiles() {
+    const box = $("ia-tiles"), prob = $("ia-problem");
+    prob.hidden = !R.why;
+    if (R.why) { prob.innerHTML = `<p><strong>Not possible:</strong> ${esc(R.why)}</p>`; box.innerHTML = ""; return; }
+    box.innerHTML = R.t.parts.map(part => {
+      if (part.fixed) return tile(part.label, part.frames, `frames, whatever the IAS &middot; ${aps(part.frames)} hits/s`);
+      if (part.swings) return tile(`${part.label}, ${part.hits} hits`, part.swings.join("/"), `${part.frames} frames in all &middot; ${perSecond(part)} hits/s`);
+      if (part.hits > 1) return tile(part.label, part.frames, `frames &middot; ${part.hits} hits &middot; ${perSecond(part)} hits/s`);
+      return tile(part.label, part.frames, `frames &middot; ${aps(part.frames)} attacks/s`);
+    }).join("");
+  }
+  const tile = (label, value, sub) => `<div class="tile"><span class="tile-label">${esc(label)}</span><span class="tile-value">${esc(fmt(value))}</span><span class="tile-sub">${sub}</span></div>`;
+  function animTitle() {
+    const p = R.p;
+    if (p.seq) return `${p.sk.n}, a sequence (${WC_NAME[p.wc] || p.wc})`;
+    const a = p.anims[0];
+    const who = p.form === "human" ? p.cl.name : FORM_NAME[p.form];
+    return `${who} ${MODE_NAME[a.mode]}${p.form === "human" ? ", " + (WC_NAME[p.wc] || p.wc) : ""}`;
+  }
+  function renderFacts() {
+    const facts = $("ia-facts"), notes = $("ia-notes"), h = $("ia-det-h");
+    if (R.why) { h.textContent = "Animation"; facts.innerHTML = ""; notes.innerHTML = ""; return; }
+    const p = R.p, sp = R.sp, t = R.t;
+    const code = p.seq ? `sequence ${p.seq.num}` : p.anims.map(a => a.code).join(" / ");
+    h.innerHTML = `${esc(animTitle())} <code>${esc(code)}</code>`;
+    const f = [["Total IAS", sp.ias], ["EIAS", sp.eias], ["WSM counted", (sp.wsm > 0 ? "+" : "") + sp.wsm], ["Skill speed", (sp.skill > 0 ? "+" : "") + sp.skill],
+               ["Speed", sp.speed + (sp.capped ? " (cap)" : "")], ["Base speed", t.base], ["Rate per frame", t.rate],
+               ["Length", t.len + " frames"]];
+    if (!p.seq && p.anims[0].start) f.push(["Starts at frame", p.anims[0].start]);
+    if (p.formBase) f.push(["Weapon time (H)", p.formBase.H], ["Standing frames", p.formBase.stand]);
+    if (p.fixed) f.splice(0, f.length, ["Frames per hit", p.fixed]);
+    facts.innerHTML = f.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("");
+    const n = [];
+    if (!p.sk && p.anims.length > 1) n.push("A normal attack plays attack 1 or attack 2 at random, so both are shown; the breakpoints follow both.");
+    if (p.dual) n.push(sp.which === "first" ? "Two weapons: the first one counts (its speed modifier and its IAS); the second one's IAS counts nowhere." :
+      "Two weapons: the second one counts (its speed modifier and its IAS); the first one's IAS counts nowhere.");
+    if (sp.sq) n.push("A sequence skill: 30 less speed.");
+    if (sp.capped) n.push(`Speed is at its cap (${sp.hi}): more IAS changes nothing.`);
+    if (sp.inc) n.push(`Increased Speed adds ${sp.inc} IAS (it counts as IAS, with the rest).`);
+    if (p.formBase) n.push(`In ${p.form === "wolf" ? "werewolf" : "werebear"} form the base speed comes from the weapon: ${p.formBase.weaponTime ? `your ${E.CLS[S.cls].name}'s normal attack with it (${p.formBase.weaponTime})` : "no weapon"}, ${p.formBase.H} frames, so ${p.formBase.stand} &times; 256 &divide; ${p.formBase.H} = ${t.base}. IAS on the weapon counts there too, so it is worth more than IAS on other gear.`);
+    if (p.rollback) n.push(`${p.sk.n} rolls its swing back ${p.rollback.pct}% after each hit: the lengths are hit by hit.`);
+    if (p.fixed) n.push(`${p.sk.n} hits every ${p.fixed - (p.dual ? 1 : 0)} frames${p.dual ? ", one more with a weapon in each hand" : ""}, whatever the IAS.`);
+    if (p.charge !== undefined) n.push("Charge's run doesn't depend on IAS; its swing is the last 8 frames, at a base speed of 100 with +65 speed.");
+    if (p.sk && p.sk.ar) n.push(`${p.sk.n} adds ${p.sk.ar > 0 ? "+" : ""}${p.sk.ar} speed to its own attack.`);
+    notes.innerHTML = n.map(x => `<li>${x}</li>`).join("");
+  }
+  // breakpoints, measured from your setup: what each frame count still costs on other gear
+  function renderBreakpoints() {
+    const tbl = $("ia-bp"), sub = $("ia-bp-sub");
+    if (R.why) { tbl.innerHTML = ""; sub.textContent = ""; return; }
+    if (!BP) { tbl.innerHTML = ""; sub.textContent = "This attack hits at a fixed pace: IAS doesn't change it."; return; }
+    const parts = BP.r0.t.parts;
+    // one frames column when attack 1 and attack 2 agree on every row
+    const same = parts.length > 1 && BP.rows.every(row => row.r.t.parts.every(p => partText(p) === partText(row.r.t.parts[0])));
+    const cols = same ? [{label: "Frames (both attacks)", i: 0}] : parts.map((p, i) => ({label: parts.length > 1 ? p.label : "Frames", i}));
+    sub.innerHTML = `What each frame count needs from other gear, with ${R.sp.weaponIAS} IAS on the weapon${R.sp.inc ? ` and Increased Speed&rsquo;s ${R.sp.inc}` : ""}. &ldquo;More&rdquo; is what you still need beyond your ${S.gear}; your row is lit.`;
+    const head = `<thead><tr><th class="left">More</th><th>Other gear IAS</th><th>Total IAS</th><th>EIAS</th><th>Speed</th>${cols.map(c => `<th>${esc(c.label)}</th>`).join("")}<th>${parts.some(p => p.hits > 1) ? "Hits/s" : "Attacks/s"}</th></tr></thead>`;
+    const rows = BP.rows.map((row, i) => {
+      const r = row.r, more = row.gear - S.gear;
+      const mark = i === BP.you ? "now" : more > 0 ? `+${more}` : "&check;";
+      return `<tr${i === BP.you ? ' class="you"' : ""}><td class="left">${mark}</td><td>${row.gear}</td><td>${r.sp.ias}</td><td>${r.sp.eias}</td><td>${r.sp.speed}</td>` +
+        cols.map(c => `<td>${r.t.parts[c.i] ? partText(r.t.parts[c.i]) : ""}</td>`).join("") + `<td>${perSecond(r.t.parts[0])}</td></tr>`;
+    }).join("");
+    tbl.innerHTML = head + `<tbody>${rows}</tbody>`;
+  }
+  // which base of this type is fastest for you
+  function renderBases() {
+    const tbl = $("ia-bases"), sec = tbl.closest("section"), w = E.BASE[S.w];
+    if (!w || R.why || R.p.fixed) { sec.hidden = true; return; }
+    sec.hidden = false;
+    const rows = basesOf(S.cls, w.k, false).map(b => {
+      const s = Object.assign({}, S, {w: b.c});
+      if (E.twoHanded(S.cls, b) || b.wc === "bow" || b.wc === "xbw" || (s.oh === "weapon" && !E.canSecond(S.cls, b))) s.oh = "none";
+      return {b, r: E.evaluate(s)};
+    }).filter(x => !x.r.why);
+    rows.sort((x, y) => x.r.t.parts[0].frames - y.r.t.parts[0].frames || x.b.w - y.b.w || x.b.n.localeCompare(y.b.n));
+    const parts = R.t.parts;
+    // one frames column when attack 1 and attack 2 agree for every base
+    const same = parts.length > 1 && rows.every(x => x.r.t.parts.every(p => partText(p) === partText(x.r.t.parts[0])));
+    const cols = same ? [{label: "Frames (both attacks)", i: 0}] : parts.map((p, i) => ({label: parts.length > 1 ? p.label : "Frames", i}));
+    $("ia-bases-sub").innerHTML = `Every base of the type <b>${esc(KIND_NAME[w.k])}</b> with your setup and the same IAS on the weapon, fastest first. Pick one to try it.`;
+    tbl.innerHTML = `<thead><tr><th class="left">Base</th><th>WSM</th>${cols.map(c => `<th>${esc(c.label)}</th>`).join("")}<th>${parts.some(p => p.hits > 1) ? "Hits/s" : "Attacks/s"}</th></tr></thead><tbody>` +
+      rows.map(x => `<tr${x.b.c === S.w ? ' class="you"' : ""}><td class="left"><a href="#" data-base="${esc(x.b.c)}">${esc(x.b.n)}</a> <small>${tierName[x.b.t]}</small></td><td>${x.b.w > 0 ? "+" : ""}${x.b.w}</td>` +
+        cols.map(c => `<td>${x.r.t.parts[c.i] ? partText(x.r.t.parts[c.i]) : ""}</td>`).join("") + `<td>${perSecond(x.r.t.parts[0])}</td></tr>`).join("") + "</tbody>";
+  }
+  $("ia-bases").addEventListener("click", e => {
+    const a = e.target.closest("a[data-base]"); if (!a) return;
+    e.preventDefault(); S.w = a.dataset.base; update();
+  });
+  // the frame grid: sized to where speed reaches its cap, with a line where the frame count changes
+  function axis(max, step, mine) {
+    const v = [];
+    for (let x = 0; x <= max; x += step) v.push(x);
+    if (!v.includes(mine) && mine >= 0) v.push(mine);
+    return v.sort((a, b) => a - b);
+  }
+  const STEPS = [5, 10, 20, 25, 50, 100];
+  const stepFor = max => STEPS.find(st => max / st <= 15) || 100;
+  function capIAS() {
+    // the IAS (from either side, the other at 0) that brings speed to its cap: past it the grid is all the same
+    const r = E.evaluate(Object.assign({}, S, {wi: 0, gear: 0}));
+    if (r.why) return 100;
+    const e = Math.min(119, Math.max(0, r.sp.hi - (r.sp.raw - r.sp.eias)));
+    return Math.max(40, Math.ceil(E.needIAS(e) / 10) * 10);
+  }
+  let GRID = null;
+  const GRID_OPEN = {v: !(window.matchMedia && matchMedia("(max-width: 640px)").matches)};
+  function renderGrid() {
+    const tbl = $("ia-grid"), key = $("ia-grid-key"), sub = $("ia-grid-sub");
+    const sec = tbl.closest("section");
+    if (R.why || R.p.fixed) { sec.hidden = true; GRID = null; return; }
+    sec.hidden = false;
+    sub.innerHTML = (R.p.formBase ? "In a form the weapon&rsquo;s IAS also sets the base speed, so rows and columns don&rsquo;t trade one for one. " :
+      "In human form both kinds of IAS go into the same total, so rows and columns trade one for one. ") +
+      "Each box is the calculator again with another split of IAS; everything else stays as you set it above.";
+    if (!GRID_OPEN.v) { GRID = null; return; }
+    const cap = capIAS();
+    const gw = S.gw || cap, gg = S.gg || cap, gws = S.gws || stepFor(gw), ggs = S.ggs || stepFor(gg);
+    const second = R.p.dual && R.sp.which === "second";
+    const ws = axis(gw, gws, S.wi).reverse(), gs = axis(gg, ggs, S.gear);
+    const cells = E.grid(S, ws, gs);
+    const all = cells.flat().filter(Boolean).map(c => c.f).filter(Number.isFinite);
+    const lo = Math.min(...all), hi = Math.max(...all);
+    GRID = {ws, gs, cells};
+    const mix = f => { const t = hi === lo ? 1 : (hi - f) / (hi - lo); return `color-mix(in srgb, var(--cell-hi) ${Math.round(t * 100)}%, var(--cell-lo))`; };
+    let html = `<thead><tr><th>Weapon &darr; / gear &rarr;</th>${gs.map(g => `<th${g === S.gear ? ' class="you"' : ""}>${g}</th>`).join("")}</tr></thead><tbody>`;
+    ws.forEach((wi, r) => {
+      html += `<tr><th${wi === S.wi ? ' class="you"' : ""}>${wi}</th>`;
+      gs.forEach((g, c) => {
+        const cell = cells[r][c];
+        if (!cell) { html += "<td></td>"; return; }
+        const t = hi === lo ? 1 : (hi - cell.f) / (hi - lo);
+        const right = cells[r][c + 1], below = cells[r + 1] && cells[r + 1][c];
+        const cls = [wi === S.wi && g === S.gear ? "you" : "", cell.capped ? "cap" : "", right && right.f !== cell.f ? "er" : "",
+                     below && below.f !== cell.f ? "eb" : ""].filter(Boolean).join(" ");
+        html += `<td data-r="${r}" data-c="${c}"${cls ? ` class="${cls}"` : ""} style="background:${mix(cell.f)};color:${t > .55 ? "var(--cell-fg-hi)" : "var(--cell-fg)"}">${fmt(cell.f)}</td>`;
+      });
+      html += "</tr>";
+    });
+    tbl.innerHTML = html + "</tbody>";
+    key.innerHTML = `<span>${fmt(hi)} frames</span><span class="ramp"></span><span>${fmt(lo)} frames</span>` +
+      `<span><span class="box"></span> your setup (weapon ${S.wi}, gear ${S.gear})</span><span>a gold line: the frame count changes there</span>` +
+      `<span>&bull; in a box&rsquo;s corner: speed is at its cap</span>` +
+      (second ? "<span>Rows change the first weapon&rsquo;s IAS; the second weapon counts in your setup</span>" : "");
+  }
+  function setGridOpen(open) {
+    GRID_OPEN.v = open;
+    $("ia-grid-body").hidden = !open;
+    const b = $("ia-grid-toggle");
+    b.setAttribute("aria-expanded", String(open));
+    b.textContent = open ? "Hide the frame grid" : "Show the frame grid";
+    if (open && R) renderGrid();
+  }
+  $("ia-grid-toggle").addEventListener("click", () => setGridOpen(!GRID_OPEN.v));
+  setGridOpen(GRID_OPEN.v);
+  $("ia-grid").addEventListener("mouseover", gridTip);
+  $("ia-grid").addEventListener("click", gridTip);
+  function gridTip(e) {
+    const td = e.target.closest("td[data-r]");
+    if (!td || !GRID) return;
+    const r = +td.dataset.r, c = +td.dataset.c, cell = GRID.cells[r][c];
+    $("ia-grid-tip").textContent = `Weapon IAS ${GRID.ws[r]}, other gear IAS ${GRID.gs[c]}: ${fmt(cell.f)} frames (total IAS ${cell.sp.ias}, EIAS ${cell.sp.eias}, speed ${cell.sp.speed}${cell.capped ? ", at the cap" : ""}).`;
+  }
+  // a link to this setup (it lives in the address)
+  $("ia-copy").addEventListener("click", async () => {
+    save();
+    let ok = false;
+    try { await navigator.clipboard.writeText(location.href); ok = true; } catch (e) { /* no clipboard: show it */ }
+    $("ia-copied").textContent = ok ? "Copied." : location.href;
+    clearTimeout(PV.copied);
+    PV.copied = setTimeout(() => { $("ia-copied").textContent = ""; }, 4000);
+  });
+
+  // ---------------------------------------------------------------- the preview: the game's own sprites and the frame strip
+  // the sprites sit beside the page: on the website its script is assets/ias-map/ias-map.js
+  const SPRITES = SCRIPT_SRC ? new URL("../../resources/IAS-Calculator-Sprites/", SCRIPT_SRC).href : "IAS-Calculator-Sprites/";
+  const SPR = {state: {}, img: {}, target: {}, floor: null, started: false};
+  const PV = {playing: !(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches), speed: 1, frame: 0, acc: 0, last: 0,
+              tl: [], gh: -1, nu: 0, copied: 0};
+  const STAND = [112, 108], TARGET_AT = [170, 137], FLOOR_AT = [-30, -17];  // feet on the 300 x 176 stage; the floor picture's corner
+  function loadScript(src, done, fail) {
+    const s = document.createElement("script");
+    s.src = src; s.onload = done; s.onerror = fail;
+    document.head.appendChild(s);
+  }
+  function loadImage(src, done, fail) { const im = new Image(); im.onload = () => done(im); im.onerror = fail; im.src = src; }
+  function startStage() {
+    if (SPR.started) return;
+    SPR.started = true;
+    loadImage(SPRITES + "stage.png", im => { SPR.floor = im; $("ia-stage").hidden = false; drawSprite(); }, () => {});
+    loadScript(SPRITES + "target.js", () => ["NU", "GH"].forEach(m => loadImage(SPRITES + `target-${m}.png`, im => { SPR.target[m] = im; drawSprite(); }, () => {})), () => {});
+  }
+  // an animation's sprites: its layout script, then its atlas
+  function sprites(key) {
+    if (!SPR.state[key]) {
+      SPR.state[key] = "loading";
+      loadScript(SPRITES + key + ".js",
+        () => loadImage(SPRITES + key + ".png", im => { SPR.img[key] = im; SPR.state[key] = "ready"; drawSprite(); }, () => { SPR.state[key] = "missing"; }),
+        () => { SPR.state[key] = "missing"; });
+    }
+    return SPR.state[key] === "ready" ? {geo: (window.IAS_SPRITES || {})[key], img: SPR.img[key]} : null;
+  }
+  // which weapon, shield or body part draws each layer of the animation
+  function layerPart(comp, geo) {
+    if (geo.p[comp]) return comp;
+    const w = E.BASE[S.w], w2 = R && R.p && R.p.dual ? E.BASE[S.w2] : null;
+    if (comp === "SH") return S.oh === "shield" ? Object.keys(geo.p).find(k => k.startsWith("SH:")) : null;
+    if (comp === "RH" || comp === "LH") {
+      const g = comp === "LH" && w2 ? w2.g : w ? w.g : "";
+      return g && geo.p[`${comp}:${g}`] ? `${comp}:${g}` : null;
+    }
+    return null;
+  }
+  function drawAnim(ctx, key, frame, x, y) {
+    const sp = sprites(key);
+    if (!sp || !sp.geo) return false;
+    const f = Math.max(0, Math.min(frame, sp.geo.f - 1));
+    (sp.geo.o[f] || []).forEach(comp => {
+      const part = layerPart(comp, sp.geo), fr = part && sp.geo.p[part][f];
+      if (fr) ctx.drawImage(sp.img, fr[0], fr[1], fr[2], fr[3], x + fr[4], y + fr[5], fr[2], fr[3]);
+    });
+    return true;
+  }
+  function drawTarget(ctx) {
+    const geo = window.IAS_TARGET;
+    if (!geo) return;
+    const mode = PV.gh >= 0 && geo.GH && PV.gh < geo.GH.f ? "GH" : "NU", g = geo[mode], img = SPR.target[mode];
+    if (!g || !img) return;
+    const f = mode === "GH" ? PV.gh : PV.nu % g.f;
+    (g.o[f] || []).forEach(comp => {
+      const fr = g.p[comp] && g.p[comp][f];
+      if (fr) ctx.drawImage(img, fr[0], fr[1], fr[2], fr[3], TARGET_AT[0] + fr[4], TARGET_AT[1] + fr[5], fr[2], fr[3]);
+    });
+  }
+  function shadow(ctx, x, y, rx) {
+    ctx.fillStyle = "rgba(0, 0, 0, .38)";
+    ctx.beginPath(); ctx.ellipse(x, y, rx, rx / 2.4, 0, 0, Math.PI * 2); ctx.fill();
+  }
+  // what the attacker shows on this game frame: an animation and its frame
+  function shownFrame() {
+    if (!R || R.why || !PV.tl.length) return null;
+    const e = PV.tl[PV.frame], p = R.p;
+    if (e.step) return {key: p.tok + e.step[0] + p.wc.toUpperCase(), f: e.step[1]};
+    return {key: p.anims[0].code, f: e.f};
+  }
+  function drawSprite() {
+    const cv = $("ia-stage");
+    if (!SPR.floor || cv.hidden) return;
+    const ctx = cv.getContext("2d");
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(SPR.floor, FLOOR_AT[0], FLOOR_AT[1]);
+    shadow(ctx, TARGET_AT[0], TARGET_AT[1], 20);
+    shadow(ctx, STAND[0], STAND[1], 20);
+    drawTarget(ctx);
+    const s = shownFrame();
+    if (s) drawAnim(ctx, s.key, s.f, STAND[0], STAND[1]);
+  }
+
+  function timeline() {
+    // one entry per game frame of one attack: the animation frame (or sequence step) shown, and whether a hit lands
+    if (R.why) return [];
+    const p = R.p, t = R.t, part = t.parts[0];
+    if (p.fixed) {  // a hit every so many frames, the sequence's steps turning one a frame
+      const steps = p.seq.steps;
+      return Array.from({length: p.fixed}, (_, i) => ({f: i, hit: i === p.fixed - 1, step: steps[i % steps.length]}));
+    }
+    const out = [];
+    if (p.seq) {
+      const steps = p.charge !== undefined ? p.seq.steps.slice(-8) : p.seq.steps;
+      const rate = t.rate, n = part.frames;
+      for (let i = 0; i < n; i++) {
+        const pos = Math.min(steps.length - 1, (i * rate) >> 8), next = Math.min(steps.length, ((i + 1) * rate) >> 8);
+        let hit = false;
+        for (let k = pos; k < Math.max(next, pos + 1) && k < steps.length; k++) if (steps[k][2] === 1) hit = true;
+        out.push({f: pos, hit, step: steps[pos]});
+      }
+      return out;
+    }
+    const a = part.anim, rate = part.rate;
+    if (part.swings) {  // runs to its hit, rolls back and runs again: the swings' lengths
+      let pos = a.start * 256;
+      part.swings.forEach((len, k) => {
+        for (let i = 0; i < len; i++) {
+          out.push({f: Math.min(a.frames - 1, pos >> 8), hit: a.hits.some(h => h * 256 >= pos && h * 256 < pos + rate)});
+          pos += rate;
+        }
+        if (k < part.swings.length - 1) pos = Math.trunc(((pos >> 8) * (100 - p.rollback.pct)) / 100) * 256;
+      });
+      return out;
+    }
+    let pos = a.start * 256;
+    for (let i = 0; i < part.frames; i++) {
+      const next = pos + rate;
+      out.push({f: Math.min(a.frames - 1, pos >> 8), hit: a.hits.some(h => h * 256 >= pos && h * 256 < next)});
+      pos = next;
+    }
+    return out;
+  }
+  function resetPreview() {
+    PV.tl = timeline(); PV.frame = 0; PV.acc = 0;
+    renderStrip();
+    startStage();
+    const s = shownFrame();
+    if (s) {  // load what this attack shows (a sequence: each mode it steps through)
+      const keys = new Set(PV.tl.map(e => e.step ? R.p.tok + e.step[0] + R.p.wc.toUpperCase() : s.key));
+      keys.forEach(k => sprites(k));
+    }
+    drawSprite();
+    $("ia-prev-note").textContent = R.why ? "" : (R.p.seq ? "A sequence plays the steps of its own animations; the strip shows where each hit lands." :
+      "Each box is one game frame of the attack, held as if you keep the button down. The figure wears light armor and your weapon.");
+  }
+  function renderStrip() {
+    const box = $("ia-strips");
+    if (!PV.tl.length) { box.innerHTML = ""; return; }
+    box.innerHTML = `<div class="strip" role="img" aria-label="${PV.tl.length} frames, hits on ${PV.tl.map((x, i) => x.hit ? i + 1 : 0).filter(Boolean).join(", ") || "none"}">` +
+      PV.tl.map((x, i) => `<span class="${[x.hit ? "hit" : "", i === PV.frame ? "now" : ""].filter(Boolean).join(" ")}">${i + 1}</span>`).join("") + "</div>";
+  }
+  function stepPreview() {
+    if (!PV.tl.length) return;
+    PV.frame = (PV.frame + 1) % PV.tl.length;
+    PV.nu++;
+    if (PV.gh >= 0) PV.gh++;
+    const geo = window.IAS_TARGET;
+    if (geo && geo.GH && PV.gh >= geo.GH.f) PV.gh = -1;
+    if (PV.tl[PV.frame].hit) PV.gh = 0;
+    $("ia-strips").querySelectorAll(".strip span").forEach((s, i) => s.classList.toggle("now", i === PV.frame));
+    drawSprite();
+  }
+  function tick(now) {
+    if (PV.playing && PV.tl.length) {
+      if (PV.last) PV.acc += (now - PV.last) * PV.speed;
+      if (PV.acc > 400) PV.acc = 400;  // back from a hidden tab: don't race
+      while (PV.acc >= 40) { PV.acc -= 40; stepPreview(); }
+    }
+    PV.last = now;
+    requestAnimationFrame(tick);
+  }
+  $("ia-play").textContent = PV.playing ? "Pause" : "Play";
+  $("ia-play").addEventListener("click", () => { PV.playing = !PV.playing; $("ia-play").textContent = PV.playing ? "Pause" : "Play"; });
+  $("ia-speed").addEventListener("change", () => { PV.speed = Number($("ia-speed").value) || 1; });
+  $("ia-step").addEventListener("click", () => { PV.playing = false; $("ia-play").textContent = "Play"; stepPreview(); });
+  requestAnimationFrame(tick);
+
+  // ---------------------------------------------------------------- tabs
+  const TABS = [...document.querySelectorAll(".ias-map .ia-tabs [role=tab]")];
+  function showTab(tab, focus) {
+    S.tab = tab;
+    TABS.forEach(b => { const on = b.dataset.tab === tab; b.setAttribute("aria-selected", String(on)); b.tabIndex = on ? 0 : -1; if (on && focus) b.focus(); });
+    ["calc", "fast", "how", "ref"].forEach(t => { $("ia-" + t).hidden = t !== tab; });
+    if (tab === "fast") renderFastest();
+    if (tab === "how") renderHow();
+    if (tab === "ref") renderRef();
+    save();
+  }
+  TABS.forEach(b => b.addEventListener("click", () => showTab(b.dataset.tab)));
+  document.querySelector(".ias-map .ia-tabs").addEventListener("keydown", e => {
+    const k = TABS.indexOf(document.activeElement), to = {ArrowRight: k + 1, ArrowLeft: k - 1, Home: 0, End: TABS.length - 1}[e.key];
+    if (k < 0 || to === undefined) return;
+    e.preventDefault();
+    showTab(TABS[(to + TABS.length) % TABS.length].dataset.tab, true);
+  });
+  $("ia-why").addEventListener("click", () => { showTab("how"); $("ia-how").scrollIntoView({block: "start"}); });
+  $("ia-how-back").addEventListener("click", () => { showTab("calc"); });
+  addEventListener("hashchange", () => { const was = S.tab; load(); update(); if (S.tab !== was) showTab(S.tab); });
+
+  // ---------------------------------------------------------------- fastest frames
+  let FF_DONE = false;
+  function wmaxOf(code) { const b = E.BASE[code]; return b ? (b.m || 0) : 0; }
+  function renderFastest() {
+    if (FF_DONE) return;
+    FF_DONE = true;
+    $("ia-ff-assume").innerHTML = [
+      "Human form: the IAS shown is your total from every source (the weapon, other gear, Increased Speed), since it all adds up.",
+      "Werewolf and werebear: the weapon&rsquo;s own IAS also sets the form&rsquo;s base speed, so each row says how much IAS the weapon needs and how much other gear. The weapon&rsquo;s IAS goes up to what its base can carry: a crafted weapon with its best IAS affix, or its best unique or set item, with Shael runes in the sockets Larzuk&rsquo;s Puzzlebox gives it and the attack speed corruption (or Shael in a corruption&rsquo;s sockets instead), or its best runeword. Point at a weapon IAS for its base&rsquo;s most and how. In a form the &ldquo;own attack&rdquo; is your class&rsquo;s normal attack with the weapon, which sets the form&rsquo;s base speed.",
+      "Class-only bases (Amazon bows, spears and javelins, Assassin claws, Sorceress orbs, the Paladin&rsquo;s two-handed Phase Blade) show only for their class. Two weapons: the Barbarian&rsquo;s and the Assassin&rsquo;s pairs, counted at their faster weapon."
+    ].map(x => `<li>${x}</li>`).join("");
+    const out = $("ia-ff");
+    out.innerHTML = D.cls.map(([k, n]) => `<div class="ff" data-cls="${k}"><button type="button" class="ff-head" aria-expanded="false" aria-controls="ia-ff-${k}">${esc(n)} <small></small></button>` +
+      `<div class="ff-body ff-forms" id="ia-ff-${k}" hidden></div></div>`).join("");
+    out.querySelectorAll(".ff").forEach(d => d.querySelector(".ff-head").addEventListener("click", () => openFastest(d, d.querySelector(".ff-body").hidden)));
+    const first = out.querySelector(`.ff[data-cls="${S.cls}"]`);
+    if (first) openFastest(first, true);
+  }
+  function openFastest(d, open) {
+    d.querySelector(".ff-head").setAttribute("aria-expanded", String(open));
+    d.querySelector(".ff-body").hidden = !open;
+    if (open) fillFastest(d);
+  }
+  function fillFastest(d) {
+    if (d.dataset.done) return;
+    d.dataset.done = "1";
+    const cls = d.dataset.cls, box = d.querySelector(".ff-forms"), summary = [];
+    ["human", "wolf", "bear"].forEach(form => {
+      const res = E.fastest(cls, form, wmaxOf);
+      if (!res.length) return;
+      summary.push(`${FORM_NAME[form]} ${res[0].frames}`);
+      let html = `<div class="ff-form"><h3>${FORM_NAME[form]}</h3><div class="scroll"><table class="ia-table"><thead><tr><th class="left">Frames</th><th class="left">Weapon</th><th>${form === "human" ? "Animation" : "Its own attack"}</th><th>WSM</th>` +
+        (form === "human" ? "<th>IAS needed</th>" : "<th>Weapon IAS</th><th>Other IAS</th>") + "<th>Speed</th></tr></thead><tbody>";
+      res.forEach(group => group.rows.forEach((row, i) => {
+        const names = [...row.g.names];
+        const shown = names.slice(0, 6).join(", ") + (names.length > 6 ? `, and ${names.length - 6} more` : "");
+        const animCell = form === "human" ? `<code>${esc(row.g.anim.code)}</code>${row.g.anim.start ? ` from ${row.g.anim.start}` : ""}` :
+          (row.g.weaponTime ? `<code>${esc(row.g.weaponTime)}</code>` : "no weapon");
+        const capNote = form !== "human" && row.g.s.w ? ` title="${esc("The weapon carries up to " + row.g.cap + " IAS: " + (E.BASE[row.g.s.w].mh || ""))}"` : "";
+        html += `<tr><td class="left">${i ? "" : `<b>${group.frames}</b> (${aps(group.frames)}/s)`}</td><td class="left"><a href="#" data-open='${esc(JSON.stringify({cls, form, w: row.g.s.w, oh: row.g.s.oh, w2: row.g.s.w2 || "", wi: row.wi, gear: row.other}))}'>${esc(shown)}</a></td>` +
+          `<td>${animCell}</td><td>${row.g.wsm > 0 ? "+" : ""}${row.g.wsm}</td>` +
+          (form === "human" ? `<td>${row.ias}</td>` : `<td${capNote}>${row.wi}</td><td>${row.other}</td>`) + `<td>${row.speed}</td></tr>`;
+      }));
+      box.insertAdjacentHTML("beforeend", html + "</tbody></table></div></div>");
+    });
+    d.querySelector(".ff-head small").textContent = summary.length ? "fastest: " + summary.join(" · ") + " frames" : "";
+  }
+  $("ia-ff").addEventListener("click", e => {
+    const a = e.target.closest("a[data-open]"); if (!a) return;
+    e.preventDefault();
+    const o = JSON.parse(a.dataset.open);
+    Object.assign(S, {cls: o.cls, form: o.form, atk: 0, w: o.w, oh: o.oh, w2: o.w2, wi: o.wi, wi2: 0, gear: o.gear, fana: 0, frenzy: 0, inc: 0, bos: 0, hustle: false, ww: 0, other: 0});
+    showTab("calc"); update();
+    $("ia-calc").scrollIntoView({block: "start"});
+  });
+  $("ia-ff-open").addEventListener("click", () => document.querySelectorAll("#ia-ff .ff").forEach(d => openFastest(d, true)));
+  $("ia-ff-close").addEventListener("click", () => document.querySelectorAll("#ia-ff .ff").forEach(d => openFastest(d, false)));
+
+  // ---------------------------------------------------------------- how it's worked out
+  function stepsFor(s, r) {
+    const p = r.p, sp = r.sp, t = r.t, part = t.parts[0], a = p.anims ? p.anims[0] : null;
+    const st = [];
+    const w = E.BASE[s.w];
+    st.push(["Add up your IAS", `${sp.weaponIAS} on the weapon${p.dual ? (sp.which === "first" ? " (the first one counts)" : " (the second one counts)") : ""} + ${sp.gear} from other gear${sp.inc ? ` + ${sp.inc} from Increased Speed` : ""} = <b>${sp.ias} IAS</b>.`]);
+    st.push(["Diminishing returns", `<span class="formula">120 &times; ${sp.ias} &divide; (120 + ${sp.ias})</span> = <b>${sp.eias} EIAS</b> (rounded down).`]);
+    const parts = sp.parts.map(([n, v]) => `${n} ${v > 0 ? "+" : ""}${v}`).join(", ");
+    st.push(["Work out your speed", `100 ${sp.skill ? `+ ${sp.skill} skill speed (${parts}) ` : ""}&minus; ${sp.wsm} WSM${w ? ` (${esc(w.n)})` : ""} + ${sp.eias} EIAS${sp.sq ? " &minus; 30 for a sequence" : ""}${p.charge !== undefined ? ` + ${p.charge} for Charge` : ""} = ${sp.raw}` +
+      (sp.raw !== sp.speed ? `, kept between 15 and ${sp.hi}: <b>${sp.speed}</b>` : `: <b>speed ${sp.speed}</b>`) + "."]);
+    if (p.formBase) {
+      st.push(["Turn the weapon into the form's base speed", p.formBase.weaponTime ? `Your ${esc(E.CLS[s.cls].name)}'s normal attack with this weapon (<code>${esc(p.formBase.weaponTime)}</code>) at 100 &minus; WSM + the weapon's own ${p.formBase.own} IAS takes H = <b>${p.formBase.H}</b> frames; the base speed is ${p.formBase.stand} standing frames &times; 256 &divide; ${p.formBase.H} = <b>${t.base}</b>.` :
+        `With no weapon H = 19; the base speed is ${p.formBase.stand} standing frames &times; 256 &divide; 19 = <b>${t.base}</b>.`]);
+    }
+    st.push(["Look up the animation", p.seq ? `${esc(p.sk.n)} is a sequence of <b>${t.len}</b> frames${p.charge !== undefined ? " (Charge counts only its last 8)" : ""} at a base speed of ${t.base}.` :
+      `<code>${esc(a.code)}</code>: <b>${a.frames}</b> frames${a.start ? `, starting at frame ${a.start}` : ""}, base speed ${a.speed}${p.formBase ? ` (in form: ${t.base})` : ""}.`]);
+    st.push(["Rate per frame", `<span class="formula">${t.base} &times; ${sp.speed} &divide; 100</span> = <b>${t.rate}</b> (one animation frame is 256).`]);
+    if (part.swings) {
+      st.push(["Count the frames", `The swing runs to its hit, rolls back ${p.rollback.pct}% and runs to the hit again, ${part.hits} times, then to its end: <b>${part.swings.join("/")}</b> frames, ${part.frames} in all.`]);
+    } else {
+      const len = p.seq ? t.len : a.frames - a.start;
+      st.push(["Count the frames", `<span class="formula">&lceil;${len} &times; 256 &divide; ${t.rate}&rceil; &minus; 1</span> = <b>${part.frames} frames</b> per attack, ${aps(part.frames)} a second (25 frames a second).`]);
+    }
+    return st;
+  }
+  function renderHow() {
+    const sub = $("ia-how-sub"), box = $("ia-how-steps");
+    if (!R || R.why || R.p.fixed) {
+      sub.textContent = R && R.p && R.p.fixed ? "Your attack hits at a fixed pace, whatever the IAS: pick another to see the steps." : "Pick a setup the game allows to see the steps.";
+      box.innerHTML = ""; return;
+    }
+    sub.innerHTML = `Your setup, step by step: ${esc(E.CLS[S.cls].name)}${S.form !== "human" ? " as a " + FORM_NAME[S.form].toLowerCase() : ""}, ${R.p.sk ? esc(R.p.sk.n) : "normal attack"}${E.BASE[S.w] ? ", " + esc(E.BASE[S.w].n) : ", no weapon"}.`;
+    box.innerHTML = stepsFor(S, R).map(([b, d]) => `<li><b>${b}</b><div>${d}</div></li>`).join("");
+    renderExamples();
+  }
+  const EXAMPLES = [
+    {title: "Barbarian, Phase Blade", s: {cls: "bar", form: "human", w: "7cr", wi: 20, oh: "none", gear: 20}},
+    {title: "Druid as a werewolf, Crystal Sword", s: {cls: "dru", form: "wolf", w: "crs", wi: 40, oh: "none", gear: 0, ww: 0}},
+    {title: "Druid as a werebear, Crystal Sword", s: {cls: "dru", form: "bear", w: "crs", wi: 40, oh: "none", gear: 60}},
+    {title: "Amazon, Jab with a Matriarchal Spear", s: {cls: "ama", form: "human", atk: 10, w: "amd", wi: 0, oh: "none", gear: 40}},
+    {title: "Paladin, Zeal with a Phase Blade", s: {cls: "pal", form: "human", atk: 106, lvl: 20, w: "7cr", wi: 0, oh: "shield", gear: 60}}
+  ];
+  let EX_DONE = false;
+  function renderExamples() {
+    if (EX_DONE) return;
+    EX_DONE = true;
+    const empty = {atk: 0, lvl: 20, tg: 5, w2: "", wi2: 0, fana: 0, frenzy: 0, inc: 0, bos: 0, hustle: false, ww: 1, other: 0};
+    $("ia-examples").innerHTML = EXAMPLES.map((ex, i) => {
+      const s = Object.assign({}, empty, ex.s), r = E.evaluate(s);
+      if (r.why) return "";
+      const part = r.t.parts[0];
+      return `<div class="panel"><h3>${esc(ex.title)}: ${part.swings ? part.swings.join("/") : part.frames} frames</h3><ol class="steps">` +
+        stepsFor(s, r).map(([b, d]) => `<li><b>${b}</b><div>${d}</div></li>`).join("") +
+        `</ol><p><button type="button" class="btn" data-ex="${i}">Open in the calculator</button></p></div>`;
+    }).join("");
+  }
+  $("ia-examples").addEventListener("click", e => {
+    const b = e.target.closest("button[data-ex]"); if (!b) return;
+    S = Object.assign({}, DEFAULT, {atk: 0, lvl: 20, tg: 5, w2: "", wi2: 0, fana: 0, frenzy: 0, inc: 0, bos: 0, hustle: false, ww: 1, other: 0}, EXAMPLES[+b.dataset.ex].s, {tab: "calc"});
+    showTab("calc"); update(); $("ia-calc").scrollIntoView({block: "start"});
+  });
+
+  // ---------------------------------------------------------------- reference
+  let REF_DONE = false;
+  function renderRef() {
+    if (!REF_DONE) {
+      REF_DONE = true;
+      $("ia-ref-code").textContent = [
+        "const eias = ias => Math.trunc(120 * ias / (120 + ias));",
+        "function frames(anim, start, baseSpeed, wsm, ias, skillSpeed, sequence) {",
+        "  let speed = 100 + skillSpeed - wsm + eias(ias) - (sequence ? 30 : 0);",
+        "  speed = Math.max(15, Math.min(175, speed));",
+        "  const rate = Math.trunc(baseSpeed * speed / 100);        // 256 = one animation frame",
+        "  return Math.ceil((anim - start) * 256 / rate) - 1;          // held",
+        "}",
+        "// werewolf / werebear: baseSpeed = trunc(standing * 256 / H), where",
+        "// H = trunc(attack1Frames * 256 / trunc((100 - wsm + weaponIAS) * attack1Speed / 100))",
+        "// with the class's own attack 1 for the weapon (H = 19 with no weapon)"
+      ].join("\n");
+      $("ia-ref-cls").innerHTML = D.cls.map(([k, n]) => opt(k, n, k === S.cls)).join("") + opt("wolf", "Werewolf") + opt("bear", "Werebear");
+      $("ia-ref-cls").addEventListener("change", refAnims);
+      const lvls = [1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 25, 30, 35, 40, 50, 60];
+      $("ia-ref-skills").innerHTML = `<thead><tr><th>Level</th><th>Fanaticism</th><th>Frenzy</th><th>Werewolf</th><th>Burst of Speed (hard points)</th><th>Increased Speed IAS (hard points)</th></tr></thead><tbody>` +
+        lvls.map(l => `<tr><td>${l}</td><td>${D.sp.fana[l - 1]}</td><td>${D.sp.frenzy[l - 1]}</td><td>${D.sp.wolf[l - 1]}</td><td>${l <= 20 ? D.sp.bos[l - 1] : "&ndash;"}</td><td>${l <= 20 ? D.sp.inc[l - 1] : "&ndash;"}</td></tr>`).join("") +
+        `</tbody>`;
+      const seqUse = {};
+      D.sk.filter(s => s.q).forEach(s => { (seqUse[s.q] = seqUse[s.q] || []).push(s.n); });
+      $("ia-ref-seq").innerHTML = `<thead><tr><th class="left">Skills</th>${D.wcs.map(w => `<th>${w}</th>`).join("")}</tr></thead><tbody>` +
+        Object.keys(D.sq).sort((a, b) => a - b).map(q => `<tr><td class="left">${esc([...new Set(seqUse[q] || [])].join(", "))}</td>${D.wcs.map(w => `<td>${D.sq[q][w] ? D.sq[q][w].length + `<small> (${D.sq[q][w].filter(x => x[2] === 1).length} hit${D.sq[q][w].filter(x => x[2] === 1).length === 1 ? "" : "s"})</small>` : ""}</td>`).join("")}</tr>`).join("") + "</tbody>";
+      $("ia-ref-wsm").innerHTML = `<thead><tr><th class="left">Type</th><th class="left">Base</th><th>WSM</th><th>One hand</th><th>Two hands</th></tr></thead><tbody>` +
+        D.kinds.map(([k, n]) => D.b.filter(b => b.k === k).map((b, i) => `<tr><td class="left">${i ? "" : esc(n)}</td><td class="left">${esc(b.n)}</td><td>${b.w > 0 ? "+" : ""}${b.w}</td><td>${b.f & 2 && !(b.f & 1) ? "" : esc(b.wc)}</td><td>${b.f & 2 ? esc(b.wc2) : ""}</td></tr>`).join("")).join("") + "</tbody>";
+      $("ia-ref-ver").textContent = `Animation, weapon and skill data as of ${D.v}.`;
+    }
+    refAnims();
+  }
+  function refAnims() {
+    const v = $("ia-ref-cls").value, tok = v === "wolf" ? "40" : v === "bear" ? "TG" : E.CLS[v].tok;
+    const modes = ["A1", "A2", "S1", "S2", "S3", "S4", "TH", "KK", "NU", "RN"];
+    const rows = Object.keys(D.a).filter(k => k.startsWith(tok)).sort((x, y) => x.slice(4).localeCompare(y.slice(4)) || modes.indexOf(x.slice(2, 4)) - modes.indexOf(y.slice(2, 4)));
+    const fb = D.fb[v] || {};
+    $("ia-ref-anims").innerHTML = `<thead><tr><th class="left">Animation</th><th class="left">Mode</th><th class="left">Weapon class</th><th>Frames</th><th>Base speed</th><th>Hit frames</th><th>Start</th></tr></thead><tbody>` +
+      rows.map(k => { const r = D.a[k], m = k.slice(2, 4), wc = k.slice(4).toLowerCase();
+        return `<tr><td class="left"><code>${k}</code></td><td class="left">${esc(MODE_NAME[m] || (m === "NU" ? "standing" : m === "RN" ? "running" : m))}</td><td class="left">${esc(WC_NAME[wc] || wc)}</td><td>${r[0]}</td><td>${r[1]}</td><td>${r[2].map(x => x + 1).join(", ")}</td><td>${(m === "A1" || m === "A2") && fb[wc] ? fb[wc] : ""}</td></tr>`; }).join("") + "</tbody>";
+  }
+
+  load();
+  update();
+  if (S.tab !== "calc") showTab(S.tab);
+})();
+</script>
+</body>
+</html>

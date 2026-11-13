@@ -53,4 +53,11 @@ time.
     How fast you run with your faster run/walk and your movement skills, up to four setups side by side, and what more
     FRW on gear would still bring.
 
+-   **[IAS Calculator](ias-calculator.md)**
+
+    ---
+
+    Frames per attack for every class, werewolf and werebear, weapon and attack skill: the IAS breakpoints, a grid of
+    weapon IAS against IAS on other gear, the fastest setups of each class, and every attack played frame by frame.
+
 </div>
