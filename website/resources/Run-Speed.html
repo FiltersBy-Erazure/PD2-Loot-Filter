@@ -517,6 +517,7 @@
     if (b.cls === "pal" && s.joust > 0) on("frenzy", lasts(378, s.joust));
     if (form === "wolf") { const k = clamp(s.charges, 1, 5); on(`feralrage${k}back`, lasts(232, s.feral)); on(`feralrage${k}`, lasts(232, s.feral)); }
     if (form === "bear") on("bloodlust_state", lasts(242, s.hunger));
+    if (s.shrine) on("shrine_stamina", RC.sp.shrine);  // the shrine's sign above the head, as long as the shrine lasts
     // Blaze: flames left behind as the runner moves while it lasts, small and medium, in a map square around its path
     // (how many the game puts down isn't known here: one every other game frame)
     const flames = [], blaze = s.blaze > 0 ? lasts(46, s.blaze) : 0;
@@ -532,6 +533,13 @@
     if (RC.state !== "ready") return;
     RC.key = raceKey();
     RC.runners = builds.map(runnerOf);
+    /* room above each runner: a Stamina shrine's sign floats well above the head, so the lanes move apart to keep each
+       sign under the runner in the lane above (game pixels from the feet up) */
+    const reach = Math.max(0, ...RC.runners.flatMap(r => r.ov.map(v => {
+      const top = Math.min(0, ...(RC.sp.p["ov:" + v.name] || []).filter(x => x && x[2]).map(x => x[5]));
+      return -(top + v.o.dy + ((v.o.h || [])[1] || 0));
+    })));
+    RC.top = Math.max(TOP, reach + 12); RC.lane = reach > TOP ? reach + 8 : LANE;
     if (!RC.playing) RC.t = Math.min(...RC.runners.map(r => r.T));  // the still: the moment the first one finishes
     raceResults();
   }
@@ -576,6 +584,7 @@
     const cv = $("fr-canvas");
     if (RC.state !== "ready" || !RC.runners.length) return;
     const cssW = Math.max(240, $("fr-stage").clientWidth || 800), dpr = window.devicePixelRatio || 1;
+    const TOP = RC.top, LANE = RC.lane;
     const D = RC.dist * PX_YD, trackW = LEFT + D + RIGHT, H = TOP + (RC.runners.length - 1) * LANE + BOTTOM;
     const scale = clamp(cssW / trackW, 0.55, 1.25), viewW = cssW / scale, k = scale * dpr;
     const W = Math.round(cssW * dpr), Hd = Math.round(H * k);
@@ -614,7 +623,8 @@
         const o = fl.f, fr = !o.loop || age < o.start ? Math.min(age, o.f - 1) : o.start + (age - o.start) % (o.stop - o.start + 1);
         blit("fx:" + fl.k, fr, LEFT + fl.x, gy + fl.y);
       }
-      const overlay = pre => { for (const v of r.ov) if (v.o.pre === pre && fi < v.until) blit("ov:" + v.name, Math.floor(fi * v.o.rate / 16) % v.o.n, gx + v.o.dx, gy + v.o.dy); };
+      // an overlay sits at its offset plus its height for a player (Height2: a player's overlay height, any form)
+      const overlay = pre => { for (const v of r.ov) if (v.o.pre === pre && fi < v.until) blit("ov:" + v.name, Math.floor(fi * v.o.rate / 16) % v.o.n, gx + v.o.dx, gy + v.o.dy + ((v.o.h || [])[1] || 0)); };
       overlay(1);
       ctx.globalCompositeOperation = "source-over";
       ctx.fillStyle = "rgba(0,0,0,0.33)"; ctx.beginPath();

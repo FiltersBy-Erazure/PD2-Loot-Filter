@@ -55,9 +55,11 @@ LOOKS = {
 }
 MODES = ("RN", "WL", "NU")  # running, walking, standing (at the finish)
 # the buffs' overlays (Overlay.txt): Burst of Speed (state quickness), Vigor (stamina), Frenzy and Joust (frenzy),
-# Feral Rage (feralrage, a size per charge count), Hunger (hunger)
-OVERLAYS = ["quickness", "staminafront", "staminaback", "frenzy", "bloodlust_state"] + \
+# Feral Rage (feralrage, a size per charge count), Hunger (hunger), a Stamina shrine (shrine_stamina: its sign above
+# the head; the state's other overlay, shrine_shimmer01, draws nothing to see)
+OVERLAYS = ["quickness", "staminafront", "staminaback", "frenzy", "bloodlust_state", "shrine_stamina"] + \
            [f"feralrage{i}{b}" for i in range(1, 6) for b in ("", "back")]
+STAMINA_SHRINE = "14"  # Shrines.txt's Code of the Stamina shrine (its duration goes to the page)
 # Blaze's fire (Missiles.txt): the flames of its trail (blaze2trail, SrvMissileA, which the game puts down as you move)
 FIRES = ["blaze2dotfiresmall", "blaze2dotfiremedium"]
 FLOOR = ("Act1/Town/Floor.dt1", "ACT1", (0, 0), 0.8)  # the Rogue Encampment's ground, as tools/ias_sprites.py's
@@ -190,10 +192,16 @@ def draw(game_dir, check=False):
         raw = arch.read("data/global/overlays/" + r["Filename"].replace("\\", "/") + ".dcc")
         frames["ov:" + name] = d2_sprites.dcc(raw, 0)
         # n: the frames it plays (Overlay.txt's, which can be fewer than the file has); pre: drawn before (behind) the
-        # unit; rate: sixteenths of a frame per game frame
+        # unit; rate: sixteenths of a frame per game frame; h: Height1-4, the unit's overlay height picking one (a
+        # player's is the second, whatever its form)
         info["overlays"][name] = {"f": len(frames["ov:" + name]), "n": min(num(r["Frames"]) or 999, len(frames["ov:" + name])),
                                   "pre": num(r["PreDraw"]), "rate": num(r["AnimRate"], 16),
-                                  "dx": num(r["Xoffset"]), "dy": num(r["Yoffset"]), "trans": num(r["Trans"])}
+                                  "dx": num(r["Xoffset"]), "dy": num(r["Yoffset"]), "trans": num(r["Trans"]),
+                                  "h": [num(r[f"Height{i}"]) for i in range(1, 5)]}
+    shrine = next((r for r in excel(arch, "Shrines.txt") if r.get("Code") == STAMINA_SHRINE), None)
+    if not shrine:
+        raise SystemExit(f"run_sprites: Shrines.txt has no shrine of code {STAMINA_SHRINE} (the Stamina shrine)")
+    info["shrine"] = num(shrine["Duration in frames"])
     for name in FIRES:
         r = missiles.get(name)
         if not r:

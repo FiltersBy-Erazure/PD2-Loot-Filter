@@ -1074,8 +1074,10 @@
   frames a game frame, base 101 running, 213 walking (the base game's, which PD2 doesn't change), the same % that
   moves them; a wereform's base is its MonStats walk / run anim speed, AnimData's WL / RN speed (werewolf 128 / 104,
   werebear 168 / 120), its velocity MonStats' 6. Overlays: the states' Overlay.txt rows (quickness, stamina
-  front / back, frenzy for Frenzy and Joust, bloodlust_state for Hunger, feralrage1-5 and their backs), drawn
-  additively at AnimRate / 16 frames a game frame. Not traced (said nowhere on the page): which Feral Rage size the game
+  front / back, frenzy for Frenzy and Joust, bloodlust_state for Hunger, feralrage1-5 and their backs, shrine_stamina:
+  the Stamina shrine's sign, which floats 99-162 pixels above the feet, so the lanes move apart when one shows), drawn
+  additively at AnimRate / 16 frames a game frame, raised by Height2 (a player's overlay height in any form). Not
+  traced (said nowhere on the page): which Feral Rage size the game
   picks (the page: charges 1-5 as sizes A-E), how many flames a Blaze trail missile (SrvMissileA blaze2trail, put down
   as you move; each burns 60 frames) draws (the page: one every other game frame), and the burst on cast: PD2 replaces
   srvdo 23 (Blaze: the vanilla state plus a path collision change) and nothing found creates its srvmissile
