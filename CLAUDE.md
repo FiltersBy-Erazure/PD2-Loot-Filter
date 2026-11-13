@@ -1062,7 +1062,14 @@
   with nothing (HarryPe's sheet reads the points as yards: 9). Vigor's +1% FRW per base point applies with any aura;
   Whirlwind's and Blade Dance's movement isn't modelled (not found). Blaze counts for every class (2026-11-12, the
   author: items cast it, Infernostride level 16 when struck): +min(25 + lvl - 1, 60)% for min(75 + 5 x (lvl - 1), 250)
-  frames; Hunger is the werebear's in PD2 (restrict 2, State1 bear), Feral Rage the werewolf's.
+  frames; Hunger is the werebear's in PD2 (restrict 2, State1 bear), Feral Rage the werewolf's. Charge (2026-11-12,
+  the author: "one of its primary mobility skills"; a Paladin's "Charge" box, a Charging row and tile line, the race
+  charges the whole way): PD2's start function (srvst 72, replaced) sets the path velocity once, RunVelocity << 8 x
+  (Param1 150 + max(50, stat 67)) / 100, where stat 67 velocitypercent is 100 plus the skills' and shrines' movement %
+  (no FRW, and running's +50% is gone: the mode change to SQ drops the temporary run stat list before the start
+  function runs): 23.44 yd/s with nothing. Its run steps play at the other animations' rate (a frame a game frame);
+  its Param5 "Trails" 2 is drawn as two fainter copies 2 and 4 game frames behind (how the game draws them: not
+  traced).
   The race ("See them run", 2026-11-12, the author: a character running to show how fast, with the buffs under their
   feet and Blaze's fire): each setup from a standing start, buffs just cast (a buff stops counting when its
   auralencalc runs out: Joust 2 s, Blaze 3-10 s), drawn with the game's sprites facing east (a yard is 1.5 subtiles,

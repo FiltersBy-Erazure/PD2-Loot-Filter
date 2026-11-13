@@ -351,7 +351,8 @@ def ancestors_of_type(game, t):
 
 
 def run_data(game):
-    rows = skill_rows(game, [148, 147, 232, 242, 115, 378, 46, 29, 258, 151, 380])
+    # the movement skills (Charge, 107: its Param1, the velocity it adds while charging)
+    rows = skill_rows(game, [148, 147, 232, 242, 115, 378, 46, 29, 258, 151, 380, 107])
     cls = []
     for code, tok, name in CLASSES:
         r = game.charstats.get(name, {})
