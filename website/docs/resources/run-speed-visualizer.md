@@ -1,5 +1,5 @@
 ---
-title: Run Speed
+title: Run Speed Visualizer
 description: How fast you run with your faster run/walk and your movement skills, up to four setups side by side, and what more FRW on gear would still bring.
 hide:
   - navigation
@@ -11,7 +11,7 @@ hide:
   .md-grid { max-width: 72rem; }
 </style>
 
-# Run Speed
+# Run Speed Visualizer
 
-<!-- the Run Speed page (website/hooks.py puts it here, from website/resources/Run-Speed.html) -->
+<!-- the Run Speed Visualizer page (website/hooks.py puts it here, from website/resources/Run-Speed.html) -->
 <div id="frw-map-here"></div>

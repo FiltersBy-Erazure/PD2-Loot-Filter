@@ -827,6 +827,20 @@
   (double-click) previews it at http://127.0.0.1:8000/PD2-Loot-Filter/ with MkDocs Material 9.7.7 in
   `tools/.cache/mkdocs-venv`. CI builds it with `--strict`. On `main`, `.github/workflows/pages.yml` builds and
   deploys it on every push (Pages source: GitHub Actions).
+  Its tabs are sections (2026-11-13, the author: 14 tabs in two rows were too many), mkdocs.yml's nav: **Loot
+  Filter** (Home, Versions, Minimal Version, Filter Levels, Unique & Set Tiers, Non-magical Bases, Magic Items, Rare
+  Items, Skill & Shop Highlights, Examples), **Filter Editor** (Filter Editor, Customization) and **Resources** (its
+  Overview, the Grail Planner, the Resources pages). Under the tabs a row of the current section's pages
+  (`website/overrides/partials/tabs.html`, styled in `erazure.css`), which on desktop replaces Material's sidebar
+  (hidden from 76.25em; narrower screens hide the tabs and keep the sidebar as the ☰ menu, opened at the section).
+  A page's address stays its file's whatever its section. A new page goes into its section in the nav and in the
+  home page's On this site list. Four Resources pages were renamed the same day (the author), and their addresses
+  with them: Infinity Merc Bases is **Infinity Base Comparison** (`resources/infinity-base-comparison/`), Event and
+  Boss Map Runs **Map Event and Boss Rushing** (`map-event-boss-rushing/`; the Grail Planner's section and links
+  too), Ohm vs Jewel **Ohm vs Jewel Comparison** (`ohm-vs-jewel-comparison/`), Run Speed **Run Speed Visualizer**
+  (`run-speed-visualizer/`). The older names below mean these pages; their source files (`website/resources/*.html`)
+  and browser storage keys keep the old names. An old address still works: `MOVED` in `website/hooks.py` writes a
+  page there that sends the browser on (the part after # too). A page that moves gets a `MOVED` line.
 - Colour and zoom on the players' pages (2026-11-13, the author: the calculators' green / coral pair, then "check
   every players' page for meaning shown by colour alone, and add a sign, word or mark where it is" and "do a 200%
   zoom pass"; no settings panel: the site's light / dark switch and the browser's zoom already exist). Colour never
@@ -1058,8 +1072,7 @@
   the page's grail card in headless Edge), so rerun `tools/grail_map.py` after it. Its runs-ahead / clears-ahead text
   and washes (`--ahead` / `--behind` in `site_page.py`'s TOKENS and the calculator template, 2026-11-13) are the
   site's teal / orange like its bars (green / coral was one tan to deuteranopes), and what Skip and "Skip what doesn't
-  pay" do is a line under those buttons (`#ev-skip-note`; they were hover-only titles, which phones never show). The tab bar wraps onto
-  a second line where the 13 tabs don't fit (`erazure.css`; until then Examples was cut off from about 1920 px down).
+  pay" do is a line under those buttons (`#ev-skip-note`; they were hover-only titles, which phones never show).
   Calculators (2026-11-12, the author: like HarryPe's "Physical damage calculator PD2" sheet and HiimPD2's damage-calc,
   three separate pages, a full attack speed model, up to four builds side by side, one credit line to HarryPe's sheet;
   plan `C:\Users\Erik\.claude\plans\floating-strolling-wreath.md`): **Ohm vs Jewel** (`ohm-map`,

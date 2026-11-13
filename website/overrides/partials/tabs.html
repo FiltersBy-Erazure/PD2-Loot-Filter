@@ -1,0 +1,36 @@
+{#- The Erazure website's tab bar (2026-11-13, the author: the site's 14 tabs in sections, "Perhaps the filter should
+    have a section with everything that pertains to it"). Material's own row of sections (mkdocs.yml's nav: Loot
+    Filter, Filter Editor, Resources) and under it the current section's pages, so every page reaches its neighbours
+    though the pages hide Material's sidebar (hide: navigation). Phones and tablets keep Material's drawer, which shows
+    the same sections. -#}
+{% import "partials/tabs-item.html" as item with context %}
+<nav class="md-tabs" aria-label="{{ lang.t('tabs') }}" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      {% for nav_item in nav.items %}
+        {{ item.render(nav_item) }}
+      {% endfor %}
+    </ul>
+  </div>
+  {% for section in nav.items if section.active and section.children %}
+    <div class="ez-pages">
+      <div class="md-grid">
+        <ul class="md-tabs__list" aria-label="{{ section.title }}">
+          {% for child in section.children %}
+            {% set target = child %}
+            {% if child.children %}
+              {% set target = child.children | first %}
+            {% endif %}
+            {#- a section's own page (Resources' index.md, titled as its section) is its Overview -#}
+            {% set label = "Overview" if (child.is_index and child.title == section.title) else child.title %}
+            <li class="md-tabs__item{% if child.active %} md-tabs__item--active{% endif %}">
+              <a href="{{ target.url | url }}" class="md-tabs__link"{% if child.active %} aria-current="page"{% endif %}>
+                {{ label }}
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  {% endfor %}
+</nav>

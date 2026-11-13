@@ -15,15 +15,15 @@ Each is a repo-root HTML file that a tool writes (build.bat runs them):
   Erazure-Filter-Editor-Assets/ (tools/editor_map.py --assets), both copied beside it; the source's name in its script
   gets the source's CRC (SOURCE_V), so a browser never keeps an old copy of the filter after a push
 The Resources tab's pages are written by hand, in website/resources/ (each with its data and script inside):
-- Infinity-Merc-Bases.html, shown on the Infinity Merc Bases page (docs/resources/infinity-merc-bases.md)
+- Infinity-Merc-Bases.html, shown on the Infinity Base Comparison page (docs/resources/infinity-base-comparison.md)
 - Map-Experience.html, shown on the Map Experience page (docs/resources/map-experience.md); its numbers are written by
   tools/gen_map_exp.py
-- Event-Boss-Runs.html, shown on the Event and Boss Map Runs page (docs/resources/event-boss-runs.md); the event-run
+- Event-Boss-Runs.html, shown on the Map Event and Boss Rushing page (docs/resources/map-event-boss-rushing.md); the event-run
   model writes the whole file (its site_page.py, kept out of the repo with the model)
-- Ohm-vs-Jewel.html, shown on the Ohm vs Jewel page (docs/resources/ohm-vs-jewel.md); its game numbers are written
+- Ohm-vs-Jewel.html, shown on the Ohm vs Jewel Comparison page (docs/resources/ohm-vs-jewel-comparison.md); its game numbers are written
   by tools/calc_data.py
 - Damage-Calculator.html, shown on the Damage Calculator page (docs/resources/damage-calculator.md), and
-  Run-Speed.html, shown on the Run Speed page (docs/resources/run-speed.md); their game numbers are written by
+  Run-Speed.html, shown on the Run Speed Visualizer page (docs/resources/run-speed-visualizer.md); their game numbers are written by
   tools/calc_data.py too, and the Run Speed race's pictures (Run-Speed-Sprites/, copied beside it) by
   tools/run_sprites.py
 - IAS-Calculator.html, shown on the IAS Calculator page (docs/resources/ias-calculator.md); its game numbers are
@@ -52,12 +52,12 @@ MAPS = [  # (the page, from the repo root; the tool that writes it, or "by hand"
     ("Erazure-Skill-Shop-Highlights.html", "tools/shop_map.py", "shop.md", "shop-map"),
     ("Erazure-Grail-Planner.html", "tools/grail_map.py", "grail.md", "grail-map"),
     ("Erazure-Filter-Editor.html", "tools/editor_map.py", "editor.md", "edit-map"),
-    ("website/resources/Infinity-Merc-Bases.html", "by hand", "resources/infinity-merc-bases.md", "merc-map"),
+    ("website/resources/Infinity-Merc-Bases.html", "by hand", "resources/infinity-base-comparison.md", "merc-map"),
     ("website/resources/Map-Experience.html", "by hand", "resources/map-experience.md", "mapexp-map"),
-    ("website/resources/Event-Boss-Runs.html", "by hand", "resources/event-boss-runs.md", "evrun-map"),
-    ("website/resources/Ohm-vs-Jewel.html", "by hand", "resources/ohm-vs-jewel.md", "ohm-map"),
+    ("website/resources/Event-Boss-Runs.html", "by hand", "resources/map-event-boss-rushing.md", "evrun-map"),
+    ("website/resources/Ohm-vs-Jewel.html", "by hand", "resources/ohm-vs-jewel-comparison.md", "ohm-map"),
     ("website/resources/Damage-Calculator.html", "by hand", "resources/damage-calculator.md", "dmg-map"),
-    ("website/resources/Run-Speed.html", "by hand", "resources/run-speed.md", "frw-map"),
+    ("website/resources/Run-Speed.html", "by hand", "resources/run-speed-visualizer.md", "frw-map"),
     ("website/resources/IAS-Calculator.html", "by hand", "resources/ias-calculator.md", "ias-map"),
 ]
 FONTS = ('<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700'
@@ -71,8 +71,17 @@ BESIDE = ["Erazure-Grail-Planner-Compendium.png", "Erazure-Grail-Planner-Glyphs.
 BESIDE_FOLDERS = ["Erazure-Filter-Editor-Assets",
                   # the IAS Calculator's attack previews (tools/ias_sprites.py), beside its own copy in resources/
                   "website/resources/IAS-Calculator-Sprites",
-                  # the Run Speed page's race (tools/run_sprites.py), the same way
+                  # the Run Speed Visualizer page's race (tools/run_sprites.py), the same way
                   "website/resources/Run-Speed-Sprites"]
+# Pages that moved, old address -> new (from the site's root). Links posted before the move still land: the old
+# address gets a page that sends the browser on, with the part after # (a section or a tab) and after ? kept.
+# 2026-11-13, the author: four Resources pages' addresses follow their new names.
+MOVED = {
+    "resources/infinity-merc-bases/": ("resources/infinity-base-comparison/", "Infinity Base Comparison"),
+    "resources/event-boss-runs/": ("resources/map-event-boss-rushing/", "Map Event and Boss Rushing"),
+    "resources/ohm-vs-jewel/": ("resources/ohm-vs-jewel-comparison/", "Ohm vs Jewel Comparison"),
+    "resources/run-speed/": ("resources/run-speed-visualizer/", "Run Speed Visualizer"),
+}
 # The Filter Editor's script names its source with the source's CRC, so a new filter is a new address for browsers
 EDITOR_SOURCE, SOURCE_V = "Erazure-Filter-Editor-Source.js", "__SOURCE_V__"
 
@@ -127,6 +136,17 @@ def on_files(files, config):
             if path.is_file():
                 rel = own_copy(path.relative_to(ROOT).as_posix())  # a Resources page's folder goes to resources/
                 files.append(File.generated(config, rel, abs_src_path=str(path)))
+    for old, (new, title) in MOVED.items():
+        if files.get_file_from_path(old + "index.html") or files.get_file_from_path(old.rstrip("/") + ".md"):
+            raise PluginError(f"{old} is a page again: take it out of MOVED in website/hooks.py")
+        to = "../" * old.count("/") + new
+        files.append(File.generated(config, old + "index.html", content=(
+            '<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n'
+            f'<title>{title} - {config.site_name}</title>\n'
+            f'<link rel="canonical" href="{config.site_url}{new}">\n<meta name="robots" content="noindex">\n'
+            f'<meta http-equiv="refresh" content="0; url={to}">\n'
+            f'<script>location.replace("{to}" + location.search + location.hash);</script>\n</head>\n'
+            f'<body>\n<p>This page has moved: <a href="{to}">{title}</a>.</p>\n</body>\n</html>\n')))
     return files
 
 

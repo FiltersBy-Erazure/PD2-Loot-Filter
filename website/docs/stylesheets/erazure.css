@@ -39,10 +39,39 @@
   text-underline-offset: 5px;
 }
 
-/* the tabs wrap onto a second line where they don't fit, instead of hiding the last ones (Examples, Resources)
-   behind a sideways scroll */
+/* the tabs wrap onto a second line where they don't fit, instead of hiding the last ones behind a sideways scroll */
 .md-tabs__list {
   flex-wrap: wrap;
+}
+
+/* two rows (overrides/partials/tabs.html): the sections (Loot Filter, Filter Editor, Resources) in bold, and under
+   them, on a lighter strip, the current section's pages. The header is black in the light scheme too, so one look
+   serves both. */
+.md-tabs > .md-grid .md-tabs__link {
+  font-size: .75rem;
+  font-weight: 700;
+}
+.ez-pages {
+  background-color: rgba(255, 255, 255, .05);
+  border-top: 1px solid rgba(255, 255, 255, .08);
+}
+.ez-pages .md-tabs__item {
+  height: 2rem;
+}
+.ez-pages .md-tabs__link {
+  margin-top: .6rem;
+  font-size: .7rem;
+}
+.ez-pages .md-tabs__item--active .md-tabs__link {
+  text-underline-offset: 4px;
+}
+/* where the tabs show, the pages' row is the section's navigation: no sidebar repeating it on the pages that keep
+   theirs (Home, Versions, Customization, Examples, Resources). Narrower screens hide the tabs, and the same sidebar
+   is their menu (the ☰ button), so it stays there. */
+@media screen and (min-width: 76.25em) {
+  .md-sidebar--primary {
+    display: none;
+  }
 }
 
 /* Material's "Back to top" button: below a page's sticky bar (the filter bars of the item pages, Map Experience's

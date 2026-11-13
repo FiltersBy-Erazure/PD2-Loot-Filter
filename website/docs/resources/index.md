@@ -4,12 +4,19 @@ title: Resources
 
 # Resources
 
-Reference pages on how parts of Project Diablo 2 work, to look things up while you play. More will be added over
-time.
+The Grail Planner, calculators and reference pages on how parts of Project Diablo 2 work, to look things up while
+you play. More will be added over time.
 
 <div class="grid cards" markdown>
 
--   **[Infinity Merc Bases](infinity-merc-bases.md)**
+-   **[Grail Planner](../grail.md)**
+
+    ---
+
+    How long your grail takes in maps, which Corrupted Ear to use for the items you're missing, and where to target
+    farm every unique and set item. Mark what you've found, and it plans the rest.
+
+-   **[Infinity Base Comparison](infinity-base-comparison.md)**
 
     ---
 
@@ -23,7 +30,7 @@ time.
     What the filter's two experience lines on a map mean (`1.4x Experience`, `1.1x at Level 89`), how your level and
     a map's size change them, and every plain T1-T3 map ranked at your level.
 
--   **[Event and Boss Map Runs](event-boss-runs.md)**
+-   **[Map Event and Boss Rushing](map-event-boss-rushing.md)**
 
     ---
 
@@ -31,7 +38,7 @@ time.
     each, at your own times. Trade value, High and Medium items, the grail with your missing items and your Corrupted
     Ear, experience, and which events pay their time. And what rushing a unique map's bosses is worth for the grail.
 
--   **[Ohm vs Jewel](ohm-vs-jewel.md)**
+-   **[Ohm vs Jewel Comparison](ohm-vs-jewel-comparison.md)**
 
     ---
 
@@ -46,7 +53,7 @@ time.
     crushing blow. Their damage per hit, frames per attack, damage per second and kill time, and what else would give
     the same damage.
 
--   **[Run Speed](run-speed.md)**
+-   **[Run Speed Visualizer](run-speed-visualizer.md)**
 
     ---
 

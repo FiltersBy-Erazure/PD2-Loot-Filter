@@ -12,22 +12,30 @@ afterwards.
 
 ## On this site
 
+### Loot Filter
+
 - [Versions](versions.md): Main, Revealed, BIG GG, PoE and Minimal, and what each one changes
 - [Minimal Version](minimal.md): the labels that look different in Minimal, beside Erazure - Main's
 - [Filter Levels](filter-levels.md): what each filter level shows, notifies and hides, at every character level
 - [Unique & Set Tiers](tiers.md): how every unique and set item shows when it drops
-- [Grail Planner](grail.md): how long your grail takes in maps, which ear to use for the items you're missing, and
-  where to target farm every unique and set item
 - [Non-magical Bases](bases.md): when each non-magical armor and weapon base is tagged, notified or hidden
 - [Magic Items](magic.md): how every magic item shows when it drops, and when it is hidden
 - [Rare Items](rare.md): how every rare item shows when it drops, and when it is hidden
 - [Skill & Shop Highlights](shop.md): the highlights for +skills and shop items, and what an item needs for each
+- [Examples](examples.md): the filter's style in game
+
+### Filter Editor
+
 - [Filter Editor](editor.md): make the filter your own (looks, sounds, items, your own rules), preview drops as
   the game draws them, and save it straight into your game
 - [Customization](customization.md): edit your own copy of the filter
-- [Examples](examples.md): the filter's style in game
-- [Resources](resources/index.md): reference pages on how parts of the game work, such as which Infinity base to give
-  your Act 2 mercenary
+
+### Resources
+
+- [Grail Planner](grail.md): how long your grail takes in maps, which ear to use for the items you're missing, and
+  where to target farm every unique and set item
+- [Resources](resources/index.md): calculators (damage, attack speed, run speed, Ohm or a jewel) and pages on how
+  parts of the game work, such as which Infinity base to give your Act 2 mercenary
 
 ## Contact
 
