@@ -835,6 +835,11 @@
   of the current section's pages
   (`website/overrides/partials/tabs.html`, styled in `erazure.css`), which on desktop replaces Material's sidebar
   (hidden from 76.25em; narrower screens hide the tabs and keep the sidebar as the ☰ menu, opened at the section).
+  On the Grail Planner that row holds the planner's own tabs (the author, 2026-11-13: it showed "Grail Planner"
+  alone): grail.md's `page_tabs: true`, and `website/hooks.py` (`page_tabs`) reads the tab row of the planner's
+  markup (`role="tablist"`, each button's `data-tab`) into links to `#tab-<name>`, which the planner's own script
+  opens (it takes any `#tab-` link on the page); `javascripts/erazure.js` marks the open tab there as the planner's
+  row marks it (`aria-selected`). So a tab added to the planner reaches the row on the next site build.
   The header, both tab rows and the footer keep Material's 61rem on every page (the author, 2026-11-13: the header
   jumped going to the Filter Editor): a page's own `.md-grid` width (84rem, 72rem, the editor's none) widens only its
   content. The pages' row is a little tighter than the sections' so Resources' fits that width on one line.

@@ -35,7 +35,9 @@ markup between the map's markers (<!-- tier-map:start --> ...) and the script ou
 the page has its placeholder (<div id="tier-map-here"></div> ...), and adds the styles and the script (with the
 data) as two files of their own.
 """
+import re
 import zlib
+from html import unescape
 from pathlib import Path
 
 from mkdocs.exceptions import PluginError
@@ -164,4 +166,17 @@ def on_page_content(html, page, config, files):
         # erazure-map: what every map and resource shares on the site (erazure.css: plain folds)
         html = html.replace(placeholder, f'{FONTS}<link rel="stylesheet" href="{css}">'
                                          f'<div class="{name} erazure-map">{markup}</div><script src="{js}"></script>')
+        if page.meta.get("page_tabs"):
+            page.meta["page_tabs"] = page_tabs(markup, md)
     return html
+
+
+def page_tabs(markup, md):
+    """A page with `page_tabs: true` (the Grail Planner, the one page of its section; the author, 2026-11-13) shows its
+    own tabs in the row under the site's tabs (overrides/partials/tabs.html): each tab of its tab row as a link to
+    #tab-<name>, which the page's script opens; javascripts/erazure.js marks the open one."""
+    row = re.search(r'role="tablist".*?</div>', markup, re.S)
+    tabs = re.findall(r'<button[^>]*\bdata-tab="([^"]+)"[^>]*>(.*?)</button>', row.group(0), re.S) if row else []
+    if not tabs:
+        raise PluginError(f"docs/{md} asks for page_tabs, but its map has no tab row (role=\"tablist\")")
+    return [{"title": unescape(title.strip()), "url": f"#tab-{key}"} for key, title in tabs]

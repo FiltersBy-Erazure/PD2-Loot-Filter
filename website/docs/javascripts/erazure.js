@@ -29,3 +29,25 @@
   new MutationObserver(place).observe(button, {attributes: true, attributeFilter: ["hidden"]});
   window.addEventListener("resize", place);
 })();
+
+/* A page whose own tabs are in the row under the site's tabs (page_tabs: the Grail Planner; overrides/partials/
+   tabs.html): the page's script opens a tab from its #tab-<name> link, and this marks the open one in the row, as the
+   page's own tab row marks it (aria-selected), whether it was opened there, from the row, a link or the address. */
+(function () {
+  "use strict";
+  var links = document.querySelectorAll('.ez-pages a[href^="#tab-"]');
+  var tabs = document.querySelectorAll('[role="tab"][data-tab]');
+  if (!links.length || !tabs.length) return;
+  function mark() {
+    var open = document.querySelector('[role="tab"][data-tab][aria-selected="true"]');
+    if (!open) return;
+    for (var i = 0; i < links.length; i++) {
+      var on = links[i].getAttribute("href") === "#tab-" + open.getAttribute("data-tab");
+      links[i].parentElement.classList.toggle("md-tabs__item--active", on);
+      if (on) links[i].setAttribute("aria-current", "true"); else links[i].removeAttribute("aria-current");
+    }
+  }
+  var watch = new MutationObserver(mark);
+  for (var i = 0; i < tabs.length; i++) watch.observe(tabs[i], {attributes: true, attributeFilter: ["aria-selected"]});
+  mark();
+})();
