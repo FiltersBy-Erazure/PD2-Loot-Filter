@@ -841,6 +841,26 @@
   (`run-speed-visualizer/`). The older names below mean these pages; their source files (`website/resources/*.html`)
   and browser storage keys keep the old names. An old address still works: `MOVED` in `website/hooks.py` writes a
   page there that sends the browser on (the part after # too). A page that moves gets a `MOVED` line.
+- Link previews (2026-11-13, the author, after mockups on https://claude.ai/artifact/XqN2oKBLfnkb6H5YqcSjTG): a link
+  to the site posted in Discord (and elsewhere) shows the gold bar (`theme-color` #d8b45e, which phones' browsers use
+  for their own bar too), the site's name over the page's own name (the home page: the site's name alone), the page's
+  description and a 1200 x 630 picture. `website/overrides/main.html` writes the tags from each page's front matter:
+  `description:` (every page has its own since then; a page without one falls back to the site's) and `image:`
+  (`img/previews/<name>.png`; without one `default.png`). The pictures in `website/docs/img/previews/` (committed) are
+  written by `python tools/preview_images.py [NAME ...] [--no-build]` (builds the site with the `site_preview.bat`
+  MkDocs, serves it, shoots it in headless Edge over the DevTools protocol with a new profile, so every page shows its
+  defaults; not run by build.bat, the hook or CI: rerun it after a change to how one of these pages looks). The
+  author's choice: designed cards (the site's and the page's name over the page's own parts, moved into a card) for
+  Ohm vs Jewel Comparison (its answer), Run Speed Visualizer (the race in motion: it differs a little each run), the
+  IAS Calculator (the answer beside the attack preview, its setup as the subtitle) and the Grail Planner (the
+  Compendium view); screenshots for Unique & Set Tiers, Map Experience and Infinity Base Comparison; every other page
+  gets `default.png`,
+  the site's name beside `tools/preview_mascot.png`: the author's lynx sticker holding the PD2 coin in place of its
+  heart (the author asked for the swap; made 2026-11-13 from the author's original sticker, 512 x 512, and the PD2
+  wiki's 256 px icon of the coin, the cleanest copy found: the launcher's own icon is drawn at 128 px and its 256 px
+  copy is that doubled, the Discord server's is 68 px; a sharper coin needs the PD2 team's source file). A new page
+  with a picture: a `SHOTS` entry in the tool and an `image:` line. Discord keeps
+  a link's preview for a while; `?v=2` on a link makes it fetch again.
 - Colour and zoom on the players' pages (2026-11-13, the author: the calculators' green / coral pair, then "check
   every players' page for meaning shown by colour alone, and add a sign, word or mark where it is" and "do a 200%
   zoom pass"; no settings panel: the site's light / dark switch and the browser's zoom already exist). Colour never
@@ -1627,6 +1647,7 @@ before), and so are throwing and stamina potions (hidden Fulminating / Chilling 
 Calculator) · `styles/minimal.filter` + `tools/style_map.py` + `tools/style_map_template.html` +
 `Erazure-Minimal-Style.html` · `styles/corrlorized.edits` + `tools/style_edits.py` + `Corrlorized-*.filter` ·
 `website/` + `site_preview.bat` + `.github/workflows/pages.yml` ·
+`tools/preview_images.py` + `tools/preview_mascot.png` + `website/docs/img/previews/` (the link previews) ·
 `tools/example_shots.py` + `website/docs/img/examples/` · `tools/icon_preview.py` + `tools/icon_preview.html` +
 `icon_preview.bat` ·
 `tools/tag_order.py` + `tools/pd2_stat_priority.tsv` · `tools/pd2_data.py` + `docs/pd2-unique-set-items.tsv` +

@@ -1,5 +1,6 @@
 ---
 title: Magic Items
+description: How the filter shows every unidentified magic item on the ground, the look it gives each armor, weapon, quiver, ring, amulet, jewel and charm, the drops it notifies and when each is hidden.
 hide:
   - navigation
   - toc

@@ -1,5 +1,6 @@
 ---
 title: Filter Levels
+description: What each filter level shows, notifies and hides, for every kind of item that drops, read from the filter's own rules, and what changes from one level to the next.
 hide:
   - navigation
   - toc

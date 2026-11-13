@@ -1,3 +1,7 @@
+---
+description: Make your own changes to Erazure, with the Filter Editor in your browser or by editing a copy of the filter by hand in VS Code or Notepad++.
+---
+
 # Loot Filter Customization and Edits
 
 The easiest way: the [Filter Editor](editor.md) makes your own copy of Erazure in your browser (looks, sounds,

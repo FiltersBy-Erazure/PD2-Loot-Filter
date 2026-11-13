@@ -1,5 +1,6 @@
 ---
 title: Skill & Shop Highlights
+description: Every highlight the filter adds to an item's hover box in a shop, your inventory or your stash, such as +3/20ias or +7 Chain Lightning, and what an item needs to get it.
 hide:
   - navigation
   - toc

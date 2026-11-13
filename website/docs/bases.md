@@ -1,5 +1,6 @@
 ---
 title: Non-magical Bases
+description: How the filter shows every non-magical armor and weapon base on the ground, the runeword bases it tags, the drops it notifies and when each base is hidden, filter level by filter level.
 hide:
   - navigation
   - toc

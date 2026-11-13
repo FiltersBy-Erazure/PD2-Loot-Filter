@@ -1,6 +1,7 @@
 ---
 title: Map Experience
 description: What the filter's two experience lines on a map mean, and how your level and a map's size change them.
+image: img/previews/map-experience.png
 hide:
   - navigation
   - toc

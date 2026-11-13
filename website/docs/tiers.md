@@ -1,5 +1,7 @@
 ---
 title: Unique & Set Tiers
+description: How the filter shows every unique and set item, with its tier, label, minimap icon and drop sound, on every filter level and version.
+image: img/previews/tiers.png
 hide:
   - navigation
   - toc

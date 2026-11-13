@@ -1,5 +1,6 @@
 ---
 title: Rare Items
+description: How the filter shows every unidentified rare item on the ground, the look it gives each armor, weapon, quiver, ring, amulet and jewel, the drops it notifies and when each is hidden.
 hide:
   - navigation
   - toc

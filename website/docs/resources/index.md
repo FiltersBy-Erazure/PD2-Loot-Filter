@@ -1,5 +1,6 @@
 ---
 title: Resources
+description: The Grail Planner, calculators and reference pages on how parts of Project Diablo 2 work, to look things up while you play.
 ---
 
 # Resources

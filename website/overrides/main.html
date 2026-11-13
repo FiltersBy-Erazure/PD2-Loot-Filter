@@ -1,8 +1,31 @@
-{#- The Erazure website's pages: Material's own, plus one script in the head (mkdocs.yml: theme custom_dir). -#}
+{#- The Erazure website's pages: Material's own, plus the link preview tags and one script in the head (mkdocs.yml:
+    theme custom_dir). -#}
 {% extends "base.html" %}
 
 {% block extrahead %}
   {{ super() }}
+  {#- Link previews (Discord and other sites): the site's name, the page's own name and description, and its picture,
+      from its `image:` front matter line (website/docs/img/previews/, written by tools/preview_images.py); a page
+      without one gets default.png. theme-color is the gold bar of a Discord preview (phones' browsers tint their
+      own bar with it too). -#}
+  {%- set og_desc = (page.meta and page.meta.description) or config.site_description %}
+  {%- set og_image = (page.meta and page.meta.image) or "img/previews/default.png" %}
+  <meta property="og:type" content="website">
+  {%- if page.url == "" %}{#- the home page (page.is_homepage reads False on this site) #}
+  <meta property="og:title" content="{{ config.site_name | e }}">
+  {%- else %}
+  <meta property="og:site_name" content="{{ config.site_name | e }}">
+  <meta property="og:title" content="{{ page.title | striptags | e }}">
+  {%- endif %}
+  <meta property="og:description" content="{{ og_desc | e }}">
+  {%- if page.canonical_url %}
+  <meta property="og:url" content="{{ page.canonical_url }}">
+  {%- endif %}
+  <meta property="og:image" content="{{ config.site_url }}{{ og_image }}">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#d8b45e">
   <script>
     /* Every visit starts dark. Material keeps the light / dark switch in the browser (localStorage); forget a choice
        from an earlier visit before Material reads it. During a visit the switch still works, from page to page. */

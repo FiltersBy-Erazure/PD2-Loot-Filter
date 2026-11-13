@@ -1,6 +1,7 @@
 ---
 title: Grail Planner
 description: Find every unique and set item in Project Diablo 2. Mark what you've found, and the planner shows which maps, Corrupted Ears and bosses find the rest fastest.
+image: img/previews/grail.png
 hide:
   - navigation
   - toc

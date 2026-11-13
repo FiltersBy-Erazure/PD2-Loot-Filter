@@ -1,3 +1,7 @@
+---
+description: How the filter looks in game. Potions, gems, runes and boss drops on the ground, with the labels Erazure - Main gives them.
+---
+
 # Examples of Stylization and Aesthetic
 
 How the filter looks in game: Erazure - Main on filter level 1 (potions, scrolls and tomes for a level 5 character,

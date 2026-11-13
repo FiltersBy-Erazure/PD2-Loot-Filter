@@ -1,6 +1,7 @@
 ---
 title: Run Speed Visualizer
 description: How fast you run with your faster run/walk and your movement skills, up to four setups side by side, and what more FRW on gear would still bring.
+image: img/previews/run-speed-visualizer.png
 hide:
   - navigation
   - toc

@@ -1,5 +1,6 @@
 ---
 title: Minimal Version
+description: Minimal is Erazure - Main with a minimal style, fewer and simpler symbols around item names. Every label that looks different, beside Main's.
 hide:
   - navigation
   - toc

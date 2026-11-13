@@ -1,6 +1,7 @@
 ---
 title: IAS Calculator
 description: Frames per attack for every class, form, weapon and attack skill, the IAS breakpoints, a frame grid of weapon IAS against IAS on other gear, and the fastest setups.
+image: img/previews/ias-calculator.png
 hide:
   - navigation
   - toc

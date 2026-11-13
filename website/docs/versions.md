@@ -1,3 +1,7 @@
+---
+description: The versions of Erazure's filter in the PD2 launcher (Main, BIG GG, PoE, Revealed, Minimal and Corrlorized) and what each one changes.
+---
+
 # Versions of the Filter
 
 Pick a version in the launcher, then click **Save Filter** on the right side.
