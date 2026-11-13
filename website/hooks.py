@@ -20,6 +20,11 @@ The Resources tab's pages are written by hand, in website/resources/ (each with 
   tools/gen_map_exp.py
 - Event-Boss-Runs.html, shown on the Event and Boss Map Runs page (docs/resources/event-boss-runs.md); the event-run
   model writes the whole file (its site_page.py, kept out of the repo with the model)
+- Ohm-vs-Jewel.html, shown on the Ohm vs Jewel page (docs/resources/ohm-vs-jewel.md); its game numbers are written
+  by tools/calc_data.py
+- Damage-Calculator.html, shown on the Damage Calculator page (docs/resources/damage-calculator.md), and
+  Run-Speed.html, shown on the Run Speed page (docs/resources/run-speed.md); their game numbers are written by
+  tools/calc_data.py too
 Each goes into the site as a file of its own (a Resources page under resources/), so its address keeps working.
 Its site page shows the same map with no frame, so its filter bar can stay under the site's header while
 scrolling: this hook takes the styles, the
@@ -47,6 +52,9 @@ MAPS = [  # (the page, from the repo root; the tool that writes it, or "by hand"
     ("website/resources/Infinity-Merc-Bases.html", "by hand", "resources/infinity-merc-bases.md", "merc-map"),
     ("website/resources/Map-Experience.html", "by hand", "resources/map-experience.md", "mapexp-map"),
     ("website/resources/Event-Boss-Runs.html", "by hand", "resources/event-boss-runs.md", "evrun-map"),
+    ("website/resources/Ohm-vs-Jewel.html", "by hand", "resources/ohm-vs-jewel.md", "ohm-map"),
+    ("website/resources/Damage-Calculator.html", "by hand", "resources/damage-calculator.md", "dmg-map"),
+    ("website/resources/Run-Speed.html", "by hand", "resources/run-speed.md", "frw-map"),
 ]
 FONTS = ('<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700'
          '&family=Source+Sans+3:wght@400;600;700&display=swap">')

@@ -1027,16 +1027,38 @@
   Calculators (2026-11-12, the author: like HarryPe's "Physical damage calculator PD2" sheet and HiimPD2's damage-calc,
   three separate pages, a full attack speed model, up to four builds side by side, one credit line to HarryPe's sheet;
   plan `C:\Users\Erik\.claude\plans\floating-strolling-wreath.md`): **Ohm vs Jewel** (`ohm-map`,
-  `website/resources/Ohm-vs-Jewel.html`) first, then the Damage Calculator (`dmg-map`) and Run Speed (`frw-map`). Their
-  text and script are by hand; their game numbers (weapon bases with 1H / 2H / throw damage, WSM, Str / Dex bonus, the
-  jewel damage affixes, Ohm's enhanced damage; skills and animations to come) are the `DATA` line between each page's
-  `calc-data` markers, written by `python tools/calc_data.py "<Diablo II folder>"` (`--check`, `--selftest`: known
-  values such as the sheet's ethereal Ogre Maul at 600%, 840-1155). It reads the game files, so build.bat, the hook and
-  CI don't run it: rerun it after a PD2 patch (after `pd2_data.py --extract`). The rules the pages state are traced in
-  the game (not the wiki): an ethereal weapon has 5/4 of its base damage, rounded down; on-weapon enhanced damage
-  (sockets too) raises only the base damage, base + base x ED / 100 rounded down, flat damage added after; everything
-  else multiplies weapon damage and flat damage from other gear alike, in 1/256ths of a point; a maximum at or below
-  the minimum becomes the minimum + 1.
+  `website/resources/Ohm-vs-Jewel.html`), the **Damage Calculator** (`dmg-map`, `Damage-Calculator.html`) and **Run
+  Speed** (`frw-map`, `Run-Speed.html`). Their text and script are by hand; their game numbers (weapon bases with 1H /
+  2H / throw damage, WSM, Str / Dex bonus, the jewel damage affixes, Ohm's enhanced damage, the attack skills' and
+  movement skills' Skills.txt rows, AnimData frames, the IAS Calculator's `docs/pd2-attack-sequences.json`, each class's
+  walk / run speed) are the `DATA` line between each page's `calc-data` markers, written by `python tools/calc_data.py
+  "<Diablo II folder>"` (`--check`, `--selftest`: known values such as the sheet's ethereal Ogre Maul at 600%,
+  840-1155, Might 20 = 420 / 210, Frenzy 26's movement 64, each attack's tooltip damage line). The pages evaluate the
+  skill formulas as the game does (`tools/skill_calc.py`, a JavaScript copy in each page: `?` binds tighter than the
+  operators around it). It reads the game files, so build.bat, the hook and CI don't run it: rerun it after a PD2 patch
+  (after `pd2_data.py --extract`). The rules the pages state are traced in the game (not the wiki): an ethereal weapon
+  has 5/4 of its base damage, rounded down; on-weapon enhanced damage (sockets too) raises only the base damage, base +
+  base x ED / 100 rounded down, flat damage added after; everything else multiplies weapon damage and flat damage from
+  other gear alike, in 1/256ths of a point; a maximum at or below the minimum becomes the minimum + 1. Crushing blow
+  (players asked for crit, deadly strike and crushing blow without monster-life homework) takes a share of the life
+  left: 1/8 monsters, 1/30 map bosses, 1/(70 + 10 per 1% missing) other bosses, 1/10 players and pets, + 1.4 to the
+  divisor per player after the first, ranged x1.5, x (1 + efficiency / 100), lowered by physical resistance (raised by
+  a negative one); the page shows the share and the kill time with and without it. The Damage Calculator's layout (the
+  author, 2026-11-12, against the sheet's): each card section ends with what its fields make (weapon damage, the
+  Strength / Dexterity bonus, crit and deadly strike, attack speed and the next breakpoint, skill damage and frames, the
+  auras' bonus; the sheet's running subtotals) and each card with its totals; a strip with every build's damage per
+  second and kill time stays at the bottom of the screen while the builds are on it (`position: sticky`); "How they
+  compare" splits each build's difference from build A exactly into per hit x crit / deadly strike x the monster's
+  resistance x hits per second; fields that differ from build A are gold; "Try a change" copies build A. The monster can
+  be a boss (`TARGETS` in calc_data.py): its life in Hell at its own level, +70% for each player after the first (PD2's
+  table), at most 8,388,607; Diablo Clone, Rathma, Mendeln and Lucion x 1.5 at tier 0, x 4 x (1 + tier / 5) at tiers 1-2
+  (their fight sets it); the crushing blow divisor from PD2's map boss lists (`MAP_BOSS_CLASSES`: The Tainted Hive,
+  Na-Krul, the Djinns and Zoltun Kulle are on none). Attack speed: the IAS Calculator
+  page owns the model; the damage page's own frame engine is interim, to be replaced by it. Run speed: speed points =
+  6 x (100, +50 running, + FRW diminished at 150, + movement %) / 100, at least 25; a point moves a character 1/16 of a
+  subtile a frame, and a yard (the skill descriptions') is 2/3 of a subtile: 25/24 of a yard a second, running 9.375
+  with nothing (HarryPe's sheet reads the points as yards: 9). Vigor's +1% FRW per base point applies with any aura;
+  Whirlwind's and Blade Dance's movement isn't modelled (not found).
 - The Examples page's pictures (`website/docs/img/examples/*.png`, committed; README's examples show them too) are
   drawn by `python tools/example_shots.py "<Diablo II folder>" [--only NAME]` (2026-10-20; not run by build.bat, the
   hook or CI: it needs the game files): per scene of `SCENES` a floor of the area's own DT1 tiles, each item's

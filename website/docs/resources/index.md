@@ -31,4 +31,26 @@ time.
     each, at your own times. Trade value, High and Medium items, the grail with your missing items and your Corrupted
     Ear, experience, and which events pay their time. And what rushing a unique map's bosses is worth for the grail.
 
+-   **[Ohm vs Jewel](ohm-vs-jewel.md)**
+
+    ---
+
+    Does a jewel beat an Ohm rune in your weapon? The minimum and maximum damage a jewel needs to match Ohm's enhanced
+    damage, exact for your weapon and what is already on it, and how the jewels that can drop compare.
+
+-   **[Damage Calculator](damage-calculator.md)**
+
+    ---
+
+    Up to four builds side by side: weapon, Strength and Dexterity, attack skill, auras, critical and deadly strike,
+    crushing blow. Their damage per hit, frames per attack, damage per second and kill time, and what else would give
+    the same damage.
+
+-   **[Run Speed](run-speed.md)**
+
+    ---
+
+    How fast you run with your faster run/walk and your movement skills, up to four setups side by side, and what more
+    FRW on gear would still bring.
+
 </div>
