@@ -164,7 +164,7 @@
       <label>Speed <select id="fr-slow"><option value="1" selected>As in game</option><option value="0.5">Half speed</option><option value="0.25">Quarter speed</option></select></label>
       <button type="button" class="play" id="fr-play">Run the race</button>
     </div>
-    <div class="stage" id="fr-stage"><canvas id="fr-canvas" role="img" aria-label="The race"></canvas><div class="wait" id="fr-wait">Loading the pictures&hellip;</div></div>
+    <div class="stage" id="fr-stage"><canvas id="fr-canvas" role="img" aria-label="The race" width="1100" height="250"></canvas><div class="wait" id="fr-wait">Loading the pictures&hellip;</div></div>
     <ol class="race-res" id="fr-race-res" aria-live="polite"></ol>
   </section>
 
@@ -547,8 +547,10 @@
   function raceUpdate() {
     if (RC.state !== "ready" || raceKey() === RC.key) return;
     if (RC.playing) { RC.playing = false; raceButtons(); }
-    raceSetup(); raceDraw();
+    raceSetup(); raceSoon();
   }
+  // a redraw on the next frame (from a resize: resizing the picture inside the browser's resize callback starts a loop)
+  function raceSoon() { if (!RC.queued) { RC.queued = true; requestAnimationFrame(() => { RC.queued = false; if (!RC.playing) raceDraw(); }); } }
   function raceResults() {
     const R = RC.runners.slice().sort((a, z) => a.T - z.T), best = R.length ? R[0].T : 0, ol = $("fr-race-res");
     ol.innerHTML = "";
@@ -665,7 +667,7 @@
         if (RC.state === "ready" && !reducedMotion() && !RC.playing && !RC.done) racePlay();
       }, { threshold: 0.5 }).observe(stage);
     } else raceLoad();
-    if (window.ResizeObserver) { let w0 = 0; new ResizeObserver(() => { const w = stage.clientWidth; if (Math.abs(w - w0) > 2) { w0 = w; if (!RC.playing) raceDraw(); } }).observe(stage); }
+    if (window.ResizeObserver) { let w0 = 0; new ResizeObserver(() => { const w = stage.clientWidth; if (Math.abs(w - w0) > 2) { w0 = w; raceSoon(); } }).observe(stage); }
   }
 
   // ================================================================== start
@@ -673,7 +675,8 @@
   builds = Array.isArray(saved) && saved.length ? saved.slice(0, 4).map(x => { const d = DEFAULT(); return Object.assign(d, x, { s: Object.assign(d.s, x.s || {}) }); }) : example();
   $("fr-add").addEventListener("click", () => { if (builds.length < 4) { const c = JSON.parse(JSON.stringify(builds[builds.length - 1])); c.name = ""; builds.push(c); renderBuilds(); } });
   let lastW = 0;
-  if (window.ResizeObserver) new ResizeObserver(() => { const w = $("fr-plot").clientWidth; if (Math.abs(w - lastW) > 4) { lastW = w; render(); } }).observe($("fr-plot"));
+  // redrawn on the next frame: redrawing inside the browser's resize callback resizes what it watches (a loop)
+  if (window.ResizeObserver) new ResizeObserver(() => { const w = $("fr-plot").clientWidth; if (Math.abs(w - lastW) > 4) { lastW = w; requestAnimationFrame(render); } }).observe($("fr-plot"));
   raceInit();
   renderBuilds();
 })();
