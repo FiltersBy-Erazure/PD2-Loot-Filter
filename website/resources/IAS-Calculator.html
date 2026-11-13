@@ -522,8 +522,8 @@
         <li><strong>PD2&rsquo;s own sequences</strong>: Jab is faster than in the original game (one-handed 16 frames, two-handed 18),
           and so is Blade Fury, a channel: held, the game casts it again every
           <span class="formula">&lceil;768 &divide; rate&rceil; + 1</span> frames. Its own timer allows a blade every 4 frames
-          at most, but counted in game it throws one about every 5 frames from speed 75 up, whatever the IAS (25&ndash;27 blades
-          in 5 seconds from 50 to 150 IAS); below speed 75, one a loop.</li>
+          at most, but counted in game it throws one about every 5 frames from speed 75 up, whatever the IAS (95 blades in
+          20 seconds with Blade Talons and 150 IAS); below speed 75, one a loop.</li>
         <li><strong>Mercenaries</strong>: <span class="formula">100 &minus; WSM + EIAS + auras</span>, IAS from the weapon and other
           gear together, no sequence penalty, no start frame. Each shows its own animation whatever it holds. From one attack
           to the next: <span class="formula">&lceil;frames &times; 256 &divide; rate&rceil; + 1</span> frames (+ 2 after a
@@ -1302,7 +1302,7 @@
     if (p.rollback) n.push(`${p.sk.n} rolls its swing back ${p.rollback.pct}% after each hit: the lengths are hit by hit.`);
     if (p.channel) {
       const tm = p.channel.timer;
-      n.push(`${p.sk.n} is channelled: held, the game casts it again each time it reaches step ${p.channel.at}, a loop of ${t.loop} frames at this speed${tm ? `. Its own timer allows a blade every ${tm} game frames at most (${aps(tm)} a second), but held it throws one about every ${tm + 1} from speed 75 up, counted in game (19 blades in 5 seconds at speed 70, 24 at 90-94, 25-27 from 105 to 156): a blade every <b>${t.parts[0].frames} frames</b> here, the loop setting the pace below speed 75` : ""}. The first comes about ${t.first} frames in.`);
+      n.push(`${p.sk.n} is channelled: held, the game casts it again each time it reaches step ${p.channel.at}, a loop of ${t.loop} frames at this speed${tm ? `. Its own timer allows a blade every ${tm} game frames at most (${aps(tm)} a second), but held it throws one about every ${tm + 1} from speed 75 up, counted in game (95 blades in 20 seconds with Blade Talons and 150 IAS, speed 156: one every 5.3 frames): a blade every <b>${t.parts[0].frames} frames</b> here, the loop setting the pace below speed 75` : ""}. The first comes about ${t.first} frames in.`);
     }
     if (p.fixed) n.push(`${p.sk.n}'s timer allows a hit every ${p.fixed} frames, but the game checks it only every ${t.check} frames (every 4 steps of its sequence, which runs at the other animation rate): a hit every <b>${t.parts[0].frames} frames</b>${p.dual ? ", one with each weapon" : ""}. IAS changes nothing; slows and Frenzy's charges change the check.`);
     if (p.fx && !p.fixed) n.push(`${p.sk.n} is drawn at the game's other animation rate (100, changed by slows and Frenzy's charges): IAS, the weapon's speed and the skills' speed don't count.`);

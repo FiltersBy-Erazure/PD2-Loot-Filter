@@ -1141,7 +1141,9 @@
     pace below speed 75, the 5 from there is the counts' (the code reading's "a blade per loop", 4 frames at speed
     100-149 and 6 from 150, was wrong). The game's own timer allows a blade every 4 frames at most (Param4; HiimPD2's
     bot read the same, 2026-11-12), so the page says 4 is the cap and about 5 the pace held; what keeps it from 4 isn't
-    traced. Not the same as Dragon Tail's breakpoints, nor HiimPD2's 15 frames at 0 IAS (one full 11-frame pass per
+    traced. A 20 s recording (the author, 2026-11-13: Blade Talons, 150 IAS, speed 156) counted 95 blades, one every
+    5.26 frames (the page's 5 gives 100, the cap 125, a blade every second 3-frame loop 83, a full pass 71); that
+    setup's 5 s count was 27 (108 in 20 s), so the 5 s counts ran about 14% high: the page cites the 20 s count. Not the same as Dragon Tail's breakpoints, nor HiimPD2's 15 frames at 0 IAS (one full 11-frame pass per
     blade, as BH's screen counts it: the counts rule it out). Whirlwind's 8 frames rest on the same kind of reading. Blade Fury is IAS with the -30. Frenzy's speed
     trunc(dm56 x charges / 5) (`fst`, 0-5). Double Swing, Dragon Tail, Split Throw: their speed buff counts for their
     own animation. Whirlwind / Blade Dance (other animation rate): the hit timer (Param3) is checked only on the
