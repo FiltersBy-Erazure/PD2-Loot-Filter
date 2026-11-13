@@ -1036,7 +1036,15 @@
   840-1155, Might 20 = 420 / 210, Frenzy 26's movement 64, each attack's tooltip damage line). The pages evaluate the
   skill formulas as the game does (`tools/skill_calc.py`, a JavaScript copy in each page: `?` binds tighter than the
   operators around it). It reads the game files, so build.bat, the hook and CI don't run it: rerun it after a PD2 patch
-  (after `pd2_data.py --extract`). The rules the pages state are traced in the game (not the wiki): an ethereal weapon
+  (after `pd2_data.py --extract`). Ohm vs Jewel's layout (2026-11-13, the author took all seven of a design review):
+  the inputs in fixed rows (help text behind (i) buttons, one tooltip for those and the bars), a "Pick a jewel" select,
+  the answer as a banner (the % and who wins, both damage ranges as bars on one scale from 0) with a strip at the bottom
+  of the screen while it is scrolled away (`.dock`, as the Damage Calculator's), the needs table sideways (a column per
+  jewel ED, your jewel's ED inserted and marked ✓ / ✗; no ED box of its own any more), the jewels grouped Magic / Rare,
+  best first, each a bar from its lowest to its top rolls around Ohm's line (cards on phones), and the sockets capped
+  at the base's most (the data's `ms`: `pd2_data.socket_caps` at item level 41+, Ohm's data only). Its better / worse
+  colours (`--good` / `--bad`, teal-green and orange) are a pair colour-blind readers tell apart (green / coral wasn't).
+  The rules the pages state are traced in the game (not the wiki): an ethereal weapon
   has 5/4 of its base damage, rounded down; on-weapon enhanced damage (sockets too) raises only the base damage, base +
   base x ED / 100 rounded down, flat damage added after; everything else multiplies weapon damage and flat damage from
   other gear alike, in 1/256ths of a point; a maximum at or below the minimum becomes the minimum + 1. Crushing blow

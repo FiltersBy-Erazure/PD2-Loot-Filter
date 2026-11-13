@@ -362,7 +362,9 @@ def run_data(game):
 
 def page_data(game, game_dir):
     ws, cats = weapons(game)
-    return {"ohm": {"weapons": ws, "cats": cats, "jewels": jewel_affixes(), "ohm": ohm_ed(game)},
+    # Ohm vs Jewel's sockets to fill go up to the most the base can have (BH's MAXSOCKETS at item level 41+)
+    ohm_ws = [dict(w, ms=pd2_data.socket_caps(game, w["code"])[2]) for w in ws]
+    return {"ohm": {"weapons": ohm_ws, "cats": cats, "jewels": jewel_affixes(), "ohm": ohm_ed(game)},
             "dmg": damage_data(game, game_dir), "frw": run_data(game)}
 
 
@@ -384,6 +386,8 @@ def selftest(game, data):
            [840, 1155])
     expect("Highland Blade", (ws["7cm"].get("d1"), ws["7cm"].get("d2"), ws["7cm"]["sb"]), ([28, 78], [84, 120], 110))
     expect("Phase Blade can be ethereal", ws["7cr"].get("eth"), None)
+    expect("most sockets: Colossus Crossbow, Quhab, Bone Knife, Dagger",
+           [ws[c]["ms"] for c in ("6hx", "9ar", "7dg", "dgr")], [6, 3, 2, 1])
     expect("Ohm", data["ohm"]["ohm"]["ed"], 45)
     best = max(a["hi"] for a in data["ohm"]["jewels"] if a["stat"] == "ed")
     expect("best jewel enhanced damage", best, 40)
