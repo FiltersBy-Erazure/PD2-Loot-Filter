@@ -144,6 +144,15 @@
      "why": "EIAS 24: speed 124, rate 317; 0AA22HS 16 frames, hits at 6 and 12: ceil(4096/317) + 1 = 13 + 1 = 14, two hits"},
     {"name": "Barbarian mercenary, Bash, Claymore (WSM +10), 30 IAS", "setup": {"cls": "m5", "atk": 126, "w": "clm", "gear": 30},
      "expect": {"f0": 16, "speed": 114},
-     "why": "speed 114, rate 291: ceil(4096/291) + 1 = 15 + 1 = 16"}
+     "why": "speed 114, rate 291: ceil(4096/291) + 1 = 15 + 1 = 16"},
+    {"name": "Barbarian, Phase Blade, against a flying Carrion Bird: attack 2 only", "setup": {"cls": "bar", "w": "7cr", "mon": "bird"},
+     "expect": {"frames": [12], "parts": 1},
+     "why": "MonStats2 Height 2 (flying): the game always draws attack 2; speed 130, rate 332; BAA21HS 16 frames: ceil(16x256/332) - 1 = 12"},
+    {"name": "Barbarian, Phase Blade, against a small Fallen: attack 1 only", "setup": {"cls": "bar", "w": "7cr", "mon": "fallen"},
+     "expect": {"frames": [12], "parts": 1},
+     "why": "Height 1 (small): always attack 1; BAA11HS 16 frames at rate 332: 12"},
+    {"name": "Amazon, Long Bow, against a Carrion Bird: still attack 1", "setup": {"cls": "ama", "w": "lbw", "mon": "bird"},
+     "expect": {"frames": [13], "parts": 1},
+     "why": "a bow, a crossbow or no weapon draws attack 1 whatever the target"}
   ]
 }

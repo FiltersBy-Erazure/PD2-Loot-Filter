@@ -38,7 +38,7 @@ CASES = TOOLS / "ias_cases.json"
 
 TEST_JS = r"""
 const DEF = {cls: "bar", form: "human", atk: 0, lvl: 20, tg: 5, w: "", wi: 0, oh: "none", w2: "", wi2: 0, gear: 0,
-             fana: 0, frenzy: 0, fst: 5, inc: 0, bos: 0, hustle: false, ww: 0, other: 0};
+             fana: 0, frenzy: 0, fst: 5, inc: 0, bos: 0, hustle: false, ww: 0, other: 0, mon: "zombie"};
 const out = {fail: [], ran: 0, info: {}};
 function bad(name, msg) { out.fail.push(name + ": " + msg); }
 function check(c) {
@@ -66,6 +66,7 @@ for (let i = 0; i < 1500; i++) {
   const bases = D.b.filter(b => IAS.canHold(cls, b.c));
   const w = rnd(8) === 0 ? "" : bases[rnd(bases.length)].c;
   const s = Object.assign({}, DEF, {cls, form, w, wi: rnd(60), gear: rnd(150), fana: rnd(3) ? 0 : rnd(25), ww: rnd(25),
+                                    mon: ["zombie", "fallen", "bird"][rnd(3)],
                                     inc: cls === "bar" ? rnd(12) : 0, bos: cls === "ass" ? rnd(12) : 0, lvl: 1 + rnd(30), tg: 1 + rnd(6),
                                     frenzy: cls === "bar" && rnd(2) ? rnd(30) : 0, fst: rnd(6), other: rnd(4) ? 0 : rnd(60) - 30});
   const b = IAS.BASE[w];
@@ -165,14 +166,14 @@ def main():
     if args.setup:
         keys = {"c": "cls", "f": "form", "a": "atk", "l": "lvl", "t": "tg", "w": "w", "wi": "wi", "o": "oh", "w2": "w2",
                 "wj": "wi2", "g": "gear", "fa": "fana", "fr": "frenzy", "fs": "fst", "in": "inc", "bs": "bos", "hu": "hustle",
-                "ww": "ww", "ot": "other"}
+                "ww": "ww", "ot": "other", "mo": "mon"}
         s = {}
         for kv in args.setup.lstrip("#").split("&"):
             k, _, v = kv.partition("=")
             if k in keys:
-                s[keys[k]] = v if k in ("c", "f", "w", "w2", "o") else (v == "1" if k == "hu" else int(v))
+                s[keys[k]] = v if k in ("c", "f", "w", "w2", "o", "mo") else (v == "1" if k == "hu" else int(v))
         js = ("const DEF = {cls: 'bar', form: 'human', atk: 0, lvl: 20, tg: 5, w: '', wi: 0, oh: 'none', w2: '', wi2: 0, "
-              "gear: 0, fana: 0, frenzy: 0, fst: 5, inc: 0, bos: 0, hustle: false, ww: 0, other: 0};"
+              "gear: 0, fana: 0, frenzy: 0, fst: 5, inc: 0, bos: 0, hustle: false, ww: 0, other: 0, mon: 'zombie'};"
               "const s = Object.assign({}, DEF, CASES), r = IAS.evaluate(s), bp = r.why ? null : IAS.breakpoints(s);"
               "document.getElementById('result').textContent = JSON.stringify({why: r.why || '', parts: r.why ? [] : "
               "r.t.parts.map(p => ({label: p.label, frames: p.frames, swings: p.swings, anim: p.anim && p.anim.code})), "

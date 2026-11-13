@@ -291,6 +291,8 @@
     D.b.forEach(b => { BASE[b.c] = b; });
     D.sk.forEach(s => { SKILL[s.id] = s; });
     (D.mercs || []).forEach(m => { MERC[m.k] = m; });
+    const TGT = {};
+    (D.targets || []).forEach(x => { TGT[x.k] = x; });
     const tdiv = (a, b) => Math.trunc(a / b);
     const cdiv = (a, b) => Math.floor((a + b - 1) / b);  // ceil for a >= 0, b > 0
     const eias = ias => (ias === -120 ? 0 : tdiv(120 * ias, 120 + ias));
@@ -404,13 +406,19 @@
         if (sk.ff) { p.fixed = sk.ff; p.fixedHits = p.dual ? 2 : 1; p.fx = true; }
       } else {
         // a normal attack: the game draws attack 1 or attack 2, half the time each, but always attack 1 with a bow, a
-        // crossbow or no weapon (and against small monsters; attack 2 against flying ones)
-        const modes = sk ? [sk.m] : !w || w.wc === "bow" || w.wc === "xbw" ? ["A1"] : ["A1", "A2"];
+        // crossbow or no weapon; else by the target's size (MonStats2 Height): small, attack 1; flying, attack 2
+        const size = (TGT[s.mon] || {h: 3}).h;
+        const modes = sk ? [sk.m] : !w || w.wc === "bow" || w.wc === "xbw" || size === 1 ? ["A1"] : size === 2 ? ["A2"] : ["A1", "A2"];
         p.anims = modes.map(m => anim(tok, m, p.wc)).filter(Boolean);
+        if (!sk && modes[0] === "A2") {  // attack 2 drawn, but the game's hit comes at attack 1's hit frame
+          p.a1 = anim(tok, "A1", p.wc);
+          if (!p.anims.length && p.a1) p.anims = [p.a1];
+        }
         if (!p.anims.length) { p.why = sk ? `${sk.n} has no animation with this weapon.` : "No attack animation with this weapon."; return p; }
         if (form === "human" && D.fb[s.cls]) {
           const row = w ? w.wc : "hth";
           p.anims.forEach(a => { if (a.mode === "A1" || a.mode === "A2") a.start = D.fb[s.cls][row] || 0; });
+          if (p.a1) p.a1.start = D.fb[s.cls][row] || 0;
         }
         if (sk && sk.rb !== undefined) {
           const n = Math.max(1, Math.min(60, s.lvl || 1));
@@ -521,7 +529,8 @@
       const fb = p.formBase && over && over.wi !== undefined ? formBase(p.s, p, over) : p.formBase;
       p.anims.forEach((a, i) => {
         const base = fb ? fb.base : a.speed, rate = rateOf(base, sp.speed);
-        const part = {label: p.anims.length > 1 ? `Attack ${i + 1}` : (p.sk ? p.sk.n : "Attack"), anim: a, base, rate, frames: held(a.frames, a.start, rate), hits: 1};
+        const part = {label: p.anims.length > 1 ? `Attack ${i + 1}` : p.sk ? p.sk.n : a.mode === "A2" ? "Attack 2" : "Attack", anim: a, base, rate,
+                      frames: held(a.frames, a.start, rate), hits: 1};
         if (p.rollback && i === 0) {
           part.swings = rollback(p.rollback.hits, p.rollback.action, a.frames, a.start, rate, p.rollback.pct);
           part.frames = part.swings.reduce((x, y) => x + y, 0);
@@ -530,6 +539,10 @@
         t.parts.push(part);
       });
       t.base = t.parts[0].base; t.rate = t.parts[0].rate; t.len = p.anims[0].frames;
+      if (p.a1 && p.anims[0].mode === "A2") {  // against a flying monster: attack 2 lasts, attack 1's hit frame hits
+        const q = t.parts[0], h = p.a1.hits.length ? p.a1.hits[0] : p.a1.frames - 1;
+        q.lost = q.frames < cdiv((h - p.a1.start) * 256, rateOf(fb ? fb.base : p.a1.speed, sp.speed));
+      }
       if (t.parts.length === 2) {
         // A held normal attack lasts as long as the attack the game draws, attack 1 or attack 2, half the time each.
         // The hit always comes at attack 1's hit frame: an attack 2 that ends before it loses that attack's hit.
@@ -650,7 +663,7 @@
         return Object.assign({ias: w.wi + w.other, g}, w);
       }).sort((a, b) => a.ias - b.ias || a.wi - b.wi)}));
     }
-    return {D, A, CLS, BASE, SKILL, MERC, eias, needIAS, canHold, canSecond, twoHanded, dualClass, dual, humanWC, counted, plan,
+    return {D, A, CLS, BASE, SKILL, MERC, TGT, eias, needIAS, canHold, canSecond, twoHanded, dualClass, dual, humanWC, counted, plan,
             speed, timing, evaluate, breakpoints, grid, fastest, rollback, held, rateOf, usable};
   })(IAS_DATA);
   /* ias-engine:end */

@@ -1101,7 +1101,9 @@
     one-handed weapon class, its WSM and its own IAS undiminished (19 with no weapon). Traced 2026-11-12 (private
     notes `private/ias-trace-*-2026-11-12.md`): a normal attack is A1 or A2, the client's roll, half each, the server
     always A1 and its hit at A1's hit frame; held, each lasts the drawn one, so (A1 + A2) / 2 (an A2 ending before A1's
-    hit loses it); always A1 with a bow, a crossbow or no weapon (and against small monsters, A2 against flying ones);
+    hit loses it); always A1 with a bow, a crossbow or no weapon, else by the target's MonStats2 Height: small (1)
+    A1, flying (2) A2 (the page's Target field, `mon`, 2026-11-12, the author: a Zombie, a Fallen or a Carrion Bird,
+    drawn in the preview from `targets` in the data, files target-<key>.js / target-<key>-NU|GH.png);
     a dual-wield normal attack hits with the first weapon only (weapsel 0; 3: first then the other; 2: both). Which
     rate draws an attack: A1, A2, TH, KK the attack rate; S1-S4 and sequences only with Skills.txt's UseAttackRate,
     else the other animation rate (100, slows, Frenzy's charges; IAS changes nothing, so Inferno, Arctic Blast and Leap

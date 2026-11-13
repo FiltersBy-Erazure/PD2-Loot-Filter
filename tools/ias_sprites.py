@@ -46,7 +46,9 @@ BODY = ("HD", "TR", "LG", "RA", "LA", "S1", "S2", "S3", "S4", "S5", "S6", "S7", 
 WEAPON = ("RH", "LH")
 SHIELDS = ("KIT", "LRG", "TOW", "BUC", "SPK", "BSH")  # the first one a class has
 ATTACK_MODES = ("A1", "A2", "S1", "S2", "S3", "S4", "TH", "KK")
-TARGET = ("ZM", ("NU", "GH"), 1)  # a zombie, standing and taking a hit, facing north-west (towards the attacker)
+# The targets (the page data's: a zombie, a Fallen, a Carrion Bird), standing and taking a hit, facing north-west
+# (towards the attacker); files target-<key>.js and target-<key>-<mode>.png
+TARGET_MODES, TARGET_DIR = ("NU", "GH"), 1
 FLOOR = {"floor": ("Act1/Town/Floor.dt1", "ACT1", [(0, 0)]), "light": (0.8, None)}
 STAGE = (360, 210)  # the floor picture, in game pixels
 ATLAS_W = 1024
@@ -212,25 +214,35 @@ def fingerprint(data):
     """What the previews show, from the page's data alone: every animation to draw and its weapon graphics, the
     mercenaries' looks and the missiles."""
     keys = wanted(data)
-    what = {"v": VERSION, "target": TARGET, "floor": FLOOR, "keys": keys,
+    what = {"v": VERSION, "target": [TARGET_MODES, TARGET_DIR, data.get("targets", [])], "floor": FLOOR, "keys": keys,
             "gfx": {k: graphics(data, k[:2], k[4:]) for k in keys}, "mercs": [m["lk"] for m in data.get("mercs", [])],
             "missiles": missiles(data)}
     return hashlib.sha1(json.dumps(what, sort_keys=True).encode()).hexdigest()
 
 
-def target_files(arch):
-    tok, modes, d = TARGET
+def target_files(arch, data):
+    """{target key: {mode: (cof, direction, [(part, path)])}}"""
     out = {}
-    for mode in modes:
-        key = f"{tok}{mode}HTH"
-        cof = d2_sprites.cof(arch.read(f"data/global/monsters/{tok}/cof/{key}.cof"))
-        paths = []
-        for layer in cof["layers"]:
-            path = f"data/global/monsters/{tok}/{layer['comp']}/{tok}{layer['comp']}LIT{mode}{layer['wc'] or 'HTH'}.dcc"
-            if arch.has(path):
-                paths.append((layer["comp"], path))
-        out[mode] = (cof, d if d < cof["directions"] else 0, paths)
+    for tg in data.get("targets", []):
+        tok, wc, lk = tg["tok"], tg["bw"].upper(), tg["lk"]
+        modes = {}
+        for mode in TARGET_MODES:
+            cof = d2_sprites.cof(arch.read(f"data/global/monsters/{tok}/cof/{tok}{mode}{wc}.cof"))
+            paths = []
+            for layer in cof["layers"]:
+                comp = layer["comp"]
+                if comp not in lk:
+                    continue
+                path = f"data/global/monsters/{tok}/{comp}/{tok}{comp}{lk[comp]}{mode}{layer['wc'] or wc}.dcc"
+                if arch.has(path):
+                    paths.append((comp, path))
+            modes[mode] = (cof, TARGET_DIR if TARGET_DIR < cof["directions"] else 0, paths)
+        out[tg["k"]] = modes
     return out
+
+
+def target_stems(data):
+    return {f"target-{tg['k']}" + s for tg in data.get("targets", []) for s in [""] + [f"-{m}" for m in TARGET_MODES]}
 
 
 def sources(arch, data):
@@ -241,7 +253,7 @@ def sources(arch, data):
         found = layers(arch, data, key, stats)
         for _, path in (found[2] if found else []):
             arch.read(path)
-    target_files(arch)
+    target_files(arch, data)
     for cel in missiles(data).values():
         arch.has(missile_path(cel))
     palette(arch)
@@ -390,20 +402,23 @@ def draw(game_dir, data, only=None, stats_only=False):
                                            json.dumps(geo, separators=(",", ":")) + ";\n", encoding="utf-8", newline="\n")
         made[key] = digest
         print(f"{key}: {len(frames)} frames, {w}x{h}")
-    target = {}
-    for mode, (cof, d, paths) in target_files(arch).items():
-        parts = {comp: d2_sprites.dcc(arch.read(path), d) for comp, path in paths}
-        w, h, px, layout = pack(parts)
-        target[mode] = {"f": cof["frames"], "o": cof["order"][d2_sprites.cof_row(d, cof["directions"])], "p": layout}
+    for key, modes in target_files(arch, data).items():
+        target = {}
+        for mode, (cof, d, paths) in modes.items():
+            parts = {comp: d2_sprites.dcc(arch.read(path), d) for comp, path in paths}
+            w, h, px, layout = pack(parts)
+            target[mode] = {"f": cof["frames"], "o": cof["order"][d2_sprites.cof_row(d, cof["directions"])], "p": layout}
+            if not stats_only:
+                png_indexed(OUT / f"target-{key}-{mode}.png", w, h, px, pal)
         if not stats_only:
-            png_indexed(OUT / f"target-{mode}.png", w, h, px, pal)
+            (OUT / f"target-{key}.js").write_text("(window.IAS_TARGETS = window.IAS_TARGETS || {})[" + json.dumps(key) + "] = " +
+                                                  json.dumps(target, separators=(",", ":")) + ";\n", encoding="utf-8", newline="\n")
     if not stats_only:
-        (OUT / "target.js").write_text("window.IAS_TARGET = " + json.dumps(target, separators=(",", ":")) + ";\n",
-                                       encoding="utf-8", newline="\n")
         write_stage(arch, OUT)
         if not only:
-            old = [p for p in OUT.glob("*.png") if p.stem not in made and not p.stem.startswith(("target", "stage"))] + \
-                [p for p in OUT.glob("*.js") if p.stem not in made and p.stem != "target"]
+            keep = target_stems(data) | {"stage"}
+            old = [p for p in OUT.glob("*.png") if p.stem not in made and p.stem not in keep] + \
+                [p for p in OUT.glob("*.js") if p.stem not in made and p.stem not in keep]
             for p in old:
                 p.unlink()
             MANIFEST.write_text(json.dumps({"data": fingerprint(data), "files": arch.digest(), "keys": dict(sorted(made.items()))},
@@ -421,7 +436,9 @@ def check_files(data):
     for k in sorted(keys):
         if not (OUT / f"{k}.png").exists() or not (OUT / f"{k}.js").exists():
             bad.append(f"the attack preview {k} is missing")
-    extra = {p.stem for p in OUT.glob("*.*") if p.suffix in (".png", ".js")} - keys - {"target", "target-NU", "target-GH", "stage"}
+    extra = {p.stem for p in OUT.glob("*.*") if p.suffix in (".png", ".js")} - keys - target_stems(data) - {"stage"}
+    bad += [f"the target picture {s} is missing" for s in sorted(target_stems(data))
+            if not (OUT / f"{s}.png").exists() and not (OUT / f"{s}.js").exists()]
     bad += [f"the attack preview {k} isn't one the page shows" for k in sorted(extra)]
     return bad
 

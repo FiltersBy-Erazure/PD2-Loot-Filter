@@ -94,6 +94,9 @@ DOUBLE_THROW = 140
 MERCS = [("m1", 271, ["bow", "xbow"]), ("m2", 338, ["spea", "pole"]), ("m5", 561, ["axe", "swor", "mace", "hamm"])]
 MERC_MODES = {"4": "A1", "5": "A2", "14": "SQ"}  # Hireling.txt's skill modes that attack
 MERC_UNMODELLED = ("Strafe", "MonWhirlwind")  # their timing isn't worked out for mercenaries yet
+# The preview's targets (key, MonStats Id): the game draws a normal attack's attack 1 or 2 by the target's MonStats2
+# Height: 1 small, always attack 1; 2 flying, always attack 2; else either, half the time each
+TARGETS = [("zombie", "zombie1"), ("fallen", "fallen1"), ("bird", "vulture1")]
 LEVELS = 60
 
 
@@ -498,15 +501,33 @@ def mercs(game, anims):
                     used[a["q"]] = [[s["mode"].strip(), int(s["frame"] or 0), int(s["event"] or 0)]
                                     for s in seq_rows if s.get("sequence") == a["q"]]
                 atk.append(a)
-        looks = {}
-        for comp, col in (("HD", "HDv"), ("TR", "TRv"), ("LG", "LGv"), ("RA", "Rav"), ("LA", "Lav"), ("RH", "RHv"),
-                          ("LH", "LHv"), ("SH", "SHv")) + tuple((f"S{i}", f"S{i}v") for i in range(1, 9)):
-            v = (m2.get(col) or "").strip().strip('"')
-            if v:
-                looks[comp] = v.split(",")[0].strip().upper()
         out.append({"k": key, "n": rows[0]["Hireling"], "act": int(rows[0]["Act"]), "tok": tok, "bw": bw, "kinds": kinds,
-                    "atk": atk, "skip": skip, "lk": looks})
+                    "atk": atk, "skip": skip, "lk": monster_looks(m2)})
     return out, used
+
+
+def monster_looks(m2):
+    """The look of each body part and weapon a monster is drawn with: MonStats2's first ("nil": none)."""
+    looks = {}
+    for comp, col in (("HD", "HDv"), ("TR", "TRv"), ("LG", "LGv"), ("RA", "Rav"), ("LA", "Lav"), ("RH", "RHv"),
+                      ("LH", "LHv"), ("SH", "SHv")) + tuple((f"S{i}", f"S{i}v") for i in range(1, 9)):
+        v = (m2.get(col) or "").strip().strip('"').split(",")[0].strip()
+        if v and v.lower() != "nil":
+            looks[comp] = v.upper()
+    return looks
+
+
+def targets(game):
+    """The preview's targets: [{k, n, tok, bw, h (MonStats2 Height), lk}]."""
+    stats = {r.get("Id"): r for r in excel(game, "MonStats.txt") if r.get("Id")}
+    ex = {r.get("Id"): r for r in excel(game, "MonStats2.txt") if r.get("Id")}
+    out = []
+    for key, mid in TARGETS:
+        r = stats[mid]
+        m2 = ex[r["MonStatsEx"]]
+        out.append({"k": key, "n": game.keyed_strings.get(r["NameStr"], r["NameStr"]), "tok": r["Code"].strip(),
+                    "bw": m2["BaseW"].strip().lower(), "h": int(m2.get("Height") or 0), "lk": monster_looks(m2)})
+    return out
 
 
 def speed_skills(game):
@@ -606,7 +627,7 @@ def page_data(game, arch):
             "a": a, "types": tree, "tcls": tcls, "kinds": [list(k) for k in KINDS], "b": bases,
             "sk": skills, "sq": seqs, "sp": speed_skills(game), "os": os_,
             "forms": {f: {"t": t, "skill": sid} for f, (t, sid) in FORMS.items()},
-            "mercs": merc_list, "msq": merc_seqs, "mis": mis, "shots": shots}
+            "mercs": merc_list, "msq": merc_seqs, "mis": mis, "shots": shots, "targets": targets(game)}
 
 
 def js_line(name, data):
@@ -682,6 +703,8 @@ def selftest(data):
     expect("Act 2 Jab: its monster sequence", len(data["msq"].get(next((x["q"] for x in m["m2"]["atk"] if x.get("q")), ""), [])), 14)
     expect("Act 5 Bash: attack 2", [x["m"] for x in m["m5"]["atk"] if x["n"] == "Bash"], ["A2"])
     expect("drawn at a fixed speed: left out", [s["n"] for s in data["sk"] if s["id"] in (41, 143, 230)], [])
+    expect("targets: zombie, small Fallen, flying Carrion Bird", [(x["k"], x["tok"], x["h"]) for x in data["targets"]],
+           [("zombie", "ZM", 3), ("fallen", "FA", 1), ("bird", "VD", 2)])
     expect("Blade Fury (attack speed)", [s["n"] for s in data["sk"] if s["id"] == 266], ["Blade Fury"])
     b = {w["c"]: w for w in data["b"]}
     expect("Colossus Blade", [b["7gd"][k] for k in ("w", "wc", "wc2", "f")], [5, "1hs", "2hs", 3])
