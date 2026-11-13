@@ -68,6 +68,7 @@ RUNEWORDS = ROOT / "docs" / "pd2-runewords.tsv"
 CLASSES = [("ama", "Amazon", "AM"), ("sor", "Sorceress", "SO"), ("nec", "Necromancer", "NE"),
            ("pal", "Paladin", "PA"), ("bar", "Barbarian", "BA"), ("dru", "Druid", "DZ"), ("ass", "Assassin", "AI")]
 FORMS = {"wolf": ("40", 223), "bear": ("TG", 228)}  # animation token, the form's skill
+TIER_LETTER = {"normal": "N", "exceptional": "X", "elite": "E"}  # a base's tier, as the page's tierName reads it
 ATTACK_MODES = ("A1", "A2", "S1", "S2", "S3", "S4", "TH", "KK")
 FORM_MODES = ("NU", "RN")  # the forms' standing and running animations (their attack's base speed)
 # The weapon classes in the order the sequences list them
@@ -303,7 +304,8 @@ def weapons(game):
             raise SystemExit(f"ias_data: weapon {code} ({r['type']}) fits no kind: add it to KINDS")
         flags = (1 if r.get("1or2handed") == "1" else 0) | (2 if r.get("2handed") == "1" else 0) | \
             (4 if "thro" in anc else 0)
-        out.append({"c": code, "n": game.base_name(code), "t": game.tier(code)[0].upper(), "k": kind,
+        # the tier as one letter: exceptional is X (its first letter would read as elite's E)
+        out.append({"c": code, "n": game.base_name(code), "t": TIER_LETTER[game.tier(code)], "k": kind,
                     "w": int(r.get("speed") or 0), "wc": r["wclass"].strip(), "wc2": r["2handedwclass"].strip(),
                     "f": flags, "ty": [x for x in (r.get("type"), r.get("type2")) if x],
                     "g": r.get("alternateGfx", "").strip().upper(), "lv": int(r.get("levelreq") or 0)})

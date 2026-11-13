@@ -1100,15 +1100,30 @@
   last one finishes.
 - The **IAS Calculator** (Resources, 2026-11-12, the author: "all the functionality of" RoofooEvazan's
   hiimpd2.com/ias-calculator, credited on the page; plan `C:\Users\Erik\.claude\plans\i-want-to-create-compiled-lake.md`):
-  `website/resources/IAS-Calculator.html` (`ias-map`, by hand), four tabs. IAS Calculator: the setup beside an answer
-  that stays in view (a one-line bar on phones: "16 frames now; +8 IAS on other gear gives 15, +143 the fastest,
-  10"), the attack preview, the animation's numbers, breakpoints measured from your setup (a "More" column), every
-  base of the weapon's type at your IAS, the frame grid sized to the speed cap with a line where the frames change
-  (folded on phones). Fastest Frames (as hiimpd2: every setup's own fastest count, the two fastest per class and form;
+  `website/resources/IAS-Calculator.html` (`ias-map`, by hand), four tabs (underlined, as the Grail Planner's).
+  IAS Calculator, after the layout review (2026-11-13, the author took all eight): the setup on the left (it stays in
+  view while the results scroll where the window is tall enough, `fitSetup`); on the right one answer card (the frames
+  and attacks a second big, then what more IAS gives and how much you could do without, "You could do with 6 IAS less
+  and keep 16", Copy a link, and the notes that change how to read it: a mercenary's attack to attack, which of two
+  weapons counts, a lost hit), the breakpoints (Frames first; More, Other gear, Total IAS; EIAS and speed behind "Show
+  EIAS and speed"; in human form and for mercenaries from no IAS at all, `bpRows`, so a row the weapon alone gets past
+  shows a dash and your row shows the IAS to spare; in a form from no IAS on other gear, the engine's `breakpoints`),
+  then the attack preview (at most 600 px wide) and the animation's numbers folded under it. Once the answer card
+  scrolls away a one-line copy shows at the top of the calculator (`#ia-bar`, no room of its own, so nothing moves;
+  the site's Back to top goes under it, `--ias-bar` in ias-calculator.md). Phones: one column, the answer first. Target
+  and Skill level sit in the setup only where they change the answer (Target where attack 1 and attack 2 aren't as
+  long, `DIFF`; Skill level for a skill that hits several times a swing), else among the preview's settings
+  (`placeFields`). Static field help is an (i) beside its label (`.tip` elements, `makeInfo`). Below: every base of
+  the weapon's type, bases that come out the same in one row (frames now, WSM, the next frame count and the fastest
+  with the IAS on other gear each needs, the bases); the frame grid (closed in human form, where it is the breakpoints
+  in diagonal bands, open in a form but on phones; each frame count its own step from slow to fast, `cellColors`,
+  stripes where speed is at its cap). Fastest Frames (as hiimpd2: every setup's own fastest count, the two fastest per
+  class and form;
   in a form the weapon's IAS only up to what its base carries, DATA's `m` / `mh`: a crafted weapon or its best unique /
   set item with Shael in Larzuk's Puzzlebox sockets and the attack speed corruption, or Shael in a corruption's
-  sockets, or its best runeword). How It's Worked Out (your setup step by step, worked examples). Reference (the rules,
-  a short implementation, the data tables). The setup lives in the address (`#tab-calc&c=bar&w=7gd...`, Copy a link)
+  sockets, or its best runeword), with a Weapon type select (the engine's `fastest(..., keep)`: the two fastest of that
+  type alone) and the assumptions folded. How It's Worked Out (your setup step by step, worked examples). Reference
+  (the rules, a short implementation, the data tables). The setup lives in the address (`#tab-calc&c=bar&w=7gd...`, Copy a link)
   and in localStorage `erazure-ias-calculator`. The author's layout choices (2026-11-12) differ from hiimpd2's on
   purpose: answer first, breakpoints from you, the bases table, the trimmed grid, the site's own look, tabs kept, no
   side-by-side builds. This page owns the attack speed model (the author): the Damage Calculator runs its engine.
