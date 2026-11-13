@@ -141,6 +141,7 @@ def on_page_content(html, page, config, files):
         css_path, js_path = assets(name)
         css = files.get_file_from_path(css_path).url_relative_to(page.file)
         js = files.get_file_from_path(js_path).url_relative_to(page.file)
+        # erazure-map: what every map and resource shares on the site (erazure.css: plain folds)
         html = html.replace(placeholder, f'{FONTS}<link rel="stylesheet" href="{css}">'
-                                         f'<div class="{name}">{markup}</div><script src="{js}"></script>')
+                                         f'<div class="{name} erazure-map">{markup}</div><script src="{js}"></script>')
     return html

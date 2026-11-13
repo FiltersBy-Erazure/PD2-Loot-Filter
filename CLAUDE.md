@@ -816,6 +816,13 @@
   dark rule names `[data-md-color-scheme="slate"][data-md-color-primary="black"]` too, since Material's black theme
   sets blue links with both attributes: the site's dark links were blue until the audit, 2026-11-04). On the Grail
   Planner page, Material's "Back to top" button sits under the planner's bar (grail.md, from the planner's `--gm-bar`).
+  On every other page with a sticky bar it does too (2026-11-13; until then the item pages', Map Experience's and
+  Event and Boss Map Runs' bars hid it): each time the button appears, `website/docs/javascripts/erazure.js`
+  (mkdocs.yml `extra_javascript`) finds the page's sticky element right under the header and `erazure.css` moves the
+  button below it (`--page-bar-bottom`; a page's own rule, grail.md / editor.md, wins). hooks.py wraps every map and
+  Resources page in `.erazure-map` beside its own class: there `erazure.css` makes a `<details>` a plain fold with the
+  browser's triangle instead of Material's note box (a page's own fold styles win; added 2026-11-13 with no change to
+  any page's existing folds, checked style by style), so a new page can't get the note box by accident.
   `site_preview.bat`
   (double-click) previews it at http://127.0.0.1:8000/PD2-Loot-Filter/ with MkDocs Material 9.7.7 in
   `tools/.cache/mkdocs-venv`. CI builds it with `--strict`. On `main`, `.github/workflows/pages.yml` builds and
@@ -1011,7 +1018,10 @@
   mkdocs.yml, its card on the Resources page. Public text, so no client DLL names or code addresses, and no "from the
   game's code / tables": say how it works. First (2026-11-02): **Infinity Merc Bases** (`merc-map`): every ethereal
   4-socket Infinity base on the Act 2 Jab merc at every item IAS (damage, Crushing Blows, kill time, breakpoints, the
-  teleport pass); first made as a claude.ai page, now kept here. Second (2026-11-02, the author: a write-up to refer
+  teleport pass); first made as a claude.ai page, now kept here. Its own Jab and basic attack formulas (its
+  `merc-speed` block: the lengths the PD2 wiki's Desert Guard breakpoints count, + 2 frames to the next attack) give
+  the IAS Calculator engine's frames from one attack to the next; `ias_selftest.py` checks every base at every IAS
+  (until 2026-11-13 the page added 1 frame, so its rates were ~7% high). Second (2026-11-02, the author: a write-up to refer
   players to): **Map Experience** (`mapexp-map`): what 146's two lines mean, a level slider (each tier's monster
   share, the tiers' average plain maps over levels 80-98, every plain T1-T3 map ranked), the screenshot's Sanatorium
   worked through. The slider sits in a bar that stays under the site's header (2026-11-05, the author), with the
@@ -1063,6 +1073,12 @@
   best first, each a bar from its lowest to its top rolls around Ohm's line (cards on phones), and the sockets capped
   at the base's most (the data's `ms`: `pd2_data.socket_caps` at item level 41+, Ohm's data only). Its better / worse
   colours (`--good` / `--bad`, teal-green and orange) are a pair colour-blind readers tell apart (green / coral wasn't).
+  The calculators match (2026-11-13, the author): each keeps its answer in a strip at the bottom of the screen while
+  the answer is scrolled away or, for the Damage Calculator, while the builds are on screen (Ohm vs Jewel's `.dock`,
+  the Damage Calculator's, the IAS Calculator's `#ia-bar`, Run Speed's `#fr-dock`: each setup's running speed and
+  race time, shown while its tiles are out of view, above or below); their (i) buttons show their text on hover,
+  keyboard focus or a tap, one at a time, and close on Escape, a tap elsewhere or a scroll (Ohm vs Jewel's); their
+  tabs are underlined (the IAS Calculator's and the Damage Calculator's, as the Grail Planner's).
   The rules the pages state are traced in the game (not the wiki): an ethereal weapon
   has 5/4 of its base damage, rounded down; on-weapon enhanced damage (sockets too) raises only the base damage, base +
   base x ED / 100 rounded down, flat damage added after; everything else multiplies weapon damage and flat damage from
@@ -1085,7 +1101,8 @@
   (`PRESETS`: Zeal, Frenzy, Whirlwind, Fury, Jab, Strafe, Dragon Claw, plausible endgame numbers of Claude's, for the
   author to check; Undo until the next change); "Copy A, change one thing" is the main button; the card's damage per
   hit says the character screen shows it; under How they compare, tabs (Side by Side with the best of a row green,
-  Breakpoints as a ladder per build with each frame count's damage per second, Stat Trade-offs, Damage Profile, How
+  Breakpoints as a ladder per build with each frame count's damage per second, your row's IAS to spare and "You could
+  do with N% IAS less ... and keep F frames" as the IAS Calculator says it (the engine's `spare`), Stat Trade-offs, Damage Profile, How
   It's Worked Out; `#tab-<name>` or a heading's id opens one); tables as wide as their numbers. Fixed the same day: the
   breakpoints' shared column (sorted by frames per hit, labelled per round: 13, 12, 11, 16, 10, 9), Whirlwind's 8
   frames in the text, Charge's damage per second is strikes only (said), a class's masteries only (a build switched
@@ -1141,14 +1158,15 @@
   and attacks a second big, then what more IAS gives and how much you could do without, "You could do with 6 IAS less
   and keep 16", Copy a link, and the notes that change how to read it: a mercenary's attack to attack, which of two
   weapons counts, a lost hit), the breakpoints (Frames first; More, Other gear, Total IAS; EIAS and speed behind "Show
-  EIAS and speed"; in human form and for mercenaries from no IAS at all, `bpRows`, so a row the weapon alone gets past
-  shows a dash and your row shows the IAS to spare; in a form from no IAS on other gear, the engine's `breakpoints`),
-  then the attack preview (at most 600 px wide) and the animation's numbers folded under it. Once the answer card
-  scrolls away a one-line copy shows at the top of the calculator (`#ia-bar`, no room of its own, so nothing moves;
-  the site's Back to top goes under it, `--ias-bar` in ias-calculator.md). Phones: one column, the answer first. Target
+  EIAS and speed"; the engine's `breakpoints(s, fromNone)`: in human form and for mercenaries from no IAS at all, so a
+  row the weapon alone gets past shows a dash, in a form from no IAS on other gear; its `spare`, the IAS your row could
+  do without, which the self-test checks), then the attack preview (at most 600 px wide) and the animation's numbers
+  folded under it. Once the answer card scrolls away a one-line copy shows in a strip at the bottom of the screen
+  (`#ia-bar`; at the top until 2026-11-13, when every calculator's went to the bottom). Phones: one column, the answer first. Target
   and Skill level sit in the setup only where they change the answer (Target where attack 1 and attack 2 aren't as
   long, `DIFF`; Skill level for a skill that hits several times a swing), else among the preview's settings
-  (`placeFields`). Static field help is an (i) beside its label (`.tip` elements, `makeInfo`). Below: every base of
+  (`placeFields`). Static field help is an (i) beside its label (`.tip` elements, `makeInfo`; shown on hover, focus or a
+  tap, as Ohm vs Jewel's). Below: every base of
   the weapon's type, bases that come out the same in one row (frames now, WSM, the next frame count and the fastest
   with the IAS on other gear each needs, the bases); the frame grid (closed in human form, where it is the breakpoints
   in diagonal bands, open in a form but on phones; each frame count its own step from slow to fast, `cellColors`,

@@ -396,7 +396,7 @@
         <tbody></tbody>
       </table>
     </div>
-    <p class="mm-note">Frames count from the frame you land (frame 0). The attack is one Jab (both hits) or, 20% of the time, one basic attack; damage is its average and "Monster dead" the share of 8,000 simulated attacks per base that kill the monster, with every damage roll, Crushing Blow, Critical Strike and Deadly Strike rolled. A monster killed after you've moved on dies where you left it. While you chain teleport, the merc starts its next attack one frame after the last one ends, on whatever is beside it then, so it can attack on only as many landings as its attacks fit: hops of 7 or 8 frames against the length of a Jab (or of a basic attack). Bases of one speed group hit on the same frames; their kill chances differ only through their damage spread.</p>
+    <p class="mm-note">Frames count from the frame you land (frame 0). The attack is one Jab (both hits) or, 20% of the time, one basic attack; damage is its average and "Monster dead" the share of 8,000 simulated attacks per base that kill the monster, with every damage roll, Crushing Blow, Critical Strike and Deadly Strike rolled. A monster killed after you've moved on dies where you left it. While you chain teleport, the merc starts its next attack 2 frames after the last one's length, on whatever is beside it then, so it can attack on only as many landings as its attacks fit: hops of 7 or 8 frames against the length of a Jab (or of a basic attack). Bases of one speed group hit on the same frames; their kill chances differ only through their damage spread.</p>
   </section>
 
   <section class="panel">
@@ -431,7 +431,7 @@
 
   <section class="panel">
     <h2>Jab breakpoints</h2>
-    <p class="sub">Item IAS needed for each Jab length, with your skill IAS. A Jab's length covers both of its hits; the merc stands one more frame before its next attack; 25 frames make one second.</p>
+    <p class="sub">Item IAS needed for each Jab length, with your skill IAS. A Jab's length covers both of its hits; the merc starts its next attack 2 frames after it; 25 frames make one second.</p>
     <div class="scroll"><table class="mm-table bp" id="bpJab"></table></div>
     <h3>Basic attack breakpoints</h3>
     <p class="sub">One hit per swing; the merc swings instead of Jabbing 20% of the time.</p>
@@ -441,7 +441,7 @@
   <section class="panel method">
     <h2>How it's worked out</h2>
     <ul>
-      <li><strong>Attack speed.</strong> Item IAS counts as <span class="formula">&lfloor;120 &times; IAS / (120 + IAS)&rfloor;</span>. Add skill IAS, subtract the base's speed (negative is faster), cap at 75: that's the total. The animation then advances <span class="formula">&lfloor;256 &times; (100 + total) / 100&rfloor;</span> per frame. The merc's Jab is a 14-step sequence with two hits (on steps 6 and 10), lasting <span class="formula">&lceil;256 &times; 14 / rate&rceil;</span> frames; its basic attack is a 16-frame swing with one hit (on frame 11), lasting <span class="formula">&lceil;256 &times; 16 / rate&rceil; &minus; 1</span>. These give the PD2 wiki's Desert Guard breakpoints exactly. Between two attacks the merc stands one more frame before it decides on the next one.</li>
+      <li><strong>Attack speed.</strong> Item IAS counts as <span class="formula">&lfloor;120 &times; IAS / (120 + IAS)&rfloor;</span>. Add skill IAS, subtract the base's speed (negative is faster), cap at 75: that's the total. The animation then advances <span class="formula">&lfloor;256 &times; (100 + total) / 100&rfloor;</span> per frame. The merc's Jab is a 14-step sequence with two hits (on steps 6 and 10), lasting <span class="formula">&lceil;256 &times; 14 / rate&rceil;</span> frames; its basic attack is a 16-frame swing with one hit (on frame 11), lasting <span class="formula">&lceil;256 &times; 16 / rate&rceil; &minus; 1</span>. These give the PD2 wiki's Desert Guard breakpoints exactly. The merc starts its next attack 2 frames after either length: the game ends the attack a frame later, and the merc picks its next one the frame after that. So from one Jab to the next takes the IAS Calculator's frame count for the Desert Mercenary.</li>
       <li><strong>Attack mix.</strong> The merc uses Jab 80% of the time and a basic attack otherwise, so damage and hits per second are averages over that mix (or Jab alone, if you pick it).</li>
       <li><strong>Damage per hit.</strong> First the weapon's own damage: the base's damage, times 1.25 for ethereal, raised by the weapon's enhanced damage, which is Infinity's roll plus a superior base's 5&ndash;20% (both are on the weapon, so they add up). That is the damage the weapon shows. A hit does the weapon's damage times (100 + the Strength and Dexterity bonus + Jab's bonus + other damage %) / 100: enhanced damage on the merc's other gear adds to those bonuses, not to the weapon's. Polearms and spears give 0.75% per point of Strength and of Dexterity. Jab gives +30% at level 1 and +15% per level; the merc's Jab is level 24 from merc level 75 on, plus your + skills. A basic attack gets no Jab bonus. A Hell merc has 173 Strength and 139 Dexterity at level 75, then 1.75 and 1.5 more per level.</li>
       <li><strong>Critical Strike and Deadly Strike.</strong> Every hit, both Jab hits included, first rolls Critical Strike (at most 75%): it does 200% damage, plus any Critical Strike Multiplier. A hit that isn't a Critical Strike rolls Deadly Strike (at most 75%, plus any Maximum Deadly Strike): 150% damage, plus any Deadly Strike Multiplier. So 50% Deadly Strike alone makes the average hit 25% stronger. Only the hit's physical damage is raised; Crushing Blow takes the same share as without. Every base gains the same share, so neither changes which base does the most damage per second.</li>
@@ -469,7 +469,6 @@
   const BER_LEVEL = 63;
   const PASS_FRAMES = 20;
   const PASS_RUNS = 8000;
-  const AI_GAP = 1; // frames the merc stands between two attacks before its next decision
 
   const root = document.querySelector(".merc-map");
   const ethD = d => Math.floor((d + Math.floor(d / 2)) * 5 / 6);
@@ -497,12 +496,21 @@
   const secs = v => !isFinite(v) ? "never" : v >= 100 ? nf0.format(v) + " s" : nf1.format(v) + " s";
   const pct = v => v <= 0 ? "0%" : v < 0.005 ? "<1%" : v >= 1 ? "100%" : v > 0.995 ? ">99%" : nf0.format(v * 100) + "%";
 
-  // speed: item IAS -> total attack speed -> frames
+  // speed: item IAS -> total attack speed -> frames. The IAS Calculator owns the attack speed model: from one attack
+  // to the next (a length + AI_GAP) these give its engine's frames for every base at every IAS (tools/ias_selftest.py
+  // checks it), so a change here or there needs the other.
+  /* merc-speed:start */
   const eias = i => Math.floor(120 * i / (120 + i));
   const totalSpeed = (i, wsm, sias) => Math.min(75, eias(i) + sias - wsm);
   const rate = t => Math.floor(256 * (100 + t) / 100);
+  // a Jab's and a basic attack's length as the PD2 wiki's Desert Guard breakpoints count them
   const jabFrames = t => Math.ceil(256 * 14 / rate(t));
   const swingFrames = t => Math.ceil(256 * 16 / rate(t)) - 1;
+  // the merc starts its next attack 2 frames after either length: the game ends the attack a frame later, and the
+  // merc picks its next one the frame after that (until 2026-11-13 the page counted 1 frame, so its rates were ~7%
+  // high)
+  const AI_GAP = 2;
+  /* merc-speed:end */
   // the sorceress's cast: 14 frames, FCR counted like IAS, capped at 75
   const castFrames = fcr => Math.ceil(256 * 14 / rate(Math.min(75, eias(fcr)))) - 1;
   const W200 = castFrames(200), W105 = castFrames(105);

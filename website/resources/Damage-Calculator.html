@@ -223,11 +223,14 @@
   .dmg-map .credit a, .dmg-map .method a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
   .dmg-map .tabs { display: none; gap: 6px; flex-wrap: wrap; }
   .dmg-map .tabs button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-wash); font-weight: 700; }
-  /* the details under the builds: a tab each (the ARIA tab pattern) */
-  .dmg-map .dm-tabbar { display: flex; flex-wrap: wrap; gap: 6px; border-bottom: 1px solid var(--line); padding-bottom: 10px; }
-  .dmg-map .dm-tabbar button { padding: 7px 14px; font: 600 14px/1.2 var(--body); color: var(--fg2); }
-  .dmg-map .dm-tabbar button[aria-selected="true"] { border-color: var(--accent); background: var(--accent-wash); color: var(--fg);
-    box-shadow: inset 0 -3px 0 var(--accent); }
+  /* the details under the builds: a tab each (the ARIA tab pattern), underlined as the IAS Calculator's and the Grail
+     Planner's tabs */
+  .dmg-map .dm-tabbar { display: flex; flex-wrap: wrap; gap: 2px; border-bottom: 1px solid var(--line); }
+  .dmg-map .dm-tabbar button { background: transparent; border: 0; border-bottom: 2px solid transparent; border-radius: 0;
+                               padding: 6px 14px 9px; margin: 0 0 -1px; font: 600 15px/1.2 var(--body); color: var(--muted); white-space: nowrap; }
+  .dmg-map .dm-tabbar button:hover { color: var(--fg); border-color: transparent; }
+  .dmg-map .dm-tabbar button[aria-selected="true"] { color: var(--fg); border-bottom-color: var(--accent); }
+  .dmg-map .dm-tabbar button:focus-visible { outline-offset: -2px; }
   .dmg-map .dm-tabpanel { display: grid; gap: 12px; min-width: 0; position: relative; }
 
   @media (max-width: 700px) {
@@ -669,22 +672,27 @@
       const sp = speed(s, p, over);
       return {p, sp, t: timing(p, sp, over)};
     }
-    // breakpoints over IAS from other gear (the weapon's IAS as set): one row per change in frames
-    function breakpoints(s) {
+    // breakpoints over IAS from other gear (the weapon's IAS as set): one row per change in frames, {rows: [{gear, r}],
+    // you, spare, r0}. fromNone: in human form (and for a mercenary) all IAS adds up, so the rows start from no IAS at
+    // all and a row the weapon alone gets past has gear below 0; in a form the weapon's IAS also sets the base speed,
+    // so the rows start at no IAS on other gear either way. spare: the IAS on other gear you could do without and keep
+    // your frames (from the weapon too, where it goes below 0).
+    function breakpoints(s, fromNone) {
       const r0 = evaluate(s);
-      if (r0.why || (r0.p.seq && r0.p.fixed) || r0.p.fx) return {rows: [], r0};
+      if (r0.why || (r0.p.seq && r0.p.fixed) || r0.p.fx) return {rows: [], you: 0, spare: 0, r0};
       const rows = [], key = r => r.t.parts.map(x => x.swings ? x.swings.join("/") : x.frames).join(",");
       const own = r0.sp.weaponIAS + r0.sp.inc;  // the IAS that isn't other gear
+      const all = !!fromNone && !r0.p.formBase;
       let last = null;
-      for (let e = eias(own); e < 120; e++) {
-        const gear = Math.max(0, needIAS(e) - own);
+      for (let e = all ? 0 : eias(own); e < 120; e++) {
+        const gear = all ? needIAS(e) - own : Math.max(0, needIAS(e) - own);
         const r = evaluate(s, {gear}), k = key(r);
         if (k !== last) { rows.push({gear, r}); last = k; }
         if (r.sp.raw >= r.sp.hi) break;
       }
       let you = 0;  // the setup's own row: the last one its gear reaches
       rows.forEach((row, i) => { if (row.gear <= s.gear) you = i; });
-      return {rows, you, r0};
+      return {rows, you, spare: rows.length ? s.gear - rows[you].gear : 0, r0};
     }
     // frames over weapon IAS (rows) and other gear's IAS (columns)
     function grid(s, ws, gs) {
@@ -2039,21 +2047,23 @@
       if (!r.fr) body = `<p class="note">${att} has no animation with this weapon.</p>`;
       else if (r.fr.note === "fixed") body = `<p class="note">${att} hits every ${r.fr.frames} frames whatever the attack speed: it has no breakpoints.</p>`;
       else {
-        const rows = IAS.breakpoints(iasSetup(b, r.attack)).rows;
+        // the engine's rows from no IAS on other gear, your row, and the IAS on other gear you could do without
+        const bp = IAS.breakpoints(iasSetup(b, r.attack)), rows = bp.rows, cur = rows.length ? bp.you : -1, spare = bp.spare;
         const dmg = !r.attack.frames_only && r.final > 0;
-        let cur = -1;
-        rows.forEach((row, k) => { if (row.gear <= own) cur = k; });
         let t = `<table class="dm-table"><thead><tr><th>Frames</th><th>IAS on other gear</th>${dmg ? "<th>Damage per second</th>" : ""}</tr></thead><tbody>`;
         rows.forEach((row, k) => {
           const f = roundOf(row.r), dps = dmg ? r.final * 25 * f.hits / f.frames : 0;
           const hits = !f.alt && f.hits > 1 ? `<small>${f.hits} hits</small>` : f.alt ? "<small>attack 1 / attack 2</small>" : "";
-          const you = k === cur ? `<small>you: ${own}%</small>` : "";
+          const you = k === cur ? `<small>you: ${own}%${spare > 0 ? `, ${spare} to spare` : ""}</small>` : "";
           const gain = dmg && k > cur && r.dps ? `<small>${signed(dps / r.dps - 1)}</small>` : "";
           t += `<tr class="${k === cur ? "cur" : k < cur ? "past" : ""}"><td>${frLabel(f)}${hits}</td><td>${row.gear}%${you}</td>${dmg ? `<td>${nf0.format(dps)}${gain}</td>` : ""}</tr>`;
         });
         t += "</tbody></table>";
         const nb = r.next;
-        const foot = !nb ? "" : nb.capped ? "More IAS makes this attack no faster." : `Next: <b>+${nb.add}% IAS</b> on other gear for ${frLabel(nb.fr)} frames (${signed(nb.gain)} damage per second).`;
+        // as the IAS Calculator's answer says it: what you could do without, then what more gives
+        const keep = spare > 0 && cur >= 0 ? `You could do with <b>${spare}% IAS less</b> on other gear and keep ${frLabel(roundOf(rows[cur].r))} frames.` : "";
+        const next = !nb ? "" : nb.capped ? "More IAS makes this attack no faster." : `Next: <b>+${nb.add}% IAS</b> on other gear for ${frLabel(nb.fr)} frames (${signed(nb.gain)} damage per second).`;
+        const foot = [keep, next].filter(Boolean).join(" ");
         body = t + (foot ? `<p class="note">${foot}</p>` : "");
       }
       return `<div class="bp-card" style="--key:${KEYS[i]}"><h3>${esc(bname(i))}<small>${att}, ${own}% IAS on other gear</small></h3>${body}</div>`;

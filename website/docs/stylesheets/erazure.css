@@ -44,3 +44,39 @@
 .md-tabs__list {
   flex-wrap: wrap;
 }
+
+/* Material's "Back to top" button: below a page's sticky bar (the filter bars of the item pages, Map Experience's
+   level bar, Event and Boss Map Runs' strip), which is drawn over it. javascripts/erazure.js sets --page-bar-bottom
+   while the button shows. :where() keeps this rule as weak as a page's own (grail.md, editor.md), which come later
+   and win. Material's script puts the header's height in the button's own style, hence !important. */
+:where(html[data-page-bar]) .md-top {
+  top: calc(var(--page-bar-bottom) + .6rem) !important;
+}
+
+/* Material draws every <details> as a note box (a tinted bar, a blue icon, a chevron). On the players' pages and the
+   Resources pages (hooks.py wraps each in .erazure-map) a fold is a plain one, with the browser's own triangle, unless
+   the page styles it: a page's own rules come later (or weigh more) and win. */
+.md-typeset .erazure-map details {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: none;
+  font-size: inherit;
+}
+.md-typeset .erazure-map summary {
+  display: list-item;
+  list-style-position: inside;  /* the triangle inside the summary, which Material clips (overflow: hidden) */
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  font-weight: inherit;
+  min-height: 0;
+}
+.md-typeset .erazure-map summary::before,
+.md-typeset .erazure-map summary::after {
+  content: none;
+}

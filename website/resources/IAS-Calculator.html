@@ -69,25 +69,28 @@
   .ias-map .ia-tabs button:focus-visible { outline-offset: -2px; }
   .ias-map .ia-panel { display: grid; gap: 18px; min-width: 0; }
 
-  /* (i): a field's explanation, shown on a click or a tap, so the setup isn't fine print under every field */
+  /* (i): a field's explanation, so the setup isn't fine print under every field; it shows on hover, keyboard focus or
+     a tap, and looks and behaves as Ohm vs Jewel's */
   .ias-map .lab-row { display: flex; align-items: center; gap: 6px; position: relative; min-width: 0; }
   .ias-map .has-info { position: relative; }
-  .ias-map .info { flex: none; width: 18px; height: 18px; border-radius: 50%; border: 1px solid var(--axis); background: var(--bg);
-                   color: var(--muted); font: italic 700 11.5px/1 Georgia, "Times New Roman", serif; display: inline-grid; place-items: center;
-                   padding: 0; margin-left: 6px; cursor: pointer; vertical-align: middle; letter-spacing: 0; text-transform: none; }
+  .ias-map .info { position: relative; flex: none; width: 17px; height: 17px; border-radius: 50%; border: 1px solid var(--axis); background: none;
+                   color: var(--muted); font: italic 700 11px/1 Georgia, "Times New Roman", serif; display: inline-grid; place-items: center;
+                   padding: 0; margin-left: 6px; cursor: help; vertical-align: middle; letter-spacing: 0; text-transform: none; }
+  .ias-map .info::after { content: ""; position: absolute; inset: -7px; }  /* a bigger target for a finger */
   .ias-map .lab-row .info { margin-left: 0; }
-  .ias-map .info:hover, .ias-map .info[aria-expanded="true"] { border-color: var(--accent); color: var(--accent); }
+  .ias-map .info:hover, .ias-map .info[aria-describedby] { color: var(--fg); border-color: var(--accent); }
   .ias-map .field small.info-pop, .ias-map .info-pop {
-    position: absolute; z-index: 3; top: calc(100% + 6px); left: 0; width: max-content; max-width: min(360px, 86vw);
-    background: var(--panel); border: 1px solid var(--accent); border-radius: 8px; padding: 8px 11px; display: block;
-    font: 400 13.5px/1.45 var(--body); color: var(--fg2); letter-spacing: 0; text-transform: none; text-align: left;
-    box-shadow: 0 8px 18px rgba(0, 0, 0, .45); white-space: normal; }
+    position: absolute; z-index: 3; top: calc(100% + 8px); left: 0; width: max-content; max-width: min(320px, calc(100vw - 32px));  /* under the site's header (4), over the strip (2) */
+    background: var(--panel); border: 1px solid var(--axis); border-radius: 6px; padding: 8px 10px; display: block; pointer-events: none;
+    font: 400 13px/1.4 var(--body); color: var(--fg); letter-spacing: 0; text-transform: none; text-align: left;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, .45); white-space: normal; }
+  [data-md-color-scheme="default"] .ias-map .info-pop { box-shadow: 0 6px 18px rgba(0, 0, 0, .12); }
 
   /* setup */
   .ias-map .ia-cols { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 18px; align-items: start; min-width: 0; }
   .ias-map .ia-setup { gap: 16px; }
-  /* beside the results, the setup stays in view while you scroll them, where it fits the window (under the bar) */
-  .ias-map .ia-setup.stick { position: sticky; top: calc(var(--stick) + 52px); }
+  /* beside the results, the setup stays in view while you scroll them, where it fits the window (above the strip) */
+  .ias-map .ia-setup.stick { position: sticky; top: var(--stick); }
   .ias-map fieldset { border: 0; margin: 0; padding: 0; min-width: 0; display: grid;
                       grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px 14px; align-content: start; }
   .ias-map legend { grid-column: 1 / -1; float: left; width: 100%; padding: 0 0 6px; font-size: 11.5px; letter-spacing: .1em;
@@ -113,7 +116,8 @@
   .ias-map .btn:hover { border-color: var(--accent); color: var(--fg); }
 
   /* results: one answer card (the frames, what the next breakpoint costs, a link), then the breakpoints beside the
-     setup; once the card scrolls away, a one-line copy of the answer stays at the top of the calculator */
+     setup; once the card scrolls away, a one-line copy of the answer stays at the bottom of the screen (the strip of
+     Ohm vs Jewel and the Damage Calculator) */
   .ias-map { --stick: 8px; }
   .md-content .ias-map { --stick: calc(2.4rem + 8px); }  /* under the website's header */
   .ias-map .ia-out { display: grid; gap: 14px; min-width: 0; align-content: start; }
@@ -124,15 +128,17 @@
   .ias-map .ia-answer-head { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: start; justify-content: space-between; }
   .ias-map .ia-answer-tools { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; justify-content: flex-end; max-width: 100%; }
   .ias-map .ia-answer-tools .note { overflow-wrap: anywhere; }
-  /* the bar takes no room of its own (it shows over the page as it scrolls by), so nothing moves when it appears */
-  .ias-map .ia-bar-wrap { position: sticky; top: var(--stick); z-index: 3; height: 0; margin-bottom: -18px; }  /* under the site's header (4) */
-  .ias-map .ia-verdict-bar { position: absolute; inset: 0 0 auto; margin: 0; font-size: 14.5px; font-variant-numeric: tabular-nums;
-                             background: linear-gradient(var(--accent-wash), var(--accent-wash)), var(--panel); border: 1px solid var(--accent);
-                             border-radius: 8px; padding: 8px 12px; box-shadow: 0 8px 12px -6px rgba(0, 0, 0, .55);
-                             opacity: 0; visibility: hidden; transform: translateY(-6px); transition: opacity .15s, transform .15s, visibility 0s .15s; }
-  .ias-map .ia-bar-wrap.on .ia-verdict-bar { opacity: 1; visibility: visible; transform: none; transition: opacity .15s, transform .15s; }
+  /* the strip: hidden (keeping its room at the end of the calculator, so nothing moves) until the card scrolls away */
+  .ias-map .ia-dock { position: sticky; bottom: 0; z-index: 2; padding: 8px 14px; background: var(--panel);
+                      border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 -8px 24px rgba(0, 0, 0, .4);
+                      visibility: hidden; opacity: 0; transition: opacity .15s, visibility .15s; }
+  [data-md-color-scheme="default"] .ias-map .ia-dock { box-shadow: 0 -6px 18px rgba(0, 0, 0, .12); }
+  .ias-map .ia-dock.on { visibility: visible; opacity: 1; }
+  .ias-map .ia-verdict-bar { margin: 0; font-size: 14.5px; font-variant-numeric: tabular-nums; color: var(--fg); }
   .ias-map .ia-verdict-bar .what { color: var(--muted); font-weight: 600; margin-right: 6px; }
-  @media (prefers-reduced-motion: reduce) { .ias-map .ia-verdict-bar { transition: none !important; } }
+  @media (prefers-reduced-motion: reduce) { .ias-map .ia-dock { transition: none !important; } }
+  /* short windows (200% zoom on a laptop): none, as the Damage Calculator's (it would cover a third of the screen) */
+  @media (max-height: 420px) { .ias-map .ia-dock { display: none; } }
   .ias-map .tiles { display: flex; flex-wrap: wrap; gap: 8px 28px; }
   .ias-map .tile { display: grid; gap: 0; align-content: start; }
   .ias-map .tile-label { font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
@@ -287,7 +293,8 @@
     .ias-map .ia-cols { grid-template-columns: minmax(0, 1fr); }
     .ias-map .ia-out { display: contents; }
     .ias-map .ia-answer { order: -1; }
-    .ias-map .ia-verdict-bar { font-size: 14px; padding: 7px 10px; }
+    .ias-map .ia-verdict-bar { font-size: 14px; }
+    .ias-map .ia-dock { padding: 7px 10px; }
   }
   @media (max-width: 640px) {
     .ias-map .panel { padding: 14px 12px 12px; }
@@ -327,7 +334,6 @@
 
   <!-- the calculator -->
   <section class="ia-panel" id="ia-calc" role="tabpanel" aria-labelledby="ia-tab-calc">
-    <div class="ia-bar-wrap" id="ia-bar"><p class="ia-verdict-bar" id="ia-verdict-bar" aria-hidden="true"></p></div>
     <div class="ia-cols">
       <div class="panel ia-setup" aria-label="Your setup">
         <fieldset>
@@ -527,6 +533,7 @@
         <p class="grid-tip" id="ia-grid-tip" aria-live="polite">Point at a box (or tap it) for its numbers.</p>
       </div>
     </section>
+    <div class="ia-dock" id="ia-bar" aria-hidden="true"><p class="ia-verdict-bar" id="ia-verdict-bar"></p></div>
   </section>
 
   <!-- the fastest setups -->
@@ -972,22 +979,27 @@
       const sp = speed(s, p, over);
       return {p, sp, t: timing(p, sp, over)};
     }
-    // breakpoints over IAS from other gear (the weapon's IAS as set): one row per change in frames
-    function breakpoints(s) {
+    // breakpoints over IAS from other gear (the weapon's IAS as set): one row per change in frames, {rows: [{gear, r}],
+    // you, spare, r0}. fromNone: in human form (and for a mercenary) all IAS adds up, so the rows start from no IAS at
+    // all and a row the weapon alone gets past has gear below 0; in a form the weapon's IAS also sets the base speed,
+    // so the rows start at no IAS on other gear either way. spare: the IAS on other gear you could do without and keep
+    // your frames (from the weapon too, where it goes below 0).
+    function breakpoints(s, fromNone) {
       const r0 = evaluate(s);
-      if (r0.why || (r0.p.seq && r0.p.fixed) || r0.p.fx) return {rows: [], r0};
+      if (r0.why || (r0.p.seq && r0.p.fixed) || r0.p.fx) return {rows: [], you: 0, spare: 0, r0};
       const rows = [], key = r => r.t.parts.map(x => x.swings ? x.swings.join("/") : x.frames).join(",");
       const own = r0.sp.weaponIAS + r0.sp.inc;  // the IAS that isn't other gear
+      const all = !!fromNone && !r0.p.formBase;
       let last = null;
-      for (let e = eias(own); e < 120; e++) {
-        const gear = Math.max(0, needIAS(e) - own);
+      for (let e = all ? 0 : eias(own); e < 120; e++) {
+        const gear = all ? needIAS(e) - own : Math.max(0, needIAS(e) - own);
         const r = evaluate(s, {gear}), k = key(r);
         if (k !== last) { rows.push({gear, r}); last = k; }
         if (r.sp.raw >= r.sp.hi) break;
       }
       let you = 0;  // the setup's own row: the last one its gear reaches
       rows.forEach((row, i) => { if (row.gear <= s.gear) you = i; });
-      return {rows, you, r0};
+      return {rows, you, spare: rows.length ? s.gear - rows[you].gear : 0, r0};
     }
     // frames over weapon IAS (rows) and other gear's IAS (columns)
     function grid(s, ws, gs) {
@@ -1313,25 +1325,12 @@
     if ((sk && sk.rb !== undefined) || lvl.hidden) setup.insertBefore(lvl, before); else pv.appendChild(lvl);
   }
   const perOf = r => (r.t.avg ? r.t.avg.frames : r.t.parts[0].frames);
-  const rowKey = r => r.t.parts.map(x => (x.swings ? x.swings.join("/") : x.frames)).join(",");
-  // a setup's breakpoints, one row per frame count: {rows: [{gear, r}], you, r0}, gear being the IAS from other gear
-  // it needs. In human form (and for a mercenary) all IAS adds up, so the rows start from no IAS at all: a row the
-  // weapon alone gets past has gear below 0, and your row shows how much IAS you could do without. In a form the
-  // weapon's IAS also sets the base speed, so it stays as set and the rows start at no IAS on other gear.
+  // a setup's breakpoints, one row per frame count (the engine's, from no IAS at all where all IAS adds up), or null
+  // for an attack IAS doesn't change
   function bpRows(s) {
     const r0 = E.evaluate(s);
     if (r0.why || r0.p.fixed || r0.p.fx) return null;
-    if (r0.p.formBase) return E.breakpoints(s);
-    const own = r0.sp.weaponIAS + r0.sp.inc, rows = [];
-    let last = null;
-    for (let e = 0; e < 120; e++) {
-      const gear = E.needIAS(e) - own, r = E.evaluate(s, {gear}), k = rowKey(r);
-      if (k !== last) { rows.push({gear, r}); last = k; }
-      if (r.sp.raw >= r.sp.hi) break;
-    }
-    let you = 0;
-    rows.forEach((row, i) => { if (row.gear <= s.gear) you = i; });
-    return {rows, you, r0};
+    return E.breakpoints(s, true);
   }
   // from a setup's row: the next faster frame count and the fastest (null where there is none)
   function ahead(bp) {
@@ -1356,8 +1355,9 @@
   // the setup stays in view beside the results where the window is wide and tall enough for all of it
   function fitSetup() {
     const el = document.querySelector(".ias-map .ia-setup");
-    const top = (parseFloat(getComputedStyle($("ia-bar")).top) || 0) + 52;
-    el.classList.toggle("stick", innerWidth > 980 && el.offsetHeight + top + 16 <= innerHeight);
+    // its top (under the website's header) and the strip at the bottom of the screen, which mustn't cover it
+    const head = document.querySelector(".md-header"), top = (el.closest(".md-content") && head ? head.offsetHeight : 0) + 8;
+    el.classList.toggle("stick", innerWidth > 980 && el.offsetHeight + top + 16 + $("ia-bar").offsetHeight + 8 <= innerHeight);
   }
   addEventListener("resize", () => { clearTimeout(fitSetup.t); fitSetup.t = setTimeout(fitSetup, 150); });
   const partText = p => (p.swings ? p.swings.join("/") : fmt(p.frames));
@@ -1368,7 +1368,7 @@
   const heldRate = r => (r.t.avg ? (25 / r.t.avg.frames).toFixed(2) : perSecond(r.t.parts[0]));
   const avgText = v => (Number.isInteger(v) ? String(v) : v.toFixed(1));
   // IAS you could do without and keep the frames you have (in human form from the weapon or other gear)
-  const spareOf = bp => S.gear - bp.rows[bp.you].gear;
+  const spareOf = bp => bp.spare;
   // the answer in one line: frames now, what the next breakpoint costs, the fastest
   // The answer card says what more IAS gives and what you could do without (its big number already says the frames);
   // the bar says it all in one line.
@@ -1897,7 +1897,7 @@
         "Attack 1, then attack 2: the game draws either, half the time each, and makes the hit at attack 1's hit frame both times. ") : "") +
       (PV.tl.some(x => x.shot) ? "The shot leaves on the filled frame and flies at its own speed, moved smoothly between the game's frames as D2GL draws it. " : "") +
       "Each box is one game frame of the attack, held as if you keep the button down. The figure holds your weapon; its light armor is only how it's drawn, as armor never changes attack speed.");
-    const info = document.querySelector('.ias-map .info[aria-controls="ia-prev-note"]');
+    const info = document.querySelector('.ias-map .info[data-pop="ia-prev-note"]');
     if (info) info.hidden = !$("ia-prev-note").textContent;
   }
   function renderStrip() {
@@ -2181,19 +2181,19 @@
         return `<tr><td class="left"><code>${k}</code></td><td class="left">${esc(MODE_NAME[m] || (m === "NU" ? "standing" : m === "RN" ? "running" : m))}</td><td class="left">${esc(WC_NAME[wc] || wc)}</td><td>${r[0]}</td><td>${r[1]}</td><td>${r[2].map(x => x + 1).join(", ")}</td><td>${(m === "A1" || m === "A2") && fb[wc] ? fb[wc] : ""}</td></tr>`; }).join("") + "</tbody>";
   }
 
-  // ---------------------------------------------------------------- (i): a field's explanation on a click or a tap
-  // Each .tip becomes the popup of an (i) button beside its field's label (or the element its data-anchor names).
-  let INFO_N = 0;
+  // ---------------------------------------------------------------- (i): a field's explanation, as Ohm vs Jewel's
+  // Each .tip becomes the text of an (i) button beside its field's label (or the element its data-anchor names), shown
+  // on hover, keyboard focus or a tap, one at a time; Escape, a tap elsewhere or scrolling closes it.
+  let INFO_N = 0, INFO_ON = null;
   function makeInfo(tip) {
     const field = tip.closest(".field");
     const anchor = tip.dataset.anchor ? $(tip.dataset.anchor) : field && field.querySelector("label, .lab");
     if (!anchor) return;
     if (!tip.id) tip.id = "ia-info-" + (++INFO_N);
     const btn = document.createElement("button");
-    btn.type = "button"; btn.className = "info"; btn.textContent = "i";
-    btn.setAttribute("aria-expanded", "false"); btn.setAttribute("aria-controls", tip.id);
+    btn.type = "button"; btn.className = "info"; btn.textContent = "i"; btn.dataset.pop = tip.id;
     btn.setAttribute("aria-label", `About ${anchor.textContent.trim()}`);
-    tip.classList.remove("tip"); tip.classList.add("info-pop"); tip.hidden = true;
+    tip.classList.remove("tip"); tip.classList.add("info-pop"); tip.setAttribute("role", "tooltip"); tip.hidden = true;
     if (anchor.tagName === "LABEL" || anchor.classList.contains("lab")) {
       const row = document.createElement("span");
       row.className = "lab-row";
@@ -2205,43 +2205,47 @@
     }
   }
   document.querySelectorAll(".ias-map .tip").forEach(makeInfo);
-  function setInfo(b, open) {
-    const pop = $(b.getAttribute("aria-controls"));
-    b.setAttribute("aria-expanded", String(open));
-    pop.hidden = !open;
-    if (!open) return;
+  function showInfo(b) {
+    if (INFO_ON === b) return;
+    hideInfo();
+    const pop = $(b.dataset.pop);
+    INFO_ON = b; b.setAttribute("aria-describedby", pop.id); pop.hidden = false;
     pop.style.left = "";  // kept inside the window
     const r = pop.getBoundingClientRect(), room = document.documentElement.clientWidth - 8;
     if (r.right > room) pop.style.left = `${Math.max(8 - r.left, room - r.right)}px`;
   }
-  const closeInfos = keep => document.querySelectorAll('.ias-map .info[aria-expanded="true"]').forEach(b => { if (b !== keep) setInfo(b, false); });
+  function hideInfo() {
+    if (!INFO_ON) return;
+    $(INFO_ON.dataset.pop).hidden = true;
+    INFO_ON.removeAttribute("aria-describedby");
+    INFO_ON = null;
+  }
+  const infoOf = t => (t && t.closest ? t.closest(".ias-map .info") : null);
+  document.addEventListener("pointerover", e => { const b = e.pointerType === "mouse" && infoOf(e.target); if (b) showInfo(b); });
+  document.addEventListener("pointerout", e => {
+    if (e.pointerType === "mouse" && INFO_ON && infoOf(e.target) === INFO_ON && !INFO_ON.contains(e.relatedTarget)) hideInfo();
+  });
+  document.addEventListener("focusin", e => { const b = infoOf(e.target); if (b) showInfo(b); });
+  document.addEventListener("focusout", e => { if (INFO_ON && e.target === INFO_ON) hideInfo(); });
   document.addEventListener("click", e => {
-    const b = e.target.closest && e.target.closest(".ias-map .info");
-    if (b) { e.preventDefault(); closeInfos(b); setInfo(b, b.getAttribute("aria-expanded") !== "true"); return; }
-    if (!(e.target.closest && e.target.closest(".ias-map .info-pop"))) closeInfos();
+    const b = infoOf(e.target);
+    if (b) { e.preventDefault(); showInfo(b); } else hideInfo();
   });
-  document.addEventListener("keydown", e => {
-    if (e.key !== "Escape") return;
-    const b = document.querySelector('.ias-map .info[aria-expanded="true"]');
-    if (b) { closeInfos(); b.focus(); }
-  });
+  document.addEventListener("keydown", e => { if (e.key === "Escape") hideInfo(); });
+  addEventListener("scroll", hideInfo, {passive: true});
 
-  // ---------------------------------------------------------------- the bar: the answer in one line once its card scrolls away
+  // ---------------------------------------------------------------- the strip: the answer in one line once its card scrolls away
   (function () {
-    const card = $("ia-answer"), wrap = $("ia-bar"), site = !!document.querySelector(".md-content .ias-map");
-    const set = on => {
-      wrap.classList.toggle("on", on);
-      // the website's "Back to top" button goes under it (ias-calculator.md)
-      if (site) document.documentElement.style.setProperty("--ias-bar", on ? `${$("ia-verdict-bar").offsetHeight + 6}px` : "0px");
-    };
+    const card = $("ia-answer"), dock = $("ia-bar");
     if (!("IntersectionObserver" in window)) return;
     let io = null, t = 0;
     const watch = () => {
       if (io) io.disconnect();
-      const top = parseFloat(getComputedStyle(wrap).top) || 0;
-      // out of view: the card's bottom has gone under the bar's line (a hidden tab's card has no size)
-      io = new IntersectionObserver(([e]) => set(!e.isIntersecting && e.boundingClientRect.height > 0 && e.boundingClientRect.top < top),
-        {rootMargin: `${-Math.round(top + 40)}px 0px 0px 0px`});
+      // under the website's header counts as out of view
+      const head = document.querySelector(".md-header"), top = dock.closest(".md-content") && head ? head.offsetHeight : 0;
+      // out of view: the card has gone up past the top (a hidden tab's card has no size)
+      io = new IntersectionObserver(([e]) => dock.classList.toggle("on", !e.isIntersecting && e.boundingClientRect.height > 0 && e.boundingClientRect.top < top),
+        {rootMargin: `${-top}px 0px 0px 0px`});
       io.observe(card);
     };
     watch();

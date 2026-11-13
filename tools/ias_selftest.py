@@ -18,6 +18,10 @@ Tests:
               (tools/ias_data.py --sync writes them).
   previews    the attack previews (website/resources/IAS-Calculator-Sprites/) were drawn from the page's data, and
               every drawn animation's files are there (tools/ias_sprites.py check_files).
+  infinity    Infinity Merc Bases (website/resources/Infinity-Merc-Bases.html) works out the Act 2 mercenary's Jab and
+              basic attack with formulas of its own (its merc-speed block): from one attack to the next they must
+              take the engine's frames, for every base it lists, at every item IAS from 0 to 150 and with skill IAS,
+              and its bases' speeds must be the page's data's.
 The engine (between the page's ias-engine markers) and the IAS_DATA line (between its calc-data markers) are loaded
 into a test page of their own; nothing of the page's interface runs.
 """
@@ -34,6 +38,7 @@ sys.path.insert(0, str(TOOLS))
 import editor_selftest  # noqa: E402  (its headless browser runner)
 
 PAGE = ROOT / "website" / "resources" / "IAS-Calculator.html"
+INFINITY_PAGE = ROOT / "website" / "resources" / "Infinity-Merc-Bases.html"
 CASES = TOOLS / "ias_cases.json"
 
 TEST_JS = r"""
@@ -103,6 +108,18 @@ for (let i = 0; i < 1500; i++) {
         if (key(less) === key(row.r)) bad("breakpoints " + name, "one IAS less is as fast at " + row.gear);
       }
     });
+    // the IAS to spare (from no IAS on other gear, and from no IAS at all): that much less keeps the frames, one more
+    // less doesn't (where a slower row is below)
+    [false, true].forEach(fromNone => {
+      const b2 = IAS.breakpoints(s, fromNone);
+      if (!b2.rows.length) return;
+      const key = x => x.t.parts.map(p => p.swings ? p.swings.join("/") : p.frames).join(",");
+      const at = gear => key(IAS.evaluate(Object.assign({}, s, {gear})));
+      const what = `spare ${fromNone ? "from none " : ""}${name}`;
+      if (b2.spare < 0 || b2.spare !== s.gear - b2.rows[b2.you].gear) bad(what, "spare " + b2.spare);
+      else if (at(s.gear - b2.spare) !== at(s.gear)) bad(what, `${b2.spare} IAS less changes the frames`);
+      else if (b2.you > 0 && at(s.gear - b2.spare - 1) === at(s.gear)) bad(what, `${b2.spare + 1} IAS less keeps the frames`);
+    });
     if (i % 25 === 0) {
       const g = IAS.grid(s, [0, s.wi, 40], [0, s.gear, 100]);
       [0, s.wi, 40].forEach((wi, a) => [0, s.gear, 100].forEach((gear, c) => {
@@ -126,6 +143,26 @@ D.cls.map(c => c[0]).forEach(cls => ["human", "wolf", "bear"].forEach(form => { 
   }));
 }));
 out.info.fastest = ffRows;
+// Infinity Merc Bases: its own Jab and basic attack formulas against the engine, from one attack to the next
+let infRows = 0;
+const JAB = IAS.MERC.m2.atk.find(a => a.n === "Jab").id;
+INF.RAW.forEach(([code, name, , wsm]) => {
+  if (!IAS.BASE[code] || !IAS.canHold("m2", code)) { bad("infinity " + name, "the Desert Mercenary can't hold it"); return; }
+  if (IAS.BASE[code].w !== wsm) bad("infinity " + name, `speed ${wsm}, the IAS Calculator's data says ${IAS.BASE[code].w}`);
+  [0, 9, 18, 27, 36, 45, 60].forEach(sias => {
+    for (let ias = 0; ias <= 150; ias++) {
+      const t = INF.totalSpeed(ias, wsm, sias);
+      [[JAB, INF.jabFrames, "Jab"], [0, INF.swingFrames, "basic attack"]].forEach(([atk, len, what]) => {
+        infRows++;
+        const r = IAS.evaluate(Object.assign({}, DEF, {cls: "m2", atk, w: code, gear: ias, other: sias}));
+        if (r.why) bad(`infinity ${name} ${what}`, r.why);
+        else if (len(t) + INF.AI_GAP !== r.t.parts[0].frames)
+          bad(`infinity ${name} ${what}`, `${ias} IAS, ${sias} skill IAS: ${len(t)} + ${INF.AI_GAP} frames, the engine ${r.t.parts[0].frames}`);
+      });
+    }
+  });
+});
+out.info.infinity = infRows;
 """
 
 PAGE_HTML = """<!doctype html>
@@ -135,6 +172,7 @@ PAGE_HTML = """<!doctype html>
 "use strict";
 __DATA__
 __ENGINE__
+__INFINITY__
 const CASES = __CASES__;
 __MODE__
 </script></body></html>
@@ -150,9 +188,19 @@ def blocks():
     return between("/* calc-data:start */", "/* calc-data:end */"), between("/* ias-engine:start */", "/* ias-engine:end */")
 
 
+def infinity_js():
+    """Infinity Merc Bases' speed formulas (its merc-speed block) and bases (its RAW line), as the test page's INF."""
+    text = INFINITY_PAGE.read_text(encoding="utf-8")
+    a, b = "/* merc-speed:start */", "/* merc-speed:end */"
+    speed = text[text.index(a) + len(a):text.index(b)]
+    raw = re.search(r"^\s*const RAW = \[.*\];$", text, re.M).group(0)
+    return ("const INF = (function () {\n" + raw + "\n" + speed +
+            "\nreturn {totalSpeed, jabFrames, swingFrames, AI_GAP, RAW};\n})();")
+
+
 def run(browser, cases, mode_js):
     data, engine = blocks()
-    html = (PAGE_HTML.replace("__DATA__", data).replace("__ENGINE__", engine)
+    html = (PAGE_HTML.replace("__DATA__", data).replace("__ENGINE__", engine).replace("__INFINITY__", infinity_js())
             .replace("__CASES__", json.dumps(cases)).replace("__MODE__", mode_js))
     return editor_selftest.run_page(browser, html, {}, timeout=600)
 
@@ -197,7 +245,8 @@ def main():
     if len(res["fail"]) > 60:
         print(f"ias_selftest: ... and {len(res['fail']) - 60} more")
     print(f"ias_selftest: {res['ran']} cases, {res['info'].get('random', 0)} random setups, "
-          f"{res['info'].get('fastest', 0)} Fastest Frames rows: {'FAILED' if res['fail'] else 'ok'}")
+          f"{res['info'].get('fastest', 0)} Fastest Frames rows, {res['info'].get('infinity', 0)} Infinity Merc Bases "
+          f"setups: {'FAILED' if res['fail'] else 'ok'}")
     sys.exit(1 if res["fail"] else 0)
 
 
