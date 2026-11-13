@@ -80,6 +80,27 @@
   .merc-map .range-row input[type="range"] { flex: 1; min-width: 0; accent-color: var(--accent); }
   .merc-map .range-row input[type="number"] { width: 76px; flex: none; }
   .merc-map .range-row output { width: 56px; flex: none; text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+  /* a field: its label (help behind an (i)), its input, then a note the settings fill in. The fields of a row share
+     their label's height, so their inputs line up */
+  .merc-map .lab { display: flex; align-items: center; gap: 6px; min-height: 20px; }
+  .merc-map .num { display: inline-flex; align-items: center; gap: 6px; flex: none; }
+  .merc-map .num input[type="number"] { width: 84px; }
+  .merc-map .num.wide input[type="number"] { width: 112px; }
+  .merc-map .unit { color: var(--muted); font-size: 14px; }
+  @supports (grid-template-rows: subgrid) {
+    .merc-map .field { grid-row: span 3; grid-template-rows: subgrid; row-gap: 4px; }
+  }
+  /* the (i) beside a label: its text shows on hover, keyboard focus or a tap */
+  .merc-map { position: relative; }
+  .merc-map button.info { position: relative; display: inline-grid; place-items: center; flex: none; width: 17px; height: 17px; padding: 0;
+                          border: 1px solid var(--axis); border-radius: 50%; background: none; color: var(--muted); cursor: help;
+                          font: italic 700 11px/1 Georgia, "Times New Roman", serif; }
+  .merc-map button.info::after { content: ""; position: absolute; inset: -7px; }
+  .merc-map button.info:hover, .merc-map button.info[aria-describedby] { color: var(--fg); border-color: var(--accent); }
+  .merc-map .mm-help { position: absolute; z-index: 6; max-width: min(320px, calc(100vw - 32px)); padding: 8px 10px; border-radius: 6px;
+                       background: var(--panel); border: 1px solid var(--axis); color: var(--fg); font-size: 13px; line-height: 1.4;
+                       pointer-events: none; box-shadow: 0 6px 18px rgba(0, 0, 0, .45); }
+  [data-md-color-scheme="default"] .merc-map .mm-help { box-shadow: 0 6px 18px rgba(0, 0, 0, .12); }
 
   /* the best bases at your IAS */
   .merc-map .tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
@@ -90,6 +111,19 @@
   .merc-map .tile-value span { font-size: 15px; font-weight: 600; color: var(--fg2); margin-left: 4px; }
   .merc-map .tile-sub { font-size: 14.5px; font-weight: 600; }
   .merc-map .tile-note { font-size: 12.5px; color: var(--muted); }
+  /* the strip at the bottom of the screen with the best bases, while the tiles are scrolled away */
+  .merc-map .dock { position: sticky; bottom: 0; z-index: 3; display: grid; grid-template-columns: auto repeat(3, minmax(0, 1fr));
+                    gap: 2px 20px; align-items: center; padding: 8px 16px; background: var(--panel); border: 1px solid var(--line);
+                    border-radius: 8px; box-shadow: 0 -8px 24px rgba(0, 0, 0, .4); visibility: hidden; opacity: 0;
+                    transition: opacity .15s, visibility .15s, border-color .4s; }
+  [data-md-color-scheme="default"] .merc-map .dock { box-shadow: 0 -6px 18px rgba(0, 0, 0, .12); }
+  .merc-map .dock.on { visibility: visible; opacity: 1; }
+  .merc-map .dock.flash { border-color: var(--accent); transition: none; }
+  .merc-map .d-ias { font-weight: 700; white-space: nowrap; }
+  .merc-map .d-item { display: grid; min-width: 0; }
+  .merc-map .d-lab { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+  .merc-map .d-line { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--fg2); font-size: 14px; }
+  .merc-map .d-line b { font-size: 17px; color: var(--fg); margin-right: 6px; font-variant-numeric: tabular-nums; }
 
   /* charts */
   .merc-map .chart-head { display: grid; gap: 4px; }
@@ -150,6 +184,36 @@
     .merc-map .tiles { grid-template-columns: 1fr; }
     .merc-map .field.wide { grid-column: 1 / -1; }
     .merc-map .panel { padding: 14px 12px 12px; }
+    .merc-map .dock { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2px 12px; padding: 6px 10px; }
+    .merc-map .d-ias { grid-column: 1 / -1; font-size: 13px; }
+    .merc-map .d-lab { font-size: 10.5px; letter-spacing: .04em; }
+    .merc-map .d-line b { display: block; margin: 0; font-size: 16px; }
+    .merc-map .d-line { font-size: 13px; }
+    @supports (grid-template-rows: subgrid) {
+      /* a label that wraps keeps the three values level */
+      .merc-map .d-item { grid-row: span 2; grid-template-rows: subgrid; }
+    }
+    /* the base and teleport tables: a card per base, each value under its column's name */
+    .merc-map table.cards, .merc-map .cards tbody, .merc-map .cards tr, .merc-map .cards td { display: block; }
+    .merc-map .cards thead { display: none; }
+    .merc-map .cards tbody tr { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 14px; padding: 12px 2px;
+                                border-bottom: 1px solid var(--line); }
+    .merc-map .cards td { padding: 0; border: 0; text-align: left; white-space: normal; min-width: 0; }
+    .merc-map .cards td.sep { border-left: 0; }
+    .merc-map .cards tbody tr:hover td { background: none; }
+    .merc-map .cards td.name { align-self: center; }
+    .merc-map .cards td[data-l]::before { content: attr(data-l); display: block; font-size: 12px; font-weight: 400; color: var(--muted); }
+    /* every base: three to a line, its results first */
+    .merc-map #baseTable.cards tbody tr { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .merc-map #baseTable.cards td.name { grid-column: span 2; }
+    .merc-map #baseTable.cards td:nth-child(7) { order: 3; }
+    .merc-map #baseTable.cards td:nth-child(9) { order: 4; }
+    .merc-map #baseTable.cards td:nth-child(10) { order: 5; }
+    .merc-map #baseTable.cards td:nth-child(8) { order: 6; }
+    .merc-map #baseTable.cards td:nth-child(6) { order: 7; }
+    .merc-map #baseTable.cards td:nth-child(3) { order: 8; }
+    .merc-map #baseTable.cards td:nth-child(4) { order: 9; }
+    .merc-map #baseTable.cards td:nth-child(5) { order: 10; grid-column: span 2; }
   }
   @media (max-width: 440px) {
     .merc-map fieldset { grid-template-columns: 1fr; }
@@ -171,105 +235,107 @@
     <fieldset>
       <legend>Your mercenary</legend>
       <div class="field full">
-        <label for="ias">Item IAS (increased attack speed from the merc's gear)</label>
+        <div class="lab"><label for="ias">Item IAS</label>
+          <button type="button" class="info" aria-label="About item IAS" data-tip="Increased attack speed from the merc's gear. A click on one of the charts below sets it too.">i</button></div>
         <div class="range-row">
           <input type="range" id="ias" min="0" max="150" step="1" value="40">
-          <input type="number" id="iasNum" min="0" max="150" step="1" value="40" aria-label="Item IAS in percent">
+          <span class="num"><input type="number" id="iasNum" min="0" max="150" step="1" value="40" aria-label="Item IAS in percent"><span class="unit">%</span></span>
         </div>
       </div>
       <div class="field">
-        <label for="lvl">Merc level</label>
+        <div class="lab"><label for="lvl">Merc level</label></div>
         <select id="lvl"></select>
         <small id="lvlNote"></small>
       </div>
       <div class="field">
-        <label for="ed">Infinity's damage roll</label>
+        <div class="lab"><label for="ed">Infinity's damage roll</label></div>
         <div class="range-row">
           <input type="range" id="ed" min="255" max="325" step="1" value="290">
           <output id="edOut" for="ed">+290%</output>
         </div>
       </div>
       <div class="field">
-        <label for="sup">Superior base</label>
+        <div class="lab"><label for="sup">Superior base</label>
+          <button type="button" class="info" aria-label="About a superior base" data-tip="A superior base's +5&ndash;20% damage adds to Infinity's roll.">i</button></div>
         <div class="range-row">
           <input type="range" id="sup" min="4" max="20" step="1" value="4">
           <output id="supOut" for="sup">None</output>
         </div>
-        <small>A superior base's +5&ndash;20% damage adds to Infinity's roll</small>
       </div>
       <div class="field">
-        <label for="plus">+ Skills on merc gear</label>
+        <div class="lab"><label for="plus">+ Skills on merc gear</label></div>
         <select id="plus"></select>
         <small id="jabNote"></small>
       </div>
       <div class="field">
-        <label for="other">Other + % damage</label>
-        <input type="number" id="other" min="0" max="5000" step="5" value="0">
-        <small>Damage % from other gear; each Strength or Dexterity point on gear adds 0.75%</small>
+        <div class="lab"><label for="other">Other damage</label>
+          <button type="button" class="info" aria-label="About other damage" data-tip="Damage % from other gear; each Strength or Dexterity point on gear adds 0.75%.">i</button></div>
+        <span class="num"><input type="number" id="other" min="0" max="5000" step="5" value="0"><span class="unit">%</span></span>
       </div>
       <div class="field">
-        <label for="sias">Skill IAS</label>
-        <input type="number" id="sias" min="0" max="200" step="1" value="0">
-        <small>From an aura such as Fanaticism</small>
+        <div class="lab"><label for="sias">Skill IAS</label>
+          <button type="button" class="info" aria-label="About skill IAS" data-tip="From an aura such as Fanaticism.">i</button></div>
+        <span class="num"><input type="number" id="sias" min="0" max="200" step="1" value="0"><span class="unit">%</span></span>
       </div>
       <div class="field">
-        <label for="mix">Attacks</label>
+        <div class="lab"><label for="mix">Attacks</label>
+          <button type="button" class="info" aria-label="About the attacks" data-tip="The merc picks Jab 80% of the time and a basic attack otherwise.">i</button></div>
         <select id="mix">
-          <option value="0.8">Jab 80%, basic attack 20%</option>
+          <option value="0.8">Jab 80%, basic 20%</option>
           <option value="1">Jab only</option>
         </select>
-        <small>The merc picks Jab 80% of the time</small>
       </div>
       <div class="field">
-        <label for="cbc">Crushing Blow chance %</label>
-        <input type="number" id="cbc" min="0" max="100" step="1" value="40">
-        <small>Infinity has 40% (two Ber runes)</small>
+        <div class="lab"><label for="cbc">Crushing Blow chance</label>
+          <button type="button" class="info" aria-label="About Crushing Blow chance" data-tip="Infinity has 40% (two Ber runes).">i</button></div>
+        <span class="num"><input type="number" id="cbc" min="0" max="100" step="1" value="40"><span class="unit">%</span></span>
       </div>
       <div class="field">
-        <label for="cbe">Crushing Blow efficiency %</label>
-        <input type="number" id="cbe" min="0" max="500" step="5" value="0">
-        <small>Each Crushing Blow takes this much more</small>
+        <div class="lab"><label for="cbe">Crushing Blow efficiency</label>
+          <button type="button" class="info" aria-label="About Crushing Blow efficiency" data-tip="Each Crushing Blow takes this much more.">i</button></div>
+        <span class="num"><input type="number" id="cbe" min="0" max="500" step="5" value="0"><span class="unit">%</span></span>
       </div>
     </fieldset>
     <fieldset>
       <legend>Critical Strike and Deadly Strike, from the merc's gear</legend>
       <div class="field">
-        <label for="cs">Critical Strike chance</label>
+        <div class="lab"><label for="cs">Critical Strike chance</label>
+          <button type="button" class="info" id="csInfo" aria-label="About Critical Strike chance" data-tip="At most 75%. A Critical Strike does 200% damage.">i</button></div>
         <div class="range-row">
           <input type="range" id="cs" min="0" max="75" step="1" value="0">
           <output id="csOut" for="cs">0%</output>
         </div>
-        <small id="csNote">At most 75%. A Critical Strike does 200% damage</small>
       </div>
       <div class="field">
-        <label for="csMul">Critical Strike multiplier %</label>
-        <input type="number" id="csMul" min="0" max="500" step="5" value="0">
-        <small>From gear, added to the 200%</small>
+        <div class="lab"><label for="csMul">Critical Strike multiplier</label>
+          <button type="button" class="info" aria-label="About the Critical Strike multiplier" data-tip="From gear, added to the 200%.">i</button></div>
+        <span class="num"><input type="number" id="csMul" min="0" max="500" step="5" value="0"><span class="unit">%</span></span>
       </div>
       <div class="field">
-        <label for="ds">Deadly Strike chance</label>
+        <div class="lab"><label for="ds">Deadly Strike chance</label>
+          <button type="button" class="info" id="dsInfo" aria-label="About Deadly Strike chance" data-tip="Rolled when a hit isn't a Critical Strike; at most 75%. A Deadly Strike does 150% damage.">i</button></div>
         <div class="range-row">
           <input type="range" id="ds" min="0" max="100" step="1" value="0">
           <output id="dsOut" for="ds">0%</output>
         </div>
-        <small id="dsNote">Rolled when a hit isn't a Critical Strike; at most 75%. A Deadly Strike does 150% damage</small>
+        <small id="dsNote" class="over" hidden></small>
       </div>
       <div class="field">
-        <label for="dsMul">Deadly Strike multiplier %</label>
-        <input type="number" id="dsMul" min="0" max="500" step="5" value="0">
-        <small>From gear, added to the 150%</small>
+        <div class="lab"><label for="dsMul">Deadly Strike multiplier</label>
+          <button type="button" class="info" aria-label="About the Deadly Strike multiplier" data-tip="From gear, added to the 150%.">i</button></div>
+        <span class="num"><input type="number" id="dsMul" min="0" max="500" step="5" value="0"><span class="unit">%</span></span>
       </div>
       <div class="field">
-        <label for="dsMax">Maximum Deadly Strike %</label>
-        <input type="number" id="dsMax" min="0" max="100" step="1" value="0">
-        <small>From gear, raises the 75% cap</small>
+        <div class="lab"><label for="dsMax">Maximum Deadly Strike</label>
+          <button type="button" class="info" aria-label="About Maximum Deadly Strike" data-tip="From gear, raises the 75% cap.">i</button></div>
+        <span class="num"><input type="number" id="dsMax" min="0" max="100" step="1" value="0"><span class="unit">%</span></span>
       </div>
       <p class="mm-note crit-sum" id="critSum" aria-live="polite"></p>
     </fieldset>
     <fieldset>
       <legend>Target, for the kill time</legend>
       <div class="field wide">
-        <label for="target">Target</label>
+        <div class="lab"><label for="target">Target</label></div>
         <select id="target">
           <option value="pack">Map monster, example: 30,000 life</option>
           <option value="boss" selected>Map boss, example: 300,000 life, 20% physical resistance</option>
@@ -278,15 +344,15 @@
         </select>
       </div>
       <div class="field">
-        <label for="life">Life</label>
-        <input type="number" id="life" min="1" step="1000" value="300000">
+        <div class="lab"><label for="life">Life</label></div>
+        <span class="num wide"><input type="number" id="life" min="1" step="1000" value="300000"></span>
       </div>
       <div class="field">
-        <label for="pr">Physical resistance %</label>
-        <input type="number" id="pr" min="0" max="100" step="5" value="20">
+        <div class="lab"><label for="pr">Physical resistance</label></div>
+        <span class="num"><input type="number" id="pr" min="0" max="100" step="5" value="20"><span class="unit">%</span></span>
       </div>
       <div class="field wide">
-        <label for="cbs">Each Crushing Blow takes</label>
+        <div class="lab"><label for="cbs">Each Crushing Blow takes</label></div>
         <select id="cbs">
           <option value="8">1/8 of current life (most monsters)</option>
           <option value="30" selected>1/30 of current life (map bosses)</option>
@@ -298,16 +364,17 @@
     <fieldset>
       <legend>Monster you teleport past</legend>
       <div class="field">
-        <label for="pLife">Life</label>
-        <input type="number" id="pLife" min="1" step="250" value="6000">
-        <small>Hell monsters at level 85, 1 player: about 1,500 (Fallen) to 9,300 (Zombie) before map modifiers</small>
+        <div class="lab"><label for="pLife">Life</label>
+          <button type="button" class="info" aria-label="About the monster's life" data-tip="Hell monsters at level 85, 1 player: about 1,500 (Fallen) to 9,300 (Zombie) before map modifiers.">i</button></div>
+        <span class="num wide"><input type="number" id="pLife" min="1" step="250" value="6000"></span>
       </div>
       <div class="field">
-        <label for="pPr">Physical resistance %</label>
-        <input type="number" id="pPr" min="0" max="100" step="5" value="0">
+        <div class="lab"><label for="pPr">Physical resistance</label></div>
+        <span class="num"><input type="number" id="pPr" min="0" max="100" step="5" value="0"><span class="unit">%</span></span>
       </div>
       <div class="field">
-        <label for="pDelay">Merc starts its attack</label>
+        <div class="lab"><label for="pDelay">Merc starts its attack</label>
+          <button type="button" class="info" aria-label="About when the merc starts its attack" data-tip="Your merc lands with you and, if it's free, acts 2 frames later; later if it first has to step closer.">i</button></div>
         <select id="pDelay">
           <option value="2" selected>2 frames after you land</option>
           <option value="3">3 frames after</option>
@@ -315,7 +382,6 @@
           <option value="5">5 frames after</option>
           <option value="6">6 frames after</option>
         </select>
-        <small>Your merc lands with you and, if it's free, acts 2 frames later; later if it first has to step closer</small>
       </div>
     </fieldset>
   </section>
@@ -376,7 +442,7 @@
     <ul class="mm-legend"></ul>
     <div class="plot"></div>
     <div class="scroll">
-      <table class="mm-table" id="passTable">
+      <table class="mm-table cards" id="passTable">
         <thead>
           <tr>
             <th scope="col" rowspan="2">Base</th>
@@ -408,7 +474,7 @@
     </div>
     <p class="sub">Ethereal, with your Infinity roll and superior bonus. Ethereal lowers the Strength and Dexterity needed by 10. The best value of each column has a diamond. Within a speed group, average damage differs by about 1% at most, so pick by what your merc can wear. Amazon spears also take Infinity, but the merc can't wear them.</p>
     <div class="scroll">
-      <table class="mm-table" id="baseTable">
+      <table class="mm-table cards" id="baseTable">
         <thead>
           <tr>
             <th scope="col">Base</th>
@@ -452,6 +518,13 @@
       <li><strong>Not counted.</strong> Walking to a target, misses, Chain Lightning's damage, and the merc's own base damage (whether it adds to the weapon's damage isn't confirmed).</li>
     </ul>
   </section>
+
+  <div class="dock" id="mm-dock" aria-hidden="true">
+    <span class="d-ias" id="dIas">Best at 40% IAS</span>
+    <div class="d-item"><span class="d-lab">Damage / s</span><span class="d-line"><b id="d1v"></b><span id="d1s"></span></span></div>
+    <div class="d-item"><span class="d-lab">Crushing Blows / s</span><span class="d-line"><b id="d2v"></b><span id="d2s"></span></span></div>
+    <div class="d-item"><span class="d-lab">Kill time</span><span class="d-line"><b id="d3v"></b><span id="d3s"></span></span></div>
+  </div>
 </div>
 <!-- merc-map:end -->
 </div>
@@ -879,9 +952,16 @@
     const slow = Math.max(...rows.map(r => r.kill));
     const tl = TARGETS[S.target.key] ? TARGETS[S.target.key].label : "your target";
     $("t3n").textContent = `on ${tl}; the slowest elite base takes ${secs(slow)}`;
+
+    // the strip at the bottom of the screen: the same three
+    $("dIas").textContent = `Best at ${S.ias}% IAS`;
+    $("d1v").textContent = nf0.format(a.best); $("d1s").textContent = names(a.rows.map(r => r.b));
+    $("d2v").textContent = nf2.format(c.best); $("d2s").textContent = names(c.rows.map(r => r.b));
+    $("d3v").textContent = secs(k.best); $("d3s").textContent = names(k.rows.map(r => r.b));
   }
 
-  function addCell(tr, text, cls) { const c = document.createElement("td"); c.textContent = text; if (cls) c.className = cls; tr.appendChild(c); return c; }
+  // a cell; l names its column on a phone, where each row is a card
+  function addCell(tr, text, cls, l) { const c = document.createElement("td"); c.textContent = text; if (cls) c.className = cls; if (l) c.dataset.l = l; tr.appendChild(c); return c; }
   function nameCell(tr, b) {
     const n = addCell(tr, "", "name"), g = groupOf(b);
     n.appendChild(keyOf(g));
@@ -908,17 +988,17 @@
       const { b, e } = r;
       const tr = document.createElement("tr");
       nameCell(tr, b);
-      addCell(tr, signed(b.wsm));
+      addCell(tr, signed(b.wsm), "", "Speed");
       const w = weapon(b, S);
-      addCell(tr, `${nf0.format(w.min)}–${nf0.format(w.max)}`);
-      addCell(tr, `${b.rs} / ${b.rd}`);
-      const lv = addCell(tr, r.need === null ? "over 99" : String(r.need));
+      addCell(tr, `${nf0.format(w.min)}–${nf0.format(w.max)}`, "", "Two-hand damage");
+      addCell(tr, `${b.rs} / ${b.rd}`, "", "Str / Dex needed");
+      const lv = addCell(tr, r.need === null ? "over 99" : String(r.need), "", "Merc level needed");
       if (r.need === null || r.need > S.L) { lv.className = "low"; lv.title = "Your merc can't wear it yet without Strength or Dexterity from gear"; lv.textContent += " (higher than yours)"; }
-      addCell(tr, `${e.fj} frames`);
-      addCell(tr, nf0.format(r.dps), isBest("dps", r.dps) ? "best" : "");
-      addCell(tr, nf2.format(r.hps), isBest("hps", r.hps) ? "best" : "");
-      addCell(tr, nf2.format(r.cbs), isBest("cbs", r.cbs) ? "best" : "");
-      addCell(tr, secs(r.kill), isBest("kill", r.kill) ? "best" : "");
+      addCell(tr, `${e.fj} frames`, "", "Jab length");
+      addCell(tr, nf0.format(r.dps), isBest("dps", r.dps) ? "best" : "", "Damage / s");
+      addCell(tr, nf2.format(r.hps), isBest("hps", r.hps) ? "best" : "", "Hits / s");
+      addCell(tr, nf2.format(r.cbs), isBest("cbs", r.cbs) ? "best" : "", "Crushing Blows / s");
+      addCell(tr, secs(r.kill), isBest("kill", r.kill) ? "best" : "", "Kill time");
       tb.appendChild(tr);
     });
   }
@@ -947,13 +1027,13 @@
     rows.forEach(r => {
       const tr = document.createElement("tr");
       nameCell(tr, r.b);
-      addCell(tr, signed(r.b.wsm));
-      addCell(tr, `${r.p.h1 + d} and ${r.p.h2 + d}`);
-      addCell(tr, `${r.p.jl} frames`);
-      addCell(tr, nf0.format(r.dAll), "sep " + mark("dAll", r.dAll));
-      addCell(tr, pct(r.kAll), mark("kAll", r.kAll));
-      addCell(tr, pct(r.s200), "sep " + mark("s200", r.s200));
-      addCell(tr, pct(r.s105), mark("s105", r.s105));
+      addCell(tr, signed(r.b.wsm), "", "Speed");
+      addCell(tr, `${r.p.h1 + d} and ${r.p.h2 + d}`, "", "Jab hits on frames");
+      addCell(tr, `${r.p.jl} frames`, "", "Jab length");
+      addCell(tr, nf0.format(r.dAll), "sep " + mark("dAll", r.dAll), "Damage to the monster");
+      addCell(tr, pct(r.kAll), mark("kAll", r.kAll), "Monster dead");
+      addCell(tr, pct(r.s200), "sep " + mark("s200", r.s200), `Landings attacked, 200% FCR`);
+      addCell(tr, pct(r.s105), mark("s105", r.s105), `Landings attacked, 105% FCR`);
       tb.appendChild(tr);
     });
   }
@@ -996,15 +1076,65 @@
   function renderStrikes(C) {
     el.csOut.textContent = `${C.cs}%`;
     el.dsOut.textContent = `${C.ds}%`;
-    $("csNote").textContent = `At most 75%. A Critical Strike does ${nf0.format(C.cm * 100)}% damage`;
+    $("csInfo").dataset.tip = `At most 75%. A Critical Strike does ${nf0.format(C.cm * 100)}% damage.`;
+    $("dsInfo").dataset.tip = `Rolled when a hit isn't a Critical Strike; at most ${C.dsCap}%. A Deadly Strike does ${nf0.format(C.dm * 100)}% damage.`;
+    if (tipOn && (tipOn.id === "csInfo" || tipOn.id === "dsInfo")) showTip(tipOn);
+    // past the cap, said under the slider
     const over = C.ds > C.dsCap, dsNote = $("dsNote");
-    dsNote.textContent = `Rolled when a hit isn't a Critical Strike; ${over ? `only ${C.dsCap}% counts` : `at most ${C.dsCap}%`}. A Deadly Strike does ${nf0.format(C.dm * 100)}% damage`;
-    dsNote.classList.toggle("over", over);
+    dsNote.hidden = !over;
+    dsNote.textContent = over ? `Only ${C.dsCap}% counts: the cap is 75% plus Maximum Deadly Strike` : "";
     const shareC = nfp.format(C.pc * 100), shareD = nfp.format((1 - C.pc) * C.pd * 100);
     const which = C.pc && C.pd ? `${shareC}% of hits are Critical Strikes and ${shareD}% Deadly Strikes`
       : C.pc ? `${shareC}% of hits are Critical Strikes` : `${shareD}% of hits are Deadly Strikes`;
     $("critSum").textContent = C.mean === 1 ? "No Critical or Deadly Strikes: every hit does its plain damage."
       : `The average hit does ${nfp.format(C.mean * 100)}% of its plain damage: ${which}.`;
+  }
+
+  // ---------- the (i) texts: on hover, keyboard focus or a tap ----------
+  const help = document.createElement("div");
+  help.className = "mm-help"; help.id = "mm-help"; help.setAttribute("role", "tooltip"); help.hidden = true;
+  root.appendChild(help);
+  let tipOn = null;
+  function showTip(t) {
+    if (!t.dataset.tip) return;
+    if (tipOn && tipOn !== t) tipOn.removeAttribute("aria-describedby");
+    tipOn = t;
+    help.textContent = t.dataset.tip;
+    help.hidden = false;
+    t.setAttribute("aria-describedby", "mm-help");
+    const r = t.getBoundingClientRect(), R = root.getBoundingClientRect();
+    const w = help.offsetWidth, vw = document.documentElement.clientWidth;
+    const x = Math.min(Math.max(r.left + r.width / 2 - w / 2, 8), vw - w - 8);
+    help.style.left = `${x - R.left}px`;
+    help.style.top = `${r.bottom - R.top + 8}px`;
+  }
+  function hideTip() {
+    if (tipOn) tipOn.removeAttribute("aria-describedby");
+    tipOn = null;
+    help.hidden = true;
+  }
+  root.addEventListener("pointerover", e => {
+    if (e.pointerType !== "mouse") return;
+    const t = e.target.closest("button.info");
+    if (t && t !== tipOn) showTip(t);
+  });
+  root.addEventListener("pointerout", e => {
+    if (e.pointerType === "mouse" && tipOn && !tipOn.contains(e.relatedTarget)) hideTip();
+  });
+  root.addEventListener("focusin", e => { const t = e.target.closest("button.info"); if (t) showTip(t); });
+  root.addEventListener("focusout", e => { if (tipOn && e.target === tipOn) hideTip(); });
+  root.addEventListener("click", e => { const t = e.target.closest("button.info"); if (t) showTip(t); });
+  document.addEventListener("click", e => { if (tipOn && !e.target.closest("button.info")) hideTip(); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape" && tipOn) hideTip(); });
+  window.addEventListener("scroll", () => { if (tipOn) hideTip(); }, { passive: true });
+
+  // ---------- the strip: shown while the tiles are off screen (under the website's bar counts as off) ----------
+  const dock = $("mm-dock");
+  let flashT = 0;
+  const flashDock = () => { dock.classList.add("flash"); clearTimeout(flashT); flashT = setTimeout(() => dock.classList.remove("flash"), 450); };
+  if ("IntersectionObserver" in window) {
+    new IntersectionObserver(es => { for (const e of es) dock.classList.toggle("on", !e.isIntersecting); },
+      { rootMargin: "-64px 0px 0px 0px" }).observe(root.querySelector(".tiles"));
   }
 
   // ---------- wiring ----------
@@ -1026,7 +1156,8 @@
     renderBreakpoints(S);
     emphasize(null);
   }
-  function setIas(i) { el.ias.value = String(i); el.iasNum.value = String(i); renderAll(); }
+  // from a chart: the tiles are likely off screen, so the strip catches the eye
+  function setIas(i) { el.ias.value = String(i); el.iasNum.value = String(i); renderAll(); flashDock(); }
 
   el.ias.addEventListener("input", () => { el.iasNum.value = el.ias.value; renderAll(); });
   el.iasNum.addEventListener("input", () => { const v = num(el.iasNum, 0, MAX_IAS, 0); el.ias.value = String(Math.round(v)); renderAll(); });

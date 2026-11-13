@@ -26,8 +26,8 @@
     --bg: #15130f; --panel: #1f1c16; --sunk: #191612; --line: #39322a; --line-soft: #2c2822;
     --fg: #e9e1cf; --fg2: #cfc5ae; --muted: #a59a84; --gold: #d6b468; --on-gold: #1f1c16; --focus: #d6b468;
     --chip: #2a251e; --chip-on: #5a4721;
-    --ahead: #86c39b; --ahead-bg: #1d3226; --ahead-track: #38a283; --ahead-fill: rgba(56, 162, 131, .17);
-    --behind: #f07a6f; --behind-bg: #3a1d1a; --behind-track: #cc7b38; --behind-fill: rgba(204, 123, 56, .15); --stripe: rgba(0, 0, 0, .45); --behind-stripe: rgba(204, 123, 56, .45);
+    --ahead: #5cc4a3; --ahead-bg: #173128; --ahead-track: #38a283; --ahead-fill: rgba(56, 162, 131, .17);
+    --behind: #e59a5b; --behind-bg: #36261a; --behind-track: #cc7b38; --behind-fill: rgba(204, 123, 56, .15); --stripe: rgba(0, 0, 0, .45); --behind-stripe: rgba(204, 123, 56, .45);
     --c-over: #3987e5; --c-tele: #d95926; --c-event: #199e70; --c-boss: #c98500; --c-clear: #d55181;
     --on-fill: #ffffff; --on-light-fill: #0b0b0b;
     --grid: #2c2822; --axis: #4a4236; --tip-bg: #e9e1cf; --tip-fg: #15130f;
@@ -42,8 +42,8 @@
     --bg: #f2f0eb; --panel: #ffffff; --sunk: #f7f5f0; --line: #dcd5c7; --line-soft: #ebe5d9;
     --fg: #24211b; --fg2: #4a4337; --muted: #6c6455; --gold: #7d621b; --on-gold: #ffffff; --focus: #7d621b;
     --chip: #ece7dc; --chip-on: #e7d6ae;
-    --ahead: #2f6b45; --ahead-bg: #e2f0e6; --ahead-track: #11805c; --ahead-fill: rgba(17, 128, 92, .13);
-    --behind: #b3261e; --behind-bg: #f8e3e0; --behind-track: #b65a17; --behind-fill: rgba(182, 90, 23, .12); --stripe: rgba(255, 255, 255, .55); --behind-stripe: rgba(182, 90, 23, .4);
+    --ahead: #057553; --ahead-bg: #dcefe7; --ahead-track: #11805c; --ahead-fill: rgba(17, 128, 92, .13);
+    --behind: #9e4700; --behind-bg: #f8e8da; --behind-track: #b65a17; --behind-fill: rgba(182, 90, 23, .12); --stripe: rgba(255, 255, 255, .55); --behind-stripe: rgba(182, 90, 23, .4);
     --c-over: #2a78d6; --c-tele: #eb6834; --c-event: #1baf7a; --c-boss: #eda100; --c-clear: #e87ba4;
     --grid: #ebe5d9; --axis: #c9c0ae; --tip-bg: #24211b; --tip-fg: #f2f0eb;
     color-scheme: light;
@@ -376,12 +376,13 @@
     <section class="group">
       <h2>Events</h2>
       <p class="group-note" id="ev-summary">An event shows on 1 rare map in 3, each kind as often. Your time to do it, not to find it.</p>
-      <div class="ev-actions"><button type="button" class="chip" id="ev-best" title="The events to skip for the best runs, by what you compare">Skip what doesn't pay</button><button type="button" class="chip" id="ev-all">Do every event</button></div>
+      <div class="ev-actions"><button type="button" class="chip" id="ev-best" aria-describedby="ev-skip-note">Skip what doesn't pay</button><button type="button" class="chip" id="ev-all">Do every event</button></div>
+      <p class="group-note" id="ev-skip-note">Skip an event and you head for the boss when it shows. Skip what doesn't pay ticks the skips that come out best for what you compare by.</p>
 
       <div class="field" data-key="Gheed" data-lo="0" data-hi="120" data-min="0" data-dec="0" data-unit="s" data-def="30" data-per="0">
         <div class="f-row">
           <label class="f-label" for="in-gheed">Gheed</label>
-          <label class="skipbox" title="When it shows, head for the boss instead"><input type="checkbox" class="skipcb" data-kind="Gheed" aria-label="Skip Gheed"> Skip</label><span class="f-input"><input autocomplete="off" data-lpignore="true" data-1p-ignore data-bwignore data-form-type="other" id="in-gheed" class="num" type="number" inputmode="decimal" min="0" step="any" value="30"><span class="unit">s</span></span>
+          <label class="skipbox"><input type="checkbox" class="skipcb" data-kind="Gheed" aria-label="Skip Gheed" aria-describedby="ev-skip-note"> Skip</label><span class="f-input"><input autocomplete="off" data-lpignore="true" data-1p-ignore data-bwignore data-form-type="other" id="in-gheed" class="num" type="number" inputmode="decimal" min="0" step="any" value="30"><span class="unit">s</span></span>
         </div>
         <div class="f-note">buy all 5 offers (5M gold) <span class="f-val" id="val-gheed"></span></div>
         <input id="sl-gheed" class="slider" type="range" min="0" max="120" step="1" value="30" aria-label="Gheed, s">
@@ -390,7 +391,7 @@
       <div class="field" data-key="Bitter Depths" data-lo="0" data-hi="900" data-min="0" data-dec="0" data-unit="s" data-def="300" data-per="0">
         <div class="f-row">
           <label class="f-label" for="in-bitter-depths">The Bitter Depths</label>
-          <label class="skipbox" title="When it shows, head for the boss instead"><input type="checkbox" class="skipcb" data-kind="Bitter Depths" aria-label="Skip The Bitter Depths"> Skip</label><span class="f-input"><input autocomplete="off" data-lpignore="true" data-1p-ignore data-bwignore data-form-type="other" id="in-bitter-depths" class="num" type="number" inputmode="decimal" min="0" step="any" value="300"><span class="unit">s</span></span>
+          <label class="skipbox"><input type="checkbox" class="skipcb" data-kind="Bitter Depths" aria-label="Skip The Bitter Depths" aria-describedby="ev-skip-note"> Skip</label><span class="f-input"><input autocomplete="off" data-lpignore="true" data-1p-ignore data-bwignore data-form-type="other" id="in-bitter-depths" class="num" type="number" inputmode="decimal" min="0" step="any" value="300"><span class="unit">s</span></span>
         </div>
         <div class="f-note">20 Lucion chests, Zoltun Kulle and his 60-item explosion, the monsters <span class="f-val" id="val-bitter-depths"></span></div>
         <input id="sl-bitter-depths" class="slider" type="range" min="0" max="900" step="1" value="300" aria-label="The Bitter Depths, s">
@@ -399,7 +400,7 @@
       <div class="field" data-key="Corrupted Heroes" data-lo="0" data-hi="180" data-min="0" data-dec="0" data-unit="s each" data-def="90" data-per="1">
         <div class="f-row">
           <label class="f-label" for="in-corrupted-heroes">Corrupted Heroes</label>
-          <label class="skipbox" title="When it shows, head for the boss instead"><input type="checkbox" class="skipcb" data-kind="Corrupted Heroes" aria-label="Skip Corrupted Heroes"> Skip</label><span class="f-input"><input autocomplete="off" data-lpignore="true" data-1p-ignore data-bwignore data-form-type="other" id="in-corrupted-heroes" class="num" type="number" inputmode="decimal" min="0" step="any" value="90"><span class="unit">s each</span></span>
+          <label class="skipbox"><input type="checkbox" class="skipcb" data-kind="Corrupted Heroes" aria-label="Skip Corrupted Heroes" aria-describedby="ev-skip-note"> Skip</label><span class="f-input"><input autocomplete="off" data-lpignore="true" data-1p-ignore data-bwignore data-form-type="other" id="in-corrupted-heroes" class="num" type="number" inputmode="decimal" min="0" step="any" value="90"><span class="unit">s each</span></span>
         </div>
         <div class="f-note">each of the 3 portals, 5 heroes in all <span class="f-val" id="val-corrupted-heroes"></span><span class="f-total" id="tot-corrupted-heroes"></span></div>
         <input id="sl-corrupted-heroes" class="slider" type="range" min="0" max="180" step="1" value="90" aria-label="Corrupted Heroes, s each">
@@ -408,7 +409,7 @@
       <div class="field" data-key="Dark Wanderer" data-lo="0" data-hi="240" data-min="0" data-dec="0" data-unit="s each" data-def="30" data-per="1">
         <div class="f-row">
           <label class="f-label" for="in-dark-wanderer">Dark Wanderer</label>
-          <label class="skipbox" title="When it shows, head for the boss instead"><input type="checkbox" class="skipcb" data-kind="Dark Wanderer" aria-label="Skip Dark Wanderer"> Skip</label><span class="f-input"><input autocomplete="off" data-lpignore="true" data-1p-ignore data-bwignore data-form-type="other" id="in-dark-wanderer" class="num" type="number" inputmode="decimal" min="0" step="any" value="30"><span class="unit">s each</span></span>
+          <label class="skipbox"><input type="checkbox" class="skipcb" data-kind="Dark Wanderer" aria-label="Skip Dark Wanderer" aria-describedby="ev-skip-note"> Skip</label><span class="f-input"><input autocomplete="off" data-lpignore="true" data-1p-ignore data-bwignore data-form-type="other" id="in-dark-wanderer" class="num" type="number" inputmode="decimal" min="0" step="any" value="30"><span class="unit">s each</span></span>
         </div>
         <div class="f-note">each of the 3 wanderers <span class="f-val" id="val-dark-wanderer"></span><span class="f-total" id="tot-dark-wanderer"></span></div>
         <input id="sl-dark-wanderer" class="slider" type="range" min="0" max="240" step="1" value="30" aria-label="Dark Wanderer, s each">
@@ -417,7 +418,7 @@
       <div class="field" data-key="Horazon" data-lo="0" data-hi="300" data-min="0" data-dec="0" data-unit="s" data-def="60" data-per="0">
         <div class="f-row">
           <label class="f-label" for="in-horazon">Horazon</label>
-          <label class="skipbox" title="When it shows, head for the boss instead"><input type="checkbox" class="skipcb" data-kind="Horazon" aria-label="Skip Horazon"> Skip</label><span class="f-input"><input autocomplete="off" data-lpignore="true" data-1p-ignore data-bwignore data-form-type="other" id="in-horazon" class="num" type="number" inputmode="decimal" min="0" step="any" value="60"><span class="unit">s</span></span>
+          <label class="skipbox"><input type="checkbox" class="skipcb" data-kind="Horazon" aria-label="Skip Horazon" aria-describedby="ev-skip-note"> Skip</label><span class="f-input"><input autocomplete="off" data-lpignore="true" data-1p-ignore data-bwignore data-form-type="other" id="in-horazon" class="num" type="number" inputmode="decimal" min="0" step="any" value="60"><span class="unit">s</span></span>
         </div>
         <div class="f-note">and the boss of the map his portal opens <span class="f-val" id="val-horazon"></span></div>
         <input id="sl-horazon" class="slider" type="range" min="0" max="300" step="1" value="60" aria-label="Horazon, s">
@@ -426,7 +427,7 @@
       <div class="field" data-key="Altar" data-lo="0" data-hi="240" data-min="0" data-dec="0" data-unit="s" data-def="60" data-per="0">
         <div class="f-row">
           <label class="f-label" for="in-altar">Altar of the Catalyst</label>
-          <label class="skipbox" title="When it shows, head for the boss instead"><input type="checkbox" class="skipcb" data-kind="Altar" aria-label="Skip Altar of the Catalyst"> Skip</label><span class="f-input"><input autocomplete="off" data-lpignore="true" data-1p-ignore data-bwignore data-form-type="other" id="in-altar" class="num" type="number" inputmode="decimal" min="0" step="any" value="60"><span class="unit">s</span></span>
+          <label class="skipbox"><input type="checkbox" class="skipcb" data-kind="Altar" aria-label="Skip Altar of the Catalyst" aria-describedby="ev-skip-note"> Skip</label><span class="f-input"><input autocomplete="off" data-lpignore="true" data-1p-ignore data-bwignore data-form-type="other" id="in-altar" class="num" type="number" inputmode="decimal" min="0" step="any" value="60"><span class="unit">s</span></span>
         </div>
         <div class="f-note">the Guardian of Fate <span class="f-val" id="val-altar"></span></div>
         <input id="sl-altar" class="slider" type="range" min="0" max="240" step="1" value="60" aria-label="Altar of the Catalyst, s">
@@ -435,7 +436,7 @@
       <div class="field" data-key="Mendeln" data-lo="0" data-hi="360" data-min="0" data-dec="0" data-unit="s" data-def="120" data-per="0">
         <div class="f-row">
           <label class="f-label" for="in-mendeln">Shadow of Mendeln</label>
-          <label class="skipbox" title="When it shows, head for the boss instead"><input type="checkbox" class="skipcb" data-kind="Mendeln" aria-label="Skip Shadow of Mendeln"> Skip</label><span class="f-input"><input autocomplete="off" data-lpignore="true" data-1p-ignore data-bwignore data-form-type="other" id="in-mendeln" class="num" type="number" inputmode="decimal" min="0" step="any" value="120"><span class="unit">s</span></span>
+          <label class="skipbox"><input type="checkbox" class="skipcb" data-kind="Mendeln" aria-label="Skip Shadow of Mendeln" aria-describedby="ev-skip-note"> Skip</label><span class="f-input"><input autocomplete="off" data-lpignore="true" data-1p-ignore data-bwignore data-form-type="other" id="in-mendeln" class="num" type="number" inputmode="decimal" min="0" step="any" value="120"><span class="unit">s</span></span>
         </div>
         <div class="f-note">its reward <span class="f-val" id="val-mendeln"></span></div>
         <input id="sl-mendeln" class="slider" type="range" min="0" max="360" step="1" value="120" aria-label="Shadow of Mendeln, s">
@@ -444,7 +445,7 @@
       <div class="field" data-key="Treasure Fallen" data-lo="0" data-hi="120" data-min="0" data-dec="0" data-unit="s each" data-def="20" data-per="1">
         <div class="f-row">
           <label class="f-label" for="in-treasure-fallen">Treasure Fallen</label>
-          <label class="skipbox" title="When it shows, head for the boss instead"><input type="checkbox" class="skipcb" data-kind="Treasure Fallen" aria-label="Skip Treasure Fallen"> Skip</label><span class="f-input"><input autocomplete="off" data-lpignore="true" data-1p-ignore data-bwignore data-form-type="other" id="in-treasure-fallen" class="num" type="number" inputmode="decimal" min="0" step="any" value="20"><span class="unit">s each</span></span>
+          <label class="skipbox"><input type="checkbox" class="skipcb" data-kind="Treasure Fallen" aria-label="Skip Treasure Fallen" aria-describedby="ev-skip-note"> Skip</label><span class="f-input"><input autocomplete="off" data-lpignore="true" data-1p-ignore data-bwignore data-form-type="other" id="in-treasure-fallen" class="num" type="number" inputmode="decimal" min="0" step="any" value="20"><span class="unit">s each</span></span>
         </div>
         <div class="f-note">each of the 3 fallen; maps, orbs and runes, no uniques <span class="f-val" id="val-treasure-fallen"></span><span class="f-total" id="tot-treasure-fallen"></span></div>
         <input id="sl-treasure-fallen" class="slider" type="range" min="0" max="120" step="1" value="20" aria-label="Treasure Fallen, s each">
@@ -453,7 +454,7 @@
       <div class="field" data-key="Spire" data-lo="0" data-hi="600" data-min="0" data-dec="0" data-unit="s" data-def="120" data-per="0">
         <div class="f-row">
           <label class="f-label" for="in-spire">Spire of Darkness</label>
-          <label class="skipbox" title="When it shows, head for the boss instead"><input type="checkbox" class="skipcb" data-kind="Spire" aria-label="Skip Spire of Darkness"> Skip</label><span class="f-input"><input autocomplete="off" data-lpignore="true" data-1p-ignore data-bwignore data-form-type="other" id="in-spire" class="num" type="number" inputmode="decimal" min="0" step="any" value="120"><span class="unit">s</span></span>
+          <label class="skipbox"><input type="checkbox" class="skipcb" data-kind="Spire" aria-label="Skip Spire of Darkness" aria-describedby="ev-skip-note"> Skip</label><span class="f-input"><input autocomplete="off" data-lpignore="true" data-1p-ignore data-bwignore data-form-type="other" id="in-spire" class="num" type="number" inputmode="decimal" min="0" step="any" value="120"><span class="unit">s</span></span>
         </div>
         <div class="f-note">the obelisk and its shadows; Pandemonium keys, no uniques <span class="f-val" id="val-spire"></span></div>
         <input id="sl-spire" class="slider" type="range" min="0" max="600" step="1" value="120" aria-label="Spire of Darkness, s">

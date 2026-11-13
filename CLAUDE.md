@@ -1021,7 +1021,11 @@
   teleport pass); first made as a claude.ai page, now kept here. Its own Jab and basic attack formulas (its
   `merc-speed` block: the lengths the PD2 wiki's Desert Guard breakpoints count, + 2 frames to the next attack) give
   the IAS Calculator engine's frames from one attack to the next; `ias_selftest.py` checks every base at every IAS
-  (until 2026-11-13 the page added 1 frame, so its rates were ~7% high). Second (2026-11-02, the author: a write-up to refer
+  (until 2026-11-13 the page added 1 frame, so its rates were ~7% high). Its layout (2026-11-13, the author, Ohm vs
+  Jewel's review taken over): help behind (i) buttons (one tooltip, `mm-help`), units beside the number boxes, the
+  fields of a row level (subgrid), a strip at the bottom of the screen with the three best bases while the tiles are
+  scrolled away (`.dock`), and the base and teleport tables as cards on phones (`.cards`, each value under its
+  column's name). Second (2026-11-02, the author: a write-up to refer
   players to): **Map Experience** (`mapexp-map`): what 146's two lines mean, a level slider (each tier's monster
   share, the tiers' average plain maps over levels 80-98, every plain T1-T3 map ranked), the screenshot's Sanatorium
   worked through. The slider sits in a bar that stays under the site's header (2026-11-05, the author), with the
@@ -1051,7 +1055,10 @@
   reaches the player; the rush times `erazure-event-runs-umaps`, which the reset clears too), and "Use my Grail Planner list" reads the
   planner's `erazure-grail-planner` (same site; the data's `keys` are the planner's item keys). `site_page.py` also writes
   the Grail Planner template's `EVRUNS` (between its `evrun-summary` markers: the grail hours at those defaults, read off
-  the page's grail card in headless Edge), so rerun `tools/grail_map.py` after it. The tab bar wraps onto
+  the page's grail card in headless Edge), so rerun `tools/grail_map.py` after it. Its runs-ahead / clears-ahead text
+  and washes (`--ahead` / `--behind` in `site_page.py`'s TOKENS and the calculator template, 2026-11-13) are the
+  site's teal / orange like its bars (green / coral was one tan to deuteranopes), and what Skip and "Skip what doesn't
+  pay" do is a line under those buttons (`#ev-skip-note`; they were hover-only titles, which phones never show). The tab bar wraps onto
   a second line where the 13 tabs don't fit (`erazure.css`; until then Examples was cut off from about 1920 px down).
   Calculators (2026-11-12, the author: like HarryPe's "Physical damage calculator PD2" sheet and HiimPD2's damage-calc,
   three separate pages, a full attack speed model, up to four builds side by side, one credit line to HarryPe's sheet;
