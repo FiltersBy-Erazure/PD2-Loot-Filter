@@ -521,8 +521,9 @@
           strike, the last 7 steps of its sequence, lasts <span class="formula">&lceil;1792 &divide; speed&rceil;</span> frames.</li>
         <li><strong>PD2&rsquo;s own sequences</strong>: Jab is faster than in the original game (one-handed 16 frames, two-handed 18),
           and so is Blade Fury, a channel: held, the game casts it again every
-          <span class="formula">&lceil;768 &divide; rate&rceil; + 1</span> frames, and its own timer lets a blade through at most
-          every 5 frames, so from speed 75 up it throws a blade every 5 frames (counted in game).</li>
+          <span class="formula">&lceil;768 &divide; rate&rceil; + 1</span> frames. Its own timer allows a blade every 4 frames
+          at most, but counted in game it throws one about every 5 frames from speed 75 up, whatever the IAS (25&ndash;27 blades
+          in 5 seconds from 50 to 150 IAS); below speed 75, one a loop.</li>
         <li><strong>Mercenaries</strong>: <span class="formula">100 &minus; WSM + EIAS + auras</span>, IAS from the weapon and other
           gear together, no sequence penalty, no start frame. Each shows its own animation whatever it holds. From one attack
           to the next: <span class="formula">&lceil;frames &times; 256 &divide; rate&rceil; + 1</span> frames (+ 2 after a
@@ -1203,7 +1204,7 @@
     R = E.evaluate(S);
     DIFF = lengths(R);
     renderTarget();
-    BP = R.why || R.p.fixed || R.p.fx || R.p.paced ? null : E.breakpoints(S);
+    BP = R.why || R.p.fixed || R.p.fx ? null : E.breakpoints(S);
     renderTiles(); renderVerdict(); renderFacts(); renderBreakpoints(); renderBases(); renderGrid(); resetPreview();
     if (S.tab === "how") renderHow();
     save();
@@ -1219,7 +1220,6 @@
   function renderVerdict() {
     let html;
     if (R.why) html = `<b>Not possible:</b> ${esc(R.why)}`;
-    else if (R.p.paced) html = `<b>${R.t.parts[0].frames} frames</b> a blade while held (${aps(R.t.parts[0].frames)} a second), whatever the IAS.`;
     else if (R.p.fixed) html = `<b>${R.t.parts[0].frames} frames</b> a hit${R.t.parts[0].hits > 1 ? " with each weapon" : ""} (${aps(R.t.parts[0].frames)} a second), whatever the IAS.`;
     else if (R.p.fx) html = `<b>${partText(R.t.parts[0])} frames</b>: ${esc(R.p.sk.n)} runs at a fixed speed, whatever the IAS.`;
     else {
@@ -1302,7 +1302,7 @@
     if (p.rollback) n.push(`${p.sk.n} rolls its swing back ${p.rollback.pct}% after each hit: the lengths are hit by hit.`);
     if (p.channel) {
       const tm = p.channel.timer;
-      n.push(`${p.sk.n} is channelled: held, the game casts it again each time it reaches step ${p.channel.at}, a loop of ${t.loop} frames at this speed${tm ? `, and its own timer lets a blade through at most every ${tm + 1} game frames: a blade every <b>${t.parts[0].frames} frames</b>. From speed 75 the timer sets the pace, about 5 blades a second; below it the loop does (counted in game: 19 blades in 5 seconds at speed 70, 24 at 90-94, 25-27 from 105 to 156)` : ""}. The first comes about ${t.first} frames in.`);
+      n.push(`${p.sk.n} is channelled: held, the game casts it again each time it reaches step ${p.channel.at}, a loop of ${t.loop} frames at this speed${tm ? `. Its own timer allows a blade every ${tm} game frames at most (${aps(tm)} a second), but held it throws one about every ${tm + 1} from speed 75 up, counted in game (19 blades in 5 seconds at speed 70, 24 at 90-94, 25-27 from 105 to 156): a blade every <b>${t.parts[0].frames} frames</b> here, the loop setting the pace below speed 75` : ""}. The first comes about ${t.first} frames in.`);
     }
     if (p.fixed) n.push(`${p.sk.n}'s timer allows a hit every ${p.fixed} frames, but the game checks it only every ${t.check} frames (every 4 steps of its sequence, which runs at the other animation rate): a hit every <b>${t.parts[0].frames} frames</b>${p.dual ? ", one with each weapon" : ""}. IAS changes nothing; slows and Frenzy's charges change the check.`);
     if (p.fx && !p.fixed) n.push(`${p.sk.n} is drawn at the game's other animation rate (100, changed by slows and Frenzy's charges): IAS, the weapon's speed and the skills' speed don't count.`);
@@ -1334,7 +1334,7 @@
   // which base of this type is fastest for you
   function renderBases() {
     const tbl = $("ia-bases"), sec = tbl.closest("section"), w = E.BASE[S.w];
-    if (!w || R.why || R.p.fixed || R.p.fx || R.p.paced || R.p.merc) { sec.hidden = true; return; }
+    if (!w || R.why || R.p.fixed || R.p.fx || R.p.merc) { sec.hidden = true; return; }
     sec.hidden = false;
     const rows = basesOf(S.cls, w.k, false).map(b => {
       const s = Object.assign({}, S, {w: b.c});
@@ -1377,7 +1377,7 @@
   function renderGrid() {
     const tbl = $("ia-grid"), key = $("ia-grid-key"), sub = $("ia-grid-sub");
     const sec = tbl.closest("section");
-    if (R.why || R.p.fixed || R.p.fx || R.p.paced) { sec.hidden = true; GRID = null; return; }
+    if (R.why || R.p.fixed || R.p.fx) { sec.hidden = true; GRID = null; return; }
     sec.hidden = false;
     sub.innerHTML = (R.p.formBase ? "In a form the weapon&rsquo;s IAS also sets the base speed, so rows and columns don&rsquo;t trade one for one. " :
       "In human form both kinds of IAS go into the same total, so rows and columns trade one for one. ") +
@@ -1824,7 +1824,7 @@
     if (p.channel) {
       st.push(["Rate per frame", `<span class="formula">${t.base} &times; ${sp.speed} &divide; 100</span> = <b>${t.rate}</b> (one step is 256).`]);
       st.push(["The channel's loop", `Held, the game casts ${esc(p.sk.n)} again each time it reaches step ${p.channel.at}: <span class="formula">&lceil;${p.channel.at} &times; 256 &divide; ${t.rate}&rceil; + 1</span> = <b>${t.loop} frames</b> a loop.`]);
-      if (p.channel.timer) st.push(["Count the frames", `Its own timer lets a blade through at most every ${p.channel.timer + 1} game frames, so a blade every <span class="formula">max(${t.loop}, ${p.channel.timer + 1})</span> = <b>${part.frames} frames</b>, ${aps(part.frames)} a second (counted in game).`]);
+      if (p.channel.timer) st.push(["Count the frames", `Its own timer allows a blade every ${p.channel.timer} game frames at most, but counted in game a held ${esc(p.sk.n)} throws one about every ${p.channel.timer + 1} once the loop is that short: <span class="formula">max(${t.loop}, ${p.channel.timer + 1})</span> = <b>${part.frames} frames</b> a blade, ${aps(part.frames)} a second.`]);
       return st;
     }
     if (p.charge !== undefined) {

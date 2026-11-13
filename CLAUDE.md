@@ -1138,9 +1138,11 @@
     re-cast restarts the sequence once step 3 is reached (the wind-up, ceil(3 x 256 / rate) + 1 frames, shortened by
     IAS). Blade Fury held: a blade every max(loop, Param4 + 1 = 5) frames, as the author counted in game (2026-11-12:
     19 blades in 5 s at speed 70, 24 at 90-94, 25-27 from 105 to 156, no weapon and -20 WSM claws): the loop sets the
-    pace below speed 75, its timer from there (the code reading's "a blade per loop", 4 frames at speed 100-149 and 6
-    from 150, was wrong). Not the same as Dragon Tail's breakpoints (one blade per full sequence, as BH's screen counts
-    it, would be a similar ladder; the counts rule it out). Whirlwind's 8 frames rest on the same kind of reading. Blade Fury is IAS with the -30. Frenzy's speed
+    pace below speed 75, the 5 from there is the counts' (the code reading's "a blade per loop", 4 frames at speed
+    100-149 and 6 from 150, was wrong). The game's own timer allows a blade every 4 frames at most (Param4; HiimPD2's
+    bot read the same, 2026-11-12), so the page says 4 is the cap and about 5 the pace held; what keeps it from 4 isn't
+    traced. Not the same as Dragon Tail's breakpoints, nor HiimPD2's 15 frames at 0 IAS (one full 11-frame pass per
+    blade, as BH's screen counts it: the counts rule it out). Whirlwind's 8 frames rest on the same kind of reading. Blade Fury is IAS with the -30. Frenzy's speed
     trunc(dm56 x charges / 5) (`fst`, 0-5). Double Swing, Dragon Tail, Split Throw: their speed buff counts for their
     own animation. Whirlwind / Blade Dance (other animation rate): the hit timer (Param3) is checked only on the
     sequence's hit steps, every ceil(1024 / rate) frames, so a hit every 8 frames unslowed (BH and the S14 notes say
