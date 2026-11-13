@@ -108,7 +108,7 @@
      "why": "the strike's rate is the speed itself: 100 - 0 + 0 + 65 = 165; its last 7 steps: ceil(7x256/165) = ceil(10.86) = 11 (BH's ceil(2048/165) - 1 says 12)"},
     {"name": "Assassin, Blade Fury held, Feral Claws, 0 IAS", "setup": {"cls": "ass", "atk": 266, "w": "7lw"},
      "expect": {"f0": 5, "speed": 90, "rate": 230},
-     "why": "held, its own timer lets a blade through every 5 game frames whatever the IAS: counted in game (the author, 2026-11-12) 24, 25 and 27 blades in 5 seconds at 0, 50 and 150 IAS"},
+     "why": "speed 90, rate 230: a loop of ceil(768/230) + 1 = 5 frames; the timer's 5: a blade every max(5, 5) = 5; counted in game (the author, 2026-11-12): 19 blades in 5 s at speed 70 (no weapon, 0 IAS), 24 at 90-94, 25-27 from 105 to 156"},
     {"name": "Barbarian, Frenzy 20 with 2 charges, two Phase Blades", "setup": {"cls": "bar", "atk": 147, "w": "7cr", "oh": "weapon", "w2": "7cr", "frenzy": 20, "fst": 2},
      "expect": {"f0": 14, "speed": 116, "rate": 296, "skill": 16},
      "why": "Frenzy 20 gives 42, a fifth per charge: trunc(42x2/5) = 16; 100 + 16 + 30 + 0 - 30 = 116; rate 296; sequence 11 two swords, 17 steps: ceil(17x256/296) - 1 = 14"},
@@ -156,9 +156,12 @@
      "why": "a bow, a crossbow or no weapon draws attack 1 whatever the target"},
     {"name": "Assassin, Blade Fury held, Feral Claws, 20 IAS", "setup": {"cls": "ass", "atk": 266, "w": "7lw", "gear": 20},
      "expect": {"f0": 5, "speed": 107},
-     "why": "the same 5 frames a blade: IAS only shortens the wind-up"},
+     "why": "rate 273: a loop of 4 frames, under the timer's 5: a blade every 5"},
     {"name": "Assassin, Blade Fury held, Feral Claws, 300 IAS", "setup": {"cls": "ass", "atk": 266, "w": "7lw", "gear": 300},
      "expect": {"f0": 5, "speed": 175},
-     "why": "the same 5 frames a blade at the speed cap"}
+     "why": "rate 448: a loop of 3 frames: the timer's 5"},
+    {"name": "Assassin, Blade Fury held, no weapon, 0 IAS: the loop sets the pace", "setup": {"cls": "ass", "atk": 266, "w": ""},
+     "expect": {"f0": 6, "speed": 70, "rate": 179},
+     "why": "speed 100 - 30 = 70, rate 179: a loop of ceil(768/179) + 1 = 6 frames, over the timer's 5: a blade every 6; counted in game (the author, 2026-11-12): 19 blades in 5 s at speed 70 (no weapon, 0 IAS), 24 at 90-94, 25-27 from 105 to 156"}
   ]
 }

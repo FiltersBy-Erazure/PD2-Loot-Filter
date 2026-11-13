@@ -663,9 +663,9 @@
         if (!steps) { p.why = `${sk.n} can't be used with this weapon.`; return p; }
         p.seq = {num: sk.q, steps, frames: steps.length, hits: steps.filter(x => x[2] === 1).length};
         if (sk.chg !== undefined) p.charge = sk.chg;
-        // a channel (Blade Fury): held, the game starts it again on reaching step `at`; with a timer of its own
-        // (Blade Fury's 4 frames between blades) a blade every timer + 1 frames whatever the IAS, as counted in game
-        if (sk.ch) { p.channel = {at: sk.ch, timer: sk.ct || 0}; p.paced = !!sk.ct; }
+        // a channel (Blade Fury): held, the game casts it again on reaching step `at`; with a timer of its own
+        // (Blade Fury's 4 frames between blades) a blade every max(loop, timer + 1) frames, as counted in game
+        if (sk.ch) p.channel = {at: sk.ch, timer: sk.ct || 0};
         // Whirlwind, Blade Dance: a hit at most every Param3 frames by the game's timer, with each weapon when there
         // are two; their sequence runs at the other animation rate
         if (sk.ff) { p.fixed = sk.ff; p.fixedHits = p.dual ? 2 : 1; p.fx = true; }
@@ -791,9 +791,9 @@
         if (p.channel) {
           // held: a loop of steps 0 to `at` (its event made the frame after), the timer letting a hit through on the
           // first loop at least `timer` frames after the last one
-          const at = p.channel.at, loop = cdiv(at * 256, rate) + 1, every = p.channel.timer ? p.channel.timer + 1 : loop;
+          const at = p.channel.at, loop = cdiv(at * 256, rate) + 1, every = p.channel.timer ? Math.max(loop, p.channel.timer + 1) : loop;
           Object.assign(t, {loop, first: Math.floor(at * 256 / rate) + 1, len: at});
-          t.parts.push({label: `Each ${p.sk.n === "Blade Fury" ? "blade" : "hit"}, held`, frames: every, hits: 1, channel: true, fixed: p.paced});
+          t.parts.push({label: `Each ${p.sk.n === "Blade Fury" ? "blade" : "hit"}, held`, frames: every, hits: 1, channel: true});
           return t;
         }
         t.parts.push({label: "One " + p.sk.n, frames: held(len, 0, rate), hits: p.seq.hits});
@@ -1255,7 +1255,7 @@
     if (p.rollback) n.push(`${p.sk.n} rolls its swing back ${p.rollback.pct}% after each hit: the lengths are hit by hit.`);
     if (p.channel) {
       const tm = p.channel.timer;
-      n.push(`${p.sk.n} is channelled: held, the game casts it again each time it reaches step ${p.channel.at}${tm ? `, and its own timer lets a blade through every ${t.parts[0].frames} game frames, about ${aps(t.parts[0].frames)} a second, whatever the IAS (counted in game: 24, 25 and 27 blades in 5 seconds at 0, 50 and 150 IAS)` : ""}. IAS only shortens the wind-up: the first blade comes about ${t.first} frames in.`);
+      n.push(`${p.sk.n} is channelled: held, the game casts it again each time it reaches step ${p.channel.at}, a loop of ${t.loop} frames at this speed${tm ? `, and its own timer lets a blade through at most every ${tm + 1} game frames: a blade every <b>${t.parts[0].frames} frames</b>. From speed 75 the timer sets the pace, about 5 blades a second; below it the loop does (counted in game: 19 blades in 5 seconds at speed 70, 24 at 90-94, 25-27 from 105 to 156)` : ""}. The first comes about ${t.first} frames in.`);
     }
     if (p.fixed) n.push(`${p.sk.n}'s timer allows a hit every ${p.fixed} frames, but the game checks it only every ${t.check} frames (every 4 steps of its sequence, which runs at the other animation rate): a hit every <b>${t.parts[0].frames} frames</b>${p.dual ? ", one with each weapon" : ""}. IAS changes nothing; slows and Frenzy's charges change the check.`);
     if (p.fx && !p.fixed) n.push(`${p.sk.n} is drawn at the game's other animation rate (100, changed by slows and Frenzy's charges): IAS, the weapon's speed and the skills' speed don't count.`);
@@ -1774,8 +1774,8 @@
     }
     if (p.channel) {
       st.push(["Rate per frame", `<span class="formula">${t.base} &times; ${sp.speed} &divide; 100</span> = <b>${t.rate}</b> (one step is 256).`]);
-      st.push(["The wind-up", `Held, the game casts ${esc(p.sk.n)} again each time it reaches step ${p.channel.at}, about <span class="formula">&lceil;${p.channel.at} &times; 256 &divide; ${t.rate}&rceil; + 1</span> = <b>${t.loop} frames</b> at this speed.`]);
-      if (p.channel.timer) st.push(["Count the frames", `Its own timer then lets a blade through every <b>${part.frames} game frames</b>, ${aps(part.frames)} a second, whatever the IAS (counted in game). IAS only shortens the wind-up to the first blade.`]);
+      st.push(["The channel's loop", `Held, the game casts ${esc(p.sk.n)} again each time it reaches step ${p.channel.at}: <span class="formula">&lceil;${p.channel.at} &times; 256 &divide; ${t.rate}&rceil; + 1</span> = <b>${t.loop} frames</b> a loop.`]);
+      if (p.channel.timer) st.push(["Count the frames", `Its own timer lets a blade through at most every ${p.channel.timer + 1} game frames, so a blade every <span class="formula">max(${t.loop}, ${p.channel.timer + 1})</span> = <b>${part.frames} frames</b>, ${aps(part.frames)} a second (counted in game).`]);
       return st;
     }
     if (p.charge !== undefined) {

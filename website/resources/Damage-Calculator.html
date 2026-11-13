@@ -401,9 +401,9 @@
         if (!steps) { p.why = `${sk.n} can't be used with this weapon.`; return p; }
         p.seq = {num: sk.q, steps, frames: steps.length, hits: steps.filter(x => x[2] === 1).length};
         if (sk.chg !== undefined) p.charge = sk.chg;
-        // a channel (Blade Fury): held, the game starts it again on reaching step `at`; with a timer of its own
-        // (Blade Fury's 4 frames between blades) a blade every timer + 1 frames whatever the IAS, as counted in game
-        if (sk.ch) { p.channel = {at: sk.ch, timer: sk.ct || 0}; p.paced = !!sk.ct; }
+        // a channel (Blade Fury): held, the game casts it again on reaching step `at`; with a timer of its own
+        // (Blade Fury's 4 frames between blades) a blade every max(loop, timer + 1) frames, as counted in game
+        if (sk.ch) p.channel = {at: sk.ch, timer: sk.ct || 0};
         // Whirlwind, Blade Dance: a hit at most every Param3 frames by the game's timer, with each weapon when there
         // are two; their sequence runs at the other animation rate
         if (sk.ff) { p.fixed = sk.ff; p.fixedHits = p.dual ? 2 : 1; p.fx = true; }
@@ -529,9 +529,9 @@
         if (p.channel) {
           // held: a loop of steps 0 to `at` (its event made the frame after), the timer letting a hit through on the
           // first loop at least `timer` frames after the last one
-          const at = p.channel.at, loop = cdiv(at * 256, rate) + 1, every = p.channel.timer ? p.channel.timer + 1 : loop;
+          const at = p.channel.at, loop = cdiv(at * 256, rate) + 1, every = p.channel.timer ? Math.max(loop, p.channel.timer + 1) : loop;
           Object.assign(t, {loop, first: Math.floor(at * 256 / rate) + 1, len: at});
-          t.parts.push({label: `Each ${p.sk.n === "Blade Fury" ? "blade" : "hit"}, held`, frames: every, hits: 1, channel: true, fixed: p.paced});
+          t.parts.push({label: `Each ${p.sk.n === "Blade Fury" ? "blade" : "hit"}, held`, frames: every, hits: 1, channel: true});
           return t;
         }
         t.parts.push({label: "One " + p.sk.n, frames: held(len, 0, rate), hits: p.seq.hits});
