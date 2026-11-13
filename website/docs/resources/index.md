@@ -1,21 +1,14 @@
 ---
 title: Resources
-description: The Grail Planner, calculators and reference pages on how parts of Project Diablo 2 work, to look things up while you play.
+description: Calculators and reference pages on how parts of Project Diablo 2 work, to look things up while you play.
 ---
 
 # Resources
 
-The Grail Planner, calculators and reference pages on how parts of Project Diablo 2 work, to look things up while
-you play. More will be added over time.
+Calculators and reference pages on how parts of Project Diablo 2 work, to look things up while you play. More will
+be added over time.
 
 <div class="grid cards" markdown>
-
--   **[Grail Planner](../grail.md)**
-
-    ---
-
-    How long your grail takes in maps, which Corrupted Ear to use for the items you're missing, and where to target
-    farm every unique and set item. Mark what you've found, and it plans the rest.
 
 -   **[Infinity Base Comparison](infinity-base-comparison.md)**
 

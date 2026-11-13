@@ -829,8 +829,10 @@
   deploys it on every push (Pages source: GitHub Actions).
   Its tabs are sections (2026-11-13, the author: 14 tabs in two rows were too many), mkdocs.yml's nav: **Loot
   Filter** (Home, Versions, Minimal Version, Filter Levels, Unique & Set Tiers, Non-magical Bases, Magic Items, Rare
-  Items, Skill & Shop Highlights, Examples), **Filter Editor** (Filter Editor, Customization) and **Resources** (its
-  Overview, the Grail Planner, the Resources pages). Under the tabs a row of the current section's pages
+  Items, Skill & Shop Highlights, Examples), **Filter Editor** (Filter Editor, Customization), **Grail Planner** (the
+  planner alone: its own tab since 2026-11-13, the author: "it deserves its own top tab for how comprehensive it is";
+  the Resources page no longer lists it) and **Resources** (its Overview, the Resources pages). Under the tabs a row
+  of the current section's pages
   (`website/overrides/partials/tabs.html`, styled in `erazure.css`), which on desktop replaces Material's sidebar
   (hidden from 76.25em; narrower screens hide the tabs and keep the sidebar as the ☰ menu, opened at the section).
   The header, both tab rows and the footer keep Material's 61rem on every page (the author, 2026-11-13: the header

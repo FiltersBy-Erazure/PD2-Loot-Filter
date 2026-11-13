@@ -30,10 +30,13 @@ afterwards.
   the game draws them, and save it straight into your game
 - [Customization](customization.md): edit your own copy of the filter
 
-### Resources
+### Grail Planner
 
 - [Grail Planner](grail.md): how long your grail takes in maps, which ear to use for the items you're missing, and
   where to target farm every unique and set item
+
+### Resources
+
 - [Resources](resources/index.md): calculators (damage, attack speed, run speed, Ohm or a jewel) and pages on how
   parts of the game work, such as which Infinity base to give your Act 2 mercenary
 
