@@ -24,7 +24,8 @@ The Resources tab's pages are written by hand, in website/resources/ (each with 
   by tools/calc_data.py
 - Damage-Calculator.html, shown on the Damage Calculator page (docs/resources/damage-calculator.md), and
   Run-Speed.html, shown on the Run Speed page (docs/resources/run-speed.md); their game numbers are written by
-  tools/calc_data.py too
+  tools/calc_data.py too, and the Run Speed race's pictures (Run-Speed-Sprites/, copied beside it) by
+  tools/run_sprites.py
 - IAS-Calculator.html, shown on the IAS Calculator page (docs/resources/ias-calculator.md); its game numbers are
   written by tools/ias_data.py, its engine checked by tools/ias_selftest.py
 Each goes into the site as a file of its own (a Resources page under resources/), so its address keeps working.
@@ -69,7 +70,9 @@ BESIDE = ["Erazure-Grail-Planner-Compendium.png", "Erazure-Grail-Planner-Glyphs.
 # --assets; until it's written the editor draws with a web font and no pictures)
 BESIDE_FOLDERS = ["Erazure-Filter-Editor-Assets",
                   # the IAS Calculator's attack previews (tools/ias_sprites.py), beside its own copy in resources/
-                  "website/resources/IAS-Calculator-Sprites"]
+                  "website/resources/IAS-Calculator-Sprites",
+                  # the Run Speed page's race (tools/run_sprites.py), the same way
+                  "website/resources/Run-Speed-Sprites"]
 # The Filter Editor's script names its source with the source's CRC, so a new filter is a new address for browsers
 EDITOR_SOURCE, SOURCE_V = "Erazure-Filter-Editor-Source.js", "__SOURCE_V__"
 

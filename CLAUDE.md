@@ -1058,9 +1058,28 @@
   a normal attack's round is attack 1 + attack 2, and an attack hits with the weapons the game picks for it
   (`weaponsFor`: a normal attack the first weapon only). Run speed: speed points =
   6 x (100, +50 running, + FRW diminished at 150, + movement %) / 100, at least 25; a point moves a character 1/16 of a
-  subtile a frame, and a yard (the skill descriptions') is 2/3 of a subtile: 25/24 of a yard a second, running 9.375
+  subtile a frame, and a subtile is 2/3 of a yard (the skill descriptions'): 25/24 of a yard a second, running 9.375
   with nothing (HarryPe's sheet reads the points as yards: 9). Vigor's +1% FRW per base point applies with any aura;
-  Whirlwind's and Blade Dance's movement isn't modelled (not found).
+  Whirlwind's and Blade Dance's movement isn't modelled (not found). Blaze counts for every class (2026-11-12, the
+  author: items cast it, Infernostride level 16 when struck): +min(25 + lvl - 1, 60)% for min(75 + 5 x (lvl - 1), 250)
+  frames; Hunger is the werebear's in PD2 (restrict 2, State1 bear), Feral Rage the werewolf's.
+  The race ("See them run", 2026-11-12, the author: a character running to show how fast, with the buffs under their
+  feet and Blaze's fire): each setup from a standing start, buffs just cast (a buff stops counting when its
+  auralencalc runs out: Joust 2 s, Blaze 3-10 s), drawn with the game's sprites facing east (a yard is 1.5 subtiles,
+  a subtile going east 16 x √2 pixels). `python tools/run_sprites.py "<Diablo II folder>" [--check]` writes
+  `website/resources/Run-Speed-Sprites/` (race.png: each class's run / walk / stand with light armor and a weapon,
+  the werewolf and werebear, the overlays, Blaze's flames; race.js: the layout; floor.png), copied beside the page by
+  hooks.py (`BESIDE_FOLDERS`); it needs the game files, so build.bat, the hook and CI don't run it (rerun after a
+  patch that changes those animations). Traced: a player's walk / run plays trunc(base x velocity % / 100) / 256
+  frames a game frame, base 101 running, 213 walking (the base game's, which PD2 doesn't change), the same % that
+  moves them; a wereform's base is its MonStats walk / run anim speed, AnimData's WL / RN speed (werewolf 128 / 104,
+  werebear 168 / 120), its velocity MonStats' 6. Overlays: the states' Overlay.txt rows (quickness, stamina
+  front / back, frenzy for Frenzy and Joust, bloodlust_state for Hunger, feralrage1-5 and their backs), drawn
+  additively at AnimRate / 16 frames a game frame. Not traced (said nowhere on the page): which Feral Rage size the game
+  picks (the page: charges 1-5 as sizes A-E), how many flames a Blaze trail missile (SrvMissileA blaze2trail, put down
+  as you move; each burns 60 frames) draws (the page: one every other game frame), and the burst on cast: PD2 replaces
+  srvdo 23 (Blaze: the vanilla state plus a path collision change) and nothing found creates its srvmissile
+  blaze2ignite, so the race shows none.
 - The **IAS Calculator** (Resources, 2026-11-12, the author: "all the functionality of" RoofooEvazan's
   hiimpd2.com/ias-calculator, credited on the page; plan `C:\Users\Erik\.claude\plans\i-want-to-create-compiled-lake.md`):
   `website/resources/IAS-Calculator.html` (`ias-map`, by hand), four tabs. IAS Calculator: the setup beside an answer

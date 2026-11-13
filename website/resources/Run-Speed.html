@@ -106,6 +106,25 @@
   .frw-map .method li strong { color: var(--fg); }
   .frw-map .credit { color: var(--muted); font-size: 13px; }
   .frw-map .credit a { color: var(--accent); }
+  /* the race: the game's own pictures on the game's ground (the scene keeps its own colors in light mode too) */
+  .frw-map .race-bar { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
+  .frw-map .race-bar .seg { display: inline-flex; border: 1px solid var(--axis); border-radius: 6px; overflow: hidden; }
+  .frw-map .race-bar .seg button { border: 0; border-radius: 0; background: var(--bg); padding: 5px 12px; }
+  .frw-map .race-bar .seg button + button { border-left: 1px solid var(--axis); }
+  .frw-map .race-bar .seg button[aria-pressed="true"] { background: var(--accent-wash); color: var(--fg); font-weight: 700; }
+  .frw-map .race-bar label { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--fg2); }
+  .frw-map .race-bar select { width: auto; }
+  .frw-map .race-bar .play { font-weight: 700; border-color: var(--accent); }
+  .frw-map .panel > * { min-width: 0; }
+  .frw-map .stage { position: relative; border-radius: 6px; overflow: hidden; background: #0d0c0a; line-height: 0; min-width: 0; }
+  .frw-map .stage canvas { display: block; width: 100%; max-width: 100%; height: auto; cursor: pointer; }
+  .frw-map .stage .wait { position: absolute; inset: 0; display: grid; place-items: center; color: #cfc8bb; font-size: 13.5px; line-height: 1.4; }
+  .frw-map ol.race-res { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+  .frw-map .race-res li { display: flex; flex-wrap: wrap; gap: 2px 10px; align-items: baseline; font-size: 13.5px; margin: 0; color: var(--fg2); }
+  .frw-map .race-res .who { display: inline-flex; align-items: baseline; gap: 7px; color: var(--fg); font-weight: 600; }
+  .frw-map .race-res .key { display: inline-block; width: 10px; height: 10px; border-radius: 2px; align-self: center; }
+  .frw-map .race-res b { font-variant-numeric: tabular-nums; color: var(--fg); }
+  .frw-map .race-res small { color: var(--muted); font-size: 12.5px; }
   @media (max-width: 860px) {
     .frw-map .builds, .frw-map .tiles { grid-template-columns: 1fr; }
   }
@@ -132,6 +151,23 @@
 
   <section class="tiles" id="fr-tiles" aria-live="polite"></section>
 
+  <section class="panel" aria-labelledby="fr-race-h" id="fr-race">
+    <div class="bar">
+      <h2 id="fr-race-h" style="flex:1">See them run</h2>
+    </div>
+    <p class="sub">Each setup from a standing start, its buffs just cast, at the game&rsquo;s own speed and scale. The legs move as fast as the game moves them. A buff that runs out on the way (Blaze, Joust) stops counting there.</p>
+    <div class="race-bar">
+      <span class="seg" role="group" aria-label="Running or walking">
+        <button type="button" id="fr-run" aria-pressed="true">Running</button><button type="button" id="fr-walk" aria-pressed="false">Walking</button>
+      </span>
+      <label>Distance <select id="fr-dist"><option value="10">10 yards</option><option value="20">20 yards</option><option value="30" selected>30 yards</option><option value="50">50 yards</option><option value="100">100 yards</option></select></label>
+      <label>Speed <select id="fr-slow"><option value="1" selected>As in game</option><option value="0.5">Half speed</option><option value="0.25">Quarter speed</option></select></label>
+      <button type="button" class="play" id="fr-play">Run the race</button>
+    </div>
+    <div class="stage" id="fr-stage"><canvas id="fr-canvas" role="img" aria-label="The race"></canvas><div class="wait" id="fr-wait">Loading the pictures&hellip;</div></div>
+    <ol class="race-res" id="fr-race-res" aria-live="polite"></ol>
+  </section>
+
   <section class="panel" aria-labelledby="fr-res-h">
     <h2 id="fr-res-h">Side by side</h2>
     <div class="scroll"><table class="fr-table" id="fr-results"></table></div>
@@ -148,9 +184,11 @@
     <h2 id="fr-how-h">How it&rsquo;s worked out</h2>
     <ul>
       <li><strong>FRW on gear</strong> (with Vigor&rsquo;s +1% per base point: the Paladin has it whichever aura is on) adds up, then counts as 150 &times; FRW / (150 + FRW), rounded down: 30% counts 25, 60% counts 42, 100% counts 60, 300% counts 100.</li>
-      <li><strong>Movement from skills</strong> (Increased Speed, Frenzy, Burst of Speed, Vigor&rsquo;s aura, Blaze, Evade, Feral Rage, Hunger, Joust) and from a Stamina shrine (+35%) counts in full. Frenzy&rsquo;s grows with its stacks (a fifth of it per stack, full at 5); Feral Rage&rsquo;s is worked out from its charges, as the game does.</li>
+      <li><strong>Movement from skills</strong> (Increased Speed, Frenzy, Burst of Speed, Vigor&rsquo;s aura, Blaze, Evade, Feral Rage, Hunger, Joust) and from a Stamina shrine (+35%) counts in full. Frenzy&rsquo;s grows with its stacks (a fifth of it per stack, full at 5); Feral Rage&rsquo;s is worked out from its charges, as the game does. Feral Rage is the werewolf&rsquo;s and Hunger the werebear&rsquo;s, so a Druid has one of them at a time.</li>
+      <li><strong>Blaze</strong> gives +25% movement at level 1 and 1% more a level, up to 60%, while it lasts: 3 seconds at level 1 and 0.2 more a level, up to 10. Any class can have it from an item (Infernostride casts level 16 when you&rsquo;re struck: +40% for 6 seconds). While it lasts it leaves fire behind you as you move, and each flame burns for 2.4 seconds.</li>
       <li><strong>Speed:</strong> walking is 6 points of speed, running 9 (walking + 50%), and every 1% of movement adds 0.06 of a point. The game moves you a sixteenth of a map square per point every frame, 25 frames a second; in the yards the skill descriptions use (a map square is two thirds of a yard), a point is 25/24 of a yard a second: walking 6.25, running 9.375, and every 1% adds 0.0625. Calculators that read the points as yards a second show about 4% less. The speed never goes below a quarter of walking.</li>
-      <li><strong>Not shown:</strong> Whirlwind&rsquo;s and Blade Dance&rsquo;s own movement, Teleport, and how fast the run animation plays, which doesn&rsquo;t change the distance covered.</li>
+      <li><strong>The race</strong> uses the game&rsquo;s own pictures, facing east (screen right), where a yard is 34 of the game&rsquo;s pixels across. The animation keeps pace with the speed: running plays 101/256 of a frame per game frame and walking 213/256 (the werewolf 104 and 128, the werebear 120 and 168), times the same speed % that moves you, so a faster character also moves its legs faster. Each setup starts with its buffs just cast, and a buff that runs out on the way stops counting there: Joust&rsquo;s lasts 2 seconds and Blaze&rsquo;s 3 to 10, the others longer than any race here.</li>
+      <li><strong>Not shown:</strong> Whirlwind&rsquo;s and Blade Dance&rsquo;s own movement, and Teleport.</li>
     </ul>
     <p class="credit">Inspired by HarryPe&rsquo;s <a href="https://docs.google.com/spreadsheets/d/1HAxtlOHB7pY6nyNICU13cEb1hHC7ohuUe-2zIJ6EHG8/edit" rel="noopener">Physical damage calculator</a> (its &ldquo;FRW Calculator&rdquo; sheet).</p>
   </section>
@@ -160,6 +198,8 @@
 <script>
 (function () {
   "use strict";
+  // on the website this script is assets/frw-map/frw-map.js: the race's pictures are found from there
+  const SCRIPT_SRC = document.currentScript && document.currentScript.src;
   /* calc-data:start */
   const DATA = {"skills":{"380":{"Id":"380","skill":"Blade Dance","charclass":"ass","HitShift":"8","ToHit":"200","LevToHit":"15","anim":"SQ","seqnum":"10","SrcDam":"128","maxlvl":"20","itypea1":"mele","reqlevel":"30","Param1":"30","Param2":"4","Param3":"6","Param5":"20","Param6":"2","calc1":"ln12","aurastat1":"velocitypercent","aurastat2":"item_attackrate","aurastatcalc1":"\"min(ln56, 65)\"","aurastatcalc2":"100","name":"Blade Dance"},"151":{"Id":"151","skill":"Whirlwind","charclass":"bar","HitShift":"8","ToHit":"90","LevToHit":"6","anim":"SQ","seqnum":"10","SrcDam":"128","maxlvl":"20","itypea1":"mele","reqlevel":"30","Param1":"20","Param2":"5","Param3":"6","Param5":"0","Param6":"2","calc1":"ln12","aurastat1":"velocitypercent","aurastat2":"item_attackrate","aurastatcalc1":"\"min(ln56, 65)\"","aurastatcalc2":"100","name":"Whirlwind"},"258":{"Id":"258","skill":"Quickness","charclass":"ass","HitShift":"8","ELen":"20","auralencalc":"ln56","anim":"SC","maxlvl":"20","reqlevel":"6","ELevLen1":"2","ELevLen2":"1","ELevLen3":"1","Param3":"15","Param4":"60","Param5":"7500","Param6":"125","aurastat1":"velocitypercent","aurastat2":"attackrate","aurastatcalc1":"edln","aurastatcalc2":"((110*blvl) * (par4-par3))/(100 * (blvl+6)) + par3","name":"Burst of Speed"},"29":{"Id":"29","skill":"Evade","charclass":"ama","HitShift":"8","EMin":"6","EMax":"15","anim":"NU","maxlvl":"20","reqlevel":"6","EMinLev1":"2","EMinLev2":"1","EMinLev3":"1","EMinLev4":"1","EMaxLev1":"2","EMaxLev2":"2","EMaxLev3":"2","EMaxLev4":"2","EMaxLev5":"1","Param1":"0","Param2":"40","Param3":"2","passivestat1":"passive_evade","passivestat2":"velocitypercent","passivecalc1":"\"min(edmn, par2)\"","passivecalc2":"edmx","name":"Evade"},"46":{"Id":"46","skill":"Blaze","charclass":"sor","HitShift":"2","EMin":"1","EMax":"2","EDmgSymPerCalc":"(skill('Fire Wall'.blvl))*par8","auralencalc":"\"min(ln12, 250)\"","anim":"SC","maxlvl":"20","reqlevel":"6","EMinLev1":"1","EMinLev2":"1","EMinLev3":"5","EMinLev4":"8","EMinLev5":"8","EMaxLev1":"1","EMaxLev2":"2","EMaxLev3":"6","EMaxLev4":"9","EMaxLev5":"9","Param1":"75","Param2":"5","Param3":"25","Param4":"1","Param5":"60","Param7":"6","Param8":"6","passivestat1":"velocitypercent","passivestat2":"item_cannotbefrozen","passivecalc1":"min(ln34,par5)","passivecalc2":"1","name":"Blaze"},"51":{"Id":"51","skill":"Fire Wall","charclass":"sor","HitShift":"3","EMin":"6","EMax":"10","EDmgSymPerCalc":"(skill('Blaze'.blvl))*par8","anim":"SC","maxlvl":"20","reqlevel":"12","EMinLev1":"2","EMinLev2":"6","EMinLev3":"25","EMinLev4":"50","EMinLev5":"50","EMaxLev1":"3","EMaxLev2":"8","EMaxLev3":"28","EMaxLev4":"53","EMaxLev5":"53","Param7":"5","Param8":"5","name":"Fire Wall"},"378":{"Id":"378","skill":"Joust","charclass":"pal","HitShift":"8","ToHit":"120","LevToHit":"16","auralencalc":"50","anim":"A1","SrcDam":"128","maxlvl":"20","reqlevel":"24","Param1":"40","Param2":"8","Param3":"10","Param4":"2","calc1":"ln12","calc2":"ln34","aurastat1":"velocitypercent","aurastatcalc1":"\"min(3 + (2 * lvl), 65)\"","name":"Joust"},"115":{"Id":"115","skill":"Vigor","charclass":"pal","HitShift":"8","anim":"RN","maxlvl":"20","itypea1":"weap","reqlevel":"18","Param1":"26","Param2":"3","Param3":"50","Param4":"25","Param5":"7","Param6":"50","aurastat1":"staminarecoverybonus","aurastat2":"skill_staminapercent","aurastat3":"velocitypercent","aurastatcalc1":"ln34","aurastatcalc2":"ln34","aurastatcalc3":"dm56","passivestat1":"item_fastermovevelocity","passivecalc1":"blvl","name":"Vigor"},"242":{"Id":"242","skill":"Hunger","charclass":"dru","HitShift":"8","EMax":"40","EDmgSymPerCalc":"(skill('Maul'.blvl)) * par8","auralencalc":"475+(lvl*25)","anim":"S3","maxlvl":"20","reqlevel":"12","EMaxLev1":"10","EMaxLev2":"16","EMaxLev3":"24","EMaxLev4":"34","EMaxLev5":"46","Param1":"14","Param2":"50","Param3":"3","Param4":"19","Param8":"20","aurastat1":"lifedrainmindam","aurastat2":"velocitypercent","aurastat3":"item_openwounds","aurastat4":"deep_wounds","aurastatcalc1":"par3 + blvl / 4","aurastatcalc2":"par4 + lvl","aurastatcalc3":"dm12 + 5","aurastatcalc4":"edmx","name":"Hunger"},"233":{"Id":"233","skill":"Maul","charclass":"dru","HitShift":"8","ToHit":"25","LevToHit":"10","auralencalc":"par4","anim":"A1","SrcDam":"128","maxlvl":"20","reqlevel":"6","Param3":"40","Param4":"500","Param5":"30","Param6":"5","Param7":"2","Param8":"3","calc1":"0","calc2":"lvl/par7 + par8","aurastat1":"damagepercent","aurastat2":"stunlength","aurastatcalc1":"lvl*par3","aurastatcalc2":"((par5 + ((blvl - 1) * - par6))<5)?par6:(par5 + ((blvl - 1) * - par6))","name":"Maul"},"232":{"Id":"232","skill":"Feral Rage","charclass":"dru","HitShift":"8","ToHit":"25","LevToHit":"8","auralencalc":"par1","anim":"A1","SrcDam":"128","maxlvl":"20","reqlevel":"6","Param1":"750","Param2":"1","Param3":"20","Param4":"120","Param5":"50","Param6":"10","Param7":"2","Param8":"3","calc1":"ln56 + skill('Fury'.blvl) * 6","calc2":"lvl/par7 + par8","aurastat1":"velocitypercent","aurastat2":"lifedrainmindam","aurastatcalc1":"dm34","aurastatcalc2":"\"1 + (lvl - 1) * (min(par2 * skill('Feral Rage'.lvl) / 2 + 4,10) - 1) / max(skill('Feral Rage'.clc2) - 1,1)\"","name":"Feral Rage"},"248":{"Id":"248","skill":"Fury","charclass":"dru","HitShift":"8","ToHit":"235","LevToHit":"10","anim":"A1","SrcDam":"128","maxlvl":"20","reqlevel":"30","Param2":"100","Param3":"100","Param4":"8","Param5":"3","Param6":"3","Param8":"4","calc1":"\"min((par5 + lvl -1), par6)\"","calc2":"ln34 + skill('Feral Rage'.blvl)*par8","aurastat1":"inc_splash_radius","aurastatcalc1":"1","name":"Fury"},"147":{"Id":"147","skill":"Frenzy","charclass":"bar","HitShift":"8","ELen":"32","ToHit":"30","LevToHit":"12","auralencalc":"375 + (25 * (blvl*2))","anim":"SQ","seqnum":"11","SrcDam":"128","maxlvl":"20","itypea1":"mele","reqlevel":"6","ELevLen1":"2","ELevLen2":"1","ELevLen3":"1","Param1":"25","Param2":"25","Param3":"0","Param4":"45","Param5":"0","Param6":"50","Param7":"375","Param8":"20","calc1":"ln12+(skill('Double Swing'.blvl) + skill('Stun'.blvl))*par8","calc2":"dm34","calc4":"5","aurastat1":"velocitypercent","aurastat2":"attackrate","aurastatcalc1":"edln","aurastatcalc2":"dm56","name":"Frenzy"},"139":{"Id":"139","skill":"Stun","charclass":"bar","HitShift":"8","ELen":"25","ToHitCalc":"40+lvl*15+skill('Concentrate'.blvl)*par7","anim":"A1","SrcDam":"32","maxlvl":"20","itypea1":"mele","reqlevel":"6","ELevLen1":"4","ELevLen2":"4","ELevLen3":"2","Param1":"0","Param2":"0","Param6":"0","Param7":"10","Param8":"8","name":"Stun"},"144":{"Id":"144","skill":"Concentrate","charclass":"bar","HitShift":"8","ToHit":"40","LevToHit":"20","anim":"A1","SrcDam":"128","maxlvl":"20","itypea1":"mele","reqlevel":"12","Param1":"80","Param2":"25","Param3":"20","Param4":"5","Param7":"25","Param8":"25","calc1":"ln12+skill('Bash'.blvl)*par8+skill('Battle Command'.blvl)*par7","calc4":"30 + 2*blvl ","aurastat1":"skill_armor_percent","aurastat2":"inc_splash_radius","aurastatcalc1":"ln34","aurastatcalc2":"20","name":"Concentrate"},"155":{"Id":"155","skill":"Battle Command","charclass":"bar","HitShift":"8","auralencalc":"7500","anim":"SC","maxlvl":"20","reqlevel":"30","Param1":"125","Param2":"250","Param3":"20","Param4":"3","Param8":"125","aurastat1":"item_allskills","aurastat2":"damagepercent","aurastatcalc1":"1+blvl/10","aurastatcalc2":"ln34","name":"Battle Command"},"126":{"Id":"126","skill":"Bash","charclass":"bar","HitShift":"8","ToHit":"30","LevToHit":"20","anim":"A1","SrcDam":"128","maxlvl":"20","itypea1":"mele","reqlevel":"1","Param3":"1","Param4":"1","Param5":"50","Param6":"25","Param7":"10","Param8":"20","calc1":"ln56 + (skill('Stun'.blvl) + skill('Concentrate'.blvl)) * par8","calc2":"ln34","name":"Bash"},"133":{"Id":"133","skill":"Double Swing","charclass":"bar","HitShift":"8","ToHit":"20","LevToHit":"15","anim":"SQ","seqnum":"11","SrcDam":"128","maxlvl":"20","itypea1":"mele","reqlevel":"1","Param1":"50","Param3":"30","Param4":"30","Param5":"50","Param8":"20","calc1":"ln34 + (skill('Frenzy'.blvl) + skill('Stun'.blvl)) * par8","aurastat1":"attackrate","aurastatcalc1":"par5","name":"Double Swing"},"148":{"Id":"148","skill":"Increased Speed","charclass":"bar","HitShift":"8","ELen":"2","anim":"SC","maxlvl":"20","reqlevel":"24","ELevLen1":"2","ELevLen2":"2","ELevLen3":"1","Param1":"7","Param2":"50","passivestat1":"velocitypercent","passivestat2":"item_fasterattackrate","passivecalc1":"dm12","passivecalc2":"blvl * 2","name":"Increased Speed"}},"classes":[{"code":"ama","name":"Amazon","walk":6,"run":9},{"code":"sor","name":"Sorceress","walk":6,"run":9},{"code":"nec","name":"Necromancer","walk":6,"run":9},{"code":"pal","name":"Paladin","walk":6,"run":9},{"code":"bar","name":"Barbarian","walk":6,"run":9},{"code":"dru","name":"Druid","walk":6,"run":9},{"code":"ass","name":"Assassin","walk":6,"run":9}]};
   /* calc-data:end */
@@ -172,6 +212,7 @@
   const LETTERS = ["A", "B", "C", "D"];
   const nf0 = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
   const nf2 = new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const nf1 = new Intl.NumberFormat("en-US", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
   const SK = DATA.skills;
   const CLS = Object.fromEntries(DATA.classes.map(c => [c.code, c]));
   const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
@@ -232,18 +273,21 @@
   const YARDS = 25 / 24;
   const efrw = v => (v > 0 ? Math.trunc(150 * v / (150 + v)) : v);
   /* the velocity % a setup's skills give (velocitypercent: no diminishing returns) and the item FRW they add */
+  /* how long a buff lasts once cast, in game frames (its auralencalc; 0: as long as it's on) */
+  const lasts = (id, lvl) => Calc(id, "auralencalc", lvl);
   function skills(b) {
     const parts = []; let vel = 0, itemFrw = 0;
-    const add = (label, v) => { if (v) { vel += v; parts.push([label, v]); } };
+    // [label, movement %, frames it lasts (0: no end)]
+    const add = (label, v, dur) => { if (v) { vel += v; parts.push([label, v, dur || 0]); } };
     const s = b.s;
     if (b.cls === "bar" && s.inc > 0) add("Increased Speed", Calc(148, "passivecalc1", s.inc));
-    if (b.cls === "bar" && s.frenzy > 0) add("Frenzy", Math.floor(Calc(147, "aurastatcalc1", s.frenzy) * clamp(s.stacks, 0, 5) / 5));
-    if (b.cls === "ass" && s.bos > 0) add("Burst of Speed", Calc(258, "aurastatcalc1", s.bos));
+    if (b.cls === "bar" && s.frenzy > 0) add("Frenzy", Math.floor(Calc(147, "aurastatcalc1", s.frenzy) * clamp(s.stacks, 0, 5) / 5), lasts(147, s.frenzy));
+    if (b.cls === "ass" && s.bos > 0) add("Burst of Speed", Calc(258, "aurastatcalc1", s.bos), lasts(258, s.bos));
     if (b.cls === "ama" && s.evade > 0) add("Evade", Calc(29, "passivecalc2", s.evade));
-    if (b.cls === "sor" && s.blaze > 0) add("Blaze", Calc(46, "passivecalc1", s.blaze));
-    if (b.cls === "dru" && s.feral > 0 && s.charges > 0) add("Feral Rage", Calc(232, "aurastatcalc1", s.charges));
-    if (b.cls === "dru" && s.hunger > 0) add("Hunger", Calc(242, "aurastatcalc2", s.hunger));
-    if (b.cls === "pal" && s.joust > 0) add("Joust", Calc(378, "aurastatcalc1", s.joust));
+    if (s.blaze > 0) add("Blaze", Calc(46, "passivecalc1", s.blaze), lasts(46, s.blaze));
+    if (b.cls === "dru" && s.feral > 0 && s.charges > 0) add("Feral Rage", Calc(232, "aurastatcalc1", s.charges), lasts(232, s.feral));
+    if (b.cls === "dru" && s.hunger > 0) add("Hunger", Calc(242, "aurastatcalc2", s.hunger), lasts(242, s.hunger));
+    if (b.cls === "pal" && s.joust > 0) add("Joust", Calc(378, "aurastatcalc1", s.joust), lasts(378, s.joust));
     if (s.vigor > 0) add("Vigor", Calc(115, "aurastatcalc3", s.vigor));
     if (b.cls === "pal" && s.vigorHard > 0) itemFrw += Calc(115, "passivecalc1", s.vigorHard, { self_blvl: s.vigorHard });
     if (s.shrine) add("Stamina shrine", 35);
@@ -285,8 +329,8 @@
     const f = el("div", { class: "field" }, p); const id = "fr-f" + (++uid);
     el("label", { for: id }, f, label);
     const i = el("input", { type: "number", id, min: lo, max: hi, step: 1 }, f); i.value = get();
-    i.addEventListener("input", () => { set(num(i.value, lo, hi)); render(); });
-    if (hint) el("small", {}, f, hint);
+    const sm = hint ? el("small", {}, f, typeof hint === "function" ? hint() : hint) : null;
+    i.addEventListener("input", () => { set(num(i.value, lo, hi)); if (sm && typeof hint === "function") sm.textContent = hint(); render(); });
   }
   function checkField(p, label, get, set) {
     const f = el("div", { class: "field" }, p); const l = el("label", { class: "check" }, f);
@@ -320,12 +364,14 @@
       }
       if (b.cls === "ass") numField(f, "Burst of Speed", () => s.bos, v => { s.bos = v; }, 0, 60);
       if (b.cls === "ama") numField(f, "Evade", () => s.evade, v => { s.evade = v; }, 0, 60);
-      if (b.cls === "sor") numField(f, "Blaze", () => s.blaze, v => { s.blaze = v; }, 0, 60, "While it burns");
       if (b.cls === "dru") {
         numField(f, "Feral Rage", () => s.feral, v => { s.feral = v; }, 0, 60, "Werewolf");
         numField(f, "Feral Rage charges", () => s.charges, v => { s.charges = v; }, 0, 40, `Up to ${s.feral ? Calc(232, "calc2", s.feral) : "?"} at its level`);
-        numField(f, "Hunger", () => s.hunger, v => { s.hunger = v; }, 0, 60, "Its buff");
+        numField(f, "Hunger", () => s.hunger, v => { s.hunger = v; }, 0, 60, "Werebear, its buff");
       }
+      const sor = b.cls === "sor";
+      numField(f, sor ? "Blaze" : "Blaze from an item", () => s.blaze, v => { s.blaze = v; }, 0, 60,
+               () => s.blaze > 0 ? `+${Calc(46, "passivecalc1", s.blaze)}% for ${nf1.format(lasts(46, s.blaze) / 25)} s` : sor ? "Its level" : "Its level: Infernostride’s is 16");
       if (b.cls === "pal") numField(f, "Joust", () => s.joust, v => { s.joust = v; }, 0, 60, "2 s after a joust");
       numField(f, "Vigor aura", () => s.vigor, v => { s.vigor = v; }, 0, 60, b.cls === "pal" ? "Its level; 0 while another aura is on" : "A Paladin’s, its level");
       if (b.cls === "pal") numField(f, "Vigor base points", () => s.vigorHard, v => { s.vigorHard = v; }, 0, 20, "+1% FRW each, any aura");
@@ -360,6 +406,7 @@
     h += "</tbody>";
     $("fr-results").innerHTML = h;
     drawChart(R);
+    raceUpdate();
     save();
   }
   const speedsAt = (i, more) => speeds(builds[i], (+builds[i].frw || 0) + more).run;
@@ -401,12 +448,223 @@
     svg.addEventListener("pointerleave", () => { tip.hidden = true; });
   }
 
+  // ================================================================== the race
+  /* Each setup runs (or walks) the distance from a standing start, its buffs just cast, drawn with the game's own
+     pictures (tools/run_sprites.py writes them beside this page, in Run-Speed-Sprites/), facing east: a yard is 1.5 map
+     squares (subtiles) and a map square going east is 16 x √2 of the game's pixels across. Speeds are the table's; a
+     buff stops counting when it runs out. The animation plays rate / 256 of a frame each game frame: 101 running and
+     213 walking (a werewolf's and werebear's own: their animations' speed) times the speed % / 100, rounded down;
+     standing, its animation's speed. Poses change on game frames, positions move smoothly between them (as D2GL draws
+     them). Overlays play AnimRate / 16 of a frame each game frame; Blaze's flames burn 2.4 s from where they start. */
+  const RACE_DIR = SCRIPT_SRC ? new URL("../../resources/Run-Speed-Sprites/", SCRIPT_SRC).href : "Run-Speed-Sprites/";
+  const FPS = 25, PX_YD = 1.5 * 16 * Math.SQRT2, HUMAN_RATE = { RN: 101, WL: 213 };
+  const LANE = 60, TOP = 104, BOTTOM = 30, LEFT = 50, RIGHT = 86, HOLD = 30;  // game pixels; frames to hold the end
+  const RC = { sp: null, img: null, floor: null, pattern: null, state: "idle", mode: "RN", dist: 30, slow: 1,
+               t: 0, playing: false, last: 0, runners: [], seen: false, want: false, done: false, cam: 0 };
+  const reducedMotion = () => !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+  function rng(seed) { return () => { seed = (seed + 0x6d2b79f5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+  function raceLoad() {
+    if (RC.state !== "idle") return;
+    RC.state = "loading";
+    const fail = () => { RC.state = "failed"; $("fr-wait").textContent = "The pictures didn’t load."; };
+    const s = document.createElement("script");
+    s.src = RACE_DIR + "race.js";
+    s.onerror = fail;
+    s.onload = () => {
+      RC.sp = window.FRW_SPRITES;
+      if (!RC.sp) { fail(); return; }
+      let n = 2;
+      const done = () => {
+        if (--n) return;
+        RC.state = "ready"; $("fr-wait").hidden = true;
+        raceSetup();
+        if (RC.want || (RC.seen && !reducedMotion())) racePlay(); else raceDraw();
+      };
+      const im = new Image(); im.onload = () => { RC.img = im; done(); }; im.onerror = fail; im.src = RACE_DIR + "race.png";
+      const fl = new Image(); fl.onload = () => { RC.floor = fl; done(); }; fl.onerror = fail; fl.src = RACE_DIR + "floor.png";
+    };
+    document.head.appendChild(s);
+  }
+  /* a setup as a runner: its form, the speed between the moments its buffs run out, when it finishes, its overlays and
+     Blaze's flames */
+  function runnerOf(b, i) {
+    const s = b.s, mode = RC.mode, sk = skills(b), cls = CLS[b.cls] || { walk: 6, run: 9 };
+    const form = b.cls === "dru" ? (s.feral > 0 && s.charges > 0 ? "wolf" : s.hunger > 0 ? "bear" : "dru") : b.cls;
+    const runBonus = cls.walk ? Math.trunc(100 * cls.run / cls.walk) - 100 : 50;
+    const fixed = 100 + (mode === "RN" ? runBonus : 0) + efrw((+b.frw || 0) + sk.itemFrw);
+    const pctAt = f => Math.max(25, fixed + sk.parts.reduce((a, p) => a + (!p[2] || f < p[2] ? p[1] : 0), 0));
+    const anim = RC.sp.anims[`${form}.${mode}`], stand = RC.sp.anims[`${form}.NU`];
+    const base = form === "wolf" || form === "bear" ? anim.speed : HUMAN_RATE[mode];
+    const ends = [...new Set(sk.parts.filter(p => p[2] > 0).map(p => p[2]))].sort((a, z) => a - z);
+    const segs = []; let from = 0, x = 0, ph = 0;
+    for (const e of ends.concat([Infinity])) {
+      if (e <= from) continue;
+      const pct = pctAt(from);
+      // pixels a game frame (speed points / 16 map squares, each 16 x √2 pixels going east), animation frames a game frame
+      segs.push({ from, to: e, x, ph, pct, px: cls.walk * pct / 100 * Math.SQRT2, fr: Math.trunc(base * pct / 100) / 256 });
+      x += segs[segs.length - 1].px * (e - from); ph += segs[segs.length - 1].fr * (e - from); from = e;
+    }
+    const D = RC.dist * PX_YD;
+    const seg = f => { let g = segs[0]; for (const h of segs) if (h.from <= f) g = h; return g; };
+    let T = 0;
+    for (const g of segs) { const need = (D - g.x) / g.px; if (need <= g.to - g.from) { T = g.from + need; break; } }
+    const at = f => { const g = seg(f); return Math.min(D, g.x + g.px * (f - g.from)); };
+    const ov = [];
+    const on = (name, until) => { if (RC.sp.overlays[name]) ov.push({ name, until: until || Infinity, o: RC.sp.overlays[name] }); };
+    if (b.cls === "ass" && s.bos > 0) on("quickness", lasts(258, s.bos));
+    if (s.vigor > 0) { on("staminaback"); on("staminafront"); }
+    if (b.cls === "bar" && s.frenzy > 0 && s.stacks > 0) on("frenzy", lasts(147, s.frenzy));
+    if (b.cls === "pal" && s.joust > 0) on("frenzy", lasts(378, s.joust));
+    if (form === "wolf") { const k = clamp(s.charges, 1, 5); on(`feralrage${k}back`, lasts(232, s.feral)); on(`feralrage${k}`, lasts(232, s.feral)); }
+    if (form === "bear") on("bloodlust_state", lasts(242, s.hunger));
+    // Blaze: flames left behind as the runner moves while it lasts, small and medium, in a map square around its path
+    // (how many the game puts down isn't known here: one every other game frame)
+    const flames = [], blaze = s.blaze > 0 ? lasts(46, s.blaze) : 0;
+    if (blaze) {
+      const F = RC.sp.fires, rand = rng(1000 + i), disc = r => { const a = rand() * 2 * Math.PI, d = r * Math.sqrt(rand()), u = d * Math.cos(a), v = d * Math.sin(a); return [(u - v) * 16, (u + v) * 8]; };
+      const kinds = ["blaze2dotfiresmall", "blaze2dotfiremedium"];
+      for (let f = 0; f < Math.min(blaze, Math.ceil(T)); f += 2) { const [dx, dy] = disc(F.blaze2trail.radius); const k = kinds[rand() < 0.5 ? 0 : 1]; flames.push({ k, x: at(f) + dx, y: dy, born: f, burn: F.blaze2trail.burn, f: F[k] }); }
+    }
+    return { i, b, form, anim, stand, segs, seg, at, T, D, ov, flames, blaze, sk };
+  }
+  const raceKey = () => JSON.stringify([builds, RC.mode, RC.dist]);
+  function raceSetup() {
+    if (RC.state !== "ready") return;
+    RC.key = raceKey();
+    RC.runners = builds.map(runnerOf);
+    if (!RC.playing) RC.t = Math.min(...RC.runners.map(r => r.T));  // the still: the moment the first one finishes
+    raceResults();
+  }
+  /* after a change to the setups (render() calls it after every redraw, so it checks what changed) */
+  function raceUpdate() {
+    if (RC.state !== "ready" || raceKey() === RC.key) return;
+    if (RC.playing) { RC.playing = false; raceButtons(); }
+    raceSetup(); raceDraw();
+  }
+  function raceResults() {
+    const R = RC.runners.slice().sort((a, z) => a.T - z.T), best = R.length ? R[0].T : 0, ol = $("fr-race-res");
+    ol.innerHTML = "";
+    R.forEach((r, n) => {
+      const li = el("li", {}, ol), who = el("span", { class: "who" }, li);
+      const k = el("span", { class: "key" }, who); k.style.background = KEYS[r.i];
+      who.append(`${n + 1}. ${r.b.name || "Setup " + LETTERS[r.i]}`);
+      const t = el("span", {}, li); t.innerHTML = `<b>${nf2.format(r.T / FPS)} s</b>${n ? ` (+${nf2.format((r.T - best) / FPS)} s)` : ""}`;
+      const notes = [];
+      if (r.blaze && r.blaze < r.T) notes.push(`Blaze runs out at ${nf1.format(r.blaze / FPS)} s`);
+      for (const p of r.sk.parts) if (p[2] && p[2] < r.T && p[0] !== "Blaze") notes.push(`${p[0]} runs out at ${nf1.format(p[2] / FPS)} s`);
+      if (notes.length) el("small", {}, li, notes.join("; "));
+    });
+    $("fr-canvas").setAttribute("aria-label", `A race over ${RC.dist} yards, ${RC.mode === "RN" ? "running" : "walking"}: ` +
+      R.map(r => `${r.b.name || "Setup " + LETTERS[r.i]} ${nf2.format(r.T / FPS)} seconds`).join(", "));
+  }
+  function raceButtons() { $("fr-play").textContent = RC.playing ? "Stop" : RC.done ? "Run it again" : "Run the race"; }
+  function racePlay() {
+    if (RC.state !== "ready") { RC.want = true; raceLoad(); return; }
+    RC.want = false; RC.t = 0; RC.playing = true; RC.done = false; RC.last = performance.now();
+    raceButtons();
+    requestAnimationFrame(raceTick);
+  }
+  function raceTick(now) {
+    if (!RC.playing) return;
+    RC.t += Math.min(0.1, Math.max(0, now - RC.last) / 1000) * RC.slow * FPS; RC.last = now;
+    const end = Math.max(...RC.runners.map(r => r.T)) + HOLD;
+    if (RC.t >= end) { RC.t = end; RC.playing = false; RC.done = true; raceButtons(); }
+    raceDraw();
+    if (RC.playing) requestAnimationFrame(raceTick);
+  }
+  function raceDraw() {
+    const cv = $("fr-canvas");
+    if (RC.state !== "ready" || !RC.runners.length) return;
+    const cssW = Math.max(240, $("fr-stage").clientWidth || 800), dpr = window.devicePixelRatio || 1;
+    const D = RC.dist * PX_YD, trackW = LEFT + D + RIGHT, H = TOP + (RC.runners.length - 1) * LANE + BOTTOM;
+    const scale = clamp(cssW / trackW, 0.55, 1.25), viewW = cssW / scale, k = scale * dpr;
+    const W = Math.round(cssW * dpr), Hd = Math.round(H * k);
+    if (cv.width !== W || cv.height !== Hd) { cv.width = W; cv.height = Hd; RC.pattern = null; }
+    const ctx = cv.getContext("2d"), f = RC.t, fi = Math.floor(f);
+    // the camera: the whole track when it fits, else it follows the leader
+    const lead = Math.max(...RC.runners.map(r => r.at(f)));
+    const cam = trackW <= viewW ? -(viewW - trackW) / 2 : clamp(LEFT + lead - viewW * 0.68, 0, trackW - viewW);
+    const X = gx => Math.round((gx - cam) * k), Y = gy => Math.round(gy * k);
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.globalCompositeOperation = "source-over";
+    ctx.imageSmoothingEnabled = k < 1;
+    if (!RC.pattern) RC.pattern = ctx.createPattern(RC.floor, "repeat");
+    ctx.save(); ctx.setTransform(k, 0, 0, k, -Math.round(cam * k), 0); ctx.fillStyle = RC.pattern; ctx.fillRect(cam - 2, -2, viewW + 4, H + 4); ctx.restore();
+    // start and finish lines, a yard ruler
+    const font = px => `600 ${Math.round(px * dpr)}px "Source Sans 3", system-ui, sans-serif`;
+    ctx.fillStyle = "rgba(255,255,255,0.32)"; ctx.fillRect(X(LEFT), Y(TOP - 70), Math.max(1, Math.round(dpr)), Y(H - TOP + 70 - 12));
+    ctx.fillStyle = "rgba(255,255,255,0.75)"; ctx.fillRect(X(LEFT + D), Y(TOP - 70), Math.max(2, Math.round(2 * dpr)), Y(H - TOP + 70 - 12));
+    ctx.textBaseline = "alphabetic"; ctx.textAlign = "center";
+    const step = RC.dist >= 50 ? 10 : 5;
+    ctx.fillStyle = "rgba(255,255,255,0.55)"; ctx.font = font(10.5);
+    for (let yd = 0; yd <= RC.dist; yd += step) {
+      const gx = LEFT + yd * PX_YD;
+      ctx.fillRect(X(gx), Y(H - 27), Math.max(1, Math.round(dpr)), Y(6));
+      ctx.fillText(yd ? `${yd} yd` : "0", X(gx), Y(H - 5));
+    }
+    // the runners, back to front: flames, the overlays behind, a shadow, the figure, the overlays in front
+    const css = getComputedStyle(root), color = i => css.getPropertyValue(`--s${i + 1}`).trim() || "#fff";
+    const blit = (key, frame, gx, gy) => { const fr = RC.sp.p[key] && RC.sp.p[key][frame]; if (fr && fr[2]) ctx.drawImage(RC.img, fr[0], fr[1], fr[2], fr[3], X(gx + fr[4]), Y(gy + fr[5]), Math.round(fr[2] * k), Math.round(fr[3] * k)); };
+    for (const r of RC.runners) {
+      const gy = TOP + r.i * LANE, gx = LEFT + r.at(f), moving = f < r.T;
+      ctx.globalCompositeOperation = "lighter";
+      for (const fl of r.flames) {
+        const age = fi - fl.born;
+        if (age < 0 || age >= fl.burn) continue;
+        const o = fl.f, fr = !o.loop || age < o.start ? Math.min(age, o.f - 1) : o.start + (age - o.start) % (o.stop - o.start + 1);
+        blit("fx:" + fl.k, fr, LEFT + fl.x, gy + fl.y);
+      }
+      const overlay = pre => { for (const v of r.ov) if (v.o.pre === pre && fi < v.until) blit("ov:" + v.name, Math.floor(fi * v.o.rate / 16) % v.o.n, gx + v.o.dx, gy + v.o.dy); };
+      overlay(1);
+      ctx.globalCompositeOperation = "source-over";
+      ctx.fillStyle = "rgba(0,0,0,0.33)"; ctx.beginPath();
+      ctx.ellipse(X(gx), Y(gy), (r.form === "wolf" || r.form === "bear" ? 26 : 17) * k, 6 * k, 0, 0, 2 * Math.PI); ctx.fill();
+      if (moving) { const g = r.seg(fi); blit(r.anim.key, Math.floor(g.ph + g.fr * (fi - g.from)) % r.anim.f, gx, gy); }
+      else blit(r.stand.key, Math.floor(Math.max(0, fi - Math.ceil(r.T)) * r.stand.speed / 256) % r.stand.f, gx, gy);
+      ctx.globalCompositeOperation = "lighter";
+      overlay(0);
+      ctx.globalCompositeOperation = "source-over";
+      // the lane's letter at the start, the time beside the finish
+      ctx.font = font(12); ctx.lineWidth = Math.max(2, 3 * dpr); ctx.strokeStyle = "rgba(0,0,0,0.75)"; ctx.lineJoin = "round";
+      ctx.fillStyle = color(r.i);
+      ctx.beginPath(); ctx.arc(X(LEFT - 26), Y(gy - 8), 8.5 * k, 0, 2 * Math.PI); ctx.fill();
+      ctx.textAlign = "center"; ctx.fillStyle = "#111"; ctx.fillText(LETTERS[r.i], X(LEFT - 26), Y(gy - 4));
+      if (!moving) {
+        const tx = `${nf2.format(r.T / FPS)} s`;
+        ctx.textAlign = "left"; ctx.strokeText(tx, X(gx + 24), Y(gy - 22)); ctx.fillStyle = color(r.i); ctx.fillText(tx, X(gx + 24), Y(gy - 22));
+      }
+    }
+    ctx.textAlign = "left"; ctx.font = font(12.5); ctx.strokeStyle = "rgba(0,0,0,0.75)"; ctx.fillStyle = "#ece7de";
+    const clock = `${nf2.format(f / FPS)} s` + (RC.slow < 1 ? (RC.slow === 0.5 ? " · half speed" : " · quarter speed") : "");
+    ctx.strokeText(clock, Math.round(10 * dpr), Math.round(20 * dpr)); ctx.fillText(clock, Math.round(10 * dpr), Math.round(20 * dpr));
+  }
+  function raceInit() {
+    const stage = $("fr-stage");
+    const setMode = m => { RC.mode = m; $("fr-run").setAttribute("aria-pressed", m === "RN"); $("fr-walk").setAttribute("aria-pressed", m === "WL"); RC.done = false; raceUpdate(); raceButtons(); };
+    $("fr-run").addEventListener("click", () => setMode("RN"));
+    $("fr-walk").addEventListener("click", () => setMode("WL"));
+    $("fr-dist").addEventListener("change", e => { RC.dist = +e.target.value || 30; RC.done = false; raceUpdate(); raceButtons(); });
+    $("fr-slow").addEventListener("change", e => { RC.slow = +e.target.value || 1; if (!RC.playing) raceDraw(); });
+    $("fr-play").addEventListener("click", () => { if (RC.playing) { RC.playing = false; RC.done = true; raceButtons(); } else racePlay(); });
+    $("fr-canvas").addEventListener("click", () => { if (!RC.playing) racePlay(); });
+    if (window.IntersectionObserver) {
+      new IntersectionObserver(es => { if (es.some(e => e.isIntersecting)) raceLoad(); }, { rootMargin: "400px 0px" }).observe(stage);
+      new IntersectionObserver(es => {
+        if (!es.some(e => e.isIntersecting) || RC.seen) return;
+        RC.seen = true;
+        if (RC.state === "ready" && !reducedMotion() && !RC.playing && !RC.done) racePlay();
+      }, { threshold: 0.5 }).observe(stage);
+    } else raceLoad();
+    if (window.ResizeObserver) { let w0 = 0; new ResizeObserver(() => { const w = stage.clientWidth; if (Math.abs(w - w0) > 2) { w0 = w; if (!RC.playing) raceDraw(); } }).observe(stage); }
+  }
+
   // ================================================================== start
   const saved = load();
   builds = Array.isArray(saved) && saved.length ? saved.slice(0, 4).map(x => { const d = DEFAULT(); return Object.assign(d, x, { s: Object.assign(d.s, x.s || {}) }); }) : example();
   $("fr-add").addEventListener("click", () => { if (builds.length < 4) { const c = JSON.parse(JSON.stringify(builds[builds.length - 1])); c.name = ""; builds.push(c); renderBuilds(); } });
   let lastW = 0;
   if (window.ResizeObserver) new ResizeObserver(() => { const w = $("fr-plot").clientWidth; if (Math.abs(w - lastW) > 4) { lastW = w; render(); } }).observe($("fr-plot"));
+  raceInit();
   renderBuilds();
 })();
 </script>
