@@ -512,10 +512,9 @@
           animation rolls back by a share (Zeal, Fury and Dragon Talon all the way, Fend 60%, Strafe 50%) and runs to the
           hit again; the swing lengths are shown hit by hit (4/4/8). Strafe shoots at least as many arrows as its minimum,
           one per target in range up to its maximum.</li>
-        <li><strong>Whirlwind and Blade Dance</strong> aren&rsquo;t drawn at attack speed but at the game&rsquo;s other animation
-          rate (100, raised by Frenzy&rsquo;s charges, lowered by slows). Their timer allows a hit every 6 frames, but the game
-          checks it only every 4 frames at that rate: a hit every 8 frames whatever your IAS, with each weapon when you hold
-          two.</li>
+        <li><strong>Whirlwind and Blade Dance</strong> hit every 6 frames, their timer, which the game checks every frame:
+          whatever your IAS, slows or Frenzy&rsquo;s charges, with each weapon when you hold two. The spin is drawn at the
+          game&rsquo;s other animation rate (100, raised by Frenzy&rsquo;s charges, lowered by slows).</li>
         <li><strong>Charge</strong>: its run doesn&rsquo;t depend on IAS. When it connects, the game sets the strike&rsquo;s speed
           itself, <span class="formula">100 &minus; WSM + skill speed + EIAS + 65</span>, at most 256, with no base speed: the
           strike, the last 7 steps of its sequence, lasts <span class="formula">&lceil;1792 &divide; speed&rceil;</span> frames.</li>
@@ -793,11 +792,12 @@
       if (p.merc) return mercTiming(p, sp, t);
       if (p.seq) {
         if (p.fixed) {
-          // The game checks the hit timer only on the sequence's hit steps, which come back every 4 steps: every
-          // ceil(1024 / rate) frames. A hit lands on the first check at least Param3 frames after the last one.
-          const rate = rateOf(256, sp.speed), every = cdiv(1024, rate);
-          Object.assign(t, {base: 256, rate, len: p.seq.frames, check: every});
-          t.parts.push({label: "Each hit", frames: every * cdiv(p.fixed, every), hits: p.fixedHits, fixed: true});
+          // The game runs the skill's hit check every frame (each check puts the spin back at step 3, whose own event
+          // comes the next frame), and its timer lets a hit through Param3 frames after the last one. The rate only
+          // sets how fast the spin is drawn.
+          const rate = rateOf(256, sp.speed);
+          Object.assign(t, {base: 256, rate, len: p.seq.frames});
+          t.parts.push({label: "Each hit", frames: p.fixed, hits: p.fixedHits, fixed: true});
           return t;
         }
         if (p.charge !== undefined) {
@@ -1276,7 +1276,7 @@
        ["Length", t.len + " frames"]];
     if (!p.seq && p.anims[0].start) f.push(["Starts at frame", p.anims[0].start]);
     if (p.formBase) f.push(["Weapon time (H)", p.formBase.H], ["Standing frames", p.formBase.stand]);
-    if (p.fixed) f.splice(0, f.length, ["Frames per hit", t.parts[0].frames], ["Hit timer", p.fixed + " frames"], ["Checked every", t.check + " frames"], ["Other animation rate", sp.speed]);
+    if (p.fixed) f.splice(0, f.length, ["Frames per hit", t.parts[0].frames], ["Hit timer", p.fixed + " frames"], ["Other animation rate", sp.speed]);
     facts.innerHTML = f.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("");
     const n = [];
     if (p.merc) {
@@ -1304,7 +1304,7 @@
       const tm = p.channel.timer;
       n.push(`${p.sk.n} is channelled: held, the game casts it again each time it reaches step ${p.channel.at}, a loop of ${t.loop} frames at this speed${tm ? `. Its own timer allows a blade every ${tm} game frames at most (${aps(tm)} a second), but held it throws one about every ${tm + 1} from speed 75 up, counted in game (95 blades in 20 seconds with Blade Talons and 150 IAS, speed 156: one every 5.3 frames): a blade every <b>${t.parts[0].frames} frames</b> here, the loop setting the pace below speed 75` : ""}. The first comes about ${t.first} frames in.`);
     }
-    if (p.fixed) n.push(`${p.sk.n}'s timer allows a hit every ${p.fixed} frames, but the game checks it only every ${t.check} frames (every 4 steps of its sequence, which runs at the other animation rate): a hit every <b>${t.parts[0].frames} frames</b>${p.dual ? ", one with each weapon" : ""}. IAS changes nothing; slows and Frenzy's charges change the check.`);
+    if (p.fixed) n.push(`${p.sk.n}'s timer lets a hit through every ${p.fixed} frames, and the game checks it every frame: a hit every <b>${t.parts[0].frames} frames</b>${p.dual ? ", one with each weapon" : ""}, whatever your IAS. Slows and Frenzy's charges only change how fast the spin is drawn (the other animation rate).`);
     if (p.fx && !p.fixed) n.push(`${p.sk.n} is drawn at the game's other animation rate (100, changed by slows and Frenzy's charges): IAS, the weapon's speed and the skills' speed don't count.`);
     if (p.charge !== undefined) n.push(`Charge's run doesn't depend on IAS. When it connects the game sets the strike's speed itself: 100 &minus; WSM + skill speed + EIAS + ${p.charge}, at most 256; the strike is the last 7 steps, its hit ${t.hitAt} frames in.`);
     if (!p.merc && S.cls === "bar" && S.frenzy && (S.fst === undefined ? 5 : S.fst) < 5) n.push(`Frenzy's speed comes a fifth per charge: ${S.fst} of 5.`);
@@ -1593,10 +1593,10 @@
     // one entry per game frame of one attack: the animation frame (or sequence step) shown, and whether a hit lands
     if (R.why) return [];
     const p = R.p, t = R.t, part = t.parts[0];
-    if (p.fixed) {  // its sequence turning between its hit steps, a hit on a check the timer allows
+    if (p.fixed) {  // its spin turning at the other animation rate, a hit each time the timer allows
       const steps = p.seq.steps, loop = steps.slice(3, 7);
       return Array.from({length: part.frames}, (_, i) => {
-        const pos = Math.min(loop.length - 1, Math.trunc((i % t.check) * t.rate / 256));
+        const pos = Math.trunc(i * t.rate / 256) % loop.length;
         return {f: i, hit: i === part.frames - 1, step: loop[pos] || steps[0]};
       });
     }
@@ -1806,8 +1806,7 @@
       st.push(["The other animation rate", `${esc(p.sk.n)} isn't drawn at attack speed but at the game's other animation rate: ${sum}. IAS, the weapon's speed and the skills' speed don't count.`]);
       st.push(["Rate per frame", `<span class="formula">${t.base} &times; ${sp.speed} &divide; 100</span> = <b>${t.rate}</b> (one step is 256).`]);
       if (p.fixed) {
-        st.push(["When the game checks the hit timer", `Only on the sequence's hit steps, 4 steps apart: every <span class="formula">&lceil;4 &times; 256 &divide; ${t.rate}&rceil;</span> = <b>${t.check}</b> frames.`]);
-        st.push(["Count the frames", `The timer allows a hit ${p.fixed} frames after the last one; the first check from then: <span class="formula">${t.check} &times; &lceil;${p.fixed} &divide; ${t.check}&rceil;</span> = <b>${part.frames} frames</b> a hit${p.dual ? ", with each weapon" : ""}.`]);
+        st.push(["Count the frames", `The game checks ${esc(p.sk.n)}'s hit timer every frame, and the timer lets a hit through ${p.fixed} frames after the last one: <b>${part.frames} frames</b> a hit${p.dual ? ", with each weapon" : ""}, ${aps(part.frames)} a second. The rate above only sets how fast the spin is drawn.`]);
       } else {
         st.push(["Count the frames", `<span class="formula">&lceil;${t.len} &times; 256 &divide; ${t.rate}&rceil; &minus; 1</span> = <b>${part.frames} frames</b> per attack, ${aps(part.frames)} a second.`]);
       }

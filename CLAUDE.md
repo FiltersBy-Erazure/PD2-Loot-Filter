@@ -1144,11 +1144,13 @@
     traced. A 20 s recording (the author, 2026-11-13: Blade Talons, 150 IAS, speed 156) counted 95 blades, one every
     5.26 frames (the page's 5 gives 100, the cap 125, a blade every second 3-frame loop 83, a full pass 71); that
     setup's 5 s count was 27 (108 in 20 s), so the 5 s counts ran about 14% high: the page cites the 20 s count. Not the same as Dragon Tail's breakpoints, nor HiimPD2's 15 frames at 0 IAS (one full 11-frame pass per
-    blade, as BH's screen counts it: the counts rule it out). Whirlwind's 8 frames rest on the same kind of reading. Blade Fury is IAS with the -30. Frenzy's speed
+    blade, as BH's screen counts it: the counts rule it out). Blade Fury is IAS with the -30. Frenzy's speed
     trunc(dm56 x charges / 5) (`fst`, 0-5). Double Swing, Dragon Tail, Split Throw: their speed buff counts for their
-    own animation. Whirlwind / Blade Dance (other animation rate): the hit timer (Param3) is checked only on the
-    sequence's hit steps, every ceil(1024 / rate) frames, so a hit every 8 frames unslowed (BH and the S14 notes say
-    6; not yet counted in game), two weapons: a hit with each, no +1. Charge's strike: steps 8-14 at a rate PD2 sets,
+    own animation. Whirlwind / Blade Dance: a hit every Param3 = 6 frames, whatever IAS, slows or Frenzy's charges
+    (those only set how fast the spin is drawn, the other animation rate): each do puts the unit back at step 3
+    through the game's re-anchor helper, whose event loop starts a step before the anchor, so step 3's own do event
+    comes again the next frame and the timer is checked every frame (2026-11-13, after HiimPD2's bot said 6; the first
+    reading, 8 frames, missed that). Two weapons: a hit with each, no +1. Charge's strike: steps 8-14 at a rate PD2 sets,
     min(speed + Param6, 256) with no base speed, ceil(1792 / rate) frames (BH: ceil(2048 / rate) - 1). Mercenaries:
     speed 100 - WSM + EIAS(weapon + gear IAS) + auras, no -30, no start frame, rate from token + mode + BaseW (never
     the weapon held); attack to attack max(2, ceil(F x 256 / rate)) + 1, a monster sequence ceil(N x 256 / rate) + 2

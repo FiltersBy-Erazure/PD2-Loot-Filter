@@ -509,11 +509,12 @@
       if (p.merc) return mercTiming(p, sp, t);
       if (p.seq) {
         if (p.fixed) {
-          // The game checks the hit timer only on the sequence's hit steps, which come back every 4 steps: every
-          // ceil(1024 / rate) frames. A hit lands on the first check at least Param3 frames after the last one.
-          const rate = rateOf(256, sp.speed), every = cdiv(1024, rate);
-          Object.assign(t, {base: 256, rate, len: p.seq.frames, check: every});
-          t.parts.push({label: "Each hit", frames: every * cdiv(p.fixed, every), hits: p.fixedHits, fixed: true});
+          // The game runs the skill's hit check every frame (each check puts the spin back at step 3, whose own event
+          // comes the next frame), and its timer lets a hit through Param3 frames after the last one. The rate only
+          // sets how fast the spin is drawn.
+          const rate = rateOf(256, sp.speed);
+          Object.assign(t, {base: 256, rate, len: p.seq.frames});
+          t.parts.push({label: "Each hit", frames: p.fixed, hits: p.fixedHits, fixed: true});
           return t;
         }
         if (p.charge !== undefined) {
