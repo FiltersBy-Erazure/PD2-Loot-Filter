@@ -1,0 +1,493 @@
+/* Erazure website: gold on Material's black theme (the tier map's own golds). The tier map brings its own styles
+   (assets/tier-map/tier-map.css, from Erazure-Unique-Set-Tiers.html; see hooks.py). */
+:root,
+[data-md-color-scheme="default"] {
+  --erazure-gold: #8a6d1f;
+  --md-typeset-a-color: var(--erazure-gold);
+}
+/* Material's black theme sets its own (blue) link color for the dark scheme with two attributes, so this names both */
+[data-md-color-scheme="slate"],
+[data-md-color-scheme="slate"][data-md-color-primary="black"] {
+  --erazure-gold: #d8b45e;
+  --md-typeset-a-color: var(--erazure-gold);
+}
+/* links in the pages' own text are underlined, not told apart by their color alone (the maps and resources bring
+   their own link styles: they sit in a div of their own, never right under the page's paragraphs and lists) */
+.md-content__inner > :is(p, ul, ol) a:not(.md-button),
+.md-typeset .grid.cards > ul > li > p:not(:first-child) a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+/* the footer's "last updated" leads to What's New (website/hooks.py on_config) */
+.md-copyright a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+/* a primary button on light gold: dark text */
+[data-md-color-scheme="slate"] .md-typeset .md-button--primary {
+  color: #1b160b;
+}
+
+/* the black header: gold chest and site name; the current page's tab in gold */
+.md-header__button.md-logo,
+.md-header__title {
+  color: #d8b45e;
+}
+.md-tabs__item--active .md-tabs__link,
+.md-tabs__link:hover {
+  color: #d8b45e;
+}
+/* the current page's tab also underlined (the gold is about as light as the other tabs' gray); an underline takes
+   no room, so the tab row doesn't move */
+.md-tabs__item--active .md-tabs__link {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 5px;
+}
+
+/* the tabs wrap onto a second line where they don't fit, instead of hiding the last ones behind a sideways scroll */
+.md-tabs__list {
+  flex-wrap: wrap;
+}
+
+/* two rows (overrides/partials/tabs.html): the sections (Loot Filter, Filter Editor, Grail Planner, Resources) in
+   bold, and under them, on a lighter strip, the current section's pages. The header is black in the light scheme too,
+   so one look serves both. */
+.md-tabs > .md-grid .md-tabs__link {
+  font-size: .75rem;
+  font-weight: 700;
+}
+.ez-pages {
+  background-color: rgba(255, 255, 255, .05);
+  border-top: 1px solid rgba(255, 255, 255, .08);
+}
+/* a little closer together than the sections, so the longest row (Resources) fits Material's width on one line; the
+   list's margin keeps the first page's name under the first section's */
+.ez-pages .md-tabs__list {
+  margin-left: .4rem;
+}
+.ez-pages .md-tabs__item {
+  height: 2rem;
+  padding-left: .3rem;
+  padding-right: .3rem;
+}
+.ez-pages .md-tabs__link {
+  margin-top: .6rem;
+  font-size: .68rem;
+}
+/* the header, the tab rows and the footer keep Material's width on every page. A page that widens its content (its
+   own .md-grid rule: the item pages 84rem, the Filter Editor the whole window) widens only its content, so going
+   from page to page never moves the header or the tabs. */
+.md-header .md-grid,
+.md-tabs .md-grid,
+.md-footer .md-grid {
+  max-width: 61rem;
+}
+.ez-pages .md-tabs__item--active .md-tabs__link {
+  text-underline-offset: 4px;
+}
+/* where the tabs show, the pages' row is the section's navigation: no sidebar repeating it on the pages that keep
+   theirs (Home, Versions, Customization, Examples, Resources). Narrower screens hide the tabs, and the same sidebar
+   is their menu (the ☰ button), so it stays there. */
+@media screen and (min-width: 76.25em) {
+  .md-sidebar--primary {
+    display: none;
+  }
+}
+
+/* Material's "Back to top" button: below a page's sticky bar (the filter bars of the item pages, Map Experience's
+   level bar, Event and Boss Map Runs' strip), which is drawn over it. javascripts/erazure.js sets --page-bar-bottom
+   while the button shows. :where() keeps this rule as weak as a page's own (grail.md, editor.md), which come later
+   and win. Material's script puts the header's height in the button's own style, hence !important. */
+:where(html[data-page-bar]) .md-top {
+  top: calc(var(--page-bar-bottom) + .6rem) !important;
+}
+
+/* Material draws every <details> as a note box (a tinted bar, a blue icon, a chevron). On the players' pages and the
+   Resources pages (hooks.py wraps each in .erazure-map) a fold is a plain one, with the browser's own triangle, unless
+   the page styles it: a page's own rules come later (or weigh more) and win. */
+.md-typeset .erazure-map details {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: none;
+  font-size: inherit;
+}
+.md-typeset .erazure-map summary {
+  display: list-item;
+  list-style-position: inside;  /* the triangle inside the summary, which Material clips (overflow: hidden) */
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  font-weight: inherit;
+  min-height: 0;
+}
+.md-typeset .erazure-map summary::before,
+.md-typeset .erazure-map summary::after {
+  content: none;
+}
+
+/* the pages row: a thin divider where a section's next group of pages starts (mkdocs.yml extra.page_groups: the item
+   lookups after the Loot Filter's guides, the map pages after the Resources calculators; 2026-11-15, audit SITE-04 /
+   SITE-05) */
+.ez-pages .md-tabs__item.ez-group {
+  position: relative;
+  margin-left: .3rem;
+  padding-left: .65rem;
+}
+.ez-pages .md-tabs__item.ez-group::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: .7rem;
+  height: .85rem;
+  border-left: 1px solid rgba(255, 255, 255, .25);
+}
+
+/* a grid card (the Resources overview, Home's sections) is one link: a tap anywhere on it opens its page, not only its
+   title (2026-11-15, audit RES-09); the card's frame shows where it is under the pointer or the keyboard */
+.md-typeset .grid.cards > ul > li {
+  position: relative;
+}
+.md-typeset .grid.cards > ul > li > p:first-child a::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+.md-typeset .grid.cards > ul > li:has(> p:first-child a):hover,
+.md-typeset .grid.cards > ul > li:has(> p:first-child a):focus-within {
+  border-color: var(--erazure-gold);
+}
+.md-typeset .grid.cards > ul > li > p:first-child a:focus-visible {
+  outline: none;
+}
+.md-typeset .grid.cards > ul > li:has(> p:first-child a:focus-visible) {
+  outline: 2px solid var(--erazure-gold);
+  outline-offset: 2px;
+}
+
+/* Examples: screenshots of hover boxes in a grid, each with its caption (2026-11-15) */
+.md-typeset .ez-shots {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
+  gap: 1rem;
+  align-items: start;
+}
+.md-typeset .ez-shots figure {
+  margin: 0;
+  max-width: none;
+}
+.md-typeset .ez-shots img {
+  display: block;
+  margin: 0 auto;
+  border-radius: 4px;
+}
+.md-typeset .ez-shots figcaption {
+  font-size: .68rem;
+  max-width: none;
+  margin-top: .4rem;
+}
+
+/* Resources overview (resources/index.md, 2026-11-20): one card a resource, one across, the text beside three pictures
+   of the page (a large one over two small ones; tools/resource_shots.py), the sides swapped on every other card. Each
+   picture is a link to its part of the page. The text starts at the card's top, so its name (a heading) scrolls out
+   of view with the card and the table of contents marks the card in view, not the one before it (2026-11-21). */
+.md-typeset .ez-res {
+  display: grid;
+  gap: 1.2rem;
+  margin: 1rem 0 2rem;
+}
+.md-typeset .ez-res-card {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: 1.6rem;
+  align-items: start;
+  padding: 1.4rem 1.5rem;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: .6rem;
+  background: linear-gradient(135deg, rgba(216, 180, 94, .07), transparent 55%), var(--md-code-bg-color);
+}
+.md-typeset .ez-res-card:nth-child(even) {
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  background: linear-gradient(225deg, rgba(216, 180, 94, .07), transparent 55%), var(--md-code-bg-color);
+}
+.md-typeset .ez-res-card:nth-child(even) .ez-res-text {
+  order: 2;
+}
+.md-typeset .ez-res-text > :first-child {
+  margin-top: 0;
+}
+.md-typeset .ez-res-text > :last-child {
+  margin-bottom: 0;
+}
+.md-typeset .ez-res-kind {
+  margin: 0 0 .3rem;
+  color: var(--erazure-gold);
+  font-size: .62rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.md-typeset .ez-res-text h3 {
+  margin: 0 0 .5rem;
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+.md-typeset .ez-res-text h3 a {
+  color: var(--md-default-fg-color);
+}
+.md-typeset .ez-res-text h3 a:hover {
+  color: var(--erazure-gold);
+}
+.md-typeset .ez-res-hook {
+  margin: 0 0 .7rem;
+  font-size: .95rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--erazure-gold);
+}
+.md-typeset .ez-res-text p {
+  line-height: 1.6;
+}
+.md-typeset .ez-res-text .md-button {
+  margin-top: .3rem;
+  font-size: .72rem;
+  padding: .45em 1.2em;
+}
+.md-typeset .ez-res-shots {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .8rem .9rem;
+}
+.md-typeset .ez-res-shot {
+  display: block;
+  color: var(--md-default-fg-color--light);
+  text-decoration: none;
+}
+.md-typeset .ez-res-shot.big {
+  grid-column: 1 / -1;
+}
+.md-typeset .ez-res-shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  object-position: top;
+  border-radius: .35rem;
+  border: 1px solid rgba(255, 255, 255, .1);
+  box-shadow: 0 .3rem 1rem rgba(0, 0, 0, .35);
+  transition: border-color .15s, transform .15s;
+}
+.md-typeset .ez-res-shot span {
+  display: block;
+  margin-top: .4rem;
+  font-size: .64rem;
+  line-height: 1.4;
+}
+.md-typeset .ez-res-shot:hover img,
+.md-typeset .ez-res-shot:focus-visible img {
+  border-color: var(--erazure-gold);
+  transform: translateY(-2px);
+}
+.md-typeset .ez-res-shot:hover span,
+.md-typeset .ez-res-shot:focus-visible span {
+  color: var(--md-default-fg-color);
+}
+.md-typeset .ez-res-shot:focus-visible {
+  outline: 2px solid var(--erazure-gold);
+  outline-offset: 3px;
+  border-radius: .35rem;
+}
+@media (prefers-reduced-motion: reduce) {
+  .md-typeset .ez-res-shot img {
+    transition: none;
+  }
+  .md-typeset .ez-res-shot:hover img,
+  .md-typeset .ez-res-shot:focus-visible img {
+    transform: none;
+  }
+}
+[data-md-color-scheme="default"] .md-typeset .ez-res-shot img {
+  border-color: rgba(0, 0, 0, .15);
+  box-shadow: 0 .2rem .7rem rgba(0, 0, 0, .18);
+}
+/* narrower: the text over the pictures, on every card */
+@media screen and (max-width: 52em) {
+  .md-typeset .ez-res-card,
+  .md-typeset .ez-res-card:nth-child(even) {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.1rem;
+    padding: 1.1rem 1rem;
+  }
+  .md-typeset .ez-res-card:nth-child(even) .ez-res-text {
+    order: 0;
+  }
+  .md-typeset .ez-res-text h3 {
+    font-size: 1.2rem;
+  }
+}
+@media screen and (max-width: 30em) {
+  .md-typeset .ez-res-shots {
+    gap: .7rem .6rem;
+  }
+  .md-typeset .ez-res-shot span {
+    font-size: .6rem;
+  }
+}
+
+/* Feedback (javascripts/erazure.js, 2026-11-21): the header's Feedback button, a speech bubble with its word where
+   the tabs show (wide screens), the bubble alone below */
+.md-header__button.ez-fb-head {
+  display: inline-flex;
+  align-items: center;
+  gap: .3rem;
+  color: inherit;
+  font-size: .7rem;
+  font-weight: 700;
+}
+.md-header__button.ez-fb-head svg {
+  width: 1.2rem;
+  height: 1.2rem;
+  fill: currentColor;
+}
+.md-header__button.ez-fb-head:hover,
+.md-header__button.ez-fb-head:focus-visible {
+  color: #d8b45e;
+  opacity: 1;
+}
+@media screen and (max-width: 76.1875em) {
+  .md-header__button.ez-fb-head span {
+    display: none;
+  }
+}
+
+/* What's New's "Give feedback on changes" (the marker under the intro): picking changes to send feedback on. The
+   site's buttons for it, 14 px and 34 px tall as the calculators' */
+.md-typeset .ez-btn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.7rem;
+  padding: .2rem .8rem;
+  border: 1px solid var(--md-default-fg-color--lighter);
+  border-radius: .3rem;
+  background: transparent;
+  color: var(--md-default-fg-color);
+  font: inherit;
+  font-size: .7rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.md-typeset .ez-btn:hover {
+  border-color: var(--erazure-gold);
+}
+.md-typeset .ez-btn[aria-pressed="true"] {
+  border-color: var(--erazure-gold);
+  box-shadow: inset 0 0 0 1px var(--erazure-gold);
+}
+.md-typeset .ez-btn--primary {
+  background: var(--erazure-gold);
+  border-color: var(--erazure-gold);
+  color: #1b160b;
+}
+[data-md-color-scheme="default"] .md-typeset .ez-btn--primary {
+  color: #fffdf8;
+}
+.md-typeset .ez-btn[disabled] {
+  opacity: .5;
+  cursor: default;
+}
+.md-typeset .ez-feedback-select {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .5rem .9rem;
+  margin: 1em 0 1.4em;
+}
+.md-typeset .ez-feedback-select .ez-pick-help {
+  flex: 1 1 18rem;
+  margin: 0;
+  font-size: .7rem;
+  color: var(--md-default-fg-color--light);
+}
+.md-typeset .ez-pick {
+  display: none;
+}
+/* picking: a box in place of each bullet's dot (a numbered list keeps its numbers, the box before the words); a picked
+   change gets its box ticked and an outline, never a colour alone. The page's article is itself
+   .md-typeset, so .md-typeset.ez-picking */
+.md-typeset.ez-picking .ez-pickable {
+  position: relative;
+  cursor: pointer;
+  border-radius: .2rem;
+}
+.md-typeset.ez-picking .ez-pickable:hover {
+  background: rgba(216, 180, 94, .06);
+}
+.md-typeset.ez-picking .ez-pick {
+  display: inline-block;
+  width: .8rem;
+  height: .8rem;
+  margin: 0 .4rem 0 0;
+  vertical-align: -.1rem;
+  accent-color: var(--erazure-gold);
+  cursor: pointer;
+}
+.md-typeset.ez-picking ul.ez-picklist {
+  list-style: none;
+}
+.md-typeset.ez-picking ul.ez-picklist > li > .ez-pick {
+  position: absolute;
+  left: -1.45em;
+  top: .3em;
+  margin: 0;
+}
+.md-typeset.ez-picking .ez-picked {
+  background: rgba(216, 180, 94, .12);
+  outline: 1px solid var(--erazure-gold);
+  outline-offset: .2rem;
+}
+/* the bar at the bottom of the screen while picking (inside the page, so it never covers the header or the footer);
+   smaller on short screens, and in its place at the page's end on very short ones (200% zoom) */
+.md-typeset .ez-pickbar {
+  position: sticky;
+  bottom: .5rem;
+  z-index: 3;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .5rem .7rem;
+  margin: 1.5rem 0 0;
+  padding: .6rem .8rem;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: .4rem;
+  background: var(--md-default-bg-color);
+  box-shadow: 0 -.3rem 1.2rem rgba(0, 0, 0, .35);
+  font-size: .75rem;
+}
+[data-md-color-scheme="default"] .md-typeset .ez-pickbar {
+  box-shadow: 0 -.3rem 1rem rgba(0, 0, 0, .12);
+}
+.md-typeset .ez-pickbar[hidden] {
+  display: none;
+}
+.md-typeset .ez-pickbar .ez-pick-count {
+  flex: 1 1 auto;
+  font-weight: 700;
+}
+@media screen and (max-height: 500px) {
+  .md-typeset .ez-pickbar {
+    padding: .3rem .6rem;
+  }
+}
+@media screen and (max-height: 420px) {
+  .md-typeset .ez-pickbar {
+    position: static;
+  }
+}

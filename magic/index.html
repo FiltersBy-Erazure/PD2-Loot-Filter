@@ -1,0 +1,1779 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="How the filter shows every unidentified magic item on the ground, the look it gives each armor, weapon, quiver, ring, amulet, jewel and charm, the drops it notifies and when each is hidden.">
+      
+      
+        <meta name="author" content="Erazure">
+      
+      
+        <link rel="canonical" href="https://filtersby-erazure.github.io/PD2-Loot-Filter/magic/">
+      
+      
+        <link rel="prev" href="../bases/">
+      
+      
+        <link rel="next" href="../rare/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Magic Items - Erazure's PD2 Loot Filter</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/erazure.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Erazure&#39;s PD2 Loot Filter">
+  <meta property="og:title" content="Magic Items">
+  <meta property="og:description" content="How the filter shows every unidentified magic item on the ground, the look it gives each armor, weapon, quiver, ring, amulet, jewel and charm, the drops it notifies and when each is hidden.">
+  <meta property="og:url" content="https://filtersby-erazure.github.io/PD2-Loot-Filter/magic/">
+  <meta property="og:image" content="https://filtersby-erazure.github.io/PD2-Loot-Filter/img/previews/default.png?v=7e96694e">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#d8b45e">
+  <script>
+    /* Every visit starts dark, or light where the browser asks for light (2026-11-15, audit SITE-10: a player whose
+       system is set to light switched on every visit). Material keeps the light / dark switch in the browser
+       (localStorage); set it before Material reads it. During a visit the switch still works, from page to page. */
+    try {
+      if (!sessionStorage.getItem("erazure-visit")) {
+        sessionStorage.setItem("erazure-visit", "1");
+        var key = __md_scope.pathname + ".__palette";
+        if (matchMedia("(prefers-color-scheme: light)").matches) {
+          localStorage.setItem(key, JSON.stringify(
+            {index: 1, color: {media: "", scheme: "default", primary: "black", accent: "amber"}}));
+        } else {
+          localStorage.removeItem(key);
+        }
+      }
+    } catch (e) {}
+  </script>
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#magic-items" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Erazure&#39;s PD2 Loot Filter" class="md-header__button md-logo" aria-label="Erazure's PD2 Loot Filter" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5 4h14a3 3 0 0 1 3 3v4h-7v-1H9v1H2V7a3 3 0 0 1 3-3m6 7h2v2h-2zm-9 1h7v1l2 2h2l2-2v-1h7v8H2z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Erazure's PD2 Loot Filter
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Magic Items
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="amber"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="black" data-md-color-accent="amber"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/FiltersBy-Erazure/PD2-Loot-Filter" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    FiltersBy-Erazure/PD2-Loot-Filter
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href=".." class="md-tabs__link">
+          
+  
+  
+  Loot Filter
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../editor/" class="md-tabs__link">
+          
+  
+  
+  Filter Editor
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../grail/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Grail Planner
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../resources/" class="md-tabs__link">
+          
+  
+  
+  Resources
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../feedback/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Feedback
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+  
+    <div class="ez-pages">
+      <div class="md-grid">
+        <ul class="md-tabs__list" aria-label="Loot Filter">
+          
+            
+              
+              
+              <li class="md-tabs__item">
+                <a href=".." class="md-tabs__link">
+                  Home
+                </a>
+              </li>
+            
+              
+              
+              <li class="md-tabs__item">
+                <a href="../examples/" class="md-tabs__link">
+                  Examples
+                </a>
+              </li>
+            
+              
+              
+              <li class="md-tabs__item">
+                <a href="../versions/" class="md-tabs__link">
+                  Versions
+                </a>
+              </li>
+            
+              
+              
+              <li class="md-tabs__item">
+                <a href="../minimal/" class="md-tabs__link">
+                  Minimal Version
+                </a>
+              </li>
+            
+              
+              
+              <li class="md-tabs__item">
+                <a href="../filter-levels/" class="md-tabs__link">
+                  Filter Levels
+                </a>
+              </li>
+            
+              
+              
+                
+              
+              <li class="md-tabs__item">
+                <a href="../updates/" class="md-tabs__link">
+                  What's New
+                </a>
+              </li>
+            
+              
+              
+              <li class="md-tabs__item ez-group">
+                <a href="../tiers/" class="md-tabs__link">
+                  Unique & Set Tiers
+                </a>
+              </li>
+            
+              
+              
+              <li class="md-tabs__item">
+                <a href="../bases/" class="md-tabs__link">
+                  Non-magical Bases
+                </a>
+              </li>
+            
+              
+              
+              <li class="md-tabs__item md-tabs__item--active">
+                <a href="./" class="md-tabs__link" aria-current="page">
+                  Magic Items
+                </a>
+              </li>
+            
+              
+              
+              <li class="md-tabs__item">
+                <a href="../rare/" class="md-tabs__link">
+                  Rare Items
+                </a>
+              </li>
+            
+              
+              
+              <li class="md-tabs__item">
+                <a href="../shop/" class="md-tabs__link">
+                  Skill & Shop Highlights
+                </a>
+              </li>
+            
+          
+        </ul>
+      </div>
+    </div>
+  
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" hidden>
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Erazure&#39;s PD2 Loot Filter" class="md-nav__button md-logo" aria-label="Erazure's PD2 Loot Filter" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5 4h14a3 3 0 0 1 3 3v4h-7v-1H9v1H2V7a3 3 0 0 1 3-3m6 7h2v2h-2zm-9 1h7v1l2 2h2l2-2v-1h7v8H2z"/></svg>
+
+    </a>
+    Erazure's PD2 Loot Filter
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/FiltersBy-Erazure/PD2-Loot-Filter" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    FiltersBy-Erazure/PD2-Loot-Filter
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_1" id="__nav_1_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Loot Filter
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Loot Filter
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../versions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Versions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../minimal/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Minimal Version
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../filter-levels/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Filter Levels
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_1_6" id="__nav_1_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What's New
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_1_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    What's New
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../updates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What's New
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../updates/2026-11-16/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    November 16th
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../updates/2026-11-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    November 2nd
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../updates/grail-looks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grail Looks and Sounds
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../updates/tier-set-reviews/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Unique and Set Reviews
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../updates/season-14/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Season 14 Launch
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tiers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Unique & Set Tiers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Non-magical Bases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Magic Items
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rare/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rare Items
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../shop/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Skill & Shop Highlights
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Filter Editor
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Filter Editor
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../editor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Filter Editor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../customization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Edit by Hand
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grail/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grail Planner
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Resources
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Resources
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../resources/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../resources/damage-calculator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Damage Calculator
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../resources/ias-calculator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IAS Calculator
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../resources/run-speed-visualizer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Run Speed Visualizer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../resources/ohm-vs-jewel-comparison/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ohm vs Jewel Comparison
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../resources/infinity-base-comparison/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Infinity Base Comparison
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../resources/map-experience/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Map Experience
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../resources/map-event-boss-rushing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Map Event and Boss Rushing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../resources/monster-damage-calculator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Monster Damage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../feedback/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Feedback
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" hidden>
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+  
+
+
+
+
+<style>
+  /* this page only: room for the item rows */
+  .md-grid { max-width: 84rem; }
+</style>
+
+<h1 id="magic-items">Magic Items<a class="headerlink" href="#magic-items" title="Permanent link">&para;</a></h1>
+<p>How the filter shows every magic item that drops on the ground, unidentified: its look, the drops it notifies, and when each is hidden. At a glance answers by item type; pick your filter level and search a base in the bar for the details.</p>
+<p>Shown for Erazure - Main: the PoE versions play other drop sounds, <a href="../minimal/">Minimal</a> draws simpler symbols, and the Corrlorized versions use Corr's colors and sounds and leave out the icons and sounds of rare rings, belts and boots, magic jewels and Large Charms.</p>
+<!-- the magic items map (website/hooks.py puts it here, from Erazure-Magic-Items.html) -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Source+Sans+3:wght@400;600;700&display=swap"><link rel="stylesheet" href="../assets/magic-map/magic-map.css"><div hidden class="ez-search-terms">Jewel (jew) &middot; Ring (rin) &middot; Amulet (amu) &middot; Grand Charm (cm3) &middot; Large Charm (cm2) &middot; Small Charm (cm1) &middot; Ancient Armor (aar) &middot; Full Plate Mail (ful) &middot; Gothic Plate (gth) &middot; Breast Plate (brs) &middot; Field Plate (fld) &middot; Light Plate (ltp) &middot; Plate Mail (plt) &middot; Ring Mail (rng) &middot; Splint Mail (spl) &middot; Chain Mail (chn) &middot; Hard Leather Armor (hla) &middot; Leather Armor (lea) &middot; Quilted Armor (qui) &middot; Scale Mail (scl) &middot; Studded Leather (stu) &middot; Chaos Armor (xul) &middot; Embossed Plate (xth) &middot; Ornate Plate (xar) &middot; Cuirass (xrs) &middot; Demonhide Armor (xla) &middot; Ghost Armor (xui) &middot; Linked Mail (xng) &middot; Mage Plate (xtp) &middot; Mesh Armor (xhn) &middot; Russet Armor (xpl) &middot; Serpentskin Armor (xea) &middot; Sharktooth Armor (xld) &middot; Templar Coat (xlt) &middot; Tigulated Mail (xcl) &middot; Trellised Armor (xtu) &middot; Archon Plate (utp) &middot; Boneweave (uhn) &middot; Diamond Mail (ung) &middot; Dusk Shroud (uui) &middot; Great Hauberk (urs) &middot; Scarab Husk (ula) &middot; Wire Fleece (utu) &middot; Wyrmhide (uea) &middot; Balrog Skin (upl) &middot; Hellforge Plate (ult) &middot; Kraken Shell (uld) &middot; Lacquered Plate (uth) &middot; Loricated Mail (ucl) &middot; Sacred Armor (uar) &middot; Shadow Plate (uul) &middot; Bone Helm (bhm) &middot; Cap (cap) &middot; Full Helm (fhl) &middot; Helm (hlm) &middot; Skull Cap (skp) &middot; Crown (crn) &middot; Great Helm (ghm) &middot; Mask (msk) &middot; Basinet (xhl) &middot; Casque (xlm) &middot; Grim Helm (xh9) &middot; Sallet (xkp) &middot; War Hat (xap) &middot; Death Mask (xsk) &middot; Grand Crown (xrn) &middot; Winged Helm (xhm) &middot; Armet (ulm) &middot; Bone Visage (uh9) &middot; Corona (urn) &middot; Demonhead (usk) &middot; Giant Conch (uhl) &middot; Spired Helm (uhm) &middot; Hydraskull (ukp) &middot; Shako (uap) &middot; Circlet (ci0) &middot; Coronet (ci1) &middot; Tiara (ci2) &middot; Diadem (ci3) &middot; Bone Shield (bsh) &middot; Buckler (buc) &middot; Gothic Shield (gts) &middot; Kite Shield (kit) &middot; Large Shield (lrg) &middot; Spiked Shield (spk) &middot; Tower Shield (tow) &middot; Small Shield (sml) &middot; Ancient Shield (xts) &middot; Barbed Shield (xpk) &middot; Dragon Shield (xit) &middot; Grim Shield (xsh) &middot; Pavise (xow) &middot; Scutum (xrg) &middot; Defender (xuc) &middot; Round Shield (xml) &middot; Aegis (uow) &middot; Monarch (uit) &middot; Ward (uts) &middot; Blade Barrier (upk) &middot; Hyperion (urg) &middot; Troll Nest (ush) &middot; Heater (uuc) &middot; Luna (uml) &middot; Chain Gloves (mgl) &middot; Gauntlets (hgl) &middot; Heavy Gloves (vgl) &middot; Leather Gloves (lgl) &middot; Light Gauntlets (tgl) &middot; Battle Gauntlets (xtg) &middot; Demonhide Gloves (xlg) &middot; Heavy Bracers (xmg) &middot; Sharkskin Gloves (xvg) &middot; War Gauntlets (xhg) &middot; Bramble Mitts (ulg) &middot; Crusader Gauntlets (utg) &middot; Ogre Gauntlets (uhg) &middot; Vambraces (umg) &middot; Vampirebone Gloves (uvg) &middot; Boots (lbt) &middot; Chain Boots (mbt) &middot; Greaves (hbt) &middot; Heavy Boots (vbt) &middot; Light Plated Boots (tbt) &middot; Battle Boots (xtb) &middot; Demonhide Boots (xlb) &middot; Mesh Boots (xmb) &middot; Sharkskin Boots (xvb) &middot; War Boots (xhb) &middot; Boneweave Boots (umb) &middot; Mirrored Boots (utb) &middot; Myrmidon Greaves (uhb) &middot; Scarabshell Boots (uvb) &middot; Wyrmhide Boots (ulb) &middot; Belt (mbl) &middot; Heavy Belt (tbl) &middot; Light Belt (vbl) &middot; Plated Belt (hbl) &middot; Sash (lbl) &middot; Battle Belt (ztb) &middot; Demonhide Sash (zlb) &middot; Mesh Belt (zmb) &middot; Sharkskin Belt (zvb) &middot; War Belt (zhb) &middot; Colossus Girdle (uhc) &middot; Mithril Coil (umc) &middot; Spiderweb Sash (ulc) &middot; Troll Belt (utc) &middot; Vampirefang Belt (uvc) &middot; Assault Helmet (ba4) &middot; Avenger Guard (ba5) &middot; Fanged Helm (ba2) &middot; Horned Helm (ba3) &middot; Jawbone Cap (ba1) &middot; Jawbone Visor (ba6) &middot; Lion Helm (ba7) &middot; Rage Mask (ba8) &middot; Savage Helmet (ba9) &middot; Slayer Guard (baa) &middot; Carnage Helm (bab) &middot; Destroyer Helm (bad) &middot; Fury Visor (bac) &middot; Conqueror Crown (bae) &middot; Guardian Crown (baf) &middot; Antlers (dr3) &middot; Falcon Mask (dr4) &middot; Hawk Helm (dr2) &middot; Spirit Mask (dr5) &middot; Wolf Head (dr1) &middot; Alpha Helm (dr6) &middot; Griffon Headdress (dr7) &middot; Hunter&#x27;s Guise (dr8) &middot; Sacred Feathers (dr9) &middot; Totemic Mask (dra) &middot; Blood Spirit (drb) &middot; Dream Spirit (drf) &middot; Earth Spirit (drd) &middot; Sky Spirit (dre) &middot; Sun Spirit (drc) &middot; Demon Head (ne5) &middot; Gargoyle Head (ne4) &middot; Preserved Head (ne1) &middot; Unraveller Head (ne3) &middot; Zombie Head (ne2) &middot; Cantor Trophy (ne9) &middot; Fetish Trophy (ne7) &middot; Hierophant Trophy (nea) &middot; Mummified Trophy (ne6) &middot; Sexton Trophy (ne8) &middot; Bloodlord Skull (nef) &middot; Hellspawn Skull (neg) &middot; Minion Skull (neb) &middot; Overseer Skull (ned) &middot; Succubus Skull (nee) &middot; Aerin Shield (pa4) &middot; Crown Shield (pa5) &middot; Heraldic Shield (pa3) &middot; Rondache (pa2) &middot; Targe (pa1) &middot; Akaran Rondache (pa7) &middot; Akaran Targe (pa6) &middot; Gilded Shield (pa9) &middot; Protector Shield (pa8) &middot; Royal Shield (paa) &middot; Kurast Shield (pad) &middot; Sacred Rondache (pac) &middot; Sacred Targe (pab) &middot; Vortex Shield (paf) &middot; Zakarum Shield (pae) &middot; Axe (axe) &middot; Large Axe (lax) &middot; Battle Axe (btx) &middot; Broad Axe (bax) &middot; Double Axe (2ax) &middot; Giant Axe (gix) &middot; Great Axe (gax) &middot; Hand Axe (hax) &middot; Military Pick (mpi) &middot; War Axe (wax) &middot; Ancient Axe (9gi) &middot; Bearded Axe (9ba) &middot; Military Axe (9la) &middot; Twin Axe (92a) &middot; Cleaver (9ax) &middot; Crowbill (9mp) &middot; Naga (9wa) &middot; Gothic Axe (9ga) &middot; Hatchet (9ha) &middot; Tabar (9bt) &middot; Berserker Axe (7wa) &middot; War Spike (7mp) &middot; Champion Axe (7ga) &middot; Decapitator (7bt) &middot; Ettin Axe (72a) &middot; Feral Axe (7la) &middot; Silver-edged Axe (7ba) &middot; Glorious Axe (7gi) &middot; Small Crescent (7ax) &middot; Tomahawk (7ha) &middot; Composite Bow (cbw) &middot; Hunter&#x27;s Bow (hbw) &middot; Long Battle Bow (lbb) &middot; Long War Bow (lwb) &middot; Long Bow (lbw) &middot; Short Battle Bow (sbb) &middot; Short War Bow (swb) &middot; Short Bow (sbw) &middot; Cedar Bow (8lb) &middot; Rune Bow (8sw) &middot; Short Siege Bow (8s8) &middot; Double Bow (8cb) &middot; Edge Bow (8sb) &middot; Razor Bow (8hb) &middot; Gothic Bow (8lw) &middot; Large Siege Bow (8l8) &middot; Blade Bow (6hb) &middot; Great Bow (6cb) &middot; Spider Bow (6sb) &middot; Crusader Bow (6l7) &middot; Hydra Bow (6lw) &middot; Shadow Bow (6lb) &middot; Diamond Bow (6s7) &middot; Ward Bow (6sw) &middot; Crossbow (mxb) &middot; Heavy Crossbow (hxb) &middot; Light Crossbow (lxb) &middot; Repeating Crossbow (rxb) &middot; Arbalest (8lx) &middot; Siege Crossbow (8mx) &middot; Ballista (8hx) &middot; Chu-Ko-Nu (8rx) &middot; Colossus Crossbow (6hx) &middot; Demon Crossbow (6rx) &middot; Gorgon Crossbow (6mx) &middot; Pellet Bow (6lx) &middot; Blade (bld) &middot; Dagger (dgr) &middot; Dirk (dir) &middot; Kris (kri) &middot; Cinquedeas (9kr) &middot; Poignard (9dg) &middot; Rondel (9di) &middot; Stiletto (9bl) &middot; Bone Knife (7dg) &middot; Legend Spike (7bl) &middot; Mithril Point (7di) &middot; Fanged Knife (7kr) &middot; Glaive (glv) &middot; Javelin (jav) &middot; Pilum (pil) &middot; Short Spear (ssp) &middot; Throwing Spear (tsp) &middot; Great Pilum (9pi) &middot; Harpoon (9ts) &middot; Simbilan (9s9) &middot; Spiculum (9gl) &middot; War Javelin (9ja) &middot; Balrog Spear (7s7) &middot; Ghost Glaive (7gl) &middot; Hyperion Javelin (7ja) &middot; Stygian Pilum (7pi) &middot; Winged Harpoon (7ts) &middot; Balanced Axe (bal) &middot; Balanced Knife (bkf) &middot; Throwing Axe (tax) &middot; Throwing Knife (tkf) &middot; Battle Dart (9tk) &middot; Francisca (9ta) &middot; Hurlbat (9b8) &middot; War Dart (9bk) &middot; Flying Axe (7ta) &middot; Flying Knife (7tk) &middot; Winged Axe (7b8) &middot; Winged Knife (7bk) &middot; Club (clb) &middot; Spiked Club (spc) &middot; Flail (fla) &middot; Mace (mac) &middot; Morning Star (mst) &middot; Barbed Club (9sp) &middot; Cudgel (9cl) &middot; Flanged Mace (9ma) &middot; Jagged Star (9mt) &middot; Knout (9fl) &middot; Devil Star (7mt) &middot; Reinforced Mace (7ma) &middot; Scourge (7fl) &middot; Truncheon (7cl) &middot; Tyrant Club (7sp) &middot; Great Maul (gma) &middot; Maul (mau) &middot; War Hammer (whm) &middot; Battle Hammer (9wh) &middot; Martel de Fer (9gm) &middot; War Club (9m9) &middot; Legendary Mallet (7wh) &middot; Ogre Maul (7m7) &middot; Thunder Maul (7gm) &middot; Bardiche (bar) &middot; Halberd (hal) &middot; Poleaxe (pax) &middot; Scythe (scy) &middot; Voulge (vou) &middot; War Scythe (wsc) &middot; Battle Scythe (9s8) &middot; Bec-de-Corbin (9h9) &middot; Bill (9vo) &middot; Lochaber Axe (9b7) &middot; Grim Scythe (9wc) &middot; Partizan (9pa) &middot; Colossus Voulge (7vo) &middot; Ogre Axe (7o7) &middot; Cryptic Axe (7pa) &middot; Giant Thresher (7wc) &middot; Great Poleaxe (7h7) &middot; Thresher (7s8) &middot; Brandistock (brn) &middot; Pike (pik) &middot; Spear (spr) &middot; Spetum (spt) &middot; Trident (tri) &middot; Fuscina (9tr) &middot; Lance (9p9) &middot; War Fork (9br) &middot; War Spear (9sr) &middot; Yari (9st) &middot; Ghost Spear (7st) &middot; Hyperion Spear (7sr) &middot; Mancatcher (7br) &middot; Stygian Pike (7tr) &middot; War Pike (7p7) &middot; Grand Scepter (gsc) &middot; Scepter (scp) &middot; War Scepter (wsp) &middot; Divine Scepter (9ws) &middot; Holy Water Sprinkler (9qs) &middot; Rune Scepter (9sc) &middot; Caduceus (7ws) &middot; Mighty Scepter (7sc) &middot; Seraph Rod (7qs) &middot; Battle Staff (bst) &middot; Gnarled Staff (cst) &middot; Long Staff (lst) &middot; Short Staff (sst) &middot; War Staff (wst) &middot; Cedar Staff (8cs) &middot; Gothic Staff (8bs) &middot; Jo Staff (8ss) &middot; Quarterstaff (8ls) &middot; Rune Staff (8ws) &middot; Archon Staff (6ws) &middot; Elder Staff (6cs) &middot; Shillelagh (6bs) &middot; Stalagmite (6ls) &middot; Walking Stick (6ss) &middot; Bastard Sword (bsw) &middot; Broad Sword (bsd) &middot; Claymore (clm) &middot; Giant Sword (gis) &middot; Long Sword (lsd) &middot; Crystal Sword (crs) &middot; Falchion (flc) &middot; Sabre (sbr) &middot; Scimitar (scm) &middot; Short Sword (ssd) &middot; Flamberge (flb) &middot; Great Sword (gsd) &middot; Two-Handed Sword (2hs) &middot; War Sword (wsd) &middot; Ancient Sword (9wd) &middot; Cutlass (9sm) &middot; Espandon (92h) &middot; Gladius (9ss) &middot; Shamshir (9sb) &middot; Tulwar (9fc) &middot; Battle Sword (9bs) &middot; Dacian Falx (9cm) &middot; Gothic Sword (9b9) &middot; Tusk Sword (9gs) &middot; Dimensional Blade (9cr) &middot; Executioner Sword (9gd) &middot; Rune Sword (9ls) &middot; Zweihander (9fb) &middot; Ataghan (7sm) &middot; Elegant Blade (7sb) &middot; Falcata (7ss) &middot; Hydra Edge (7fc) &middot; Legend Sword (72h) &middot; Mythical Sword (7wd) &middot; Balrog Blade (7gs) &middot; Champion Sword (7b7) &middot; Conquest Sword (7bs) &middot; Highland Blade (7cm) &middot; Colossus Blade (7gd) &middot; Colossus Sword (7fb) &middot; Cryptic Sword (7ls) &middot; Phase Blade (7cr) &middot; Bone Wand (bwn) &middot; Grim Wand (gwn) &middot; Wand (wnd) &middot; Yew Wand (ywn) &middot; Burnt Wand (9wn) &middot; Grave Wand (9gw) &middot; Petrified Wand (9yw) &middot; Tomb Wand (9bw) &middot; Ghost Wand (7yw) &middot; Lich Wand (7bw) &middot; Polished Wand (7wn) &middot; Unearthed Wand (7gw) &middot; Blade Talons (btl) &middot; Cestus (ces) &middot; Wrist Blade (wrb) &middot; Claws (clw) &middot; Hatchet Hands (axf) &middot; Katar (ktr) &middot; Scissors Katar (skr) &middot; Fascia (9xf) &middot; Greater Talons (9tw) &middot; Greater Claws (9lw) &middot; Hand Scythe (9cs) &middot; Wrist Spike (9wb) &middot; Quhab (9ar) &middot; Scissors Quhab (9qr) &middot; Battle Cestus (7cs) &middot; Feral Claws (7lw) &middot; Wrist Sword (7wb) &middot; Runic Talons (7tw) &middot; War Fist (7xf) &middot; Scissors Suwayyah (7qr) &middot; Suwayyah (7ar) &middot; Clasped Orb (ob4) &middot; Eagle Orb (ob1) &middot; Sacred Globe (ob2) &middot; Smoked Sphere (ob3) &middot; Jared&#x27;s Stone (ob5) &middot; Cloudy Sphere (ob8) &middot; Crystalline Globe (ob7) &middot; Glowing Orb (ob6) &middot; Sparkling Ball (ob9) &middot; Swirling Crystal (oba) &middot; Demon Heart (obd) &middot; Eldritch Orb (obc) &middot; Heavenly Stone (obb) &middot; Vortex Orb (obe) &middot; Dimensional Shard (obf) &middot; Maiden Javelin (am5) &middot; Maiden Pike (am4) &middot; Maiden Spear (am3) &middot; Reflex Bow (am2) &middot; Stag Bow (am1) &middot; Ashwood Bow (am6) &middot; Ceremonial Bow (am7) &middot; Ceremonial Javelin (ama) &middot; Ceremonial Pike (am9) &middot; Ceremonial Spear (am8) &middot; Grand Matron Bow (amc) &middot; Matriarchal Bow (amb) &middot; Matriarchal Javelin (amf) &middot; Matriarchal Pike (ame) &middot; Matriarchal Spear (amd) &middot; Blunt Arrows (aqv) &middot; Light Bolts (cqv) &middot; Heavy Bolts (cqv2) &middot; Sharp Arrows (aqv2) &middot; Razor Arrows (aqv3) &middot; War Bolts (cqv3)</div><div class="magic-map erazure-map">
+<div class="wrap">
+  <h2 class="part" id="glance">At a glance</h2>
+  <a class="skip" href="#bar">Skip to the bases, base by base</a>
+  <p class="gx">What each kind of magic item does at each filter level. Filter levels that treat them the same
+    share a column. <b>from clvl 80</b> means from character level 80; the strip under a cell shows character levels 1 to 99,
+    hatched where items hide.
+    Click a cell to see its bases at that filter level below.</p>
+  <div class="legend" id="glance-legend"></div>
+  <p class="swipe">Swipe the table sideways for more filter levels.</p>
+  <div class="tw"><table class="gl" id="glance-table"></table></div>
+  <h2 class="part">Base by base</h2>
+</div>
+<div class="bar" id="bar">
+  <div class="wrap">
+    <div class="controls">
+      <select id="level" aria-label="Filter level"></select>
+      <select id="cat" aria-label="Item type"></select>
+      <select id="tier" aria-label="Tier">
+        <option value="">All tiers</option><option>Normal</option><option>Exceptional</option><option>Elite</option>
+      </select>
+    </div>
+    <input id="q" type="search" placeholder="Search a base, code or look" aria-label="Search a base, code or look">
+    <span class="count" id="count"></span>
+  </div>
+</div>
+<details class="wrap fold">
+  <summary>How to read this page: the rows, the columns and the filter levels</summary>
+  <div class="fold-body">
+<div class="wrap">
+  <div class="howto">
+   <div>
+    <h2>How to read it</h2>
+    <p>How the Erazure loot filter shows magic items that drop on the ground, unidentified, read from the
+      filter's own rules. At the filter levels a base's rows don't cover, it shows with its plain name in
+      <span class="q-blue">blue</span>, with Eth before it when it is ethereal.</p>
+    <div class="kinds">
+      <span><span class="pill k-notify">Notify</span> minimap icon and chat notification, and a drop sound where one is shown</span>
+      <span><span class="pill k-show">Shows as</span> a look of its own (shown as the game draws it)</span>
+      <span><span class="pill k-hide">Hidden</span> the item is not shown</span>
+    </div>
+    <ul>
+      <li>Each row is one case: the filter levels it applies to, what happens, and what the item needs. Every column
+        must hold; <b>any</b> means no condition. Pick your filter level in the bar to see only your rows.</li>
+      <li><b>Crafted affix level</b> is the affix level the filter works out for a craft made from the item: from half
+        your character level plus half its item level.</li>
+      <li>Bases of one type and tier with the same socket maximum and rows share a group. A look shows the group's
+        first base; each base shows its own name.</li>
+      <li><b>Hidden items still show in town.</b> The minimap icon and chat notification come on their own, even for a hidden
+        item.</li>
+      <li>Charms drop only as magic items (the game has no rare charms). The number after the dot in a charm's look is its item level; a row shows its lowest.</li>
+    </ul>
+   </div>
+   <div>
+    <h2>Filter levels</h2>
+    <ol class="levels" id="levels" start="0"></ol>
+   </div>
+  </div>
+</div>
+  </div>
+</details>
+<div class="wrap" id="list"></div>
+<div class="wrap"><footer id="foot"></footer></div>
+</div><script src="../assets/magic-map/magic-map.js"></script>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+  
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+        
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../bases/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Non-magical Bases">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Non-magical Bases
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../rare/" class="md-footer__link md-footer__link--next" aria-label="Next: Rare Items">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Rare Items
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Erazure's loot filter, Season 14: <a href="/PD2-Loot-Filter/updates/">last updated November 20th, 2026</a> &middot; Questions: <b>erazure</b> on Discord<span class="ez-fb-foot"> &middot; <a href="/PD2-Loot-Filter/feedback/">Feedback on this page</a></span> &middot; &copy; 2021&ndash;2026 Erazure. All rights reserved.
+    </div>
+  
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.top", "navigation.footer", "search.suggest", "search.highlight"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../javascripts/erazure.js"></script>
+      
+    
+  </body>
+</html>

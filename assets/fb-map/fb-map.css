@@ -1,0 +1,158 @@
+
+  /* One column: Start's three cards, or a flow's steps one at a time, then a summary and Send. Dark by default; light
+     when the website (Material) is switched to light. */
+  .fb-map {
+    --bg: #151412; --panel: #1f1d1a; --fg: #ece7de; --fg2: #cfc8bb; --muted: #a59e91; --line: #36322c;
+    --axis: #4a463f; --accent: #d8b45e; --accent-wash: rgba(216, 180, 94, 0.12); --bad: #cc7b38;
+    --display: "Cinzel", "Trajan Pro", Georgia, serif;
+    --body: "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    color-scheme: dark; position: relative;
+    color: var(--fg); font: 15px/1.5 var(--body);
+  }
+  [data-md-color-scheme="default"] .fb-map {
+    --bg: #f3f1ec; --panel: #fffdf8; --fg: #23211c; --fg2: #4a463e; --muted: #6b655a; --line: #ded7c9;
+    --axis: #c3bcae; --accent: #8a6d1f; --accent-wash: rgba(138, 109, 31, 0.10); --bad: #b65a17;
+    color-scheme: light;
+  }
+  .fb-map *, .fb-map *::before, .fb-map *::after { box-sizing: border-box; }
+  .fb-map .wrap { max-width: 860px; margin: 0 auto; padding: 0 16px 32px; }
+  .md-content .fb-map .wrap { padding-inline: 0; margin-inline: 0; }  /* on the site: under the page's title */
+  .fb-map #fb-view { display: grid; gap: 16px; }
+  .fb-map h1.fb-title { font: 700 30px/1.15 var(--display); letter-spacing: .02em; margin: 0; padding-block: 24px 10px; }
+  .fb-map h2, .fb-map h3 { margin: 0; color: var(--fg); letter-spacing: 0; text-wrap: balance; }
+  .fb-map h2 { font: 700 21px/1.25 var(--body); }
+  .fb-map h3 { font: 700 15px/1.3 var(--body); }
+  .fb-map p { margin: 0; }
+  .fb-map a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  .fb-map :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .fb-map h2:focus { outline: none; }
+  .fb-map [hidden] { display: none !important; }
+  .fb-map .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .fb-map .lede { color: var(--fg2); font-size: 16px; max-width: 70ch; }
+  .fb-map .note { color: var(--muted); font-size: 13px; }
+  .fb-map .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 18px 20px; }
+  .fb-map .eyebrow { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+
+  /* the page's own row of tabs: on phones and this file on its own; where the site shows them under its own tabs
+     (wide screens: the row under the site's tabs, website/hooks.py page_tabs) this one is hidden */
+  .fb-map .fb-tabs { display: flex; flex-wrap: wrap; gap: 4px 18px; border-bottom: 1px solid var(--line); margin-bottom: 18px; }
+  .fb-map .fb-tabs button { background: none; border: 0; padding: 8px 0 7px; cursor: pointer; font: 600 14px/1.3 var(--body);
+                            color: var(--fg2); border-bottom: 2px solid transparent; margin-bottom: -1px; }
+  .fb-map .fb-tabs button[aria-selected="true"] { color: var(--fg); border-bottom-color: var(--accent);
+                                                  text-decoration: underline; text-decoration-color: transparent; }
+  .fb-map .fb-tabs button:hover { color: var(--fg); }
+  @media screen and (min-width: 76.25em) {
+    .md-content .fb-map .fb-tabs { display: none; }
+  }
+
+  /* buttons, lists and boxes 14 px and 34 px tall, as the calculators' */
+  .fb-map button, .fb-map input, .fb-map select, .fb-map textarea { font: inherit; color: var(--fg); }
+  .fb-map .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 34px; padding: 5px 14px;
+                 border: 1px solid var(--axis); border-radius: 6px; background: var(--bg); cursor: pointer; font-size: 14px;
+                 font-weight: 600; text-decoration: none; color: var(--fg); }
+  .fb-map .btn:hover { border-color: var(--accent); }
+  .fb-map .btn.primary { background: var(--accent); border-color: var(--accent); color: #1b160b; }
+  [data-md-color-scheme="default"] .fb-map .btn.primary { color: #fffdf8; }
+  .fb-map .btn.primary:hover { filter: brightness(1.08); }
+  .fb-map .btn.link { border-color: transparent; background: none; padding-inline: 4px; color: var(--fg2); text-decoration: underline;
+                      text-underline-offset: 2px; }
+  .fb-map .btn.link:hover { color: var(--fg); }
+  .fb-map .btn.small { min-height: 30px; font-size: 13px; padding: 3px 10px; }
+  .fb-map .x { display: inline-grid; place-items: center; flex: none; width: 26px; height: 26px; padding: 0; border: 1px solid var(--axis);
+               border-radius: 50%; background: none; color: var(--muted); cursor: pointer; font-size: 13px; line-height: 1; }
+  .fb-map .x:hover { color: var(--fg); border-color: var(--accent); }
+
+  /* Start */
+  .fb-map .start { display: grid; gap: 18px; }
+  .fb-map .from { display: inline-flex; align-items: center; gap: 8px; justify-self: start; padding: 4px 10px; border-radius: 999px;
+                  border: 1px solid var(--axis); font-size: 13px; color: var(--fg2); }
+  .fb-map .from b { color: var(--fg); }
+  .fb-map .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; }
+  .fb-map .card { position: relative; display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; align-content: start; text-align: left;
+                  padding: 18px 18px 16px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); cursor: pointer; }
+  .fb-map .card:hover { border-color: var(--accent); }
+  .fb-map .card .ico { grid-row: span 2; display: grid; place-items: center; width: 38px; height: 38px; border-radius: 50%;
+                       border: 2px solid var(--accent); color: var(--accent); font: 700 20px/1 var(--body); }
+  .fb-map .card .ct { font-size: 17px; font-weight: 700; color: var(--fg); line-height: 1.3; }
+  .fb-map .card .cs { font-size: 14px; color: var(--fg2); }
+  /* the card that fits the page the player came from: an outline and a word, not a colour alone */
+  .fb-map .card.fits { border: 2px solid var(--accent); padding: 17px 17px 15px; }
+  .fb-map .card .fit { grid-column: 2; justify-self: start; margin-top: 6px; font-size: 12px; font-weight: 700; letter-spacing: .06em;
+                       text-transform: uppercase; color: var(--accent); }
+  .fb-map .card .fit::before { content: "\25B8\00A0"; }
+  .fb-map .lines { display: grid; gap: 6px; font-size: 15px; color: var(--fg2); }
+  .fb-map .anon { display: flex; gap: 10px; align-items: flex-start; padding: 10px 14px; border-radius: 8px; background: var(--accent-wash);
+                  color: var(--fg); font-size: 14px; }
+  .fb-map .anon .lock { flex: none; font-weight: 700; color: var(--accent); }
+
+  /* a flow: one step at a time */
+  .fb-map .flow { display: grid; gap: 16px; }
+  .fb-map .fhead { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 14px; }
+  .fb-map .progress { display: flex; gap: 4px; }
+  .fb-map .progress i { width: 34px; height: 5px; border-radius: 3px; background: var(--line); }
+  .fb-map .progress i.done { background: var(--accent); }
+  .fb-map .progress i.now { background: var(--accent); box-shadow: 0 0 0 2px var(--accent-wash); }
+  .fb-map .step { display: grid; gap: 16px; }
+  .fb-map .step-title { display: grid; gap: 2px; }
+  .fb-map .row { display: flex; flex-wrap: wrap; gap: 14px 20px; align-items: flex-start; }
+  .fb-map .field { display: grid; gap: 5px; min-width: 0; align-content: start; flex: 1 1 220px; }
+  .fb-map .field.wide { flex-basis: 100%; }
+  .fb-map .field.short { flex: 0 1 150px; }
+  .fb-map .lab { font-size: 13px; font-weight: 600; color: var(--fg2); }
+  .fb-map .lab .opt { font-weight: 400; color: var(--muted); }
+  .fb-map .lab .req { color: var(--fg2); font-weight: 400; }
+  .fb-map .field small, .fb-map .hint { font-size: 12px; color: var(--muted); line-height: 1.4; }
+  .fb-map input[type="text"], .fb-map input[type="url"], .fb-map input[type="number"], .fb-map select, .fb-map textarea {
+    width: 100%; min-width: 0; min-height: 34px; padding: 5px 9px; font-size: 14px; background: var(--bg);
+    border: 1px solid var(--axis); border-radius: 6px; }
+  .fb-map textarea { min-height: 96px; resize: vertical; line-height: 1.45; }
+  .fb-map input[aria-invalid="true"], .fb-map select[aria-invalid="true"], .fb-map textarea[aria-invalid="true"],
+  .fb-map fieldset[aria-invalid="true"] .chips { outline: 2px solid var(--bad); outline-offset: 1px; }
+  .fb-map fieldset { border: 0; margin: 0; padding: 0; min-width: 0; display: grid; gap: 6px; }
+  .fb-map legend { padding: 0; margin-bottom: 6px; font-size: 13px; font-weight: 600; color: var(--fg2); }
+  .fb-map .chips { display: flex; flex-wrap: wrap; gap: 6px; border-radius: 6px; }
+  .fb-map .chip { position: relative; display: inline-flex; align-items: center; gap: 7px; min-height: 34px; padding: 5px 12px;
+                  border: 1px solid var(--axis); border-radius: 6px; background: var(--bg); cursor: pointer; font-size: 14px; }
+  .fb-map .chip input { accent-color: var(--accent); width: 15px; height: 15px; margin: 0; }
+  .fb-map .chip:has(input:checked) { border-color: var(--accent); background: var(--accent-wash); font-weight: 700; }
+  .fb-map .chip:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .fb-map .errors { padding: 10px 14px; border: 1px solid var(--bad); border-radius: 8px; font-size: 14px; }
+  .fb-map .errors b { color: var(--bad); }
+  .fb-map .nav { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .fb-map .nav .spacer { flex: 1; }
+  .fb-map .draft { font-size: 13px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: center; }
+
+  /* what's attached: shown before it's sent, each can be left out */
+  .fb-map .attach { display: grid; gap: 8px; }
+  .fb-map .att { display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; align-items: start; padding: 8px 12px;
+                 border: 1px dashed var(--axis); border-radius: 6px; font-size: 13px; }
+  .fb-map .att .an { font-weight: 700; color: var(--fg2); }
+  .fb-map .att .av { grid-column: 1; color: var(--muted); overflow-wrap: anywhere; white-space: pre-wrap; max-height: 9.5em; overflow: auto; }
+  .fb-map .att .x { grid-row: 1 / span 2; grid-column: 2; }
+  .fb-map .att.off { opacity: .55; }
+  .fb-map .att.off .av { text-decoration: line-through; }
+
+  /* feedback on an update: the picked changes, each with a box of its own */
+  .fb-map .chg { display: grid; gap: 8px; padding: 14px 16px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); }
+  .fb-map .chg-head { display: flex; align-items: center; gap: 10px; }
+  .fb-map .chg-when { flex: 1; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+  .fb-map .chg-when span { text-transform: none; letter-spacing: 0; font-weight: 400; font-style: italic; }
+  .fb-map .chg-text { font-size: 15px; color: var(--fg); }
+  .fb-map .chg-text b, .fb-map .chg-text strong { color: var(--fg); }
+
+  /* the summary */
+  .fb-map .sum { display: grid; grid-template-columns: minmax(120px, max-content) 1fr; gap: 6px 18px; margin: 0; font-size: 14px; }
+  .fb-map .sum dt { color: var(--muted); font-weight: 600; }
+  .fb-map .sum dd { margin: 0; color: var(--fg); white-space: pre-wrap; overflow-wrap: anywhere; }
+  .fb-map .copybox { width: 100%; min-height: 180px; font: 13px/1.45 ui-monospace, SFMono-Regular, Consolas, monospace; }
+  .fb-map .done { display: grid; gap: 14px; }
+  .fb-map .done .big { font: 700 26px/1.2 var(--display); color: var(--fg); }
+
+  .fb-map .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+  @media (max-width: 600px) {
+    .fb-map .panel { padding: 14px; }
+    .fb-map .sum { grid-template-columns: 1fr; gap: 2px; }
+    .fb-map .sum dd { margin-bottom: 8px; }
+    .fb-map .nav .btn { flex: 1 1 auto; }
+  }

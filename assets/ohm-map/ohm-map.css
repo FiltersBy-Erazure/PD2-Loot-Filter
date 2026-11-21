@@ -1,0 +1,230 @@
+
+  /* One column: the weapon and the jewel, the answer (with a strip that keeps it in view further down), what a jewel
+     needs at each enhanced damage, the jewels that can roll, how it's worked out. Dark by default; light when the
+     website (Material) is switched to light. */
+  .ohm-map {
+    --bg: #151412; --panel: #1f1d1a; --fg: #ece7de; --fg2: #cfc8bb; --muted: #a59e91; --line: #36322c;
+    --axis: #4a463f; --accent: #d8b45e; --accent-wash: rgba(216, 180, 94, 0.12);
+    /* better / worse than Ohm: one pair that colour-blind readers tell apart too; Ohm's own bar a quiet gray */
+    --good: #38a283; --bad: #cc7b38; --ohm: #7f796e;
+    --display: "Cinzel", "Trajan Pro", Georgia, serif;
+    --body: "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    color-scheme: dark; position: relative;
+    color: var(--fg); font: 15px/1.5 var(--body);
+  }
+  [data-md-color-scheme="default"] .ohm-map {
+    --bg: #f3f1ec; --panel: #fffdf8; --fg: #23211c; --fg2: #4a463e; --muted: #6b655a; --line: #ded7c9;
+    --axis: #c3bcae; --accent: #8a6d1f; --accent-wash: rgba(138, 109, 31, 0.10);
+    --good: #11805c; --bad: #b65a17; --ohm: #bdb6a8;
+    color-scheme: light;
+  }
+  .ohm-map *, .ohm-map *::before, .ohm-map *::after { box-sizing: border-box; }
+  .ohm-map .wrap { max-width: 1120px; margin: 0 auto; padding-inline: 16px; }
+  .md-content .ohm-map .wrap { padding-inline: 0; max-width: none; }
+  .ohm-map .oj-main { display: grid; gap: 20px; padding-block: 4px 24px; }
+  .ohm-map .oj-main > * { min-width: 0; }
+  .ohm-map h1.oj-title { font: 700 30px/1.15 var(--display); letter-spacing: .02em; margin: 0; padding-block: 24px 6px; color: var(--fg); }
+  .ohm-map h2, .ohm-map h3 { margin: 0; color: var(--fg); text-wrap: balance; letter-spacing: 0; }
+  .ohm-map h2 { font: 700 19px/1.25 var(--body); }
+  .ohm-map p { margin: 0; }
+  .ohm-map :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .ohm-map .oj-head { display: grid; gap: 8px; }
+  .ohm-map .eyebrow { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+  .ohm-map .lede { max-width: 72ch; color: var(--fg2); font-size: 16px; }
+  .ohm-map .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px 18px 14px;
+                    display: grid; gap: 12px; }
+  .ohm-map .sub { color: var(--fg2); font-size: 14px; max-width: 82ch; }
+  .ohm-map .note { color: var(--muted); font-size: 13px; max-width: 92ch; }
+  .ohm-map [hidden] { display: none !important; }
+
+  /* settings: the weapon on the left, the jewel on the right, each in rows of fields */
+  .ohm-map .setup { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 18px 0; padding: 18px 20px; }
+  .ohm-map fieldset { border: 0; margin: 0; padding: 0; min-width: 0; display: grid; gap: 14px; align-content: start; }
+  .ohm-map fieldset.jewel { border-left: 1px solid var(--line); margin-left: 24px; padding-left: 24px; }
+  .ohm-map legend { float: left; width: 100%; padding: 0; font-size: 12px; letter-spacing: .1em; text-transform: uppercase;
+                    color: var(--muted); font-weight: 700; }
+  .ohm-map .row { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: flex-start; }
+  .ohm-map .field { display: grid; gap: 5px; min-width: 0; align-content: start; }
+  .ohm-map .f-kind { flex: 0 1 180px; }
+  .ohm-map .f-base { flex: 1 1 250px; }
+  .ohm-map .f-pick { flex: 1 1 100%; }
+  .ohm-map .lab { display: flex; align-items: center; gap: 6px; min-height: 20px; font-size: 13px; font-weight: 600; color: var(--fg2); }
+  .ohm-map .lab label { font: inherit; color: inherit; }
+  .ohm-map .field small { font-size: 12px; color: var(--muted); line-height: 1.35; }
+  .ohm-map input, .ohm-map select, .ohm-map button { font: inherit; color: var(--fg); }
+  .ohm-map select, .ohm-map input[type="number"] { background: var(--bg); border: 1px solid var(--axis); border-radius: 6px;
+                                                    padding: 5px 8px; min-width: 0; width: 100%; font-size: 14px; min-height: 34px; }
+  /* every list, number box and toggle 14 px and 34 px tall, the buttons in the jewels' table 13 px and 30 px, as the IAS
+     Calculator's (the type review, 2026-11-20) */
+  .ohm-map input[type="number"] { font-variant-numeric: tabular-nums; }
+  .ohm-map .num { display: inline-flex; align-items: center; gap: 6px; }
+  .ohm-map .num input[type="number"], .ohm-map select.short { width: 76px; }
+  .ohm-map .unit { color: var(--muted); font-size: 14px; }
+  .ohm-map .check { display: flex; gap: 8px; align-items: center; font-size: 14px; color: var(--fg2); min-height: 34px; }
+  .ohm-map .check input { accent-color: var(--accent); width: 16px; height: 16px; margin: 0; }
+  .ohm-map .no-eth { display: flex; align-items: center; min-height: 34px; font-size: 14px; color: var(--muted); }
+  .ohm-map .seg { display: flex; flex-wrap: wrap; gap: 6px; }
+  .ohm-map .seg button { background: var(--bg); border: 1px solid var(--axis); border-radius: 6px; padding: 5px 10px; cursor: pointer;
+                         font-size: 14px; min-height: 34px; }
+  .ohm-map .seg button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-wash); color: var(--fg); font-weight: 700; }
+
+  /* the (i) beside a label: its text shows on hover, keyboard focus or a tap */
+  .ohm-map button.info { position: relative; display: inline-grid; place-items: center; flex: none; width: 17px; height: 17px; padding: 0;
+                         border: 1px solid var(--axis); border-radius: 50%; background: none; color: var(--muted); cursor: help;
+                         font: italic 700 11px/1 Georgia, "Times New Roman", serif; }
+  .ohm-map button.info::after { content: ""; position: absolute; inset: -7px; }
+  .ohm-map button.info:hover, .ohm-map button.info[aria-describedby] { color: var(--fg); border-color: var(--accent); }
+  .ohm-map .oj-tip { position: absolute; z-index: 6; max-width: min(320px, calc(100vw - 32px)); padding: 8px 10px; border-radius: 6px;
+                     background: var(--panel); border: 1px solid var(--axis); color: var(--fg); font-size: 13px; line-height: 1.4;
+                     font-weight: 400; pointer-events: none; box-shadow: 0 6px 18px rgba(0, 0, 0, .45); }
+  [data-md-color-scheme="default"] .ohm-map .oj-tip { box-shadow: 0 6px 18px rgba(0, 0, 0, .12); }
+
+  /* the answer: how much better or worse, and both damage ranges on one scale */
+  /* both sides start at the top, so the answer's label is level with WITH OHM (the author, 2026-11-20: "This section's
+     vertical alignments seem inconsistent") */
+  .ohm-map .verdict { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 18px 36px; align-items: start; padding: 20px 22px; }
+  .ohm-map .v-head { display: grid; gap: 6px; }
+  .ohm-map .tile-label { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+  .ohm-map .v-big { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 14px; }
+  .ohm-map .v-num { font-size: 40px; font-weight: 700; line-height: 1.05; }
+  .ohm-map .v-words { font-size: 19px; font-weight: 700; color: var(--fg); }
+  .ohm-map .v-sub { font-size: 14px; color: var(--fg2); }
+  .ohm-map .v-ranges { display: grid; grid-template-columns: max-content minmax(140px, 1fr); gap: 12px 18px; align-items: center; }
+  .ohm-map .v-lab { display: grid; gap: 1px; }
+  .ohm-map .v-name { display: flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 700; letter-spacing: .08em;
+                     text-transform: uppercase; color: var(--muted); }
+  .ohm-map .key { flex: none; width: 14px; height: 4px; border-radius: 2px; background: var(--k); }
+  .ohm-map .k-ohm { --k: var(--ohm); }
+  .ohm-map .k-jew { --k: var(--accent); }
+  .ohm-map .v-val { font-size: 22px; font-weight: 700; line-height: 1.25; }
+  .ohm-map .v-val span { font-size: 14px; font-weight: 600; color: var(--fg2); margin-left: 6px; }
+  .ohm-map .v-lab small { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .ohm-map .track { position: relative; height: 28px; background: linear-gradient(var(--line), var(--line)) center / 100% 1px no-repeat; }
+  .ohm-map .track .bar { position: absolute; top: 9px; height: 10px; border-radius: 5px; background: var(--k); }
+  .ohm-map .track .avg { position: absolute; top: 5px; width: 3px; height: 18px; margin-left: -1.5px; border-radius: 2px;
+                         background: var(--fg); box-shadow: 0 0 0 2px var(--panel); }
+  .ohm-map .v-axis { position: relative; height: 20px; border-top: 1px solid var(--axis); font-size: 12px; color: var(--muted);
+                     font-variant-numeric: tabular-nums; }
+  .ohm-map .v-axis span { position: absolute; top: 3px; transform: translateX(-50%); white-space: nowrap; }
+  .ohm-map .v-axis span:first-child { transform: none; }
+  .ohm-map .v-axis span:last-child { transform: translateX(-100%); }
+  .ohm-map .v-cap { grid-column: 2; font-size: 13px; }
+  .ohm-map .good { color: var(--good); }
+  .ohm-map .bad { color: var(--bad); }
+
+  /* the strip that keeps the answer on screen while the answer itself is scrolled away */
+  .ohm-map .dock { position: sticky; bottom: 0; z-index: 3; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 14px;
+                   padding: 8px 16px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+                   box-shadow: 0 -8px 24px rgba(0, 0, 0, .4); visibility: hidden; opacity: 0;
+                   transition: opacity .15s, visibility .15s, border-color .4s; }
+  [data-md-color-scheme="default"] .ohm-map .dock { box-shadow: 0 -6px 18px rgba(0, 0, 0, .12); }
+  .ohm-map .dock.on { visibility: visible; opacity: 1; }
+  .ohm-map .dock.flash { border-color: var(--accent); transition: none; }
+  .ohm-map .d-num { font-size: 22px; font-weight: 700; line-height: 1.3; }
+  .ohm-map .d-words { font-weight: 700; }
+  .ohm-map .d-more { font-size: 14px; color: var(--fg2); font-variant-numeric: tabular-nums; }
+
+  /* tables */
+  .ohm-map .scroll { overflow-x: auto; min-width: 0; }
+  .ohm-map table.oj-table { border-collapse: collapse; font-size: 14px; margin: 0; display: table; }
+  .ohm-map .oj-table th, .ohm-map .oj-table td { padding: 7px 10px; text-align: right; border: 0; border-bottom: 1px solid var(--line);
+                                                 white-space: nowrap; background: none; }
+  .ohm-map .oj-table th { font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: .03em; vertical-align: bottom; }
+  .ohm-map .oj-table th:first-child, .ohm-map .oj-table td:first-child { text-align: left; }
+  .ohm-map .oj-table td { font-variant-numeric: tabular-nums; color: var(--fg); }
+  .ohm-map .oj-table tbody tr:hover td { background: var(--accent-wash); }
+
+  /* what a jewel needs: one column per enhanced damage, your jewel's marked */
+  .ohm-map table.need { width: auto; }
+  .ohm-map .need th:first-child { position: sticky; left: 0; z-index: 1; background: var(--panel); white-space: normal; min-width: 150px; }
+  .ohm-map .need tbody th { font-size: 14px; font-weight: 600; color: var(--fg2); letter-spacing: 0; vertical-align: middle; }
+  .ohm-map .need tbody th .lab { display: inline-flex; min-height: 0; }
+  .ohm-map .need tbody tr:hover th { background: linear-gradient(var(--accent-wash), var(--accent-wash)), var(--panel); }
+  .ohm-map .need td, .ohm-map .need thead th + th { min-width: 54px; }
+  .ohm-map .need .you { background: var(--accent-wash); }
+  .ohm-map .need thead th.you { color: var(--accent); }
+  .ohm-map .need thead th.you small { display: block; font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+  .ohm-map .need td.you { font-weight: 700; }
+  .ohm-map .mark { display: inline-block; width: 1.1em; margin-left: 4px; text-align: center; font-weight: 700; }
+
+  /* the jewels that can roll: lowest to top rolls against Ohm as a bar around Ohm's line */
+  .ohm-map table.jewels { width: 100%; }
+  .ohm-map .jewels td.name { white-space: normal; min-width: 170px; font-weight: 600; }
+  .ohm-map .jewels tr.grp th { padding: 16px 10px 6px; text-align: left; font-size: 12px; letter-spacing: .08em; text-transform: uppercase;
+                               color: var(--accent); }
+  .ohm-map .jewels tr.grp th small { margin-left: 8px; font-size: 13px; font-weight: 600; letter-spacing: 0; text-transform: none; color: var(--muted); }
+  .ohm-map .jewels tr.grp:hover th { background: none; }
+  .ohm-map .jewels tr.cur td { background: var(--accent-wash); }
+  .ohm-map .jewels th.vs-h, .ohm-map .jewels td.vsc { min-width: 300px; width: 38%; }
+  .ohm-map .vs { display: grid; grid-template-columns: 122px minmax(120px, 1fr); align-items: center; gap: 14px; }
+  .ohm-map .vs-txt { text-align: right; font-variant-numeric: tabular-nums; }
+  .ohm-map .vs-bar { position: relative; height: 24px; }
+  .ohm-map .vs-bar .zero { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--axis); }
+  .ohm-map .vs-bar .seg { position: absolute; top: 7px; height: 10px; border-radius: 5px; }
+  .ohm-map .vs-bar .seg.neg { background: var(--bad); }
+  .ohm-map .vs-bar .seg.pos { background: var(--good); }
+  .ohm-map .vs-bar .seg.sq-r { border-top-right-radius: 0; border-bottom-right-radius: 0; }
+  .ohm-map .vs-bar .seg.sq-l { border-top-left-radius: 0; border-bottom-left-radius: 0; }
+  .ohm-map .vs-axis { position: relative; height: 16px; font-weight: 600; letter-spacing: 0; }
+  .ohm-map .vs-axis span { position: absolute; bottom: 0; transform: translateX(-50%); }
+  .ohm-map .vs-axis span.l { transform: none; }
+  .ohm-map .vs-axis span.r { transform: translateX(-100%); }
+  .ohm-map .vs-axis span.z { color: var(--fg2); }
+  .ohm-map .legend { display: flex; flex-wrap: wrap; gap: 4px 18px; align-items: center; font-size: 13px; color: var(--fg2); }
+  .ohm-map .legend span { display: inline-flex; align-items: center; gap: 7px; }
+  .ohm-map .sw { width: 14px; height: 10px; border-radius: 3px; background: var(--k); }
+  .ohm-map .sw.neg { --k: var(--bad); }
+  .ohm-map .sw.pos { --k: var(--good); }
+  .ohm-map .sw.line { width: 1px; height: 14px; border-radius: 0; background: var(--axis); margin-inline: 6px; }
+  .ohm-map button.use { background: none; border: 1px solid var(--axis); border-radius: 6px; padding: 3px 10px; cursor: pointer;
+                        font-size: 13px; min-height: 30px; color: var(--fg2); white-space: nowrap; }
+  .ohm-map button.use:hover { border-color: var(--accent); color: var(--fg); }
+  .ohm-map tr.cur button.use { border-color: var(--accent); color: var(--fg); font-weight: 700; }
+  .ohm-map button.use .short { display: none; }
+
+  .ohm-map .method ul { margin: 0; padding-left: 20px; display: grid; gap: 7px; max-width: 92ch; color: var(--fg2); list-style: disc; }
+  .ohm-map .method li { margin: 0; }
+  .ohm-map .method li strong { color: var(--fg); }
+  .ohm-map .credit { color: var(--muted); font-size: 13px; }
+  .ohm-map .credit a, .ohm-map .method a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+
+  @media (max-width: 860px) {
+    .ohm-map .setup { grid-template-columns: 1fr; }
+    .ohm-map fieldset.jewel { border-left: 0; margin-left: 0; padding-left: 0; border-top: 1px solid var(--line); padding-top: 16px; }
+    .ohm-map .verdict { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 760px) {
+    .ohm-map .panel { padding: 14px 12px 12px; }
+    .ohm-map .v-num { font-size: 32px; }
+    .ohm-map .v-ranges { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+    .ohm-map .v-ranges .v-lab + .track { margin-bottom: 6px; }
+    .ohm-map .v-ranges .gap { display: none; }
+    .ohm-map .v-cap { grid-column: 1; }
+    .ohm-map .d-num { font-size: 18px; }
+    .ohm-map .need th:first-child { min-width: 92px; }
+    .ohm-map .need th, .ohm-map .need td { padding: 6px 5px; }
+    .ohm-map .need td, .ohm-map .need thead th + th { min-width: 0; }
+    .ohm-map .need .mark { margin-left: 2px; }
+    /* the jewels: a card each */
+    .ohm-map table.jewels, .ohm-map .jewels tbody, .ohm-map .jewels tr, .ohm-map .jewels td, .ohm-map .jewels th { display: block; }
+    .ohm-map .jewels thead { display: none; }
+    .ohm-map .jewels tr.j { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+                            grid-template-areas: "name name act" "lo hi lvl" "vs vs vs"; gap: 6px 12px; padding: 12px 2px;
+                            border-bottom: 1px solid var(--line); }
+    .ohm-map .jewels tr.j td { padding: 0; border: 0; text-align: left; white-space: normal; min-width: 0; width: auto; }
+    .ohm-map .jewels tbody tr.j:hover td, .ohm-map .jewels tr.cur td { background: none; }
+    .ohm-map .jewels tr.cur { background: var(--accent-wash); }
+    .ohm-map .jewels td.name { grid-area: name; }
+    .ohm-map .jewels td.lvl { grid-area: lvl; text-align: right; }
+    .ohm-map .jewels td.lo { grid-area: lo; }
+    .ohm-map .jewels td.hi { grid-area: hi; }
+    .ohm-map .jewels td.vsc { grid-area: vs; }
+    .ohm-map .jewels td.act { grid-area: act; justify-self: end; align-self: start; }
+    .ohm-map .jewels td[data-l]::before { content: attr(data-l); display: block; font-size: 12px; color: var(--muted); }
+    .ohm-map .jewels tr.grp th { padding: 18px 2px 6px; border-bottom: 1px solid var(--line); }
+    .ohm-map .vs { grid-template-columns: 118px minmax(0, 1fr); gap: 12px; }
+    .ohm-map button.use .long { display: none; }
+    .ohm-map button.use .short { display: inline; }
+    .ohm-map button.use { min-width: 58px; }
+    .ohm-map .vs-txt { text-align: left; }
+  }

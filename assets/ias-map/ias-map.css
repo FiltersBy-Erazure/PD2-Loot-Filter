@@ -1,0 +1,425 @@
+
+  /* Tabs: the calculator (setup beside the results, then the breakpoints and the frame grid), the fastest setups,
+     how it's worked out, the reference. Dark by default; light when the website (Material) is switched to light. */
+  .ias-map {
+    --bg: #151412; --panel: #1f1d1a; --fg: #ece7de; --fg2: #cfc8bb; --muted: #a59e91; --line: #36322c;
+    --axis: #736c60; --accent: #d8b45e; --accent-wash: rgba(216, 180, 94, 0.12); --good: #38a283; --bad: #cc7b38;
+    --hit: #c94431; --cell-lo: #2a2722; --cell-hi: #b9a77c; --cell-fg: #ece7de; --cell-fg-hi: #1b1915;
+    --display: "Cinzel", "Trajan Pro", Georgia, serif;
+    --body: "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    color-scheme: dark;
+    color: var(--fg); font: 15px/1.5 var(--body);
+  }
+  [data-md-color-scheme="default"] .ias-map {
+    --bg: #f3f1ec; --panel: #fffdf8; --fg: #23211c; --fg2: #4a463e; --muted: #6b655a; --line: #ded7c9;
+    --axis: #928a7b; --accent: #7d6219; --accent-wash: rgba(125, 98, 25, 0.10); --good: #11805c; --bad: #b65a17;
+    --hit: #c2361f; --cell-lo: #ece6da; --cell-hi: #8a6d1f; --cell-fg: #23211c; --cell-fg-hi: #fffdf8;
+    color-scheme: light;
+  }
+  .ias-map *, .ias-map *::before, .ias-map *::after { box-sizing: border-box; }
+  .ias-map .wrap { max-width: 1240px; margin: 0 auto; padding-inline: 16px; }
+  .md-content .ias-map .wrap { padding-inline: 0; max-width: none; }
+  .ias-map .ia-main { display: grid; gap: 18px; padding-block: 4px 48px; }
+  .ias-map .ia-main > * { min-width: 0; }
+  .ias-map h1.ia-title { font: 700 30px/1.15 var(--display); letter-spacing: .02em; margin: 0; padding-block: 24px 6px; color: var(--fg); }
+  .ias-map h2, .ias-map h3 { margin: 0; color: var(--fg); text-wrap: balance; letter-spacing: 0; }
+  .ias-map h2 { font: 700 19px/1.25 var(--body); }
+  .ias-map h3 { font: 700 15px/1.3 var(--body); }  /* one subheading size (the type review, 2026-11-20: T5) */
+  .ias-map p { margin: 0; }
+  .ias-map :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .ias-map .ia-head { display: grid; gap: 8px; }
+  .ias-map .eyebrow { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+  .ias-map .lede { max-width: 80ch; color: var(--fg2); font-size: 16px; }
+  .ias-map .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px 18px 14px;
+                    display: grid; gap: 12px; align-content: start; min-width: 0; }
+  .ias-map .sub { color: var(--fg2); font-size: 14px; max-width: 86ch; }
+  .ias-map .note { color: var(--muted); font-size: 13px; max-width: 96ch; }
+  .ias-map .credit { color: var(--muted); font-size: 13px; }
+  .ias-map .credit a, .ias-map .method a, .ias-map .sub a, .ias-map .note a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  .ias-map [hidden] { display: none !important; }
+  .md-typeset .ias-map small { opacity: 1; }  /* Material dims every <small>: the tips were see-through (the IAS audit, UX-01) */
+  .ias-map .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  /* one monospace for codes, formulas and the reference implementation, on the page and the website (whose theme sets
+     its own on .md-typeset code): the type review, 2026-11-20, T6 */
+  .ias-map code, .md-typeset .ias-map code { font: 13px/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+                                             background: var(--bg); border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; }
+
+  /* tabs (the ARIA tab pattern), underlined as the Grail Planner's */
+  .ias-map .ia-tabs { display: flex; flex-wrap: wrap; gap: 2px; border-bottom: 1px solid var(--line); }
+  .ias-map .ia-tabs button { background: transparent; border: 0; border-bottom: 2px solid transparent; padding: 6px 14px 9px;
+                             margin: 0 0 -1px; cursor: pointer; font: 600 15px/1.2 var(--body); color: var(--muted); white-space: nowrap; }
+  .ias-map .ia-tabs button:hover { color: var(--fg); }
+  .ias-map .ia-tabs button[aria-selected="true"] { color: var(--fg); border-bottom-color: var(--accent); }
+  .ias-map .ia-tabs button:focus-visible { outline-offset: -2px; }
+  .ias-map .ia-panel { display: grid; gap: 18px; min-width: 0; scroll-margin-top: calc(var(--stick) + 4px); }
+
+  /* (i): a field's explanation, so the setup isn't fine print under every field; it shows on hover, keyboard focus or
+     a tap, and looks and behaves as Ohm vs Jewel's */
+  .ias-map .lab-row { display: flex; align-items: center; gap: 6px; position: relative; min-width: 0; }
+  .ias-map .has-info { position: relative; }
+  .ias-map .info { position: relative; flex: none; width: 17px; height: 17px; border-radius: 50%; border: 1px solid var(--axis); background: none;
+                   color: var(--muted); font: italic 700 11px/1 Georgia, "Times New Roman", serif; display: inline-grid; place-items: center;
+                   padding: 0; margin-left: 6px; cursor: help; vertical-align: middle; letter-spacing: 0; text-transform: none; }
+  .ias-map .info::after { content: ""; position: absolute; inset: -7px; }  /* a bigger target for a finger */
+  .ias-map .lab-row .info { margin-left: 0; }
+  .ias-map .info:hover, .ias-map .info[aria-describedby] { color: var(--fg); border-color: var(--accent); }
+  .ias-map .field small.info-pop, .ias-map .info-pop {
+    position: absolute; z-index: 3; top: calc(100% + 8px); left: 0; width: max-content; max-width: min(320px, calc(100vw - 32px));  /* under the site's header (4), over the strip (2) */
+    background: var(--panel); border: 1px solid var(--axis); border-radius: 6px; padding: 8px 10px; display: block; pointer-events: none;
+    font: 400 13px/1.4 var(--body); color: var(--fg); letter-spacing: 0; text-transform: none; text-align: left;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, .45); white-space: normal; }
+  [data-md-color-scheme="default"] .ias-map .info-pop { box-shadow: 0 6px 18px rgba(0, 0, 0, .12); }
+
+  /* setup */
+  .ias-map .ia-cols { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 18px; align-items: start; min-width: 0; }
+  .ias-map .ia-setup { gap: 16px; }
+  /* beside the results, the setup stays in view while you scroll them, where it fits the window (above the strip) */
+  .ias-map .ia-setup.stick { position: sticky; top: var(--stick); }
+  .ias-map fieldset { border: 0; margin: 0; padding: 0; min-width: 0; display: grid;
+                      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px 14px; align-content: start; }
+  .ias-map legend { grid-column: 1 / -1; float: left; width: 100%; padding: 0 0 6px; font-size: 12px; letter-spacing: .1em;
+                    text-transform: uppercase; color: var(--muted); font-weight: 700; border-bottom: 1px solid var(--line); margin-bottom: 4px; }
+  .ias-map .field { display: grid; gap: 4px; min-width: 0; align-content: start; }
+  .ias-map .field.wide { grid-column: span 2; }
+  .ias-map .field.full { grid-column: 1 / -1; }
+  .ias-map .field label, .ias-map .field .lab { font-size: 13px; font-weight: 600; color: var(--fg2); }
+  .ias-map .field small { font-size: 12px; color: var(--muted); line-height: 1.35; }
+  .ias-map .field small.clamp-note, .ias-map .field small.field-notice { color: var(--accent); font-weight: 600; }
+  .ias-map input, .ias-map select, .ias-map button { font: inherit; color: var(--fg); }
+  .ias-map select, .ias-map input[type="number"] { background: var(--bg); border: 1px solid var(--axis); border-radius: 6px;
+                                                    padding: 5px 8px; min-width: 0; width: 100%; }
+  .ias-map input[type="number"] { font-variant-numeric: tabular-nums; }
+  .ias-map .check { display: flex; gap: 8px; align-items: center; font-size: 14px; color: var(--fg2); min-height: 34px; }
+  .ias-map .check input { accent-color: var(--accent); width: 16px; height: 16px; }
+  .ias-map .seg { display: flex; flex-wrap: wrap; gap: 6px; }
+  .ias-map .seg button { background: var(--bg); border: 1px solid var(--axis); border-radius: 6px; padding: 5px 10px; cursor: pointer;
+                         font-size: 13.5px; }
+  .ias-map .seg button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-wash); color: var(--fg); font-weight: 700; }
+  .ias-map .seg button:disabled { opacity: .45; cursor: not-allowed; }
+  .ias-map .btn { background: var(--bg); border: 1px solid var(--axis); border-radius: 6px; padding: 6px 12px; cursor: pointer;
+                  font-size: 13.5px; font-weight: 600; color: var(--fg2); }
+  .ias-map .btn:hover { border-color: var(--accent); color: var(--fg); }
+  /* every button, toggle, list and number box one text size and height; the small header buttons a size down (the type
+     review, 2026-11-20: T1, "Are the font sizes consistent between Pause, Game Speed, +1 Frame?") */
+  .ias-map .btn, .ias-map .seg button, .ias-map select, .ias-map input[type="number"] { font-size: 14px; min-height: 34px; box-sizing: border-box; }
+  .ias-map .seg button { padding: 6px 10px; }
+  .ias-map select, .ias-map input[type="number"] { padding: 6px 8px; }
+  .ias-map .btn.small { font-size: 13px; min-height: 30px; }
+
+  /* results: one answer card (the frames, what the next breakpoint costs, a link), then the breakpoints beside the
+     setup; once the card scrolls away, a one-line copy of the answer stays at the bottom of the screen (the strip of
+     Ohm vs Jewel and the Damage Calculator) */
+  .ias-map { --stick: 8px; }
+  .md-content .ias-map { --stick: calc(2.4rem + 8px); }  /* under the website's header */
+  .ias-map .ia-out { display: grid; gap: 14px; min-width: 0; align-content: start; }
+  /* the preview and the animation's numbers: right under the answer (the author, 2026-11-20: layout D), and where the
+     calculator is 1,150 pixels wide or more a third column of their own, beside the answer and the breakpoints, which
+     stays in view while you scroll where it fits the window (layout E; fitSide) */
+  .ias-map .ia-side { display: grid; gap: 14px; min-width: 0; align-content: start; }
+  .ias-map #ia-calc { container: ia-calc / inline-size; }
+  @container ia-calc (min-width: 1150px) {
+    /* the setup 30%, the answer with the breakpoints and the preview half each of the rest (the breakpoints of a form
+       need about 400 pixels) */
+    .ias-map .ia-cols { grid-template-columns: minmax(0, 3fr) minmax(0, 7fr); }
+    /* as tall as the setup beside it, so the preview stays in view while you scroll past either */
+    .ias-map .ia-out { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: auto auto 1fr; column-gap: 18px;
+                       align-items: start; align-self: stretch; }
+    .ias-map .ia-out > * { grid-column: 1; min-width: 0; }
+    .ias-map .ia-out > .ia-side { grid-column: 2; grid-row: 1 / span 3; align-self: start; }
+    .ias-map .ia-side.stick { position: sticky; top: var(--stick); }
+    /* the setup's fields two a row in its narrower column (one column of 150 pixels and a wide field's span 2 made
+       implicit columns on the website, where the column is a little narrower) */
+    .ias-map .ia-setup fieldset { grid-template-columns: repeat(auto-fill, minmax(min(150px, 44%), 1fr)); }
+    /* the breakpoints in their narrower column as on a phone: tighter cells, the small notes under their number */
+    .ias-map #ia-bp th, .ias-map #ia-bp td, .ias-map #ia-bpw th, .ias-map #ia-bpw td { padding-left: 7px; padding-right: 7px; }
+    .ias-map #ia-bp td small, .ias-map #ia-bpw td small { display: block; }
+  }
+  /* a wide table scrolls inside its box rather than widening the card (a form's weapon breakpoints in a narrow column) */
+  .ias-map #ia-bp-sec > *, .ias-map #ia-bpw-box > * { min-width: 0; }
+  /* the breakpoints in tighter rows (layouts D and E) */
+  .ias-map #ia-bp th, .ias-map #ia-bp td, .ias-map #ia-bpw th, .ias-map #ia-bpw td { padding-top: 4px; padding-bottom: 4px; }
+  .ias-map .ia-answer { border-color: var(--accent); background: linear-gradient(var(--accent-wash), var(--accent-wash)), var(--panel); gap: 14px; }
+  .ias-map .ia-verdict { font-size: 16px; color: var(--fg); font-variant-numeric: tabular-nums; }
+  .ias-map .ia-verdict b, .ias-map .ia-verdict-bar b { color: var(--accent); }
+  /* what more IAS gives, what you could do without and the notes, a line each (the author, 2026-11-20: "having it as a
+     paragraph of text isn't that readable") */
+  .ias-map .ia-verdict ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+  .ias-map .ia-verdict p { margin: 0; }
+  .ias-map .ia-answer .notes { font-size: 14px; }
+  /* what the page switched for you (a form, an attack, a weapon), until the next change */
+  /* the words the page uses, a term and its meaning a line */
+  .ias-map .words { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 6px 14px; margin: 0; font-size: 14px; }
+  .ias-map .words dt { font-weight: 700; color: var(--fg); }
+  .ias-map .words dd { margin: 0; color: var(--fg2); }
+  @media (max-width: 640px) { .ias-map .words { grid-template-columns: minmax(0, 1fr); } .ias-map .words dd { margin-bottom: 6px; } }
+  .ias-map .switched { font-size: 14px; color: var(--fg); border-left: 3px solid var(--accent); padding: 2px 0 2px 9px; }
+  .ias-map .ia-answer-tools { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; max-width: 100%;
+                              border-top: 1px solid var(--line); padding-top: 10px; }
+  .ias-map .ia-answer-tools .note { overflow-wrap: anywhere; }
+  /* the strip: hidden (keeping its room at the end of the calculator, so nothing moves) until the card scrolls away */
+  .ias-map .ia-dock { position: sticky; bottom: 0; z-index: 2; padding: 8px 14px; background: var(--panel);
+                      border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 -8px 24px rgba(0, 0, 0, .4);
+                      visibility: hidden; opacity: 0; transition: opacity .15s, visibility .15s; }
+  [data-md-color-scheme="default"] .ias-map .ia-dock { box-shadow: 0 -6px 18px rgba(0, 0, 0, .12); }
+  .ias-map .ia-dock.on { visibility: visible; opacity: 1; }
+  .ias-map .ia-verdict-bar { margin: 0; font-size: 14px; font-variant-numeric: tabular-nums; color: var(--fg); }
+  .ias-map .ia-verdict-bar .what { color: var(--muted); font-weight: 600; margin-right: 6px; }
+  @media (prefers-reduced-motion: reduce) { .ias-map .ia-dock { transition: none !important; } }
+  /* short windows (200% zoom on a laptop): none, as the Damage Calculator's (it would cover a third of the screen) */
+  @media (max-height: 420px) { .ias-map .ia-dock { display: none; } }
+  /* The answer card (design E, the author, 2026-11-20, from the redesign page https://claude.ai/artifact/D35SKkdJLAAuAhCmjLvt9g):
+     the attack's name, then its numbers together in one dark box, each number over its word, the frames big and gold
+     ("All three of these numbers are important"), spacing only between them; they stay on one line (fitAnswer shrinks
+     the big number first, then everything; a sequence too long even then takes the first line and the other numbers
+     share the second evenly). Under it one panel of rows, Next, Then, To spare..., the IAS in gold lined up in one
+     column, the line between two rows from edge to edge. */
+  .ias-map .ans-hero { display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; }
+  .ias-map .ans-label { margin: 0; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+  .ias-map .ans-box { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 16px 9px; min-width: 0; }
+  .ias-map .ans-nums { display: flex; flex-wrap: nowrap; gap: calc(24px * var(--k, 1)); align-items: stretch; }
+  .ias-map .ans-n { flex: none; display: grid; align-content: center; justify-items: start; font-variant-numeric: tabular-nums; }
+  .ias-map .ans-n b { font-size: calc(20px * var(--k, 1)); font-weight: 700; color: var(--fg); line-height: 1.2; white-space: nowrap; }
+  .ias-map .ans-n span { font-size: calc(13px * var(--k, 1)); font-weight: 600; color: var(--fg2); line-height: 1.35; white-space: nowrap; }
+  .ias-map .ans-n.main b { font-size: calc(40px * var(--km, 1)); color: var(--accent); line-height: 1.05; }
+  .ias-map .ans-n.main span { font-size: calc(14px * var(--k, 1)); }
+  .ias-map .ans-n.warn b, .ias-map .ans-n.warn span { color: var(--bad); }
+  .ias-map .ans-nums.stack { flex-wrap: wrap; row-gap: 6px; }
+  .ias-map .ans-nums.stack .ans-n.main { flex: 1 1 100%; }
+  .ias-map .ans-nums.stack .ans-n:not(.main) { flex: 1 1 0; }
+  .ias-map .ans-note { margin: 0; font-size: 14px; color: var(--fg2); font-variant-numeric: tabular-nums; }
+  .ias-map .ans-rows { display: grid; grid-template-columns: max-content max-content minmax(0, 1fr); column-gap: 14px; background: var(--panel);
+                       border: 1px solid var(--line); border-radius: 8px; font-variant-numeric: tabular-nums; overflow: hidden; }
+  .ias-map .ans-row { grid-column: 1 / -1; display: grid; grid-template-columns: subgrid; align-items: baseline; padding: 10px 16px 11px; }
+  .ias-map .ans-row + .ans-row { border-top: 1px solid var(--line); }
+  .ias-map .ans-row .rl { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+  .ias-map .ans-row .ri { font-size: 18px; font-weight: 700; color: var(--accent); text-align: right; white-space: nowrap; }
+  .ias-map .ans-row .rf { font-size: 20px; font-weight: 700; color: var(--fg); }
+  .ias-map .ans-row .rf small { font-size: 13px; font-weight: 600; color: var(--fg2); }
+  .ias-map .ans-row .rf .dim { font-size: 14px; font-weight: 500; color: var(--fg2); margin-right: 5px; }
+  .ias-map .ans-row .nw, .ias-map .ans-row .rx { white-space: nowrap; }
+  .ias-map .ans-row .rx { font-size: 13px; font-weight: 600; color: var(--fg2); }
+  .ias-map .ans-row .rx.ok { color: var(--good); }
+  .ias-map .ans-row .rt { grid-column: 2 / -1; font-size: 14px; color: var(--fg2); line-height: 1.45; }
+  .ias-map .ans-row .rt b { color: var(--fg); }
+  .ias-map .ans-where { margin: 0; font-size: 13px; color: var(--muted); }
+  .ias-map .ans-rows + .ans-where { margin-top: 10px; }
+  .ias-map .ia-answer.bad { border-color: var(--bad); background: var(--panel); }
+  .ias-map .ia-answer.bad .ia-verdict b { color: var(--bad); }
+  .ias-map .facts { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 8px 14px; margin: 0; }
+  .ias-map .facts div { display: grid; gap: 0; min-width: 0; }
+  .ias-map .facts dt { font-size: 12px; color: var(--muted); }
+  .ias-map .facts dd { margin: 0; font-size: 18px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .ias-map .anim-name { font-size: 15px; font-weight: 600; }
+  .ias-map .anim-name code { margin-left: 6px; }
+  /* the fold's name on its own line, the attack and its animation on the next, both after the triangle (the author,
+     2026-11-20) */
+  .ias-map #ia-det > summary { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: baseline; }
+  .ias-map #ia-det > summary small { display: block; margin-top: 2px; }
+  .ias-map .notes { margin: 0; padding-left: 18px; display: grid; gap: 5px; color: var(--fg2); font-size: 14px; }
+  /* under the animation's numbers: how they give the frames */
+  .ias-map .calc { display: grid; gap: 8px; border-top: 1px solid var(--line); padding-top: 12px; }
+  .ias-map .calc h3 { margin: 0; font-size: 15px; font-weight: 700; color: var(--fg2); }
+  .ias-map .calc ol { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+  .ias-map .calc li { margin: 0; display: grid; grid-template-columns: 10.5em minmax(0, 1fr); gap: 2px 12px; font-size: 14px; color: var(--fg2);
+                      font-variant-numeric: tabular-nums; }
+  .ias-map .calc li > span:first-child { color: var(--muted); }
+  .ias-map .calc li b { color: var(--fg); }
+  .ias-map .calc .formula { white-space: normal; }
+  .ias-map .calc p { margin: 0; font-size: 13px; color: var(--muted); }
+  @media (max-width: 560px) { .ias-map .calc li { grid-template-columns: minmax(0, 1fr); } }
+  .ias-map .head-row { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; justify-content: space-between; }
+  .ias-map .btn.small { padding: 4px 10px; font-size: 13px; }
+  .ias-map .btn[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-wash); color: var(--fg); }
+  /* folds: the animation's numbers, Fastest Frames' assumptions (on the website without Material's own details look) */
+  .md-typeset .ias-map details.panel, .ias-map details.panel { border: 1px solid var(--line); border-radius: 8px; box-shadow: none;
+    background: var(--panel); padding: 16px 18px 14px; margin: 0; overflow: visible; font-size: inherit; display: grid; gap: 12px; }
+  .md-typeset .ias-map details.panel > summary, .ias-map details.panel > summary { list-style: none; display: block; position: static; padding: 0; margin: 0; border: 0; background: none; min-height: 0;
+    font-weight: 700; color: var(--fg); cursor: pointer; }
+  .ias-map details.panel > summary::-webkit-details-marker { display: none; }
+  .md-typeset .ias-map details.panel > summary::before, .ias-map details.panel > summary::before { content: "\25B8"; position: static;
+    display: inline-block; width: auto; height: auto; margin-right: 8px; background: none; -webkit-mask-image: none; mask-image: none;
+    transform: none; color: var(--accent); }
+  .md-typeset .ias-map details.panel[open] > summary::before, .ias-map details.panel[open] > summary::before { content: "\25BE"; }
+  .md-typeset .ias-map details.panel > summary::after { display: none; content: none; }
+  .ias-map details.panel > summary small { font-weight: 500; color: var(--muted); font-size: 13px; }
+  .ias-map details.panel:not([open]) { gap: 0; }
+
+  /* the frame strip and the preview */
+  .ias-map .strip { display: flex; flex-wrap: wrap; gap: 3px; }
+  .ias-map .strip span { min-width: 26px; height: 24px; padding: 0 3px; display: inline-grid; place-items: center; font-size: 12px;
+                         border: 1px solid var(--axis); border-radius: 4px; color: var(--fg2); font-variant-numeric: tabular-nums; }
+  .ias-map .strip span.hit { background: var(--hit); border-color: var(--hit); color: #fff; font-weight: 700; }
+  /* a hit the game doesn't make (a held Strafe or Fend at some speeds): dashed and struck through, not a colour alone */
+  .ias-map .strip span.lost { border: 2px dashed var(--hit); color: var(--hit); text-decoration: line-through; }
+  .ias-map .legend-key i.lost { background: none; border: 2px dashed var(--hit); width: 8px; height: 8px; }
+  /* a frame spent standing while a cooldown runs: hatched and dotted, not a colour alone */
+  .ias-map .strip span.wait { border-style: dotted; color: var(--muted);
+                              background: repeating-linear-gradient(135deg, transparent 0 3px, color-mix(in srgb, var(--axis) 45%, transparent) 3px 5px); }
+  .ias-map .legend-key i.wait { border: 1px dotted var(--axis); width: 10px; height: 10px;
+                                background: repeating-linear-gradient(135deg, transparent 0 3px, color-mix(in srgb, var(--axis) 45%, transparent) 3px 5px); }
+  .ias-map small.lost { color: var(--bad); font-weight: 600; white-space: nowrap; }
+  .ias-map .strip span.now { outline: 2px solid var(--accent); outline-offset: 1px; color: var(--fg); }
+  .ias-map .strip span.next { margin-left: 12px; }  /* attack 2 after attack 1 */
+  .ias-map .strip-row { display: grid; gap: 4px; }
+  .ias-map .strip-row .lab { font-size: 13px; color: var(--muted); }
+  /* the strip's legend right above it (the type review, 2026-11-20: T10) */
+  .ias-map .strip-legend { display: flex; flex-wrap: wrap; gap: 4px 14px; }
+  /* one row per attack the preview plays, each counted from 1 */
+  .ias-map .strip-line { display: grid; gap: 3px; }
+  .ias-map .strip-lab { font-size: 13px; color: var(--muted); }
+  /* a build to start from: the select and its Undo on one line */
+  .ias-map .start-row { display: flex; gap: 8px; align-items: center; min-width: 0; }
+  .ias-map .start-row select { flex: 1 1 auto; min-width: 0; }
+  .ias-map .stage { width: 100%; max-width: 600px; background: radial-gradient(ellipse at 50% 85%, #3a3226 0%, #1a1814 70%); border: 1px solid var(--line);
+                    border-radius: 6px; display: block; image-rendering: pixelated; }
+  [data-md-color-scheme="default"] .ias-map .stage { background: radial-gradient(ellipse at 50% 85%, #d9cfbb 0%, #b9ad97 75%); }
+  .ias-map .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .ias-map .controls select { width: auto; }
+  /* the preview's own settings: the target, and a skill level that only changes the picture (Multiple Shot's arrows) */
+  .ias-map .pv-opts { gap: 8px 18px; }
+  .ias-map .pv-opts:empty { display: none; }
+  .ias-map .pv-opts .field { display: flex; align-items: center; gap: 8px; }
+  .ias-map .pv-opts .field > small { display: none; }
+  .ias-map .pv-opts select { width: auto; max-width: 260px; }
+  .ias-map .pv-opts input[type="number"] { width: 76px; }
+  .ias-map .legend-key { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); }
+  .ias-map .legend-key i { width: 12px; height: 12px; border-radius: 3px; background: var(--hit); display: inline-block; }
+
+  /* tables */
+  /* a table wider than its box shows a shade at the edge it scrolls toward (the IAS audit, UX-07) */
+  .ias-map .scroll { overflow-x: auto; min-width: 0;
+    background: linear-gradient(to right, var(--panel) 30%, transparent) left / 24px 100% no-repeat local,
+                linear-gradient(to left, var(--panel) 30%, transparent) right / 24px 100% no-repeat local,
+                radial-gradient(farthest-side at 0 50%, rgba(0, 0, 0, .3), transparent) left / 10px 100% no-repeat scroll,
+                radial-gradient(farthest-side at 100% 50%, rgba(0, 0, 0, .3), transparent) right / 10px 100% no-repeat scroll; }
+  .ias-map table.ia-table { border-collapse: collapse; width: 100%; font-size: 14px; margin: 0; display: table; }
+  .ias-map .ia-table th, .ias-map .ia-table td { padding: 6px 10px; text-align: right; border: 0; border-bottom: 1px solid var(--line);
+                                                 white-space: nowrap; background: none; }
+  .ias-map .ia-table th { font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: .03em; vertical-align: bottom; }
+  .ias-map .ia-table th:first-child, .ias-map .ia-table td:first-child { text-align: left; }
+  .ias-map .ia-table td { font-variant-numeric: tabular-nums; color: var(--fg); }
+  .ias-map .ia-table tbody tr:hover td { background: var(--accent-wash); }
+  .ias-map .ia-table tr.you td { background: var(--accent-wash); color: var(--accent); font-weight: 700; }
+  .ias-map .ia-table td.left, .ias-map .ia-table th.left { text-align: left; white-space: normal; }
+  .ias-map .ia-table td a { color: var(--accent); text-decoration: underline dotted; text-underline-offset: 3px; }
+  /* the frames come first and stand out; EIAS and speed only when asked for */
+  .ias-map .ia-table td.fr, .ias-map .ia-table th.fr { text-align: left; }
+  .ias-map .ia-table td.fr { font-weight: 700; font-size: 15px; }
+  .ias-map .ia-table td.fr small, .ias-map .ia-table td small { font-weight: 500; font-size: 12px; color: var(--muted); }
+  .ias-map .ia-table tr.you td small { color: var(--accent); }
+  .ias-map .ia-table .math { display: none; }
+  .ias-map .ia-table.show-math .math { display: table-cell; }
+  .ias-map .ia-table td.dim { color: var(--muted); }
+  /* in a form IAS on the weapon and IAS on other gear have a table each; a row past what the weapon can carry is dimmed */
+  .ias-map .bp-h { margin: 16px 0 6px; }
+  .ias-map .bp-h small { font: 500 13px/1.3 var(--body); color: var(--muted); margin-left: 6px; }
+  .ias-map .ia-table tr.past td { color: var(--muted); font-weight: 400; }
+  .ias-map .bp-note { font-size: 14px; color: var(--fg2); margin: 8px 0 0; max-width: 86ch; }
+  /* the slower frame counts fold away: the line that shows them */
+  .ias-map .bp-fold { margin: 2px 0 6px; }
+  .ias-map .bp-fold button { background: none; border: 0; padding: 2px 0; color: var(--accent); font: 600 13px/1.4 var(--body);
+                             cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+  .ias-map .bp-fold button::before { content: "\25B8\00a0"; display: inline-block; text-decoration: none; }
+  .ias-map .bp-fold button[aria-expanded="true"]::before { content: "\25BE\00a0"; }
+  /* every base of the type: bases that behave the same share a row */
+  .ias-map .ia-bases td.names { white-space: normal; text-align: left; line-height: 1.7; }
+  .ias-map .base-link { background: none; border: 0; padding: 0; font: inherit; cursor: pointer; text-align: left;
+                        color: var(--accent); text-decoration: underline dotted; text-underline-offset: 3px; }
+  .ias-map .base-link:hover { text-decoration: underline; }
+  .ias-map .ia-bases td.names .base-link { margin-right: 10px; white-space: nowrap; }
+  .ias-map .ia-bases td.names .base-link.mine { font-weight: 700; text-decoration: underline; }
+  .ias-map .ia-bases tr.you td.names .base-link:not(.mine) { font-weight: 500; }
+  .ias-map .ia-bases td.names .base-link small { color: var(--muted); font-weight: 400; }
+  .ias-map .ia-bases td.ahead { text-align: left; color: var(--fg2); }
+  .ias-map .ia-bases td.ahead .dim, .ias-map .ia-table span.dim { color: var(--muted); font-weight: 400; }
+  .ias-map .ia-bases td.names { width: 60%; }
+
+  /* the frame grid */
+  .ias-map .grid-opts { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px 14px; }
+  .ias-map table.ia-grid { border-collapse: separate; border-spacing: 3px; font-size: 13px; margin: 0; display: table; }
+  .ias-map .ia-grid th { font-weight: 600; color: var(--muted); padding: 2px 4px; text-align: right; white-space: nowrap; background: none; border: 0; }
+  .ias-map .ia-grid thead th { text-align: center; }
+  .ias-map .ia-grid th.you { color: var(--accent); font-weight: 800; text-decoration: underline; text-underline-offset: 3px; }
+  .ias-map .ia-grid td { width: 46px; min-width: 40px; height: 34px; text-align: center; border-radius: 4px; position: relative; font-size: 14px;
+                         font-weight: 600; font-variant-numeric: tabular-nums; padding: 0; border: 0; cursor: default; }
+  /* your box: a two-tone ring (the outline outside, the panel's color inside), so it shows on light and dark boxes alike */
+  .ias-map .ia-grid td.you { outline: 2px solid var(--good); outline-offset: 0; z-index: 1; box-shadow: inset 0 0 0 2px var(--panel); }
+  /* where the frame count changes: a line on the box's right and bottom edges */
+  .ias-map .ia-grid th.past { font-style: italic; }
+  .ias-map .ia-grid td.er { box-shadow: inset -3px 0 0 var(--bp-line); }
+  .ias-map .ia-grid td.eb { box-shadow: inset 0 -3px 0 var(--bp-line); }
+  .ias-map .ia-grid td.er.eb { box-shadow: inset -3px 0 0 var(--bp-line), inset 0 -3px 0 var(--bp-line); }
+  .ias-map .ia-grid td.you.er { box-shadow: inset 0 0 0 2px var(--panel), inset -5px 0 0 var(--bp-line); }
+  .ias-map .ia-grid td.you.eb { box-shadow: inset 0 0 0 2px var(--panel), inset 0 -5px 0 var(--bp-line); }
+  .ias-map .ia-grid td.you.er.eb { box-shadow: inset 0 0 0 2px var(--panel), inset -5px 0 0 var(--bp-line), inset 0 -5px 0 var(--bp-line); }
+  .ias-map { --bp-line: #f1d48a; }
+  [data-md-color-scheme="default"] .ias-map { --bp-line: #6b4e0a; }
+  /* speed at its cap: stripes (more IAS there is wasted) */
+  .ias-map .ia-grid td.cap, .ias-map .grid-key .sw.cap { background-image: repeating-linear-gradient(135deg, var(--hatch) 0 1.5px, transparent 1.5px 7px); }
+  .ias-map { --hatch: rgba(27, 25, 21, .22); --cell-mid: #8a6531; }
+  [data-md-color-scheme="default"] .ias-map { --hatch: rgba(255, 253, 248, .45); --cell-mid: #c9a95e; }
+  .ias-map .grid-key { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; font-size: 13px; color: var(--muted); }
+  .ias-map .grid-key .sws { display: inline-flex; gap: 3px; align-items: center; }
+  .ias-map .grid-key .sw { min-width: 26px; height: 22px; padding: 0 4px; border-radius: 4px; display: inline-grid; place-items: center;
+                           font-size: 12.5px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .ias-map .grid-key .box { width: 18px; height: 18px; border: 2px solid var(--good); border-radius: 3px; display: inline-block; vertical-align: -4px;
+                            background: var(--cell-mid); box-shadow: inset 0 0 0 2px var(--panel); }
+  .ias-map .grid-key .line { width: 14px; height: 14px; display: inline-block; box-shadow: inset -3px 0 0 var(--bp-line); vertical-align: -2px; }
+  .ias-map .grid-tip { font-size: 14px; color: var(--fg2); min-height: 1.5em; font-variant-numeric: tabular-nums; }
+
+  /* fastest frames */
+  .ias-map .ff { border: 1px solid var(--line); border-radius: 8px; background: var(--panel); min-width: 0; }
+  .ias-map .ff-head { width: 100%; background: none; border: 0; cursor: pointer; padding: 10px 14px; font-weight: 700; font-size: 15px;
+                      display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; text-align: left; color: var(--fg); }
+  .ias-map .ff-head::before { content: "▸"; color: var(--accent); }
+  .ias-map .ff-head[aria-expanded="true"]::before { content: "▾"; }
+  .ias-map .ff-head small { font-weight: 500; color: var(--fg2); font-size: 13px; }
+  .ias-map .ff-body { padding: 0 14px 12px; display: grid; gap: 12px; min-width: 0; }
+  .ias-map .ff-forms { display: grid; gap: 10px; min-width: 0; }
+  .ias-map .ff-form h3 { font-size: 15px; color: var(--fg2); }
+  /* the fields lined up at the top, the buttons level with the lists under the labels (the type review, T9) */
+  .ias-map .ff-filter { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: start; }
+  .ias-map .ff-filter > .controls { margin-top: calc(13px * 1.5 + 4px); }
+  .ias-map .ff-filter .field { min-width: 200px; }
+  .ias-map .ff-none { color: var(--muted); font-size: 14px; }
+  .ias-map .ff-more { background: none; border: 0; padding: 0; color: var(--accent); font: inherit; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+
+  /* how it's worked out, reference */
+  .ias-map .method ol, .ias-map .method ul { margin: 0; padding-left: 22px; display: grid; gap: 8px; max-width: 96ch; color: var(--fg2); }
+  .ias-map .method li strong { color: var(--fg); }
+  .ias-map .formula { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; color: var(--fg);
+                      background: var(--bg); border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; white-space: nowrap; }
+  .ias-map .steps { display: grid; gap: 10px; counter-reset: st; margin: 0; padding: 0; list-style: none; }
+  .ias-map .steps > li { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 4px 10px; }
+  .ias-map .steps > li::before { counter-increment: st; content: counter(st); grid-row: span 2; width: 26px; height: 26px; border-radius: 50%;
+                                 border: 1px solid var(--accent); color: var(--accent); display: grid; place-items: center; font-weight: 700; font-size: 13px; }
+  .ias-map .steps > li b { color: var(--fg); }
+  .ias-map .steps > li div { color: var(--fg2); font-size: 14px; }
+  .ias-map pre.code { margin: 0; padding: 12px 14px; background: var(--bg); border: 1px solid var(--line); border-radius: 6px; overflow-x: auto;
+                      font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: var(--fg); }
+  .ias-map .ref-filter { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; }
+  .ias-map .ref-filter .field { min-width: 160px; }
+
+  @media (max-width: 980px) {
+    /* one column: the answer first, then the setup, the breakpoints and the preview */
+    .ias-map .ia-cols { grid-template-columns: minmax(0, 1fr); }
+    .ias-map .ia-out { display: contents; }
+    .ias-map .ia-answer { order: -1; }
+    .ias-map .ia-verdict-bar { font-size: 14px; }
+    .ias-map .ia-dock { padding: 7px 10px; }
+  }
+  @media (max-width: 640px) {
+    .ias-map .panel { padding: 14px 12px 12px; }
+    .ias-map .field.wide { grid-column: 1 / -1; }
+    .ias-map .ia-tabs button { padding: 6px 10px 8px; font-size: 14px; }
+    .ias-map .ia-tabs { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+    .ias-map .ia-grid td { width: 38px; min-width: 34px; height: 30px; font-size: 13px; }
+    /* the tables fit a phone: tighter cells, the total IAS with EIAS and speed, the small notes under their number */
+    .ias-map .ia-table th, .ias-map .ia-table td { padding: 6px 7px; }
+    .ias-map .ia-table .tot { display: none; }
+    .ias-map .ia-table.show-math .tot { display: table-cell; }
+    .ias-map .ia-table td:not(.names) small { display: block; }
+    .ias-map .ia-bases .wsm, .ias-map .ia-bases td.names .base-link small { display: none; }
+    .ias-map .ia-bases td.names { min-width: 130px; }
+    .ias-map .ia-bases td.names .base-link { display: block; white-space: normal; margin: 0; line-height: 1.5; }
+  }

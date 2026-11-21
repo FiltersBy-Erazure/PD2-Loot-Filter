@@ -1,0 +1,251 @@
+
+  @font-face { font-family: "AvQest"; src: local("AvQest"); }  /* the D2-style font, if the viewer has it installed */
+  /* Layout: the title; "how to read it" with the filter levels; then the filter bar, which stays at the top while
+     scrolling (under the website's header on the website); then one table per item type: a header row per group of
+     bases with the same tier, socket maximum and rows, then one row per case (filter levels, what happens, then one
+     column per condition). Phones: each row is a card. Every rule is scoped to .magic-map, so the website's theme and
+     this page leave each other alone. Dark by default; light when the website (Material) is switched to light. */
+  .magic-map {
+    --bg: #151412; --panel: #1f1d1a; --fg: #ece7de; --muted: #a59e91; --line: #36322c; --soft: #2a2723;
+    --accent: #d8b45e;
+    --k-notify: #8bb4e8; --k-show: #c9b27a; --k-hide: #9a9385;
+    --s-chat: #7cc474; --s-icon: #8bb4e8; --s-mixed: #b6c48f; --s-shown: #b9b2a3; --s-some: #e0b45a;
+    --s-hidden: #ef7a72;  /* at a glance: the Filter Levels page's colors */
+    --ground-1: #3a3428; --ground-2: #26221b; --ground-3: #15130f;
+    --display: "Cinzel", "Trajan Pro", Georgia, serif;
+    --body: "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --label: "AvQest", "Palatino Linotype", Palatino, Georgia, serif;
+    --top: 0px;  /* where the filter bar stops while scrolling */
+    color-scheme: dark;
+    color: var(--fg); font: 15px/1.45 var(--body);
+  }
+  [data-md-color-scheme="default"] .magic-map {
+    --bg: #f3f1ec; --panel: #fffdf8; --fg: #23211c; --muted: #6b655a; --line: #ded7c9; --soft: #ece6da;
+    --accent: #8a6d1f;
+    --k-notify: #2f6db3; --k-show: #8a6d1f; --k-hide: #8b8579;
+    --s-chat: #2f8a3a; --s-icon: #2f6db3; --s-mixed: #6f7d3c; --s-shown: #7c7568; --s-some: #a8690c;
+    --s-hidden: #b3261e;
+    color-scheme: light;
+  }
+  .md-content .magic-map { --top: 2.4rem; }  /* on the website: under its header, which stays at the top */
+  .magic-map *, .magic-map *::before, .magic-map *::after { box-sizing: border-box; }
+  .magic-map .wrap { max-width: 1400px; margin: 0 auto; padding-inline: 16px; }
+  .md-content .magic-map .wrap { padding-inline: 0; }
+  .magic-map h1.bm-title { font: 700 26px/1.2 var(--display); letter-spacing: .02em; margin: 0; padding-block: 16px 10px;
+                         color: var(--fg); text-wrap: balance; }
+  .magic-map .bar { position: sticky; top: var(--top); z-index: 3; background: var(--panel);
+                  border-block: 1px solid var(--line); padding-block: 8px; margin-block: 12px 0; }
+  @media (max-height: 420px) { .magic-map .bar { position: static; } }  /* a short window (zoomed in): it scrolls away */
+  .magic-map .bar .wrap { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
+  .md-content .magic-map .bar .wrap { padding-inline: 10px; }
+  .magic-map .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; min-width: 0; max-width: 100%; }
+  .magic-map #level { width: 16rem; }  /* the closed select: its long options do not widen the page (phones) */
+  @media (min-width: 761px) { .magic-map #level { width: 28em; } }  /* room for a level's whole name (2026-11-15) */
+  .magic-map input[type=search], .magic-map select {
+    font: inherit; font-size: 14.5px; padding: 5px 8px; border: 1px solid var(--line); border-radius: 6px;
+    background: var(--bg); color: var(--fg); min-width: 0; max-width: 100%; margin: 0; }
+  .magic-map input[type=search] { flex: 1 1 220px; }
+  .magic-map .count { font-size: 13px; color: var(--muted); }
+  .magic-map button:focus-visible, .magic-map select:focus-visible, .magic-map input:focus-visible {
+    outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* how to read it */
+  .magic-map .howto { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 4px 24px;
+                    background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; }
+  @media (max-width: 900px) { .magic-map .howto { grid-template-columns: minmax(0, 1fr); } }
+  .magic-map .howto h2 { font: 700 12.5px/1.3 var(--body); text-transform: uppercase; letter-spacing: .08em;
+                       color: var(--muted); margin: 0 0 6px; }
+  .magic-map .howto p, .magic-map .howto li { max-width: 76ch; font-size: 14.5px; line-height: 1.45; }
+  .magic-map .howto p { margin: 0 0 6px; }
+  .magic-map .howto ul { margin: 0 0 6px; padding-left: 18px; list-style: disc; }
+  .magic-map .howto li { margin: 0; }
+  .magic-map .levels { font-size: 13.5px; margin: 4px 0 0; padding-left: 24px; list-style: decimal; }
+  .magic-map .levels li { font-size: 13.5px; margin: 0; }
+  .magic-map .kinds { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 2px 0 8px; font-size: 13.5px; }
+  .magic-map .kinds > span { display: inline-flex; align-items: center; gap: 6px; }
+  .magic-map .q-blue { color: #6969ff; font-weight: 600; } .magic-map .q-yellow { color: #c9a400; font-weight: 600; }
+  [data-md-color-scheme="default"] .magic-map .q-blue { color: #3b3bd1; }
+  [data-md-color-scheme="default"] .magic-map .q-yellow { color: #8a6d00; }
+
+  /* at a glance (the pages magic_rare_map.py's GLANCE names): the Filter Levels page's table, one row per kind of
+     item, one column per group of filter levels that treat them the same, each cell a symbol and a word, with a strip
+     for character levels 1-99. The column of the level picked in the bar is marked; a click on a cell picks its
+     level and jumps to that type's bases. */
+  .magic-map h2.part { font: 700 22px/1.2 var(--display); margin: 22px 0 4px; letter-spacing: .02em; color: var(--fg); }
+  .magic-map p.gx { max-width: 90ch; font-size: 14px; color: var(--muted); margin: 0 0 4px; }
+  .magic-map .legend { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 2px 0 8px; font-size: 13.5px; }
+  .magic-map .legend > span { display: inline-flex; align-items: center; gap: 6px; }
+  .magic-map .st { display: inline-flex; align-items: baseline; gap: 5px; color: var(--sc); }
+  .magic-map .st .g { font-size: 13px; width: 1em; text-align: center; flex: none; }
+  .magic-map .s-chat { --sc: var(--s-chat); } .magic-map .s-icon { --sc: var(--s-icon); }
+  .magic-map .s-mixed { --sc: var(--s-mixed); } .magic-map .s-shown { --sc: var(--s-shown); }
+  .magic-map .s-some { --sc: var(--s-some); } .magic-map .s-hidden { --sc: var(--s-hidden); }
+  .magic-map table.gl { width: 100%; min-width: 1040px; table-layout: fixed; border-collapse: collapse; font-size: 14px;
+                      line-height: 1.35; margin: 0; }
+  .magic-map table.gl col.w-item { width: 13em; }
+  .magic-map table.gl th, .magic-map table.gl td { text-align: left; vertical-align: top; padding: 5px 8px; border: 0; }
+  .magic-map table.gl thead th { background: var(--bg); border-bottom: 2px solid var(--line); vertical-align: bottom; }
+  .magic-map table.gl thead .lv { font: 700 16px/1.1 var(--display); color: var(--fg); font-variant-numeric: tabular-nums; }
+  /* hyphens: a long name breaks between syllables, not mid-word ("STRICTN / ESS" on phones and at 200% zoom) */
+  .magic-map table.gl thead .nm { display: block; font-size: 12px; font-weight: 700; text-transform: uppercase; hyphens: auto;
+                                letter-spacing: .05em; color: var(--muted); margin-top: 2px; }
+  .magic-map table.gl thead .hd { display: block; font-size: 12px; color: var(--accent); margin-top: 1px; font-weight: 600; }
+  .magic-map table.gl tr.r td, .magic-map table.gl tr.r th { border-bottom: 1px solid var(--soft); }
+  .magic-map table.gl tr.r th { font-weight: 600; }
+  .magic-map table.gl tr.r.sub th { font-weight: 400; padding-left: 26px; color: var(--muted); }
+  .magic-map table.gl tr.r.sub td { background: color-mix(in srgb, var(--soft) 45%, transparent); }
+  .magic-map table.gl .tog { font: inherit; color: var(--muted); background: none; border: 0; padding: 0;
+                           margin: 0 4px 0 -2px; cursor: pointer; width: 1.1em; }
+  .magic-map table.gl .cnt { font-size: 12px; color: var(--muted); font-weight: 400; margin-left: 4px; }
+  .magic-map table.gl tr.r td.on, .magic-map table.gl thead th.on {  /* the bar's level (sub-rows too) */
+    background: color-mix(in srgb, var(--accent) 13%, transparent); }
+  .magic-map table.gl thead th.on { box-shadow: inset 0 -2px 0 var(--accent); }
+  .magic-map table.gl thead th.on .lv::before { content: "▸"; content: "▸" / ""; margin-right: 4px; }  /* not only a tint */
+  .magic-map table.gl td.c { cursor: pointer; }
+  .magic-map table.gl tr.r td.c:hover { background: var(--soft); }
+  .magic-map table.gl td.c .t { display: block; }
+  .magic-map table.gl .muted { color: var(--muted); }
+  .magic-map .strip { display: flex; height: 6px; margin-top: 5px; border-radius: 2px; overflow: hidden; gap: 1px; }
+  .magic-map .strip + .strip { margin-top: 2px; }
+  /* the strip's runs and the legend's swatches: hiding states hatched, so they don't depend on the color */
+  .magic-map .strip span, .magic-map .sw { background: var(--sc); opacity: .85; }
+  .magic-map .strip span.s-hidden, .magic-map .sw.s-hidden {
+    background: repeating-linear-gradient(135deg, var(--sc) 0 2px, transparent 2px 4px); }
+  .magic-map .strip span.s-some, .magic-map .sw.s-some {
+    background: repeating-linear-gradient(135deg, var(--sc) 0 2px, transparent 2px 7px); }
+  .magic-map .sw { display: inline-block; width: 22px; height: 6px; border-radius: 2px; flex: none; }
+  /* the item column stays while the table scrolls sideways */
+  .magic-map table.gl thead th:first-child, .magic-map table.gl tr.r th { position: sticky; left: 0; z-index: 1;
+                                                                     background: var(--bg); }
+  .magic-map table.gl tr.r.sub th { background: color-mix(in srgb, var(--soft) 45%, var(--bg)); }
+  .magic-map section.cat { scroll-margin-top: calc(var(--top) + var(--bar, 0px) + 8px); }  /* a jump lands below the bar */
+  @media (max-width: 760px) {
+    .magic-map table.gl { min-width: 900px; }
+    .magic-map table.gl col.w-item { width: 9.5em; }
+    .magic-map table.gl thead .nm { letter-spacing: 0; font-size: 11.5px; text-transform: none; }
+  }
+
+  /* the tables */
+  .magic-map section.cat { margin-top: 22px; }
+  .magic-map h3.cat { font: 600 19px/1.25 var(--display); margin: 0 0 4px; letter-spacing: 0; color: var(--fg); }
+  /* Every table of the page has the same columns (Levels, Shows, Icon, Chat, then each condition the page uses) at
+     the same widths, so they line up from one item type to the next; Skills takes the room that is left
+     (or an empty last column does), 10em at least (until 2026-11-15 nothing kept it from 0 px, which stacked its text
+     one letter per line at 761-1100 px and at 200% zoom). A window narrower than that scrolls the table sideways; up
+     to 1100 px wide each row is a card, as on phones. */
+  .magic-map .tw { overflow-x: auto; }
+  .magic-map table.bm { width: max(100%, 85em); table-layout: fixed; border-collapse: collapse; font-size: 14px; line-height: 1.4;
+                      margin: 0; }
+  .magic-map table.bm col.w-lv { width: 8.5em; } .magic-map table.bm col.w-shows { width: 16.5em; }
+  .magic-map table.bm col.w-ic { width: 3.5em; } .magic-map table.bm col.w-ch { width: 13em; }
+  .magic-map table.bm col.w-eth { width: 4.5em; } .magic-map table.bm col.w-clvl { width: 8.5em; }
+  .magic-map table.bm col.w-class { width: 9em; } .magic-map table.bm col.w-ilvl { width: 5.5em; }
+  .magic-map table.bm col.w-craft { width: 6em; } .magic-map table.bm col.w-other { width: 14em; }
+  .magic-map table.bm th, .magic-map table.bm td { text-align: left; vertical-align: top; padding: 4px 8px; border: 0;
+                                               overflow-wrap: anywhere; }
+  .magic-map table.bm thead th { font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
+                               color: var(--muted); border-bottom: 2px solid var(--line); padding-block: 6px;
+                               vertical-align: bottom; overflow-wrap: normal; }
+  .magic-map tr.ghead th { padding: 14px 8px 4px; border-bottom: 1px solid var(--line); font-weight: 400;
+                         background: none; text-transform: none; letter-spacing: 0; font-size: 14px; }
+  .magic-map tr.ghead .nm { font-weight: 700; font-size: 15px; }
+  .magic-map tr.ghead .code { color: var(--muted); font-size: 12.5px; font-weight: 400; }
+  .magic-map tr.ghead .sub { display: block; color: var(--muted); font-size: 12.5px; margin-top: 1px; }
+  .magic-map tr.row td { border-bottom: 1px solid var(--soft); vertical-align: middle; }  /* text level with labels */
+  .magic-map tr.row:hover td { background: var(--soft); }
+  .magic-map td.lv { color: var(--muted); font-weight: 600; font-variant-numeric: tabular-nums; overflow-wrap: normal; }
+  .magic-map td.shows .ground { max-width: none; }
+  .magic-map .anyw { color: var(--muted); opacity: .6; }
+  .magic-map tr.none td { color: var(--muted); font-size: 13px; font-style: italic; }
+  .magic-map .pill { display: inline-block; font-size: 11.5px; font-weight: 700; letter-spacing: .05em;
+                   text-transform: uppercase; padding: 1px 7px; border-radius: 999px; border: 1px solid var(--kc);
+                   color: var(--kc); white-space: nowrap; line-height: 1.45; }
+  .magic-map .k-notify { --kc: var(--k-notify); }
+  .magic-map .k-show { --kc: var(--k-show); } .magic-map .k-hide { --kc: var(--k-hide); }
+  .magic-map .text.clamp { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .magic-map .more { font: inherit; font-size: 12.5px; color: var(--accent); background: none; border: 0; padding: 0;
+                   margin: 0; cursor: pointer; }
+
+  /* the in-game look */
+  .magic-map .ground { display: inline-block; max-width: 100%; text-align: center; border-radius: 5px; padding: 2px 5px;
+                     background: radial-gradient(ellipse at 50% 45%, var(--ground-1) 0%, var(--ground-2) 55%, var(--ground-3) 100%); }
+  .magic-map .d2label { display: inline-block; font-family: var(--label); font-size: 14px; line-height: 1.12;
+                      text-align: center; white-space: pre; background: rgba(0, 0, 0, .74); padding: 2px 6px 0;
+                      vertical-align: middle; max-width: 100%; }
+  /* A backslash is drawn as the slash mirrored: the web fonts space "\" wide, the game draws it like "/" */
+  .magic-map .d2label .bs { display: inline-block; transform: scaleX(-1); }
+  .magic-map .c-WHITE { color: #e8e8e8; } .magic-map .c-RED { color: #ff4d4d; } .magic-map .c-GREEN { color: #00ff00; }
+  .magic-map .c-BLUE { color: #6969ff; } .magic-map .c-GOLD { color: #c7b377; } .magic-map .c-GRAY { color: #696969; }
+  .magic-map .c-BLACK { color: #000000; } .magic-map .c-TAN { color: #d0c27d; } .magic-map .c-ORANGE { color: #ffa800; }
+  .magic-map .c-YELLOW { color: #ffff64; } .magic-map .c-PURPLE { color: #ae00ff; }
+  .magic-map .c-DARK_GREEN { color: #008000; } .magic-map .c-CORAL { color: #ff7f6e; } .magic-map .c-SAGE { color: #a3b88f; }
+  .magic-map .c-TEAL { color: #3fb5b5; } .magic-map .c-LIGHT_GRAY { color: #a8a8a8; }
+  .magic-map .icon { position: relative; display: inline-block; width: 16px; height: 16px; background: #0c0b09;
+                   border-radius: 2px; vertical-align: middle; }
+  .magic-map .icon span { position: absolute; }
+  .magic-map .chat { display: inline-flex; color: var(--muted); vertical-align: middle; cursor: help; }
+  .magic-map .chat svg { width: 22px; height: 22px; }
+  .magic-map .sound { white-space: nowrap; font-size: 12.5px; color: var(--muted); border-bottom: 1px dotted var(--muted);
+                    cursor: help; margin-left: 4px; }
+  .magic-map p.empty { color: var(--muted); text-align: center; padding: 40px 0; margin: 0; }
+  .magic-map footer { color: var(--muted); font-size: 13px; padding-block: 24px; }
+
+  .magic-map [hidden] { display: none !important; }
+
+  /* phones, tablets and 200% zoom: each row a card (levels, what happens and its icons on top, then the conditions
+     that are not "any") */
+  @media (max-width: 1100px) {
+    .magic-map table.bm, .magic-map table.bm tbody, .magic-map table.bm tr, .magic-map table.bm th,
+    .magic-map table.bm td { display: block; width: auto; }
+    .magic-map table.bm thead { display: none; }
+    .magic-map table.bm tr.ghead th { padding: 12px 0 4px; }
+    .magic-map table.bm tr.row { display: flex; flex-wrap: wrap; align-items: center; gap: 3px 12px; padding: 7px 0;
+                               border-bottom: 1px solid var(--soft); }
+    .magic-map table.bm tr.row td { display: inline-block; border: 0; padding: 0; min-width: 0; white-space: normal; }
+    .magic-map table.bm tr.row:hover td { background: none; }
+    .magic-map table.bm tr.row td.cond::before { content: attr(data-label) ": "; color: var(--muted); }
+    /* a value that says what it is needs no label (2026-11-15, audit LFB-22: "Eth: eth", "ED: under 15% ED") */
+    .magic-map table.bm tr.row td.cond:is(.c-eth, .c-ed, .c-sockets, .c-clvl, .c-skills, .c-other)::before {
+      content: none; }
+    .magic-map table.bm tr.row td.cond .text:not(.clamp) { display: inline; }
+    .magic-map table.bm tr.row td.c-skills, .magic-map table.bm tr.row td.c-other { flex-basis: 100%; }
+    .magic-map table.bm tr.row td.any, .magic-map table.bm tr.row td.nu, .magic-map table.bm tr.row td.fill,
+    .magic-map table.bm tr.row td.ic:empty, .magic-map table.bm tr.row td.ch:empty { display: none; }
+    .magic-map table.bm colgroup { display: none; }
+    .magic-map table.bm tr.none td { padding: 4px 0; }
+  }
+
+  /* How to read this page: folded under the bar, so the bar is on the first screen (2026-11-15, audit LFB-02) */
+  .md-typeset .magic-map details.fold, .magic-map details.fold { border: 1px solid var(--line); border-radius: 8px; box-shadow: none;
+    background: var(--panel); margin: 10px auto 0; padding: 0; font-size: inherit; color: inherit; overflow: visible; }
+  .md-typeset .magic-map details.fold > summary, .magic-map details.fold > summary { list-style: none; cursor: pointer;
+    padding: 8px 14px; font-weight: 700; color: var(--fg); background: none; border: 0; margin: 0; min-height: 0;
+    position: static; display: block; }
+  .magic-map details.fold > summary::-webkit-details-marker { display: none; }
+  .md-typeset .magic-map details.fold > summary::before, .magic-map details.fold > summary::before { content: "\25B8  ";
+    position: static; width: auto; height: auto; background: none; -webkit-mask-image: none; mask-image: none;
+    transform: none; color: var(--accent); }
+  .md-typeset .magic-map details.fold[open] > summary::before, .magic-map details.fold[open] > summary::before { content: "\25BE  "; }
+  .md-typeset .magic-map details.fold > summary::after { display: none; content: none; }
+  .magic-map details.fold > .fold-body { padding: 0 14px 12px; }
+  /* the copy of a table's column headings that stays in view (the script at the end) */
+  .magic-map .fhead { position: fixed; z-index: 2; overflow: hidden; background: var(--bg); pointer-events: none;
+                    box-shadow: 0 6px 8px -6px rgba(0, 0, 0, .5); }
+  .magic-map .fhead table { margin: 0; }
+  /* a drop sound's play button */
+  .magic-map button.play { font: inherit; font-size: 9px; line-height: 1; width: 18px; height: 18px; padding: 0;
+    border: 1px solid var(--line); border-radius: 50%; background: transparent; color: var(--accent); cursor: pointer;
+    flex: none; display: inline-flex; align-items: center; justify-content: center; vertical-align: middle;
+    margin-right: 4px; }
+  .magic-map button.play:hover, .magic-map button.play.on { border-color: var(--accent); background: var(--accent); color: var(--bg); }
+  .magic-map button.play:disabled { opacity: .4; cursor: default; }
+  .magic-map .snd { display: inline-flex; align-items: center; }
+  .magic-map .swipe { display: none; font-size: 13px; color: var(--muted); margin: 0 0 4px; }
+  @media (max-width: 1040px) { .magic-map .swipe { display: block; } }
+  .magic-map a.skip { position: absolute; left: -9999px; }
+  .magic-map a.skip:focus { position: static; display: inline-block; margin: 0 0 8px; }
+  /* touch screens: the small toggles get room for a thumb (LFB-17) */
+  @media (pointer: coarse) {
+    .magic-map table.gl .tog { min-width: 32px; min-height: 32px; }
+    .magic-map button.more { min-height: 32px; padding-inline: 6px; }
+  }

@@ -1,0 +1,2272 @@
+
+(function () {
+  "use strict";
+  /* calc-data:start */
+  const DATA = {"weapons":[{"code":"hax","name":"Hand Axe","tier":"N","cat":"axe1","lvl":0,"str":0,"dex":0,"wsm":0,"sb":100,"db":0,"wc":"1HS","it":["1han","axe","mele"],"d1":[3,6],"eth":1},{"code":"axe","name":"Axe","tier":"N","cat":"axe1","lvl":0,"str":32,"dex":0,"wsm":10,"sb":100,"db":0,"wc":"1HS","it":["1han","axe","mele"],"d1":[4,11],"eth":1},{"code":"2ax","name":"Double Axe","tier":"N","cat":"axe1","lvl":0,"str":43,"dex":0,"wsm":10,"sb":100,"db":0,"wc":"1HS","it":["1han","axe","mele"],"d1":[5,13],"eth":1},{"code":"mpi","name":"Military Pick","tier":"N","cat":"axe1","lvl":0,"str":49,"dex":33,"wsm":-10,"sb":100,"db":0,"wc":"1HS","it":["1han","axe","mele"],"d1":[7,11],"eth":1},{"code":"wax","name":"War Axe","tier":"N","cat":"axe1","lvl":0,"str":67,"dex":0,"wsm":0,"sb":100,"db":0,"wc":"1HS","it":["1han","axe","mele"],"d1":[12,20],"eth":1},{"code":"lax","name":"Large Axe","tier":"N","cat":"axe2","lvl":0,"str":35,"dex":0,"wsm":-10,"sb":110,"db":0,"wc":"STF","it":["2han","axe","mele"],"d2":[6,13],"wc2":"STF","eth":1},{"code":"bax","name":"Broad Axe","tier":"N","cat":"axe2","lvl":0,"str":48,"dex":0,"wsm":0,"sb":110,"db":0,"wc":"STF","it":["2han","axe","mele"],"d2":[10,18],"wc2":"STF","eth":1},{"code":"btx","name":"Battle Axe","tier":"N","cat":"axe2","lvl":0,"str":54,"dex":0,"wsm":10,"sb":110,"db":0,"wc":"STF","it":["2han","axe","mele"],"d2":[12,32],"wc2":"STF","eth":1},{"code":"gax","name":"Great Axe","tier":"N","cat":"axe2","lvl":0,"str":63,"dex":39,"wsm":-10,"sb":110,"db":0,"wc":"STF","it":["2han","axe","mele"],"d2":[9,30],"wc2":"STF","eth":1},{"code":"gix","name":"Giant Axe","tier":"N","cat":"axe2","lvl":0,"str":70,"dex":0,"wsm":10,"sb":110,"db":0,"wc":"STF","it":["2han","axe","mele"],"d2":[22,45],"wc2":"STF","eth":1},{"code":"wnd","name":"Wand","tier":"N","cat":"wand","lvl":0,"str":0,"dex":0,"wsm":0,"sb":100,"db":0,"wc":"1HS","it":["1han","blun","mele","wand","rod"],"d1":[2,4],"eth":1},{"code":"ywn","name":"Yew Wand","tier":"N","cat":"wand","lvl":0,"str":0,"dex":0,"wsm":10,"sb":100,"db":0,"wc":"1HS","it":["1han","blun","mele","wand","rod"],"d1":[2,8],"eth":1},{"code":"bwn","name":"Bone Wand","tier":"N","cat":"wand","lvl":0,"str":0,"dex":0,"wsm":-20,"sb":100,"db":0,"wc":"1HS","it":["1han","blun","mele","wand","rod"],"d1":[3,7],"eth":1},{"code":"gwn","name":"Grim Wand","tier":"N","cat":"wand","lvl":0,"str":0,"dex":0,"wsm":0,"sb":100,"db":0,"wc":"1HS","it":["1han","blun","mele","wand","rod"],"d1":[5,11],"eth":1},{"code":"clb","name":"Club","tier":"N","cat":"club","lvl":0,"str":0,"dex":0,"wsm":-10,"sb":100,"db":0,"wc":"1HS","it":["1han","blun","mele","club"],"d1":[1,6],"eth":1},{"code":"scp","name":"Scepter","tier":"N","cat":"scep","lvl":0,"str":25,"dex":0,"wsm":0,"sb":100,"db":0,"wc":"1HS","it":["1han","blun","mele","scep","rod"],"d1":[6,11],"eth":1},{"code":"gsc","name":"Grand Scepter","tier":"N","cat":"scep","lvl":0,"str":37,"dex":0,"wsm":10,"sb":100,"db":0,"wc":"1HS","it":["1han","blun","mele","scep","rod"],"d1":[8,18],"eth":1},{"code":"wsp","name":"War Scepter","tier":"N","cat":"scep","lvl":0,"str":55,"dex":0,"wsm":-10,"sb":100,"db":0,"wc":"1HS","it":["1han","blun","mele","scep","rod"],"d1":[12,19],"eth":1},{"code":"spc","name":"Spiked Club","tier":"N","cat":"club","lvl":0,"str":0,"dex":0,"wsm":0,"sb":100,"db":0,"wc":"1HS","it":["1han","blun","mele","club"],"d1":[5,8],"eth":1},{"code":"mac","name":"Mace","tier":"N","cat":"mace","lvl":0,"str":27,"dex":0,"wsm":0,"sb":100,"db":0,"wc":"1HS","it":["1han","blun","mele","mace"],"d1":[3,10],"eth":1},{"code":"mst","name":"Morning Star","tier":"N","cat":"mace","lvl":0,"str":36,"dex":0,"wsm":10,"sb":100,"db":0,"wc":"1HS","it":["1han","blun","mele","mace"],"d1":[7,16],"eth":1},{"code":"fla","name":"Flail","tier":"N","cat":"mace","lvl":0,"str":41,"dex":35,"wsm":-10,"sb":100,"db":0,"wc":"1HS","it":["1han","blun","mele","mace"],"d1":[1,24],"eth":1},{"code":"whm","name":"War Hammer","tier":"N","cat":"ham1","lvl":0,"str":53,"dex":0,"wsm":20,"sb":110,"db":0,"wc":"1HS","it":["1han","blun","mele","hamm"],"d1":[22,32],"eth":1},{"code":"mau","name":"Maul","tier":"N","cat":"ham2","lvl":0,"str":69,"dex":0,"wsm":10,"sb":110,"db":0,"wc":"STF","it":["2han","blun","mele","hamm"],"d2":[30,43],"wc2":"STF","eth":1},{"code":"gma","name":"Great Maul","tier":"N","cat":"ham2","lvl":0,"str":99,"dex":0,"wsm":20,"sb":110,"db":0,"wc":"STF","it":["2han","blun","mele","hamm"],"d2":[38,58],"wc2":"STF","eth":1},{"code":"ssd","name":"Short Sword","tier":"N","cat":"swd1","lvl":0,"str":0,"dex":0,"wsm":0,"sb":75,"db":75,"wc":"1HS","it":["1han","swor","mele"],"d1":[2,7],"eth":1},{"code":"scm","name":"Scimitar","tier":"N","cat":"swd1","lvl":0,"str":0,"dex":21,"wsm":-20,"sb":75,"db":75,"wc":"1HS","it":["1han","swor","mele"],"d1":[2,6],"eth":1},{"code":"sbr","name":"Sabre","tier":"N","cat":"swd1","lvl":0,"str":25,"dex":25,"wsm":-10,"sb":75,"db":75,"wc":"1HS","it":["1han","swor","mele"],"d1":[3,8],"eth":1},{"code":"flc","name":"Falchion","tier":"N","cat":"swd1","lvl":0,"str":33,"dex":0,"wsm":20,"sb":75,"db":75,"wc":"1HS","it":["1han","swor","mele"],"d1":[9,17],"eth":1},{"code":"crs","name":"Crystal Sword","tier":"N","cat":"swd1","lvl":0,"str":43,"dex":0,"wsm":0,"sb":75,"db":75,"wc":"1HS","it":["1han","swor","mele"],"d1":[5,15],"eth":1},{"code":"bsd","name":"Broad Sword","tier":"N","cat":"swd1","lvl":0,"str":48,"dex":0,"wsm":0,"sb":75,"db":75,"wc":"1HS","it":["1han","swor","mele"],"d1":[7,14],"eth":1},{"code":"lsd","name":"Long Sword","tier":"N","cat":"swd1","lvl":0,"str":55,"dex":39,"wsm":-10,"sb":75,"db":75,"wc":"1HS","it":["1han","swor","mele"],"d1":[3,19],"eth":1},{"code":"wsd","name":"War Sword","tier":"N","cat":"swd1","lvl":0,"str":71,"dex":45,"wsm":0,"sb":75,"db":75,"wc":"1HS","it":["1han","swor","mele"],"d1":[8,20],"eth":1},{"code":"2hs","name":"Two-Handed Sword","tier":"N","cat":"swd2","lvl":0,"str":35,"dex":27,"wsm":0,"sb":110,"db":0,"wc":"1HS","it":["2han","swor","mele","2hsw"],"d1":[2,9],"d2":[8,17],"wc2":"2HS","eth":1},{"code":"clm","name":"Claymore","tier":"N","cat":"swd2","lvl":0,"str":47,"dex":0,"wsm":10,"sb":110,"db":0,"wc":"1HS","it":["2han","swor","mele","2hsw"],"d1":[5,12],"d2":[13,30],"wc2":"2HS","eth":1},{"code":"gis","name":"Giant Sword","tier":"N","cat":"swd2","lvl":0,"str":56,"dex":34,"wsm":0,"sb":110,"db":0,"wc":"1HS","it":["2han","swor","mele","2hsw"],"d1":[3,16],"d2":[9,28],"wc2":"2HS","eth":1},{"code":"bsw","name":"Bastard Sword","tier":"N","cat":"swd2","lvl":0,"str":62,"dex":0,"wsm":10,"sb":110,"db":0,"wc":"1HS","it":["2han","swor","mele","2hsw"],"d1":[7,19],"d2":[20,28],"wc2":"2HS","eth":1},{"code":"flb","name":"Flamberge","tier":"N","cat":"swd2","lvl":0,"str":70,"dex":49,"wsm":-10,"sb":110,"db":0,"wc":"1HS","it":["2han","swor","mele","2hsw"],"d1":[9,15],"d2":[13,26],"wc2":"2HS","eth":1},{"code":"gsd","name":"Great Sword","tier":"N","cat":"swd2","lvl":0,"str":100,"dex":60,"wsm":10,"sb":110,"db":0,"wc":"1HS","it":["2han","swor","mele","2hsw"],"d1":[12,20],"d2":[25,42],"wc2":"2HS","eth":1},{"code":"dgr","name":"Dagger","tier":"N","cat":"dag","lvl":0,"str":0,"dex":0,"wsm":-20,"sb":75,"db":75,"wc":"1HT","it":["1han","asm","knif","mele"],"d1":[1,4],"eth":1},{"code":"dir","name":"Dirk","tier":"N","cat":"dag","lvl":0,"str":0,"dex":25,"wsm":0,"sb":75,"db":75,"wc":"1HT","it":["1han","asm","knif","mele"],"d1":[3,9],"eth":1},{"code":"kri","name":"Kris","tier":"N","cat":"dag","lvl":0,"str":0,"dex":45,"wsm":-20,"sb":75,"db":75,"wc":"1HT","it":["1han","asm","knif","mele"],"d1":[2,11],"eth":1},{"code":"bld","name":"Blade","tier":"N","cat":"dag","lvl":0,"str":35,"dex":51,"wsm":-10,"sb":75,"db":75,"wc":"1HT","it":["1han","asm","knif","mele"],"d1":[4,15],"eth":1},{"code":"tkf","name":"Throwing Knife","tier":"N","cat":"tkni","lvl":0,"str":0,"dex":21,"wsm":0,"sb":75,"db":75,"wc":"1HT","it":["1han","thro","asm","knif","mele","tkni"],"d1":[2,3],"dt":[4,5],"eth":1},{"code":"tax","name":"Throwing Axe","tier":"N","cat":"taxe","lvl":0,"str":0,"dex":40,"wsm":10,"sb":75,"db":75,"wc":"1HS","it":["1han","thro","axe","mele","taxe"],"d1":[4,7],"dt":[7,8],"eth":1},{"code":"bkf","name":"Balanced Knife","tier":"N","cat":"tkni","lvl":0,"str":0,"dex":51,"wsm":-20,"sb":75,"db":75,"wc":"1HT","it":["1han","thro","asm","knif","mele","tkni"],"d1":[1,8],"dt":[6,11],"eth":1},{"code":"bal","name":"Balanced Axe","tier":"N","cat":"taxe","lvl":0,"str":0,"dex":57,"wsm":-10,"sb":75,"db":75,"wc":"1HS","it":["1han","thro","axe","mele","taxe"],"d1":[5,10],"dt":[12,15],"eth":1},{"code":"jav","name":"Javelin","tier":"N","cat":"jave","lvl":0,"str":0,"dex":0,"wsm":-10,"sb":75,"db":75,"wc":"1HT","it":["1han","thro","spea","jave","mele"],"d1":[1,5],"dt":[6,10],"eth":1},{"code":"pil","name":"Pilum","tier":"N","cat":"jave","lvl":0,"str":0,"dex":45,"wsm":0,"sb":75,"db":75,"wc":"1HT","it":["1han","thro","spea","jave","mele"],"d1":[4,9],"dt":[7,20],"eth":1},{"code":"ssp","name":"Short Spear","tier":"N","cat":"jave","lvl":0,"str":40,"dex":40,"wsm":10,"sb":75,"db":75,"wc":"1HT","it":["1han","thro","spea","jave","mele"],"d1":[2,13],"dt":[10,22],"eth":1},{"code":"glv","name":"Glaive","tier":"N","cat":"jave","lvl":0,"str":52,"dex":35,"wsm":20,"sb":75,"db":75,"wc":"1HT","it":["1han","thro","spea","jave","mele"],"d1":[5,17],"dt":[16,22],"eth":1},{"code":"tsp","name":"Throwing Spear","tier":"N","cat":"jave","lvl":0,"str":0,"dex":65,"wsm":-10,"sb":75,"db":75,"wc":"1HT","it":["1han","thro","spea","jave","mele"],"d1":[5,15],"dt":[12,30],"eth":1},{"code":"spr","name":"Spear","tier":"N","cat":"spea","lvl":0,"str":0,"dex":20,"wsm":-10,"sb":75,"db":75,"wc":"2HT","it":["2han","spea","mele"],"d2":[3,15],"wc2":"2HT","eth":1},{"code":"tri","name":"Trident","tier":"N","cat":"spea","lvl":0,"str":38,"dex":24,"wsm":0,"sb":75,"db":75,"wc":"2HT","it":["2han","spea","mele"],"d2":[9,15],"wc2":"2HT","eth":1},{"code":"brn","name":"Brandistock","tier":"N","cat":"spea","lvl":0,"str":40,"dex":50,"wsm":-20,"sb":75,"db":75,"wc":"2HT","it":["2han","spea","mele"],"d2":[7,17],"wc2":"2HT","eth":1},{"code":"spt","name":"Spetum","tier":"N","cat":"spea","lvl":0,"str":54,"dex":35,"wsm":0,"sb":75,"db":75,"wc":"2HT","it":["2han","spea","mele"],"d2":[15,23],"wc2":"2HT","eth":1},{"code":"pik","name":"Pike","tier":"N","cat":"spea","lvl":0,"str":60,"dex":45,"wsm":20,"sb":75,"db":75,"wc":"2HT","it":["2han","spea","mele"],"d2":[14,63],"wc2":"2HT","eth":1},{"code":"bar","name":"Bardiche","tier":"N","cat":"pole","lvl":0,"str":40,"dex":0,"wsm":10,"sb":75,"db":75,"wc":"STF","it":["2han","pole","mele"],"d2":[1,27],"wc2":"STF","eth":1},{"code":"vou","name":"Voulge","tier":"N","cat":"pole","lvl":0,"str":50,"dex":0,"wsm":0,"sb":75,"db":75,"wc":"STF","it":["2han","pole","mele"],"d2":[6,21],"wc2":"STF","eth":1},{"code":"scy","name":"Scythe","tier":"N","cat":"pole","lvl":0,"str":41,"dex":41,"wsm":-10,"sb":75,"db":75,"wc":"STF","it":["2han","pole","mele"],"d2":[8,20],"wc2":"STF","eth":1},{"code":"pax","name":"Poleaxe","tier":"N","cat":"pole","lvl":0,"str":62,"dex":0,"wsm":10,"sb":75,"db":75,"wc":"STF","it":["2han","pole","mele"],"d2":[18,39],"wc2":"STF","eth":1},{"code":"hal","name":"Halberd","tier":"N","cat":"pole","lvl":0,"str":75,"dex":47,"wsm":0,"sb":75,"db":75,"wc":"STF","it":["2han","pole","mele"],"d2":[12,45],"wc2":"STF","eth":1},{"code":"wsc","name":"War Scythe","tier":"N","cat":"pole","lvl":0,"str":80,"dex":80,"wsm":-10,"sb":75,"db":75,"wc":"STF","it":["2han","pole","mele"],"d2":[15,36],"wc2":"STF","eth":1},{"code":"sst","name":"Short Staff","tier":"N","cat":"staf","lvl":0,"str":0,"dex":0,"wsm":-10,"sb":110,"db":0,"wc":"STF","it":["2han","blun","staf","mele","rod"],"d2":[1,5],"wc2":"STF","eth":1},{"code":"lst","name":"Long Staff","tier":"N","cat":"staf","lvl":0,"str":0,"dex":0,"wsm":0,"sb":110,"db":0,"wc":"STF","it":["2han","blun","staf","mele","rod"],"d2":[2,8],"wc2":"STF","eth":1},{"code":"cst","name":"Gnarled Staff","tier":"N","cat":"staf","lvl":0,"str":0,"dex":0,"wsm":10,"sb":110,"db":0,"wc":"STF","it":["2han","blun","staf","mele","rod"],"d2":[4,12],"wc2":"STF","eth":1},{"code":"bst","name":"Battle Staff","tier":"N","cat":"staf","lvl":0,"str":0,"dex":0,"wsm":0,"sb":110,"db":0,"wc":"STF","it":["2han","blun","staf","mele","rod"],"d2":[6,13],"wc2":"STF","eth":1},{"code":"wst","name":"War Staff","tier":"N","cat":"staf","lvl":0,"str":0,"dex":0,"wsm":20,"sb":110,"db":0,"wc":"STF","it":["2han","blun","staf","mele","rod"],"d2":[12,28],"wc2":"STF","eth":1},{"code":"sbw","name":"Short Bow","tier":"N","cat":"bow","lvl":0,"str":0,"dex":15,"wsm":5,"sb":0,"db":50,"wc":"BOW","it":["miss","bow"],"d2":[1,4],"wc2":"BOW"},{"code":"hbw","name":"Hunter's Bow","tier":"N","cat":"bow","lvl":0,"str":0,"dex":28,"wsm":-10,"sb":0,"db":50,"wc":"BOW","it":["miss","bow"],"d2":[2,6],"wc2":"BOW"},{"code":"lbw","name":"Long Bow","tier":"N","cat":"bow","lvl":0,"str":22,"dex":19,"wsm":0,"sb":0,"db":50,"wc":"BOW","it":["miss","bow"],"d2":[5,10],"wc2":"BOW"},{"code":"cbw","name":"Composite Bow","tier":"N","cat":"bow","lvl":0,"str":25,"dex":35,"wsm":-10,"sb":0,"db":50,"wc":"BOW","it":["miss","bow"],"d2":[5,9],"wc2":"BOW"},{"code":"sbb","name":"Short Battle Bow","tier":"N","cat":"bow","lvl":0,"str":30,"dex":40,"wsm":0,"sb":0,"db":50,"wc":"BOW","it":["miss","bow"],"d2":[6,12],"wc2":"BOW"},{"code":"lbb","name":"Long Battle Bow","tier":"N","cat":"bow","lvl":0,"str":40,"dex":50,"wsm":10,"sb":0,"db":50,"wc":"BOW","it":["miss","bow"],"d2":[7,18],"wc2":"BOW"},{"code":"swb","name":"Short War Bow","tier":"N","cat":"bow","lvl":0,"str":35,"dex":55,"wsm":0,"sb":0,"db":50,"wc":"BOW","it":["miss","bow"],"d2":[6,14],"wc2":"BOW"},{"code":"lwb","name":"Long War Bow","tier":"N","cat":"bow","lvl":0,"str":50,"dex":65,"wsm":10,"sb":0,"db":50,"wc":"BOW","it":["miss","bow"],"d2":[3,23],"wc2":"BOW"},{"code":"lxb","name":"Light Crossbow","tier":"N","cat":"xbow","lvl":0,"str":21,"dex":27,"wsm":-10,"sb":0,"db":50,"wc":"XBW","it":["miss","xbow"],"d2":[8,11],"wc2":"XBW"},{"code":"mxb","name":"Crossbow","tier":"N","cat":"xbow","lvl":0,"str":40,"dex":33,"wsm":0,"sb":0,"db":50,"wc":"XBW","it":["miss","xbow"],"d2":[11,19],"wc2":"XBW"},{"code":"hxb","name":"Heavy Crossbow","tier":"N","cat":"xbow","lvl":0,"str":60,"dex":40,"wsm":10,"sb":0,"db":50,"wc":"XBW","it":["miss","xbow"],"d2":[20,33],"wc2":"XBW"},{"code":"rxb","name":"Repeating Crossbow","tier":"N","cat":"xbow","lvl":0,"str":40,"dex":50,"wsm":-40,"sb":0,"db":50,"wc":"XBW","it":["miss","xbow"],"d2":[9,18],"wc2":"XBW"},{"code":"9ha","name":"Hatchet","tier":"X","cat":"axe1","lvl":19,"str":25,"dex":25,"wsm":0,"sb":100,"db":0,"wc":"1HS","it":["1han","axe","mele"],"d1":[15,30],"eth":1},{"code":"9ax","name":"Cleaver","tier":"X","cat":"axe1","lvl":22,"str":68,"dex":0,"wsm":10,"sb":100,"db":0,"wc":"1HS","it":["1han","axe","mele"],"d1":[14,47],"eth":1},{"code":"92a","name":"Twin Axe","tier":"X","cat":"axe1","lvl":25,"str":85,"dex":0,"wsm":10,"sb":100,"db":0,"wc":"1HS","it":["1han","axe","mele"],"d1":[18,54],"eth":1},{"code":"9mp","name":"Crowbill","tier":"X","cat":"axe1","lvl":25,"str":94,"dex":70,"wsm":-10,"sb":100,"db":0,"wc":"1HS","it":["1han","axe","mele"],"d1":[21,48],"eth":1},{"code":"9wa","name":"Naga","tier":"X","cat":"axe1","lvl":25,"str":121,"dex":0,"wsm":0,"sb":100,"db":0,"wc":"1HS","it":["1han","axe","mele"],"d1":[23,64],"eth":1},{"code":"9la","name":"Military Axe","tier":"X","cat":"axe2","lvl":22,"str":73,"dex":0,"wsm":-10,"sb":110,"db":0,"wc":"STF","it":["2han","axe","mele"],"d2":[21,61],"wc2":"STF","eth":1},{"code":"9ba","name":"Bearded Axe","tier":"X","cat":"axe2","lvl":25,"str":92,"dex":0,"wsm":0,"sb":110,"db":0,"wc":"STF","it":["2han","axe","mele"],"d2":[30,70],"wc2":"STF","eth":1},{"code":"9bt","name":"Tabar","tier":"X","cat":"axe2","lvl":25,"str":101,"dex":0,"wsm":10,"sb":110,"db":0,"wc":"STF","it":["2han","axe","mele"],"d2":[35,99],"wc2":"STF","eth":1},{"code":"9ga","name":"Gothic Axe","tier":"X","cat":"axe2","lvl":25,"str":115,"dex":79,"wsm":-10,"sb":110,"db":0,"wc":"STF","it":["2han","axe","mele"],"d2":[23,100],"wc2":"STF","eth":1},{"code":"9gi","name":"Ancient Axe","tier":"X","cat":"axe2","lvl":25,"str":125,"dex":0,"wsm":10,"sb":110,"db":0,"wc":"STF","it":["2han","axe","mele"],"d2":[62,122],"wc2":"STF","eth":1},{"code":"9wn","name":"Burnt Wand","tier":"X","cat":"wand","lvl":19,"str":25,"dex":0,"wsm":0,"sb":100,"db":0,"wc":"1HS","it":["1han","blun","mele","wand","rod"],"d1":[8,18],"eth":1},{"code":"9yw","name":"Petrified Wand","tier":"X","cat":"wand","lvl":25,"str":25,"dex":0,"wsm":10,"sb":100,"db":0,"wc":"1HS","it":["1han","blun","mele","wand","rod"],"d1":[8,24],"eth":1},{"code":"9bw","name":"Tomb Wand","tier":"X","cat":"wand","lvl":25,"str":25,"dex":0,"wsm":-20,"sb":100,"db":0,"wc":"1HS","it":["1han","blun","mele","wand","rod"],"d1":[10,22],"eth":1},{"code":"9gw","name":"Grave Wand","tier":"X","cat":"wand","lvl":25,"str":25,"dex":0,"wsm":0,"sb":100,"db":0,"wc":"1HS","it":["1han","blun","mele","wand","rod"],"d1":[13,29],"eth":1},{"code":"9cl","name":"Cudgel","tier":"X","cat":"club","lvl":18,"str":25,"dex":0,"wsm":-10,"sb":100,"db":0,"wc":"1HS","it":["1han","blun","mele","club"],"d1":[10,30],"eth":1},{"code":"9sc","name":"Rune Scepter","tier":"X","cat":"scep","lvl":19,"str":58,"dex":0,"wsm":0,"sb":100,"db":0,"wc":"1HS","it":["1han","blun","mele","scep","rod"],"d1":[18,35],"eth":1},{"code":"9qs","name":"Holy Water Sprinkler","tier":"X","cat":"scep","lvl":25,"str":76,"dex":0,"wsm":10,"sb":100,"db":0,"wc":"1HS","it":["1han","blun","mele","scep","rod"],"d1":[20,52],"eth":1},{"code":"9ws","name":"Divine Scepter","tier":"X","cat":"scep","lvl":25,"str":103,"dex":0,"wsm":-10,"sb":100,"db":0,"wc":"1HS","it":["1han","blun","mele","scep","rod"],"d1":[24,46],"eth":1},{"code":"9sp","name":"Barbed Club","tier":"X","cat":"club","lvl":20,"str":30,"dex":0,"wsm":0,"sb":100,"db":0,"wc":"1HS","it":["1han","blun","mele","club"],"d1":[18,36],"eth":1},{"code":"9ma","name":"Flanged Mace","tier":"X","cat":"mace","lvl":23,"str":61,"dex":0,"wsm":0,"sb":100,"db":0,"wc":"1HS","it":["1han","blun","mele","mace"],"d1":[22,33],"eth":1},{"code":"9mt","name":"Jagged Star","tier":"X","cat":"mace","lvl":25,"str":74,"dex":0,"wsm":10,"sb":100,"db":0,"wc":"1HS","it":["1han","blun","mele","mace"],"d1":[29,45],"eth":1},{"code":"9fl","name":"Knout","tier":"X","cat":"mace","lvl":25,"str":82,"dex":73,"wsm":-10,"sb":100,"db":0,"wc":"1HS","it":["1han","blun","mele","mace"],"d1":[18,50],"eth":1},{"code":"9wh","name":"Battle Hammer","tier":"X","cat":"ham1","lvl":25,"str":100,"dex":0,"wsm":20,"sb":110,"db":0,"wc":"1HS","it":["1han","blun","mele","hamm"],"d1":[39,60],"eth":1},{"code":"9m9","name":"War Club","tier":"X","cat":"ham2","lvl":25,"str":124,"dex":0,"wsm":10,"sb":110,"db":0,"wc":"STF","it":["2han","blun","mele","hamm"],"d2":[69,113],"wc2":"STF","eth":1},{"code":"9gm","name":"Martel de Fer","tier":"X","cat":"ham2","lvl":25,"str":169,"dex":0,"wsm":20,"sb":110,"db":0,"wc":"STF","it":["2han","blun","mele","hamm"],"d2":[76,131],"wc2":"STF","eth":1},{"code":"9ss","name":"Gladius","tier":"X","cat":"swd1","lvl":18,"str":25,"dex":0,"wsm":0,"sb":75,"db":75,"wc":"1HS","it":["1han","swor","mele"],"d1":[12,32],"eth":1},{"code":"9sm","name":"Cutlass","tier":"X","cat":"swd1","lvl":25,"str":25,"dex":52,"wsm":-30,"sb":75,"db":75,"wc":"1HS","it":["1han","swor","mele"],"d1":[12,30],"eth":1},{"code":"9sb","name":"Shamshir","tier":"X","cat":"swd1","lvl":23,"str":58,"dex":58,"wsm":-10,"sb":75,"db":75,"wc":"1HS","it":["1han","swor","mele"],"d1":[14,35],"eth":1},{"code":"9fc","name":"Tulwar","tier":"X","cat":"swd1","lvl":25,"str":70,"dex":42,"wsm":20,"sb":75,"db":75,"wc":"1HS","it":["1han","swor","mele"],"d1":[23,50],"eth":1},{"code":"9cr","name":"Dimensional Blade","tier":"X","cat":"swd1","lvl":25,"str":85,"dex":60,"wsm":0,"sb":75,"db":75,"wc":"1HS","it":["1han","swor","mele"],"d1":[18,51],"eth":1},{"code":"9bs","name":"Battle Sword","tier":"X","cat":"swd1","lvl":25,"str":92,"dex":43,"wsm":0,"sb":75,"db":75,"wc":"1HS","it":["1han","swor","mele"],"d1":[23,48],"eth":1},{"code":"9ls","name":"Rune Sword","tier":"X","cat":"swd1","lvl":25,"str":103,"dex":79,"wsm":-10,"sb":75,"db":75,"wc":"1HS","it":["1han","swor","mele"],"d1":[14,60],"eth":1},{"code":"9wd","name":"Ancient Sword","tier":"X","cat":"swd1","lvl":25,"str":127,"dex":88,"wsm":0,"sb":75,"db":75,"wc":"1HS","it":["1han","swor","mele"],"d1":[25,55],"eth":1},{"code":"92h","name":"Espandon","tier":"X","cat":"swd2","lvl":25,"str":73,"dex":61,"wsm":0,"sb":110,"db":0,"wc":"1HS","it":["2han","swor","mele","2hsw"],"d1":[12,37],"d2":[32,58],"wc2":"2HS","eth":1},{"code":"9cm","name":"Dacian Falx","tier":"X","cat":"swd2","lvl":25,"str":91,"dex":20,"wsm":10,"sb":110,"db":0,"wc":"1HS","it":["2han","swor","mele","2hsw"],"d1":[18,43],"d2":[38,87],"wc2":"2HS","eth":1},{"code":"9gs","name":"Tusk Sword","tier":"X","cat":"swd2","lvl":25,"str":104,"dex":71,"wsm":0,"sb":110,"db":0,"wc":"1HS","it":["2han","swor","mele","2hsw"],"d1":[14,53],"d2":[28,83],"wc2":"2HS","eth":1},{"code":"9b9","name":"Gothic Sword","tier":"X","cat":"swd2","lvl":25,"str":113,"dex":20,"wsm":10,"sb":110,"db":0,"wc":"1HS","it":["2han","swor","mele","2hsw"],"d1":[22,58],"d2":[58,86],"wc2":"2HS","eth":1},{"code":"9fb","name":"Zweihander","tier":"X","cat":"swd2","lvl":25,"str":125,"dex":94,"wsm":-10,"sb":110,"db":0,"wc":"1HS","it":["2han","swor","mele","2hsw"],"d1":[28,51],"d2":[41,77],"wc2":"2HS","eth":1},{"code":"9gd","name":"Executioner Sword","tier":"X","cat":"swd2","lvl":25,"str":170,"dex":110,"wsm":10,"sb":110,"db":0,"wc":"1HS","it":["2han","swor","mele","2hsw"],"d1":[28,58],"d2":[68,115],"wc2":"2HS","eth":1},{"code":"9dg","name":"Poignard","tier":"X","cat":"dag","lvl":19,"str":25,"dex":0,"wsm":-20,"sb":75,"db":75,"wc":"1HT","it":["1han","asm","knif","mele"],"d1":[9,26],"eth":1},{"code":"9di","name":"Rondel","tier":"X","cat":"dag","lvl":24,"str":25,"dex":58,"wsm":0,"sb":75,"db":75,"wc":"1HT","it":["1han","asm","knif","mele"],"d1":[14,38],"eth":1},{"code":"9kr","name":"Cinquedeas","tier":"X","cat":"dag","lvl":25,"str":25,"dex":88,"wsm":-20,"sb":75,"db":75,"wc":"1HT","it":["1han","asm","knif","mele"],"d1":[17,45],"eth":1},{"code":"9bl","name":"Stiletto","tier":"X","cat":"dag","lvl":25,"str":47,"dex":97,"wsm":-10,"sb":75,"db":75,"wc":"1HT","it":["1han","asm","knif","mele"],"d1":[28,52],"eth":1},{"code":"9tk","name":"Battle Dart","tier":"X","cat":"tkni","lvl":19,"str":25,"dex":52,"wsm":0,"sb":75,"db":75,"wc":"1HT","it":["1han","thro","asm","knif","mele","tkni"],"d1":[12,20],"dt":[14,30],"eth":1},{"code":"9ta","name":"Francisca","tier":"X","cat":"taxe","lvl":22,"str":25,"dex":80,"wsm":10,"sb":75,"db":75,"wc":"1HS","it":["1han","thro","axe","mele","taxe"],"d1":[13,27],"dt":[22,41],"eth":1},{"code":"9bk","name":"War Dart","tier":"X","cat":"tkni","lvl":25,"str":25,"dex":97,"wsm":-20,"sb":75,"db":75,"wc":"1HT","it":["1han","thro","asm","knif","mele","tkni"],"d1":[8,30],"dt":[17,34],"eth":1},{"code":"9b8","name":"Hurlbat","tier":"X","cat":"taxe","lvl":25,"str":25,"dex":106,"wsm":-10,"sb":75,"db":75,"wc":"1HS","it":["1han","thro","axe","mele","taxe"],"d1":[19,34],"dt":[24,34],"eth":1},{"code":"9ja","name":"War Javelin","tier":"X","cat":"jave","lvl":18,"str":25,"dex":25,"wsm":-10,"sb":75,"db":75,"wc":"1HT","it":["1han","thro","spea","jave","mele"],"d1":[7,24],"dt":[18,40],"eth":1},{"code":"9pi","name":"Great Pilum","tier":"X","cat":"jave","lvl":25,"str":25,"dex":88,"wsm":0,"sb":75,"db":75,"wc":"1HT","it":["1han","thro","spea","jave","mele"],"d1":[13,33],"dt":[17,52],"eth":1},{"code":"9s9","name":"Simbilan","tier":"X","cat":"jave","lvl":25,"str":80,"dex":80,"wsm":10,"sb":75,"db":75,"wc":"1HT","it":["1han","thro","spea","jave","mele"],"d1":[10,40],"dt":[34,58],"eth":1},{"code":"9gl","name":"Spiculum","tier":"X","cat":"jave","lvl":25,"str":98,"dex":73,"wsm":20,"sb":75,"db":75,"wc":"1HT","it":["1han","thro","spea","jave","mele"],"d1":[16,48],"dt":[32,65],"eth":1},{"code":"9ts","name":"Harpoon","tier":"X","cat":"jave","lvl":25,"str":25,"dex":118,"wsm":-10,"sb":75,"db":75,"wc":"1HT","it":["1han","thro","spea","jave","mele"],"d1":[16,44],"dt":[23,59],"eth":1},{"code":"9sr","name":"War Spear","tier":"X","cat":"spea","lvl":21,"str":25,"dex":25,"wsm":-10,"sb":75,"db":75,"wc":"2HT","it":["2han","spea","mele"],"d2":[15,54],"wc2":"2HT","eth":1},{"code":"9tr","name":"Fuscina","tier":"X","cat":"spea","lvl":24,"str":77,"dex":25,"wsm":0,"sb":75,"db":75,"wc":"2HT","it":["2han","spea","mele"],"d2":[24,53],"wc2":"2HT","eth":1},{"code":"9br","name":"War Fork","tier":"X","cat":"spea","lvl":25,"str":80,"dex":95,"wsm":-20,"sb":75,"db":75,"wc":"2HT","it":["2han","spea","mele"],"d2":[23,58],"wc2":"2HT","eth":1},{"code":"9st","name":"Yari","tier":"X","cat":"spea","lvl":25,"str":101,"dex":0,"wsm":0,"sb":75,"db":75,"wc":"2HT","it":["2han","spea","mele"],"d2":[41,85],"wc2":"2HT","eth":1},{"code":"9p9","name":"Lance","tier":"X","cat":"spea","lvl":25,"str":110,"dex":88,"wsm":20,"sb":75,"db":75,"wc":"2HT","it":["2han","spea","mele"],"d2":[33,163],"wc2":"2HT","eth":1},{"code":"9b7","name":"Lochaber Axe","tier":"X","cat":"pole","lvl":21,"str":80,"dex":0,"wsm":10,"sb":75,"db":75,"wc":"STF","it":["2han","pole","mele"],"d2":[9,83],"wc2":"STF","eth":1},{"code":"9vo","name":"Bill","tier":"X","cat":"pole","lvl":25,"str":95,"dex":0,"wsm":0,"sb":75,"db":75,"wc":"STF","it":["2han","pole","mele"],"d2":[20,76],"wc2":"STF","eth":1},{"code":"9s8","name":"Battle Scythe","tier":"X","cat":"pole","lvl":25,"str":82,"dex":82,"wsm":-10,"sb":75,"db":75,"wc":"STF","it":["2han","pole","mele"],"d2":[25,64],"wc2":"STF","eth":1},{"code":"9pa","name":"Partizan","tier":"X","cat":"pole","lvl":23,"str":113,"dex":67,"wsm":10,"sb":75,"db":75,"wc":"STF","it":["2han","pole","mele"],"d2":[49,108],"wc2":"STF","eth":1},{"code":"9h9","name":"Bec-de-Corbin","tier":"X","cat":"pole","lvl":25,"str":133,"dex":91,"wsm":0,"sb":75,"db":75,"wc":"STF","it":["2han","pole","mele"],"d2":[18,122],"wc2":"STF","eth":1},{"code":"9wc","name":"Grim Scythe","tier":"X","cat":"pole","lvl":25,"str":140,"dex":140,"wsm":-10,"sb":75,"db":75,"wc":"STF","it":["2han","pole","mele"],"d2":[44,100],"wc2":"STF","eth":1},{"code":"8ss","name":"Jo Staff","tier":"X","cat":"staf","lvl":18,"str":25,"dex":0,"wsm":-10,"sb":110,"db":0,"wc":"STF","it":["2han","blun","staf","mele","rod"],"d2":[9,30],"wc2":"STF","eth":1},{"code":"8ls","name":"Quarterstaff","tier":"X","cat":"staf","lvl":23,"str":25,"dex":0,"wsm":0,"sb":110,"db":0,"wc":"STF","it":["2han","blun","staf","mele","rod"],"d2":[12,38],"wc2":"STF","eth":1},{"code":"8cs","name":"Cedar Staff","tier":"X","cat":"staf","lvl":25,"str":25,"dex":0,"wsm":10,"sb":110,"db":0,"wc":"STF","it":["2han","blun","staf","mele","rod"],"d2":[15,46],"wc2":"STF","eth":1},{"code":"8bs","name":"Gothic Staff","tier":"X","cat":"staf","lvl":25,"str":25,"dex":0,"wsm":0,"sb":110,"db":0,"wc":"STF","it":["2han","blun","staf","mele","rod"],"d2":[21,48],"wc2":"STF","eth":1},{"code":"8ws","name":"Rune Staff","tier":"X","cat":"staf","lvl":25,"str":25,"dex":0,"wsm":20,"sb":110,"db":0,"wc":"STF","it":["2han","blun","staf","mele","rod"],"d2":[35,84],"wc2":"STF","eth":1},{"code":"8sb","name":"Edge Bow","tier":"X","cat":"bow","lvl":18,"str":25,"dex":43,"wsm":5,"sb":0,"db":50,"wc":"BOW","it":["miss","bow"],"d2":[8,25],"wc2":"BOW"},{"code":"8hb","name":"Razor Bow","tier":"X","cat":"bow","lvl":21,"str":25,"dex":62,"wsm":-10,"sb":0,"db":50,"wc":"BOW","it":["miss","bow"],"d2":[11,29],"wc2":"BOW"},{"code":"8lb","name":"Cedar Bow","tier":"X","cat":"bow","lvl":23,"str":53,"dex":49,"wsm":0,"sb":0,"db":50,"wc":"BOW","it":["miss","bow"],"d2":[13,38],"wc2":"BOW"},{"code":"8cb","name":"Double Bow","tier":"X","cat":"bow","lvl":25,"str":58,"dex":73,"wsm":-10,"sb":0,"db":50,"wc":"BOW","it":["miss","bow"],"d2":[14,35],"wc2":"BOW"},{"code":"8s8","name":"Short Siege Bow","tier":"X","cat":"bow","lvl":25,"str":65,"dex":80,"wsm":0,"sb":0,"db":50,"wc":"BOW","it":["miss","bow"],"d2":[17,40],"wc2":"BOW"},{"code":"8l8","name":"Large Siege Bow","tier":"X","cat":"bow","lvl":25,"str":80,"dex":95,"wsm":10,"sb":0,"db":50,"wc":"BOW","it":["miss","bow"],"d2":[13,56],"wc2":"BOW"},{"code":"8sw","name":"Rune Bow","tier":"X","cat":"bow","lvl":25,"str":73,"dex":103,"wsm":0,"sb":0,"db":50,"wc":"BOW","it":["miss","bow"],"d2":[19,46],"wc2":"BOW"},{"code":"8lw","name":"Gothic Bow","tier":"X","cat":"bow","lvl":25,"str":95,"dex":118,"wsm":10,"sb":0,"db":50,"wc":"BOW","it":["miss","bow"],"d2":[8,63],"wc2":"BOW"},{"code":"8lx","name":"Arbalest","tier":"X","cat":"xbow","lvl":22,"str":52,"dex":61,"wsm":-10,"sb":0,"db":50,"wc":"XBW","it":["miss","xbow"],"d2":[20,38],"wc2":"XBW"},{"code":"8mx","name":"Siege Crossbow","tier":"X","cat":"xbow","lvl":25,"str":80,"dex":70,"wsm":0,"sb":0,"db":50,"wc":"XBW","it":["miss","xbow"],"d2":[28,60],"wc2":"XBW"},{"code":"8hx","name":"Ballista","tier":"X","cat":"xbow","lvl":25,"str":110,"dex":80,"wsm":10,"sb":0,"db":50,"wc":"XBW","it":["miss","xbow"],"d2":[47,78],"wc2":"XBW"},{"code":"8rx","name":"Chu-Ko-Nu","tier":"X","cat":"xbow","lvl":25,"str":80,"dex":95,"wsm":-60,"sb":0,"db":50,"wc":"XBW","it":["miss","xbow"],"d2":[22,50],"wc2":"XBW"},{"code":"ktr","name":"Katar","tier":"N","cat":"claw","lvl":0,"str":20,"dex":20,"wsm":-10,"sb":75,"db":75,"wc":"HT1","it":["1han","asm","h2h","mele"],"d1":[5,8],"eth":1},{"code":"wrb","name":"Wrist Blade","tier":"N","cat":"claw","lvl":0,"str":33,"dex":33,"wsm":0,"sb":75,"db":75,"wc":"HT1","it":["1han","asm","h2h","mele"],"d1":[6,10],"eth":1},{"code":"axf","name":"Hatchet Hands","tier":"N","cat":"claw","lvl":0,"str":37,"dex":37,"wsm":10,"sb":75,"db":75,"wc":"HT1","it":["1han","asm","h2h","mele"],"d1":[3,17],"eth":1},{"code":"ces","name":"Cestus","tier":"N","cat":"claw","lvl":0,"str":42,"dex":42,"wsm":0,"sb":75,"db":75,"wc":"HT1","it":["1han","asm","h2h","mele"],"d1":[8,17],"eth":1},{"code":"clw","name":"Claws","tier":"N","cat":"claw","lvl":0,"str":46,"dex":46,"wsm":-10,"sb":75,"db":75,"wc":"HT1","it":["1han","asm","h2h","mele"],"d1":[9,16],"eth":1},{"code":"btl","name":"Blade Talons","tier":"N","cat":"claw","lvl":0,"str":50,"dex":50,"wsm":-20,"sb":75,"db":75,"wc":"HT1","it":["1han","asm","h2h","mele"],"d1":[11,15],"eth":1},{"code":"skr","name":"Scissors Katar","tier":"N","cat":"claw","lvl":0,"str":55,"dex":55,"wsm":-10,"sb":75,"db":75,"wc":"HT1","it":["1han","asm","h2h","mele"],"d1":[10,19],"eth":1},{"code":"9ar","name":"Quhab","tier":"X","cat":"claw","lvl":21,"str":57,"dex":57,"wsm":0,"sb":75,"db":75,"wc":"HT1","it":["1han","asm","h2h","mele"],"d1":[15,35],"eth":1},{"code":"9wb","name":"Wrist Spike","tier":"X","cat":"claw","lvl":24,"str":66,"dex":66,"wsm":-10,"sb":75,"db":75,"wc":"HT1","it":["1han","asm","h2h","mele"],"d1":[20,46],"eth":1},{"code":"9xf","name":"Fascia","tier":"X","cat":"claw","lvl":27,"str":69,"dex":69,"wsm":10,"sb":75,"db":75,"wc":"HT1","it":["1han","asm","h2h","mele"],"d1":[12,53],"eth":1},{"code":"9cs","name":"Hand Scythe","tier":"X","cat":"claw","lvl":30,"str":73,"dex":73,"wsm":-10,"sb":75,"db":75,"wc":"HT1","it":["1han","asm","h2h","mele"],"d1":[23,46],"eth":1},{"code":"9lw","name":"Greater Claws","tier":"X","cat":"claw","lvl":33,"str":76,"dex":76,"wsm":-20,"sb":75,"db":75,"wc":"HT1","it":["1han","asm","h2h","mele"],"d1":[23,53],"eth":1},{"code":"9tw","name":"Greater Talons","tier":"X","cat":"claw","lvl":37,"str":79,"dex":79,"wsm":-30,"sb":75,"db":75,"wc":"HT1","it":["1han","asm","h2h","mele"],"d1":[25,45],"eth":1},{"code":"9qr","name":"Scissors Quhab","tier":"X","cat":"claw","lvl":40,"str":82,"dex":82,"wsm":0,"sb":75,"db":75,"wc":"HT1","it":["1han","asm","h2h","mele"],"d1":[28,58],"eth":1},{"code":"7ar","name":"Suwayyah","tier":"E","cat":"claw","lvl":44,"str":99,"dex":99,"wsm":0,"sb":75,"db":75,"wc":"HT1","it":["1han","asm","h2h","mele"],"d1":[54,71],"eth":1},{"code":"7wb","name":"Wrist Sword","tier":"E","cat":"claw","lvl":46,"str":105,"dex":105,"wsm":-10,"sb":75,"db":75,"wc":"HT1","it":["1han","asm","h2h","mele"],"d1":[46,63],"eth":1},{"code":"7xf","name":"War Fist","tier":"E","cat":"claw","lvl":51,"str":108,"dex":108,"wsm":10,"sb":75,"db":75,"wc":"HT1","it":["1han","asm","h2h","mele"],"d1":[60,73],"eth":1},{"code":"7cs","name":"Battle Cestus","tier":"E","cat":"claw","lvl":54,"str":110,"dex":110,"wsm":-10,"sb":75,"db":75,"wc":"HT1","it":["1han","asm","h2h","mele"],"d1":[45,53],"eth":1},{"code":"7lw","name":"Feral Claws","tier":"E","cat":"claw","lvl":58,"str":113,"dex":113,"wsm":-20,"sb":75,"db":75,"wc":"HT1","it":["1han","asm","h2h","mele"],"d1":[30,73],"eth":1},{"code":"7tw","name":"Runic Talons","tier":"E","cat":"claw","lvl":60,"str":115,"dex":115,"wsm":-30,"sb":75,"db":75,"wc":"HT1","it":["1han","asm","h2h","mele"],"d1":[33,60],"eth":1},{"code":"7qr","name":"Scissors Suwayyah","tier":"E","cat":"claw","lvl":64,"str":118,"dex":118,"wsm":0,"sb":75,"db":75,"wc":"HT1","it":["1han","asm","h2h","mele"],"d1":[55,70],"eth":1},{"code":"7ha","name":"Tomahawk","tier":"E","cat":"axe1","lvl":40,"str":125,"dex":67,"wsm":0,"sb":100,"db":0,"wc":"1HS","it":["1han","axe","mele"],"d1":[44,75],"eth":1},{"code":"7ax","name":"Small Crescent","tier":"E","cat":"axe1","lvl":45,"str":115,"dex":83,"wsm":10,"sb":100,"db":0,"wc":"1HS","it":["1han","axe","mele"],"d1":[47,75],"eth":1},{"code":"72a","name":"Ettin Axe","tier":"E","cat":"axe1","lvl":52,"str":145,"dex":45,"wsm":10,"sb":100,"db":0,"wc":"1HS","it":["1han","axe","mele"],"d1":[41,83],"eth":1},{"code":"7mp","name":"War Spike","tier":"E","cat":"axe1","lvl":59,"str":133,"dex":54,"wsm":-10,"sb":100,"db":0,"wc":"1HS","it":["1han","axe","mele"],"d1":[38,60],"eth":1},{"code":"7wa","name":"Berserker Axe","tier":"E","cat":"axe1","lvl":64,"str":138,"dex":59,"wsm":0,"sb":100,"db":0,"wc":"1HS","it":["1han","axe","mele"],"d1":[30,89],"eth":1},{"code":"7la","name":"Feral Axe","tier":"E","cat":"axe2","lvl":42,"str":196,"dex":0,"wsm":-15,"sb":110,"db":0,"wc":"STF","it":["2han","axe","mele"],"d2":[31,154],"wc2":"STF","eth":1},{"code":"7ba","name":"Silver-edged Axe","tier":"E","cat":"axe2","lvl":48,"str":166,"dex":65,"wsm":0,"sb":110,"db":0,"wc":"STF","it":["2han","axe","mele"],"d2":[78,138],"wc2":"STF","eth":1},{"code":"7bt","name":"Decapitator","tier":"E","cat":"axe2","lvl":54,"str":189,"dex":33,"wsm":10,"sb":110,"db":0,"wc":"STF","it":["2han","axe","mele"],"d2":[61,171],"wc2":"STF","eth":1},{"code":"7ga","name":"Champion Axe","tier":"E","cat":"axe2","lvl":61,"str":167,"dex":59,"wsm":-10,"sb":110,"db":0,"wc":"STF","it":["2han","axe","mele"],"d2":[74,118],"wc2":"STF","eth":1},{"code":"7gi","name":"Glorious Axe","tier":"E","cat":"axe2","lvl":66,"str":164,"dex":55,"wsm":10,"sb":110,"db":0,"wc":"STF","it":["2han","axe","mele"],"d2":[75,155],"wc2":"STF","eth":1},{"code":"7wn","name":"Polished Wand","tier":"E","cat":"wand","lvl":41,"str":25,"dex":0,"wsm":0,"sb":100,"db":0,"wc":"1HS","it":["1han","blun","mele","wand","rod"],"d1":[18,33],"eth":1},{"code":"7yw","name":"Ghost Wand","tier":"E","cat":"wand","lvl":48,"str":25,"dex":0,"wsm":10,"sb":100,"db":0,"wc":"1HS","it":["1han","blun","mele","wand","rod"],"d1":[20,40],"eth":1},{"code":"7bw","name":"Lich Wand","tier":"E","cat":"wand","lvl":56,"str":25,"dex":0,"wsm":-20,"sb":100,"db":0,"wc":"1HS","it":["1han","blun","mele","wand","rod"],"d1":[10,31],"eth":1},{"code":"7gw","name":"Unearthed Wand","tier":"E","cat":"wand","lvl":64,"str":25,"dex":0,"wsm":0,"sb":100,"db":0,"wc":"1HS","it":["1han","blun","mele","wand","rod"],"d1":[22,28],"eth":1},{"code":"7cl","name":"Truncheon","tier":"E","cat":"club","lvl":39,"str":88,"dex":43,"wsm":-10,"sb":100,"db":0,"wc":"1HS","it":["1han","blun","mele","club"],"d1":[44,54],"eth":1},{"code":"7sc","name":"Mighty Scepter","tier":"E","cat":"scep","lvl":46,"str":125,"dex":65,"wsm":0,"sb":100,"db":0,"wc":"1HS","it":["1han","blun","mele","scep","rod"],"d1":[50,65],"eth":1},{"code":"7qs","name":"Seraph Rod","tier":"E","cat":"scep","lvl":57,"str":108,"dex":69,"wsm":10,"sb":100,"db":0,"wc":"1HS","it":["1han","blun","mele","scep","rod"],"d1":[56,68],"eth":1},{"code":"7ws","name":"Caduceus","tier":"E","cat":"scep","lvl":66,"str":97,"dex":70,"wsm":-10,"sb":100,"db":0,"wc":"1HS","it":["1han","blun","mele","scep","rod"],"d1":[46,54],"eth":1},{"code":"7sp","name":"Tyrant Club","tier":"E","cat":"club","lvl":42,"str":133,"dex":0,"wsm":0,"sb":100,"db":0,"wc":"1HS","it":["1han","blun","mele","club"],"d1":[43,75],"eth":1},{"code":"7ma","name":"Reinforced Mace","tier":"E","cat":"mace","lvl":47,"str":145,"dex":46,"wsm":0,"sb":100,"db":0,"wc":"1HS","it":["1han","blun","mele","mace"],"d1":[56,66],"eth":1},{"code":"7mt","name":"Devil Star","tier":"E","cat":"mace","lvl":52,"str":153,"dex":44,"wsm":10,"sb":100,"db":0,"wc":"1HS","it":["1han","blun","mele","mace"],"d1":[56,69],"eth":1},{"code":"7fl","name":"Scourge","tier":"E","cat":"mace","lvl":57,"str":125,"dex":77,"wsm":-10,"sb":100,"db":0,"wc":"1HS","it":["1han","blun","mele","mace"],"d1":[14,100],"eth":1},{"code":"7wh","name":"Legendary Mallet","tier":"E","cat":"ham1","lvl":61,"str":189,"dex":0,"wsm":20,"sb":110,"db":0,"wc":"1HS","it":["1han","blun","mele","hamm"],"d1":[63,76],"eth":1},{"code":"7m7","name":"Ogre Maul","tier":"E","cat":"ham2","lvl":51,"str":225,"dex":0,"wsm":10,"sb":110,"db":0,"wc":"STF","it":["2han","blun","mele","hamm"],"d2":[96,132],"wc2":"STF","eth":1},{"code":"7gm","name":"Thunder Maul","tier":"E","cat":"ham2","lvl":65,"str":253,"dex":0,"wsm":20,"sb":110,"db":0,"wc":"STF","it":["2han","blun","mele","hamm"],"d2":[41,225],"wc2":"STF","eth":1},{"code":"7ss","name":"Falcata","tier":"E","cat":"swd1","lvl":42,"str":150,"dex":88,"wsm":0,"sb":75,"db":75,"wc":"1HS","it":["1han","swor","mele"],"d1":[39,74],"eth":1},{"code":"7sm","name":"Ataghan","tier":"E","cat":"swd1","lvl":45,"str":138,"dex":95,"wsm":-20,"sb":75,"db":75,"wc":"1HS","it":["1han","swor","mele"],"d1":[33,58],"eth":1},{"code":"7sb","name":"Elegant Blade","tier":"E","cat":"swd1","lvl":47,"str":109,"dex":122,"wsm":-10,"sb":75,"db":75,"wc":"1HS","it":["1han","swor","mele"],"d1":[41,56],"eth":1},{"code":"7fc","name":"Hydra Edge","tier":"E","cat":"swd1","lvl":51,"str":142,"dex":105,"wsm":10,"sb":75,"db":75,"wc":"1HS","it":["1han","swor","mele"],"d1":[35,85],"eth":1},{"code":"7cr","name":"Phase Blade","tier":"E","cat":"swd1","lvl":54,"str":25,"dex":136,"wsm":-30,"sb":75,"db":75,"wc":"1HS","it":["1han","swor","mele"],"d1":[39,44]},{"code":"7bs","name":"Conquest Sword","tier":"E","cat":"swd1","lvl":58,"str":142,"dex":112,"wsm":0,"sb":75,"db":75,"wc":"1HS","it":["1han","swor","mele"],"d1":[46,66],"eth":1},{"code":"7ls","name":"Cryptic Sword","tier":"E","cat":"swd1","lvl":61,"str":99,"dex":109,"wsm":-10,"sb":75,"db":75,"wc":"1HS","it":["1han","swor","mele"],"d1":[6,96],"eth":1},{"code":"7wd","name":"Mythical Sword","tier":"E","cat":"swd1","lvl":66,"str":147,"dex":124,"wsm":0,"sb":75,"db":75,"wc":"1HS","it":["1han","swor","mele"],"d1":[50,63],"eth":1},{"code":"72h","name":"Legend Sword","tier":"E","cat":"swd2","lvl":44,"str":175,"dex":100,"wsm":-15,"sb":110,"db":0,"wc":"1HS","it":["2han","swor","mele","2hsw"],"d1":[28,70],"d2":[63,118],"wc2":"2HS","eth":1},{"code":"7cm","name":"Highland Blade","tier":"E","cat":"swd2","lvl":49,"str":171,"dex":104,"wsm":-5,"sb":110,"db":0,"wc":"1HS","it":["2han","swor","mele","2hsw"],"d1":[28,78],"d2":[84,120],"wc2":"2HS","eth":1},{"code":"7gs","name":"Balrog Blade","tier":"E","cat":"swd2","lvl":53,"str":185,"dex":87,"wsm":0,"sb":110,"db":0,"wc":"1HS","it":["2han","swor","mele","2hsw"],"d1":[19,94],"d2":[69,149],"wc2":"2HS","eth":1},{"code":"7b7","name":"Champion Sword","tier":"E","cat":"swd2","lvl":57,"str":163,"dex":103,"wsm":-10,"sb":110,"db":0,"wc":"1HS","it":["2han","swor","mele","2hsw"],"d1":[30,68],"d2":[89,104],"wc2":"2HS","eth":1},{"code":"7fb","name":"Colossus Sword","tier":"E","cat":"swd2","lvl":60,"str":182,"dex":95,"wsm":10,"sb":110,"db":0,"wc":"1HS","it":["2han","swor","mele","2hsw"],"d1":[33,88],"d2":[76,151],"wc2":"2HS","eth":1},{"code":"7gd","name":"Colossus Blade","tier":"E","cat":"swd2","lvl":63,"str":189,"dex":110,"wsm":5,"sb":110,"db":0,"wc":"1HS","it":["2han","swor","mele","2hsw"],"d1":[31,81],"d2":[73,144],"wc2":"2HS","eth":1},{"code":"7dg","name":"Bone Knife","tier":"E","cat":"dag","lvl":43,"str":38,"dex":75,"wsm":-20,"sb":75,"db":75,"wc":"1HT","it":["1han","asm","knif","mele"],"d1":[28,56],"eth":1},{"code":"7di","name":"Mithril Point","tier":"E","cat":"dag","lvl":52,"str":55,"dex":98,"wsm":0,"sb":75,"db":75,"wc":"1HT","it":["1han","asm","knif","mele"],"d1":[43,61],"eth":1},{"code":"7kr","name":"Fanged Knife","tier":"E","cat":"dag","lvl":62,"str":42,"dex":86,"wsm":-20,"sb":75,"db":75,"wc":"1HT","it":["1han","asm","knif","mele"],"d1":[19,65],"eth":1},{"code":"7bl","name":"Legend Spike","tier":"E","cat":"dag","lvl":66,"str":65,"dex":67,"wsm":-10,"sb":75,"db":75,"wc":"1HT","it":["1han","asm","knif","mele"],"d1":[36,64],"eth":1},{"code":"7tk","name":"Flying Knife","tier":"E","cat":"tkni","lvl":48,"str":48,"dex":141,"wsm":0,"sb":75,"db":75,"wc":"1HT","it":["1han","thro","asm","knif","mele","tkni"],"d1":[23,54],"dt":[23,54],"eth":1},{"code":"7ta","name":"Flying Axe","tier":"E","cat":"taxe","lvl":42,"str":88,"dex":108,"wsm":10,"sb":75,"db":75,"wc":"1HS","it":["1han","thro","axe","mele","taxe"],"d1":[17,65],"dt":[15,66],"eth":1},{"code":"7bk","name":"Winged Knife","tier":"E","cat":"tkni","lvl":57,"str":45,"dex":142,"wsm":-20,"sb":75,"db":75,"wc":"1HT","it":["1han","thro","asm","knif","mele","tkni"],"d1":[27,35],"dt":[23,39],"eth":1},{"code":"7b8","name":"Winged Axe","tier":"E","cat":"taxe","lvl":60,"str":96,"dex":122,"wsm":-10,"sb":75,"db":75,"wc":"1HS","it":["1han","thro","axe","mele","taxe"],"d1":[11,56],"dt":[7,60],"eth":1},{"code":"7ja","name":"Hyperion Javelin","tier":"E","cat":"jave","lvl":40,"str":98,"dex":123,"wsm":-10,"sb":75,"db":75,"wc":"1HT","it":["1han","thro","spea","jave","mele"],"d1":[21,57],"dt":[28,55],"eth":1},{"code":"7pi","name":"Stygian Pilum","tier":"E","cat":"jave","lvl":46,"str":118,"dex":112,"wsm":0,"sb":75,"db":75,"wc":"1HT","it":["1han","thro","spea","jave","mele"],"d1":[14,64],"dt":[21,75],"eth":1},{"code":"7s7","name":"Balrog Spear","tier":"E","cat":"jave","lvl":53,"str":127,"dex":95,"wsm":10,"sb":75,"db":75,"wc":"1HT","it":["1han","thro","spea","jave","mele"],"d1":[33,63],"dt":[40,62],"eth":1},{"code":"7gl","name":"Ghost Glaive","tier":"E","cat":"jave","lvl":59,"str":89,"dex":137,"wsm":20,"sb":75,"db":75,"wc":"1HT","it":["1han","thro","spea","jave","mele"],"d1":[19,60],"dt":[30,78],"eth":1},{"code":"7ts","name":"Winged Harpoon","tier":"E","cat":"jave","lvl":65,"str":76,"dex":145,"wsm":-10,"sb":75,"db":75,"wc":"1HT","it":["1han","thro","spea","jave","mele"],"d1":[27,35],"dt":[11,77],"eth":1},{"code":"7sr","name":"Hyperion Spear","tier":"E","cat":"spea","lvl":43,"str":155,"dex":120,"wsm":-10,"sb":75,"db":75,"wc":"2HT","it":["2han","spea","mele"],"d2":[44,149],"wc2":"2HT","eth":1},{"code":"7tr","name":"Stygian Pike","tier":"E","cat":"spea","lvl":49,"str":168,"dex":97,"wsm":0,"sb":75,"db":75,"wc":"2HT","it":["2han","spea","mele"],"d2":[36,180],"wc2":"2HT","eth":1},{"code":"7br","name":"Mancatcher","tier":"E","cat":"spea","lvl":55,"str":132,"dex":134,"wsm":-20,"sb":75,"db":75,"wc":"2HT","it":["2han","spea","mele"],"d2":[52,115],"wc2":"2HT","eth":1},{"code":"7st","name":"Ghost Spear","tier":"E","cat":"spea","lvl":62,"str":122,"dex":163,"wsm":0,"sb":75,"db":75,"wc":"2HT","it":["2han","spea","mele"],"d2":[23,194],"wc2":"2HT","eth":1},{"code":"7p7","name":"War Pike","tier":"E","cat":"spea","lvl":66,"str":165,"dex":106,"wsm":20,"sb":75,"db":75,"wc":"2HT","it":["2han","spea","mele"],"d2":[41,223],"wc2":"2HT","eth":1},{"code":"7o7","name":"Ogre Axe","tier":"E","cat":"pole","lvl":45,"str":195,"dex":75,"wsm":0,"sb":75,"db":75,"wc":"STF","it":["2han","pole","mele"],"d2":[35,181],"wc2":"STF","eth":1},{"code":"7vo","name":"Colossus Voulge","tier":"E","cat":"pole","lvl":48,"str":210,"dex":55,"wsm":10,"sb":75,"db":75,"wc":"STF","it":["2han","pole","mele"],"d2":[21,206],"wc2":"STF","eth":1},{"code":"7s8","name":"Thresher","tier":"E","cat":"pole","lvl":53,"str":152,"dex":118,"wsm":-10,"sb":75,"db":75,"wc":"STF","it":["2han","pole","mele"],"d2":[15,176],"wc2":"STF","eth":1},{"code":"7pa","name":"Cryptic Axe","tier":"E","cat":"pole","lvl":59,"str":165,"dex":103,"wsm":10,"sb":75,"db":75,"wc":"STF","it":["2han","pole","mele"],"d2":[41,188],"wc2":"STF","eth":1},{"code":"7h7","name":"Great Poleaxe","tier":"E","cat":"pole","lvl":63,"str":179,"dex":99,"wsm":0,"sb":75,"db":75,"wc":"STF","it":["2han","pole","mele"],"d2":[58,159],"wc2":"STF","eth":1},{"code":"7wc","name":"Giant Thresher","tier":"E","cat":"pole","lvl":66,"str":188,"dex":140,"wsm":-10,"sb":75,"db":75,"wc":"STF","it":["2han","pole","mele"],"d2":[50,142],"wc2":"STF","eth":1},{"code":"6ss","name":"Walking Stick","tier":"E","cat":"staf","lvl":43,"str":25,"dex":0,"wsm":-10,"sb":110,"db":0,"wc":"STF","it":["2han","blun","staf","mele","rod"],"d2":[86,106],"wc2":"STF","eth":1},{"code":"6ls","name":"Stalagmite","tier":"E","cat":"staf","lvl":49,"str":63,"dex":35,"wsm":10,"sb":110,"db":0,"wc":"STF","it":["2han","blun","staf","mele","rod"],"d2":[94,134],"wc2":"STF","eth":1},{"code":"6cs","name":"Elder Staff","tier":"E","cat":"staf","lvl":55,"str":44,"dex":37,"wsm":0,"sb":110,"db":0,"wc":"STF","it":["2han","blun","staf","mele","rod"],"d2":[100,116],"wc2":"STF","eth":1},{"code":"6bs","name":"Shillelagh","tier":"E","cat":"staf","lvl":62,"str":52,"dex":27,"wsm":0,"sb":110,"db":0,"wc":"STF","it":["2han","blun","staf","mele","rod"],"d2":[81,135],"wc2":"STF","eth":1},{"code":"6ws","name":"Archon Staff","tier":"E","cat":"staf","lvl":66,"str":34,"dex":0,"wsm":10,"sb":110,"db":0,"wc":"STF","it":["2han","blun","staf","mele","rod"],"d2":[104,124],"wc2":"STF","eth":1},{"code":"6sb","name":"Spider Bow","tier":"E","cat":"bow","lvl":41,"str":64,"dex":143,"wsm":5,"sb":0,"db":50,"wc":"BOW","it":["miss","bow"],"d2":[34,73],"wc2":"BOW"},{"code":"6hb","name":"Blade Bow","tier":"E","cat":"bow","lvl":45,"str":76,"dex":119,"wsm":-10,"sb":0,"db":50,"wc":"BOW","it":["miss","bow"],"d2":[30,60],"wc2":"BOW"},{"code":"6lb","name":"Shadow Bow","tier":"E","cat":"bow","lvl":47,"str":52,"dex":188,"wsm":0,"sb":0,"db":50,"wc":"BOW","it":["miss","bow"],"d2":[22,86],"wc2":"BOW"},{"code":"6cb","name":"Great Bow","tier":"E","cat":"bow","lvl":51,"str":121,"dex":107,"wsm":-10,"sb":0,"db":50,"wc":"BOW","it":["miss","bow"],"d2":[17,76],"wc2":"BOW"},{"code":"6s7","name":"Diamond Bow","tier":"E","cat":"bow","lvl":54,"str":89,"dex":132,"wsm":0,"sb":0,"db":50,"wc":"BOW","it":["miss","bow"],"d2":[48,58],"wc2":"BOW"},{"code":"6l7","name":"Crusader Bow","tier":"E","cat":"bow","lvl":57,"str":97,"dex":121,"wsm":10,"sb":0,"db":50,"wc":"BOW","it":["miss","bow"],"d2":[23,91],"wc2":"BOW"},{"code":"6sw","name":"Ward Bow","tier":"E","cat":"bow","lvl":60,"str":72,"dex":146,"wsm":0,"sb":0,"db":50,"wc":"BOW","it":["miss","bow"],"d2":[29,77],"wc2":"BOW"},{"code":"6lw","name":"Hydra Bow","tier":"E","cat":"bow","lvl":63,"str":134,"dex":167,"wsm":10,"sb":0,"db":50,"wc":"BOW","it":["miss","bow"],"d2":[14,100],"wc2":"BOW"},{"code":"6lx","name":"Pellet Bow","tier":"E","cat":"xbow","lvl":42,"str":83,"dex":155,"wsm":-10,"sb":0,"db":50,"wc":"XBW","it":["miss","xbow"],"d2":[40,99],"wc2":"XBW"},{"code":"6mx","name":"Gorgon Crossbow","tier":"E","cat":"xbow","lvl":50,"str":117,"dex":105,"wsm":0,"sb":0,"db":50,"wc":"XBW","it":["miss","xbow"],"d2":[39,120],"wc2":"XBW"},{"code":"6hx","name":"Colossus Crossbow","tier":"E","cat":"xbow","lvl":56,"str":163,"dex":77,"wsm":10,"sb":0,"db":50,"wc":"XBW","it":["miss","xbow"],"d2":[47,125],"wc2":"XBW"},{"code":"6rx","name":"Demon Crossbow","tier":"E","cat":"xbow","lvl":63,"str":141,"dex":98,"wsm":-60,"sb":0,"db":50,"wc":"XBW","it":["miss","xbow"],"d2":[43,66],"wc2":"XBW"},{"code":"ob1","name":"Eagle Orb","tier":"N","cat":"orb","lvl":0,"str":0,"dex":0,"wsm":-10,"sb":100,"db":0,"wc":"1HS","it":["orb"],"d1":[2,5],"eth":1},{"code":"ob2","name":"Sacred Globe","tier":"N","cat":"orb","lvl":0,"str":0,"dex":0,"wsm":-10,"sb":100,"db":0,"wc":"1HS","it":["orb"],"d1":[3,8],"eth":1},{"code":"ob3","name":"Smoked Sphere","tier":"N","cat":"orb","lvl":8,"str":0,"dex":0,"wsm":0,"sb":100,"db":0,"wc":"1HS","it":["orb"],"d1":[4,10],"eth":1},{"code":"ob4","name":"Clasped Orb","tier":"N","cat":"orb","lvl":13,"str":0,"dex":0,"wsm":0,"sb":100,"db":0,"wc":"1HS","it":["orb"],"d1":[5,12],"eth":1},{"code":"ob5","name":"Jared's Stone","tier":"N","cat":"orb","lvl":18,"str":0,"dex":0,"wsm":10,"sb":100,"db":0,"wc":"1HS","it":["orb"],"d1":[8,18],"eth":1},{"code":"am1","name":"Stag Bow","tier":"N","cat":"abow","lvl":14,"str":30,"dex":45,"wsm":0,"sb":0,"db":50,"wc":"BOW","it":["miss","bow","abow"],"d2":[8,14],"wc2":"BOW"},{"code":"am2","name":"Reflex Bow","tier":"N","cat":"abow","lvl":20,"str":35,"dex":60,"wsm":10,"sb":0,"db":50,"wc":"BOW","it":["miss","bow","abow"],"d2":[10,21],"wc2":"BOW"},{"code":"am3","name":"Maiden Spear","tier":"N","cat":"aspe","lvl":14,"str":54,"dex":40,"wsm":-10,"sb":80,"db":50,"wc":"2HT","it":["2han","spea","mele","aspe"],"d2":[20,26],"wc2":"2HT","eth":1},{"code":"am4","name":"Maiden Pike","tier":"N","cat":"aspe","lvl":20,"str":63,"dex":52,"wsm":0,"sb":80,"db":50,"wc":"2HT","it":["2han","spea","mele","aspe"],"d2":[25,60],"wc2":"2HT","eth":1},{"code":"am5","name":"Maiden Javelin","tier":"N","cat":"ajav","lvl":17,"str":33,"dex":47,"wsm":-10,"sb":80,"db":50,"wc":"1HT","it":["1han","thro","spea","jave","mele","ajav"],"d1":[8,14],"dt":[6,22],"eth":1},{"code":"ob6","name":"Glowing Orb","tier":"X","cat":"orb","lvl":24,"str":0,"dex":0,"wsm":-10,"sb":100,"db":0,"wc":"1HS","it":["orb"],"d1":[8,21],"eth":1},{"code":"ob7","name":"Crystalline Globe","tier":"X","cat":"orb","lvl":27,"str":0,"dex":0,"wsm":-10,"sb":100,"db":0,"wc":"1HS","it":["orb"],"d1":[10,26],"eth":1},{"code":"ob8","name":"Cloudy Sphere","tier":"X","cat":"orb","lvl":30,"str":0,"dex":0,"wsm":0,"sb":100,"db":0,"wc":"1HS","it":["orb"],"d1":[11,29],"eth":1},{"code":"ob9","name":"Sparkling Ball","tier":"X","cat":"orb","lvl":34,"str":0,"dex":0,"wsm":0,"sb":100,"db":0,"wc":"1HS","it":["orb"],"d1":[13,32],"eth":1},{"code":"oba","name":"Swirling Crystal","tier":"X","cat":"orb","lvl":37,"str":0,"dex":0,"wsm":10,"sb":100,"db":0,"wc":"1HS","it":["orb"],"d1":[18,42],"eth":1},{"code":"am6","name":"Ashwood Bow","tier":"X","cat":"abow","lvl":29,"str":56,"dex":77,"wsm":0,"sb":0,"db":50,"wc":"BOW","it":["miss","bow","abow"],"d2":[19,38],"wc2":"BOW"},{"code":"am7","name":"Ceremonial Bow","tier":"X","cat":"abow","lvl":35,"str":73,"dex":110,"wsm":10,"sb":0,"db":50,"wc":"BOW","it":["miss","bow","abow"],"d2":[22,53],"wc2":"BOW"},{"code":"am8","name":"Ceremonial Spear","tier":"X","cat":"aspe","lvl":32,"str":101,"dex":80,"wsm":-10,"sb":80,"db":50,"wc":"2HT","it":["2han","spea","mele","aspe"],"d2":[49,74],"wc2":"2HT","eth":1},{"code":"am9","name":"Ceremonial Pike","tier":"X","cat":"aspe","lvl":38,"str":115,"dex":98,"wsm":10,"sb":80,"db":50,"wc":"2HT","it":["2han","spea","mele","aspe"],"d2":[60,140],"wc2":"2HT","eth":1},{"code":"ama","name":"Ceremonial Javelin","tier":"X","cat":"ajav","lvl":26,"str":25,"dex":109,"wsm":-10,"sb":80,"db":50,"wc":"1HT","it":["1han","thro","spea","jave","mele","ajav"],"d1":[26,51],"dt":[25,69],"eth":1},{"code":"obb","name":"Heavenly Stone","tier":"E","cat":"orb","lvl":44,"str":0,"dex":0,"wsm":-10,"sb":100,"db":0,"wc":"1HS","it":["orb"],"d1":[21,46],"eth":1},{"code":"obc","name":"Eldritch Orb","tier":"E","cat":"orb","lvl":50,"str":0,"dex":0,"wsm":-10,"sb":100,"db":0,"wc":"1HS","it":["orb"],"d1":[18,50],"eth":1},{"code":"obd","name":"Demon Heart","tier":"E","cat":"orb","lvl":56,"str":0,"dex":0,"wsm":0,"sb":100,"db":0,"wc":"1HS","it":["orb"],"d1":[23,55],"eth":1},{"code":"obe","name":"Vortex Orb","tier":"E","cat":"orb","lvl":63,"str":0,"dex":0,"wsm":0,"sb":100,"db":0,"wc":"1HS","it":["orb"],"d1":[12,66],"eth":1},{"code":"obf","name":"Dimensional Shard","tier":"E","cat":"orb","lvl":66,"str":0,"dex":0,"wsm":10,"sb":100,"db":0,"wc":"1HS","it":["orb"],"d1":[30,53],"eth":1},{"code":"amb","name":"Matriarchal Bow","tier":"E","cat":"abow","lvl":39,"str":87,"dex":187,"wsm":-10,"sb":0,"db":50,"wc":"BOW","it":["miss","bow","abow"],"d2":[31,74],"wc2":"BOW"},{"code":"amc","name":"Grand Matron Bow","tier":"E","cat":"abow","lvl":58,"str":108,"dex":152,"wsm":10,"sb":0,"db":50,"wc":"BOW","it":["miss","bow","abow"],"d2":[20,104],"wc2":"BOW"},{"code":"amd","name":"Matriarchal Spear","tier":"E","cat":"aspe","lvl":45,"str":114,"dex":142,"wsm":-10,"sb":80,"db":50,"wc":"2HT","it":["2han","spea","mele","aspe"],"d2":[79,116],"wc2":"2HT","eth":1},{"code":"ame","name":"Matriarchal Pike","tier":"E","cat":"aspe","lvl":60,"str":132,"dex":149,"wsm":10,"sb":80,"db":50,"wc":"2HT","it":["2han","spea","mele","aspe"],"d2":[44,185],"wc2":"2HT","eth":1},{"code":"amf","name":"Matriarchal Javelin","tier":"E","cat":"ajav","lvl":48,"str":107,"dex":151,"wsm":-10,"sb":80,"db":50,"wc":"1HT","it":["1han","thro","spea","jave","mele","ajav"],"d1":[38,68],"dt":[44,83],"eth":1}],"cats":[{"key":"axe1","label":"One-handed axes"},{"key":"axe2","label":"Two-handed axes"},{"key":"swd1","label":"One-handed swords"},{"key":"swd2","label":"Two-handed swords"},{"key":"dag","label":"Daggers"},{"key":"club","label":"Clubs"},{"key":"mace","label":"Maces"},{"key":"ham1","label":"One-handed hammers"},{"key":"ham2","label":"Two-handed hammers"},{"key":"scep","label":"Scepters"},{"key":"wand","label":"Wands"},{"key":"staf","label":"Staves"},{"key":"spea","label":"Spears"},{"key":"pole","label":"Polearms"},{"key":"jave","label":"Javelins"},{"key":"taxe","label":"Throwing axes"},{"key":"tkni","label":"Throwing knives"},{"key":"bow","label":"Bows"},{"key":"xbow","label":"Crossbows"},{"key":"claw","label":"Claws (Assassin)"},{"key":"orb","label":"Orbs (Sorceress)"},{"key":"abow","label":"Bows (Amazon)"},{"key":"aspe","label":"Spears (Amazon)"},{"key":"ajav","label":"Javelins (Amazon)"}],"classes":[{"code":"ama","tok":"AM","name":"Amazon","th":5},{"code":"sor","tok":"SO","name":"Sorceress","th":-15},{"code":"nec","tok":"NE","name":"Necromancer","th":-10},{"code":"pal","tok":"PA","name":"Paladin","th":20},{"code":"bar","tok":"BA","name":"Barbarian","th":20},{"code":"dru","tok":"DZ","name":"Druid","th":5},{"code":"ass","tok":"AI","name":"Assassin","th":15}],"anim":{"AMA1HTH":[13,256,8],"AMA11HS":[16,256,10],"AMA11HT":[15,256,9],"AMA12HS":[20,256,12],"AMA12HT":[18,256,11],"AMA1BOW":[14,256,6],"AMA1XBW":[20,294,9],"AMA1STF":[20,256,12],"AMA2HTH":[13,256,8],"AMA21HS":[16,256,10],"AMA21HT":[15,256,9],"AMA22HS":[20,256,12],"AMA22HT":[18,256,11],"AMA2STF":[20,256,12],"AMTHHTH":[16,256,9],"AMTH1HS":[16,256,9],"AMTH1HT":[16,256,9],"AMKKHTH":[12,256,5],"AMKK1HS":[12,256,5],"AMKK1HT":[12,256,5],"AMKK2HS":[12,256,5],"AMKK2HT":[12,256,5],"AMKKBOW":[12,256,5],"AMKKXBW":[12,256,5],"AMKKSTF":[12,256,5],"AMS1HTH":[9,256,2],"AMS11HS":[9,256,-1],"AMS11HT":[9,256,-1],"AMS12HS":[9,256,2],"AMS12HT":[9,256,2],"AMS1BOW":[9,256,2],"AMS1XBW":[9,256,-1],"AMS1STF":[9,256,2],"AMNUHTH":[8,128,-1],"AMNU1HS":[8,128,-1],"AMNU1HT":[8,128,-1],"AMNU2HS":[8,128,-1],"AMNU2HT":[8,128,-1],"AMNUBOW":[8,128,-1],"AMNUXBW":[8,128,-1],"AMNUSTF":[8,128,-1],"SOA1HTH":[16,256,9],"SOA11HS":[20,256,12],"SOA11HT":[19,256,11],"SOA12HS":[24,256,14],"SOA12HT":[23,256,13],"SOA1BOW":[17,256,9],"SOA1XBW":[20,282,11],"SOA1STF":[18,256,11],"SOA2HTH":[16,256,8],"SOA21HS":[20,256,12],"SOA21HT":[19,256,11],"SOA22HS":[24,256,14],"SOA22HT":[23,256,13],"SOA2STF":[18,256,11],"SOTHHTH":[20,256,10],"SOTH1HS":[20,256,10],"SOTH1HT":[20,256,10],"SOKKHTH":[12,256,6],"SOKK1HS":[12,256,6],"SOKK1HT":[12,256,6],"SOKK2HS":[12,256,6],"SOKK2HT":[12,256,6],"SOKKBOW":[12,256,6],"SOKKXBW":[12,256,6],"SOKKSTF":[12,256,6],"SOS1HTH":[14,256,7],"SOS11HS":[14,256,7],"SOS11HT":[14,256,7],"SOS12HS":[14,256,7],"SOS12HT":[14,256,7],"SOS1BOW":[14,256,7],"SOS1XBW":[14,256,7],"SOS1STF":[14,256,7],"SONUHTH":[8,128,-1],"SONU1HS":[8,128,-1],"SONU1HT":[8,128,-1],"SONU2HS":[8,128,-1],"SONU2HT":[8,128,-1],"SONUBOW":[8,128,-1],"SONUXBW":[8,128,-1],"SONUSTF":[8,128,-1],"NEA1HTH":[15,256,8],"NEA11HS":[19,256,9],"NEA11HT":[19,256,9],"NEA12HS":[23,256,11],"NEA12HT":[24,256,10],"NEA1BOW":[18,256,9],"NEA1XBW":[20,282,11],"NEA1STF":[20,256,11],"NEA2HTH":[15,256,8],"NEA21HS":[19,256,9],"NEA21HT":[19,256,9],"NEA22HS":[23,256,11],"NEA22HT":[24,256,10],"NEA2STF":[20,256,11],"NETHHTH":[20,256,10],"NETH1HS":[20,256,10],"NETH1HT":[20,256,10],"NEKKHTH":[12,256,6],"NEKK1HS":[12,256,6],"NEKK1HT":[12,256,6],"NEKK2HS":[12,256,6],"NEKK2HT":[12,256,6],"NEKKBOW":[12,256,6],"NEKKXBW":[12,256,6],"NEKKSTF":[12,256,6],"NES1HTH":[16,256,8],"NES11HS":[16,256,8],"NES11HT":[16,256,8],"NES12HS":[16,256,8],"NES12HT":[16,256,8],"NES1BOW":[16,256,8],"NES1XBW":[16,256,8],"NES1STF":[16,256,8],"NENUHTH":[8,128,-1],"NENU1HS":[8,128,-1],"NENU1HT":[8,128,-1],"NENU2HS":[8,128,-1],"NENU2HT":[8,128,-1],"NENUBOW":[8,128,-1],"NENUXBW":[8,128,-1],"NENUSTF":[8,128,-1],"PAA1HTH":[14,256,7],"PAA11HS":[15,256,7],"PAA11HT":[17,256,8],"PAA12HS":[18,256,8],"PAA12HT":[20,256,8],"PAA1BOW":[16,256,8],"PAA1XBW":[20,282,10],"PAA1STF":[18,256,9],"PAA2HTH":[14,256,7],"PAA21HS":[15,256,7],"PAA21HT":[17,256,8],"PAA22HS":[19,256,8],"PAA22HT":[20,256,9],"PAA2STF":[18,256,9],"PATHHTH":[12,256,6],"PATH1HS":[16,256,8],"PATH1HT":[16,256,8],"PAKKHTH":[12,256,5],"PAKK1HS":[12,256,5],"PAKK1HT":[12,256,5],"PAKK2HS":[12,256,5],"PAKK2HT":[12,256,5],"PAKKBOW":[12,256,5],"PAKKXBW":[12,256,5],"PAKKSTF":[12,256,5],"PAS1HTH":[12,256,7],"PAS11HS":[12,256,7],"PAS11HT":[12,256,7],"PANUHTH":[8,184,-1],"PANU1HS":[8,128,-1],"PANU1HT":[8,184,-1],"PANU2HS":[8,184,-1],"PANU2HT":[8,184,-1],"PANUBOW":[8,184,-1],"PANUXBW":[8,128,-1],"PANUSTF":[8,184,-1],"BAA1HTH":[12,256,6],"BAA11HS":[16,256,7],"BAA11HT":[16,256,7],"BAA12HS":[18,256,8],"BAA12HT":[19,256,9],"BAA1BOW":[15,256,7],"BAA1XBW":[20,294,10],"BAA1STF":[19,256,9],"BAA11JS":[16,256,7],"BAA11JT":[16,256,7],"BAA11SS":[16,256,7],"BAA11ST":[16,256,7],"BAA21HS":[16,256,7],"BAA21HT":[16,256,7],"BAA22HS":[18,256,8],"BAA22HT":[19,256,9],"BAA2STF":[19,256,9],"BAA21JS":[16,256,8],"BAA21JT":[16,256,7],"BAA21SS":[16,256,7],"BAA21ST":[16,256,7],"BATHHTH":[16,256,8],"BATH1HS":[16,256,8],"BATH1HT":[16,256,8],"BATH1JS":[16,256,8],"BATH1JT":[16,256,8],"BATH1SS":[16,256,8],"BATH1ST":[16,256,8],"BAKKHTH":[12,256,4],"BAKK1HS":[12,256,4],"BAKK1HT":[12,256,4],"BAKK2HS":[12,256,4],"BAKK2HT":[12,256,4],"BAKKBOW":[12,256,4],"BAKKXBW":[12,256,4],"BAKKSTF":[12,256,4],"BAKK1JS":[12,256,4],"BAKK1JT":[12,256,4],"BAKK1SS":[12,256,4],"BAKK1ST":[12,256,4],"BAS1HTH":[15,256,-1],"BAS11HS":[15,256,-1],"BAS11HT":[15,256,-1],"BAS12HS":[15,256,-1],"BAS12HT":[15,256,-1],"BAS1BOW":[15,256,-1],"BAS1XBW":[15,256,-1],"BAS1STF":[15,256,-1],"BAS11JS":[15,256,-1],"BAS11JT":[15,256,-1],"BAS11SS":[15,256,-1],"BAS11ST":[15,256,-1],"BAS21HT":[14,256,9],"BAS31JS":[12,256,8],"BAS31JT":[12,256,8],"BAS31SS":[12,256,7],"BAS31ST":[12,256,7],"BAS41JS":[16,256,8],"BAS41JT":[16,256,8],"BAS41SS":[16,256,9],"BAS41ST":[16,256,9],"BANUHTH":[8,96,-1],"BANU1HS":[8,96,-1],"BANU1HT":[8,96,-1],"BANU2HS":[8,96,-1],"BANU2HT":[8,96,-1],"BANUBOW":[8,96,-1],"BANUXBW":[8,96,-1],"BANUSTF":[8,96,-1],"BANU1JS":[8,96,-1],"BANU1JT":[8,96,-1],"BANU1SS":[8,96,-1],"BANU1ST":[8,96,-1],"DZA1HTH":[16,256,8],"DZA11HS":[19,256,9],"DZA11HT":[19,256,8],"DZA12HS":[21,256,10],"DZA12HT":[23,256,9],"DZA1BOW":[16,256,8],"DZA1XBW":[20,282,10],"DZA1STF":[17,256,9],"DZA21HS":[19,256,9],"DZA21HT":[19,256,8],"DZA22HS":[21,256,10],"DZA22HT":[23,256,9],"DZA2STF":[17,256,9],"DZTHHTH":[18,256,9],"DZTH1HS":[18,256,8],"DZTH1HT":[18,256,8],"DZKKHTH":[12,256,5],"DZKK1HS":[12,224,5],"DZKK1HT":[12,256,5],"DZKK2HS":[12,224,5],"DZKK2HT":[12,256,5],"DZKKBOW":[12,256,5],"DZKKXBW":[12,256,5],"DZKKSTF":[12,256,5],"DZS1HTH":[15,256,8],"DZS11HS":[15,256,9],"DZS11HT":[15,256,8],"DZS12HS":[15,208,8],"DZS12HT":[15,208,8],"DZS1BOW":[15,208,8],"DZS1XBW":[15,256,8],"DZS1STF":[15,208,8],"DZNUHTH":[6,120,-1],"DZNU1HS":[6,120,-1],"DZNU1HT":[6,120,-1],"DZNU2HS":[6,120,-1],"DZNU2HT":[6,120,-1],"DZNUBOW":[6,120,-1],"DZNUXBW":[6,120,-1],"DZNUSTF":[6,120,-1],"AIA1HTH":[11,256,6],"AIA11HS":[15,256,7],"AIA11HT":[15,256,7],"AIA12HS":[23,256,11],"AIA12HT":[23,256,10],"AIA1BOW":[16,256,7],"AIA1XBW":[21,294,10],"AIA1STF":[19,256,9],"AIA1HT1":[11,208,6],"AIA1HT2":[11,208,6],"AIA2HTH":[12,256,6],"AIA21HS":[15,256,7],"AIA21HT":[15,256,7],"AIA22HS":[23,256,11],"AIA22HT":[23,256,10],"AIA2STF":[19,256,9],"AIA2HT1":[12,208,6],"AIA2HT2":[12,208,6],"AITH1HS":[16,256,7],"AITH1HT":[16,256,7],"AIKKHTH":[13,256,4],"AIKK1HS":[13,256,4],"AIKK1HT":[13,256,4],"AIKK2HS":[13,256,4],"AIKK2HT":[13,256,4],"AIKKBOW":[13,256,4],"AIKKXBW":[13,256,4],"AIKKSTF":[13,256,4],"AIKKHT1":[13,256,4],"AIKKHT2":[13,256,4],"AIS1HTH":[17,256,10],"AIS11HS":[15,256,10],"AIS11HT":[15,256,10],"AIS12HS":[15,256,10],"AIS12HT":[15,256,10],"AIS1BOW":[15,256,10],"AIS1XBW":[15,256,10],"AIS1STF":[15,256,10],"AIS1HT1":[17,256,10],"AIS1HT2":[15,256,10],"AIS2HTH":[8,128,4],"AIS21HS":[8,128,4],"AIS21HT":[8,128,4],"AIS22HS":[8,128,4],"AIS22HT":[8,128,4],"AIS2BOW":[8,128,4],"AIS2XBW":[8,128,4],"AIS2STF":[8,128,4],"AIS2HT1":[8,128,4],"AIS2HT2":[8,128,4],"AIS3HTH":[10,256,-1],"AIS31HS":[10,256,-1],"AIS31HT":[10,256,-1],"AIS32HS":[10,256,-1],"AIS32HT":[10,256,-1],"AIS3BOW":[10,256,-1],"AIS3XBW":[10,256,-1],"AIS3STF":[10,256,-1],"AIS3HT1":[10,256,-1],"AIS3HT2":[10,256,-1],"AIS4HT1":[12,208,6],"AIS4HT2":[12,208,6],"AINUHTH":[8,128,-1],"AINU1HS":[8,128,-1],"AINU1HT":[8,128,-1],"AINU2HS":[8,128,-1],"AINU2HT":[8,128,-1],"AINUBOW":[8,128,-1],"AINUXBW":[8,128,-1],"AINUSTF":[8,128,-1],"AINUHT1":[8,128,-1],"AINUHT2":[8,128,-1],"40NUHTH":[9,144,-1],"40A1HTH":[13,256,7],"40A2HTH":[13,256,7],"40S3HTH":[10,240,6],"40S4HTH":[7,152,4],"TGNUHTH":[10,136,-1],"TGA1HTH":[12,224,7],"TGA2HTH":[12,224,7],"TGS3HTH":[10,208,6],"TGS4HTH":[7,152,4]},"seq":{"1":{"HTH":[13,1],"1HT":[16,3],"2HT":[18,3]},"2":{"HTH":[14,1],"1HS":[7,1],"2HS":[8,1]},"3":{"HTH":[14,1],"1HS":[16,1]},"4":{"HTH":[15,9],"1HT":[15,9],"2HT":[15,9],"1HS":[15,9],"2HS":[15,9],"STF":[15,9]},"5":{"HTH":[14,1],"1HS":[6,1]},"6":{"HTH":[8,1],"1HT":[8,1],"2HT":[8,1],"1HS":[8,1],"2HS":[8,1],"BOW":[8,1],"XBW":[8,1],"STF":[8,1],"1JS":[8,1],"1JT":[8,1],"1SS":[8,1],"1ST":[8,1],"HT1":[8,1],"HT2":[8,1]},"7":{"HTH":[13,1],"BOW":[13,1],"XBW":[20,1]},"8":{"HTH":[13,1],"1HT":[21,1],"2HT":[24,1]},"9":{"HTH":[13,1],"1HT":[16,1],"2HT":[16,0]},"10":{"HTH":[8,2],"1HT":[8,2],"2HT":[8,2],"1HS":[8,2],"2HS":[8,2],"STF":[8,2],"1JS":[8,2],"1JT":[8,2],"1SS":[8,2],"1ST":[8,2],"HT1":[8,2],"HT2":[8,2]},"11":{"HTH":[17,2],"1HT":[17,2],"2HT":[17,2],"1HS":[17,2],"2HS":[17,2],"BOW":[17,2],"XBW":[17,2],"STF":[17,2],"1JS":[17,2],"1JT":[17,2],"1SS":[17,2],"1ST":[17,2],"HT1":[17,2],"HT2":[17,2]},"12":{"HTH":[19,1],"1HT":[19,1],"2HT":[19,1],"1HS":[19,1],"2HS":[19,1],"BOW":[19,1],"XBW":[19,1],"STF":[19,1],"1JS":[19,1],"1JT":[19,1],"1SS":[19,1],"1ST":[19,1],"HT1":[19,1],"HT2":[19,1]},"13":{"HTH":[15,3],"1HT":[15,3],"2HT":[15,3],"1HS":[15,3],"2HS":[15,3],"BOW":[15,3],"XBW":[15,3],"STF":[15,3],"1JS":[15,3],"1JT":[15,3],"1SS":[15,3],"1ST":[15,3],"HT1":[15,3],"HT2":[15,3]},"14":{"HTH":[22,3],"1HT":[25,3],"2HT":[28,3],"1HS":[25,3],"2HS":[27,3],"STF":[28,3],"1JS":[22,3],"1JT":[22,3],"1SS":[22,3],"1ST":[22,3],"HT1":[22,3],"HT2":[22,3]},"15":{"HTH":[12,2],"1HT":[12,2],"2HT":[12,2],"1HS":[12,2],"2HS":[12,2],"BOW":[12,2],"XBW":[12,2],"STF":[12,2],"1JS":[12,2],"1JT":[12,2],"1SS":[12,2],"1ST":[12,2],"HT1":[12,2],"HT2":[12,2]},"16":{"HTH":[12,1],"HT1":[12,1],"HT2":[16,2]},"17":{"HTH":[19,3],"1HT":[19,3],"2HT":[19,3],"1HS":[19,3],"2HS":[19,3],"BOW":[19,3],"XBW":[19,3],"STF":[19,3],"HT1":[19,3],"HT2":[19,3]},"18":{"HTH":[8,1],"1HT":[8,1],"2HT":[8,1],"1HS":[8,1],"2HS":[8,1],"BOW":[8,1],"XBW":[8,1],"STF":[8,1],"1JS":[8,1],"1JT":[8,1],"1SS":[8,1],"1ST":[8,1],"HT1":[8,1],"HT2":[8,1]},"19":{"HTH":[20,3],"1HT":[20,3],"2HT":[20,3],"1HS":[20,3],"2HS":[20,3],"BOW":[20,3],"XBW":[20,3],"STF":[20,3],"HT1":[20,3],"HT2":[20,3]},"20":{"HTH":[17,4],"1HT":[17,4],"2HT":[17,4],"1HS":[17,4],"2HS":[17,4],"BOW":[17,4],"XBW":[17,4],"HT1":[17,4],"HT2":[17,4]},"21":{"HTH":[23,2],"1HT":[23,2],"2HT":[23,2],"1HS":[23,2],"2HS":[23,2],"BOW":[23,2],"XBW":[23,2],"STF":[23,2],"1JS":[23,2],"1JT":[23,2],"1SS":[23,2],"1ST":[23,2],"HT1":[23,2],"HT2":[23,2]},"22":{"HTH":[16,1],"1HT":[16,1],"2HT":[16,1],"1HS":[16,1],"2HS":[16,1],"BOW":[16,1],"XBW":[16,1],"STF":[16,1],"1JS":[16,1],"1JT":[16,1],"1SS":[16,1],"1ST":[16,1],"HT1":[16,1],"HT2":[16,1]},"23":{"HTH":[11,1],"1HT":[11,1],"2HT":[11,1],"1HS":[11,1],"2HS":[11,1],"BOW":[11,1],"XBW":[11,1],"STF":[11,1],"1JS":[11,1],"1JT":[11,1],"1SS":[11,1],"1ST":[11,1],"HT1":[11,1],"HT2":[11,1]}},"attacks":[{"k":"attack","id":0,"cls":null,"kind":"normal","mode":"A1","label":"Attack","srcdam":128,"itype":"weap","hit":1},{"k":"throw","id":2,"cls":null,"kind":"normal","mode":"TH","dmg":null,"throw":true,"label":"Throw","srcdam":128,"itype":"thro","hit":1},{"k":"jab","id":10,"cls":"ama","kind":"seq","dmg":"calc1","label":"Jab","srcdam":128,"seq":1,"itype":"spea","hit":1},{"k":"fend","id":30,"cls":"ama","kind":"roll","mode":"A1","dmg":"calc2","hits":"calc1","roll":"Param2","label":"Fend","srcdam":128,"itype":"spea","hit":1},{"k":"strafe","id":26,"cls":"ama","kind":"roll","mode":"A1","dmg":"calc2","hits":"calc1","roll":"Param6","missile":true,"label":"Strafe","srcdam":128,"itype":"miss","hit":1},{"k":"multishot","id":12,"cls":"ama","kind":"normal","mode":"A1","dmg":"calc4","missile":true,"label":"Multiple Shot","srcdam":128,"itype":"miss","hit":1},{"k":"guided","id":22,"cls":"ama","kind":"normal","mode":"A1","dmg":"calc1","missile":true,"label":"Guided Arrow","srcdam":64,"itype":"miss","hit":0},{"k":"dragonclaw","id":260,"cls":"ass","kind":"seq","dmg":"calc1","label":"Dragon Claw","srcdam":128,"seq":16,"itype":"h2h","hit":1},{"k":"bladefury","id":266,"cls":"ass","kind":"seq","dmg":null,"missile":true,"label":"Blade Fury","srcdam":96,"seq":23,"itype":"","hit":1},{"k":"bladedance","id":380,"cls":"ass","kind":"ww","dmg":"calc1","label":"Blade Dance","srcdam":128,"itype":"mele","hit":1},{"k":"dragontalon","id":255,"cls":"ass","kind":"roll","mode":"KK","hits":"calc1","roll":100,"frames_only":true,"label":"Dragon Talon","srcdam":128,"itype":"","hit":1},{"k":"bash","id":126,"cls":"bar","kind":"normal","mode":"A1","dmg":"calc1","flat":"calc2","label":"Bash","srcdam":128,"itype":"mele","hit":1},{"k":"doubleswing","id":133,"cls":"bar","kind":"seq","dmg":"calc1","rate":"Param5","label":"Double Swing","srcdam":128,"seq":11,"itype":"mele","hit":1},{"k":"frenzy","id":147,"cls":"bar","kind":"seq","dmg":"calc1","label":"Frenzy","srcdam":128,"seq":11,"itype":"mele","hit":1},{"k":"berserk","id":152,"cls":"bar","kind":"seq","dmg":"calc1","label":"Berserk","srcdam":128,"seq":11,"itype":"mele","hit":1},{"k":"whirlwind","id":151,"cls":"bar","kind":"ww","dmg":"calc1","label":"Whirlwind","srcdam":128,"itype":"mele","hit":1},{"k":"concentrate","id":144,"cls":"bar","kind":"normal","mode":"A1","dmg":"calc1","label":"Concentrate","srcdam":128,"itype":"mele","hit":1},{"k":"doublethrow","id":140,"cls":"bar","kind":"seq","dmg":"calc1","throw":true,"label":"Double Throw","srcdam":128,"seq":15,"itype":"comb","hit":1},{"k":"splitthrow","id":375,"cls":"bar","kind":"normal","mode":"TH","dmg":"calc4","throw":true,"label":"Split Throw","srcdam":128,"itype":"comb","hit":1},{"k":"stun","id":139,"cls":"bar","kind":"normal","mode":"A1","dmg":null,"label":"Stun","srcdam":32,"itype":"mele","hit":1},{"k":"wolfattack","id":0,"cls":"dru","kind":"were","form":"40","mode":"A1","label":"Attack (Werewolf)","srcdam":128,"itype":"weap","hit":1},{"k":"bearattack","id":0,"cls":"dru","kind":"were","form":"TG","mode":"A1","label":"Attack (Werebear)","srcdam":128,"itype":"weap","hit":1},{"k":"feralrage","id":232,"cls":"dru","kind":"were","form":"40","mode":"A1","dmg":"calc1","label":"Feral Rage","srcdam":128,"itype":"","hit":1},{"k":"fury","id":248,"cls":"dru","kind":"wereroll","form":"40","mode":"A1","dmg":"calc2","hits":"calc1","roll":"Param2","label":"Fury","srcdam":128,"itype":"","hit":1},{"k":"maul","id":233,"cls":"dru","kind":"were","form":"TG","mode":"A1","dmg":null,"label":"Maul","srcdam":128,"itype":"","hit":1},{"k":"zeal","id":106,"cls":"pal","kind":"roll","mode":"A1","dmg":"calc2","hits":"calc1","roll":"Param2","label":"Zeal","srcdam":128,"itype":"mele","hit":1},{"k":"sacrifice","id":96,"cls":"pal","kind":"normal","mode":"A1","dmg":"calc1","label":"Sacrifice","srcdam":128,"itype":"mele","hit":1},{"k":"charge","id":107,"cls":"pal","kind":"charge","dmg":"calc1","label":"Charge","srcdam":128,"itype":"mele","hit":1},{"k":"joust","id":378,"cls":"pal","kind":"normal","mode":"A1","dmg":"calc1","label":"Joust","srcdam":128,"itype":"","hit":1},{"k":"smite","id":97,"cls":"pal","kind":"normal","mode":"S1","dmg":"calc1","frames_only":true,"label":"Smite","srcdam":128,"itype":"shld","hit":0}],"skills":{"255":{"Id":"255","skill":"Dragon Talon","charclass":"ass","HitShift":"8","ToHit":"20","LevToHit":"25","anim":"KK","seqnum":"19","maxlvl":"20","reqlevel":"1","Param1":"60","Param2":"30","Param3":"25","Param4":"50","Param5":"25","Param6":"99","Param8":"25","calc1":"\"min(lvl/6+1, 3)\"","calc2":"ln12 + (skill('Dragon Tail'.blvl)+ skill('Dragon Flight'.blvl))*par8","name":"Dragon Talon"},"275":{"Id":"275","skill":"Dragon Flight","charclass":"ass","HitShift":"8","ToHit":"180","LevToHit":"15","anim":"KK","maxlvl":"20","reqlevel":"24","Param1":"100","Param2":"25","Param7":"40","calc2":"ln12","name":"Dragon Flight"},"270":{"Id":"270","skill":"Dragon Tail","charclass":"ass","HitShift":"8","ToHit":"210","LevToHit":"10","anim":"KK","maxlvl":"20","reqlevel":"18","Param1":"40","Param2":"13","Param3":"6","Param4":"-20","Param8":"8","calc1":"ln12 + (skill('Dragon Talon'.blvl)+ skill('Dragon Flight'.blvl))*par8","aurastat1":"attackrate","aurastatcalc1":"par4","name":"Dragon Tail"},"252":{"Id":"252","skill":"Claw Mastery","charclass":"ass","HitShift":"8","anim":"SC","maxlvl":"20","itypea1":"asm","passiveitype":"asm","reqlevel":"1","Param1":"30","Param2":"10","Param3":"40","Param4":"15","Param5":"0","Param6":"30","passivestat1":"passive_mastery_melee_th","passivestat2":"passive_mastery_melee_dmg","passivestat3":"passive_mastery_melee_crit","passivecalc1":"ln12","passivecalc2":"ln34","passivecalc3":"dm56","name":"Claw and Dagger Mastery"},"248":{"Id":"248","skill":"Fury","charclass":"dru","HitShift":"8","ToHit":"235","LevToHit":"10","anim":"A1","SrcDam":"128","maxlvl":"20","reqlevel":"30","Param2":"100","Param3":"100","Param4":"8","Param5":"3","Param6":"3","Param8":"4","calc1":"\"min((par5 + lvl -1), par6)\"","calc2":"ln34 + skill('Feral Rage'.blvl)*par8","aurastat1":"inc_splash_radius","aurastatcalc1":"1","name":"Fury"},"232":{"Id":"232","skill":"Feral Rage","charclass":"dru","HitShift":"8","ToHit":"25","LevToHit":"8","auralencalc":"par1","anim":"A1","SrcDam":"128","maxlvl":"20","reqlevel":"6","Param1":"750","Param2":"1","Param3":"20","Param4":"120","Param5":"50","Param6":"10","Param7":"2","Param8":"3","calc1":"ln56 + skill('Fury'.blvl) * 6","calc2":"lvl/par7 + par8","aurastat1":"velocitypercent","aurastat2":"lifedrainmindam","aurastatcalc1":"dm34","aurastatcalc2":"\"1 + (lvl - 1) * (min(par2 * skill('Feral Rage'.lvl) / 2 + 4,10) - 1) / max(skill('Feral Rage'.clc2) - 1,1)\"","name":"Feral Rage"},"246":{"Id":"246","skill":"Spirit of Barbs","charclass":"dru","HitShift":"8","EMin":"15","EDmgSymPerCalc":"(skill('Cycle of Life'.blvl)) * par6","anim":"SC","maxlvl":"20","reqlevel":"18","EMinLev1":"8","EMinLev2":"16","EMinLev3":"32","EMinLev4":"48","EMinLev5":"64","Param1":"15","Param2":"0","Param3":"50","Param4":"20","Param6":"7","Param7":"30","Param8":"2","calc1":"(lvl-1)*par1","calc2":"ulvl","passivestat1":"poisonresist","passivestat2":"maxpoisonresist","passivecalc1":"100","passivecalc2":"100","name":"Spirit of Barbs"},"231":{"Id":"231","skill":"Cycle of Life","charclass":"dru","HitShift":"8","anim":"SC","maxlvl":"20","reqlevel":"12","Param1":"10","Param2":"0","Param3":"52","Param4":"20","Param5":"4","Param6":"40","Param7":"4","Param8":"4","calc1":"par3 * (lvl-1)","calc2":"ulvl * 3 / 4 + lvl","calc3":"(par4 + par5*lvl) + (skill('Oak Sage'.blvl)+skill('Vines'.blvl)) * par8 / 2","calc4":"(par6 + par7*lvl) + (skill('Oak Sage'.blvl)+skill('Vines'.blvl)) * par8","name":"Carrion Vine"},"241":{"Id":"241","skill":"Vines","charclass":"dru","HitShift":"8","anim":"SC","maxlvl":"20","reqlevel":"24","Param1":"3","Param2":"1","Param3":"30","Param4":"15","Param5":"3","Param6":"25","Param7":"3","Param8":"3","calc1":"par3 * (lvl-1)","calc2":"ulvl * 3 / 4 + lvl","calc3":"(par4 + par5*lvl) + (skill('Oak Sage'.blvl)+skill('Cycle of Life'.blvl)) * par8 / 3","calc4":"(par6 + par7*lvl) + (skill('Oak Sage'.blvl)+skill('Cycle of Life'.blvl)) * par8","name":"Solar Creeper"},"226":{"Id":"226","skill":"Oak Sage","charclass":"dru","HitShift":"8","EMin":"12","EMax":"50","anim":"SC","maxlvl":"20","reqlevel":"30","EMinLev1":"4","EMinLev2":"4","EMinLev3":"5","EMinLev4":"5","EMinLev5":"5","EMaxLev1":"12","EMaxLev2":"14","EMaxLev3":"16","EMaxLev4":"18","EMaxLev5":"20","Param1":"50","Param2":"12","Param3":"250","Param4":"0","Param5":"0","Param6":"0","Param7":"30","Param8":"2","calc1":"(lvl-1)*(par1 + 1)/100","calc2":"ulvl","passivestat1":"poisonresist","passivestat2":"maxpoisonresist","passivecalc1":"100","passivecalc2":"100","name":"Oak Sage"},"242":{"Id":"242","skill":"Hunger","charclass":"dru","HitShift":"8","EMax":"40","EDmgSymPerCalc":"(skill('Maul'.blvl)) * par8","auralencalc":"475+(lvl*25)","anim":"S3","maxlvl":"20","reqlevel":"12","EMaxLev1":"10","EMaxLev2":"16","EMaxLev3":"24","EMaxLev4":"34","EMaxLev5":"46","Param1":"14","Param2":"50","Param3":"3","Param4":"19","Param8":"20","aurastat1":"lifedrainmindam","aurastat2":"velocitypercent","aurastat3":"item_openwounds","aurastat4":"deep_wounds","aurastatcalc1":"par3 + blvl / 4","aurastatcalc2":"par4 + lvl","aurastatcalc3":"dm12 + 5","aurastatcalc4":"edmx","name":"Hunger"},"233":{"Id":"233","skill":"Maul","charclass":"dru","HitShift":"8","ToHit":"25","LevToHit":"10","auralencalc":"par4","anim":"A1","SrcDam":"128","maxlvl":"20","reqlevel":"6","Param3":"40","Param4":"500","Param5":"30","Param6":"5","Param7":"2","Param8":"3","calc1":"0","calc2":"lvl/par7 + par8","aurastat1":"damagepercent","aurastat2":"stunlength","aurastatcalc1":"lvl*par3","aurastatcalc2":"((par5 + ((blvl - 1) * - par6))<5)?par6:(par5 + ((blvl - 1) * - par6))","name":"Maul"},"236":{"Id":"236","skill":"Heart of Wolverine","charclass":"dru","HitShift":"8","anim":"SC","maxlvl":"20","reqlevel":"6","Param1":"5","Param2":"3","Param3":"25","Param4":"8","Param5":"25","Param6":"8","Param7":"30","Param8":"2","calc1":"(lvl-1)*par1","calc2":"ulvl","passivestat1":"poisonresist","passivestat2":"maxpoisonresist","passivecalc1":"100","passivecalc2":"100","name":"Heart of Wolverine"},"228":{"Id":"228","skill":"Wearbear","charclass":"dru","HitShift":"8","auralencalc":"249975","anim":"SC","seqnum":"22","SrcDam":"128","maxlvl":"20","reqlevel":"1","Param1":"55","Param2":"15","Param3":"75","Param4":"10","Param5":"10","Param7":"10","Param8":"1","aurastat1":"damagepercent","aurastat2":"skill_armor_percent","aurastat3":"item_maxhp_percent","aurastat4":"item_tohit_percent","aurastat5":"inc_splash_radius","aurastat6":"skill_concentration","aurastatcalc1":"ln12","aurastatcalc2":"ln34","aurastatcalc3":"par5 + skill('Shape Shifting'.ln34)","aurastatcalc4":"skill('Shape Shifting'.ln12)","aurastatcalc5":"20","aurastatcalc6":"ln78","name":"Werebear"},"224":{"Id":"224","skill":"Shape Shifting","charclass":"dru","HitShift":"8","anim":"SC","maxlvl":"20","reqlevel":"1","Param1":"50","Param2":"12","Param3":"2","Param4":"2","Param5":"0","Param6":"0","name":"Lycanthropy"},"223":{"Id":"223","skill":"Wearwolf","charclass":"dru","HitShift":"8","ToHit":"0","LevToHit":"0","auralencalc":"249975","anim":"SC","seqnum":"22","SrcDam":"128","maxlvl":"20","reqlevel":"1","Param1":"25","Param2":"0","Param3":"10","Param4":"80","Param5":"20","Param6":"4","aurastat1":"attackrate","aurastat2":"item_tohit_percent","aurastat3":"item_maxhp_percent","aurastat4":"damagepercent","aurastat5":"normal_damage_reduction","aurastat6":"magic_damage_reduction","aurastatcalc1":"dm34","aurastatcalc2":"skill('Shape Shifting'.ln12)","aurastatcalc3":"par2+skill('Shape Shifting'.ln34)","aurastatcalc4":"ln56","aurastatcalc5":"1 + lvl / 3","aurastatcalc6":"1 + lvl / 3","name":"Werewolf"},"155":{"Id":"155","skill":"Battle Command","charclass":"bar","HitShift":"8","auralencalc":"7500","anim":"SC","maxlvl":"20","reqlevel":"30","Param1":"125","Param2":"250","Param3":"20","Param4":"3","Param8":"125","aurastat1":"item_allskills","aurastat2":"damagepercent","aurastatcalc1":"1+blvl/10","aurastatcalc2":"ln34","name":"Battle Command"},"152":{"Id":"152","skill":"Berserk","charclass":"bar","HitShift":"8","ToHit":"60","LevToHit":"8","auralencalc":"13","anim":"SQ","seqnum":"11","SrcDam":"128","maxlvl":"20","itypea1":"mele","reqlevel":"24","Param1":"150","Param2":"20","Param3":"5","Param4":"1","Param5":"5","Param6":"1","Param8":"12","calc1":"ln12+(skill('Combat Reflexes'.blvl) + skill('Taunt'.blvl))*par8","aurastat1":"damageresist","aurastat2":"armor_override_percent","aurastat3":"passive_phys_pierce","aurastat4":"inc_splash_radius","aurastatcalc1":"-\"min(ln34, 10)\"","aurastatcalc2":"-25","aurastatcalc3":"\"min(ln56,45)\"","aurastatcalc4":"20","name":"Berserk"},"137":{"Id":"137","skill":"Taunt","charclass":"bar","HitShift":"8","auralencalc":"50 + (25*blvl / 4)","anim":"SC","maxlvl":"20","reqlevel":"18","Param1":"-5","Param2":"-2","Param3":"-5","Param4":"-2","aurastat1":"item_tohit_percent","aurastat2":"damagepercent","aurastatcalc1":"ln12","aurastatcalc2":"ln34","name":"Taunt"},"141":{"Id":"141","skill":"Combat Reflexes","charclass":"bar","HitShift":"8","anim":"SC","maxlvl":"20","reqlevel":"12","Param1":"30","Param2":"15","Param3":"0","Param4":"2","Param5":"20","Param6":"10","passivestat1":"skill_passive_staminapercent","passivestat2":"item_fastergethitrate","passivestat3":"maxhp","passivecalc1":"ln12","passivecalc2":"blvl * 2","passivecalc3":"(par5 + par6*lvl) * 256","name":"Combat Reflexes"},"151":{"Id":"151","skill":"Whirlwind","charclass":"bar","HitShift":"8","ToHit":"90","LevToHit":"6","anim":"SQ","seqnum":"10","SrcDam":"128","maxlvl":"20","itypea1":"mele","reqlevel":"30","Param1":"20","Param2":"5","Param3":"6","Param5":"0","Param6":"2","calc1":"ln12","aurastat1":"velocitypercent","aurastat2":"item_attackrate","aurastatcalc1":"\"min(ln56, 65)\"","aurastatcalc2":"100","name":"Whirlwind"},"150":{"Id":"150","skill":"Grim Ward","charclass":"bar","HitShift":"8","ToHit":"120","LevToHit":"10","anim":"SC","maxlvl":"20","reqlevel":"24","Param1":"16","Param2":"1","Param3":"1000","Param4":"0","Param5":"50","Param6":"15","calc1":"ln34","aurastat1":"damagepercent","aurastat2":"tohit","aurastatcalc1":"ln56","aurastatcalc2":"toht","name":"Grim Ward"},"148":{"Id":"148","skill":"Increased Speed","charclass":"bar","HitShift":"8","ELen":"2","anim":"SC","maxlvl":"20","reqlevel":"24","ELevLen1":"2","ELevLen2":"2","ELevLen3":"1","Param1":"7","Param2":"50","passivestat1":"velocitypercent","passivestat2":"item_fasterattackrate","passivecalc1":"dm12","passivecalc2":"blvl * 2","name":"Increased Speed"},"147":{"Id":"147","skill":"Frenzy","charclass":"bar","HitShift":"8","ELen":"32","ToHit":"30","LevToHit":"12","auralencalc":"375 + (25 * (blvl*2))","anim":"SQ","seqnum":"11","SrcDam":"128","maxlvl":"20","itypea1":"mele","reqlevel":"6","ELevLen1":"2","ELevLen2":"1","ELevLen3":"1","Param1":"25","Param2":"25","Param3":"0","Param4":"45","Param5":"0","Param6":"50","Param7":"375","Param8":"20","calc1":"ln12+(skill('Double Swing'.blvl) + skill('Stun'.blvl))*par8","calc2":"dm34","calc4":"5","aurastat1":"velocitypercent","aurastat2":"attackrate","aurastatcalc1":"edln","aurastatcalc2":"dm56","name":"Frenzy"},"139":{"Id":"139","skill":"Stun","charclass":"bar","HitShift":"8","ELen":"25","ToHitCalc":"40+lvl*15+skill('Concentrate'.blvl)*par7","anim":"A1","SrcDam":"32","maxlvl":"20","itypea1":"mele","reqlevel":"6","ELevLen1":"4","ELevLen2":"4","ELevLen3":"2","Param1":"0","Param2":"0","Param6":"0","Param7":"10","Param8":"8","name":"Stun"},"144":{"Id":"144","skill":"Concentrate","charclass":"bar","HitShift":"8","ToHit":"40","LevToHit":"20","anim":"A1","SrcDam":"128","maxlvl":"20","itypea1":"mele","reqlevel":"12","Param1":"80","Param2":"25","Param3":"20","Param4":"5","Param7":"25","Param8":"25","calc1":"ln12+skill('Bash'.blvl)*par8+skill('Battle Command'.blvl)*par7","calc4":"30 + 2*blvl ","aurastat1":"skill_armor_percent","aurastat2":"inc_splash_radius","aurastatcalc1":"ln34","aurastatcalc2":"20","name":"Concentrate"},"126":{"Id":"126","skill":"Bash","charclass":"bar","HitShift":"8","ToHit":"30","LevToHit":"20","anim":"A1","SrcDam":"128","maxlvl":"20","itypea1":"mele","reqlevel":"1","Param3":"1","Param4":"1","Param5":"50","Param6":"25","Param7":"10","Param8":"20","calc1":"ln56 + (skill('Stun'.blvl) + skill('Concentrate'.blvl)) * par8","calc2":"ln34","name":"Bash"},"133":{"Id":"133","skill":"Double Swing","charclass":"bar","HitShift":"8","ToHit":"20","LevToHit":"15","anim":"SQ","seqnum":"11","SrcDam":"128","maxlvl":"20","itypea1":"mele","reqlevel":"1","Param1":"50","Param3":"30","Param4":"30","Param5":"50","Param8":"20","calc1":"ln34 + (skill('Frenzy'.blvl) + skill('Stun'.blvl)) * par8","aurastat1":"attackrate","aurastatcalc1":"par5","name":"Double Swing"},"146":{"Id":"146","skill":"Battle Cry","charclass":"bar","HitShift":"8","auralencalc":"ln12 + stat('pvp_cd'.accr)*5 + stat('pvp_lld_cd'.accr)*5","anim":"SC","maxlvl":"20","reqlevel":"30","Param1":"300","Param2":"0","Param3":"15","Param4":"1","Param5":"4","aurastat1":"skill_armor_percent","aurastat2":"damageresist","aurastatcalc1":"-\"min(ln34, 30)\"","aurastatcalc2":"-(par5+(lvl<22)?lvl:(22+((lvl-22)/2)))","name":"Battle Cry"},"140":{"Id":"140","skill":"Double Throw","charclass":"bar","HitShift":"8","ToHit":"35","LevToHit":"15","anim":"SQ","seqnum":"15","SrcDam":"128","maxlvl":"20","itypea1":"comb","reqlevel":"12","Param1":"45","Param2":"8","Param3":"15","Param4":"0","Param5":"3","Param6":"3","Param8":"6","calc1":"ln12 + (skill('Double Swing'.blvl) + skill('Frenzy'.blvl))*par8","calc2":"\"min(par5 + lvl / par6, 8)\"","calc3":"par4","name":"Double Throw"},"135":{"Id":"135","skill":"Throwing Mastery","charclass":"bar","HitShift":"8","ELen":"15","anim":"SC","maxlvl":"20","passiveitype":"thro","reqlevel":"1","ELevLen1":"2","ELevLen2":"1","ELevLen3":"1","Param1":"30","Param2":"10","Param3":"30","Param4":"5","Param5":"0","Param6":"35","passivestat1":"passive_mastery_throw_th","passivestat2":"passive_mastery_throw_dmg","passivestat3":"passive_mastery_throw_crit","passivestat4":"skill_pierce","passivecalc1":"ln12","passivecalc2":"ln34","passivecalc3":"dm56","passivecalc4":"edln","name":"Throwing Mastery"},"134":{"Id":"134","skill":"Two Hand Mastery","charclass":"bar","HitShift":"8","ELen":"5","anim":"SC","maxlvl":"20","passiveitype":"2han","reqlevel":"6","ELevLen1":"1","ELevLen2":"1","ELevLen3":"1","Param1":"30","Param2":"10","Param3":"40","Param4":"10","Param5":"0","Param6":"35","passivestat1":"passive_mastery_melee_th","passivestat2":"passive_mastery_melee_dmg","passivestat3":"item_crushingblow","passivestat4":"item_crushingblow_efficiency","passivestat5":"inc_splash_radius","passivecalc1":"ln12","passivecalc2":"ln34","passivecalc3":"dm56","passivecalc4":"\"min(edln, 20)\"","passivecalc5":"\"min((20+lvl), 40)\"","name":"Two Handed Weapon Mastery"},"128":{"Id":"128","skill":"One Hand Mastery","charclass":"bar","HitShift":"8","ELen":"10","anim":"SC","maxlvl":"20","passiveitype":"1han","reqlevel":"1","ELevLen1":"1","ELevLen2":"1","ELevLen3":"1","Param1":"35","Param2":"12","Param3":"30","Param4":"8","Param5":"0","Param6":"45","passivestat1":"passive_mastery_melee_th","passivestat2":"passive_mastery_melee_dmg","passivestat3":"passive_mastery_melee_crit","passivestat4":"inc_splash_radius","passivecalc1":"ln12","passivecalc2":"ln34","passivecalc3":"dm56","passivecalc4":"\"min(lvl, 20)\"","name":"One Handed Weapon Mastery"},"123":{"Id":"123","skill":"Conviction","charclass":"pal","HitShift":"8","anim":"RN","seqnum":"5","maxlvl":"20","itypea1":"weap","reqlevel":"30","Param1":"22","Param2":"1","Param3":"12","Param4":"2","Param5":"10","Param6":"75","aurastat1":"skill_armor_percent","aurastat2":"fireresist","aurastat3":"coldresist","aurastat4":"lightresist","aurastatcalc1":"-dm56","aurastatcalc2":"\"-min(ln34,150)\"","aurastatcalc3":"\"-min(ln34,150)\"","aurastatcalc4":"\"-min(ln34,150)\"","name":"Conviction"},"380":{"Id":"380","skill":"Blade Dance","charclass":"ass","HitShift":"8","ToHit":"200","LevToHit":"15","anim":"SQ","seqnum":"10","SrcDam":"128","maxlvl":"20","itypea1":"mele","reqlevel":"30","Param1":"30","Param2":"4","Param3":"6","Param5":"20","Param6":"2","calc1":"ln12","aurastat1":"velocitypercent","aurastat2":"item_attackrate","aurastatcalc1":"\"min(ln56, 65)\"","aurastatcalc2":"100","name":"Blade Dance"},"122":{"Id":"122","skill":"Fanaticism","charclass":"pal","HitShift":"8","ToHit":"40","LevToHit":"5","anim":"RN","maxlvl":"20","itypea1":"weap","reqlevel":"30","Param1":"20","Param2":"3","Param3":"10","Param4":"40","Param5":"50","Param6":"15","aurastat1":"attackrate","aurastat2":"item_tohit_percent","aurastat3":"damagepercent","aurastatcalc1":"dm34","aurastatcalc2":"toht","aurastatcalc3":"ln56/2","passivestat1":"damagepercent","passivecalc1":"ln56","name":"Fanaticism"},"378":{"Id":"378","skill":"Joust","charclass":"pal","HitShift":"8","ToHit":"120","LevToHit":"16","auralencalc":"50","anim":"A1","SrcDam":"128","maxlvl":"20","reqlevel":"24","Param1":"40","Param2":"8","Param3":"10","Param4":"2","calc1":"ln12","calc2":"ln34","aurastat1":"velocitypercent","aurastatcalc1":"\"min(3 + (2 * lvl), 65)\"","name":"Joust"},"119":{"Id":"119","skill":"Sanctuary","charclass":"pal","HitShift":"6","EMin":"33","EMax":"53","EDmgSymPerCalc":"(skill('Might'.blvl)+skill('Holy Sword'.blvl)+skill('Blessed Aim'.blvl))*par8","ToHit":"50","LevToHit":"5","anim":"RN","maxlvl":"20","itypea1":"weap","reqlevel":"24","EMinLev1":"11","EMinLev2":"13","EMinLev3":"20","EMinLev4":"31","EMinLev5":"46","EMaxLev1":"11","EMaxLev2":"13","EMaxLev3":"20","EMaxLev4":"31","EMaxLev5":"46","Param1":"18","Param2":"0","Param3":"0","Param4":"0","Param5":"0","Param6":"0","Param7":"3","Param8":"10","aurastat1":"magicresist","aurastatcalc1":"-(5 + lvl/2)","passivestat1":"magicmindam","passivestat2":"magicmaxdam","passivestat3":"item_tohit_percent","passivecalc1":"edns*par7/256","passivecalc2":"edxs*par7/256","passivecalc3":"toht","name":"Sanctuary"},"108":{"Id":"108","skill":"Blessed Aim","charclass":"pal","HitShift":"8","anim":"RN","maxlvl":"20","itypea1":"weap","reqlevel":"12","Param1":"20","Param2":"2","Param3":"60","Param4":"15","Param5":"5","Param6":"1","Param8":"1","aurastat1":"item_tohit_percent","aurastat2":"item_deadlystrike","aurastatcalc1":"ln34","aurastatcalc2":"par5 + (par6 * lvl / 2)","passivestat1":"item_fractionaltargetac","passivecalc1":"blvl","name":"Blessed Aim"},"116":{"Id":"116","skill":"Holy Sword","charclass":"pal","HitShift":"8","EMin":"10","EMax":"1","ToHit":"50","LevToHit":"10","auralencalc":"ln12","anim":"SC","maxlvl":"20","itypea1":"2hsw","reqlevel":"24","EMinLev1":"2","EMinLev2":"1","EMinLev3":"1","EMinLev4":"1","EMinLev5":"1","EMaxLev1":"1","Param1":"7500","Param2":"125","Param3":"25","Param4":"7","Param5":"0","Param6":"55","aurastat1":"passive_weaponblock","aurastat2":"item_demondamage_percent","aurastat3":"item_undeaddamage_percent","aurastatcalc1":"dm56 + (stat('toblock'.accr) / 5)","aurastatcalc2":"ln34","aurastatcalc3":"ln34","name":"Holy Sword"},"98":{"Id":"98","skill":"Might","charclass":"pal","HitShift":"8","EMin":"40","anim":"RN","maxlvl":"20","itypea1":"weap","reqlevel":"1","EMinLev1":"20","EMinLev2":"20","EMinLev3":"20","EMinLev4":"20","EMinLev5":"20","Param1":"20","Param2":"3","aurastat1":"damagepercent","aurastatcalc1":"edmn / 2","passivestat1":"damagepercent","passivecalc1":"edmn","name":"Might"},"375":{"Id":"375","skill":"Split Throw","charclass":"bar","HitShift":"8","ToHit":"40","LevToHit":"15","anim":"TH","SrcDam":"128","maxlvl":"20","itypea1":"comb","reqlevel":"18","Param1":"3","Param2":"4","Param3":"1","Param4":"10","Param5":"80","Param6":"15","Param8":"12","calc1":"par1+(min(lvl/5,par2))","calc2":"1","calc3":"3","calc4":"ln56 + (skill('Increased Speed'.blvl) + skill('Concentrate'.blvl))*par8","aurastat1":"attackrate","aurastatcalc1":"par4","name":"Split Throw"},"118":{"Id":"118","skill":"Holy Shock","charclass":"pal","HitShift":"7","EMin":"2","EMax":"27","EDmgSymPerCalc":"(skill('Resist Lightning'.blvl)+skill('Salvation'.blvl)+skill('Blessed Aim'.blvl))*par8","ToHit":"50","LevToHit":"5","anim":"RN","maxlvl":"20","itypea1":"weap","reqlevel":"24","EMaxLev1":"11","EMaxLev2":"15","EMaxLev3":"20","EMaxLev4":"27","EMaxLev5":"35","Param1":"16","Param2":"0","Param5":"6","Param6":"0","Param7":"9","Param8":"9","passivestat1":"lightmindam","passivestat2":"lightmaxdam","passivestat3":"item_tohit_percent","passivecalc1":"edns*par5/256","passivecalc2":"edxs*par5/256","passivecalc3":"toht","name":"Holy Shock"},"125":{"Id":"125","skill":"Salvation","charclass":"pal","HitShift":"8","EMin":"20","EMax":"3","anim":"RN","maxlvl":"20","itypea1":"weap","reqlevel":"30","EMinLev1":"4","EMinLev2":"3","EMinLev3":"2","EMinLev4":"1","EMinLev5":"1","EMaxLev1":"1","EMaxLev2":"1","EMaxLev3":"1","EMaxLev4":"1","EMaxLev5":"1","Param1":"16","Param2":"2","Param3":"20","Param4":"75","aurastat1":"fireresist","aurastat2":"coldresist","aurastat3":"lightresist","aurastat4":"passive_ltng_mastery","aurastat5":"passive_cold_mastery","aurastat6":"passive_fire_mastery","aurastatcalc1":"\"min(edmn, 75)\"","aurastatcalc2":"\"min(edmn, 75)\"","aurastatcalc3":"\"min(edmn, 75)\"","aurastatcalc4":"edmx / 2","aurastatcalc5":"edmx / 2","aurastatcalc6":"edmx / 2","name":"Salvation"},"110":{"Id":"110","skill":"Resist Lightning","charclass":"pal","HitShift":"8","EMin":"25","EMax":"5","anim":"RN","maxlvl":"20","itypea1":"weap","reqlevel":"1","EMinLev1":"4","EMinLev2":"3","EMinLev3":"2","EMinLev4":"1","EMinLev5":"1","EMaxLev1":"1","EMaxLev2":"1","EMaxLev3":"1","EMaxLev4":"2","EMaxLev5":"2","Param1":"20","Param2":"2","Param3":"25","Param4":"100","Param5":"0","Param6":"0","aurastat1":"lightresist","aurastat2":"passive_ltng_mastery","aurastatcalc1":"\"min(edmn, 100)\"","aurastatcalc2":"edmx","passivestat1":"maxlightresist","passivecalc1":"skill('Resist Lightning'.blvl)/2","name":"Resist Lightning"},"115":{"Id":"115","skill":"Vigor","charclass":"pal","HitShift":"8","anim":"RN","maxlvl":"20","itypea1":"weap","reqlevel":"18","Param1":"26","Param2":"3","Param3":"50","Param4":"25","Param5":"7","Param6":"50","aurastat1":"staminarecoverybonus","aurastat2":"skill_staminapercent","aurastat3":"velocitypercent","aurastatcalc1":"ln34","aurastatcalc2":"ln34","aurastatcalc3":"dm56","passivestat1":"item_fastermovevelocity","passivecalc1":"blvl","name":"Vigor"},"114":{"Id":"114","skill":"Holy Freeze","charclass":"pal","HitShift":"7","EMin":"5","EMax":"7","EDmgSymPerCalc":"(skill('Resist Cold'.blvl)+skill('Salvation'.blvl)+skill('Blessed Aim'.blvl))*par8","ToHit":"50","LevToHit":"5","anim":"RN","maxlvl":"20","itypea1":"weap","reqlevel":"18","EMinLev1":"3","EMinLev2":"4","EMinLev3":"6","EMinLev4":"10","EMinLev5":"15","EMaxLev1":"4","EMaxLev2":"5","EMaxLev3":"7","EMaxLev4":"12","EMaxLev5":"17","Param1":"12","Param2":"0","Param3":"25","Param4":"60","Param5":"4","Param6":"0","Param7":"11","Param8":"11","aurastat1":"velocitypercent","aurastat2":"attackrate","aurastat3":"other_animrate","aurastatcalc1":"-dm34","aurastatcalc2":"-dm34","aurastatcalc3":"-dm34","passivestat1":"coldmindam","passivestat2":"coldmaxdam","passivestat3":"item_tohit_percent","passivecalc1":"edns*par5/256","passivecalc2":"edxs*par5/256","passivecalc3":"toht","name":"Holy Freeze"},"105":{"Id":"105","skill":"Resist Cold","charclass":"pal","HitShift":"8","EMin":"25","EMax":"5","anim":"RN","maxlvl":"20","itypea1":"weap","reqlevel":"1","EMinLev1":"4","EMinLev2":"3","EMinLev3":"2","EMinLev4":"1","EMinLev5":"1","EMaxLev1":"1","EMaxLev2":"1","EMaxLev3":"1","EMaxLev4":"2","EMaxLev5":"2","Param1":"20","Param2":"2","Param3":"25","Param4":"100","Param5":"0","Param6":"0","aurastat1":"coldresist","aurastat2":"passive_cold_mastery","aurastatcalc1":"\"min(edmn, 100)\"","aurastatcalc2":"edmx","passivestat1":"maxcoldresist","passivecalc1":"skill('Resist Cold'.blvl)/2","name":"Resist Cold"},"113":{"Id":"113","skill":"Concentration","charclass":"pal","HitShift":"8","ToHit":"50","LevToHit":"10","anim":"RN","maxlvl":"20","itypea1":"weap","reqlevel":"18","Param1":"20","Param2":"3","Param3":"60","Param4":"15","Param5":"15","Param6":"0","aurastat1":"damagepercent","aurastat2":"skill_concentration","aurastat3":"item_tohit_percent","aurastatcalc1":"ln34 / 2","aurastatcalc2":"par5+(lvl / 3)","aurastatcalc3":"toht","passivestat1":"damagepercent","passivecalc1":"ln34","name":"Concentration"},"107":{"Id":"107","skill":"Charge","charclass":"pal","HitShift":"8","ToHit":"75","LevToHit":"15","anim":"SQ","seqnum":"4","SrcDam":"128","maxlvl":"20","itypea1":"mele","reqlevel":"12","Param1":"150","Param2":"0","Param3":"100","Param4":"20","Param5":"2","Param6":"65","Param8":"15","calc1":"ln34+(skill('Vigor'.blvl)+skill('Might'.blvl))*par8","name":"Charge"},"106":{"Id":"106","skill":"Zeal","charclass":"pal","HitShift":"8","ToHit":"35","LevToHit":"20","anim":"A1","SrcDam":"128","maxlvl":"20","itypea1":"mele","reqlevel":"1","Param2":"100","Param3":"30","Param4":"25","Param5":"3","Param6":"3","Param8":"20","calc1":"\"min((par5 + lvl -1), par6)\"","calc2":"ln34 +skill('Sacrifice'.blvl)*par8","aurastat1":"inc_splash_radius","aurastatcalc1":"1","name":"Zeal"},"96":{"Id":"96","skill":"Sacrifice","charclass":"pal","HitShift":"8","ToHit":"20","LevToHit":"16","anim":"A1","seqnum":"2","SrcDam":"128","maxlvl":"20","itypea1":"mele","reqlevel":"6","Param1":"180","Param2":"30","Param3":"3","Param4":"4","Param5":"5","Param6":"125","Param7":"25","Param8":"25","calc1":"ln12+skill('Redemption'.blvl)*par8+skill('Fanaticism'.blvl)*par7","calc2":"par3","calc3":"\"min(par4 + lvl / 3, 10)\"","name":"Sacrifice"},"124":{"Id":"124","skill":"Redemption","charclass":"pal","HitShift":"8","anim":"RN","maxlvl":"20","itypea1":"weap","reqlevel":"30","Param1":"16","Param2":"0","Param3":"10","Param4":"100","Param5":"25","Param6":"5","calc1":"dm34","calc2":"5 + (lvl * 2)","calc3":"ln56","name":"Redemption"},"102":{"Id":"102","skill":"Holy Fire","charclass":"pal","HitShift":"6","EMin":"5","EMax":"11","EDmgSymPerCalc":"(skill('Resist Fire'.blvl)+skill('Salvation'.blvl)+skill('Blessed Aim'.blvl))*par8","ToHit":"50","LevToHit":"5","anim":"RN","maxlvl":"20","itypea1":"weap","reqlevel":"6","EMinLev1":"1","EMinLev2":"4","EMinLev3":"12","EMinLev4":"22","EMinLev5":"31","EMaxLev1":"2","EMaxLev2":"5","EMaxLev3":"15","EMaxLev4":"26","EMaxLev5":"37","Param1":"6","Param2":"1","Param3":"5","Param5":"4","Param7":"16","Param8":"16","passivestat1":"firemindam","passivestat2":"firemaxdam","passivestat3":"item_tohit_percent","passivecalc1":"edns*par5/256","passivecalc2":"edxs*par5/256","passivecalc3":"toht","name":"Holy Fire"},"100":{"Id":"100","skill":"Resist Fire","charclass":"pal","HitShift":"8","EMin":"25","EMax":"5","anim":"RN","maxlvl":"20","itypea1":"weap","reqlevel":"1","EMinLev1":"4","EMinLev2":"3","EMinLev3":"2","EMinLev4":"1","EMinLev5":"1","EMaxLev1":"1","EMaxLev2":"1","EMaxLev3":"1","EMaxLev4":"2","EMaxLev5":"2","Param1":"20","Param2":"2","Param3":"25","Param4":"100","aurastat1":"fireresist","aurastat2":"passive_fire_mastery","aurastatcalc1":"\"min(edmn, 100)\"","aurastatcalc2":"edmx","passivestat1":"maxfireresist","passivecalc1":"skill('Resist Fire'.blvl)/2","name":"Resist Fire"},"97":{"Id":"97","skill":"Smite","charclass":"pal","HitShift":"8","EMax":"15","anim":"S1","maxlvl":"20","itypea1":"shld","reqlevel":"1","EMaxLev1":"2","EMaxLev2":"1","EMaxLev3":"1","EMaxLev4":"1","EMaxLev5":"1","Param1":"15","Param2":"5","Param3":"75","Param4":"25","Param5":"20","Param8":"10","calc1":"ln34","calc2":"\"min(250,ln12)\"","calc3":"5 + blvl","calc4":"edmx","name":"Smite"},"87":{"Id":"87","skill":"Decrepify","charclass":"nec","HitShift":"8","auralencalc":"ln34","anim":"SC","maxlvl":"20","reqlevel":"24","Param1":"12","Param2":"1","Param3":"150","Param4":"10","Param5":"19","Param6":"19","aurastat1":"velocitypercent","aurastat2":"attackrate","aurastat3":"item_fastercastrate","aurastat4":"item_leap_speed","aurastat5":"damageresist","aurastatcalc1":"-\"min(par5 + lvl,60)\"","aurastatcalc2":"-\"min(par6 + lvl + skill('CurMas'.blvl),60)\"","aurastatcalc3":"-\"min(par6 + lvl + skill('CurMas'.blvl),60)\"","aurastatcalc4":"-\"min(par5 + blvl,60)\"","aurastatcalc5":"-(10 + (lvl/2))","name":"Decrepify"},"374":{"Id":"374","skill":"CurMas","charclass":"nec","HitShift":"8","anim":"SC","maxlvl":"20","reqlevel":"1","Param1":"5","Param2":"5","Param3":"1","Param4":"1","passivestat1":"max_curses","passivecalc1":"blvl / 10","name":"Curse Mastery"},"86":{"Id":"86","skill":"Attract","charclass":"nec","HitShift":"8","auralencalc":"\"min(ln34, 375)\"","anim":"SC","maxlvl":"20","reqlevel":"24","Param1":"4","Param2":"0","Param3":"200","Param4":"5","Param5":"120","Param6":"10","Param8":"5","aurastat1":"armorclass","aurastatcalc1":"-(ln56 + skill('CurMas'.blvl)*par8)","name":"Attract"},"72":{"Id":"72","skill":"Weaken","charclass":"nec","HitShift":"8","auralencalc":"ln34","anim":"SC","maxlvl":"20","reqlevel":"18","Param1":"12","Param2":"1","Param3":"250","Param4":"35","Param5":"10","Param6":"1","Param7":"10","Param8":"2","aurastat1":"damagepercent","aurastat2":"skill_armor_percent","aurastatcalc1":"-(ln56 + skill('CurMas'.blvl) / 2)","aurastatcalc2":"-ln78","name":"Weaken"},"66":{"Id":"66","skill":"AmpDmg","charclass":"nec","HitShift":"8","auralencalc":"ln34","anim":"SC","maxlvl":"20","reqlevel":"1","Param1":"9","Param2":"1","Param3":"150","Param4":"5","Param5":"14","Param6":"1","aurastat1":"damageresist","aurastatcalc1":"-(par5 + par6*lvl + (skill('CurMas'.blvl)/2))","name":"Amplify Damage"},"46":{"Id":"46","skill":"Blaze","charclass":"sor","HitShift":"2","EMin":"1","EMax":"2","EDmgSymPerCalc":"(skill('Fire Wall'.blvl))*par8","auralencalc":"\"min(ln12, 250)\"","anim":"SC","maxlvl":"20","reqlevel":"6","EMinLev1":"1","EMinLev2":"1","EMinLev3":"5","EMinLev4":"8","EMinLev5":"8","EMaxLev1":"1","EMaxLev2":"2","EMaxLev3":"6","EMaxLev4":"9","EMaxLev5":"9","Param1":"75","Param2":"5","Param3":"25","Param4":"1","Param5":"60","Param7":"6","Param8":"6","passivestat1":"velocitypercent","passivestat2":"item_cannotbefrozen","passivecalc1":"min(ln34,par5)","passivecalc2":"1","name":"Blaze"},"51":{"Id":"51","skill":"Fire Wall","charclass":"sor","HitShift":"3","EMin":"6","EMax":"10","EDmgSymPerCalc":"(skill('Blaze'.blvl))*par8","anim":"SC","maxlvl":"20","reqlevel":"12","EMinLev1":"2","EMinLev2":"6","EMinLev3":"25","EMinLev4":"50","EMinLev5":"50","EMaxLev1":"3","EMaxLev2":"8","EMaxLev3":"28","EMaxLev4":"53","EMaxLev5":"53","Param7":"5","Param8":"5","name":"Fire Wall"},"297":{"Id":"297","skill":"Wolverine Aura","HitShift":"8","anim":"SQ","reqlevel":"1","Param1":"30","Param2":"2","Param3":"25","Param4":"8","Param5":"25","Param6":"8","aurastat1":"item_tohit_percent","aurastat2":"damagepercent","aurastatcalc1":"ln34","aurastatcalc2":"ln56","name":"Wolverine Aura"},"30":{"Id":"30","skill":"Fend","charclass":"ama","HitShift":"8","ToHit":"80","LevToHit":"6","anim":"A1","SrcDam":"128","maxlvl":"20","itypea1":"spea","reqlevel":"18","Param1":"0","Param2":"60","Param3":"100","Param4":"25","Param8":"20","calc1":"3","calc2":"ln34 + (skill('Jab'.blvl) * par8)","aurastat1":"inc_splash_radius","aurastatcalc1":"1","name":"Fend"},"10":{"Id":"10","skill":"Jab","charclass":"ama","HitShift":"8","ToHit":"25","LevToHit":"12","anim":"SQ","seqnum":"1","SrcDam":"128","maxlvl":"20","itypea1":"spea","reqlevel":"1","Param3":"30","Param4":"15","Param8":"12","calc1":"ln34 + (skill('Fend'.blvl) * par8)","name":"Jab"},"29":{"Id":"29","skill":"Evade","charclass":"ama","HitShift":"8","EMin":"6","EMax":"15","anim":"NU","maxlvl":"20","reqlevel":"6","EMinLev1":"2","EMinLev2":"1","EMinLev3":"1","EMinLev4":"1","EMaxLev1":"2","EMaxLev2":"2","EMaxLev3":"2","EMaxLev4":"2","EMaxLev5":"1","Param1":"0","Param2":"40","Param3":"2","passivestat1":"passive_evade","passivestat2":"velocitypercent","passivecalc1":"\"min(edmn, par2)\"","passivecalc2":"edmx","name":"Evade"},"26":{"Id":"26","skill":"Strafe","charclass":"ama","HitShift":"8","ToHit":"80","LevToHit":"6","anim":"A1","SrcDam":"128","maxlvl":"20","itypea1":"miss","reqlevel":"24","Param1":"80","Param2":"12","Param3":"2","Param4":"5","Param5":"28","Param6":"50","Param8":"10","calc1":"\"min(par3 + lvl - 1, par4)\"","calc2":"ln12 + (skill('Penetrate'.blvl) * par8)","calc3":"2+lvl/4","name":"Strafe"},"23":{"Id":"23","skill":"Penetrate","charclass":"ama","HitShift":"8","maxlvl":"20","itypea1":"spea","reqlevel":"24","Param1":"35","Param2":"10","Param3":"5","calc1":"par1+lvl/par2","passivestat1":"item_tohit_percent","passivestat2":"passive_phys_pierce","passivecalc1":"ln12","passivecalc2":"blvl/2","name":"Penetrate"},"22":{"Id":"22","skill":"Guided Arrow","charclass":"ama","HitShift":"8","anim":"A1","SrcDam":"64","maxlvl":"20","itypea1":"miss","reqlevel":"18","Param3":"25","Param4":"5","calc1":"ln34","name":"Guided Arrow"},"19":{"Id":"19","skill":"Javelin and Spear Mastery","charclass":"ama","HitShift":"8","EMin":"10","anim":"SC","maxlvl":"20","itypea1":"spea","passiveitype":"spea","reqlevel":"6","EMinLev1":"1","EMinLev2":"1","EMinLev3":"1","EMinLev4":"1","EMinLev5":"1","Param1":"40","Param2":"12","Param5":"0","Param6":"35","passivestat1":"passive_mastery_melee_dmg","passivestat2":"item_crit_multiplier","passivestat3":"passive_mastery_throw_dmg","passivecalc1":"ln12","passivecalc2":"edmn","passivecalc3":"ln12","name":"Javelin and Spear Mastery"},"12":{"Id":"12","skill":"Multiple Shot","charclass":"ama","HitShift":"8","ToHit":"8","LevToHit":"6","anim":"A1","SrcDam":"128","maxlvl":"20","itypea1":"miss","reqlevel":"6","Param1":"5","Param2":"1","Param3":"1","Param5":"50","Param6":"4","Param8":"8","calc1":"\"min(25,ln12)\"","calc2":"par3","calc3":"3","calc4":"ln56","name":"Multiple Shot"},"266":{"Id":"266","skill":"Blade Fury","charclass":"ass","HitShift":"8","ToHit":"60","LevToHit":"15","anim":"SQ","seqnum":"23","SrcDam":"96","maxlvl":"20","passiveitype":"mele","reqlevel":"18","Param1":"0","Param2":"0","Param3":"3","Param4":"4","Param5":"0","Param8":"10","passivestat1":"skill_pierce","passivecalc1":"skill('Blade Fury'.lvl)*par5","name":"Blade Fury"},"9":{"Id":"9","skill":"Critical Strike","charclass":"ama","HitShift":"8","maxlvl":"20","itypea1":"spea","reqlevel":"1","Param1":"5","Param2":"75","passivestat1":"passive_critical_strike","passivecalc1":"dm12","name":"Critical Strike"},"8":{"Id":"8","skill":"Inner Sight","charclass":"ama","HitShift":"8","EMin":"40","auralencalc":"ln34","anim":"SC","maxlvl":"20","reqlevel":"1","EMinLev1":"25","EMinLev2":"45","EMinLev3":"60","EMinLev4":"80","EMinLev5":"100","Param1":"40","Param2":"25","Param3":"200","Param4":"100","Param5":"10","Param6":"1","Param7":"1","aurastat1":"armorclass","aurastat2":"item_tohit_percent","aurastatcalc1":"-edmn","aurastatcalc2":"-\"min(9+(lvl*par7),40)\"","name":"Inner Sight"},"260":{"Id":"260","skill":"Dragon Claw","charclass":"ass","HitShift":"8","ToHit":"40","LevToHit":"20","anim":"SQ","seqnum":"16","SrcDam":"128","maxlvl":"20","itypea1":"h2h","reqlevel":"6","Param1":"50","Param2":"25","Param7":"20","Param8":"20","calc1":"ln12 + skill('Weapon Block'.blvl) * par8 + skill('Claw Mastery'.lvl) * par7","name":"Dragon Claw"},"263":{"Id":"263","skill":"Weapon Block","charclass":"ass","HitShift":"8","EMin":"15","EMax":"1","anim":"SC","maxlvl":"20","itypea1":"h2h","passiveitype":"h2h","reqlevel":"12","EMinLev1":"2","EMinLev2":"1","EMinLev3":"1","EMinLev4":"1","EMinLev5":"1","EMaxLev1":"1","Param1":"0","Param2":"55","Param3":"20","Param4":"4","passivestat1":"passive_weaponblock","passivestat2":"item_fasterblockrate","passivecalc1":"dm12 + (stat('toblock'.accr) / 5)","passivecalc2":"lvl","name":"Weapon Block"},"258":{"Id":"258","skill":"Quickness","charclass":"ass","HitShift":"8","ELen":"20","auralencalc":"ln56","anim":"SC","maxlvl":"20","reqlevel":"6","ELevLen1":"2","ELevLen2":"1","ELevLen3":"1","Param3":"15","Param4":"60","Param5":"7500","Param6":"125","aurastat1":"velocitypercent","aurastat2":"attackrate","aurastatcalc1":"edln","aurastatcalc2":"((110*blvl) * (par4-par3))/(100 * (blvl+6)) + par3","name":"Burst of Speed"},"2":{"Id":"2","skill":"Throw","HitShift":"8","anim":"TH","SrcDam":"128","itypea1":"thro","reqlevel":"1","name":"Throw"},"0":{"Id":"0","skill":"Attack","HitShift":"8","anim":"A1","SrcDam":"128","itypea1":"weap","reqlevel":"1","name":"Attack"}},"targets":[{"k":"andariel","n":"Andariel","g":"Act bosses","lvl":85,"hp":[90937,90937],"res":66,"def":1816,"type":"demon","kind":"boss","tier":false},{"k":"duriel","n":"Duriel","g":"Act bosses","lvl":88,"hp":[84524,84524],"res":50,"def":2044,"type":"demon","kind":"boss","tier":false},{"k":"mephisto","n":"Mephisto","g":"Act bosses","lvl":87,"hp":[94320,94320],"res":20,"def":2697,"type":"demon","kind":"boss","tier":false},{"k":"diablo","n":"Diablo","g":"Act bosses","lvl":94,"hp":[180425,180425],"res":45,"def":2534,"type":"demon","kind":"boss","tier":false},{"k":"baalcrab","n":"Baal","g":"Act bosses","lvl":99,"hp":[493701,493701],"res":50,"def":2847,"type":"demon","kind":"boss","tier":false},{"k":"uberandariel","n":"Lilith","g":"Pandemonium","lvl":110,"hp":[650000,660000],"res":50,"def":1155,"type":"demon","kind":"boss","tier":false},{"k":"uberduriel","n":"Uber Duriel","g":"Pandemonium","lvl":110,"hp":[650000,660000],"res":50,"def":1260,"type":"demon","kind":"boss","tier":false},{"k":"uberizual","n":"Uber Izual","g":"Pandemonium","lvl":110,"hp":[650000,660000],"res":50,"def":1260,"type":"","kind":"boss","tier":false},{"k":"ubermephisto","n":"Uber Mephisto","g":"Pandemonium","lvl":120,"hp":[569500,569500],"res":40,"def":1260,"type":"demon","kind":"boss","tier":false},{"k":"uberdiablo","n":"Uber Diablo","g":"Pandemonium","lvl":120,"hp":[642700,642700],"res":40,"def":1155,"type":"demon","kind":"boss","tier":false},{"k":"uberbaal","n":"Uber Baal","g":"Pandemonium","lvl":120,"hp":[633600,633600],"res":40,"def":1176,"type":"demon","kind":"boss","tier":false},{"k":"uberancientbarb1","n":"Talic","g":"Uber Ancients","lvl":90,"hp":[510829,510829],"res":20,"def":2173,"type":"","kind":"boss","tier":false},{"k":"uberancientbarb2","n":"Madawc","g":"Uber Ancients","lvl":90,"hp":[449340,449340],"res":20,"def":2173,"type":"","kind":"boss","tier":false},{"k":"uberancientbarb3","n":"Korlic","g":"Uber Ancients","lvl":90,"hp":[406771,406771],"res":20,"def":2173,"type":"","kind":"boss","tier":false},{"k":"uberdiablonew","n":"Diablo Clone","g":"Diablo Clone, Rathma, Lucion","lvl":110,"hp":[1053000,1053000],"res":30,"def":2940,"type":"demon","kind":"boss","tier":true},{"k":"rathmaBone","n":"Rathma","g":"Diablo Clone, Rathma, Lucion","lvl":110,"hp":[697500,697500],"res":30,"def":1470,"type":"","kind":"boss","tier":true},{"k":"rathmaPoison","n":"Mendeln","g":"Diablo Clone, Rathma, Lucion","lvl":110,"hp":[855000,855000],"res":30,"def":1470,"type":"","kind":"boss","tier":true},{"k":"Lucion","n":"Lucion","g":"Diablo Clone, Rathma, Lucion","lvl":110,"hp":[2400000,2400000],"res":30,"def":1470,"type":"","kind":"boss","tier":true},{"k":"megademonboss","n":"Lieutenant of Sin","g":"Map bosses: Tier 1","lvl":91,"hp":[377960,377960],"res":20,"def":2020,"type":"demon","kind":"mapboss","tier":false},{"k":"unravelerboss","n":"Karvarousku the Cartographer","g":"Map bosses: Tier 1","lvl":90,"hp":[229738,229738],"res":20,"def":2086,"type":"undead","kind":"mapboss","tier":false},{"k":"IceBoss","n":"Nathkill The Numb","g":"Map bosses: Tier 1","lvl":90,"hp":[236495,236495],"res":20,"def":1565,"type":"demon","kind":"mapboss","tier":false},{"k":"TombBoss","n":"Toadflax the Tainted","g":"Map bosses: Tier 1","lvl":90,"hp":[354742,354742],"res":20,"def":2173,"type":"","kind":"mapboss","tier":false},{"k":"torajanBoss","n":"The Great Worm","g":"Map bosses: Tier 1","lvl":89,"hp":[185976,185976],"res":20,"def":1205,"type":"","kind":"mapboss","tier":false},{"k":"act2hireTraitorBoss","n":"Waheed The Traitor","g":"Map bosses: Tier 1","lvl":89,"hp":[272322,272322],"res":50,"def":2152,"type":"","kind":"mapboss","tier":false},{"k":"spiderboss","n":"Khalim's Corrupted Body","g":"Map bosses: Tier 1","lvl":89,"hp":[273982,273982],"res":50,"def":1635,"type":"demon","kind":"mapboss","tier":false},{"k":"westmarchMapBoss","n":"Urzael Harbringer of Death","g":"Map bosses: Tier 1","lvl":89,"hp":[265680,265680],"res":20,"def":1205,"type":"","kind":"mapboss","tier":false},{"k":"doomknight3LibraryBoss","n":"The Guardian","g":"Map bosses: Tier 1","lvl":91,"hp":[446680,446680],"res":20,"def":2020,"type":"undead","kind":"mapboss","tier":false},{"k":"PoisonedWellBoss","n":"Rotting Horror","g":"Map bosses: Tier 1","lvl":80,"hp":[392490,392490],"res":20,"def":1406,"type":"undead","kind":"mapboss","tier":false},{"k":"ArcaneBoss","n":"Deathmaiden Madinsane","g":"Map bosses: Tier 2","lvl":89,"hp":[376601,376601],"res":20,"def":1980,"type":"demon","kind":"mapboss","tier":false},{"k":"ThroneBoss","n":"Indio The Insane","g":"Map bosses: Tier 2","lvl":91,"hp":[412320,412320],"res":20,"def":1757,"type":"undead","kind":"mapboss","tier":false},{"k":"SewerBoss","n":"The Mad Philosopher","g":"Map bosses: Tier 2","lvl":89,"hp":[252396,252396],"res":20,"def":1894,"type":"demon","kind":"mapboss","tier":false},{"k":"archerBoss","n":"Dark Commander Alma","g":"Map bosses: Tier 2","lvl":91,"hp":[309240,309240],"res":50,"def":2196,"type":"demon","kind":"mapboss","tier":false},{"k":"CanyonBoss","n":"Shattered Soul","g":"Map bosses: Tier 2","lvl":91,"hp":[329856,329856],"res":50,"def":1757,"type":"","kind":"mapboss","tier":false},{"k":"AshenBoss","n":"Borq the Consumed","g":"Map bosses: Tier 2","lvl":91,"hp":[398576,398576],"res":20,"def":2108,"type":"undead","kind":"mapboss","tier":false},{"k":"lernaeanhydra2","n":"Ancient Cistern Hydra","g":"Map bosses: Tier 2","lvl":89,"hp":[365310,365310],"res":20,"def":1722,"type":"","kind":"mapboss","tier":false},{"k":"TortureHallsBoss","n":"Gimli the Summoned One","g":"Map bosses: Tier 2","lvl":89,"hp":[421767,421767],"res":20,"def":2410,"type":"","kind":"mapboss","tier":false},{"k":"DarkTempleBoss","n":"Son of Rakkis","g":"Map bosses: Tier 2","lvl":84,"hp":[515695,515695],"res":20,"def":1143,"type":"undead","kind":"mapboss","tier":false},{"k":"DescentBoss","n":"Tainted Child of Bul-Kathos","g":"Map bosses: Tier 2","lvl":84,"hp":[485360,485360],"res":20,"def":1062,"type":"demon","kind":"mapboss","tier":false},{"k":"baalminionboss","n":"Belial Lord of Lies","g":"Map bosses: Tier 3","lvl":91,"hp":[446680,446680],"res":20,"def":2371,"type":"demon","kind":"mapboss","tier":false},{"k":"BastionBoss","n":"Johnathan The Damned","g":"Map bosses: Tier 3","lvl":90,"hp":[405420,405420],"res":20,"def":1565,"type":"undead","kind":"mapboss","tier":false},{"k":"CowBoss","n":"The Cow Queen","g":"Map bosses: Tier 3","lvl":91,"hp":[481040,481040],"res":20,"def":2284,"type":"","kind":"mapboss","tier":false},{"k":"SiegeBoss","n":"Armorsmith of Equality","g":"Map bosses: Tier 3","lvl":89,"hp":[415125,415125],"res":20,"def":1722,"type":"demon","kind":"mapboss","tier":false},{"k":"MarketBoss","n":"Overlord Aerlynn","g":"Map bosses: Tier 3","lvl":91,"hp":[467296,467296],"res":50,"def":1405,"type":"demon","kind":"mapboss","tier":false},{"k":"leoricMapBoss","n":"King Leoric","g":"Map bosses: Tier 3","lvl":89,"hp":[448335,448335],"res":20,"def":2410,"type":"undead","kind":"mapboss","tier":false},{"k":"DemonRoadBoss","n":"Thonos the Many-Limbed","g":"Map bosses: Tier 3","lvl":90,"hp":[472990,472990],"res":20,"def":1652,"type":"","kind":"mapboss","tier":false},{"k":"SkovosBoss","n":"Incarnation of Akarat","g":"Map bosses: Tier 3","lvl":90,"hp":[462854,462854],"res":20,"def":1304,"type":"undead","kind":"mapboss","tier":false},{"k":"KyovoshadBoss","n":"The Tainted Hive","g":"Map bosses: Tier 3","lvl":91,"hp":[549760,549760],"res":20,"def":527,"type":"","kind":"boss","tier":false},{"k":"willowispboss","n":"Canight The Corrupted","g":"Tier 4 dungeons","lvl":92,"hp":[1117920,1117920],"res":50,"def":2040,"type":"undead","kind":"mapboss","tier":false},{"k":"fingermageboss","n":"The Synthetic One","g":"Tier 4 dungeons","lvl":92,"hp":[838440,838440],"res":50,"def":2128,"type":"undead","kind":"mapboss","tier":false},{"k":"siegebeastMapBoss","n":"The Stygian Beast","g":"Tier 4 dungeons","lvl":92,"hp":[698700,698700],"res":50,"def":1596,"type":"demon","kind":"mapboss","tier":false},{"k":"KanemithBoss","n":"Naz the Cursed King","g":"Tier 4 dungeons","lvl":92,"hp":[908310,908310],"res":50,"def":1951,"type":"","kind":"mapboss","tier":false},{"k":"RadamentBoss","n":"Elmegaard the Unholy","g":"Tier 4 dungeons","lvl":92,"hp":[1152855,1152855],"res":50,"def":2128,"type":"","kind":"mapboss","tier":false},{"k":"SharpToothBoss","n":"Skullsplitter Cyrus","g":"Tier 4 dungeons","lvl":90,"hp":[1013550,1013550],"res":50,"def":1565,"type":"","kind":"mapboss","tier":false},{"k":"ZharTheMad","n":"Zhar The Mad","g":"Unique maps","lvl":91,"hp":[446680,446680],"res":20,"def":1493,"type":"","kind":"mapboss","tier":false},{"k":"WarlordOfBlood","n":"Warlord of Blood","g":"Unique maps","lvl":91,"hp":[439808,439808],"res":20,"def":7028,"type":"","kind":"mapboss","tier":false},{"k":"CityofUrehBoss","n":"Gregus Mazi","g":"Unique maps","lvl":91,"hp":[1030800,1030800],"res":20,"def":3514,"type":"","kind":"mapboss","tier":false},{"k":"NaKrulBoss","n":"Na-Krul","g":"Unique maps","lvl":91,"hp":[481040,481040],"res":20,"def":2635,"type":"demon","kind":"boss","tier":false},{"k":"DjinnDarkBoss","n":"Siren of the Forgotten Vault","g":"Unique maps","lvl":90,"hp":[641915,641915],"res":20,"def":1999,"type":"demon","kind":"boss","tier":false},{"k":"DjinnLightBoss","n":"Djinn of a Thousand Blades","g":"Unique maps","lvl":90,"hp":[608130,608130],"res":20,"def":1999,"type":"undead","kind":"boss","tier":false},{"k":"ImperialPalaceBoss","n":"Imperial Assassin","g":"Unique maps","lvl":91,"hp":[566940,566940],"res":20,"def":1932,"type":"demon","kind":"mapboss","tier":false},{"k":"Iskatu","n":"Iskatu","g":"Unique maps","lvl":90,"hp":[472990,472990],"res":30,"def":1478,"type":"","kind":"mapboss","tier":false},{"k":"Rakanoth","n":"Rakanoth","g":"Unique maps","lvl":90,"hp":[405420,405420],"res":50,"def":2086,"type":"demon","kind":"mapboss","tier":false},{"k":"TombEventBoss","n":"Zoltun Kulle","g":"Map events","lvl":85,"hp":[494560,494560],"res":20,"def":1981,"type":"undead","kind":"boss","tier":false}],"types":{"weap":["1han","2han","2hcs","2hsw","abow","ajav","aspe","axe","blun","bow","club","comb","crys","h2h","h2h2","hamm","jave","knif","mace","mele","mgen","miss","orb","pole","rod","sc9","scep","spea","staf","swor","taxe","thro","tkni","tpot","wand","weap","xbow"],"miss":["abow","bow","miss","xbow"],"thro":["ajav","comb","jave","taxe","thro","tkni","tpot"],"h2h":["h2h","h2h2"],"asm":["asm","assn","cloa","h2h","h2h2","knif","tkni"],"mele":["2hcs","2hsw","ajav","aspe","axe","blun","club","comb","h2h","h2h2","hamm","jave","knif","mace","mele","mgen","pole","rod","sc9","scep","spea","staf","swor","taxe","tkni","wand"]}};
+  /* calc-data:end */
+  // Attack speed: the IAS Calculator's engine and the part of its data it reads, copied from
+  // website/resources/IAS-Calculator.html by tools/ias_data.py --sync (edit the engine there)
+  /* ias-data:start */
+  const IAS_DATA = {"v":"2026-11-20","cls":[["ama","Amazon","AM"],["sor","Sorceress","SO"],["nec","Necromancer","NE"],["pal","Paladin","PA"],["bar","Barbarian","BA"],["dru","Druid","DZ"],["ass","Assassin","AI"]],"fb":{"ama":{"hth":1,"1hs":2,"1ht":2,"stf":2,"2hs":2,"2ht":2,"bow":0,"xbw":0,"ht1":0},"sor":{"hth":1,"1hs":2,"1ht":2,"stf":2,"2hs":2,"2ht":2,"bow":0,"xbw":0,"ht1":0}},"a":{"40A1HTH":[13,256,[7]],"40A2HTH":[13,256,[7]],"40NUHTH":[9,144,[]],"40RNHTH":[8,104,[]],"40S1HTH":[16,256,[]],"40S3HTH":[10,240,[6]],"40S4HTH":[7,152,[4]],"AIA11HS":[15,256,[7]],"AIA11HT":[15,256,[7]],"AIA12HS":[23,256,[11]],"AIA12HT":[23,256,[10]],"AIA1BOW":[16,256,[7]],"AIA1HT1":[11,208,[6]],"AIA1HT2":[11,208,[6]],"AIA1HTH":[11,256,[6]],"AIA1STF":[19,256,[9]],"AIA1XBW":[21,294,[10]],"AIA21HS":[15,256,[7]],"AIA21HT":[15,256,[7]],"AIA22HS":[23,256,[11]],"AIA22HT":[23,256,[10]],"AIA2HT1":[12,208,[6]],"AIA2HT2":[12,208,[6]],"AIA2HTH":[12,256,[6]],"AIA2STF":[19,256,[9]],"AIKK1HS":[13,256,[4]],"AIKK1HT":[13,256,[4]],"AIKK2HS":[13,256,[4]],"AIKK2HT":[13,256,[4]],"AIKKBOW":[13,256,[4]],"AIKKHT1":[13,256,[4]],"AIKKHT2":[13,256,[4]],"AIKKHTH":[13,256,[4]],"AIKKSTF":[13,256,[4]],"AIKKXBW":[13,256,[4]],"AINU1HS":[8,128,[]],"AINU1HT":[8,128,[]],"AINU2HS":[8,128,[]],"AINU2HT":[8,128,[]],"AINUBOW":[8,128,[]],"AINUHT1":[8,128,[]],"AINUHT2":[8,128,[]],"AINUHTH":[8,128,[]],"AINUSTF":[8,128,[]],"AINUXBW":[8,128,[]],"AIRN1HS":[8,256,[]],"AIRN1HT":[8,256,[]],"AIRN2HS":[8,256,[]],"AIRN2HT":[8,256,[]],"AIRNBOW":[8,256,[]],"AIRNHT1":[8,256,[]],"AIRNHT2":[8,256,[]],"AIRNHTH":[8,256,[]],"AIRNSTF":[8,256,[]],"AIRNXBW":[8,256,[]],"AIS11HS":[15,256,[10]],"AIS11HT":[15,256,[10]],"AIS12HS":[15,256,[10]],"AIS12HT":[15,256,[10]],"AIS1BOW":[15,256,[10]],"AIS1HT1":[17,256,[10]],"AIS1HT2":[15,256,[10]],"AIS1HTH":[17,256,[10]],"AIS1STF":[15,256,[10]],"AIS1XBW":[15,256,[10]],"AIS21HS":[8,128,[4]],"AIS21HT":[8,128,[4]],"AIS22HS":[8,128,[4]],"AIS22HT":[8,128,[4]],"AIS2BOW":[8,128,[4]],"AIS2HT1":[8,128,[4]],"AIS2HT2":[8,128,[4]],"AIS2HTH":[8,128,[4]],"AIS2STF":[8,128,[4]],"AIS2XBW":[8,128,[4]],"AIS31HS":[10,256,[]],"AIS31HT":[10,256,[]],"AIS32HS":[10,256,[]],"AIS32HT":[10,256,[]],"AIS3BOW":[10,256,[]],"AIS3HT1":[10,256,[]],"AIS3HT2":[10,256,[]],"AIS3HTH":[10,256,[]],"AIS3STF":[10,256,[]],"AIS3XBW":[10,256,[]],"AIS4HT1":[12,208,[6]],"AIS4HT2":[12,208,[6]],"AITH1HS":[16,256,[7]],"AITH1HT":[16,256,[7]],"AMA11HS":[16,256,[10]],"AMA11HT":[15,256,[9]],"AMA12HS":[20,256,[12]],"AMA12HT":[18,256,[11]],"AMA1BOW":[14,256,[6]],"AMA1HTH":[13,256,[8]],"AMA1STF":[20,256,[12]],"AMA1XBW":[20,294,[9]],"AMA21HS":[16,256,[10]],"AMA21HT":[15,256,[9]],"AMA22HS":[20,256,[12]],"AMA22HT":[18,256,[11]],"AMA2HTH":[13,256,[8]],"AMA2STF":[20,256,[12]],"AMKK1HS":[12,256,[5]],"AMKK1HT":[12,256,[5]],"AMKK2HS":[12,256,[5]],"AMKK2HT":[12,256,[5]],"AMKKBOW":[12,256,[5]],"AMKKHTH":[12,256,[5]],"AMKKSTF":[12,256,[5]],"AMKKXBW":[12,256,[5]],"AMNU1HS":[8,128,[]],"AMNU1HT":[8,128,[]],"AMNU2HS":[8,128,[]],"AMNU2HT":[8,128,[]],"AMNUBOW":[8,128,[]],"AMNUHTH":[8,128,[]],"AMNUSTF":[8,128,[]],"AMNUXBW":[8,128,[]],"AMRN1HS":[8,256,[]],"AMRN1HT":[8,256,[]],"AMRN2HS":[8,256,[]],"AMRN2HT":[8,256,[]],"AMRNBOW":[8,256,[]],"AMRNHTH":[8,256,[]],"AMRNSTF":[8,256,[]],"AMRNXBW":[8,256,[]],"AMS11HS":[9,256,[]],"AMS11HT":[9,256,[]],"AMS12HS":[9,256,[2]],"AMS12HT":[9,256,[2]],"AMS1BOW":[9,256,[2]],"AMS1HTH":[9,256,[2]],"AMS1STF":[9,256,[2]],"AMS1XBW":[9,256,[]],"AMTH1HS":[16,256,[9]],"AMTH1HT":[16,256,[9]],"AMTHHTH":[16,256,[9]],"BAA11HS":[16,256,[7]],"BAA11HT":[16,256,[7]],"BAA11JS":[16,256,[7]],"BAA11JT":[16,256,[7]],"BAA11SS":[16,256,[7]],"BAA11ST":[16,256,[7]],"BAA12HS":[18,256,[8]],"BAA12HT":[19,256,[9]],"BAA1BOW":[15,256,[7]],"BAA1HTH":[12,256,[6]],"BAA1STF":[19,256,[9]],"BAA1XBW":[20,294,[10]],"BAA21HS":[16,256,[7]],"BAA21HT":[16,256,[7]],"BAA21JS":[16,256,[8]],"BAA21JT":[16,256,[7]],"BAA21SS":[16,256,[7]],"BAA21ST":[16,256,[7]],"BAA22HS":[18,256,[8]],"BAA22HT":[19,256,[9]],"BAA2STF":[19,256,[9]],"BAKK1HS":[12,256,[4]],"BAKK1HT":[12,256,[4]],"BAKK1JS":[12,256,[4]],"BAKK1JT":[12,256,[4]],"BAKK1SS":[12,256,[4]],"BAKK1ST":[12,256,[4]],"BAKK2HS":[12,256,[4]],"BAKK2HT":[12,256,[4]],"BAKKBOW":[12,256,[4]],"BAKKHTH":[12,256,[4]],"BAKKSTF":[12,256,[4]],"BAKKXBW":[12,256,[4]],"BANU1HS":[8,96,[]],"BANU1HT":[8,96,[]],"BANU1JS":[8,96,[]],"BANU1JT":[8,96,[]],"BANU1SS":[8,96,[]],"BANU1ST":[8,96,[]],"BANU2HS":[8,96,[]],"BANU2HT":[8,96,[]],"BANUBOW":[8,96,[]],"BANUHTH":[8,96,[]],"BANUSTF":[8,96,[]],"BANUXBW":[8,96,[]],"BARN1HS":[8,216,[]],"BARN1HT":[8,216,[]],"BARN1JS":[8,216,[]],"BARN1JT":[8,216,[]],"BARN1SS":[8,216,[]],"BARN1ST":[8,216,[]],"BARN2HS":[8,216,[]],"BARN2HT":[8,216,[]],"BARNBOW":[8,256,[]],"BARNHTH":[8,216,[]],"BARNSTF":[8,216,[]],"BARNXBW":[8,216,[]],"BAS11HS":[15,256,[]],"BAS11HT":[15,256,[]],"BAS11JS":[15,256,[]],"BAS11JT":[15,256,[]],"BAS11SS":[15,256,[]],"BAS11ST":[15,256,[]],"BAS12HS":[15,256,[]],"BAS12HT":[15,256,[]],"BAS1BOW":[15,256,[]],"BAS1HTH":[15,256,[]],"BAS1STF":[15,256,[]],"BAS1XBW":[15,256,[]],"BAS21HT":[14,256,[9]],"BAS31JS":[12,256,[8]],"BAS31JT":[12,256,[8]],"BAS31SS":[12,256,[7]],"BAS31ST":[12,256,[7]],"BAS41JS":[16,256,[8]],"BAS41JT":[16,256,[8]],"BAS41SS":[16,256,[9]],"BAS41ST":[16,256,[9]],"BATH1HS":[16,256,[8]],"BATH1HT":[16,256,[8]],"BATH1JS":[16,256,[8]],"BATH1JT":[16,256,[8]],"BATH1SS":[16,256,[8]],"BATH1ST":[16,256,[8]],"BATHHTH":[16,256,[8]],"DZA11HS":[19,256,[9]],"DZA11HT":[19,256,[8]],"DZA12HS":[21,256,[10]],"DZA12HT":[23,256,[9]],"DZA1BOW":[16,256,[8]],"DZA1HTH":[16,256,[8]],"DZA1STF":[17,256,[9]],"DZA1XBW":[20,282,[10]],"DZA21HS":[19,256,[9]],"DZA21HT":[19,256,[8]],"DZA22HS":[21,256,[10]],"DZA22HT":[23,256,[9]],"DZA2STF":[17,256,[9]],"DZKK1HS":[12,224,[5]],"DZKK1HT":[12,256,[5]],"DZKK2HS":[12,224,[5]],"DZKK2HT":[12,256,[5]],"DZKKBOW":[12,256,[5]],"DZKKHTH":[12,256,[5]],"DZKKSTF":[12,256,[5]],"DZKKXBW":[12,256,[5]],"DZNU1HS":[6,120,[]],"DZNU1HT":[6,120,[]],"DZNU2HS":[6,120,[]],"DZNU2HT":[6,120,[]],"DZNUBOW":[6,120,[]],"DZNUHTH":[6,120,[]],"DZNUSTF":[6,120,[]],"DZNUXBW":[6,120,[]],"DZRN1HS":[8,168,[]],"DZRN1HT":[8,168,[]],"DZRN2HS":[8,168,[]],"DZRN2HT":[8,168,[]],"DZRNBOW":[8,168,[]],"DZRNHTH":[8,168,[]],"DZRNSTF":[8,168,[]],"DZRNXBW":[8,168,[]],"DZS11HS":[15,256,[9]],"DZS11HT":[15,256,[8]],"DZS12HS":[15,208,[8]],"DZS12HT":[15,208,[8]],"DZS1BOW":[15,208,[8]],"DZS1HTH":[15,256,[8]],"DZS1STF":[15,208,[8]],"DZS1XBW":[15,256,[8]],"DZTH1HS":[18,256,[8]],"DZTH1HT":[18,256,[8]],"DZTHHTH":[18,256,[9]],"NEA11HS":[19,256,[9]],"NEA11HT":[19,256,[9]],"NEA12HS":[23,256,[11]],"NEA12HT":[24,256,[10]],"NEA1BOW":[18,256,[9]],"NEA1HTH":[15,256,[8]],"NEA1STF":[20,256,[11]],"NEA1XBW":[20,282,[11]],"NEA21HS":[19,256,[9]],"NEA21HT":[19,256,[9]],"NEA22HS":[23,256,[11]],"NEA22HT":[24,256,[10]],"NEA2HTH":[15,256,[8]],"NEA2STF":[20,256,[11]],"NEKK1HS":[12,256,[6]],"NEKK1HT":[12,256,[6]],"NEKK2HS":[12,256,[6]],"NEKK2HT":[12,256,[6]],"NEKKBOW":[12,256,[6]],"NEKKHTH":[12,256,[6]],"NEKKSTF":[12,256,[6]],"NEKKXBW":[12,256,[6]],"NENU1HS":[8,128,[]],"NENU1HT":[8,128,[]],"NENU2HS":[8,128,[]],"NENU2HT":[8,128,[]],"NENUBOW":[8,128,[]],"NENUHTH":[8,128,[]],"NENUSTF":[8,128,[]],"NENUXBW":[8,128,[]],"NERN1HS":[8,256,[]],"NERN1HT":[8,256,[]],"NERN2HS":[8,256,[]],"NERN2HT":[8,256,[]],"NERNBOW":[8,256,[]],"NERNHTH":[8,256,[]],"NERNSTF":[8,256,[]],"NERNXBW":[8,256,[]],"NES11HS":[16,256,[8]],"NES11HT":[16,256,[8]],"NES12HS":[16,256,[8]],"NES12HT":[16,256,[8]],"NES1BOW":[16,256,[8]],"NES1HTH":[16,256,[8]],"NES1STF":[16,256,[8]],"NES1XBW":[16,256,[8]],"NETH1HS":[20,256,[10]],"NETH1HT":[20,256,[10]],"NETHHTH":[20,256,[10]],"PAA11HS":[15,256,[7]],"PAA11HT":[17,256,[8]],"PAA12HS":[18,256,[8]],"PAA12HT":[20,256,[8]],"PAA1BOW":[16,256,[8]],"PAA1HTH":[14,256,[7]],"PAA1STF":[18,256,[9]],"PAA1XBW":[20,282,[10]],"PAA21HS":[15,256,[7]],"PAA21HT":[17,256,[8]],"PAA22HS":[19,256,[8]],"PAA22HT":[20,256,[9]],"PAA2HTH":[14,256,[7]],"PAA2STF":[18,256,[9]],"PAKK1HS":[12,256,[5]],"PAKK1HT":[12,256,[5]],"PAKK2HS":[12,256,[5]],"PAKK2HT":[12,256,[5]],"PAKKBOW":[12,256,[5]],"PAKKHTH":[12,256,[5]],"PAKKSTF":[12,256,[5]],"PAKKXBW":[12,256,[5]],"PANU1HS":[8,128,[]],"PANU1HT":[8,184,[]],"PANU2HS":[8,184,[]],"PANU2HT":[8,184,[]],"PANUBOW":[8,184,[]],"PANUHTH":[8,184,[]],"PANUSTF":[8,184,[]],"PANUXBW":[8,128,[]],"PARN1HS":[8,256,[]],"PARN1HT":[8,256,[]],"PARN2HS":[8,184,[]],"PARN2HT":[8,184,[]],"PARNBOW":[8,184,[]],"PARNHTH":[8,256,[]],"PARNSTF":[8,184,[]],"PARNXBW":[8,256,[]],"PAS11HS":[12,256,[7]],"PAS11HT":[12,256,[7]],"PAS1HTH":[12,256,[7]],"PATH1HS":[16,256,[8]],"PATH1HT":[16,256,[8]],"PATHHTH":[12,256,[6]],"SOA11HS":[20,256,[12]],"SOA11HT":[19,256,[11]],"SOA12HS":[24,256,[14]],"SOA12HT":[23,256,[13]],"SOA1BOW":[17,256,[9]],"SOA1HTH":[16,256,[9]],"SOA1STF":[18,256,[11]],"SOA1XBW":[20,282,[11]],"SOA21HS":[20,256,[12]],"SOA21HT":[19,256,[11]],"SOA22HS":[24,256,[14]],"SOA22HT":[23,256,[13]],"SOA2HTH":[16,256,[8]],"SOA2STF":[18,256,[11]],"SOKK1HS":[12,256,[6]],"SOKK1HT":[12,256,[6]],"SOKK2HS":[12,256,[6]],"SOKK2HT":[12,256,[6]],"SOKKBOW":[12,256,[6]],"SOKKHTH":[12,256,[6]],"SOKKSTF":[12,256,[6]],"SOKKXBW":[12,256,[6]],"SONU1HS":[8,128,[]],"SONU1HT":[8,128,[]],"SONU2HS":[8,128,[]],"SONU2HT":[8,128,[]],"SONUBOW":[8,128,[]],"SONUHTH":[8,128,[]],"SONUSTF":[8,128,[]],"SONUXBW":[8,128,[]],"SORN1HS":[8,256,[]],"SORN1HT":[8,256,[]],"SORN2HS":[8,256,[]],"SORN2HT":[8,256,[]],"SORNBOW":[8,256,[]],"SORNHTH":[8,256,[]],"SORNSTF":[8,256,[]],"SORNXBW":[8,256,[]],"SOS11HS":[14,256,[7]],"SOS11HT":[14,256,[7]],"SOS12HS":[14,256,[7]],"SOS12HT":[14,256,[7]],"SOS1BOW":[14,256,[7]],"SOS1HTH":[14,256,[7]],"SOS1STF":[14,256,[7]],"SOS1XBW":[14,256,[7]],"SOTH1HS":[20,256,[10]],"SOTH1HT":[20,256,[10]],"SOTHHTH":[20,256,[10]],"TGA1HTH":[12,224,[7]],"TGA2HTH":[12,224,[7]],"TGNUHTH":[10,136,[]],"TGRNHTH":[8,120,[]],"TGS1HTH":[16,256,[]],"TGS3HTH":[10,208,[6]],"TGS4HTH":[7,152,[4]],"RGA1HTH":[15,256,[6]],"GUA1HTH":[16,256,[11]],"0AA12HS":[16,256,[5,12]],"0AA22HS":[16,256,[6,12]]},"types":{"shie":["shld"],"shld":["armo","seco"],"seco":[],"armo":[],"2han":["weap"],"weap":[],"2hcs":["2hsw","pala"],"pala":["clas"],"clas":[],"2hsw":["swor","2han"],"swor":["mgen"],"mgen":["mele","gen"],"gen":[],"mele":["weap"],"1han":["weap"],"ajav":["jave","amaz"],"amaz":["clas"],"jave":["comb","spea"],"spea":["mele","pas"],"pas":[],"comb":["mele","thro"],"thro":["weap","rng"],"rng":[],"aspe":["spea","amaz"],"abow":["bow","amaz"],"bow":["miss","rng"],"miss":["weap","rng"],"orb":["weap","sorc"],"sorc":["clas"],"xbow":["miss","rng"],"staf":["rod"],"rod":["blun"],"blun":["mgen"],"sc9":["pole"],"pole":["mele","pas"],"taxe":["comb","axe"],"axe":["mgen"],"tkni":["comb","knif"],"knif":["mgen","asm"],"asm":[],"crys":["1han"],"hamm":["blun"],"mace":["blun"],"club":["blun"],"scep":["rod","gen"],"wand":["rod"],"h2h2":["h2h"],"h2h":["mele","assn"],"assn":["clas","asm"]},"tcls":{"2hcs":"pal","pala":"pal","ajav":"ama","amaz":"ama","aspe":"ama","abow":"ama","orb":"sor","sorc":"sor","asm":"ass","h2h2":"ass","h2h":"ass","assn":"ass"},"b":[{"c":"hax","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["axe","1han"]},{"c":"axe","w":10,"wc":"1hs","wc2":"1hs","f":0,"ty":["axe","1han"]},{"c":"2ax","w":10,"wc":"1hs","wc2":"1hs","f":0,"ty":["axe","1han"]},{"c":"mpi","w":-10,"wc":"1hs","wc2":"1hs","f":0,"ty":["axe","1han"]},{"c":"wax","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["axe","1han"]},{"c":"lax","w":-10,"wc":"stf","wc2":"stf","f":2,"ty":["axe","2han"]},{"c":"bax","w":0,"wc":"stf","wc2":"stf","f":2,"ty":["axe","2han"]},{"c":"btx","w":10,"wc":"stf","wc2":"stf","f":2,"ty":["axe","2han"]},{"c":"gax","w":-10,"wc":"stf","wc2":"stf","f":2,"ty":["axe","2han"]},{"c":"gix","w":10,"wc":"stf","wc2":"stf","f":2,"ty":["axe","2han"]},{"c":"wnd","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["wand","1han"]},{"c":"ywn","w":10,"wc":"1hs","wc2":"1hs","f":0,"ty":["wand","1han"]},{"c":"bwn","w":-20,"wc":"1hs","wc2":"1hs","f":0,"ty":["wand","1han"]},{"c":"gwn","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["wand","1han"]},{"c":"clb","w":-10,"wc":"1hs","wc2":"1hs","f":0,"ty":["club","1han"]},{"c":"scp","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["scep","1han"]},{"c":"gsc","w":10,"wc":"1hs","wc2":"1hs","f":0,"ty":["scep","1han"]},{"c":"wsp","w":-10,"wc":"1hs","wc2":"1hs","f":0,"ty":["scep","1han"]},{"c":"spc","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["club","1han"]},{"c":"mac","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["mace","1han"]},{"c":"mst","w":10,"wc":"1hs","wc2":"1hs","f":0,"ty":["mace","1han"]},{"c":"fla","w":-10,"wc":"1hs","wc2":"1hs","f":0,"ty":["mace","1han"]},{"c":"whm","w":20,"wc":"1hs","wc2":"1hs","f":0,"ty":["hamm","1han"]},{"c":"mau","w":10,"wc":"stf","wc2":"stf","f":2,"ty":["hamm","2han"]},{"c":"gma","w":20,"wc":"stf","wc2":"stf","f":2,"ty":["hamm","2han"]},{"c":"ssd","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["swor","1han"]},{"c":"scm","w":-20,"wc":"1hs","wc2":"1hs","f":0,"ty":["swor","1han"]},{"c":"sbr","w":-10,"wc":"1hs","wc2":"1hs","f":0,"ty":["swor","1han"]},{"c":"flc","w":20,"wc":"1hs","wc2":"1hs","f":0,"ty":["swor","1han"]},{"c":"crs","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["swor","crys"]},{"c":"bsd","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["swor","1han"]},{"c":"lsd","w":-10,"wc":"1hs","wc2":"1hs","f":0,"ty":["swor","1han"]},{"c":"wsd","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["swor","1han"]},{"c":"2hs","w":0,"wc":"1hs","wc2":"2hs","f":3,"ty":["swor","2hsw"]},{"c":"clm","w":10,"wc":"1hs","wc2":"2hs","f":3,"ty":["swor","2hsw"]},{"c":"gis","w":0,"wc":"1hs","wc2":"2hs","f":3,"ty":["swor","2hsw"]},{"c":"bsw","w":10,"wc":"1hs","wc2":"2hs","f":3,"ty":["swor","2hsw"]},{"c":"flb","w":-10,"wc":"1hs","wc2":"2hs","f":3,"ty":["swor","2hsw"]},{"c":"gsd","w":10,"wc":"1hs","wc2":"2hs","f":3,"ty":["swor","2hsw"]},{"c":"dgr","w":-20,"wc":"1ht","wc2":"1ht","f":0,"ty":["knif","1han"]},{"c":"dir","w":0,"wc":"1ht","wc2":"1ht","f":0,"ty":["knif","1han"]},{"c":"kri","w":-20,"wc":"1ht","wc2":"1ht","f":0,"ty":["knif","1han"]},{"c":"bld","w":-10,"wc":"1ht","wc2":"1ht","f":0,"ty":["knif","1han"]},{"c":"tkf","w":0,"wc":"1ht","wc2":"1ht","f":4,"ty":["tkni","1han"]},{"c":"tax","w":10,"wc":"1hs","wc2":"1hs","f":4,"ty":["taxe","1han"]},{"c":"bkf","w":-20,"wc":"1ht","wc2":"1ht","f":4,"ty":["tkni","1han"]},{"c":"bal","w":-10,"wc":"1hs","wc2":"1hs","f":4,"ty":["taxe","1han"]},{"c":"jav","w":-10,"wc":"1ht","wc2":"1ht","f":4,"ty":["jave","1han"]},{"c":"pil","w":0,"wc":"1ht","wc2":"1ht","f":4,"ty":["jave","1han"]},{"c":"ssp","w":10,"wc":"1ht","wc2":"1ht","f":4,"ty":["jave","1han"]},{"c":"glv","w":20,"wc":"1ht","wc2":"1ht","f":4,"ty":["jave","1han"]},{"c":"tsp","w":-10,"wc":"1ht","wc2":"1ht","f":4,"ty":["jave","1han"]},{"c":"spr","w":-10,"wc":"2ht","wc2":"2ht","f":2,"ty":["spea","2han"]},{"c":"tri","w":0,"wc":"2ht","wc2":"2ht","f":2,"ty":["spea","2han"]},{"c":"brn","w":-20,"wc":"2ht","wc2":"2ht","f":2,"ty":["spea","2han"]},{"c":"spt","w":0,"wc":"2ht","wc2":"2ht","f":2,"ty":["spea","2han"]},{"c":"pik","w":20,"wc":"2ht","wc2":"2ht","f":2,"ty":["spea","2han"]},{"c":"bar","w":10,"wc":"stf","wc2":"stf","f":2,"ty":["pole","2han"]},{"c":"vou","w":0,"wc":"stf","wc2":"stf","f":2,"ty":["pole","2han"]},{"c":"scy","w":-10,"wc":"stf","wc2":"stf","f":2,"ty":["sc9","2han"]},{"c":"pax","w":10,"wc":"stf","wc2":"stf","f":2,"ty":["pole","2han"]},{"c":"hal","w":0,"wc":"stf","wc2":"stf","f":2,"ty":["pole","2han"]},{"c":"wsc","w":-10,"wc":"stf","wc2":"stf","f":2,"ty":["sc9","2han"]},{"c":"sst","w":-10,"wc":"stf","wc2":"stf","f":2,"ty":["staf","2han"]},{"c":"lst","w":0,"wc":"stf","wc2":"stf","f":2,"ty":["staf","2han"]},{"c":"cst","w":10,"wc":"stf","wc2":"stf","f":2,"ty":["staf","2han"]},{"c":"bst","w":0,"wc":"stf","wc2":"stf","f":2,"ty":["staf","2han"]},{"c":"wst","w":20,"wc":"stf","wc2":"stf","f":2,"ty":["staf","2han"]},{"c":"sbw","w":5,"wc":"bow","wc2":"bow","f":2,"ty":["bow"]},{"c":"hbw","w":-10,"wc":"bow","wc2":"bow","f":2,"ty":["bow"]},{"c":"lbw","w":0,"wc":"bow","wc2":"bow","f":2,"ty":["bow"]},{"c":"cbw","w":-10,"wc":"bow","wc2":"bow","f":2,"ty":["bow"]},{"c":"sbb","w":0,"wc":"bow","wc2":"bow","f":2,"ty":["bow"]},{"c":"lbb","w":10,"wc":"bow","wc2":"bow","f":2,"ty":["bow"]},{"c":"swb","w":0,"wc":"bow","wc2":"bow","f":2,"ty":["bow"]},{"c":"lwb","w":10,"wc":"bow","wc2":"bow","f":2,"ty":["bow"]},{"c":"lxb","w":-10,"wc":"xbw","wc2":"xbw","f":2,"ty":["xbow"]},{"c":"mxb","w":0,"wc":"xbw","wc2":"xbw","f":2,"ty":["xbow"]},{"c":"hxb","w":10,"wc":"xbw","wc2":"xbw","f":2,"ty":["xbow"]},{"c":"rxb","w":-40,"wc":"xbw","wc2":"xbw","f":2,"ty":["xbow"]},{"c":"g33","w":-20,"wc":"1ht","wc2":"1ht","f":0,"ty":["knif","1han"]},{"c":"leg","w":-10,"wc":"1hs","wc2":"1hs","f":0,"ty":["club","1han"]},{"c":"hdm","w":20,"wc":"1hs","wc2":"1hs","f":0,"ty":["hamm","1han"]},{"c":"hfh","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["hamm","1han"]},{"c":"hst","w":0,"wc":"stf","wc2":"stf","f":2,"ty":["staf","2han"]},{"c":"msf","w":0,"wc":"stf","wc2":"stf","f":2,"ty":["staf","2han"]},{"c":"9ha","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["axe","1han"]},{"c":"9ax","w":10,"wc":"1hs","wc2":"1hs","f":0,"ty":["axe","1han"]},{"c":"92a","w":10,"wc":"1hs","wc2":"1hs","f":0,"ty":["axe","1han"]},{"c":"9mp","w":-10,"wc":"1hs","wc2":"1hs","f":0,"ty":["axe","1han"]},{"c":"9wa","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["axe","1han"]},{"c":"9la","w":-10,"wc":"stf","wc2":"stf","f":2,"ty":["axe","2han"]},{"c":"9ba","w":0,"wc":"stf","wc2":"stf","f":2,"ty":["axe","2han"]},{"c":"9bt","w":10,"wc":"stf","wc2":"stf","f":2,"ty":["axe","2han"]},{"c":"9ga","w":-10,"wc":"stf","wc2":"stf","f":2,"ty":["axe","2han"]},{"c":"9gi","w":10,"wc":"stf","wc2":"stf","f":2,"ty":["axe","2han"]},{"c":"9wn","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["wand","1han"]},{"c":"9yw","w":10,"wc":"1hs","wc2":"1hs","f":0,"ty":["wand","1han"]},{"c":"9bw","w":-20,"wc":"1hs","wc2":"1hs","f":0,"ty":["wand","1han"]},{"c":"9gw","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["wand","1han"]},{"c":"9cl","w":-10,"wc":"1hs","wc2":"1hs","f":0,"ty":["club","1han"]},{"c":"9sc","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["scep","1han"]},{"c":"9qs","w":10,"wc":"1hs","wc2":"1hs","f":0,"ty":["scep","1han"]},{"c":"9ws","w":-10,"wc":"1hs","wc2":"1hs","f":0,"ty":["scep","1han"]},{"c":"9sp","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["club","1han"]},{"c":"9ma","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["mace","1han"]},{"c":"9mt","w":10,"wc":"1hs","wc2":"1hs","f":0,"ty":["mace","1han"]},{"c":"9fl","w":-10,"wc":"1hs","wc2":"1hs","f":0,"ty":["mace","1han"]},{"c":"9wh","w":20,"wc":"1hs","wc2":"1hs","f":0,"ty":["hamm","1han"]},{"c":"9m9","w":10,"wc":"stf","wc2":"stf","f":2,"ty":["hamm","2han"]},{"c":"9gm","w":20,"wc":"stf","wc2":"stf","f":2,"ty":["hamm","2han"]},{"c":"9ss","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["swor","1han"]},{"c":"9sm","w":-30,"wc":"1hs","wc2":"1hs","f":0,"ty":["swor","1han"]},{"c":"9sb","w":-10,"wc":"1hs","wc2":"1hs","f":0,"ty":["swor","1han"]},{"c":"9fc","w":20,"wc":"1hs","wc2":"1hs","f":0,"ty":["swor","1han"]},{"c":"9cr","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["swor","crys"]},{"c":"9bs","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["swor","1han"]},{"c":"9ls","w":-10,"wc":"1hs","wc2":"1hs","f":0,"ty":["swor","1han"]},{"c":"9wd","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["swor","1han"]},{"c":"92h","w":0,"wc":"1hs","wc2":"2hs","f":3,"ty":["swor","2hsw"]},{"c":"9cm","w":10,"wc":"1hs","wc2":"2hs","f":3,"ty":["swor","2hsw"]},{"c":"9gs","w":0,"wc":"1hs","wc2":"2hs","f":3,"ty":["swor","2hsw"]},{"c":"9b9","w":10,"wc":"1hs","wc2":"2hs","f":3,"ty":["swor","2hsw"]},{"c":"9fb","w":-10,"wc":"1hs","wc2":"2hs","f":3,"ty":["swor","2hsw"]},{"c":"9gd","w":10,"wc":"1hs","wc2":"2hs","f":3,"ty":["swor","2hsw"]},{"c":"9dg","w":-20,"wc":"1ht","wc2":"1ht","f":0,"ty":["knif","1han"]},{"c":"9di","w":0,"wc":"1ht","wc2":"1ht","f":0,"ty":["knif","1han"]},{"c":"9kr","w":-20,"wc":"1ht","wc2":"1ht","f":0,"ty":["knif","1han"]},{"c":"9bl","w":-10,"wc":"1ht","wc2":"1ht","f":0,"ty":["knif","1han"]},{"c":"9tk","w":0,"wc":"1ht","wc2":"1ht","f":4,"ty":["tkni","1han"]},{"c":"9ta","w":10,"wc":"1hs","wc2":"1hs","f":4,"ty":["taxe","1han"]},{"c":"9bk","w":-20,"wc":"1ht","wc2":"1ht","f":4,"ty":["tkni","1han"]},{"c":"9b8","w":-10,"wc":"1hs","wc2":"1hs","f":4,"ty":["taxe","1han"]},{"c":"9ja","w":-10,"wc":"1ht","wc2":"1ht","f":4,"ty":["jave","1han"]},{"c":"9pi","w":0,"wc":"1ht","wc2":"1ht","f":4,"ty":["jave","1han"]},{"c":"9s9","w":10,"wc":"1ht","wc2":"1ht","f":4,"ty":["jave","1han"]},{"c":"9gl","w":20,"wc":"1ht","wc2":"1ht","f":4,"ty":["jave","1han"]},{"c":"9ts","w":-10,"wc":"1ht","wc2":"1ht","f":4,"ty":["jave","1han"]},{"c":"9sr","w":-10,"wc":"2ht","wc2":"2ht","f":2,"ty":["spea","2han"]},{"c":"9tr","w":0,"wc":"2ht","wc2":"2ht","f":2,"ty":["spea","2han"]},{"c":"9br","w":-20,"wc":"2ht","wc2":"2ht","f":2,"ty":["spea","2han"]},{"c":"9st","w":0,"wc":"2ht","wc2":"2ht","f":2,"ty":["spea","2han"]},{"c":"9p9","w":20,"wc":"2ht","wc2":"2ht","f":2,"ty":["spea","2han"]},{"c":"9b7","w":10,"wc":"stf","wc2":"stf","f":2,"ty":["pole","2han"]},{"c":"9vo","w":0,"wc":"stf","wc2":"stf","f":2,"ty":["pole","2han"]},{"c":"9s8","w":-10,"wc":"stf","wc2":"stf","f":2,"ty":["sc9","2han"]},{"c":"9pa","w":10,"wc":"stf","wc2":"stf","f":2,"ty":["pole","2han"]},{"c":"9h9","w":0,"wc":"stf","wc2":"stf","f":2,"ty":["pole","2han"]},{"c":"9wc","w":-10,"wc":"stf","wc2":"stf","f":2,"ty":["sc9","2han"]},{"c":"8ss","w":-10,"wc":"stf","wc2":"stf","f":2,"ty":["staf","2han"]},{"c":"8ls","w":0,"wc":"stf","wc2":"stf","f":2,"ty":["staf","2han"]},{"c":"8cs","w":10,"wc":"stf","wc2":"stf","f":2,"ty":["staf","2han"]},{"c":"8bs","w":0,"wc":"stf","wc2":"stf","f":2,"ty":["staf","2han"]},{"c":"8ws","w":20,"wc":"stf","wc2":"stf","f":2,"ty":["staf","2han"]},{"c":"8sb","w":5,"wc":"bow","wc2":"bow","f":2,"ty":["bow"]},{"c":"8hb","w":-10,"wc":"bow","wc2":"bow","f":2,"ty":["bow"]},{"c":"8lb","w":0,"wc":"bow","wc2":"bow","f":2,"ty":["bow"]},{"c":"8cb","w":-10,"wc":"bow","wc2":"bow","f":2,"ty":["bow"]},{"c":"8s8","w":0,"wc":"bow","wc2":"bow","f":2,"ty":["bow"]},{"c":"8l8","w":10,"wc":"bow","wc2":"bow","f":2,"ty":["bow"]},{"c":"8sw","w":0,"wc":"bow","wc2":"bow","f":2,"ty":["bow"]},{"c":"8lw","w":10,"wc":"bow","wc2":"bow","f":2,"ty":["bow"]},{"c":"8lx","w":-10,"wc":"xbw","wc2":"xbw","f":2,"ty":["xbow"]},{"c":"8mx","w":0,"wc":"xbw","wc2":"xbw","f":2,"ty":["xbow"]},{"c":"8hx","w":10,"wc":"xbw","wc2":"xbw","f":2,"ty":["xbow"]},{"c":"8rx","w":-60,"wc":"xbw","wc2":"xbw","f":2,"ty":["xbow"]},{"c":"qf1","w":-10,"wc":"1hs","wc2":"1hs","f":0,"ty":["mace","1han"]},{"c":"qf2","w":-10,"wc":"1hs","wc2":"1hs","f":0,"ty":["mace","1han"]},{"c":"ktr","w":-10,"wc":"ht1","wc2":"ht1","f":0,"ty":["h2h","1han"]},{"c":"wrb","w":0,"wc":"ht1","wc2":"ht1","f":0,"ty":["h2h","1han"]},{"c":"axf","w":10,"wc":"ht1","wc2":"ht1","f":0,"ty":["h2h","1han"]},{"c":"ces","w":0,"wc":"ht1","wc2":"ht1","f":0,"ty":["h2h","1han"]},{"c":"clw","w":-10,"wc":"ht1","wc2":"ht1","f":0,"ty":["h2h","1han"]},{"c":"btl","w":-20,"wc":"ht1","wc2":"ht1","f":0,"ty":["h2h","1han"]},{"c":"skr","w":-10,"wc":"ht1","wc2":"ht1","f":0,"ty":["h2h","1han"]},{"c":"9ar","w":0,"wc":"ht1","wc2":"ht1","f":0,"ty":["h2h","1han"]},{"c":"9wb","w":-10,"wc":"ht1","wc2":"ht1","f":0,"ty":["h2h","1han"]},{"c":"9xf","w":10,"wc":"ht1","wc2":"ht1","f":0,"ty":["h2h","1han"]},{"c":"9cs","w":-10,"wc":"ht1","wc2":"ht1","f":0,"ty":["h2h2","1han"]},{"c":"9lw","w":-20,"wc":"ht1","wc2":"ht1","f":0,"ty":["h2h2","1han"]},{"c":"9tw","w":-30,"wc":"ht1","wc2":"ht1","f":0,"ty":["h2h2","1han"]},{"c":"9qr","w":0,"wc":"ht1","wc2":"ht1","f":0,"ty":["h2h2","1han"]},{"c":"7ar","w":0,"wc":"ht1","wc2":"ht1","f":0,"ty":["h2h2","1han"]},{"c":"7wb","w":-10,"wc":"ht1","wc2":"ht1","f":0,"ty":["h2h2","1han"]},{"c":"7xf","w":10,"wc":"ht1","wc2":"ht1","f":0,"ty":["h2h2","1han"]},{"c":"7cs","w":-10,"wc":"ht1","wc2":"ht1","f":0,"ty":["h2h2","1han"]},{"c":"7lw","w":-20,"wc":"ht1","wc2":"ht1","f":0,"ty":["h2h2","1han"]},{"c":"7tw","w":-30,"wc":"ht1","wc2":"ht1","f":0,"ty":["h2h2","1han"]},{"c":"7qr","w":0,"wc":"ht1","wc2":"ht1","f":0,"ty":["h2h2","1han"]},{"c":"7ha","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["axe","1han"]},{"c":"7ax","w":10,"wc":"1hs","wc2":"1hs","f":0,"ty":["axe","1han"]},{"c":"72a","w":10,"wc":"1hs","wc2":"1hs","f":0,"ty":["axe","1han"]},{"c":"7mp","w":-10,"wc":"1hs","wc2":"1hs","f":0,"ty":["axe","1han"]},{"c":"7wa","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["axe","1han"]},{"c":"7la","w":-15,"wc":"stf","wc2":"stf","f":2,"ty":["axe","2han"]},{"c":"7ba","w":0,"wc":"stf","wc2":"stf","f":2,"ty":["axe","2han"]},{"c":"7bt","w":10,"wc":"stf","wc2":"stf","f":2,"ty":["axe","2han"]},{"c":"7ga","w":-10,"wc":"stf","wc2":"stf","f":2,"ty":["axe","2han"]},{"c":"7gi","w":10,"wc":"stf","wc2":"stf","f":2,"ty":["axe","2han"]},{"c":"7wn","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["wand","1han"]},{"c":"7yw","w":10,"wc":"1hs","wc2":"1hs","f":0,"ty":["wand","1han"]},{"c":"7bw","w":-20,"wc":"1hs","wc2":"1hs","f":0,"ty":["wand","1han"]},{"c":"7gw","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["wand","1han"]},{"c":"7cl","w":-10,"wc":"1hs","wc2":"1hs","f":0,"ty":["club","1han"]},{"c":"7sc","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["scep","1han"]},{"c":"7qs","w":10,"wc":"1hs","wc2":"1hs","f":0,"ty":["scep","1han"]},{"c":"7ws","w":-10,"wc":"1hs","wc2":"1hs","f":0,"ty":["scep","1han"]},{"c":"7sp","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["club","1han"]},{"c":"7ma","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["mace","1han"]},{"c":"7mt","w":10,"wc":"1hs","wc2":"1hs","f":0,"ty":["mace","1han"]},{"c":"7fl","w":-10,"wc":"1hs","wc2":"1hs","f":0,"ty":["mace","1han"]},{"c":"7wh","w":20,"wc":"1hs","wc2":"1hs","f":0,"ty":["hamm","1han"]},{"c":"7m7","w":10,"wc":"stf","wc2":"stf","f":2,"ty":["hamm","2han"]},{"c":"7gm","w":20,"wc":"stf","wc2":"stf","f":2,"ty":["hamm","2han"]},{"c":"7ss","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["swor","1han"]},{"c":"7sm","w":-20,"wc":"1hs","wc2":"1hs","f":0,"ty":["swor","1han"]},{"c":"7sb","w":-10,"wc":"1hs","wc2":"1hs","f":0,"ty":["swor","1han"]},{"c":"7fc","w":10,"wc":"1hs","wc2":"1hs","f":0,"ty":["swor","1han"]},{"c":"7cr","w":-30,"wc":"1hs","wc2":"1hs","f":0,"ty":["swor","crys"]},{"c":"7bs","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["swor","1han"]},{"c":"7ls","w":-10,"wc":"1hs","wc2":"1hs","f":0,"ty":["swor","1han"]},{"c":"7wd","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["swor","1han"]},{"c":"72h","w":-15,"wc":"1hs","wc2":"2hs","f":3,"ty":["swor","2hsw"]},{"c":"7cm","w":-5,"wc":"1hs","wc2":"2hs","f":3,"ty":["swor","2hsw"]},{"c":"7gs","w":0,"wc":"1hs","wc2":"2hs","f":3,"ty":["swor","2hsw"]},{"c":"7b7","w":-10,"wc":"1hs","wc2":"2hs","f":3,"ty":["swor","2hsw"]},{"c":"7fb","w":10,"wc":"1hs","wc2":"2hs","f":3,"ty":["swor","2hsw"]},{"c":"7gd","w":5,"wc":"1hs","wc2":"2hs","f":3,"ty":["swor","2hsw"]},{"c":"7dg","w":-20,"wc":"1ht","wc2":"1ht","f":0,"ty":["knif","1han"]},{"c":"7di","w":0,"wc":"1ht","wc2":"1ht","f":0,"ty":["knif","1han"]},{"c":"7kr","w":-20,"wc":"1ht","wc2":"1ht","f":0,"ty":["knif","1han"]},{"c":"7bl","w":-10,"wc":"1ht","wc2":"1ht","f":0,"ty":["knif","1han"]},{"c":"7tk","w":0,"wc":"1ht","wc2":"1ht","f":4,"ty":["tkni","1han"]},{"c":"7ta","w":10,"wc":"1hs","wc2":"1hs","f":4,"ty":["taxe","1han"]},{"c":"7bk","w":-20,"wc":"1ht","wc2":"1ht","f":4,"ty":["tkni","1han"]},{"c":"7b8","w":-10,"wc":"1hs","wc2":"1hs","f":4,"ty":["taxe","1han"]},{"c":"7ja","w":-10,"wc":"1ht","wc2":"1ht","f":4,"ty":["jave","1han"]},{"c":"7pi","w":0,"wc":"1ht","wc2":"1ht","f":4,"ty":["jave","1han"]},{"c":"7s7","w":10,"wc":"1ht","wc2":"1ht","f":4,"ty":["jave","1han"]},{"c":"7gl","w":20,"wc":"1ht","wc2":"1ht","f":4,"ty":["jave","1han"]},{"c":"7ts","w":-10,"wc":"1ht","wc2":"1ht","f":4,"ty":["jave","1han"]},{"c":"7sr","w":-10,"wc":"2ht","wc2":"2ht","f":2,"ty":["spea","2han"]},{"c":"7tr","w":0,"wc":"2ht","wc2":"2ht","f":2,"ty":["spea","2han"]},{"c":"7br","w":-20,"wc":"2ht","wc2":"2ht","f":2,"ty":["spea","2han"]},{"c":"7st","w":0,"wc":"2ht","wc2":"2ht","f":2,"ty":["spea","2han"]},{"c":"7p7","w":20,"wc":"2ht","wc2":"2ht","f":2,"ty":["spea","2han"]},{"c":"7o7","w":0,"wc":"stf","wc2":"stf","f":2,"ty":["pole","2han"]},{"c":"7vo","w":10,"wc":"stf","wc2":"stf","f":2,"ty":["pole","2han"]},{"c":"7s8","w":-10,"wc":"stf","wc2":"stf","f":2,"ty":["sc9","2han"]},{"c":"7pa","w":10,"wc":"stf","wc2":"stf","f":2,"ty":["pole","2han"]},{"c":"7h7","w":0,"wc":"stf","wc2":"stf","f":2,"ty":["pole","2han"]},{"c":"7wc","w":-10,"wc":"stf","wc2":"stf","f":2,"ty":["sc9","2han"]},{"c":"6ss","w":-10,"wc":"stf","wc2":"stf","f":2,"ty":["staf","2han"]},{"c":"6ls","w":10,"wc":"stf","wc2":"stf","f":2,"ty":["staf","2han"]},{"c":"6cs","w":0,"wc":"stf","wc2":"stf","f":2,"ty":["staf","2han"]},{"c":"6bs","w":0,"wc":"stf","wc2":"stf","f":2,"ty":["staf","2han"]},{"c":"6ws","w":10,"wc":"stf","wc2":"stf","f":2,"ty":["staf","2han"]},{"c":"6sb","w":5,"wc":"bow","wc2":"bow","f":2,"ty":["bow"]},{"c":"6hb","w":-10,"wc":"bow","wc2":"bow","f":2,"ty":["bow"]},{"c":"6lb","w":0,"wc":"bow","wc2":"bow","f":2,"ty":["bow"]},{"c":"6cb","w":-10,"wc":"bow","wc2":"bow","f":2,"ty":["bow"]},{"c":"6s7","w":0,"wc":"bow","wc2":"bow","f":2,"ty":["bow"]},{"c":"6l7","w":10,"wc":"bow","wc2":"bow","f":2,"ty":["bow"]},{"c":"6sw","w":0,"wc":"bow","wc2":"bow","f":2,"ty":["bow"]},{"c":"6lw","w":10,"wc":"bow","wc2":"bow","f":2,"ty":["bow"]},{"c":"6lx","w":-10,"wc":"xbw","wc2":"xbw","f":2,"ty":["xbow"]},{"c":"6mx","w":0,"wc":"xbw","wc2":"xbw","f":2,"ty":["xbow"]},{"c":"6hx","w":10,"wc":"xbw","wc2":"xbw","f":2,"ty":["xbow"]},{"c":"6rx","w":-60,"wc":"xbw","wc2":"xbw","f":2,"ty":["xbow"]},{"c":"ob1","w":-10,"wc":"1hs","wc2":"1hs","f":0,"ty":["orb"]},{"c":"ob2","w":-10,"wc":"1hs","wc2":"1hs","f":0,"ty":["orb"]},{"c":"ob3","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["orb"]},{"c":"ob4","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["orb"]},{"c":"ob5","w":10,"wc":"1hs","wc2":"1hs","f":0,"ty":["orb"]},{"c":"am1","w":0,"wc":"bow","wc2":"bow","f":2,"ty":["abow"]},{"c":"am2","w":10,"wc":"bow","wc2":"bow","f":2,"ty":["abow"]},{"c":"am3","w":-10,"wc":"2ht","wc2":"2ht","f":2,"ty":["aspe","2han"]},{"c":"am4","w":0,"wc":"2ht","wc2":"2ht","f":2,"ty":["aspe","2han"]},{"c":"am5","w":-10,"wc":"1ht","wc2":"1ht","f":4,"ty":["ajav","1han"]},{"c":"ob6","w":-10,"wc":"1hs","wc2":"1hs","f":0,"ty":["orb"]},{"c":"ob7","w":-10,"wc":"1hs","wc2":"1hs","f":0,"ty":["orb"]},{"c":"ob8","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["orb"]},{"c":"ob9","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["orb"]},{"c":"oba","w":10,"wc":"1hs","wc2":"1hs","f":0,"ty":["orb"]},{"c":"am6","w":0,"wc":"bow","wc2":"bow","f":2,"ty":["abow"]},{"c":"am7","w":10,"wc":"bow","wc2":"bow","f":2,"ty":["abow"]},{"c":"am8","w":-10,"wc":"2ht","wc2":"2ht","f":2,"ty":["aspe","2han"]},{"c":"am9","w":10,"wc":"2ht","wc2":"2ht","f":2,"ty":["aspe","2han"]},{"c":"ama","w":-10,"wc":"1ht","wc2":"1ht","f":4,"ty":["ajav","1han"]},{"c":"obb","w":-10,"wc":"1hs","wc2":"1hs","f":0,"ty":["orb"]},{"c":"obc","w":-10,"wc":"1hs","wc2":"1hs","f":0,"ty":["orb"]},{"c":"obd","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["orb"]},{"c":"obe","w":0,"wc":"1hs","wc2":"1hs","f":0,"ty":["orb"]},{"c":"obf","w":10,"wc":"1hs","wc2":"1hs","f":0,"ty":["orb"]},{"c":"amb","w":-10,"wc":"bow","wc2":"bow","f":2,"ty":["abow"]},{"c":"amc","w":10,"wc":"bow","wc2":"bow","f":2,"ty":["abow"]},{"c":"amd","w":-10,"wc":"2ht","wc2":"2ht","f":2,"ty":["aspe","2han"]},{"c":"ame","w":10,"wc":"2ht","wc2":"2ht","f":2,"ty":["aspe","2han"]},{"c":"amf","w":-10,"wc":"1ht","wc2":"1ht","f":4,"ty":["ajav","1han"]},{"c":"7cr2","w":-30,"wc":"2hs","wc2":"2hs","f":2,"ty":["2hcs","2han"]}],"sk":[{"id":2,"n":"Throw","c":"","m":"TH","q":0,"ia":["thro"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]},{"id":6,"n":"Magic Arrow","c":"ama","m":"A1","q":0,"tb":"Bow and Crossbow","ia":["miss"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"],"msl":["","magicarrow","",""]},{"id":7,"n":"Fire Arrow","c":"ama","m":"A1","q":0,"tb":"Bow and Crossbow","ia":["miss"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"],"msl":["","firearrow","",""]},{"id":10,"n":"Jab","c":"ama","m":"SQ","q":1,"tb":"Javelin and Spear","ia":["spea"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]},{"id":11,"n":"Cold Arrow","c":"ama","m":"A1","q":0,"tb":"Bow and Crossbow","ia":["miss"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"],"msl":["","coldarrow","",""]},{"id":12,"n":"Multiple Shot","c":"ama","m":"A1","q":0,"tb":"Bow and Crossbow","ia":["miss"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"],"msl":["","multipleshotarrow","multipleshotbolt",""],"mc":[5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25]},{"id":14,"n":"Power Strike","c":"ama","m":"A1","q":0,"tb":"Javelin and Spear","ia":["spea"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]},{"id":15,"n":"Poison Javelin","c":"ama","m":"TH","q":0,"tb":"Javelin and Spear","ia":["jave"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"],"msl":["poisonjav","","",""]},{"id":16,"n":"Exploding Arrow","c":"ama","m":"A1","q":0,"tb":"Bow and Crossbow","ia":["miss"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"],"msl":["explodingarrow","","",""]},{"id":20,"n":"Lightning Bolt","c":"ama","m":"TH","q":0,"tb":"Javelin and Spear","ia":["jave"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"],"msl":["","lightningjavelin","",""]},{"id":21,"n":"Ice Arrow","c":"ama","m":"A1","q":0,"tb":"Bow and Crossbow","ia":["miss"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"],"msl":["icearrow","","",""]},{"id":22,"n":"Guided Arrow","c":"ama","m":"A1","q":0,"tb":"Bow and Crossbow","ia":["miss"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"],"msl":["","guidedarrow","guidedarrow","guidedarrow"]},{"id":24,"n":"Charged Strike","c":"ama","m":"A1","q":0,"tb":"Javelin and Spear","ia":["spea"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]},{"id":25,"n":"Plague Javelin","c":"ama","m":"TH","q":0,"tb":"Javelin and Spear","ia":["jave"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"],"msl":["plaguejavelin","","",""],"cd":[25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25]},{"id":26,"n":"Strafe","c":"ama","m":"A1","q":0,"tb":"Bow and Crossbow","ia":["miss"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"],"rb":50,"hits":[2,3,4,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5],"hmin":[2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5],"msl":["","strafearrow","strafebolt",""]},{"id":27,"n":"Immolation Arrow","c":"ama","m":"A1","q":0,"tb":"Bow and Crossbow","ia":["miss"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"],"msl":["immolationarrow","","",""]},{"id":30,"n":"Fend","c":"ama","m":"A1","q":0,"tb":"Javelin and Spear","ia":["spea"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"],"rb":60,"hits":[3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3]},{"id":31,"n":"Freezing Arrow","c":"ama","m":"A1","q":0,"tb":"Bow and Crossbow","ia":["miss"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"],"msl":["freezingarrow","","",""]},{"id":34,"n":"Lightning Strike","c":"ama","m":"A1","q":0,"tb":"Javelin and Spear","ia":["spea"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]},{"id":35,"n":"Lightning Fury","c":"ama","m":"TH","q":0,"tb":"Javelin and Spear","ia":["jave"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"],"msl":["","lightningfury","",""]},{"id":73,"n":"Poison Strike","c":"nec","m":"A1","q":0,"tb":"Poison and Bone","ia":["knif","sc9"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]},{"id":96,"n":"Sacrifice","c":"pal","m":"A1","q":0,"tb":"Combat","ia":["mele"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]},{"id":97,"n":"Smite","c":"pal","m":"S1","q":0,"tb":"Combat","ia":["shld"],"ea":[],"ib":[],"eb":[],"ws":4,"fm":["human"]},{"id":106,"n":"Zeal","c":"pal","m":"A1","q":0,"tb":"Combat","ia":["mele"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"],"rb":100,"hits":[3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3]},{"id":107,"n":"Charge","c":"pal","m":"SQ","q":4,"tb":"Combat","ia":["mele"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"],"chg":65},{"id":111,"n":"Vengeance","c":"pal","m":"A1","q":0,"tb":"Combat","ia":["mele"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]},{"id":126,"n":"Bash","c":"bar","m":"A1","q":0,"tb":"Combat","ia":["mele"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]},{"id":133,"n":"Double Swing","c":"bar","m":"SQ","q":11,"tb":"Combat","ia":["mele"],"ea":[],"ib":["mele"],"eb":[],"ws":3,"fm":["human"],"ar":50},{"id":139,"n":"Stun","c":"bar","m":"A1","q":0,"tb":"Combat","ia":["mele"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]},{"id":140,"n":"Double Throw","c":"bar","m":"SQ","q":15,"tb":"Combat","ia":["comb"],"ea":[],"ib":["comb"],"eb":[],"ws":3,"fm":["human"],"msl":["","doublethrowaxe","doublethrowknife","doublethrowjav"]},{"id":144,"n":"Concentrate","c":"bar","m":"A1","q":0,"tb":"Combat","ia":["mele"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]},{"id":147,"n":"Frenzy","c":"bar","m":"SQ","q":11,"tb":"Combat","ia":["mele"],"ea":[],"ib":["mele"],"eb":[],"ws":3,"fm":["human"]},{"id":151,"n":"Whirlwind","c":"bar","m":"SQ","q":10,"tb":"Combat","ia":["mele"],"ea":[],"ib":[],"eb":[],"ws":2,"fm":["human"],"ff":6},{"id":152,"n":"Berserk","c":"bar","m":"SQ","q":11,"tb":"Combat","ia":["mele"],"ea":[],"ib":["mele"],"eb":[],"ws":3,"fm":["human"]},{"id":232,"n":"Feral Rage","c":"dru","m":"A1","q":0,"tb":"Shape Shifting","ia":[],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["wolf"]},{"id":233,"n":"Maul","c":"dru","m":"A1","q":0,"tb":"Shape Shifting","ia":[],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["bear"]},{"id":238,"n":"Rabies","c":"dru","m":"S3","q":0,"tb":"Shape Shifting","ia":[],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["wolf"]},{"id":239,"n":"Fire Claws","c":"dru","m":"A1","q":0,"tb":"Shape Shifting","ia":[],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["wolf","bear"]},{"id":242,"n":"Hunger","c":"dru","m":"S3","q":0,"tb":"Shape Shifting","ia":[],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["bear"]},{"id":248,"n":"Fury","c":"dru","m":"A1","q":0,"tb":"Shape Shifting","ia":[],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["wolf"],"rb":100,"hits":[3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3]},{"id":251,"n":"Fire Blast","c":"ass","m":"S2","q":0,"tb":"Traps","ia":[],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"],"msl":["","bomb in air","",""],"bomb":[[1,1],[1,1],[2,2],[2,2],[2,2],[3,2],[3,2],[3,2],[4,3],[4,3],[4,3],[5,3],[5,3],[5,3],[6,4],[6,4],[6,4],[7,4],[7,4],[7,4],[8,4],[8,4],[8,4],[9,4],[9,4],[9,4],[9,4],[9,4],[9,4],[9,4],[9,4],[9,4],[9,4],[9,4],[9,4],[9,4],[9,4],[9,4],[9,4],[9,4],[9,4],[9,4],[9,4],[9,4],[9,4],[9,4],[9,4],[9,4],[9,4],[9,4],[9,4],[9,4],[9,4],[9,4],[9,4],[9,4],[9,4],[9,4],[9,4],[9,4]],"bh":1},{"id":254,"n":"Tiger Strike","c":"ass","m":"A1","q":0,"tb":"Martial Arts","ia":["asm"],"ea":[],"ib":[],"eb":[],"ws":3,"fm":["human"]},{"id":255,"n":"Dragon Talon","c":"ass","m":"KK","q":0,"tb":"Martial Arts","ia":[],"ea":[],"ib":[],"eb":[],"ws":4,"fm":["human"],"rb":100,"hits":[1,1,1,1,1,2,2,2,2,2,2,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3]},{"id":256,"n":"Shock Web","c":"ass","m":"S2","q":0,"tb":"Traps","ia":[],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"],"msl":["","shock field in air","",""],"bomb":[[4,2],[4,2],[5,2],[5,2],[5,2],[6,3],[6,3],[6,3],[7,3],[7,3],[7,3],[8,3],[8,3],[8,3],[9,4],[9,4],[9,4],[10,4],[10,4],[10,4],[11,4],[11,4],[11,4],[12,5],[12,5],[12,5],[13,5],[13,5],[13,5],[14,5],[14,5],[14,5],[15,6],[15,6],[15,6],[16,6],[16,6],[16,6],[17,6],[17,6],[17,6],[18,7],[18,7],[18,7],[19,7],[19,7],[19,7],[20,7],[20,7],[20,7],[21,8],[21,8],[21,8],[22,8],[22,8],[22,8],[23,8],[23,8],[23,8],[24,9]],"cd":[25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25]},{"id":257,"n":"Blade Sentinel","c":"ass","m":"S2","q":0,"tb":"Traps","ia":[],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]},{"id":259,"n":"Fists of Fire","c":"ass","m":"A1","q":0,"tb":"Martial Arts","ia":["asm"],"ea":[],"ib":[],"eb":[],"ws":3,"fm":["human"]},{"id":260,"n":"Dragon Claw","c":"ass","m":"SQ","q":16,"tb":"Martial Arts","ia":["h2h"],"ea":[],"ib":["h2h"],"eb":[],"ws":3,"fm":["human"]},{"id":261,"n":"Charged Bolt Sentry","c":"ass","m":"S2","q":0,"tb":"Traps","ia":[],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]},{"id":262,"n":"Wake of Fire","c":"ass","m":"S2","q":0,"tb":"Traps","ia":[],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]},{"id":265,"n":"Cobra Strike","c":"ass","m":"A1","q":0,"tb":"Martial Arts","ia":["asm"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]},{"id":266,"n":"Blade Fury","c":"ass","m":"SQ","q":23,"tb":"Traps","ia":[],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"],"ch":3,"ct":4},{"id":269,"n":"Claws of Thunder","c":"ass","m":"A1","q":0,"tb":"Martial Arts","ia":["asm"],"ea":[],"ib":[],"eb":[],"ws":3,"fm":["human"]},{"id":270,"n":"Dragon Tail","c":"ass","m":"KK","q":0,"tb":"Martial Arts","ia":[],"ea":[],"ib":[],"eb":[],"ws":4,"fm":["human"],"ar":-20},{"id":271,"n":"Chain Lightning Sentry","c":"ass","m":"S2","q":0,"tb":"Traps","ia":[],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]},{"id":272,"n":"Wake of Inferno","c":"ass","m":"S2","q":0,"tb":"Traps","ia":[],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]},{"id":274,"n":"Blades of Ice","c":"ass","m":"A1","q":0,"tb":"Martial Arts","ia":["asm"],"ea":[],"ib":[],"eb":[],"ws":3,"fm":["human"]},{"id":275,"n":"Dragon Flight","c":"ass","m":"KK","q":0,"tb":"Martial Arts","ia":[],"ea":[],"ib":[],"eb":[],"ws":4,"fm":["human"],"cd":[50,49,48,47,46,45,44,43,42,41,40,39,38,37,36,35,34,33,32,31,30,29,28,27,26,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25]},{"id":276,"n":"Death Sentry","c":"ass","m":"S2","q":0,"tb":"Traps","ia":[],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]},{"id":280,"n":"Phoenix Strike","c":"ass","m":"A1","q":0,"tb":"Martial Arts","ia":["asm"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]},{"id":366,"n":"Lightning Sentry","c":"ass","m":"S2","q":0,"tb":"Traps","ia":[],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"]},{"id":375,"n":"Split Throw","c":"bar","m":"TH","q":0,"tb":"Combat","ia":["comb"],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"],"msl":["","splitthrowaxe","splitthrowknife","splitthrowjav"],"ar":10},{"id":378,"n":"Joust","c":"pal","m":"A1","q":0,"tb":"Combat","ia":[],"ea":[],"ib":[],"eb":[],"ws":0,"fm":["human"],"cd":[102,99,97,94,92,89,87,84,82,79,77,74,72,69,67,64,62,59,57,54,52,49,47,44,42,39,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38],"cdr":[["Alma Negra",13,"pal","pac",0,"shield"],["Leoric's Mithril Bane",19,"","7cm",20,"weapon"],["Zerae's Resolve",38,"ama","ame",20,"weapon"]]},{"id":380,"n":"Blade Dance","c":"ass","m":"SQ","q":10,"io":1,"ia":["mele"],"ea":[],"ib":[],"eb":[],"ws":2,"fm":["human"],"ff":6}],"sq":{"1":{"hth":[["A1",0,0],["A1",1,0],["A1",2,0],["A1",3,0],["A1",4,0],["A1",5,0],["A1",6,0],["A1",7,0],["A1",8,1],["A1",9,0],["A1",10,0],["A1",11,0],["A1",12,0]],"1ht":[["A1",1,0],["A1",2,0],["A1",4,0],["A1",6,3],["A1",8,0],["A1",9,1],["A1",12,0],["A2",6,3],["A2",8,0],["A2",9,1],["A2",12,0],["A1",6,3],["A1",8,0],["A1",9,1],["A1",10,0],["A1",12,0]],"2ht":[["A1",0,0],["A1",1,0],["A1",2,0],["A1",4,0],["A1",7,3],["A1",9,0],["A1",11,1],["A1",14,0],["A2",6,3],["A2",9,0],["A2",10,1],["A2",14,0],["A1",7,3],["A1",9,0],["A1",11,1],["A1",12,0],["A1",14,0],["A1",16,0]]},"4":{"hth":[["RN",0,1],["RN",1,1],["RN",2,1],["RN",3,1],["RN",4,1],["RN",5,1],["RN",6,1],["RN",7,1],["A1",1,0],["A1",4,0],["A1",5,3],["A1",6,1],["A1",8,0],["A1",10,0],["A1",12,0]],"1ht":[["RN",0,1],["RN",1,1],["RN",2,1],["RN",3,1],["RN",4,1],["RN",5,1],["RN",6,1],["RN",7,1],["A1",1,0],["A1",4,0],["A1",5,3],["A1",6,1],["A1",8,0],["A1",10,0],["A1",12,0]],"2ht":[["RN",0,1],["RN",1,1],["RN",2,1],["RN",3,1],["RN",4,1],["RN",5,1],["RN",6,1],["RN",7,1],["A1",1,0],["A1",4,0],["A1",5,3],["A1",6,1],["A1",8,0],["A1",10,0],["A1",12,0]],"1hs":[["RN",0,1],["RN",1,1],["RN",2,1],["RN",3,1],["RN",4,1],["RN",5,1],["RN",6,1],["RN",7,1],["A1",1,0],["A1",4,0],["A1",5,3],["A1",6,1],["A1",8,0],["A1",10,0],["A1",12,0]],"2hs":[["RN",0,1],["RN",1,1],["RN",2,1],["RN",3,1],["RN",4,1],["RN",5,1],["RN",6,1],["RN",7,1],["A1",1,0],["A1",4,0],["A1",5,3],["A1",6,1],["A1",8,0],["A1",10,0],["A1",12,0]],"stf":[["RN",0,1],["RN",1,1],["RN",2,1],["RN",3,1],["RN",4,1],["RN",5,1],["RN",6,1],["RN",7,1],["A1",1,0],["A1",4,0],["A1",5,3],["A1",6,1],["A1",8,0],["A1",10,0],["A1",12,0]]},"10":{"hth":[["A1",0,0],["A1",1,0],["A1",2,0],["A1",3,1],["A1",3,0],["A1",4,0],["A1",5,0],["A1",6,1]],"1ht":[["A1",0,0],["A1",1,0],["A1",2,0],["A1",3,1],["A1",3,0],["A1",4,0],["A1",5,0],["A1",6,1]],"2ht":[["A1",0,0],["A1",1,0],["A1",2,0],["A1",3,1],["A1",3,0],["A1",4,0],["A1",5,0],["A1",6,1]],"1hs":[["A1",0,0],["A1",1,0],["A1",2,0],["A1",3,1],["A1",3,0],["A1",4,0],["A1",5,0],["A1",6,1]],"2hs":[["A1",0,0],["A1",1,0],["A1",2,0],["A1",3,1],["A1",3,0],["A1",4,0],["A1",5,0],["A1",6,1]],"stf":[["A1",0,0],["A1",1,0],["A1",2,0],["A1",3,1],["A1",3,0],["A1",4,0],["A1",5,0],["A1",6,1]],"1js":[["A1",0,0],["A1",1,0],["A1",2,0],["A1",3,1],["A1",3,0],["A1",4,0],["A1",5,0],["A1",6,1]],"1jt":[["A1",0,0],["A1",1,0],["A1",2,0],["A1",3,1],["A1",3,0],["A1",4,0],["A1",5,0],["A1",6,1]],"1ss":[["A1",0,0],["A1",1,0],["A1",2,0],["A1",3,1],["A1",3,0],["A1",4,0],["A1",5,0],["A1",6,1]],"1st":[["A1",0,0],["A1",1,0],["A1",2,0],["A1",3,1],["A1",3,0],["A1",4,0],["A1",5,0],["A1",6,1]],"ht1":[["A1",0,0],["A1",1,0],["A1",2,0],["A1",3,1],["A1",3,0],["A1",4,0],["A1",5,0],["A1",6,1]],"ht2":[["A1",0,0],["A1",1,0],["A1",2,0],["A1",3,1],["A1",3,0],["A1",4,0],["A1",5,0],["A1",6,1]]},"11":{"hth":[["A1",1,0],["A1",2,0],["A1",4,0],["A1",6,0],["A1",7,1],["A1",9,0],["A1",11,0],["A1",13,0],["A1",14,0],["S3",2,1],["S3",4,0],["S3",5,0],["S3",6,0],["S3",8,0],["S3",9,0],["S3",10,0],["S3",11,0]],"1ht":[["A1",1,0],["A1",2,0],["A1",4,0],["A1",6,0],["A1",7,1],["A1",9,0],["A1",11,0],["A1",13,0],["A1",14,0],["S3",2,1],["S3",4,0],["S3",5,0],["S3",6,0],["S3",8,0],["S3",9,0],["S3",10,0],["S3",11,0]],"2ht":[["A1",1,0],["A1",2,0],["A1",4,0],["A1",6,0],["A1",7,1],["A1",9,0],["A1",11,0],["A1",13,0],["A1",14,0],["S3",2,1],["S3",4,0],["S3",5,0],["S3",6,0],["S3",8,0],["S3",9,0],["S3",10,0],["S3",11,0]],"1hs":[["A1",1,0],["A1",2,0],["A1",4,0],["A1",6,0],["A1",7,1],["A1",9,0],["A1",11,0],["A1",13,0],["A1",14,0],["S3",2,1],["S3",4,0],["S3",5,0],["S3",6,0],["S3",8,0],["S3",9,0],["S3",10,0],["S3",11,0]],"2hs":[["A1",1,0],["A1",2,0],["A1",4,0],["A1",6,0],["A1",7,1],["A1",9,0],["A1",11,0],["A1",13,0],["A1",14,0],["S3",2,1],["S3",4,0],["S3",5,0],["S3",6,0],["S3",8,0],["S3",9,0],["S3",10,0],["S3",11,0]],"bow":[["A1",1,0],["A1",2,0],["A1",4,0],["A1",6,0],["A1",7,1],["A1",9,0],["A1",11,0],["A1",13,0],["A1",14,0],["S3",2,1],["S3",4,0],["S3",5,0],["S3",6,0],["S3",8,0],["S3",9,0],["S3",10,0],["S3",11,0]],"xbw":[["A1",1,0],["A1",2,0],["A1",4,0],["A1",6,0],["A1",7,1],["A1",9,0],["A1",11,0],["A1",13,0],["A1",14,0],["S3",2,1],["S3",4,0],["S3",5,0],["S3",6,0],["S3",8,0],["S3",9,0],["S3",10,0],["S3",11,0]],"stf":[["A1",1,0],["A1",2,0],["A1",4,0],["A1",6,0],["A1",7,1],["A1",9,0],["A1",11,0],["A1",13,0],["A1",14,0],["S3",2,1],["S3",4,0],["S3",5,0],["S3",6,0],["S3",8,0],["S3",9,0],["S3",10,0],["S3",11,0]],"1js":[["A1",1,0],["A1",2,0],["A1",4,0],["A1",6,0],["A1",7,1],["A1",9,0],["A1",11,0],["A1",13,0],["A1",14,0],["S3",2,1],["S3",4,0],["S3",5,0],["S3",6,0],["S3",8,0],["S3",9,0],["S3",10,0],["S3",11,0]],"1jt":[["A1",1,0],["A1",2,0],["A1",4,0],["A1",6,0],["A1",7,1],["A1",9,0],["A1",11,0],["A1",13,0],["A1",14,0],["S3",2,1],["S3",4,0],["S3",5,0],["S3",6,0],["S3",8,0],["S3",9,0],["S3",10,0],["S3",11,0]],"1ss":[["A1",1,0],["A1",2,0],["A1",4,0],["A1",6,0],["A1",7,1],["A1",9,0],["A1",11,0],["A1",13,0],["A1",14,0],["S3",2,1],["S3",4,0],["S3",5,0],["S3",6,0],["S3",8,0],["S3",9,0],["S3",10,0],["S3",11,0]],"1st":[["A1",1,0],["A1",2,0],["A1",4,0],["A1",6,0],["A1",7,1],["A1",9,0],["A1",11,0],["A1",13,0],["A1",14,0],["S3",2,1],["S3",4,0],["S3",5,0],["S3",6,0],["S3",8,0],["S3",9,0],["S3",10,0],["S3",11,0]],"ht1":[["A1",1,0],["A1",2,0],["A1",4,0],["A1",6,0],["A1",7,1],["A1",9,0],["A1",11,0],["A1",13,0],["A1",14,0],["S3",2,1],["S3",4,0],["S3",5,0],["S3",6,0],["S3",8,0],["S3",9,0],["S3",10,0],["S3",11,0]],"ht2":[["A1",1,0],["A1",2,0],["A1",4,0],["A1",6,0],["A1",7,1],["A1",9,0],["A1",11,0],["A1",13,0],["A1",14,0],["S3",2,1],["S3",4,0],["S3",5,0],["S3",6,0],["S3",8,0],["S3",9,0],["S3",10,0],["S3",11,0]]},"15":{"hth":[["TH",2,0],["TH",3,0],["TH",4,0],["TH",6,0],["TH",7,0],["TH",8,1],["S3",2,0],["S3",4,0],["S3",5,0],["S3",7,1],["S3",8,0],["S3",10,0]],"1ht":[["TH",2,0],["TH",3,0],["TH",4,0],["TH",6,0],["TH",7,0],["TH",8,1],["S3",2,0],["S3",4,0],["S3",5,0],["S3",7,1],["S3",8,0],["S3",10,0]],"2ht":[["TH",2,0],["TH",3,0],["TH",4,0],["TH",6,0],["TH",7,0],["TH",8,1],["S3",2,0],["S3",4,0],["S3",5,0],["S3",7,1],["S3",8,0],["S3",10,0]],"1hs":[["TH",2,0],["TH",3,0],["TH",4,0],["TH",6,0],["TH",7,0],["TH",8,1],["S3",2,0],["S3",4,0],["S3",5,0],["S3",7,1],["S3",8,0],["S3",10,0]],"2hs":[["TH",2,0],["TH",3,0],["TH",4,0],["TH",6,0],["TH",7,0],["TH",8,1],["S3",2,0],["S3",4,0],["S3",5,0],["S3",7,1],["S3",8,0],["S3",10,0]],"bow":[["TH",2,0],["TH",3,0],["TH",4,0],["TH",6,0],["TH",7,0],["TH",8,1],["S3",2,0],["S3",4,0],["S3",5,0],["S3",7,1],["S3",8,0],["S3",10,0]],"xbw":[["TH",2,0],["TH",3,0],["TH",4,0],["TH",6,0],["TH",7,0],["TH",8,1],["S3",2,0],["S3",4,0],["S3",5,0],["S3",7,1],["S3",8,0],["S3",10,0]],"stf":[["TH",2,0],["TH",3,0],["TH",4,0],["TH",6,0],["TH",7,0],["TH",8,1],["S3",2,0],["S3",4,0],["S3",5,0],["S3",7,1],["S3",8,0],["S3",10,0]],"1js":[["TH",2,0],["TH",3,0],["TH",4,0],["TH",6,0],["TH",7,0],["TH",8,1],["S3",2,0],["S3",4,0],["S3",5,0],["S3",7,1],["S3",8,0],["S3",10,0]],"1jt":[["TH",2,0],["TH",3,0],["TH",4,0],["TH",6,0],["TH",7,0],["TH",8,1],["S3",2,0],["S3",4,0],["S3",5,0],["S3",7,1],["S3",8,0],["S3",10,0]],"1ss":[["TH",2,0],["TH",3,0],["TH",4,0],["TH",6,0],["TH",7,0],["TH",8,1],["S3",2,0],["S3",4,0],["S3",5,0],["S3",7,1],["S3",8,0],["S3",10,0]],"1st":[["TH",2,0],["TH",3,0],["TH",4,0],["TH",6,0],["TH",7,0],["TH",8,1],["S3",2,0],["S3",4,0],["S3",5,0],["S3",7,1],["S3",8,0],["S3",10,0]],"ht1":[["TH",2,0],["TH",3,0],["TH",4,0],["TH",6,0],["TH",7,0],["TH",8,1],["S3",2,0],["S3",4,0],["S3",5,0],["S3",7,1],["S3",8,0],["S3",10,0]],"ht2":[["TH",2,0],["TH",3,0],["TH",4,0],["TH",6,0],["TH",7,0],["TH",8,1],["S3",2,0],["S3",4,0],["S3",5,0],["S3",7,1],["S3",8,0],["S3",10,0]]},"16":{"hth":[["A2",0,0],["A2",1,0],["A2",2,0],["A2",3,0],["A2",4,0],["A2",5,0],["A2",6,1],["A2",7,0],["A2",8,0],["A2",9,0],["A2",10,0],["A2",11,0]],"ht1":[["A2",0,0],["A2",1,0],["A2",2,0],["A2",3,0],["A2",4,0],["A2",5,0],["A2",6,1],["A2",7,0],["A2",8,0],["A2",9,0],["A2",10,0],["A2",11,0]],"ht2":[["A2",0,0],["A2",1,0],["A2",2,0],["A2",3,0],["A2",4,0],["A2",5,0],["A2",6,1],["S4",3,0],["S4",4,0],["S4",5,0],["S4",6,1],["S4",7,0],["S4",8,0],["S4",9,0],["S4",10,0],["S4",11,0]]},"23":{"hth":[["SC",4,0],["SC",8,0],["SC",10,0],["SC",10,1],["SC",10,0],["SC",11,0],["SC",12,0],["SC",13,0],["SC",14,0],["SC",15,0],["SC",16,0]],"1ht":[["SC",4,0],["SC",8,0],["SC",10,0],["SC",10,1],["SC",10,0],["SC",11,0],["SC",12,0],["SC",13,0],["SC",14,0],["SC",15,0],["SC",16,0]],"2ht":[["SC",4,0],["SC",8,0],["SC",10,0],["SC",10,1],["SC",10,0],["SC",11,0],["SC",12,0],["SC",13,0],["SC",14,0],["SC",15,0],["SC",16,0]],"1hs":[["SC",4,0],["SC",8,0],["SC",10,0],["SC",10,1],["SC",10,0],["SC",11,0],["SC",12,0],["SC",13,0],["SC",14,0],["SC",15,0],["SC",16,0]],"2hs":[["SC",4,0],["SC",8,0],["SC",10,0],["SC",10,1],["SC",10,0],["SC",11,0],["SC",12,0],["SC",13,0],["SC",14,0],["SC",15,0],["SC",16,0]],"bow":[["SC",4,0],["SC",8,0],["SC",10,0],["SC",10,1],["SC",10,0],["SC",11,0],["SC",12,0],["SC",13,0],["SC",14,0],["SC",15,0],["SC",16,0]],"xbw":[["SC",4,0],["SC",8,0],["SC",10,0],["SC",10,1],["SC",10,0],["SC",11,0],["SC",12,0],["SC",13,0],["SC",14,0],["SC",15,0],["SC",16,0]],"stf":[["SC",4,0],["SC",8,0],["SC",10,0],["SC",10,1],["SC",10,0],["SC",11,0],["SC",12,0],["SC",13,0],["SC",14,0],["SC",15,0],["SC",16,0]],"1js":[["SC",4,0],["SC",8,0],["SC",10,0],["SC",10,1],["SC",10,0],["SC",11,0],["SC",12,0],["SC",13,0],["SC",14,0],["SC",15,0],["SC",16,0]],"1jt":[["SC",4,0],["SC",8,0],["SC",10,0],["SC",10,1],["SC",10,0],["SC",11,0],["SC",12,0],["SC",13,0],["SC",14,0],["SC",15,0],["SC",16,0]],"1ss":[["SC",4,0],["SC",8,0],["SC",10,0],["SC",10,1],["SC",10,0],["SC",11,0],["SC",12,0],["SC",13,0],["SC",14,0],["SC",15,0],["SC",16,0]],"1st":[["SC",4,0],["SC",8,0],["SC",10,0],["SC",10,1],["SC",10,0],["SC",11,0],["SC",12,0],["SC",13,0],["SC",14,0],["SC",15,0],["SC",16,0]],"ht1":[["SC",4,0],["SC",8,0],["SC",10,0],["SC",10,1],["SC",10,0],["SC",11,0],["SC",12,0],["SC",13,0],["SC",14,0],["SC",15,0],["SC",16,0]],"ht2":[["SC",4,0],["SC",8,0],["SC",10,0],["SC",10,1],["SC",10,0],["SC",11,0],["SC",12,0],["SC",13,0],["SC",14,0],["SC",15,0],["SC",16,0]]}},"sp":{"fana":[14,18,20,23,25,26,27,28,29,30,31,31,32,33,33,34,34,34,34,35,35,35,36,36,36,36,37,37,37,37,37,37,37,37,37,38,38,38,38,38,38,38,38,38,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,40],"frenzy":[7,13,18,22,25,27,29,31,33,34,35,36,37,38,39,40,40,41,41,42,42,43,43,44,44,44,45,45,45,45,46,46,46,46,46,47,47,47,47,47,47,48,48,48,48,48,48,48,49,49,49,49,49,49,49,49,49,49,49,50],"wolf":[20,28,35,40,45,48,51,53,56,57,59,61,62,63,64,66,66,67,68,68,69,70,70,71,71,72,73,73,73,73,74,74,75,75,75,75,75,76,76,76,76,77,77,77,77,77,77,77,78,78,78,78,78,79,79,79,79,79,79,80],"bos":[22,27,31,34,37,39,41,43,44,45,47,48,48,49,50,51,51,52,52,53,53,53,54,54,54,55,55,55,56,56,56,56,56,57,57,57,57,57,57,58,58,58,58,58,58,58,58,59,59,59,59,59,59,59,59,59,59,59,59,60],"inc":[2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40,42,44,46,48,50,52,54,56,58,60,62,64,66,68,70,72,74,76,78,80,82,84,86,88,90,92,94,96,98,100,102,104,106,108,110,112,114,116,118,120],"hustle":15},"mercs":[{"k":"m1","n":"Rogue Scout","act":1,"tok":"RG","bw":"hth","kinds":["bow","xbow"],"atk":[{"id":385,"n":"Fire Arrow","m":"A1","msl":["mercfirearrow","","",""]},{"id":16,"n":"Exploding Arrow","m":"A1","msl":["explodingarrow","","",""]},{"id":386,"n":"Cold Arrow","m":"A1","msl":["merccoldarrow","","",""]},{"id":31,"n":"Freezing Arrow","m":"A1","msl":["freezingarrow","","",""]},{"id":545,"n":"Magic Arrow","m":"A1","msl":["","magicarrow","",""]}],"skip":["Strafe"],"lk":{"HD":"LIT","TR":"LIT","LG":"LIT","RA":"LIT","LA":"LIT","LH":"SBW","S1":"LIT","S2":"LIT"},"h":3},{"k":"m2","n":"Desert Mercenary","act":2,"tok":"GU","bw":"hth","kinds":["spea","pole"],"atk":[{"id":10,"n":"Jab","m":"SQ","q":"seq_act2guardjab"}],"skip":[],"lk":{"HD":"LIT","TR":"LIT","LG":"LIT","RA":"LIT","LA":"LIT","RH":"SPR","S1":"LIT","S2":"LIT","S3":"LIT"},"h":3},{"k":"m5","n":"Barbarian","act":5,"tok":"0A","bw":"2hs","kinds":["axe","swor","mace","hamm"],"atk":[{"id":144,"n":"Concentrate","m":"A2"},{"id":126,"n":"Bash","m":"A2"}],"skip":["Whirlwind"],"lk":{"HD":"FHM","TR":"HVY","RH":"BSD","S1":"LIT","S2":"LIT"},"h":3}],"msq":{"seq_act2guardjab":[["A1",2,0],["A1",4,0],["A1",6,0],["A1",8,0],["A1",10,0],["A1",11,1],["A1",10,0],["A1",9,0],["A1",10,0],["A1",11,1],["A1",12,0],["A1",13,0],["A1",14,0],["A1",15,0]]},"slow":{"chill":-50,"list":[{"k":"decrep","name":"Decrepify","oa":false,"opts":[{"v":-30,"who":["Oblivion Knight (one curse in four)","Baal (on his throne)","Madness (Canight The Corrupted's minion)","Shadow of Mendeln (one curse in four)","Void Knight (one curse in four)","Thonos the Many-Limbed"]},{"v":-32,"who":["Onion the Accused"]},{"v":-46,"who":["Nathkill The Numb"]}]},{"k":"hfreeze","name":"Holy Freeze","oa":true,"opts":[{"v":-30,"who":["Aura-enchanted unique, monster level 1–13"]},{"v":-34,"who":["Aura-enchanted unique, monster level 14–20"]},{"v":-37,"who":["Aura-enchanted unique, monster level 21–27"]},{"v":-40,"who":["Aura-enchanted unique, monster level 28–34"]},{"v":-42,"who":["Duriel (Normal)","Duriel (Nightmare)","Aura-enchanted unique, monster level 35–41"]},{"v":-44,"who":["Duriel (Hell)","Corrupted Paladin","Aura-enchanted unique, monster level 42–48"]},{"v":-45,"who":["Aura-enchanted unique, monster level 49–55"]},{"v":-46,"who":["Aura-enchanted unique, monster level 56–62"]},{"v":-48,"who":["Shattered Soul","Aura-enchanted unique, monster level 63–76"]},{"v":-49,"who":["Aura-enchanted unique, monster level 77–83"]},{"v":-50,"who":["Aura-enchanted unique, monster level 84–90"]},{"v":-51,"who":["Aura-enchanted unique, monster level 91+"]},{"v":-55,"who":["Uber Duriel"]}]}]}};
+  /* ias-data:end */
+  /* ias-engine:start */
+  const IAS = (function (D) {
+    const A = D.a, CLS = {}, BASE = {}, SKILL = {}, MERC = {};
+    D.cls.forEach(([key, name, tok]) => { CLS[key] = {key, name, tok}; });
+    D.b.forEach(b => { BASE[b.c] = b; });
+    D.sk.forEach(s => { SKILL[s.id] = s; });
+    (D.mercs || []).forEach(m => { MERC[m.k] = m; });
+    const TGT = {};
+    (D.targets || []).forEach(x => { TGT[x.k] = x; });
+    const tdiv = (a, b) => Math.trunc(a / b);
+    const cdiv = (a, b) => Math.floor((a + b - 1) / b);  // ceil for a >= 0, b > 0
+    const eias = ias => (ias === -120 ? 0 : tdiv(120 * ias, 120 + ias));
+    // the least IAS whose effective IAS reaches e (below 0 too: a corrupted map can take IAS off, and the rounding
+    // toward zero then rounds up: eias(ias) >= e from ias > 120 (e - 1) / (121 - e))
+    const needIAS = e => (e > 0 ? cdiv(120 * e, 120 - e) : Math.floor(120 * (e - 1) / (121 - e)) + 1);
+    const ANC = {};
+    D.b.forEach(b => {
+      const out = new Set(), todo = b.ty.slice();
+      while (todo.length) { const t = todo.pop(); if (!t || out.has(t)) continue; out.add(t); (D.types[t] || []).forEach(p => todo.push(p)); }
+      ANC[b.c] = out;
+    });
+    // a class-only base: its own item type is one class's (Amazon bows, claws, orbs); daggers reach the Assassin's
+    // item types only as one of several parents
+    const classOf = code => { for (const t of (BASE[code] || {ty: []}).ty) if (D.tcls[t]) return D.tcls[t]; return ""; };
+    // a mercenary holds the kinds of weapon its act's mercenaries take, never a class's own
+    const canHold = (cls, code) => {
+      const c = classOf(code), m = MERC[cls];
+      return m ? !c && !!BASE[code] && m.kinds.includes(BASE[code].k) : !c || c === cls;
+    };
+    const isA = (code, types) => types.some(t => (ANC[code] || new Set()).has(t));
+    const twoHanded = (cls, b) => !!b && !!(b.f & 2) && !((b.f & 1) && cls === "bar");
+    const dualClass = cls => cls === "bar" || cls === "ass";
+    // what a class can hold in its second hand as a weapon
+    const canSecond = (cls, b) => !!b && canHold(cls, b.c) && (cls === "ass" ? b.wc === "ht1" :
+      cls === "bar" && b.wc !== "ht1" && b.wc !== "bow" && b.wc !== "xbw" && (!(b.f & 2) || (b.f & 1)));
+    function dual(s) {
+      const w = BASE[s.w], w2 = BASE[s.w2];
+      return dualClass(s.cls) && s.oh === "weapon" && !!w && canSecond(s.cls, w2) && canSecond(s.cls, w);
+    }
+    // the weapon class the human animations use
+    function humanWC(s) {
+      const w = BASE[s.w];
+      if (!w) return "hth";
+      if (dual(s)) {
+        const w2 = BASE[s.w2];
+        if (s.cls === "ass") return "ht2";
+        const a = w.wc, b = w2.wc;
+        if (a === "1hs") return b === "1ht" ? "1js" : "1ss";
+        if (a === "1ht") return b === "1ht" ? "1jt" : b === "1hs" ? "1st" : "1ss";
+        return "1ss";
+      }
+      if (w.f & 2) return (w.f & 1) && s.cls === "bar" && s.oh !== "none" ? w.wc : w.wc2;
+      return w.wc;
+    }
+    // the weapon whose speed modifier and IAS count
+    function counted(s, over) {
+      const w = BASE[s.w], wi = over && over.wi !== undefined ? over.wi : s.wi;
+      if (!w) return {wsm: 0, ias: 0, which: ""};
+      if (dual(s)) {
+        const w2 = BASE[s.w2], a1 = -w.w + wi, a2 = -w2.w + s.wi2;
+        return a1 > a2 ? {wsm: w.w, ias: wi, which: "first"} : {wsm: w2.w, ias: s.wi2, which: "second"};
+      }
+      return {wsm: w.w, ias: wi, which: "first"};
+    }
+    const lv = (arr, n) => (n > 0 ? arr[Math.min(n, arr.length) - 1] : 0);
+    function anim(tok, mode, wc) {
+      const code = tok + mode + wc.toUpperCase(), r = A[code];
+      return r ? {code, mode, frames: r[0], speed: r[1], hits: r[2], start: 0} : null;
+    }
+    // can this setup use this attack? (why not, or "")
+    function usable(s, sk) {
+      if (!sk) return "";
+      const form = s.form || "human";
+      if (!sk.fm.includes(form)) return form === "human" ? `${sk.n} is only used in ${sk.fm.map(f => f === "wolf" ? "werewolf" : "werebear").join(" or ")} form.` :
+        `${sk.n} can't be used in ${form === "wolf" ? "werewolf" : "werebear"} form.`;
+      const w = BASE[s.w], w2 = BASE[s.w2];
+      if (sk.ia.includes("shld")) return s.oh === "shield" ? "" : `${sk.n} needs a shield.`;
+      if (sk.ia.length && !sk.ia.includes("asm")) {
+        if (!w || !isA(w.c, sk.ia)) return `${sk.n} needs a weapon of another kind.`;
+      }
+      if (sk.ia.includes("asm") && w && !isA(w.c, sk.ia)) return `${sk.n} needs a claw, a dagger or no weapon.`;
+      if (w && sk.ea.length && isA(w.c, sk.ea)) return `${sk.n} can't be used with this weapon.`;
+      if (sk.ib.length) {
+        if (s.oh !== "weapon" || !w2 || !isA(w2.c, sk.ib) || !dual(s)) return `${sk.n} needs a weapon in each hand.`;
+      }
+      return "";
+    }
+    // a mercenary's attack: its own animations (token, mode and the weapon class its monster always shows), the
+    // monster sequences of its skills
+    function planMerc(s, m) {
+      const atk = s.atk ? m.atk.find(x => x.id === s.atk) || null : null;
+      const p = {s, merc: m, cl: {key: m.k, name: m.n, tok: m.tok}, sk: atk, form: "human", tok: m.tok, wc: m.bw, wcH: m.bw,
+                 why: "", notes: [], dual: false};
+      if (s.w && !canHold(s.cls, s.w)) p.why = `The ${m.n} can't use this weapon.`;
+      else if (atk && atk.q) {
+        const steps = D.msq[atk.q];
+        p.seq = {num: atk.q, steps, frames: steps.length, hits: steps.filter(x => x[2] === 1).length};
+      } else {
+        p.anims = [anim(m.tok, atk ? atk.m : "A1", m.bw)].filter(Boolean);
+        if (!p.anims.length) p.why = "No attack animation.";
+      }
+      return p;
+    }
+    // everything about a setup that doesn't depend on IAS
+    function plan(s) {
+      if (MERC[s.cls]) return planMerc(s, MERC[s.cls]);
+      const cl = CLS[s.cls], sk = s.atk ? SKILL[s.atk] : null;
+      const form = s.form || "human";
+      const tok = form === "wolf" ? "40" : form === "bear" ? "TG" : cl.tok;
+      const p = {s, cl, sk, form, tok, wcH: humanWC(s), why: usable(s, sk), notes: [], dual: dual(s)};
+      p.wc = form === "human" ? p.wcH : "hth";
+      const w = BASE[s.w];
+      if (p.why) return p;
+      if (sk && sk.m === "SQ") {
+        const steps = (D.sq[sk.q] || {})[p.wc];
+        if (!steps) { p.why = `${sk.n} can't be used with this weapon.`; return p; }
+        p.seq = {num: sk.q, steps, frames: steps.length, hits: steps.filter(x => x[2] === 1).length};
+        if (sk.chg !== undefined) p.charge = sk.chg;
+        // a channel (Blade Fury): held, the game casts it again on reaching step `at`, a blade a loop; with a timer of
+        // its own (Blade Fury's 4 frames between blades) a blade every max(loop, timer + 1) frames, as counted in game
+        if (sk.ch) p.channel = {at: sk.ch, timer: sk.ct || 0};
+        // Whirlwind, Blade Dance: a hit at most every Param3 frames by the game's timer, with each weapon when there
+        // are two; their sequence runs at the other animation rate
+        if (sk.ff) { p.fixed = sk.ff; p.fixedHits = p.dual ? 2 : 1; p.fx = true; }
+      } else {
+        // a normal attack: the game draws attack 1 or attack 2, half the time each, but always attack 1 with a bow, a
+        // crossbow or no weapon; else by the target's size (MonStats2 Height): small, attack 1; flying, attack 2
+        const size = (TGT[s.mon] || {h: 3}).h;
+        const modes = sk ? [sk.m] : !w || w.wc === "bow" || w.wc === "xbw" || size === 1 ? ["A1"] : size === 2 ? ["A2"] : ["A1", "A2"];
+        p.anims = modes.map(m => anim(tok, m, p.wc)).filter(Boolean);
+        if (!sk && modes[0] === "A2") {  // attack 2 drawn, but the game's hit comes at attack 1's hit frame
+          p.a1 = anim(tok, "A1", p.wc);
+          if (!p.anims.length && p.a1) p.anims = [p.a1];
+        }
+        if (!p.anims.length) { p.why = sk ? `${sk.n} has no animation with this weapon.` : "No attack animation with this weapon."; return p; }
+        if (form === "human" && D.fb[s.cls]) {
+          const row = w ? w.wc : "hth";
+          p.anims.forEach(a => { if (a.mode === "A1" || a.mode === "A2") a.start = D.fb[s.cls][row] || 0; });
+          if (p.a1) p.a1.start = D.fb[s.cls][row] || 0;
+        }
+        if (sk && sk.rb !== undefined) {
+          const n = Math.max(1, Math.min(60, s.lvl || 1));
+          let hits = sk.hits[n - 1];
+          if (sk.hmin) hits = Math.min(Math.max(s.tg || hits, sk.hmin[n - 1]), hits);
+          p.rollback = {pct: sk.rb, hits, action: p.anims[0].hits.length ? p.anims[0].hits[0] : 0};
+        }
+      }
+      if (sk && sk.fx) p.fx = true;  // drawn at the game's other animation rate: IAS, the weapon and skills don't count
+      if (form !== "human" && !p.fx) p.formBase = formBase(s, p);
+      // a cooldown (Skills.txt delay, game frames: Shock Web and Plague Javelin 25, Dragon Flight and Joust by level),
+      // less what an item takes off (s.cdr names it: Joust's Alma Negra, Leoric's Mithril Bane, Zerae's Resolve)
+      if (sk && sk.cd) {
+        const it = (sk.cdr || []).find(x => x[0] === s.cdr) || null;
+        p.cd = Math.max(0, lv(sk.cd, Math.max(1, Math.min(60, s.lvl || 1))) - (it ? it[1] : 0));
+        p.cdItem = it;
+      }
+      return p;
+    }
+    // a form's base speed, from the weapon (over: another IAS on the weapon)
+    function formBase(s, p, over) {
+      const w = BASE[s.w], wi = over && over.wi !== undefined ? over.wi : s.wi;
+      let H, h = null;
+      if (!w) H = 19;
+      else {
+        // the class's own attack 1 with the weapon's one-handed weapon class, however it's held
+        h = A[p.cl.tok + "A1" + w.wc.toUpperCase()];
+        if (!h) H = 45;
+        else {
+          const ar = tdiv((100 - w.w + wi) * h[1], 100);
+          H = ar > 0 ? tdiv(h[0] * 256, ar) : 0;
+        }
+      }
+      const stand = A[p.tok + "NUHTH"][0], fallback = A[p.tok + (p.anims && p.anims[0] ? p.anims[0].mode : "A1") + "HTH"];
+      const base = H > 0 ? tdiv(stand * 256, H) : 0;
+      return {H, stand, base: base || (fallback ? fallback[1] : 256), weaponTime: h ? p.cl.tok + "A1" + w.wc.toUpperCase() : "", own: wi};
+    }
+    // the setup's slows: chill and Holy Freeze take speed off attacks and the other animation rate alike, Decrepify off
+    // attacks only; each holds what it takes off (0 for none)
+    const SLOW = D.slow || {chill: -50, list: []};
+    function slowed(s, fx, add) {
+      if (s.chill) add(SLOW.chill, "Chilled");
+      SLOW.list.forEach(sl => { if (s[sl.k] && (!fx || sl.oa)) add(s[sl.k], sl.name); });
+    }
+    // the speed (over: other IAS on the weapon, or from other gear)
+    function speed(s, p, over) {
+      const c = counted(s, over), gear = over && over.gear !== undefined ? over.gear : s.gear;
+      const inc = s.cls === "bar" ? lv(D.sp.inc, s.inc) : 0;
+      const map = p.merc ? 0 : s.map || 0;  // a corrupted map's IAS for players
+      const ias = Math.max(-119, c.ias + gear + inc + map), e = eias(ias);  // no setup goes below -119 (the boxes)
+      let skill = 0;
+      const parts = [];
+      const add = (v, what) => { if (v) { skill += v; parts.push([what, v]); } };
+      if (p.fx) {  // Whirlwind, Blade Dance: their sequence plays a step a game frame, whatever the speed, Frenzy or slows
+        // (traced 2026-11-18: nothing writes a sequence's own speed for them; until then the page drew the spin at the
+        // other animation rate, with Frenzy's charges and the slows)
+        return {wsm: 0, which: "", weaponIAS: c.ias, gear, inc, map, ias, eias: e, skill: 0, parts: [], sq: false, raw: 100, speed: 100, capped: false, hi: 175, fx: true};
+      }
+      add(lv(D.sp.fana, s.fana), "Fanaticism");
+      if (!p.merc) {
+        // Frenzy's speed comes with its charges: a fifth of it per charge (up to 5), rounded down
+        if (s.cls === "bar") add(tdiv(lv(D.sp.frenzy, s.frenzy) * Math.max(0, Math.min(5, s.fst === undefined ? 5 : s.fst)), 5), "Frenzy");
+        const bos = Math.max(s.hustle ? D.sp.hustle : 0, s.cls === "ass" ? lv(D.sp.bos, s.bos) : 0);
+        add(bos, "Burst of Speed");
+        if (p.form === "wolf") add(lv(D.sp.wolf, s.ww), "Werewolf");
+      } else if (s.hustle) add(D.sp.hustle, "Burst of Speed");  // a mercenary wearing Hustle armor gets it too (traced 2026-11-18)
+      slowed(s, false, add);
+      add(s.other || 0, "Other speed");
+      if (p.sk && p.sk.ar) add(p.sk.ar, p.sk.n);
+      let raw = 100 + skill - c.wsm + e;
+      const sq = !!p.seq && p.charge === undefined && !p.merc;  // a monster's sequence isn't slower
+      if (sq) raw -= 30;
+      if (p.charge !== undefined) raw += p.charge;
+      const hi = p.charge !== undefined ? 256 : 175;
+      const v = Math.max(15, Math.min(hi, raw));
+      return {wsm: c.wsm, which: c.which, weaponIAS: c.ias, gear, inc, map, ias, eias: e, skill, parts, sq, raw, speed: v, capped: raw >= hi, hi};
+    }
+    const rateOf = (base, sp) => Math.max(0, Math.min(32767, tdiv(base * sp, 100)));
+    const held = (frames, start, rate) => (rate > 0 ? cdiv((frames - start) * 256, rate) - 1 : Infinity);
+    // the swing lengths of an attack that rolls back after each hit
+    function rollback(hits, action, total, start, rate, pct) {
+      const af = new Array(hits).fill(0), out = new Array(hits).fill(0);
+      let base = 0, next = 0;
+      af[0] = start * 256 + cdiv((action - start) * 256, rate) * rate;
+      for (let i = 1; i < hits; i++) {
+        base = tdiv((af[i - 1] >> 8) * (100 - pct), 100);
+        next = base * 256 + rate;
+        af[i] = base * 256 + cdiv((action - base) * 256, rate) * rate;
+        out[i] = 1;
+        while (next < af[i]) { next += rate; out[i] += 1; }
+      }
+      af[hits - 1] = base * 256 + cdiv((total - base) * 256, rate) * rate - rate * 2;
+      while (next < af[hits - 1]) { next += rate; out[hits - 1] += 1; }
+      out[0] = cdiv(af[0] - start * 256, rate) + 1;
+      return out;
+    }
+    // The hits the game itself makes of an attack that rolls back part of the way (Strafe, Fend; traced 2026-11-18): after
+    // each hit it goes back by the game frames the swing has run x (100 - pct)%, not by the animation's frame, and looks
+    // for the hit frame from one frame before there. The game frames of its hits from the attack's start; a hit it can't
+    // reach before the swing's end is never made. Held, a hit after the next attack starts is lost (the next attack
+    // clears it); one on that very frame lands (the request is handled after that frame's hits).
+    function serverHits(hits, action, total, start, rate, pct) {
+      const end = total * 256, out = [];
+      const reach = (from, lo, pos0) => {
+        for (let k = 1; ; k++) {
+          const pos = pos0 + k * rate;
+          if (pos >= end) return -1;
+          if (lo <= action && action <= pos >> 8) return from + k;
+          lo = Math.max(lo, (pos >> 8) + 1);
+        }
+      };
+      let g = reach(0, start, start * 256), began = 0;
+      while (g >= 0) {
+        out.push(g);
+        if (out.length >= hits) break;
+        const back = tdiv((g - began) * (100 - pct), 100);
+        began = g - back;
+        g = reach(g, back - 1, back * 256);
+      }
+      return out;
+    }
+    // the frames of every part of the attack at a speed
+    function timing(p, sp, over) {
+      const t = {parts: []};
+      if (p.merc) return mercTiming(p, sp, t);
+      if (p.seq) {
+        if (p.fixed) {
+          // The game runs the skill's hit check every frame (each check puts the spin back at step 3, whose own event
+          // comes the next frame), and its timer lets a hit through Param3 frames after the last one. The rate only
+          // sets how fast the spin is drawn.
+          const rate = rateOf(256, sp.speed);
+          Object.assign(t, {base: 256, rate, len: p.seq.frames});
+          t.parts.push({label: "Each hit", frames: p.fixed, hits: p.fixedHits, fixed: true});
+          return t;
+        }
+        if (p.charge !== undefined) {
+          // Charge's strike: steps 8-14 of its sequence at a rate the game sets when the charge connects (speed, no
+          // base speed, at most 256), the hit at step 11
+          const rate = Math.max(1, Math.min(256, sp.speed));
+          Object.assign(t, {base: 100, rate, len: 7, hitAt: cdiv(768, rate) - 1});
+          t.parts.push({label: "The charge's strike", frames: cdiv(1792, rate), hits: 1});
+          return t;
+        }
+        const base = 256, rate = rateOf(base, sp.speed), len = p.seq.frames;
+        t.base = base; t.rate = rate; t.len = len;
+        if (p.channel) {
+          // held: a loop of steps 0 to `at`, ceil(at x 256 / rate) + 2 frames as counted in game (the author, 2026-11-18:
+          // 69 blades in 20 s at speed 70, a loop of 7; the code's order gives + 1 as the least it can be), the timer
+          // letting a hit through on the first loop at least `timer` frames after the last one (counted: about every
+          // timer + 1 frames once the loop is that short, 95 blades in 20 s at speed 156)
+          const at = p.channel.at, loop = cdiv(at * 256, rate) + 2, every = p.channel.timer ? Math.max(loop, p.channel.timer + 1) : loop;
+          Object.assign(t, {loop, first: Math.floor(at * 256 / rate) + 1, len: at});
+          t.parts.push({label: `Each ${p.sk.n === "Blade Fury" ? "blade" : "hit"}, held`, frames: every, hits: 1, channel: true});
+          return t;
+        }
+        t.parts.push({label: "One " + p.sk.n, frames: held(len, 0, rate), hits: p.seq.hits});
+        return t;
+      }
+      const fb = p.formBase && over && over.wi !== undefined ? formBase(p.s, p, over) : p.formBase;
+      p.anims.forEach((a, i) => {
+        const base = fb ? fb.base : a.speed, rate = rateOf(base, sp.speed);
+        const part = {label: p.anims.length > 1 ? `Attack ${i + 1}` : p.sk ? p.sk.n : a.mode === "A2" ? "Attack 2" : "Attack", anim: a, base, rate,
+                      frames: held(a.frames, a.start, rate), hits: 1};
+        if (p.rollback && i === 0) {
+          part.swings = rollback(p.rollback.hits, p.rollback.action, a.frames, a.start, rate, p.rollback.pct);
+          part.frames = part.swings.reduce((x, y) => x + y, 0);
+          part.hits = p.rollback.hits;
+          if (p.rollback.pct < 100) {  // Zeal, Fury, Dragon Talon go all the way back on both sides: every hit lands
+            part.server = serverHits(p.rollback.hits, p.rollback.action, a.frames, a.start, rate, p.rollback.pct);
+            part.landed = part.server.filter(g => g <= part.frames).length;
+            part.tie = part.server.includes(part.frames);
+          }
+        }
+        t.parts.push(part);
+      });
+      t.base = t.parts[0].base; t.rate = t.parts[0].rate; t.len = p.anims[0].frames;
+      if (p.a1 && p.anims[0].mode === "A2") {  // against a flying monster: attack 2 lasts, attack 1's hit frame hits
+        const q = t.parts[0], h = p.a1.hits.length ? p.a1.hits[0] : p.a1.frames - 1;
+        q.lost = q.frames < cdiv((h - p.a1.start) * 256, rateOf(fb ? fb.base : p.a1.speed, sp.speed));
+      }
+      if (t.parts.length === 2) {
+        // A held normal attack lasts as long as the attack the game draws, attack 1 or attack 2, half the time each.
+        // The hit always comes at attack 1's hit frame: an attack 2 that ends before it loses that attack's hit.
+        const [a1, a2] = t.parts, h = a1.anim.hits.length ? a1.anim.hits[0] : a1.anim.frames - 1;
+        const hitAt = cdiv((h - a1.anim.start) * 256, a1.rate);
+        a2.lost = a2.frames < hitAt;
+        t.avg = {frames: (a1.frames + a2.frames) / 2, hits: (1 + (a2.lost ? 0 : 1)) / 2};
+      }
+      return t;
+    }
+    // a mercenary: its attack ends when its animation does, and its AI picks the next one the frame after (a
+    // sequence: two frames after)
+    function mercTiming(p, sp, t) {
+      if (p.seq) {
+        const rate = rateOf(256, sp.speed), len = p.seq.frames;
+        Object.assign(t, {base: 256, rate, len});
+        t.parts.push({label: "One " + p.sk.n, frames: cdiv(len * 256, rate) + 2, hits: p.seq.hits, anim: null});
+        return t;
+      }
+      const a = p.anims[0], rate = rateOf(a.speed, sp.speed);
+      Object.assign(t, {base: a.speed, rate, len: a.frames});
+      t.parts.push({label: p.sk ? p.sk.n : "Attack", anim: a, base: a.speed, rate, frames: Math.max(2, cdiv(a.frames * 256, rate)) + 1,
+                    hits: Math.max(1, a.hits.length)});
+      return t;
+    }
+    function evaluate(s, over) {
+      const p = plan(s);
+      if (p.why) return {p, why: p.why};
+      const sp = speed(s, p, over), t = timing(p, sp, over);
+      if (p.cd) cooled(t, p.cd);
+      return {p, sp, t};
+    }
+    // A skill with a cooldown, held (traced 2026-11-20): the game starts the cooldown when the skill does what it does
+    // (the throw's release, the strike), d game frames after the attack starts, as it schedules a hit:
+    // max(1, ceil((event - start) x 256 / rate)); it lasts cd frames, and only when it ends does the game tell your
+    // client, which starts the next attack at once while the button is held (PD2's own cooldowns, one per skill). So
+    // an attack lasts max(its frames, d + cd): IAS still helps under a cooldown, by bringing the release sooner. Per
+    // part: cd, that cycle; release, d; a part that is over sooner keeps its own frames as `own`, stands for `wait`
+    // frames and lasts the cycle. t.cd: the first part's cycle.
+    function cooled(t, cd) {
+      t.parts.forEach(q => {
+        const a = q.anim;
+        if (!a || !q.rate) return;
+        const h = a.hits.length ? a.hits[0] : a.frames - 1, d = Math.max(1, cdiv((h - a.start) * 256, q.rate));
+        Object.assign(q, {cd: d + cd, release: d});
+        if (q.frames < q.cd) Object.assign(q, {own: q.frames, wait: q.cd - q.frames, frames: q.cd});
+      });
+      t.cd = t.parts[0].cd;
+    }
+    // breakpoints over IAS from other gear (the weapon's IAS as set): one row per change in frames, {rows: [{gear, r}],
+    // you, spare, r0}. fromNone: in human form (and for a mercenary) all IAS adds up, so the rows start from no IAS at
+    // all and a row the weapon alone gets past has gear below 0; in a form the weapon's IAS also sets the base speed,
+    // so the rows start at no IAS on other gear either way. spare: the IAS on other gear you could do without and keep
+    // your frames (from the weapon too, where it goes below 0).
+    // a row per frame count, and per count of hits that land (Fend with a javelin: 14 frames lose a hit at speed 172-174)
+    const frameKey = r => r.t.parts.map(x => (x.swings ? x.swings.join("/") + (x.landed < x.hits ? "~" + x.landed : "") : x.frames)).join(",");
+    function breakpoints(s, fromNone) {
+      const r0 = evaluate(s);
+      if (r0.why || (r0.p.seq && r0.p.fixed) || r0.p.fx) return {rows: [], you: 0, spare: 0, r0};
+      const rows = [], key = frameKey;
+      const own = r0.sp.weaponIAS + r0.sp.inc + (r0.sp.map || 0);  // the IAS that isn't other gear
+      const all = !!fromNone && !r0.p.formBase;
+      let last = null;
+      for (let e = all ? Math.min(0, eias(own)) : eias(own); e < 120; e++) {  // a map can take the total below 0
+        const gear = all ? needIAS(e) - own : Math.max(0, needIAS(e) - own);
+        const r = evaluate(s, {gear}), k = key(r);
+        if (k !== last) { rows.push({gear, r}); last = k; }
+        if (r.sp.raw >= r.sp.hi) break;
+      }
+      let you = 0;  // the setup's own row: the last one its gear reaches
+      rows.forEach((row, i) => { if (row.gear <= s.gear) you = i; });
+      return {rows, you, spare: rows.length ? s.gear - rows[you].gear : 0, r0};
+    }
+    // in a form, breakpoints over IAS on the weapon (other gear as set): it also sets the form's base speed, so it has
+    // breakpoints of its own and keeps counting once speed is at its cap. One row per change in frames, from no IAS on
+    // the weapon up to the most the base can carry (its m) or the setup's own if more, then the first row past that; a
+    // row above what the base can carry is `past`. {rows: [{wi, r, past}], you, spare, carry, r0}; null in human form,
+    // for a mercenary or with no weapon (the weapon's IAS sets no base speed there).
+    function weaponBreakpoints(s) {
+      const r0 = evaluate(s), w = BASE[s.w];
+      if (r0.why || !r0.p.formBase || !w) return null;
+      const carry = w.m || 0, upto = Math.max(carry, s.wi), rows = [];
+      let last = null;
+      for (let wi = 0; wi <= upto + 300; wi++) {
+        const r = evaluate(s, {wi}), k = frameKey(r);
+        if (k === last) continue;
+        last = k;
+        rows.push({wi, r, past: wi > carry});
+        if (wi > upto) break;
+      }
+      let you = 0;
+      rows.forEach((row, i) => { if (row.wi <= s.wi) you = i; });
+      return {rows, you, spare: s.wi - rows[you].wi, carry, r0};
+    }
+    // frames over weapon IAS (rows) and other gear's IAS (columns)
+    function grid(s, ws, gs) {
+      return ws.map(wi => gs.map(g => {
+        const r = evaluate(s, {wi, gear: g});
+        const p = r.why ? null : r.t.parts[0];
+        return r.why ? null : {f: r.t.avg ? r.t.avg.frames : p.frames, sp: r.sp, capped: r.sp.raw >= r.sp.hi,
+                               lost: p.landed !== undefined ? p.hits - p.landed : 0, cd: !!p.wait || (!!r.t.cd && p.frames === r.t.cd)};
+      }));
+    }
+    // the fastest held normal attacks of a class in a form (no skill speed): every setup's own fastest frame count,
+    // the two fastest of those, and what each setup needs for it (in a form the weapon's own IAS, up to what
+    // wmaxOf(base) says the weapon can carry, and the rest from other gear: the least in all); keep(base), if given,
+    // picks the bases to try (keep(null): no weapon)
+    function fastest(cls, form, wmaxOf, keep) {
+      if (MERC[cls]) return [];  // the classes' own normal attacks only
+      const groups = new Map();
+      const bases = D.b.filter(b => canHold(cls, b.c) && (!keep || keep(b)));
+      const setups = !keep || keep(null) ? [{w: "", oh: "none"}] : [];
+      bases.forEach(b => {
+        setups.push({w: b.c, oh: "none"});
+        if (cls === "bar" && (b.f & 2) && (b.f & 1)) setups.push({w: b.c, oh: "shield"});
+      });
+      if (dualClass(cls) && form === "human") {
+        const firsts = bases.filter(b => canSecond(cls, b));
+        const byKey = new Map();  // one second weapon per (weapon class, WSM): the pair counts its faster weapon
+        firsts.forEach(b => { const k = b.wc + "|" + b.w; if (!byKey.has(k)) byKey.set(k, b); });
+        firsts.forEach(b => byKey.forEach(b2 => setups.push({w: b.c, oh: "weapon", w2: b2.c})));
+      }
+      const empty = {cls, form, atk: 0, lvl: 1, tg: 1, wi: 0, wi2: 0, gear: 0, fana: 0, frenzy: 0, inc: 0, bos: 0, hustle: false, ww: 0, other: 0};
+      setups.forEach(su => {
+        const s = Object.assign({}, empty, su), p = plan(s);
+        if (p.why || !p.anims) return;
+        const a = p.anims[0], w = BASE[s.w], two = dual(s);
+        const wsm = two ? Math.min(w.w, BASE[s.w2].w) : w ? w.w : 0;  // two weapons at no IAS: the faster one counts
+        const cap = form !== "human" && w && wmaxOf ? wmaxOf(s.w) : 0;
+        // a form: what decides the frames is the class's own attack with the weapon, its WSM and the weapon's most IAS
+        const key = form === "human" ? [a.code, a.start, wsm].join("|") : [p.formBase.weaponTime || "-", wsm, cap].join("|");
+        if (!groups.has(key)) groups.set(key, {anim: a, wsm, s, p, cap, names: new Set(), dual: two, weaponTime: p.formBase ? p.formBase.weaponTime : ""});
+        const g = groups.get(key);
+        g.names.add(two ? `${w.n} + ${BASE[s.w2].n}` : w ? (su.oh === "shield" ? `${w.n} with a shield` : w.n) : "No weapon");
+      });
+      // each group's way to each frame count it reaches: human, the least IAS; in a form the least IAS on the weapon
+      // (the scarce part), then the least on other gear
+      const better = (x, y) => !y || x.wi < y.wi || (x.wi === y.wi && x.other < y.other);
+      groups.forEach(g => {
+        const a = g.anim, ways = new Map();
+        const keep = w => { if (better(w, ways.get(w.frames))) ways.set(w.frames, w); };
+        if (form === "human") {
+          for (let e = 0; e < 120; e++) {
+            const v = Math.max(15, Math.min(175, 100 - g.wsm + e));
+            keep({frames: held(a.frames, a.start, rateOf(a.speed, v)), wi: 0, other: needIAS(e), speed: v});
+            if (100 - g.wsm + e >= 175) break;
+          }
+        } else {
+          for (let wi = 0; wi <= g.cap; wi++) {
+            const base = formBase(Object.assign({}, g.s, {wi}), g.p).base;
+            for (let e = eias(wi); e < 120; e++) {
+              const v = Math.max(15, Math.min(175, 100 - g.wsm + e));
+              keep({frames: held(a.frames, 0, rateOf(base, v)), wi, other: Math.max(0, needIAS(e) - wi), speed: v});
+              if (100 - g.wsm + e >= 175) break;
+            }
+          }
+        }
+        g.ways = ways;
+        g.min = Math.min(...ways.keys());
+      });
+      // the two fastest frame counts some setup can't get past, and every setup that gets to each (or faster)
+      const all = [...groups.values()].filter(g => g.ways.size);
+      const counts = [...new Set(all.map(g => g.min))].sort((a, b) => a - b).slice(0, 2);
+      return counts.map(f => ({frames: f, rows: all.filter(g => g.min <= f).map(g => {
+        let w = null;
+        g.ways.forEach(x => { if (x.frames <= f && better(x, w)) w = x; });
+        return Object.assign({ias: w.wi + w.other, g}, w);
+      }).sort((a, b) => a.ias - b.ias || a.wi - b.wi)}));
+    }
+    return {D, A, CLS, BASE, SKILL, MERC, TGT, eias, needIAS, canHold, canSecond, twoHanded, dualClass, dual, humanWC, counted, plan,
+            speed, timing, evaluate, breakpoints, weaponBreakpoints, grid, fastest, rollback, serverHits, held, rateOf, usable};
+  })(IAS_DATA);
+  /* ias-engine:end */
+
+  const root = document.querySelector(".dmg-map");
+  if (!root || !DATA.weapons) return;
+  const $ = id => document.getElementById(id);
+  const STORE = "erazure-damage-calc";
+  const KEYS = ["var(--s1)", "var(--s2)", "var(--s3)", "var(--s4)"];
+  // each build's own line in the damage profile too: A solid, B dashed, C dotted, D dash-dot (told apart without colour)
+  const DASHES = ["none", "8 4", "2 3", "11 3 2 3"];
+  const LETTERS = ["A", "B", "C", "D"];
+  const nf0 = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
+  const nf1 = new Intl.NumberFormat("en-US", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const nf2 = new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const TIER = { N: "Normal", X: "Exceptional", E: "Elite" };
+  const W = Object.fromEntries(DATA.weapons.map(w => [w.code, w]));
+  const SK = DATA.skills;
+  const ATT = Object.fromEntries(DATA.attacks.map(a => [a.k, a]));
+  const CLS = Object.fromEntries(DATA.classes.map(c => [c.code, c]));
+  const has = (w, t) => !!w && w.it.includes(t);
+  const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+  const tdiv = (a, b) => (b === 0 ? 0 : Math.trunc(a / b));
+
+  // ================================================================== skill formulas (as the game reads them)
+  const Calc = (() => {
+    const KW = ["ln12", "dm12", "ln34", "dm34", "ln56", "dm56", "ln78", "dm78"];
+    const BIN = { "<": 15, ">": 15, "<=": 15, ">=": 15, "==": 15, "!=": 15, "+": 17, "-": 17, "*": 19, "/": 19, "^": 20 };
+    const TOK = /\s*(?:(\d+)|('[^']*'\s*\.\s*[A-Za-z_]\w*)|([A-Za-z_]\w*)|(<=|>=|==|!=|[-+*/^?:<>(),]))/y;
+    const cache = new Map();
+    function tokens(text) {
+      const out = []; text = text.replace(/"/g, ""); TOK.lastIndex = 0;
+      while (TOK.lastIndex < text.length) {
+        if (!text.slice(TOK.lastIndex).trim()) break;
+        const m = TOK.exec(text);
+        if (!m) throw new Error("bad formula " + text);
+        if (m[1]) out.push(["n", +m[1]]);
+        else if (m[2]) { const mm = /'([^']*)'\s*\.\s*(\w+)/.exec(m[2]); out.push(["link", [mm[1], mm[2]]]); }
+        else if (m[3]) out.push(["id", m[3]]);
+        else out.push(["op", m[4]]);
+      }
+      return out;
+    }
+    function parse(text) {
+      if (cache.has(text)) return cache.get(text);
+      const t = tokens(text); let i = 0;
+      const peek = () => t[i] || [null, null];
+      const take = op => { const x = t[i++]; if (op !== undefined && !(x && x[0] === "op" && x[1] === op)) throw new Error("expected " + op); return x; };
+      function expr(minbp) {
+        let left = unary();
+        for (;;) {
+          const [k, v] = peek();
+          if (k !== "op" || !(v in BIN) || BIN[v] < minbp) return left;
+          take(); left = ["bin", v, left, expr(BIN[v] + 1)];
+        }
+      }
+      function unary() {
+        const [k, v] = peek();
+        if (k === "op" && v === "-") { take(); return ["neg", unary()]; }
+        if (k === "op" && v === "+") { take(); return unary(); }
+        let node = primary();
+        while (peek()[0] === "op" && peek()[1] === "?") { take(); const a = primary(); take(":"); const b = primary(); node = ["tern", node, a, b]; }
+        return node;
+      }
+      function primary() {
+        const [k, v] = take();
+        if (k === "n") return ["n", v];
+        if (k === "op" && v === "(") { const n = expr(0); take(")"); return n; }
+        if (k === "id") {
+          if (peek()[0] === "op" && peek()[1] === "(") { take("("); const args = [expr(0)]; while (peek()[1] === ",") { take(); args.push(expr(0)); } take(")"); return ["call", v.toLowerCase(), args]; }
+          return ["kw", v];
+        }
+        if (k === "link") return ["link", v];
+        throw new Error("unexpected " + v);
+      }
+      const tree = text.trim() ? expr(0) : ["n", 0];
+      cache.set(text, tree);
+      return tree;
+    }
+    const bracket = (lvl, base, per) => {
+      if (lvl <= 1) return base;
+      const p = per;
+      if (lvl > 28) return base + 7 * p[0] + 8 * p[1] + 6 * (p[2] + p[3]) + (lvl - 28) * p[4];
+      if (lvl > 22) return base + 7 * p[0] + 8 * p[1] + 6 * p[2] + (lvl - 22) * p[3];
+      if (lvl > 16) return base + 7 * p[0] + 8 * p[1] + (lvl - 16) * p[2];
+      if (lvl > 8) return base + 7 * p[0] + (lvl - 8) * p[1];
+      return base + (lvl - 1) * p[0];
+    };
+    const len = (lvl, base, p) => lvl <= 0 ? 0 : base + (lvl <= 8 ? p[0] * (lvl - 1) : lvl <= 16 ? 7 * p[0] + (lvl - 8) * p[1] : 7 * p[0] + 8 * p[1] + (lvl - 16) * p[2]);
+    const n = x => (x === undefined || x === "" ? 0 : parseInt(x, 10) || 0);
+    const byName = {};
+    for (const [id, r] of Object.entries(SK)) byName[r.skill.toLowerCase()] = id;
+    function kw(r, key, lvl, ctx) {
+      const par = i => n(r["Param" + i]);
+      const k = KW.indexOf(key);
+      if (k >= 0) {
+        const a = par(2 * (k >> 1) + 1), b = par(2 * (k >> 1) + 2);
+        if (k % 2 === 0) return lvl > 0 ? a + (lvl - 1) * b : 0;
+        if (lvl <= 0 && k !== 7) return 0;
+        return Math.min(a + tdiv((b - a) * tdiv(110 * lvl, lvl + 6), 100), b);
+      }
+      if (/^par[1-8]$/.test(key)) return par(+key[3]);
+      if (key === "lvl") return lvl;
+      if (key === "blvl") return ctx.self_blvl !== undefined ? ctx.self_blvl : lvl;
+      if (key === "ulvl") return ctx.ulvl || 90;
+      if (key === "edmn" || key === "edmx" || key === "edns" || key === "edxs") {
+        const side = key === "edmn" || key === "edns" ? "EMin" : "EMax";
+        let d = lvl > 0 ? bracket(lvl, n(r[side]), [1, 2, 3, 4, 5].map(i => n(r[side + "Lev" + i]))) : 0;
+        d = d * Math.pow(2, n(r.HitShift));
+        if (r.EDmgSymPerCalc) { const b = ev(parse(r.EDmgSymPerCalc), r, lvl, ctx); if (b) d += tdiv(d * b, 100); }
+        return key === "edmn" || key === "edmx" ? Math.floor(d / 256) : d;
+      }
+      if (key === "edln") {
+        let d = len(lvl, n(r.ELen), [1, 2, 3].map(i => n(r["ELevLen" + i])));
+        if (r.ELenSymPerCalc) { const b = ev(parse(r.ELenSymPerCalc), r, lvl, ctx); if (b) d += tdiv(d * b, 100); }
+        return d;
+      }
+      if (key === "toht") return r.ToHitCalc ? ev(parse(r.ToHitCalc), r, lvl, ctx) : (lvl > 0 ? n(r.ToHit) + (lvl - 1) * n(r.LevToHit) : 0);
+      const m = /^(clc|ast|pst)([1-6])$/.exec(key);
+      if (m) return ev(parse(r[{ clc: "calc", ast: "aurastatcalc", pst: "passivecalc" }[m[1]] + m[2]] || ""), r, lvl, ctx);
+      if (key === "len") return ev(parse(r.auralencalc || ""), r, lvl, ctx);
+      return 0;
+    }
+    function link([name, key], ctx) {
+      const lc = name.toLowerCase();
+      const blvl = (ctx.blvl || {})[lc] || 0;
+      if (key === "blvl") return blvl;
+      const olvl = (ctx.lvl || {})[lc] !== undefined ? ctx.lvl[lc] : blvl;
+      if (key === "lvl") return olvl;
+      const id = byName[lc];
+      return id ? kw(SK[id], key, olvl, Object.assign({}, ctx, { self_blvl: blvl })) : 0;
+    }
+    function ev(node, r, lvl, ctx) {
+      switch (node[0]) {
+        case "n": return node[1];
+        case "kw": return kw(r, node[1], lvl, ctx);
+        case "neg": return -ev(node[1], r, lvl, ctx);
+        case "tern": return ev(node[1], r, lvl, ctx) ? ev(node[2], r, lvl, ctx) : ev(node[3], r, lvl, ctx);
+        case "bin": {
+          const a = ev(node[2], r, lvl, ctx), b = ev(node[3], r, lvl, ctx);
+          switch (node[1]) {
+            case "+": return a + b; case "-": return a - b; case "*": return a * b; case "/": return tdiv(a, b);
+            case "<": return +(a < b); case ">": return +(a > b); case "<=": return +(a <= b); case ">=": return +(a >= b);
+            case "==": return +(a === b); case "!=": return +(a !== b); case "^": return b > 0 ? Math.pow(a, b) : 1;
+          }
+          return 0;
+        }
+        case "call": {
+          const [, name, args] = node;
+          if (name === "min" || name === "max") { const v = args.map(x => ev(x, r, lvl, ctx)); return name === "min" ? Math.min(...v) : Math.max(...v); }
+          if (name === "skill" && args[0][0] === "link") return link(args[0][1], ctx);
+          if (name === "stat" && args[0][0] === "link") return ((ctx.stat || {})[args[0][1][0].toLowerCase()]) || 0;
+          return 0;
+        }
+        case "link": return link(node[1], ctx);
+      }
+      return 0;
+    }
+    function value(id, col, lvl, ctx) {
+      const r = SK[id];
+      if (!r || !r[col] || lvl <= 0) return 0;
+      try { return ev(parse(r[col]), r, lvl, ctx || {}); } catch (e) { return 0; }
+    }
+    /* the skill names whose base points a formula reads (its synergies) */
+    function synergies(id, col) {
+      const r = SK[id]; if (!r || !r[col]) return [];
+      const out = []; const re = /skill\('([^']+)'\.blvl\)/g; let m;
+      while ((m = re.exec(r[col]))) if (!out.includes(m[1])) out.push(m[1]);
+      return out;
+    }
+    /* a skill's own attack rating bonus at a level (toht: ToHit + (lvl - 1) x LevToHit, or ToHitCalc) */
+    const tohit = (id, lvl, ctx) => (SK[id] && lvl > 0 ? kw(SK[id], "toht", lvl, ctx || {}) : 0);
+    return { value, tohit, synergies, name: id => (SK[id] ? SK[id].name : "") };
+  })();
+
+  // ================================================================== the model
+  const ethD = d => Math.floor(d * 5 / 4);
+  const MAX_LVL = 60;
+  const DUAL = { bar: true, ass: true };
+  /* two weapons as the IAS Calculator's engine allows them: an Assassin two claws, a Barbarian two weapons that aren't
+     claws, bows or crossbows, each one-handed or a sword made for one or two hands (until 2026-11-13 an Assassin's two
+     swords counted as two weapons here while the frames were one weapon's) */
+  const dual = b => !!(DUAL[b.cls] && b.o && b.o.on && W[b.o.code] && W[b.w.code]) && IAS.dual({ cls: b.cls, oh: "weapon", w: b.w.code, w2: b.o.code });
+  /* a weapon held in both hands: a two-handed one, but a Barbarian's sword made for one or two hands held in one (with
+     a shield, or as one of two weapons). Until 2026-11-13 any class could hold such a sword "in one hand" here, with
+     its one-hand damage. */
+  const heldInTwo = (b, x) => { const w = W[x.code]; return !!(w && w.d2) && (!w.d1 || b.cls !== "bar" || (x.hand === "d2" && !dual(b))); };
+  const isWolf = (b, a) => a && (a.form === "40");
+  const isBear = (b, a) => a && (a.form === "TG");
+
+  /* Frames per attack: the IAS Calculator's engine (IAS, above) on a build's setup; gear: other IAS on other gear */
+  const FORMS = { "40": "wolf", TG: "bear" };
+  function iasSetup(b, attack, gear) {
+    const w = IAS.BASE[b.w.code] ? b.w.code : "", two = dual(b), base = IAS.BASE[w];
+    // a Barbarian holds a sword made for one or two hands in one hand while the other hand holds something
+    const oh = two ? "weapon" : base && (base.f & 1) && (base.f & 2) && !heldInTwo(b, b.w) ? "shield" : "none";
+    return {
+      // one monster in range: Strafe fires its fewest arrows, all at it
+      cls: b.cls, form: FORMS[attack.form] || "human", atk: attack.id || 0, lvl: clamp(+b.s.lvl || 1, 1, MAX_LVL), tg: 1,
+      w, wi: +b.w.ias || 0, oh, w2: two ? b.o.code : "", wi2: two ? +b.o.ias || 0 : 0,
+      gear: gear !== undefined ? gear : +b.g.ias || 0, fana: +b.buf.fana || 0, frenzy: b.cls === "bar" ? +b.buf.frenzy || 0 : 0,
+      fst: clamp(b.buf.stacks === undefined ? 5 : +b.buf.stacks, 0, 5),
+      inc: b.cls === "bar" ? +b.buf.incHard || 0 : 0, bos: b.cls === "ass" && b.buf.bos > 0 ? +b.buf.bosHard || 0 : 0,
+      hustle: false, ww: +b.buf.were || 0, other: 0, cdr: b.s.cdr || "",
+    };
+  }
+  /* one round of the attack: { frames, hits, per: each part's frames, alt: attack 1 and attack 2, note, r: the
+     engine's result }. A held normal attack lasts attack 1 or attack 2, half the time each: a round is one of each,
+     and attack 2 loses its hit when it ends before attack 1's hit frame (the game hits at attack 1's). Where both take
+     as long (every weapon but an Assassin's claws and a Paladin's two-handed sword) it is one attack. */
+  function roundOf(r) {
+    const parts = r.t.parts, p = parts[0];
+    if (parts.length > 1 && (parts[1].frames !== p.frames || parts.some(q => q.lost))) return { frames: parts.reduce((x, q) => x + q.frames, 0), hits: parts.reduce((x, q) => x + (q.lost ? 0 : q.hits), 0), per: parts.map(q => q.frames), alt: true, r };
+    // a held Strafe or Fend can lose hits at some speeds (the game makes them on its side): hits are the ones that land
+    if (p.swings) return { frames: p.frames, hits: p.landed !== undefined ? p.landed : p.hits, made: p.hits, per: p.swings, r };
+    return { frames: p.frames, hits: p.hits, per: [p.frames], note: p.fixed ? "fixed" : "", r };
+  }
+  function frames(b, attack, gear) {
+    const s = iasSetup(b, attack, gear);
+    if (s.atk && !IAS.SKILL[s.atk]) return null;
+    const r = IAS.evaluate(s);
+    return r.why ? null : roundOf(r);
+  }
+  /* the weapons an attack hits with, as the game picks them by the skill's weapon choice: the first weapon (a normal
+     attack and most skills), the first then the other (Double Swing, Frenzy, Berserk, Double Throw, Dragon Claw and
+     the other charge-up finishers: the hits before its sequence's frame 6 with the first), both (Whirlwind, Blade Dance) */
+  function weaponsFor(b, attack) {
+    if (!dual(b)) return [b.w];
+    const sk = IAS.SKILL[attack.id], ws = sk ? sk.ws || 0 : 0;
+    return ws === 2 || ws === 3 ? [b.w, b.o] : [b.w];
+  }
+  /* the frames as the game's breakpoints show them: attack 1 / attack 2 */
+  const frLabel = fr => (fr.alt ? fr.per.join(" / ") : String(fr.frames));
+  /* the masteries the Skill section asks for, by class; only the build's class's count (a build switched from a
+     Barbarian kept One Handed Weapon Mastery's damage, unseen, until 2026-11-13) */
+  const MAST = { bar: [128, 134, 135], ass: [252], ama: [19, 9, 23] };
+  const MAST_BASE = { 23: true };   // asked as base points (Penetrate: pierce, and Strafe's synergy)
+  function mOf(b) {
+    const out = {};
+    for (const id of MAST[b.cls] || []) if (+(b.m || {})[id] > 0) out[id] = +b.m[id];
+    return out;
+  }
+  /* what a skill formula reads of the build: synergies' base points (blvl), and skills' levels (lvl): a mastery's
+     (Dragon Claw's damage reads Claw Mastery's level) and the attack's own */
+  function ctxOf(b, attack) {
+    const blvl = {}, lvl = {};
+    for (const [id, v] of Object.entries(mOf(b))) {
+      const k = SK[id] ? SK[id].skill.toLowerCase() : "";
+      if (!k) continue;
+      lvl[k] = v;
+      if (MAST_BASE[id]) blvl[k] = v;
+    }
+    for (const [k, v] of Object.entries(b.s.syn || {})) blvl[k.toLowerCase()] = +v || 0;
+    if (attack && attack.id && SK[attack.id]) lvl[SK[attack.id].skill.toLowerCase()] = +b.s.lvl || 0;
+    return { blvl, lvl, self_blvl: b.s.lvl };
+  }
+
+  /* one weapon's damage range (whole points) */
+  function weaponRange(x, attack, b) {
+    const w = W[x.code];
+    if (!w) return { min: 1, max: 2 };
+    let d = attack.throw && w.dt ? w.dt : heldInTwo(b, x) ? w.d2 : (w.d1 || w.dt);
+    if (x.eth && w.eth) d = d.map(ethD);
+    const ed = +x.ed || 0;
+    return { min: d[0] + Math.trunc(d[0] * ed / 100) + (+x.min || 0), max: d[1] + Math.trunc(d[1] * ed / 100) + (+x.max || 0), base: d };
+  }
+
+  /* the damage bonus of the build's attack skill, auras and buffs (the damagepercent stat and the skill's own %) */
+  function skillPct(b, attack) {
+    if (!attack.dmg) return 0;
+    return Calc.value(attack.id, attack.dmg, b.s.lvl, ctxOf(b, attack));
+  }
+  function auraPct(b, attack) {
+    let p = 0; const parts = [];
+    const add = (lbl, v) => { if (v) { p += v; parts.push([lbl, v]); } };
+    const a = b.aur;
+    if (a.might > 0) add("Might", Calc.value(98, a.mightSelf ? "passivecalc1" : "aurastatcalc1", a.might));
+    if (a.conc > 0) add("Concentration", Calc.value(113, a.concSelf ? "passivecalc1" : "aurastatcalc1", a.conc));
+    if (b.buf.fana > 0) add("Fanaticism", Calc.value(122, b.buf.fanaSelf ? "passivecalc1" : "aurastatcalc3", b.buf.fana));
+    if (a.bc > 0) add("Battle Command", Calc.value(155, "aurastatcalc2", a.bc));
+    if (a.grim > 0) add("Grim Ward", Calc.value(150, "aurastatcalc1", a.grim));
+    if (a.wolv > 0) add("Heart of Wolverine", Calc.value(297, "aurastatcalc2", a.wolv));
+    if (isWolf(b, attack) && b.buf.were > 0) add("Werewolf", Calc.value(223, "aurastatcalc4", b.buf.were));
+    if (isBear(b, attack) && b.buf.bear > 0) add("Werebear", Calc.value(228, "aurastatcalc1", b.buf.bear));
+    if (isBear(b, attack) && b.buf.maul > 0) add("Maul charges", Calc.value(233, "aurastatcalc1", b.buf.maul));
+    return { p, parts };
+  }
+  /* weapon mastery's damage % and its crit / crushing blow / crit multiplier, the way the game picks them */
+  function mastery(b, attack, x) {
+    const w = W[x.code]; const out = { dmg: 0, crit: 0, cb: 0, cbe: 0, cmult: 0, names: [] };
+    if (!w) return out;
+    const m = mOf(b);
+    const sk = attack.itype || "";
+    const types = DATA.types;
+    const isA = (t, set) => types[set].includes(t);
+    const meleeSkill = !sk || (isA(sk, "weap") && !isA(sk, "miss") && !isA(sk, "thro"));
+    const throwing = !!attack.throw;
+    // One Handed (1han, or a two-hander a barbarian holds in one hand) / Two Handed (2han held in both hands); until
+    // 2026-11-13 a sword held in one hand beside a shield counted as held in both
+    const two = heldInTwo(b, x);
+    if (m[128] > 0 && !two && (has(w, "1han") || (b.cls === "bar" && has(w, "2han") && has(w, "mele"))) && !attack.missile) {
+      if (!throwing) out.dmg += Calc.value(128, "passivecalc2", m[128]);
+      if (meleeSkill) out.crit += Calc.value(128, "passivecalc3", m[128]);
+      out.names.push("One Handed Weapon Mastery");
+    }
+    if (m[134] > 0 && has(w, "2han") && two && !attack.missile) {
+      if (!throwing) out.dmg += Calc.value(134, "passivecalc2", m[134]);
+      out.cb += Calc.value(134, "passivecalc3", m[134]);
+      out.cbe += Calc.value(134, "passivecalc4", m[134]);
+      out.names.push("Two Handed Weapon Mastery");
+    }
+    if (m[135] > 0 && has(w, "thro") && throwing) {
+      out.dmg += Calc.value(135, "passivecalc2", m[135]);
+      if (isA(sk || "thro", "thro")) out.crit += Calc.value(135, "passivecalc3", m[135]);
+      out.names.push("Throwing Mastery");
+    }
+    if (m[252] > 0 && has(w, "asm")) {
+      if (!throwing && !attack.missile) out.dmg += Calc.value(252, "passivecalc2", m[252]);
+      if (types.h2h.some(t => t === sk) || sk === "" || isA("h2h", "weap") && (sk === "weap" || sk === "mele")) out.crit += Calc.value(252, "passivecalc3", m[252]);
+      out.names.push("Claw and Dagger Mastery");
+    }
+    if (m[19] > 0 && has(w, "spea")) {
+      out.dmg += Calc.value(19, throwing ? "passivecalc3" : "passivecalc1", m[19]);
+      out.cmult += Calc.value(19, "passivecalc2", m[19]);
+      out.names.push("Javelin and Spear Mastery");
+    }
+    return out;
+  }
+
+  /* What is on the monster: a curse and Battle Cry, from the party (the monster's fields) or from the build itself (its
+     card's Curses and debuffs: its own skill, charges, a chance to cast, Call to Arms' Battle Cry). A monster holds one
+     curse at a time (States.txt's curse flag: Amplify Damage, Decrepify), so a build's own curse replaces the party's;
+     Battle Cry is no curse (it stays beside one), but a monster holds one Battle Cry, so a build's own replaces the
+     party's too. b null: the party's alone. Each value is the stat's change, below 0: v physical resistance, dv the
+     monster's defense in % (Weaken and Battle Cry; Amplify Damage and Decrepify leave its defense), df its defense in
+     points (Attract: the monster's armorclass, before the %). The party's curse level is T[its key]. */
+  const CURSES = { amp: "Amplify Damage", decrep: "Decrepify", weaken: "Weaken", attract: "Attract" };
+  // a Paladin's own Holy aura (its attack rating): skill id, name
+  const HOLY = { fire: [102, "Holy Fire"], freeze: [114, "Holy Freeze"], shock: [118, "Holy Shock"], sanc: [119, "Sanctuary"] };
+  const AURA_AR = ["Fanaticism", "Concentration", "Blessed Aim", "Heart of Wolverine", "Werewolf", "Werebear"];
+  function curseValue(kind, lvl, curmas) {
+    if (!(lvl > 0)) return 0;
+    if (kind === "amp") return Calc.value(66, "aurastatcalc1", lvl, { blvl: { curmas: +curmas || 0 } });
+    if (kind === "decrep") return Calc.value(87, "aurastatcalc5", lvl);
+    return 0;
+  }
+  const curseDef = (kind, lvl) => (kind === "weaken" && lvl > 0 ? Calc.value(72, "aurastatcalc2", lvl) : 0);
+  const curseFlat = (kind, lvl, curmas) => (kind === "attract" && lvl > 0 ? Calc.value(86, "aurastatcalc1", lvl, { blvl: { curmas: +curmas || 0 } }) : 0);
+  const curseOf = (kind, lvl, curmas, own) => ({ kind, lvl, v: curseValue(kind, lvl, curmas), dv: curseDef(kind, lvl), df: curseFlat(kind, lvl, curmas), own });
+  function onMonster(b, T) {
+    const partyLvl = CURSES[T.curse] ? +T[T.curse] || 0 : 0;
+    const party = partyLvl > 0 ? curseOf(T.curse, partyLvl, T.curmas, false) : null;
+    const d = b && b.deb, ownLvl = d && CURSES[d.curse] ? +d.lvl || 0 : 0;
+    const own = ownLvl > 0 ? curseOf(d.curse, ownLvl, d.curmas, true) : null;
+    const bcOf = (lvl, isOwn) => (lvl > 0 ? { lvl, v: Calc.value(146, "aurastatcalc2", lvl), dv: Calc.value(146, "aurastatcalc1", lvl), own: isOwn } : null);
+    const partyBc = bcOf(+T.bc || 0, false), ownBc = bcOf(d ? +d.bc || 0 : 0, true);
+    return { curse: own || party, bc: ownBc || partyBc, replaced: { curse: own ? party : null, bc: ownBc ? partyBc : null } };
+  }
+  /* the monster's physical resistance after the curse and Battle Cry (both count half against a monster whose own
+     resistance is 100% or more) */
+  function cursedRes(b, T) {
+    const base = +T.res || 0, immune = base >= 100;
+    const half = v => (immune ? tdiv(v, 2) : v);
+    const on = onMonster(b, T);
+    const curse = on.curse ? half(on.curse.v) : 0, bc = on.bc ? half(on.bc.v) : 0;
+    return { base, immune, on, curse, bc, res: base + curse + bc };
+  }
+  /* the monster's physical resistance against this build, and against crushing blow */
+  function resist(b, attack, T) {
+    const C = cursedRes(b, T);
+    let r = C.res;
+    const cbRes = r;
+    let pierce = (+b.g.pierce || 0);
+    if (attack.k === "berserk") pierce += Calc.value(152, "aurastatcalc3", b.s.lvl);
+    if (b.cls === "ama" && (b.m[23] || 0) > 0 && attack.missile) pierce += Calc.value(23, "passivecalc2", b.m[23], { self_blvl: b.m[23] });
+    if (r < 100 && pierce) { r -= pierce; if (r < 0) r = tdiv(r, 2); }
+    r = Math.max(r, -100);
+    return { res: r, cbRes, C, pierce: cbRes < 100 ? pierce : 0, mult: r >= 100 ? 0 : (100 - r) / 100, cbMult: cbRes >= 100 ? 0 : (100 - cbRes) / 100 };
+  }
+
+  /* Chance to hit (2026-11-21, the author; PD2's hit check traced in the live build of 11-04 on 2026-11-19 and 11-21).
+     Each hit of an attack that rolls (the data's attack.hit) lands with this chance, on its own; crushing blow only on
+     a hit. */
+  /* a missile's hit (a bow's or crossbow's arrow, a thrown weapon, Blade Fury): no weapon mastery's attack rating */
+  const rangedHit = (b, attack) => !!(attack.missile || attack.throw || (!attack.id && !attack.form && has(W[b.w.code], "miss")));
+  /* weapon mastery's attack rating % for a hit with weapon x: the hit check adds it to melee hits only, One Handed, Two
+     Handed or Claw and Dagger Mastery's by the weapon (stat 342, its item type the parameter), Throwing Mastery's (345)
+     with a throwing weapon; the character screen (forScreen) shows Throwing Mastery's with a throw skill too */
+  function masteryTh(b, attack, x, forScreen) {
+    const w = W[x.code], m = mOf(b);
+    if (!w) return 0;
+    if (has(w, "thro")) return m[135] > 0 && (!rangedHit(b, attack) || (forScreen && attack.throw)) ? Calc.value(135, "passivecalc1", m[135]) : 0;
+    if (rangedHit(b, attack)) return 0;
+    const two = heldInTwo(b, x);
+    let th = 0;
+    if (m[128] > 0 && !two && (has(w, "1han") || (b.cls === "bar" && has(w, "2han") && has(w, "mele")))) th += Calc.value(128, "passivecalc1", m[128]);
+    if (m[134] > 0 && has(w, "2han") && two) th += Calc.value(134, "passivecalc1", m[134]);
+    if (m[252] > 0 && has(w, "asm")) th += Calc.value(252, "passivecalc1", m[252]);
+    return th;
+  }
+  /* the attack rating of a hit with weapon x: (5 x Dexterity - 35 + the class's ToHitFactor + attack rating on gear and
+     Grim Ward's) x (100 + attack rating % on gear, auras and buffs, the attack skill's own, a melee hit's weapon
+     mastery) / 100, the % part rounded toward zero; parts lists the %s for the page */
+  function attackRating(b, attack, x, forScreen, T) {
+    const a = b.aur, parts = [];
+    const lyc = +b.buf.lyc || 0, lycCtx = { lvl: { "shape shifting": lyc }, blvl: { "shape shifting": lyc } };
+    let base = 5 * (+b.c.dex || 0) - 35 + (CLS[b.cls].th || 0) + (+b.g.ar || 0);
+    if (a.grim > 0) base += Calc.value(150, "aurastatcalc2", a.grim);
+    // attack rating against demons or undead (stats 123 / 124, per-level items' too): flat, only against such a
+    // monster (MonStats' demon flag; its low or high undead flag); the character screen leaves it out
+    const vs = forScreen || !T ? 0 : T.type === "demon" ? +b.g.ard || 0 : T.type === "undead" ? +b.g.aru || 0 : 0;
+    base += vs;
+    let pct = 0;
+    const add = (lbl, v) => { if (v) { pct += v; parts.push([lbl, v]); } };
+    add("gear", +b.g.arp || 0);
+    if (attack.id) add(attack.label, Calc.tohit(attack.id, b.s.lvl, ctxOf(b, attack)));
+    if (b.buf.fana > 0) add("Fanaticism", Calc.value(122, "aurastatcalc2", b.buf.fana));
+    if (a.conc > 0) add("Concentration", Calc.value(113, "aurastatcalc3", a.conc));
+    if (a.ba > 0) add("Blessed Aim", Calc.value(108, "aurastatcalc1", a.ba));
+    if (a.wolv > 0) add("Heart of Wolverine", Calc.value(297, "aurastatcalc1", a.wolv));
+    if (isWolf(b, attack) && b.buf.were > 0) add("Werewolf", Calc.value(223, "aurastatcalc2", b.buf.were, lycCtx));
+    if (isBear(b, attack) && b.buf.bear > 0) add("Werebear", Calc.value(228, "aurastatcalc4", b.buf.bear, lycCtx));
+    const pen = mOf(b)[23];
+    if (pen) add("Penetrate", Calc.value(23, "passivecalc1", +(b.m || {}).penLvl || pen));
+    // a Paladin's own Holy aura: its owner's attack rating (passivestat3, toht)
+    const holy = b.cls === "pal" && HOLY[b.buf.holy] && b.buf.holyLvl > 0 ? HOLY[b.buf.holy] : null;
+    if (holy) add(holy[1], Calc.value(holy[0], "passivecalc3", +b.buf.holyLvl));
+    const mth = masteryTh(b, attack, x, forScreen);
+    add("mastery", mth);
+    return { ar: base + Math.trunc(base * pct / 100), base, pct, parts, vs, mth };
+  }
+  /* the monster's defense against this build's hits: its own, lowered by Conviction (the party's, the monster's field),
+     Battle Cry and Weaken, which add up (the game's defense: own x (100 + the sum) / 100, rounded toward zero; below
+     0 it adds to the attack rating); then Ignore Target's Defense makes it 0 against a normal monster, champion or minion
+     (not a unique, superunique, boss (MonStats' boss flag: every listed monster) or player), and -% target defense
+     lowers it by that share, halved against a superunique, a boss or a player (rounded toward zero), at most 100%.
+     b null: the party's debuffs alone. */
+  function defenseOf(b, T) {
+    const on = onMonster(b, T), base = Math.max(0, +T.def || 0);
+    const conv = +T.conv > 0 ? { lvl: +T.conv, dv: Calc.value(123, "aurastatcalc1", +T.conv) } : null;
+    // Inner Sight (the party's, the monster's field) and Attract lower its armorclass, in points, before the %
+    const inner = +T.inner > 0 ? { lvl: +T.inner, df: Calc.value(8, "aurastatcalc1", +T.inner) } : null;
+    const flat = (inner ? inner.df : 0) + (on.curse ? on.curse.df : 0), d0 = base + flat;
+    const pct = (on.curse ? on.curse.dv : 0) + (on.bc ? on.bc.dv : 0) + (conv ? conv.dv : 0);
+    let d = d0 > 0 ? d0 + tdiv(d0 * pct, 100) : d0 - tdiv(d0 * pct, 100);
+    const cursed = d;
+    const itdWorks = T.kind === "monster", halved = !(T.kind === "monster" || T.kind === "unique");
+    const itd = !!(b && b.g.itd) && itdWorks;
+    if (itd) d = 0;
+    // -% target defense: gear's, and a Paladin's own Blessed Aim's (its base points, while it runs)
+    const ba = b && b.cls === "pal" && b.aur.baSelf && b.aur.ba > 0 ? Calc.value(108, "passivecalc1", +b.aur.ba, { self_blvl: +b.aur.baHard || 0 }) : 0;
+    let x = (b ? +b.g.tdef || 0 : 0) + ba;
+    if (halved) x = tdiv(x, 2);
+    x = x < 1 ? 0 : x > 99 ? 100 : x;
+    d -= Math.trunc(d * x / 100);
+    return { base, on, conv, inner, flat, pct, cursed, itd, itdWorks, halved, ba, x, def: d };
+  }
+  /* the hit chance in whole %: negative defense adds to the attack rating (negative attack rating to the defense);
+     2 x 111 x AR / (AR + defense) x the attacker's level / (both levels), at least 5; above 95 the rest of the 111 part
+     counts 90/111; at most 100. Every step rounds toward zero, as the game does. */
+  function hitChance(ar, def, alvl, dlvl) {
+    const d0 = Math.max(def, 0), a1 = def < 0 ? ar - def : ar, d1 = a1 < 0 ? d0 - a1 : d0;
+    const A = Math.max(a1, 0), D = Math.max(d1, 0), S = A + D;
+    const factor = S ? tdiv(111 * A, S) : 100, L = alvl + dlvl;
+    if (!L) return 5;
+    let c = tdiv(2 * factor * alvl, L);
+    if (c < 5) return 5;
+    if (c > 95 && alvl) {
+      let e = factor - tdiv(95 * L, 2 * alvl);
+      if (S) e = tdiv(tdiv(e * S, 111) * 90, S);
+      c = tdiv(2 * e * alvl, L) + 95;
+    }
+    return Math.min(c, 100);
+  }
+
+  /* everything about one build against the monster (opts.kill false: no kill time, for the parity search) */
+  function evaluate(b, T, opts) {
+    const attack = ATT[b.s.k] || ATT.attack;
+    const out = { attack, b };
+    const weaponsUsed = weaponsFor(b, attack);
+    out.offUnused = dual(b) && weaponsUsed.length === 1;
+    const fr = frames(b, attack);
+    out.fr = fr;
+    const aur = auraPct(b, attack);
+    const sp = skillPct(b, attack);
+    const flat = attack.flat ? Calc.value(attack.id, attack.flat, b.s.lvl, ctxOf(b, attack)) : 0;
+    out.parts = [];
+    // per weapon: damage range after the pool
+    const ranged = rangedHit(b, attack);
+    const per = weaponsUsed.map(x => {
+      const w = W[x.code];
+      const wr = weaponRange(x, attack, b);
+      const ms = mastery(b, attack, x);
+      const strB = w ? Math.floor((+b.c.str || 0) * w.sb / 100) : 0;
+      const dexB = w ? Math.floor((+b.c.dex || 0) * w.db / 100) : 0;
+      /* damage against demons or undead (stats 121 / 122, per-level items' too) joins the skill's own % against such a
+         monster (never a player): on a melee hit only above 0, and a blunt weapon (maces, hammers, clubs, scepters,
+         wands, staves) adds 50 against undead; an arrow's or a thrown weapon's damage takes the stat alone (traced
+         2026-11-21: D2Game's damage fill 0x6fcfd450 / 0x6fcfa8c0, the missile setup 0x6fc5a280, both still the game's) */
+      let vs = 0;
+      if (T.kind !== "player") {
+        if (T.type === "demon") vs = +b.g.edd || 0;
+        else if (T.type === "undead") vs = (!ranged && has(w, "blun") ? 50 : 0) + (+b.g.edu || 0);
+        if (!ranged && vs < 0) vs = 0;
+      }
+      const off = +b.g.ed || 0;
+      let mn = wr.min + (+b.g.min || 0) + flat, mx = wr.max + (+b.g.max || 0) + flat;
+      if (mn < 1) mn = 1;
+      if (mx <= mn) mx = mn + 1;
+      const src = attack.srcdam || 128;
+      const range = extra => {
+        const pct = Math.max(sp + aur.p + strB + dexB + ms.dmg + extra, -90);
+        let lo = mn * 256, hi = mx * 256;
+        lo += tdiv(lo * (pct + off), 100);
+        hi += tdiv(hi * (pct + off), 100);
+        if (src !== 128) { lo = tdiv(lo * src, 128); hi = tdiv(hi * src, 128); }
+        return { pct, lo, hi };
+      };
+      const r = range(vs), scr = vs ? range(0) : r;
+      return { wr, ms, strB, dexB, vs, pct: r.pct, off, mn256: r.lo, mx256: r.hi, avg256: r.hi > r.lo ? (r.lo + r.hi - 1) / 2 : r.lo,
+               screen: [scr.lo, scr.hi] };
+    });
+    out.per = per;
+    out.sp = sp; out.aur = aur; out.flat = flat;
+    // crit and deadly strike
+    const ms0 = per[0].ms;
+    let crit = (+b.g.crit || 0) + ms0.crit;
+    if (b.cls === "ama" && (b.m[9] || 0) > 0) crit += Calc.value(9, "passivecalc1", b.m[9]);
+    if (attack.k === "joust") crit += Calc.value(378, "calc2", b.s.lvl);
+    const pc = clamp(crit, 0, 75) / 100;
+    const dsCap = 75 + (+b.g.maxds || 0);
+    let dsCh = (+b.g.ds || 0);
+    if (b.aur.ba > 0) dsCh += Calc.value(108, "aurastatcalc2", b.aur.ba);
+    const pd = clamp(dsCh, 0, Math.min(dsCap, 100)) / 100;
+    const cm = (200 + (+b.g.cmult || 0) + ms0.cmult) / 100, dm = (150 + (+b.g.dsmult || 0)) / 100;
+    out.crit = { pc, pd: (1 - pc) * pd, cm, dm, critRaw: crit, dsRaw: dsCh };
+    out.mean = 1 + pc * (cm - 1) + (1 - pc) * pd * (dm - 1);
+    // resistance
+    const R = resist(b, attack, T);
+    out.R = R;
+    const avgHit256 = per.reduce((s, x) => s + x.avg256, 0) / per.length;
+    out.hit = avgHit256 / 256;                  // before crit/DS and resistance
+    out.eff = out.hit * out.mean;               // with crit/DS
+    out.final = out.eff * R.mult;               // after resistance
+    // chance to hit, per weapon (a melee hit's weapon mastery can differ); toHit weighs them by their damage, so damage
+    // per second = final x hits per second x toHit splits exactly
+    const D = defenseOf(b, T);
+    out.D = D; out.rolls = !!attack.hit; out.ranged = ranged;
+    per.forEach((p, k) => {
+      p.AR = attackRating(b, attack, weaponsUsed[k], false, T);
+      p.p = out.rolls ? hitChance(p.AR.ar, D.def, +b.c.lvl || 1, +T.lvl || 1) / 100 : 1;
+    });
+    out.screen = attackRating(b, attack, weaponsUsed[0], true, T);
+    const sum256 = per.reduce((s, x) => s + x.avg256, 0);
+    out.toHit = sum256 > 0 ? per.reduce((s, x) => s + x.avg256 * x.p, 0) / sum256 : per[0].p;
+    // crushing blow
+    let cbCh = (+b.g.cb || 0) + ms0.cb;
+    let cbe = (+b.g.cbe || 0) + ms0.cbe;
+    if (attack.k === "smite") { cbCh += Calc.value(97, "calc3", b.s.lvl, { self_blvl: b.s.lvl }); cbe += Calc.value(97, "calc4", b.s.lvl); }
+    // the share of the life left one crushing blow takes (a boss's at full life): it doesn't depend on the monster's life
+    const lifeFull = Math.max(1, +T.life || 1);
+    const div0 = cbDivisor(T, lifeFull, lifeFull, !!(attack.missile || attack.throw)) / (1 + cbe / 100);
+    out.cb = { ch: clamp(cbCh, 0, 100) / 100, cbe, share: R.cbMult / div0 };
+    // speed
+    if (fr) {
+      out.aps = 25 / fr.frames;              // attacks per second
+      out.hps = fr.hits * out.aps;           // hits per second
+      out.dps = out.final * out.hps * out.toHit;
+    }
+    // the kill: seeded simulation
+    const kill = !(opts && opts.kill === false);
+    out.kill = kill && fr && !attack.frames_only ? killTime(out, b, T, false) : null;
+    out.killNoCb = out.kill && out.cb.ch > 0 && out.cb.share > 0 ? killTime(out, b, T, true) : null;
+    return out;
+  }
+
+  function cbDivisor(T, life, maxLife, ranged) {
+    let d = 8;
+    if (T.kind === "player") d = 10;
+    else if (T.kind === "mapboss") d = 30;
+    else if (T.kind === "boss") d = 70 + 10 * (100 - Math.floor(100 * life / maxLife));
+    if (T.kind !== "player") d += [0, 0, 70, 140, 210, 280, 350, 420, 490][clamp(+T.players || 1, 1, 8)] / 50;
+    if (ranged) d *= 1.5;
+    return d;
+  }
+  function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+  function killTime(E, b, T, noCb) {
+    const life = Math.max(1, +T.life || 1) * 256;
+    if (!(E.final > 0) && !(E.cb.ch > 0 && E.R.cbMult > 0 && !noCb)) return { never: true };
+    const rnd = mulberry32(12345);
+    /* fewer runs for a long fight (many hits average out anyway), so a boss with millions of life stays quick */
+    const est = life / Math.max(1, E.final * 256 * E.toHit);
+    const runs = clamp(Math.round(150000 / Math.max(1, est)), 4, 400), cap = Math.max(20000, Math.ceil(est * 3));
+    const fr = E.fr; let totHits = 0, fail = 0;
+    const ranged = !!(E.attack.missile || E.attack.throw);
+    for (let r = 0; r < runs; r++) {
+      let L = life, hits = 0;
+      while (L > 0 && hits < cap) {
+        const p = E.per[hits % E.per.length];
+        if (p.p < 1 && rnd() >= p.p) { hits++; continue; }   // a miss: no damage, no crushing blow
+        let d =p.mn256 + (p.mx256 > p.mn256 ? Math.floor(rnd() * (p.mx256 - p.mn256)) : 0);
+        const x = rnd();
+        if (x < E.crit.pc) d = Math.trunc(d * E.crit.cm);
+        else if (rnd() < E.crit.pd / (1 - E.crit.pc || 1)) d = Math.trunc(d * E.crit.dm);
+        if (!noCb && E.cb.ch > 0 && E.R.cbMult > 0 && rnd() < E.cb.ch) {
+          const div = cbDivisor(T, L, life, ranged) / (1 + E.cb.cbe / 100);
+          L -= Math.trunc(L / div * E.R.cbMult);
+        }
+        L -= Math.trunc(d * E.R.mult);
+        hits++;
+      }
+      if (hits >= cap) fail++;
+      totHits += hits;
+    }
+    if (fail > runs / 2) return { never: true };
+    const hits = totHits / runs;
+    const framesPerHit = fr.frames / fr.hits;
+    return { hits, secs: hits * framesPerHit / 25 };
+  }
+
+  // ================================================================== state
+  const DEFAULT_BUILD = () => ({
+    name: "", cls: "pal",
+    // lvl: the character level (chance to hit)
+    c: { str: 156, dex: 75, lvl: 90 },
+    w: { cat: "swd1", code: "7cr", eth: false, hand: "d1", ed: 300, min: 0, max: 0, ias: 40 },
+    o: { on: false, cat: "swd1", code: "7cr", eth: false, hand: "d1", ed: 0, min: 0, max: 0, ias: 0 },
+    // ar / arp: attack rating and attack rating % on gear; tdef: -% target defense; itd: Ignore Target's Defense; ard /
+    // aru: attack rating against demons / undead; edd / edu: damage % against demons / undead
+    g: { ias: 20, ed: 0, min: 0, max: 0, crit: 0, cmult: 0, ds: 20, maxds: 0, dsmult: 0, cb: 0, cbe: 0, pierce: 0, ar: 0, arp: 0, tdef: 0, itd: false, ard: 0, aru: 0, edd: 0, edu: 0 },
+    s: { k: "zeal", lvl: 30, syn: { Sacrifice: 20 }, cdr: "" },
+    m: {},   // the masteries by skill id; penLvl: Penetrate's level with + skills (its attack rating)
+    // baSelf / baHard: Blessed Aim is the Paladin's own, and its base points (its -% target defense)
+    aur: { might: 0, mightSelf: true, conc: 0, concSelf: true, bc: 0, grim: 0, wolv: 0, ba: 0, baSelf: false, baHard: 0 },
+    // lyc: Lycanthropy's level (a wereform's attack rating); holy / holyLvl: a Paladin's own Holy aura (HOLY's key)
+    buf: { fana: 25, fanaSelf: true, frenzy: 0, stacks: 5, bos: 0, bosHard: 0, incHard: 0, were: 0, bear: 0, maul: 0, lyc: 0, holy: "", holyLvl: 0 },
+    // what the build puts on the monster itself (onMonster): its curse ("none" or a CURSES key) and Battle Cry
+    deb: { curse: "none", lvl: 0, curmas: 0, bc: 0 },
+  });
+  /* the monster: its level, defense and type ("demon", "undead" or "": a preset's from the data; your own monster's
+     start as a normal Hell monster of level 85, MonLvl's 1,651 defense), the party's curse (a CURSES key, its level
+     under that key), Battle Cry, Conviction (conv) and Inner Sight (inner) */
+  const DEFAULT_TARGET = () => ({ preset: "", tier: 0, kind: "monster", type: "", lvl: 85, life: 50000, def: 1651, res: 0, curse: "none", amp: 0, curmas: 0, decrep: 0, weaken: 0, attract: 0, bc: 0, conv: 0, inner: 0, players: 1 });
+  let builds = [], target = DEFAULT_TARGET(), shown = 0;
+  let undo = null;   // { i, b }: the build a "Start from…" replaced, while its card offers Undo
+
+  function exampleBuilds() {
+    const a = DEFAULT_BUILD();
+    a.name = "Zealot";
+    const b = DEFAULT_BUILD();
+    Object.assign(b, { name: "Frenzy", cls: "bar" });
+    b.c = { str: 200, dex: 100 };
+    b.w = { cat: "swd2", code: "7gd", eth: false, hand: "d1", ed: 320, min: 0, max: 0, ias: 0 };
+    b.o = { on: true, cat: "swd2", code: "7gd", eth: true, hand: "d1", ed: 280, min: 0, max: 0, ias: 0 };
+    b.s = { k: "frenzy", lvl: 30, syn: { "Double Swing": 20, Stun: 1 } };
+    b.m = { 128: 20 };
+    b.buf = Object.assign(b.buf, { fana: 0, frenzy: 30, stacks: 5, incHard: 10 });
+    b.aur.bc = 25;
+    b.g.ds = 30;
+    return [a, b];
+  }
+
+  /* builds to start from ("Start from…" on each card), there to be changed to the player's own. Since 2026-11-20 (the
+     author: the IAS Calculator's presets "the same way") the most played Season 14 attack builds of characters level
+     80-99 whose damage this page works out, softcore and hardcore (pd2.tools' builds data, characters with their gear
+     read): each build's most used weapon (the IAS Calculator's pick) with the median of what the characters holding it
+     have on it (its own enhanced damage with what is socketed, its flat and per-level damage at their level, its IAS),
+     strength and dexterity as the character screen shows them, the median of the rest of their gear and charms
+     (enhanced damage, flat damage, IAS; deadly strike, crushing blow and critical strike with the weapons' own added),
+     the attack's median level with +skills, its synergies' base points and the masteries, and the auras and buffs
+     more than 55% of them have (a Paladin's Fanaticism, a Barbarian's Battle Command, an Act 5 mercenary's Might).
+     Since 2026-11-21 (chance to hit) also the median character level, attack rating and attack rating % on gear and
+     charms (per-level attack rating at their level), attack rating and damage against demons / undead (Tomb Reaver's,
+     Immortal King's Stone Crusher's, arrows'), -% target
+     defense, Lycanthropy's and Penetrate's levels with +
+     skills (43-115 characters a build; Ignore Target's Defense on 0-14% of them: left off).
+     Left out: the attacks this page doesn't work out (Vengeance, Rabies, Lightning Fury, Blades of Ice) or only times
+     (Smite, Dragon Talon), and Dragon Claw (almost never the main attack). */
+  function presetBuild(name, cls, set) {
+    const b = Object.assign(DEFAULT_BUILD(), { name, cls });
+    Object.assign(b.g, { ias: 0, ed: 0, min: 0, max: 0, crit: 0, cmult: 0, ds: 0, maxds: 0, dsmult: 0, cb: 0, cbe: 0, pierce: 0 });
+    Object.assign(b.buf, { fana: 0, fanaSelf: true });
+    b.o.on = false;
+    b.m = {};
+    for (const [k, v] of Object.entries(set)) Object.assign(b[k], v);
+    return b;
+  }
+  const PRESETS = [
+    ["zeal", "Zeal Paladin, Death Cleaver Berserker Axe", () => presetBuild("Zeal", "pal", {
+      c: { str: 204, dex: 164, lvl: 91 },
+      w: { cat: "axe1", code: "7wa", eth: false, hand: "d1", ed: 435, min: 28, max: 0, ias: 40 },
+      g: { ias: 20, ed: 193, min: 1, max: 5, ds: 57, cb: 15, ar: 539, arp: 10, tdef: 33 },
+      s: { k: "zeal", lvl: 27, syn: { Sacrifice: 20 } },
+      buf: { fana: 25, fanaSelf: true },
+    })],
+    ["sacrifice", "Sacrifice Paladin, Schaefer's Hammer Legendary Mallet", () => presetBuild("Sacrifice", "pal", {
+      c: { str: 219, dex: 164, lvl: 90 },
+      w: { cat: "ham1", code: "7wh", eth: false, hand: "d1", ed: 255, min: 0, max: 182, ias: 55 },
+      g: { ias: 20, ed: 278, min: 7, max: 4, cb: 5, ar: 1065, arp: 116 },
+      s: { k: "sacrifice", lvl: 28, syn: { Fanaticism: 20, Redemption: 20 } },
+      buf: { fana: 26, fanaSelf: true },
+    })],
+    ["frenzy", "Frenzy Barbarian, Doombringer Champion Sword and The Grandfather Colossus Blade", () => presetBuild("Frenzy", "bar", {
+      c: { str: 238, dex: 141, lvl: 90 },
+      w: { cat: "swd2", code: "7b7", eth: false, hand: "d1", ed: 285, min: 120, max: 150, ias: 0 },
+      o: { on: true, cat: "swd2", code: "7gd", eth: false, hand: "d1", ed: 369, min: 0, max: 228, ias: 0 },
+      g: { ias: 20, ed: 68, min: 0, max: 4, ar: 603, arp: 60 },
+      s: { k: "frenzy", lvl: 27, syn: { "Double Swing": 20, Stun: 20 } },
+      m: { 128: 20 },
+      aur: { bc: 10 },
+      buf: { frenzy: 27, stacks: 5, incHard: 1 },
+    })],
+    ["dthrow", "Double Throw Barbarian, two Warshrike Winged Knives", () => presetBuild("Double Throw", "bar", {
+      c: { str: 200, dex: 194, lvl: 90 },
+      w: { cat: "tkni", code: "7bk", eth: false, hand: "d1", ed: 430, min: 0, max: 0, ias: 30 },
+      o: { on: true, cat: "tkni", code: "7bk", eth: false, hand: "d1", ed: 455, min: 0, max: 0, ias: 30 },
+      g: { ias: 30, ed: 212, min: 8, max: 13, crit: 60, cmult: 60, ds: 19, cb: 15, ar: 467, arp: 20 },
+      s: { k: "doublethrow", lvl: 26, syn: { "Double Swing": 20, Frenzy: 20 } },
+      m: { 135: 25 },
+      aur: { might: 18, mightSelf: false, bc: 13 },
+      buf: { incHard: 1 },
+    })],
+    ["ww", "Whirlwind Barbarian, Immortal King's Stone Crusher Ogre Maul", () => presetBuild("Whirlwind", "bar", {
+      c: { str: 259, dex: 127, lvl: 88 },
+      w: { cat: "ham2", code: "7m7", eth: false, hand: "d1", ed: 258, min: 0, max: 0, ias: 45 },
+      g: { ias: 20, ed: 127, ds: 19, cb: 41, ar: 512, edd: 176, edu: 154 },
+      s: { k: "whirlwind", lvl: 25, syn: {} },
+      m: { 134: 20 },
+      aur: { might: 18, mightSelf: false, bc: 24 },
+      buf: { incHard: 1 },
+    })],
+    ["fury", "Fury Druid as a werewolf, Tomb Reaver Cryptic Axe", () => presetBuild("Fury", "dru", {
+      c: { str: 228, dex: 111, lvl: 89 },
+      w: { cat: "pole", code: "7pa", eth: false, hand: "d1", ed: 394, min: 0, max: 0, ias: 155 },
+      g: { ias: 10, ed: 130, ds: 33, cb: 15, ar: 462, arp: 121, aru: 295, edu: 189 },
+      s: { k: "fury", lvl: 31, syn: { "Feral Rage": 20 } },
+      aur: { wolv: 20 },
+      buf: { were: 30, lyc: 32 },
+    })],
+    ["mshot", "Multiple Shot Amazon, Windforce Hydra Bow", () => presetBuild("Multiple Shot", "ama", {
+      c: { str: 200, dex: 259, lvl: 91 },
+      w: { cat: "bow", code: "6lw", eth: false, hand: "d1", ed: 460, min: 0, max: 188, ias: 40 },
+      g: { ias: 50, ed: 261, min: 9, max: 39, ds: 36, cb: 25, ar: 558, edd: 90 },
+      s: { k: "multishot", lvl: 24, syn: {} },
+      m: { 9: 23, 23: 20, penLvl: 25 },
+    })],
+    ["strafe", "Strafe Amazon, Demon Machine Demon Crossbow", () => presetBuild("Strafe", "ama", {
+      c: { str: 155, dex: 184, lvl: 85 },
+      w: { cat: "xbow", code: "6rx", eth: false, hand: "d1", ed: 461, min: 0, max: 2, ias: 0 },
+      g: { ias: 20, ed: 73, min: 4, max: 15, ar: 847, arp: 10 },
+      s: { k: "strafe", lvl: 25, syn: {} },
+      m: { 9: 21, 23: 20, penLvl: 23 },
+    })],
+    ["jab", "Jab Amazon, Stoneraven Matriarchal Spear", () => presetBuild("Jab", "ama", {
+      c: { str: 162, dex: 177, lvl: 90 },
+      w: { cat: "aspe", code: "amd", eth: false, hand: "d1", ed: 437, min: 0, max: 0, ias: 115 },
+      g: { ias: 40, ed: 78, ar: 401 },
+      s: { k: "jab", lvl: 30, syn: { Fend: 20 } },
+      m: { 19: 30, 9: 14, 23: 20, penLvl: 24 },
+    })],
+  ];
+
+  function save() {
+    try { localStorage.setItem(STORE, JSON.stringify({ builds, target })); } catch (e) { /* storage blocked */ }
+  }
+  function load() {
+    const fromHash = /[#&]v=([^&]+)/.exec(location.hash || "");
+    if (fromHash) {
+      try {
+        const v = JSON.parse(decodeURIComponent(escape(atob(fromHash[1]))));
+        /* from here on the builds are kept in this browser, so the link's builds leave the address: a reload keeps
+           the changes made since (until 2026-11-13 every reload went back to the link's builds) */
+        try { history.replaceState(null, "", location.pathname + location.search); } catch (e) { /* no history */ }
+        return v;
+      } catch (e) { /* a broken link */ }
+    }
+    try { return JSON.parse(localStorage.getItem(STORE) || "null"); } catch (e) { return null; }
+  }
+  function sanitize(x) {
+    const d = DEFAULT_BUILD();
+    const merge = (base, over) => { const o = Object.assign({}, base); for (const k of Object.keys(base)) if (over && over[k] !== undefined) o[k] = (base[k] && typeof base[k] === "object" && !Array.isArray(base[k])) ? merge(base[k], over[k]) : over[k]; return o; };
+    const b = merge(d, x || {});
+    b.m = Object.assign({}, (x && x.m) || {});
+    b.s.syn = Object.assign({}, (x && x.s && x.s.syn) || {});
+    // Penetrate's base points are one field, the Amazon's (Strafe asked them twice, as a synergy too)
+    if (b.s.syn.Penetrate !== undefined) { if (!(+b.m[23] > 0)) b.m[23] = +b.s.syn.Penetrate || 0; delete b.s.syn.Penetrate; }
+    if (!CLS[b.cls]) b.cls = "pal";
+    if (!W[b.w.code]) b.w.code = "7cr";
+    if (!W[b.o.code]) b.o.code = "7cr";
+    if (!ATT[b.s.k]) b.s.k = "attack";
+    if (!CURSES[b.deb.curse]) b.deb.curse = "none";
+    return b;
+  }
+
+  // ================================================================== building the inputs
+  const num = (v, lo, hi) => { const n = Math.round(+v); return Number.isFinite(n) ? clamp(n, lo, hi) : lo; };
+  function el(tag, attrs, parent, text) {
+    const e = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs || {})) {
+      if (k === "class") e.className = v; else if (k === "html") e.innerHTML = v; else if (v !== undefined && v !== null && v !== false) e.setAttribute(k, v === true ? "" : v);
+    }
+    if (text !== undefined) e.textContent = text;
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+  /* a field is a label, its input and a hint (empty or not): three rows of its line's grid, so a line's inputs stay
+     level whatever their labels wrap to */
+  let uid = 0;
+  function numField(parent, label, get, set, lo, hi, opts) {
+    const f = el("div", { class: "field" + (opts && opts.wide ? " wide" : ""), "data-path": opts && opts.path }, parent);
+    const id = "dm-f" + (++uid);
+    el("label", { for: id }, f, label);
+    const i = el("input", { type: "number", id, min: lo, max: hi, step: 1 }, f);
+    i.value = get();
+    i.addEventListener("input", () => { set(num(i.value, lo, hi)); update(); });
+    el("small", {}, f, (opts && opts.hint) || "");
+    return i;
+  }
+  function selField(parent, label, options, get, set, opts) {
+    const f = el("div", { class: "field" + (opts && opts.wide ? " wide" : "") + (opts && opts.full ? " full" : ""), "data-path": opts && opts.path }, parent);
+    const id = "dm-f" + (++uid);
+    el("label", { for: id }, f, label);
+    const s = el("select", { id }, f);
+    for (const o of options) {
+      if (o.group) { const g = el("optgroup", { label: o.group }, s); for (const x of o.items) el("option", { value: x.value }, g, x.label); }
+      else el("option", { value: o.value }, s, o.label);
+    }
+    s.value = get();
+    s.addEventListener("change", () => { set(s.value); update(true); });
+    el("small", {}, f, (opts && opts.hint) || "");
+    return s;
+  }
+  function checkField(parent, label, get, set, opts) {
+    const f = el("div", { class: "field" + (opts && opts.wide ? " wide" : ""), "data-path": opts && opts.path }, parent);
+    const title = (opts && opts.title) || "";
+    el("span", { class: "lab", "aria-hidden": "true" }, f, title);
+    const l = el("label", { class: "check" }, f);
+    const off = !!(opts && opts.disabled);
+    const c = el("input", { type: "checkbox", disabled: off, "aria-label": title ? `${title}: ${label}` : undefined }, l);
+    c.checked = !off && !!get();
+    l.append(" " + label);
+    c.addEventListener("change", () => { set(c.checked); update(true); });
+    el("small", {}, f, (opts && opts.hint) || "");
+    return c;
+  }
+  function weaponOptions(cat) {
+    const out = [];
+    for (const t of ["N", "X", "E"]) {
+      const ws = DATA.weapons.filter(w => w.cat === cat && w.tier === t);
+      if (ws.length) out.push({ group: TIER[t], items: ws.map(w => { const d = w.d2 && !w.d1 ? w.d2 : (w.d1 || w.d2 || w.dt); return { value: w.code, label: `${w.name} (${d[0]}–${d[1]})` }; }) });
+    }
+    return out;
+  }
+  function catOptions(cls) {
+    return DATA.cats.filter(c => DATA.weapons.some(w => w.cat === c.key)).map(c => ({ value: c.key, label: c.label }));
+  }
+  function attacksFor(cls) {
+    return DATA.attacks.filter(a => !a.cls || a.cls === cls);
+  }
+  const SECTIONS_OPEN = { char: true, weapon: true, off: false, gear: false, skill: true, aura: false, deb: false };
+
+  /* a weapon's fields, in the same lines on every card: what it is; ethereal and the hands; what is on it */
+  function weaponFields(body, b, x, isOff) {
+    const p = isOff ? "o." : "w.";
+    const l1 = line(body);
+    selField(l1, "Kind", catOptions(b.cls), () => x.cat, v => { x.cat = v; const first = DATA.weapons.filter(w => w.cat === v && w.tier === "E")[0] || DATA.weapons.find(w => w.cat === v); x.code = first.code; x.hand = "d1"; renderBuilds(); }, { wide: true, path: p + "cat" });
+    selField(l1, "Base", weaponOptions(x.cat), () => x.code, v => { x.code = v; renderBuilds(); }, { wide: true, path: p + "code" });
+    const w = W[x.code];
+    const l2 = line(body);
+    checkField(l2, w && w.eth ? "5/4 base damage" : "Can’t be ethereal", () => x.eth, v => { x.eth = v; }, { title: "Ethereal", path: p + "eth", disabled: !(w && w.eth) });
+    if (w && w.d1 && w.d2 && !isOff && b.cls === "bar") selField(l2, "Held in", [{ value: "d1", label: `One hand ${w.d1[0]}–${w.d1[1]}` }, { value: "d2", label: `Two hands ${w.d2[0]}–${w.d2[1]}` }], () => x.hand, v => { x.hand = v; }, { path: p + "hand", wide: true });
+    const l3 = line(body);
+    numField(l3, "Enhanced damage %", () => x.ed, v => { x.ed = v; }, 0, 2000, { hint: "Its own, superior, sockets", path: p + "ed" });
+    numField(l3, "+ Min damage", () => x.min, v => { x.min = v; }, 0, 999, { path: p + "min" });
+    numField(l3, "+ Max damage", () => x.max, v => { x.max = v; }, 0, 999, { path: p + "max" });
+    numField(l3, "IAS on it", () => x.ias, v => { x.ias = v; }, 0, 200, { path: p + "ias" });
+    const facts = [];
+    if (w && w.wsm) facts.push(`Weapon speed ${w.wsm > 0 ? "+" + w.wsm : "\u2212" + -w.wsm}`);
+    if (w && w.sb) facts.push(`Strength bonus ${w.sb / 100} per point`);
+    if (w && w.db) facts.push(`Dexterity bonus ${w.db / 100} per point`);
+    if (facts.length) el("p", { class: "note" }, body, facts.join(", "));
+  }
+  /* a card's section: its summary line (the inputs, then what they make) and its body; refs keeps both for fillCards.
+     Opening or closing it does the same in every card, so the cards' rows stay level. */
+  function section(card, key, title, refs) {
+    const d = el("details", { class: "sec", "data-sec": key }, card);
+    d.open = SECTIONS_OPEN[key];
+    d.addEventListener("toggle", () => {
+      SECTIONS_OPEN[key] = d.open;
+      $("dm-builds").querySelectorAll(`details.sec[data-sec="${key}"]`).forEach(x => { if (x.open !== d.open) x.open = d.open; });
+    });
+    const s = el("summary", {}, d);
+    el("span", { class: "ttl" }, s, title);
+    refs.sum[key] = el("span", { class: "sum" }, s);
+    refs.sec[key] = d;
+    return el("div", { class: "sec-body" }, d);
+  }
+  /* a line of fields: a new line starts a new row on every card */
+  const line = body => el("div", { class: "fields" }, body);
+  /* the line under a section's fields that says what they make (the sheet's "Weapon damage" under the weapon) */
+  const subtotal = (body, refs, key) => { refs.sub[key] = el("p", { class: "subtotal", "aria-live": "polite" }, body); };
+
+  /* the control that had the focus before the cards are drawn again (a select that changes a card's fields), to
+     give it back */
+  function focusKey() {
+    const a = document.activeElement, box = $("dm-builds");
+    if (!a || !box.contains(a)) return null;
+    const card = a.closest(".build"), host = a.closest("[data-path], [data-focus]");
+    if (!card || !host) return null;
+    const sel = host.dataset.path !== undefined ? `[data-path="${CSS.escape(host.dataset.path)}"]` : `[data-focus="${host.dataset.focus}"]`;
+    return { i: [...box.children].indexOf(card), sel };
+  }
+  function refocus(k) {
+    if (!k) return;
+    const card = $("dm-builds").children[k.i];
+    const host = card && (card.querySelector(k.sel) || card.querySelector('[data-focus="start"]'));
+    const c = host && (host.matches("input, select, button") ? host : host.querySelector("input, select, button"));
+    if (c) c.focus();
+  }
+
+  let cardRefs = [];
+  function renderBuilds() {
+    const box = $("dm-builds"), fk = focusKey();
+    box.innerHTML = "";
+    cardRefs = [];
+    root.style.setProperty("--n", builds.length);
+    root.dataset.n = builds.length;  // the cards go two a row where n cards would be too narrow (the CSS container queries)
+    const anyDual = builds.some(x => DUAL[x.cls]);
+    builds.forEach((b, i) => {
+      const refs = { sum: {}, sub: {}, sec: {} };
+      cardRefs.push(refs);
+      const card = el("article", { class: "build" + (i === shown ? " shown" : ""), "aria-label": `Build ${LETTERS[i]}` }, box);
+      card.style.setProperty("--key", KEYS[i]);
+      refs.card = card;
+      const head = el("div", { class: "build-head" }, card);
+      const h = el("h3", {}, head);
+      el("span", { class: "key" }, h);
+      const nm = el("input", { type: "text", class: "bname", "aria-label": `Name of build ${LETTERS[i]}`, maxlength: 30, "data-focus": "name" }, h);
+      nm.value = b.name || `Build ${LETTERS[i]}`;
+      nm.addEventListener("input", () => { b.name = nm.value; update(); });
+      const start = el("select", { "aria-label": `Start build ${LETTERS[i]} from an example`, "data-focus": "start" }, head);
+      el("option", { value: "" }, start, "Start from…");
+      for (const [k, label] of PRESETS) el("option", { value: k }, start, label);
+      start.addEventListener("change", () => {
+        const p = PRESETS.find(x => x[0] === start.value);
+        if (!p) return;
+        undo = { i, b: JSON.parse(JSON.stringify(b)) };
+        builds[i] = sanitize(p[2]());
+        renderBuilds();
+      });
+      if (undo && undo.i === i) {
+        const u = el("button", { type: "button", "data-focus": "undo", title: "Back to this build as it was before Start from" }, head, "Undo");
+        u.addEventListener("click", () => { builds[i] = undo.b; undo = null; renderBuilds(); });
+      }
+      const copy = el("select", { "aria-label": "Copy this build", "data-focus": "copy" }, head);
+      el("option", { value: "" }, copy, "Copy to…");
+      builds.forEach((_, j) => { if (j !== i) el("option", { value: j }, copy, `Build ${LETTERS[j]}`); });
+      if (builds.length < 4) el("option", { value: "new" }, copy, "A new build");
+      copy.addEventListener("change", () => {
+        const c = JSON.parse(JSON.stringify(b));
+        if (copy.value === "new") { c.name = ""; builds.push(c); shown = builds.length - 1; }
+        else if (copy.value !== "") { c.name = builds[+copy.value].name; builds[+copy.value] = c; }
+        undo = null;
+        renderAll();
+      });
+      if (builds.length > 1) {
+        const rm = el("button", { type: "button", "aria-label": `Remove build ${LETTERS[i]}` }, head, "Remove");
+        rm.addEventListener("click", () => { builds.splice(i, 1); shown = Math.min(shown, builds.length - 1); undo = null; renderAll(); });
+      }
+      // character
+      const cb = section(card, "char", "Character", refs);
+      const c1 = line(cb);
+      selField(c1, "Class", DATA.classes.map(x => ({ value: x.code, label: x.name })), () => b.cls, v => { b.cls = v; if (!attacksFor(v).some(a => a.k === b.s.k)) b.s.k = "attack"; renderBuilds(); }, { wide: true, path: "cls" });
+      numField(c1, "Strength", () => b.c.str, v => { b.c.str = v; }, 0, 2000, { path: "c.str" });
+      numField(c1, "Dexterity", () => b.c.dex, v => { b.c.dex = v; }, 0, 2000, { path: "c.dex" });
+      numField(c1, "Level", () => b.c.lvl, v => { b.c.lvl = v; }, 1, 99, { hint: "Character level: chance to hit", path: "c.lvl" });
+      subtotal(cb, refs, "char");
+      // weapon
+      const wb = section(card, "weapon", "Weapon", refs);
+      weaponFields(wb, b, b.w, false);
+      subtotal(wb, refs, "weapon");
+      // second weapon: a row on every card while any build's class can hold two, so the rows stay level
+      if (DUAL[b.cls]) {
+        const ob = section(card, "off", "Second weapon", refs);
+        checkField(line(ob), "A weapon in each hand", () => b.o.on, v => { b.o.on = v; renderBuilds(); }, { title: "Dual wield", wide: true, path: "o.on" });
+        if (b.o.on) weaponFields(ob, b, b.o, true);
+        subtotal(ob, refs, "off");
+      } else if (anyDual) {
+        const ph = el("div", { class: "sec-none" }, card);
+        el("span", {}, ph, "Second weapon");
+        el("span", { class: "sum" }, ph, "Barbarians and Assassins only");
+      } else el("div", { class: "sec-gap", "aria-hidden": "true" }, card);
+      // other gear
+      const gb = section(card, "gear", "Other gear", refs);
+      const g1 = line(gb);
+      numField(g1, "IAS", () => b.g.ias, v => { b.g.ias = v; }, 0, 400, { path: "g.ias" });
+      numField(g1, "Enhanced damage %", () => b.g.ed, v => { b.g.ed = v; }, 0, 2000, { hint: "Off the weapon", path: "g.ed" });
+      numField(g1, "+ Min damage", () => b.g.min, v => { b.g.min = v; }, 0, 999, { hint: "Rings, charms, jewels in armor", path: "g.min" });
+      numField(g1, "+ Max damage", () => b.g.max, v => { b.g.max = v; }, 0, 999, { path: "g.max" });
+      const g2 = line(gb);
+      numField(g2, "Critical strike %", () => b.g.crit, v => { b.g.crit = v; }, 0, 100, { path: "g.crit" });
+      numField(g2, "Crit multiplier %", () => b.g.cmult, v => { b.g.cmult = v; }, 0, 500, { path: "g.cmult" });
+      numField(g2, "Deadly strike %", () => b.g.ds, v => { b.g.ds = v; }, 0, 200, { path: "g.ds" });
+      numField(g2, "Max deadly strike %", () => b.g.maxds, v => { b.g.maxds = v; }, 0, 50, { path: "g.maxds" });
+      numField(g2, "DS multiplier %", () => b.g.dsmult, v => { b.g.dsmult = v; }, 0, 500, { path: "g.dsmult" });
+      const g3 = line(gb);
+      numField(g3, "Crushing blow %", () => b.g.cb, v => { b.g.cb = v; }, 0, 100, { path: "g.cb" });
+      numField(g3, "CB efficiency %", () => b.g.cbe, v => { b.g.cbe = v; }, 0, 500, { path: "g.cbe" });
+      numField(g3, "Physical pierce %", () => b.g.pierce, v => { b.g.pierce = v; }, 0, 100, { hint: "“to Enemy Physical Resistance”", path: "g.pierce" });
+      const g4 = line(gb);
+      numField(g4, "Attack rating", () => b.g.ar, v => { b.g.ar = v; }, 0, 50000, { hint: "On all gear, the weapon and charms too", path: "g.ar" });
+      numField(g4, "Attack rating %", () => b.g.arp, v => { b.g.arp = v; }, 0, 5000, { hint: "“Bonus to Attack Rating”", path: "g.arp" });
+      numField(g4, "−% Target defense", () => b.g.tdef, v => { b.g.tdef = v; }, 0, 200, { hint: "Half against bosses, superuniques, players", path: "g.tdef" });
+      checkField(g4, "Has it", () => b.g.itd, v => { b.g.itd = v; }, { title: "Ignore Target’s Defense", hint: "Not against uniques, bosses, players", path: "g.itd" });
+      const g5 = line(gb);
+      numField(g5, "Attack rating vs demons", () => b.g.ard, v => { b.g.ard = v; }, 0, 50000, { hint: "Per-level items at your level too", path: "g.ard" });
+      numField(g5, "Attack rating vs undead", () => b.g.aru, v => { b.g.aru = v; }, 0, 50000, { path: "g.aru" });
+      numField(g5, "Damage vs demons %", () => b.g.edd, v => { b.g.edd = v; }, 0, 5000, { hint: "When the monster is one", path: "g.edd" });
+      numField(g5, "Damage vs undead %", () => b.g.edu, v => { b.g.edu = v; }, 0, 5000, { hint: "Blunt weapons add 50 in melee", path: "g.edu" });
+      subtotal(gb, refs, "gear");
+      // skill
+      const att = ATT[b.s.k] || ATT.attack;
+      const sb = section(card, "skill", "Skill", refs);
+      const s1 = line(sb);
+      selField(s1, "Attack", attacksFor(b.cls).map(a => ({ value: a.k, label: a.label + (a.frames_only ? " (speed only)" : "") })), () => b.s.k, v => { b.s.k = v; renderBuilds(); }, { wide: true, path: "s.k" });
+      if (att.id && (att.dmg || att.hits || att.k === "berserk")) numField(s1, "Skill level", () => b.s.lvl, v => { b.s.lvl = v; }, 1, MAX_LVL, { hint: "With + skills", path: "s.lvl" });
+      // its synergies, but a class mastery asked below (Penetrate: Strafe's synergy and the Amazon's pierce)
+      const mast = MAST[b.cls] || [], mastNames = new Set(mast.map(id => SK[id] && SK[id].skill));
+      const syns = new Set();
+      for (const col of [att.dmg, att.hits].filter(Boolean)) for (const name of Calc.synergies(att.id, col)) if (!mastNames.has(name)) syns.add(name);
+      for (const name of syns) numField(s1, `${name} (synergy)`, () => b.s.syn[name] || 0, v => { b.s.syn[name] = v; }, 0, 20, { hint: "Base points", path: "s.syn." + name });
+      // a skill with a cooldown items shorten (Joust: Alma Negra, Leoric's Mithril Bane, Zerae's Resolve), the ones this
+      // class can use (the IAS Calculator's engine counts the cooldown, from the attack's release)
+      const csk = att.id ? IAS.SKILL[att.id] : null, cdIt = csk && csk.cdr ? csk.cdr.filter(x => !x[2] || x[2] === b.cls) : [];
+      if (cdIt.length) {
+        if (b.s.cdr && !cdIt.some(x => x[0] === b.s.cdr)) b.s.cdr = "";
+        selField(s1, "Cooldown shortened by", [{ value: "", label: "Nothing" }].concat(cdIt.map(x => ({ value: x[0], label: `${x[0]} (${x[1]} frames less)` }))),
+          () => b.s.cdr || "", v => { b.s.cdr = v; }, { wide: true, path: "s.cdr", hint: "An item you hold or wear" });
+      }
+      if (mast.length) {
+        const s2 = line(sb);
+        for (const id of mast) {
+          const hint = id === 23 ? (att.k === "strafe" ? "Base points: pierce, Strafe’s synergy" : "Base points (pierce)") : "Level";
+          numField(s2, Calc.name(id), () => b.m[id] || 0, v => { b.m[id] = v; }, 0, MAX_LVL, { hint, path: "m." + id });
+          if (id === 23) numField(s2, "Penetrate level", () => b.m.penLvl || 0, v => { b.m.penLvl = v; }, 0, MAX_LVL, { hint: "With + skills: its attack rating", path: "m.penLvl" });
+        }
+      }
+      if (att.frames_only) el("p", { class: "note" }, sb, "Its frames per attack are shown; its damage isn’t worked out yet.");
+      if (att.k === "charge") el("p", { class: "note" }, sb, "Damage per second and kill time count Charge’s strikes back to back: the run before each strike isn’t counted.");
+      subtotal(sb, refs, "skill");
+      // auras and buffs
+      const ab = section(card, "aura", "Auras and buffs", refs);
+      const a1 = line(ab);
+      numField(a1, "Might", () => b.aur.might, v => { b.aur.might = v; }, 0, MAX_LVL, { path: "aur.might" });
+      checkField(a1, "Your own", () => b.aur.mightSelf, v => { b.aur.mightSelf = v; }, { title: "Might from", path: "aur.mightSelf" });
+      numField(a1, "Concentration", () => b.aur.conc, v => { b.aur.conc = v; }, 0, MAX_LVL, { path: "aur.conc" });
+      checkField(a1, "Your own", () => b.aur.concSelf, v => { b.aur.concSelf = v; }, { title: "Concentration from", path: "aur.concSelf" });
+      numField(a1, "Fanaticism", () => b.buf.fana, v => { b.buf.fana = v; }, 0, MAX_LVL, { hint: "Also its attack speed", path: "buf.fana" });
+      checkField(a1, "Your own", () => b.buf.fanaSelf, v => { b.buf.fanaSelf = v; }, { title: "Fanaticism from", path: "buf.fanaSelf" });
+      const a2 = line(ab);
+      numField(a2, "Blessed Aim", () => b.aur.ba, v => { b.aur.ba = v; }, 0, MAX_LVL, { hint: "Deadly strike", path: "aur.ba" });
+      numField(a2, "Battle Command", () => b.aur.bc, v => { b.aur.bc = v; }, 0, MAX_LVL, { path: "aur.bc" });
+      numField(a2, "Grim Ward", () => b.aur.grim, v => { b.aur.grim = v; }, 0, MAX_LVL, { path: "aur.grim" });
+      numField(a2, "Heart of Wolverine", () => b.aur.wolv, v => { b.aur.wolv = v; }, 0, MAX_LVL, { path: "aur.wolv" });
+      if (b.cls === "pal") {
+        const a3 = line(ab);
+        checkField(a3, "Your own", () => b.aur.baSelf, v => { b.aur.baSelf = v; renderBuilds(); }, { title: "Blessed Aim from", path: "aur.baSelf" });
+        if (b.aur.baSelf) numField(a3, "Its base points", () => b.aur.baHard, v => { b.aur.baHard = v; }, 0, 20, { hint: "Yours: −% target defense", path: "aur.baHard" });
+        selField(a3, "Holy aura", [{ value: "", label: "None" }].concat(Object.entries(HOLY).map(([k, h]) => ({ value: k, label: h[1] }))), () => b.buf.holy || "", v => { b.buf.holy = v; renderBuilds(); }, { path: "buf.holy", hint: "Your own: its attack rating" });
+        if (HOLY[b.buf.holy]) numField(a3, "Its level", () => b.buf.holyLvl, v => { b.buf.holyLvl = v; }, 0, MAX_LVL, { path: "buf.holyLvl" });
+      }
+      if (b.cls === "bar" || b.cls === "ass" || b.cls === "dru") {
+        const a3 = line(ab);
+        if (b.cls === "bar") {
+          numField(a3, "Frenzy (its buff)", () => b.buf.frenzy, v => { b.buf.frenzy = v; }, 0, MAX_LVL, { hint: "Attack speed while it lasts", path: "buf.frenzy" });
+          numField(a3, "Frenzy stacks", () => b.buf.stacks, v => { b.buf.stacks = v; }, 0, 5, { path: "buf.stacks" });
+          numField(a3, "Increased Speed", () => b.buf.incHard, v => { b.buf.incHard = v; }, 0, 20, { hint: "Base points: +2% IAS each", path: "buf.incHard" });
+        }
+        if (b.cls === "ass") {
+          numField(a3, "Burst of Speed", () => b.buf.bos, v => { b.buf.bos = v; }, 0, MAX_LVL, { path: "buf.bos" });
+          numField(a3, "Its base points", () => b.buf.bosHard, v => { b.buf.bosHard = v; }, 0, 20, { hint: "Its attack speed comes from these", path: "buf.bosHard" });
+        }
+        if (b.cls === "dru") {
+          numField(a3, "Werewolf", () => b.buf.were, v => { b.buf.were = v; }, 0, MAX_LVL, { hint: "Wolf attacks", path: "buf.were" });
+          numField(a3, "Werebear", () => b.buf.bear, v => { b.buf.bear = v; }, 0, MAX_LVL, { hint: "Bear attacks", path: "buf.bear" });
+          numField(a3, "Maul charges", () => b.buf.maul, v => { b.buf.maul = v; }, 0, 20, { hint: "Bear attacks", path: "buf.maul" });
+          numField(a3, "Lycanthropy", () => b.buf.lyc, v => { b.buf.lyc = v; }, 0, MAX_LVL, { hint: "A wereform’s attack rating", path: "buf.lyc" });
+        }
+      }
+      subtotal(ab, refs, "aura");
+      // curses and debuffs: what the build itself puts on the monster (onMonster: they replace the party's, the monster's
+      // fields), so a Barbarian's Battle Cry no longer counts for the Paladin beside him
+      const db = section(card, "deb", "Curses and debuffs", refs);
+      const d1 = line(db);
+      selField(d1, "Your curse", [{ value: "none", label: "None" }].concat(Object.entries(CURSES).map(([k, n]) => ({ value: k, label: n }))),
+        () => b.deb.curse, v => { b.deb.curse = v; renderBuilds(); }, { wide: true, path: "deb.curse", hint: "Your own, charges or on striking" });
+      if (CURSES[b.deb.curse]) numField(d1, "Curse level", () => b.deb.lvl, v => { b.deb.lvl = v; }, 0, MAX_LVL, { path: "deb.lvl" });
+      if (b.deb.curse === "amp" || b.deb.curse === "attract") numField(d1, "Curse Mastery", () => b.deb.curmas, v => { b.deb.curmas = v; }, 0, 20, { hint: "Base points", path: "deb.curmas" });
+      numField(d1, "Battle Cry", () => b.deb.bc, v => { b.deb.bc = v; }, 0, MAX_LVL, { hint: "Level; Call to Arms gives +1–3", path: "deb.bc" });
+      subtotal(db, refs, "deb");
+      // the card's totals: what everything above makes
+      refs.foot = el("div", { class: "build-foot", "aria-live": "polite" }, card);
+    });
+    const tabs = $("dm-tabs");
+    tabs.innerHTML = "";
+    builds.forEach((b, i) => {
+      const t = el("button", { type: "button", "aria-pressed": String(i === shown) }, tabs, b.name || `Build ${LETTERS[i]}`);
+      t.addEventListener("click", () => { shown = i; renderBuilds(); });
+    });
+    $("dm-add").disabled = builds.length >= 4;
+    $("dm-try").disabled = builds.length >= 4;
+    refocus(fk);
+    update(true);
+  }
+  function auraSummary(b) {
+    const p = [];
+    if (b.aur.might) p.push(`Might ${b.aur.might}`);
+    if (b.aur.conc) p.push(`Concentration ${b.aur.conc}`);
+    if (b.buf.fana) p.push(`Fanaticism ${b.buf.fana}`);
+    if (b.aur.bc) p.push(`BC ${b.aur.bc}`);
+    if (b.buf.frenzy) p.push(`Frenzy ${b.buf.frenzy}`);
+    if (b.buf.bos) p.push(`BoS ${b.buf.bos}`);
+    return p.join(", ") || "None";
+  }
+
+  // ================================================================== the monster
+  /* a monster's life in Hell: its table life, +70% for each player after the first (at most 8,388,607); Diablo Clone,
+     Rathma, Mendeln and Lucion: 3/2 of that at tier 0, 4 x (1 + tier / 5) at tiers 1 and 2 */
+  const MON = Object.fromEntries((DATA.targets || []).map(m => [m.k, m]));
+  const HP_PLAYERS = [0, 0, 70, 140, 210, 280, 350, 420, 490];
+  const MAX_LIFE = 8388607;
+  function presetLife(m, T) {
+    const base = Math.round((m.hp[0] + m.hp[1]) / 2);
+    let life = Math.min(base + Math.floor(base * HP_PLAYERS[clamp(+T.players || 1, 1, 8)] / 100), MAX_LIFE);
+    if (m.tier) {
+      const t = clamp(+T.tier || 0, 0, 2);
+      life = t === 0 ? Math.floor(life * 3 / 2) : life * 4 + Math.floor(life * 4 / 5) * t;
+    }
+    return Math.min(life, MAX_LIFE);
+  }
+  function applyPreset() {
+    const m = MON[target.preset];
+    if (!m) return;
+    target.kind = m.kind; target.res = m.res; target.life = presetLife(m, target); target.lvl = m.lvl; target.def = m.def; target.type = m.type || "";
+  }
+  function renderTarget() {
+    const box = $("dm-target"), a = document.activeElement;
+    // the field that had the focus (a select that redraws the fields), by its label
+    const was = a && box.contains(a) && a.closest(".field") ? a.closest(".field").querySelector("label").textContent : null;
+    box.innerHTML = "";
+    const T = target, m = MON[T.preset];
+    const groups = [];
+    for (const t of DATA.targets || []) {
+      let g = groups.find(x => x.group === t.g);
+      if (!g) groups.push(g = { group: t.g, items: [] });
+      g.items.push({ value: t.k, label: t.n });
+    }
+    const pick = selField(box, "Monster", [{ value: "", label: "Your own numbers" }].concat(groups), () => (m ? T.preset : ""), v => { T.preset = v; applyPreset(); renderTarget(); }, { wide: true });
+    let tierField = null;
+    if (m && m.tier) tierField = selField(box, "Tier", [0, 1, 2].map(t => ({ value: String(t), label: `Tier ${t}` })), () => String(T.tier || 0), v => { T.tier = +v; applyPreset(); renderTarget(); });
+    /* typing a monster's own life or resistance makes it "your own numbers" (without redrawing the field being typed in) */
+    const own = () => { if (T.preset) { T.preset = ""; pick.value = ""; if (tierField) tierField.closest(".field").hidden = true; } };
+    // kinds: crushing blow's share (a unique's and a superunique's as a monster's) and, for the hit check, Ignore Target's
+    // Defense (a normal monster, champion or minion only) and -% target defense (halved against a superunique, a boss, a player)
+    selField(box, "Kind", [{ value: "monster", label: "Monster, champion or minion" }, { value: "unique", label: "Unique monster" }, { value: "superunique", label: "Superunique" }, { value: "mapboss", label: "Map boss" }, { value: "boss", label: "Other boss (act bosses, ubers)" }, { value: "player", label: "Player" }], () => T.kind, v => { T.kind = v; own(); }, { wide: true });
+    selField(box, "Type", [{ value: "", label: "Neither" }, { value: "demon", label: "Demon" }, { value: "undead", label: "Undead" }], () => T.type || "", v => { T.type = v; own(); }, { hint: "Attack rating vs demons / undead" });
+    numField(box, "Level", () => T.lvl, v => { T.lvl = v; own(); }, 1, 120, { hint: "Chance to hit" });
+    const lifeIn = numField(box, "Life", () => T.life, v => { T.life = v; own(); }, 1, 100000000);
+    numField(box, "Defense", () => T.def, v => { T.def = v; own(); }, 0, 1000000);
+    numField(box, "Physical resistance %", () => T.res, v => { T.res = v; own(); }, -100, 1000);
+    // the party's curse and Battle Cry: on every build, but a build's own (its card's Curses and debuffs) replaces them
+    selField(box, "Party’s curse", [{ value: "none", label: "None" }].concat(Object.entries(CURSES).map(([k, n]) => ({ value: k, label: n }))), () => T.curse, v => { T.curse = v; renderTarget(); }, { wide: true, hint: "Every build; a build’s own replaces it" });
+    if (CURSES[T.curse]) numField(box, `${CURSES[T.curse]} level`, () => T[T.curse], v => { T[T.curse] = v; }, 0, MAX_LVL);
+    if (T.curse === "amp" || T.curse === "attract") numField(box, "Curse Mastery points", () => T.curmas, v => { T.curmas = v; }, 0, 20);
+    numField(box, "Party’s Battle Cry", () => T.bc, v => { T.bc = v; }, 0, MAX_LVL, { hint: "Level; a build’s own replaces it" });
+    numField(box, "Conviction", () => T.conv, v => { T.conv = v; }, 0, MAX_LVL, { hint: "Level: a Paladin’s, Infinity on a mercenary" });
+    numField(box, "Inner Sight", () => T.inner, v => { T.inner = v; }, 0, MAX_LVL, { hint: "Level: an Amazon’s" });
+    numField(box, "Players in the game", () => T.players, v => { T.players = v; if (MON[T.preset]) { T.life = presetLife(MON[T.preset], T); lifeIn.value = T.life; } }, 1, 8, { hint: "Its life and crushing blow" });
+    if (was) {
+      const f = [...box.querySelectorAll(".field")].find(x => x.querySelector("label").textContent === was);
+      const c = f && f.querySelector("input, select");
+      if (c) c.focus();
+    }
+  }
+  const nfd = new Intl.NumberFormat("en-US", { maximumFractionDigits: 1 });
+  function targetNote() {
+    const T = target, m = MON[T.preset], out = [];
+    if (m) {
+      out.push(`${m.n}: level ${m.lvl}, ${nf0.format(T.life)} life in Hell with ${T.players} player${+T.players > 1 ? "s" : ""}${m.tier ? ` at tier ${T.tier || 0}` : ""}, physical resistance ${m.res}%, defense ${nf0.format(m.def)}${m.type ? `, ${m.type === "demon" ? "a demon" : "undead"}` : ""}.`);
+      // the crushing blow share with the players in the game (each after the first adds 1.4 to the divisor)
+      const div = cbDivisor(T, 1, 1, false), ranged = `a ranged attack’s 1/${nfd.format(div * 1.5)}`;
+      out.push(m.kind === "mapboss" ? `A crushing blow takes 1/${nfd.format(div)} of its life left (${ranged}).` : `A crushing blow takes 1/${nfd.format(div)} of its life left at full life (${ranged}), less as it loses life.`);
+      if (m.tier) out.push("Its phases, immunity, healing and helpers aren’t counted.");
+    }
+    const P = cursedRes(null, T), Dp = defenseOf(null, T), on = P.on;
+    const what = [on.curse ? `${CURSES[on.curse.kind]} ${on.curse.lvl}` : "", on.bc ? `Battle Cry ${on.bc.lvl}` : "", Dp.conv ? `Conviction ${Dp.conv.lvl}` : "", Dp.inner ? `Inner Sight ${Dp.inner.lvl}` : ""].filter(Boolean);
+    const andList = a => (a.length > 1 ? `${a.slice(0, -1).join(", ")} and ${a[a.length - 1]}` : a[0]);
+    out.push(what.length ? `After the party’s ${andList(what)}: physical resistance ${resPct(P.res)}${P.immune ? " (immune: curses and Battle Cry count half)" : ""}, defense ${numTxt(Dp.def)}. A build’s own curse or Battle Cry (Curses and debuffs on its card) replaces the party’s; its pierce and target defense lower them further.`
+      : "Each build’s own curse and Battle Cry (Curses and debuffs on its card), pierce and target defense lower its physical resistance and defense.");
+    return out.join(" ");
+  }
+  /* the monster in a line, for the strip at the bottom: its physical resistance and defense with the party's curse,
+     Battle Cry and Conviction (each build's own are on its card) */
+  function targetShort() {
+    const T = target, m = MON[T.preset];
+    const who = m ? `<b>${esc(m.n)}</b>${m.tier ? ` (tier ${T.tier || 0})` : ""}` : "<b>your monster</b>";
+    const bits = [`${nf0.format(T.life)} life`, `${resPct(cursedRes(null, T).res)} physical resistance`, `${numTxt(defenseOf(null, T).def)} defense`];
+    if (+T.players > 1) bits.push(`${T.players} players`);
+    return `Against ${who}: ${bits.join(", ")}`;
+  }
+
+  // ================================================================== output
+  let results = [];
+  let updTimer = 0;
+  function update(now) {
+    clearTimeout(updTimer);
+    updTimer = setTimeout(renderResults, now ? 0 : 60);
+  }
+  const fmt = (v, nf) => (v === undefined || v === null || !Number.isFinite(v) ? "—" : (nf || nf0).format(v));
+  const bname = i => builds[i].name || `Build ${LETTERS[i]}`;
+  function renderResults() {
+    results = builds.map(b => evaluate(b, target));
+    results.forEach(r => { r.next = nextBreakpoint(r); });
+    renderDock();
+    renderVerdict();
+    fillCards();
+    $("dm-target-note").textContent = targetNote();
+    renderTab(currentTab);
+    save();
+  }
+  /* the tab on show; the others are drawn when they show */
+  function renderTab(tab) {
+    if (tab === "side") renderSide();
+    else if (tab === "bp") renderBreakpoints();
+    else if (tab === "par") renderParity();
+    else if (tab === "prof") drawProfile();
+  }
+  /* every number behind each build's damage per second; the best of a row green, bold and marked with a diamond */
+  function renderSide() {
+    const tb = $("dm-results");
+    let h = "<thead><tr><th></th>" + results.map((r, i) => `<th><span class="key" style="background:${KEYS[i]}"></span>${esc(bname(i))}</th>`).join("") + "</tr></thead><tbody>";
+    const near = (a, b) => Math.abs(a - b) <= 1e-9 * Math.max(1, Math.abs(a), Math.abs(b));
+    const row = (label, f, cls, best) => {
+      let top = null;
+      if (best && results.length > 1) {
+        const vals = results.map(r => { const v = best.v(r); return v === null || v === undefined || !Number.isFinite(v) ? null : v; });
+        const ok = vals.filter(v => v !== null);
+        if (ok.length > 1) {
+          const t = best.low ? Math.min(...ok) : Math.max(...ok), u = best.low ? Math.max(...ok) : Math.min(...ok);
+          if (!near(t, u)) top = vals.map(v => v !== null && near(v, t));
+        }
+      }
+      h += `<tr class="${cls || ""}"><td>${label}</td>` + results.map((r, k) => (top && top[k] ? `<td class="best">${f(r)}<span class="sr-only"> (best)</span></td>` : `<td>${f(r)}</td>`)).join("") + "</tr>";
+    };
+    const group = label => { h += `<tr class="group"><td colspan="${results.length + 1}">${label}</td></tr>`; };
+    const dmg = get => r => (r.attack.frames_only ? null : get(r));
+    const secs = k => (k && !k.never ? k.secs : null);
+    group("Damage");
+    row("Weapon damage", r => r.per.map(p => `${p.wr.min}–${p.wr.max}`).join(" / "));
+    row("Damage bonus", r => `+${nf0.format(r.per[0].pct + r.per[0].off)}%<small>${pctParts(r)}</small>`);
+    row("Damage per hit", r => r.per.map(p => `${fmt(p.mn256 / 256)}–${fmt(p.mx256 / 256)}`).join(" / ") + (vsWord(r) ? `<small>${vsWord(r)}; character screen ${r.per.map(p => `${fmt(p.screen[0] / 256)}–${fmt(p.screen[1] / 256)}`).join(" / ")}</small>` : `<small>character screen, before crit</small>`));
+    row("Critical / deadly strike", r => `${fmt(r.crit.pc * 100, nf1)}% / ${fmt(r.crit.pd * 100, nf1)}%<small>&times;${nf2.format(r.crit.cm)} / &times;${nf2.format(r.crit.dm)}, +${fmt((r.mean - 1) * 100, nf1)}% on average</small>`);
+    row("Average hit", r => fmt(r.eff), "", { v: dmg(r => r.eff) });
+    row("Monster&rsquo;s physical resistance", r => `${resPct(r.R.res)}${resWords(r.R) ? `<small>${resWords(r.R)}</small>` : ""}`);
+    row("Average hit on the monster", r => fmt(r.final), "strong", { v: dmg(r => r.final) });
+    row("Crushing blow", r => r.cb.ch ? `${fmt(r.cb.ch * 100)}% of hits<small>${r.cb.share > 0 ? `each takes ${pct(r.cb.share)} of the life left${target.kind === "boss" ? " (at full life)" : ""}` : "none: immune"}${r.cb.cbe ? `, efficiency +${r.cb.cbe}%` : ""}</small>` : "—");
+    group("Hitting");
+    row("Attack rating", r => (r.attack.frames_only ? "—" : r.rolls ? `${arText(r)}<small>character screen${r.screen.ar !== r.per[0].AR.ar ? `: ${nf0.format(r.screen.ar)}` : ""}</small>` : "—<small>never misses</small>"));
+    row("Monster&rsquo;s defense", r => `${numTxt(r.D.def)}${defWords(r) ? `<small>${defWords(r)}</small>` : ""}`);
+    row("Chance to hit", r => (r.attack.frames_only ? "—" : r.rolls ? hitText(r) : "100%"), "", { v: dmg(r => r.toHit) });
+    group("Speed");
+    row("Frames per attack", r => r.fr ? `${frLabel(r.fr)}${r.fr.alt ? "<small>attack 1 / attack 2</small>" : madeOf(r.fr) > 1 ? `<small>${hitsWord(r.fr, ":")}</small>` : ""}` : "N/A");
+    row("Total attack speed", r => tasCell(r));
+    row("Next breakpoint", r => (!r.next ? "—" : r.next.capped ? "—<small>more IAS makes it no faster</small>" : `+${r.next.add}% IAS<small>on other gear: ${frLabel(r.next.fr)} frames, ${signed(r.next.gain)} damage per second</small>`));
+    row("Hits per second", r => r.fr ? fmt(r.hps, nf2) : "—", "", { v: r => (r.fr ? r.hps : null) });
+    group("Result");
+    row("Damage per second", r => r.fr && !r.attack.frames_only ? fmt(r.dps) : "—", "strong", { v: dmg(r => (r.fr ? r.dps : null)) });
+    const killCell = k => (k ? (k.never ? "Never" : `${nf1.format(k.secs)} s<small>${nf1.format(k.hits)} hits</small>`) : "—");
+    row("Kill time", r => killCell(r.kill), "strong", { v: r => secs(r.kill), low: true });
+    if (results.some(r => r.killNoCb)) row("Without crushing blow", r => (r.killNoCb ? killCell(r.killNoCb) : r.kill ? "the same" : "—"), "", { v: r => secs(r.killNoCb || r.kill), low: true });
+    if (results.length > 1) row(`Damage per second against ${esc(bname(0))}`, r => (r === results[0] ? "—" : r.dps && results[0].dps ? signed(r.dps / results[0].dps - 1) : "—"));
+    h += "</tbody>";
+    tb.innerHTML = h;
+  }
+  /* the strip at the bottom of the screen while the builds are being edited: the monster, then each build's damage
+     per second, kill time and why it differs from build A */
+  function renderDock() {
+    const dock = $("dm-dock");
+    dock.innerHTML = "";
+    const A = results[0];
+    const head = el("div", { class: "dk-head" }, dock);
+    el("span", { html: targetShort() }, head);
+    const ch = el("button", { type: "button", "aria-label": "Change the monster" }, head, "Change");
+    ch.addEventListener("click", () => {
+      $("dm-target-panel").scrollIntoView({ block: "start", behavior: "smooth" });
+      const s = $("dm-target").querySelector("select");
+      if (s) s.focus({ preventScroll: true });
+    });
+    results.forEach((r, i) => {
+      const t = el("div", { class: "dk" }, dock);
+      t.style.setProperty("--key", KEYS[i]);
+      el("span", { class: "dk-name" }, t, bname(i));
+      const v = el("span", { class: "dk-val" }, t);
+      if (r.attack.frames_only || !r.fr) v.textContent = r.fr ? `${frLabel(r.fr)} frames` : "—";
+      else v.innerHTML = `${nf0.format(r.dps)}<small> per second</small>`;
+      const sub = [];
+      if (r.kill) sub.push(r.kill.never ? "can’t kill it" : `kills in ${nf1.format(r.kill.secs)} s${r.attack.k === "charge" ? " (strikes only)" : ""}`);
+      if (i > 0 && r.dps && A.dps) {
+        const x = r.dps / A.dps - 1;
+        sub.push(`<span class="${x < -0.0005 ? "bad" : x > 0.0005 ? "good" : ""}">${signed(x)} vs ${esc(bname(0))}</span>`);
+      }
+      el("span", { class: "dk-sub", html: sub.join(" · ") }, t);
+      if (i > 0 && r.dps && A.dps && !r.attack.frames_only && !A.attack.frames_only) {
+        const f = factors(r, A, true);
+        if (f.length) el("span", { class: "dk-why" }, t, f.join(" · "));
+      }
+    });
+  }
+  /* damage per second = average hit x critical and deadly strikes x the monster's resistance x hits per second x the
+     chance to hit, so a build's difference from build A splits exactly into those five */
+  const FACTORS = [
+    [r => r.hit, "more per hit", "less per hit", "per hit"],
+    [r => r.mean, "more from critical and deadly strikes", "less from critical and deadly strikes", "crit and deadly strike"],
+    [r => r.R.mult, "more through the monster’s resistance", "less through the monster’s resistance", "through resistance"],
+    [r => r.toHit, "more of its hits land", "fewer of its hits land", "hits landing"],
+    [r => r.hps, "more hits per second", "fewer hits per second", "hits per second"],
+  ];
+  function factors(r, A, short) {
+    const out = [];
+    for (const [get, more, less, word] of FACTORS) {
+      const y = get(r) / get(A) - 1;
+      if (!Number.isFinite(y) || Math.abs(y) < 0.0005) continue;
+      out.push(short ? `${signed(y)} ${word}` : `${nf1.format(Math.abs(y) * 100)}% ${y > 0 ? more : less}`);
+    }
+    return out;
+  }
+  function renderVerdict() {
+    const box = $("dm-verdict"), A = results[0], an = esc(bname(0));
+    if (results.length < 2) {
+      box.innerHTML = `<p>Add a build, or press <b>Copy A, change one thing</b> to put a copy of ${an} beside it and change one thing: this says how much more or less damage the other builds do than ${an}, and why.</p>`;
+      return;
+    }
+    box.innerHTML = results.slice(1).map((r, k) => {
+      const i = k + 1, bn = `<b><span class="key" style="background:${KEYS[i]}"></span>${esc(bname(i))}</b>`;
+      if (r.attack.frames_only || A.attack.frames_only || !r.dps || !A.dps) {
+        const fo = r.attack.frames_only ? r : A.attack.frames_only ? A : null;
+        return `<p>${bn}: ${fo ? `the damage of ${esc(fo.attack.label)} isn’t worked out yet` : "no damage per second to compare"}.</p>`;
+      }
+      const x = r.dps / A.dps - 1;
+      const head = Math.abs(x) < 0.0005 ? `does the same damage per second as ${an}` : `does <b>${nf1.format(Math.abs(x) * 100)}% ${x > 0 ? "more" : "less"}</b> damage per second than ${an}`;
+      const f = factors(r, A, false);
+      let s = `<p>${bn} ${head}${f.length ? ": " + f.join(", ") : ""}.`;
+      if (r.kill && A.kill && !r.kill.never && !A.kill.never) {
+        const cbx = c => (c.ch ? `${fmt(c.ch * 100)}% of hits${c.cbe ? ` (+${c.cbe}% efficiency)` : ""}` : "none");
+        const cbDiff = r.cb.ch !== A.cb.ch || r.cb.cbe !== A.cb.cbe;
+        s += ` ${cbDiff ? `With crushing blow on ${cbx(r.cb)} (${an}: ${cbx(A.cb)}), it kills` : "It kills"} the monster in <b>${nf1.format(r.kill.secs)} s</b> instead of ${nf1.format(A.kill.secs)} s.`;
+      }
+      return s + "</p>";
+    }).join("");
+  }
+  /* each card's summaries, subtotals, totals, and the fields that differ from build A */
+  const getPath = (o, p) => p.split(".").reduce((x, k) => (x === undefined || x === null ? undefined : x[k]), o);
+  const blank = v => (v === undefined || v === null || v === 0 || v === "" || v === false ? null : v);
+  const same = (a, b) => JSON.stringify(blank(a)) === JSON.stringify(blank(b));
+  // the hits of a round: "5 hits: 4 + 4 + 4 + 4 + 7", and where some don't land "5 hits: ..., 1 lands"
+  function madeOf(fr) { return fr.made || fr.hits; }
+  function hitsWord(fr, form) {  // form ":" "5 hits: 4 + 4 + ...", "(" "5 hits (4 + 4 + ...)", "" the count alone
+    const n = madeOf(fr), sw = fr.per.length === n ? fr.per.join(" + ") : "";
+    const per = !sw || !form ? "" : form === "(" ? ` (${sw})` : `: ${sw}`;
+    return `${n} hits${per}${fr.hits < n ? `, ${fr.hits} land${fr.hits === 1 ? "s" : ""}` : ""}`;
+  }
+  function framesText(fr) {
+    if (fr.alt) return `${frLabel(fr)} frames (attack 1 / attack 2)`;
+    const q = fr.r.t.parts[0];
+    // a cooldown that holds the attack back: it runs from the release, and the next attack waits for it
+    if (q.wait) return `${fr.frames} frames an attack: ${q.own} attacking, ${q.wait} waiting for its ${fr.r.p.cd}-frame cooldown`;
+    return `${fr.frames} frames${madeOf(fr) > 1 ? ` for ${hitsWord(fr, "(")}` : " an attack"}`;
+  }
+  function nextText(nb) {
+    if (!nb) return "";
+    if (nb.capped) return "More IAS makes this attack no faster";
+    return `Next breakpoint: <b>+${nb.add}% IAS</b> on other gear → ${frLabel(nb.fr)} frames (${signed(nb.gain)} damage per second)`;
+  }
+  function fillCards() {
+    const A = builds[0];
+    results.forEach((r, i) => {
+      const refs = cardRefs[i];
+      if (!refs) return;
+      const b = r.b, att = r.attack, p0 = r.per[0], w = W[b.w.code], S = refs.sum, U = refs.sub;
+      const wname = w ? esc(w.name) : "this weapon";
+      S.char.textContent = `Level ${b.c.lvl} ${CLS[b.cls].name}, ${b.c.str} Str, ${b.c.dex} Dex`;
+      U.char.innerHTML = p0.strB || p0.dexB ? `Strength <b>+${p0.strB}%</b>, Dexterity <b>+${p0.dexB}%</b> damage with ${wname}` : `No damage from Strength or Dexterity with ${wname}`;
+      S.weapon.textContent = w ? `${b.w.eth && w.eth ? "Eth " : ""}${w.name}, ${b.w.ed}% → ${p0.wr.min}–${p0.wr.max}` : "";
+      U.weapon.innerHTML = `Weapon damage <b>${p0.wr.min}–${p0.wr.max}</b>${att.throw ? " thrown" : ""}`;
+      if (S.off) {
+        const o = W[b.o.code], p1 = r.per[1];
+        S.off.textContent = b.o.on && o ? `${o.name}${p1 ? ` → ${p1.wr.min}–${p1.wr.max}` : ""}` : "None";
+        U.off.innerHTML = !b.o.on ? "One weapon" : p1 ? `Weapon damage <b>${p1.wr.min}–${p1.wr.max}</b>` :
+          r.offUnused ? `Not used: ${esc(att.label)} hits with the first weapon only` : "Not counted: dual wielding needs two weapons with one-hand damage";
+      }
+      S.gear.textContent = `${b.g.ias}% IAS, ${b.g.ed}% ED, ${b.g.ds}% DS${att.frames_only ? "" : ` → ×${nf2.format(r.mean)}`}`;
+      const gl = [];
+      if (!att.frames_only) gl.push(`Critical strike <b>${fmt(r.crit.pc * 100, nf1)}%</b>, deadly strike <b>${fmt(r.crit.pd * 100, nf1)}%</b>: <b>×${nf2.format(r.mean)}</b> on average`);
+      if (r.cb.ch) gl.push(r.cb.share > 0 ? `Crushing blow on <b>${fmt(r.cb.ch * 100)}%</b> of hits, each <b>${pct(r.cb.share)}</b> of the life left` : "Crushing blow: none, the monster is immune");
+      if (r.fr && r.fr.note !== "fixed") { const sp = r.fr.r.sp; gl.push(`Attack speed <b>${sp.raw - 100}</b>${sp.speed !== sp.raw ? ` (${sp.speed - 100} counted)` : ""}`); }
+      if (r.next) gl.push(nextText(r.next));
+      if (vsWord(r)) gl.push(`Damage <b>${vsWord(r)}</b>`);
+      if (b.g.itd && r.rolls) gl.push(r.D.itdWorks ? "Ignore Target’s Defense: the monster’s defense <b>0</b>" : "Ignore Target’s Defense: <b>none</b> against this monster");
+      if ((+b.g.tdef || r.D.ba) && r.rolls && !r.D.itd) gl.push(`Target defense <b>−${r.D.x}%</b>${r.D.ba ? ` (with your Blessed Aim’s ${r.D.ba})` : ""}${r.D.halved && r.D.x < 100 ? ", half against this monster" : ""}`);
+      U.gear.innerHTML = gl.join("<br>");
+      S.skill.textContent = `${att.label}${att.dmg ? ` ${b.s.lvl}` : ""}${r.fr ? ` → ${frLabel(r.fr)} frames` : ""}`;
+      const sl = [];
+      const bonus = [r.sp ? `skill <b>+${nf0.format(r.sp)}%</b>` : "", p0.ms.dmg ? `mastery <b>+${nf0.format(p0.ms.dmg)}%</b>` : "", r.flat ? `<b>+${nf0.format(r.flat)}</b> flat` : ""].filter(Boolean);
+      if (bonus.length && !att.frames_only) sl.push(`Damage: ${bonus.join(", ")}`);
+      sl.push(r.fr ? framesText(r.fr) : "No animation for this weapon");
+      U.skill.innerHTML = sl.join("<br>");
+      S.aura.textContent = auraSummary(b) + (r.aur.p ? ` → +${nf0.format(r.aur.p)}%` : "");
+      // the buffs' attack speed (the engine's skill speed but the attack's own)
+      const sIAS = r.fr ? r.fr.r.sp.parts.filter(([what]) => !(r.fr.r.p.sk && what === r.fr.r.p.sk.n)).reduce((x, [, v]) => x + v, 0) : 0, al = [];
+      al.push(r.aur.p ? `Damage <b>+${nf0.format(r.aur.p)}%</b> (${r.aur.parts.map(x => `${x[0]} ${nf0.format(x[1])}`).join(", ")})` : "No damage bonus");
+      if (sIAS) al.push(`Attack speed <b>+${sIAS}</b>`);
+      // the auras' and buffs' attack rating % (the gear's, the skill's and the mastery's are other sections')
+      const arParts = p0.AR.parts.filter(([l]) => AURA_AR.includes(l) || (HOLY[b.buf.holy] && l === HOLY[b.buf.holy][1]));
+      if (arParts.length && !att.frames_only) al.push(`Attack rating <b>+${nf0.format(arParts.reduce((s, x) => s + x[1], 0))}%</b> (${arParts.map(x => `${x[0]} ${nf0.format(x[1])}`).join(", ")})`);
+      U.aura.innerHTML = al.join("<br>");
+      // curses and debuffs: the monster's physical resistance with this build's own and the party's
+      const C = r.R.C, on = C.on, who = x => (x.own ? "yours" : "the party’s");
+      const mine = [on.curse && on.curse.own ? `${CURSE_SHORT[on.curse.kind]} ${on.curse.lvl}` : "", on.bc && on.bc.own ? `Battle Cry ${on.bc.lvl}` : ""].filter(Boolean);
+      S.deb.textContent = on.curse || on.bc || r.D.conv ? `${mine.join(", ") || "The party’s"} → ${resPct(r.R.cbRes)} resistance, ${numTxt(r.D.cursed)} defense` : "None";
+      const parts = [];
+      if (on.curse && C.curse) parts.push(`${CURSES[on.curse.kind]} ${on.curse.lvl} (${who(on.curse)}) <b>${signedInt(C.curse)}</b>`);
+      if (on.bc) parts.push(`Battle Cry ${on.bc.lvl} (${who(on.bc)}) <b>${signedInt(C.bc)}</b>`);
+      const dl = [`Physical resistance <b>${resPct(r.R.cbRes)}</b>${parts.length ? `: its own ${resPct(C.base)}, ${parts.join(", ")}${C.immune ? " (half: it is immune)" : ""}` : ", its own"}`];
+      const rep = [on.replaced.curse ? `${CURSES[on.replaced.curse.kind]} ${on.replaced.curse.lvl}` : "", on.replaced.bc ? `Battle Cry ${on.replaced.bc.lvl}` : ""].filter(Boolean);
+      if (rep.length) dl.push(`Replaces the party’s ${rep.join(" and ")}`);
+      if (r.R.res !== r.R.cbRes) dl.push(`With your ${r.R.pierce}% pierce: <b>${resPct(r.R.res)}</b>`);
+      // its defense: Weaken, Battle Cry and the party's Conviction add up
+      const D = r.D, dparts = [];
+      if (on.curse && on.curse.dv) dparts.push(`${CURSES[on.curse.kind]} ${on.curse.lvl} (${who(on.curse)}) <b>${signedInt(on.curse.dv)}%</b>`);
+      if (on.bc && on.bc.dv) dparts.push(`Battle Cry ${on.bc.lvl} (${who(on.bc)}) <b>${signedInt(on.bc.dv)}%</b>`);
+      if (D.conv) dparts.push(`Conviction ${D.conv.lvl} (the party’s) <b>${signedInt(D.conv.dv)}%</b>`);
+      if (on.curse && on.curse.df) dparts.unshift(`${CURSES[on.curse.kind]} ${on.curse.lvl} (${who(on.curse)}) <b>${signedInt(on.curse.df)}</b>`);
+      if (D.inner) dparts.unshift(`Inner Sight ${D.inner.lvl} (the party’s) <b>${signedInt(D.inner.df)}</b>`);
+      dl.push(`Defense <b>${numTxt(D.cursed)}</b>${dparts.length ? `: its own ${nf0.format(D.base)}, ${dparts.join(", ")}` : ", its own"}${D.cursed < 0 ? " (below 0 it adds to your attack rating)" : ""}`);
+      U.deb.innerHTML = dl.join("<br>");
+      // the card's totals; damage per hit as the character screen shows it, to check the numbers put in
+      const ft = [];
+      if (att.frames_only) ft.push(`<div class="big"><span>${esc(att.label)}</span><b>${r.fr ? `${frLabel(r.fr)} frames` : "—"}</b><small>its damage isn’t worked out yet</small></div>`);
+      else {
+        const vsW = vsWord(r), scr = r.per.map(p => `${fmt(p.screen[0] / 256)}–${fmt(p.screen[1] / 256)}`).join(" / ");
+        const screen = vsW ? `<small>With ${vsW}; your character screen shows ${scr} with ${esc(att.label)} on a mouse button</small>`
+          : r.per.length === 1 ? `<small>Your character screen shows this with ${esc(att.label)} on a mouse button</small>` : "";
+        ft.push(`<div><span>Damage per hit</span><b>${r.per.map(p => `${fmt(p.mn256 / 256)}–${fmt(p.mx256 / 256)}`).join(" / ")}</b>${screen}</div>`);
+        ft.push(`<div><span>Average hit, with crit and deadly strike</span><b>${fmt(r.eff)}</b></div>`);
+        if (r.R.mult !== 1) ft.push(`<div><span>On the monster</span><b>${fmt(r.final)}</b></div>`);
+        if (r.rolls) {
+          const why = [p0.AR.vs ? `without your attack rating against ${target.type === "demon" ? "demons" : "undead"}` : "",
+            r.screen.mth !== p0.AR.mth ? "with Throwing Mastery’s bonus, which a thrown hit doesn’t get" : ""].filter(Boolean);
+          ft.push(`<div><span>Attack rating</span><b>${arText(r)}</b><small>Your character screen shows ${r.screen.ar === p0.AR.ar ? "this" : `${nf0.format(r.screen.ar)} (${why.join("; ")})`} with ${esc(att.label)} on a mouse button</small></div>`);
+          ft.push(`<div><span>Chance to hit</span><b>${hitText(r)}</b><small>against defense ${numTxt(r.D.def)} at level ${target.lvl}</small></div>`);
+        } else ft.push(`<div><span>Chance to hit</span><b>100%</b><small>${esc(att.label)} never misses</small></div>`);
+        ft.push(`<div class="big"><span>Damage per second</span><b>${r.fr ? fmt(r.dps) : "—"}</b>${r.kill ? `<small>${r.kill.never ? "can’t kill it" : `kills in ${nf1.format(r.kill.secs)} s${att.k === "charge" ? " (strikes only)" : ""}`}</small>` : ""}</div>`);
+      }
+      refs.foot.innerHTML = ft.join("");
+      // what differs from build A, on a build of A's class (across classes nearly every field would)
+      const mark = i > 0 && b.cls === A.cls;
+      refs.card.querySelectorAll(".field[data-path]").forEach(f => { f.classList.toggle("diff", mark && !same(getPath(A, f.dataset.path), getPath(b, f.dataset.path))); });
+      for (const d of Object.values(refs.sec)) d.classList.toggle("diff", mark && !!d.querySelector(".field.diff"));
+      const tab = $("dm-tabs").children[i];
+      if (tab) tab.textContent = bname(i);
+    });
+    $("dm-diff-note").hidden = !builds.some((x, k) => k > 0 && x.cls === builds[0].cls);
+  }
+  /* the IAS on other gear a build still needs for fewer frames, and what that is worth */
+  function nextBreakpoint(r) {
+    if (!r.fr || r.fr.note === "fixed") return null;
+    const s = iasSetup(r.b, r.attack), row = IAS.breakpoints(s).rows.find(x => x.gear > s.gear);
+    if (!row) return { capped: true };
+    const f = roundOf(row.r);
+    return { add: row.gear - s.gear, fr: f, gain: (f.hits / f.frames) / (r.fr.hits / r.fr.frames) - 1 };
+  }
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const signed = x => `${x >= 0 ? "+" : "−"}${nf1.format(Math.abs(x * 100))}%`;
+  const signedInt = v => `${v >= 0 ? "+" : "−"}${nf0.format(Math.abs(v))}`;
+  const resPct = v => `${v < 0 ? "−" : ""}${nf0.format(Math.abs(v))}%`;   // a resistance, with a minus sign below 0
+  const numTxt = v => `${v < 0 ? "−" : ""}${nf0.format(Math.abs(v))}`;     // a defense, with a minus sign below 0
+  const CURSE_SHORT = { amp: "Amp", decrep: "Decrep", weaken: "Weaken" };
+  /* a build's attack rating and chance to hit, per weapon where they differ ("87% / 85%") */
+  const perWeapon = (r, f) => { const v = r.per.map(f); return v.every(x => x === v[0]) ? v[0] : v.join(" / "); };
+  const arText = r => perWeapon(r, p => nf0.format(p.AR.ar));
+  /* "+176% against demons" when the build's damage against the monster's type counts (per weapon where it differs) */
+  const vsWord = r => (r.per.some(p => p.vs) ? `${perWeapon(r, p => `+${nf0.format(p.vs)}%`)} against ${target.type === "demon" ? "demons" : "undead"}` : "");
+  const hitText = r => perWeapon(r, p => `${Math.round(p.p * 100)}%`);
+  /* what lowers the monster's defense for a build, in a few words (Side by Side's defense row) */
+  function defWords(r) {
+    const D = r.D, on = D.on, p = [];
+    if (D.conv) p.push(`Conviction ${D.conv.lvl}`);
+    if (D.inner) p.push(`Inner Sight ${D.inner.lvl}`);
+    if (on.curse && (on.curse.dv || on.curse.df)) p.push(`${CURSES[on.curse.kind]} ${on.curse.lvl}${on.curse.own ? " (yours)" : ""}`);
+    if (on.bc && on.bc.dv) p.push(`Battle Cry ${on.bc.lvl}${on.bc.own ? " (yours)" : ""}`);
+    if (D.itd) p.push("Ignore Target’s Defense");
+    else if (D.x) p.push(`−${D.x}% target defense`);
+    return p.join(", ");
+  }
+  /* what is on the monster for a build, in a few words (Side by Side's resistance row) */
+  function resWords(R) {
+    const on = R.C.on, p = [];
+    if (on.curse && on.curse.v) p.push(`${CURSES[on.curse.kind]} ${on.curse.lvl}${on.curse.own ? " (yours)" : ""}`);
+    if (on.bc) p.push(`Battle Cry ${on.bc.lvl}${on.bc.own ? " (yours)" : ""}`);
+    if (R.res !== R.cbRes) p.push(`pierce ${R.pierce}%`);
+    return p.join(", ");
+  }
+  function pctParts(r) {
+    const p = [];
+    const x = r.per[0];
+    if (r.sp) p.push(`skill ${nf0.format(r.sp)}`);
+    for (const [l, v] of r.aur.parts) p.push(`${l} ${nf0.format(v)}`);
+    if (x.strB) p.push(`Str ${x.strB}`);
+    if (x.dexB) p.push(`Dex ${x.dexB}`);
+    if (x.ms.dmg) p.push(`mastery ${x.ms.dmg}`);
+    if (x.vs) p.push(`vs ${target.type === "demon" ? "demons" : "undead"} ${x.vs}`);
+    if (x.off) p.push(`gear ${x.off}`);
+    return p.join(", ");
+  }
+  const pct = v => `${(v * 100 < 10 ? nf2 : nf1).format(v * 100)}%`;
+  /* the attack speed the game counts (the IAS Calculator's engine): items' IAS (diminished), the skills', the weapon's
+     speed, the attack's own; at most 75 (a sequence counts 30 less first; Charge goes to 156) */
+  function tasCell(r) {
+    if (!r.fr) return "—";
+    if (r.fr.note === "fixed") return `—<small>fixed frames</small>`;
+    const sp = r.fr.r.sp, sg = v => (v < 0 ? `−${-v}` : `+${v}`);
+    const parts = [`items ${sp.eias}${sp.ias !== sp.eias ? ` (${sp.ias} IAS)` : ""}`];
+    sp.parts.forEach(([what, v]) => parts.push(`${what} ${sg(v)}`));
+    if (sp.wsm) parts.push(`weapon ${sg(-sp.wsm)}`);
+    if (sp.sq) parts.push("sequence −30");
+    if (r.fr.r.p.charge !== undefined) parts.push(`${r.attack.label} ${sg(r.fr.r.p.charge)}`);
+    return `${sp.raw - 100}${sp.speed !== sp.raw ? ` (${sp.speed - 100} counted)` : ""}<small>${parts.join(", ")}</small>`;
+  }
+
+  // ---------- damage profile chart
+  function mk(tag, attrs, parent) { const e = document.createElementNS("http://www.w3.org/2000/svg", tag); for (const [k, v] of Object.entries(attrs || {})) e.setAttribute(k, v); if (parent) parent.appendChild(e); return e; }
+  function niceTicks(lo, hi, n) {
+    const span = hi - lo || 1, step0 = span / n, mag = Math.pow(10, Math.floor(Math.log10(step0)));
+    const step = [1, 2, 2.5, 5, 10].map(m => m * mag).find(s => s >= step0) || mag * 10;
+    const out = []; for (let v = Math.ceil(lo / step) * step; v <= hi + 1e-9; v += step) out.push(v);
+    return out;
+  }
+  /* a hit's damage at quantile q (0..1), on the monster */
+  function quantiles(r) {
+    const segs = [];
+    const add = (w, mult) => { for (const p of r.per) segs.push({ w: w / r.per.length, lo: p.mn256 / 256 * mult * r.R.mult, hi: p.mx256 / 256 * mult * r.R.mult }); };
+    const pn = 1 - r.crit.pc - r.crit.pd;
+    if (pn > 0) add(pn, 1);
+    if (r.crit.pd > 0) add(r.crit.pd, r.crit.dm);
+    if (r.crit.pc > 0) add(r.crit.pc, r.crit.cm);
+    const F = x => segs.reduce((s, g) => s + g.w * (x <= g.lo ? 0 : x >= g.hi ? 1 : (x - g.lo) / (g.hi - g.lo || 1)), 0);
+    const lo = Math.min(...segs.map(g => g.lo)), hi = Math.max(...segs.map(g => g.hi));
+    const pts = [];
+    for (let i = 0; i <= 200; i++) {
+      const q = i / 200;
+      let a = lo, z = hi;
+      for (let k = 0; k < 40; k++) { const m = (a + z) / 2; if (F(m) < q) a = m; else z = m; }
+      pts.push([q * 100, (a + z) / 2]);
+    }
+    return pts;
+  }
+  function drawProfile() {
+    const box = $("dm-plot");
+    if ($("dm-p-prof").hidden) return;   // drawn when its tab shows
+    const width = Math.max(300, box.clientWidth || 800), narrow = width < 560, height = narrow ? 200 : 230;
+    const series = results.map((r, i) => (r.attack.frames_only ? null : { i, pts: quantiles(r) })).filter(Boolean);
+    box.innerHTML = "";
+    const leg = $("dm-legend"); leg.innerHTML = "";
+    if (!series.length) return;
+    series.forEach(s => {
+      const li = el("li", {}, leg), k = mk("svg", { class: "key", viewBox: "0 0 26 8", "aria-hidden": "true" }, li);
+      mk("line", { x1: 1, x2: 25, y1: 4, y2: 4, stroke: KEYS[s.i], "stroke-width": 2.5, "stroke-dasharray": DASHES[s.i] }, k);
+      li.append(bname(s.i));
+    });
+    // each line named at its right end too (wide enough only), so no build is told apart by its colour alone
+    const short = t => (t.length > 12 ? t.slice(0, 11) + "…" : t);
+    const ends = narrow || series.length < 2 ? [] : series.map(s => ({ s, t: short(bname(s.i)) }));
+    const M = { l: narrow ? 60 : 76, r: ends.length ? 16 + 7 * Math.max(...ends.map(e => e.t.length)) : 12, t: 10, b: 36 };
+    const ymax = Math.max(...series.flatMap(s => s.pts.map(p => p[1]))) * 1.05 || 1;
+    const svg = mk("svg", { viewBox: `0 0 ${width} ${height}`, role: "img", "aria-label": "Damage per hit, sorted from weakest to strongest" }, box);
+    const x = v => M.l + (width - M.l - M.r) * v / 100, y = v => height - M.b - (height - M.t - M.b) * v / ymax;
+    for (const t of niceTicks(0, ymax, narrow ? 4 : 5)) {
+      mk("line", { x1: M.l, x2: width - M.r, y1: y(t), y2: y(t), stroke: "var(--grid)" }, svg);
+      const tx = mk("text", { x: M.l - 6, y: y(t) + 4, "text-anchor": "end", class: "tick" }, svg); tx.textContent = nf0.format(t);
+    }
+    for (const t of [0, 25, 50, 75, 100]) { const tx = mk("text", { x: x(t), y: height - M.b + 16, "text-anchor": "middle", class: "tick" }, svg); tx.textContent = t + "%"; }
+    const at = mk("text", { x: (M.l + width - M.r) / 2, y: height - 4, "text-anchor": "middle", class: "axis-title" }, svg); at.textContent = "Share of hits, weakest to strongest";
+    const yt = mk("text", { transform: `translate(13 ${(M.t + height - M.b) / 2}) rotate(-90)`, "text-anchor": "middle", class: "axis-title" }, svg); yt.textContent = "Damage per hit";
+    mk("line", { x1: M.l, x2: M.l, y1: M.t, y2: height - M.b, stroke: "var(--axis)" }, svg);
+    for (const s of series) {
+      const d = s.pts.map((p, k) => `${k ? "L" : "M"}${x(p[0]).toFixed(1)},${y(p[1]).toFixed(1)}`).join("");
+      mk("path", { d, fill: "none", stroke: KEYS[s.i], "stroke-width": 2.5, "stroke-linejoin": "round", "stroke-dasharray": DASHES[s.i] }, svg);
+    }
+    if (ends.length) {   // labels at the lines' ends, pushed apart where the ends meet
+      ends.forEach(e => { e.y = y(e.s.pts[e.s.pts.length - 1][1]) + 4; });
+      ends.sort((a, b) => a.y - b.y);
+      for (let k = 1; k < ends.length; k++) ends[k].y = Math.max(ends[k].y, ends[k - 1].y + 13);
+      for (let k = ends.length - 1; k >= 0; k--) ends[k].y = Math.min(ends[k].y, k < ends.length - 1 ? ends[k + 1].y - 13 : height - M.b + 4);
+      for (const e of ends) { const t = mk("text", { x: width - M.r + 6, y: e.y, class: "end-label" }, svg); t.textContent = e.t; }
+    }
+    // hover
+    const tip = el("div", { class: "tip", hidden: true }, box);
+    const cross = mk("line", { y1: M.t, y2: height - M.b, stroke: "var(--axis)", "stroke-dasharray": "3 3", visibility: "hidden" }, svg);
+    svg.addEventListener("pointermove", e => {
+      const rect = svg.getBoundingClientRect(); const px = (e.clientX - rect.left) * width / rect.width;
+      const q = clamp((px - M.l) / (width - M.l - M.r) * 100, 0, 100);
+      cross.setAttribute("x1", x(q)); cross.setAttribute("x2", x(q)); cross.setAttribute("visibility", "visible");
+      tip.hidden = false;
+      tip.innerHTML = `<div>${nf0.format(q)}% of hits do less than</div>` + series.map(s => `<div><span style="color:${KEYS[s.i]}">&#9632;</span> ${esc(bname(s.i))}: <b>${nf0.format(s.pts[Math.round(q * 2)][1])}</b></div>`).join("");
+      tip.style.left = Math.min(rect.width - 190, (e.clientX - rect.left) + 12) + "px"; tip.style.top = "8px";
+    });
+    svg.addEventListener("pointerleave", () => { tip.hidden = true; cross.setAttribute("visibility", "hidden"); });
+  }
+
+  // ---------- breakpoints: a ladder per build (its own frame counts; until 2026-11-13 one column mixed every build's
+  // frame counts, sorted by frames per hit but labelled by frames per round: 13, 12, 11, 16, 10, 9)
+  function renderBreakpoints() {
+    $("dm-bp").innerHTML = results.map((r, i) => {
+      const b = r.b, own = +b.g.ias || 0, att = esc(r.attack.label);
+      let body;
+      if (!r.fr) body = `<p class="note">${att} has no animation with this weapon.</p>`;
+      else if (r.fr.note === "fixed") body = `<p class="note">${att} hits every ${r.fr.frames} frames whatever the attack speed: it has no breakpoints.</p>`;
+      else {
+        // the engine's rows from no IAS on other gear, your row, and the IAS on other gear you could do without
+        const bp = IAS.breakpoints(iasSetup(b, r.attack)), rows = bp.rows, cur = rows.length ? bp.you : -1, spare = bp.spare;
+        const dmg = !r.attack.frames_only && r.final > 0;
+        let t = `<table class="dm-table"><thead><tr><th>Frames</th><th>IAS on other gear</th>${dmg ? "<th>Damage per second</th>" : ""}</tr></thead><tbody>`;
+        rows.forEach((row, k) => {
+          const f = roundOf(row.r), dps = dmg ? r.final * 25 * f.hits / f.frames : 0;
+          const hits = !f.alt && madeOf(f) > 1 ? `<small>${hitsWord(f, "")}</small>` : f.alt ? "<small>attack 1 / attack 2</small>" : "";
+          const you = k === cur ? `<small>you: ${own}%${spare > 0 ? `, ${spare} to spare` : ""}</small>` : "";
+          const gain = dmg && k > cur && r.dps ? `<small>${signed(dps / r.dps - 1)}</small>` : "";
+          t += `<tr class="${k === cur ? "cur" : k < cur ? "past" : ""}"><td>${frLabel(f)}${hits}</td><td>${row.gear}%${you}</td>${dmg ? `<td>${nf0.format(dps)}${gain}</td>` : ""}</tr>`;
+        });
+        t += "</tbody></table>";
+        const nb = r.next;
+        // as the IAS Calculator's answer says it: what you could do without, then what more gives
+        const keep = spare > 0 && cur >= 0 ? `You could do with <b>${spare}% IAS less</b> on other gear and keep ${frLabel(roundOf(rows[cur].r))} frames.` : "";
+        const next = !nb ? "" : nb.capped ? "More IAS makes this attack no faster." : `Next: <b>+${nb.add}% IAS</b> on other gear for ${frLabel(nb.fr)} frames (${signed(nb.gain)} damage per second).`;
+        const foot = [keep, next].filter(Boolean).join(" ");
+        body = t + (foot ? `<p class="note">${foot}</p>` : "");
+      }
+      return `<div class="bp-card" style="--key:${KEYS[i]}"><h3>${esc(bname(i))}<small>${att}, ${own}% IAS on other gear</small></h3>${body}</div>`;
+    }).join("");
+  }
+
+  // ---------- stat trade-offs
+  const PARITY = [
+    { k: "offed", label: "Enhanced damage off the weapon", unit: "%", get: b => b.g.ed, set: (b, v) => { b.g.ed = v; }, max: 3000 },
+    { k: "oned", label: "Enhanced damage on the weapon", unit: "%", get: b => b.w.ed, set: (b, v) => { b.w.ed = v; }, max: 5000 },
+    { k: "flat", label: "Flat damage (+min and +max)", unit: "", get: b => b.g.min, set: (b, v, b0) => { b.g.min = b0.g.min + (v - b0.g.min); b.g.max = b0.g.max + (v - b0.g.min); }, max: 5000 },
+    { k: "max", label: "Maximum damage alone", unit: "", get: b => b.g.max, set: (b, v) => { b.g.max = v; }, max: 5000 },
+    { k: "str", label: "Strength", unit: "", get: b => b.c.str, set: (b, v) => { b.c.str = v; }, max: 5000 },
+    { k: "dex", label: "Dexterity", unit: "", get: b => b.c.dex, set: (b, v) => { b.c.dex = v; }, max: 5000 },
+    { k: "ds", label: "Deadly strike", unit: "%", get: b => b.g.ds, set: (b, v) => { b.g.ds = v; }, max: 200 },
+    { k: "dsmult", label: "Deadly strike multiplier", unit: "%", get: b => b.g.dsmult, set: (b, v) => { b.g.dsmult = v; }, max: 2000 },
+    { k: "crit", label: "Critical strike", unit: "%", get: b => b.g.crit, set: (b, v) => { b.g.crit = v; }, max: 100 },
+    { k: "cmult", label: "Critical strike multiplier", unit: "%", get: b => b.g.cmult, set: (b, v) => { b.g.cmult = v; }, max: 2000 },
+    { k: "ar", label: "Attack rating", unit: "", get: b => b.g.ar, set: (b, v) => { b.g.ar = v; }, max: 50000 },
+    { k: "arp", label: "Attack rating %", unit: "%", get: b => b.g.arp, set: (b, v) => { b.g.arp = v; }, max: 5000 },
+    { k: "edd", label: "Damage vs demons", unit: "%", get: b => b.g.edd, set: (b, v) => { b.g.edd = v; }, max: 5000 },
+    { k: "edu", label: "Damage vs undead", unit: "%", get: b => b.g.edu, set: (b, v) => { b.g.edu = v; }, max: 5000 },
+  ];
+  /* what a row of Stat Trade-offs matches: the average hit on the monster, a miss counting 0 (so attack rating and
+     Dexterity's share of it count) */
+  const parityValue = r => r.final * r.toHit;
+  function renderParity() {
+    const sel = $("dm-par-stat");
+    if (!sel.options.length) {
+      for (const p of PARITY) el("option", { value: p.k }, sel, p.label);
+      sel.value = "offed";
+      sel.addEventListener("change", renderParity);
+      $("dm-par-amt").addEventListener("input", renderParity);
+    }
+    const ref = PARITY.find(p => p.k === sel.value) || PARITY[0];
+    $("dm-par-unit").textContent = ref.unit;
+    const amt = num($("dm-par-amt").value, 1, 5000);
+    const tb = $("dm-parity");
+    let h = "<thead><tr><th>Stat</th>" + results.map((r, i) => `<th><span class="key" style="background:${KEYS[i]}"></span>${esc(bname(i))}</th>`).join("") + "</tr></thead><tbody>";
+    const goals = builds.map((b, i) => {
+      if (results[i].attack.frames_only) return null;
+      const c = JSON.parse(JSON.stringify(b));
+      ref.set(c, ref.get(b) + amt, b);
+      const r = evaluate(c, target, { kill: false });
+      return { base: parityValue(results[i]), goal: parityValue(r) };
+    });
+    h += `<tr class="strong"><td>Average hit on the monster, a miss as 0</td>` + goals.map(g => g ? `<td>${nf0.format(g.base)} &rarr; ${nf0.format(g.goal)}<small>${signed(g.goal / g.base - 1)}</small></td>` : "<td>—</td>").join("") + "</tr>";
+    for (const p of PARITY) {
+      h += `<tr><td>${p.label}${p.k === ref.k ? " <small>(picked above)</small>" : ""}</td>` + builds.map((b, i) => {
+        const g = goals[i];
+        if (!g || g.goal <= g.base) return "<td>—</td>";
+        const at = v => { const c = JSON.parse(JSON.stringify(b)); p.set(c, p.get(b) + v, b); return parityValue(evaluate(c, target, { kill: false })); };
+        if (at(p.max) < g.goal) return "<td>—</td>";
+        let lo = 0, hi = p.max;
+        while (hi - lo > 1) { const m = (lo + hi) >> 1; if (at(m) >= g.goal) hi = m; else lo = m; }
+        return `<td class="${p.k === ref.k ? "cur" : ""}">+${hi}${p.unit}</td>`;
+      }).join("") + "</tr>";
+    }
+    h += "</tbody>";
+    tb.innerHTML = h;
+  }
+
+  // ================================================================== the details' tabs (the ARIA tab pattern)
+  const TABS = [...root.querySelectorAll(".dm-tabbar [role=tab]")];
+  let currentTab = "side";
+  function showTab(tab, focus) {
+    currentTab = tab;
+    TABS.forEach(t => {
+      const on = t.dataset.tab === tab;
+      t.setAttribute("aria-selected", String(on));
+      t.tabIndex = on ? 0 : -1;
+      $(t.getAttribute("aria-controls")).hidden = !on;
+      if (on && focus) t.focus();
+    });
+    if (results.length) renderTab(tab);
+  }
+  TABS.forEach(t => t.addEventListener("click", () => showTab(t.dataset.tab)));
+  root.querySelector(".dm-tabbar").addEventListener("keydown", e => {
+    const k = TABS.indexOf(document.activeElement), to = { ArrowRight: k + 1, ArrowLeft: k - 1, Home: 0, End: TABS.length - 1 }[e.key];
+    if (k < 0 || to === undefined) return;
+    e.preventDefault();
+    showTab(TABS[(to + TABS.length) % TABS.length].dataset.tab, true);
+  });
+  /* #tab-<name>, or a link to a heading inside a tab (the website's search), opens that tab */
+  function tabFromHash() {
+    const h = decodeURIComponent((location.hash || "").slice(1));
+    if (!h || h.includes("=")) return;
+    let tab = /^tab-(\w+)$/.exec(h) ? h.slice(4) : null;
+    if (!tab) { const e = document.getElementById(h), p = e && e.closest(".dm-tabpanel"); if (p) tab = (TABS.find(t => t.getAttribute("aria-controls") === p.id) || {}).dataset.tab; }
+    if (tab && TABS.some(t => t.dataset.tab === tab)) showTab(tab);
+  }
+  addEventListener("hashchange", tabFromHash);
+
+  // ================================================================== start
+  function renderAll() { renderBuilds(); renderTarget(); }
+  const saved = load();
+  if (saved && Array.isArray(saved.builds) && saved.builds.length) {
+    builds = saved.builds.slice(0, 4).map(sanitize);
+    target = Object.assign(DEFAULT_TARGET(), saved.target || {});
+    if (MON[target.preset]) applyPreset();  // a boss's numbers as the game data has them now
+  } else {
+    builds = exampleBuilds();
+  }
+  $("dm-add").addEventListener("click", () => {
+    if (builds.length >= 4) return;
+    const c = JSON.parse(JSON.stringify(builds[builds.length - 1])); c.name = "";
+    builds.push(c); shown = builds.length - 1; undo = null; renderAll();
+  });
+  $("dm-try").addEventListener("click", () => {
+    if (builds.length >= 4) return;
+    const c = JSON.parse(JSON.stringify(builds[0]));
+    c.name = `${(builds[0].name || "Build A").slice(0, 20)} + change`;
+    builds.push(c); shown = builds.length - 1; undo = null; renderAll();
+  });
+  const shareLink = () => location.href.split("#")[0] + "#v=" + btoa(unescape(encodeURIComponent(JSON.stringify({ builds, target }))));
+  // the website's Feedback button (javascripts/erazure.js) passes these builds on to the Feedback page (2026-11-21)
+  window.erazureFeedback = () => ({ link: shareLink() });
+  $("dm-share").addEventListener("click", () => {
+    const link = shareLink();
+    const done = ok => { $("dm-share-note").textContent = ok ? "Link copied." : "Copy this link: " + link; };
+    if (navigator.clipboard) navigator.clipboard.writeText(link).then(() => done(true), () => done(false)); else done(false);
+  });
+  let lastW = 0;
+  if (window.ResizeObserver) new ResizeObserver(() => { const w = $("dm-plot").clientWidth; if (Math.abs(w - lastW) > 4) { lastW = w; requestAnimationFrame(drawProfile); } }).observe($("dm-plot"));
+  renderAll();
+  tabFromHash();
+})();
