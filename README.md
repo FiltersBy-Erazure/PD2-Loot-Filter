@@ -1,12 +1,18 @@
 > [!TIP]
 > ## **[Visit the Erazure Loot Filter website](https://filtersby-erazure.github.io/PD2-Loot-Filter/)**
-> What each filter level shows and hides, the tiers of every unique and set item, non-magical bases, magic and rare items, skill and shop highlights, and more
+> What each filter level shows and hides, every item's look, the Filter Editor to make the filter your own, the Grail Planner, and calculators
 
 # **Season 14 Alliance Update:**
 
 My loot filters are updated for the Season 14 Alliance ladder reset on October 23rd, 2026
 
-After selecting the version of the filter from the launcher, be sure to click "Save Filter" on the right side afterwards
+## Get started
+
+1. In the PD2 launcher, open **Item Filter Profiles**, pick **Erazure - Main** and click **Save Filter** on the right side
+2. In game, pick your filter level: Esc > Options > PD2 Options, or the Increase / Decrease Filter Level hotkeys (set them in Configure Controls). Your Horadric Cube's description shows the version and level you're on
+3. Start on level 1, Lowest Strictness, and move to a stricter level as your character outgrows its drops: [Filter Levels](https://filtersby-erazure.github.io/PD2-Loot-Filter/filter-levels/) shows what each one hides
+
+The launcher keeps the filter up to date: each update reaches you the next time you press Play. [What's new](https://filtersby-erazure.github.io/PD2-Loot-Filter/updates/) lists every update. Something not working? See [Troubleshooting](https://filtersby-erazure.github.io/PD2-Loot-Filter/troubleshooting/)
 
 ## Versions of the Filter
 
@@ -27,7 +33,20 @@ After selecting the version of the filter from the launcher, be sure to click "S
 - The **Minimal** version is the same as Erazure - Main but with a minimal style: fewer, simpler symbols around the names of items ([see the differences](https://filtersby-erazure.github.io/PD2-Loot-Filter/minimal/)). It also comes in Revealed, BIG GG and PoE versions, and every combination of them
 - The **Corrlorized** versions (Corrlorized - Main - PoE, - Revealed - PoE, - BIG GG - PoE and - Revealed - BIG GG - PoE) are Corr's restyle of the four Erazure PoE versions: his own colors, symbols and PoE sound picks, with the same filter levels
 
+[Versions](https://filtersby-erazure.github.io/PD2-Loot-Filter/versions/) on the website has more
+
 <img width="994" height="741" alt="image" src="https://github.com/user-attachments/assets/9835b0c1-36c6-402a-8bfa-51288c6f46a9" />
+
+## Make it your own
+
+- The **[Filter Editor](https://filtersby-erazure.github.io/PD2-Loot-Filter/editor/)** is the easiest way: change looks, sounds, minimap icons and single items, add your own rules or a filter level of your own, and save it straight into your game. Your changes carry over to every Erazure update
+- To edit a copy by hand, click **Copy to Local** in the launcher's Item Filter Profiles, edit the file in `Diablo II\ProjectD2\filters\local`, then pick it with **Local Filter** and click **Save Filter**. A hand-edited copy doesn't update by itself: [Edit by Hand](https://filtersby-erazure.github.io/PD2-Loot-Filter/customization/) has the steps and the text editors I recommend
+
+## Also on the website
+
+- **[Grail Planner](https://filtersby-erazure.github.io/PD2-Loot-Filter/grail/)**: mark the unique and set items you've found and see where to find the rest, and which Corrupted Ear helps most
+- **[Resources](https://filtersby-erazure.github.io/PD2-Loot-Filter/resources/)**: damage, attack speed and run speed calculators, map experience, and map events
+- **[Feedback](https://filtersby-erazure.github.io/PD2-Loot-Filter/feedback/)**: report an item that shows wrong or send an idea, anonymously
 
 # **Contact:**
 
@@ -49,58 +68,7 @@ After selecting the version of the filter from the launcher, be sure to click "S
 
 ![HD Erazure Filter Diablo Clone Rathma Lucion](https://filtersby-erazure.github.io/PD2-Loot-Filter/img/examples/dclone-rathma-lucion.png)
 
-# **Filter Levels:**
-
-What each filter level shows, notifies and hides, for every kind of item and at every character level, read from the filter's own rules: [Filter Levels](https://filtersby-erazure.github.io/PD2-Loot-Filter/filter-levels/) on the website.
-
-
-# **Loot Filter Customization and Edits**
-
-- I recommend using either [VS Code](https://code.visualstudio.com/download) or [Notepad++](https://notepad-plus-plus.org/downloads/) for editing a customized version of the filter
-
-## VS Code
-
-- Download [VS Code](https://code.visualstudio.com/download) from Visual Studio Code's website
-  
-- Under File - Preferences - Extensions - Search for "TommyC90"
-
-- Install the Diablo 2 Loot Filter Hints Extension
-
-- This adds helpful color coding to the syntax of .filter files
-
-<img width="1125" height="160" alt="image" src="https://github.com/user-attachments/assets/f5e425a0-6db7-43eb-81fc-53110fb7ba8e" />
-
-- Then navigate to the file of the filter version you would like to edit. Click on the three dots on the top right of the screen then click Download
-    
-<img width="1540" height="312" alt="image" src="https://github.com/user-attachments/assets/cca16f05-b088-4e36-bde0-f841ca7b6c5c" />
-
-- Under File - Open File - Navigate to where the file was downloaded and open it
-
-- You are then free to make the edits you want
-
-- After this, save the file to Diablo II\ProjectD2\filters\local. Be sure that it is saved as a .filter file
-
-- In the launcher under Item Filter Profiles, click Local Filter, select the file, then click Save Filter
-    
-<img width="979" height="729" alt="image" src="https://github.com/user-attachments/assets/3c6ac94d-bac9-4585-b821-2823207b92ad" />
-
-## Notepad++
-
-- Download the latest version of [Notepad++](https://notepad-plus-plus.org/downloads/)
-
-- Open up the program after installing it
-
-- Then navigate to the file of the filter version you would like to edit. Click on the three dots on the top right of the screen then click Download
-
-<img width="1540" height="312" alt="image" src="https://github.com/user-attachments/assets/cca16f05-b088-4e36-bde0-f841ca7b6c5c" />
-
-- You are then free to make the edits you want
-
-- After this, save the file to Diablo II\ProjectD2\filters\local. Be sure that it is saved as a .filter file
-
-- In the launcher under Item Filter Profiles, click Local Filter, select the file, then click Save Filter
-    
-<img width="979" height="729" alt="image" src="https://github.com/user-attachments/assets/3c6ac94d-bac9-4585-b821-2823207b92ad" />
+More on the website's [Examples](https://filtersby-erazure.github.io/PD2-Loot-Filter/examples/)
 
 # **License**
 
