@@ -1,0 +1,179 @@
+
+  /* Builds side by side (up to four), the speeds, a chart of speed against FRW on gear, how it's worked out. Dark by
+     default; light when the website (Material) is switched to light. */
+  .frw-map {
+    --bg: #151412; --panel: #1f1d1a; --fg: #ece7de; --fg2: #cfc8bb; --muted: #a59e91; --line: #36322c;
+    --grid: #2e2b27; --axis: #736c60; --accent: #d8b45e; --accent-wash: rgba(216, 180, 94, 0.12); --good: #38a283;
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #bb33aa; --base: #8f897e;
+    --display: "Cinzel", "Trajan Pro", Georgia, serif;
+    --body: "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    color-scheme: dark;
+    color: var(--fg); font: 15px/1.5 var(--body);
+  }
+  [data-md-color-scheme="default"] .frw-map {
+    --bg: #f3f1ec; --panel: #fffdf8; --fg: #23211c; --fg2: #4a463e; --muted: #6b655a; --line: #ded7c9;
+    --grid: #e7e2d8; --axis: #928a7b; --accent: #8a6d1f; --accent-wash: rgba(138, 109, 31, 0.10); --good: #11805c;
+    --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #a8329b; --base: #9a9385;
+    color-scheme: light;
+  }
+  .frw-map *, .frw-map *::before, .frw-map *::after { box-sizing: border-box; }
+  .frw-map [hidden] { display: none !important; }
+  .frw-map .wrap { max-width: 1180px; margin: 0 auto; padding-inline: 16px; }
+  .md-content .frw-map .wrap { padding-inline: 0; max-width: none; }
+  .frw-map .fr-main { display: grid; gap: 20px; padding-block: 4px 48px; }
+  .frw-map .fr-main > * { min-width: 0; }
+  .frw-map h1.fr-title { font: 700 30px/1.15 var(--display); letter-spacing: .02em; margin: 0; padding-block: 24px 6px; color: var(--fg); }
+  .frw-map h2, .frw-map h3 { margin: 0; color: var(--fg); letter-spacing: 0; }
+  .frw-map h2 { font: 700 19px/1.25 var(--body); }
+  .frw-map h3 { font: 700 15px/1.3 var(--body); }
+  .frw-map p { margin: 0; }
+  .frw-map :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .frw-map .fr-head { display: grid; gap: 8px; }
+  .frw-map .eyebrow { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+  .frw-map .lede { max-width: 76ch; color: var(--fg2); font-size: 16px; }
+  .frw-map .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px 18px 14px; display: grid; gap: 12px; }
+  .frw-map .sub { color: var(--fg2); font-size: 14px; max-width: 86ch; }
+  .frw-map .note { color: var(--muted); font-size: 13px; max-width: 92ch; }
+  .frw-map .bar { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
+  .frw-map button { font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--axis); border-radius: 6px;
+                    padding: 5px 11px; cursor: pointer; font-size: 14px; min-height: 34px; }
+  /* every button, toggle, list and number box 14 px and 34 px tall, as the IAS Calculator's (the type review, 2026-11-20) */
+  .frw-map button:hover { border-color: var(--accent); }
+  .frw-map button:disabled { opacity: .5; cursor: default; }
+  /* the cards are one grid: each card's parts (name, class, class skills, gear and buffs, slowed by) are rows every
+     card shares (subgrid), so a part starts level in every card whatever the class skills above it; the last two
+     parts' heading and two lines of fields (label, box and hint each) are rows of their own: 3 + 7 + 7 rows a card */
+  .frw-map .builds { display: grid; gap: 14px; grid-template-columns: repeat(var(--n, 2), minmax(0, 1fr)); }
+  /* four cards two by two where four in a line would be narrower than about 255 px each */
+  .frw-map .setups { container: fr-setups / inline-size; }
+  @container fr-setups (max-width: 1060px) { .frw-map .builds[data-n="4"] { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .frw-map .build { background: var(--panel); border: 1px solid var(--line); border-top: 3px solid var(--key); border-radius: 8px; min-width: 0;
+                    display: grid; grid-template-columns: minmax(0, 1fr); grid-row: span 17; grid-template-rows: subgrid; row-gap: 0; }
+  .frw-map .build-head { display: flex; align-items: center; gap: 8px; padding: 10px 12px 6px; }
+  /* a setup's key: its color with its letter (the race's lanes say A-D too), so the color is never the only link */
+  .frw-map .key { display: inline-grid; place-items: center; flex: none; width: 16px; height: 16px; border-radius: 3px;
+                  font: 700 11px/1 var(--body); letter-spacing: 0; text-transform: none; vertical-align: -3px; }
+  .frw-map .build-head .key { background: var(--key); }
+  .frw-map .build-head input { flex: 1; background: transparent; border: 1px solid transparent; font-weight: 700; padding: 2px 4px; min-width: 0; }
+  .frw-map .build-head input:hover, .frw-map .build-head input:focus { border-color: var(--axis); }
+  /* the name can be typed over: a pencil says so (audit CALC-07) */
+  .frw-map .build-head .nm { flex: 1; min-width: 0; display: flex; align-items: center; gap: 4px; }
+  .frw-map .build-head .nm::after { content: "\270E"; color: var(--muted); font-size: 13px; flex: none; }
+  .frw-map .build-head .nm:focus-within::after { color: var(--accent); }
+  .frw-map .copy-note { font-size: 13px; color: var(--muted); }
+  /* Copy and Remove are small icons (their names say which setup), so a name such as Burst of Speed Assassin fits beside
+     them; with four setups (four cards in a line, about 255 px each) there is no Copy, so it fits beside Remove alone */
+  .frw-map .build-head button { flex: none; width: 30px; min-height: 30px; padding: 0; font-size: 14px; line-height: 1; }
+  .frw-map .build-head button svg { display: block; margin: auto; }
+  .frw-map .sec { padding: 4px 12px 12px; min-width: 0; }
+  .frw-map .sec + .sec { border-top: 1px solid var(--line); padding-top: 9px; }
+  .frw-map .sec-h { margin: 0 0 7px; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+  /* two fields a line, each field's label, box and hint rows shared along the line (subgrid), so the boxes stay level
+     when a label or hint takes two lines */
+  .frw-map .fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 10px; }
+  .frw-map .field { display: grid; grid-row: span 3; grid-template-rows: subgrid; row-gap: 3px; min-width: 0; align-content: start; }
+  .frw-map .fields .none { grid-column: 1 / -1; margin: 0; font-size: 13px; color: var(--muted); }
+  .frw-map .sec-grid { display: grid; grid-template-columns: minmax(0, 1fr); grid-row: span 7; grid-template-rows: subgrid; row-gap: 0; }
+  .frw-map .sec-grid > .fields { grid-row: span 6; grid-template-rows: subgrid; }
+  .frw-map .field.wide { grid-column: span 2; }
+  .frw-map .field.full { grid-column: 1 / -1; }
+  .frw-map .field label, .frw-map .field .lab { font-size: 13px; font-weight: 600; color: var(--fg2); }
+  .frw-map .field small { font-size: 12px; color: var(--muted); line-height: 1.3; }
+  .frw-map input, .frw-map select { font: inherit; color: var(--fg); }
+  .frw-map select, .frw-map input[type="number"] { background: var(--bg); border: 1px solid var(--axis); border-radius: 6px;
+      padding: 4px 7px; min-width: 0; width: 100%; font-size: 14px; min-height: 34px; font-variant-numeric: tabular-nums; }
+  .frw-map .check { display: flex; gap: 7px; align-items: center; font-size: 14px; color: var(--fg2); min-height: 34px; }
+  .frw-map .check input { accent-color: var(--accent); width: 15px; height: 15px; }
+  .frw-map .field .check { font-size: 14px; font-weight: 400; color: var(--fg); cursor: pointer; }
+  .frw-map .tiles { display: grid; grid-template-columns: repeat(var(--n, 2), minmax(0, 1fr)); gap: 12px; }
+  .frw-map .tile { background: var(--panel); border: 1px solid var(--line); border-left: 3px solid var(--key); border-radius: 8px;
+                   padding: 12px 14px; display: grid; gap: 3px; align-content: start; min-width: 0; }
+  .frw-map .tile-label { display: flex; align-items: center; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+  .frw-map .tile-value { font-size: 30px; font-weight: 700; line-height: 1.15; font-variant-numeric: tabular-nums; }
+  .frw-map .tile-value span { font-size: 15px; font-weight: 600; color: var(--fg2); margin-left: 4px; }
+  .frw-map .tile-sub { font-size: 14px; color: var(--fg2); font-variant-numeric: tabular-nums; }
+  .frw-map .tile-sub .ln { display: block; }
+  .frw-map .scroll { overflow-x: auto; min-width: 0; }
+  .frw-map table.fr-table { border-collapse: collapse; width: 100%; font-size: 14px; margin: 0; display: table; }
+  .frw-map .fr-table th, .frw-map .fr-table td { padding: 6px 10px; text-align: right; border: 0; border-bottom: 1px solid var(--line); white-space: nowrap; background: none; }
+  .frw-map .fr-table th { font-size: 12px; font-weight: 700; color: var(--muted); }
+  .frw-map .fr-table th:first-child, .frw-map .fr-table td:first-child { text-align: left; }
+  /* the row names stay put while the setups scroll past them on a phone (audit CALC-03) */
+  .frw-map .fr-table th:first-child, .frw-map .fr-table td:first-child { position: sticky; left: 0; z-index: 1; background: var(--panel); }
+  @media (max-width: 600px) { .frw-map .fr-table th:first-child, .frw-map .fr-table td:first-child { white-space: normal; min-width: 7.5em; max-width: 9em; box-shadow: 1px 0 0 var(--line); } }
+  .frw-map .fr-table td { font-variant-numeric: tabular-nums; }
+  .frw-map .fr-table tr.strong td { font-weight: 700; }
+  .frw-map .fr-table td small { display: block; color: var(--muted); font-size: 12px; font-weight: 400; }
+  .frw-map .fr-table th .key, .frw-map .tile-label .key, .frw-map .kn .key { margin-right: 6px; }
+  /* a letter key and the name beside it centred on each other (the author, 2026-11-20) */
+  .frw-map .kn { display: inline-flex; align-items: center; }
+  .frw-map .plot { position: relative; min-width: 0; }
+  .frw-map .plot svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .frw-map .tick { fill: var(--muted); font-size: 12px; font-family: var(--body); font-variant-numeric: tabular-nums; }
+  .frw-map .axis-title { fill: var(--muted); font-size: 12px; font-family: var(--body); }
+  .frw-map .mark { font-size: 12px; font-weight: 700; font-family: var(--body); }
+  .frw-map ul.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; padding: 0; margin: 0; list-style: none; }
+  .frw-map .legend li { display: flex; align-items: center; gap: 7px; font-size: 13px; margin: 0; }
+  .frw-map .legend svg.line { flex: none; }  /* a short line with the series' own dash */
+  .frw-map .tip { position: absolute; z-index: 5; pointer-events: none; background: var(--panel); border: 1px solid var(--line);
+                  border-radius: 8px; box-shadow: 0 6px 24px rgba(0,0,0,.25); padding: 7px 10px; font-size: 13px; min-width: 170px; }
+  .frw-map .method ul { margin: 0; padding-left: 20px; display: grid; gap: 7px; max-width: 96ch; color: var(--fg2); list-style: disc; }
+  .frw-map .method li strong { color: var(--fg); }
+  .frw-map .credit { color: var(--muted); font-size: 13px; }
+  .frw-map .credit a, .frw-map #fr-more a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  /* the race: the game's own pictures on the game's ground (the scene keeps its own colors in light mode too) */
+  .frw-map .race-bar { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
+  .frw-map .race-bar .seg { display: inline-flex; border: 1px solid var(--axis); border-radius: 6px; overflow: hidden; }
+  .frw-map .race-bar .seg button { border: 0; border-radius: 0; background: var(--bg); padding: 5px 12px; min-height: 32px; }  /* + its border: 34 */
+  .frw-map .race-bar .seg button + button { border-left: 1px solid var(--axis); }
+  .frw-map .race-bar .seg button[aria-pressed="true"] { background: var(--accent-wash); color: var(--fg); font-weight: 700; }
+  .frw-map .race-bar label { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--fg2); }
+  .frw-map .race-bar select { width: auto; }
+  .frw-map .race-bar .play { font-weight: 700; border-color: var(--accent); }
+  .frw-map .panel > * { min-width: 0; }
+  .frw-map .stage { position: relative; border-radius: 6px; overflow: hidden; background: #0d0c0a; line-height: 0; min-width: 0; }
+  .frw-map .stage canvas { display: block; width: 100%; max-width: 100%; height: auto; cursor: pointer; }
+  .frw-map .stage .wait { position: absolute; inset: 0; display: grid; place-items: center; color: #cfc8bb; font-size: 14px; line-height: 1.4; }
+  .frw-map ol.race-res { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+  .frw-map .race-res li { display: flex; flex-wrap: wrap; gap: 2px 10px; align-items: baseline; font-size: 14px; margin: 0; color: var(--fg2); }
+  .frw-map .race-res .who { display: inline-flex; align-items: baseline; gap: 7px; color: var(--fg); font-weight: 600; }
+  .frw-map .race-res .key { align-self: center; }
+  .frw-map .race-res b { font-variant-numeric: tabular-nums; color: var(--fg); }
+  .frw-map .race-res small { color: var(--muted); font-size: 13px; }
+  /* the strip that keeps each setup's speed and race time on screen while the tiles are out of view (the strip of Ohm vs
+     Jewel, the Damage Calculator and the IAS Calculator) */
+  .frw-map .dock { position: sticky; bottom: 0; z-index: 3; display: grid; grid-template-columns: repeat(var(--n, 2), minmax(0, 1fr));
+                   gap: 6px 10px; padding: 8px 10px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+                   box-shadow: 0 -8px 24px rgba(0, 0, 0, .4); visibility: hidden; opacity: 0; transition: opacity .15s, visibility .15s; }
+  [data-md-color-scheme="default"] .frw-map .dock { box-shadow: 0 -6px 18px rgba(0, 0, 0, .12); }
+  .frw-map .dock.on { visibility: visible; opacity: 1; }
+  .frw-map .dk { border-left: 3px solid var(--key); padding: 1px 10px; display: grid; min-width: 0; }
+  .frw-map .dk-name { display: flex; align-items: center; gap: 6px; min-width: 0; font-size: 12px; letter-spacing: .08em; text-transform: uppercase;
+                      color: var(--muted); font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .frw-map .dk-val { font-size: 22px; font-weight: 700; line-height: 1.2; font-variant-numeric: tabular-nums; }
+  .frw-map .dk-val small { font-size: 13px; font-weight: 600; color: var(--fg2); }
+  .frw-map .dk-sub { font-size: 13px; color: var(--fg2); font-variant-numeric: tabular-nums; }
+  @media (prefers-reduced-motion: reduce) { .frw-map .dock { transition: none; } }
+  @media (max-width: 860px) {
+    .frw-map .builds, .frw-map .builds[data-n], .frw-map .tiles { grid-template-columns: 1fr; }
+    /* on a phone the answer (the tiles and the race) before the four forms (audit CALC-13) */
+    .frw-map .fr-main > .tiles { order: 1; }
+    .frw-map .fr-main > #fr-race { order: 2; }
+    .frw-map .fr-main > .setups { order: 3; }
+    .frw-map .fr-main > :not(.fr-head):not(.tiles):not(#fr-race):not(.setups) { order: 4; }
+    .frw-map .dock { grid-template-columns: repeat(min(var(--n, 2), 2), minmax(0, 1fr)); }
+  }
+  @media (max-width: 520px) {
+    .frw-map .panel { padding: 14px 12px 12px; }
+    .frw-map .dock { padding: 6px 8px; gap: 4px 8px; }
+    .frw-map .dk-val { font-size: 18px; }
+  }
+  /* short windows (200% zoom on a laptop): none, as the Damage Calculator's (it would cover a third of the screen) */
+  @media (max-height: 420px) { .frw-map .dock { display: none; } }
+  /* the quiet buttons (Reset to the defaults, Copy a link to this setup): text, their edge shown under the pointer or
+     the keyboard, as the website's erazure.css draws them, so this file opened on its own looks the same (the Resources
+     pages' shared interface, 2026-11-27) */
+  .frw-map button.ez-quiet, .frw-map .btn.ez-quiet { background: none; border: 1px solid transparent; box-shadow: none;
+      color: var(--fg2, var(--muted)); font-size: 13px; font-weight: 400; min-height: 30px; padding: 3px 8px; cursor: pointer; }
+  .frw-map button.ez-quiet:hover:not(:disabled), .frw-map button.ez-quiet:focus-visible { border-color: var(--axis); color: var(--fg); }
+  .frw-map button.ez-quiet:disabled { opacity: .5; cursor: default; }

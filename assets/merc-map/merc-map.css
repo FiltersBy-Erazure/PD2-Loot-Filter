@@ -1,0 +1,232 @@
+
+  /* Layout: one column, read top to bottom: settings, the best bases at your IAS, charts on one shared IAS axis,
+     the teleport pass, every base, the breakpoint tables, how it's worked out. Dark by default; light when the
+     website (Material) is switched to light. */
+  .merc-map {
+    --bg: #151412; --panel: #1f1d1a; --fg: #ece7de; --fg2: #cfc8bb; --muted: #a59e91; --line: #36322c;
+    --grid: #2e2b27; --axis: #736c60; --accent: #d8b45e; --accent-wash: rgba(216, 180, 94, 0.12); --warn: #f0a24a;
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181;
+    --display: "Cinzel", "Trajan Pro", Georgia, serif;
+    --body: "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    color-scheme: dark;
+    color: var(--fg); font: 15px/1.5 var(--body);
+  }
+  [data-md-color-scheme="default"] .merc-map {
+    --bg: #f3f1ec; --panel: #fffdf8; --fg: #23211c; --fg2: #4a463e; --muted: #6b655a; --line: #ded7c9;
+    --grid: #e7e2d8; --axis: #928a7b; --accent: #8a6d1f; --accent-wash: rgba(138, 109, 31, 0.10); --warn: #8a4b00;
+    --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4;
+    color-scheme: light;
+  }
+  .merc-map *, .merc-map *::before, .merc-map *::after { box-sizing: border-box; }
+  .merc-map .wrap { max-width: 1120px; margin: 0 auto; padding-inline: 16px; }
+  .md-content .merc-map .wrap { padding-inline: 0; max-width: none; }
+  .merc-map .mm-main { display: grid; gap: 20px; padding-block: 4px 48px; }
+  .merc-map .mm-main > * { min-width: 0; }
+  .merc-map h1.mm-title { font: 700 30px/1.15 var(--display); letter-spacing: .02em; margin: 0; padding-block: 24px 6px;
+                          color: var(--fg); text-wrap: balance; }
+  .merc-map h2, .merc-map h3 { margin: 0; color: var(--fg); text-wrap: balance; letter-spacing: 0; }
+  .merc-map h2 { font: 700 19px/1.25 var(--body); }
+  .merc-map h3 { font: 700 15px/1.3 var(--body); }
+  .merc-map p { margin: 0; }
+  .merc-map small { opacity: 1; }
+  .merc-map :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .merc-map .mm-head { display: grid; gap: 8px; }
+  .merc-map .eyebrow { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+  .merc-map .lede { max-width: 72ch; color: var(--fg2); font-size: 16px; }
+
+  .merc-map .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px 18px 14px;
+                     display: grid; gap: 12px; }
+  .merc-map .sub { color: var(--fg2); font-size: 14px; max-width: 82ch; }
+  .merc-map .mm-note { color: var(--muted); font-size: 13px; max-width: 92ch; }
+
+  /* settings */
+  .merc-map .controls { gap: 16px; }
+  .merc-map fieldset { border: 0; margin: 0; padding: 0; min-width: 0; display: grid;
+                       grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px 18px; align-items: start; }
+  .merc-map fieldset + fieldset { border-top: 1px solid var(--line); padding-top: 14px; }
+  .merc-map legend { grid-column: 1 / -1; float: left; width: 100%; padding: 0 0 8px; font-size: 12px; letter-spacing: .1em;
+                     text-transform: uppercase; color: var(--muted); font-weight: 700; }
+  .merc-map .field { display: grid; gap: 4px; min-width: 0; }
+  .merc-map .field.wide { grid-column: span 2; }
+  .merc-map .field.full { grid-column: 1 / -1; }
+  .merc-map .crit-sum { grid-column: 1 / -1; color: var(--fg2); font-variant-numeric: tabular-nums; }
+  .merc-map .field label { font-size: 13px; font-weight: 600; color: var(--fg2); }
+  .merc-map .field small { font-size: 12px; color: var(--muted); line-height: 1.35; }
+  .merc-map .field small.over { color: var(--warn); }
+  .merc-map input, .merc-map select { font: inherit; color: var(--fg); }
+  .merc-map select, .merc-map input[type="number"] { background: var(--bg); border: 1px solid var(--axis); border-radius: 6px;
+                                                     padding: 5px 8px; min-width: 0; width: 100%; font-size: 14px; min-height: 34px; }
+  /* every list and number box 14 px and 34 px tall, as the IAS Calculator's (the type review, 2026-11-20) */
+  .merc-map input[type="number"] { font-variant-numeric: tabular-nums; }
+  .merc-map .range-row { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .merc-map .range-row input[type="range"] { flex: 1; min-width: 0; accent-color: var(--accent); }
+  /* a finger's slider as tall as the boxes beside it (the additions audit, SW-09: 16 px) */
+  @media (pointer: coarse) { .merc-map .range-row input[type="range"] { min-height: 34px; margin: 0; } }
+  .merc-map .range-row input[type="number"] { width: 76px; flex: none; }
+  .merc-map .range-row output { width: 56px; flex: none; text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+  /* a field: its label (help behind an (i)), its input, then a note the settings fill in. The fields of a row share
+     their label's height, so their inputs line up */
+  .merc-map .lab { display: flex; align-items: center; gap: 6px; min-height: 20px; }
+  .merc-map .num { display: inline-flex; align-items: center; gap: 6px; flex: none; }
+  .merc-map .num input[type="number"] { width: 84px; }
+  .merc-map .num.wide input[type="number"] { width: 112px; }
+  .merc-map .unit { color: var(--muted); font-size: 14px; }
+  @supports (grid-template-rows: subgrid) {
+    .merc-map .field { grid-row: span 3; grid-template-rows: subgrid; row-gap: 4px; }
+  }
+  /* the (i) beside a label: its text shows on hover, keyboard focus or a tap */
+  .merc-map { position: relative; }
+  .merc-map button.info { position: relative; display: inline-grid; place-items: center; flex: none; width: 17px; height: 17px; padding: 0;
+                          border: 1px solid var(--axis); border-radius: 50%; background: none; color: var(--muted); cursor: help;
+                          font: italic 700 11px/1 Georgia, "Times New Roman", serif; }
+  .merc-map button.info::after { content: ""; position: absolute; inset: -7px; }
+  .merc-map button.info:hover, .merc-map button.info[aria-describedby] { color: var(--fg); border-color: var(--accent); }
+  .merc-map .mm-help { position: absolute; z-index: 6; max-width: min(320px, calc(100vw - 32px)); padding: 8px 10px; border-radius: 6px;
+                       background: var(--panel); border: 1px solid var(--axis); color: var(--fg); font-size: 13px; line-height: 1.4;
+                       pointer-events: none; box-shadow: 0 6px 18px rgba(0, 0, 0, .45); }
+  [data-md-color-scheme="default"] .merc-map .mm-help { box-shadow: 0 6px 18px rgba(0, 0, 0, .12); }
+
+  /* the best bases at your IAS */
+  .merc-map .tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+  .merc-map .tile { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px;
+                    display: grid; gap: 4px; align-content: start; }
+  .merc-map .tile-label { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+  .merc-map .tile-value { font-size: 30px; font-weight: 700; line-height: 1.15; }
+  .merc-map .tile-value span { font-size: 15px; font-weight: 600; color: var(--fg2); margin-left: 4px; }
+  .merc-map .tile-sub { font-size: 15px; font-weight: 600; }
+  .merc-map .tile-note { font-size: 13px; color: var(--muted); }
+  /* the strip at the bottom of the screen with the best bases, while the tiles are scrolled away */
+  .merc-map .dock { position: sticky; bottom: 0; z-index: 3; display: grid; grid-template-columns: auto repeat(3, minmax(0, 1fr));
+                    gap: 2px 20px; align-items: center; padding: 8px 16px; background: var(--panel); border: 1px solid var(--line);
+                    border-radius: 8px; box-shadow: 0 -8px 24px rgba(0, 0, 0, .4); visibility: hidden; opacity: 0;
+                    transition: opacity .15s, visibility .15s, border-color .4s; }
+  [data-md-color-scheme="default"] .merc-map .dock { box-shadow: 0 -6px 18px rgba(0, 0, 0, .12); }
+  .merc-map .dock.on { visibility: visible; opacity: 1; }
+  .merc-map .dock.flash { border-color: var(--accent); transition: none; }
+  .merc-map .d-ias { font-weight: 700; white-space: nowrap; }
+  .merc-map .d-item { display: grid; min-width: 0; }
+  .merc-map .d-lab { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+  .merc-map .d-line { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--fg2); font-size: 14px; }
+  .merc-map .d-line b { font-size: 18px; color: var(--fg); margin-right: 6px; font-variant-numeric: tabular-nums; }
+
+  /* charts */
+  .merc-map .chart-head { display: grid; gap: 4px; }
+  .merc-map ul.mm-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; padding: 0; margin: 0; list-style: none; }
+  .merc-map .mm-legend li { display: flex; align-items: baseline; gap: 7px; font-size: 13px; cursor: default; min-width: 0; margin: 0; }
+  .merc-map .mm-legend .key { width: 26px; height: 4px; flex: none; transform: translateY(-3px); }
+  .merc-map .mm-legend .spd { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+  .merc-map .plot { position: relative; min-width: 0; }
+  .merc-map .plot svg { display: block; width: 100%; max-width: 100%; height: auto; overflow: visible; touch-action: pan-y; }
+  .merc-map .plot svg:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 4px; }
+  .merc-map .tick { fill: var(--muted); font-size: 12px; font-family: var(--body); font-variant-numeric: tabular-nums; }
+  .merc-map .axis-title { fill: var(--muted); font-size: 12px; font-family: var(--body); }
+  .merc-map .marker-label { fill: var(--fg2); font-size: 12px; font-weight: 700; font-family: var(--body); }
+  .merc-map .end-label { fill: var(--muted); font-size: 12px; font-weight: 700; font-family: var(--body); font-variant-numeric: tabular-nums; }
+  /* a speed group's key: a short line with its color and dash (after .plot svg, which the tooltip's keys sit in) */
+  .merc-map svg.key { display: inline-block; overflow: visible; }
+  .merc-map .mm-tip { position: absolute; z-index: 5; pointer-events: none; background: var(--panel); border: 1px solid var(--line);
+                      border-radius: 8px; box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25); padding: 8px 10px; font-size: 13px;
+                      min-width: 210px; max-width: 300px; }
+  .merc-map .mm-tip-head { font-weight: 700; margin-bottom: 4px; color: var(--fg); }
+  .merc-map .mm-tip-row { display: grid; grid-template-columns: 22px auto 1fr; gap: 0 7px; align-items: baseline; padding: 1px 0; }
+  .merc-map .mm-tip-row .key { width: 22px; height: 4px; transform: translateY(-3px); }
+  .merc-map .mm-tip-row b { font-variant-numeric: tabular-nums; color: var(--fg); }
+  .merc-map .mm-tip-row span:last-child { color: var(--fg2); overflow-wrap: anywhere; }
+  .merc-map .mm-tip-foot { margin-top: 5px; color: var(--muted); font-size: 12px; }
+
+  /* tables */
+  .merc-map .table-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 20px; }
+  .merc-map .toggles { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 14px; color: var(--fg2); }
+  .merc-map .toggles label { display: flex; gap: 6px; align-items: center; }
+  .merc-map .toggles input { accent-color: var(--accent); }
+  /* relative: the screen reader note in your breakpoint cell (position: absolute) stays inside it, or the page scrolled
+     sideways on phones (219 px at 390 wide; found 2026-11-23, the additions audit's checks) */
+  .merc-map .scroll { overflow-x: auto; min-width: 0; position: relative; }
+  .merc-map table.mm-table { border-collapse: collapse; width: 100%; font-size: 14px; margin: 0; display: table; }
+  .merc-map .mm-table th, .merc-map .mm-table td { padding: 7px 10px; text-align: right; border: 0; border-bottom: 1px solid var(--line);
+                                                   white-space: nowrap; background: none; }
+  .merc-map .mm-table th { font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: .03em; vertical-align: bottom; }
+  .merc-map .mm-table th:first-child, .merc-map .mm-table td:first-child { text-align: left; }
+  .merc-map .mm-table th.grp { text-align: center; color: var(--fg2); border-bottom-color: var(--axis); }
+  .merc-map .mm-table td { font-variant-numeric: tabular-nums; color: var(--fg); }
+  .merc-map .mm-table tbody tr:hover td { background: var(--accent-wash); }
+  .merc-map .mm-table td.name { font-weight: 600; }
+  .merc-map .mm-table td.name small { display: block; font-weight: 400; color: var(--muted); font-size: 12px; }
+  .merc-map .mm-table td .key { display: inline-block; width: 20px; height: 4px; margin-right: 7px; transform: translateY(-3px); }
+  .merc-map .mm-table td.best { font-weight: 700; }
+  .merc-map .mm-table td.best::after { content: "\25C6"; margin-left: 5px; font-size: 9px; color: var(--accent); vertical-align: 1px; }
+  .merc-map .mm-table td.low { color: var(--warn); font-weight: 600; }
+  .merc-map .mm-table td.sep, .merc-map .mm-table th.sep { border-left: 1px solid var(--line); }
+  .merc-map .bp th:first-child, .merc-map .bp td:first-child { white-space: normal; min-width: 170px; }
+  .merc-map .bp td.zero { color: var(--muted); }
+  /* the frame count your IAS reaches, in each speed group (audit RES-20): outlined and bold, not colour alone */
+  .merc-map .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .merc-map .bp td.you { font-weight: 700; color: var(--fg); outline: 2px solid var(--accent); outline-offset: -2px; }
+  /* one answer over the tiles (audit RES-02) */
+  .merc-map .mm-verdict { font-size: 16px; color: var(--fg2); max-width: 90ch; margin: 0; }
+  .merc-map .mm-verdict b { color: var(--fg); }
+  /* Reset and Copy a link, as every calculator has them (audit CALC-09) */
+  .merc-map .tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 0; }
+  .merc-map .tools button { font: inherit; background: var(--bg); border: 1px solid var(--axis); border-radius: 6px; padding: 4px 10px; cursor: pointer;
+                            font-size: 13px; min-height: 30px; color: var(--fg2); }
+  .merc-map .tools button:hover:not(:disabled) { border-color: var(--accent); color: var(--fg); }
+  .merc-map .tools button:disabled { opacity: .5; cursor: default; }
+  .merc-map .tools-note { font-size: 13px; color: var(--muted); }
+  /* 200% zoom on a laptop: no strip, it would cover a third of the screen (audit RES-11) */
+  @media (max-height: 420px) { .merc-map .dock { display: none; } }
+
+  .merc-map .method { display: grid; gap: 10px; }
+  .merc-map .method ul { margin: 0; padding-left: 20px; display: grid; gap: 7px; max-width: 92ch; color: var(--fg2); list-style: disc; }
+  .merc-map .method li { margin: 0; }
+  .merc-map .method li strong { color: var(--fg); }
+  /* formulas as the IAS Calculator's codes: its monospace in a box (the type review, 2026-11-20) */
+  .merc-map .formula { font: 13px/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; white-space: nowrap;
+                       background: var(--bg); border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; }
+
+  @media (max-width: 760px) {
+    .merc-map .tiles { grid-template-columns: 1fr; }
+    .merc-map .field.wide { grid-column: 1 / -1; }
+    .merc-map .panel { padding: 14px 12px 12px; }
+    .merc-map .dock { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2px 12px; padding: 6px 10px; }
+    .merc-map .d-ias { grid-column: 1 / -1; font-size: 13px; }
+    .merc-map .d-lab { font-size: 11px; letter-spacing: .04em; }
+    .merc-map .d-line b { display: block; margin: 0; font-size: 16px; }
+    .merc-map .d-line { font-size: 13px; }
+    @supports (grid-template-rows: subgrid) {
+      /* a label that wraps keeps the three values level */
+      .merc-map .d-item { grid-row: span 2; grid-template-rows: subgrid; }
+    }
+    /* the base and teleport tables: a card per base, each value under its column's name */
+    .merc-map table.cards, .merc-map .cards tbody, .merc-map .cards tr, .merc-map .cards td { display: block; }
+    .merc-map .cards thead { display: none; }
+    .merc-map .cards tbody tr { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 14px; padding: 12px 2px;
+                                border-bottom: 1px solid var(--line); }
+    .merc-map .cards td { padding: 0; border: 0; text-align: left; white-space: normal; min-width: 0; }
+    .merc-map .cards td.sep { border-left: 0; }
+    .merc-map .cards tbody tr:hover td { background: none; }
+    .merc-map .cards td.name { align-self: center; }
+    .merc-map .cards td[data-l]::before { content: attr(data-l); display: block; font-size: 12px; font-weight: 400; color: var(--muted); }
+    /* every base: three to a line, its results first */
+    .merc-map #baseTable.cards tbody tr { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .merc-map #baseTable.cards td.name { grid-column: span 2; }
+    .merc-map #baseTable.cards td:nth-child(7) { order: 3; }
+    .merc-map #baseTable.cards td:nth-child(9) { order: 4; }
+    .merc-map #baseTable.cards td:nth-child(10) { order: 5; }
+    .merc-map #baseTable.cards td:nth-child(8) { order: 6; }
+    .merc-map #baseTable.cards td:nth-child(6) { order: 7; }
+    .merc-map #baseTable.cards td:nth-child(3) { order: 8; }
+    .merc-map #baseTable.cards td:nth-child(4) { order: 9; }
+    .merc-map #baseTable.cards td:nth-child(5) { order: 10; grid-column: span 2; }
+  }
+  @media (max-width: 440px) {
+    .merc-map fieldset { grid-template-columns: 1fr; }
+    .merc-map .tile-value { font-size: 26px; }
+  }
+  /* the quiet buttons (Reset to the defaults, Copy a link to this setup): text, their edge shown under the pointer or
+     the keyboard, as the website's erazure.css draws them, so this file opened on its own looks the same (the Resources
+     pages' shared interface, 2026-11-27) */
+  .merc-map button.ez-quiet, .merc-map .btn.ez-quiet { background: none; border: 1px solid transparent; box-shadow: none;
+      color: var(--fg2, var(--muted)); font-size: 13px; font-weight: 400; min-height: 30px; padding: 3px 8px; cursor: pointer; }
+  .merc-map button.ez-quiet:hover:not(:disabled), .merc-map button.ez-quiet:focus-visible { border-color: var(--axis); color: var(--fg); }
+  .merc-map button.ez-quiet:disabled { opacity: .5; cursor: default; }

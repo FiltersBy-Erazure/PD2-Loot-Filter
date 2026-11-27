@@ -1,0 +1,162 @@
+
+  /* Two columns: the monster, its auras and the curse on you, the map's mods and you on the left; the answer on the
+     right (it stays in view where the window is tall enough). Below: how it adds up and the rules. One column on
+     phones, with a strip at the bottom while the answer is scrolled away. Dark by default; light when the website
+     (Material) is switched to light. */
+  .mondmg-map {
+    --bg: #151412; --panel: #1f1d1a; --panel2: #262420; --fg: #ece7de; --muted: #a59e91; --line: #36322c;
+    --accent: #d8b45e; --axis: #736c60; --accent-ink: #1a1508; --warn: #e0954a;
+    --t-phys: #d6cdbd; --t-fire: #f07c45; --t-cold: #63aef0; --t-ltng: #e9cf4c; --t-pois: #74c56f; --t-mag: #c294f0;
+    --display: "Cinzel", "Trajan Pro", Georgia, serif;
+    --body: "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --stick: 12px;
+    color-scheme: dark; position: relative;
+    color: var(--fg); font: 15px/1.5 var(--body);
+  }
+  [data-md-color-scheme="default"] .mondmg-map {
+    --bg: #f3f1ec; --panel: #fffdf8; --panel2: #f6f2e9; --fg: #23211c; --muted: #6b655a; --line: #ded7c9;
+    --accent: #8a6d1f; --axis: #928a7b; --accent-ink: #fffdf8; --warn: #a85a12;
+    --t-phys: #5c554a; --t-fire: #c4501a; --t-cold: #1d6fb8; --t-ltng: #8f7a00; --t-pois: #2f8a2c; --t-mag: #8243c2;
+    color-scheme: light;
+  }
+  .mondmg-map *, .mondmg-map *::before, .mondmg-map *::after { box-sizing: border-box; }
+  .mondmg-map .wrap { max-width: 1240px; margin: 0 auto; padding-inline: 16px; }
+  .md-content .mondmg-map .wrap { padding-inline: 0; max-width: none; }
+  .mondmg-map h1, .mondmg-map h2, .mondmg-map h3 { font-family: var(--display); font-weight: 700; text-wrap: balance; margin: 0; letter-spacing: .01em; color: var(--fg); }
+  .mondmg-map .dg-title { font-size: 2rem; line-height: 1.15; padding-block: 24px 4px; }
+  .mondmg-map h2 { font-size: 1.15rem; }
+  .mondmg-map h3 { font-family: var(--body); color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: .06em; font-size: .76rem; }
+  .mondmg-map p { margin: 0; }
+  .mondmg-map .lede { color: var(--fg2); font-size: 16px; max-width: 72ch; }
+  .mondmg-map .eyebrow { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); font-weight: 700; margin: 0; }
+  /* the page's buttons: Reset to the defaults (Undo reset until the next change), then Copy a link to this setup, under
+     the intro, your character on a line of its own under them (the additions audit, SW-08 and SW-12) */
+  .mondmg-map .tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 0; }
+  .mondmg-map .tools button { font: inherit; font-size: 13px; min-height: 30px; padding: 4px 10px; border-radius: 6px; cursor: pointer;
+    background: transparent; border: 1px solid var(--accent); color: var(--accent); white-space: nowrap; }
+  .mondmg-map .tools button:disabled { opacity: .5; cursor: default; }
+  .mondmg-map .tools-note { font-size: 13px; color: var(--muted); overflow-wrap: anywhere; }
+  @media (max-width: 640px), (pointer: coarse) { .mondmg-map .tools button { min-height: 32px; } }
+  /* the kinds of hit stay named while the numbers scroll past on a phone (audit RES-05) */
+  .mondmg-map .dg-t td:first-child, .mondmg-map .dg-t th:first-child { position: sticky; left: 0; z-index: 1; background: var(--panel); }
+  @media (max-width: 600px) { .mondmg-map .dg-t .long { display: none; } }
+  .mondmg-map .dg-main { display: grid; gap: 20px; padding-block: 4px 24px; }
+  .mondmg-map .grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr); gap: 20px; align-items: start; }
+  .mondmg-map .col { display: grid; gap: 16px; min-width: 0; }
+  .mondmg-map .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 16px; display: grid; gap: 14px; min-width: 0; }
+  .mondmg-map .below { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+  .mondmg-map .results.stick { position: sticky; top: var(--stick); }
+  .mondmg-map .row2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 12px; }
+  .mondmg-map .row3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px 12px; }
+  .mondmg-map .f.wide { grid-column: 1 / -1; }
+  .mondmg-map label.f { display: grid; gap: 4px; font-size: .84rem; color: var(--muted); min-width: 0; }
+  .mondmg-map select, .mondmg-map input[type=number] { width: 100%; min-width: 0; font: inherit; font-size: .95rem; color: var(--fg);
+    background: var(--panel2); border: 1px solid var(--axis); border-radius: 6px; padding: 6px 8px; }
+  .mondmg-map select:disabled, .mondmg-map input:disabled { opacity: .55; }
+  .mondmg-map input[type=number] { font-variant-numeric: tabular-nums; }
+  .mondmg-map input[type=range] { accent-color: var(--accent); }
+  .mondmg-map :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .mondmg-map .seg { display: inline-flex; border: 1px solid var(--axis); border-radius: 7px; overflow: hidden; }
+  .mondmg-map .seg button { font: inherit; font-size: .88rem; background: var(--panel2); color: var(--fg); border: 0; padding: 6px 12px; cursor: pointer; }
+  .mondmg-map .seg button + button { border-left: 1px solid var(--axis); }
+  .mondmg-map .seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); font-weight: 700; }
+  .mondmg-map .seg button[aria-pressed="true"]::before { content: "✓ "; }
+  .mondmg-map .seg button:disabled { opacity: .45; cursor: not-allowed; }
+  .mondmg-map .segs { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: end; }
+  .mondmg-map .segs .f { display: grid; gap: 4px; }
+  .mondmg-map .hint { font-size: .82rem; color: var(--muted); }
+  .mondmg-map .affix { display: grid; grid-template-columns: auto minmax(0, 1fr) 76px; gap: 4px 10px; align-items: center; padding: 8px 0; border-top: 1px solid var(--line); }
+  .mondmg-map .affix:first-of-type { border-top: 0; }
+  .mondmg-map .affix input[type=checkbox] { width: 18px; height: 18px; accent-color: var(--accent); margin: 0; }
+  .mondmg-map .affix .name { font-weight: 600; }
+  .mondmg-map .affix .rows { grid-column: 2 / 4; font-size: .8rem; color: var(--muted); }
+  .mondmg-map .affix input[type=range] { grid-column: 2 / 3; width: 100%; accent-color: var(--accent); }
+  .mondmg-map .affix.off .name { opacity: .55; }
+  .mondmg-map .affix.off .rows { opacity: .8; }  /* small print: at .55 its rolls read 2.9:1 (the additions audit, SW-03) */
+  .mondmg-map .affix .val { text-align: right; }
+  .mondmg-map .umods { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 14px; }
+  .mondmg-map .umod { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 2px 8px; align-items: start; font-size: .92rem; }
+  .mondmg-map .umod input { width: 17px; height: 17px; accent-color: var(--accent); margin: 3px 0 0; }
+  .mondmg-map .umod .hint { grid-column: 2; }
+  .mondmg-map .umod.dis { opacity: .5; }
+  .mondmg-map .sub { display: grid; gap: 8px; padding-top: 12px; border-top: 1px solid var(--line); }
+  .mondmg-map .dot { display: inline-block; width: .62em; height: .62em; border-radius: 50%; margin-right: .38em; vertical-align: .06em; }
+  .mondmg-map .d-phys { background: var(--t-phys); } .mondmg-map .d-fire { background: var(--t-fire); } .mondmg-map .d-cold { background: var(--t-cold); }
+  .mondmg-map .d-ltng { background: var(--t-ltng); } .mondmg-map .d-pois { background: var(--t-pois); } .mondmg-map .d-mag { background: var(--t-mag); }
+  .mondmg-map .count { font-size: .84rem; padding: 2px 9px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
+  .mondmg-map .count.over { border-color: var(--warn); color: var(--warn); font-weight: 700; }
+  .mondmg-map .count.over::before { content: "⚠ "; }
+  .mondmg-map .toggle { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; background: var(--panel2); border-radius: 8px; border: 1px solid var(--line); }
+  .mondmg-map .toggle input { width: 18px; height: 18px; accent-color: var(--accent); margin: 3px 0 0; }
+  .mondmg-map .always { display: flex; gap: 10px; align-items: baseline; padding: 10px 12px; border-radius: 8px; border: 1px dashed var(--line); font-size: .92rem; }
+  .mondmg-map .effect { font-size: .88rem; padding: 8px 10px; border-radius: 7px; background: var(--panel2); border: 1px solid var(--line); }
+  .mondmg-map .effect b { font-variant-numeric: tabular-nums; }
+  /* where the auras and curses come from on the map picked */
+  .mondmg-map .srcs { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+  .mondmg-map .srcs li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 10px; align-items: center;
+    font-size: .88rem; padding: 6px 10px; border-radius: 7px; background: var(--panel2); border: 1px solid var(--line); }
+  .mondmg-map .srcs li.on { border-color: var(--accent); box-shadow: inset 3px 0 0 var(--accent); }
+  .mondmg-map .srcs .what b { font-variant-numeric: tabular-nums; }
+  .mondmg-map .srcs .who { grid-column: 1; font-size: .82rem; color: var(--muted); }
+  .mondmg-map .srcs .kind { font-size: .72rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin-right: 6px; }
+  .mondmg-map .srcs button { grid-column: 2; grid-row: 1 / span 2; font: inherit; font-size: .82rem; white-space: nowrap;
+    background: var(--panel); color: var(--fg); border: 1px solid var(--axis); border-radius: 6px; padding: 3px 10px; cursor: pointer; }
+  .mondmg-map .srcs button[aria-pressed="true"] { border-color: var(--accent); font-weight: 700; }
+  .mondmg-map table.tiers th, .mondmg-map table.tiers td { text-align: center; }
+  .mondmg-map table.tiers th:first-child, .mondmg-map table.tiers td:first-child { text-align: left; white-space: normal; }
+  .mondmg-map table.tiers .cur { font-weight: 700; }
+  .mondmg-map table.tiers th[scope=row] .rng { display: block; font-size: .76rem; color: var(--muted); font-weight: 400; }
+  .mondmg-map .big { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+  .mondmg-map .stat { background: var(--panel2); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; display: grid; gap: 2px; min-width: 0; }
+  .mondmg-map .stat .k { font-size: .76rem; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; font-weight: 700; }
+  .mondmg-map .stat .v { font-size: 2rem; font-weight: 700; line-height: 1.05; font-variant-numeric: tabular-nums; }
+  .mondmg-map .stat .s { font-size: .82rem; color: var(--muted); }
+  .mondmg-map .stat.hot { border-color: var(--accent); box-shadow: inset 3px 0 0 var(--accent); }
+  .mondmg-map .tablewrap { overflow-x: auto; position: relative; }
+  .mondmg-map table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; font-size: .9rem; }
+  .mondmg-map th, .mondmg-map td { padding: 6px 8px; text-align: right; white-space: nowrap; border-bottom: 1px solid var(--line); }
+  .mondmg-map th:first-child, .mondmg-map td:first-child { text-align: left; }
+  .mondmg-map thead th { font-weight: 700; color: var(--muted); font-size: .76rem; text-transform: uppercase; letter-spacing: .04em; }
+  .mondmg-map tbody tr.worst td { font-weight: 700; }
+  .mondmg-map td.cnt { text-align: left; white-space: normal; font-weight: 700; }
+  .mondmg-map td .rng { display: block; font-size: .76rem; color: var(--muted); font-weight: 400; }
+  .mondmg-map .chain { display: grid; gap: 10px; }
+  .mondmg-map .chain .line { display: grid; grid-template-columns: 116px minmax(0, 1fr); gap: 8px; font-size: .9rem; align-items: baseline; }
+  .mondmg-map .chain .steps { display: flex; flex-wrap: wrap; gap: 4px 6px; align-items: baseline; min-width: 0; }
+  .mondmg-map .step { background: var(--panel2); border: 1px solid var(--line); border-radius: 5px; padding: 1px 7px; font-variant-numeric: tabular-nums; }
+  .mondmg-map .step.add { border-style: dashed; }
+  .mondmg-map .step.mul b { color: var(--accent); }
+  .mondmg-map .arrow { color: var(--muted); }
+  .mondmg-map .cb { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; font-size: .92rem; padding: 10px 12px; border-radius: 8px; background: var(--panel2); border: 1px solid var(--line); }
+  .mondmg-map .notes li { margin-bottom: 6px; max-width: 75ch; }
+  .mondmg-map .notes ul { padding-left: 1.1em; margin: 0; }
+  .mondmg-map .warnline { color: var(--warn); font-size: .88rem; }
+  .mondmg-map .warnline:not(:empty)::before { content: "⚠ "; }
+  .mondmg-map .head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .mondmg-map button.link { font: inherit; font-size: .88rem; color: var(--accent); background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline; }
+  /* the strip that keeps the answer on screen while the answer itself is scrolled away */
+  .mondmg-map .dock { position: sticky; bottom: 0; z-index: 3; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 16px;
+    padding: 8px 16px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+    box-shadow: 0 -8px 24px rgba(0, 0, 0, .4); visibility: hidden; opacity: 0; transition: opacity .15s, visibility .15s; }
+  [data-md-color-scheme="default"] .mondmg-map .dock { box-shadow: 0 -6px 18px rgba(0, 0, 0, .12); }
+  .mondmg-map .dock.on { visibility: visible; opacity: 1; }
+  .mondmg-map .dock b { font-size: 1.25rem; font-variant-numeric: tabular-nums; }
+  .mondmg-map .dock span { font-size: .84rem; color: var(--muted); }
+  @media (max-width: 900px) {
+    .mondmg-map .grid, .mondmg-map .below { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (max-width: 520px) {
+    .mondmg-map .big { grid-template-columns: minmax(0, 1fr); }
+    .mondmg-map .row3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .mondmg-map .umods { grid-template-columns: minmax(0, 1fr); }
+    .mondmg-map .chain .line { grid-template-columns: minmax(0, 1fr); }
+    .mondmg-map .dg-title { font-size: 1.6rem; }
+  }
+  @media (prefers-reduced-motion: reduce) { .mondmg-map .dock { transition: none; } }
+  /* the quiet buttons (Reset to the defaults, Copy a link to this setup): text, their edge shown under the pointer or
+     the keyboard, as the website's erazure.css draws them, so this file opened on its own looks the same (the Resources
+     pages' shared interface, 2026-11-27) */
+  .mondmg-map button.ez-quiet, .mondmg-map .btn.ez-quiet { background: none; border: 1px solid transparent; box-shadow: none;
+      color: var(--fg2, var(--muted)); font-size: 13px; font-weight: 400; min-height: 30px; padding: 3px 8px; cursor: pointer; }
+  .mondmg-map button.ez-quiet:hover:not(:disabled), .mondmg-map button.ez-quiet:focus-visible { border-color: var(--axis); color: var(--fg); }
+  .mondmg-map button.ez-quiet:disabled { opacity: .5; cursor: default; }

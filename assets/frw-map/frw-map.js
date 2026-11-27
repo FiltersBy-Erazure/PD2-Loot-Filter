@@ -1,0 +1,826 @@
+
+(function () {
+  "use strict";
+  // on the website this script is assets/frw-map/frw-map.js: the race's pictures are found from there
+  const SCRIPT_SRC = document.currentScript && document.currentScript.src;
+  /* calc-data:start */
+  const DATA = {"skills":{"107":{"Id":"107","skill":"Charge","charclass":"pal","HitShift":"8","ToHit":"75","LevToHit":"15","anim":"SQ","seqnum":"4","SrcDam":"128","maxlvl":"20","itypea1":"mele","reqlevel":"12","Param1":"150","Param2":"0","Param3":"100","Param4":"20","Param5":"2","Param6":"65","Param8":"15","calc1":"ln34+(skill('Vigor'.blvl)+skill('Might'.blvl))*par8","name":"Charge","tab":24},"98":{"Id":"98","skill":"Might","charclass":"pal","HitShift":"8","EMin":"40","aurarangecalc":"ln12","anim":"RN","maxlvl":"20","itypea1":"weap","reqlevel":"1","EMinLev1":"20","EMinLev2":"20","EMinLev3":"20","EMinLev4":"20","EMinLev5":"20","Param1":"20","Param2":"3","aurastat1":"damagepercent","aurastatcalc1":"edmn / 2","passivestat1":"damagepercent","passivecalc1":"edmn","perdelay":"50","name":"Might","tab":25},"115":{"Id":"115","skill":"Vigor","charclass":"pal","HitShift":"8","aurarangecalc":"ln12","anim":"RN","maxlvl":"20","itypea1":"weap","reqlevel":"18","Param1":"26","Param2":"3","Param3":"50","Param4":"25","Param5":"7","Param6":"50","aurastat1":"staminarecoverybonus","aurastat2":"skill_staminapercent","aurastat3":"velocitypercent","aurastatcalc1":"ln34","aurastatcalc2":"ln34","aurastatcalc3":"dm56","passivestat1":"item_fastermovevelocity","passivecalc1":"blvl","perdelay":"50","name":"Vigor","tab":26},"380":{"Id":"380","skill":"Blade Dance","charclass":"ass","HitShift":"8","ToHit":"200","LevToHit":"15","anim":"SQ","seqnum":"10","SrcDam":"128","maxlvl":"20","itypea1":"mele","reqlevel":"30","Param1":"30","Param2":"4","Param3":"6","Param5":"20","Param6":"2","calc1":"ln12","aurastat1":"velocitypercent","aurastat2":"item_attackrate","aurastatcalc1":"\"min(ln56, 65)\"","aurastatcalc2":"100","name":"Blade Dance"},"151":{"Id":"151","skill":"Whirlwind","charclass":"bar","HitShift":"8","ToHit":"90","LevToHit":"6","anim":"SQ","seqnum":"10","SrcDam":"128","maxlvl":"20","itypea1":"mele","reqlevel":"30","Param1":"20","Param2":"5","Param3":"6","Param5":"0","Param6":"2","calc1":"ln12","aurastat1":"velocitypercent","aurastat2":"item_attackrate","aurastatcalc1":"\"min(ln56, 65)\"","aurastatcalc2":"100","name":"Whirlwind","tab":32},"258":{"Id":"258","skill":"Quickness","charclass":"ass","HitShift":"8","ELen":"20","auralencalc":"ln56","anim":"SC","maxlvl":"20","reqlevel":"6","ELevLen1":"2","ELevLen2":"1","ELevLen3":"1","Param3":"15","Param4":"60","Param5":"7500","Param6":"125","aurastat1":"velocitypercent","aurastat2":"attackrate","aurastatcalc1":"edln","aurastatcalc2":"((110*blvl) * (par4-par3))/(100 * (blvl+6)) + par3","name":"Burst of Speed","tab":49},"29":{"Id":"29","skill":"Evade","charclass":"ama","HitShift":"8","EMin":"6","EMax":"15","anim":"NU","maxlvl":"20","reqlevel":"6","EMinLev1":"2","EMinLev2":"1","EMinLev3":"1","EMinLev4":"1","EMaxLev1":"2","EMaxLev2":"2","EMaxLev3":"2","EMaxLev4":"2","EMaxLev5":"1","Param1":"0","Param2":"40","Param3":"2","passivestat1":"passive_evade","passivestat2":"velocitypercent","passivecalc1":"\"min(edmn, par2)\"","passivecalc2":"edmx","name":"Evade","tab":1},"46":{"Id":"46","skill":"Blaze","charclass":"sor","EType":"fire","HitShift":"2","EMin":"1","EMax":"2","EDmgSymPerCalc":"(skill('Fire Wall'.blvl))*par8","auralencalc":"\"min(ln12, 250)\"","anim":"SC","maxlvl":"20","reqlevel":"6","EMinLev1":"1","EMinLev2":"1","EMinLev3":"5","EMinLev4":"8","EMinLev5":"8","EMaxLev1":"1","EMaxLev2":"2","EMaxLev3":"6","EMaxLev4":"9","EMaxLev5":"9","Param1":"75","Param2":"5","Param3":"25","Param4":"1","Param5":"60","Param7":"6","Param8":"6","passivestat1":"velocitypercent","passivestat2":"item_cannotbefrozen","passivecalc1":"min(ln34,par5)","passivecalc2":"1","name":"Blaze","tab":8},"51":{"Id":"51","skill":"Fire Wall","charclass":"sor","EType":"fire","HitShift":"3","EMin":"6","EMax":"10","EDmgSymPerCalc":"(skill('Blaze'.blvl))*par8","anim":"SC","maxlvl":"20","reqlevel":"12","EMinLev1":"2","EMinLev2":"6","EMinLev3":"25","EMinLev4":"50","EMinLev5":"50","EMaxLev1":"3","EMaxLev2":"8","EMaxLev3":"28","EMaxLev4":"53","EMaxLev5":"53","Param7":"5","Param8":"5","name":"Fire Wall","tab":8},"378":{"Id":"378","skill":"Joust","charclass":"pal","HitShift":"8","ToHit":"120","LevToHit":"16","auralencalc":"50","anim":"A1","SrcDam":"128","maxlvl":"20","reqlevel":"24","Param1":"40","Param2":"8","Param3":"10","Param4":"2","calc1":"ln12","calc2":"ln34","aurastat1":"velocitypercent","aurastatcalc1":"\"min(3 + (2 * lvl), 65)\"","name":"Joust","tab":24},"242":{"Id":"242","skill":"Hunger","charclass":"dru","HitShift":"8","EMax":"40","EDmgSymPerCalc":"(skill('Maul'.blvl)) * par8","auralencalc":"475+(lvl*25)","anim":"S3","maxlvl":"20","reqlevel":"12","EMaxLev1":"10","EMaxLev2":"16","EMaxLev3":"24","EMaxLev4":"34","EMaxLev5":"46","Param1":"14","Param2":"50","Param3":"3","Param4":"19","Param8":"20","aurastat1":"lifedrainmindam","aurastat2":"velocitypercent","aurastat3":"item_openwounds","aurastat4":"deep_wounds","aurastatcalc1":"par3 + blvl / 4","aurastatcalc2":"par4 + lvl","aurastatcalc3":"dm12 + 5","aurastatcalc4":"edmx","name":"Hunger","tab":41},"233":{"Id":"233","skill":"Maul","charclass":"dru","HitShift":"8","ToHit":"25","LevToHit":"10","auralencalc":"par4","anim":"A1","SrcDam":"128","maxlvl":"20","reqlevel":"6","Param3":"40","Param4":"500","Param5":"30","Param6":"5","Param7":"2","Param8":"3","calc1":"0","calc2":"lvl/par7 + par8","aurastat1":"damagepercent","aurastat2":"stunlength","aurastatcalc1":"lvl*par3","aurastatcalc2":"((par5 + ((blvl - 1) * - par6))<5)?par6:(par5 + ((blvl - 1) * - par6))","name":"Maul","tab":41},"232":{"Id":"232","skill":"Feral Rage","charclass":"dru","HitShift":"8","ToHit":"25","LevToHit":"8","auralencalc":"par1","anim":"A1","SrcDam":"128","maxlvl":"20","reqlevel":"6","Param1":"750","Param2":"1","Param3":"20","Param4":"120","Param5":"50","Param6":"10","Param7":"2","Param8":"3","calc1":"ln56 + skill('Fury'.blvl) * 6","calc2":"lvl/par7 + par8","aurastat1":"velocitypercent","aurastat2":"lifedrainmindam","aurastatcalc1":"dm34","aurastatcalc2":"\"1 + (lvl - 1) * (min(par2 * skill('Feral Rage'.lvl) / 2 + 4,10) - 1) / max(skill('Feral Rage'.clc2) - 1,1)\"","name":"Feral Rage","tab":41},"248":{"Id":"248","skill":"Fury","charclass":"dru","HitShift":"8","ToHit":"235","LevToHit":"10","anim":"A1","SrcDam":"128","maxlvl":"20","reqlevel":"30","Param2":"100","Param3":"100","Param4":"8","Param5":"3","Param6":"3","Param8":"4","calc1":"\"min((par5 + lvl -1), par6)\"","calc2":"ln34 + skill('Feral Rage'.blvl)*par8","aurastat1":"inc_splash_radius","aurastatcalc1":"1","name":"Fury","tab":41},"147":{"Id":"147","skill":"Frenzy","charclass":"bar","HitShift":"8","ELen":"32","ToHit":"30","LevToHit":"12","auralencalc":"375 + (25 * (blvl*2))","anim":"SQ","seqnum":"11","SrcDam":"128","maxlvl":"20","itypea1":"mele","reqlevel":"6","ELevLen1":"2","ELevLen2":"1","ELevLen3":"1","Param1":"25","Param2":"25","Param3":"0","Param4":"45","Param5":"0","Param6":"50","Param7":"375","Param8":"20","calc1":"ln12+(skill('Double Swing'.blvl) + skill('Stun'.blvl))*par8","calc2":"dm34","calc4":"5","aurastat1":"velocitypercent","aurastat2":"attackrate","aurastatcalc1":"edln","aurastatcalc2":"dm56","name":"Frenzy","tab":32},"139":{"Id":"139","skill":"Stun","charclass":"bar","EType":"stun","HitShift":"8","ELen":"25","ToHitCalc":"40+lvl*15+skill('Concentrate'.blvl)*par7","aurarangecalc":"5","anim":"A1","SrcDam":"32","maxlvl":"20","itypea1":"mele","reqlevel":"6","MinDam":"2","MaxDam":"4","MinLevDam1":"1","MinLevDam2":"2","MinLevDam3":"3","MinLevDam4":"4","MinLevDam5":"5","MaxLevDam1":"2","MaxLevDam2":"3","MaxLevDam3":"4","MaxLevDam4":"5","MaxLevDam5":"6","ELevLen1":"4","ELevLen2":"4","ELevLen3":"2","Param1":"0","Param2":"0","Param6":"0","Param7":"10","Param8":"8","name":"Stun","tab":32},"144":{"Id":"144","skill":"Concentrate","charclass":"bar","EType":"mag","HitShift":"8","ToHit":"40","LevToHit":"20","anim":"A1","SrcDam":"128","maxlvl":"20","itypea1":"mele","reqlevel":"12","Param1":"80","Param2":"25","Param3":"20","Param4":"5","Param7":"25","Param8":"25","calc1":"ln12+skill('Bash'.blvl)*par8+skill('Battle Command'.blvl)*par7","calc4":"30 + 2*blvl ","aurastat1":"skill_armor_percent","aurastat2":"inc_splash_radius","aurastatcalc1":"ln34","aurastatcalc2":"20","name":"Concentrate","tab":32},"155":{"Id":"155","skill":"Battle Command","charclass":"bar","HitShift":"8","auralencalc":"7500","anim":"SC","maxlvl":"20","reqlevel":"30","Param1":"125","Param2":"250","Param3":"20","Param4":"3","Param8":"125","aurastat1":"item_allskills","aurastat2":"damagepercent","aurastatcalc1":"1+blvl/10","aurastatcalc2":"ln34","name":"Battle Command","tab":34},"126":{"Id":"126","skill":"Bash","charclass":"bar","HitShift":"8","ToHit":"30","LevToHit":"20","anim":"A1","SrcDam":"128","maxlvl":"20","itypea1":"mele","reqlevel":"1","Param3":"1","Param4":"1","Param5":"50","Param6":"25","Param7":"10","Param8":"20","calc1":"ln56 + (skill('Stun'.blvl) + skill('Concentrate'.blvl)) * par8","calc2":"ln34","name":"Bash","tab":32},"133":{"Id":"133","skill":"Double Swing","charclass":"bar","HitShift":"8","ToHit":"20","LevToHit":"15","anim":"SQ","seqnum":"11","SrcDam":"128","maxlvl":"20","itypea1":"mele","reqlevel":"1","Param1":"50","Param3":"30","Param4":"30","Param5":"50","Param8":"20","calc1":"ln34 + (skill('Frenzy'.blvl) + skill('Stun'.blvl)) * par8","aurastat1":"attackrate","aurastatcalc1":"par5","name":"Double Swing","tab":32},"148":{"Id":"148","skill":"Increased Speed","charclass":"bar","HitShift":"8","ELen":"2","anim":"SC","maxlvl":"20","reqlevel":"24","ELevLen1":"2","ELevLen2":"2","ELevLen3":"1","Param1":"7","Param2":"50","passivestat1":"velocitypercent","passivestat2":"item_fasterattackrate","passivecalc1":"dm12","passivecalc2":"blvl * 2","name":"Increased Speed","tab":33}},"classes":[{"code":"ama","name":"Amazon","walk":6,"run":9},{"code":"sor","name":"Sorceress","walk":6,"run":9},{"code":"nec","name":"Necromancer","walk":6,"run":9},{"code":"pal","name":"Paladin","walk":6,"run":9},{"code":"bar","name":"Barbarian","walk":6,"run":9},{"code":"dru","name":"Druid","walk":6,"run":9},{"code":"ass","name":"Assassin","walk":6,"run":9}],"chill":-50,"slows":[{"k":"decrep","name":"Decrepify","opts":[{"v":-30,"who":["Oblivion Knight (one curse in four)","Baal (on his throne)","Madness (Canight The Corrupted's minion)","Shadow of Mendeln (one curse in four)","Void Knight (one curse in four)","Thonos the Many-Limbed"]},{"v":-32,"who":["Onion the Accused"]},{"v":-46,"who":["Nathkill The Numb"]}]},{"k":"hfreeze","name":"Holy Freeze","opts":[{"v":-30,"who":["Aura-enchanted unique, monster level 1–13"]},{"v":-34,"who":["Aura-enchanted unique, monster level 14–20"]},{"v":-37,"who":["Aura-enchanted unique, monster level 21–27"]},{"v":-40,"who":["Aura-enchanted unique, monster level 28–34"]},{"v":-42,"who":["Duriel (Normal)","Duriel (Nightmare)","Aura-enchanted unique, monster level 35–41"]},{"v":-44,"who":["Duriel (Hell)","Corrupted Paladin","Aura-enchanted unique, monster level 42–48"]},{"v":-45,"who":["Aura-enchanted unique, monster level 49–55"]},{"v":-46,"who":["Aura-enchanted unique, monster level 56–62"]},{"v":-48,"who":["Shattered Soul","Aura-enchanted unique, monster level 63–76"]},{"v":-49,"who":["Aura-enchanted unique, monster level 77–83"]},{"v":-50,"who":["Aura-enchanted unique, monster level 84–90"]},{"v":-51,"who":["Aura-enchanted unique, monster level 91+"]},{"v":-55,"who":["Uber Duriel"]}]},{"k":"slowmv","name":"Slow Movement","opts":[{"v":-42,"who":["Siren of the Forgotten Vault"]},{"v":-65,"who":["Borq the Consumed"]}]}]};
+  /* calc-data:end */
+
+  const root = document.querySelector(".frw-map");
+  if (!root || !DATA.skills) return;
+  const $ = id => document.getElementById(id);
+  const STORE = "erazure-run-speed";
+  const KEYS = ["var(--s1)", "var(--s2)", "var(--s3)", "var(--s4)"];
+  const LETTERS = ["A", "B", "C", "D"];
+  const INK = ["#111", "#111", "#111", "#fff"];  // each key's letter, the darker or lighter as reads best on its color
+  const DASHES = ["", "8 4", "2 3", "11 3 2 3"];  // each setup's line in the chart (the line with no skills: 4 3)
+  const keyHTML = i => `<span class="key" aria-hidden="true" style="background:${KEYS[i]};color:${INK[i]}">${LETTERS[i]}</span>`;
+  const nf0 = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
+  const nf2 = new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const nf1 = new Intl.NumberFormat("en-US", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const SK = DATA.skills;
+  const CLS = Object.fromEntries(DATA.classes.map(c => [c.code, c]));
+  const SLOWS = DATA.slows || [];
+  const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+  const tdiv = (a, b) => (b === 0 ? 0 : Math.trunc(a / b));
+
+  /* The skills' formulas as the game reads them (the same rules as the Damage Calculator's): integer arithmetic, '?'
+     binding tighter than the operators around it, ln / dm / ed* keywords from the skill's own columns */
+  const Calc = (() => {
+    const KW = ["ln12", "dm12", "ln34", "dm34", "ln56", "dm56", "ln78", "dm78"];
+    const BIN = { "<": 15, ">": 15, "<=": 15, ">=": 15, "==": 15, "!=": 15, "+": 17, "-": 17, "*": 19, "/": 19 };
+    const TOK = /\s*(?:(\d+)|('[^']*'\s*\.\s*[A-Za-z_]\w*)|([A-Za-z_]\w*)|(<=|>=|==|!=|[-+*/?:<>(),]))/y;
+    const n = x => (x === undefined || x === "" ? 0 : parseInt(x, 10) || 0);
+    const bracket = (lvl, base, p) => lvl <= 1 ? base : lvl > 28 ? base + 7 * p[0] + 8 * p[1] + 6 * (p[2] + p[3]) + (lvl - 28) * p[4]
+      : lvl > 22 ? base + 7 * p[0] + 8 * p[1] + 6 * p[2] + (lvl - 22) * p[3] : lvl > 16 ? base + 7 * p[0] + 8 * p[1] + (lvl - 16) * p[2]
+      : lvl > 8 ? base + 7 * p[0] + (lvl - 8) * p[1] : base + (lvl - 1) * p[0];
+    const len = (lvl, base, p) => lvl <= 0 ? 0 : base + (lvl <= 8 ? p[0] * (lvl - 1) : lvl <= 16 ? 7 * p[0] + (lvl - 8) * p[1] : 7 * p[0] + 8 * p[1] + (lvl - 16) * p[2]);
+    function parse(text) {
+      const t = []; text = text.replace(/"/g, ""); TOK.lastIndex = 0;
+      while (TOK.lastIndex < text.length && text.slice(TOK.lastIndex).trim()) {
+        const m = TOK.exec(text); if (!m) throw new Error("bad formula");
+        if (m[1]) t.push(["n", +m[1]]); else if (m[2]) { const mm = /'([^']*)'\s*\.\s*(\w+)/.exec(m[2]); t.push(["link", [mm[1], mm[2]]]); }
+        else if (m[3]) t.push(["id", m[3]]); else t.push(["op", m[4]]);
+      }
+      let i = 0; const peek = () => t[i] || [null, null];
+      const take = () => t[i++];
+      function expr(minbp) { let l = unary(); for (;;) { const [k, v] = peek(); if (k !== "op" || !(v in BIN) || BIN[v] < minbp) return l; take(); l = ["bin", v, l, expr(BIN[v] + 1)]; } }
+      function unary() { const [k, v] = peek(); if (k === "op" && v === "-") { take(); return ["neg", unary()]; } let x = primary(); while (peek()[1] === "?") { take(); const a = primary(); take(); const b = primary(); x = ["tern", x, a, b]; } return x; }
+      function primary() { const [k, v] = take(); if (k === "n") return ["n", v]; if (k === "op" && v === "(") { const e = expr(0); take(); return e; }
+        if (k === "id") { if (peek()[1] === "(") { take(); const a = [expr(0)]; while (peek()[1] === ",") { take(); a.push(expr(0)); } take(); return ["call", v.toLowerCase(), a]; } return ["kw", v]; }
+        if (k === "link") return ["link", v]; throw new Error("bad formula"); }
+      return text.trim() ? expr(0) : ["n", 0];
+    }
+    function kw(r, key, lvl, ctx) {
+      const par = i => n(r["Param" + i]); const k = KW.indexOf(key);
+      if (k >= 0) { const a = par(2 * (k >> 1) + 1), b = par(2 * (k >> 1) + 2); if (k % 2 === 0) return lvl > 0 ? a + (lvl - 1) * b : 0; if (lvl <= 0 && k !== 7) return 0; return Math.min(a + tdiv((b - a) * tdiv(110 * lvl, lvl + 6), 100), b); }
+      if (/^par[1-8]$/.test(key)) return par(+key[3]);
+      if (key === "lvl") return lvl;
+      if (key === "blvl") return ctx.self_blvl !== undefined ? ctx.self_blvl : lvl;
+      if (key === "edmn" || key === "edmx") { const s = key === "edmn" ? "EMin" : "EMax"; let d = bracket(lvl, n(r[s]), [1, 2, 3, 4, 5].map(i => n(r[s + "Lev" + i]))) * Math.pow(2, n(r.HitShift)); return Math.floor(d / 256); }
+      if (key === "edln") return len(lvl, n(r.ELen), [1, 2, 3].map(i => n(r["ELevLen" + i])));
+      return 0;
+    }
+    function ev(x, r, lvl, ctx) {
+      switch (x[0]) {
+        case "n": return x[1]; case "kw": return kw(r, x[1], lvl, ctx); case "neg": return -ev(x[1], r, lvl, ctx);
+        case "tern": return ev(x[1], r, lvl, ctx) ? ev(x[2], r, lvl, ctx) : ev(x[3], r, lvl, ctx);
+        case "bin": { const a = ev(x[2], r, lvl, ctx), b = ev(x[3], r, lvl, ctx); switch (x[1]) { case "+": return a + b; case "-": return a - b; case "*": return a * b; case "/": return tdiv(a, b); case "<": return +(a < b); case ">": return +(a > b); case "<=": return +(a <= b); case ">=": return +(a >= b); case "==": return +(a === b); case "!=": return +(a !== b); } return 0; }
+        case "call": { if (x[1] === "min" || x[1] === "max") { const v = x[2].map(y => ev(y, r, lvl, ctx)); return x[1] === "min" ? Math.min(...v) : Math.max(...v); } return 0; }
+      }
+      return 0;
+    }
+    return (id, col, lvl, ctx) => { const r = SK[id]; if (!r || !r[col] || lvl <= 0) return 0; try { return ev(parse(r[col]), r, lvl, ctx || {}); } catch (e) { return 0; } };
+  })();
+
+  // ================================================================== the model
+  /* a point of speed moves a character 1/16 of a map square (subtile) a frame, 25 frames a second; a map square is
+     2/3 of the skill descriptions' yards: 25/16 x 2/3 = 25/24 of a yard a second */
+  const YARDS = 25 / 24;
+  const efrw = v => (v > 0 ? Math.trunc(150 * v / (150 + v)) : v);
+  /* the velocity % a setup's skills give (velocitypercent: no diminishing returns) and the item FRW they add */
+  /* how long a buff lasts once cast, in game frames (its auralencalc; 0: as long as it's on) */
+  const lasts = (id, lvl) => Calc(id, "auralencalc", lvl);
+  /* one Blaze at a time (the author, 2026-11-14): a Sorceress's own (blaze) or an item's (blazeItem); the page lets
+     only one be above 0 */
+  const blazeLvl = b => (b.cls === "sor" && b.s.blaze > 0 ? b.s.blaze : b.s.blazeItem || 0);
+  /* Frenzy's most stacks (its calc4: a hit adds one up to it, and each stack gives that share of the buff) */
+  const frenzyMax = lvl => Math.max(1, Calc(147, "calc4", Math.max(1, lvl)));
+  function skills(b) {
+    const parts = []; let vel = 0, itemFrw = 0;
+    // [label, movement %, frames it lasts (0: no end)]
+    const add = (label, v, dur) => { if (v) { vel += v; parts.push([label, v, dur || 0]); } };
+    const s = b.s;
+    if (b.cls === "bar" && s.inc > 0) add("Increased Speed", Calc(148, "passivecalc1", s.inc));
+    if (b.cls === "bar" && s.frenzy > 0) { const m = frenzyMax(s.frenzy); add("Frenzy", Math.floor(Calc(147, "aurastatcalc1", s.frenzy) * clamp(s.stacks, 0, m) / m), lasts(147, s.frenzy)); }
+    if (b.cls === "ass" && s.bos > 0) add("Burst of Speed", Calc(258, "aurastatcalc1", s.bos), lasts(258, s.bos));
+    if (b.cls === "ama" && s.evade > 0) add("Evade", Calc(29, "passivecalc2", s.evade));
+    const bz = blazeLvl(b);
+    if (bz > 0) add("Blaze", Calc(46, "passivecalc1", bz), lasts(46, bz));
+    if (b.cls === "dru" && s.feral > 0 && s.charges > 0) add("Feral Rage", Calc(232, "aurastatcalc1", s.charges), lasts(232, s.feral));
+    if (b.cls === "dru" && s.hunger > 0) add("Hunger", Calc(242, "aurastatcalc2", s.hunger), lasts(242, s.hunger));
+    if (b.cls === "pal" && s.joust > 0) add("Joust", Calc(378, "aurastatcalc1", s.joust), lasts(378, s.joust));
+    if (s.vigor > 0) add("Vigor", Calc(115, "aurastatcalc3", s.vigor));
+    if (b.cls === "pal" && s.vigorHard > 0) itemFrw += Calc(115, "passivecalc1", s.vigorHard, { self_blvl: s.vigorHard });
+    if (s.shrine) add("Stamina shrine", 35);
+    // slows: a minus to the same movement %; a kept choice the data no longer lists counts as none
+    let slow = 0;
+    // [.., key]: a slow, by its key (the race draws it: chill and Holy Freeze blue, Decrepify and Slow Movement's overlays)
+    const minus = (label, v, key) => { if (v) { slow += v; vel += v; parts.push([label, v, 0, key]); } };
+    if (s.chill) minus("Chilled", DATA.chill, "chill");
+    for (const sl of SLOWS) if (sl.opts.some(o => o.v === s[sl.k])) minus(sl.name, s[sl.k], sl.k);
+    return { vel, slow, itemFrw, parts };
+  }
+  const sign = v => (v >= 0 ? "+" : "−") + Math.abs(v);
+  /* Charge (a Paladin's): it sets its own speed when it starts, the run speed times its Param1 (+150%) plus the movement
+     % from skills and shrines (at least 50%), so FRW and running's +50% don't count; then null for others */
+  const chargePct = vel => (+(SK[107] || {}).Param1 || 0) + Math.max(50, 100 + vel);
+  /* Whirlwind (a Barbarian's): while it goes on, the game moves you at walking speed times the same movement % as
+     walking (FRW, skills, shrines, slows; at least 25%) plus Whirlwind's own, its state's velocitypercent (min(ln56, 65):
+     +2% a level after the first); running's +50% doesn't count. wwBonus: that own part at a skill level */
+  const wwBonus = lvl => Calc(151, "aurastatcalc1", lvl);
+  const whirls = b => b.cls === "bar" && b.s.ww > 0 && !!SK[151];
+  function speeds(b, gearOverride) {
+    const sk = skills(b);
+    const gear = gearOverride !== undefined ? gearOverride : (+b.frw || 0);
+    const frw = gear + sk.itemFrw;
+    const e = efrw(frw);
+    const cls = CLS[b.cls] || { walk: 6, run: 9 };
+    const runBonus = cls.walk ? Math.trunc(100 * cls.run / cls.walk) - 100 : 50;
+    const walkPct = Math.max(25, 100 + e + sk.vel), runPct = Math.max(25, 100 + runBonus + e + sk.vel);
+    const charge = b.cls === "pal" && b.s.charge && SK[107] ? cls.run * chargePct(sk.vel) / 100 * YARDS : null;
+    const ww = whirls(b) ? wwBonus(b.s.ww) : null;
+    const wwPct = ww === null ? null : Math.max(25, 100 + e + sk.vel + ww);
+    return { sk, frw, e, walk: cls.walk * walkPct / 100 * YARDS, run: cls.walk * runPct / 100 * YARDS, walkPct, runPct,
+             base: cls.walk * (100 + runBonus) / 100 * YARDS, runBonus, charge, wwBonus: ww, wwPct,
+             ww: ww === null ? null : cls.walk * wwPct / 100 * YARDS };
+  }
+  /* how a setup gets about: whirlwinding when it whirls, else running (the tiles, the chart, the strip) */
+  const travel = r => (r.ww !== null ? r.ww : r.run);
+
+  // ================================================================== state and inputs
+  // the slows (chill, decrep, hfreeze, slowmv) hold the movement % of the one picked, 0 for none
+  const DEFAULT = () => ({ name: "", cls: "bar", frw: 60, s: { inc: 0, frenzy: 0, stacks: 5, ww: 0, bos: 0, evade: 0, blaze: 0, blazeItem: 0, feral: 0, charges: 0, hunger: 0, joust: 0, charge: false, vigor: 0, vigorHard: 0, shrine: false, chill: false, decrep: 0, hfreeze: 0, slowmv: 0 } });
+  /* a kept setup with today's fields only (one kept before 2026-11-14 had "Other movement %", gone since) */
+  function fromKept(x) {
+    const d = DEFAULT(), s = (x && x.s) || {};
+    for (const k of ["name", "cls", "frw"]) if (x && x[k] !== undefined) d[k] = x[k];
+    for (const k of Object.keys(d.s)) if (s[k] !== undefined) d.s[k] = s[k];
+    // kept before 2026-11-14, Blaze was one field: a Sorceress's own, any other class's from an item
+    if (s.blazeItem === undefined && d.cls !== "sor" && d.s.blaze > 0) { d.s.blazeItem = d.s.blaze; d.s.blaze = 0; }
+    return d;
+  }
+  let builds = [];
+  function example() {
+    const a = DEFAULT(); a.name = "Frenzy Barbarian"; a.frw = 30; a.s.inc = 10; a.s.frenzy = 20; a.s.stacks = 5;
+    const b = DEFAULT(); b.name = "Feral Rage Druid"; b.cls = "dru"; b.frw = 40; b.s.feral = 20; b.s.charges = 5;
+    const c = DEFAULT(); c.name = "Blaze Sorceress"; c.cls = "sor"; c.frw = 0; c.s.blaze = 10;
+    const d = DEFAULT(); d.name = "Burst of Speed Assassin"; d.cls = "ass"; d.frw = 40; d.s.bos = 20;
+    return [a, b, c, d];
+  }
+  /* the first-visit setups until 2026-11-13, which every visit kept then (each redraw saved them): read as no choice */
+  function oldExample() {
+    const a = DEFAULT(); a.name = "300 FRW, Increased Speed 10"; a.frw = 300; a.s.inc = 10;
+    const b = DEFAULT(); b.name = "60 FRW, Increased Speed 10, Frenzy 26"; b.frw = 60; b.s.inc = 10; b.s.frenzy = 26;
+    return [a, b];
+  }
+  const isExample = () => JSON.stringify(builds) === JSON.stringify(example());
+  /* a default setup's name says its class and skill: once either changes, the setup goes back to its letter (audit
+     CALC-07); a name the player typed stays */
+  const PRESET_SKILL = { "Frenzy Barbarian": ["bar", "frenzy"], "Feral Rage Druid": ["dru", "feral"],
+                         "Blaze Sorceress": ["sor", "blaze"], "Burst of Speed Assassin": ["ass", "bos"] };
+  function presetNames() {
+    let changed = false;
+    for (const b of builds) {
+      const p = PRESET_SKILL[b.name];
+      if (p && (b.cls !== p[0] || !(b.s[p[1]] > 0))) { b.name = ""; changed = true; }
+    }
+    return changed;
+  }
+  /* the setups in the address (Copy a link): one key a setup, a to d, "class,FRW,skill<level>,switch,...~name", only
+     what differs from a new setup's (audit CALC-09) */
+  function hashText() {
+    if (isExample()) return "";
+    const d = DEFAULT();
+    return builds.map((b, i) => {
+      const parts = [b.cls, b.frw];
+      for (const [k, v] of Object.entries(b.s)) {
+        if (v === d.s[k]) continue;
+        parts.push(typeof v === "boolean" ? (v ? k : k + "0") : k + v);
+      }
+      return "abcd"[i] + "=" + parts.join(",") + (b.name ? "~" + encodeURIComponent(b.name) : "");
+    }).join("&");
+  }
+  function fromHash() {
+    const h = location.hash.slice(1), out = [];
+    for (const kv of h.split("&")) {
+      const m = kv.match(/^([abcd])=([^~]*)(?:~(.*))?$/);
+      if (!m) continue;
+      const b = DEFAULT(), [cls, frw, ...rest] = m[2].split(",");
+      if (DATA.classes.some(c => c.code === cls)) b.cls = cls;
+      b.frw = num(frw, 0, 500);
+      for (const p of rest) {
+        const q = p.match(/^([a-zA-Z]+)(-?\d+)?$/);
+        if (!q || !(q[1] in b.s)) continue;
+        b.s[q[1]] = typeof b.s[q[1]] === "boolean" ? q[2] !== "0" : num(q[2], -100, 500);
+      }
+      try { b.name = m[3] ? decodeURIComponent(m[3]).slice(0, 40) : ""; } catch (e) { b.name = ""; }
+      out["abcd".indexOf(m[1])] = b;
+    }
+    return out.filter(Boolean).slice(0, 4);
+  }
+  /* kept only once they differ from the first-visit setups, so a later change of those reaches everyone who never
+     changed them */
+  function save() {
+    try {
+      if (isExample()) localStorage.removeItem(STORE); else localStorage.setItem(STORE, JSON.stringify(builds));
+    } catch (e) { /* storage blocked */ }
+    const q = hashText();
+    try { history.replaceState(null, "", q ? "#" + q : location.pathname + location.search); } catch (e) { /* file: */ }
+  }
+  /* Reset to the default setups: the setups it replaced, while its button offers Undo (until the next change) */
+  let undoReset = null;
+  function resetButton() {
+    const same = isExample();
+    if (undoReset && !same) undoReset = null;
+    const btn = $("fr-reset");
+    btn.textContent = undoReset ? "Undo reset" : "Reset to the defaults";
+    btn.disabled = !undoReset && same;
+  }
+  /* Clear setups (the author, 2026-11-20: for players who put in their own from a blank slate): one setup, Setup A,
+     Setup A's class kept and every field 0 or off; its button offers Undo as Reset's does (until the next change) */
+  const cleared = () => { const a = DEFAULT(); a.cls = builds[0] ? builds[0].cls : a.cls; a.frw = 0; a.s.stacks = 0; return [a]; };
+  let undoClear = null;
+  function clearButton() {
+    const same = JSON.stringify(builds) === JSON.stringify(cleared());
+    if (undoClear && !same) undoClear = null;
+    const btn = $("fr-clear");
+    btn.textContent = undoClear ? "Undo clear" : "Clear setups";
+    btn.disabled = !undoClear && same;
+  }
+  function load() { try { return JSON.parse(localStorage.getItem(STORE) || "null"); } catch (e) { return null; } }
+  const num = (v, lo, hi) => { const n = Math.round(+v); return Number.isFinite(n) ? clamp(n, lo, hi) : lo; };
+  function el(tag, attrs, parent, text) {
+    const e = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs || {})) { if (k === "class") e.className = v; else if (v !== undefined && v !== false && v !== null) e.setAttribute(k, v === true ? "" : v); }
+    if (text !== undefined) e.textContent = text;
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+  const keyEl = (i, parent) => { const k = el("span", { class: "key", "aria-hidden": "true" }, parent, LETTERS[i]); k.style.background = KEYS[i]; k.style.color = INK[i]; return k; };
+  let uid = 0;
+  function numField(p, label, get, set, lo, hi, hint) {
+    const f = el("div", { class: "field" }, p); const id = "fr-f" + (++uid);
+    el("label", { for: id }, f, label);
+    const i = el("input", { type: "number", id, min: lo, max: hi, step: 1 }, f); i.value = get();
+    const sm = hint ? el("small", {}, f, typeof hint === "function" ? hint() : hint) : null;
+    const refresh = () => { i.value = get(); if (sm && typeof hint === "function") sm.textContent = hint(); };
+    i.addEventListener("input", () => { set(num(i.value, lo, hi)); if (sm && typeof hint === "function") sm.textContent = hint(); render(); });
+    // leaving the box shows the number the page counts (an empty box its lowest, too much its most: audit CALC-08)
+    i.addEventListener("change", () => { if (String(get()) !== i.value) i.value = get(); });
+    return refresh;
+  }
+  /* a switch laid out as a number field: its name over it, the box where a number box sits, what it does beside it */
+  function checkField(p, label, get, set, text, hint) {
+    const f = el("div", { class: "field" }, p); const id = "fr-f" + (++uid);
+    el("span", { class: "lab", id: id + "-l" }, f, label);
+    const l = el("label", { class: "check" }, f);
+    const c = el("input", { type: "checkbox", id, "aria-labelledby": `${id}-l ${id}-t` }, l); c.checked = !!get();
+    el("span", { id: id + "-t" }, l, text);
+    c.addEventListener("change", () => { set(c.checked); renderBuilds(); });
+    if (hint) el("small", {}, f, hint);
+  }
+  /* a monster's slow: none, or the movement % it takes off, with the monsters that cast it at that much */
+  function selectField(p, sl, s) {
+    const f = el("div", { class: "field" }, p); const id = "fr-f" + (++uid);
+    el("label", { for: id }, f, sl.name);
+    const sel = el("select", { id }, f);
+    el("option", { value: "0" }, sel, "None");
+    for (const o of sl.opts) el("option", { value: String(o.v) }, sel, `${sign(o.v)}%: ${o.who.join(", ")}`);
+    const pick = () => sl.opts.find(o => o.v === s[sl.k]);
+    sel.value = pick() ? String(s[sl.k]) : "0";
+    const sm = el("small", {}, f);
+    const hint = () => { const o = pick(); sm.textContent = o ? o.who.join(", ") : ""; };
+    hint();
+    sel.addEventListener("change", () => { s[sl.k] = +sel.value; hint(); render(); });
+  }
+  /* two overlapping sheets, drawn in the button's own text color */
+  const COPY_ICON = '<svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round">'
+                  + '<rect x="5.25" y="5.25" width="8.5" height="8.5" rx="1.5"/><path d="M10.75 5.25V3.75a1.5 1.5 0 0 0-1.5-1.5h-5.5a1.5 1.5 0 0 0-1.5 1.5v5.5a1.5 1.5 0 0 0 1.5 1.5h1.5"/></svg>';
+  /* a copy's name: an unnamed setup's copy stays unnamed (it shows as its own letter), a named one gets " (copy)",
+     once, within the box's 40 characters */
+  function copyName(n) {
+    if (!n || /^Setup [A-D]$/.test(n.trim())) return "";
+    const base = n.replace(/ \(copy\)$/, "");
+    return base.slice(0, 33).trimEnd() + " (copy)";
+  }
+  /* the copy goes last, so the other setups keep their letters and colors; it scrolls into view where it is out of it
+     (one card a line on phones), and from the keyboard the focus goes to its name, picked, ready to type over */
+  function copySetup(i, fromKeys) {
+    if (builds.length >= 4) return;
+    const c = JSON.parse(JSON.stringify(builds[i])); c.name = copyName(builds[i].name);
+    builds.push(c); renderBuilds();
+    const card = $("fr-builds").lastElementChild; if (!card) return;
+    card.scrollIntoView({ block: "nearest", behavior: reducedMotion() ? "auto" : "smooth" });
+    if (fromKeys) { const nm = card.querySelector(".build-head input"); if (nm) { nm.focus({ preventScroll: true }); nm.select(); } }
+  }
+  /* your character, shared with the site's other tools: the .ez-char box (javascripts/erazure.js; the website ideas' #11):
+     setup A's */
+  window.ezCharPage = {fields: ["cls", "frw"],
+    read: () => (builds[0] ? {cls: builds[0].cls, frw: builds[0].frw} : {}),
+    fit: (c) => Object.assign(c, c.frw !== undefined ? {frw: Math.max(0, Math.min(500, Math.round(+c.frw) || 0))} : {}),
+    use(c) {
+      const b = builds[0];
+      if (!b) return;
+      if (c.cls && DATA.classes.some(x => x.code === c.cls) && b.cls !== c.cls) {
+        b.cls = c.cls;
+        if (b.cls === "sor" && b.s.blaze > 0 && b.s.blazeItem > 0) b.s.blaze = 0;  // as the class select does
+      }
+      if (c.frw !== undefined) b.frw = Math.max(0, Math.min(500, Math.round(+c.frw) || 0));
+      renderBuilds();
+    }};
+  function renderBuilds() {
+    const box = $("fr-builds"); box.innerHTML = "";
+    root.style.setProperty("--n", builds.length); box.dataset.n = builds.length;
+    builds.forEach((b, i) => {
+      const card = el("article", { class: "build", "aria-label": `Setup ${LETTERS[i]}` }, box);
+      card.style.setProperty("--key", KEYS[i]);
+      const head = el("div", { class: "build-head" }, card);
+      keyEl(i, head);
+      const nm = el("input", { type: "text", "aria-label": `Name of setup ${LETTERS[i]}`, maxlength: 40 }, el("span", { class: "nm" }, head));
+      nm.value = b.name || `Setup ${LETTERS[i]}`;
+      nm.addEventListener("input", () => { b.name = nm.value; render(); });
+      // Copy: a new setup at the end with every choice of this one (the author, 2026-11-20: tweak the copy to compare).
+      // Not there with four setups, the most: four cards in a line leave room for the name beside one button only
+      if (builds.length < 4) {
+        const cp = el("button", { type: "button", class: "copy", "aria-label": `Copy setup ${LETTERS[i]} into a new setup`, title: "Copy this setup into a new setup" }, head);
+        cp.innerHTML = COPY_ICON;
+        cp.addEventListener("click", ev => copySetup(i, ev.detail === 0));
+      }
+      if (builds.length > 1) { const rm = el("button", { type: "button", "aria-label": `Remove setup ${LETTERS[i]}`, title: "Remove this setup" }, head, "\u2715"); rm.addEventListener("click", () => { builds.splice(i, 1); renderBuilds(); }); }
+      // the card's parts, each a row the cards share: the class, its own skills, gear and buffs, slows
+      const part = (title, cls) => {
+        const d = el("div", { class: cls ? "sec " + cls : "sec" }, card);
+        if (title) { const hid = "fr-h" + (++uid); el("p", { class: "sec-h", id: hid }, d, title); d.setAttribute("role", "group"); d.setAttribute("aria-labelledby", hid); }
+        return el("div", { class: "fields" }, d);
+      };
+      const g = part();
+      const cf = el("div", { class: "field full" }, g); const cid = "fr-f" + (++uid);
+      el("label", { for: cid }, cf, "Class");
+      const cs = el("select", { id: cid }, cf);
+      for (const c of DATA.classes) el("option", { value: c.code }, cs, c.name);
+      cs.value = b.cls; cs.addEventListener("change", () => {
+        b.cls = cs.value;
+        // back to a Sorceress with an item's Blaze set since: her own, kept from before, goes (one Blaze at a time)
+        if (b.cls === "sor" && b.s.blaze > 0 && b.s.blazeItem > 0) b.s.blaze = 0;
+        renderBuilds();
+      });
+      const s = b.s, sor = b.cls === "sor";
+      // a skill and its stacks or charges side by side (the author, 2026-11-14)
+      const k = part(`${(DATA.classes.find(c => c.code === b.cls) || { name: "Class" }).name} skills`);
+      if (b.cls === "bar") {
+        // the stacks' hint as Feral Rage charges', following Frenzy's level (at any skill level while the most doesn't change)
+        const anyLvl = frenzyMax(1) === frenzyMax(60);
+        let stacks;
+        numField(k, "Frenzy", () => s.frenzy, v => { s.frenzy = v; if (stacks) stacks(); }, 0, 60, "Buff after hitting");
+        stacks = numField(k, "Frenzy stacks", () => s.stacks, v => { s.stacks = v; }, 0, frenzyMax(60),
+                          () => anyLvl ? `Max ${frenzyMax(1)} at any skill level` : s.frenzy > 0 ? `Max ${frenzyMax(s.frenzy)} at skill level ${s.frenzy}` : "Max depends on the skill level");
+        numField(k, "Increased Speed", () => s.inc, v => { s.inc = v; }, 0, 60);
+        // Whirlwind: above 0 the Barbarian whirls (the tiles, the chart and the race show his whirlwinding speed)
+        numField(k, "Whirlwind", () => s.ww, v => { s.ww = v; }, 0, 60,
+                 () => s.ww > 0 && SK[151] ? `Whirls the whole way: +${wwBonus(s.ww)}% movement` : "Skill level; whirls the whole way");
+      }
+      if (b.cls === "ass") numField(k, "Burst of Speed", () => s.bos, v => { s.bos = v; }, 0, 60);
+      if (b.cls === "ama") numField(k, "Evade", () => s.evade, v => { s.evade = v; }, 0, 60);
+      if (b.cls === "dru") {
+        let charges;  // its hint follows Feral Rage's level
+        numField(k, "Feral Rage", () => s.feral, v => { s.feral = v; if (charges) charges(); }, 0, 60, "Werewolf");
+        charges = numField(k, "Feral Rage charges", () => s.charges, v => { s.charges = v; }, 0, 40,
+                           () => s.feral > 0 ? `Max ${Calc(232, "calc2", s.feral)} at skill level ${s.feral}` : "Max depends on the skill level");
+        numField(k, "Hunger", () => s.hunger, v => { s.hunger = v; }, 0, 60, "Werebear buff");
+      }
+      if (b.cls === "pal") {
+        numField(k, "Joust", () => s.joust, v => { s.joust = v; }, 0, 60, "2 s after a joust");
+        checkField(k, "Charge", () => s.charge, v => { s.charge = v; }, "The whole way", "FRW doesn’t count while charging");
+        numField(k, "Vigor base points", () => s.vigorHard, v => { s.vigorHard = v; }, 0, 20, "+1% FRW each, any aura");
+      }
+      /* Blaze: a Sorceress's own under her skills, an item's under Gear and buffs; one at a time (the author,
+         2026-11-14), so a level above 0 in one sets the other to 0 */
+      const blazeHint = (key, none) => () => s[key] > 0 ? `+${Calc(46, "passivecalc1", s[key])}% for ${nf1.format(lasts(46, s[key]) / 25)} s` : none;
+      const fresh = {};
+      const blazeSet = (key, other) => v => { s[key] = v; if (v > 0 && s[other] > 0) { s[other] = 0; if (fresh[other]) fresh[other](); } };
+      if (sor) fresh.blaze = numField(k, "Blaze", () => s.blaze, blazeSet("blaze", "blazeItem"), 0, 60,
+                                      blazeHint("blaze", "Skill level"));
+      if (!k.children.length) el("p", { class: "none" }, k, "No skill of its own that adds speed.");
+      // the same four fields in the same places on every card, in both parts
+      const a = part("Gear and buffs", "sec-grid");
+      numField(a, "FRW on gear %", () => b.frw, v => { b.frw = v; }, 0, 500, "Add up each item’s Faster Run/Walk");
+      fresh.blazeItem = numField(a, "Blaze from an item", () => s.blazeItem, sor ? blazeSet("blazeItem", "blaze") : v => { s.blazeItem = v; }, 0, 60,
+                                 blazeHint("blazeItem", sor ? "Only one Blaze can be active at a time" : "Skill level (Infernostride: 16)"));
+      numField(a, "Vigor aura", () => s.vigor, v => { s.vigor = v; }, 0, 60, b.cls === "pal" ? "Skill level; 0 while using another aura" : "A Paladin’s skill level");
+      checkField(a, "Stamina shrine", () => s.shrine, v => { s.shrine = v; }, "+35%");
+      const w = part("Slowed by", "sec-grid");
+      checkField(w, "Chilled", () => s.chill, v => { s.chill = v; }, `${sign(DATA.chill)}%`, "Cold damage, while it lasts");
+      for (const sl of SLOWS) selectField(w, sl, s);
+    });
+    $("fr-add").disabled = builds.length >= 4;
+    render();
+  }
+
+  // ================================================================== output
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  function render() {
+    // (#40, 2026-11-22) the IAS Calculator opens on setup A's class, the rest of the visitor's own setup kept there, and
+    // says where it came from (the additions audit, CA-09)
+    $("fr-to-ias").href = (typeof __md_scope !== "undefined" ? __md_scope.href : "https://filtersby-erazure.github.io/PD2-Loot-Filter/")
+      + "resources/ias-calculator/#tab-calc&c=" + encodeURIComponent((builds[0] && builds[0].cls) || "bar") + "&from=run";
+    if (presetNames()) {
+      $("fr-builds").querySelectorAll(".build-head input").forEach((nm, i) => { if (builds[i] && !builds[i].name) nm.value = `Setup ${LETTERS[i]}`; });
+    }
+    const R = builds.map(b => speeds(b));
+    const tiles = $("fr-tiles"); tiles.innerHTML = "";
+    R.forEach((r, i) => {
+      const t = el("div", { class: "tile" }, tiles); t.style.setProperty("--key", KEYS[i]);
+      const lab = el("span", { class: "tile-label" }, t); keyEl(i, lab); lab.append(builds[i].name || `Setup ${LETTERS[i]}`);
+      const v = el("span", { class: "tile-value" }, t);
+      v.innerHTML = `${nf2.format(travel(r))}<span>yards a second, ${r.ww !== null ? "whirlwinding" : "running"}</span>`;
+      // a line each (the author, 2026-11-20: "Put Movement from skills +Y% on the 2nd line"), so a number never
+      // sits apart from its words
+      const parts = [`Effective FRW ${r.e}%`, `Movement from skills ${sign(r.sk.vel - r.sk.slow)}%`]
+        .concat(r.ww !== null ? [`Whirlwind ${sign(r.wwBonus)}%`] : [], r.sk.slow ? [`Slowed ${sign(r.sk.slow)}%`] : []);
+      const sub = el("span", { class: "tile-sub" }, t);
+      parts.forEach(p => el("span", { class: "ln" }, sub, p));
+      const than = Math.round((travel(r) / r.base - 1) * 100);
+      el("span", { class: "tile-sub" }, t, `${nf0.format(Math.abs(than))}% ${than < 0 ? "slower" : "faster"} than running with nothing`);
+      if (r.ww !== null) el("span", { class: "tile-sub" }, t, `Running: ${nf2.format(r.run)} yards a second`);
+      if (r.charge) el("span", { class: "tile-sub" }, t, `Charging: ${nf2.format(r.charge)} yards a second`);
+    });
+    let h = "<thead><tr><th></th>" + R.map((r, i) => `<th><span class="kn">${keyHTML(i)}${esc(builds[i].name || "Setup " + LETTERS[i])}</span></th>`).join("") + "</tr></thead><tbody>";
+    const row = (l, f, c) => { h += `<tr class="${c || ""}"><td>${l}</td>` + R.map(f).join("") + "</tr>"; };
+    row("FRW on gear", r => `<td>${r.frw}%${r.sk.itemFrw ? `<small>with Vigor&rsquo;s +${r.sk.itemFrw}</small>` : ""}</td>`);
+    row("Effective FRW", r => `<td>${r.e}%</td>`);
+    const list = (r, slows) => r.sk.parts.filter(p => !p[3] === !slows).map(p => `${p[0]} ${sign(p[1])}`).join(", ") || "none";
+    row("Movement from skills", r => `<td>${sign(r.sk.vel - r.sk.slow)}%<small>${list(r, false)}</small></td>`);
+    if (R.some(r => r.sk.slow)) row("Slowed by", r => `<td>${sign(r.sk.slow)}%<small>${list(r, true)}</small></td>`);
+    row("Total", r => `<td>${sign(r.e + r.sk.vel)}%</td>`);
+    row("Running", r => `<td>${nf2.format(r.run)} yd/s</td>`, "strong");
+    row("Walking", r => `<td>${nf2.format(r.walk)} yd/s</td>`);
+    if (R.some(r => r.ww !== null)) row("Whirlwinding", r => `<td>${r.ww !== null ? `${nf2.format(r.ww)} yd/s<small>Whirlwind&rsquo;s ${sign(r.wwBonus)}% in place of running&rsquo;s ${sign(r.runBonus)}%</small>` : "&mdash;"}</td>`, "strong");
+    if (R.some(r => r.charge)) row("Charging", r => `<td>${r.charge ? `${nf2.format(r.charge)} yd/s` : "&mdash;"}</td>`, "strong");
+    row("Next +10% FRW on gear", r => `<td>+${nf2.format(speedsAt(R.indexOf(r), 10) - travel(r))} yd/s${r.ww !== null ? "<small>whirlwinding</small>" : ""}</td>`);
+    h += "</tbody>";
+    $("fr-results").innerHTML = h;
+    drawChart(R);
+    raceUpdate();
+    renderDock();
+    save();
+    resetButton();
+    clearButton();
+  }
+  /* the strip: each setup's running speed and, once the race is set up, its time over the race's distance */
+  function renderDock() {
+    const dock = $("fr-dock"); dock.innerHTML = "";
+    const race = RC.state === "ready" && RC.key === raceKey() && RC.runners ? RC.runners : null;
+    builds.forEach((b, i) => {
+      const r = speeds(b), t = el("div", { class: "dk" }, dock); t.style.setProperty("--key", KEYS[i]);
+      const n = el("span", { class: "dk-name" }, t); keyEl(i, n); n.append(b.name || `Setup ${LETTERS[i]}`);
+      el("span", { class: "dk-val" }, t).innerHTML = `${nf2.format(travel(r))}<small> yd/s ${r.ww !== null ? "whirlwinding" : "running"}</small>`;
+      const sub = [];
+      if (r.charge) sub.push(`charging ${nf2.format(r.charge)} yd/s`);
+      if (race && race[i]) sub.push(`${RC.dist} yards ${race[i].whirl ? "whirlwinding" : RC.mode === "RN" ? "running" : "walking"}: ${nf2.format(race[i].T / FPS)} s`);
+      if (sub.length) el("span", { class: "dk-sub" }, t, sub.join(" · "));
+    });
+  }
+  const speedsAt = (i, more) => travel(speeds(builds[i], (+builds[i].frw || 0) + more));
+  const named = (b, i) => (b.name || `Setup ${LETTERS[i]}`) + (whirls(b) ? " (whirlwinding)" : "");
+  function mk(tag, attrs, parent) { const e = document.createElementNS("http://www.w3.org/2000/svg", tag); for (const [k, v] of Object.entries(attrs || {})) e.setAttribute(k, v); if (parent) parent.appendChild(e); return e; }
+  function drawChart(R) {
+    const box = $("fr-plot"); box.innerHTML = "";
+    const width = Math.max(300, box.clientWidth || 800), narrow = width < 560, height = narrow ? 240 : 300;
+    const M = { l: 44, r: 14, t: 12, b: 38 };
+    const leg = $("fr-legend"); leg.innerHTML = "";
+    const sample = (li, color, w, dash) => { const s = mk("svg", { class: "line", width: 30, height: 8, "aria-hidden": "true" }, li); mk("line", { x1: 0, x2: 30, y1: 4, y2: 4, stroke: color, "stroke-width": w, "stroke-dasharray": dash }, s); };
+    builds.forEach((b, i) => { const li = el("li", {}, leg); sample(li, KEYS[i], 2.5, DASHES[i]); keyEl(i, li); li.append(named(b, i)); });
+    const li0 = el("li", {}, leg); sample(li0, "var(--base)", 2, "4 3"); li0.append("Running with no movement skills");
+    const lines = builds.map((b, i) => ({ i, pts: Array.from({ length: 61 }, (_, k) => [k * 5, travel(speeds(b, k * 5))]) }));
+    const basePts = Array.from({ length: 61 }, (_, k) => [k * 5, 6 * (150 + efrw(k * 5)) / 100 * YARDS]);
+    const all = lines.flatMap(l => l.pts.map(p => p[1])).concat(basePts.map(p => p[1]));
+    const ylo = Math.floor(Math.min(...all) - 1), yhi = Math.ceil(Math.max(...all) + 1);
+    const svg = mk("svg", { viewBox: `0 0 ${width} ${height}`, role: "img", "aria-label": "Speed against FRW on gear" }, box);
+    const x = v => M.l + (width - M.l - M.r) * v / 300, y = v => height - M.b - (height - M.t - M.b) * (v - ylo) / (yhi - ylo);
+    for (let v = Math.ceil(ylo); v <= yhi; v += (yhi - ylo > 12 ? 4 : 2)) { mk("line", { x1: M.l, x2: width - M.r, y1: y(v), y2: y(v), stroke: "var(--grid)" }, svg); const t = mk("text", { x: M.l - 6, y: y(v) + 4, "text-anchor": "end", class: "tick" }, svg); t.textContent = v; }
+    for (let v = 0; v <= 300; v += (narrow ? 100 : 50)) { const t = mk("text", { x: x(v), y: height - M.b + 16, "text-anchor": "middle", class: "tick" }, svg); t.textContent = v + "%"; }
+    const at = mk("text", { x: (M.l + width - M.r) / 2, y: height - 4, "text-anchor": "middle", class: "axis-title" }, svg); at.textContent = "FRW on gear";
+    const yt = mk("text", { x: 12, y: M.t + 2, class: "axis-title" }, svg); yt.textContent = "yd/s";
+    const path = (pts, color, w, dash) => mk("path", { d: pts.map((p, k) => `${k ? "L" : "M"}${x(p[0]).toFixed(1)},${y(p[1]).toFixed(1)}`).join(""), fill: "none", stroke: color, "stroke-width": w, "stroke-dasharray": dash || "" }, svg);
+    path(basePts, "var(--base)", 2, "4 3");
+    for (const l of lines) path(l.pts, KEYS[l.i], 2.5, DASHES[l.i]);
+    const marks = R.map((r, i) => {
+      const fx = Math.min(300, +builds[i].frw || 0), cy = y(travel(speeds(builds[i], fx))), end = fx > 250;
+      mk("circle", { cx: x(fx), cy, r: 5, fill: KEYS[i], stroke: "var(--panel)", "stroke-width": 2 }, svg);
+      const text = `${LETTERS[i]} ${nf2.format(travel(r))}`, lx = x(fx) + (end ? -8 : 8), w = text.length * 7;
+      return { i, text, lx, y: cy - 8, end, lo: end ? lx - w : lx, hi: end ? lx : lx + w };
+    });
+    // labels that would overlap pushed 13px apart (as the Damage Calculator's line ends): sorted by y, pushed down,
+    // then pulled back up from the bottom edge, so setups with the same speed stay readable
+    const meet = (a, b) => a.lo < b.hi + 4 && b.lo < a.hi + 4;
+    marks.sort((a, b) => a.y - b.y);
+    marks.forEach((m, k) => { for (let j = 0; j < k; j++) if (meet(m, marks[j])) m.y = Math.max(m.y, marks[j].y + 13); });
+    for (let k = marks.length - 1; k >= 0; k--) {
+      let lim = height - M.b - 2;
+      for (let j = k + 1; j < marks.length; j++) if (meet(marks[k], marks[j])) lim = Math.min(lim, marks[j].y - 13);
+      marks[k].y = Math.min(marks[k].y, lim);
+    }
+    for (const m of marks) {
+      const t = mk("text", { x: m.lx, y: m.y, "text-anchor": m.end ? "end" : "start", class: "mark", fill: KEYS[m.i] }, svg);
+      t.textContent = m.text;
+    }
+    const tip = el("div", { class: "tip", hidden: true }, box);
+    svg.addEventListener("pointermove", e => {
+      const rect = svg.getBoundingClientRect(); const px = (e.clientX - rect.left) * width / rect.width;
+      const v = clamp(Math.round((px - M.l) / (width - M.l - M.r) * 300), 0, 300);
+      tip.hidden = false;
+      tip.innerHTML = `<div>${v}% FRW on gear (${efrw(v)}% effective)</div>` + builds.map((b, i) => `<div><span class="kn">${keyHTML(i)}${esc(b.name || "Setup " + LETTERS[i])}:</span> <b>${nf2.format(travel(speeds(b, v)))}</b> yd/s${whirls(b) ? " whirlwinding" : ""}</div>`).join("");
+      tip.style.left = Math.min(rect.width - 190, e.clientX - rect.left + 12) + "px"; tip.style.top = "8px";
+    });
+    svg.addEventListener("pointerleave", () => { tip.hidden = true; });
+  }
+
+  // ================================================================== the race
+  /* Each setup runs (or walks) the distance from a standing start, its buffs just cast, drawn with the game's own
+     pictures (tools/run_sprites.py writes them beside this page, in Run-Speed-Sprites/), facing east: a yard is 1.5 map
+     squares (subtiles) and a map square going east is 16 x √2 of the game's pixels across. Speeds are the table's; a
+     buff stops counting when it runs out. The animation plays rate / 256 of a frame each game frame: 101 running and
+     213 walking (a werewolf's and werebear's own: their animations' speed) times the speed % / 100, rounded down;
+     standing, its animation's speed. Poses change on game frames, positions move smoothly between them (as D2GL draws
+     them). Overlays play AnimRate / 16 of a frame each game frame; Blaze's flames burn 2.4 s from where they start. */
+  const RACE_DIR = SCRIPT_SRC ? new URL("../../resources/Run-Speed-Sprites/", SCRIPT_SRC).href : "Run-Speed-Sprites/";
+  const FPS = 25, PX_YD = 1.5 * 16 * Math.SQRT2, HUMAN_RATE = { RN: 101, WL: 213 };
+  const LANE = 60, TOP = 104, BOTTOM = 30, LEFT = 50, RIGHT = 86, HOLD = 80;  // game pixels; frames the end plays on
+  const RC = { sp: null, img: null, floor: null, pattern: null, state: "idle", mode: "RN", dist: 30, slow: 1,
+               t: 0, playing: false, over: false, last: 0, runners: [], seen: false, want: false, done: false, cam: 0 };
+  const reducedMotion = () => !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+  function rng(seed) { return () => { seed = (seed + 0x6d2b79f5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+  function raceLoad() {
+    if (RC.state !== "idle") return;
+    RC.state = "loading";
+    const fail = () => { RC.state = "failed"; $("fr-wait").textContent = "The pictures didn’t load."; };
+    const s = document.createElement("script");
+    s.src = RACE_DIR + "race.js";
+    s.onerror = fail;
+    s.onload = () => {
+      RC.sp = window.FRW_SPRITES;
+      if (!RC.sp) { fail(); return; }
+      let n = 3;
+      const done = () => {
+        if (--n) return;
+        RC.state = "ready"; $("fr-wait").hidden = true;
+        raceSetup();
+        if (RC.want || (RC.seen && !reducedMotion())) racePlay(); else raceDraw();
+      };
+      const im = new Image(); im.onload = () => { RC.img = im; done(); }; im.onerror = fail; im.src = RACE_DIR + "race.png";
+      const fl = new Image(); fl.onload = () => { RC.floor = fl; done(); }; fl.onerror = fail; fl.src = RACE_DIR + "floor.png";
+      // the same frames in a chilled unit's colours
+      const co = new Image(); co.onload = () => { RC.cold = co; done(); }; co.onerror = fail; co.src = RACE_DIR + "race-cold.png";
+    };
+    document.head.appendChild(s);
+  }
+  /* a setup as a runner: its form, the speed between the moments its buffs run out, when it finishes, its overlays and
+     Blaze's flames */
+  function runnerOf(b, i) {
+    const s = b.s, mode = RC.mode, sk = skills(b), cls = CLS[b.cls] || { walk: 6, run: 9 };
+    const form = b.cls === "dru" ? (s.feral > 0 && s.charges > 0 ? "wolf" : s.hunger > 0 ? "bear" : "dru") : b.cls;
+    const runBonus = cls.walk ? Math.trunc(100 * cls.run / cls.walk) - 100 : 50;
+    const efr = efrw((+b.frw || 0) + sk.itemFrw);
+    const fixed = 100 + (mode === "RN" ? runBonus : 0) + efr;
+    const velAt = f => sk.parts.reduce((a, p) => a + (!p[2] || f < p[2] ? p[1] : 0), 0);
+    const pctAt = f => Math.max(25, fixed + velAt(f));
+    /* a Paladin charging the whole way: Charge's own speed (chargePct, from the run speed), its run steps playing a frame
+       each game frame (its sequence at the other animations' rate: 256 / 256 unslowed), walking or running alike */
+    const charging = b.cls === "pal" && !!s.charge && !!SK[107];
+    /* a Barbarian whirlwinding the whole way, walking or running alike: walking speed times the walking movement % with
+       Whirlwind's own instead of running's; his attack animation as Whirlwind's sequence steps through it, a step a game
+       frame (RC.sp.whirl: one pass, then from the step after the first hit to the last, over and over) */
+    const W = whirls(b) && RC.sp.whirl && RC.sp.anims[RC.sp.whirl.anim] ? RC.sp.whirl : null;
+    const anim = W ? RC.sp.anims[W.anim] : RC.sp.anims[`${form}.${charging ? "RN" : mode}`], stand = RC.sp.anims[`${form}.NU`];
+    const base = form === "wolf" || form === "bear" ? anim.speed : HUMAN_RATE[mode];
+    const ends = [...new Set(sk.parts.filter(p => p[2] > 0).map(p => p[2]))].sort((a, z) => a - z);
+    const segs = []; let from = 0, x = 0, ph = 0;
+    for (const e of ends.concat([Infinity])) {
+      if (e <= from) continue;
+      const pct = charging ? chargePct(velAt(from)) : W ? Math.max(25, 100 + efr + velAt(from) + wwBonus(s.ww)) : pctAt(from);
+      // pixels a game frame (speed points / 16 map squares, each 16 x √2 pixels going east), animation frames a game frame
+      segs.push({ from, to: e, x, ph, pct, px: (charging ? cls.run : cls.walk) * pct / 100 * Math.SQRT2,
+                  fr: charging || W ? 1 : Math.trunc(base * pct / 100) / 256 });
+      x += segs[segs.length - 1].px * (e - from); ph += segs[segs.length - 1].fr * (e - from); from = e;
+    }
+    const D = RC.dist * PX_YD;
+    const seg = f => { let g = segs[0]; for (const h of segs) if (h.from <= f) g = h; return g; };
+    let T = 0;
+    for (const g of segs) { const need = (D - g.x) / g.px; if (need <= g.to - g.from) { T = g.from + need; break; } }
+    const at = f => { const g = seg(f); return Math.min(D, g.x + g.px * (f - g.from)); };
+    const ov = [];
+    const on = (name, until) => { if (RC.sp.overlays[name]) ov.push({ name, until: until || Infinity, o: RC.sp.overlays[name] }); };
+    if (b.cls === "ass" && s.bos > 0) on("quickness", lasts(258, s.bos));
+    if (s.vigor > 0) { on("staminaback"); on("staminafront"); }
+    if (b.cls === "bar" && s.frenzy > 0 && s.stacks > 0) on("frenzy", lasts(147, s.frenzy));
+    if (b.cls === "pal" && s.joust > 0) on("frenzy", lasts(378, s.joust));
+    if (form === "wolf") { const k = clamp(s.charges, 1, 5); on(`feralrage${k}back`, lasts(232, s.feral)); on(`feralrage${k}`, lasts(232, s.feral)); }
+    if (form === "bear") on("bloodlust_state", lasts(242, s.hunger));
+    if (s.shrine) on("shrine_stamina", RC.sp.shrine);  // the shrine's sign above the head, as long as the shrine lasts
+    if (W) on(W.overlay, T);  // Whirlwind's state draws its overlay around him while he whirls
+    // the slows as the game draws them: chill and Holy Freeze turn the unit blue, Decrepify and Slow Movement have overlays
+    const slowed = new Set(sk.parts.filter(p => p[3]).map(p => p[3]));
+    const blue = slowed.has("chill") || slowed.has("hfreeze");
+    if (slowed.has("decrep")) on("cursedecrepify");
+    if (slowed.has("slowmv")) on("innersight");
+    // Blaze: flames left behind as the runner moves while it lasts, small and medium, in a map square around its path
+    // (how many the game puts down isn't known here: one every other game frame)
+    const flames = [], blaze = blazeLvl(b) > 0 ? lasts(46, blazeLvl(b)) : 0;
+    if (blaze) {
+      const F = RC.sp.fires, rand = rng(1000 + i), disc = r => { const a = rand() * 2 * Math.PI, d = r * Math.sqrt(rand()), u = d * Math.cos(a), v = d * Math.sin(a); return [(u - v) * 16, (u + v) * 8]; };
+      const kinds = ["blaze2dotfiresmall", "blaze2dotfiremedium"];
+      for (let f = 0; f < Math.min(blaze, Math.ceil(T)); f += 2) { const [dx, dy] = disc(F.blaze2trail.radius); const k = kinds[rand() < 0.5 ? 0 : 1]; flames.push({ k, x: at(f) + dx, y: dy, born: f, burn: F.blaze2trail.burn, f: F[k] }); }
+    }
+    return { i, b, form, anim, stand, segs, seg, at, T, D, ov, flames, blaze, sk, charging, whirl: W, blue };
+  }
+  const raceKey = () => JSON.stringify([builds, RC.mode, RC.dist]);
+  function raceSetup() {
+    if (RC.state !== "ready") return;
+    RC.key = raceKey();
+    RC.runners = builds.map(runnerOf);
+    /* room above each runner: a Stamina shrine's sign floats well above the head, so the lanes move apart to keep each
+       sign under the runner in the lane above (game pixels from the feet up) */
+    const reach = Math.max(0, ...RC.runners.flatMap(r => r.ov.map(v => {
+      const top = Math.min(0, ...(RC.sp.p["ov:" + v.name] || []).filter(x => x && x[2]).map(x => x[5]));
+      return -(top + v.o.dy + ((v.o.h || [])[1] || 0));
+    })));
+    RC.top = Math.max(TOP, reach + 12); RC.lane = reach > TOP ? reach + 8 : LANE;
+    if (!RC.playing) RC.t = Math.min(...RC.runners.map(r => r.T));  // the still: the moment the first one finishes
+    raceResults();
+  }
+  /* after a change to the setups (render() calls it after every redraw, so it checks what changed) */
+  function raceUpdate() {
+    if (RC.state !== "ready" || raceKey() === RC.key) return;
+    if (RC.playing) { RC.playing = false; RC.over = false; raceButtons(); }
+    raceSetup(); raceSoon();
+  }
+  // a redraw on the next frame (from a resize: resizing the picture inside the browser's resize callback starts a loop)
+  function raceSoon() { if (!RC.queued) { RC.queued = true; requestAnimationFrame(() => { RC.queued = false; if (!RC.playing) raceDraw(); }); } }
+  function raceResults() {
+    const R = RC.runners.slice().sort((a, z) => a.T - z.T), best = R.length ? R[0].T : 0, ol = $("fr-race-res");
+    ol.innerHTML = "";
+    R.forEach((r, n) => {
+      const li = el("li", {}, ol), who = el("span", { class: "who" }, li);
+      keyEl(r.i, who);
+      who.append(`${n + 1}. ${r.b.name || "Setup " + LETTERS[r.i]}`);
+      const t = el("span", {}, li); t.innerHTML = `<b>${nf2.format(r.T / FPS)} s</b>${n ? ` (+${nf2.format((r.T - best) / FPS)} s)` : ""}`;
+      const notes = r.charging ? ["charging"] : r.whirl ? ["whirlwinding"] : [];
+      if (r.blaze && r.blaze < r.T) notes.push(`Blaze runs out at ${nf1.format(r.blaze / FPS)} s`);
+      for (const p of r.sk.parts) if (p[2] && p[2] < r.T && p[0] !== "Blaze") notes.push(`${p[0]} runs out at ${nf1.format(p[2] / FPS)} s`);
+      if (notes.length) el("small", {}, li, notes.join("; "));
+    });
+    $("fr-canvas").setAttribute("aria-label", `A race over ${RC.dist} yards, ${RC.mode === "RN" ? "running" : "walking"}: ` +
+      R.map(r => `${r.b.name || "Setup " + LETTERS[r.i]} ${nf2.format(r.T / FPS)} seconds`).join(", "));
+    renderDock();
+  }
+  /* RC.over: everyone has finished and the end plays on (standing at the finish line): the race can be run again */
+  function raceButtons() { $("fr-play").textContent = RC.playing && !RC.over ? "Stop" : RC.done || RC.over ? "Run it again" : "Run the race"; }
+  function racePlay() {
+    if (RC.state !== "ready") { RC.want = true; raceLoad(); return; }
+    const running = RC.playing;  // run again while the end plays on: the frame loop already runs
+    RC.want = false; RC.t = 0; RC.playing = true; RC.over = false; RC.done = false; RC.last = performance.now();
+    raceButtons();
+    if (!running) requestAnimationFrame(raceTick);
+  }
+  function raceTick(now) {
+    if (!RC.playing) return;
+    RC.t += Math.min(0.1, Math.max(0, now - RC.last) / 1000) * RC.slow * FPS; RC.last = now;
+    const last = Math.max(...RC.runners.map(r => r.T)), end = last + HOLD;
+    if (!RC.over && RC.t >= last) { RC.over = true; raceButtons(); }
+    if (RC.t >= end) { RC.t = end; RC.playing = false; RC.over = false; RC.done = true; raceButtons(); }
+    raceDraw();
+    if (RC.playing) requestAnimationFrame(raceTick);
+  }
+  function raceDraw() {
+    const cv = $("fr-canvas");
+    if (RC.state !== "ready" || !RC.runners.length) return;
+    const cssW = Math.max(240, $("fr-stage").clientWidth || 800), dpr = window.devicePixelRatio || 1;
+    const TOP = RC.top, LANE = RC.lane;
+    const D = RC.dist * PX_YD, trackW = LEFT + D + RIGHT, H = TOP + (RC.runners.length - 1) * LANE + BOTTOM;
+    const scale = clamp(cssW / trackW, 0.55, 1.25), viewW = cssW / scale, k = scale * dpr;
+    const W = Math.round(cssW * dpr), Hd = Math.round(H * k);
+    if (cv.width !== W || cv.height !== Hd) { cv.width = W; cv.height = Hd; RC.pattern = null; }
+    const ctx = cv.getContext("2d"), f = RC.t, fi = Math.floor(f);
+    // the camera: the whole track when it fits, else it follows the leader
+    const lead = Math.max(...RC.runners.map(r => r.at(f)));
+    const cam = trackW <= viewW ? -(viewW - trackW) / 2 : clamp(LEFT + lead - viewW * 0.68, 0, trackW - viewW);
+    const X = gx => Math.round((gx - cam) * k), Y = gy => Math.round(gy * k);
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.globalCompositeOperation = "source-over";
+    ctx.imageSmoothingEnabled = k < 1;
+    if (!RC.pattern) RC.pattern = ctx.createPattern(RC.floor, "repeat");
+    ctx.save(); ctx.setTransform(k, 0, 0, k, -Math.round(cam * k), 0); ctx.fillStyle = RC.pattern; ctx.fillRect(cam - 2, -2, viewW + 4, H + 4); ctx.restore();
+    // start and finish lines, a yard ruler
+    const font = px => `600 ${Math.round(px * dpr)}px "Source Sans 3", system-ui, sans-serif`;
+    ctx.fillStyle = "rgba(255,255,255,0.32)"; ctx.fillRect(X(LEFT), Y(TOP - 70), Math.max(1, Math.round(dpr)), Y(H - TOP + 70 - 12));
+    ctx.fillStyle = "rgba(255,255,255,0.75)"; ctx.fillRect(X(LEFT + D), Y(TOP - 70), Math.max(2, Math.round(2 * dpr)), Y(H - TOP + 70 - 12));
+    ctx.textBaseline = "alphabetic"; ctx.textAlign = "center";
+    const step = RC.dist >= 50 ? 10 : 5;
+    ctx.fillStyle = "rgba(255,255,255,0.55)"; ctx.font = font(12);
+    for (let yd = 0; yd <= RC.dist; yd += step) {
+      const gx = LEFT + yd * PX_YD;
+      ctx.fillRect(X(gx), Y(H - 27), Math.max(1, Math.round(dpr)), Y(6));
+      ctx.fillText(yd ? `${yd} yd` : "0", X(gx), Y(H - 5));
+    }
+    // the runners, back to front: flames, the overlays behind, a shadow, the figure, the overlays in front
+    const css = getComputedStyle(root), color = i => css.getPropertyValue(`--s${i + 1}`).trim() || "#fff";
+    const blit = (key, frame, gx, gy, img) => { const fr = RC.sp.p[key] && RC.sp.p[key][frame]; if (fr && fr[2]) ctx.drawImage(img || RC.img, fr[0], fr[1], fr[2], fr[3], X(gx + fr[4]), Y(gy + fr[5]), Math.round(fr[2] * k), Math.round(fr[3] * k)); };
+    for (const r of RC.runners) {
+      const gy = TOP + r.i * LANE, gx = LEFT + r.at(f), moving = f < r.T;
+      ctx.globalCompositeOperation = "lighter";
+      for (const fl of r.flames) {
+        const age = fi - fl.born;
+        if (age < 0 || age >= fl.burn) continue;
+        const o = fl.f, fr = !o.loop || age < o.start ? Math.min(age, o.f - 1) : o.start + (age - o.start) % (o.stop - o.start + 1);
+        blit("fx:" + fl.k, fr, LEFT + fl.x, gy + fl.y);
+      }
+      // an overlay sits at its offset plus its height for a player (Height2: a player's overlay height, any form); one
+      // of Trans 0 (Whirlwind's) is drawn see-through, half of it showing (the game blends it at a quarter; half is the
+      // author's choice, 2026-11-16), the others (Trans 3) add their light, as the game draws them
+      const overlay = pre => {
+        for (const v of r.ov) {
+          if (v.o.pre !== pre || fi >= v.until) continue;
+          const see = v.o.trans === 0;
+          if (see) { ctx.globalCompositeOperation = "source-over"; ctx.globalAlpha = 0.5; }
+          blit("ov:" + v.name, Math.floor(fi * v.o.rate / 16) % v.o.n, gx + v.o.dx, gy + v.o.dy + ((v.o.h || [])[1] || 0));
+          if (see) { ctx.globalCompositeOperation = "lighter"; ctx.globalAlpha = 1; }
+        }
+      };
+      overlay(1);
+      ctx.globalCompositeOperation = "source-over";
+      ctx.fillStyle = "rgba(0,0,0,0.33)"; ctx.beginPath();
+      ctx.ellipse(X(gx), Y(gy), (r.form === "wolf" || r.form === "bear" ? 26 : 17) * k, 6 * k, 0, 0, 2 * Math.PI); ctx.fill();
+      const pose = q => {
+        const g = r.seg(q), n = Math.floor(g.ph + g.fr * (q - g.from)), W = r.whirl;
+        // whirlwinding: the n-th step of Whirlwind's sequence, its attack-animation frame
+        return W ? W.frames[n <= W.to ? n : W.from + (n - W.to - 1) % (W.to - W.from + 1)] : n % r.anim.f;
+      };
+      const body = r.blue ? RC.cold : RC.img;  // chilled or in Holy Freeze: the figure in a chilled unit's colours
+      // Charge's trails: the figure where it was 4 and 2 game frames before, fainter
+      if (moving && r.charging) for (const [lag, a] of [[4, 0.22], [2, 0.45]]) {
+        if (fi < lag) continue;
+        ctx.globalAlpha = a; blit(r.anim.key, pose(fi - lag), LEFT + r.at(f - lag), gy, body); ctx.globalAlpha = 1;
+      }
+      if (moving) blit(r.anim.key, pose(fi), gx, gy, body);
+      else blit(r.stand.key, Math.floor(Math.max(0, fi - Math.ceil(r.T)) * r.stand.speed / 256) % r.stand.f, gx, gy, body);
+      ctx.globalCompositeOperation = "lighter";
+      overlay(0);
+      ctx.globalCompositeOperation = "source-over";
+      // the lane's letter at the start, the time beside the finish
+      ctx.font = font(12); ctx.lineWidth = Math.max(2, 3 * dpr); ctx.strokeStyle = "rgba(0,0,0,0.75)"; ctx.lineJoin = "round";
+      ctx.fillStyle = color(r.i);
+      ctx.beginPath(); ctx.arc(X(LEFT - 26), Y(gy - 8), 8.5 * k, 0, 2 * Math.PI); ctx.fill();
+      ctx.textAlign = "center"; ctx.fillStyle = INK[r.i]; ctx.fillText(LETTERS[r.i], X(LEFT - 26), Y(gy - 4));
+      if (!moving) {
+        const tx = `${nf2.format(r.T / FPS)} s`;
+        ctx.textAlign = "left"; ctx.strokeText(tx, X(gx + 24), Y(gy - 22)); ctx.fillStyle = color(r.i); ctx.fillText(tx, X(gx + 24), Y(gy - 22));
+      }
+    }
+    ctx.textAlign = "left"; ctx.font = font(13); ctx.strokeStyle = "rgba(0,0,0,0.75)"; ctx.fillStyle = "#ece7de";
+    const clock = `${nf2.format(f / FPS)} s` + (RC.slow < 1 ? (RC.slow === 0.5 ? " · half speed" : " · quarter speed") : "");
+    ctx.strokeText(clock, Math.round(10 * dpr), Math.round(20 * dpr)); ctx.fillText(clock, Math.round(10 * dpr), Math.round(20 * dpr));
+  }
+  function raceInit() {
+    const stage = $("fr-stage");
+    const setMode = m => { RC.mode = m; $("fr-run").setAttribute("aria-pressed", m === "RN"); $("fr-walk").setAttribute("aria-pressed", m === "WL"); RC.done = false; raceUpdate(); raceButtons(); };
+    $("fr-run").addEventListener("click", () => setMode("RN"));
+    $("fr-walk").addEventListener("click", () => setMode("WL"));
+    $("fr-dist").addEventListener("change", e => { RC.dist = +e.target.value || 30; RC.done = false; raceUpdate(); raceButtons(); });
+    $("fr-slow").addEventListener("change", e => { RC.slow = +e.target.value || 1; if (!RC.playing) raceDraw(); });
+    $("fr-play").addEventListener("click", () => { if (RC.playing && !RC.over) { RC.playing = false; RC.done = true; raceButtons(); } else racePlay(); });
+    $("fr-canvas").addEventListener("click", () => { if (!RC.playing || RC.over) racePlay(); });
+    if (window.IntersectionObserver) {
+      new IntersectionObserver(es => { if (es.some(e => e.isIntersecting)) raceLoad(); }, { rootMargin: "400px 0px" }).observe(stage);
+      new IntersectionObserver(es => {
+        if (!es.some(e => e.isIntersecting) || RC.seen) return;
+        RC.seen = true;
+        if (RC.state === "ready" && !reducedMotion() && !RC.playing && !RC.done) racePlay();
+      }, { threshold: 0.5 }).observe(stage);
+    } else raceLoad();
+    if (window.ResizeObserver) { let w0 = 0; new ResizeObserver(() => { const w = stage.clientWidth; if (Math.abs(w - w0) > 2) { w0 = w; raceSoon(); } }).observe(stage); }
+  }
+
+  // ================================================================== start
+  // a link's setups first, else this browser's, else the default setups
+  const saved = load(), linked = fromHash();
+  const kept = Array.isArray(saved) && saved.length ? saved.slice(0, 4).map(fromKept) : null;
+  builds = linked.length ? linked : kept && JSON.stringify(kept) !== JSON.stringify(oldExample()) ? kept : example();
+  $("fr-copy").addEventListener("click", () => {
+    save();
+    const note = $("fr-copy-note"), link = location.href;
+    const done = ok => { note.textContent = ok ? "Copied." : link; if (ok) setTimeout(() => { note.textContent = ""; }, 2500); };
+    if (navigator.clipboard) navigator.clipboard.writeText(link).then(() => done(true), () => done(false)); else done(false);
+  });
+  $("fr-reset").addEventListener("click", () => {
+    if (undoReset) { builds = undoReset; undoReset = null; } else { undoReset = builds; builds = example(); }
+    renderBuilds();
+  });
+  $("fr-clear").addEventListener("click", () => {
+    if (undoClear) { builds = undoClear; undoClear = null; } else { undoClear = builds; builds = cleared(); }
+    renderBuilds();
+  });
+  $("fr-add").addEventListener("click", () => { if (builds.length < 4) { const c = JSON.parse(JSON.stringify(builds[builds.length - 1])); c.name = ""; builds.push(c); renderBuilds(); } });
+  let lastW = 0;
+  // redrawn on the next frame: redrawing inside the browser's resize callback resizes what it watches (a loop)
+  if (window.ResizeObserver) new ResizeObserver(() => { const w = $("fr-plot").clientWidth; if (Math.abs(w - lastW) > 4) { lastW = w; requestAnimationFrame(render); } }).observe($("fr-plot"));
+  raceInit();
+  renderBuilds();
+  // the strip shows while the tiles are out of view, above or below (under the website's header counts as out)
+  if (window.IntersectionObserver) {
+    const head = document.querySelector(".md-header"), top = root.closest(".md-content") && head ? head.offsetHeight : 0;
+    new IntersectionObserver(es => { for (const e of es) $("fr-dock").classList.toggle("on", !e.isIntersecting); },
+      { rootMargin: `${-top}px 0px 0px 0px` }).observe($("fr-tiles"));
+  }
+})();

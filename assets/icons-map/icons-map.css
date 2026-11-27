@@ -1,0 +1,75 @@
+
+  /* Layout: a bar (search, sounds Main / PoE), then under a heading per kind of item (uniques and sets, runes...) one
+     card per minimap icon: the icon as the game draws it (each box in its palette colour) beside a stretch of minimap,
+     the items it is for as the card's title, whether it comes with a chat notification, and its drop sound to play.
+     Prints as a cheat sheet. Every rule scoped to .icons-map; dark by default, light with the website's light mode. */
+  .icons-map {
+    --bg: #151412; --panel: #1f1d1a; --fg: #ece7de; --muted: #a59e91; --line: #36322c; --accent: #d8b45e;
+    --map: #0c0b09;
+    --display: "Cinzel", "Trajan Pro", Georgia, serif;
+    --body: "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    color-scheme: dark; color: var(--fg); font: 15px/1.45 var(--body);
+  }
+  [data-md-color-scheme="default"] .icons-map {
+    --bg: #f3f1ec; --panel: #fffdf8; --fg: #23211c; --muted: #6b655a; --line: #ded7c9; --accent: #8a6d1f;
+    color-scheme: light;
+  }
+  .icons-map *, .icons-map *::before, .icons-map *::after { box-sizing: border-box; }
+  .icons-map .wrap { max-width: 1240px; margin: 0 auto; padding-inline: 16px; }
+  .md-content .icons-map .wrap { padding-inline: 0; }
+  .icons-map h1.ic-title { font: 700 26px/1.2 var(--display); letter-spacing: .02em; margin: 0; padding-block: 16px 10px; }
+  .icons-map .lede { margin: 0 0 12px; max-width: 80ch; }
+  .icons-map .bar { position: sticky; top: var(--md-header-height, 2.4rem); z-index: 2; display: flex; flex-wrap: wrap;
+                    gap: 8px 12px; align-items: center; padding: 10px 12px; margin-bottom: 12px; background: var(--panel);
+                    border: 1px solid var(--line); border-radius: 8px; }
+  /* a window under 560 px tall (200% zoom): the bar scrolls away (the additions audit, 2026-11-23, SW-07) */
+  @media (max-height: 560px) { .icons-map .bar { position: static; } }
+  .icons-map .bar input[type="search"] { flex: 1 1 220px; min-width: 0; height: 34px; padding: 0 10px; font: inherit;
+                                         font-size: 14px; color: var(--fg); background: var(--bg); border: 1px solid var(--line);
+                                         border-radius: 6px; }
+  .icons-map .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+  .icons-map .seg button { height: 32px; padding: 0 12px; font: inherit; font-size: 13.5px; color: var(--fg); background: none;
+                           border: 0; cursor: pointer; }
+  .icons-map .seg button + button { border-left: 1px solid var(--line); }
+  .icons-map .seg button[aria-pressed="true"] { background: rgba(216, 180, 94, .16); font-weight: 700; }
+  .icons-map .seg button[aria-pressed="true"]::before { content: "\2713  "; }
+  .icons-map .count { font-size: 13px; color: var(--muted); margin-left: auto; }
+  .icons-map :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  /* a heading per kind of item, as Tags and Symbols groups its cards (the additions audit, 2026-11-23, LU-10) */
+  .icons-map h2.grp { font: 700 22px/1.2 var(--display); margin: 22px 0 8px; letter-spacing: .02em; color: var(--fg); }
+  .icons-map section:first-child h2.grp { margin-top: 4px; }
+  .icons-map .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: 10px;
+                      align-items: start; }
+  .icons-map .card { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 3px 12px; background: var(--panel);
+                     border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; break-inside: avoid;
+                     align-content: start; }
+  /* the icon on a patch of minimap: BH's nested boxes, 8 / 6 / 4 / 2 game pixels, drawn 4x */
+  .icons-map .mm { grid-row: span 3; width: 64px; height: 64px; border-radius: 6px; position: relative;
+                   background: radial-gradient(circle at 50% 50%, #2b2a26 0%, var(--map) 70%); border: 1px solid #000; }
+  .icons-map .mm span { position: absolute; }
+  /* the card's title: the items it is for, a line per kind; under it whether it comes with a chat notification */
+  .icons-map h3.items { margin: 0; font: 700 15px/1.35 var(--body); color: var(--fg); letter-spacing: 0; }
+  .icons-map h3.items .line { display: block; }
+  .icons-map h3.items .k { font-weight: 600; color: var(--muted); }
+  .icons-map .alert { font-size: 13px; color: var(--muted); }
+  .icons-map .snd { display: flex; align-items: center; gap: 6px; font-size: 13.5px; flex-wrap: wrap; }
+  .icons-map .snd .none { color: var(--muted); }
+  .icons-map .play { width: 26px; height: 26px; padding: 0; border-radius: 50%; border: 1px solid var(--line); background: none;
+                     color: var(--fg); font-size: 11px; cursor: pointer; flex: none; }
+  .icons-map .play.on { border-color: var(--accent); color: var(--accent); }
+  /* on a touch screen the button is 34 px to hit: a transparent ring around the same 26 px circle (the additions audit,
+     2026-11-23, SW-09) */
+  @media (pointer: coarse) {
+    .icons-map .play, .icons-map .play.on { width: 34px; height: 34px; border: 4px solid transparent;
+      background-clip: padding-box; box-shadow: inset 0 0 0 1px var(--line); }
+    .icons-map .play.on { box-shadow: inset 0 0 0 1px var(--accent); }
+  }
+  .icons-map .poe-note { font-size: 12px; color: var(--muted); }
+  .icons-map .empty { color: var(--muted); padding: 16px 0; }
+  .icons-map footer { margin: 18px 0 6px; font-size: 13px; color: var(--muted); }
+  @media print {
+    .icons-map .bar, .icons-map .play { display: none; }
+    .icons-map h2.grp { font-size: 15px; margin: 8px 0 4px; }
+    .icons-map .cards { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+    .icons-map .card { padding: 6px 8px; }
+  }

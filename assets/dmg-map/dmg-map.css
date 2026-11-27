@@ -1,0 +1,485 @@
+
+  /* Builds side by side (up to four), the monster, the comparison, the damage profile, breakpoints, parity, how it's
+     worked out. Dark by default; light when the website (Material) is switched to light. */
+  .dmg-map {
+    --bg: #151412; --panel: #1f1d1a; --panel2: #191815; --fg: #ece7de; --fg2: #cfc8bb; --muted: #a59e91; --line: #36322c;
+    --grid: #2e2b27; --axis: #736c60; --accent: #d8b45e; --accent-wash: rgba(216, 180, 94, 0.12); --good: #38a283;
+    --bad: #cc7b38; --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #bb33aa;
+    --display: "Cinzel", "Trajan Pro", Georgia, serif;
+    --body: "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    color-scheme: dark;
+    color: var(--fg); font: 15px/1.5 var(--body);
+    /* a section header's band (the text color into the card's: lighter on dark, darker on light) and the line under it
+       (the section looks review, 2026-11-27) */
+    --band: color-mix(in srgb, var(--fg) 6%, var(--panel)); --div: color-mix(in srgb, var(--axis) 65%, var(--line));
+  }
+  [data-md-color-scheme="default"] .dmg-map {
+    --bg: #f3f1ec; --panel: #fffdf8; --panel2: #f8f5ee; --fg: #23211c; --fg2: #4a463e; --muted: #6b655a; --line: #ded7c9;
+    --grid: #e7e2d8; --axis: #928a7b; --accent: #8a6d1f; --accent-wash: rgba(138, 109, 31, 0.10); --good: #11805c;
+    --bad: #b65a17; --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #a8329b;
+    color-scheme: light;
+  }
+  .dmg-map *, .dmg-map *::before, .dmg-map *::after { box-sizing: border-box; }
+  .dmg-map [hidden] { display: none !important; }
+  .dmg-map .wrap { max-width: 1280px; margin: 0 auto; padding-inline: 16px; }
+  .md-content .dmg-map .wrap { padding-inline: 0; max-width: none; }
+  .dmg-map .dm-main { display: grid; gap: 20px; padding-block: 4px 48px; }
+  .dmg-map .dm-main > * { min-width: 0; }
+  .dmg-map h1.dm-title { font: 700 30px/1.15 var(--display); letter-spacing: .02em; margin: 0; padding-block: 24px 6px; color: var(--fg); }
+  .dmg-map h2, .dmg-map h3 { margin: 0; color: var(--fg); text-wrap: balance; letter-spacing: 0; }
+  .dmg-map h2 { font: 700 19px/1.25 var(--body); }
+  .dmg-map h3 { font: 700 15px/1.3 var(--body); }
+  .dmg-map p { margin: 0; }
+  .dmg-map :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .dmg-map .dm-head { display: grid; gap: 8px; }
+  .dmg-map .eyebrow { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+  .dmg-map .lede { max-width: 78ch; color: var(--fg2); font-size: 16px; }
+  .dmg-map .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px 18px 14px;
+                    display: grid; gap: 12px; }
+  .dmg-map .sub { color: var(--fg2); font-size: 14px; max-width: 86ch; }
+  .dmg-map .note { color: var(--muted); font-size: 13px; max-width: 92ch; }
+  .dmg-map .bar { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
+  .dmg-map button { font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--axis); border-radius: 6px;
+                    padding: 5px 11px; cursor: pointer; font-size: 14px; min-height: 34px; }
+  /* every button, list and box 14 px and 34 px tall; the small ones in a card's head and the strip 13 px and 30 px, as
+     the IAS Calculator's (the type review, 2026-11-20) */
+  .dmg-map button:hover { border-color: var(--accent); }
+  .dmg-map button.primary { border-color: var(--accent); background: var(--accent-wash); font-weight: 700; }
+  .dmg-map button:disabled { opacity: .5; cursor: default; }
+  /* the quiet buttons (Open / Close all sections, Undo, Redo, Reset, Copy a link): text, their edge shown under the
+     pointer or the keyboard, as the website's erazure.css draws them, so this file opened on its own looks the same
+     (2026-11-27, the author: on its own they had become boxed buttons once --axis was raised) */
+  .dmg-map button.ez-quiet { background: none; border: 1px solid transparent; box-shadow: none; color: var(--fg2); font-size: 13px;
+                             font-weight: 400; min-height: 30px; padding: 3px 8px; }
+  .dmg-map button.ez-quiet:hover:not(:disabled), .dmg-map button.ez-quiet:focus-visible { border-color: var(--axis); color: var(--fg); }
+
+  .dmg-map .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+                      margin: 0; padding: 0; }
+  .dmg-map .target-panel, .dmg-map .build, .dmg-map .tabs { scroll-margin-top: 80px; }
+  /* the monster: on phones a line and Change the monster, which opens its fields in place (the additions audit, CA-12) */
+  .dmg-map .target-body { display: grid; gap: 12px; min-width: 0; }
+  .dmg-map .target-sum { display: none; }
+  @media (max-width: 600px) {
+    .dmg-map .target-sum { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; font-size: 14px; color: var(--fg2); }
+    .dmg-map .target-sum b { color: var(--fg); }
+    .dmg-map .target-panel:not(.open) .target-body { display: none; }
+  }
+
+  /* builds: every card is a column of the same 9 rows (head, the seven sections, totals) of one grid (subgrid), so a
+     section starts level in every card */
+  .dmg-map .builds { display: grid; column-gap: 14px; row-gap: 0; grid-template-columns: repeat(var(--cols, var(--n, 2)), minmax(0, 1fr));
+                     grid-template-rows: repeat(9, auto); }
+  /* a card needs about 300 px for its fields (a wide field is two 118 px columns); where three or four cards in a row
+     would be narrower, they go two a row (2026-11-15: four cards at 960-1280 px overlapped and scrolled the page
+     sideways). The second row's cards take the next 9 rows, so their sections still start level. */
+  .dmg-map .builds-wrap { container-type: inline-size; container-name: builds; }
+  @media (min-width: 901px) {  /* narrower windows show one card at a time (the tabs) */
+    @container builds (max-width: 1243px) {
+      .dmg-map[data-n="4"] .builds { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .dmg-map[data-n="4"] .builds .build:nth-child(n+3) { margin-top: 14px; }
+    }
+    @container builds (max-width: 929px) {
+      .dmg-map[data-n="3"] .builds { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .dmg-map[data-n="3"] .builds .build:nth-child(n+3) { margin-top: 14px; }
+    }
+    /* the + Add a build tile takes a column too: two builds and the tile go as three cards do, three as four */
+    @container builds (max-width: 1243px) {
+      .dmg-map .builds[data-cols="4"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .dmg-map .builds[data-cols="4"] > :nth-child(n+3) { margin-top: 14px; }
+    }
+    @container builds (max-width: 929px) {
+      .dmg-map .builds[data-cols="3"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .dmg-map .builds[data-cols="3"] > :nth-child(n+3) { margin-top: 14px; }
+    }
+  }
+  /* What to compare: builds (cards side by side) or weapons (2026-11-22, the author picked direction A of the redesign
+     review: the character once, the weapons as columns, their results lined up under them) */
+  .dmg-map .mode { display: inline-flex; border: 1px solid var(--axis); border-radius: 6px; overflow: hidden; flex: none; }
+  .dmg-map .mode button { border: 0; border-radius: 0; background: var(--bg); }
+  .dmg-map .mode button + button { border-left: 1px solid var(--axis); }
+  .dmg-map .mode button[aria-pressed="true"] { background: var(--accent-wash); font-weight: 700; box-shadow: inset 0 -2px 0 var(--accent); }
+  /* three modes don't fit a phone's line side by side: the group takes the line, its buttons share it (2026-11-24) */
+  @media (max-width: 600px) {
+    .dmg-map .mode { flex: 1 1 100%; }
+    .dmg-map .mode button { flex: 1 1 0; min-width: 0; padding-left: 4px; padding-right: 4px; white-space: normal; line-height: 1.2; }
+  }
+  .dmg-map .mode-note { color: var(--fg2); }
+  /* the bar's quiet group (the author's pick, 2026-11-24): Undo, Redo, a divider, Reset, Copy a link; since 2026-11-27
+     (the section looks review, the author's note) Open all sections and Close all sections first, the group centered
+     under the compare switch, the section's main control, centered on the heading's line (Copy A, change one thing
+     went the same day, the author: each card's Copy to... and + Add a build do it) */
+  .dmg-map .dm-bar { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 0 12px; }
+  .dmg-map .dm-bar > h2 { grid-column: 1; }
+  .dmg-map .dm-center { grid-column: 2; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px 12px; }
+  .dmg-map .dm-acts { grid-column: 1 / -1; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 2px;
+                      margin-top: 8px; }
+  .dmg-map .dm-bar > #dm-share-note { grid-column: 1 / -1; text-align: center; max-width: none; overflow-wrap: anywhere; }
+  .dmg-map .dm-bar > #dm-share-note:not(:empty) { margin-top: 4px; }
+  .dmg-map .dm-sep { width: 1px; height: 18px; background: var(--line); margin: 0 6px; }
+  /* a pair (Open / Close all, Undo / Redo, Reset / Copy a link) wraps to the next line together */
+  .dmg-map .dm-pair { display: inline-flex; align-items: center; gap: 2px; white-space: nowrap; }
+  /* a phone: the switch takes the line, so the heading has a line of its own */
+  @media (max-width: 600px) {
+    .dmg-map .dm-bar { grid-template-columns: minmax(0, 1fr); }
+    .dmg-map .dm-center { grid-column: 1; margin-top: 8px; }
+  }
+  @media (max-width: 600px) { .dmg-map .dm-sep { display: none; } }
+  .dmg-map .mode-note button { font-size: 13px; min-height: 30px; padding: 3px 10px; margin-left: 6px; }
+  .dmg-map .builds.wmode { grid-template-columns: minmax(0, 380px) minmax(0, 1fr); grid-template-rows: none; gap: 14px; align-items: start; }
+  .dmg-map .builds.wmode .wchar { grid-row: auto; display: block; }
+  .dmg-map .wright { display: grid; gap: 14px; min-width: 0; }
+  .dmg-map .wcols { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); column-gap: 12px; row-gap: 0;
+                    grid-auto-rows: auto; }
+  .dmg-map .builds.wmode .wcol { grid-row: span 3; grid-template-rows: subgrid; margin-bottom: 12px; }
+  .dmg-map .wadd { grid-row: span 3; border: 1px dashed var(--axis); border-radius: 8px; background: transparent; color: var(--fg2);
+                   min-height: 64px; margin-bottom: 12px; font-weight: 700; align-self: start; }
+  .dmg-map .wadd:hover { border-color: var(--accent); color: var(--fg); }
+  .dmg-map .badd { grid-row: span 9; min-height: 120px; }
+  /* a build an armory load filled: "✓ Loaded above"; a card's own armory name box (Start from…) */
+  .dmg-map .build-head .arm-mark { flex-basis: 100%; margin: 0; font-size: 13px; color: var(--fg2); }
+  .dmg-map .build-head .arm-card { flex-basis: 100%; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .dmg-map .build-head .arm-card input { font: 13px var(--body); color: var(--fg); background: var(--bg); border: 1px solid var(--axis); border-radius: 6px; min-height: 30px; padding: 0 8px; width: 11em; max-width: 100%; }
+  .dmg-map .build-head .arm-card input::placeholder { color: var(--muted); opacity: 1; }
+  .dmg-map .build-head .arm-err { flex-basis: 100%; margin: 0; font-size: 13px; color: var(--fg2); }  /* + Add a build: the top of its column, as tall as a card's head */
+  .dmg-map .wres { min-width: 0; }
+  .dmg-map .wres table.dm-table { width: 100%; }
+  .dmg-map .wres th small { display: block; font-weight: 400; color: var(--muted); letter-spacing: 0; }
+  .dmg-map .wres tbody th { text-align: left; font-size: 14px; font-weight: 400; color: var(--fg2); letter-spacing: 0; vertical-align: top;
+                            padding-right: 28px; }
+  .dmg-map .wres tbody tr.strong th { font-weight: 700; color: var(--fg); }
+  .dmg-map .wres td { vertical-align: top; }
+  .dmg-map .wres .dm-table th:not(:first-child), .dmg-map .wres .dm-table td:not(:first-child) { min-width: 120px; white-space: normal; }
+  @container builds (max-width: 820px) { .dmg-map .builds.wmode { grid-template-columns: minmax(0, 1fr); } }
+  /* Compare gear (2026-11-24): build A's card on the left, the slot, the item columns and their table on the right */
+  .dmg-map .builds.gmode { grid-template-columns: minmax(0, 380px) minmax(0, 1fr); grid-template-rows: none; gap: 14px; align-items: start; }
+  .dmg-map .builds.gmode .gleft .build { display: block; }
+  .dmg-map .gright .gtop { padding: 0; }
+  .dmg-map .gcols { grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); row-gap: 12px; align-items: start; }
+  .dmg-map .builds.gmode .gcol { display: block; }
+  .dmg-map .gcol .gname { font-weight: 700; font-size: 15px; overflow-wrap: anywhere; }
+  .dmg-map .gcol .gbody { padding: 0 12px 4px; }
+  .dmg-map .gcol .gsum { margin: 0; padding: 2px 12px 10px; }
+  .dmg-map .gcols .wadd { grid-row: auto; }
+  @container builds (max-width: 820px) { .dmg-map .builds.gmode { grid-template-columns: minmax(0, 1fr); } }
+  .dmg-map #dm-kc-trade { display: grid; gap: 8px; min-width: 0; }
+  .dmg-map #dm-kc-trade[hidden] { display: none; }
+  .dmg-map #dm-kc-trade .kc-h { font-size: 15px; margin: 14px 0 0; }
+  .dmg-map #dm-kc-trade th small { display: block; font-weight: 400; color: var(--muted); letter-spacing: 0; }
+  .dmg-map #dm-kc-trade td small { display: inline; margin-left: 4px; }
+  .dmg-map #dm-kc-trade small.good { color: var(--good); }
+  .dmg-map #dm-kc-trade small.bad { color: var(--bad); }
+  .dmg-map .build { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; border-top: 3px solid var(--key);
+                    display: grid; grid-row: span 9; grid-template-rows: subgrid; gap: 0; min-width: 0;
+                    grid-template-columns: minmax(0, 1fr); }  /* the card's width, never its widest content's */
+  .dmg-map .build-head { display: flex; align-items: center; align-content: start; gap: 8px; padding: 10px 12px 8px; flex-wrap: wrap; }
+  /* the head: the build's letter and name on a line of their own, then Start from, Copy to and Remove. Start from's
+     closed box only ever shows "Start from…", so it is given a width (its list still opens as wide as its longest
+     example): at its own width, the longest option's, it made the card's grid column wider than the card, and three
+     cards ran into each other (2026-11-21) */
+  .dmg-map .build-head h3 { flex: 1 1 100%; min-width: 0; display: flex; align-items: center; gap: 8px; }
+  .dmg-map .build-head select { width: auto; flex: none; font-size: 13px; padding: 3px 6px; height: 30px; line-height: 22px; }
+  .dmg-map .build-head select.start { width: 9em; flex: 1 1 7em; min-width: 0; }
+  .dmg-map .build-head select.copy { width: 7em; min-width: 0; }  /* likewise: its options name the other builds */
+  .dmg-map .bar select { width: auto; max-width: 100%; }
+  /* the build's letter (A is the first card, the one the others are compared with) in its colour */
+  .dmg-map .build-head .key, .dmg-map .tabs .key { width: 22px; height: 22px; border-radius: 4px; flex: none; display: grid; place-items: center;
+                              border: 2px solid var(--key); background: color-mix(in srgb, var(--key) 30%, transparent);
+                              font-size: 13px; font-weight: 700; line-height: 1; color: var(--fg); }
+  /* the phone tabs: the build's badge, then its name (the additions audit, CA-14) */
+  .dmg-map .tabs button { display: inline-flex; align-items: center; gap: 7px; }
+  .dmg-map .build-head input.bname { background: transparent; border: 1px solid transparent; font-weight: 700; padding: 2px 4px; width: 100%; }
+  .dmg-map .build-head input.bname:hover, .dmg-map .build-head input.bname:focus { border-color: var(--axis); }
+  .dmg-map .build-head button { padding: 3px 8px; font-size: 13px; min-height: 30px; }
+  /* a build from the IAS Calculator: what came over and what to put in, with Undo, and the fields to fill in marked ✎
+     (the additions audit, CA-04) */
+  .dmg-map .build-head .arrive-note { flex: 1 1 100%; margin: 2px 0 0; font-size: 13px; line-height: 1.45; color: var(--fg2);
+                                      border-left: 2px solid var(--key); padding: 2px 0 2px 8px; }
+  .dmg-map .build-head .arrive-note button { margin-left: 4px; }
+  .dmg-map .field.todo > label::after { content: " \270E"; color: var(--accent); }
+  .dmg-map .field.todo input[type="number"] { border-color: var(--accent); border-style: dashed; }
+  /* a card's sections (the author's pick on the section looks review, 2026-11-27, https://claude.ai/artifact/8eTTpFh1t2YiBQHZsSDcLK,
+     db decision/main: until then a 12 px gray title in caps, its ▸ at the far right, sections split by a faint line, so
+     the headers read as labels): what can be pressed looks it, as the IAS Calculator's folds. Space between sections;
+     each header a shaded band with a line under it, a gold ▸ before a bold 15 px title (▾ once open), what the section
+     holds in a few words after it; a gold tint under the pointer; an open section's header edged in the build's color.
+     The same day fields' and buttons' edges took the IAS Calculator's --axis (3.2 : 1 against the card; 1.8 : 1 until
+     then). On the website, none of Material's admonition look. */
+  .dmg-map details.sec { border: 0; border-radius: 0; box-shadow: none; background: none; padding: 12px 0 0; margin: 0; overflow: visible;
+                         font-size: inherit; color: inherit; display: block; }
+  .dmg-map details.sec:last-of-type { padding-bottom: 6px; }
+  .dmg-map details.sec > summary { cursor: pointer; margin: 0 12px; padding: 5px 4px 6px 6px; font-size: 15px; letter-spacing: 0;
+                                   text-transform: none; color: var(--fg); font-weight: 700; list-style: none; display: flex;
+                                   justify-content: flex-start; align-items: baseline; gap: 10px; position: static; border: 0;
+                                   border-bottom: 1px solid var(--div); border-radius: 0; background: var(--band); min-height: 0; }
+  .dmg-map details.sec > summary:hover { background: linear-gradient(var(--accent-wash), var(--accent-wash)), var(--band); }
+  .dmg-map details.sec[open] > summary { margin-bottom: 8px; box-shadow: inset 3px 0 0 var(--key); }
+  .dmg-map details.sec > summary::-webkit-details-marker { display: none; }
+  .dmg-map details.sec > summary::after { display: none; content: none; }
+  .dmg-map details.sec > summary::before { content: "\25B8"; display: inline-block; flex: none; width: 12px; text-align: center; color: var(--accent);
+                                           font-size: 14px; line-height: 1; letter-spacing: 0; position: static; height: auto; background: none;
+                                           -webkit-mask-image: none; mask-image: none; transform: none; }
+  .dmg-map details.sec[open] > summary::before { content: "\25BE"; }
+  .dmg-map details.sec > summary .ttl, .dmg-map .sec-none > span:first-child { white-space: nowrap; flex: none; }
+  .dmg-map details.sec > summary .sum, .dmg-map .sec-none .sum { text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--fg2);
+                                       font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  /* the second weapon's row in a card whose class holds one weapon, while another card's class can hold two: no band,
+     no ▸ (it can't open), its title in line with the others' */
+  .dmg-map .sec-none { margin: 0 12px; padding: 17px 4px 6px 6px; border-bottom: 1px solid var(--div); font-size: 15px; letter-spacing: 0;
+                       text-transform: none; color: var(--muted); font-weight: 700; display: flex; justify-content: flex-start;
+                       align-items: baseline; gap: 10px; }
+  .dmg-map .sec-none > span:first-child { margin-left: 22px; }
+  .dmg-map .sec-none .sum { color: var(--muted); }
+  /* a section: lines of fields, then notes and what they make. A field is three rows of its line's grid (label,
+     input, hint: subgrid), so the inputs of a line stay level whatever their labels wrap to. */
+  .dmg-map .sec-body { padding-bottom: 6px; }
+  /* a fold inside a section (a weapon's own deadly strike, crushing blow, attack rating...): an outlined box that holds
+     its fields once open, a gold ▸ / ▾ before its title (the section looks review, 2026-11-27; a line with a small ▸
+     until then) */
+  .dmg-map details.fold { border: 1px solid var(--axis); border-radius: 6px; box-shadow: none; background: none; padding: 0; margin: 2px 12px 10px;
+                          overflow: visible; font-size: inherit; color: inherit; display: block; }
+  .dmg-map details.fold > summary { cursor: pointer; padding: 6px 10px; font-size: 13px; font-weight: 600; color: var(--fg2); list-style: none;
+                                    display: flex; gap: 8px; align-items: center; position: static; margin: 0; border: 0; border-radius: 5px;
+                                    background: none; min-height: 0; }
+  .dmg-map details.fold > summary:hover { background: var(--accent-wash); }
+  .dmg-map details.fold[open] > summary { border-bottom: 1px solid var(--line); border-radius: 5px 5px 0 0; margin-bottom: 6px; }
+  .dmg-map details.fold > summary::-webkit-details-marker { display: none; }
+  .dmg-map details.fold > summary::after { display: none; content: none; }
+  .dmg-map details.fold > summary::before { content: "\25B8"; color: var(--accent); width: 12px; text-align: center; position: static; height: auto;
+                                            background: none; -webkit-mask-image: none; mask-image: none; transform: none; flex: none; }
+  .dmg-map details.fold[open] > summary::before { content: "\25BE"; }
+  .dmg-map details.fold > summary .ttl { flex: none; color: var(--fg); }
+  .dmg-map details.fold > summary .sum { font-weight: 400; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+  .dmg-map details.fold.diff > summary .ttl { color: var(--accent); }
+  .dmg-map details.fold.diff > summary .ttl::after { content: " \25CF"; }
+  .dmg-map details.fold .fields { padding-left: 10px; padding-right: 10px; }
+  .dmg-map .fold-body > .note { padding: 0 10px 6px; }
+  .dmg-map .fields { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); column-gap: 10px; row-gap: 0;
+                     padding: 2px 12px 0; }
+  .dmg-map .field { display: grid; grid-row: span 3; grid-template-rows: subgrid; row-gap: 0; min-width: 0; align-content: start;
+                    position: relative; }
+  .dmg-map .field.wide { grid-column: span 2; }
+  .dmg-map .field.full { grid-column: 1 / -1; }
+  /* the curse lists (2026-11-24): the monster's curses from others, a row each in a box; a card's own, a line each */
+  .dmg-map .cm-block { grid-column: 1 / -1; display: grid; gap: 6px; margin: 4px 0 10px; }
+  .dmg-map .cm-h { margin: 0; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .dmg-map .fields.cm-row { padding: 6px 10px 0; border: 1px solid var(--line); border-radius: 8px; background: var(--panel2); }
+  .dmg-map .fields.cm-foot { border: 0; background: none; padding: 0; }
+  .dmg-map .cm-x { justify-self: start; min-width: 34px; padding: 0 10px; }
+  .dmg-map .cm-add { justify-self: start; }
+  /* a curse not on the monster: its name struck through, why not left readable */
+  .dmg-map .cm-off { color: var(--muted); }
+  .dmg-map .cm-off s { text-decoration-thickness: 1px; }
+  .dmg-map .field > label:not(.check), .dmg-map .field > .lab { font-size: 13px; font-weight: 600; color: var(--fg2); padding-bottom: 3px;
+                                                               align-self: end; line-height: 1.3; }
+  .dmg-map .field > small { font-size: 12px; color: var(--muted); line-height: 1.3; padding: 3px 0 9px; }
+  .dmg-map .field > small:empty { padding: 0 0 9px; }
+  .dmg-map .sec-body > .note { padding: 0 12px 8px; }
+  /* what a weapon pasted from the game filled in, with Undo (2026-11-23) */
+  .dmg-map .sec-body > .paste-note { margin: 0 12px 10px; padding: 2px 0 2px 8px; border-left: 2px solid var(--key); color: var(--fg2);
+                                     line-height: 1.45; }
+  .dmg-map .paste-note button { font-size: 13px; min-height: 30px; padding: 3px 10px; margin-left: 6px; }
+  .dmg-map input, .dmg-map select { font: inherit; color: var(--fg); }
+  .dmg-map select, .dmg-map input[type="number"], .dmg-map input[type="text"] { background: var(--bg); border: 1px solid var(--axis);
+      border-radius: 6px; padding: 4px 7px; min-width: 0; width: 100%; font-size: 14px; height: 34px; line-height: 24px; }
+  .dmg-map input[type="number"] { font-variant-numeric: tabular-nums; }
+  .dmg-map .check { display: flex; gap: 7px; align-items: center; font-size: 13px; color: var(--fg2); min-height: 34px; line-height: 1.25; }
+  .dmg-map .check input { accent-color: var(--accent); width: 15px; height: 15px; flex: none; }
+  .dmg-map .check:has(input:disabled) { color: var(--muted); }
+  /* under each section, what its fields make; at the card's bottom, the build's totals (the sheet's running subtotals) */
+  .dmg-map .subtotal { display: block; margin: 0 12px 6px; padding: 7px 10px; background: var(--panel2); border-left: 2px solid var(--key);
+                       border-radius: 0 6px 6px 0; font-size: 13px; line-height: 1.5; color: var(--fg2); font-variant-numeric: tabular-nums; }
+  .dmg-map .subtotal b { color: var(--fg); }
+  .dmg-map .build-foot { border-top: 1px solid var(--line); padding: 10px 12px 12px; display: grid; gap: 3px; font-variant-numeric: tabular-nums; }
+  .dmg-map .build-foot div { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 2px 10px;
+                             font-size: 14px; color: var(--fg2); }
+  .dmg-map .build-foot b { color: var(--fg); }
+  .dmg-map .build-foot small { flex-basis: 100%; text-align: right; color: var(--muted); font-size: 13px; }
+  .dmg-map .build-foot .big { padding-top: 3px; }
+  .dmg-map .build-foot .big b { font-size: 22px; }
+  /* fields that differ from build A (the mark sits in the gap left of the label, so the label never wraps for it) */
+  .dmg-map .gold { color: var(--accent); font-weight: 700; }
+  .dmg-map .field.diff > label, .dmg-map .field.diff > .lab, .dmg-map .field.diff .check { color: var(--accent); }
+  .dmg-map .field.diff > label:not(.check)::before, .dmg-map .field.diff > .lab::before { content: "\25CF"; position: absolute; left: -9px;
+                                                                                         font-size: 8px; margin-top: 4px; }
+  .dmg-map .field.diff select, .dmg-map .field.diff input[type="number"] { border-color: var(--accent); }
+  .dmg-map details.sec.diff > summary .ttl { color: var(--accent); }
+  .dmg-map details.sec.diff > summary .ttl::after { content: " \25CF"; }
+  /* the strip of totals that stays at the bottom of the screen while the builds are on it */
+  .dmg-map .dock { position: sticky; bottom: 0; z-index: 3; display: grid; grid-template-columns: repeat(var(--n, 2), minmax(0, 1fr));
+                   gap: 6px 10px; padding: 8px 10px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+                   box-shadow: 0 -8px 24px rgba(0, 0, 0, .4); }
+  [data-md-color-scheme="default"] .dmg-map .dock { box-shadow: 0 -6px 18px rgba(0, 0, 0, .12); }
+  /* its first line: the monster the kill times are for */
+  .dmg-map .dk-head { grid-column: 1 / -1; display: flex; align-items: center; gap: 4px 10px; min-width: 0; font-size: 13px; color: var(--fg2);
+                      padding-bottom: 5px; border-bottom: 1px solid var(--line); }
+  .dmg-map .dk-head span { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .dmg-map .dk-head b { color: var(--fg); }
+  .dmg-map .dk-head button { flex: none; padding: 1px 9px; font-size: 13px; min-height: 30px; }
+  .dmg-map .dk-head .dk-acts { display: inline-flex; gap: 2px; margin-left: auto; flex: none; }
+  .dmg-map .dk { border-left: 3px solid var(--key); padding: 1px 10px; display: grid; min-width: 0; }
+  .dmg-map .dk-name { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 700;
+                      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .dmg-map .dk-val { font-size: 22px; font-weight: 700; line-height: 1.2; font-variant-numeric: tabular-nums; }
+  .dmg-map .dk-val small { font-size: 13px; font-weight: 600; color: var(--fg2); }
+  .dmg-map .dk-sub { font-size: 13px; color: var(--fg2); font-variant-numeric: tabular-nums; }
+  /* why it differs from build A: the five parts of How they compare */
+  .dmg-map .dk-why { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  /* how each build compares with build A */
+  .dmg-map .verdict { display: grid; gap: 8px; max-width: 96ch; }
+  .dmg-map .verdict p { color: var(--fg2); font-size: 15px; }
+  .dmg-map .verdict b { color: var(--fg); }
+  .dmg-map .verdict .wv ul { margin: 4px 0 0 1.2em; padding: 0; color: var(--fg2); font-size: 14px; display: grid; gap: 3px; }
+  .dmg-map .verdict .wv li { margin: 0; }
+  .dmg-map .verdict .key { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; }
+  .dmg-map .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .dmg-map .pair.three { grid-template-columns: 1fr 1fr 1fr; }
+
+  /* results */
+  /* relative: the screen reader notes in its cells (position: absolute) stay inside it, or the page scrolls sideways */
+  .dmg-map .scroll { overflow-x: auto; min-width: 0; position: relative; }
+  /* tables as wide as their numbers, not the page: the label beside its values */
+  .dmg-map table.dm-table { border-collapse: collapse; width: auto; min-width: min(100%, 520px); font-size: 14px; margin: 0; display: table; }
+  .dmg-map .dm-table th, .dmg-map .dm-table td { padding: 6px 10px; text-align: right; border: 0; border-bottom: 1px solid var(--line);
+                                                 white-space: nowrap; background: none; }
+  .dmg-map .dm-table th { font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: .03em; vertical-align: bottom; }
+  .dmg-map .dm-table th:first-child, .dmg-map .dm-table td:first-child { text-align: left; }
+  .dmg-map .dm-table td { font-variant-numeric: tabular-nums; color: var(--fg); }
+  .dmg-map .dm-table tbody tr:hover td { background: var(--accent-wash); }
+  .dmg-map .dm-table tr.strong td { font-weight: 700; }
+  .dmg-map .dm-table td:first-child { padding-right: 28px; }
+  .dmg-map .dm-table th:not(:first-child), .dmg-map .dm-table td:not(:first-child) { min-width: 150px; }
+  .dmg-map .dm-table tr.group td { color: var(--muted); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; font-weight: 700;
+                                   padding-top: 12px; }
+  .dmg-map .dm-table td small { display: block; color: var(--muted); font-size: 12px; font-weight: 400; }
+  .dmg-map .dm-table th .key { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; }
+  .dmg-map .dm-table td.cur { color: var(--accent); font-weight: 700; }
+  .dmg-map .dm-table td.best, .dmg-map .best-key { color: var(--good); font-weight: 700; }
+  /* the best of a row is marked with a diamond as well (before the number, so the column's digits stay right-aligned) */
+  .dmg-map .dm-table td.best::before, .dmg-map .best-key::before { content: "\25C6"; font-size: 9px; margin-right: 5px; vertical-align: 1px; }
+  .dmg-map .dm-table tr.cur td { color: var(--accent); font-weight: 700; background: var(--accent-wash); }
+  .dmg-map .dm-table tr.past td { color: var(--muted); }
+
+  /* breakpoints: one ladder per build */
+  .dmg-map .bp-grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); align-items: start; }
+  .dmg-map .bp-card { border: 1px solid var(--line); border-top: 3px solid var(--key); border-radius: 8px; background: var(--panel2);
+                      padding: 10px 12px; display: grid; gap: 8px; min-width: 0; }
+  .dmg-map .bp-card h3 small { display: block; font-weight: 400; color: var(--muted); font-size: 13px; }
+  .dmg-map .bp-card table.dm-table { width: 100%; min-width: 0; }
+  .dmg-map .bp-card .dm-table td:first-child { padding-right: 10px; }
+  .dmg-map .bp-card .dm-table th:not(:first-child), .dmg-map .bp-card .dm-table td:not(:first-child) { min-width: 0; }
+  /* between cooldowns: the other skill's frames and the cycle under each row's frames, wrapping in a narrow card */
+  .dmg-map .bp-card .dm-table.wv td:first-child { white-space: normal; }
+  /* stat trade-offs: "+ [40] % [stat]" */
+  .dmg-map .par-amt { display: inline-flex; align-items: center; gap: 3px; font-weight: 700; color: var(--fg); }
+  .dmg-map .par-amt input[type="number"] { width: 78px; }
+  .dmg-map .good { color: var(--good); }
+  .dmg-map .bad { color: var(--bad); }
+
+  /* chart */
+  .dmg-map .plot { position: relative; min-width: 0; }
+  .dmg-map .plot svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .dmg-map .tick { fill: var(--muted); font-size: 12px; font-family: var(--body); font-variant-numeric: tabular-nums; }
+  .dmg-map .axis-title { fill: var(--muted); font-size: 12px; font-family: var(--body); }
+  .dmg-map ul.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; padding: 0; margin: 0; list-style: none; }
+  .dmg-map .legend li { display: flex; align-items: center; gap: 7px; font-size: 13px; margin: 0; }
+  .dmg-map .legend .key { width: 26px; height: 8px; flex: none; overflow: visible; }
+  .dmg-map .end-label { fill: var(--fg2); font-size: 12px; font-family: var(--body); }
+  .dmg-map .tip { position: absolute; z-index: 5; pointer-events: none; background: var(--panel); border: 1px solid var(--line);
+                  border-radius: 8px; box-shadow: 0 6px 24px rgba(0,0,0,.25); padding: 7px 10px; font-size: 13px; min-width: 180px; }
+  .dmg-map .tip b { font-variant-numeric: tabular-nums; }
+
+  .dmg-map .method ul { margin: 0; padding-left: 20px; display: grid; gap: 7px; max-width: 96ch; color: var(--fg2); list-style: disc; }
+  .dmg-map .method li { margin: 0; }
+  .dmg-map .method li strong { color: var(--fg); }
+  .dmg-map .credit { color: var(--muted); font-size: 13px; }
+  /* links in running text are underlined: the notes' and each card's "See this attack frame by frame" too (the
+     additions audit, SW-05) */
+  .dmg-map .credit a, .dmg-map .method a, .dmg-map .note a, .dmg-map .subtotal a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  .dmg-map .tabs { display: none; gap: 6px; flex-wrap: wrap; }
+  .dmg-map .tabs button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-wash); font-weight: 700; }
+  /* the details under the builds: a tab each (the ARIA tab pattern), underlined as the IAS Calculator's and the Grail
+     Planner's tabs */
+  .dmg-map .dm-tabbar { display: flex; flex-wrap: wrap; gap: 2px; border-bottom: 1px solid var(--line); }
+  .dmg-map .dm-tabbar button { background: transparent; border: 0; border-bottom: 2px solid transparent; border-radius: 0;
+                               padding: 6px 14px 9px; margin: 0 0 -1px; font: 600 15px/1.2 var(--body); color: var(--muted); white-space: nowrap; }
+  .dmg-map .dm-tabbar button:hover { color: var(--fg); border-color: transparent; }
+  .dmg-map .dm-tabbar button[aria-selected="true"] { color: var(--fg); border-bottom-color: var(--accent); }
+  .dmg-map .dm-tabbar button:focus-visible { outline-offset: -2px; }
+  .dmg-map .dm-tabpanel { display: grid; gap: 12px; min-width: 0; position: relative; }
+
+  @media (max-width: 700px) {
+    .dmg-map .dk-why { display: none; }
+  }
+  @media (max-width: 900px) {
+    .dmg-map .builds { grid-template-columns: 1fr; }
+    .dmg-map .builds .build:not(.shown) { display: none; }
+    .dmg-map .builds.wmode { grid-template-columns: minmax(0, 1fr); }
+    .dmg-map .builds.wmode .build:not(.shown) { display: grid; }
+    .dmg-map .builds.wmode .wchar:not(.shown) { display: block; }
+    .dmg-map .builds.gmode { grid-template-columns: minmax(0, 1fr); }
+    .dmg-map .builds.gmode .build:not(.shown) { display: block; }
+    .dmg-map .tabs { display: flex; }
+    .dmg-map .dock { grid-template-columns: repeat(min(var(--n, 2), 2), minmax(0, 1fr)); }
+  }
+  @media (max-width: 520px) {
+    .dmg-map .panel { padding: 14px 12px 12px; }
+    .dmg-map .dock { padding: 6px 8px; gap: 4px 8px; }
+    .dmg-map .dk-val { font-size: 18px; }
+    .dmg-map .dk-sub { font-size: 12px; }
+    .dmg-map .dk-head { font-size: 13px; }
+  }
+  /* short windows (200% zoom on a laptop): a smaller strip, and below 420px none (it would cover a third of the screen) */
+  @media (max-height: 500px) {
+    .dmg-map .dk-why { display: none; }
+    .dmg-map .dock { padding-block: 6px; gap: 4px 12px; }
+    .dmg-map .dk-val { font-size: 18px; }
+  }
+  @media (max-height: 420px) {
+    .dmg-map .dock { position: static; }
+  }
+  /* the strip shows while the cards are on screen and their totals aren't (2026-11-22, audit CALC-12: on a short screen
+     it covered the Builds heading and the first fields); below 800 px tall, a line a build: its name and damage per
+     second */
+  .dmg-map .dock { transition: opacity .15s, visibility .15s; }
+  .dmg-map .dock.off { visibility: hidden; opacity: 0; }
+  @media (max-height: 800px) {
+    .dmg-map .dk-sub, .dmg-map .dk-why { display: none; }
+    .dmg-map .dk { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 8px; }
+    .dmg-map .dk-val { font-size: 18px; }
+  }
+  /* phones: Side by Side's row names stay at the left while the builds' columns scroll (audit CALC-03) */
+  @media (max-width: 600px) {
+    .dmg-map .dm-table th:first-child, .dmg-map .dm-table td:first-child { position: sticky; left: 0; z-index: 1; background: var(--panel);
+                                                                             max-width: 42vw; white-space: normal; padding-right: 10px; }
+    .dmg-map .dm-table tbody tr:hover td:first-child, .dmg-map .dm-table tr.cur td:first-child { background: linear-gradient(var(--accent-wash), var(--accent-wash)) var(--panel); }
+    .dmg-map .dm-table th:not(:first-child), .dmg-map .dm-table td:not(:first-child) { min-width: 110px; }
+  }
+  /* Side by Side's builds' letters over their columns; on phones each row's small lines go under it, across the table,
+     each after its build's letter, so two to four builds' numbers fit side by side (the additions audit, CA-06) */
+  .dmg-map .dm-table .kb { display: inline-grid; place-items: center; width: 18px; height: 18px; border-radius: 3px; margin-right: 6px; vertical-align: middle;
+                           border: 2px solid var(--key); background: color-mix(in srgb, var(--key) 30%, transparent);
+                           font-size: 12px; font-weight: 700; line-height: 1; color: var(--fg); letter-spacing: 0; }
+  .dmg-map #dm-results tr.subs { display: none; }
+  /* a long line under a number (the attack speed's parts) wraps rather than widening its column past the others' */
+  .dmg-map #dm-results td small { white-space: normal; max-width: 44ch; margin-left: auto; }
+  @media (max-width: 600px) {
+    .dmg-map #dm-results td small { display: none; }
+    .dmg-map #dm-results td:not(:first-child), .dmg-map #dm-results thead th { white-space: normal; }
+    .dmg-map #dm-results .nw { white-space: nowrap; }
+    .dmg-map #dm-results tr.subs { display: table-row; }
+    .dmg-map #dm-results tr.has-subs td { border-bottom: 0; padding-bottom: 2px; }
+    .dmg-map #dm-results tr.subs td { position: static; max-width: none; white-space: normal; text-align: left; padding: 0 0 8px; background: none; }
+    .dmg-map #dm-results tr.subs:hover td { background: none; }
+    /* the lines stay in view while a table of three or four builds scrolls sideways */
+    .dmg-map #dm-results .sbw { position: sticky; left: 10px; display: grid; gap: 3px; width: min(100%, calc(100vw - 76px));
+                                font-size: 12px; line-height: 1.35; color: var(--muted); }
+    .dmg-map #dm-results .sb { display: flex; align-items: baseline; gap: 0; }
+    .dmg-map #dm-results .sb .kb { flex: none; width: 16px; height: 16px; margin-right: 6px; font-size: 12px; vertical-align: 0; align-self: center; }
+    .dmg-map #dm-results th:not(:first-child), .dmg-map #dm-results td:not(:first-child) { min-width: 72px; padding-left: 4px; padding-right: 6px; }
+    .dmg-map #dm-results th:first-child, .dmg-map #dm-results td:first-child { max-width: 34vw; }
+    /* a table still wider than the screen (four builds) shows a shade at the edge it scrolls toward, as the IAS
+       Calculator's tables */
+    .dmg-map .scroll { background: linear-gradient(to left, var(--panel) 30%, transparent) right / 24px 100% no-repeat local,
+                                   radial-gradient(farthest-side at 100% 50%, rgba(0, 0, 0, .3), transparent) right / 10px 100% no-repeat scroll; }
+  }
+  .dmg-map .dm-tabbar { scroll-margin-top: 72px; }

@@ -1,0 +1,93 @@
+
+  @font-face { font-family: "AvQest"; src: local("AvQest"); }  /* the D2-style font, if the viewer has it installed */
+  /* Layout: the title and what the version is; then one section per kind of item, each a table-like list: the
+     item, its label in Erazure - Main, its label in Minimal, each drawn as the game does on a patch of
+     ground. Every rule is scoped to .style-map, so the website's theme and this page leave each other alone. */
+  /* Dark by default; light when the website (Material) is switched to light */
+  .style-map {
+    --bg: #151412; --panel: #1f1d1a; --fg: #ece7de; --muted: #a59e91; --line: #36322c; --accent: #d8b45e;
+    --ground-1: #3a3428; --ground-2: #26221b; --ground-3: #15130f;
+    --display: "Cinzel", "Trajan Pro", Georgia, serif;
+    --body: "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --label: "AvQest", "Palatino Linotype", Palatino, Georgia, serif;
+    color-scheme: dark;
+    color: var(--fg); font: 15px/1.45 var(--body);
+  }
+  [data-md-color-scheme="default"] .style-map {
+    --bg: #f3f1ec; --panel: #fffdf8; --fg: #23211c; --muted: #6b655a; --line: #ded7c9; --accent: #8a6d1f;
+    color-scheme: light;
+  }
+  .style-map *, .style-map *::before, .style-map *::after { box-sizing: border-box; }
+  .style-map .wrap { max-width: 1100px; margin: 0 auto; padding-inline: 16px; }
+  .md-content .style-map .wrap { padding-inline: 0; }
+  .style-map h1.sm-title { font: 700 26px/1.2 var(--display); letter-spacing: .02em; margin: 0; padding-block: 16px 10px;
+                           color: var(--fg); text-wrap: balance; }
+  .style-map .intro { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; }
+  .style-map .intro p { margin: 0 0 6px; max-width: 75ch; font-size: 14.5px; }
+  .style-map .intro p:last-child { margin-bottom: 0; }
+  .style-map h2.kind { font: 700 22px/1.2 var(--display); margin: 28px 0 8px; letter-spacing: .02em; color: var(--fg); }
+  /* the rows' columns in px, not rem: the website's theme sets a bigger root font */
+  .style-map .table { display: grid; grid-template-columns: 200px minmax(0, 1fr) minmax(0, 1fr); gap: 5px 12px;
+                      align-items: center; }
+  .style-map .head { font-size: 12.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em;
+                     color: var(--muted); }
+  .style-map .item { font-weight: 600; font-size: 14.5px; line-height: 1.3; }
+  .style-map .item.more .t { visibility: hidden; }
+  /* a look's drop sound (the website ideas' #28, 2026-11-22): the item pages' play button, at one size on every page
+     (Icons and Sounds' 26 px; the additions audit, 2026-11-23, SW-09) */
+  .style-map button.play { font: inherit; font-size: 11px; line-height: 1; width: 26px; height: 26px; padding: 0;
+    border: 1px solid var(--line); border-radius: 50%; background: transparent; color: var(--accent); cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center; vertical-align: middle; margin-right: 6px; }
+  .style-map button.play:hover, .style-map button.play.on { border-color: var(--accent); background: var(--accent); color: var(--bg); }
+  .style-map button.play:disabled { opacity: .4; cursor: default; }
+  /* on a touch screen 34 px to hit: a transparent ring around the same 26 px circle */
+  @media (pointer: coarse) {
+    .style-map button.play, .style-map button.play:hover, .style-map button.play.on { width: 34px; height: 34px;
+      border: 4px solid transparent; background-clip: padding-box; box-shadow: inset 0 0 0 1px var(--line); }
+    .style-map button.play:hover, .style-map button.play.on { box-shadow: inset 0 0 0 1px var(--accent); }
+  }
+  .style-map .ground { min-width: 0; overflow-x: auto; text-align: center; border-radius: 5px; padding: 3px 6px;
+                       background: radial-gradient(ellipse at 50% 45%, var(--ground-1) 0%, var(--ground-2) 55%, var(--ground-3) 100%); }
+  .style-map .d2label { display: inline-block; font-family: var(--label); font-size: 15px; line-height: 1.12;
+                        white-space: pre; background: rgba(0, 0, 0, .74); padding: 2px 6px 0; vertical-align: middle; }
+  /* A backslash is drawn as the slash mirrored: the web fonts space "\" wide, the game draws it like "/" */
+  .style-map .d2label .bs { display: inline-block; transform: scaleX(-1); }
+  .style-map .c-WHITE { color: #e8e8e8; } .style-map .c-RED { color: #ff4d4d; } .style-map .c-GREEN { color: #00ff00; }
+  .style-map .c-BLUE { color: #6969ff; } .style-map .c-GOLD { color: #c7b377; } .style-map .c-GRAY { color: #696969; }
+  .style-map .c-BLACK { color: #000000; } .style-map .c-TAN { color: #d0c27d; } .style-map .c-ORANGE { color: #ffa800; }
+  .style-map .c-YELLOW { color: #ffff64; } .style-map .c-PURPLE { color: #ae00ff; }
+  .style-map .c-DARK_GREEN { color: #008000; } .style-map .c-CORAL { color: #ff7f6e; } .style-map .c-SAGE { color: #a3b88f; }
+  .style-map .c-TEAL { color: #3fb5b5; } .style-map .c-LIGHT_GRAY { color: #a8a8a8; }
+  .style-map .same { font-size: 14px; color: var(--muted); margin: 8px 0 0; }
+  /* the search (the website ideas' #28): under the site's header while the labels scroll; static on short windows */
+  .style-map .bar { position: sticky; top: var(--md-header-height, 2.4rem); z-index: 2; display: flex; flex-wrap: wrap;
+                    gap: 8px 12px; align-items: center; margin-top: 12px; padding: 10px 12px; background: var(--panel);
+                    border: 1px solid var(--line); border-radius: 8px; }
+  .style-map .bar input[type="search"] { flex: 1 1 240px; min-width: 0; height: 34px; padding: 0 10px; font: inherit;
+                                         font-size: 14px; color: var(--fg); background: var(--bg);
+                                         border: 1px solid var(--line); border-radius: 6px; }
+  .style-map .bar input[type="search"]:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .style-map .bar .count { font-size: 13px; color: var(--muted); }
+  .style-map .empty { color: var(--muted); padding: 16px 0; }
+  /* a window under 560 px tall (200% zoom): the bar scrolls away (the additions audit, 2026-11-23, SW-07) */
+  @media (max-height: 560px) { .style-map .bar { position: static; } }
+  .style-map footer { color: var(--muted); font-size: 13px; padding-block: 24px; }
+  .style-map .ground .cap { display: none; }
+  /* phones: the two looks one above the other, each the column's whole width, with a small caption (2026-11-15: side
+     by side, 50 of the 80 labels were cut off at 390 px) */
+  @media (max-width: 600px) {
+    .style-map .table { grid-template-columns: minmax(0, 1fr); }
+    .style-map .item { margin-top: 8px; }
+    .style-map .item.more:not(:has(button)), .style-map .head { display: none; }
+    .style-map .item.more .t { display: none; }
+    .style-map .ground { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 8px; text-align: left; }
+    .style-map .ground .cap { display: block; flex: none; width: 4.6em; font-size: 11.5px; font-weight: 700;
+                              text-transform: uppercase; letter-spacing: .05em; color: #b9b2a3; }
+    .style-map .d2label { font-size: 13.5px; }
+  }
+  @media (min-width: 601px) and (max-width: 760px) {
+    .style-map .table { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+    .style-map .item { grid-column: 1 / -1; margin-top: 6px; }
+    .style-map .item.more:not(:has(button)), .style-map .head.item { display: none; }
+    .style-map .item.more .t { display: none; }
+  }

@@ -1,0 +1,257 @@
+
+  @font-face { font-family: "AvQest"; src: local("AvQest"); }  /* the D2-style font, if the viewer has it installed */
+  /* Layout: the title; a "how to read it" block with each tier's real in-game look; then the filter bar, which stays
+     at the top while scrolling (under the website's header on the website); then one section per item type with its
+     tiers in order. Each item is one thin, wide row: the item on the left, then one line per condition (when, tier,
+     the label as the game draws it, minimap icon, drop sound). Every rule is scoped to .tier-map, so the website's
+     theme and this page leave each other alone. */
+  /* Dark by default; light when the website (Material) is switched to light */
+  .tier-map {
+    --bg: #151412; --panel: #1f1d1a; --fg: #ece7de; --muted: #a59e91; --line: #36322c; --chip: #2a2723;
+    --accent: #d8b45e; --tip-bg: #ece7de; --tip-fg: #151412;
+    --t-dclone: #8b9cf0; --t-high: #f08a52; --t-medium: #e0b45a; --t-minimal: #c2b38a; --t-lld: #62c2b8;
+    --t-else: #9a9385; --set: #7cc474; --bad: #ef7a72;
+    --ground-1: #3a3428; --ground-2: #26221b; --ground-3: #15130f;
+    --display: "Cinzel", "Trajan Pro", Georgia, serif;
+    --body: "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --label: "AvQest", "Palatino Linotype", Palatino, Georgia, serif;
+    --top: 0px;  /* where the filter bar stops while scrolling */
+    color-scheme: dark;
+    color: var(--fg); font: 15px/1.45 var(--body);
+  }
+  [data-md-color-scheme="default"] .tier-map {
+    --bg: #f3f1ec; --panel: #fffdf8; --fg: #23211c; --muted: #6b655a; --line: #ded7c9; --chip: #efe9dd;
+    --accent: #8a6d1f; --tip-bg: #23211c; --tip-fg: #f3f1ec;
+    --t-dclone: #4b5fc4; --t-high: #c2410c; --t-medium: #b7791f; --t-minimal: #8c7a4f; --t-lld: #2f8f86;
+    --t-else: #8b8579; --set: #3d8b3d; --bad: #b3261e;
+    color-scheme: light;
+  }
+  .md-content .tier-map { --top: 2.4rem; }  /* on the website: under its header, which stays at the top */
+  .tier-map *, .tier-map *::before, .tier-map *::after { box-sizing: border-box; }
+  .tier-map .wrap { max-width: 1320px; margin: 0 auto; padding-inline: 16px; }
+  .md-content .tier-map .wrap { padding-inline: 0; }
+  .tier-map h1.tm-title { font: 700 26px/1.2 var(--display); letter-spacing: .02em; margin: 0; padding-block: 16px 10px;
+                          color: var(--fg); text-wrap: balance; }
+  .tier-map .bar { position: sticky; top: var(--top); z-index: 3; background: var(--panel);
+                   border-block: 1px solid var(--line); padding-block: 8px; margin-block: 12px 0; }
+  /* a short window (200% zoom: 960 x 470, 683 x 315): the bar scrolls away, or it would cover most of the page
+     (560 px since 2026-11-23, the additions audit SW-07 / LU-04: at 420 px it still covered 46% of a 470 px window) */
+  @media (max-height: 560px) { .tier-map .bar { position: static; } }
+  .tier-map .bar .wrap { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
+  .md-content .tier-map .bar .wrap { padding-inline: 10px; }
+  .tier-map .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .tier-map input[type=search], .tier-map select {
+    font: inherit; font-size: 14.5px; padding: 5px 8px; border: 1px solid var(--line); border-radius: 6px;
+    background: var(--bg); color: var(--fg); min-width: 0; margin: 0; }
+  .tier-map input[type=search] { flex: 1 1 220px; }
+  .tier-map .row2 { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; width: 100%; }
+  .tier-map .chipbtn { font: inherit; font-size: 13px; padding: 2px 10px; border-radius: 999px; border: 1px solid var(--line);
+                       background: var(--chip); color: var(--fg); cursor: pointer; display: inline-flex; gap: 6px;
+                       align-items: center; margin: 0; }
+  /* on: a check before the dot; off: dimmed and struck through (not by color alone). The check's room is kept when
+     off, so the chips after it don't move. */
+  .tier-map .chipbtn::before { content: ""; width: .8em; margin-right: -2px; text-align: center; }
+  .tier-map .chipbtn[aria-pressed=true]::before { content: "\2713"; content: "\2713" / ""; }
+  .tier-map .chipbtn[aria-pressed=false] { opacity: .5; text-decoration: line-through; }
+  .tier-map .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--tc); flex: none; }
+  .tier-map .muted { color: var(--muted); }
+  .tier-map button:focus-visible, .tier-map select:focus-visible, .tier-map input:focus-visible,
+  .tier-map .sound:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* how to read it */
+  .tier-map .intro { display: grid; gap: 12px; }
+  .tier-map .howto { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 4px 24px; }
+  @media (max-width: 900px) { .tier-map .howto { grid-template-columns: minmax(0, 1fr); } }
+  .tier-map .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px;
+                     min-width: 0; }
+  .tier-map .panel h2 { font: 700 12.5px/1.3 var(--body); text-transform: uppercase; letter-spacing: .08em;
+                        color: var(--muted); margin: 0 0 6px; }
+  .tier-map .panel p, .tier-map .panel li { max-width: 72ch; font-size: 14.5px; line-height: 1.45; }
+  .tier-map .panel p { margin: 0 0 6px; }
+  .tier-map .panel ul { margin: 0 0 6px; padding-left: 18px; list-style: disc; }
+  .tier-map .panel li { margin: 0; }
+  .tier-map .levels { font-size: 13.5px; margin: 4px 0 0; padding-left: 24px; list-style: decimal; }
+  .tier-map .levels li { font-size: 13.5px; margin: 0; }
+  /* the tiers legend: one table-like grid, so every column lines up (name | example label | icon | meaning) */
+  .tier-map .legend { display: grid; grid-template-columns: 15rem max-content auto minmax(0, 1fr); gap: 5px 14px;
+                      align-items: center; }
+  .tier-map .legend .lrow { display: contents; }
+  .tier-map .legend .ground { justify-self: start; }
+  .tier-map .legend .lname { font-size: 14px; }
+  .tier-map .legend .lname b { color: var(--tc); }
+  .tier-map .legend .lwhat { font-size: 13.5px; color: var(--muted); }
+  @media (max-width: 900px) {
+    .tier-map .legend { grid-template-columns: minmax(0, 1fr); }
+    .tier-map .legend .lrow { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 10px; padding-block: 3px; }
+    .tier-map .legend .lname, .tier-map .legend .lwhat { flex: 1 1 100%; }
+  }
+  .tier-map .low { display: grid; gap: 6px; margin-top: 10px; }
+  .tier-map .low .rule { font-size: 14px; }
+
+  /* items */
+  .tier-map h2.kind { font: 700 24px/1.2 var(--display); margin: 30px 0 2px; letter-spacing: .02em; color: var(--fg); }
+  .tier-map section.cat { margin-top: 18px; }
+  .tier-map h3.cat { font: 600 18px/1.25 var(--display); margin: 0 0 4px; padding-bottom: 3px; letter-spacing: 0;
+                     border-bottom: 1px solid var(--line); color: var(--fg); }
+  .tier-map .tier-head { display: flex; gap: 8px; align-items: center; font-size: 12.5px; font-weight: 700;
+                         text-transform: uppercase; letter-spacing: .07em; color: var(--tc); margin: 10px 0 5px; }
+  .tier-map .rows { display: grid; gap: 5px; }
+  /* the item lines' columns in px, not rem: the website's theme sets a bigger root font, and the line must fit there
+     as on the page itself */
+  .tier-map article.row { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 3px 14px; align-items: start;
+                          background: var(--panel); border: 1px solid var(--line); border-left: 3px solid var(--tc);
+                          border-radius: 6px; padding: 5px 10px; }
+  .tier-map article.row.group { grid-template-columns: minmax(0, 1fr); }
+  @media (max-width: 760px) { .tier-map article.row { grid-template-columns: minmax(0, 1fr); } }
+  .tier-map .who { min-width: 0; }
+  .tier-map .who .nm { font-weight: 700; line-height: 1.3; }
+  .tier-map .who .sub { font-size: 13px; color: var(--muted); margin-top: 1px; }
+  /* a row's links (the website's row menu, javascripts/erazure.js; the website ideas' #3): on the site only */
+  .tier-map .ez-rowmenu { display: none; align-items: center; justify-content: center; min-width: 28px; height: 22px;
+    margin-left: 6px; padding: 0 6px; border: 1px solid var(--line); border-radius: 5px; background: none; color: var(--muted);
+    font: inherit; font-size: 14px; line-height: 1; cursor: pointer; vertical-align: middle; }
+  .tier-map .ez-rowmenu:hover, .tier-map .ez-rowmenu[aria-expanded="true"] { color: var(--fg); border-color: var(--accent); }
+  .tier-map .ez-rowmenu:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  /* a row a link points to (#u-<code>, #s-<code>), for a moment */
+  .tier-map .row.hit { box-shadow: 0 0 0 2px var(--accent); }
+  .tier-map .who .setname { font-size: 13px; color: var(--set); }
+  .tier-map .who .setname.inline { font-weight: 400; }
+  .tier-map .who.names { font-size: 13.5px; }
+  .tier-map .who.names b { font-weight: 700; }
+  .tier-map .who.names .base { color: var(--muted); }
+  .tier-map .rules { display: grid; gap: 2px; min-width: 0; }
+  .tier-map .run { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 12px; min-width: 0; }
+  .tier-map .run .when { flex: 0 0 208px; font-size: 14px; }
+  .tier-map .run .what { flex: 0 0 200px; font-size: 14px; font-weight: 600; }
+  /* the label's cell: at least as wide on every line, so the icons and sounds after it line up */
+  .tier-map .run .lab { flex: 0 0 auto; min-width: 368px; display: flex; }
+  .tier-map .run .meta { flex: 1 1 60px; min-width: 0; }  /* stays beside the label: a long sound name wraps */
+  .tier-map .run .meta .sound { white-space: normal; }
+  @media (max-width: 760px) { .tier-map .run .when, .tier-map .run .what, .tier-map .run .lab { flex: 1 1 auto; }
+                              .tier-map .run .lab { min-width: 0; } }
+  .tier-map .ground { flex: 0 1 auto; max-width: 100%; min-width: 0; text-align: center; border-radius: 5px; padding: 3px 6px;
+                      background: radial-gradient(ellipse at 50% 45%, var(--ground-1) 0%, var(--ground-2) 55%, var(--ground-3) 100%); }
+  .tier-map .d2label { display: inline-block; font-family: var(--label); font-size: 15px; line-height: 1.12;
+                       text-align: center; white-space: pre; background: rgba(0, 0, 0, .74); padding: 2px 6px 0;
+                       vertical-align: middle; }
+  .tier-map .d2label .cut, .tier-map .d2label .cut .bs { text-decoration: underline dotted var(--bad);
+                                                          text-decoration-thickness: 2px; text-underline-offset: 3px; }
+  /* A backslash is drawn as the slash mirrored: the web fonts space "\" wide, the game draws it like "/" */
+  .tier-map .d2label .bs { display: inline-block; transform: scaleX(-1); }
+  .tier-map .c-WHITE { color: #e8e8e8; } .tier-map .c-RED { color: #ff4d4d; } .tier-map .c-GREEN { color: #00ff00; }
+  .tier-map .c-BLUE { color: #6969ff; } .tier-map .c-GOLD { color: #c7b377; } .tier-map .c-GRAY { color: #696969; }
+  .tier-map .c-BLACK { color: #000000; } .tier-map .c-TAN { color: #d0c27d; } .tier-map .c-ORANGE { color: #ffa800; }
+  .tier-map .c-YELLOW { color: #ffff64; } .tier-map .c-PURPLE { color: #ae00ff; }
+  .tier-map .c-DARK_GREEN { color: #008000; } .tier-map .c-CORAL { color: #ff7f6e; } .tier-map .c-SAGE { color: #a3b88f; }
+  .tier-map .c-TEAL { color: #3fb5b5; } .tier-map .c-LIGHT_GRAY { color: #a8a8a8; }
+  .tier-map .hidden-label { font-size: 12.5px; color: #a8a8a8; font-style: italic; padding-inline: 6px; }
+  .tier-map .meta { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--muted); }
+  .tier-map .icon { position: relative; width: 16px; height: 16px; background: #0c0b09; border-radius: 2px; flex: none; }
+  .tier-map .icon span { position: absolute; }
+  .tier-map .sound { position: relative; white-space: nowrap; cursor: help; border-bottom: 1px dotted var(--muted); }
+  .tier-map .sound .tip { display: none; position: absolute; right: 0; bottom: calc(100% + 6px); z-index: 4;
+                          background: var(--tip-bg); color: var(--tip-fg); padding: 6px 9px; border-radius: 6px;
+                          font-size: 12.5px; line-height: 1.45; white-space: nowrap; box-shadow: 0 3px 10px rgba(0, 0, 0, .25); }
+  @media (max-width: 760px) {
+    .tier-map .sound .tip { right: auto; left: 0; white-space: normal; width: max-content; max-width: 78vw; }
+  }
+  .tier-map .sound .tip span { display: block; }
+  .tier-map .sound:hover .tip, .tier-map .sound:focus .tip { display: block; }
+  /* phones: a long sound name scrolled the page sideways (2026-11-15); the icon and sound go under the label when
+     they don't fit beside it, and the name wraps */
+  @media (max-width: 760px) {
+    .tier-map .sound { white-space: normal; min-width: 0; }
+    .tier-map .run .meta { flex-basis: auto; }
+  }
+  .tier-map .note { font-size: 13px; color: var(--muted); }
+  /* Once identified (the website ideas' #23): a fold across the row, its labels side by side, each tag's roll under them */
+  .md-typeset .tier-map details.idf, .tier-map details.idf { grid-column: 1 / -1; margin: 0; border: 0; box-shadow: none;
+                                                             background: none; padding: 0; font-size: inherit; }
+  .md-typeset .tier-map details.idf > summary, .tier-map details.idf > summary { cursor: pointer; width: fit-content;
+    font-size: 13px; font-weight: 600; color: var(--muted); padding: 1px 0; background: none; border: 0; min-height: 0; }
+  .md-typeset .tier-map details.idf > summary::before, .md-typeset .tier-map details.idf > summary::after { display: none; }
+  .tier-map details.idf > summary:hover, .tier-map details.idf[open] > summary { color: var(--fg); }
+  .tier-map .idf-body { display: grid; gap: 12px; padding: 6px 0 6px 14px; border-left: 2px solid var(--line); margin: 4px 0 2px 4px; }
+  .tier-map .idf-name { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+  .tier-map .idf-cells { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: flex-start; }
+  .tier-map .idf-cell { display: grid; gap: 4px; justify-items: start; min-width: 0; max-width: 100%; }
+  .tier-map .idf-h { font-size: 12px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
+  .tier-map .idf-corrupt select, .tier-map .idf-pick select { font-size: 13.5px; max-width: min(100%, 24rem); }
+  .tier-map .idf-corrupt { display: grid; gap: 6px; margin-top: 8px; }
+  .tier-map .idf-picks { display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: end; }
+  .tier-map .idf-look { display: grid; justify-items: center; min-width: 0; max-width: 100%; }
+  /* the lines the filter writes under the name, as the hover box draws them (the game's hover text, black behind) */
+  .tier-map .d2desc { display: block; width: fit-content; max-width: 100%; margin-top: 3px; font-family: var(--label);
+                      font-size: 12px; line-height: 1.15; text-align: center; white-space: pre-wrap;
+                      background: rgba(0, 0, 0, .85); padding: 2px 6px; }
+  .tier-map .idf-body.idf-one { padding: 0; border: 0; margin: 0; }
+  .tier-map .idf-tags { margin: 6px 0 0; padding: 0; list-style: none; display: grid; gap: 4px; font-size: 13.5px; }
+  .tier-map .idf-tags li { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 8px; }
+  .tier-map .idf-tags .ground { padding: 2px 4px; }
+  .tier-map .idf-tags .d2label { font-size: 14px; padding: 1px 5px 0; }
+  .tier-map .idf-note { font-size: 13px; color: var(--muted); margin: 0; }
+  .tier-map .idf-note a { color: inherit; text-decoration: underline; }
+  .tier-map p.empty { color: var(--muted); text-align: center; padding: 40px 0; margin: 0; }
+  .tier-map footer { color: var(--muted); font-size: 13px; padding-block: 24px; }
+  @media (prefers-reduced-motion: reduce) { .tier-map * { transition: none !important; } }
+
+  /* How to read this page: folded under the bar, so the bar is on the first screen (2026-11-15, audit LFB-02) */
+  .md-typeset .tier-map details.fold, .tier-map details.fold { border: 1px solid var(--line); border-radius: 8px; box-shadow: none;
+    background: var(--panel); margin: 10px auto 0; padding: 0; font-size: inherit; color: inherit; overflow: visible; }
+  .md-typeset .tier-map details.fold > summary, .tier-map details.fold > summary { list-style: none; cursor: pointer;
+    padding: 8px 14px; font-weight: 700; color: var(--fg); background: none; border: 0; margin: 0; min-height: 0;
+    position: static; display: block; }
+  .tier-map details.fold > summary::-webkit-details-marker { display: none; }
+  .md-typeset .tier-map details.fold > summary::before, .tier-map details.fold > summary::before { content: "\25B8  ";
+    position: static; width: auto; height: auto; background: none; -webkit-mask-image: none; mask-image: none;
+    transform: none; color: var(--accent); }
+  .md-typeset .tier-map details.fold[open] > summary::before, .tier-map details.fold[open] > summary::before { content: "\25BE  "; }
+  .md-typeset .tier-map details.fold > summary::after { display: none; content: none; }
+  .tier-map details.fold > .fold-body { padding: 0 14px 12px; }
+  .tier-map #level { width: 16rem; }  /* the closed select: its long options do not widen the page (phones) */
+  @media (min-width: 761px) { .tier-map #level { width: 28em; } }
+  /* a drop sound's play button */
+  .tier-map button.play { font: inherit; font-size: 9px; line-height: 1; width: 18px; height: 18px; padding: 0;
+    border: 1px solid var(--line); border-radius: 50%; background: transparent; color: var(--accent); cursor: pointer;
+    flex: none; display: inline-flex; align-items: center; justify-content: center; vertical-align: middle;
+    margin-right: 4px; }
+  .tier-map button.play:hover, .tier-map button.play.on { border-color: var(--accent); background: var(--accent); color: var(--bg); }
+  .tier-map button.play:disabled { opacity: .4; cursor: default; }
+  .tier-map .snd { display: inline-flex; align-items: center; }
+  .tier-map .more-filters { display: none; }
+  /* below 1,060 px wide (the level select, Version and the two selects need that on one line) More filters folds
+     Version and the two selects, so the bar keeps to two lines (at 960 px "Sets by item type" took a line of its own,
+     a four-line bar: the additions audit, 2026-11-23, LU-04); on phones the tier buttons too */
+  @media (max-width: 1059px) {
+    .tier-map .more-filters { display: inline-block; font: inherit; font-size: 13.5px; padding: 4px 10px;
+      border: 1px solid var(--line); border-radius: 6px; background: transparent; color: var(--fg); }
+    .tier-map .bar:not(.open) #variant, .tier-map .bar:not(.open) label[for=variant],
+    .tier-map .bar:not(.open) #kind, .tier-map .bar:not(.open) #setgroup { display: none; }
+  }
+  @media (max-width: 760px) { .tier-map .bar:not(.open) .row2 { display: none; } }
+  .tier-map ul.lowlines { margin: 4px 0 2px; padding-left: 18px; }
+  .tier-map ul.lowlines ul { margin: 0; padding-left: 16px; }
+  .md-typeset .tier-map details.lowall, .tier-map details.lowall { margin: 2px 0 8px; border: 0; box-shadow: none;
+    background: none; padding: 0; font-size: 13.5px; }
+  .md-typeset .tier-map details.lowall > summary, .tier-map details.lowall > summary { cursor: pointer; color: var(--accent);
+    padding: 0; background: none; min-height: 0; }
+  .md-typeset .tier-map details.lowall > summary::before, .md-typeset .tier-map details.lowall > summary::after { display: none; }
+  @media (pointer: coarse) {
+    .tier-map .more-filters { min-height: 36px; }
+    /* the drop sound's ▶ and the row's ⋯ take a thumb: 32 px at least, a transparent ring around the button as drawn
+       (the ▶ 26 px, as Icons and Sounds draws it), and no taller line (the additions audit, 2026-11-23, SW-09) */
+    .tier-map button.play, .tier-map button.play:hover, .tier-map button.play.on { width: 32px; height: 32px;
+      font-size: 11px; border: 3px solid transparent; background-clip: padding-box; box-shadow: inset 0 0 0 1px var(--line);
+      margin: -3px 1px -3px -3px; }
+    .tier-map button.play:hover, .tier-map button.play.on { box-shadow: inset 0 0 0 1px var(--accent); }
+    .tier-map .ez-rowmenu, .tier-map .ez-rowmenu:hover, .tier-map .ez-rowmenu[aria-expanded="true"] { min-width: 38px;
+      height: 32px; border: 5px solid transparent; border-radius: 10px; background-clip: padding-box;
+      box-shadow: inset 0 0 0 1px var(--line); margin: -5px -5px -5px 1px; }
+    .tier-map .ez-rowmenu:hover, .tier-map .ez-rowmenu[aria-expanded="true"] { box-shadow: inset 0 0 0 1px var(--accent); }
+    .tier-map .chipbtn { min-height: 32px; }  /* the tier buttons, and the folds' lines below */
+    .md-typeset .tier-map details.idf > summary, .tier-map details.idf > summary,
+    .md-typeset .tier-map details.lowall > summary, .tier-map details.lowall > summary { padding-block: 7px; }
+  }
+  /* a search for a runeword: where its bases are (the additions audit, 2026-11-23, LU-06) */
+  .tier-map p.empty a, .tier-map p.rwnote a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  .tier-map p.rwnote { font-size: 14px; color: var(--muted); margin: 14px 0 0; }

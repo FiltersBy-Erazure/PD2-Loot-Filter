@@ -1,0 +1,129 @@
+
+  /* the game's HD font, if the viewer has it installed; Cinzel (small capitals too) otherwise */
+  @font-face { font-family: "D2Exocet"; src: local("Exocet Blizzard"), local("ExocetBlizzardOT-Medium"), local("Exocet"); }
+  /* Layout: the title and one sentence; the bar, How to read this page folded under it; the sections (jewelry,
+     gloves...), each a list of cards. A card is one kind of highlight: its sample item drawn as the game draws its
+     hover box (over a piece of the shop's or the inventory's grid), then a row per highlight: the line as drawn, the
+     item, what it needs. Every rule is scoped to .shop-map, so the website's theme and this page leave each other
+     alone. */
+  /* Dark by default; light when the website (Material) is switched to light. The game's pictures stay dark. */
+  .shop-map {
+    --bg: #151412; --panel: #1f1d1a; --fg: #ece7de; --muted: #a59e91; --line: #36322c; --chip: #2a2723;
+    --accent: #d8b45e;
+    --display: "Cinzel", "Trajan Pro", Georgia, serif;
+    --body: "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --game: "D2Exocet", "Cinzel", "Trajan Pro", Georgia, serif;
+    color-scheme: dark;
+    color: var(--fg); font: 15px/1.45 var(--body);
+    --top: 0px;  /* where the bar stops while scrolling */
+  }
+  .md-content .shop-map { --top: 2.4rem; }  /* on the website: under its header, which stays at the top */
+  [data-md-color-scheme="default"] .shop-map {
+    --bg: #f3f1ec; --panel: #fffdf8; --fg: #23211c; --muted: #6b655a; --line: #ded7c9; --chip: #ece7dc;
+    --accent: #8a6d1f;
+    color-scheme: light;
+  }
+  .shop-map *, .shop-map *::before, .shop-map *::after { box-sizing: border-box; }
+  /* (1,240 px, as Tags and Symbols and Icons and Sounds: on the website the text starts at the title's edge) */
+  .shop-map .wrap { max-width: 1240px; margin: 0 auto; padding-inline: 16px; }
+  .md-content .shop-map .wrap { padding-inline: 0; }
+  .shop-map h1.sh-title { font: 700 26px/1.2 var(--display); letter-spacing: .02em; margin: 0; padding-block: 16px 10px;
+                          color: var(--fg); text-wrap: balance; }
+  .shop-map .lede { margin: 0; max-width: 80ch; }
+  .shop-map .bar { position: sticky; top: var(--top); z-index: 3; background: var(--panel);
+                   border-block: 1px solid var(--line); padding-block: 8px; margin-block: 12px 0; }
+  /* a window under 560 px tall (200% zoom): the bar scrolls away, or it covers over a third of it (the additions
+     audit, 2026-11-23, SW-07: until then 420 px) */
+  @media (max-height: 560px) { .shop-map .bar { position: static; } }
+  /* How to read this page: folded under the bar, as on the item pages (the additions audit, 2026-11-23, LU-08) */
+  .md-typeset .shop-map details.fold, .shop-map details.fold { border: 1px solid var(--line); border-radius: 8px;
+    box-shadow: none; background: var(--panel); margin: 10px auto 0; padding: 0; font-size: inherit; color: inherit;
+    overflow: visible; }
+  .md-typeset .shop-map details.fold > summary, .shop-map details.fold > summary { list-style: none; cursor: pointer;
+    padding: 8px 14px; font-weight: 700; color: var(--fg); background: none; border: 0; margin: 0; min-height: 0;
+    position: static; display: block; }
+  .shop-map details.fold > summary::-webkit-details-marker { display: none; }
+  .md-typeset .shop-map details.fold > summary::before, .shop-map details.fold > summary::before { content: "\25B8  ";
+    position: static; width: auto; height: auto; background: none; -webkit-mask-image: none; mask-image: none;
+    transform: none; color: var(--accent); }
+  .md-typeset .shop-map details.fold[open] > summary::before, .shop-map details.fold[open] > summary::before { content: "\25BE  "; }
+  .md-typeset .shop-map details.fold > summary::after { display: none; content: none; }
+  .shop-map details.fold > .fold-body { padding: 0 14px 12px; }
+  .shop-map .fold-body p { margin: 0 0 6px; max-width: 78ch; font-size: 14.5px; }
+  .shop-map .fold-body p:last-child { margin-bottom: 0; }
+  /* a link in the text: underlined, not told apart by its color alone (the additions audit, 2026-11-23, SW-05) */
+  .shop-map .fold-body a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  .shop-map .bar .wrap { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
+  .md-content .shop-map .bar .wrap { padding-inline: 10px; }
+  .shop-map .bar input[type=search] { font: inherit; font-size: 14.5px; padding: 5px 8px; border: 1px solid var(--line);
+    border-radius: 6px; background: var(--bg); color: var(--fg); flex: 1 1 16rem; min-width: 0; max-width: 28rem; margin: 0; }
+  .shop-map .bar .count { font-size: 13px; color: var(--muted); }
+  /* the class (the website ideas' #29): the highlights for one class's items and skills, and those for every class */
+  .shop-map .bar .cls { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; }
+  .shop-map .bar .cls select { font: inherit; font-size: 14px; padding: 4px 6px; border: 1px solid var(--line); border-radius: 6px;
+                               background: var(--bg); color: var(--fg); }
+  .shop-map .card .for { font-size: 12.5px; color: var(--muted); margin: -2px 0 6px; }
+  .shop-map section[id^="shop-"], .shop-map .card { scroll-margin-top: calc(var(--top) + var(--bar, 0px) + 8px); }
+  .shop-map .empty { color: var(--muted); font-style: italic; margin: 16px 0; }
+  .shop-map nav.toc { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; flex: 1 1 100%; }
+  @media (max-width: 760px) { .shop-map nav.toc { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 2px; }
+                              .shop-map nav.toc a { flex: none; white-space: nowrap; } }
+  /* phones: a hover box drawn smaller than the game's opens at full size on a tap (LFB-15) */
+  .shop-map .zoomable { cursor: zoom-in; }
+  .shop-map .zoom-note { font-size: 12.5px; color: var(--muted); margin: 4px 0 0; }
+  .shop-map dialog.zoom { border: 1px solid var(--line); background: var(--bg); color: var(--fg); padding: 8px;
+    border-radius: 8px; max-width: 100vw; max-height: 92vh; overflow: auto; }
+  .shop-map dialog.zoom::backdrop { background: rgba(0, 0, 0, .75); }
+  .shop-map dialog.zoom .close { font: inherit; position: sticky; left: 0; top: 0; margin-bottom: 6px;
+    background: var(--panel); color: var(--fg); border: 1px solid var(--line); border-radius: 6px; padding: 4px 10px; }
+  .shop-map nav.toc a { font-size: 13.5px; padding: 3px 10px; border-radius: 99px; background: var(--chip);
+                        border: 1px solid var(--line); color: var(--fg); text-decoration: none; }
+  .shop-map nav.toc a:hover { border-color: var(--accent); }
+  .shop-map h2.sec { font: 700 22px/1.2 var(--display); margin: 30px 0 4px; letter-spacing: .02em; color: var(--fg); }
+  .shop-map p.sec-intro { margin: 0 0 8px; color: var(--muted); font-size: 14px; max-width: 80ch; }
+  .shop-map .card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; margin: 12px 0;
+                    padding: 12px 14px; }
+  .shop-map .card h3 { font: 700 17px/1.25 var(--display); margin: 0 0 10px; letter-spacing: .02em; color: var(--fg); }
+  .shop-map .card-body { display: flex; gap: 18px; align-items: flex-start; }
+  .shop-map .scene-wrap { flex: 0 0 auto; max-width: 100%; }
+  .shop-map .rows { flex: 1 1 340px; min-width: 0; }
+  @media (max-width: 900px) { .shop-map .card-body { flex-direction: column; } .shop-map .rows { flex: 1 1 auto; width: 100%; } }
+
+  /* the game's picture: a piece of the shop's (or the inventory's) grid, the item in its cells, its hover box */
+  .shop-map .scene-box { overflow: hidden; border-radius: 6px; }
+  .shop-map .scene { position: relative; width: max-content; padding: 10px 10px 14px;
+                     background-color: #07070b;
+                     background-image: linear-gradient(#2e2e38 1px, transparent 1px), linear-gradient(90deg, #2e2e38 1px, transparent 1px);
+                     background-size: 29px 29px; background-position: 10px 10px; transform-origin: 0 0; }
+  .shop-map .scene.inventory { background-color: #0b0a08;
+                               background-image: linear-gradient(#34302a 1px, transparent 1px), linear-gradient(90deg, #34302a 1px, transparent 1px); }
+  .shop-map .scene .slot { position: relative; background: rgba(46, 150, 46, .42); outline: 1px solid rgba(96, 200, 96, .55);
+                           display: flex; align-items: center; justify-content: center; }
+  .shop-map .scene .slot img { display: block; image-rendering: pixelated; }
+  .shop-map .scene .slot .none { width: 70%; height: 70%; border: 1px dashed rgba(255, 255, 255, .35); }
+  .shop-map .scene .cursor { position: absolute; right: -6px; bottom: -8px; width: 16px; height: 18px;
+                             background: linear-gradient(135deg, #d8d2c0 0 45%, transparent 46%); opacity: .8; }
+  .shop-map .tip { margin: 4px auto 0; width: max-content; max-width: none; background: rgba(8, 8, 8, .84);
+                   padding: 5px 12px 6px; text-align: center; font: 600 15.5px/1.24 var(--game); letter-spacing: .02em;
+                   white-space: pre; position: relative; z-index: 1; }
+  .shop-map .tip .ln { display: block; min-height: 1.24em; }
+  .shop-map .scene-cap { font-size: 12.5px; color: var(--muted); margin: 5px 2px 0; }
+
+  /* a highlight as the game draws it, on its own */
+  .shop-map .d2line { display: inline-block; background: rgba(8, 8, 8, .9); font: 600 14px/1.5 var(--game);
+                      letter-spacing: .02em; white-space: pre; padding: 1px 8px; border-radius: 3px; margin: 2px 4px 2px 0; }
+  .shop-map .row { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2px; padding: 8px 0;
+                   border-top: 1px solid var(--line); }
+  .shop-map .row:first-child { border-top: 0; padding-top: 0; }
+  .shop-map .row .what { font-size: 14px; }
+  .shop-map .row .what b { font-weight: 600; }
+  .shop-map .row ul { margin: 2px 0 0; padding-left: 18px; font-size: 14px; }
+  .shop-map .row li { margin: 1px 0; }
+  .shop-map .pill { display: inline-block; font-size: 11.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+                    padding: 1px 7px; border-radius: 99px; margin-left: 6px; vertical-align: 1px;
+                    background: var(--chip); border: 1px solid var(--line); color: var(--muted); }
+  .shop-map .pill.cost { color: #071; border-color: #3a7a3a; background: #d9f2d9; }
+  .shop-map .pill.cost.TEAL { color: #0b4f4d; border-color: #3f8f8c; background: #d7efee; }
+  [data-md-color-scheme="default"] .shop-map .pill.cost { color: #064; }
+  .shop-map .note { color: var(--muted); font-size: 13.5px; margin: 2px 0 8px; }
+  .shop-map footer { color: var(--muted); font-size: 13px; padding-block: 24px; }

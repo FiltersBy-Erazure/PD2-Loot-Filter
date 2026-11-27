@@ -1,0 +1,996 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shadow of Mendeln</title>
+<!-- A Resources page of the website, written by hand, but its numbers (the DATA line between the mendeln-data markers
+     in the script) are written by tools/mendeln_data.py from the game's tables and the map experience model: edit the
+     text, never that line. website/hooks.py puts it on the site's Shadow of Mendeln page
+     (docs/resources/shadow-of-mendeln.md): it takes the styles after the mendeln-map:css marker, the markup between the
+     mendeln-map:start / :end markers and the script out of this file, so keep those markers. Every rule is scoped to
+     .mendeln-map. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+  /* this file on its own only (the website has its own page around it) */
+  body { margin: 0; background: #151412; }
+</style>
+<!-- mendeln-map:css -->
+<style>
+  /* Layout: a bar that stays at the top while scrolling (your level, the map, its rolls, your party), then one column,
+     read top to bottom: the answer for your setup, the four choices that make it bigger, every map at your level, your
+     level, against clearing the map, the waves, good to know, how it's worked out. Dark by default; light when the
+     website (Material) is switched to light. */
+  .mendeln-map {
+    --top: 0px;  /* where the bar stops while scrolling */
+    --bg: #151412; --panel: #1f1d1a; --panel2: #171513; --fg: #ece7de; --fg2: #cfc8bb; --muted: #a59e91; --line: #36322c;
+    --grid: #2e2b27; --axis: #736c60; --accent: #d8b45e; --accent-wash: rgba(216, 180, 94, 0.12); --bar: #6f6a60;
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70;
+    --display: "Cinzel", "Trajan Pro", Georgia, serif;
+    --body: "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    color-scheme: dark;
+    color: var(--fg); font: 15px/1.5 var(--body);
+  }
+  [data-md-color-scheme="default"] .mendeln-map {
+    --bg: #f3f1ec; --panel: #fffdf8; --panel2: #f4f1ea; --fg: #23211c; --fg2: #4a463e; --muted: #6b655a; --line: #ded7c9;
+    --grid: #e7e2d8; --axis: #928a7b; --accent: #8a6d1f; --accent-wash: rgba(138, 109, 31, 0.10); --bar: #b3ab9c;
+    --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a;
+    color-scheme: light;
+  }
+  .md-content .mendeln-map { --top: 2.4rem; }  /* on the website: under its header, which stays at the top */
+  .mendeln-map *, .mendeln-map *::before, .mendeln-map *::after { box-sizing: border-box; }
+  .mendeln-map .wrap { max-width: 1120px; margin: 0 auto; padding-inline: 16px; }
+  .md-content .mendeln-map .wrap { padding-inline: 0; max-width: none; }
+  .mendeln-map h1.mn-title { font: 700 30px/1.15 var(--display); letter-spacing: .02em; margin: 0; padding-block: 24px 6px;
+                             color: var(--fg); text-wrap: balance; }
+  .mendeln-map h2, .mendeln-map h3 { margin: 0; color: var(--fg); text-wrap: balance; letter-spacing: 0; }
+  .mendeln-map h2 { font: 700 19px/1.25 var(--body); }
+  .mendeln-map h3 { font: 700 15px/1.3 var(--body); }
+  .mendeln-map p { margin: 0; }
+  .mendeln-map a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  .mendeln-map :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .mendeln-map b, .mendeln-map strong { color: var(--fg); }
+
+  /* the bar */
+  .mendeln-map .mn-bar { position: sticky; top: var(--top); z-index: 3; background: var(--panel); border-block: 1px solid var(--line);
+                         padding-block: 8px; margin-block: 8px 12px; }
+  .mendeln-map .mn-bar-in { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px 26px; }
+  .md-content .mendeln-map .mn-bar-in { padding-inline: 10px; }
+  .mendeln-map .mn-f { display: grid; gap: 4px; min-width: 0; }
+  .mendeln-map .mn-f > label, .mendeln-map .mn-f > .lab { font-size: 13px; font-weight: 600; color: var(--fg2); }
+  .mendeln-map .mn-f-lvl { width: min(100%, 260px); }
+  .mendeln-map .mn-f-pl { width: min(100%, 210px); }
+  .mendeln-map .range-row { display: flex; align-items: center; gap: 10px; min-width: 0; height: 34px; }
+  .mendeln-map .range-row input[type="range"] { flex: 1; min-width: 0; accent-color: var(--accent); }
+  .mendeln-map .range-row output { min-width: 26px; flex: none; text-align: right; font-variant-numeric: tabular-nums; font-weight: 700;
+                                   font-size: 18px; color: var(--fg); }
+  .mendeln-map .seg { display: inline-flex; border: 1px solid var(--axis); border-radius: 6px; overflow: hidden; }
+  .mendeln-map .seg label { position: relative; display: block; }
+  .mendeln-map .seg label + label { border-left: 1px solid var(--axis); }
+  .mendeln-map .seg input, .mendeln-map .chip input { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; pointer-events: none; }
+  .mendeln-map .seg span { display: grid; place-items: center; height: 32px; min-width: 46px; padding-inline: 12px; font-size: 14px;
+                           font-weight: 600; color: var(--fg2); cursor: pointer; user-select: none; }
+  .mendeln-map .seg input:checked + span { background: var(--accent); color: var(--bg); }
+  .mendeln-map .seg input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: -4px; }
+  .mendeln-map .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .mendeln-map .chip { position: relative; display: block; }
+  .mendeln-map .chip span { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding-inline: 12px; font-size: 14px;
+                            font-weight: 600; color: var(--fg2); border: 1px solid var(--axis); border-radius: 6px; cursor: pointer;
+                            user-select: none; white-space: nowrap; }
+  .mendeln-map .chip span::before { content: ""; width: 14px; height: 14px; border: 1.5px solid var(--axis); border-radius: 3px;
+                                    display: grid; place-items: center; font-size: 11px; line-height: 1; flex: none; }
+  .mendeln-map .chip input:checked + span { color: var(--fg); border-color: var(--accent); background: var(--accent-wash); }
+  .mendeln-map .chip input:checked + span::before { content: "✓"; background: var(--accent); border-color: var(--accent); color: var(--bg);
+                                                    font-weight: 700; }
+  .mendeln-map .chip input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
+  /* Reset to the defaults (Undo reset until the next change) and Copy a link to this setup, at the bar's right end, as
+     every tool has them (the additions audit, SW-08) */
+  .mendeln-map .mn-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin-left: auto; min-width: 0; }
+  .mendeln-map .mn-tools button { font: inherit; font-size: 13px; color: var(--fg2); background: none; border: 1px solid var(--axis);
+                                  border-radius: 6px; min-height: 32px; padding: 0 10px; cursor: pointer; }
+  .mendeln-map .mn-tools button:hover:not(:disabled) { color: var(--fg); border-color: var(--fg2); }
+  .mendeln-map .mn-tools button:disabled { opacity: .5; cursor: default; }
+  .mendeln-map .mn-tools .tools-note { font-size: 13px; color: var(--muted); overflow-wrap: anywhere; }
+  /* the site's small text keeps its full color: Material's .75 opacity took it under 4.5:1 (the additions audit, MG-12) */
+  .md-typeset .mendeln-map small { opacity: 1; }
+
+  .mendeln-map .mn-main { display: grid; gap: 20px; padding-block: 4px 48px; }
+  .mendeln-map .mn-main > * { min-width: 0; }
+  .mendeln-map .mn-main > section { scroll-margin-top: calc(var(--top) + var(--barh, 70px) + 12px); }
+  .mendeln-map .mn-head { display: grid; gap: 8px; }
+  .mendeln-map .eyebrow { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+  .mendeln-map .lede { max-width: 72ch; color: var(--fg2); font-size: 16px; }
+  .mendeln-map .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px 18px;
+                        display: grid; gap: 12px; }
+  .mendeln-map .sub { color: var(--fg2); font-size: 14.5px; max-width: 80ch; }
+  .mendeln-map .note { color: var(--muted); font-size: 13px; max-width: 86ch; }
+  .mendeln-map ul.mn-list { margin: 0; padding-left: 20px; display: grid; gap: 7px; max-width: 80ch; color: var(--fg2);
+                            font-size: 14.5px; list-style: disc; }
+  .mendeln-map .mn-list li { margin: 0; }
+  .mendeln-map .num { font-variant-numeric: tabular-nums; }
+
+  /* the answer */
+  .mendeln-map .mn-ans-top { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 14px; }
+  .mendeln-map .mn-setup { color: var(--muted); font-size: 14px; }
+  .mendeln-map .mn-ans-box { background: var(--panel2); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px;
+                             display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px 18px; align-items: end; }
+  .mendeln-map .mn-ans-box .k { display: grid; gap: 2px; min-width: 0; }
+  .mendeln-map .mn-ans-box .k b { font: 700 30px/1.1 var(--body); font-variant-numeric: tabular-nums; color: var(--fg); }
+  .mendeln-map .mn-ans-box .k.main b { font-size: 40px; color: var(--accent); }
+  .mendeln-map .mn-ans-box .k > span { font-size: 13px; color: var(--fg2); line-height: 1.3; }
+  .mendeln-map .mn-say { font-size: 16px; color: var(--fg); max-width: 80ch; }
+  .mendeln-map .mn-xp { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+  .mendeln-map .mn-xp label { font-size: 13px; font-weight: 600; color: var(--fg2); }
+  .mendeln-map input[type="number"] { font: inherit; font-size: 14px; height: 34px; width: 76px; padding: 0 8px; color: var(--fg);
+                                      background: var(--panel2); border: 1px solid var(--axis); border-radius: 6px;
+                                      font-variant-numeric: tabular-nums; }
+  .mendeln-map .unit { font-size: 14px; color: var(--fg2); }
+  .mendeln-map .hint { font-size: 12px; color: var(--muted); }
+
+  /* the ladder */
+  .mendeln-map .mn-ladder { position: relative; display: grid; grid-template-columns: max-content max-content minmax(0, 1fr);
+                            gap: 8px 12px; align-items: center; padding-top: 16px; }  /* room for the "You" label */
+  .mendeln-map .mn-ladder .lab { font-size: 14px; font-weight: 600; color: var(--fg); white-space: nowrap; }
+  .mendeln-map .mn-ladder .mult { font-size: 13px; font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums;
+                                  text-align: right; min-width: 3.4em; }
+  .mendeln-map .mn-ladder .mult.start { color: var(--muted); font-weight: 600; }
+  .mendeln-map .mn-ladder .track { position: relative; height: 28px; min-width: 0; font-size: 14px; }
+  .mendeln-map .mn-ladder .fill { position: absolute; left: 0; top: 3px; bottom: 3px; border-radius: 3px; background: var(--bar);
+                                  min-width: 2px; }
+  .mendeln-map .mn-ladder .row-last .fill { background: var(--accent); }
+  .mendeln-map .mn-ladder .val { position: absolute; z-index: 1; top: 50%; transform: translateY(-50%); font-size: 14px; font-weight: 700;
+                                 font-variant-numeric: tabular-nums; color: var(--fg); white-space: nowrap; padding: 0 4px 0 8px;
+                                 background: var(--panel); }  /* over the dashed line of your setup */
+  .mendeln-map .mn-ladder .row { display: contents; }
+  .mendeln-map .mn-you { position: absolute; top: -6px; bottom: -6px; width: 0; border-left: 2px dashed var(--fg2); pointer-events: none; }
+  .mendeln-map .mn-you span { position: absolute; top: -18px; left: 0; transform: translateX(-50%); font-size: 12px; font-weight: 700;
+                              color: var(--fg2); white-space: nowrap; background: var(--panel); padding-inline: 4px; }
+  .mendeln-map .mn-why { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 22px; }
+  .mendeln-map .mn-why div { display: grid; gap: 2px; align-content: start; }
+  .mendeln-map .mn-why h3 { font-size: 15px; }
+  .mendeln-map .mn-why h3 .m { color: var(--accent); font-variant-numeric: tabular-nums; }
+  .mendeln-map .mn-why p { font-size: 14px; color: var(--fg2); }
+
+  /* tables */
+  .mendeln-map .scroll { overflow-x: auto; min-width: 0; position: relative; }
+  .mendeln-map table.mn-table { border-collapse: collapse; width: 100%; font-size: 14px; margin: 0; display: table; }
+  .mendeln-map .mn-table th, .mendeln-map .mn-table td { padding: 7px 10px; text-align: right; border: 0; border-bottom: 1px solid var(--line);
+                                                         white-space: nowrap; background: none; vertical-align: middle; }
+  .mendeln-map .mn-table th { font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: .03em; vertical-align: bottom; }
+  .mendeln-map .mn-table th:first-child, .mendeln-map .mn-table td:first-child { text-align: left; }
+  .mendeln-map .mn-table td { font-variant-numeric: tabular-nums; color: var(--fg); }
+  .mendeln-map .mn-table td.name { font-weight: 700; }
+  .mendeln-map .mn-table th.left { text-align: left; }
+  .mendeln-map .mn-table td small, .mendeln-map .mn-table th small { display: block; font-size: 12px; font-weight: 400; color: var(--muted);
+                                                                     letter-spacing: 0; }
+  .mendeln-map .mn-table tr.cur td { background: var(--accent-wash); }
+  .mendeln-map .mn-table tr.cur td:first-child { box-shadow: inset 3px 0 0 var(--accent); }
+  .mendeln-map .mn-table.grid td.c { padding: 4px; }
+  .mendeln-map .mn-table.grid button { font: inherit; width: 100%; min-width: 96px; display: grid; justify-items: end; gap: 0; padding: 6px 10px;
+                                       background: none; color: var(--fg); border: 1px solid transparent; border-radius: 6px; cursor: pointer; }
+  .mendeln-map .mn-table.grid button:hover { border-color: var(--axis); }
+  .mendeln-map .mn-table.grid button b { font-size: 16px; font-variant-numeric: tabular-nums; }
+  .mendeln-map .mn-table.grid button small { font-size: 12px; color: var(--muted); }
+  .mendeln-map .mn-table tr.cur button small, .mendeln-map .mn-table.grid button.cur small { color: var(--fg2); }  /* on the gold wash: 3.9:1 in --muted */
+  .mendeln-map .mn-table.grid button.best b { color: var(--accent); }
+  .mendeln-map .mn-table.grid button.cur { border: 2px solid var(--accent); background: var(--accent-wash); }
+  .mendeln-map .mn-table.grid .tagline { font-size: 12px; font-weight: 700; color: var(--accent); }
+  .mendeln-map .mn-table.grid .tagline.you { color: var(--fg); }
+
+  /* charts */
+  .mendeln-map ul.mn-legend { display: flex; flex-wrap: wrap; gap: 6px 18px; padding: 0; margin: 0; list-style: none; }
+  .mendeln-map .mn-legend li { display: flex; align-items: center; gap: 7px; font-size: 13px; margin: 0; color: var(--fg2); }
+  .mendeln-map .mn-legend svg { flex: none; }
+  .mendeln-map .plot { position: relative; min-width: 0; }
+  .mendeln-map .plot svg { display: block; width: 100%; max-width: 100%; height: auto; overflow: visible; touch-action: pan-y; }
+  .mendeln-map .plot svg:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 4px; }
+  .mendeln-map .tick { fill: var(--muted); font-size: 12px; font-family: var(--body); font-variant-numeric: tabular-nums; }
+  .mendeln-map .axis-title { fill: var(--muted); font-size: 12px; font-family: var(--body); }
+  .mendeln-map .marker-label { fill: var(--fg2); font-size: 12px; font-weight: 700; font-family: var(--body); }
+  .mendeln-map .end-label { fill: var(--fg2); font-size: 12px; font-weight: 700; font-family: var(--body); }
+  .mendeln-map .end-label.cur { fill: var(--fg); }
+  .mendeln-map .band-label { fill: var(--muted); font-size: 12px; font-weight: 700; font-family: var(--body); }
+  .mendeln-map .pt-label { fill: var(--fg); font-size: 12px; font-weight: 700; font-family: var(--body); font-variant-numeric: tabular-nums; }
+  .mendeln-map .mn-tip { position: absolute; z-index: 2; pointer-events: none; background: var(--panel); border: 1px solid var(--line);
+                         border-radius: 8px; box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25); padding: 8px 10px; font-size: 13px; min-width: 170px; }
+  .mendeln-map .mn-tip-head { font-weight: 700; margin-bottom: 4px; color: var(--fg); }
+  .mendeln-map .mn-tip-row { display: grid; grid-template-columns: 22px auto 1fr; gap: 0 7px; align-items: center; padding: 1px 0; }
+  .mendeln-map .mn-tip-row b { font-variant-numeric: tabular-nums; }
+  .mendeln-map .mn-tip-row span:last-child { color: var(--fg2); }
+  .mendeln-map .mn-tip-foot { margin-top: 5px; color: var(--muted); font-size: 12px; }
+  .mendeln-map button.mn-toggle { font: inherit; font-size: 14px; color: var(--fg2); background: none; border: 1px solid var(--axis);
+                                  border-radius: 6px; height: 34px; padding: 0 12px; cursor: pointer; width: fit-content; }
+  .mendeln-map button.mn-toggle:hover { color: var(--fg); border-color: var(--fg2); }
+
+  /* against clearing the map */
+  .mendeln-map .mn-vs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .mendeln-map .mn-vs .card { background: var(--panel2); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; display: grid; gap: 2px; }
+  .mendeln-map .mn-vs .card b { font: 700 30px/1.1 var(--body); font-variant-numeric: tabular-nums; }
+  .mendeln-map .mn-vs .card span { font-size: 14px; color: var(--fg2); }
+  .mendeln-map .mn-times { display: flex; flex-wrap: wrap; gap: 10px 26px; align-items: center; }
+  .mendeln-map .mn-times label { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--fg2); }
+  .mendeln-map .mn-rate { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 8px 12px; align-items: center; max-width: 760px; }
+  .mendeln-map .mn-rate .lab { font-size: 14px; color: var(--fg); }
+  .mendeln-map .mn-rate .lab small { display: block; font-size: 12px; color: var(--muted); }
+  .mendeln-map .mn-rate .track { position: relative; height: 26px; font-size: 14px; }
+  .mendeln-map .mn-rate .fill { position: absolute; left: 0; top: 3px; bottom: 3px; border-radius: 3px; background: var(--bar); min-width: 2px; }
+  .mendeln-map .mn-rate .first .fill { background: var(--accent); }
+  .mendeln-map .mn-rate .val { position: absolute; top: 50%; transform: translateY(-50%); padding-left: 8px; font-size: 14px; font-weight: 700;
+                               font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--fg); }
+  .mendeln-map .mn-rate .row { display: contents; }
+
+  /* how it's worked out */
+  /* How it's worked out: a gold arrow before its heading, ▸ closed and ▾ open, as the IAS Calculator's folds (the
+     Resources pages' shared interface, 2026-11-27; the browser's own triangle until then) */
+  .mendeln-map details.mn-how > summary { cursor: pointer; font: 700 19px/1.25 var(--body); color: var(--fg); list-style: none; }
+  .mendeln-map details.mn-how > summary::-webkit-details-marker { display: none; }
+  .mendeln-map details.mn-how > summary::before { content: "\25B8"; display: inline-block; width: 1em; margin-right: 4px; font-size: 16px;
+                                                color: var(--accent); position: static; height: auto; background: none; -webkit-mask-image: none; mask-image: none; }
+  .mendeln-map details.mn-how[open] > summary::before { content: "\25BE"; }
+  .mendeln-map details.mn-how[open] > summary { margin-bottom: 12px; }
+
+  @media (max-width: 760px) {
+    .mendeln-map .mn-bar { position: static; }  /* phones: the bar would take half the screen */
+    .mendeln-map .panel { padding: 14px 12px; }
+    .mendeln-map .mn-ans-box { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .mendeln-map .mn-ans-box .k.main { grid-column: 1 / -1; }
+    .mendeln-map .mn-why, .mendeln-map .mn-vs { grid-template-columns: 1fr; }
+    .mendeln-map .mn-ladder { grid-template-columns: max-content minmax(0, 1fr); }
+    .mendeln-map .mn-ladder .lab { grid-column: 1 / -1; margin-bottom: -6px; }
+    .mendeln-map .mn-table th, .mendeln-map .mn-table td { padding: 6px; }
+    .mendeln-map .mn-table.grid td.c { padding: 2px; }
+    .mendeln-map .mn-table.grid td.name small { display: none; }  /* the area levels: the note under the table says it */
+    .mendeln-map .mn-table.grid button { min-width: 0; padding: 5px 4px; }
+    .mendeln-map .mn-table.grid button b { font-size: 15px; }
+    .mendeln-map .mn-table.grid th { white-space: normal; }
+    .mendeln-map .mn-ladder { padding-block: 0 22px; }
+    .mendeln-map .mn-rate { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+    .mendeln-map .mn-rate .track { margin-bottom: 8px; }
+    .mendeln-map .mn-table .wide { display: none; }  /* the waves' words: How it's worked out has them */
+    .mendeln-map .mn-you span { top: auto; bottom: -20px; }  /* the labels sit over the bars here */
+  }
+  @media (max-height: 560px) {
+    .mendeln-map .mn-bar { position: static; }  /* 200% zoom: the bar would cover most of the window (the additions audit, SW-07) */
+  }
+  /* the quiet buttons (Reset to the defaults, Copy a link to this setup): text, their edge shown under the pointer or
+     the keyboard, as the website's erazure.css draws them, so this file opened on its own looks the same (the Resources
+     pages' shared interface, 2026-11-27) */
+  .mendeln-map button.ez-quiet, .mendeln-map .btn.ez-quiet { background: none; border: 1px solid transparent; box-shadow: none;
+      color: var(--fg2, var(--muted)); font-size: 13px; font-weight: 400; min-height: 30px; padding: 3px 8px; cursor: pointer; }
+  .mendeln-map button.ez-quiet:hover:not(:disabled), .mendeln-map button.ez-quiet:focus-visible { border-color: var(--axis); color: var(--fg); }
+  .mendeln-map button.ez-quiet:disabled { opacity: .5; cursor: default; }
+</style>
+</head>
+<body>
+<div class="mendeln-map">
+<div class="wrap"><h1 class="mn-title">Shadow of Mendeln</h1></div>
+<!-- mendeln-map:start -->
+<div class="wrap mn-head">
+  <p class="eyebrow">Season 14 &middot; Maps &middot; Map events</p>
+  <p class="lede">Shadow of Mendeln is a map event that summons 45 waves of undead in 72 seconds: this page shows what they are worth to you, and the four choices that make them worth more.</p>
+</div>
+<div class="mn-bar" id="mnBar">
+  <div class="wrap mn-bar-in">
+    <div class="mn-f mn-f-lvl">
+      <label for="mnLvl">Your level</label>
+      <div class="range-row">
+        <input type="range" id="mnLvl" min="80" max="98" step="1" value="95">
+        <output id="mnLvlOut" for="mnLvl">95</output>
+      </div>
+    </div>
+    <div class="mn-f">
+      <span class="lab" id="mnTierLab">Map</span>
+      <div class="seg" role="radiogroup" aria-labelledby="mnTierLab">
+        <label><input type="radio" name="mnTier" value="1"><span>T1</span></label>
+        <label><input type="radio" name="mnTier" value="2"><span>T2</span></label>
+        <label><input type="radio" name="mnTier" value="3"><span>T3</span></label>
+      </div>
+    </div>
+    <div class="mn-f">
+      <span class="lab">The map has</span>
+      <div class="chips">
+        <label class="chip"><input type="checkbox" id="mnPlus"><span>+1 area level</span></label>
+        <label class="chip"><input type="checkbox" id="mnFort"><span>Fortified</span></label>
+      </div>
+    </div>
+    <div class="mn-f mn-f-pl">
+      <label for="mnPl">Players in your party</label>
+      <div class="range-row">
+        <input type="range" id="mnPl" min="1" max="8" step="1" value="1">
+        <output id="mnPlOut" for="mnPl">1</output>
+      </div>
+    </div>
+    <div class="mn-tools"><button type="button" class="ez-quiet" id="mnReset">Reset to the defaults</button><button type="button" class="ez-quiet" id="mnCopy">Copy a link to this setup</button><span class="tools-note" id="mnCopyNote" role="status"></span></div>
+  </div>
+</div>
+<div class="wrap mn-main" id="mn-main">
+  <header class="mn-head">
+    <div class="ez-char"></div>
+  </header>
+
+  <section class="panel" id="mn-answer" aria-labelledby="mnAnsH">
+    <div class="mn-ans-top">
+      <h2 id="mnAnsH">One event, for you</h2>
+      <p class="mn-setup" id="mnSetup"></p>
+    </div>
+    <div class="mn-ans-box">
+      <div class="k main"><b id="mnPct"></b><span>of level <span class="lvlA"></span><span id="mnEachA"></span></span></div>
+      <div class="k"><b id="mnExp"></b><span>experience</span></div>
+      <div class="k"><b id="mnNm"></b><span>full clears of a non-magical <span class="tierA"></span> map</span></div>
+      <div class="k"><b id="mnRr"></b><span>full clears of a corrupted rare <span class="tierA"></span> map</span></div>
+    </div>
+    <p class="mn-say" id="mnSay" aria-live="polite"></p>
+    <div class="mn-xp">
+      <label for="mnXp">Your +% experience</label>
+      <input type="number" id="mnXp" min="0" max="100" step="1" value="0" inputmode="numeric"><span class="unit">%</span>
+      <span class="hint">An Annihilus gives 5&ndash;10%. Add the map's Experience roll if it has one.</span>
+    </div>
+  </section>
+
+  <section class="panel" id="mn-ladder" aria-labelledby="mnLadH">
+    <h2 id="mnLadH">Four choices make it bigger</h2>
+    <p class="sub" id="mnLadSub"></p>
+    <div class="mn-ladder" id="mnLadder"></div>
+    <div class="mn-why">
+      <div><h3>Fortified <span class="m" id="mnWhyF"></span></h3><p>Every kill counts twice, the event's too. A Fortified map has half as many monsters of its own, each worth twice as much, so its clear gives about what the same map gives without it. The event isn't halved: on a Fortified map it is worth twice as much.</p></div>
+      <div><h3>A party <span class="m" id="mnWhyP"></span></h3><p>Each player in the game after the first adds 50% to every monster's experience, and your party shares every kill near it. With 8 players each of you gets <span id="mnWhyP2"></span> times what one player alone would. It makes no difference who gets the kills.</p></div>
+      <div><h3>A higher tier <span class="m" id="mnWhyT"></span></h3><p>The waves are as high as the map's area level: 87 in T1, 88 in T2, and 89 in T3. Up to level 92 that changes almost nothing. From there your level takes experience off monsters 6 or more levels below you: a T1 map's from level 93, a T2 map's from 94, a T3 map's from 95. The higher the map, the less it loses.</p></div>
+      <div><h3>+1 area level <span class="m" id="mnWhyA"></span></h3><p>One of a map corruption's outcomes, 9% of them. A T1 map with it gives what a T2 map does, a T2 map what a T3 map does, and a T3 map with it (area level 90) is the most there is. Fortify a corrupted map: the Horadric Cube takes it.</p></div>
+    </div>
+  </section>
+
+  <section class="panel" id="mn-grid" aria-labelledby="mnGridH">
+    <h2 id="mnGridH">Every map, at level <span class="lvlA"></span></h2>
+    <p class="sub" id="mnGridSub"></p>
+    <div class="scroll">
+      <table class="mn-table grid" id="mnGrid">
+        <thead>
+          <tr>
+            <th scope="col">Map</th>
+            <th scope="col">Neither</th>
+            <th scope="col">+1 area level</th>
+            <th scope="col">Fortified</th>
+            <th scope="col">Fortified,<small>+1 area level</small></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <p class="note">A T1 map with +1 area level gives exactly what a T2 map without it does, and a T2 map with +1 what a T3 map does: the waves are as high as the map's area level, whichever tier it is.</p>
+  </section>
+
+  <section class="panel" id="mn-level" aria-labelledby="mnLevH">
+    <h2 id="mnLevH">Your level decides how much the map counts</h2>
+    <p class="sub">Each map's event against a T1 map's at the same level. Up to level 92 every map gives about the same. From 93 your level starts to take experience off monsters 6 or more levels below you, and the higher area levels pull ahead: at 98 a T3 map with +1 area level gives <span id="mnLev98"></span> times a T1 map. Players, Fortified, and your +% experience don't change these lines: they multiply every map alike.</p>
+    <ul class="mn-legend" id="mnLegend"></ul>
+    <div class="plot" id="mnPlot"></div>
+    <button type="button" class="mn-toggle" id="mnLevToggle" aria-expanded="false" aria-controls="mnLevWrap">Show every level as a table</button>
+    <div class="scroll" id="mnLevWrap" hidden>
+      <table class="mn-table" id="mnLevTable"></table>
+    </div>
+  </section>
+
+  <section class="panel" id="mn-clear" aria-labelledby="mnClearH">
+    <h2 id="mnClearH">Against clearing the map</h2>
+    <p class="sub" id="mnClearSub"></p>
+    <div class="mn-vs">
+      <div class="card"><b id="mnVsNm"></b><span>full clears of the average non-magical <span class="tierA"></span> map</span></div>
+      <div class="card"><b id="mnVsRr"></b><span>full clears of the average corrupted rare <span class="tierA"></span> map: <span id="mnRolls"></span></span></div>
+    </div>
+    <h3>Your share of a level a minute</h3>
+    <div class="mn-times">
+      <label>The event takes <input type="number" id="mnEvMin" min="0.5" max="30" step="0.5" value="2" inputmode="decimal"> minutes</label>
+      <label>A full clear takes <input type="number" id="mnClMin" min="1" max="120" step="1" value="15" inputmode="decimal"> minutes</label>
+    </div>
+    <div class="mn-rate" id="mnRate"></div>
+    <p class="sub" id="mnRateSay"></p>
+  </section>
+
+  <section class="panel" id="mn-waves" aria-labelledby="mnWavesH">
+    <h2 id="mnWavesH">The 45 waves: stay to the end</h2>
+    <p class="sub" id="mnWavesSub"></p>
+    <div class="plot" id="mnWavePlot"></div>
+    <div class="scroll">
+      <table class="mn-table" id="mnPhases">
+        <thead>
+          <tr>
+            <th scope="col">Waves</th>
+            <th scope="col" class="left wide">Each wave</th>
+            <th scope="col">Normal<small>monsters</small></th>
+            <th scope="col">Champions</th>
+            <th scope="col">Uniques<small>(minions)</small></th>
+            <th scope="col">Share<small>of the experience</small></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <p class="note">Monsters per event on average. A wave that rolls no monster at all gets one normal monster. A wave comes every 1.6 seconds, so the last one comes 70 seconds after the first; how long the kills take is up to you.</p>
+  </section>
+
+  <section class="panel" id="mn-know" aria-labelledby="mnKnowH">
+    <h2 id="mnKnowH">Good to know</h2>
+    <ul class="mn-list">
+      <li><strong>Who gets the kills makes no difference.</strong> Party members within about 53 yards of a kill share it, and the waves come within about 7 yards of Mendeln, so everyone in your party at the event shares every kill.</li>
+      <li><strong>Players:</strong> each player in the game after the first adds 50% to every monster's experience when it spawns, and 70% to its life.</li>
+      <li><strong>How often:</strong> he shows up in about 1 rare map in 26, 1 magic map in 53, and 1 non-magical map in 82.</li>
+      <li><strong>No loot from the waves:</strong> the event's loot is Mendeln's own drop when he leaves.</li>
+      <li><strong>Nothing else on the map changes it:</strong> Monster Density, Monster Rarity, "Map contains ..." monsters, Treacherous, and the other monster mods. Every event is the same 45 waves.</li>
+      <li><strong>Fortified's price:</strong> the waves get the map's monster mods, Fortified's twice the life and +40% damage among them, so the event takes longer and hits harder.</li>
+      <li><strong>Mendeln himself</strong> can't be attacked and gives no experience. Between waves he casts curses.</li>
+      <li>At level 99 there's no experience to gain.</li>
+    </ul>
+  </section>
+
+  <section class="panel" id="mn-how">
+    <details class="mn-how">
+      <summary>How it's worked out</summary>
+      <ul class="mn-list">
+        <li><strong>The waves.</strong> Waves 1&ndash;20 bring 0&ndash;7 normal monsters each; waves 21&ndash;35 0&ndash;5 normal monsters and 0&ndash;2 champions; waves 36&ndash;45 0&ndash;3 normal monsters, 0&ndash;1 champion, and 0&ndash;2 uniques, each unique with 3&ndash;6 minions. On average that is <span id="mnHowCounts"></span>. Four in five are Hungry Dead, Defiled Warriors, Horrors, or Horror Archers, one in five a Horror Mage; all give the same experience.</li>
+        <li><strong>Each monster's experience.</strong> The same for every wave monster of a map: <span id="mnHowBase"></span>, for one player. Champions give 3 times as much and are 2 levels higher; 1 in 5 is a berserker, 5 times as much and 3 levels higher. Uniques give 5 times as much and are 3 levels higher. A unique's minions give the plain experience, at the map's level.</li>
+        <li><strong>Players and your party.</strong> Each player in the game after the first adds 50% when the monster spawns. A kill is shared by the party members within about 53 yards: together they get 1 + 0.35 for each member after the first, split between them by level (this page takes everyone at your level).</li>
+        <li><strong>Your level.</strong> A monster up to 5 levels below you gives its full experience, then 81%, 62%, 43%, and 24% at 6, 7, 8, and 9 levels below, and 5% from 10 levels below. A monster above your level gives your level divided by its level. From level 70 a character gets only part of every kill's experience, less the higher it is: <span id="mnHowRatio"></span>. Then your +% experience (your own and the map's add up).</li>
+        <li><strong>Fortified:</strong> every kill counts twice.</li>
+        <li><strong>Full clears.</strong> The tier's average map from the model the <a href="../map-experience/">Map Experience</a> page explains: every monster a full clear of each map spawns, and its level. Non-magical, or the average corrupted rare map (T1 / T2 / T3: <span id="mnHowRolls"></span>). The same setup counts for both: a Fortified or +1 area level map's own clear is Fortified or +1 too.</li>
+        <li><strong>Left out:</strong> how long the kills take (the waves have the map's life, +70% for each player after the first and twice as much on a Fortified map), Mendeln's curses, and a monster that finds no room near him to spawn.</li>
+      </ul>
+    </details>
+  </section>
+</div>
+<!-- mendeln-map:end -->
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  // Written by tools/mendeln_data.py (never by hand): lxp: the base experience of each monster level (/ 100 of a
+  // 1,000 monster's); span: the experience each character level takes; ratio: the experience a character of each
+  // level gets (/ 1024); mon: the wave monsters' experience; pen: the level penalty (/ 256) by how many levels you are
+  // above a monster; phases: [waves, normal monsters, champions, uniques] on average; minions: per unique; berserk: the
+  // champions' share of berserkers; party: a party's bonus per member after the first; cap: a share's most; area: each
+  // tier's area level; clears: the tier's average map's full clear, [normal monsters, champions, uniques] (one player,
+  // no penalty): p non-magical, r rolled rare, f Fortified; rolled: the average rolled rare map's rolls.
+  /* mendeln-data:start */
+  const DATA = {"lxp":{"84":49836,"85":51195,"86":52554,"87":53913,"88":55272,"89":56631,"90":57990,"91":59349,"92":60708,"93":62067,"94":63426,"95":64785,"96":66144},"span":{"80":61702579,"81":67255812,"82":73308835,"83":79906630,"84":87098226,"85":94937067,"86":103481403,"87":112794729,"88":122946255,"89":134011418,"90":146072446,"91":159218965,"92":173548673,"93":189168053,"94":206193177,"95":224750564,"96":244978115,"97":267026144,"98":291058498},"ratio":{"80":496,"81":448,"82":400,"83":352,"84":304,"85":256,"86":192,"87":144,"88":108,"89":81,"90":61,"91":46,"92":35,"93":26,"94":20,"95":15,"96":11,"97":8,"98":6},"mon":1000,"pen":[256,256,256,256,256,256,207,159,110,61,13],"phases":[[20,72.5,0.0,0.0],[15,38.3333,15.0,0.0],[10,15.4167,5.0,10.0]],"minions":4.5,"berserk":0.2,"party":0.34765625,"cap":8388607,"area":{"1":87,"2":88,"3":89},"clears":{"1":{"p":[48038597,5756182,53310690],"pf":[24183885,2878091,26655345],"r":[95327681,7745266,71867308],"rf":[47847665,3858923,35801662]},"2":{"p":[53054827,6229634,61195156],"pf":[26638274,3114817,30597578],"r":[113366608,8357590,82033141],"rf":[56815275,4163631,40862532]},"3":{"p":[49153792,5857327,56000357],"pf":[24773739,2928664,28000178],"r":[111330751,8699695,83004963],"rf":[55922300,4298099,41018442]}},"rolled":{"1":{"density":91,"rarity":14,"xp":12},"2":{"density":104,"rarity":18,"xp":14},"3":{"density":117,"rarity":22,"xp":16}}};
+  /* mendeln-data:end */
+
+  const D = DATA;
+  const $ = id => document.getElementById(id);
+  const root = $("mnBar").closest(".mendeln-map") || document.documentElement;
+  const L0 = 80, L1 = 98;
+  const LEVELS = Array.from({ length: L1 - L0 + 1 }, (_, i) => L0 + i);
+  const STORE = "erazure-mendeln";
+  const DEF = { lvl: 95, tier: 3, plus: false, fort: false, players: 1, xp: 0, evMin: 2, clMin: 15 };
+  // the setup in the address, as Rune Odds keeps its own (the additions audit, SW-08): a link opens on it
+  // ?level=95&map=3&plus=0&fortified=0&players=1&xp=0&event=2&clear=15
+  const ADDR = [["lvl", "level"], ["tier", "map"], ["plus", "plus"], ["fort", "fortified"], ["players", "players"], ["xp", "xp"],
+    ["evMin", "event"], ["clMin", "clear"]];
+  const S = load();
+
+  function load() {
+    let s = {};
+    try { s = JSON.parse(localStorage.getItem(STORE) || "{}") || {}; } catch (e) { s = {}; }
+    const q = new URLSearchParams(location.search);
+    for (const [k, p] of ADDR) {
+      const v = q.get(p);
+      if (v === null || v === "" || !isFinite(+v)) continue;
+      s[k] = typeof DEF[k] === "boolean" ? +v === 1 : +v;
+    }
+    const o = { ...DEF };
+    const num = (v, lo, hi, d) => (typeof v === "number" && isFinite(v) ? Math.min(hi, Math.max(lo, v)) : d);
+    o.lvl = Math.round(num(s.lvl, L0, L1, DEF.lvl));
+    o.tier = [1, 2, 3].includes(s.tier) ? s.tier : DEF.tier;
+    o.plus = s.plus === true; o.fort = s.fort === true;
+    o.players = Math.round(num(s.players, 1, 8, DEF.players));
+    o.xp = num(s.xp, 0, 100, DEF.xp);
+    o.evMin = num(s.evMin, 0.5, 30, DEF.evMin); o.clMin = num(s.clMin, 1, 120, DEF.clMin);
+    return o;
+  }
+  function save() {
+    const same = Object.keys(DEF).every(k => S[k] === DEF[k]);
+    try { if (same) localStorage.removeItem(STORE); else localStorage.setItem(STORE, JSON.stringify(S)); } catch (e) { /* private window */ }
+    const p = new URLSearchParams(location.search);
+    for (const [k, n] of ADDR) p.set(n, typeof S[k] === "boolean" ? (S[k] ? "1" : "0") : String(S[k]));
+    try { history.replaceState(null, "", location.pathname + "?" + p.toString() + location.hash); } catch (e) { /* a file */ }
+    resetBtn();
+  }
+
+  // ---------- the model ----------
+  const pen = (c, m) => (c >= m ? D.pen[Math.min(c - m, 10)] / 256 : c / m);
+  const COUNT = D.phases.reduce((a, [, n, c, u]) => ({ n: a.n + n, c: a.c + c, u: a.u + u }), { n: 0, c: 0, u: 0 });
+  // a wave monster's experience when it spawns, for the players in the game
+  function base(alvl, players) {
+    const b = Math.floor(D.mon * D.lxp[alvl] / 100);
+    return b + Math.floor(b * 50 * (players - 1) / 100);
+  }
+  // one kill's experience for each member of a party of `players`, all of level c
+  function share(e, m, c, players, xp) {
+    if (c >= 99) return 0;
+    const sh = Math.min(e * (1 + D.party * (players - 1)) / players, D.cap);
+    return sh * pen(c, m) * D.ratio[c] / 1024 * (1 + xp / 100);
+  }
+  // s: {lvl, tier, plus, fort, players, xp} -> each kind's experience per monster, per phase and in all
+  function event(s) {
+    const a = D.area[s.tier] + (s.plus ? 1 : 0), b = base(a, s.players), f = s.fort ? 2 : 1;
+    const one = (e, m) => f * share(e, m, s.lvl, s.players, s.xp);
+    const pm = {
+      n: one(b, a),
+      c: (1 - D.berserk) * one(3 * b, a + 2) + D.berserk * one(5 * b, a + 3),
+      u: one(5 * b, a + 3), m: one(b, a),
+    };
+    const phases = D.phases.map(([, n, c, u]) => n * pm.n + c * pm.c + u * (pm.u + D.minions * pm.m));
+    const total = phases.reduce((x, y) => x + y, 0);
+    return { total, phases, pm, pct: 100 * total / D.span[s.lvl] };
+  }
+  // a full clear of the tier's average map, for one player before the experience ratio and +% experience (as the
+  // event's below: the two cancel in a comparison)
+  function clear(s, rolled) {
+    const c = D.clears[s.tier][(rolled ? "r" : "p") + (s.fort ? "f" : "")];
+    const L = D.area[s.tier], m = L + (s.plus ? 1 : 0), sc = D.lxp[m] / D.lxp[L];
+    return (s.fort ? 2 : 1) * sc * (c[0] * pen(s.lvl, m) + c[1] * pen(s.lvl, m + 2) + c[2] * pen(s.lvl, m + 3));
+  }
+  const eventRaw = s => event({ ...s, players: 1, xp: 0 }).total / (D.ratio[s.lvl] / 1024);
+  const vsClear = (s, rolled) => eventRaw(s) / clear(s, rolled);
+
+  // ---------- words and numbers ----------
+  const fmtPct = v => (v >= 10 ? v.toFixed(1) : v >= 1 ? v.toFixed(2) : String(+v.toPrecision(2))) + "%";
+  const fmtExp = v => (v >= 1e7 ? (v / 1e6).toFixed(1) + "M" : v >= 1e6 ? (v / 1e6).toFixed(2) + "M"
+    : Math.round(v / 1e3).toLocaleString("en-US") + "k");
+  const fmtX = v => String(Math.round(v * 100) / 100);
+  const fmtR = v => v.toFixed(2);
+  const fmtMin = v => (v >= 10 ? String(Math.round(v)) : String(Math.round(v * 10) / 10));
+  const tierWord = s => `T${s.tier}`;
+  const mapWords = s => {
+    const parts = [];
+    if (s.fort) parts.push("Fortified");
+    if (s.plus) parts.push("+1 area level");
+    return parts.length ? `${tierWord(s)} map, ${parts.join(", ")}` : `${tierWord(s)} map`;
+  };
+  const partyWords = n => (n === 1 ? "solo" : `${n} players in a party`);
+  const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text !== undefined) n.textContent = text; return n; };
+  const cell = (tr, text, cls) => { const td = tr.insertCell(); td.textContent = text; if (cls) td.className = cls; return td; };
+
+  // ---------- the answer ----------
+  function renderAnswer() {
+    const ev = event(S), nm = vsClear(S, false), rr = vsClear(S, true);
+    $("mnSetup").textContent = `Level ${S.lvl} · ${partyWords(S.players)} · ${mapWords(S)}` + (S.xp ? ` · +${S.xp}% experience` : "");
+    $("mnPct").textContent = fmtPct(ev.pct);
+    $("mnEachA").textContent = S.players > 1 ? ", each" : "";
+    $("mnExp").textContent = fmtExp(ev.total);
+    $("mnNm").textContent = fmtR(nm);
+    $("mnRr").textContent = fmtR(rr);
+    const mins = rr * S.clMin;
+    const who = S.players > 1 ? `each of the ${S.players} of you gets` : "you get";
+    $("mnSay").textContent = S.lvl >= 99 ? "At level 99 there's no experience to gain."
+      : `Stay for him: in about ${fmtMin(S.evMin)} minutes ${who} as much as ${fmtMin(mins)} minutes of clearing a corrupted rare ${tierWord(S)} map gives.`;
+  }
+
+  // ---------- the four choices ----------
+  const ROOM = 5;  // em the bars leave free for their values, at the track's 14px
+  function ladderSteps() {
+    const b = { lvl: S.lvl, xp: S.xp, tier: 1, plus: false, fort: false, players: 1 };
+    const steps = [
+      { label: "Solo, on a T1 map", s: b },
+      { label: "Fortified", s: { ...b, fort: true } },
+      { label: "A party of 8", s: { ...b, fort: true, players: 8 } },
+      { label: "A T3 map", s: { ...b, fort: true, players: 8, tier: 3 } },
+      { label: "+1 area level", s: { ...b, fort: true, players: 8, tier: 3, plus: true } },
+    ];
+    steps.forEach(st => { st.v = event(st.s).pct; });
+    return steps;
+  }
+  function renderLadder() {
+    const steps = ladderSteps(), max = steps[steps.length - 1].v, box = $("mnLadder");
+    box.textContent = "";
+    steps.forEach((st, i) => {
+      const row = el("div", "row" + (i === steps.length - 1 ? " row-last" : ""));
+      row.appendChild(el("span", "lab", st.label));
+      row.appendChild(el("span", "mult" + (i ? "" : " start"), i ? "×" + fmtX(st.v / steps[i - 1].v) : "start"));
+      const tr = el("div", "track"), fill = el("div", "fill"), val = el("span", "val", fmtPct(st.v));
+      fill.style.width = val.style.left = `calc((100% - ${ROOM}em) * ${st.v / max})`;
+      tr.append(fill, val);
+      row.appendChild(tr);
+      box.appendChild(row);
+      st.track = tr;
+    });
+    // your setup, as a dashed line over the bars
+    const you = event(S).pct, mark = el("div", "mn-you");
+    const first = steps[0].track, last = steps[steps.length - 1].track;
+    const place = () => {
+      const bx = box.getBoundingClientRect(), tr = first.getBoundingClientRect(), lr = last.getBoundingClientRect();
+      const room = tr.width - ROOM * parseFloat(getComputedStyle(first).fontSize);
+      mark.style.left = (tr.left - bx.left + room * Math.min(1, you / max)) + "px";
+      mark.style.top = (tr.top - bx.top - 4) + "px";
+      mark.style.height = (lr.bottom - tr.top + 8) + "px";
+    };
+    mark.appendChild(el("span", "", `You: ${fmtPct(you)}`));
+    box.appendChild(mark);
+    place();
+    box._place = place;
+    const total = max / steps[0].v;
+    $("mnLadSub").textContent = `At level ${S.lvl}, each player's share of the level per event, each choice on top of the ones before it: ${fmtX(total)} times in all. The dashed line is your setup.`;
+    $("mnWhyF").textContent = "×" + fmtX(steps[1].v / steps[0].v);
+    $("mnWhyP").textContent = "×" + fmtX(steps[2].v / steps[1].v);
+    $("mnWhyP2").textContent = fmtX(steps[2].v / steps[1].v);
+    $("mnWhyT").textContent = "×" + fmtX(steps[3].v / steps[2].v);
+    $("mnWhyA").textContent = "×" + fmtX(steps[4].v / steps[3].v);
+  }
+
+  // ---------- every map at your level ----------
+  const COLS = [[false, false], [true, false], [false, true], [true, true]];  // [plus, fort]
+  function renderGrid() {
+    const tb = $("mnGrid").tBodies[0];
+    const hadFocus = tb.contains(document.activeElement) ? document.activeElement.dataset.key : null;
+    tb.textContent = "";
+    const vals = [1, 2, 3].map(t => COLS.map(([plus, fort]) => event({ ...S, tier: t, plus, fort }).pct));
+    const best = Math.max(...vals.flat()), base = vals[0][0];
+    [1, 2, 3].forEach((t, r) => {
+      const tr = tb.insertRow();
+      if (t === S.tier) tr.className = "cur";
+      const th = cell(tr, `T${t}`, "name");
+      th.appendChild(el("small", "", `area level ${D.area[t]}`));
+      COLS.forEach(([plus, fort], k) => {
+        const td = tr.insertCell(); td.className = "c";
+        const v = vals[r][k], cur = t === S.tier && plus === S.plus && fort === S.fort;
+        const b = el("button", (v === best ? "best" : "") + (cur ? " cur" : ""));
+        b.type = "button"; b.dataset.key = `${t}${k}`;
+        b.setAttribute("aria-pressed", String(cur));
+        const tags = [];
+        if (cur) tags.push(["You", "tagline you"]);
+        if (v === best) tags.push(["✓ Best", "tagline"]);
+        tags.forEach(([w, c]) => b.appendChild(el("span", c, w)));
+        b.appendChild(el("b", "", fmtPct(v)));
+        b.appendChild(el("small", "", v === base ? "the T1 map" : "×" + fmtX(v / base) + " of T1"));
+        b.setAttribute("aria-label", `T${t}${plus ? ", +1 area level" : ""}${fort ? ", Fortified" : ""}: ${fmtPct(v)} of the level${cur ? ", your setup" : ""}${v === best ? ", the best" : ""}`);
+        b.addEventListener("click", () => { S.tier = t; S.plus = plus; S.fort = fort; update(); });
+        td.appendChild(b);
+      });
+    });
+    $("mnGridSub").textContent = `Your share of the level per event, ${S.players === 1 ? "solo" : `each of ${S.players} players in a party`}${S.xp ? `, +${S.xp}% experience` : ""}. Pick a map here or in the bar.`;
+    if (hadFocus) { const b = tb.querySelector(`[data-key="${hadFocus}"]`); if (b) b.focus({ preventScroll: true }); }
+  }
+
+  // ---------- your level ----------
+  const SVGNS = "http://www.w3.org/2000/svg";
+  const mk = (tag, attrs, parent) => { const n = document.createElementNS(SVGNS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); if (parent) parent.appendChild(n); return n; };
+  function niceTicks(lo, hi, n) {
+    const span = hi - lo, raw = span / n, p = Math.pow(10, Math.floor(Math.log10(raw)));
+    const step = [1, 2, 2.5, 5, 10].map(k => k * p).find(s => span / s <= n) || 10 * p;
+    const a = Math.floor(lo / step) * step, b = Math.ceil(hi / step) * step, out = [];
+    for (let v = a; v <= b + step / 2; v += step) out.push(+v.toFixed(8));
+    return out;
+  }
+  // by area level: the T1 map is the line at 1
+  const SERIES = [
+    { add: 3, label: "T3, +1 area level", color: "var(--s3)", dash: "" },
+    { add: 2, label: "T3, or T2 +1", color: "var(--s2)", dash: "8 4" },
+    { add: 1, label: "T2, or T1 +1", color: "var(--s1)", dash: "2 4" },
+  ];
+  const areaOf = s => D.area[s.tier] + (s.plus ? 1 : 0);
+  const rel = (c, add) => {
+    const t1 = { lvl: c, tier: 1, plus: false, fort: false, players: 1, xp: 0 };
+    const s = add === 3 ? { ...t1, tier: 3, plus: true } : add === 2 ? { ...t1, tier: 3 } : { ...t1, tier: 2 };
+    return event(s).total / event(t1).total;
+  };
+  const REL = SERIES.map(se => LEVELS.map(c => rel(c, se.add)));
+  const keySvg = (color, dash, w) => {
+    const s = mk("svg", { width: 26, height: 10, viewBox: "0 0 26 10", "aria-hidden": "true" });
+    mk("line", { x1: 1, x2: 25, y1: 5, y2: 5, stroke: color, "stroke-width": w || 2.5, "stroke-dasharray": dash || "none", "stroke-linecap": "round" }, s);
+    return s;
+  };
+  function buildLegend() {
+    const ul = $("mnLegend");
+    SERIES.forEach(se => { const li = el("li"); li.append(keySvg(se.color, se.dash), el("span", "", se.label)); ul.appendChild(li); });
+    const li = el("li"); li.append(keySvg("var(--fg2)", "3 3", 1.5), el("span", "", "T1 = 1x")); ul.appendChild(li);
+  }
+  function drawLevel() {
+    const plot = $("mnPlot");
+    const W = Math.max(300, Math.round(plot.clientWidth || 640)), narrow = W < 560;
+    const H = narrow ? 250 : 290;
+    const m = { l: narrow ? 40 : 48, r: narrow ? 64 : 150, t: 26, b: 42 };
+    const iw = W - m.l - m.r, ih = H - m.t - m.b, n = LEVELS.length - 1;
+    const ticks = niceTicks(1, Math.max(...REL.flat()) * 1.02, narrow ? 4 : 7);
+    $("mnLev98").textContent = fmtR(REL[0][n]);
+    const y0 = 1, y1 = ticks[ticks.length - 1];
+    const X = i => m.l + i / n * iw, Y = v => m.t + (1 - (v - y0) / (y1 - y0)) * ih;
+    const hadFocus = plot.contains(document.activeElement);
+    plot.textContent = "";
+    const svg = mk("svg", { viewBox: `0 0 ${W} ${H}`, width: W, height: H, role: "img", tabindex: "0",
+      "aria-label": "Each map's event against a T1 map's, at every character level from 80 to 98; the table under the chart lists every value" }, plot);
+    const g = mk("g", {}, svg);
+    ticks.forEach(v => {
+      mk("line", { x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v), stroke: "var(--grid)", "stroke-width": 1, "shape-rendering": "crispEdges" }, g);
+      const t = mk("text", { x: m.l - 8, y: Y(v) + 4, "text-anchor": "end", class: "tick" }, g); t.textContent = fmtX(v) + "x";
+    });
+    const step = narrow ? 3 : 2;
+    LEVELS.forEach((c, i) => {
+      if ((c - L0) % step) return;
+      const t = mk("text", { x: X(i), y: m.t + ih + 17, "text-anchor": "middle", class: "tick" }, g); t.textContent = String(c);
+    });
+    const xt = mk("text", { x: m.l + iw / 2, y: H - 4, "text-anchor": "middle", class: "axis-title" }, g); xt.textContent = "Your level";
+    // the T1 map: 1x
+    mk("line", { x1: m.l, x2: W - m.r, y1: Y(1), y2: Y(1), stroke: "var(--fg2)", "stroke-width": 1.5, "stroke-dasharray": "3 3", opacity: 0.8 }, svg);
+    // your level
+    const mx = X(S.lvl - L0);
+    mk("line", { x1: mx, x2: mx, y1: m.t - 6, y2: m.t + ih, stroke: "var(--accent)", "stroke-width": 1.5 }, svg);
+    const ml = mk("text", { x: Math.min(Math.max(mx, m.l + 30), W - m.r - 30), y: m.t - 10, "text-anchor": "middle", class: "marker-label" }, svg);
+    ml.textContent = `Level ${S.lvl}`;
+    const curAdd = areaOf(S) - D.area[1];
+    SERIES.forEach((se, k) => {
+      const d = REL[k].map((v, i) => `${i ? "L" : "M"}${X(i).toFixed(1)},${Y(v).toFixed(1)}`).join("");
+      mk("path", { d, fill: "none", stroke: se.color, "stroke-width": se.add === curAdd ? 3.5 : 2.2, "stroke-dasharray": se.dash || "none",
+        "stroke-linejoin": "round", "stroke-linecap": "round" }, svg);
+    });
+    // labels at the right end, kept 14px apart
+    const ends = SERIES.map((se, k) => ({ se, v: REL[k][n], y: Y(REL[k][n]) }));
+    ends.push({ se: { label: "T1", add: 0 }, v: 1, y: Y(1) });
+    ends.sort((a, b) => a.y - b.y);
+    for (let i = 1; i < ends.length; i++) ends[i].y = Math.max(ends[i].y, ends[i - 1].y + 14);
+    ends.forEach(e => {
+      const t = mk("text", { x: W - m.r + 8, y: e.y + 4, class: "end-label" + (e.se.add === curAdd ? " cur" : "") }, svg);
+      t.textContent = narrow ? `${fmtX(e.v)}x` : `${e.se.label} ${fmtX(e.v)}x`;
+    });
+    // hover
+    const cross = mk("line", { y1: m.t, y2: m.t + ih, stroke: "var(--fg2)", "stroke-width": 1, opacity: 0 }, svg);
+    const dots = SERIES.map(se => mk("circle", { r: 4, fill: se.color, stroke: "var(--panel)", "stroke-width": 2, opacity: 0 }, svg));
+    const hit = mk("rect", { x: m.l - 6, y: 0, width: iw + 12, height: m.t + ih + 24, fill: "transparent", style: "cursor: crosshair" }, svg);
+    const tip = el("div", "mn-tip"); tip.hidden = true; plot.appendChild(tip);
+    let hover = null;
+    const show = (i, px) => {
+      i = Math.max(0, Math.min(n, i)); hover = i;
+      cross.setAttribute("x1", X(i)); cross.setAttribute("x2", X(i)); cross.setAttribute("opacity", 0.55);
+      dots.forEach((dot, k) => { dot.setAttribute("cx", X(i)); dot.setAttribute("cy", Y(REL[k][i])); dot.setAttribute("opacity", 1); });
+      tip.textContent = "";
+      tip.appendChild(el("div", "mn-tip-head", `Level ${LEVELS[i]}`));
+      SERIES.forEach((se, k) => {
+        const row = el("div", "mn-tip-row");
+        row.append(keySvg(se.color, se.dash), el("b", "", fmtR(REL[k][i]) + "x"), el("span", "", se.label));
+        tip.appendChild(row);
+      });
+      tip.appendChild(el("div", "mn-tip-foot", "Against a T1 map's event. Click to pick this level."));
+      tip.hidden = false;
+      const pw = plot.clientWidth, tw = tip.offsetWidth, scale = pw / W;
+      const xpx = px !== undefined ? px : X(i) * scale;
+      let left = xpx + 14; if (left + tw > pw) left = Math.max(0, xpx - tw - 14);
+      tip.style.left = left + "px"; tip.style.top = Math.max(0, (m.t + 4) * scale) + "px";
+    };
+    const hide = () => { cross.setAttribute("opacity", 0); dots.forEach(d => d.setAttribute("opacity", 0)); tip.hidden = true; hover = null; };
+    const toI = ev => { const r = svg.getBoundingClientRect(); const x = (ev.clientX - r.left) * W / r.width; return { i: Math.round((x - m.l) / iw * n), px: ev.clientX - r.left }; };
+    hit.addEventListener("pointermove", ev => { const p = toI(ev); show(p.i, p.px); });
+    hit.addEventListener("pointerdown", ev => { const p = toI(ev); show(p.i, p.px); });
+    hit.addEventListener("pointerleave", hide);
+    hit.addEventListener("click", ev => { const p = toI(ev); S.lvl = L0 + Math.max(0, Math.min(n, p.i)); update(); });
+    svg.addEventListener("focus", () => show(hover ?? S.lvl - L0));
+    svg.addEventListener("blur", hide);
+    svg.addEventListener("keydown", ev => {
+      const cur = hover ?? S.lvl - L0;
+      if (ev.key === "ArrowRight" || ev.key === "ArrowLeft") { ev.preventDefault(); show(cur + (ev.key === "ArrowRight" ? 1 : -1)); }
+      else if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); S.lvl = L0 + cur; update(); }
+      else if (ev.key === "Escape") hide();
+    });
+    if (hadFocus) svg.focus({ preventScroll: true });
+  }
+  function renderLevelTable() {
+    const t = $("mnLevTable");
+    t.textContent = "";
+    const head = t.createTHead().insertRow();
+    ["Your level", "T1", "T2, or T1 +1", "T3, or T2 +1", "T3, +1 area level"].forEach(h => { const th = el("th", "", h); th.scope = "col"; head.appendChild(th); });
+    const tb = t.createTBody();
+    const adds = [[1, false], [2, false], [3, false], [3, true]];
+    LEVELS.forEach(c => {
+      const tr = tb.insertRow();
+      if (c === S.lvl) tr.className = "cur";
+      cell(tr, String(c), "name");
+      adds.forEach(([tier, plus]) => cell(tr, fmtPct(event({ ...S, lvl: c, tier, plus }).pct)));
+    });
+    const cap = t.createCaption(); cap.className = "note"; cap.style.textAlign = "left"; cap.style.captionSide = "bottom"; cap.style.paddingTop = "6px";
+    cap.textContent = `Your share of the level per event, ${partyWords(S.players)}${S.fort ? ", Fortified" : ""}${S.xp ? `, +${S.xp}% experience` : ""}.`;
+  }
+
+  // ---------- against clearing the map ----------
+  function renderClear() {
+    const nm = vsClear(S, false), rr = vsClear(S, true), r = D.rolled[S.tier];
+    $("mnVsNm").textContent = fmtR(nm);
+    $("mnVsRr").textContent = fmtR(rr);
+    $("mnRolls").textContent = `on average +${r.density}% Monster Density, +${r.rarity}% Monster Rarity, and +${r.xp}% Experience`;
+    $("mnClearSub").textContent = `One event against a full clear of the tier's average map, both for your setup: level ${S.lvl}, ${mapWords(S)}, ${partyWords(S.players)}.`;
+    const ev = event(S).pct;
+    const rows = [
+      { lab: "This event", sm: `${fmtMin(S.evMin)} minutes`, v: ev / S.evMin, first: true },
+      { lab: `Clearing a corrupted rare ${tierWord(S)} map`, sm: `${fmtMin(S.clMin)} minutes`, v: ev / rr / S.clMin },
+      { lab: `Clearing a non-magical ${tierWord(S)} map`, sm: `${fmtMin(S.clMin)} minutes`, v: ev / nm / S.clMin },
+    ];
+    const max = Math.max(...rows.map(x => x.v)), box = $("mnRate");
+    box.textContent = "";
+    rows.forEach(x => {
+      const row = el("div", "row" + (x.first ? " first" : ""));
+      const lab = el("span", "lab", x.lab); lab.appendChild(el("small", "", x.sm));
+      const tr = el("div", "track"), fill = el("div", "fill"), val = el("span", "val", fmtPct(x.v));
+      fill.style.width = val.style.left = `calc((100% - ${ROOM}em) * ${x.v / max})`;
+      tr.append(fill, val); row.append(lab, tr); box.appendChild(row);
+    });
+    const per = (S.clMin / S.evMin);
+    $("mnRateSay").textContent = `A minute of the event gives ${fmtX(rr * per)} times what a minute of clearing a corrupted rare ${tierWord(S)} map does, and ${fmtX(nm * per)} times a non-magical one. One event is worth ${fmtMin(rr * S.clMin)} minutes of clearing a corrupted rare map, or ${fmtMin(nm * S.clMin)} of a non-magical one.`;
+  }
+
+  // ---------- the waves ----------
+  function waveExp(ev) {
+    const out = [];
+    D.phases.forEach(([w], k) => { for (let i = 0; i < w; i++) out.push(ev.phases[k] / w); });
+    return out;
+  }
+  function drawWaves() {
+    const plot = $("mnWavePlot"), ev = event(S), per = waveExp(ev), nW = per.length;
+    const cum = [0]; per.forEach(v => cum.push(cum[cum.length - 1] + v));
+    const pc = cum.map(v => (ev.total ? 100 * v / ev.total : 0));
+    const W = Math.max(300, Math.round(plot.clientWidth || 640)), narrow = W < 560;
+    const H = narrow ? 240 : 270;
+    const m = { l: narrow ? 40 : 48, r: 20, t: 34, b: 42 };
+    const iw = W - m.l - m.r, ih = H - m.t - m.b;
+    const X = w => m.l + w / nW * iw, Y = v => m.t + (1 - v / 100) * ih;
+    plot.textContent = "";
+    const svg = mk("svg", { viewBox: `0 0 ${W} ${H}`, width: W, height: H, role: "img",
+      "aria-label": "The event's experience so far, wave by wave; the table under the chart gives each phase's share" }, plot);
+    // the three phases
+    let w0 = 0;
+    const names = narrow ? ["Normal", "+ champions", "+ uniques"] : ["Normal monsters", "+ champions", "+ uniques, minions"];
+    D.phases.forEach(([w], k) => {
+      const x0 = X(w0), x1 = X(w0 + w);
+      if (k % 2 === 1) mk("rect", { x: x0, y: m.t, width: x1 - x0, height: ih, fill: "var(--accent-wash)" }, svg);
+      const t = mk("text", { x: (x0 + x1) / 2, y: m.t - 10, "text-anchor": "middle", class: "band-label" }, svg);
+      t.textContent = `${names[k]}`;
+      w0 += w;
+    });
+    [0, 25, 50, 75, 100].forEach(v => {
+      mk("line", { x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v), stroke: "var(--grid)", "stroke-width": 1, "shape-rendering": "crispEdges" }, svg);
+      const t = mk("text", { x: m.l - 8, y: Y(v) + 4, "text-anchor": "end", class: "tick" }, svg); t.textContent = v + "%";
+    });
+    [0, 10, 20, 30, 35, 45].forEach(w => {
+      if (narrow && w === 30) return;
+      const t = mk("text", { x: X(w), y: m.t + ih + 17, "text-anchor": "middle", class: "tick" }, svg); t.textContent = String(w);
+    });
+    const xt = mk("text", { x: m.l + iw / 2, y: H - 4, "text-anchor": "middle", class: "axis-title" }, svg); xt.textContent = "Waves done (a wave every 1.6 seconds)";
+    const pts = pc.map((v, w) => `${X(w).toFixed(1)},${Y(v).toFixed(1)}`);
+    mk("path", { d: `M${X(0)},${Y(0)}L${pts.join("L")}L${X(nW)},${Y(0)}Z`, fill: "var(--accent)", opacity: 0.16 }, svg);
+    mk("path", { d: `M${pts.join("L")}`, fill: "none", stroke: "var(--accent)", "stroke-width": 2.5, "stroke-linejoin": "round" }, svg);
+    let wsum = 0;
+    D.phases.slice(0, -1).forEach(([w]) => {
+      wsum += w;
+      const v = pc[wsum];
+      mk("circle", { cx: X(wsum), cy: Y(v), r: 4.5, fill: "var(--accent)", stroke: "var(--panel)", "stroke-width": 2 }, svg);
+      const t = mk("text", { x: X(wsum) - 8, y: Y(v) - 10, "text-anchor": "end", class: "pt-label" }, svg);
+      t.textContent = `${Math.round(v)}% by wave ${wsum}`;
+    });
+  }
+  function renderPhases() {
+    const ev = event(S), tb = $("mnPhases").tBodies[0];
+    tb.textContent = "";
+    const words = ["0–7 normal monsters", "0–5 normal monsters and 0–2 champions", "0–3 normal, 0–1 champion, and 0–2 uniques"];
+    let w0 = 1;
+    D.phases.forEach(([w, n, c, u], k) => {
+      const tr = tb.insertRow();
+      cell(tr, `${w0}–${w0 + w - 1}`, "name");
+      const td = cell(tr, words[k], "wide"); td.style.textAlign = "left"; td.style.whiteSpace = "normal";
+      cell(tr, n.toFixed(1));
+      cell(tr, c ? String(Math.round(c)) : "–");
+      cell(tr, u ? `${Math.round(u)} (${Math.round(u * D.minions)})` : "–");
+      cell(tr, Math.round(100 * ev.phases[k] / ev.total) + "%");
+      w0 += w;
+    });
+    const tr = tb.insertRow(); tr.className = "cur";
+    cell(tr, "All 45", "name");
+    cell(tr, "", "wide");
+    cell(tr, COUNT.n.toFixed(1)); cell(tr, String(Math.round(COUNT.c))); cell(tr, `${Math.round(COUNT.u)} (${Math.round(COUNT.u * D.minions)})`);
+    cell(tr, "100%");
+    const last = Math.round(100 * ev.phases[ev.phases.length - 1] / ev.total);
+    $("mnWavesSub").textContent = `The champions come from wave 21, the uniques from wave 36. At your setup the last 10 waves bring ${last}% of the event's experience: leave early and that's what you miss.`;
+  }
+
+  // ---------- how it's worked out ----------
+  function renderHow() {
+    $("mnHowCounts").textContent = `${COUNT.n.toFixed(0)} normal monsters, ${Math.round(COUNT.c)} champions, and ${Math.round(COUNT.u)} uniques with ${Math.round(COUNT.u * D.minions)} minions`;
+    $("mnHowBase").textContent = [1, 2, 3].map(t => `${base(D.area[t], 1).toLocaleString("en-US")} on a T${t} map`).join(", ")
+      + `, and ${base(D.area[3] + 1, 1).toLocaleString("en-US")} on a T3 map with +1 area level`;
+    const rolls = ["density", "rarity", "xp"].map((k, i) =>
+      `${["Monster Density", "Monster Rarity", "Experience"][i]} +${[1, 2, 3].map(t => D.rolled[t][k]).join(" / +")}%`);
+    $("mnHowRolls").textContent = `${rolls[0]}, ${rolls[1]}, and ${rolls[2]}`;
+    const part = c => `${+(100 * D.ratio[c] / 1024).toPrecision(2)}%`;
+    $("mnHowRatio").textContent = `${part(80)} at level 80, ${part(90)} at 90${[80, 90].includes(S.lvl) ? "" : `, ${part(S.lvl)} at your level ${S.lvl}`}`;
+  }
+
+  // ---------- the bar ----------
+  const bar = $("mnBar");
+  const barHeight = () => root.style.setProperty("--barh", bar.offsetHeight + "px");
+  if ("ResizeObserver" in window) new ResizeObserver(barHeight).observe(bar); else barHeight();
+
+  /* your character, shared with the site's other tools: the .ez-char box (javascripts/erazure.js; the website ideas' #11):
+     the level, which this page's slider holds from 80 to 98 */
+  window.ezCharPage = {fields: ["lvl"], read: () => ({lvl: S.lvl}),
+    fit: (c) => Object.assign(c, c.lvl !== undefined ? {lvl: Math.max(L0, Math.min(L1, Math.round(+c.lvl) || L0))} : {}),
+    use: (c) => { if (c.lvl !== undefined) { S.lvl = Math.max(L0, Math.min(L1, Math.round(+c.lvl) || L0)); update(); } }};
+  function update() {
+    $("mnLvl").value = S.lvl;
+    $("mnLvlOut").value = $("mnLvlOut").textContent = String(S.lvl);
+    document.querySelectorAll('.mendeln-map input[name="mnTier"]').forEach(r => { r.checked = +r.value === S.tier; });
+    $("mnPlus").checked = S.plus; $("mnFort").checked = S.fort;
+    $("mnPl").value = S.players;
+    $("mnPlOut").value = $("mnPlOut").textContent = String(S.players);
+    document.querySelectorAll(".mendeln-map .lvlA").forEach(s => { s.textContent = String(S.lvl); });
+    document.querySelectorAll(".mendeln-map .tierA").forEach(s => { s.textContent = tierWord(S); });
+    renderAnswer();
+    renderLadder();
+    renderGrid();
+    drawLevel();
+    renderLevelTable();
+    renderClear();
+    drawWaves();
+    renderPhases();
+    renderHow();
+    save();
+  }
+  $("mnLvl").addEventListener("input", e => { S.lvl = +e.target.value; update(); });
+  document.querySelectorAll('.mendeln-map input[name="mnTier"]').forEach(r => r.addEventListener("change", e => { S.tier = +e.target.value; update(); }));
+  $("mnPlus").addEventListener("change", e => { S.plus = e.target.checked; update(); });
+  $("mnFort").addEventListener("change", e => { S.fort = e.target.checked; update(); });
+  $("mnPl").addEventListener("input", e => { S.players = +e.target.value; update(); });
+  const numBox = (id, key, lo, hi) => {
+    const box = $(id);
+    box.value = S[key];
+    box.addEventListener("input", () => {
+      const v = parseFloat(box.value);
+      if (!isFinite(v)) return;
+      S[key] = Math.min(hi, Math.max(lo, v));
+      update();
+    });
+    box.addEventListener("change", () => { box.value = S[key]; });
+  };
+  numBox("mnXp", "xp", 0, 100);
+  numBox("mnEvMin", "evMin", 0.5, 30);
+  numBox("mnClMin", "clMin", 1, 120);
+  $("mnLevToggle").addEventListener("click", ev => {
+    const open = $("mnLevWrap").hidden;
+    $("mnLevWrap").hidden = !open;
+    ev.currentTarget.setAttribute("aria-expanded", String(open));
+    ev.currentTarget.textContent = open ? "Hide the table" : "Show every level as a table";
+  });
+
+  // Reset to the defaults, then Undo reset until the next change; Copy a link to this setup, which the address holds
+  // (the additions audit, SW-08: as every calculator has them)
+  let undo = null;  // {was: the setup before the reset}, until the setup changes
+  const isDef = () => Object.keys(DEF).every(k => S[k] === DEF[k]);
+  const boxes = () => { $("mnXp").value = S.xp; $("mnEvMin").value = S.evMin; $("mnClMin").value = S.clMin; };
+  function resetBtn() {
+    if (undo && !isDef()) undo = null;
+    $("mnReset").textContent = undo ? "Undo reset" : "Reset to the defaults";
+    $("mnReset").disabled = !undo && isDef();
+  }
+  $("mnReset").addEventListener("click", () => {
+    if (undo) { const was = undo.was; undo = null; Object.assign(S, was); boxes(); update(); return; }
+    undo = { was: { ...S } };
+    Object.assign(S, DEF);
+    boxes(); update();
+  });
+  $("mnCopy").addEventListener("click", () => {
+    save();
+    const note = $("mnCopyNote"), link = location.href;
+    const done = ok => { note.textContent = ok ? "Copied." : link; if (ok) setTimeout(() => { note.textContent = ""; }, 2500); };
+    if (navigator.clipboard) navigator.clipboard.writeText(link).then(() => done(true), () => done(false)); else done(false);
+  });
+
+  buildLegend();
+  update();
+  // redraw the charts and the ladder's marker when the width changes
+  let raf = 0, lastW = 0;
+  new ResizeObserver(() => {
+    const w = $("mnPlot").clientWidth;
+    if (w === lastW) return; lastW = w;
+    cancelAnimationFrame(raf);
+    raf = requestAnimationFrame(() => { drawLevel(); drawWaves(); if ($("mnLadder")._place) $("mnLadder")._place(); });
+  }).observe($("mnPlot"));
+})();
+</script>
+</body>
+</html>

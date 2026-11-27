@@ -1,0 +1,276 @@
+
+  @font-face { font-family: "AvQest"; src: local("AvQest"); }  /* the D2-style font, if the viewer has it installed */
+  /* Layout: the title; "how to read it" with the filter levels; then the filter bar, which stays at the top while
+     scrolling (under the website's header on the website); then one table per item type: a header row per group of
+     bases with the same tier, socket maximum and rows, then one row per case (filter levels, what happens, then one
+     column per condition). Phones: each row is a card. Every rule is scoped to .rare-map, so the website's theme and
+     this page leave each other alone. Dark by default; light when the website (Material) is switched to light. */
+  .rare-map {
+    --bg: #151412; --panel: #1f1d1a; --fg: #ece7de; --muted: #a59e91; --line: #36322c; --soft: #2a2723;
+    --accent: #d8b45e;
+    --k-notify: #8bb4e8; --k-show: #c9b27a; --k-hide: #9a9385;
+    --s-chat: #7cc474; --s-icon: #8bb4e8; --s-mixed: #b6c48f; --s-shown: #b9b2a3; --s-some: #e0b45a;
+    --s-hidden: #ef7a72;  /* at a glance: the Filter Levels page's colors */
+    --ground-1: #3a3428; --ground-2: #26221b; --ground-3: #15130f;
+    --display: "Cinzel", "Trajan Pro", Georgia, serif;
+    --body: "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --label: "AvQest", "Palatino Linotype", Palatino, Georgia, serif;
+    --top: 0px;  /* where the filter bar stops while scrolling */
+    color-scheme: dark;
+    color: var(--fg); font: 15px/1.45 var(--body);
+  }
+  [data-md-color-scheme="default"] .rare-map {
+    --bg: #f3f1ec; --panel: #fffdf8; --fg: #23211c; --muted: #6b655a; --line: #ded7c9; --soft: #ece6da;
+    --accent: #8a6d1f;
+    --k-notify: #2f6db3; --k-show: #8a6d1f; --k-hide: #6b655a;
+    --s-chat: #2f8a3a; --s-icon: #2f6db3; --s-mixed: #6f7d3c; --s-shown: #7c7568; --s-some: #a8690c;
+    --s-hidden: #b3261e;
+    color-scheme: light;
+  }
+  .md-content .rare-map { --top: 2.4rem; }  /* on the website: under its header, which stays at the top */
+  .rare-map *, .rare-map *::before, .rare-map *::after { box-sizing: border-box; }
+  .rare-map .wrap { max-width: 1400px; margin: 0 auto; padding-inline: 16px; }
+  .md-content .rare-map .wrap { padding-inline: 0; }
+  .rare-map h1.bm-title { font: 700 26px/1.2 var(--display); letter-spacing: .02em; margin: 0; padding-block: 16px 10px;
+                         color: var(--fg); text-wrap: balance; }
+  .rare-map .bar { position: sticky; top: var(--top); z-index: 3; background: var(--panel);
+                  border-block: 1px solid var(--line); padding-block: 8px; margin-block: 12px 0; }
+  /* a short window (200% zoom: 960 x 470, 683 x 315): it scrolls away (560 px since 2026-11-23, the additions audit
+     SW-07 / LU-04: no bar over a third of the window; At a glance's heading copy stays off there too, the script) */
+  @media (max-height: 560px) { .rare-map .bar { position: static; } }
+  .rare-map .bar .wrap { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
+  .md-content .rare-map .bar .wrap { padding-inline: 10px; }
+  .rare-map .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; min-width: 0; max-width: 100%; }
+  .rare-map #level { width: 16rem; }  /* the closed select: its long options do not widen the page (phones) */
+  @media (min-width: 761px) { .rare-map #level { width: 28em; } }  /* room for a level's whole name (2026-11-15) */
+  .rare-map input[type=search], .rare-map select {
+    font: inherit; font-size: 14.5px; padding: 5px 8px; border: 1px solid var(--line); border-radius: 6px;
+    background: var(--bg); color: var(--fg); min-width: 0; max-width: 100%; margin: 0; }
+  .rare-map input[type=search] { flex: 1 1 220px; }
+  .rare-map .count { font-size: 13px; color: var(--muted); }
+  .rare-map button:focus-visible, .rare-map select:focus-visible, .rare-map input:focus-visible {
+    outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* how to read it */
+  .rare-map .howto { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 4px 24px;
+                    background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; }
+  @media (max-width: 900px) { .rare-map .howto { grid-template-columns: minmax(0, 1fr); } }
+  .rare-map .howto h2 { font: 700 12.5px/1.3 var(--body); text-transform: uppercase; letter-spacing: .08em;
+                       color: var(--muted); margin: 0 0 6px; }
+  .rare-map .howto p, .rare-map .howto li { max-width: 76ch; font-size: 14.5px; line-height: 1.45; }
+  .rare-map .howto p { margin: 0 0 6px; }
+  .rare-map .howto ul { margin: 0 0 6px; padding-left: 18px; list-style: disc; }
+  .rare-map .howto li { margin: 0; }
+  .rare-map .levels { font-size: 13.5px; margin: 4px 0 0; padding-left: 24px; list-style: decimal; }
+  .rare-map .levels li { font-size: 13.5px; margin: 0; }
+  .rare-map .kinds { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 2px 0 8px; font-size: 13.5px; }
+  .rare-map .kinds > span { display: inline-flex; align-items: center; gap: 6px; }
+  .rare-map .q-blue { color: #6969ff; font-weight: 600; } .rare-map .q-yellow { color: #c9a400; font-weight: 600; }
+  [data-md-color-scheme="default"] .rare-map .q-blue { color: #3b3bd1; }
+  [data-md-color-scheme="default"] .rare-map .q-yellow { color: #8a6d00; }
+
+  /* at a glance (the pages magic_rare_map.py's GLANCE names): the Filter Levels page's table, one row per kind of
+     item, one column per group of filter levels that treat them the same, each cell a symbol and a word, with a strip
+     for character levels 1-99. The column of the level picked in the bar is marked; a click on a cell picks its
+     level and jumps to that type's bases. */
+  .rare-map h2.part { font: 700 22px/1.2 var(--display); margin: 22px 0 4px; letter-spacing: .02em; color: var(--fg); }
+  .rare-map p.gx { max-width: 90ch; font-size: 14px; color: var(--muted); margin: 0 0 4px; }
+  .rare-map .legend { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 2px 0 8px; font-size: 13.5px; }
+  .rare-map .legend > span { display: inline-flex; align-items: center; gap: 6px; }
+  .rare-map .st { display: inline-flex; align-items: baseline; gap: 5px; color: var(--sc); }
+  .rare-map .st .g { font-size: 13px; width: 1em; text-align: center; flex: none; }
+  .rare-map .s-chat { --sc: var(--s-chat); } .rare-map .s-icon { --sc: var(--s-icon); }
+  .rare-map .s-mixed { --sc: var(--s-mixed); } .rare-map .s-shown { --sc: var(--s-shown); }
+  .rare-map .s-some { --sc: var(--s-some); } .rare-map .s-hidden { --sc: var(--s-hidden); }
+  .rare-map table.gl { width: 100%; min-width: 1040px; table-layout: fixed; border-collapse: collapse; font-size: 14px;
+                      line-height: 1.35; margin: 0; }
+  .rare-map table.gl col.w-item { width: 13em; }
+  .rare-map table.gl th, .rare-map table.gl td { text-align: left; vertical-align: top; padding: 5px 8px; border: 0; }
+  .rare-map table.gl thead th { background: var(--bg); border-bottom: 2px solid var(--line); vertical-align: bottom; }
+  .rare-map table.gl thead .lv { font: 700 16px/1.1 var(--display); color: var(--fg); font-variant-numeric: tabular-nums; }
+  /* hyphens: a long name breaks between syllables, not mid-word ("STRICTN / ESS" on phones and at 200% zoom) */
+  .rare-map table.gl thead .nm { display: block; font-size: 12px; font-weight: 700; text-transform: uppercase; hyphens: auto;
+                                letter-spacing: .05em; color: var(--muted); margin-top: 2px; }
+  .rare-map table.gl thead .hd { display: block; font-size: 12px; color: var(--accent); margin-top: 1px; font-weight: 600; }
+  .rare-map table.gl tr.r td, .rare-map table.gl tr.r th { border-bottom: 1px solid var(--soft); }
+  .rare-map table.gl tr.r th { font-weight: 600; }
+  .rare-map table.gl tr.r.sub th { font-weight: 400; padding-left: 26px; color: var(--muted); }
+  .rare-map table.gl tr.r.sub td { background: color-mix(in srgb, var(--soft) 45%, transparent); }
+  .rare-map table.gl .tog { font: inherit; color: var(--muted); background: none; border: 0; padding: 0;
+                           margin: 0 4px 0 -2px; cursor: pointer; width: 1.1em; }
+  .rare-map table.gl .cnt { font-size: 12px; color: var(--muted); font-weight: 400; margin-left: 4px; }
+  .rare-map table.gl tr.r td.on, .rare-map table.gl thead th.on {  /* the bar's level (sub-rows too) */
+    background: color-mix(in srgb, var(--accent) 13%, transparent); }
+  .rare-map table.gl thead th.on { box-shadow: inset 0 -2px 0 var(--accent); }
+  .rare-map table.gl thead th.on .lv::before { content: "▸"; content: "▸" / ""; margin-right: 4px; }  /* not only a tint */
+  .rare-map table.gl td.c { cursor: pointer; }
+  .rare-map table.gl tr.r td.c:hover { background: var(--soft); }
+  .rare-map table.gl td.c .t { display: block; }
+  .rare-map table.gl .muted { color: var(--muted); }
+  .rare-map .strip { display: flex; height: 6px; margin-top: 5px; border-radius: 2px; overflow: hidden; gap: 1px; }
+  .rare-map .strip + .strip { margin-top: 2px; }
+  /* the strip's runs and the legend's swatches: hiding states hatched, so they don't depend on the color */
+  .rare-map .strip span, .rare-map .sw { background: var(--sc); opacity: .85; }
+  .rare-map .strip span.s-hidden, .rare-map .sw.s-hidden {
+    background: repeating-linear-gradient(135deg, var(--sc) 0 2px, transparent 2px 4px); }
+  .rare-map .strip span.s-some, .rare-map .sw.s-some {
+    background: repeating-linear-gradient(135deg, var(--sc) 0 2px, transparent 2px 7px); }
+  .rare-map .sw { display: inline-block; width: 22px; height: 6px; border-radius: 2px; flex: none; }
+  /* the item column stays while the table scrolls sideways */
+  .rare-map table.gl thead th:first-child, .rare-map table.gl tr.r th { position: sticky; left: 0; z-index: 1;
+                                                                     background: var(--bg); }
+  .rare-map table.gl tr.r.sub th { background: color-mix(in srgb, var(--soft) 45%, var(--bg)); }
+  .rare-map section.cat { scroll-margin-top: calc(var(--top) + var(--bar, 0px) + 8px); }  /* a jump lands below the bar */
+  @media (max-width: 760px) {
+    .rare-map table.gl { min-width: 900px; }
+    .rare-map table.gl col.w-item { width: 9.5em; }
+    .rare-map table.gl thead .nm { letter-spacing: 0; font-size: 11.5px; text-transform: none; }
+  }
+
+  /* the tables */
+  .rare-map section.cat { margin-top: 22px; }
+  .rare-map h3.cat { font: 600 19px/1.25 var(--display); margin: 0 0 4px; letter-spacing: 0; color: var(--fg); }
+  /* Every table of the page has the same columns (Levels, Shows, Icon, Chat, then each condition the page uses) at
+     the same widths, so they line up from one item type to the next; Skills takes the room that is left
+     (or an empty last column does), 10em at least (until 2026-11-15 nothing kept it from 0 px, which stacked its text
+     one letter per line at 761-1100 px and at 200% zoom). A window narrower than that scrolls the table sideways; up
+     to 1100 px wide each row is a card, as on phones. */
+  .rare-map .tw { overflow-x: auto; }
+  .rare-map table.bm { width: max(100%, 85em); table-layout: fixed; border-collapse: collapse; font-size: 14px; line-height: 1.4;
+                      margin: 0; }
+  .rare-map table.bm col.w-lv { width: 8.5em; } .rare-map table.bm col.w-shows { width: 16.5em; }
+  .rare-map table.bm col.w-ic { width: 3.5em; } .rare-map table.bm col.w-ch { width: 13em; }
+  .rare-map table.bm col.w-eth { width: 4.5em; } .rare-map table.bm col.w-clvl { width: 8.5em; }
+  .rare-map table.bm col.w-class { width: 9em; } .rare-map table.bm col.w-ilvl { width: 5.5em; }
+  .rare-map table.bm col.w-craft { width: 6em; } .rare-map table.bm col.w-other { width: 14em; }
+  .rare-map table.bm th, .rare-map table.bm td { text-align: left; vertical-align: top; padding: 4px 8px; border: 0;
+                                               overflow-wrap: anywhere; }
+  .rare-map table.bm thead th { font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
+                               color: var(--muted); border-bottom: 2px solid var(--line); padding-block: 6px;
+                               vertical-align: bottom; overflow-wrap: normal; }
+  .rare-map tr.ghead th { padding: 14px 8px 4px; border-bottom: 1px solid var(--line); font-weight: 400;
+                         background: none; text-transform: none; letter-spacing: 0; font-size: 14px; }
+  .rare-map tr.ghead .nm { font-weight: 700; font-size: 15px; }
+  .rare-map tr.ghead .code { color: var(--muted); font-size: 12.5px; font-weight: 400; }
+  .rare-map tr.ghead .sub { display: block; color: var(--muted); font-size: 12.5px; margin-top: 1px; }
+  .rare-map tr.row td { border-bottom: 1px solid var(--soft); vertical-align: middle; }  /* text level with labels */
+  .rare-map tr.row:hover td { background: var(--soft); }
+  .rare-map td.lv { color: var(--muted); font-weight: 600; font-variant-numeric: tabular-nums; overflow-wrap: normal; }
+  .rare-map td.shows .ground { max-width: none; }
+  /* "any" in the muted text color, quieter than a condition but 4.5:1 and more (the additions audit, 2026-11-23,
+     LU-05: at 60% opacity it was 3.07:1 dark, 2.51:1 light) */
+  .rare-map .anyw { color: var(--muted); }
+  .rare-map tr.none td { color: var(--muted); font-size: 13px; font-style: italic; }
+  .rare-map .pill { display: inline-block; font-size: 11.5px; font-weight: 700; letter-spacing: .05em;
+                   text-transform: uppercase; padding: 1px 7px; border-radius: 999px; border: 1px solid var(--kc);
+                   color: var(--kc); white-space: nowrap; line-height: 1.45; }
+  .rare-map .k-notify { --kc: var(--k-notify); }
+  .rare-map .k-show { --kc: var(--k-show); } .rare-map .k-hide { --kc: var(--k-hide); }
+  .rare-map .text.clamp { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .rare-map .more { font: inherit; font-size: 12.5px; color: var(--accent); background: none; border: 0; padding: 0;
+                   margin: 0; cursor: pointer; }
+
+  /* the in-game look */
+  .rare-map .ground { display: inline-block; max-width: 100%; text-align: center; border-radius: 5px; padding: 2px 5px;
+                     background: radial-gradient(ellipse at 50% 45%, var(--ground-1) 0%, var(--ground-2) 55%, var(--ground-3) 100%); }
+  .rare-map .d2label { display: inline-block; font-family: var(--label); font-size: 14px; line-height: 1.12;
+                      text-align: center; white-space: pre; background: rgba(0, 0, 0, .74); padding: 2px 6px 0;
+                      vertical-align: middle; max-width: 100%; }
+  /* A backslash is drawn as the slash mirrored: the web fonts space "\" wide, the game draws it like "/" */
+  .rare-map .d2label .bs { display: inline-block; transform: scaleX(-1); }
+  .rare-map .c-WHITE { color: #e8e8e8; } .rare-map .c-RED { color: #ff4d4d; } .rare-map .c-GREEN { color: #00ff00; }
+  .rare-map .c-BLUE { color: #6969ff; } .rare-map .c-GOLD { color: #c7b377; } .rare-map .c-GRAY { color: #696969; }
+  .rare-map .c-BLACK { color: #000000; } .rare-map .c-TAN { color: #d0c27d; } .rare-map .c-ORANGE { color: #ffa800; }
+  .rare-map .c-YELLOW { color: #ffff64; } .rare-map .c-PURPLE { color: #ae00ff; }
+  .rare-map .c-DARK_GREEN { color: #008000; } .rare-map .c-CORAL { color: #ff7f6e; } .rare-map .c-SAGE { color: #a3b88f; }
+  .rare-map .c-TEAL { color: #3fb5b5; } .rare-map .c-LIGHT_GRAY { color: #a8a8a8; }
+  .rare-map .icon { position: relative; display: inline-block; width: 16px; height: 16px; background: #0c0b09;
+                   border-radius: 2px; vertical-align: middle; }
+  .rare-map .icon span { position: absolute; }
+  .rare-map .chat { display: inline-flex; color: var(--muted); vertical-align: middle; cursor: help; }
+  .rare-map .chat svg { width: 22px; height: 22px; }
+  .rare-map .sound { white-space: nowrap; font-size: 12.5px; color: var(--muted); border-bottom: 1px dotted var(--muted);
+                    cursor: help; margin-left: 4px; }
+  .rare-map p.empty { color: var(--muted); text-align: center; padding: 40px 0; margin: 0; }
+  .rare-map footer { color: var(--muted); font-size: 13px; padding-block: 24px; }
+
+  .rare-map [hidden] { display: none !important; }
+
+  /* phones, tablets and 200% zoom: each row a card (levels, what happens and its icons on top, then the conditions
+     that are not "any") */
+  @media (max-width: 1100px) {
+    .rare-map table.bm, .rare-map table.bm tbody, .rare-map table.bm tr, .rare-map table.bm th,
+    .rare-map table.bm td { display: block; width: auto; }
+    .rare-map table.bm thead { display: none; }
+    .rare-map table.bm tr.ghead th { padding: 12px 0 4px; }
+    .rare-map table.bm tr.row { display: flex; flex-wrap: wrap; align-items: center; gap: 3px 12px; padding: 7px 0;
+                               border-bottom: 1px solid var(--soft); }
+    .rare-map table.bm tr.row td { display: inline-block; border: 0; padding: 0; min-width: 0; white-space: normal; }
+    .rare-map table.bm tr.row:hover td { background: none; }
+    .rare-map table.bm tr.row td.cond::before { content: attr(data-label) ": "; color: var(--muted); }
+    /* a value that says what it is needs no label (2026-11-15, audit LFB-22: "Eth: eth", "ED: under 15% ED") */
+    .rare-map table.bm tr.row td.cond:is(.c-eth, .c-ed, .c-sockets, .c-clvl, .c-skills, .c-other)::before {
+      content: none; }
+    .rare-map table.bm tr.row td.cond .text:not(.clamp) { display: inline; }
+    .rare-map table.bm tr.row td.c-skills, .rare-map table.bm tr.row td.c-other { flex-basis: 100%; }
+    .rare-map table.bm tr.row td.any, .rare-map table.bm tr.row td.nu, .rare-map table.bm tr.row td.fill,
+    .rare-map table.bm tr.row td.ic:empty, .rare-map table.bm tr.row td.ch:empty { display: none; }
+    .rare-map table.bm colgroup { display: none; }
+    .rare-map table.bm tr.none td { padding: 4px 0; }
+  }
+
+  /* How to read this page: folded under the bar, so the bar is on the first screen (2026-11-15, audit LFB-02) */
+  .md-typeset .rare-map details.fold, .rare-map details.fold { border: 1px solid var(--line); border-radius: 8px; box-shadow: none;
+    background: var(--panel); margin: 10px auto 0; padding: 0; font-size: inherit; color: inherit; overflow: visible; }
+  .md-typeset .rare-map details.fold > summary, .rare-map details.fold > summary { list-style: none; cursor: pointer;
+    padding: 8px 14px; font-weight: 700; color: var(--fg); background: none; border: 0; margin: 0; min-height: 0;
+    position: static; display: block; }
+  .rare-map details.fold > summary::-webkit-details-marker { display: none; }
+  .md-typeset .rare-map details.fold > summary::before, .rare-map details.fold > summary::before { content: "\25B8  ";
+    position: static; width: auto; height: auto; background: none; -webkit-mask-image: none; mask-image: none;
+    transform: none; color: var(--accent); }
+  .md-typeset .rare-map details.fold[open] > summary::before, .rare-map details.fold[open] > summary::before { content: "\25BE  "; }
+  .md-typeset .rare-map details.fold > summary::after { display: none; content: none; }
+  .rare-map details.fold > .fold-body { padding: 0 14px 12px; }
+  /* the copy of a table's column headings that stays in view (the script at the end) */
+  .rare-map .fhead { position: fixed; z-index: 2; overflow: hidden; background: var(--bg); pointer-events: none;
+                    box-shadow: 0 6px 8px -6px rgba(0, 0, 0, .5); }
+  .rare-map .fhead table { margin: 0; }
+  /* a drop sound's play button */
+  .rare-map button.play { font: inherit; font-size: 9px; line-height: 1; width: 18px; height: 18px; padding: 0;
+    border: 1px solid var(--line); border-radius: 50%; background: transparent; color: var(--accent); cursor: pointer;
+    flex: none; display: inline-flex; align-items: center; justify-content: center; vertical-align: middle;
+    margin-right: 4px; }
+  .rare-map button.play:hover, .rare-map button.play.on { border-color: var(--accent); background: var(--accent); color: var(--bg); }
+  .rare-map button.play:disabled { opacity: .4; cursor: default; }
+  .rare-map .snd { display: inline-flex; align-items: center; }
+  .rare-map .swipe { display: none; font-size: 13px; color: var(--muted); margin: 0 0 4px; }
+  @media (max-width: 1040px) { .rare-map .swipe { display: block; } }
+  .rare-map a.skip { position: absolute; left: -9999px; }
+  .rare-map a.skip:focus { position: static; display: inline-block; margin: 0 0 8px; }
+  /* touch screens: the small toggles get room for a thumb (LFB-17) */
+  @media (pointer: coarse) {
+    .rare-map table.gl .tog { min-width: 32px; min-height: 32px; }
+    .rare-map button.more { min-height: 32px; padding-inline: 6px; }
+  }
+  /* a group's links (the website's row menu, javascripts/erazure.js; the website ideas' #3): on the site only */
+  .rare-map .ez-rowmenu { display: none; align-items: center; justify-content: center; min-width: 28px; height: 22px;
+    margin-left: 8px; padding: 0 6px; border: 1px solid var(--line); border-radius: 5px; background: none; color: var(--muted);
+    font: inherit; font-size: 14px; font-weight: 400; line-height: 1; cursor: pointer; vertical-align: middle; }
+  .rare-map .ez-rowmenu:hover, .rare-map .ez-rowmenu[aria-expanded="true"] { color: var(--fg); border-color: var(--accent); }
+  .rare-map .ez-rowmenu:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  /* a group a link points to (#b-<code>), for a moment */
+  .rare-map tbody.hit tr.ghead th { box-shadow: inset 0 0 0 2px var(--accent); }
+  /* touch screens: the drop sound's ▶ and the group's ⋯ take a thumb, 32 px at least; a transparent ring around each as
+     drawn keeps its look (the ▶ 26 px, as Icons and Sounds draws it) and the rows' height (the additions audit,
+     2026-11-23, SW-09; the ▸ toggles have 32 px since LFB-17) */
+  @media (pointer: coarse) {
+    .rare-map button.play, .rare-map button.play:hover, .rare-map button.play.on { width: 32px; height: 32px;
+      font-size: 11px; border: 3px solid transparent; background-clip: padding-box; box-shadow: inset 0 0 0 1px var(--line);
+      margin: -3px 1px -3px -3px; }
+    .rare-map button.play:hover, .rare-map button.play.on { box-shadow: inset 0 0 0 1px var(--accent); }
+    .rare-map .ez-rowmenu, .rare-map .ez-rowmenu:hover, .rare-map .ez-rowmenu[aria-expanded="true"] { min-width: 38px;
+      height: 32px; border: 5px solid transparent; border-radius: 10px; background-clip: padding-box;
+      box-shadow: inset 0 0 0 1px var(--line); margin: -5px -5px -5px 3px; }
+    .rare-map .ez-rowmenu:hover, .rare-map .ez-rowmenu[aria-expanded="true"] { box-shadow: inset 0 0 0 1px var(--accent); }
+  }

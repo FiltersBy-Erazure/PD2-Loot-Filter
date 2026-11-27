@@ -1,0 +1,985 @@
+
+/* no text under 12 px (2026-11-23, the font audit, the author: the preview's pills were 9.3 px, its notes 10 px): a
+   size under 1em is max(12px, ...), so sizes nested in smaller ones stop there too; no px size under 12 */
+.edit-map {
+  --top: 0px; --bar: 52px;
+  --bg: #151412; --panel: #1f1d1a; --panel2: #27241f; --panel3: #2f2b25; --line: #3b362e; --line2: #4c463b;
+  --fg: #ece7de; --muted: #a59d8e; --faint: #9a9282; --accent: #d8b45e; --accent2: #b8932f; --accent-fg: #1b160b;
+  --good: #7cc47f; --warn: #e3ae52; --bad: #e46f5c; --info: #8fb4e8; --focus: #f2d58c;
+  --chip: #2c2822; --chip-on: #4a3d1d; --shadow: 0 6px 22px rgba(0,0,0,.45);
+  --game: #0b0a09; --mono: ui-monospace, "Cascadia Mono", Consolas, "Liberation Mono", monospace;
+  color-scheme: dark; color: var(--fg); background: var(--bg);
+  font: 400 15px/1.45 "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  position: relative; text-align: left;
+}
+[data-md-color-scheme="default"] .edit-map {
+  --bg: #f3f1ec; --panel: #fffdf8; --panel2: #f7f3ea; --panel3: #efe9dc; --line: #ddd4c2; --line2: #cbbfa7;
+  --fg: #23211c; --muted: #685f50; --faint: #766d5e; --accent: #8a6d1f; --accent2: #6f5615; --accent-fg: #fffdf8;
+  --good: #2f7d34; --warn: #a86a08; --bad: #b8402e; --info: #2c5d9e; --focus: #8a6d1f;
+  --chip: #eee7d8; --chip-on: #f3e2b4; --shadow: 0 6px 22px rgba(60,45,10,.18);
+  color-scheme: light;
+}
+.md-content .edit-map { --top: 2.4rem; margin: 0 -.8rem; }
+.edit-map *, .edit-map *::before, .edit-map *::after { box-sizing: border-box; }
+.edit-map [hidden] { display: none !important; }
+.edit-map h2, .edit-map h3, .edit-map h4 { font-family: Cinzel, Georgia, serif; font-weight: 700; color: var(--accent);
+  letter-spacing: .01em; margin: 0 0 .5em; line-height: 1.25; }
+.edit-map h2 { font-size: 1.35em; }
+.edit-map h3 { font-size: 1.05em; }
+.edit-map h4 { font-size: max(12px, .92em); color: var(--fg); }
+.edit-map p { margin: 0 0 .6em; }
+.edit-map a { color: var(--accent); }
+/* links in the text: underlined (the website's theme takes a link's underline away, and gold alone doesn't tell) */
+.edit-map a:not(.fe-btn) { text-decoration: underline; text-underline-offset: 2px; }
+.edit-map ul,.edit-map ol { margin: .2em 0 .7em 1.3em; padding: 0; }
+.edit-map li { margin: .15em 0; }
+.edit-map code, .edit-map kbd { font-family: var(--mono); font-size: max(12px, .86em); background: var(--panel3);
+  border: 1px solid var(--line); border-radius: 4px; padding: .05em .35em; color: var(--fg); }
+.edit-map kbd { border-bottom-width: 2px; }
+.edit-map table { border-collapse: collapse; width: 100%; display: table; margin: 0; background: none;
+  border: 0; font-size: inherit; }
+.edit-map th, .edit-map td { border: 0; border-bottom: 1px solid var(--line); padding: .35em .5em;
+  text-align: left; vertical-align: top; background: none; }
+.edit-map th { color: var(--muted); font-weight: 600; font-size: max(12px, .85em); }
+.edit-map button { font: inherit; color: inherit; }
+/* <details>: the editor's own marker; on the website, none of Material's admonition look */
+.md-typeset .edit-map details, .edit-map details { border: 0; border-radius: 0; box-shadow: none; background: none;
+  padding: 0; margin: 0; overflow: visible; font-size: inherit; display: block; }
+.md-typeset .edit-map details > summary, .edit-map details > summary { list-style: none; display: block; position: static;
+  padding: 0; margin: 0; border: 0; background: none; min-height: 0; font-weight: inherit; cursor: pointer; }
+.edit-map details > summary::-webkit-details-marker { display: none; }
+.md-typeset .edit-map details > summary::before, .edit-map details > summary::before {
+  content: "\25B8"; position: static; display: inline-block; width: 1.1em; height: auto; background: none;
+  -webkit-mask-image: none; mask-image: none; transform: none; color: var(--muted); }
+.md-typeset .edit-map details[open] > summary::before, .edit-map details[open] > summary::before { content: "\25BE"; }
+.md-typeset .edit-map details > summary::after { display: none; content: none; }
+.edit-map :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+/* ---------------------------------------------------------------- the frame: bar, sidebar, area, preview */
+.edit-map .fe-app { display: grid; grid-template-columns: 200px minmax(0, 1fr) var(--pw, 520px);
+  grid-template-rows: auto 1fr; grid-template-areas: "bar bar bar" "side area preview"; min-height: 70vh; }
+.edit-map .fe-bar { grid-area: bar; position: sticky; top: var(--top); z-index: 20; display: flex; flex-wrap: wrap;
+  align-items: center; gap: .5em .75em; padding: .55em .8em; background: var(--panel);
+  border-bottom: 1px solid var(--line); box-shadow: 0 2px 8px rgba(0,0,0,.25); }
+.edit-map .fe-side { grid-area: side; border-right: 1px solid var(--line); background: var(--panel);
+  position: sticky; top: calc(var(--top) + var(--bar)); align-self: start;
+  max-height: calc(100vh - var(--top) - var(--bar)); overflow: auto; padding: .5em 0; }
+.edit-map .fe-area { grid-area: area; min-width: 0; padding: 1em 1.25em 3em; }
+.edit-map .fe-preview { grid-area: preview; border-left: 1px solid var(--line); background: var(--panel);
+  position: sticky; top: calc(var(--top) + var(--bar)); align-self: start;
+  height: calc(100vh - var(--top) - var(--bar)); overflow: auto; }
+.edit-map .fe-grip { position: absolute; left: -4px; top: 0; bottom: 0; width: 8px; cursor: col-resize; z-index: 3; }
+.edit-map .fe-preview { position: sticky; }
+.edit-map .fe-preview-inner { position: relative; min-height: 100%; }
+.edit-map .fe-pvclose-at { position: sticky; top: 0; height: 0; z-index: 5; }
+.edit-map .fe-pvclose { position: absolute; top: .55em; right: .6em; }
+.edit-map .fe-pv-head > .fe-row:first-child { padding-right: 8.6em; }
+.edit-map .fe-pvtab { display: none; }
+@media (min-width: 1001px) {
+  .edit-map .fe-app.pv-closed { grid-template-columns: 200px minmax(0, 1fr) 36px; }
+  .edit-map .fe-app.pv-closed .fe-preview-inner, .edit-map .fe-app.pv-closed .fe-grip,
+  .edit-map .fe-app.pv-closed .fe-pvclose-at { display: none; }
+  .edit-map .fe-app.pv-closed .fe-pvtab { display: flex; align-items: center; justify-content: center; gap: .5em;
+    width: 100%; min-height: 12em; padding: .9em 0; border: 0; background: none; color: var(--accent); cursor: pointer;
+    writing-mode: vertical-rl; font-family: Cinzel, Georgia, serif; font-weight: 700; letter-spacing: .06em; }
+  .edit-map .fe-app.pv-closed .fe-pvtab:hover { background: var(--panel2); }
+}
+/* a sub-section scrolled to (a link, the address) stops under the bar */
+.edit-map .fe-area [id^="fe-"] { scroll-margin-top: calc(var(--top) + var(--bar) + .6em); }
+
+/* the bar */
+.edit-map .fe-title { display: flex; align-items: baseline; gap: .45em; min-width: 0; flex: 0 1 auto; max-width: 100%;
+  border: 0; background: none; padding: .1em .2em; border-radius: 6px; cursor: pointer; color: inherit; text-align: left; }
+.edit-map .fe-title:hover { background: var(--panel2); }
+.edit-map .fe-title small { color: var(--muted); font-size: max(12px, .68em); text-transform: uppercase; letter-spacing: .07em;
+  flex: none; }
+.edit-map .fe-title b { font-family: Cinzel, Georgia, serif; color: var(--accent); font-size: 1.02em; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis; min-width: 0; max-width: 22em; }
+.edit-map .fe-chip { display: inline-flex; align-items: center; gap: .35em; border: 1px solid var(--line2);
+  background: var(--chip); border-radius: 999px; padding: .12em .6em; font-size: max(12px, .82em); white-space: nowrap;
+  color: var(--fg); cursor: default; }
+.edit-map button.fe-chip { cursor: pointer; }
+.edit-map button.fe-chip:hover { border-color: var(--accent); }
+.edit-map .fe-chip.warn { border-color: var(--warn); color: var(--warn); }
+.edit-map .fe-chip.good { border-color: var(--good); color: var(--good); }
+.edit-map .fe-chip.plain { border-color: transparent; background: none; color: var(--muted); }
+.edit-map .fe-btn[aria-pressed="true"] { background: var(--chip-on); border-color: var(--accent); color: var(--accent); }
+.edit-map .fe-dot { display: inline-block; width: .5em; height: .5em; border-radius: 50%; background: var(--accent-fg);
+  margin-left: .1em; }
+.edit-map .fe-navbtn { max-width: 11em; overflow: hidden; text-overflow: ellipsis; }
+.edit-map .fe-search { flex: 1 1 220px; min-width: 160px; max-width: 460px; position: relative; }
+.edit-map .fe-search input { width: 100%; }
+.edit-map .fe-bar-gap { flex: 1 1 0; }
+.edit-map .fe-bar .fe-btn { white-space: nowrap; }
+
+/* sidebar */
+.edit-map .fe-nav { list-style: none; margin: 0; padding: 0; }
+.edit-map .fe-nav li { margin: 0; }
+.edit-map .fe-nav button { display: flex; width: 100%; align-items: center; gap: .55em; padding: .48em .9em;
+  border: 0; background: none; cursor: pointer; text-align: left; color: var(--fg); border-left: 3px solid transparent; }
+.edit-map .fe-nav button:hover { background: var(--panel2); }
+.edit-map .fe-nav button[aria-current="page"] { background: var(--panel2); border-left-color: var(--accent);
+  color: var(--accent); font-weight: 600; }
+.edit-map .fe-nav .ic { width: 1.25em; text-align: center; opacity: .85; flex: none; }
+.edit-map .fe-nav .lbl { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.edit-map .fe-nav .n { font-size: max(12px, .74em); background: var(--chip-on); color: var(--fg); border-radius: 999px;
+  padding: 0 .45em; min-width: 1.3em; text-align: center; }
+.edit-map .fe-nav .n.warn { background: var(--warn); color: var(--accent-fg); }
+.edit-map .fe-nav-sep { border-top: 1px solid var(--line); margin: .4em .9em; }
+.edit-map .fe-nav-sep.named { border: 0; margin: .7em .9em .1em; font-size: max(12px, .7em); letter-spacing: .08em;
+  text-transform: uppercase; color: var(--faint); }
+
+/* controls */
+.edit-map .fe-btn { display: inline-flex; align-items: center; justify-content: center; gap: .4em;
+  border: 1px solid var(--line2); background: var(--panel2); color: var(--fg); border-radius: 7px;
+  padding: .38em .8em; cursor: pointer; font-weight: 600; font-size: max(12px, .9em); line-height: 1.2; text-decoration: none; }
+.edit-map .fe-btn:hover { border-color: var(--accent); }
+.edit-map .fe-btn:disabled { opacity: .45; cursor: not-allowed; border-color: var(--line2); }
+.edit-map .fe-btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-fg); }
+.edit-map .fe-btn.primary:hover { background: var(--accent2); border-color: var(--accent2); }
+.edit-map .fe-btn.ghost { background: none; border-color: transparent; }
+.edit-map .fe-btn.ghost:hover { border-color: var(--line2); }
+.edit-map .fe-btn.small { padding: .2em .5em; font-size: max(12px, .82em); border-radius: 6px; }
+.edit-map .fe-btn.danger { color: var(--bad); }
+.edit-map input[type=text], .edit-map input[type=search], .edit-map input[type=number], .edit-map select,
+.edit-map textarea { font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--line2);
+  border-radius: 7px; padding: .38em .6em; min-width: 0; }
+.edit-map input:focus, .edit-map select:focus, .edit-map textarea:focus { border-color: var(--accent); outline: none; }
+.edit-map textarea { font-family: var(--mono); font-size: max(12px, .86em); line-height: 1.45; resize: vertical; width: 100%; }
+.edit-map label.fe-field { display: flex; flex-direction: column; gap: .25em; font-size: max(12px, .88em); color: var(--muted); }
+.edit-map label.fe-field > span { font-weight: 600; }
+.edit-map .fe-field > .fe-seg, .edit-map .fe-bd-field > .fe-seg { align-self: flex-start; }
+.edit-map select { max-width: 100%; }
+.edit-map .fe-seg { display: inline-flex; border: 1px solid var(--line2); border-radius: 8px; overflow: hidden;
+  background: var(--panel2); flex-wrap: wrap; }
+.edit-map .fe-seg button { border: 0; background: none; padding: .38em .8em; cursor: pointer; color: var(--fg);
+  border-right: 1px solid var(--line2); font-size: max(12px, .9em); }
+.edit-map .fe-seg button:last-child { border-right: 0; }
+.edit-map .fe-seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-fg); font-weight: 600; }
+.edit-map .fe-switch { display: inline-flex; align-items: center; gap: .55em; cursor: pointer; user-select: none; }
+.edit-map .fe-switch input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.edit-map .fe-switch .track { width: 2.3em; height: 1.3em; border-radius: 999px; background: var(--line2);
+  position: relative; transition: background .15s; flex: none; }
+.edit-map .fe-switch .track::after { content: ""; position: absolute; left: 3px; top: 3px; width: calc(1.3em - 6px);
+  height: calc(1.3em - 6px); border-radius: 50%; background: var(--fg); transition: transform .15s; }
+.edit-map .fe-switch input:checked + .track { background: var(--accent); }
+.edit-map .fe-switch input:checked + .track::after { transform: translateX(1em); background: var(--accent-fg); }
+.edit-map .fe-switch input:focus-visible + .track { outline: 2px solid var(--focus); outline-offset: 2px; }
+.edit-map .fe-switch input:disabled + .track { opacity: .5; }
+
+/* cards and layout helpers */
+.edit-map .fe-card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 1em 1.1em;
+  margin: 0 0 1em; }
+.edit-map .fe-card.flat { background: none; }
+.edit-map .fe-card > h3:first-child { margin-bottom: .35em; }
+.edit-map .fe-sub { color: var(--muted); font-size: max(12px, .9em); }
+.edit-map .fe-row { display: flex; flex-wrap: wrap; gap: .6em; align-items: center; }
+.edit-map .fe-grid { display: grid; gap: .8em; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+.edit-map .fe-stack { display: flex; flex-direction: column; align-items: stretch; }
+.edit-map .fe-stack > * + * { margin-top: .6em; }
+.edit-map .fe-stack > .fe-switch { align-self: flex-start; }
+.edit-map .fe-crumb { color: var(--muted); font-size: max(12px, .85em); margin-bottom: .2em; }
+.edit-map .fe-area-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between;
+  gap: .5em 1em; margin-bottom: 1em; }
+.edit-map .fe-area-head h2 { margin: 0; font-size: 1.5em; }
+.edit-map .fe-pill { display: inline-block; border-radius: 999px; padding: .02em .5em; font-size: max(12px, .76em);
+  font-weight: 600; border: 1px solid var(--line2); color: var(--muted); white-space: nowrap; }
+.edit-map .fe-pill.good { color: var(--good); border-color: var(--good); }
+.edit-map .fe-pill.warn { color: var(--warn); border-color: var(--warn); }
+.edit-map .fe-pill.bad { color: var(--bad); border-color: var(--bad); }
+.edit-map .fe-pill.accent { color: var(--accent); border-color: var(--accent); }
+.edit-map .fe-rb-op .fe-pill { font-size: max(12px, .82em); padding: .08em .6em; }
+.edit-map .fe-note { border-left: 3px solid var(--accent); background: var(--panel2); padding: .55em .8em;
+  border-radius: 0 8px 8px 0; margin: .6em 0; font-size: max(12px, .92em); }
+.edit-map .fe-note.warn { border-left-color: var(--warn); }
+.edit-map .fe-note.bad { border-left-color: var(--bad); }
+/* a warning or a problem says so with a sign too (its edge's color alone doesn't tell it from a plain note) */
+.edit-map .fe-note.warn::before { content: "⚠ "; color: var(--warn); font-weight: 700; }
+.edit-map .fe-note.bad::before { content: "✕ "; color: var(--bad); font-weight: 700; }
+.edit-map .fe-note.fe-bd-field { display: block; }
+.edit-map .fe-empty { text-align: center; color: var(--muted); padding: 2em 1em; border: 1px dashed var(--line2);
+  border-radius: 10px; }
+.edit-map .fe-choice { display: grid; gap: .7em; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); }
+.edit-map .fe-option { text-align: left; border: 1px solid var(--line2); background: var(--panel2); border-radius: 10px;
+  padding: .7em .8em; cursor: pointer; color: var(--fg); display: flex; flex-direction: column; gap: .3em; }
+.edit-map .fe-option:hover { border-color: var(--accent); }
+.edit-map .fe-option[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent);
+  background: var(--chip-on); }
+.edit-map .fe-option b { font-family: Cinzel, Georgia, serif; color: var(--accent); }
+.edit-map .fe-option[aria-pressed="true"] > b::before { content: "✓ "; }
+.edit-map .fe-option small { color: var(--muted); font-size: max(12px, .84em); line-height: 1.35; }
+/* a picked card's lines on its gold fill: lighter (darker in light mode) than the page's gray, so they read at 4.5:1
+   or more (the additions audit, SW-03: 3.95:1, and 2.9:1 under the website's dimmed small text) */
+.edit-map .fe-option[aria-pressed="true"] small { color: #cfc6b4; }
+[data-md-color-scheme="default"] .edit-map .fe-option[aria-pressed="true"] small { color: #5a5245; }
+[data-md-color-scheme="default"] .edit-map .fe-option[aria-pressed="true"] > b { color: var(--accent2); }
+/* the website dims every <small> (Material: opacity .75), which takes the editor's small gray text under 4.5:1 */
+.md-typeset .edit-map small { opacity: 1; }
+.edit-map .fe-goals { display: grid; gap: .6em; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+.edit-map .fe-goals .fe-option b { font-size: max(12px, .95em); }
+.edit-map .fe-option small.fe-goal-area { color: var(--accent); margin-top: auto; }
+.edit-map .fe-intro { border-left: 3px solid var(--accent); }
+.edit-map .fe-intro p { margin: .2em 0; }
+.edit-map .fe-update { border-left: 3px solid var(--warn); }
+.edit-map .fe-update p { margin: .2em 0 .6em; }
+.edit-map .fe-steps { counter-reset: st; list-style: none; margin: .3em 0; padding: 0; }
+.edit-map .fe-steps li { counter-increment: st; position: relative; padding: .25em 0 .25em 2.1em; margin: .2em 0; }
+.edit-map .fe-steps li::before { content: counter(st); position: absolute; left: 0; top: .2em; width: 1.5em;
+  height: 1.5em; border-radius: 50%; background: var(--chip-on); color: var(--fg); font-weight: 700; font-size: max(12px, .8em);
+  display: flex; align-items: center; justify-content: center; }
+.edit-map .fe-kv { display: grid; grid-template-columns: max-content 1fr; gap: .25em .9em; font-size: max(12px, .92em); }
+.edit-map .fe-kv dt { color: var(--muted); }
+.edit-map .fe-kv dd { margin: 0; }
+.edit-map .fe-mono { font-family: var(--mono); font-size: max(12px, .85em); }
+
+/* the preview column */
+.edit-map .fe-pv-head { position: sticky; top: 0; z-index: 2; background: var(--panel); border-bottom: 1px solid var(--line);
+  padding: .55em .8em; display: flex; flex-direction: column; gap: .45em; }
+.edit-map .fe-pv-body { padding: .8em; }
+.edit-map .fe-game { background: var(--game); border-radius: 8px; border: 1px solid var(--line); overflow: hidden;
+  position: relative; }
+.edit-map .fe-game canvas { display: block; max-width: 100%; }
+.edit-map .fe-pill.info { color: var(--info); border-color: var(--info); }
+.edit-map canvas.fe-glabel, .edit-map canvas.fe-gchat { display: inline-block; max-width: 100%; height: auto;
+  vertical-align: middle; }
+.edit-map .fe-scene { margin: .5em 0; border-radius: 8px; overflow: hidden; background: #0b0a09; min-height: 6em;
+  display: flex; align-items: center; justify-content: center; }
+.edit-map canvas.fe-scene-canvas { display: block; max-width: 100%; height: auto; cursor: pointer; }
+.edit-map .fe-scene-h { margin: .7em 0 .3em; }
+.edit-map ul.fe-scene-log { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .25em; }
+.edit-map ul.fe-scene-log li { display: flex; align-items: center; gap: .5em; flex-wrap: wrap; padding: .15em .3em;
+  border-radius: 6px; }
+.edit-map .fe-scene-noicon { display: inline-block; width: 22px; }
+.edit-map .fe-pvhover { display: flex; justify-content: center; margin-top: .3em; }
+.edit-map canvas.fe-ghover { display: block; max-width: 100%; height: auto; }
+.edit-map .fe-pvctx { display: grid; grid-template-columns: repeat(auto-fill, minmax(9.5em, 1fr)); gap: .35em .6em;
+  align-items: end; font-size: max(12px, .88em); }
+.edit-map .fe-pvfield { display: flex; flex-direction: column; gap: .15em; color: var(--muted); min-width: 0; }
+.edit-map .fe-pvfield > span:first-child { font-weight: 600; font-size: max(12px, .9em); }
+.edit-map .fe-pvfield.wide { grid-column: 1 / -1; }
+.edit-map .fe-pvfield select, .edit-map .fe-pvfield .fe-pv-level { width: 100%; }
+.edit-map .fe-pvfield .fe-row { flex-wrap: nowrap; gap: .3em; }
+.edit-map .fe-pvfield .fe-row select { flex: 1; min-width: 0; }
+.edit-map input.fe-pv-num { width: 4.4em; padding: .3em .4em; }
+.edit-map input.fe-pv-num.wide { width: 6.5em; }
+.edit-map details.fe-pv-options { grid-column: 1 / -1; }
+.edit-map .fe-pv-body details > summary { cursor: pointer; color: var(--muted); font-weight: 600; font-size: max(12px, .88em);
+  margin: .2em 0 .4em; }
+.edit-map .fe-pvctx details > summary { cursor: pointer; color: var(--muted); font-size: max(12px, .92em); padding-block: 4px; }  /* 25 px tall: a target (the additions audit) */
+.edit-map .fe-pvctx .fe-pv-away { grid-column: 1 / -1; margin: 0; }
+.edit-map details.fe-pv-char > summary { cursor: pointer; }
+.edit-map details.fe-pv-char > p { margin: .25em 0; }
+.edit-map .fe-pv-chargrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(9.5em, 1fr)); gap: .35em .6em;
+  align-items: end; margin-top: .35em; font-size: max(12px, .92em); }
+.edit-map .fe-pv-charcheck { gap: .4em; align-items: center; min-height: 2em; color: var(--fg); cursor: pointer; }
+.edit-map .fe-pv-pick { position: relative; margin-bottom: .6em; }
+.edit-map input.fe-pv-search { width: 100%; max-width: none; }
+/* the bar's search (the website ideas' #35): its list under it, wider than the box */
+.edit-map .fe-bar-search { position: relative; flex: 0 1 17rem; min-width: 9rem; }
+.edit-map .fe-bar-search .fe-pv-picks { min-width: 22rem; right: auto; max-height: 70vh; overflow-y: auto; }
+.edit-map .fe-pv-picks { position: absolute; z-index: 10; left: 0; right: 0; top: calc(100% + 3px); background: var(--panel);
+  border: 1px solid var(--line2); border-radius: 9px; box-shadow: var(--shadow); padding: .25em; max-height: 22em;
+  overflow: auto; }
+.edit-map .fe-pv-picks button { display: flex; width: 100%; justify-content: space-between; gap: .8em; border: 0;
+  background: none; padding: .35em .55em; border-radius: 6px; cursor: pointer; color: var(--fg); text-align: left; }
+.edit-map .fe-pv-picks button:hover, .edit-map .fe-pv-picks button:focus-visible,
+.edit-map .fe-pv-picks button[aria-selected="true"] { background: var(--panel2); }
+.edit-map .fe-pv-picks button[aria-selected="true"] { box-shadow: inset 3px 0 0 var(--accent); }
+.edit-map input.fe-pv-search.has-value::placeholder { color: var(--fg); opacity: 1; }
+.edit-map .fe-pv-picks small { color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.edit-map .fe-pv-picks .fe-pick-group + .fe-pick-group { border-top: 1px solid var(--line); margin-top: .25em; padding-top: .2em; }
+.edit-map .fe-pv-param { gap: .45em .8em; flex-wrap: wrap; margin: .35em 0; align-items: center; }
+.edit-map .fe-pv-param select { max-width: 100%; }
+.edit-map .fe-pv-skillpick { flex: 1 1 15em; min-width: 12em; max-width: 22em; }
+.edit-map .fe-pv-skillpick .fe-pv-pick { margin-bottom: 0; }
+.edit-map .fe-pv-picks .fe-pick-head { font-size: max(12px, .74em); font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--accent); padding: .45em .65em .2em; }
+.edit-map .fe-pv-item { display: flex; flex-direction: column; gap: .45em; padding: .5em .6em; border: 1px solid var(--line);
+  border-radius: 9px; background: var(--panel2); margin-bottom: .7em; }
+.edit-map .fe-pv-itemname { font-weight: 700; }
+.edit-map .fe-pv-item .fe-pvfield { flex-direction: row; align-items: center; gap: .5em; }
+.edit-map .fe-pv-stats { display: flex; flex-wrap: wrap; gap: .3em; align-items: center; }
+/* adding a stat: the list (it opens with one click), then the stat picked with its value and Add */
+.edit-map .fe-pv-statpick { flex: 1 1 100%; }
+.edit-map .fe-pv-statpick .fe-pv-pick { margin-bottom: 0; }
+.edit-map .fe-pv-statchosen { flex: 1 1 100%; display: flex; flex-direction: column; gap: .35em; padding: .45em .6em;
+  border: 1px solid var(--line2); border-left: 3px solid var(--accent); border-radius: 8px; background: var(--panel); }
+.edit-map .fe-pv-statchosen[hidden] { display: none; }
+.edit-map .fe-pvres { display: grid; gap: .7em; margin: .2em 0 .8em; }
+.edit-map .fe-pvres.two { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+.edit-map .fe-pvres-col { min-width: 0; display: flex; flex-direction: column; gap: .4em; }
+.edit-map .fe-pvres-title { font-family: Cinzel, Georgia, serif; font-weight: 700; color: var(--accent); font-size: max(12px, .9em); }
+/* a result's state in words wraps in its column (its long form: what a hidden item still shows) */
+.edit-map .fe-pvres-col .fe-row .fe-pill { white-space: normal; border-radius: 8px; line-height: 1.3; }
+.edit-map .fe-pvground { min-height: 3.4em; justify-content: center; overflow-x: auto; }
+.edit-map .fe-pv-hidden { color: #8a8378; font-style: italic; font-size: max(12px, .85em); }
+.edit-map .fe-pvkv { font-size: max(12px, .86em); align-items: center; }
+.edit-map .fe-pvkv dd { min-width: 0; overflow-wrap: anywhere; padding: .1em .3em; border-radius: 4px; }
+.edit-map .fe-pvkv dd.is-changed { box-shadow: inset 3px 0 0 var(--accent); padding-left: .55em; }
+.edit-map canvas.fe-pv-icon { display: inline-block; vertical-align: middle; border-radius: 3px; image-rendering: pixelated; }
+.edit-map .fe-chatline, .edit-map .fe-pvdesc { background: #0d0c0b; color: #fefefe; padding: .15em .45em; border-radius: 4px;
+  display: inline-block; font-family: "Palatino Linotype", Palatino, Georgia, serif; }
+.edit-map .fe-pvdesc { text-align: center; font-family: Cinzel, Georgia, serif; font-size: max(12px, .92em); }
+.edit-map .fe-trace { margin: 0; padding: 0; list-style: none; font-size: max(12px, .82em); }
+.edit-map .fe-trace-row { display: flex; flex-wrap: wrap; gap: .3em .5em; align-items: baseline; padding: .25em 0;
+  border-bottom: 1px solid var(--line); }
+.edit-map .fe-trace-row.maybe { opacity: .6; }
+.edit-map .fe-trace-where { font-family: var(--mono); color: var(--accent); }
+.edit-map code.fe-trace-text { flex-basis: 100%; white-space: pre-wrap; overflow-wrap: anywhere; background: none;
+  border: 0; padding: 0; color: var(--muted); }
+.edit-map .fe-pv-strip { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: .35em; }
+.edit-map .fe-pv-levelrows { display: flex; flex-direction: column; gap: .25em; }
+.edit-map .fe-pv-levelrow { display: grid; grid-template-columns: minmax(6.5em, 10em) minmax(0, 1fr) auto; gap: .5em;
+  align-items: center; border: 1px solid #3b362e; background: #13110f; border-radius: 7px; padding: .3em .45em;
+  cursor: pointer; color: #ece7de; text-align: left; font: inherit; width: 100%; }
+.edit-map .fe-pv-levelrow.on { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.edit-map .fe-pv-levelrow.is-changed { box-shadow: inset 3px 0 0 var(--accent); }
+.edit-map .fe-pv-levelrow.on.is-changed { box-shadow: inset 3px 0 0 var(--accent), 0 0 0 1px var(--accent); }
+.edit-map .fe-pv-levelrow .fe-pv-lv { font-size: max(12px, .78em); color: #a59d8e; line-height: 1.25; }
+.edit-map .fe-pv-levelrow .fe-pv-lv b { color: #ece7de; margin-right: .15em; }
+/* the level shown above: a sign before its number (its gold edge alone doesn't tell) */
+.edit-map .fe-pv-levelrow.on .fe-pv-lv b::before { content: "▸ "; color: #d8b45e; }
+.edit-map .fe-pv-levellabel { overflow-x: auto; min-width: 0; display: flex; justify-content: center; }
+.edit-map .fe-pv-levellabel canvas.fe-glabel { max-width: none; }
+.edit-map .fe-pv-levelalerts { flex-wrap: nowrap; }
+.edit-map details.fe-pv-fold > summary { font-size: max(12px, .88em); color: var(--muted); padding: .1em 0; }
+.edit-map details.fe-pv-fold[open] > summary { margin-bottom: .45em; }
+.edit-map .fe-scene-open { display: inline-flex; align-items: center; gap: .5em; text-align: left; }
+.edit-map .fe-scene-note { margin: .35em 0 0; }
+.edit-map .fe-pv-cell { display: flex; flex-direction: column; align-items: center; gap: .25em; border: 1px solid #3b362e;
+  background: #13110f; border-radius: 7px; padding: .3em .25em .4em; cursor: pointer; min-width: 0; overflow: hidden; }
+.edit-map .fe-pv-cell.on { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.edit-map .fe-pv-cell .fe-label { font-size: 12px; max-width: 100%; overflow: hidden; }
+.edit-map .fe-pv-lv { font-size: max(12px, .72em); color: #a59d8e; align-self: flex-start; }
+.edit-map .fe-pv-snd { color: var(--accent); font-size: max(12px, .8em); }
+.edit-map .fe-pv-samples { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: .45em; }
+.edit-map .fe-pv-sample { display: flex; flex-direction: column; align-items: center; gap: .3em; border: 1px solid #3b362e;
+  background: #13110f; color: #ece7de; border-radius: 8px; padding: .4em .3em .5em; cursor: pointer; min-width: 0;
+  overflow: hidden; text-align: center; }
+.edit-map .fe-pv-sample.is-changed { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.edit-map .fe-pv-sample.wide { grid-column: span 2; }
+.edit-map .fe-pv-sample small { color: #a59d8e; }
+.edit-map .fe-pv-sample .fe-label { font-size: 12px; max-width: 100%; overflow: hidden; }
+
+/* toasts, menus, dialogs */
+.edit-map .fe-toasts { position: fixed; right: 1em; bottom: 1em; display: flex; flex-direction: column; gap: .5em;
+  z-index: 60; max-width: min(28em, calc(100vw - 2em)); }
+.edit-map .fe-toast { background: var(--panel3); border: 1px solid var(--line2); border-left: 4px solid var(--accent);
+  border-radius: 8px; padding: .6em .8em; box-shadow: var(--shadow); display: flex; gap: .6em; align-items: start; }
+.edit-map .fe-toast.bad { border-left-color: var(--bad); }
+.edit-map .fe-toast.good { border-left-color: var(--good); }
+/* a toast's kind as a sign too: done, or a problem */
+.edit-map .fe-toast.good > div:first-child::before { content: "✓ "; color: var(--good); font-weight: 700; }
+.edit-map .fe-toast.bad > div:first-child::before { content: "⚠ "; color: var(--bad); font-weight: 700; }
+.edit-map .fe-toast .x { margin-left: auto; }
+.edit-map .fe-menu { position: absolute; z-index: 40; background: var(--panel); border: 1px solid var(--line2);
+  border-radius: 9px; box-shadow: var(--shadow); padding: .3em; min-width: 15em; }
+.edit-map .fe-menu button { display: flex; width: 100%; gap: .5em; text-align: left; border: 0; background: none;
+  padding: .45em .6em; border-radius: 6px; cursor: pointer; color: var(--fg); }
+.edit-map .fe-menu button:hover, .edit-map .fe-menu button:focus-visible { background: var(--panel2); }
+.edit-map .fe-menu small { color: var(--muted); display: block; }
+.edit-map .fe-menu-h { font-size: max(12px, .7em); letter-spacing: .08em; text-transform: uppercase; color: var(--faint);
+  padding: .55em .6em .15em; border-top: 1px solid var(--line); margin-top: .25em; }
+.edit-map .fe-menu-h.first { border-top: 0; margin-top: 0; }
+.edit-map .fe-dialog-back { position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 70; display: flex;
+  align-items: center; justify-content: center; padding: 1em; }
+.edit-map .fe-dialog { background: var(--panel); border: 1px solid var(--line2); border-radius: 12px;
+  box-shadow: var(--shadow); width: min(40em, 100%); max-height: calc(100vh - 2em); overflow: auto; padding: 1.1em 1.2em; }
+.edit-map .fe-dialog h3 { margin-bottom: .6em; }
+.edit-map .fe-dialog-foot { display: flex; justify-content: flex-end; gap: .5em; margin-top: 1em; flex-wrap: wrap; }
+/* a dialog at the top of the screen (a phone's keyboard can't cover it), and the phones' search in one: its results
+   in the dialog under the box, not a list over it (the additions audit, GE-05: one result at a time, cut in half) */
+.edit-map .fe-dialog-back.is-top { align-items: flex-start; }
+.edit-map .fe-dialog.fe-searchdlg { max-height: calc(100vh - 2em); max-height: calc(100dvh - 2em); }
+.edit-map .fe-searchdlg .fe-pv-picks { position: static; max-height: none; overflow: visible; box-shadow: none; border: 0;
+  border-top: 1px solid var(--line); border-radius: 0; background: none; padding: .3em 0 0; margin-top: .5em; }
+.edit-map .fe-loading { padding: 3em 1em; text-align: center; color: var(--muted); }
+.edit-map .fe-spin { display: inline-block; width: 1em; height: 1em; border: 2px solid var(--line2);
+  border-top-color: var(--accent); border-radius: 50%; animation: fe-spin .8s linear infinite; vertical-align: -2px; }
+@keyframes fe-spin { to { transform: rotate(360deg); } }
+.edit-map .fe-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* changed things: a gold edge */
+.edit-map .is-changed { box-shadow: inset 3px 0 0 var(--accent); }
+.edit-map input.is-changed { box-shadow: none; border-color: var(--accent); }
+.edit-map .fe-small { font-size: max(12px, .85em); gap: .3em; }
+/* a small button in a small row keeps a readable size (not .82 x .85 of the page's) */
+.edit-map .fe-small .fe-btn.small, .edit-map .fe-small .fe-chiptog { font-size: max(12px, .95em); }
+.edit-map .fe-num { color: var(--muted); font-variant-numeric: tabular-nums; width: 2em; }
+.edit-map .fe-tablewrap { overflow-x: auto; }
+.edit-map details.fe-rules { margin-top: .5em; }
+.edit-map details.fe-rules summary { cursor: pointer; color: var(--muted); font-size: max(12px, .85em); }
+.edit-map pre.fe-code { font-family: var(--mono); font-size: max(12px, .78em); line-height: 1.5; background: var(--bg);
+  border: 1px solid var(--line); border-radius: 7px; padding: .6em .7em; overflow-x: auto; white-space: pre;
+  margin: .4em 0 0; color: var(--fg); max-height: 22em; }
+
+/* Quick Edits: each group of options beside its sample items (side by side where there's room, else one above
+   the other) */
+.edit-map .fe-optrows { display: flex; flex-direction: column; }
+.edit-map .fe-optrow { display: grid; gap: .8em 1.6em; padding: .9em 0; border-top: 1px solid var(--line);
+  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); align-items: start; }
+.edit-map .fe-optgroup h4 { margin: 0 0 .4em; }
+.edit-map .fe-optsamples { background: #0d0c0b; border: 1px solid var(--line); border-radius: 9px; padding: .55em;
+  display: flex; flex-direction: column; gap: .45em; position: sticky; top: calc(var(--top) + var(--bar) + .5em); }
+.edit-map .fe-optsample { display: flex; flex-direction: column; align-items: center; gap: .2em; padding: .45em .4em;
+  border-radius: 7px; border: 1px solid transparent; text-align: center; }
+.edit-map .fe-optsample.is-changed { border-color: var(--accent); }
+.edit-map .fe-optsample-label { display: flex; align-items: center; gap: .5em; min-height: 1.9em; }
+.edit-map .fe-optsample-was { display: flex; align-items: center; gap: .4em; flex-wrap: wrap; justify-content: center; }
+[data-md-color-scheme="default"] .edit-map .fe-optsamples { background: #0d0c0b; color: #ece7de; }
+.edit-map fieldset.fe-choiceset { border: 1px solid var(--line); border-radius: 8px; padding: .3em .7em .5em; margin: 0; }
+.edit-map fieldset.fe-choiceset legend { padding: 0 .3em; font-size: max(12px, .8em); }
+.edit-map label.fe-radio { display: flex; align-items: center; gap: .5em; padding: .15em 0; cursor: pointer; }
+.edit-map label.fe-radio input { accent-color: var(--accent); }
+.edit-map .fe-featgroup { margin-top: .8em; }
+.edit-map .fe-featgroup h4 { color: var(--muted); font-size: max(12px, .82em); text-transform: uppercase; letter-spacing: .06em;
+  font-family: inherit; }
+.edit-map .fe-feature { display: block; padding: .3em .4em .45em; border-radius: 6px; }
+.edit-map .fe-feature + .fe-feature { border-top: 1px solid var(--line); }
+.edit-map .fe-feature-head { align-items: flex-start; justify-content: flex-start; gap: .3em 1em; }
+/* under a switch: what it draws, then its parts (each its own switch, with what it draws) */
+.edit-map .fe-featmore { margin: .35em 0 .1em 2.85em; display: flex; flex-direction: column; gap: .4em; min-width: 0; }
+.edit-map .fe-featpreview { display: flex; flex-wrap: wrap; align-items: center; gap: .35em .6em; }
+.edit-map .fe-featsample { display: inline-flex; flex-direction: column; align-items: center; gap: 3px;
+  background: var(--game); border: 1px solid var(--line); border-radius: 5px; padding: 4px 9px; max-width: 100%; }
+.edit-map .fe-featsample .fe-label { font-size: 12px; max-width: 100%; overflow: hidden; }
+.edit-map .fe-featrow { display: flex; flex-wrap: wrap; align-items: center; gap: .35em .7em; width: 100%; }
+.edit-map .fe-featpair { display: inline-flex; align-items: center; gap: .5em; background: var(--game);
+  border: 1px solid var(--line); border-radius: 5px; padding: 3px 9px; max-width: 100%; }
+.edit-map .fe-featpair > small { color: #a9a294; white-space: nowrap; }
+.edit-map .fe-featpair .fe-label { font-size: 12px; }
+.edit-map .fe-featcell { display: inline-flex; flex-direction: column; align-items: center; gap: 3px; }
+.edit-map .fe-featparts > summary { cursor: pointer; color: var(--accent); font-size: max(12px, .88em); width: max-content;
+  max-width: 100%; }
+.edit-map .fe-featparts-body { margin-top: .45em; }
+.edit-map .fe-featparts-tools { gap: .4em .6em; }
+.edit-map .fe-featparts-tools input[type=search] { min-width: min(14em, 100%); }
+/* the brick bases' choices: the families ticked for the class as chips, every other one folded under "Add another
+   weapon" (the additions audit, GE-13) */
+.edit-map .fe-brickbody > * + * { margin-top: .65em; }
+.edit-map details.fe-brick-add > summary { cursor: pointer; color: var(--accent); font-size: max(12px, .88em); width: max-content;
+  max-width: 100%; }
+.edit-map details.fe-brick-add[open] > summary { margin-bottom: .45em; }
+.edit-map .fe-brick-addbody > * + * { margin-top: .5em; }
+.edit-map .fe-partlist { list-style: none; margin: .45em 0 0; padding: 0; display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: .2em .9em; }
+.edit-map .fe-part { display: flex; align-items: center; gap: .5em; min-width: 0; padding: .15em .3em;
+  border-radius: 5px; }
+.edit-map .fe-part:hover { background: var(--panel2); }
+.edit-map .fe-part label { display: flex; align-items: center; gap: .45em; cursor: pointer; flex: 0 1 auto;
+  min-width: 8em; }
+.edit-map .fe-part label input { accent-color: var(--accent); }
+.edit-map .fe-part.is-off .fe-part-title { color: var(--faint); text-decoration: line-through; }
+.edit-map .fe-part.is-off .fe-part-draws, .edit-map .fe-featparts.is-disabled .fe-part-draws { opacity: .4; }
+.edit-map .fe-part-draws { display: flex; gap: .3em; min-width: 0; overflow: hidden; flex: 1 1 auto;
+  justify-content: flex-end; }
+.edit-map .fe-part-draws .fe-featsample { padding: 2px 6px; flex: 0 1 auto; min-width: 0; }
+.edit-map .fe-part-draws .fe-label { font-size: 12px; }
+.edit-map .fe-part-draws .fe-minidesc { font-size: 12px; white-space: nowrap; max-width: 240px; overflow: hidden;
+  text-overflow: ellipsis; }
+@media (max-width: 640px) { .edit-map .fe-featmore { margin-left: 0; } }
+.edit-map table.fe-levels td { vertical-align: middle; }
+.edit-map table.fe-maptable { table-layout: fixed; }
+.edit-map table.fe-maptable col.fe-mapcol-rolls { width: 7.5em; }
+.edit-map table.fe-maptable col.fe-mapcol-line { width: 14em; }
+.edit-map table.fe-maptable col.fe-mapcol-box { width: 4.5em; }
+.edit-map td.fe-mapline { background: #0d0c0b; color: #fefefe; font-family: Cinzel, Georgia, serif; font-size: max(12px, .9em);
+  overflow-wrap: anywhere; }
+.edit-map .fe-mapsample { margin-top: .8em; }
+.edit-map .fe-mapdensity { margin-top: .7em; }
+.edit-map td.fe-mapcheck { padding: 0; }
+.edit-map td.fe-mapcheck label { display: flex; align-items: center; justify-content: center; min-height: 2.2em;
+  cursor: pointer; }
+.edit-map td.fe-mapcheck label:hover { background: var(--panel2); }
+/* Quick Edits' filter levels: the level as it shows, its fields under it (they wrap where the area is narrow) */
+.edit-map .fe-levelrows { display: flex; flex-direction: column; margin-top: .4em; }
+.edit-map .fe-levelrow { display: grid; grid-template-columns: 2em minmax(0, 1fr); gap: .3em .6em; padding: .65em .3em;
+  border-top: 1px solid var(--line); border-radius: 6px; }
+.edit-map .fe-levelrow.is-changed { background: var(--panel2); }
+.edit-map .fe-levelrow > .fe-num { padding-top: .2em; }
+.edit-map .fe-levelrow-body { display: flex; flex-direction: column; gap: .45em; min-width: 0; }
+.edit-map .fe-levelrow .fe-levelname { white-space: normal; display: inline-block; }
+.edit-map .fe-levelrow-fields { display: flex; flex-wrap: wrap; gap: .4em .7em; align-items: flex-end; }
+.edit-map .fe-levelrow-fields label { display: flex; flex-direction: column; gap: .15em; min-width: 0; }
+.edit-map .fe-levelrow-fields label.fe-levelrow-name { flex: 2 1 16em; }
+.edit-map .fe-levelrow-fields label.fe-levelrow-like { flex: 1 1 14em; }
+.edit-map .fe-levelrow-fields input, .edit-map .fe-levelrow-fields select { width: 100%; max-width: none; }
+.edit-map table.fe-levels select { max-width: 16em; }
+.edit-map .fe-levelname { font-family: Cinzel, Georgia, serif; font-weight: 600; background: #0d0c0b;
+  padding: .1em .45em; border-radius: 4px; white-space: nowrap; }
+
+/* a label as the game draws it (HTML: D2GL's colors on the 60% black box with faded ends) */
+.edit-map .fe-label { display: inline-flex; flex-direction: column; align-items: center; color: #fefefe;
+  font-family: Cinzel, Georgia, serif; font-weight: 600; font-size: 13.5px; line-height: 1.18; letter-spacing: .03em;
+  padding: 1px 15px; white-space: pre; text-shadow: 0 0 2px rgba(0,0,0,.85);
+  background: linear-gradient(90deg, rgba(0,0,0,0), rgba(0,0,0,.6) 13px, rgba(0,0,0,.6) calc(100% - 13px), rgba(0,0,0,0)); }
+.edit-map .fe-label.is-alt { background: linear-gradient(90deg, rgba(33,63,152,0), rgba(33,63,152,.867) 13px,
+  rgba(33,63,152,.867) calc(100% - 13px), rgba(33,63,152,0)); }
+.edit-map .fe-label.is-hover { background: rgba(0,0,0,.8); padding: 1px 4px; text-shadow: none; }
+.edit-map .fe-label-line { display: block; text-align: center; }
+.edit-map .fe-ground { background: #191613 radial-gradient(ellipse at 50% 40%, #2a241d 0%, #13110f 75%);
+  border-radius: 8px; padding: .7em .6em; display: flex; flex-direction: column; align-items: center; gap: .45em; }
+
+/* Looks */
+.edit-map .fe-remaps { display: grid; gap: .35em 1.2em;
+  grid-template-columns: repeat(auto-fill, minmax(min(270px, 100%), 1fr)); }
+.edit-map .fe-remap { display: flex; align-items: center; gap: .5em; padding: .15em .4em; border-radius: 6px; }
+.edit-map .fe-remap select { flex: 1; }
+.edit-map .fe-swatch-text { font-weight: 700; min-width: 7.5em; text-shadow: 0 0 2px #000; }
+.edit-map .fe-swatch-name { display: inline-flex; align-items: center; gap: .4em; min-width: 6.2em; font-weight: 600; }
+.edit-map .fe-remap select { min-width: 8em; }
+.edit-map .fe-swatchbox { display: inline-block; width: 1em; height: 1em; border-radius: 3px; flex: none;
+  border: 1px solid rgba(255,255,255,.45); box-shadow: 0 0 0 1px rgba(0,0,0,.5); }
+.edit-map .fe-chipsw { display: inline-block; width: .95em; height: .95em; border-radius: 2px;
+  border: 1px solid rgba(255,255,255,.5); vertical-align: middle; }
+.edit-map .fe-looktools.is-idle .fe-chipbtn { opacity: .6; }
+.edit-map .fe-looktools-hint { flex-basis: 100%; }
+.edit-map .fe-looktools-chips { display: flex; flex-wrap: wrap; gap: .25em; }
+.edit-map details.fe-looktools-fold { width: 100%; }
+.edit-map details.fe-looktools-fold > summary { font-size: max(12px, .88em); color: var(--muted); }
+.edit-map .fe-looknote2 { margin: -.2em 0 .45em; line-height: 1.35; }
+.edit-map .fe-looktools { position: sticky; top: calc(var(--top) + var(--bar)); z-index: 4; background: var(--panel);
+  border: 1px solid var(--line); border-radius: 10px; padding: .45em .6em; margin: 0 0 1em; display: flex; flex-wrap: wrap;
+  gap: .25em; align-items: center; }
+.edit-map .fe-chipbtn { min-width: 1.9em; height: 1.9em; border: 1px solid var(--line2); background: #0d0c0b; color: #fefefe;
+  border-radius: 5px; cursor: pointer; font-family: Cinzel, Georgia, serif; font-weight: 700; padding: 0 .3em; }
+.edit-map .fe-chipbtn:hover { border-color: var(--accent); }
+.edit-map .fe-chipbtn[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.edit-map .fe-lookgrid { display: grid; gap: .8em; grid-template-columns: repeat(auto-fill, minmax(min(340px, 100%), 1fr)); }
+.edit-map .fe-lookcard { border: 1px solid var(--line); border-radius: 9px; padding: .6em .7em; background: var(--panel2); }
+.edit-map .fe-looktitle { font-weight: 700; margin-bottom: .4em; }
+.edit-map .fe-lookprev { background: #191613 radial-gradient(ellipse at 50% 40%, #2a241d 0%, #13110f 75%);
+  border-radius: 7px; padding: .6em .4em; display: flex; flex-direction: column; align-items: center; gap: .35em;
+  margin-bottom: .5em; overflow-x: auto; }
+.edit-map .fe-aliasrow { display: grid; gap: .25em; margin-top: .45em; }
+.edit-map .fe-aliasrow input { width: 100%; font-size: max(12px, .85em); }
+.edit-map textarea.fe-lookfield { width: 100%; font-size: max(12px, .85em); resize: vertical; field-sizing: content;
+  min-height: 2.1em; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.4; }
+.edit-map .fe-looknote { margin: 0; color: var(--warn); }
+.edit-map .fe-aliasname { font-size: max(12px, .72em); color: var(--muted); background: none; border: 0; padding: 0; }
+
+/* minimap icons and the palette */
+.edit-map .fe-iconlist { display: grid; gap: .5em; }
+.edit-map .fe-iconrow { display: flex; align-items: center; gap: .6em; padding: .35em .45em; border-radius: 8px;
+  border: 1px solid var(--line); background: var(--panel2); flex-wrap: wrap; }
+.edit-map canvas.fe-icon { width: 28px; height: 28px; image-rendering: pixelated; border-radius: 3px; flex: none; }
+.edit-map .fe-iconinfo { flex: 1 1 280px; min-width: 0; }
+.edit-map .fe-layer { display: inline-flex; align-items: center; gap: .3em; border: 1px solid var(--line2);
+  background: var(--panel); border-radius: 6px; padding: .1em .45em; cursor: pointer; color: var(--fg); font-size: max(12px, .85em); }
+.edit-map .fe-layerbox { width: .95em; height: .95em; border: 1px solid var(--line2); display: inline-block; }
+.edit-map .fe-palette-menu { padding: .5em; }
+.edit-map .fe-palette { display: grid; grid-template-columns: repeat(16, 16px); gap: 2px; margin-top: .4em; }
+.edit-map .fe-swatch { width: 16px; height: 16px; border: 1px solid rgba(255,255,255,.12); padding: 0; cursor: pointer;
+  border-radius: 2px; }
+.edit-map .fe-swatch.on, .edit-map .fe-swatch:hover { outline: 2px solid var(--focus); outline-offset: 0; }
+
+/* sounds */
+.edit-map .fe-soundlist { display: grid; gap: .4em; max-height: none; }
+.edit-map .fe-dialog .fe-soundlist { max-height: 55vh; overflow: auto; margin-top: .6em; }
+.edit-map .fe-soundrow { display: flex; flex-wrap: wrap; align-items: center; gap: .3em 1em; padding: .4em .55em;
+  border: 1px solid var(--line); border-radius: 8px; background: var(--panel2); }
+.edit-map .fe-soundrow.on { border-color: var(--accent); }
+.edit-map .fe-soundmain { flex: 1 1 320px; min-width: 0; }
+.edit-map .fe-soundto { color: var(--accent); }
+
+/* profiles and history */
+.edit-map .fe-profiles { display: grid; gap: .6em; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); }
+/* Maps: the maps the player never picks up */
+.edit-map .fe-map-tiers { display: grid; gap: .8em 1.4em; margin-top: .6em;
+  grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr)); }
+.edit-map .fe-map-tier h4 { margin: 0; }
+.md-typeset .edit-map ul.fe-map-list, .edit-map ul.fe-map-list { list-style: none; margin: .35em 0 0; padding: 0;
+  display: flex; flex-direction: column; gap: .1em; }
+.md-typeset .edit-map ul.fe-map-list li, .edit-map ul.fe-map-list li { margin: 0; }
+.edit-map .fe-check { display: flex; align-items: center; gap: .5em; cursor: pointer; padding: .15em .4em;
+  border-radius: 6px; }
+.edit-map .fe-check:hover { background: var(--panel2); }
+.edit-map .fe-check.is-on { color: var(--accent); }
+.edit-map .fe-check code { margin-left: auto; }
+.edit-map ul.fe-histlist { list-style: none; margin: .3em 0 0; padding: 0; }
+.edit-map ul.fe-histlist li { display: flex; align-items: center; justify-content: space-between; gap: .6em;
+  border-bottom: 1px solid var(--line); padding: .25em 0; }
+
+/* My rules: the code editor (a highlighted copy under a see-through textarea: the same font, size and padding) */
+.edit-map .fe-ed { border: 1px solid var(--line2); border-radius: 9px; background: var(--bg); overflow: hidden; }
+.edit-map .fe-ed-bar { display: flex; flex-wrap: wrap; align-items: center; gap: .3em; padding: .3em .45em;
+  border-bottom: 1px solid var(--line); background: var(--panel2); }
+.edit-map input.fe-ed-find { width: 12em; padding: .2em .45em; font-size: max(12px, .85em); }
+.edit-map .fe-ed-body { display: flex; align-items: stretch; }
+.edit-map pre.fe-ed-gutter { margin: 0; padding: 8px 6px 8px 8px; font: 13px/20px var(--mono); color: var(--faint);
+  text-align: right; overflow: hidden; background: var(--panel2); border: 0; border-right: 1px solid var(--line);
+  border-radius: 0; user-select: none; min-width: 4.4em; flex: none; white-space: pre; }
+.edit-map .fe-ed-num { display: block; height: 20px; position: relative; }
+.edit-map .fe-ed-num.err { color: var(--bad); }
+.edit-map .fe-ed-num.warn { color: var(--warn); }
+/* a line with an error or a warning: a sign at the gutter's left (its color alone doesn't tell the two apart) */
+.edit-map .fe-ed-num.err::before, .edit-map .fe-ed-num.warn::before { position: absolute; left: 0; font-weight: 700; }
+.edit-map .fe-ed-num.err::before { content: "✕"; }
+.edit-map .fe-ed-num.warn::before { content: "!"; }
+.edit-map .fe-ed-wrap { position: relative; flex: 1; min-width: 0; }
+.edit-map pre.fe-ed-hl, .edit-map textarea.fe-ed-ta { margin: 0; padding: 8px 10px; font: 13px/20px var(--mono);
+  tab-size: 4; white-space: pre; letter-spacing: 0; word-spacing: 0; font-variant-ligatures: none; }
+.edit-map pre.fe-ed-hl { position: absolute; left: 0; top: 0; overflow: hidden; pointer-events: none; color: var(--fg);
+  background: none; border: 0; border-radius: 0; }
+.edit-map textarea.fe-ed-ta { position: relative; display: block; width: 100%; background: transparent; color: transparent;
+  caret-color: var(--fg); border: 0; border-radius: 0; resize: vertical; overflow: auto; min-height: 9em; z-index: 1; }
+.edit-map textarea.fe-ed-ta:focus { border: 0; box-shadow: inset 0 0 0 1px var(--accent); }
+.edit-map textarea.fe-ed-ta::selection { background: rgba(216,180,94,.35); color: transparent; }
+.edit-map .fe-ed-line { display: block; height: 20px; }
+.edit-map .fe-ed-line.err { background: rgba(228,111,92,.17); }
+.edit-map .fe-ed-line.warn { background: rgba(227,174,82,.11); }
+.edit-map .c-head, .edit-map .c-br { color: var(--accent); }
+.edit-map .c-op { color: var(--info); }
+.edit-map .c-w, .edit-map .c-txt { color: var(--fg); }
+.edit-map .c-num { color: #e9a66b; }
+.edit-map .c-code { color: #7cc47f; }
+.edit-map .c-al { color: #c69cf0; }
+.edit-map .c-bad { color: var(--bad); text-decoration: underline wavy var(--bad); }
+.edit-map .c-note { color: #5ec2bd; }
+.edit-map .c-kw { color: #dca3d3; }
+.edit-map .c-cmt { color: var(--faint); font-style: italic; }
+[data-md-color-scheme="default"] .edit-map .c-num { color: #a35a14; }
+[data-md-color-scheme="default"] .edit-map .c-code { color: #2f7d34; }
+[data-md-color-scheme="default"] .edit-map .c-al { color: #7a3fb5; }
+[data-md-color-scheme="default"] .edit-map .c-note { color: #1d7a76; }
+[data-md-color-scheme="default"] .edit-map .c-kw { color: #8f3d86; }
+[data-md-color-scheme="default"] .edit-map .c-col { background: #1a1815; }
+.edit-map ul.fe-ed-lint { list-style: none; margin: 0; padding: .35em .5em; display: flex; flex-direction: column;
+  gap: .2em; max-height: 16em; overflow: auto; border-top: 1px solid var(--line); }
+.edit-map ul.fe-ed-lint:empty { display: none; }
+.edit-map .fe-ed-finding { display: flex; align-items: baseline; gap: .45em; font-size: max(12px, .86em); margin: 0; }
+.edit-map .fe-ed-finding .fe-btn { flex: none; }
+.edit-map .fe-ed-h { margin: .6em .6em .3em; font-size: max(12px, .85em); color: var(--muted); }
+.edit-map .fe-ed-rules { display: flex; flex-direction: column; gap: .25em; padding: 0 .5em .55em; }
+.edit-map .fe-ed-rule { display: flex; flex-wrap: wrap; align-items: center; gap: .5em; border: 1px solid var(--line);
+  background: var(--panel2); border-radius: 7px; padding: .3em .5em; cursor: pointer; color: var(--fg); text-align: left; }
+.edit-map .fe-ed-rule:hover { border-color: var(--accent); }
+.edit-map .fe-ed-rulelabel { background: #191613; border-radius: 5px; padding: .2em .4em; display: inline-flex;
+  max-width: 100%; overflow: hidden; }
+
+/* My rules: the builder */
+.edit-map fieldset.fe-bd-set { border: 1px solid var(--line); border-radius: 9px; margin: .7em 0; padding: .4em .8em .75em;
+  display: grid; gap: .6em 1.2em; grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr)); min-width: 0; }
+.edit-map fieldset.fe-bd-set legend { font-family: Cinzel, Georgia, serif; color: var(--accent); font-weight: 700;
+  padding: 0 .35em; }
+.edit-map .fe-bd-field { display: flex; flex-direction: column; gap: .25em; min-width: 0; margin: 0; }
+.edit-map .fe-bd-field.wide { grid-column: 1 / -1; }
+.edit-map .fe-bd-label { font-size: max(12px, .82em); font-weight: 600; color: var(--muted); }
+.edit-map .fe-bd-field input[type=text] { width: 100%; }
+.edit-map .fe-chiptog { border: 1px solid var(--line2); background: var(--chip); color: var(--fg); border-radius: 999px;
+  padding: .15em .65em; cursor: pointer; font-size: max(12px, .9em); }
+.edit-map .fe-chiptog:hover { border-color: var(--accent); }
+.edit-map .fe-chiptog[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-fg);
+  font-weight: 600; }
+/* a picked chip says so with a sign too, as a picked card does (its gold fill alone doesn't tell: the additions audit,
+   GE-13) */
+.edit-map .fe-chiptog[aria-pressed="true"]::before { content: "✓ "; }
+.edit-map .fe-bd-chip { display: inline-flex; align-items: center; gap: .3em; border: 1px solid var(--line2);
+  background: var(--panel2); border-radius: 999px; padding: .1em .65em .1em .2em; }
+/* Items: a change's form beside its result (the result stays in view while the form scrolls), stacked when narrow */
+.edit-map #fe-item-edit { container-type: inline-size; }
+.edit-map .fe-it-layout { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-areas: "form" "result" "add";
+  gap: .2em 1.4em; align-items: start; }
+.edit-map .fe-it-form { grid-area: form; min-width: 0; }
+.edit-map .fe-it-result { grid-area: result; min-width: 0; margin: .7em 0 .4em; }
+.edit-map .fe-it-result h4 { margin: 0 0 .2em; font-family: Cinzel, Georgia, serif; color: var(--accent); }
+.edit-map .fe-it-add { grid-area: add; margin-top: .3em; }
+.edit-map .fe-it-lvname { max-width: 15em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.edit-map table.fe-it-strip td.fe-num { white-space: nowrap; }
+@container (min-width: 900px) {
+  .edit-map .fe-it-layout { grid-template-columns: minmax(0, 1.45fr) minmax(300px, 1fr);
+    grid-template-areas: "form result" "add result"; }
+  .edit-map .fe-it-result { position: sticky; top: calc(var(--top) + var(--bar) + .6em); border: 1px solid var(--line);
+    border-radius: 9px; padding: .55em .7em; background: var(--panel2);
+    max-height: calc(100vh - var(--top) - var(--bar) - 1.6em); overflow: auto; }
+  .edit-map .fe-it-result .fe-it-lvname { max-width: 8.5em; }
+  .edit-map .fe-it-result table.fe-it-strip td .fe-label { font-size: 12px; }
+  .edit-map .fe-it-result table.fe-it-strip td, .edit-map .fe-it-result table.fe-it-strip th { padding: .2em .3em; }
+}
+.edit-map .fe-x { border: 0; background: none; color: var(--muted); cursor: pointer; padding: 0 .3em; font-size: max(12px, .9em); }
+.edit-map .fe-x:hover { color: var(--bad); }
+.edit-map .fe-bd-chip.is-on { border-color: var(--accent); background: var(--chip-on); }
+.edit-map .fe-bd-chip.is-on .fe-linkbtn { font-weight: 700; }
+.edit-map .fe-linkbtn { border: 0; background: none; color: inherit; padding: 0; font: inherit; cursor: pointer; }
+.edit-map .fe-linkbtn:hover { color: var(--accent); text-decoration: underline; }
+.edit-map .fe-trace-where .fe-linkbtn, .edit-map .fe-ch-ref { color: var(--accent); text-decoration: underline dotted;
+  text-underline-offset: 2px; }
+.edit-map td.fe-it-new { box-shadow: inset 0 0 0 2px var(--accent); }
+/* Quick Edits: the levels a switch changes, under it */
+.edit-map .fe-optlevels { display: block; margin: .05em 0 .35em 3.1em; font-size: max(12px, .78em); }
+.edit-map .fe-radio .fe-optlevels { margin: 0 0 0 .5em; display: inline; }
+.edit-map .fe-optlevels.is-none { color: var(--warn); }
+/* the character and place an area's answers are for, beside them */
+.edit-map .fe-ctxline { gap: .35em; margin: .35em 0 .55em; align-items: center; }
+.edit-map .fe-ctxline select { max-width: 11em; }
+.edit-map .fe-bd-search { flex: 1 1 18em; min-width: 12em; margin: 0; }
+.edit-map .fe-bd-stat select { max-width: 22em; }
+.edit-map .fe-bd-result { border-top: 1px solid var(--line); margin-top: .6em; padding-top: .75em; display: flex;
+  flex-direction: column; gap: .55em; }
+.edit-map .fe-bd-show { display: flex; flex-wrap: wrap; align-items: center; gap: .6em; }
+.edit-map .fe-bd-ground { flex-direction: row; min-width: 14em; justify-content: center; }
+.edit-map code.fe-bd-line { display: block; white-space: pre-wrap; overflow-wrap: anywhere; padding: .45em .6em;
+  font-size: max(12px, .85em); }
+.edit-map .fe-bd-templates { margin: .2em 0 .4em; display: flex; flex-direction: column; gap: .3em; }
+.edit-map .fe-btn.fe-bd-template { flex-direction: column; align-items: flex-start; text-align: left; max-width: 16em;
+  white-space: normal; gap: .1em; font-weight: 400; }
+.edit-map .fe-btn.fe-bd-template b { font-weight: 700; }
+.edit-map .fe-btn.fe-bd-template small { font-size: max(12px, .9em); line-height: 1.25; }
+.edit-map .fe-bd-stat.is-unfinished { box-shadow: inset 3px 0 0 var(--warn); padding-left: .4em; border-radius: 4px; }
+.edit-map textarea.fe-ed-ta::placeholder { color: var(--faint); opacity: 1; }
+.edit-map details.fe-bd-fold > summary { font-family: Cinzel, Georgia, serif; color: var(--accent); }
+.edit-map details.fe-bd-fold[open] > summary { margin-bottom: .6em; }
+.edit-map details.fe-bd-fold > .fe-card { border: 0; padding: 0; margin: 0; background: none; }
+
+/* Items */
+.edit-map table.fe-it-strip td { vertical-align: middle; padding: .2em .4em; }
+.edit-map table.fe-it-strip td .fe-label { font-size: 12px; }
+.edit-map table.fe-it-strip tr.is-changed td:first-child { box-shadow: inset 3px 0 0 var(--accent); }
+
+/* Changes and Help */
+.edit-map table.fe-ch-table td { vertical-align: middle; }
+.edit-map table.fe-ch-table td .fe-label { font-size: 12px; }
+.edit-map table.fe-ch-table tr.is-changed td:first-child { box-shadow: inset 3px 0 0 var(--accent); }
+.edit-map .fe-ch-hunk { margin: .6em 0; }
+.edit-map .fe-ch-where { font-family: var(--mono); font-size: max(12px, .8em); color: var(--accent); margin-bottom: .2em; }
+.edit-map pre.fe-ch-pre { font: 12px/1.5 var(--mono); background: var(--bg); border: 1px solid var(--line);
+  border-radius: 7px; padding: .4em .6em; margin: 0; overflow-x: auto; white-space: pre; color: var(--muted); }
+.edit-map .fe-ch-add { color: var(--good); background: rgba(124,196,127,.08); display: block; }
+.edit-map .fe-ch-del { color: var(--bad); background: rgba(228,111,92,.08); display: block; }
+.edit-map .fe-ch-same { display: block; }
+.edit-map details.fe-faq { border-bottom: 1px solid var(--line); padding: .45em 0; }
+.edit-map details.fe-faq summary { cursor: pointer; font-weight: 600; }
+.edit-map details.fe-faq p { margin: .45em 0 .2em 1em; color: var(--muted); max-width: 75ch; }
+
+/* Erazure's rules: the browser (a list that draws only the rows in view: every row ROW px high) */
+.edit-map .fe-rb-tools > input[type=search] { flex: 1 1 18em; min-width: 0; }
+.edit-map .fe-rb-tools > select { max-width: 100%; }
+.edit-map .fe-rb-list { position: relative; height: min(70vh, 900px); min-height: 320px; overflow: auto; margin-top: .6em;
+  border: 1px solid var(--line); border-radius: 9px; background: var(--bg); }
+.edit-map .fe-rb-inner { position: relative; }
+.edit-map .fe-rb-li { position: absolute; left: 0; right: 0; height: 56px; }
+.edit-map .fe-rb-row { position: relative; width: 100%; height: 100%; display: flex; flex-direction: column;
+  justify-content: center; gap: 2px; padding: 0 .7em; border: 0; border-bottom: 1px solid var(--line); background: none;
+  color: var(--fg); text-align: left; cursor: pointer; overflow: hidden; font: inherit; }
+.edit-map button.fe-rb-row:hover, .edit-map button.fe-rb-row:focus-visible { background: var(--panel2); }
+.edit-map .fe-rb-row.off { opacity: .55; }
+.edit-map .fe-rb-legend { margin: .2em 0 0; color: var(--faint); }
+.edit-map .fe-rb-empty { margin: .6em 0 0; }
+.edit-map .fe-mine { color: var(--accent); font-weight: 700; text-decoration: underline; text-underline-offset: 2px; }
+.edit-map .fe-rb-sec { background: var(--panel2); cursor: default; flex-direction: row; justify-content: flex-start;
+  align-items: center; gap: .5em; font-family: Cinzel, Georgia, serif; color: var(--accent); }
+.edit-map .fe-rb-top { display: flex; align-items: center; gap: .45em; min-width: 0; white-space: nowrap;
+  font-size: max(12px, .86em); }
+.edit-map .fe-rb-where { font-family: var(--mono); color: var(--accent); font-size: max(12px, .92em); flex: none; }
+.edit-map .fe-rb-words { overflow: hidden; text-overflow: ellipsis; color: var(--muted); min-width: 0; }
+.edit-map .fe-rb-draw { display: flex; align-items: center; gap: .5em; min-width: 0; overflow: hidden; height: 24px; }
+.edit-map .fe-rb-draw .fe-label { font-size: 12px; flex: none; max-width: 100%; overflow: hidden; }
+/* the hover-box lines a rule writes: the game's description, black box, lines centred */
+.edit-map .fe-minidesc { display: inline-block; background: rgba(0,0,0,.82); border: 1px solid #3a342c; color: #7b7bfe;
+  border-radius: 3px; padding: .15em .55em; font-family: Cinzel, Georgia, serif; font-size: max(12px, .8em); line-height: 1.35;
+  text-align: center; max-width: 100%; overflow-wrap: anywhere; }
+.edit-map .fe-rb-draw .fe-minidesc { max-height: 1.6em; overflow: hidden; white-space: nowrap; flex: 0 1 auto;
+  min-width: 0; text-overflow: ellipsis; font-size: 12px; }
+.edit-map .fe-ed-rule .fe-minidesc { flex-basis: auto; }
+.edit-map .fe-rb-text { flex-direction: row; justify-content: flex-start; align-items: center; gap: .6em; }
+.edit-map .fe-rb-comment { font-family: var(--mono); font-size: max(12px, .8em); color: var(--faint); white-space: pre;
+  overflow: hidden; text-overflow: ellipsis; }
+.edit-map pre.fe-rb-code { font: 12.5px/1.55 var(--mono); background: var(--bg); border: 1px solid var(--line);
+  border-radius: 7px; padding: .5em .65em; margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; color: var(--fg); }
+.edit-map .fe-rb-op { border: 1px solid var(--line); border-radius: 8px; padding: .45em .6em; margin: .4em 0;
+  background: var(--panel2); display: flex; flex-direction: column; gap: .3em; }
+.edit-map .fe-rb-op.warn { border-color: var(--warn); }
+.edit-map .fe-rb-op.bad { border-color: var(--bad); }
+.edit-map code.fe-rb-optext { display: block; white-space: pre-wrap; overflow-wrap: anywhere; font-size: max(12px, .8em); }
+
+/* narrower screens: the sidebar shrinks to its icons, each with its name under it (touch screens have no hover), then
+   the preview becomes a drawer; with the preview closed on a laptop, the sidebar keeps its full names */
+@media (max-width: 1400px) {
+  .edit-map .fe-app { grid-template-columns: 80px minmax(0, 1fr) var(--pw, 420px); }
+  .edit-map .fe-nav button { flex-direction: column; justify-content: center; gap: .1em; padding: .45em .15em;
+    position: relative; text-align: center; }
+  .edit-map .fe-nav .lbl { flex: none; white-space: normal; overflow: visible; font-size: max(12px, .64em); line-height: 1.15; }
+  .edit-map .fe-nav .n { position: absolute; top: .15em; right: .3em; font-size: max(12px, .66em); padding: 0 .3em; }
+  .edit-map .fe-nav-sep { margin: .4em .5em; }
+  .edit-map .fe-nav-sep.named { margin: .6em .1em .1em; font-size: max(12px, .58em); text-align: center; letter-spacing: 0; }
+}
+@media (min-width: 1001px) and (max-width: 1400px) {
+  .edit-map .fe-app.pv-closed { grid-template-columns: 200px minmax(0, 1fr) 36px; }
+  .edit-map .fe-app.pv-closed .fe-nav button { flex-direction: row; justify-content: flex-start; gap: .55em;
+    padding: .48em .9em; text-align: left; }
+  .edit-map .fe-app.pv-closed .fe-nav .lbl { flex: 1; font-size: 1em; white-space: nowrap; overflow: hidden;
+    text-overflow: ellipsis; line-height: inherit; }
+  .edit-map .fe-app.pv-closed .fe-nav .n { position: static; font-size: max(12px, .74em); padding: 0 .45em; }
+  .edit-map .fe-app.pv-closed .fe-nav-sep { margin: .4em .9em; }
+  .edit-map .fe-app.pv-closed .fe-nav-sep.named { margin: .7em .9em .1em; font-size: max(12px, .7em); text-align: left; letter-spacing: .08em; }
+}
+@media (max-width: 1000px) {
+  .edit-map .fe-app { grid-template-columns: 80px minmax(0, 1fr); grid-template-areas: "bar bar" "side area"; }
+  .edit-map .fe-preview { position: fixed; top: calc(var(--top) + var(--bar)); right: 0; bottom: 0; height: auto;
+    width: min(560px, 100vw); z-index: 30; box-shadow: var(--shadow); transform: translateX(105%);
+    transition: transform .2s; }
+  .edit-map .fe-app.pv-open .fe-preview { transform: none; }
+  .edit-map .fe-grip { display: none; }
+}
+@media (max-width: 640px) {
+  .edit-map .fe-app { grid-template-columns: minmax(0, 1fr); grid-template-areas: "bar" "area"; }
+  .edit-map .fe-side { position: fixed; top: calc(var(--top) + var(--bar)); left: 0; bottom: 0; max-height: none;
+    width: min(18em, 85vw); z-index: 31; transform: translateX(-105%); transition: transform .2s; box-shadow: var(--shadow); }
+  .edit-map .fe-app.nav-open .fe-side { transform: none; }
+  .edit-map .fe-nav .lbl { display: inline; flex: 1; font-size: 1em; white-space: nowrap; text-align: left; }
+  .edit-map .fe-nav button { flex-direction: row; justify-content: flex-start; gap: .55em; padding: .6em .9em; }
+  .edit-map .fe-nav .n { position: static; }
+  .edit-map .fe-nav-sep.named { text-align: left; font-size: max(12px, .7em); margin: .7em .9em .1em; letter-spacing: .08em; }
+  .edit-map .fe-preview { width: 100vw; }
+  .edit-map .fe-area { padding: .8em .8em 3em; }
+  .edit-map .fe-bar .fe-search { order: 9; flex-basis: 100%; max-width: none; }
+  .edit-map .fe-hide-phone { display: none !important; }
+  /* the profile's name is in the areas menu and on Start: on a phone the bar keeps one line (2026-11-15, audit FE-14) */
+  .edit-map .fe-title { display: none; }
+  /* Start's goals as a short list of links (the additions audit, GE-16: nine cards were a screen and a half) */
+  .edit-map .fe-goals { display: flex; flex-direction: column; gap: 0; }
+  .edit-map .fe-goals .fe-option { flex-direction: row; flex-wrap: wrap; align-items: baseline; justify-content: space-between;
+    gap: .15em .8em; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; background: none; padding: .6em .15em; }
+  .edit-map .fe-goals .fe-option:last-child { border-bottom: 0; }
+  .edit-map .fe-goals .fe-option b { font-family: inherit; font-weight: 600; font-size: 1em; text-decoration: underline;
+    text-underline-offset: 2px; }
+  .edit-map .fe-goals .fe-option small { display: none; }
+  .edit-map .fe-goals .fe-option small.fe-goal-area { display: inline; margin-top: 0; }
+  /* chips a finger can hit (the additions audit, GE-13: the brick bases' class and level chips were 23 px tall) */
+  .edit-map .fe-chiptog, .edit-map .fe-bd-chip { min-height: 32px; }
+  .edit-map .fe-bd-chip .fe-x { min-width: 28px; min-height: 28px; }
+}
+@media (min-width: 641px) { .edit-map .fe-only-phone { display: none !important; } }
+@media (min-width: 1001px) { .edit-map .fe-only-narrow { display: none !important; } }
+@media (pointer: coarse) {
+  .edit-map .fe-btn, .edit-map .fe-chiptog, .edit-map .fe-seg button, .edit-map .fe-layer, .edit-map .fe-chipbtn {
+    min-height: 2.5em; }
+  .edit-map .fe-btn.small { padding: .45em .7em; font-size: max(12px, .9em); }
+  .edit-map .fe-x { min-width: 2.2em; min-height: 2.2em; }
+  .edit-map .fe-palette { grid-template-columns: repeat(8, 28px); gap: 4px; }
+  .edit-map .fe-swatch { width: 28px; height: 28px; }
+  .edit-map .fe-nav button { min-height: 2.75em; }
+  .edit-map .fe-linkbtn { min-height: 1.8em; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .edit-map *, .edit-map *::before, .edit-map *::after { transition: none !important; animation: none !important; }
+}
+/* the builder: the item and its affixes on the left, the chance on the right (in view while the left scrolls), the
+   item's look with Erazure under both; one column on phones */
+.edit-map.fe-builder { --top: 0px; --fg2: #cfc8bb; }
+[data-md-color-scheme="default"] .edit-map.fe-builder { --fg2: #4a463e; }
+/* on the site the page opens as the others do (its title, kicker and intro are the site page's): the cards on the site's
+   own background, no slab of the editor's (audit SW-12) */
+.md-content .edit-map.fe-builder { --top: 2.4rem; margin: 0; background: none; }
+.edit-map.fe-builder .ib-credit { margin: 0 0 12px; font-size: 13px; color: var(--muted); }
+.edit-map.fe-builder .ib-credit a, .edit-map.fe-builder .ib-links a { color: var(--accent); text-decoration: underline; }
+/* Reset to the defaults (Undo reset until the next change), then Copy a link to this setup, as the calculators have
+   them (audit SW-08) */
+.edit-map.fe-builder .ib-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }
+.edit-map.fe-builder .ib-bar .fe-btn { font-size: 13px; font-weight: 400; }
+.edit-map.fe-builder .ib-copied { font-size: 13px; color: var(--muted); overflow-wrap: anywhere; min-width: 0; }
+.edit-map.fe-builder .ib-grid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 14px; align-items: start; }
+.edit-map.fe-builder .ib-left, .edit-map.fe-builder .ib-right { display: grid; gap: 12px; min-width: 0; }
+.edit-map.fe-builder .ib-right { position: sticky; top: calc(var(--top) + 8px); }
+.edit-map.fe-builder .ib-card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; min-width: 0; }
+/* headings, labels, and the bar's buttons as the calculators have them (2026-11-23, the font audit, the author): a
+   card's heading 19 px bold, a heading in it 15 px bold, in the page's own font (not the editor's Cinzel); a field's
+   label 13 px semibold */
+.edit-map.fe-builder .ib-card h3 { margin: 0 0 8px; font-family: inherit; font-size: 19px; font-weight: 700; line-height: 1.25;
+  color: var(--fg); letter-spacing: 0; }
+.edit-map.fe-builder .ib-card h4 { margin: 10px 0 6px; font-family: inherit; font-size: 15px; font-weight: 700; line-height: 1.3;
+  color: var(--fg); letter-spacing: 0; }
+.edit-map.fe-builder .ib-cardhead { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+.edit-map.fe-builder .ib-cardhead h3 { margin: 0; }
+.edit-map.fe-builder .ib-base { margin: 0 0 8px; }
+.edit-map.fe-builder .ib-sub { color: var(--muted); font-size: 13px; }
+.edit-map.fe-builder .ib-field { display: grid; gap: 4px; margin: 8px 0 0; min-width: 0; }
+.edit-map.fe-builder .ib-label { font-size: 13px; font-weight: 600; color: var(--fg2); }
+.edit-map.fe-builder .ib-hint { color: var(--muted); font-size: 12px; }
+.edit-map.fe-builder .ib-row { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: end; }
+.edit-map.fe-builder .ib-num { width: 6.5em; }
+.edit-map.fe-builder .ib-select { max-width: 100%; }
+.edit-map.fe-builder .ib-note { margin: 8px 0 0; font-size: 13px; color: var(--muted); max-width: 75ch; }
+.edit-map.fe-builder .ib-eth { display: grid; gap: 2px; margin-top: 10px; }
+.edit-map.fe-builder .ib-chips { display: grid; gap: 6px; margin: 6px 0; }
+.edit-map.fe-builder .ib-chip { display: flex; gap: 10px; justify-content: space-between; align-items: center; border: 1px solid var(--line);
+  border-radius: 6px; padding: 6px 8px; background: var(--bg); }
+.edit-map.fe-builder .ib-chiptext { font-size: 13px; color: #8f8fff; }
+.edit-map.fe-builder .ib-chipside { display: flex; gap: 8px; align-items: center; white-space: nowrap; }
+/* a picked affix on two lines, here and in the LLD Item Guide (its audit's PICK-05, 2026-11-26): its name and what it
+   gives, then its side, level and chance on its own */
+.edit-map.fe-builder .ib-chip2 { padding: 4px 4px 4px 8px; }
+.edit-map.fe-builder .ib-chipl1 { font-size: 14px; line-height: 1.35; }
+.edit-map.fe-builder .ib-chipl2 { font-size: 13px; color: var(--fg2); line-height: 1.35; }
+.edit-map.fe-builder .ib-chipl2 .ib-chance { font-weight: 700; color: var(--fg); }
+.edit-map.fe-builder .ib-chance { font-variant-numeric: tabular-nums; font-size: 13px; }
+.edit-map.fe-builder .ib-x { display: inline-grid; place-items: center; min-width: 24px; min-height: 24px; border: 0; background: none;
+  color: var(--muted); cursor: pointer; font-size: 14px; padding: 2px 4px; }
+.edit-map.fe-builder .ib-x:hover, .edit-map.fe-builder .ib-x:focus-visible { color: var(--fg); }
+.edit-map.fe-builder .ib-bad { display: block; color: #e0835a; font-size: 12px; }
+.edit-map.fe-builder .ib-side + .ib-side { margin-top: 4px; }
+.edit-map.fe-builder .ib-section { border: 1px dashed var(--line); border-radius: 6px; padding: 8px; margin: 8px 0; }
+.edit-map.fe-builder .ib-sechead { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.edit-map.fe-builder .ib-list { margin: 6px 0 0 1.2em; padding: 0; font-size: 13px; color: #8f8fff; }
+.edit-map.fe-builder .ib-big { font-size: 30px; font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; line-height: 1.2; }
+.edit-map.fe-builder .ib-big small { font-size: 14px; color: var(--muted); font-weight: 400; }
+.edit-map.fe-builder .ib-what { margin: 4px 0 8px; }
+.edit-map.fe-builder .ib-table { border-collapse: collapse; width: 100%; font-size: 13px; margin: 6px 0; }
+.edit-map.fe-builder .ib-table td, .edit-map.fe-builder .ib-table th { padding: 3px 6px; border-bottom: 1px solid var(--line); text-align: left; }
+.edit-map.fe-builder .ib-table thead th { font-size: 12px; font-weight: 700; letter-spacing: .03em; color: var(--muted); }
+.edit-map.fe-builder .ib-table .num { text-align: right; font-variant-numeric: tabular-nums; }
+.edit-map.fe-builder .ib-table tr.on td { font-weight: 700; }
+.edit-map.fe-builder .ib-lld { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 8px; font-size: 13px; }
+.edit-map.fe-builder .ib-lld .ib-num { width: 4.5em; }
+.edit-map.fe-builder .ib-best p { margin: 8px 0 0; font-size: 13px; }
+.edit-map.fe-builder .ib-fold { margin-top: 8px; font-size: 13px; }
+.edit-map.fe-builder .ib-fold summary { cursor: pointer; color: var(--muted); }
+.edit-map.fe-builder .ib-item { margin-top: 14px; }
+.edit-map.fe-builder .ib-links { margin: 8px 0; font-size: 13px; }
+.edit-map.fe-builder .ib-preview .fe-pv-head h3,
+.edit-map.fe-builder .ib-preview .fe-pv-head .fe-seg[aria-label="Preview view"],
+.edit-map.fe-builder .ib-preview .fe-pv-pickrow,
+.edit-map.fe-builder .ib-preview .fe-pv-editor { display: none; }
+.edit-map.fe-builder .ib-preview .fe-pv-head { position: static; }
+.edit-map.fe-builder .fe-pv-pick { margin-top: 8px; }
+/* the pickers' lists, here and in the LLD Item Guide (2026-11-25, the author: "doesn't show many affixes and is awkward
+   to scroll through. The text on the right side is cut off"): each option's details whole on a line under its name
+   (not beside it, cut short), and a taller list; the Filter Editor keeps its own */
+.edit-map.fe-builder .fe-pv-picks { max-height: min(70vh, 40em); }
+.edit-map.fe-builder .fe-pv-picks button { flex-direction: column; align-items: stretch; gap: 1px; padding: .3em .6em; }
+.edit-map.fe-builder .fe-pv-picks small { white-space: normal; overflow: visible; font-size: 13px; }
+.edit-map.fe-builder .ib-how { margin-top: 14px; }
+.edit-map.fe-builder .ib-how li { margin: 4px 0; }
+@media (max-width: 900px) {
+  .edit-map.fe-builder .ib-grid { grid-template-columns: minmax(0, 1fr); }
+  .edit-map.fe-builder .ib-right { position: static; order: -1; }
+}
+/* light mode: the affixes' stat lines and the warnings at 4.5:1 or more on the cream cards (the game's blue #8f8fff
+   read 2.5:1 there; audit MG-12) */
+[data-md-color-scheme="default"] .edit-map.fe-builder .ib-chiptext,
+[data-md-color-scheme="default"] .edit-map.fe-builder .ib-list { color: #4b4bd6; }
+[data-md-color-scheme="default"] .edit-map.fe-builder .ib-bad { color: var(--bad); }
+/* a craft's name in its perfect gem's color (the author, 2026-11-26: "These craft names should be color coded to the gem
+   required for them"; the Item Builder and the LLD Item Guide): the game's text colors (D2GL's blue, red, green, yellow,
+   white and light gray; its purple #B700FF lightened to 4.5:1), darker on the light theme, each 4.5:1 or more on the
+   cards and lists; the recipe names the gem in words beside it */
+.edit-map.fe-builder { --gem-sapphire: #7b7bfe; --gem-ruby: #fe6950; --gem-amethyst: #c27bff; --gem-emerald: #25fe00;
+  --gem-topaz: #ebeb75; --gem-diamond: #fefefe; --gem-skull: #a9a9b0; }
+[data-md-color-scheme="default"] .edit-map.fe-builder { --gem-sapphire: #3b3bc4; --gem-ruby: #b3261e; --gem-amethyst: #7b1fa2;
+  --gem-emerald: #1b6f1b; --gem-topaz: #6b5d00; --gem-diamond: #3f4350; --gem-skull: #5f5f5f; }
+.edit-map.fe-builder .ib-gem-sapphire { color: var(--gem-sapphire); }
+.edit-map.fe-builder .ib-gem-ruby { color: var(--gem-ruby); }
+.edit-map.fe-builder .ib-gem-amethyst { color: var(--gem-amethyst); }
+.edit-map.fe-builder .ib-gem-emerald { color: var(--gem-emerald); }
+.edit-map.fe-builder .ib-gem-topaz { color: var(--gem-topaz); }
+.edit-map.fe-builder .ib-gem-diamond { color: var(--gem-diamond); }
+.edit-map.fe-builder .ib-gem-skull { color: var(--gem-skull); }
+.edit-map.fe-builder .fe-seg button[aria-pressed="true"] [class^="ib-gem-"] { color: inherit; }
+.edit-map.fe-builder .ib-recipe { margin-top: 2px; font-size: 13px; color: var(--fg2); }
+/* a finger's targets: the bar's buttons 40 px tall, the ✕ that removes a pick and the small buttons at least 32 x 32
+   (audit SW-09) */
+@media (pointer: coarse) {
+  .edit-map.fe-builder .fe-btn.small, .edit-map.fe-builder .ib-sechead .fe-linkbtn { min-height: 32px; }
+  .edit-map.fe-builder .ib-x { min-width: 32px; min-height: 32px; }
+  .edit-map.fe-builder .ib-bar .fe-btn { min-height: 40px; }
+}

@@ -1,0 +1,78 @@
+
+  @font-face { font-family: "AvQest"; src: local("AvQest"); }  /* the D2-style font, if the viewer has it installed */
+  /* Layout: a bar with the search and the kinds of tag (it stays under the site's header), how to read the page, then
+     the cards: one per tag, its look as the title, what it shows, and per kind of item the tags drawn as the game draws
+     them with the values they take. Every rule is scoped to .tags-map. Dark by default; light with the website's light
+     mode. */
+  .tags-map {
+    --bg: #151412; --panel: #1f1d1a; --fg: #ece7de; --muted: #a59e91; --line: #36322c; --accent: #d8b45e;
+    --ground-1: #3a3428; --ground-2: #26221b; --ground-3: #15130f;
+    --display: "Cinzel", "Trajan Pro", Georgia, serif;
+    --body: "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --label: "AvQest", "Palatino Linotype", Palatino, Georgia, serif;
+    color-scheme: dark;
+    color: var(--fg); font: 15px/1.45 var(--body);
+  }
+  [data-md-color-scheme="default"] .tags-map {
+    --bg: #f3f1ec; --panel: #fffdf8; --fg: #23211c; --muted: #6b655a; --line: #ded7c9; --accent: #8a6d1f;
+    color-scheme: light;
+  }
+  .tags-map *, .tags-map *::before, .tags-map *::after { box-sizing: border-box; }
+  .tags-map .wrap { max-width: 1240px; margin: 0 auto; padding-inline: 16px; }
+  .md-content .tags-map .wrap { padding-inline: 0; }
+  .tags-map h1.tg-title { font: 700 26px/1.2 var(--display); letter-spacing: .02em; margin: 0; padding-block: 16px 10px; }
+  .tags-map .lede { margin: 0 0 12px; max-width: 80ch; }
+  /* the bar: under the site's header while the cards scroll (static on short windows: 200% zoom) */
+  .tags-map .bar { position: sticky; top: var(--md-header-height, 2.4rem); z-index: 2; display: flex; flex-wrap: wrap;
+                   gap: 8px 10px; align-items: center; padding: 10px 12px; margin-bottom: 12px; background: var(--panel);
+                   border: 1px solid var(--line); border-radius: 8px; }
+  .tags-map .bar input[type="search"] { flex: 1 1 240px; min-width: 0; height: 34px; padding: 0 10px; font: inherit;
+                                        font-size: 14px; color: var(--fg); background: var(--bg); border: 1px solid var(--line);
+                                        border-radius: 6px; }
+  .tags-map .bar input[type="search"]:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .tags-map .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tags-map .chips button { height: 30px; padding: 0 11px; font: inherit; font-size: 13px; color: var(--fg); cursor: pointer;
+                            background: none; border: 1px solid var(--line); border-radius: 15px; }
+  .tags-map .chips button[aria-pressed="true"] { border-color: var(--accent); background: rgba(216, 180, 94, .14); font-weight: 700; }
+  .tags-map .chips button[aria-pressed="true"]::before { content: "\2713  "; }
+  .tags-map .count { font-size: 13px; color: var(--muted); margin-left: auto; }
+  /* a window under 560 px tall (200% zoom): the bar scrolls away, or it would cover over a third of it (the additions
+     audit, 2026-11-23, SW-07: one rule for every page) */
+  @media (max-height: 560px) { .tags-map .bar { position: static; } }
+  .tags-map details.how { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 14px;
+                          margin-bottom: 14px; }
+  .tags-map details.how summary { cursor: pointer; font-weight: 700; }
+  .tags-map details.how p, .tags-map details.how li { max-width: 80ch; font-size: 14.5px; }
+  .tags-map h2.grp { font: 700 22px/1.2 var(--display); margin: 22px 0 6px; letter-spacing: .02em; }
+  .tags-map p.grp-sub { margin: 0 0 10px; color: var(--muted); font-size: 14px; max-width: 80ch; }
+  .tags-map .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 360px), 1fr)); gap: 10px;
+                     align-items: start; }
+  .tags-map .card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px;
+                    min-width: 0; scroll-margin-top: 140px; }
+  .tags-map .card.hit { box-shadow: 0 0 0 2px var(--accent); }
+  .tags-map .card h3 { margin: 0 0 2px; font: 700 18px/1.2 var(--label); color: var(--accent); overflow-wrap: anywhere; }
+  .tags-map .what { margin: 6px 0 2px; font-weight: 700; font-size: 14.5px; }
+  .tags-map .card h3 + .what { margin-top: 2px; }
+  /* a row: the kinds of item, the tag's looks beside them where they fit (under them where they don't) */
+  .tags-map .row { display: flex; flex-wrap: wrap; align-items: center; gap: 3px 12px; padding: 5px 0;
+                   border-top: 1px solid var(--line); }
+  .tags-map .what + .row { border-top: 0; }
+  .tags-map .on { flex: 1 1 14em; min-width: 0; font-size: 13px; color: var(--muted); }
+  .tags-map .looks { display: flex; flex-wrap: wrap; gap: 6px 14px; }
+  /* the values beside the tag, not under it: a line less a row (the additions audit, 2026-11-23, LU-09) */
+  .tags-map .look { display: inline-flex; align-items: center; gap: 6px; }
+  .tags-map .ground { border-radius: 5px; padding: 3px 6px;
+                      background: radial-gradient(ellipse at 50% 45%, var(--ground-1) 0%, var(--ground-2) 55%, var(--ground-3) 100%); }
+  .tags-map .d2label { display: inline-block; font-family: var(--label); font-size: 15px; line-height: 1.12; white-space: pre;
+                       background: rgba(0, 0, 0, .74); padding: 2px 6px 0; }
+  .tags-map .d2label .bs { display: inline-block; transform: scaleX(-1); }
+  .tags-map .cap { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .tags-map .empty { padding: 20px 0; color: var(--muted); }
+  .tags-map footer { margin: 18px 0 6px; font-size: 13px; color: var(--muted); }
+  .tags-map .c-WHITE { color: #e8e8e8; } .tags-map .c-RED { color: #ff4d4d; } .tags-map .c-GREEN { color: #00ff00; }
+  .tags-map .c-BLUE { color: #6969ff; } .tags-map .c-GOLD { color: #c7b377; } .tags-map .c-GRAY { color: #696969; }
+  .tags-map .c-BLACK { color: #000000; } .tags-map .c-TAN { color: #d0c27d; } .tags-map .c-ORANGE { color: #ffa800; }
+  .tags-map .c-YELLOW { color: #ffff64; } .tags-map .c-PURPLE { color: #ae00ff; }
+  .tags-map .c-DARK_GREEN { color: #008000; } .tags-map .c-CORAL { color: #ff7f6e; } .tags-map .c-SAGE { color: #a3b88f; }
+  .tags-map .c-TEAL { color: #3fb5b5; } .tags-map .c-LIGHT_GRAY { color: #a8a8a8; }
+  .tags-map .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }

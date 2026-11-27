@@ -1,0 +1,192 @@
+
+  /* the game's font, if the viewer has it installed (Cinzel otherwise), as Skill & Shop Highlights and Map Lines draw a
+     line in the hover box */
+  @font-face { font-family: "D2Exocet"; src: local("Exocet Blizzard"), local("ExocetBlizzardOT-Medium"), local("Exocet"); }
+  @font-face { font-family: "AvQest"; src: local("AvQest"); }
+  /* Layout: a bar that stays at the top while scrolling (rare or crafted, where it drops or the craft, the bases,
+     corruption), every weapon type's odds in one table, one weapon type's chart, the stars the filter draws, how it's
+     worked out. Dark by default; light when the website (Material) is switched to light. */
+  .edodds-map {
+    --top: 0px;
+    --bg: #151412; --panel: #1f1d1a; --panel2: #171513; --fg: #ece7de; --fg2: #cfc8bb; --muted: #a59e91; --line: #36322c;
+    --accent: #d8b45e; --accent-wash: rgba(216, 180, 94, 0.12); --grid: #2b2823; --axis: #736c60;
+    --s1: #3987e5; --s2: #d95926;
+    --display: "Cinzel", "Trajan Pro", Georgia, serif;
+    --body: "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --game: "D2Exocet", "Cinzel", "Trajan Pro", Georgia, serif;
+    --label: "AvQest", "Palatino Linotype", Palatino, Georgia, serif;
+    color-scheme: dark;
+    color: var(--fg); font: 15px/1.5 var(--body);
+  }
+  [data-md-color-scheme="default"] .edodds-map {
+    --bg: #f3f1ec; --panel: #fffdf8; --panel2: #f4f1ea; --fg: #23211c; --fg2: #4a463e; --muted: #6b655a; --line: #ded7c9;
+    --accent: #8a6d1f; --accent-wash: rgba(138, 109, 31, 0.10); --grid: #e7e2d8; --axis: #928a7b;
+    --s1: #2a78d6; --s2: #eb6834;
+    color-scheme: light;
+  }
+  .md-content .edodds-map { --top: 2.4rem; }
+  .edodds-map *, .edodds-map *::before, .edodds-map *::after { box-sizing: border-box; }
+  .edodds-map [hidden] { display: none !important; }
+  .edodds-map .wrap { max-width: 1120px; margin: 0 auto; padding-inline: 16px; }
+  .md-content .edodds-map .wrap { padding-inline: 0; max-width: none; }
+  .edodds-map h1.eo-title { font: 700 30px/1.15 var(--display); letter-spacing: .02em; margin: 0; padding-block: 24px 6px; color: var(--fg); }
+  .edodds-map h2, .edodds-map h3 { margin: 0; color: var(--fg); text-wrap: balance; letter-spacing: 0; }
+  .edodds-map h2 { font: 700 19px/1.25 var(--body); }
+  .edodds-map h3 { font: 700 15px/1.3 var(--body); }
+  .edodds-map p { margin: 0; }
+  .edodds-map a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  .edodds-map :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .edodds-map b, .edodds-map strong { color: var(--fg); }
+  .edodds-map .eo-lede { color: var(--fg2); max-width: 74ch; margin-block: 4px 0; }
+  /* the opening, as on every page: the kicker, one sentence, then the bar */
+  .edodds-map .eo-head { display: grid; gap: 8px; }
+  .edodds-map .eyebrow { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+  .edodds-map .eo-head .eo-lede { font-size: 16px; margin: 0; }
+
+  /* the bar */
+  .edodds-map .eo-bar { position: sticky; top: var(--top); z-index: 3; background: var(--panel); border-block: 1px solid var(--line);
+                        padding-block: 8px; margin-block: 12px; }
+  .edodds-map .eo-bar-in { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px 16px; }
+  .md-content .edodds-map .eo-bar-in { padding-inline: 10px; }
+  .edodds-map .eo-f { display: grid; gap: 4px; min-width: 0; }
+  .edodds-map .eo-f label, .edodds-map .eo-f .lab { font-size: 13px; font-weight: 600; color: var(--fg2); }
+  .edodds-map select, .edodds-map input[type="number"] { font: 14px var(--body); color: var(--fg); background: var(--panel2);
+                        border: 1px solid var(--axis); border-radius: 6px; height: 34px; padding: 0 8px; max-width: 100%; }
+  .edodds-map input[type="number"] { width: 4.5em; font-variant-numeric: tabular-nums; }
+  .edodds-map .seg { display: inline-flex; border: 1px solid var(--axis); border-radius: 6px; overflow: hidden; }
+  .edodds-map .seg button { font: 14px var(--body); color: var(--fg2); background: var(--panel2); border: 0; height: 34px; padding: 0 10px; cursor: pointer; }
+  .edodds-map .seg button + button { border-left: 1px solid var(--axis); }
+  .edodds-map .seg button[aria-pressed="true"] { background: var(--accent-wash); color: var(--fg); font-weight: 700; box-shadow: inset 0 -2px 0 var(--accent); }
+  .edodds-map .seg button[aria-pressed="true"] .t > span::before { content: "✓ "; }
+  /* each button as wide as its picked look (✓ and bold), picked or not, so picking one moves nothing in the bar */
+  .edodds-map .seg .t { display: inline-grid; justify-items: center; }
+  .edodds-map .seg .t > span, .edodds-map .seg .t::after { grid-area: 1 / 1; }
+  .edodds-map .seg .t::after { content: "✓ " attr(data-t); font-weight: 700; visibility: hidden; }
+  /* the bar's second row in every setup: what the setup means, then Reset and Copy (a picked setting moves nothing) */
+  .edodds-map .eo-bar-foot { flex-basis: 100%; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 16px; min-height: 32px; }
+  .edodds-map .eo-note { flex: 1 1 360px; font-size: 13px; color: var(--muted); }
+  /* Reset to the defaults (Undo reset until the next change) and Copy a link to this setup, at the bar's right end */
+  .edodds-map .eo-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin-left: auto; min-width: 0; }
+  .edodds-map .eo-tools button { font: 13px var(--body); color: var(--fg); background: var(--panel2); border: 1px solid var(--axis);
+                                 border-radius: 6px; min-height: 30px; padding: 0 10px; cursor: pointer; }
+  .edodds-map .eo-tools button:disabled { opacity: .5; cursor: default; }
+  .edodds-map .eo-tools .tools-note { font-size: 13px; color: var(--muted); overflow-wrap: anywhere; }
+  @media (max-width: 640px), (pointer: coarse) { .edodds-map .eo-tools button { min-height: 32px; } }
+  /* the bar scrolls away with the page on phones and where the window is 560 px tall or less, as at 200% zoom */
+  @media (max-width: 760px), (max-height: 560px) { .edodds-map .eo-bar { position: static; } }
+
+  .edodds-map .eo-main { display: grid; gap: 14px; margin-bottom: 28px; }
+  .edodds-map .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; min-width: 0;
+                       display: grid; gap: 10px; }
+  .edodds-map .eo-foot { font-size: 13px; color: var(--muted); max-width: 90ch; }
+  .edodds-map .eo-setup { color: var(--fg); font-weight: 600; min-height: 3em; margin-top: -4px; }
+  /* a grid's items shrink below their content (a wide table scrolls in its own box instead of widening the page) */
+  .edodds-map .panel > *, .edodds-map .eo-grid > *, .edodds-map .eo-side > * { min-width: 0; }
+
+  /* game text: a line under the item's name, and the tag before it */
+  .edodds-map .game { display: inline-block; max-width: 100%; background: #000; border: 1px solid #2a2823; border-radius: 3px;
+                      padding: 3px 12px; font: 600 14px/1.5 var(--game); letter-spacing: .02em; white-space: pre; overflow: hidden; }
+  .edodds-map .game.mini { padding: 0 6px; font-size: 13px; line-height: 1.4; }
+  .edodds-map .game.tag { font: 400 15px/1.3 var(--label); letter-spacing: 0; padding: 1px 8px; }
+
+  /* the table of every weapon type */
+  .edodds-map .scroll { overflow-x: auto; position: relative; }
+  .edodds-map table { border-collapse: collapse; font-size: 14px; }
+  .edodds-map th, .edodds-map td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  .edodds-map th { font-size: 12px; letter-spacing: .03em; color: var(--muted); font-weight: 700; vertical-align: bottom; }
+  .edodds-map td.n, .edodds-map th.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .edodds-map .eo-table { width: 100%; table-layout: fixed; min-width: 880px; }
+  .edodds-map .eo-table th.type-h { width: 190px; }
+  .edodds-map .eo-table th.n { white-space: normal; }
+  .edodds-map .eo-table th.tier { text-align: right; }
+  .edodds-map .eo-table th.tier .stars { display: grid; gap: 3px; justify-items: end; margin-bottom: 4px; }
+  .edodds-map .eo-table .never, .edodds-map .eo-reach .never { color: var(--muted); }
+  .edodds-map .eo-table .from { display: block; font-size: 12px; color: var(--muted); }
+  .edodds-map .eo-table tbody tr:hover td { background: var(--accent-wash); }
+  .edodds-map .eo-table tr.sel td { background: var(--accent-wash); }
+  .edodds-map .eo-table tr.sel td:first-child { box-shadow: inset 3px 0 0 var(--accent); }
+  .edodds-map button.pick { font: 600 14px var(--body); color: var(--fg); background: none; border: 0; padding: 0; cursor: pointer;
+                            text-align: left; display: inline-flex; gap: 6px; align-items: baseline; }
+  .edodds-map button.pick .car { color: var(--muted); width: 10px; display: inline-block; }
+  .edodds-map tr.sel button.pick .car { color: var(--accent); }
+  .edodds-map button.pick:hover .name { text-decoration: underline; text-underline-offset: 2px; }
+  .edodds-map .sub { display: block; font-size: 12px; color: var(--muted); font-weight: 400; }
+  .edodds-map .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  /* one weapon type: the chart beside how many reach each star */
+  .edodds-map .eo-one-head { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 8px 20px; }
+  .edodds-map .eo-one-head h2 { margin-right: auto; }
+  .edodds-map .eo-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 400px); gap: 18px; align-items: start; }
+  @media (max-width: 980px) { .edodds-map .eo-grid { grid-template-columns: minmax(0, 1fr); } }
+  .edodds-map .eo-legend { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: 13px; color: var(--fg2); align-items: center; }
+  .edodds-map .eo-legend span { display: inline-flex; gap: 6px; align-items: center; }
+  .edodds-map .eo-plot { position: relative; min-width: 0; margin-top: 6px; min-height: 300px; }
+  @media (max-width: 560px) { .edodds-map .eo-plot { min-height: 260px; } }
+  .edodds-map .eo-plot svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .edodds-map .eo-plot svg:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+  .edodds-map .eo-plot text { font-family: var(--body); font-size: 12px; fill: var(--muted); }
+  .edodds-map .eo-plot text.mark { fill: var(--fg); font-weight: 700; }
+  .edodds-map .eo-plot text.axis-title { fill: var(--fg2); font-size: 13px; }
+  .edodds-map .eo-tip { position: absolute; z-index: 2; pointer-events: none; background: var(--panel); border: 1px solid var(--line);
+                        border-radius: 8px; box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25); padding: 8px 10px; font-size: 13px; min-width: 190px; }
+  .edodds-map .eo-tip-head { font-weight: 700; margin-bottom: 4px; color: var(--fg); }
+  .edodds-map .eo-tip-row { display: grid; grid-template-columns: 18px auto 1fr; gap: 0 7px; align-items: center; padding: 1px 0; }
+  .edodds-map .eo-tip-row b { font-variant-numeric: tabular-nums; color: var(--fg); }
+  .edodds-map .eo-tip-row span:last-child { color: var(--fg2); }
+  .edodds-map .eo-side { display: grid; gap: 12px; min-width: 0; }
+  .edodds-map .eo-reach { width: 100%; table-layout: fixed; }
+  .edodds-map .eo-reach th:nth-child(1) { width: 34%; } .edodds-map .eo-reach th:nth-child(2) { width: 16%; }
+  .edodds-map .eo-reach th.n { white-space: normal; }
+  .edodds-map .eo-reach td .sub { white-space: nowrap; }
+  .edodds-map .eo-facts { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 4px 12px; margin: 0; font-size: 14px; }
+  .edodds-map .eo-facts dt { color: var(--muted); font-size: 13px; padding-top: 1px; }
+  .edodds-map .eo-facts dd { margin: 0; color: var(--fg); }
+  .edodds-map .eo-facts dd:first-of-type { min-height: 3em; }
+  /* folds (the Resources pages' shared interface, 2026-11-27): a small one a gold link, a section's a gold arrow before
+     its heading, ▸ closed and ▾ open, as the IAS Calculator's */
+  .edodds-map details.eo-bases summary { cursor: pointer; font-size: 13px; font-weight: 600; color: var(--accent); list-style: none;
+                                         text-decoration: underline; text-underline-offset: 2px; }
+  .edodds-map details > summary::-webkit-details-marker { display: none; }
+  .edodds-map details.eo-bases > summary::before { content: "\25B8\00a0"; display: inline-block; text-decoration: none; color: var(--accent);
+                                                  width: auto; position: static; height: auto; background: none; -webkit-mask-image: none; mask-image: none; }
+  .edodds-map details.eo-bases[open] > summary::before { content: "\25BE\00a0"; }
+  .edodds-map details.eo-bases p { font-size: 13px; color: var(--fg2); margin-top: 6px; max-width: 70ch; }
+
+  /* the stars */
+  .edodds-map .eo-stars td { vertical-align: middle; }
+  .edodds-map .eo-tag { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; font-size: 14px; color: var(--fg2); }
+  .edodds-map .eo-tag span { display: inline-flex; gap: 8px; align-items: center; }
+
+  /* how it's worked out */
+  .edodds-map details.eo-how > summary { cursor: pointer; list-style: none; }
+  .edodds-map details.eo-how > summary::before { content: "\25B8"; display: inline-block; width: 1em; margin-right: 6px; font-size: 16px;
+                                               color: var(--accent); position: static; height: auto; background: none; -webkit-mask-image: none; mask-image: none; }
+  .edodds-map details.eo-how[open] > summary::before { content: "\25BE"; }
+  .edodds-map details.eo-how > summary h2 { display: inline; }
+  .edodds-map .eo-how-body { display: grid; gap: 12px; margin-top: 12px; color: var(--fg2); max-width: 82ch; }
+  .edodds-map .eo-how-body table { font-size: 14px; }
+  .edodds-map .eo-how-body td { color: var(--fg); }
+
+  /* phones: a card a weapon type, each number under its column's name */
+  @media (max-width: 760px) {
+    .edodds-map .panel { padding: 12px; }
+    .edodds-map table.eo-table, .edodds-map .eo-table tbody, .edodds-map .eo-table tr, .edodds-map .eo-table td { display: block; }
+    .edodds-map .eo-table { min-width: 0; table-layout: auto; }
+    .edodds-map .eo-table thead { display: none; }
+    .edodds-map .eo-table tbody tr { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px 12px; padding: 10px 4px;
+                                     border-bottom: 1px solid var(--line); }
+    .edodds-map .eo-table td { padding: 0; border: 0; text-align: left; white-space: normal; min-width: 0; }
+    .edodds-map .eo-table td.type { grid-column: 1 / -1; }
+    .edodds-map .eo-table td[data-l]::before { content: attr(data-l); display: block; font-size: 12px; color: var(--muted); }
+    .edodds-map .eo-table tr.sel td, .edodds-map .eo-table tbody tr:hover td { background: none; }
+    .edodds-map .eo-table tr.sel td:first-child { box-shadow: none; }
+    .edodds-map .eo-table tr.sel { background: var(--accent-wash); box-shadow: inset 3px 0 0 var(--accent); padding-left: 10px; }
+    .edodds-map .game { font-size: 13px; padding: 3px 6px; }
+  }
+  /* the quiet buttons (Reset to the defaults, Copy a link to this setup): text, their edge shown under the pointer or
+     the keyboard, as the website's erazure.css draws them, so this file opened on its own looks the same (the Resources
+     pages' shared interface, 2026-11-27) */
+  .edodds-map button.ez-quiet, .edodds-map .btn.ez-quiet { background: none; border: 1px solid transparent; box-shadow: none;
+      color: var(--fg2, var(--muted)); font-size: 13px; font-weight: 400; min-height: 30px; padding: 3px 8px; cursor: pointer; }
+  .edodds-map button.ez-quiet:hover:not(:disabled), .edodds-map button.ez-quiet:focus-visible { border-color: var(--axis); color: var(--fg); }
+  .edodds-map button.ez-quiet:disabled { opacity: .5; cursor: default; }

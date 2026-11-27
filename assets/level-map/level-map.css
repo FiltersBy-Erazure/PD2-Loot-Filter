@@ -1,0 +1,291 @@
+
+  /* Layout: the title; "which level for me?"; "how to read it" with the legend and the filter levels; then the bar (character level, jump
+     to a section), which stays at the top while scrolling (under the website's header on the website); then the
+     table, one column per group of filter levels and one row per kind of item (sections: gold and potions, gems and
+     runes, ...), each cell what that kind of item does there, with a strip for character levels 1-99; a click opens
+     the cell's details. Then "what changes", one card per group of levels. Every rule is scoped to .level-map, so the
+     website's theme and this page leave each other alone. Dark by default; light when the website (Material) is
+     switched to light. */
+  .level-map {
+    --bg: #151412; --panel: #1f1d1a; --fg: #ece7de; --muted: #a59e91; --line: #36322c; --soft: #2a2723;
+    --accent: #d8b45e;
+    --s-chat: #7cc474; --s-icon: #8bb4e8; --s-mixed: #b6c48f; --s-shown: #b9b2a3; --s-some: #e0b45a;
+    --s-hidden: #ef7a72;
+    --c-white: #e8e8e8; --c-tan: #d0c27d; --c-gold: #c7b377; --c-set: #00ff00; --c-rare: #ffff64;
+    --c-magic: #6969ff; --c-rune: #ffa800;  /* the sections' colors: the items' colors in game */
+    --display: "Cinzel", "Trajan Pro", Georgia, serif;
+    --body: "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --top: 0px;  /* where the bar stops while scrolling */
+    color-scheme: dark;
+    color: var(--fg); font: 15px/1.45 var(--body);
+  }
+  [data-md-color-scheme="default"] .level-map {
+    --bg: #f3f1ec; --panel: #fffdf8; --fg: #23211c; --muted: #6b655a; --line: #ded7c9; --soft: #ece6da;
+    --accent: #8a6d1f;
+    --s-chat: #2f8a3a; --s-icon: #2f6db3; --s-mixed: #6f7d3c; --s-shown: #7c7568; --s-some: #a8690c;
+    --s-hidden: #b3261e;
+    --c-white: #23211c; --c-tan: #7d6834; --c-gold: #8a6d1f; --c-set: #13861a; --c-rare: #7a6e00;
+    --c-magic: #3434c9; --c-rune: #a05f00;
+    color-scheme: light;
+  }
+  .md-content .level-map { --top: 2.4rem; }  /* on the website: under its header, which stays at the top */
+  .level-map *, .level-map *::before, .level-map *::after { box-sizing: border-box; }
+  .level-map .wrap { max-width: 1400px; margin: 0 auto; padding-inline: 16px; }
+  .md-content .level-map .wrap { padding-inline: 0; }
+  .level-map h1.lm-title { font: 700 26px/1.2 var(--display); letter-spacing: .02em; margin: 0;
+                           padding-block: 16px 10px;
+                           color: var(--fg); text-wrap: balance; }
+  .level-map .bar { position: sticky; top: var(--top); z-index: 3; background: var(--panel);
+                    border-block: 1px solid var(--line); padding-block: 8px; margin-block: 12px 0; }
+  .level-map .bar .wrap { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
+  .md-content .level-map .bar .wrap { padding-inline: 10px; }
+  .level-map .bar label { font-size: 14px; color: var(--muted); display: inline-flex; gap: 8px; align-items: center; }
+  .level-map input[type=number], .level-map select {
+    font: inherit; font-size: 14.5px; padding: 4px 8px; border: 1px solid var(--line); border-radius: 6px;
+    background: var(--bg); color: var(--fg); min-width: 0; max-width: 100%; margin: 0; }
+  .level-map input[type=number] { width: 5.5em; }
+  .level-map input[type=number].set { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+  .level-map .bar .hint { font-size: 13px; color: var(--muted); }
+  .level-map .jump { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 13.5px; }
+  .level-map a { color: var(--accent); text-decoration: none; }
+  .level-map a:hover { text-decoration: underline; }
+  .level-map button:focus-visible, .level-map select:focus-visible, .level-map input:focus-visible,
+  .level-map a:focus-visible, .level-map summary:focus-visible, .level-map .mtw:focus-visible {
+    outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* how to read it */
+  .level-map .howto { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 4px 24px;
+                      background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; }
+  @media (max-width: 900px) { .level-map .howto { grid-template-columns: minmax(0, 1fr); } }
+  .level-map .howto h2 { font: 700 12.5px/1.3 var(--body); text-transform: uppercase; letter-spacing: .08em;
+                         color: var(--muted); margin: 0 0 6px; }
+  .level-map .howto p, .level-map .howto li { max-width: 76ch; font-size: 14.5px; line-height: 1.45; }
+  .level-map .howto p { margin: 0 0 6px; }
+  .level-map .howto ul { margin: 0 0 8px; padding-left: 18px; list-style: disc; }
+  .level-map .howto li { margin: 0; }
+  .level-map .legend { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 4px 0 8px; font-size: 14px; }
+  .level-map .legend > span { display: inline-flex; align-items: center; gap: 6px; }
+  .level-map ol.levels { font-size: 13.5px; margin: 4px 0 0; padding-left: 26px; list-style: decimal; }
+  .level-map ol.levels li { margin: 0; }
+  .level-map ol.levels .grp { color: var(--muted); }
+
+  /* states: a symbol and a word, colored */
+  .level-map .st { display: inline-flex; align-items: baseline; gap: 5px; color: var(--sc); }
+  .level-map .st .g { font-size: 13px; width: 1em; text-align: center; flex: none; }
+  .level-map .s-chat { --sc: var(--s-chat); } .level-map .s-icon { --sc: var(--s-icon); }
+  .level-map .s-mixed { --sc: var(--s-mixed); } .level-map .s-shown { --sc: var(--s-shown); }
+  .level-map .s-some { --sc: var(--s-some); } .level-map .s-hidden { --sc: var(--s-hidden); }
+
+  /* the table */
+  .level-map h2.part { font: 700 22px/1.2 var(--display); margin: 26px 0 8px; letter-spacing: .02em; color: var(--fg); }
+  .level-map .tw { overflow-x: auto; }
+  .level-map table.lm { width: 100%; min-width: 1040px; table-layout: fixed; border-collapse: collapse; font-size: 14px;
+                        line-height: 1.35; margin: 0; }
+  .level-map table.lm col.w-item { width: 15em; }
+  .level-map table.lm th, .level-map table.lm td { text-align: left; vertical-align: top; padding: 5px 8px; border: 0; }
+  .level-map table.lm thead th { background: var(--bg); border-bottom: 2px solid var(--line); vertical-align: bottom; }
+  .level-map table.lm thead th.at { color: var(--accent); }
+  .level-map thead .lv { font: 700 16px/1.1 var(--display); color: var(--fg); font-variant-numeric: tabular-nums; }
+  /* hyphens: a long name breaks between syllables, not mid-word ("STRICTN / ESS" on phones and at 200% zoom) */
+  .level-map thead .nm { display: block; font-size: 12px; font-weight: 700; text-transform: uppercase; hyphens: auto;
+                         letter-spacing: .05em; color: var(--muted); margin-top: 2px; }
+  .level-map thead .hd { display: block; font-size: 12px; color: var(--accent); margin-top: 1px; font-weight: 600; }
+  .level-map section.sec { margin-top: 14px; }
+  .level-map section.sec, .level-map h2.part, .level-map details.card {  /* a jump lands below the bar */
+    scroll-margin-top: calc(var(--top) + var(--bar, 0px) + 8px); }
+  /* the chooser sits above the bar, so a jump to it (#which, its answer #ch-a) lands below the header alone: the
+     target is the section, not its heading (the additions audit, 2026-11-23, ST-02) */
+  .level-map #which, .level-map #ch-a { scroll-margin-top: calc(var(--top) + 8px); }
+  .level-map h3.sn { font: 600 19px/1.25 var(--display); margin: 0 0 2px; letter-spacing: 0; color: var(--fg); }
+  /* a section's name stays at the top, under the bar, while its table scrolls by */
+  .level-map section.sec > h3.sn { position: sticky; top: calc(var(--top) + var(--bar, 0px)); z-index: 2;
+                                   background: var(--bg); padding: 8px 0 4px; }
+  .level-map h3.sn .sl { font: 400 13px/1.3 var(--body); margin-left: 10px; letter-spacing: 0; }
+  .level-map p.sx { max-width: 90ch; font-size: 13.5px; color: var(--muted); margin: 0 0 4px; }
+  .level-map .dp { background: var(--panel); border: 1px solid var(--line); border-top: 2px solid var(--accent);
+                   border-radius: 0 0 8px 8px; padding: 8px 14px 10px; margin-top: 2px; }
+  .level-map .dp .dh { font-weight: 700; margin-bottom: 4px; }
+  /* a cell's details: a row under the clicked row, its panel kept at the box's left while the table scrolls */
+  .level-map table.lm tr.dr > td { padding: 0 0 10px; border: 0; }
+  .level-map tr.dr .dp { position: sticky; left: 0; box-sizing: border-box; }
+  /* the copy of a table's level header that stays under its section's name */
+  .level-map .fhead { position: fixed; z-index: 2; overflow: hidden; background: var(--bg); pointer-events: none;
+                      box-shadow: 0 6px 8px -6px rgba(0, 0, 0, .5); }
+  .level-map .fhead table.lm { margin: 0; }
+  .level-map .dp .dh .muted { font-weight: 400; }
+  .level-map .dp ul.notes { margin: 6px 0 0; padding-left: 18px; }
+  .level-map .dp ul.notes li { margin: 2px 0; max-width: 120ch; }
+  /* the small tables (a cell's details, the change lines), flowing into columns where there is room */
+  .level-map .items { column-width: 360px; column-gap: 26px; }
+  .level-map .it { break-inside: avoid; display: inline-block; width: 100%; margin: 0 0 12px; }
+  .level-map .it.wide { column-span: all; display: block; }
+  /* lanes side by side (a card's gold, healing and mana potions), as wide as the columns under them */
+  .level-map .lanes { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 360px), 1fr));
+                      column-gap: 26px; }
+  .level-map .oc.lines > span { display: block; }
+  .level-map .it .nm { font-weight: 700; margin-bottom: 2px; }
+  .level-map .it .inl { font-size: 14px; }
+  .level-map .it .arr { color: var(--muted); }
+  /* relative: a changed row's screen-reader note (.sr, absolute) stays inside the box, or the page scrolls sideways on
+     a phone (467 px at 390: the additions audit, 2026-11-23) */
+  .level-map .mtw { overflow-x: auto; position: relative; }
+  .level-map table.mt { border-collapse: collapse; font-size: 13.5px; line-height: 1.35; margin: 0; width: 100%; }
+  .level-map table.mt th, .level-map table.mt td { padding: 2px 8px; text-align: left; vertical-align: top;
+                                                   border-bottom: 1px solid var(--soft); }
+  .level-map table.mt thead th { font-size: 11.5px; text-transform: uppercase; letter-spacing: .05em; font-weight: 700;
+                                 color: var(--muted); border-bottom: 1px solid var(--line); white-space: nowrap; }
+  .level-map table.mt tbody th { font-weight: 600; white-space: nowrap; width: 1%; }
+  .level-map table.mt.kinds tbody th { white-space: normal; width: 30%; }  /* a line per kind of change: its items */
+  .level-map table.mt.kinds td { width: 35%; }
+  .level-map table.mt td.was { opacity: .72; }
+  .level-map table.mt tr.chg th, .level-map table.mt tr.chg td {
+    background: color-mix(in srgb, var(--accent) 16%, transparent); }
+  .level-map table.mt tr.chg td:not(.was) { font-weight: 600; }
+  .level-map table.mt tr.chg th { box-shadow: inset 3px 0 0 var(--accent); }  /* a changed row: a bar, not only a tint */
+  .level-map .sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden;
+                   clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+  .level-map .k-hidden { color: var(--s-hidden); } .level-map .k-some { color: var(--s-some); }
+  .level-map .k-chat { color: var(--s-chat); } .level-map .k-icon { color: var(--s-icon); }
+  .level-map .k-mixed { color: var(--s-mixed); } .level-map .k-shown { color: var(--s-shown); }
+  .level-map .k-look { color: var(--fg); }
+  .level-map .dp .x { float: right; font: inherit; color: var(--muted); background: none; border: 0; cursor: pointer;
+                      padding: 0 0 0 10px; margin: 0; }
+  .level-map tr.r td, .level-map tr.r th { border-bottom: 1px solid var(--soft); }
+  .level-map tr.r th { font-weight: 600; }
+  .level-map tr.r.sub th { font-weight: 400; padding-left: 26px; color: var(--muted); }
+  .level-map tr.r.sub td, .level-map tr.r.sub th { background: color-mix(in srgb, var(--soft) 45%, transparent); }
+  .level-map .tog { font: inherit; color: var(--muted); background: none; border: 0; padding: 0; margin: 0 4px 0 -2px;
+                    cursor: pointer; width: 1.1em; }
+  .level-map .cnt { font-size: 12px; color: var(--muted); font-weight: 400; margin-left: 4px; }
+  .level-map .tag { font-size: 12px; color: var(--accent); font-weight: 600; margin-left: 6px; }
+  .level-map td.c { cursor: pointer; }
+  .level-map td.c:hover { background: var(--soft); }
+  .level-map td.c.on { background: var(--soft); box-shadow: inset 0 -2px 0 var(--accent); }
+  .level-map td.c .t { display: block; }
+  .level-map .strip { display: flex; height: 6px; margin-top: 5px; border-radius: 2px; overflow: hidden; gap: 1px; }
+  .level-map .strip + .strip { margin-top: 2px; }
+  /* the strip's runs and the legend's swatches: hiding states hatched, so they don't depend on the color */
+  .level-map .strip span, .level-map .sw { background: var(--sc); opacity: .85; }
+  .level-map .strip span.s-hidden, .level-map .sw.s-hidden {
+    background: repeating-linear-gradient(135deg, var(--sc) 0 2px, transparent 2px 4px); }
+  .level-map .strip span.s-some, .level-map .sw.s-some {
+    background: repeating-linear-gradient(135deg, var(--sc) 0 2px, transparent 2px 7px); }
+  .level-map .sw { display: inline-block; width: 22px; height: 6px; border-radius: 2px; flex: none; }
+  .level-map .muted { color: var(--muted); }
+
+  /* what changes */
+  /* one column that may shrink: a card's min-width (its 360 px lanes) made it wider than a phone (2026-11-15) */
+  .level-map .cards { display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr); }
+  /* compare any two levels (the website ideas' #21): two lists and the card of what changes between them */
+  /* which level and version for me (the website ideas' #20): the questions, then the answer; the page's first card
+     (the additions audit, 2026-11-23, ST-02: it was 1,126 px down on a laptop, under How to read it) */
+  .level-map .chooser { margin: 14px 0; padding: 12px 14px; border: 1px solid var(--line); border-radius: 8px;
+                        background: var(--panel); display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 12px 18px; }
+  @media (max-width: 860px) { .level-map .chooser { grid-template-columns: minmax(0, 1fr); } }
+  /* beside the questions, the answer stays in view while you scroll down through them (the author, 2026-11-23: "as you
+     are answering ... you are scrolling down and potentially miss the result up and to the right"); phones have the
+     line under the question just answered instead, and a short window keeps it in place (the site's 560 px rule) */
+  @media (min-width: 861px) and (min-height: 561px) {
+    .level-map #ch-a { position: sticky; top: calc(var(--top) + 12px); align-self: start; }
+  }
+  .level-map .chooser h2 { margin: 0 0 4px; grid-column: 1 / -1; }
+  .level-map .chooser .lede { grid-column: 1 / -1; margin: 0; font-size: 14px; color: var(--muted); }
+  .level-map .chooser .q { margin: 0 0 10px; }
+  .level-map .chooser .q > span { display: block; font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+  .level-map .chooser .q > span .note { font-weight: 400; color: var(--muted); }
+  .level-map .chooser .opts { display: flex; flex-wrap: wrap; gap: 6px; }
+  .level-map .chooser .opts button { font: inherit; font-size: 13.5px; color: var(--fg); background: var(--bg); text-align: left;
+                                     border: 1px solid var(--line); border-radius: 6px; padding: 4px 9px; cursor: pointer; }
+  /* the hints at their own gray (Material's small text is .75 opaque on the website: 3.4:1 on a picked option) */
+  .level-map .chooser .opts button small { display: block; font-size: 11.5px; color: var(--muted); opacity: 1; }
+  .level-map .chooser .opts button[aria-pressed="true"] { border-color: var(--accent); background: rgba(216, 180, 94, .14); }
+  .level-map .chooser .opts button[aria-pressed="true"]::before { content: "\2713  "; color: var(--accent); font-weight: 700; }
+  .level-map .chooser .opts button:disabled { cursor: not-allowed; opacity: .6; }
+  .level-map .chooser .ans { border: 1px solid var(--accent); border-radius: 8px; padding: 10px 12px; align-self: start; }
+  .level-map .chooser .ans + .ans { margin-top: 10px; }
+  .level-map .chooser .ans .lab { font-size: 11.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .level-map .chooser .ans .big { font-weight: 700; font-size: 18px; color: var(--accent); margin: 2px 0 4px; }
+  .level-map .chooser .ans p { margin: 4px 0 0; font-size: 14px; }
+  .level-map .chooser .ans p.was { font-size: 13.5px; color: var(--muted); }
+  /* links in its text are underlined, not told apart by their color alone (the additions audit, SW-05) */
+  .level-map .chooser .ans p a, .level-map .chooser .now a { text-decoration: underline; text-underline-offset: 2px; }
+  /* on phones the answer is under all the questions: a line under the question just answered says what it is now */
+  .level-map .chooser .now { display: none; margin: 6px 0 0; font-size: 14px; }
+  /* phones, and a short window (200% zoom), where the answer can't stay beside the questions */
+  @media (max-width: 860px), (max-height: 560px) { .level-map .chooser .now { display: block; } }
+  .level-map .compare { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 0 0 12px; padding: 10px 12px;
+                        border: 1px solid var(--line); border-radius: 8px; background: var(--panel); }
+  .level-map .compare b { font-size: 15px; }
+  /* a list as wide as its longest level's words shrinks to a phone's width (min-width 0: a flex item's own is its
+     longest option) */
+  .level-map .compare label { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; min-width: 0; max-width: 100%; }
+  .level-map .compare select { font: inherit; font-size: 14px; color: var(--fg); background: var(--bg); border: 1px solid var(--line);
+                               border-radius: 6px; padding: 4px 6px; max-width: 100%; min-width: 0; }
+  .level-map .compare button { font: inherit; font-size: 14px; font-weight: 700; color: var(--bg); background: var(--accent); border: 0;
+                               border-radius: 6px; padding: 6px 12px; cursor: pointer; }
+  /* light: a darker gold under its light text, 5.9:1 (4.3:1 on the light accent; the additions audit, ST-07) */
+  [data-md-color-scheme="default"] .level-map .compare button { color: var(--panel); background: #7a5f19; }
+  .level-map .compare .cmp-note { font-size: 13px; color: var(--muted); }
+  .level-map #cmp-out { margin-bottom: 14px; }
+  .level-map #cmp-out:empty { display: none; }
+  .md-typeset .level-map details.card, .level-map details.card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 0; margin: 0;
+    box-shadow: none; overflow: visible; font-size: inherit; display: block; }
+  /* a card's header stays at the top, under the bar, while its card scrolls by */
+  .md-typeset .level-map details.card > summary, .level-map details.card > summary {
+    list-style: none; display: block; position: sticky; top: calc(var(--top) + var(--bar, 0px)); z-index: 2;
+    padding: 10px 14px; margin: 0; border: 0; border-radius: 8px 8px 0 0; background: var(--panel);
+    min-height: 0; font-weight: inherit; cursor: pointer; color: var(--fg); }
+  .md-typeset .level-map details.card[open] > summary, .level-map details.card[open] > summary {
+    box-shadow: 0 1px 0 var(--line); }
+  .md-typeset .level-map details.card:not([open]) > summary, .level-map details.card:not([open]) > summary {
+    border-radius: 8px; }
+  .level-map details.card > summary::-webkit-details-marker { display: none; }
+  .md-typeset .level-map details.card > summary::before, .level-map details.card > summary::before {
+    content: "\25B8"; position: static; display: inline-block; width: 1.1em; height: auto; background: none;
+    -webkit-mask-image: none; mask-image: none; transform: none; color: var(--muted); }
+  .md-typeset .level-map details.card[open] > summary::before, .level-map details.card[open] > summary::before {
+    content: "\25BE"; }
+  .md-typeset .level-map details.card > summary::after { display: none; content: none; }
+  .level-map .card .ct { font: 700 18px/1.25 var(--display); }
+  .level-map .card .chd { color: var(--accent); font-weight: 600; font-size: 14px; margin-left: 6px; }
+  .level-map .card .cs { display: block; font-size: 13.5px; color: var(--muted); margin: 2px 0 0 1.1em; }
+  .level-map .card .body { padding: 0 14px 12px calc(14px + 1.1em); }
+  .level-map .card h4 { font-size: 12.5px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted);
+                        margin: 10px 0 3px; font-weight: 700; }
+  /* a card's section: its heading stays under the card's header while its tables scroll by */
+  .level-map .card .grp { margin-top: 6px; }
+  .level-map .card .grp > h4 { position: sticky; top: calc(var(--top) + var(--bar, 0px) + var(--head, 0px));
+                               z-index: 1; background: var(--panel); margin: 0 0 4px; padding: 10px 0 5px;
+                               border-bottom: 1px solid var(--line); }
+  .level-map .card .as { font-size: 12px; font-weight: 400; color: var(--muted); border: 1px solid var(--line);
+                         border-radius: 999px; padding: 0 7px; margin-left: 6px; white-space: nowrap; }
+  .level-map .card .none { color: var(--muted); font-style: italic; }
+  .level-map footer { color: var(--muted); font-size: 13px; padding-block: 24px; }
+  .level-map [hidden] { display: none !important; }
+  .level-map h3.sc-white, .level-map h4.sc-white { color: var(--c-white); }
+  .level-map h3.sc-tan, .level-map h4.sc-tan { color: var(--c-tan); }
+  .level-map h3.sc-gold, .level-map h4.sc-gold { color: var(--c-gold); }
+  .level-map h3.sc-set, .level-map h4.sc-set { color: var(--c-set); }
+  .level-map h3.sc-rare, .level-map h4.sc-rare { color: var(--c-rare); }
+  .level-map h3.sc-magic, .level-map h4.sc-magic { color: var(--c-magic); }
+  .level-map h3.sc-rune, .level-map h4.sc-rune { color: var(--c-rune); }
+  /* the item column stays while the table scrolls sideways */
+  .level-map table.lm thead th:first-child, .level-map table.lm tr.r th {
+    position: sticky; left: 0; z-index: 1; background: var(--bg); }
+  .level-map table.lm tr.r.sub th { background: color-mix(in srgb, var(--soft) 45%, var(--bg)); }
+  @media (max-width: 760px) {
+    .level-map table.lm { min-width: 900px; }
+    .level-map table.lm col.w-item { width: 9.5em; }
+    .level-map thead .nm { letter-spacing: 0; font-size: 11.5px; text-transform: none; }
+    .level-map .bar .hint { display: none; }
+    .level-map .jump { flex-wrap: nowrap; overflow-x: auto; width: 100%; white-space: nowrap; padding-bottom: 2px; }
+  }
+  /* a short window (zoomed in): the bar and the sticky headings and headers scroll away, so the page keeps room to
+     read: the site's rule, static below 560 px tall (the additions audit, 2026-11-23, SW-07: 520 px for the headings
+     and 420 px for the bar until then); the script measures --bar as 0 while the bar doesn't stick */
+  @media (max-height: 560px) {
+    .level-map .bar, .level-map section.sec > h3.sn, .md-typeset .level-map details.card > summary,
+    .level-map details.card > summary, .level-map .card .grp > h4 { position: static; }
+  }
+  @media (prefers-reduced-motion: reduce) { .level-map * { transition: none !important; } }
